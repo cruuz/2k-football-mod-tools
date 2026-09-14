@@ -138,3 +138,67 @@ class LiveCPU(CPU):
         pointer = self.run(0xE8790, ecx=depth, edx=0,
                            args=(0, 0, 0x23A0100, len(assigned), 0, pool, ordinal))
         return self.person(pointer) if pointer else None
+
+
+class CompletionCPU(LiveCPU):
+    """Execute the native archive wait; model only delivery at the OS boundary.
+
+    The real wait is 432D0..432EE, reached from 2D182E before C1030.
+    A withheld completion stops at the actual back edge after 64 iterations.
+    Delivery tail-calls the native busy setter, never skips the wait branch.
+    This cannot supply the console's real asynchronous I/O/event state.
+    """
+    def __init__(self, *args, **kwargs):
+        self.hold_completion = False
+        self.wait_branches = 0
+        self.wait_callers = []
+        self.deliveries = 0
+        super().__init__(*args, **kwargs)
+        # Native execution between observed boundaries does not need a Python
+        # callback for every instruction. Keep the same instruction cap and
+        # fail if a future probe introduces an unhooked substitution address.
+        from unicorn import UC_HOOK_CODE
+        self.uc.hook_del(self._code_hook)
+        self._bounded_hooks = {
+            0xC1030, 0x2D1896, 0xC2300, 0xC240F, 0x432D0, 0x432EC,
+            0x43F50, 0x449E0, 0x432F0, 0x38F50, 0xF3210, 0x6E390,
+            0xE3150, 0xF3580, 0x773F0, 0xE9460, 0x10BD60, 0xAF510,
+            0x9CBD0, 0x23F0000,
+        }
+        self._boundary_handles = [self.uc.hook_add(UC_HOOK_CODE, self._hook, begin=at, end=at)
+                                  for at in sorted(self._bounded_hooks)]
+
+    def run(self, at, **registers):
+        if hasattr(self, '_bounded_hooks'):
+            missing = set(self.stubs) - self._bounded_hooks
+            assert not missing, f'unobserved native substitution addresses: {sorted(missing)}'
+        return super().run(at, **registers)
+
+
+    def archive_stubs(self):
+        super().archive_stubs()
+        acquire = self.stubs[0x43F50]
+        def queue():
+            acquire()
+            self.w(0xB09584, 1)  # supplied async request, after the resource bytes arrive
+        def pump():
+            if self.hold_completion:
+                self.ret(0)
+            else:
+                from unicorn import x86_const as regs
+                self.deliveries += 1
+                # Native 42FC0 clears busy and returns to 432E5 on the same stack.
+                self.uc.reg_write(regs.UC_X86_REG_ECX, 0)
+                self.uc.reg_write(regs.UC_X86_REG_EIP, 0x42FC0)
+        self.stubs[0x43F50] = queue
+        self.stubs.pop(0x432D0)
+        self.stubs[0x38F50] = pump
+
+    def _hook(self, uc, at, size, data):
+        if at == 0x432D0:
+            self.wait_callers.append(self.r(self.reg('esp')))
+        elif at == 0x432EC:
+            self.wait_branches += 1
+            if self.hold_completion and self.wait_branches >= 64:
+                uc.emu_stop()
+        super()._hook(uc, at, size, data)

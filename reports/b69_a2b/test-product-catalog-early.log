@@ -1,0 +1,94 @@
+.FFFF...FF..
+======================================================================
+FAIL: test_category_and_global_counts_match_the_registry (__main__.ProductCatalogTests.test_category_and_global_counts_match_the_registry) (category='stadiums')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a2b/tests/mod_editor/test_product_catalog.py", line 210, in test_category_and_global_counts_match_the_registry
+    self.assertEqual(
+AssertionError: Tuples differ: (12, 8, 1, 0, 0, 3, 0) != (10, 6, 1, 0, 0, 3, 0)
+
+First differing element 0:
+12
+10
+
+- (12, 8, 1, 0, 0, 3, 0)
+?   ^  ^
+
++ (10, 6, 1, 0, 0, 3, 0)
+?   ^  ^
+
+
+======================================================================
+FAIL: test_category_and_global_counts_match_the_registry (__main__.ProductCatalogTests.test_category_and_global_counts_match_the_registry) (category='menus_ui')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a2b/tests/mod_editor/test_product_catalog.py", line 210, in test_category_and_global_counts_match_the_registry
+    self.assertEqual(
+AssertionError: Tuples differ: (8, 3, 2, 0, 0, 3, 0) != (6, 3, 2, 0, 0, 1, 0)
+
+First differing element 0:
+8
+6
+
+- (8, 3, 2, 0, 0, 3, 0)
+?  ^              ^
+
++ (6, 3, 2, 0, 0, 1, 0)
+?  ^              ^
+
+
+======================================================================
+FAIL: test_category_and_global_counts_match_the_registry (__main__.ProductCatalogTests.test_category_and_global_counts_match_the_registry) (category='sliders_gameplay')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a2b/tests/mod_editor/test_product_catalog.py", line 210, in test_category_and_global_counts_match_the_registry
+    self.assertEqual(
+AssertionError: Tuples differ: (35, 27, 5, 0, 0, 0, 3) != (32, 24, 5, 0, 0, 0, 3)
+
+First differing element 0:
+35
+32
+
+- (35, 27, 5, 0, 0, 0, 3)
++ (32, 24, 5, 0, 0, 0, 3)
+
+======================================================================
+FAIL: test_category_and_global_counts_match_the_registry (__main__.ProductCatalogTests.test_category_and_global_counts_match_the_registry)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a2b/tests/mod_editor/test_product_catalog.py", line 222, in test_category_and_global_counts_match_the_registry
+    self.assertEqual(
+AssertionError: Tuples differ: (99, 77, 8, 1, 0, 10, 3) != (92, 72, 8, 1, 0, 8, 3)
+
+First differing element 0:
+99
+92
+
+- (99, 77, 8, 1, 0, 10, 3)
+?   ^   ^           ^^
+
++ (92, 72, 8, 1, 0, 8, 3)
+?   ^   ^           ^
+
+
+======================================================================
+FAIL: test_every_nfl_capability_is_assigned_exactly_once (__main__.ProductCatalogTests.test_every_nfl_capability_is_assigned_exactly_once)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a2b/tests/mod_editor/test_product_catalog.py", line 160, in test_every_nfl_capability_is_assigned_exactly_once
+    self.assertEqual(len(first_ids), 92)  # beta 68: + uniform/shoe bump maps; beta 66: + Broadcast camera v6 (beta 65: filled star + accelerated clock)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 99 != 92
+
+======================================================================
+FAIL: test_findings_hooks_add_normalized_deduplicated_notes_only (__main__.ProductCatalogTests.test_findings_hooks_add_normalized_deduplicated_notes_only)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a2b/tests/mod_editor/test_product_catalog.py", line 285, in test_findings_hooks_add_normalized_deduplicated_notes_only
+    self.assertEqual(len(seen), 92)
+AssertionError: 99 != 92
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.049s
+
+FAILED (failures=6)

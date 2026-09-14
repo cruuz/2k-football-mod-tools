@@ -8,6 +8,8 @@ team record.
 
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import failure_body
+
 from pathlib import Path
 
 from PyQt5.QtCore import Qt
@@ -421,7 +423,7 @@ class RosterReservePlanner(QWidget):
                 self._current_team(), reserve_slot, int(player_index)
             )
         except FacadeError as exc:
-            QMessageBox.warning(self, "Reserve was not assigned", str(exc))
+            QMessageBox.warning(self, "Reserve was not assigned", failure_body(exc))
             return
         self._render(select_master_slot=STOCK_ACTIVE_SLOTS + reserve_slot)
 
@@ -442,7 +444,7 @@ class RosterReservePlanner(QWidget):
                 self._current_team(), reserve_slot, None
             )
         except FacadeError as exc:
-            QMessageBox.warning(self, "Reserve was not cleared", str(exc))
+            QMessageBox.warning(self, "Reserve was not cleared", failure_body(exc))
             return
         self._render(select_master_slot=STOCK_ACTIVE_SLOTS + reserve_slot)
 
@@ -466,7 +468,7 @@ class RosterReservePlanner(QWidget):
         try:
             self._workspace = self.facade.open_roster_reserve_plan(Path(source))
         except FacadeError as exc:
-            QMessageBox.warning(self, "Reserve plan was not opened", str(exc))
+            QMessageBox.warning(self, "Reserve plan was not opened", failure_body(exc))
             return
         self._render()
 
@@ -500,7 +502,7 @@ class RosterReservePlanner(QWidget):
         try:
             saved = self.facade.save_roster_reserve_plan(path)
         except FacadeError as exc:
-            QMessageBox.warning(self, "Reserve plan was not saved", str(exc))
+            QMessageBox.warning(self, "Reserve plan was not saved", failure_body(exc))
             return
         QMessageBox.information(
             self,

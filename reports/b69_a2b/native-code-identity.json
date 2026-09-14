@@ -1,0 +1,86 @@
+[
+  {
+    "job": "J3",
+    "path": "mod_editor/core/nfl2k5_my_career.py",
+    "sha256": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+    "unchanged_from_job_tip": true
+  },
+  {
+    "job": "J3",
+    "path": "mod_editor/core/nfl2k5_my_career_mode.py",
+    "sha256": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+    "unchanged_from_job_tip": true
+  },
+  {
+    "job": "J3",
+    "path": "mod_editor/core/nfl2k5_my_career_mode_code.py",
+    "sha256": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+    "unchanged_from_job_tip": true
+  },
+  {
+    "job": "J3",
+    "path": "mod_editor/core/nfl2k5_my_career_prospects.py",
+    "sha256": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+    "unchanged_from_job_tip": true
+  },
+  {
+    "job": "J3",
+    "path": "mod_editor/core/nfl2k5_my_career_save.py",
+    "sha256": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+    "unchanged_from_job_tip": true
+  },
+  {
+    "job": "J4",
+    "path": "mod_editor/core/nfl2k5_weather.py",
+    "sha256": "89526a7912340968cbe554aedf434d5a2c60a112f21a3d2d0564082b74ecd1ad",
+    "unchanged_from_job_tip": true
+  },
+  {
+    "job": "J4",
+    "path": "mod_editor/core/nfl2k5_weather_haze.py",
+    "sha256": "3d045e099f1585658b899ab6e7d3560e92edb24529ca8d6f224e901dc7712ff9",
+    "unchanged_from_job_tip": true
+  },
+  {
+    "job": "J5",
+    "path": "mod_editor/core/nfl2k5_coin_defer.py",
+    "sha256": "403dddd1c40718d1284f008ac52222a0e2cbf0b9109941d8f16949739f6be5e0",
+    "unchanged_from_job_tip": true
+  },
+  {
+    "job": "J5",
+    "path": "mod_editor/core/nfl2k5_coin_defer_code.py",
+    "sha256": "9eefd8074b0fec01375cd266339ca0810e660af91dffbe275acaf0e5b927b0a2",
+    "unchanged_from_job_tip": true
+  },
+  {
+    "job": "J5",
+    "path": "mod_editor/core/nfl2k5_cpu_scrambles.py",
+    "sha256": "6a5b913f4c6407b64548e979ff59e1f66b2688f9ddccc20c4ed887e3209d5576",
+    "unchanged_from_job_tip": true
+  },
+  {
+    "job": "J5",
+    "path": "mod_editor/core/nfl2k5_cpu_scrambles_code.py",
+    "sha256": "6519b049d4f570dc92c58ede831a521ebface07ce23fb8406eb42318bbf52a92",
+    "unchanged_from_job_tip": true
+  },
+  {
+    "job": "J5",
+    "path": "mod_editor/core/nfl2k5_decided_clock.py",
+    "sha256": "cf27be38419bf9443c50fbed9de5c5deb08c620613af84869e60683f1b135a5b",
+    "unchanged_from_job_tip": true
+  },
+  {
+    "job": "J5",
+    "path": "mod_editor/core/nfl2k5_decided_clock_code.py",
+    "sha256": "83d7961b291a0fe08d3ac1518ec7b97ab4489f830c20c04bdd99626344d53c58",
+    "unchanged_from_job_tip": true
+  },
+  {
+    "job": "J5",
+    "path": "mod_editor/core/nfl2k5_rules_patch.py",
+    "sha256": "fa055e93835ad7c49196d361c7e0c9cfdec6fb620067ab7a0524e8a3cddcd15a",
+    "unchanged_from_job_tip": true
+  }
+]

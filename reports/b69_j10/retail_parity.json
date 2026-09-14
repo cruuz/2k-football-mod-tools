@@ -1,0 +1,107 @@
+{
+  "retail_index": "/home/noah/2k-worktrees/astra-b69-j10/extracted/All-Pro Football 2K8 (USA)/0A",
+  "reference_writer_sha256": "d50f2146ddb5edfb0c1fed65e21b2b953af7eb0c5e0160bdd4600091cd9ca222",
+  "packages": [
+    {
+      "outer_index": 36,
+      "sha256": "14d1103edf1fc24643966cbe7a39d3615e00e1a6a727b3ac5619678e518d86fd",
+      "before_seconds": 20.901443128008395,
+      "after_seconds": 1.97836740501225,
+      "python_fallback_seconds": 2.6098162649432197,
+      "byte_identical": true,
+      "source_sha256": "5683eb73e670d9ece595f707f15d9302522a5243b7fb872f70e3cd31a5632287",
+      "fit": {
+        "budget_bytes": 83425,
+        "compressed_art_bytes": 12020,
+        "shades_per_region": 16,
+        "encoder": "greedy H7A",
+        "allow_simplification": true,
+        "changed_layers": [
+          "logo_l0",
+          "logo_l1"
+        ],
+        "alpha_preserved": true,
+        "mips_regenerated": true,
+        "attempts": [
+          {
+            "shades_per_region": 16,
+            "encoder": "greedy H7A",
+            "compressed_art_bytes": 12020,
+            "fits": true
+          }
+        ],
+        "status": "Logo slot 1: art unchanged using greedy H7A to fit 83,425 bytes; 12,020 used"
+      }
+    },
+    {
+      "outer_index": 1133,
+      "sha256": "542586ada59db9882fafc6970168751a17ca4e5cde7dbd7bf62026bed4795495",
+      "before_seconds": 14.469490415998735,
+      "after_seconds": 1.5705332149518654,
+      "python_fallback_seconds": 2.434859739965759,
+      "byte_identical": true,
+      "source_sha256": "fc8e9a6edf72150a494bd9d6c31d686ae8a7cdcc01291243d5175f9dada21a3a",
+      "fit": {
+        "budget_bytes": 122337,
+        "compressed_art_bytes": 23191,
+        "shades_per_region": 16,
+        "encoder": "greedy H7A",
+        "allow_simplification": true,
+        "changed_layers": [
+          "logo_l0",
+          "logo_l1"
+        ],
+        "alpha_preserved": true,
+        "mips_regenerated": true,
+        "attempts": [
+          {
+            "shades_per_region": 16,
+            "encoder": "greedy H7A",
+            "compressed_art_bytes": 23191,
+            "fits": true
+          }
+        ],
+        "status": "Logo slot 30: art unchanged using greedy H7A to fit 122,337 bytes; 23,191 used"
+      }
+    },
+    {
+      "outer_index": 712,
+      "sha256": "e461868b777376a87923746dfa27a359fb1e00ab854abf72d10da4fd7d372456",
+      "before_seconds": 6.530318480916321,
+      "after_seconds": 1.3198669489938766,
+      "python_fallback_seconds": 2.4323675150517374,
+      "byte_identical": true,
+      "source_sha256": "9b23777ada4b31a2b73e03b3c882daef181bc3d3e953edd0b30e66c89d3ad7fc",
+      "fit": {
+        "budget_bytes": 103905,
+        "compressed_art_bytes": 23191,
+        "shades_per_region": 16,
+        "encoder": "greedy H7A",
+        "allow_simplification": true,
+        "changed_layers": [
+          "logo_l0",
+          "logo_l1"
+        ],
+        "alpha_preserved": true,
+        "mips_regenerated": true,
+        "attempts": [
+          {
+            "shades_per_region": 16,
+            "encoder": "greedy H7A",
+            "compressed_art_bytes": 23191,
+            "fits": true
+          }
+        ],
+        "status": "Logo slot 35: art unchanged using greedy H7A to fit 103,905 bytes; 23,191 used"
+      }
+    }
+  ],
+  "linked_cache": {
+    "before_seconds": 19.072290773969144,
+    "after_seconds": 2.061338633997366,
+    "warm_seconds": 1.2637677630409598,
+    "byte_identical": true,
+    "directory_sha256": "afd692662699f4d3cc724fa964449885a2cf3f872819d2ccdc42190eaeedaee2",
+    "payload_sha256": "476ec12928f9096812757c6192751d4c040f0dbc2f8bccfd3c93d7ad39edbdea"
+  }
+}

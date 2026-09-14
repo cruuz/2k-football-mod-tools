@@ -1,0 +1,38 @@
+{
+  "changelog": {},
+  "jobs": {
+    "3": {
+      "ancestor": true,
+      "changelog_bullets_preserved": true,
+      "commits": 3,
+      "head": "68b3818b5299386390f648309e273723b64859bb"
+    },
+    "4": {
+      "ancestor": true,
+      "changelog_bullets_preserved": true,
+      "commits": 3,
+      "head": "f0d1ab536665926e53d5fc5e5d0a6c331791032e"
+    },
+    "5": {
+      "ancestor": true,
+      "changelog_bullets_preserved": true,
+      "commits": 3,
+      "head": "9afe21c031fccd47cf086c8421e69bc58e8e7e9f"
+    }
+  },
+  "new_evidence_paths_exist": true,
+  "new_validation_commands": {
+    "nfl2k5.gameplay.coin_defer": "python3 -m tests.mod_editor.test_nfl2k5_b69_rules",
+    "nfl2k5.gameplay.cpu_scrambles": "python3 -m tests.mod_editor.test_nfl2k5_b69_rules",
+    "nfl2k5.gameplay.decided_clock": "python3 -m tests.mod_editor.test_nfl2k5_b69_rules",
+    "nfl2k5.mode.my_career_playcalling": "python3 -m tests.mod_editor.test_nfl2k5_my_career_playcalling",
+    "nfl2k5.mode.my_career_prospects": "python3 -m tests.mod_editor.test_nfl2k5_my_career_prospects",
+    "nfl2k5.weather.climate_editor": "python3 -m tests.mod_editor.test_nfl2k5_weather",
+    "nfl2k5.weather.haze_coefficient": "python3 -m tests.mod_editor.test_nfl2k5_weather_native"
+  },
+  "registry_canonical": true,
+  "release_manifest_sha256": "44ae3d9ca1570a40a98665da0b170ff135136508723b8c9c3b9010fcd10c6e29",
+  "release_manifest_unchanged": true,
+  "shared_after": 172,
+  "shared_before": 165
+}

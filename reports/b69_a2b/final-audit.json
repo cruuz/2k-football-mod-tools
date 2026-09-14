@@ -1,0 +1,39 @@
+{
+  "final_groups": {
+    "final-dispatcher": {
+      "completed_files": 6,
+      "production_sources_unchanged": true,
+      "source_fingerprint": "ea86dd9fcd0b3d510cef356e34faf130e50142ea758ef0648f1a98bd504cd5ce"
+    },
+    "final-gameplay-panel": {
+      "completed_files": 1,
+      "production_sources_unchanged": true,
+      "source_fingerprint": "ea86dd9fcd0b3d510cef356e34faf130e50142ea758ef0648f1a98bd504cd5ce"
+    },
+    "final-gates": {
+      "completed_files": 7,
+      "production_sources_unchanged": true,
+      "source_fingerprint": "ea86dd9fcd0b3d510cef356e34faf130e50142ea758ef0648f1a98bd504cd5ce"
+    },
+    "final-simwin": {
+      "completed_files": 1,
+      "production_sources_unchanged": true,
+      "source_fingerprint": "ea86dd9fcd0b3d510cef356e34faf130e50142ea758ef0648f1a98bd504cd5ce"
+    },
+    "final-wiring": {
+      "completed_files": 19,
+      "production_sources_unchanged": true,
+      "source_fingerprint": "ea86dd9fcd0b3d510cef356e34faf130e50142ea758ef0648f1a98bd504cd5ce"
+    }
+  },
+  "final_source_fingerprint": "ea86dd9fcd0b3d510cef356e34faf130e50142ea758ef0648f1a98bd504cd5ce",
+  "native_followup_source_changes": [
+    "mod_editor/core/mod_build.py",
+    "mod_editor/core/nfl2k5_throw_tuning.py"
+  ],
+  "native_job_files_identical": 14,
+  "production_manifest_unchanged": true,
+  "source_count": 331,
+  "staged_release_files_identical": 840,
+  "staged_release_root": "/tmp/astra-a2b-release-final"
+}

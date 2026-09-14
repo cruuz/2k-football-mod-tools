@@ -13,6 +13,8 @@ source image is never modified.  Everything the tab does is the same as
 
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import plain_error
+
 import importlib
 import json
 import os
@@ -208,7 +210,7 @@ def read_catalog(source: Path, *, banks=None, audo_records=None) -> SoundCatalog
             for record in records
         )
     except Exception as exc:  # noqa: BLE001 - the banks are still usable without the catalog
-        error = f"{type(exc).__name__}: {exc}"
+        error = plain_error(exc)
     return SoundCatalog(source, bank_rows, facts, standalone, error)
 
 
@@ -417,7 +419,7 @@ class _Task(QRunnable):
         try:
             self.signals.finished.emit(self._operation())
         except Exception as exc:  # noqa: BLE001
-            self.signals.failed.emit(f"{type(exc).__name__}: {exc}")
+            self.signals.failed.emit(plain_error(exc))
 
 
 # ------------------------------------------------------------------ panel
@@ -744,7 +746,7 @@ class SoundsPanel(QWidget):
             try:
                 self._clip = read_clip(path)
             except Exception as exc:  # noqa: BLE001 - shown in the fit line
-                self._clip_error = f"{type(exc).__name__}: {exc}"
+                self._clip_error = plain_error(exc)
         self._update_fit()
         self._refresh()
 

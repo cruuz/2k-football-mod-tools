@@ -1,0 +1,23 @@
+E
+======================================================================
+ERROR: setUpClass (__main__.FixedAudoSlotTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_nfl2k5_audo_fixed_slots.py", line 64, in setUpClass
+    cls.slots = load_editable_slots()
+                ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/core/nfl2k5_audo_fixed_slots.py", line 175, in load_editable_slots
+    supplied = path.lstat()
+               ^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 849, in lstat
+    return self.stat(follow_symlinks=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 842, in stat
+    return os.stat(self, follow_symlinks=follow_symlinks)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1/reports/assets/nfl2k5_audo_import_capacity.json'
+
+----------------------------------------------------------------------
+Ran 0 tests in 0.001s
+
+FAILED (errors=1)

@@ -1,0 +1,122 @@
+....Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a2/mod_editor/gui/studio_qt.py", line 9182, in _gameplay_build_changed
+    self._capture_music_build_settings()
+  File "/home/noah/2k-worktrees/astra-b69-a2/mod_editor/gui/studio_qt.py", line 2059, in _capture_music_build_settings
+    state = self._build_panel.project_build_settings()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a2/mod_editor/gui/build_panel_qt.py", line 2065, in project_build_settings
+    return capture(self)
+           ^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a2/mod_editor/gui/gameplay_project_ui.py", line 25, in capture
+    state = saved.from_plan(panel.plan())
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a2/mod_editor/core/nfl2k5_build_settings.py", line 97, in from_plan
+    return build_settings(plan.to_recipe())
+                          ^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a2/mod_editor/core/mod_build.py", line 309, in to_recipe
+    d = asdict(self)
+        ^^^^^^^^^^^^
+  File "/usr/lib/python3.12/dataclasses.py", line 1322, in asdict
+    return _asdict_inner(obj, dict_factory)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/dataclasses.py", line 1332, in _asdict_inner
+    f.name: _asdict_inner(getattr(obj, f.name), dict)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/dataclasses.py", line 1375, in _asdict_inner
+    return type(obj)((_asdict_inner(k, dict_factory),
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/dataclasses.py", line 1375, in <genexpr>
+    return type(obj)((_asdict_inner(k, dict_factory),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RecursionError: maximum recursion depth exceeded
+Error in sys.excepthook:
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/apport_python_hook.py", line 228, in partial_apport_excepthook
+    return apport_excepthook(binary, exc_type, exc_obj, exc_tb)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/apport_python_hook.py", line 66, in apport_excepthook
+    import apport.report
+  File "<frozen importlib._bootstrap>", line 1357, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 418, in __enter__
+  File "<frozen importlib._bootstrap>", line 311, in acquire
+  File "<frozen importlib._bootstrap>", line 170, in __enter__
+  File "<frozen importlib._bootstrap>", line 132, in setdefault
+RecursionError: maximum recursion depth exceeded
+
+Original exception was:
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a2/mod_editor/gui/studio_qt.py", line 9182, in _gameplay_build_changed
+    self._capture_music_build_settings()
+  File "/home/noah/2k-worktrees/astra-b69-a2/mod_editor/gui/studio_qt.py", line 2059, in _capture_music_build_settings
+    state = self._build_panel.project_build_settings()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a2/mod_editor/gui/build_panel_qt.py", line 2065, in project_build_settings
+    return capture(self)
+           ^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a2/mod_editor/gui/gameplay_project_ui.py", line 25, in capture
+    state = saved.from_plan(panel.plan())
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a2/mod_editor/core/nfl2k5_build_settings.py", line 97, in from_plan
+    return build_settings(plan.to_recipe())
+                          ^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a2/mod_editor/core/mod_build.py", line 309, in to_recipe
+    d = asdict(self)
+        ^^^^^^^^^^^^
+  File "/usr/lib/python3.12/dataclasses.py", line 1322, in asdict
+    return _asdict_inner(obj, dict_factory)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/dataclasses.py", line 1332, in _asdict_inner
+    f.name: _asdict_inner(getattr(obj, f.name), dict)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/dataclasses.py", line 1375, in _asdict_inner
+    return type(obj)((_asdict_inner(k, dict_factory),
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/dataclasses.py", line 1375, in <genexpr>
+    return type(obj)((_asdict_inner(k, dict_factory),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RecursionError: maximum recursion depth exceeded
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a2/mod_editor/gui/studio_qt.py", line 9182, in _gameplay_build_changed
+    self._capture_music_build_settings()
+  File "/home/noah/2k-worktrees/astra-b69-a2/mod_editor/gui/studio_qt.py", line 2059, in _capture_music_build_settings
+    state = self._build_panel.project_build_settings()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a2/mod_editor/gui/build_panel_qt.py", line 2065, in project_build_settings
+    return capture(self)
+           ^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a2/mod_editor/gui/gameplay_project_ui.py", line 25, in capture
+    state = saved.from_plan(panel.plan())
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a2/mod_editor/core/nfl2k5_build_settings.py", line 97, in from_plan
+    return build_settings(plan.to_recipe())
+                          ^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a2/mod_editor/core/mod_build.py", line 309, in to_recipe
+    d = asdict(self)
+        ^^^^^^^^^^^^
+  File "/usr/lib/python3.12/dataclasses.py", line 1322, in asdict
+    return _asdict_inner(obj, dict_factory)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/dataclasses.py", line 1332, in _asdict_inner
+    f.name: _asdict_inner(getattr(obj, f.name), dict)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/dataclasses.py", line 1375, in _asdict_inner
+    return type(obj)((_asdict_inner(k, dict_factory),
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/dataclasses.py", line 1376, in <genexpr>
+    _asdict_inner(v, dict_factory))
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/dataclasses.py", line 1328, in _asdict_inner
+    elif _is_dataclass_instance(obj):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RecursionError: maximum recursion depth exceeded
+Error in sys.excepthook:
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/apport_python_hook.py", line 228, in partial_apport_excepthook
+    return apport_excepthook(binary, exc_type, exc_obj, exc_tb)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/apport_python_hook.py", line 66, in apport_excepthook
+    import apport.report
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1322, in _find_and_load_unlocked
+
+Interrupted after repeated Qt recursion; see gameplay_project_ui integration fix.

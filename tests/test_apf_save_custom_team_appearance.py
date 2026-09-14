@@ -103,12 +103,15 @@ def synthetic_save() -> bytes:
     return bytes(data)
 
 
-def synthetic_stfs(payload: bytes, magic: bytes = b"CON ") -> bytes:
+def synthetic_stfs(payload: bytes, magic: bytes = b"CON ", *, copies: int = 1,
+                   active: int = 0, fragmented: bool = False) -> bytes:
     """Wrap one raw roster in a hash-valid, deliberately unsigned STFS fixture."""
 
     if magic not in writer.STFS_MAGICS:
         raise ValueError("unsupported synthetic STFS magic")
     first_table = 0xA000
+    if copies not in (1, 2) or active not in range(copies):
+        raise ValueError("invalid table-copy configuration")
     block_count = (len(payload) + stfs_reader.BLOCK_SIZE - 1) // stfs_reader.BLOCK_SIZE
     allocated = block_count + 1  # block 0 is the one-block directory table
     if allocated > stfs_reader.MAX_ALLOCATED_BLOCKS:
@@ -117,17 +120,12 @@ def synthetic_stfs(payload: bytes, magic: bytes = b"CON ") -> bytes:
     def first_level_backing(block: int) -> int:
         if block < stfs_reader.HASHES_PER_TABLE:
             return 0
-        value = (block // stfs_reader.HASHES_PER_TABLE) * 0xAB
-        value += 1
+        value = (block // stfs_reader.HASHES_PER_TABLE) * (170 + copies)
+        value += copies
         return value
 
     def data_backing(block: int) -> int:
-        value = ((block + stfs_reader.HASHES_PER_TABLE) // stfs_reader.HASHES_PER_TABLE) + block
-        if block < stfs_reader.HASHES_PER_TABLE:
-            return value
-        return value + (value + stfs_reader.HASHES_PER_TABLE**2) // (
-            stfs_reader.HASHES_PER_TABLE**2
-        )
+        return block + (block // 170 + 1) * copies + (copies if block >= 170 else 0)
 
     data_addresses = [
         first_table + data_backing(block) * stfs_reader.BLOCK_SIZE
@@ -137,33 +135,39 @@ def synthetic_stfs(payload: bytes, magic: bytes = b"CON ") -> bytes:
         first_table
         + first_level_backing(index * stfs_reader.HASHES_PER_TABLE)
         * stfs_reader.BLOCK_SIZE
+        + active * stfs_reader.BLOCK_SIZE
         for index in range(
             (allocated + stfs_reader.HASHES_PER_TABLE - 1)
             // stfs_reader.HASHES_PER_TABLE
         )
     ]
     top_level = 0 if allocated <= stfs_reader.HASHES_PER_TABLE else 1
-    top_address = first_table + (0 if top_level == 0 else 0xAB) * stfs_reader.BLOCK_SIZE
-    size = max(data_addresses + level_zero_addresses + [top_address]) + stfs_reader.BLOCK_SIZE
+    top_address = first_table + ((0 if top_level == 0 else 170 + copies) + active) * stfs_reader.BLOCK_SIZE
+    size = max(data_addresses + level_zero_addresses + [top_address]) + copies * stfs_reader.BLOCK_SIZE
     data = bytearray(size)
 
     data[:4] = magic
+    struct.pack_into(">IIQ", data, 0x344, 1, 2, len(payload))  # saved game, metadata v2, content size
     struct.pack_into(">I", data, 0x340, first_table)
     data[0x379] = 0x24
-    data[0x37B] = 1  # female / single active hash-table copy
+    data[0x37B] = (1 if copies == 1 else 0) | active * 2
     struct.pack_into("<H", data, 0x37C, 1)
     data[0x37E:0x381] = (0).to_bytes(3, "little")
     struct.pack_into(">I", data, 0x395, allocated)
     struct.pack_into(">I", data, 0x399, 0)
     struct.pack_into(">I", data, 0x3A9, 0)
+    struct.pack_into(">I", data, 0x360, 0x54540807)
+    chain = list(range(1, allocated))
+    if fragmented:
+        chain.reverse()
 
     directory = bytearray(stfs_reader.BLOCK_SIZE)
     name = b"Roster.ROS"
     directory[: len(name)] = name
-    directory[0x28] = len(name) | 0x40  # file + consecutive logical blocks
+    directory[0x28] = len(name) | (0 if fragmented else 0x40)
     directory[0x29:0x2C] = block_count.to_bytes(3, "little")
     directory[0x2C:0x2F] = block_count.to_bytes(3, "little")
-    directory[0x2F:0x32] = (1).to_bytes(3, "little")
+    directory[0x2F:0x32] = (chain[0] if chain else 1).to_bytes(3, "little")
     directory[0x32:0x34] = b"\xFF\xFF"
     struct.pack_into(">I", directory, 0x34, len(payload))
     data[data_addresses[0] : data_addresses[0] + stfs_reader.BLOCK_SIZE] = directory
@@ -172,10 +176,11 @@ def synthetic_stfs(payload: bytes, magic: bytes = b"CON ") -> bytes:
             index * stfs_reader.BLOCK_SIZE : (index + 1) * stfs_reader.BLOCK_SIZE
         ]
         padded = chunk.ljust(stfs_reader.BLOCK_SIZE, b"\0")
-        address = data_addresses[index + 1]
+        address = data_addresses[chain[index]]
         data[address : address + stfs_reader.BLOCK_SIZE] = padded
 
     level_zero_tables: list[bytes] = []
+    links = dict(zip(chain, chain[1:] + [0xFFFFFF]))
     table_count = len(level_zero_addresses)
     for table_index in range(table_count):
         table = bytearray(stfs_reader.BLOCK_SIZE)
@@ -188,7 +193,7 @@ def synthetic_stfs(payload: bytes, magic: bytes = b"CON ") -> bytes:
                 data[address : address + stfs_reader.BLOCK_SIZE]
             ).digest()
             table[entry + 0x14] = 0x80
-            table[entry + 0x15 : entry + 0x18] = b"\xFF\xFF\xFF"
+            table[entry + 0x15 : entry + 0x18] = links.get(block, 0xFFFFFF).to_bytes(3, "big")
         frozen = bytes(table)
         level_zero_tables.append(frozen)
         if top_level == 1:
@@ -202,7 +207,7 @@ def synthetic_stfs(payload: bytes, magic: bytes = b"CON ") -> bytes:
         for index, table in enumerate(level_zero_tables):
             entry = index * 0x18
             top[entry : entry + 0x14] = hashlib.sha1(table).digest()
-            top[entry + 0x14] = 0x80
+            top[entry + 0x14] = 0x80 | active * 0x40
             top[entry + 0x15 : entry + 0x18] = b"\xFF\xFF\xFF"
         top_table = bytes(top)
     data[top_address : top_address + stfs_reader.BLOCK_SIZE] = top_table

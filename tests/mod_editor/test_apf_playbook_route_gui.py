@@ -118,6 +118,10 @@ class PlayAssignmentRoutePanelTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.app = QApplication.instance() or QApplication([])
+        # Theme before any widget, as the studio does: the app-wide palette change over widgets built by
+        # earlier tests crashed the Windows py3.11 runner inside install_theme.
+        from mod_editor.apf_studio.apf_theme import install_theme
+        install_theme(cls.app)
 
     def test_play_and_slot_pickers_call_exact_copy_and_swap_routes(self) -> None:
         facade = _Facade()
@@ -185,6 +189,10 @@ class PlayAssignmentRoutePanelRelayTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.app = QApplication.instance() or QApplication([])
+        # Theme before any widget, as the studio does: the app-wide palette change over widgets built by
+        # earlier tests crashed the Windows py3.11 runner inside install_theme.
+        from mod_editor.apf_studio.apf_theme import install_theme
+        install_theme(cls.app)
 
     def _panel(self, facade) -> PlayAssignmentRoutePanel:
         panel = PlayAssignmentRoutePanel(facade, _run_task)

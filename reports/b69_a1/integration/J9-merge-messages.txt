@@ -1,0 +1,8 @@
+06e9f982214c83942d4734e945d2af0b1d8cdb5c
+100644 6e178bd1668e032a2559e12a9743a6b89f596ce6 1	docs/mod_editor/apf2k8_mod_studio_changelog.md
+100644 2a5d17f584a85df73fdb8cad39193e28fa5769ae 2	docs/mod_editor/apf2k8_mod_studio_changelog.md
+100644 114535725b59012016ce9c92befebe29ed7980db 3	docs/mod_editor/apf2k8_mod_studio_changelog.md
+
+Auto-merging docs/mod_editor/apf2k8_mod_studio_changelog.md
+CONFLICT (content): Merge conflict in docs/mod_editor/apf2k8_mod_studio_changelog.md
+

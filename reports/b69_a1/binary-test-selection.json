@@ -1,0 +1,4 @@
+[
+  "tests/mod_editor/test_b69_a1_registry.py",
+  "tests/mod_editor/test_validate_all_capabilities.py"
+]

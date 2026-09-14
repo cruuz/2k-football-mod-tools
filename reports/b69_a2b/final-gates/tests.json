@@ -1,0 +1,86 @@
+[
+  {
+    "path": "tests/mod_editor/test_nfl2k5_accelerated_clock_manifest.py",
+    "command": "python3 tests/mod_editor/test_nfl2k5_accelerated_clock_manifest.py",
+    "exit": 0,
+    "status": "OK",
+    "ran": "Ran 5 tests in 10.431s",
+    "final_line": "OK",
+    "seconds": 10.74,
+    "log": "reports/b69_a2b/final-gates/test_nfl2k5_accelerated_clock_manifest.log",
+    "log_sha256": "422dba4be565d378c485726bf88431ce4f59bd8a679d5fb1ac348f08d40cef4f",
+    "source_fingerprint": "ea86dd9fcd0b3d510cef356e34faf130e50142ea758ef0648f1a98bd504cd5ce"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_cave_oracle.py",
+    "command": "python3 tests/mod_editor/test_nfl2k5_cave_oracle.py",
+    "exit": 0,
+    "status": "OK (skipped=1)",
+    "ran": "Ran 29 tests in 427.751s",
+    "final_line": "OK (skipped=1)",
+    "seconds": 434.22,
+    "log": "reports/b69_a2b/final-gates/test_nfl2k5_cave_oracle.log",
+    "log_sha256": "629511ba9c26c82e4614fa1d7a2549afb3efb1b80fea0ed4fb4a51c058737d90",
+    "source_fingerprint": "ea86dd9fcd0b3d510cef356e34faf130e50142ea758ef0648f1a98bd504cd5ce"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_music_playlist_manifest.py",
+    "command": "python3 tests/mod_editor/test_nfl2k5_music_playlist_manifest.py",
+    "exit": 0,
+    "status": "OK",
+    "ran": "Ran 2 tests in 3.853s",
+    "final_line": "OK",
+    "seconds": 4.047,
+    "log": "reports/b69_a2b/final-gates/test_nfl2k5_music_playlist_manifest.log",
+    "log_sha256": "af54e6efc0afa998022764bb0c41df57c4df0e52cab1d046d473bc8609f71148",
+    "source_fingerprint": "ea86dd9fcd0b3d510cef356e34faf130e50142ea758ef0648f1a98bd504cd5ce"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_my_career_manifest.py",
+    "command": "python3 tests/mod_editor/test_nfl2k5_my_career_manifest.py",
+    "exit": 0,
+    "status": "OK",
+    "ran": "Ran 3 tests in 8.049s",
+    "final_line": "OK",
+    "seconds": 8.362,
+    "log": "reports/b69_a2b/final-gates/test_nfl2k5_my_career_manifest.log",
+    "log_sha256": "9903bcb104bcb5d9be133a7be0c7a9290daf81afddbf87899a223d53d0832a68",
+    "source_fingerprint": "ea86dd9fcd0b3d510cef356e34faf130e50142ea758ef0648f1a98bd504cd5ce"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py",
+    "command": "python3 tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py",
+    "exit": 0,
+    "status": "OK",
+    "ran": "Ran 506 tests in 2855.742s",
+    "final_line": "OK",
+    "seconds": 2856.047,
+    "log": "reports/b69_a2b/final-gates/test_nfl2k5_owner_pairwise_composition.log",
+    "log_sha256": "cdb273c4edacf4b89a55f59114778cb87312a7e2a96ba7cacc5994eaddd5004e",
+    "source_fingerprint": "ea86dd9fcd0b3d510cef356e34faf130e50142ea758ef0648f1a98bd504cd5ce"
+  },
+  {
+    "path": "tests/mod_editor/test_xbe_patch_cave_references.py",
+    "command": "python3 tests/mod_editor/test_xbe_patch_cave_references.py",
+    "exit": 0,
+    "status": "OK",
+    "ran": "Ran 131 tests in 1881.591s",
+    "final_line": "OK",
+    "seconds": 1881.989,
+    "log": "reports/b69_a2b/final-gates/test_xbe_patch_cave_references.log",
+    "log_sha256": "b5a762b9f667c2ef3e6d0aa8f9a4ce599843d637df933db6edfce5d1de54efdc",
+    "source_fingerprint": "ea86dd9fcd0b3d510cef356e34faf130e50142ea758ef0648f1a98bd504cd5ce"
+  },
+  {
+    "path": "tests/mod_editor/test_xbe_patch_memory_writes.py",
+    "command": "python3 tests/mod_editor/test_xbe_patch_memory_writes.py",
+    "exit": 0,
+    "status": "OK",
+    "ran": "Ran 119 tests in 1668.003s",
+    "final_line": "OK",
+    "seconds": 1668.152,
+    "log": "reports/b69_a2b/final-gates/test_xbe_patch_memory_writes.log",
+    "log_sha256": "621b5f6b134bdc27eb80d2dc83e9c53f222c79399605d1dbad96e613ad82570f",
+    "source_fingerprint": "ea86dd9fcd0b3d510cef356e34faf130e50142ea758ef0648f1a98bd504cd5ce"
+  }
+]

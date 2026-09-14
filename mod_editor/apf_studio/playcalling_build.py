@@ -48,7 +48,7 @@ def finalize(index, modification, progress=lambda *_: None, *, backend=None):
             raise ValidationError("Build inputs changed a reviewed CPU Play Calling edit; review it again")
         if checked["warning"] and engine.backend.lineup_callers != "non_cpu":
             raise ValidationError(checked["warning"])
-    assignments = [row for e in events if e["request"]["kind"] == "clones" for row in e["request"]["assignments"]]
+    assignments = [row for e in events if e["request"]["kind"] in {"clones", "scheme"} for row in e["request"]["assignments"]]
     clone_receipt = None
     if assignments:
         progress("Inserting all team books in one archive pass", 0, len(assignments))

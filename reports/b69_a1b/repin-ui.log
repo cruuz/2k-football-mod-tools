@@ -1,0 +1,8 @@
+[1] packaging/check_2k5_mod_studio_runtime.py: mod_editor/gui/build_panel_qt.py
+    234030c6a8034cd2a02329c948e3b069073bc3f1f7b8e04c371fb73c9377f4f5
+ -> 86fa528e1d4ba4a4458badbb24b17a419c78e9253868859e02117cc333699629
+[1] packaging/check_2k5_mod_studio_runtime.py: mod_editor/gui/gameplay_patches_panel_qt.py
+    2a7a24f9ec4ae2dcb1632d492ac42e7726548932e1eab409fc48c58cd45b8953
+ -> cf9ce1e9d40902df978f8c54f1e02dbf3c137ec2e3f2c722c7a3f9cbd876322e
+
+applied 2 pin update(s)

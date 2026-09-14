@@ -45,6 +45,7 @@ and gated by pinned exact-retail directory and payload hashes.
 from __future__ import annotations
 
 import argparse
+from collections import OrderedDict
 from dataclasses import dataclass
 import json
 import os
@@ -97,6 +98,9 @@ from apf_logo_patch import (  # noqa: E402
     _unlink_owned_path,
     _write_new,
     compress_h7a,
+    _compressed,
+    ordered_crest_map,
+    _CACHE_LOCK,
     decode_4444_base,
     encode_4444_base,
     sha256_bytes,
@@ -384,7 +388,7 @@ def _compress_part(vram: bytes, shift: int, unknown: int, what: str) -> bytes:
 
     if len(vram) != VRAM_STRIDE:
         raise PatchError(f"{what} is 0x{len(vram):x}, expected 0x{VRAM_STRIDE:x}")
-    body = compress_h7a(vram, shift)
+    body = _compressed(vram, shift)
     stored = struct.pack(
         ">5I", H7A_MAGIC, len(vram), H7A_HEADER_SIZE + len(body), unknown, shift
     ) + body
@@ -547,8 +551,24 @@ class CacheLayerSpec:
     clear_l1: bool = False
 
 
+_COMPILED_LAYERS = OrderedDict()
+
+
+def _compile_cache_art(job):
+    target, wanted = job
+    new_base = encode_4444_base(target.metadata, wanted)
+    if new_base == target.base:
+        raise PatchError(f'no-op detection inconsistent for {target.entry.name}: encode reproduced retail base')
+    new_tail = rebuild_mip_tail(target.metadata, wanted, target.mip_tail)
+    new_vram = new_base + new_tail
+    if len(new_vram) != VRAM_STRIDE:
+        raise PatchError(f'VRAM stride invariant failed for {target.entry.name}')
+    stored = _compress_part(new_vram, target.shift, target.unknown, f'{target.entry.name} VRAM part')
+    return new_base, stored, new_tail
+
+
 def build_cache_patch_many(
-    index_path: Path, specs: "Sequence[CacheLayerSpec]"
+    index_path: Path, specs: "Sequence[CacheLayerSpec]", *, progress=lambda *_: None, cancelled=None,
 ) -> CachePatchResult:
     """Rewrite several catalog slots' crests inside the cache in ONE pass.
 
@@ -559,10 +579,13 @@ def build_cache_patch_many(
     """
 
     specs = tuple(specs)
+    cancelled = cancelled or getattr(progress, 'cancelled', lambda: False)
     if not specs:
         raise PatchError("at least one crest spec is required")
     seen_catalogs: set[int] = set()
     for spec in specs:
+        if cancelled():
+            raise PatchError('Crest cache build cancelled. Build again when ready.')
         if spec.png_l1 is not None and spec.clear_l1:
             raise PatchError(
                 "choose one detail-layer treatment: supply logo_l1 art, or clear it"
@@ -603,29 +626,31 @@ def build_cache_patch_many(
     edits: dict[int, bytes] = {}
     # (target, wanted_rgba, new_base, new_stored_b)
     changed: list[tuple[_CacheLayerTarget, bytes, bytes, bytes, bytes]] = []
+    pending, jobs, prepared, wanted_targets = [], [], {}, []
     for target, art in targets:
         wanted = art if isinstance(art, bytes) else _load_png(art, 512, 512)
         if wanted == target.rgba:
             continue
-        new_base = encode_4444_base(target.metadata, wanted)
-        if new_base == target.base:
-            raise PatchError(
-                f"no-op detection inconsistent for {target.entry.name}: encode "
-                "reproduced retail base"
-            )
-        # Regenerate the packed mip levels from the new base.  Preserving
-        # them keeps the RETAIL logo in every level below mip 0, so the cached
-        # copy still serves the old crest to any surface that draws it small --
-        # exactly the bug that made modded crests look like they had not
-        # applied.  The package writer does the same, so both copies of a crest
-        # stay identical.
-        new_tail = rebuild_mip_tail(target.metadata, wanted, target.mip_tail)
-        new_vram = new_base + new_tail
-        if len(new_vram) != VRAM_STRIDE:
-            raise PatchError(f"VRAM stride invariant failed for {target.entry.name}")
-        new_stored_b = _compress_part(
-            new_vram, target.shift, target.unknown, f"{target.entry.name} VRAM part"
-        )
+        wanted_targets.append((target, wanted))
+        key = (json.dumps(target.metadata, sort_keys=True), sha256_bytes(target.base),
+               sha256_bytes(target.mip_tail), sha256_bytes(wanted), target.shift, target.unknown)
+        with _CACHE_LOCK:
+            cached = _COMPILED_LAYERS.get(key)
+            if cached is not None:
+                _COMPILED_LAYERS.move_to_end(key)
+                prepared[target.entry.index] = cached
+        if cached is None:
+            pending.append((target, key))
+            jobs.append((target, wanted))
+    for (target, key), result in zip(pending, ordered_crest_map(_compile_cache_art, jobs,
+            progress=progress, cancelled=cancelled)):
+        prepared[target.entry.index] = result
+        with _CACHE_LOCK:
+            _COMPILED_LAYERS[key] = result
+            while sum(sum(map(len, value)) for value in _COMPILED_LAYERS.values()) > 64 << 20:
+                _COMPILED_LAYERS.popitem(last=False)
+    for target, wanted in wanted_targets:
+        new_base, new_stored_b, new_tail = prepared[target.entry.index]
         edits[target.entry.index] = new_stored_b
         changed.append((target, wanted, new_base, new_stored_b, new_tail))
 

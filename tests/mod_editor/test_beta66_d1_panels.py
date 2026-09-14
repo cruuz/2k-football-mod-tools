@@ -1,9 +1,8 @@
-"""Execute the exact protected-panel handoff in memory, offscreen."""
-import json
+"""Exercise the integrated protected panels offscreen, including later wording."""
+import importlib
 import os
 from pathlib import Path
 import sys
-import types
 import unittest
 from unittest.mock import patch
 
@@ -15,23 +14,9 @@ from mod_editor.core import mod_build
 
 
 def wired_module(name):
-    filename = name.replace('.', '/') + '.py'
-    source = (ROOT / filename).read_text(encoding='utf-8')
-    edits = json.loads((ROOT / 'reports/beta66_d1/panel_edits.json').read_text(encoding='utf-8'))[filename]
-    # Work before and after integration, with no on-disk GUI mutation.
-    for edit in edits:
-        if edit['old'] in source:
-            if source.count(edit['old']) != 1:
-                raise AssertionError('ambiguous wiring insertion')
-            source = source.replace(edit['old'], edit['new'])
-        elif edit['new'] not in source:
-            raise AssertionError('wiring context drifted')
-    module = types.ModuleType(name)
-    module.__file__ = str(ROOT / filename)
-    module.__package__ = name.rpartition('.')[0]
-    with patch.dict(sys.modules, {name: module}):
-        exec(compile(source, module.__file__, 'exec'), module.__dict__)
-    return module
+    # The handoff is installed. Exercise its real behavior without replaying
+    # obsolete source-text hunks over later model, equipment and polish changes.
+    return importlib.import_module(name)
 
 
 class PlanTests(unittest.TestCase):

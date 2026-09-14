@@ -1,0 +1,1 @@
+Proposed 164-capability registry schema/semantics: validate_data(check_files=False) OK. All three new rows: backend command/module, validation command, evidence and runtime-evidence files checked strictly and OK. Protected registry unchanged. Whole-registry file check encounters pre-existing missing docs/research/apf_audio.md.

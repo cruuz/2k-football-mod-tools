@@ -1,0 +1,6 @@
+QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_save_roster_players_gui.py
+....
+----------------------------------------------------------------------
+Ran 4 tests in 0.617s
+
+OK

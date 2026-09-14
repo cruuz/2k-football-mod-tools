@@ -1,0 +1,17 @@
+[
+  "tests/mod_editor/test_beta66_supersim_wiring.py",
+  "tests/mod_editor/test_nfl2k5_b69_rules.py",
+  "tests/mod_editor/test_nfl2k5_b69_rules_series.py",
+  "tests/mod_editor/test_nfl2k5_my_career_b69_wiring.py",
+  "tests/mod_editor/test_nfl2k5_my_career_mode5.py",
+  "tests/mod_editor/test_nfl2k5_my_career_playcalling.py",
+  "tests/mod_editor/test_nfl2k5_my_career_prospects.py",
+  "tests/mod_editor/test_nfl2k5_my_career_settings.py",
+  "tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py",
+  "tests/mod_editor/test_nfl2k5_supersim_live.py",
+  "tests/mod_editor/test_nfl2k5_weather.py",
+  "tests/mod_editor/test_nfl2k5_weather_editor.py",
+  "tests/mod_editor/test_nfl2k5_weather_native.py",
+  "tests/mod_editor/test_xbe_patch_cave_references.py",
+  "tests/mod_editor/test_xbe_patch_memory_writes.py"
+]

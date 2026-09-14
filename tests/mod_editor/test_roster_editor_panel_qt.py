@@ -959,7 +959,7 @@ class PositionSchemePanelTests(unittest.TestCase):
         self.panel.refresh_diff()
         self.assertIn("Position: LB -> EDGE", self.panel.report.toPlainText())
 
-    def test_a_retail_csv_lands_on_a_one_pool_roster_with_a_warning(self) -> None:
+    def test_a_retail_csv_refuses_cross_scheme_position_rows(self) -> None:
         source = RosterEditorPanel()
         source.load_document(rr.load_body(retail_front_body()), label="retail")
         text = source.export_csv_text(everything=True)
@@ -971,9 +971,10 @@ class PositionSchemePanelTests(unittest.TestCase):
         notes = [line for line in receipt["log"] if "retired" in line]
         self.assertEqual(len(notes), 2)
         moved = {p.last: p.record.values["position"] for p in self.panel.document.players}
-        self.assertEqual(moved["Boulware"], 11)
-        self.assertEqual(moved["Thomas"], 11)
-        self.assertIn("notes", self.panel.status_label.text())
+        self.assertEqual(moved["Boulware"], 16)
+        self.assertEqual(moved["Thomas"], 16)
+        self.assertEqual(len(receipt["refused"]), 4)
+        self.assertIn("rows refused", self.panel.status_label.text())
 
     def test_a_save_is_detected_from_its_records_alone(self) -> None:
         savegame = one_pool_body() + bytes(224)

@@ -64,6 +64,7 @@ inline_load_begin:
  mov DWORD PTR [state+2708],eax
  mov DWORD PTR [state+2716],eax
  mov DWORD PTR [state+2732],eax
+ mov DWORD PTR [state+2740],eax
  pop eax
  popfd
  jmp 0x16ab70
@@ -182,6 +183,11 @@ mode_creation_done:
  pop edx
  pop ecx
  jz 1f
+ cmp eax,2
+ jne 2f
+ mov edx,OFFSET FLAT:entry_menu
+ jmp 0x6e450
+2:
  push ecx
  mov edx,OFFSET FLAT:entry_menu
  call 0x6e450
@@ -371,6 +377,13 @@ start_player:
  call resolve_team
  cmp DWORD PTR [state+24],3
  jne start_done
+ cmp DWORD PTR [state+2744],0
+ je start_rank
+ cmp DWORD PTR [state+184],0
+ jne start_done
+start_rank:
+ call mode_prospect_rank
+ mov DWORD PTR [state+2748],eax
  mov edi,DWORD PTR [state+2560]
  mov esi,DWORD PTR [state+2588]
  movzx ebp,BYTE PTR [edi+41]
@@ -390,9 +403,11 @@ start_loop:
  and eax,7
  cmp edx,edi
  jne start_other
- xor eax,eax
+ mov eax,DWORD PTR [state+2748]
  jmp start_write
 start_other:
+ cmp eax,DWORD PTR [state+2748]
+ jb start_write
  cmp eax,ebp
  jb start_shift
  mov ecx,eax

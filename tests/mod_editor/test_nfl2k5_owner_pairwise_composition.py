@@ -31,6 +31,10 @@ XBE = Path(os.environ.get("NFL2K5_RETAIL_EXTRACTION", "/media/noah/Storage/for c
 # The ten integration owners requested in the brief, plus both screen partners.
 # QB spy includes the landed man/rush hooks; Read option v5 retains its existing reservation.
 OWNERS = (
+    ("weather_haze", stack.weather_haze),
+    ("coin_defer", stack.coin_defer),
+    ("decided_clock", stack.decided_clock),
+    ("cpu_scrambles", stack.cpu_scrambles),
     ("playbook_pair", stack.playbook_pair),
     ("helmet_finish", stack.helmet_finish),
     ("accelerated_clock_on_20", stack.AcceleratedClockOn),

@@ -1,0 +1,98 @@
+[
+  {
+    "path": "tests/mod_editor/test_build_panel_qt.py",
+    "command": "python3 tests/mod_editor/test_build_panel_qt.py",
+    "exit": 0,
+    "status": "OK",
+    "ran": "Ran 13 tests in 2.365s",
+    "final_line": "OK",
+    "seconds": 2.894,
+    "log": "reports/b69_a2b/dispatcher-regressions/test_build_panel_qt.log",
+    "log_sha256": "5016868ab8c9834207ac778e681c0f281b697974e376befd0c7998f81158fd98",
+    "source_fingerprint": "eed37bec56b417cccdee3f86226b03bb2c46fbfd7e23229d23cc764868ac2855"
+  },
+  {
+    "path": "tests/mod_editor/test_mod_build.py",
+    "command": "python3 tests/mod_editor/test_mod_build.py",
+    "exit": 0,
+    "status": "OK",
+    "ran": "Ran 11 tests in 2.228s",
+    "final_line": "OK",
+    "seconds": 2.655,
+    "log": "reports/b69_a2b/dispatcher-regressions/test_mod_build.log",
+    "log_sha256": "38aa503f2b8ee02695269e30225a2f03374a423ec58c3ad6d53efe2e681a81ac",
+    "source_fingerprint": "eed37bec56b417cccdee3f86226b03bb2c46fbfd7e23229d23cc764868ac2855"
+  },
+  {
+    "path": "tests/mod_editor/test_mod_build_beta62_integration.py",
+    "command": "python3 tests/mod_editor/test_mod_build_beta62_integration.py",
+    "exit": 0,
+    "status": "OK",
+    "ran": "Ran 8 tests in 231.453s",
+    "final_line": "OK",
+    "seconds": 231.902,
+    "log": "reports/b69_a2b/dispatcher-regressions/test_mod_build_beta62_integration.log",
+    "log_sha256": "bf1a7221c22ec821b4bcd1777794a9ff8ebe5868c8417c55c834ea259bb71351",
+    "source_fingerprint": "eed37bec56b417cccdee3f86226b03bb2c46fbfd7e23229d23cc764868ac2855"
+  },
+  {
+    "path": "tests/mod_editor/test_mod_build_beta62_integration2.py",
+    "command": "python3 tests/mod_editor/test_mod_build_beta62_integration2.py",
+    "exit": 2,
+    "status": "python3: can't open file '/home/noah/2k-worktrees/astra-b69-a2b/tests/mod_editor/test_mod_build_beta62_integration2.py': [Errno 2] No such file or directory",
+    "ran": "",
+    "final_line": "python3: can't open file '/home/noah/2k-worktrees/astra-b69-a2b/tests/mod_editor/test_mod_build_beta62_integration2.py': [Errno 2] No such file or directory",
+    "seconds": 0.018,
+    "log": "reports/b69_a2b/dispatcher-regressions/test_mod_build_beta62_integration2.log",
+    "log_sha256": "5211be9edaedb273b91fe03a4f7a3f6fdf80b7fc1d48e8c088a760c35f8792f2",
+    "source_fingerprint": "eed37bec56b417cccdee3f86226b03bb2c46fbfd7e23229d23cc764868ac2855"
+  },
+  {
+    "path": "tests/mod_editor/test_mod_build_beta62_integration3.py",
+    "command": "python3 tests/mod_editor/test_mod_build_beta62_integration3.py",
+    "exit": 0,
+    "status": "OK",
+    "ran": "Ran 11 tests in 186.826s",
+    "final_line": "OK",
+    "seconds": 187.243,
+    "log": "reports/b69_a2b/dispatcher-regressions/test_mod_build_beta62_integration3.log",
+    "log_sha256": "c8cdb7c7831219b2fac9ee807544e6f7ad7ca69a992a7d1b0b01b3ca9f5ca269",
+    "source_fingerprint": "eed37bec56b417cccdee3f86226b03bb2c46fbfd7e23229d23cc764868ac2855"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_accelerated_clock.py",
+    "command": "python3 tests/mod_editor/test_nfl2k5_accelerated_clock.py",
+    "exit": 0,
+    "status": "OK",
+    "ran": "Ran 40 tests in 48.660s",
+    "final_line": "OK",
+    "seconds": 49.113,
+    "log": "reports/b69_a2b/dispatcher-regressions/test_nfl2k5_accelerated_clock.log",
+    "log_sha256": "5d2c8d2a6c4edef0b75b5f060377052a15ed97ac6f53b5355708be2a3ea08d30",
+    "source_fingerprint": "eed37bec56b417cccdee3f86226b03bb2c46fbfd7e23229d23cc764868ac2855"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_b69_rules.py",
+    "command": "python3 tests/mod_editor/test_nfl2k5_b69_rules.py",
+    "exit": 0,
+    "status": "OK",
+    "ran": "Ran 16 tests in 139.029s",
+    "final_line": "OK",
+    "seconds": 139.37,
+    "log": "reports/b69_a2b/dispatcher-regressions/test_nfl2k5_b69_rules.log",
+    "log_sha256": "7ff671d9638f844fac1bb081f0bf78bdf18aa1bdf732f9019233e1b44bed443d",
+    "source_fingerprint": "eed37bec56b417cccdee3f86226b03bb2c46fbfd7e23229d23cc764868ac2855"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_my_career_b69_wiring.py",
+    "command": "python3 tests/mod_editor/test_nfl2k5_my_career_b69_wiring.py",
+    "exit": 0,
+    "status": "OK",
+    "ran": "Ran 3 tests in 0.553s",
+    "final_line": "OK",
+    "seconds": 0.782,
+    "log": "reports/b69_a2b/dispatcher-regressions/test_nfl2k5_my_career_b69_wiring.log",
+    "log_sha256": "9449fd7ab2517285e742a9a918cabfaae2c9254a1f3c56640231a4979bf056b5",
+    "source_fingerprint": "eed37bec56b417cccdee3f86226b03bb2c46fbfd7e23229d23cc764868ac2855"
+  }
+]

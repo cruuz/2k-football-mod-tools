@@ -35,10 +35,10 @@ TaskRunner = Callable[
 ]
 
 XENIA_PLACEMENT = (
-    "Xenia keeps game-created saves as folders under its content root "
-    "(content/54540807/00000001/<save name>/Roster.ROS). Drop this raw Roster.ROS "
-    "over the Roster.ROS of a save the game itself created, then load that roster "
-    "in-game. Loading a converted roster is UNWITNESSED so far."
+    "Find a game-created Roster.ROS under your configured Xenia content root, "
+    "inside 54540807/00000001/<save name>/ (some builds include a profile folder "
+    "before 54540807). Back up that save, then place the new raw output there as "
+    "Roster.ROS and load it in-game. Loading a converted roster is UNWITNESSED."
 )
 
 
@@ -67,8 +67,9 @@ class Ps3RosterImportPanel(QWidget):
             "rotated to the Xbox byte order, serialised runtime words are rewritten "
             "the way Xbox saves carry them, and editor-damaged text (misaligned "
             "strings, stale references) is realigned or blanked. The output is a raw "
-            "payload plus a JSON receipt; the source is never modified. Nobody has "
-            "loaded a converted roster in Xenia yet: UNWITNESSED."
+            "payload plus a JSON receipt; the source is never modified. Aszemple "
+            "witnessed RPCS3 logo and roster imports on September 13. Uniform "
+            "rendering and in-game loading remain UNWITNESSED."
         )
         note.setObjectName("mutedLabel")
         note.setWordWrap(True)
@@ -124,6 +125,12 @@ class Ps3RosterImportPanel(QWidget):
             self.load_path(Path(selected))
 
     def load_path(self, path: Path) -> None:
+        self.source = None
+        self.summary = None
+        self.member = None
+        self.appearance_baseline = None
+        self.last_receipt = None
+        self.convert_button.setEnabled(False)
         self.run_task(
             "Inspecting PS3 roster",
             lambda progress: self._inspect_operation(path, progress),
@@ -156,6 +163,8 @@ class Ps3RosterImportPanel(QWidget):
         if not isinstance(result, dict):
             raise PS3RosterConvertError("PS3 roster inspection returned an invalid summary")
         self.summary = result
+        self.appearance_baseline = None
+        self.appearance_note.setText("Tick Also apply team appearance to carry the PS3 uniform codes and colours, or choose an Xbox roster to retain its appearance. Artwork files need a separate import.")
         self.source = Path(str(result["path"]))
         self.member = result["member"] if isinstance(result["member"], str) else None
         member = f" · {self.member}" if self.member else ""
@@ -181,7 +190,10 @@ class Ps3RosterImportPanel(QWidget):
         selected, _ = QFileDialog.getOpenFileName(self, "Xbox roster appearance to retain", str(Path.home()),
                                                  "Raw Xbox roster (*.ROS *.ros);;All files (*)")
         if selected:
-            self.set_appearance_baseline(Path(selected))
+            try:
+                self.set_appearance_baseline(Path(selected))
+            except (OSError, ValueError) as exc:
+                self.appearance_note.setText(f"Cannot retain appearance: {exc}. Choose a raw Xbox roster or tick Also apply team appearance.")
 
     def set_appearance_baseline(self, path: Path) -> None:
         # Validate at review time and again in the worker before any output write.
@@ -258,8 +270,10 @@ class Ps3RosterImportPanel(QWidget):
             f"runtime words rewritten; {result.changed_byte_count:,} bytes changed. Source unchanged.\n\n"
             f"Team appearance: {counts.get('appearance_teams', counts['teams'])} teams, "
             f"{'applied from PS3' if counts.get('appearance_applied_from_ps3', True) else 'retained from Xbox roster'}. "
-            "Both selector banks reparsed; each team's before/after selectors are in the receipt. "
-            "Custom texture payloads require a separate texture import.\n\n"
+            "Both banks' 14 eight-byte uniform selectors and ten colours were compared after reparse; "
+            "each team's exact before/after selector records are in the receipt. "
+            "Refused: custom texture payloads (use a separate texture import) and new meanings "
+            "for opaque selector bytes (preserved exactly).\n\n"
             f"{XENIA_PLACEMENT}\n\nStatus: {RUNTIME_STATUS}"
         )
 

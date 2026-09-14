@@ -314,10 +314,14 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/research/apf_custom_team_appearance.md",
         "docs/product/APF_UNIFORM_EQUIPMENT_COLORS.md",
-        "tests/mod_editor/test_apf_custom_team_appearance_patch.py",
+        "docs/research/apf_custom_team_appearance.md",
+        "docs/research/apf_stfs_rehash.md",
         "tests/mod_editor/test_apf_custom_team_appearance_gui.py",
+        "tests/mod_editor/test_apf_custom_team_appearance_patch.py",
+        "tests/mod_editor/test_apf_roster_appearance_transfer.py",
+        "tests/mod_editor/test_apf_roster_appearance_transfer_qt.py",
+        "tests/mod_editor/test_apf_stfs_roster_rehash.py",
         "tests/mod_editor/test_apf_uniform_equipment_colors.py",
         "tests/mod_editor/test_apf_uniform_equipment_colors_gui.py",
         "tests/test_apf_save_custom_team_appearance.py"
@@ -327,7 +331,7 @@
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "The Uniforms & Equipment tab exposes independent HOME/AWAY facemask-bar and Team-turtleneck palette selectors for all 40 teams, with exact swatches and selector-only writes. Its neighboring Custom Team Appearance editor exposes the larger palette/helmet/crest record only for user slots 32 through 39 after re-resolving unique ROST pointer ownership. Both stage canonical replacement-only JSON through the same fixed-allocation ROST build. Raw Roster Save remains restricted to user-facing IDs 24 through 31 / save-local slots 32 through 39 and writes only a new payload plus independently verified receipt. When appearance is staged with the fixed full-shell Team Logo profile, the headless composite build owns outer 1126 alongside the crest package, cache pair, and outer-1310 carrier."
+        "reason": "The Uniforms & Equipment tab exposes independent HOME/AWAY facemask-bar and Team-turtleneck palette selectors for all 40 teams, with exact swatches and selector-only writes. Its neighboring Custom Team Appearance editor exposes the larger palette/helmet/crest record only for user slots 32 through 39 after re-resolving unique ROST pointer ownership. Both stage canonical replacement-only JSON through the same fixed-allocation ROST build. Raw Roster Save remains restricted to user-facing IDs 24 through 31 / save-local slots 32 through 39 and writes only a new payload plus independently verified receipt. When appearance is staged with the fixed full-shell Team Logo profile, the headless composite build owns outer 1126 alongside the crest package, cache pair, and outer-1310 carrier. Beta 69: Custom Team Appearance now exposes Apply my custom team appearance to this roster save. It reviews destination slots, defaults to a new raw output, and optionally creates a Xenia-only rehashed package. Current controls remain intact and output is reopened with a changed-slot receipt."
       },
       "id": "apf2k8.colors.uniform_selector_appearance_custom_team",
       "input_constraints": [
@@ -341,7 +345,11 @@
         "A Team Logo build with a staged appearance composes crest package, custom-team ROST, and logo cache into one new copied 0A through one exclusively owned private intermediate.",
         "A raw Roster.ROS must retain the root at +4, exact table counts, independently resolved tables 4/16/17/19, aligned bounds, unique selected-record ownership, and user-team category 2 for slots 32 through 39.",
         "Raw-save edits authorize only ten HOME and ten AWAY ARGB dwords plus four exact eight-byte selectors: a 112-byte union per selected team. The inspected source SHA must still match, output and receipt must be new/non-aliasing, and an independent reopen must verify every changed byte.",
-        "CON, LIVE, and PIRS STFS packages are inspect-only because safe writeback also requires payload reinjection, STFS rehashing, and resigning."
+        "Apply my custom team appearance to this roster save transfers current controls and optional other staged appearances by matching slots 32..39. The destination team names are reviewed; each slot authorizes only 112 bytes. Outputs and receipts are new files, and source hashes must still match at write time.",
+        "Raw Roster.ROS output is supported. Decrypted PS3 USERDATA or one bounded roster ZIP member passes through the existing converter with all team uniform codes and palette colours carried first; only selected slots then receive the bounded editor appearance. The receipt includes conversion and override verification.",
+        "Supported fixed-size, single-file CON/LIVE/PIRS packages can produce a separate rehashed STFS copy only through the explicit Xenia-only output choice. Caption: Xenia only; a real console will reject this package. Changed data blocks, active hash-table blocks and the metadata hash are rehashed; signature bytes are preserved, never renewed. The pinned local Xenia source does not check RSA signatures, but package discovery and full loading remain HYPOTHESIS and UNWITNESSED.",
+        "STFS output refuses invalid hashes, shared file/directory blocks, file chains incompatible with Xenia traversal, multi-file packages, changed payload sizes and unsupported hash-tree bounds. The raw handoff route remains available for otherwise extractable packages.",
+        "The editor overlay does not copy jersey/shoulder/pants selectors or artwork from the project; destination values remain exact. PS3 conversion independently carries all 14 selectors in both banks and rotates RGBA to ARGB. Texture artwork needs its separate import."
       ],
       "portme": [
         "Establish emulator consumption and gameplay visibility separately from the exact headless file build, then repeat on user-owned Xbox 360 hardware before claiming hardware parity.",
@@ -407,7 +415,7 @@
         "resource": "ROST root tables 4, 16, 17, and 19 for all 40 game teams; larger custom-team and raw-save authoring remains restricted to slots 32..39, with raw-save user IDs 24..31 mapped to that range",
         "retail_file": "All-Pro Football 2K8 (USA)/0A or a user-owned raw APF Roster.ROS"
       },
-      "summary": "Edit independent HOME/AWAY facemask and Team-turtleneck colors for all 40 teams, plus the larger safe custom-team palette/helmet/crest records for slots 32..39, through the common verified 0A ROST build or the bounded raw Roster.ROS path.",
+      "summary": "Edit independent HOME/AWAY facemask and Team-turtleneck colors for all 40 teams, plus the larger safe custom-team palette/helmet/crest records for slots 32..39, through the common verified 0A ROST build or the bounded raw Roster.ROS path. Apply current/staged custom-team appearance to a new raw roster, converted PS3 roster, or explicit Xenia-only rehashed STFS copy; offline verified, in-game UNWITNESSED.",
       "surface": "uniforms",
       "title": "APF uniform equipment colors and custom-team appearance",
       "validation_command": "python3 tools/validate_apf_custom_team_appearance.py"
@@ -703,7 +711,7 @@
       "summary": "Compile Smash, Levels / Drive, Dagger, Curl-Flat and Mesh with explicit route landmarks and a -21-foot QB movement; five-step timing is unproved.",
       "surface": "cpu_ai_draft",
       "title": "APF concept recipes",
-      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+      "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
     },
     {
       "backend": {
@@ -776,7 +784,7 @@
       "summary": "Add plays to pinned named SPLB books, including explicit empty-record creation for a donor-compatible new formation; CPU books only.",
       "surface": "cpu_ai_draft",
       "title": "Add authored APF CPU calls",
-      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+      "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
     },
     {
       "backend": {
@@ -838,7 +846,7 @@
       "summary": "Append at indices 163..175; clone donor personnel/slot ordering and opaque row, author all three X/Y coordinate variants.",
       "surface": "cpu_ai_draft",
       "title": "Create APF formation",
-      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+      "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
     },
     {
       "backend": {
@@ -900,7 +908,7 @@
       "summary": "Append at indices 586..591 or explicitly replace a same-side chosen play; preserve donor descriptors and opaque relation.",
       "surface": "cpu_ai_draft",
       "title": "Create APF play",
-      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+      "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
     },
     {
       "backend": {
@@ -962,7 +970,7 @@
       "summary": "Clone defensive plays, copy coverage chains or change proved zone landmarks, man cushion and rush/dual-lane numeric fields.",
       "surface": "cpu_ai_draft",
       "title": "Design APF defensive assignments",
-      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+      "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
     },
     {
       "backend": {
@@ -1024,7 +1032,7 @@
       "summary": "Edit the existing play index; copy same-slot stock assignments, detach shared chains, change supported route, movement, read and coverage fields.",
       "surface": "cpu_ai_draft",
       "title": "Edit APF play assignments",
-      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+      "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
     },
     {
       "backend": {
@@ -1086,7 +1094,7 @@
       "summary": "Movement Y has proved feet encoding; Pass operand 1 is a receiver selector, not a step-count switch.",
       "surface": "cpu_ai_draft",
       "title": "APF five-step drop cadence",
-      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+      "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
     },
     {
       "backend": {
@@ -1148,7 +1156,7 @@
       "summary": "No mapped APF opcode/runtime owner proves QB tracking; native 1C is not advertised as spy.",
       "surface": "cpu_ai_draft",
       "title": "APF dedicated QB spy",
-      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+      "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
     },
     {
       "backend": {
@@ -1351,7 +1359,7 @@
       "summary": "Stage alpha values for eleven named field materials in four scenes; reparse and refit H7A within the original allocation, composing with staged field textures.",
       "surface": "stadiums_fields",
       "title": "Field overlay opacity",
-      "validation_command": "python3 -m mod_editor.core.apf_field_material_writer --index <0A> --entry 53 --alpha graphic_overlay_4=0.25 --manifest <report.json>"
+      "validation_command": "python3 -m tests.mod_editor.test_apf_field_material_writer"
     },
     {
       "backend": {
@@ -1470,7 +1478,7 @@
       "summary": "Edit shared zone-node landmarks and extents; gameplay UNWITNESSED.",
       "surface": "gameplay_tuning_sliders",
       "title": "Coverage Geometry (experimental)",
-      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+      "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
     },
     {
       "backend": {
@@ -1683,7 +1691,7 @@
       "summary": "Map paired APFe logo/endzone pixels to existing Xbox 360 writers with source and destination receipts.",
       "surface": "logos_cards",
       "title": "Import PS3 APFe texture bundle",
-      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+      "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
     },
     {
       "backend": {
@@ -2545,7 +2553,7 @@
       "summary": "Create a team-specific offensive copy, then edit its formations, play membership and same-record audibles through Book Identity > Edit books in Fine-tune. Named recipes and copied-folder builds verify the independent resource and preserve its shared donor.",
       "surface": "scripts_config",
       "title": "Independent offensive CPU books",
-      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+      "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
     },
     {
       "backend": {
@@ -2603,7 +2611,7 @@
       "summary": "Balance tags 0/1/2 with a same-record run and pass where possible; inspect category availability and enforce empty-formation compile guards. Runtime unwitnessed.",
       "surface": "scripts_config",
       "title": "CPU audibles and personnel availability",
-      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+      "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
     },
     {
       "backend": {
@@ -2832,7 +2840,7 @@
       "summary": "Explain each team label and name-resolved book, then open the chosen or newly cloned game folder in Fine-tune. Finish the original Studio project before cloning because directory entry indices shift.",
       "surface": "scripts_config",
       "title": "Book Identity",
-      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+      "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
     },
     {
       "backend": {
@@ -2845,7 +2853,10 @@
         "docs/mod_editor/apf_b67_play_calling.md",
         "docs/mod_editor/apf_b67_play_calling_editor.md",
         "tests/mod_editor/test_apf_b67_writers_native.py",
-        "tests/mod_editor/test_apf_playcalling_editor_qt.py"
+        "tests/mod_editor/test_apf_playcalling_editor_qt.py",
+        "tests/mod_editor/test_apf_b69_native.py",
+        "tests/mod_editor/test_apf_b69_editor_qt.py",
+        "ASTRA_B69_J9_REPORT.md"
       ],
       "game": "apf2k8_xbox360",
       "gui": {
@@ -2872,7 +2883,7 @@
       },
       "runtime": {
         "evidence": [],
-        "scope": "UNWITNESSED. P4 proves UI, project/undo, synthetic archive composition and installer plumbing using injected test contract modules. Real P3 integration and gameplay require separate acceptance.",
+        "scope": "UNWITNESSED in game. Pinned BASE native defensive driver, offense category 3 (row 3), requests row 13. Added 5-2 row 12: 0/128; row 13: 63/128. Synthetic seed states and a bounded caller, not a live game.",
         "status": "not-tested"
       },
       "selectors": {
@@ -2891,10 +2902,149 @@
         "resource": "Team book assignments, named books and MASTER personnel",
         "retail_file": "User-owned All-Pro Football 2K8 (USA) extracted game folder"
       },
-      "summary": "Edit category rows and eleven personnel roles across every book, including the defensive 5-2 row-13 fix. Gameplay UNWITNESSED.",
+      "summary": "Edit shared category rows and eleven roles, including 5-2:Big on row 13. Native matching offense row 3 selects added 5-2 after moving it from row 12; the beta-69 UI recognizes the actual category name. Gameplay UNWITNESSED.",
       "surface": "scripts_config",
       "title": "MASTER personnel (EXPERIMENTAL)",
       "validation_command": "python3 -m tests.mod_editor.test_apf_playcalling_editor_qt"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.apf_studio.playcalling_service --game-folder <folder> --project <project.apf2k8mod> --output <new-folder>",
+        "module": "mod_editor/apf_studio/playcalling_service.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/apf_b69_schemes.md",
+        "ASTRA_B69_J9_REPORT.md",
+        "tests/mod_editor/test_apf_b69_formation_calling.py",
+        "tests/mod_editor/test_apf_b69_editor_qt.py",
+        "tests/mod_editor/test_apf_b69_native.py"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Explicit review in the existing CPU Play Calling tab; options start off. The integrated real writers, reparse, project replay, Undo and copied build are tested. Gameplay UNWITNESSED."
+      },
+      "id": "apf2k8.playbooks.never_call",
+      "input_constraints": [
+        "User-owned loaded APF archive with named SPLB, MASTER and ROST resources; no retail bytes enter project recipes.",
+        "Preview has the beta-67 cold, empty-history/null-player boundary; saved USER books and global merges need a game witness.",
+        "Formation IDs 0..150 only; all duplicate records change together. Every affected category must retain another nonretired member.",
+        "Only B membership changes. Original masks are saved in the authored recipe for restore; stale or malformed restore requests are refused.",
+        "Special records 151..162 remain protected: native Hail Mary constructor cache and post-predicate selection bypass B=0. No universal CPU retirement claim."
+      ],
+      "portme": [
+        "Run the named 7ET/Urianus witness steps in ASTRA_B69_J9_REPORT.md before promoting any runtime claim."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship authored code and logical selectors only. Retail books, executable images and reconstructed title updates remain private.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "All in-game outcomes UNWITNESSED. Offline real-writer and bounded native execution prove only the explicitly reported input states.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "24 retail teams; named offense/defense books, including stock, USER and global donors",
+            "name": "team_and_book",
+            "required": true
+          },
+          {
+            "allowed": "ordinary formation IDs 0..150 with remaining category coverage",
+            "name": "formation",
+            "required": true
+          }
+        ],
+        "notes": "The facade stages one authored recipe containing ordered, undoable edit receipts; the copied-game builder applies it after existing asset edits."
+      },
+      "source_container": {
+        "format": "APF SPLB, MASTER PLAY and ROST; authored Xenia TOML for patches",
+        "hash_pins": [],
+        "resource": "Team book assignments, named books and MASTER personnel",
+        "retail_file": "User-owned All-Pro Football 2K8 (USA) extracted game folder"
+      },
+      "summary": "Reversibly clear all B membership masks for an ordinary formation without deleting plays or compacting records; cached special formations remain protected. Gameplay UNWITNESSED.",
+      "surface": "scripts_config",
+      "title": "Never call (ordinary CPU lottery)",
+      "validation_command": "python3 -m tests.mod_editor.test_apf_b69_formation_calling"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.apf_studio.playcalling_service --game-folder <folder> --project <project.apf2k8mod> --output <new-folder>",
+        "module": "mod_editor/apf_studio/playcalling_service.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/apf_b69_schemes.md",
+        "ASTRA_B69_J9_REPORT.md",
+        "tests/mod_editor/test_apf_b69_schemes.py",
+        "tests/mod_editor/test_apf_b69_editor_qt.py",
+        "tests/mod_editor/test_apf_b69_build.py",
+        "tests/mod_editor/test_apf_b69_native.py"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Explicit review in the existing CPU Play Calling tab; options start off. The integrated real writers, reparse, project replay, Undo and copied build are tested. Gameplay UNWITNESSED."
+      },
+      "id": "apf2k8.playbooks.offensive_schemes",
+      "input_constraints": [
+        "User-owned loaded APF archive with named SPLB, MASTER and ROST resources; no retail bytes enter project recipes.",
+        "Preview has the beta-67 cold, empty-history/null-player boundary; saved USER books and global merges need a game witness.",
+        "Eight interpretations authored from general football knowledge without network research; category and formation rating effects are coupled through existing records.",
+        "Twenty-two situation bytes feed an optional tendency cache; only the overall run tendency is a direct team slider in the ordinary preview. No tempo, snap-count, weather-ratio or coin-toss policy is authored.",
+        "Shared book is cloned for the selected team; aliased team tendency pointers are refused. Reapplying adds deltas again."
+      ],
+      "portme": [
+        "Run the named 7ET/Urianus witness steps in ASTRA_B69_J9_REPORT.md before promoting any runtime claim."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship authored code and logical selectors only. Retail books, executable images and reconstructed title updates remain private.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "All in-game outcomes UNWITNESSED. Offline real-writer and bounded native execution prove only the explicitly reported input states.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "24 retail teams; named offense/defense books, including stock, USER and global donors",
+            "name": "team_and_book",
+            "required": true
+          },
+          {
+            "allowed": "air_coryell, erhardt_perkins, west_coast, west_coast_spread, spread_to_run, wide_zone, power_gap, pro_spread",
+            "name": "scheme",
+            "required": true
+          }
+        ],
+        "notes": "The facade stages one authored recipe containing ordered, undoable edit receipts; the copied-game builder applies it after existing asset edits."
+      },
+      "source_container": {
+        "format": "APF SPLB, MASTER PLAY and ROST; authored Xenia TOML for patches",
+        "hash_pins": [],
+        "resource": "Team book assignments, named books and MASTER personnel",
+        "retail_file": "User-owned All-Pro Football 2K8 (USA) extracted game folder"
+      },
+      "summary": "Apply one of eight authored schemes to a team with a reviewed private-book plan, current-book personnel preferences, ratings and ROST tendencies; preview, Undo and copied Build. Gameplay UNWITNESSED.",
+      "surface": "scripts_config",
+      "title": "Offensive schemes (ADVANCED)",
+      "validation_command": "python3 -m tests.mod_editor.test_apf_b69_schemes"
     },
     {
       "backend": {
@@ -3026,22 +3176,24 @@
         "tests/mod_editor/test_apf_xex_image_retail.py",
         "tests/mod_editor/test_apf_pass_fetch_export_qt.py",
         "tests/mod_editor/test_apf_b67_xenia_patch.py",
-        "docs/research/apf_defense_playcall_model.md"
+        "docs/research/apf_defense_playcall_model.md",
+        "tests/mod_editor/test_apf_b69_launch_patches.py",
+        "ASTRA_B69_J9_REPORT.md"
       ],
       "game": "apf2k8_xbox360",
       "gui": {
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "CPU Play Calling: install a chosen Studio BASE or TU 1.1 pass-fetch patch in Xenia's patches folder after consent. Enable apply_patches in the selected launch config, reparse and report installed/enabled state, and offer removal. Last-resort fetch only; not a CPU play-calling fix. Gameplay UNWITNESSED."
+        "reason": "Install a reviewed canonical BASE or TU 1.1 pass-fetch patch. Studio launch copies only its managed patches into the actual --storage_root/patches folder with readback and honors the reviewed setting through an explicit --apply_patches=true/false argument. Restart after changes. Last-resort subtype fetch only; gameplay UNWITNESSED."
       },
       "id": "apf2k8.playbooks.pass_fetch_te_bias",
       "input_constraints": [
         "Choose the Xbox 360 game folder with default.xex and optional installed Title Update 1.1; expert flat images are also accepted. Python derives the image in memory. Full SHA, fetch hash, original hook and entire zero cave reservation are checked.",
         "Pass subtypes 2/3/4 on any down, including user calls. Main CPU weighted picker and untyped emergency fetch use different paths.",
         "Reserve 0x84D0E000..0x84D0EFFF exclusively; Capstone is required. Shared plays, later formation resolution and Subs can still produce a lineup without a TE.",
-        "Studio installation accepts only the canonical BASE or TU 1.1 pass-fetch payload. Explicit consent enables Memory.apply_patches; other enabled Xenia patches can also become active. Restart Xenia after changing installation.",
-        "Removal deletes only the Studio-managed pass-fetch file and leaves unrelated patches and the shared apply_patches setting alone."
+        "Installation accepts only a canonical BASE/TU pass-fetch payload. Consent sets the selected config's Memory.apply_patches; Studio launch forwards it as a CLI flag for Xenia builds which register this cvar under General. Other enabled patches in that launch storage can also become active.",
+        "Removal deletes the canonical managed file; the next Studio launch removes its stale managed copy from that build's storage. Unrelated patches and the shared apply_patches setting are preserved. External Xenia launches need the exact logged storage_root/patches path and enabled cvar."
       ],
       "portme": [
         "Obtain an in-game witness before changing the unwitnessed runtime status."
@@ -3421,7 +3573,69 @@
       "summary": "Fill one independent copy from Wide Zone, Spread-to-Run or Pro Power while keeping team, label and donor editable. Content remains editable in Fine-tune after building; the separate shared-book staging and CLI paths remain available.",
       "surface": "scripts_config",
       "title": "Wide Zone, Spread-to-Run, Pro Power",
-      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+      "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.apf_studio.playcalling_service --game-folder <folder> --project <project.apf2k8mod> --spreadsheet-team <0..23> --output <new.csv>",
+        "module": "mod_editor/apf_studio/playcalling_service.py",
+        "operation": "export"
+      },
+      "classification": "extract-only",
+      "evidence": [
+        "docs/mod_editor/apf_b69_schemes.md",
+        "ASTRA_B69_J9_REPORT.md",
+        "tests/mod_editor/test_apf_b69_schemes.py",
+        "tests/mod_editor/test_apf_b69_editor_qt.py"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "export",
+        "reason": "Export play call spreadsheet in CPU Play Calling writes UTF-8 CSV of the current staged offense. It is a planning aid with explicit proxy rows and probability limits."
+      },
+      "id": "apf2k8.playbooks.scheme_spreadsheet",
+      "input_constraints": [
+        "User-owned loaded APF archive with named SPLB, MASTER and ROST resources; no retail bytes enter project recipes.",
+        "Preview has the beta-67 cold, empty-history/null-player boundary; saved USER books and global merges need a game witness.",
+        "Openers and sudden change share the ordinary down/distance row; four red-zone bands have no independent rows. 2pt is only a scrimmage proxy; special calls and history are not predicted.",
+        "No scripted sequence is installed; requested pick counts and run-by-row intent remain planning annotations."
+      ],
+      "portme": [
+        "Run the named 7ET/Urianus witness steps in ASTRA_B69_J9_REPORT.md before promoting any runtime claim."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship authored code and logical selectors only. Retail books, executable images and reconstructed title updates remain private.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "All in-game outcomes UNWITNESSED. Offline real-writer and bounded native execution prove only the explicitly reported input states.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "24 retail teams; named offense/defense books, including stock, USER and global donors",
+            "name": "team_and_book",
+            "required": true
+          }
+        ],
+        "notes": "The facade stages one authored recipe containing ordered, undoable edit receipts; the copied-game builder applies it after existing asset edits."
+      },
+      "source_container": {
+        "format": "APF SPLB, MASTER PLAY and ROST; authored Xenia TOML for patches",
+        "hash_pins": [],
+        "resource": "Team book assignments, named books and MASTER personnel",
+        "retail_file": "User-owned All-Pro Football 2K8 (USA) extracted game folder"
+      },
+      "summary": "Export the staged offensive book as CSV in all 23 coaching buckets, with actual model probabilities, representative engine rows and separate coaching-intent run percentages.",
+      "surface": "scripts_config",
+      "title": "Play call spreadsheet",
+      "validation_command": "python3 -m tests.mod_editor.test_apf_b69_schemes"
     },
     {
       "backend": {
@@ -3672,16 +3886,18 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "ASTRA_B64_PS3_ROSTER_REPORT.md",
+        "reports/apf_b66_gameplay_witness.json",
         "reports/ps3_import/roster_convert_receipt.json",
         "tests/mod_editor/test_apf_b66_appearance.py",
-        "reports/apf_b66_gameplay_witness.json"
+        "tests/mod_editor/test_apf_ps3_roster_convert.py",
+        "tests/mod_editor/test_apf_ps3_roster_import_qt.py"
       ],
       "game": "apf2k8_xbox360",
       "gui": {
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "Pointer rule, palette byte order and runtime words proved from all 42,825 string references and both Xbox fixtures; output re-parsed by save_roster_players, apf_save_playbook_assignments and the team graph; loading in Xenia UNWITNESSED."
+        "reason": "PS3 import reviews uniform carry or Xbox appearance retention. Exact 14-record HOME/AWAY selector banks, ten colours per bank and palette metadata are compared after conversion. Receipts name carried/refused fields. Aszemple witnessed RPCS3 logo and roster imports on 2026-09-13; uniform rendering and in-game loading remain UNWITNESSED."
       },
       "id": "apf2k8.players_rosters.ps3_roster_import",
       "input_constraints": [
@@ -3689,7 +3905,8 @@
         "Platform is decided by the palette alpha position (2,660 colours vote); mixed or ambiguous files are refused rather than guessed.",
         "Editor-damaged text is repaired structurally only: misaligned runs shift or relocate, stale/garbage/below-pool references become the shared empty string; intended text is never invented.",
         "Output is a raw payload plus receipt next to it; no container is written and the source is never modified.",
-        "Beta 66 (Aszemple): team appearance (both uniform banks and team palettes) is reviewed with 'Also apply team appearance (N teams)', unchecked until reviewed; leaving it off requires a raw Xbox roster whose appearance is retained while players come from PS3. Every team's selector changes are receipted per bank and reparsed. The default conversion already transported the PS3 selectors; this adds verification and review."
+        "Beta 66 (Aszemple): team appearance (both uniform banks and team palettes) is reviewed with 'Also apply team appearance (N teams)', unchecked until reviewed; leaving it off requires a raw Xbox roster whose appearance is retained while players come from PS3. Every team's selector changes are receipted per bank and reparsed. The default conversion already transported the PS3 selectors; this adds verification and review.",
+        "All 40 teams' 1120 referenced eight-byte selectors and 800 referenced colours are compared after conversion, including jersey, shoulder, pants, helmet and crest. Opaque tails remain exact; custom texture payloads and new meanings for opaque bytes are refused with reasons. Choosing a new source clears the previous Xbox appearance baseline."
       ],
       "portme": [
         "Witness the converted 1993 roster in Xenia (load, names, positions, teams, colours), then move runtime.status.",
@@ -3704,7 +3921,7 @@
       },
       "runtime": {
         "evidence": [],
-        "scope": "UNWITNESSED. Nobody has loaded a converted roster in Xenia; names, positions, teams and palette colours need an in-game witness.",
+        "scope": "Aszemple: Was able import both the logos and roster files from my rpcs3 files (2026-09-13). This witnesses import usability only. In-game roster loading, HOME/AWAY uniform rendering and the helmet close-up remain UNWITNESSED.",
         "status": "not-tested"
       },
       "selectors": {
@@ -3731,7 +3948,7 @@
       "summary": "Convert a PS3 APF 2K8 roster USERDATA into the raw Xbox 360 Roster.ROS layout with a counted receipt; strict readers re-parse the output.",
       "surface": "players_rosters",
       "title": "Import PS3 roster",
-      "validation_command": "python3 -m packaging.check_apf2k8_mod_studio_runtime"
+      "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
     },
     {
       "backend": {
@@ -5663,7 +5880,7 @@
       "summary": "Edit fixed-25 setup and shared historic rosters; validate additional moments for research only.",
       "surface": "players_rosters",
       "title": "ESPN Anniversary scenarios and historic rosters (experimental)",
-      "validation_command": "python3 -m mod_editor.core.nfl2k5_espn25_scenarios status source.iso espn25-plan.json"
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_espn25_scenarios"
     },
     {
       "backend": {
@@ -6160,6 +6377,74 @@
     },
     {
       "backend": {
+        "command": "python3 tools/nfl2k5_modern_rules.py apply source.xbe --output new-rules.xbe --cpu-defer",
+        "module": "tools/nfl2k5_modern_rules.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_B69_J5_REPORT.md",
+        "docs/research/nfl2k5_b69_rules.md",
+        "tests/mod_editor/test_nfl2k5_b69_rules.py",
+        "tools/nfl2k5_coin_defer.S"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Integrated using WIRING_B69_J5.md; Off/Retail in every preset."
+      },
+      "id": "nfl2k5.gameplay.coin_defer",
+      "input_constraints": [
+        "Pinned USA XBE or verified composed input; reserve complete selected owner union before installation. Foreign or mixed bytes refuse.",
+        "EXPERIMENTAL / UNWITNESSED. Off in every preset. CPU winners defer at the published 2023 rate of 240/272 (88.24%). The loser chooses kick or receive for the first half and the deferring CPU receives in the second half. Human winners keep the retail menu; a human Defer choice is not available. Overtime keeps retail toss choices.",
+        "Rebuild from a verified base to change the selected union or installed settings."
+      ],
+      "portme": [
+        "Complete the player witness cases in docs/research/nfl2k5_b69_rules.md before claiming in-game behavior."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and instructions; never distribute generated XBEs or retail resources.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "ASTRA_B69_J5_REPORT.md",
+          "docs/research/nfl2k5_b69_rules.md",
+          "tests/mod_editor/test_nfl2k5_b69_rules.py",
+          "tools/nfl2k5_coin_defer.S"
+        ],
+        "scope": "Bounded native USA instruction execution with declared input/scene seams. CPU opening-toss winners defer at a dated 2023 count of 15/17; loser chooses first-half kick/receive and CPU receives in Q3. Human Defer is unavailable. Rendered UI, complete upstream simulation, physical plays and full-game outcomes are UNWITNESSED.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false | true; default false",
+            "name": "coin_defer",
+            "required": true
+          }
+        ],
+        "notes": "Build-time only. Off/Retail skips the writer and its allocation; there is no in-game toggle."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "Hooks 25E7B5 (7), 25E81F (5), 15864C (5), 25EAF0 (6); owned 384 RX, 4 RW, 128 RO bytes.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "CPU opening-toss winners defer at a dated 2023 count of 15/17; loser chooses first-half kick/receive and CPU receives in Q3. Human Defer is unavailable.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Coin toss: CPU defer (modern, experimental; CPU winners only)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_b69_rules"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_coverage_slider <source.xbe> <new-copy.xbe>",
         "module": "mod_editor/core/nfl2k5_coverage_slider.py",
         "operation": "write"
@@ -6360,6 +6645,156 @@
       "surface": "gameplay_tuning_sliders",
       "title": "CPU fourth downs and first downs (experimental, unwitnessed)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_cpu_money_downs"
+    },
+    {
+      "backend": {
+        "command": "python3 tools/nfl2k5_modern_rules.py apply source.xbe --output new-rules.xbe --modern-scrambles",
+        "module": "tools/nfl2k5_modern_rules.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_B69_J5_REPORT.md",
+        "docs/research/nfl2k5_b69_rules.md",
+        "tests/mod_editor/test_nfl2k5_b69_rules.py",
+        "tools/nfl2k5_cpu_scrambles.S"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Integrated using WIRING_B69_J5.md; Off/Retail in every preset."
+      },
+      "id": "nfl2k5.gameplay.cpu_scrambles",
+      "input_constraints": [
+        "Pinned USA XBE or verified composed input; reserve complete selected owner union before installation. Foreign or mixed bytes refuse.",
+        "EXPERIMENTAL / UNWITNESSED. Retail in every preset. Modern doubles one existing CPU pocket escape lottery threshold from 0.25 to 0.50 times effective Scramble. Its pressure and timer conditions remain. More branch hits are proved under identical native inputs; NFL-average scrambles per game are not established. Human steering and acceleration are unchanged.",
+        "Rebuild from a verified base to change the selected union or installed settings."
+      ],
+      "portme": [
+        "Complete the player witness cases in docs/research/nfl2k5_b69_rules.md before claiming in-game behavior."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and instructions; never distribute generated XBEs or retail resources.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "ASTRA_B69_J5_REPORT.md",
+          "docs/research/nfl2k5_b69_rules.md",
+          "tests/mod_editor/test_nfl2k5_b69_rules.py",
+          "tools/nfl2k5_cpu_scrambles.S"
+        ],
+        "scope": "Bounded native USA instruction execution with declared input/scene seams. Modern changes one eligible CPU QB escape lottery from .25 to .50 times effective Scramble. NFL-average scrambles per game are not established. Rendered UI, complete upstream simulation, physical plays and full-game outcomes are UNWITNESSED.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "retail | modern; default retail",
+            "name": "cpu_scrambles",
+            "required": true
+          }
+        ],
+        "notes": "Build-time only. Off/Retail skips the writer and its allocation; there is no in-game toggle."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "Hook 19C36C (6); owned 128 RX, 4 RO bytes; no runtime state.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "Modern changes one eligible CPU QB escape lottery from .25 to .50 times effective Scramble. NFL-average scrambles per game are not established.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "CPU QB scrambles: retail / modern (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_b69_rules"
+    },
+    {
+      "backend": {
+        "command": "python3 tools/nfl2k5_modern_rules.py apply source.xbe --output new-rules.xbe --decided-clock --margin 17 --seconds 60",
+        "module": "tools/nfl2k5_modern_rules.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_B69_J5_REPORT.md",
+        "docs/research/nfl2k5_b69_rules.md",
+        "tests/mod_editor/test_nfl2k5_b69_rules.py",
+        "tools/nfl2k5_decided_clock.S",
+        "tests/mod_editor/test_nfl2k5_b69_rules_series.py",
+        "reports/b69_j5/native_series.json"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Integrated using WIRING_B69_J5.md; Off/Retail in every preset."
+      },
+      "id": "nfl2k5.gameplay.decided_clock",
+      "input_constraints": [
+        "Pinned USA XBE or verified composed input; reserve complete selected owner union before installation. Foreign or mixed bytes refuse.",
+        "EXPERIMENTAL / UNWITNESSED. Off in every preset. In the fourth quarter, at the next dead ball, end the remaining clock if the team with the ball leads by your selected margin with no more than your selected time left. Default: at least 17 points and at most 60 seconds. This is a convenience cutoff, not mathematical elimination. Live plays, the trailing team's possession and overtime are excluded. Accelerated clock keeps its own rules.",
+        "Rebuild from a verified base to change the selected union or installed settings."
+      ],
+      "portme": [
+        "Complete the player witness cases in docs/research/nfl2k5_b69_rules.md before claiming in-game behavior."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and instructions; never distribute generated XBEs or retail resources.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "ASTRA_B69_J5_REPORT.md",
+          "docs/research/nfl2k5_b69_rules.md",
+          "tests/mod_editor/test_nfl2k5_b69_rules.py",
+          "tools/nfl2k5_decided_clock.S",
+          "tests/mod_editor/test_nfl2k5_b69_rules_series.py",
+          "reports/b69_j5/native_series.json"
+        ],
+        "scope": "Bounded native USA instruction execution with declared input/scene seams. Optional Q4 cutoff: leading possession, selected margin and time, next native dead ball/huddle. Convenience rule, not mathematical elimination. Rendered UI, complete upstream simulation, physical plays and full-game outcomes are UNWITNESSED.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false | true; default false",
+            "name": "decided_clock",
+            "required": true
+          },
+          {
+            "allowed": "9 | 17 | 25 | 33; default 17",
+            "name": "decided_clock_margin",
+            "required": true
+          },
+          {
+            "allowed": "15 | 30 | 60 | 90 | 120; default 60",
+            "name": "decided_clock_seconds",
+            "required": true
+          }
+        ],
+        "notes": "Build-time only. Off/Retail skips the writer and its allocation; there is no in-game toggle."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "Hooks B6E80 (5), A03DC (5); owned 384 RX, 8 RO bytes; no runtime state.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "Optional Q4 cutoff: leading possession, selected margin and time, next native dead ball/huddle. Convenience rule, not mathematical elimination.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Run out the clock when the game is decided (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_b69_rules"
     },
     {
       "backend": {
@@ -7731,7 +8166,11 @@
         "tools/mycareer_mode/supersim_b66_receipt.json",
         "ASTRA_B68_T3_REPORT.md",
         "tests/nfl2k5_b68_series.py",
-        "docs/nfl2k5_b68_t3_validation.json"
+        "docs/nfl2k5_b68_t3_validation.json",
+        "ASTRA_B69_J3_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_my_career_playcalling.py",
+        "tests/mod_editor/test_nfl2k5_my_career_b69_wiring.py",
+        "tests/mod_editor/test_nfl2k5_my_career_prospects.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -7749,7 +8188,8 @@
         "Career footer follows the complete native Franchise container. Sizes 720172 or 724268; ordinary saves are unchanged.",
         "Senior Bowl preparation only: the default seed-1 squads include MyPlayer. Native event transport and stat isolation are unresolved. Requests and trades stay out.",
         "All 17 retail positions have three native Create Player templates; the pools profile offers 16 live positions and merges EDGE ratings. Position-specific input decode and switch guards are bounded-native proofs; mesh movement, manual routes, catches and block animations remain unwitnessed outside Noah's reported QB play.",
-        "Apartment > Settings offers First Person Football Off/On (default Off), Supersim Off/Skip presentation/Fast forward (new-career default Fast forward), MyPlayer star On/Off (default On) and MyPlayer stat line On/Off (default On). All choices persist in the signed 128-byte career footer (byte 82: bit 0 first person, bit 1 Supersim Off, bit 2 star Off, bit 3 Fast forward, bit 4 stat line Off). Old zero-filled footers keep Skip presentation. The Apartment action Sim to next appearance launches the scheduled game and arms the settled-appearance wait. Fast forward runs up to eight native updates per presented frame with one input poll. Initial/OT toss, challenge, tips, pause and disconnected controllers use native prompts at normal speed. B cancels the current CPU sequence until the next native snap without changing the saved Supersim choice. Hardware speed, audio and visual behavior remain unwitnessed."
+        "Apartment > Settings offers First Person Football Off/On (default Off), Supersim Off/Skip presentation/Fast forward (new-career default Fast forward), MyPlayer star On/Off (default On) and MyPlayer stat line On/Off (default On). All choices persist in the signed 128-byte career footer (byte 82: bit 0 first person, bit 1 Supersim Off, bit 2 star Off, bit 3 Fast forward, bit 4 stat line Off). Old zero-filled footers keep Skip presentation. The Apartment action Sim to next appearance launches the scheduled game and arms the settled-appearance wait. Fast forward runs up to eight native updates per presented frame with one input poll. Initial/OT toss, challenge, tips, pause and disconnected controllers use native prompts at normal speed. B cancels the current CPU sequence until the next native snap without changing the saved Supersim choice. Hardware speed, audio and visual behavior remain unwitnessed.",
+        "Apartment Settings adds Who calls the plays: You call every play (default), By position (QB offense, ILB defense, including one-pool LB), or Coach calls the plays. The choice lives in footer byte 82 bits 5..6. Footer byte 83 stores the creation tier. A zero-filled old footer keeps the original caller and creation behavior. Fast-forward hand-back invalidates the absent unit's CPU choice for a human caller, then opens the native play-call screen. Coach policy keeps that native choice and restores MyPlayer's execution controller. In-game outcomes remain UNWITNESSED. andrethealchemist separately confirms the beta-68 fixes: \u201cWow! Everything I asked for was fixed in beta 68!\u201d"
       ],
       "portme": [
         "Complete the Noah witness list in ASTRA_MYCAREER_DRAFT_REPORT.md.",
@@ -7781,10 +8221,13 @@
           "tools/mycareer_mode/supersim_b66_receipt.json",
           "ASTRA_B68_T3_REPORT.md",
           "tests/nfl2k5_b68_series.py",
-          "docs/nfl2k5_b68_t3_validation.json"
+          "docs/nfl2k5_b68_t3_validation.json",
+          "ASTRA_B69_J3_REPORT.md",
+          "tests/mod_editor/test_nfl2k5_my_career_playcalling.py",
+          "tests/mod_editor/test_nfl2k5_my_career_prospects.py"
         ],
-        "scope": "Existing bounded native creation, draft, signing, played-XP, settings and signed-save proofs remain. The installed Supersim scheduler additionally executes uninterrupted native CPU plays, checks every outer football phase, counts hardware polls/presents, keeps the match RNG cadence, drains muted native audio sources, guards modal prompts, holds CPU snap requests, restores the full play clock, and submits native ticker glyphs. Native chosen personnel cover all 17 positions, actual K/P membership and an injury replacement. Declared clip/model inputs and empty optional overlays bound the renderer proof; no console, rasterizer, display or audio device is run. MyPlayer stat line defaults On in an enabled career; Apartment Settings offers On/Off. Bounded native proof executes one HUD call per presented gameplay frame, excludes menus and both replay channels, checks MyPlayer identity, reads live bank-0 game stats and submits real font4 glyphs. Actual game appearance remains UNWITNESSED.",
-        "status": "not-tested"
+        "scope": "Existing bounded native creation, draft, signing, played-XP, settings and signed-save proofs remain. The installed Supersim scheduler additionally executes uninterrupted native CPU plays, checks every outer football phase, counts hardware polls/presents, keeps the match RNG cadence, drains muted native audio sources, guards modal prompts, holds CPU snap requests, restores the full play clock, and submits native ticker glyphs. Native chosen personnel cover all 17 positions, actual K/P membership and an injury replacement. Declared clip/model inputs and empty optional overlays bound the renderer proof; no console, rasterizer, display or audio device is run. MyPlayer stat line defaults On in an enabled career; Apartment Settings offers On/Off. Bounded native proof executes one HUD call per presented gameplay frame, excludes menus and both replay channels, checks MyPlayer identity, reads live bank-0 game stats and submits real font4 glyphs. Actual game appearance remains UNWITNESSED. andrethealchemist reported on 2026-09-12/13 that the previous Fast forward cancellation, possession, Apartment-setting and PAT fixes work in-game. He separately reported a preselected first play after returning to the field. These reports cover those sequences only; new beta 69 play-calling changes and other positions, saves and mode combinations remain UNWITNESSED.",
+        "status": "partial"
       },
       "selectors": {
         "fields": [
@@ -7808,6 +8251,140 @@
       "surface": "mode_state_routing",
       "title": "In-game MyCareer (experimental, unwitnessed)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_my_career_draft"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_my_career_mode apply source.xbe output.xbe",
+        "module": "mod_editor/core/nfl2k5_my_career_mode.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_B69_J3_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_my_career_playcalling.py",
+        "tests/mod_editor/test_nfl2k5_my_career_settings.py",
+        "tests/mod_editor/test_nfl2k5_my_career_b69_wiring.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": false,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Integrated using WIRING_B69_J3.md; Off/Retail in every preset."
+      },
+      "id": "nfl2k5.mode.my_career_playcalling",
+      "input_constraints": [
+        "Requires an enabled in-game MyCareer; off in every preset.",
+        "You call every play is the default; By position admits QB offense and ILB defense (LB in the one-pool model); Coach calls the plays keeps the native CPU selection.",
+        "Footer byte 82 bits 5..6 are 0/1/2; 3 is invalid. Preserve all existing Supersim and presentation bits. Signed export is a separate copy.",
+        "Default retains beta-68 eligibility, including existing offensive-lineman and K/P exclusions; no default position-mask expansion."
+      ],
+      "portme": [
+        "Complete the andrethealchemist and THE1WAM witness scripts in ASTRA_B69_J3_REPORT.md."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "ASTRA_B69_J3_REPORT.md",
+          "tests/mod_editor/test_nfl2k5_my_career_playcalling.py"
+        ],
+        "scope": "Saved three-value play selection policy and guarded native Fast-forward hand-back. Native selector and execution controller are separate owners. Physical play, menu pixels and audibles remain UNWITNESSED.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "explicit opt-in only; false in every preset",
+            "name": "my_career",
+            "required": true
+          }
+        ],
+        "notes": "Use the saved career setting or creation tier in MyCareerPanel; exact wiring is in WIRING_B69_J3.md."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "Game Modes and Apartment rows, pinned native hooks, owned 20480 RX/8192 RW and an appended 128-byte career save footer.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "Saved three-value play selection policy and guarded native Fast-forward hand-back. Native selector and execution controller are separate owners. Physical play, menu pixels and audibles remain UNWITNESSED.",
+      "surface": "mode_state_routing",
+      "title": "MyCareer: who calls the plays (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_my_career_playcalling"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_my_career prepare source.zip output --first My --last Player --position QB --template 0 --prospect-tier \"1st Day\"",
+        "module": "mod_editor/core/nfl2k5_my_career.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_B69_J3_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_my_career_prospects.py",
+        "tests/mod_editor/test_nfl2k5_my_career_settings.py",
+        "tests/mod_editor/test_nfl2k5_my_career_b69_wiring.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": false,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Integrated using WIRING_B69_J3.md; Off/Retail in every preset."
+      },
+      "id": "nfl2k5.mode.my_career_prospects",
+      "input_constraints": [
+        "Original creation is the default. Explicit tiers start at 74/70/64/59 overall.",
+        "Tier and goal identity persist in the setup checkpoint and in-game footer byte 83; only IDs 0..4 are accepted.",
+        "Studio prepared saves require the existing depth-lock companion to preserve starting rank through native depth sorting.",
+        "Four QB labels alias three existing templates; Gunslinger and Pocket share template 0. Senior Bowl simulation, Combine, Pro Day, earned-points Apply Ratings and Draft Advisory remain unavailable."
+      ],
+      "portme": [
+        "Complete the andrethealchemist and THE1WAM witness scripts in ASTRA_B69_J3_REPORT.md."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "ASTRA_B69_J3_REPORT.md",
+          "tests/mod_editor/test_nfl2k5_my_career_prospects.py"
+        ],
+        "scope": "Native unboosted overall calibration, creation tier placement and persisted goal label. Existing CAP templates are reused. Goals, drills and draft advisory are roadmap, not simulated features.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "explicit opt-in only; false in every preset",
+            "name": "my_career",
+            "required": true
+          }
+        ],
+        "notes": "Use the saved career setting or creation tier in MyCareerPanel; exact wiring is in WIRING_B69_J3.md."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "Game Modes and Apartment rows, pinned native hooks, owned 20480 RX/8192 RW and an appended 128-byte career save footer.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "Native unboosted overall calibration, creation tier placement and persisted goal label. Existing CAP templates are reused. Goals, drills and draft advisory are roadmap, not simulated features.",
+      "surface": "mode_state_routing",
+      "title": "MyCareer: creation prospect tiers (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_my_career_prospects"
     },
     {
       "backend": {
@@ -7943,53 +8520,60 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
+        "docs/mod_editor/nfl2k5_model_project_proof.json",
+        "docs/mod_editor/nfl2k5_model_skeleton.md",
+        "docs/mod_editor/nfl2k5_model_skeleton_proof.json",
         "docs/research/nfl_group36_geometry_xiso_transport.md",
         "docs/research/nfl_group36_xemu_runtime_result_v2.md",
         "docs/research/nfl_stadium_catalog_position_writeback.md",
         "docs/research/nfl_stadium_static_target_catalog.md",
-        "docs/research/nfl_static_position_writeback.md",
         "docs/research/nfl_static_gltf.md",
+        "docs/research/nfl_static_position_writeback.md",
         "docs/research/nfl_upper_deck_changed_count_boundary.md",
         "docs/research/nfl_upper_deck_source_subset_writeback.md",
+        "mod_editor/core/nfl2k5_crib_geometry_writer.py",
+        "mod_editor/core/nfl2k5_model_skeleton.py",
+        "mod_editor/core/nfl2k5_models.py",
+        "mod_editor/core/nfl2k5_stadium_texture_writer.py",
+        "mod_editor/gui/models_panel_qt.py",
+        "reports/assets/nfl2k5_group36_s42_xemu_runtime_positive.v2.json",
+        "reports/assets/nfl2k5_scne_inventory.json",
         "reports/assets/nfl_stadium_catalog_position_patch_roundtrip.v2.json",
         "reports/assets/nfl_stadium_group36_position_patch_roundtrip.json",
         "reports/assets/nfl_stadium_upper_deck_source_subset_roundtrip.v1.json",
-        "reports/assets/nfl2k5_group36_s42_xemu_runtime_positive.v2.json",
-        "reports/assets/nfl2k5_scne_inventory.json",
         "reports/specs/nfl2k5_catalog_static_position_recipe.v2.schema.json",
+        "reports/specs/nfl2k5_crib_static_position_targets.v1.json",
         "reports/specs/nfl2k5_group36_geometry_xiso_transport.v1.json",
         "reports/specs/nfl2k5_stadium_static_target_catalog.v1.json",
         "reports/specs/nfl2k5_upper_deck_changed_count_boundary.v1.json",
         "reports/specs/nfl2k5_upper_deck_source_subset_writeback_closure.v1.json",
-        "reports/specs/nfl2k5_crib_static_position_targets.v1.json",
-        "mod_editor/core/nfl2k5_crib_geometry_writer.py",
-        "mod_editor/core/nfl2k5_stadium_texture_writer.py",
-        "mod_editor/core/nfl2k5_models.py",
-        "mod_editor/gui/models_panel_qt.py",
-        "tests/mod_editor/test_nfl2k5_crib_geometry_writer.py",
-        "tests/mod_editor/test_nfl2k5_models.py",
         "reports/specs/nfl2k5_xbox_static_scne.v1.json",
-        "mod_editor/core/nfl2k5_model_skeleton.py",
-        "tools/nfl2k5_model_skeleton_validate.py",
-        "tools/nfl2k5_model_skeleton_blender_witness.py",
-        "tests/mod_editor/test_nfl2k5_model_skeleton.py",
+        "tests/mod_editor/test_models_project_wiring.py",
         "tests/mod_editor/test_models_skeleton_wiring.py",
-        "docs/mod_editor/nfl2k5_model_skeleton.md",
-        "docs/mod_editor/nfl2k5_model_skeleton_proof.json"
+        "tests/mod_editor/test_nfl2k5_crib_geometry_writer.py",
+        "tests/mod_editor/test_nfl2k5_model_project.py",
+        "tests/mod_editor/test_nfl2k5_model_skeleton.py",
+        "tests/mod_editor/test_nfl2k5_models.py",
+        "tools/nfl2k5_model_skeleton_blender_witness.py",
+        "tools/nfl2k5_model_skeleton_validate.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "Models > Import edited .gltf/.glb defaults to Geometry only. Geometry and skeleton checks the complete sibling lo_body/hi_body/hi_head export set, reports every changed bind length in centimetres, and writes a new disc copy after all four native resources pass preflight. The GUI is exposed only after applying the complete H4 WIRING blocks."
+        "reason": "Models > Check model / Check all three > Add model edit to project. The set is counted, saved, undoable and listed in Build & Share. Make disc with this model remains the quick path using the same fixed-span model writer."
       },
       "id": "nfl2k5.models.scne_gltf",
       "input_constraints": [
         "Geometry only retains the existing fitted vertex import: native vertex count, triangles, skeleton and weights stay authored; matched position, normal, UV and colour lanes can be re-encoded within a fixed compressed span.",
         "Geometry and skeleton requires pinned player SCNE 3/113 and 3/114, the pinned head 3/115, SKEL 3/116, all three model files and their manifest from one export, unchanged joint names/parents, and translations only. A missing or unedited second LOD refuses with edit both LOD files from one export.",
         "One axial length per import, 95%-105%: left/right forearm (both elbow-wrist and wrist-hand segments together), thigh, shin or foot. Distal primary positions must agree across LODs. High derived pivots are regenerated. Upper arms are disabled because the tested refits exceed their allocations. Hand tips, spine/neck/head, direction changes, rotations/scales, animation, topology/name changes, and multiple lengths are refused.",
-        "Blender unit conversions are accepted within 0.001 cm; serialized canonical binds reparse within 0.0001 cm. Recomputed normalized directions must match canonical SKEL within 2e-6 per component. Head bind, weights, morph records, counts and angular muscle constants stay authored. Every resource must fit its original compressed span and scratch wrapper; the whole set is published together."
+        "Blender unit conversions are accepted within 0.001 cm; serialized canonical binds reparse within 0.0001 cm. Recomputed normalized directions must match canonical SKEL within 2e-6 per component. Head bind, weights, morph records, counts and angular muscle constants stay authored. Every resource must fit its original compressed span and scratch wrapper; the whole set is published together.",
+        "The project stores glTF/GLB and external-buffer paths, hashes and a checked sparse compiled change. Reopening rechecks those files; missing or changed files refuse rechecking with the path, while saved compiled bytes remain buildable.",
+        "One staged edit per model set; adding another check for that set replaces its previous checked set and Undo restores it. Geometry only accepts a single LOD and retains the other LOD and both skeletons.",
+        "Both skeleton LODs must come from one export with Custom Properties kept: Blender: File > Export > glTF 2.0 > Include > Data > Custom Properties. Separate native bind records make a single-LOD bone-length import unsafe.",
+        "Project writers sharing an exact SCNE span compose disjoint decoded byte changes, refit once and reparse; conflicting or partial overlaps refuse. Guardian cap/overlay and selected hi-res resources that require the same retail model resources must be deselected before building."
       ],
       "portme": [
         "Direction edits need a proved update of the fixed angular muscle graph. Hand terminal lengths and spine/neck/head need a proved endpoint/frame and attachment mapping.",
@@ -8028,10 +8612,10 @@
         "resource": "4,616 SCNE resources",
         "retail_file": "ESPN NFL 2K5 (USA).xiso.iso"
       },
-      "summary": "Export every NFL 2K5 SCNE as glTF and import fitted geometry into a disc copy. Player outer 3 additionally accepts one paired axial forearm, thigh, shin or foot bind-length edit within +/-5%, with regenerated high pivots, coordinated mesh/normals, recomputed and checked canonical SKEL directions, and a guarded low/high/head/SKEL transaction. EXPERIMENTAL / UNWITNESSED.",
+      "summary": "Export and check model geometry or bounded paired skeleton changes, then add one checked set to the project. Sparse compiled changes build with other project resources; all in-game outcomes remain UNWITNESSED.",
       "surface": "models_shap_scne",
       "title": "NFL 2K5 bounded SCNE glTF editing",
-      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_model_skeleton"
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_model_project"
     },
     {
       "backend": {
@@ -9128,14 +9712,16 @@
         "tests/mod_editor/test_nfl2k5_espn25_rosters_native.py",
         "docs/mod_editor/nfl2k5_espn25_inventory.json",
         "ASTRA_ESPN25_EXACT_LINEUPS_REPORT.md",
-        "tests/mod_editor/test_nfl2k5_espn25_exact_lineups.py"
+        "tests/mod_editor/test_nfl2k5_espn25_exact_lineups.py",
+        "ASTRA_B69_J6_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_espn25_loading_wait.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "EXPERIMENTAL / UNWITNESSED. All presets off. Chosen-side box-score starters are established; shared files, incomplete bench lists and snap-specific players remain limited."
+        "reason": "Historic moment rosters cannot be built: Wide Right has an unresolved loading freeze. Native team reload completes with supplied archive completions; the failing game load still needs its archive completion and scene state captured. Keep this option off. EXPERIMENTAL / UNWITNESSED."
       },
       "id": "nfl2k5.rosters.espn25_real_rosters",
       "input_constraints": [
@@ -9144,8 +9730,7 @@
         "Season rosters are incomplete: named same-franchise nearby-season role fillers and retained unknown numbers are disclosed per player."
       ],
       "portme": [
-        "The existing Build option is wired; keep it off in every preset and retain the image/layout compatibility checks.",
-        "Noah must load each of the 25 moments and check on-field and pause-menu identities, numbers, formations and gameplay."
+        "Retain the build block until the failing game's archive completion and scene state are captured and diagnosed; do not infer scene readiness from native roster import/export."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -9155,33 +9740,104 @@
       },
       "runtime": {
         "evidence": [
-          "ASTRA_ESPN25_ROSTERS_REPORT.md"
+          "ASTRA_ESPN25_IN_GAME_REPORT.md",
+          "ASTRA_B69_J6_REPORT.md",
+          "tests/mod_editor/test_nfl2k5_espn25_loading_wait.py"
         ],
-        "scope": "Bounded native selection/import/setup traces for all 25 moments; substituted archive I/O, controller, weather and presentation. No game played.",
+        "scope": "Native team import, archive wait with supplied completion, scenario setup and export. Complete scene/graphics/audio load and the reported music freeze remain unproved.",
         "status": "not-tested"
       },
       "selectors": {
         "fields": [
           {
-            "allowed": "boolean; false in Basic, Advanced and Experimental; opt-in only",
+            "allowed": "false in every preset; build is blocked even when explicitly selected",
             "name": "espn25_rosters",
             "required": true
           }
         ],
-        "notes": "Retail: position-name placeholders. Patch: box-score starters and season numbers for each chosen shared file, with every shared-season and incomplete-data exception recorded."
+        "notes": "Historic moment rosters cannot be built: Wide Right has an unresolved loading freeze. Native team reload completes with supplied archive completions; the failing game load still needs its archive completion and scene state captured. Keep this option off."
       },
       "source_container": {
         "format": "uncompressed ROST resources in XDVDFS outer archive",
         "hash_pins": [
           "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
         ],
-        "resource": "35 whole-resource pins in data/nfl2k5_espn25_moment_rosters/manifest.json; no XBE edit",
+        "resource": "35 pinned historic roster resources plus the existing guarded 12-byte native team-release repair at C2319; no cave or allocation.",
         "retail_file": "user-owned NFL 2K5 USA disc or extraction"
       },
       "summary": "Replace the 35 shared Anniversary rosters with 53 real identities each, using explicitly documented season and reserve approximations.",
       "surface": "players_rosters",
       "title": "Historic moments: real rosters (experimental, unwitnessed)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_espn25_rosters"
+    },
+    {
+      "backend": {
+        "command": "Python API: mod_editor/core/nfl2k5_roster_records.py export_csv(document), preview_csv(document, text), apply_csv_preview(document, preview)",
+        "module": "mod_editor/core/nfl2k5_roster_records.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_B69_J6_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_roster_csv.py",
+        "tests/mod_editor/test_nfl2k5_roster_records.py",
+        "tests/mod_editor/test_roster_editor_panel_qt.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Explicit CSV action on the loaded Rosters document. Preview before apply; source unchanged; one Undo. In-game outcomes UNWITNESSED."
+      },
+      "id": "nfl2k5.rosters.player_csv",
+      "input_constraints": [
+        "Loaded disc ROST, verified Xbox save or franchise document; UTF-8 CSV, at most 16 MiB and 100,000 rows.",
+        "Every row needs pool + index. Duplicate or unknown identities refuse; never match by name. Fields use the loaded scheme and editor bounds. Unknown/duplicate headers refuse the sheet.",
+        "An invalid row is refused whole. Unchanged out-of-range stored fields are preserved. Name pool and team membership constraints still apply."
+      ],
+      "portme": [
+        "Witness Excel open/edit/save with leading-zero and long numeric text.",
+        "Witness copied disc/save/franchise edits, including contracts and one Undo/Redo."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "ASTRA_B69_J6_REPORT.md"
+        ],
+        "scope": "Synthetic document and offscreen page checks; no played disc/save/franchise result.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "Exact player identity in the loaded document",
+            "name": "pool + index",
+            "required": true
+          },
+          {
+            "allowed": "CSV_COLUMNS in nfl2k5_roster_records; loaded scheme position labels; card bounds",
+            "name": "player columns",
+            "required": true
+          }
+        ],
+        "notes": "CSV menu on \u2605 Rosters; export every player or this list, import with preview. Numeric contract_value is in $10,000 units."
+      },
+      "source_container": {
+        "format": "ROST/save body",
+        "hash_pins": [],
+        "resource": "Loaded RosterDocument, all pools; 0x54 player records, name pools and team lists",
+        "retail_file": "User-owned disc roster or verified signed save"
+      },
+      "summary": "Export player fields and preview exact pool/index imports with per-row refusals and one complete Undo/Redo action.",
+      "surface": "players_rosters",
+      "title": "Player CSV export and import",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_roster_csv"
     },
     {
       "backend": {
@@ -10696,7 +11352,11 @@
         "tests/mod_editor/test_nfl2k5_equipment_texture_native.py",
         "tests/mod_editor/test_nfl2k5_equipment_retail_roundtrip.py",
         "tests/mod_editor/test_nfl2k5_equipment_consumers.py",
-        "ASTRA_B68_T2_REPORT.md"
+        "ASTRA_B68_T2_REPORT.md",
+        "tests/mod_editor/test_b69_j1_build.py",
+        "tests/mod_editor/test_b69_j1_fit.py",
+        "tests/mod_editor/test_b69_j1_native.py",
+        "ASTRA_B69_J1_REPORT.md"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -10711,7 +11371,7 @@
         "The catalog keeps all 11,395 standalone targets editable: 7,315 reviewed P8 targets and all 4,080 reviewed explicit-size A1R5G5B5 p001..p006/p011..p016 player strips. Outer 581 p005 is a proved transactional two-piece span across physical packs 0 and 1. A8R8G8B8, DXT1, VC_P8_LINEAR, crowdbase, seat, and unreviewed A1R5G5B5 layouts remain refused.",
         "The 1,585 team-linked slots in logos.cdf, mini.cdf, and flipchip.cdf are raw P8 fixed-slot resources: imports preserve their wrapper, descriptor/system bytes, exact resource span, and 96-byte slot padding, regenerate only swizzled indices plus palette, and never invoke VC-LZ. The 170 franchise-office and draft/PDA logo resources retain their exact compressed P8 spans.",
         "All Textures also edits 28,530 reviewed package-local socks, elbow-pad, glove, long-sleeve, shoe, and wristband P8 palettes. Each import preserves that TSET's shared retail index/mip chain and every unselected sibling palette and decoded image.",
-        "Socks, gloves and shoes can own a selected independent mip chain; new imports default to that choice. Global equipment rows offer All teams only, and explicit per-team requests are refused. shoes09/Style 3 and shoes10/Style 6 read each team's selected uniform package; players must select the corresponding shoe style. Unchanged retail exports at original size preserve the pinned palette and all distance images, reusing an identical shared chain when possible; otherwise exact allocation must fit or the import is refused. Half/quarter images explicitly discard detail; new art can also merge colours to fit P8 or the fixed span, with measured errors in the receipt. Siblings and retail wrapper scratch stay exact. All new in-game appearance remains unwitnessed.",
+        "Socks, gloves and shoes can own a selected independent mip chain; new imports default to that choice. Global equipment rows offer All teams only. The beta-69 bounded native cache fill, HOME/AWAY lookup and field selector bind shoes10/Style 6 through separate clean and _mud rows; the earlier Style 3/shoes09 selector proof remains narrower; missing local names fall back to the newest loaded package. maumau78 reported a Style 6 Edit Player success and Bears in-game failure on beta 68; that report remains unresolved. Package, clean/mud state, roster transport and GPU visibility need a played retest. Original-size recognized retail artwork preserves its palette and complete mip chain, including legacy imports now compiled as an exact no-op. Unhonourable restored equipment groups are refused before publishing a loaded session. Fit refusals report measured byte shortfalls and offer a checked smaller-size retry when available. A smaller size and fewer shades lose detail. No larger-allocation option is shipped: chunk-loader growth alone does not prove archive relocation. Wrapper +0x14 and unselected sibling images remain exact. All current in-game outcomes are UNWITNESSED.",
         "Compressed replacements are recompressed into the original byte span, while reviewed raw replacements retain the complete fixed-slot structure; an image that cannot satisfy its owning transport is refused rather than moving anything on the disc.",
         "Targets are addressed by outer package index and texture name. Uniform and menu-presentation targets also carry typed team names, abbreviations, asset code, style, physical-set selectors, archive name, and consumer scope; unresolved stadium targets still use package indices and preview identification.",
         "Franchise-office team logos are presentation assets, not midfield art. Stock midfield center_logo exists only in the create-team packages."
@@ -10729,7 +11389,7 @@
       },
       "runtime": {
         "evidence": [],
-        "scope": "Byte-exact transport is proved on three differently packed dumps of the same game; modified visibility is untested.",
+        "scope": "Byte-exact transport is proved on three differently packed dumps of the same game; modified visibility is untested. maumau78 reported Style 6/shoes10 visible in the Bears Edit Player preview but absent in-game on 2026-09-13. The earlier package-local colour proof is offline evidence and does not establish that played binding; preview visibility is not an in-game success.",
         "status": "not-tested"
       },
       "selectors": {
@@ -10763,7 +11423,7 @@
       "summary": "Replace all 11,395 standalone textures, including every uniform package's four P8 presentation variants, all raw aggregate menu-logo/mini-card slots, every franchise/draft logo surface, and all 4,080 explicit-size A1 player strips through a transactional cross-pack route where needed; also replace 28,530 package-local uniform-equipment palettes while preserving fixed spans and all unselected siblings.",
       "surface": "textures",
       "title": "NFL 2K5 All Textures \u2014 standalone and uniform-equipment editing",
-      "validation_command": "bash tools/validate_nfl_all_texture_lane.sh"
+      "validation_command": "python3 -m tests.mod_editor.test_b69_j1_fit"
     },
     {
       "backend": {
@@ -10885,7 +11545,11 @@
         "tests/mod_editor/test_nfl2k5_equipment_texture_native.py",
         "tests/mod_editor/test_nfl2k5_equipment_retail_roundtrip.py",
         "tests/mod_editor/test_nfl2k5_equipment_consumers.py",
-        "ASTRA_B68_T2_REPORT.md"
+        "ASTRA_B68_T2_REPORT.md",
+        "tests/mod_editor/test_b69_j1_build.py",
+        "tests/mod_editor/test_b69_j1_fit.py",
+        "tests/mod_editor/test_b69_j1_native.py",
+        "ASTRA_B69_J1_REPORT.md"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -10902,11 +11566,12 @@
         "Player portraits are exact 128x128 RGBA8 PNGs selected by a proved four-digit numeric portrait ID; cross-pack slots are reconstructed as bounded physical spans.",
         "Crib Team Photos are exact 128x128 RGBA8 PNGs selected by a canonical crib_team_photo:##_photo_0# selector; all five fixed P8 mips are regenerated.",
         "The Stadium texture route accepts an exact 64x64 RGBA8 PNG only for nfl2k5.stadium.o3280.c0005.scene2648.texture0002 (cement01); all 33 linked surfaces change together, and fixed-allocation compression overflow is refused.",
-        "Socks, gloves and shoes can own a selected independent mip chain; new imports default to that choice. Global equipment rows offer All teams only, and explicit per-team requests are refused. shoes09/Style 3 and shoes10/Style 6 read each team's selected uniform package; players must select the corresponding shoe style. Unchanged retail exports at original size preserve the pinned palette and all distance images, reusing an identical shared chain when possible; otherwise exact allocation must fit or the import is refused. Half/quarter images explicitly discard detail; new art can also merge colours to fit P8 or the fixed span, with measured errors in the receipt. Siblings and retail wrapper scratch stay exact. All new in-game appearance remains unwitnessed.",
+        "Socks, gloves and shoes can own a selected independent mip chain; new imports default to that choice. Global equipment rows offer All teams only. The beta-69 bounded native cache fill, HOME/AWAY lookup and field selector bind shoes10/Style 6 through separate clean and _mud rows; the earlier Style 3/shoes09 selector proof remains narrower; missing local names fall back to the newest loaded package. maumau78 reported a Style 6 Edit Player success and Bears in-game failure on beta 68; that report remains unresolved. Package, clean/mud state, roster transport and GPU visibility need a played retest. Original-size recognized retail artwork preserves its palette and complete mip chain, including legacy imports now compiled as an exact no-op. Unhonourable restored equipment groups are refused before publishing a loaded session. Fit refusals report measured byte shortfalls and offer a checked smaller-size retry when available. A smaller size and fewer shades lose detail. No larger-allocation option is shipped: chunk-loader growth alone does not prove archive relocation. Wrapper +0x14 and unselected sibling images remain exact. All current in-game outcomes are UNWITNESSED.",
         "Menu Back accepts only mono PCM16LE at exactly 16,000 Hz and 5,696 frames; it is encoded into the one proved fixed AUDO payload while preserving its wrapper and metadata.",
         "Additional standalone audio accepts any of 849 non-Menu-Back catalog asset IDs plus a strict PCM16LE WAV matching that row's exact channel count, rate, and frame count; 697 alias-related rows carry a prominent warning because their runtime cue meaning remains unproved.",
         "Equal decoded uniform content across selectors is not shared storage: all 3,170 audited torso, pants, sleeve, and live-helmet targets have distinct non-overlapping XISO spans.",
-        "Every target must exist in the canonical compatibility inventory; compressed artwork that does not fit is refused."
+        "Every target must exist in the canonical compatibility inventory; compressed artwork that does not fit is refused.",
+        "Build failures name the active phase, original project edit index, page, part, uniform set and texture. The Build list enumerates all canonical project edits and ranks changes observed in the current session newest first; old archives have no historical edit times, which the list explicitly discloses."
       ],
       "portme": [
         "Runtime-capture every supported family and selector class.",
@@ -10920,7 +11585,7 @@
       },
       "runtime": {
         "evidence": [],
-        "scope": "All supported spans have offline writer proof; only a Detroit away torso target has exact positive runtime proof.",
+        "scope": "All supported spans have offline writer proof; only a Detroit away torso target has exact positive runtime proof. maumau78 reported Style 6/shoes10 visible in the Bears Edit Player preview but absent in-game on 2026-09-13. The earlier package-local colour proof is offline evidence and does not establish that played binding; preview visibility is not an in-game success.",
         "status": "partial"
       },
       "selectors": {
@@ -10949,7 +11614,7 @@
       "summary": "Build one verified copied NFL 2K5 XISO containing a composed set of supported visual, text, roster, portrait, Crib, Stadium, package-local equipment, Menu Back, and exact standalone-audio physical-slot edits.",
       "surface": "uniforms",
       "title": "NFL 2K5 unified visual/data/audio mod project",
-      "validation_command": "bash tools/validate_nfl2k5_visual_mod_project.sh"
+      "validation_command": "python3 -m tests.mod_editor.test_b69_j1_fit"
     },
     {
       "backend": {
@@ -11158,6 +11823,158 @@
       "surface": "gameplay_tuning_sliders",
       "title": "Helmet finish",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_helmet_finish"
+    },
+    {
+      "backend": {
+        "command": "python3 tools/nfl2k5_weather_time_of_day.py apply-resource <source.rost> <plan.json> <new.rost>",
+        "module": "tools/nfl2k5_weather_time_of_day.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/research/nfl2k5_weather_time_of_day.md",
+        "reports/b69_j4/weather_audit.json",
+        "reports/b69_j4/weather_native.json",
+        "tests/mod_editor/test_nfl2k5_weather.py",
+        "tests/mod_editor/test_nfl2k5_weather_editor.py",
+        "ASTRA_B69_J4_REPORT.md"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Integrated using WIRING_B69_J4.md; Off/Retail in every preset."
+      },
+      "id": "nfl2k5.weather.climate_editor",
+      "input_constraints": [
+        "Supported USA version-17 ROST and 82 pinned stadium identities/roof records; resolve outer 5 and all relative pointers.",
+        "July and August share a slot; March through June are refused. Rain and snow use one precipitation threshold plus native temperature selection.",
+        "Finite bounded scalar values, exact float32 before/after comparisons, no mixed or foreign plan state. Refuse version-18 roster arena growth.",
+        "Source stays read-only in authoring. Build applies to its disposable output. Existing-save adoption and all played outcomes are unproved."
+      ],
+      "portme": [
+        "Source and pin a modern climate dataset before calling any preset modern NFL climate.",
+        "Witness new-franchise weather and existing-save behavior; do not advertise a game-day weather menu."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute authoring tools, values and verified recipes only. Never bundle a retail roster, executable, disc or texture.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "reports/b69_j4/weather_native.json",
+          "docs/research/nfl2k5_weather_time_of_day.md",
+          "ASTRA_B69_J4_REPORT.md"
+        ],
+        "scope": "Bounded native selectors and camera-field copies only; no played, save-lifecycle, appearance or gameplay outcome is witnessed.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "0..81, matching the source asset_code",
+            "name": "stadium_index",
+            "required": true
+          },
+          {
+            "allowed": "1,2,7,8,9,10,11,12; July/August alias",
+            "name": "month",
+            "required": true
+          },
+          {
+            "allowed": "temperature_f, precipitation_pct, wind_mph",
+            "name": "field",
+            "required": true
+          }
+        ],
+        "notes": "The source is authoritative. Baselines vary through the native RNG; separate snow probability and exact live wind controls do not exist in this table."
+      },
+      "source_container": {
+        "format": "Uncompressed main ROST inside Xbox VC outer archive",
+        "hash_pins": [
+          "ab4df547810a558fd3563b6bf4187b88a03b02111437b35a1f37e726a68cf85f",
+          "44d6e8566dc6902dd1f12dbe2625014687cc99f375559415231f72a634631cd2"
+        ],
+        "resource": "Outer 5; relocated 82 x 128-byte stadium table",
+        "retail_file": "ESPN NFL 2K5 (USA)/vc_53450030/0"
+      },
+      "summary": "Author temperature, shared precipitation chance and wind baselines per stadium/month; save verified build edits with Undo. The +2 F example is authored, not measured modern climatology.",
+      "surface": "stadiums_fields",
+      "title": "Stadium climate editor (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_weather"
+    },
+    {
+      "backend": {
+        "command": "python3 tools/nfl2k5_weather_time_of_day.py haze <source.xbe> <new.xbe>",
+        "module": "tools/nfl2k5_weather_time_of_day.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/research/nfl2k5_weather_time_of_day.md",
+        "reports/b69_j4/weather_native.json",
+        "tests/mod_editor/test_nfl2k5_weather_native.py",
+        "ASTRA_B69_J4_REPORT.md"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Integrated using WIRING_B69_J4.md; Off/Retail in every preset."
+      },
+      "id": "nfl2k5.weather.haze_coefficient",
+      "input_constraints": [
+        "Pinned USA reader spans and normalized 60-byte haze table; only retail/already-applied coefficient accepted.",
+        "One existing .data float at VA 0xA867F4 plus the containing section digest. No runtime storage, hook or allocator request.",
+        "Eligibility remains native; tested zero-haze, indoor, rain and snow camera paths retain their values. Appearance is unwitnessed."
+      ],
+      "portme": [
+        "Witness dry outdoor Off/On comparisons with controlled nonzero haze and indoor/rain/snow controls."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute authoring tools, values and verified recipes only. Never bundle a retail roster, executable, disc or texture.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "reports/b69_j4/weather_native.json",
+          "docs/research/nfl2k5_weather_time_of_day.md",
+          "ASTRA_B69_J4_REPORT.md"
+        ],
+        "scope": "Bounded native selectors and camera-field copies only; no played, save-lifecycle, appearance or gameplay outcome is witnessed.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false (default) or true",
+            "name": "enabled",
+            "required": false
+          }
+        ],
+        "notes": "Off restores only the recognized 1.0 endpoint. The option does not set the weather preset or guarantee visible fog."
+      },
+      "source_container": {
+        "format": "Xbox XBE .data scalar, section-digest repair",
+        "hash_pins": [
+          "311636b9459867b8fb1fb57be66e6bee17660119754995f678f8f9e1f6642520",
+          "9a6c2b318862584e4831c20c289a3686cf206dc63df001a3cc57bf0758944777",
+          "a2dd6d42a842bb0da56a1acb2da8b76580acd0dd73b4769bb5a0fa15922374ae",
+          "5c18644f31c7c71ac8aa3c5b389788ce29be30d9487932e3a6fa8f4528da9e5f"
+        ],
+        "resource": "VA 0xA867F4, existing dry-weather haze endpoint",
+        "retail_file": "ESPN NFL 2K5 (USA)/default.xbe"
+      },
+      "summary": "Change one existing dry outdoor haze endpoint from 0.8 to 1.0, with recognized Off restoration. Does not force fog or add sky art; camera parameter proof only.",
+      "surface": "stadiums_fields",
+      "title": "Existing dry-weather haze response (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_weather_native"
     },
     {
       "backend": {

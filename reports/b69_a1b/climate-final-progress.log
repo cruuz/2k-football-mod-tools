@@ -1,0 +1,5 @@
+tests/mod_editor/test_nfl2k5_weather_editor.py 0 Ran 2 tests in 0.059s OK
+tests/mod_editor/test_nfl2k5_weather.py 0 Ran 12 tests in 0.265s OK
+tests/mod_editor/test_nfl2k5_weather_native.py 0 Ran 10 tests in 19.393s OK
+tests/mod_editor/test_b69_a2b_game_wiring.py 0 Ran 8 tests in 92.350s OK
+COMPLETED 4 FAILED 0

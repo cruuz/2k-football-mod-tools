@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import failure_body
+
 from typing import Callable
 
 from PyQt5.QtCore import Qt, pyqtSignal
@@ -203,7 +205,7 @@ class PlayAssignmentRoutePanel(QWidget):
 
     def _copy_failed(self, coordinates, message: str) -> None:
         if message.strip() != ROUTE_ORPHAN_MESSAGE.strip():
-            QMessageBox.critical(self, "Could not copy route", message)
+            QMessageBox.critical(self, "Could not copy route", failure_body(message))
             return
         self._offer_relay_copy(coordinates)
 

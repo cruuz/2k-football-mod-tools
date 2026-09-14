@@ -10,6 +10,8 @@ runs in the background so the studio stays responsive.
 
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import plain_error
+
 from collections.abc import Callable
 from pathlib import Path
 
@@ -64,7 +66,7 @@ class _Task(QRunnable):
         try:
             self.signals.finished.emit(self._operation(self.signals.progress.emit))
         except Exception as exc:  # noqa: BLE001
-            self.signals.failed.emit(f"{type(exc).__name__}: {exc}")
+            self.signals.failed.emit(plain_error(exc))
 
 
 class SharePanel(QWidget):

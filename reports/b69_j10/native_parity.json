@@ -1,0 +1,12 @@
+{
+  "retail_index": "/home/noah/2k-worktrees/astra-b69-j10/extracted/All-Pro Football 2K8 (USA)/0A",
+  "reference_writer_sha256": "d50f2146ddb5edfb0c1fed65e21b2b953af7eb0c5e0160bdd4600091cd9ca222",
+  "packages": [],
+  "native_equivalence": {
+    "optimal_original_helper_cases": 45,
+    "greedy_original_python_cases": 135,
+    "all_byte_identical": true,
+    "helper_sha256": "d081d19c0078f768d2cb935732c910945c55d372dd9e1cc2b3e16ef9cfcf86a0",
+    "reference_helper_sha256": "9061866e31f1a2930eceaa4fb8652ef1b7aa9b04cbce0174cc0eae125f8e49ab"
+  }
+}

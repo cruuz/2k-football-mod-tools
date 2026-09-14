@@ -1,0 +1,10 @@
+{
+  "historical_commit": "b2d5d0cf",
+  "historical_writer_sha256": "d914d5e6224476bbc9e385aded38cf521d213f873a62cf5280032c61e73ebcd4",
+  "legacy_record": "kind/asset_id/png with npTC v1 independent-mip-chain scale 1",
+  "historical_span_changed": true,
+  "historical_video_bytes": 5888,
+  "current_span_exactly_retail": true,
+  "current_video_bytes": 4480,
+  "conclusion": "Legacy writer appended a chain; beta 68 recognizes and preserves the identical source span."
+}

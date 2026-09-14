@@ -1,0 +1,14 @@
+[
+  {
+    "studio": "2k5",
+    "unique_text_candidates": 0,
+    "snapshot_occurrences": 0,
+    "same_candidate_footprints_as_j7": true
+  },
+  {
+    "studio": "apf",
+    "unique_text_candidates": 8,
+    "snapshot_occurrences": 36,
+    "same_candidate_footprints_as_j7": true
+  }
+]

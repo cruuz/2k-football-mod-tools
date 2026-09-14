@@ -1,0 +1,98 @@
+[
+  {
+    "job": "J6",
+    "bundle": "/home/noah/2k-worktrees/astra-b69-j6/ASTRA_J6.bundle",
+    "heads": [
+      "c43a12b578db25fcb7b6f9c2290c771392490cd0 refs/heads/astra/b69-j6-rosters"
+    ],
+    "second_parent": "c43a12b578db25fcb7b6f9c2290c771392490cd0",
+    "tip_matches": true,
+    "merged_tip_is_bundle_ancestor": true,
+    "later_commits_not_on_input": [],
+    "bundle_sha256": "3fbc745cf9f987589827ebacd59b43b13c4ce971f00f1c7144f638c7cbe63268",
+    "bundle_bytes": 67338
+  },
+  {
+    "job": "J9",
+    "bundle": "/home/noah/2k-worktrees/astra-b69-j9/ASTRA_B69_J9.bundle",
+    "heads": [
+      "8e77c8630d42656669ff9b30e491742a4093f255 refs/heads/astra/b69-j9-apf-playcall"
+    ],
+    "second_parent": "8e77c8630d42656669ff9b30e491742a4093f255",
+    "tip_matches": true,
+    "merged_tip_is_bundle_ancestor": true,
+    "later_commits_not_on_input": [],
+    "bundle_sha256": "2c00321c9611d4a2b55bdebae19edbf0fd9a16680ab73889cf0c4242a4ab2f5d",
+    "bundle_bytes": 58695
+  },
+  {
+    "job": "J7",
+    "bundle": "/home/noah/2k-worktrees/astra-b69-j7/BETA69_J7.bundle",
+    "heads": [
+      "44b3d9b7f7b46945d74c2cf1365a2fc7ceb5e671 refs/heads/astra/b69-j7-polish"
+    ],
+    "second_parent": "b4b188a9b30ab24cdfd3c88ea0b552310030384a",
+    "tip_matches": false,
+    "merged_tip_is_bundle_ancestor": true,
+    "later_commits_not_on_input": [
+      "44b3d9b7f7b46945d74c2cf1365a2fc7ceb5e671 2026-09-13T18:05:26-04:00 docs: finalize the reviewed beta 69 polish handoff",
+      "2f9af2ebc8f4a668f14b5c5904fff4ee19e9b999 2026-09-13T18:05:26-04:00 docs: refresh final polish inventories and standalone test evidence",
+      "24a2de89c869c26e5ed21f32c16e48819bf968e1 2026-09-13T18:02:39-04:00 docs(apf): note recovery for browser handoff failures",
+      "f1a334bfe3e845dcc0be8b6797f350a069862474 2026-09-13T18:02:39-04:00 docs(2k5): note recovery for desktop handoff failures",
+      "1586bd77034726245fbd33b04773e9bf5991e026 2026-09-13T18:02:39-04:00 docs(apf): make packaged play-calling comparisons public-facing",
+      "ee35c7a0605aaf0ae491e749d4b0cafa111ee67c 2026-09-13T18:02:39-04:00 docs(apf): remove stale release headings from PS3 import help",
+      "6c2258812214f67fa4261fe4c5d0954f322eb054 2026-09-13T18:02:39-04:00 docs(apf): bring the current product status to beta 69",
+      "cbac7ca90cf0f1c1fcb8cdb272b62910a18aa48f 2026-09-13T18:01:47-04:00 docs: audit private handoff language in packaged APF help",
+      "ad452f50b677e54cc4eca3b2773f5a3c047a1bf4 2026-09-13T18:00:47-04:00 docs: audit stale APF status and import-guide headings",
+      "45f033f97a8ed95ff5ed25fdc6a80f352194890e 2026-09-13T17:58:46-04:00 test: exercise failed desktop handoffs in both studio menus",
+      "670f94eeb8808bf9b2325eff862fb3e30ce2b462 2026-09-13T17:58:45-04:00 fix(apf): report failed help-link handoffs",
+      "f43d86321059fb5ad5fb077277e5d5ffb9b4f201 2026-09-13T17:58:45-04:00 fix(models): explain when the export folder cannot open",
+      "0524d48820a07ec4588356bae6c3df19bbc50572 2026-09-13T17:58:45-04:00 fix(2k5): keep help links and stadium folders actionable",
+      "c2fe840559fed92a0b8fb034fe8db80f0b3eb6cc 2026-09-13T17:58:45-04:00 fix(gui): explain failed browser and file-manager handoffs",
+      "fe1370473a8545a0a872c6aa68b6fd7836682448 2026-09-13T17:55:56-04:00 docs: record remaining silent desktop actions before fixing them"
+    ],
+    "bundle_sha256": "6d3ed77a569afe3ca1652b458fb9e2a0b4205a3f89907beb86bb0647ac2f14d6",
+    "bundle_bytes": 5218789
+  },
+  {
+    "job": "J1",
+    "ref": "refs/astra/b69-j1",
+    "tip": "5d63ee07e5a0e2f4a07dbac57a9ddc323f0cf71f",
+    "bundle": "/home/noah/2k-worktrees/astra-b69-j1/ASTRA_J1.bundle",
+    "heads": [
+      "5d63ee07e5a0e2f4a07dbac57a9ddc323f0cf71f refs/heads/astra/b69-j1-equipment"
+    ],
+    "tip_matches": true,
+    "bundle_sha256": "f2c8a2046a6c4163e3c697a35ce92ec0c946df6f55675c0b3b991cd1d69973af",
+    "bundle_bytes": 69529
+  },
+  {
+    "job": "J2",
+    "ref": "refs/astra/b69-j2",
+    "tip": "b6411b41d687d1c31cec2ed0f73ce6b04b0f0880",
+    "bundle": "/home/noah/2k-worktrees/astra-b69-j2/ASTRA_J2.bundle",
+    "heads": [
+      "b6411b41d687d1c31cec2ed0f73ce6b04b0f0880 refs/heads/astra/b69-j2-models"
+    ],
+    "tip_matches": true,
+    "bundle_sha256": "012d00b3fc344edb2d6e11beb047e681541203213e822482d948774e0bee1b96",
+    "bundle_bytes": 61263
+  },
+  {
+    "job": "J8",
+    "ref": "refs/astra/b69-j8",
+    "tip": "d2b6612604f8016bf5dd2993913cf10f11a71a6a",
+    "bundle": "/home/noah/2k-worktrees/astra-b69-j8/reports/b69_j8/astra-b69-j8-apf-save.bundle",
+    "heads": [
+      "f05c1048eb3e6baa1508039bd61f7cb8d63f1879 refs/heads/astra/b69-j8-apf-save"
+    ],
+    "tip_matches": false,
+    "merged_tip_is_bundle_ancestor": true,
+    "later_commits_not_on_input": [
+      "f05c1048eb3e6baa1508039bd61f7cb8d63f1879 2026-09-13T18:14:27-04:00 Refresh J8 verification and complete bundle handoff",
+      "daa19a172d9d97d5e8bf0a654e0aaa277667ee79 2026-09-13T18:12:57-04:00 Handle root PS3 roster ZIPs and reject invalid STFS table copies"
+    ],
+    "bundle_sha256": "68232d4807a863d6a162d729c022f53e2d12deb27b873c90b504f0da5f489aba",
+    "bundle_bytes": 73250
+  }
+]

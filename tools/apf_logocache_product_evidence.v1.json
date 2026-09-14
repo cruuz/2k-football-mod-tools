@@ -2,7 +2,7 @@
   "artifacts": {
     "test_sha256": "8bf2e04f538dc77354bec3b4209721a14c153e548fb1bb3a2ab5d968c298f1c1",
     "verifier_sha256": "a75ea25d0776fbe9dd1630ddb90ac0c0baeb067b8fd6aa7a8a2a92c8df15b5c3",
-    "writer_sha256": "20c901b08fdff38fe043a0d7eef2dae992ad0cb8e5ab671587cc3d86ff83a70d"
+    "writer_sha256": "0bddddff674933d2ddd94345d3a1242df4d4dbe99662f4ad8220213d8c5533d2"
   },
   "authority": {
     "path": "reports/assets/apf_logocache_roundtrip.json",

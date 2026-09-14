@@ -1,0 +1,104 @@
+[
+  {
+    "id": "apf2k8.cpu_ai_draft.play_design.concept_recipes",
+    "command": "python3 -m packaging.check_apf2k8_mod_studio_runtime",
+    "error": "validation module must be a local dotted module",
+    "predates_game_integration": true
+  },
+  {
+    "id": "apf2k8.cpu_ai_draft.play_design.cpu_calls",
+    "command": "python3 -m packaging.check_apf2k8_mod_studio_runtime",
+    "error": "validation module must be a local dotted module",
+    "predates_game_integration": true
+  },
+  {
+    "id": "apf2k8.cpu_ai_draft.play_design.create_formation",
+    "command": "python3 -m packaging.check_apf2k8_mod_studio_runtime",
+    "error": "validation module must be a local dotted module",
+    "predates_game_integration": true
+  },
+  {
+    "id": "apf2k8.cpu_ai_draft.play_design.create_play",
+    "command": "python3 -m packaging.check_apf2k8_mod_studio_runtime",
+    "error": "validation module must be a local dotted module",
+    "predates_game_integration": true
+  },
+  {
+    "id": "apf2k8.cpu_ai_draft.play_design.defensive_assignments",
+    "command": "python3 -m packaging.check_apf2k8_mod_studio_runtime",
+    "error": "validation module must be a local dotted module",
+    "predates_game_integration": true
+  },
+  {
+    "id": "apf2k8.cpu_ai_draft.play_design.edit_play",
+    "command": "python3 -m packaging.check_apf2k8_mod_studio_runtime",
+    "error": "validation module must be a local dotted module",
+    "predates_game_integration": true
+  },
+  {
+    "id": "apf2k8.cpu_ai_draft.play_design.five_step_drop",
+    "command": "python3 -m packaging.check_apf2k8_mod_studio_runtime",
+    "error": "validation module must be a local dotted module",
+    "predates_game_integration": true
+  },
+  {
+    "id": "apf2k8.cpu_ai_draft.play_design.spy",
+    "command": "python3 -m packaging.check_apf2k8_mod_studio_runtime",
+    "error": "validation module must be a local dotted module",
+    "predates_game_integration": true
+  },
+  {
+    "id": "apf2k8.field_art.material_opacity",
+    "command": "python3 -m mod_editor.core.apf_field_material_writer --index <0A> --entry 53 --alpha graphic_overlay_4=0.25 --manifest <report.json>",
+    "error": "unreviewed validation module arguments",
+    "predates_game_integration": true
+  },
+  {
+    "id": "apf2k8.gameplay_tuning_sliders.coverage_geometry",
+    "command": "python3 -m packaging.check_apf2k8_mod_studio_runtime",
+    "error": "validation module must be a local dotted module",
+    "predates_game_integration": true
+  },
+  {
+    "id": "apf2k8.logos_cards.ps3_texture_bundle",
+    "command": "python3 -m packaging.check_apf2k8_mod_studio_runtime",
+    "error": "validation module must be a local dotted module",
+    "predates_game_integration": true
+  },
+  {
+    "id": "apf2k8.playbooks.clone",
+    "command": "python3 -m packaging.check_apf2k8_mod_studio_runtime",
+    "error": "validation module must be a local dotted module",
+    "predates_game_integration": true
+  },
+  {
+    "id": "apf2k8.playbooks.cpu_audibles",
+    "command": "python3 -m packaging.check_apf2k8_mod_studio_runtime",
+    "error": "validation module must be a local dotted module",
+    "predates_game_integration": true
+  },
+  {
+    "id": "apf2k8.playbooks.identity",
+    "command": "python3 -m packaging.check_apf2k8_mod_studio_runtime",
+    "error": "validation module must be a local dotted module",
+    "predates_game_integration": true
+  },
+  {
+    "id": "apf2k8.playbooks.scheme_presets",
+    "command": "python3 -m packaging.check_apf2k8_mod_studio_runtime",
+    "error": "validation module must be a local dotted module",
+    "predates_game_integration": true
+  },
+  {
+    "id": "apf2k8.players_rosters.ps3_roster_import",
+    "command": "python3 -m packaging.check_apf2k8_mod_studio_runtime",
+    "error": "validation module must be a local dotted module",
+    "predates_game_integration": true
+  },
+  {
+    "id": "nfl2k5.espn25.scenarios_rosters",
+    "command": "python3 -m mod_editor.core.nfl2k5_espn25_scenarios status source.iso espn25-plan.json",
+    "error": "unreviewed validation module arguments",
+    "predates_game_integration": true
+  }
+]

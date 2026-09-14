@@ -1,0 +1,9 @@
+tests/mod_editor/test_apf_digital_font.py 0 Ran 14 tests in 0.268s OK
+tests/mod_editor/test_b66_coach_wiring.py 0 Ran 5 tests in 0.857s OK (skipped=2)
+tests/mod_editor/test_beta69_feedback_qt.py 0 Ran 5 tests in 0.359s OK
+tests/mod_editor/test_discord_bugs_1_wiring.py 0 Ran 10 tests in 2.452s OK
+tests/mod_editor/test_nfl2k3_2k4_compatibility_boundary.py 0 Ran 4 tests in 0.002s OK
+tests/mod_editor/test_b68_a1_audit.py 0 Ran 10 tests in 7.749s OK
+tests/mod_editor/test_beta66_helmet_finish_wiring.py 1 Ran 8 tests in 11.214s FAILED (errors=1)
+tests/mod_editor/test_nfl2k5_franchise_2026_runtime.py 0 Ran 11 tests in 64.562s OK
+COMPLETED 8 FAILED 1

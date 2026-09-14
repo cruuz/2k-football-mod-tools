@@ -1,0 +1,26 @@
+[
+  {
+    "job": "J6",
+    "merge": "d3e0b22955243e86c59ee723b015089f3cea65b3",
+    "renames_vs_job_parent": [
+      "R100\tASTRA_REPORT.md\tASTRA_B69_J6_REPORT.md",
+      "R100\tWIRING.md\tWIRING_B69_J6.md"
+    ]
+  },
+  {
+    "job": "J9",
+    "merge": "1da5942e14313dd5390a14547bac14ba9887b6b1",
+    "renames_vs_job_parent": [
+      "R100\tASTRA_REPORT.md\tASTRA_B69_J9_REPORT.md",
+      "R100\tWIRING.md\tWIRING_B69_J9.md"
+    ]
+  },
+  {
+    "job": "J7",
+    "merge": "cae4080da83d917141a587c8951c6d5c42a1f128",
+    "renames_vs_job_parent": [
+      "R100\tASTRA_REPORT.md\tASTRA_B69_J7_REPORT.md",
+      "R100\tWIRING.md\tWIRING_B69_J7.md"
+    ]
+  }
+]

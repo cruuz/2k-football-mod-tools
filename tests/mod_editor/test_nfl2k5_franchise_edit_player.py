@@ -28,7 +28,7 @@ class PublicTests(unittest.TestCase):
         self.assertTrue(set(edit.REQUESTS) <= set(REQUESTS))
         self.assertTrue(set(edit.REQUESTS) <= set(space.dormant_union()))
         plan = space.plan(rows, scaleout=True)
-        self.assertEqual(plan['capacity']['read_only']['available_bytes'], 2968)  # beta 66: Broadcast camera v6 takes 320 RO (v5 took 80); beta 65: the accelerated clock's 8 RO bytes (16-aligned); beta 63 stack: 7400 alone; playbook pair 4096 RO
+        self.assertEqual(plan['capacity']['read_only']['available_bytes'], 2824)  # beta 69: J5's 140 RO bytes plus alignment; existing owner budgets unchanged
         self.assertEqual(len(edit.read_only_bytes()), 704)
         self.assertEqual(edit.EDIT_ROW[2:5], (1, 0, 0))
         self.assertEqual(edit.EDIT_ROW[5:], (1,) * 10)

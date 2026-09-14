@@ -1,0 +1,5 @@
+tests/nfl2k5_scorebug_layout_test.py 0 Ran 15 tests in 1.182s OK (skipped=6)
+tests/nfl2k5_edge_rename_test.py 0 Ran 13 tests in 2.244s OK
+tests/nfl2k5_throw_tuning_test.py 0 Ran 39 tests in 9.676s OK (skipped=1)
+tests/nfl2k5_depth_chart_rows_test.py 0 Ran 23 tests in 38.162s OK
+COMPLETED 4 FAILED 0

@@ -11,6 +11,8 @@ ported retail validator before it can be staged.
 
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import failure_body
+
 import math
 import struct
 from dataclasses import dataclass, field
@@ -247,7 +249,7 @@ class TeamPage(QWizardPage):
         try:
             dialog = PlaybookPackInstallDialog(self.wiz.host, path, self)
         except Exception as exc:  # noqa: BLE001
-            QMessageBox.warning(self, "Install a playbook pack", str(exc))
+            QMessageBox.warning(self, "Couldn't finish that", failure_body(exc))
             return
         if dialog.exec_() != dialog.Accepted:
             return
@@ -280,7 +282,7 @@ class TeamPage(QWizardPage):
         try:
             self.wiz.load_book(book)
         except Exception as exc:  # noqa: BLE001
-            QMessageBox.warning(self, "Create a Play", str(exc))
+            QMessageBox.warning(self, "Couldn't finish that", failure_body(exc))
             return False
         return True
 
@@ -436,7 +438,7 @@ class FormationPage(QWizardPage):
         try:
             plan = lib.resolve_personnel(self.wiz.book, self.wiz.body, codes, self._claimed())
         except ValueError as exc:
-            QMessageBox.warning(self, "Personnel", str(exc))
+            QMessageBox.warning(self, "Couldn't finish that", failure_body(exc))
             return
         old_selected = self.selected
         self.positions = [self.positions[plan.slot_order[s]] for s in range(11)]
@@ -551,7 +553,7 @@ class FormationPage(QWizardPage):
             self.name_edit.setText("SD Double A EXPERIMENTAL")
             self._refresh()
         except ValueError as exc:
-            QMessageBox.warning(self, "Double A", str(exc))
+            QMessageBox.warning(self, "Couldn't finish that", failure_body(exc))
 
     def _legality(self) -> None:
         slots = [codec.FormationSlot(0, codec.NO_MIRROR, 3, [int(round(x))] * 3, [int(round(z))] * 3) for x, z in self.positions]
@@ -1765,7 +1767,7 @@ class FinalizePage(QWizardPage):
                 raise ValueError("; ".join(check.errors))
             self.wiz.host.install_playbook_pack(pack, (self.wiz.book.book_name,), _quiet)
         except Exception as exc:
-            QMessageBox.warning(self, "Option reads", str(exc))
+            QMessageBox.warning(self, "Couldn't finish that", failure_body(exc))
             return
         self.status.setText("Option reads staged with branch flags and expected opponent fixture. " + lib.OPTION_NOTICE)
         self.apply.setEnabled(False); self.build.setEnabled(True)
@@ -1819,7 +1821,7 @@ class FinalizePage(QWizardPage):
             pack = self._defense_pack()
             self.wiz.host.install_playbook_pack(pack, (self.wiz.book.book_name,), _quiet)
         except Exception as exc:
-            QMessageBox.warning(self, "Defense", str(exc))
+            QMessageBox.warning(self, "Couldn't finish that", failure_body(exc))
             return
         self.status.setText("Defense staged with versioned Spy intent. " + lib.DEFENSE_EVIDENCE)
         self.apply.setEnabled(False)
@@ -1841,7 +1843,7 @@ class FinalizePage(QWizardPage):
         try:
             result = self.wiz.host.build_iso(dest, lambda stage, done, total: (self.status.setText(f"{stage} ({done}/{total})"), QApplication.processEvents()))
         except Exception as exc:  # noqa: BLE001
-            QMessageBox.warning(self, "Build failed", str(exc))
+            QMessageBox.warning(self, "Build failed", failure_body(exc))
             self.build.setEnabled(True)
             return
         self.status.setText(f"✔ Built and verified: {getattr(result, 'output_xiso', dest)}")
@@ -1851,7 +1853,7 @@ class FinalizePage(QWizardPage):
         try:
             result = self.wiz.host.launch_xemu(_quiet)
         except Exception as exc:  # noqa: BLE001
-            QMessageBox.warning(self, "Launch failed", str(exc))
+            QMessageBox.warning(self, "Launch failed", failure_body(exc))
             return
         self.status.setText(f"✔ {getattr(result, 'message', result)}  In-game: Practice → your team → formations are where you put them.")
 

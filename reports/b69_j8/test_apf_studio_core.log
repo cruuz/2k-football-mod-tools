@@ -1,0 +1,6 @@
+QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_studio_core.py
+s........
+----------------------------------------------------------------------
+Ran 9 tests in 0.036s
+
+OK (skipped=1)

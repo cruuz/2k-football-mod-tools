@@ -28,13 +28,27 @@ CHOICE_HELP = (
     "Import a new design for this selected sock, glove or shoe. Other variants keep "
     "their artwork, including the separate dirty version. Smaller copies are "
     "made for distance. The original image size often cannot fit. Choose a "
-    "smaller game image below, or use fewer colours and simpler shapes. "
+    "smaller game image below, or use fewer colours and simpler shapes. If it misses the slot, "
+    "the check reports the byte shortfall and offers a checked smaller size when one fits. "
     "Smaller images lose fine detail. Uses more game memory. Experimental / unwitnessed: check close up "
     "and at distance in a game."
 )
 PALETTE_HELP = (
     "Change this variant's colours using the game's shared image. "
     "This cannot add a new design or shape."
+)
+
+
+SHOE_ROUTE_HELP = (
+    "Style 3 selects shoes09; Style 6 selects shoes10. The native field path checks "
+    "HOME or AWAY, and clean or _mud artwork separately. Import each uniform and "
+    "dirty variant you need. Both feet must use that style. maumau78 reported that "
+    "Style 6 appeared in Edit Player but not in a Bears game; that report is unresolved. "
+    "Package-local lookup is proved only in bounded native tests. In-game results are UNWITNESSED."
+)
+LARGER_ART_HELP = (
+    "Larger equipment art is unavailable: moving the equipment to more space has not "
+    "passed the disc and loader checks. Choose a checked smaller size or simplify the artwork."
 )
 
 

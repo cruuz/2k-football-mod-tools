@@ -1,0 +1,164 @@
+diff --git a/ASTRA_REPORT.md b/ASTRA_B69_J8_REPORT.md
+similarity index 100%
+rename from ASTRA_REPORT.md
+rename to ASTRA_B69_J8_REPORT.md
+diff --git a/WIRING.md b/WIRING_B69_J8.md
+similarity index 100%
+rename from WIRING.md
+rename to WIRING_B69_J8.md
+diff --git a/mod_editor/capabilities/registry.v1.json b/mod_editor/capabilities/registry.v1.json
+index 6abf8786..d77b1059 100644
+--- a/mod_editor/capabilities/registry.v1.json
++++ b/mod_editor/capabilities/registry.v1.json
+@@ -314,10 +314,14 @@
+       },
+       "classification": "offline-writer-proved",
+       "evidence": [
+-        "docs/research/apf_custom_team_appearance.md",
+         "docs/product/APF_UNIFORM_EQUIPMENT_COLORS.md",
+-        "tests/mod_editor/test_apf_custom_team_appearance_patch.py",
++        "docs/research/apf_custom_team_appearance.md",
++        "docs/research/apf_stfs_rehash.md",
+         "tests/mod_editor/test_apf_custom_team_appearance_gui.py",
++        "tests/mod_editor/test_apf_custom_team_appearance_patch.py",
++        "tests/mod_editor/test_apf_roster_appearance_transfer.py",
++        "tests/mod_editor/test_apf_roster_appearance_transfer_qt.py",
++        "tests/mod_editor/test_apf_stfs_roster_rehash.py",
+         "tests/mod_editor/test_apf_uniform_equipment_colors.py",
+         "tests/mod_editor/test_apf_uniform_equipment_colors_gui.py",
+         "tests/test_apf_save_custom_team_appearance.py"
+@@ -327,7 +331,7 @@
+         "default_enabled": true,
+         "expose": true,
+         "mode": "edit",
+-        "reason": "The Uniforms & Equipment tab exposes independent HOME/AWAY facemask-bar and Team-turtleneck palette selectors for all 40 teams, with exact swatches and selector-only writes. Its neighboring Custom Team Appearance editor exposes the larger palette/helmet/crest record only for user slots 32 through 39 after re-resolving unique ROST pointer ownership. Both stage canonical replacement-only JSON through the same fixed-allocation ROST build. Raw Roster Save remains restricted to user-facing IDs 24 through 31 / save-local slots 32 through 39 and writes only a new payload plus independently verified receipt. When appearance is staged with the fixed full-shell Team Logo profile, the headless composite build owns outer 1126 alongside the crest package, cache pair, and outer-1310 carrier."
++        "reason": "The Uniforms & Equipment tab exposes independent HOME/AWAY facemask-bar and Team-turtleneck palette selectors for all 40 teams, with exact swatches and selector-only writes. Its neighboring Custom Team Appearance editor exposes the larger palette/helmet/crest record only for user slots 32 through 39 after re-resolving unique ROST pointer ownership. Both stage canonical replacement-only JSON through the same fixed-allocation ROST build. Raw Roster Save remains restricted to user-facing IDs 24 through 31 / save-local slots 32 through 39 and writes only a new payload plus independently verified receipt. When appearance is staged with the fixed full-shell Team Logo profile, the headless composite build owns outer 1126 alongside the crest package, cache pair, and outer-1310 carrier. Beta 69: Custom Team Appearance now exposes Apply my custom team appearance to this roster save. It reviews destination slots, defaults to a new raw output, and optionally creates a Xenia-only rehashed package. Current controls remain intact and output is reopened with a changed-slot receipt."
+       },
+       "id": "apf2k8.colors.uniform_selector_appearance_custom_team",
+       "input_constraints": [
+@@ -341,7 +345,11 @@
+         "A Team Logo build with a staged appearance composes crest package, custom-team ROST, and logo cache into one new copied 0A through one exclusively owned private intermediate.",
+         "A raw Roster.ROS must retain the root at +4, exact table counts, independently resolved tables 4/16/17/19, aligned bounds, unique selected-record ownership, and user-team category 2 for slots 32 through 39.",
+         "Raw-save edits authorize only ten HOME and ten AWAY ARGB dwords plus four exact eight-byte selectors: a 112-byte union per selected team. The inspected source SHA must still match, output and receipt must be new/non-aliasing, and an independent reopen must verify every changed byte.",
+-        "CON, LIVE, and PIRS STFS packages are inspect-only because safe writeback also requires payload reinjection, STFS rehashing, and resigning."
++        "Apply my custom team appearance to this roster save transfers current controls and optional other staged appearances by matching slots 32..39. The destination team names are reviewed; each slot authorizes only 112 bytes. Outputs and receipts are new files, and source hashes must still match at write time.",
++        "Raw Roster.ROS output is supported. Decrypted PS3 USERDATA or one bounded roster ZIP member passes through the existing converter with all team uniform codes and palette colours carried first; only selected slots then receive the bounded editor appearance. The receipt includes conversion and override verification.",
++        "Supported fixed-size, single-file CON/LIVE/PIRS packages can produce a separate rehashed STFS copy only through the explicit Xenia-only output choice. Caption: Xenia only; a real console will reject this package. Changed data blocks, active hash-table blocks and the metadata hash are rehashed; signature bytes are preserved, never renewed. The pinned local Xenia source does not check RSA signatures, but package discovery and full loading remain HYPOTHESIS and UNWITNESSED.",
++        "STFS output refuses invalid hashes, shared file/directory blocks, file chains incompatible with Xenia traversal, multi-file packages, changed payload sizes and unsupported hash-tree bounds. The raw handoff route remains available for otherwise extractable packages.",
++        "The editor overlay does not copy jersey/shoulder/pants selectors or artwork from the project; destination values remain exact. PS3 conversion independently carries all 14 selectors in both banks and rotates RGBA to ARGB. Texture artwork needs its separate import."
+       ],
+       "portme": [
+         "Establish emulator consumption and gameplay visibility separately from the exact headless file build, then repeat on user-owned Xbox 360 hardware before claiming hardware parity.",
+@@ -407,7 +415,7 @@
+         "resource": "ROST root tables 4, 16, 17, and 19 for all 40 game teams; larger custom-team and raw-save authoring remains restricted to slots 32..39, with raw-save user IDs 24..31 mapped to that range",
+         "retail_file": "All-Pro Football 2K8 (USA)/0A or a user-owned raw APF Roster.ROS"
+       },
+-      "summary": "Edit independent HOME/AWAY facemask and Team-turtleneck colors for all 40 teams, plus the larger safe custom-team palette/helmet/crest records for slots 32..39, through the common verified 0A ROST build or the bounded raw Roster.ROS path.",
++      "summary": "Edit independent HOME/AWAY facemask and Team-turtleneck colors for all 40 teams, plus the larger safe custom-team palette/helmet/crest records for slots 32..39, through the common verified 0A ROST build or the bounded raw Roster.ROS path. Apply current/staged custom-team appearance to a new raw roster, converted PS3 roster, or explicit Xenia-only rehashed STFS copy; offline verified, in-game UNWITNESSED.",
+       "surface": "uniforms",
+       "title": "APF uniform equipment colors and custom-team appearance",
+       "validation_command": "python3 tools/validate_apf_custom_team_appearance.py"
+@@ -3672,16 +3680,18 @@
+       "classification": "offline-writer-proved",
+       "evidence": [
+         "ASTRA_B64_PS3_ROSTER_REPORT.md",
++        "reports/apf_b66_gameplay_witness.json",
+         "reports/ps3_import/roster_convert_receipt.json",
+         "tests/mod_editor/test_apf_b66_appearance.py",
+-        "reports/apf_b66_gameplay_witness.json"
++        "tests/mod_editor/test_apf_ps3_roster_convert.py",
++        "tests/mod_editor/test_apf_ps3_roster_import_qt.py"
+       ],
+       "game": "apf2k8_xbox360",
+       "gui": {
+         "default_enabled": true,
+         "expose": true,
+         "mode": "edit",
+-        "reason": "Pointer rule, palette byte order and runtime words proved from all 42,825 string references and both Xbox fixtures; output re-parsed by save_roster_players, apf_save_playbook_assignments and the team graph; loading in Xenia UNWITNESSED."
++        "reason": "PS3 import reviews uniform carry or Xbox appearance retention. Exact 14-record HOME/AWAY selector banks, ten colours per bank and palette metadata are compared after conversion. Receipts name carried/refused fields. Aszemple witnessed RPCS3 logo and roster imports on 2026-09-13; uniform rendering and in-game loading remain UNWITNESSED."
+       },
+       "id": "apf2k8.players_rosters.ps3_roster_import",
+       "input_constraints": [
+@@ -3689,7 +3699,8 @@
+         "Platform is decided by the palette alpha position (2,660 colours vote); mixed or ambiguous files are refused rather than guessed.",
+         "Editor-damaged text is repaired structurally only: misaligned runs shift or relocate, stale/garbage/below-pool references become the shared empty string; intended text is never invented.",
+         "Output is a raw payload plus receipt next to it; no container is written and the source is never modified.",
+-        "Beta 66 (Aszemple): team appearance (both uniform banks and team palettes) is reviewed with 'Also apply team appearance (N teams)', unchecked until reviewed; leaving it off requires a raw Xbox roster whose appearance is retained while players come from PS3. Every team's selector changes are receipted per bank and reparsed. The default conversion already transported the PS3 selectors; this adds verification and review."
++        "Beta 66 (Aszemple): team appearance (both uniform banks and team palettes) is reviewed with 'Also apply team appearance (N teams)', unchecked until reviewed; leaving it off requires a raw Xbox roster whose appearance is retained while players come from PS3. Every team's selector changes are receipted per bank and reparsed. The default conversion already transported the PS3 selectors; this adds verification and review.",
++        "All 40 teams' 1120 referenced eight-byte selectors and 800 referenced colours are compared after conversion, including jersey, shoulder, pants, helmet and crest. Opaque tails remain exact; custom texture payloads and new meanings for opaque bytes are refused with reasons. Choosing a new source clears the previous Xbox appearance baseline."
+       ],
+       "portme": [
+         "Witness the converted 1993 roster in Xenia (load, names, positions, teams, colours), then move runtime.status.",
+@@ -3704,7 +3715,7 @@
+       },
+       "runtime": {
+         "evidence": [],
+-        "scope": "UNWITNESSED. Nobody has loaded a converted roster in Xenia; names, positions, teams and palette colours need an in-game witness.",
++        "scope": "Aszemple: Was able import both the logos and roster files from my rpcs3 files (2026-09-13). This witnesses import usability only. In-game roster loading, HOME/AWAY uniform rendering and the helmet close-up remain UNWITNESSED.",
+         "status": "not-tested"
+       },
+       "selectors": {
+diff --git a/packaging/apf2k8-release-allowlist.txt b/packaging/apf2k8-release-allowlist.txt
+index bed31cef..909079e6 100644
+--- a/packaging/apf2k8-release-allowlist.txt
++++ b/packaging/apf2k8-release-allowlist.txt
+@@ -72,6 +72,8 @@ mod_editor/apf_studio/playbook_membership_qt.py
+ mod_editor/apf_studio/playbook_package_map_qt.py
+ mod_editor/apf_studio/product_findings.py
+ mod_editor/apf_studio/project.py
++mod_editor/apf_studio/roster_appearance_transfer.py
++mod_editor/apf_studio/roster_appearance_transfer_qt.py
+ mod_editor/apf_studio/roster_workspace.py
+ mod_editor/apf_studio/roster_workspace_qt.py
+ mod_editor/apf_studio/save_appearance.py
+@@ -167,6 +169,7 @@ tools/apf_roster_identity_patch.py
+ tools/apf_save_custom_team_appearance.py
+ tools/apf_save_playbook_assignments.py
+ tools/apf_stfs_roster_extract.py
++tools/apf_stfs_roster_rehash.py
+ tools/apf_scene.py
+ tools/apf_stadium_catalog_position_patch.py
+ tools/apf_stadium_catalog_position_verify.py
+diff --git a/packaging/check_apf2k8_mod_studio_runtime.py b/packaging/check_apf2k8_mod_studio_runtime.py
+index 0ed23fc6..5a6aacdf 100644
+--- a/packaging/check_apf2k8_mod_studio_runtime.py
++++ b/packaging/check_apf2k8_mod_studio_runtime.py
+@@ -149,6 +149,8 @@ PRODUCT_MODULES = (
+     "mod_editor.apf_studio.roster_workspace",
+     "mod_editor.apf_studio.roster_workspace_qt",
+     "mod_editor.apf_studio.save_appearance",
++    "mod_editor.apf_studio.roster_appearance_transfer",
++    "mod_editor.apf_studio.roster_appearance_transfer_qt",
+     "mod_editor.apf_studio.save_playbooks",
+     "mod_editor.apf_studio.save_playbooks_qt",
+     "mod_editor.apf_studio.session",
+@@ -200,6 +202,7 @@ TOOL_MODULES = (
+     "apf_roster_identity_patch",
+     "apf_save_custom_team_appearance",
+     "apf_stfs_roster_extract",
++    "apf_stfs_roster_rehash",
+     "apf_scene",
+     "apf_stadium_catalog_position_patch",
+     "apf_stadium_catalog_position_verify",
+@@ -1986,6 +1989,21 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
+         is False,
+         "raw/STFS custom-team appearance safety/runtime boundary changed",
+     )
++    transfer = modules["mod_editor.apf_studio.roster_appearance_transfer"]
++    transfer_qt = modules["mod_editor.apf_studio.roster_appearance_transfer_qt"]
++    rehash = importlib.import_module("apf_stfs_roster_rehash")
++    require(
++        transfer.SCHEMA == "apf2k8_roster_appearance_transfer/v1"
++        and callable(transfer.inspect_transfer_source)
++        and callable(transfer.write_transfer)
++        and callable(transfer.verify_transfer)
++        and hasattr(transfer_qt, "RosterAppearanceTransferDialog")
++        and rehash.SCHEMA == "apf2k8_stfs_roster_rehash/v1"
++        and callable(rehash.rehash_roster)
++        and callable(rehash.verify_rehash)
++        and rehash.XENIA_ONLY == "Xenia only; a real console will reject this package",
++        "Roster appearance transfer/Xenia-only rehash contract changed",
++    )
+     for refused_slot in (31, 40, True):
+         try:
+             appearance_patch.asset_id(refused_slot)

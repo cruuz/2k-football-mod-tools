@@ -1,0 +1,11 @@
+[('00H0', 3613), ('01H0', 3622), ('02H0', 3636), ('03H0', 3640), ('04H0', 3650), ('05H0', 3653), ('06H0', 3660), ('07H0', 3668), ('08H0', 3678), ('09H0', 3685), ('10H0', 3695), ('11H0', 3702), ('12H0', 3710), ('13H0', 3717), ('14H0', 3723), ('15H0', 3734), ('16H0', 3741), ('17H0', 3753), ('18H0', 3762), ('19H0', 3770), ('20H0', 3778), ('21H0', 3783), ('22H0', 3798), ('23H0', 3804), ('24H0', 3817), ('25H0', 3829), ('26H0', 3837), ('27H0', 3842), ('28H0', 3850), ('29H0', 3859), ('30H0', 3869), ('31H0', 3874), ('33H0', 3875), ('34H0', 3876), ('35H0', 3877)]
+TARGET tset:3734:9:4:shoes10 budget 58432 scratch 32
+{'size': 256, 'colors': 256, 'compressed_bytes': 128885, 'by_offset_bits': {12: 128885, 10: 134870, 11: 131421}, 'budget': 58432, 'miss_bytes': 70453}
+{'size': 256, 'colors': 64, 'compressed_bytes': 97441, 'by_offset_bits': {12: 97441, 10: 104355, 11: 100197}, 'budget': 58432, 'miss_bytes': 39009}
+{'size': 256, 'colors': 16, 'compressed_bytes': 81017, 'by_offset_bits': {12: 81017, 10: 84942, 11: 81875}, 'budget': 58432, 'miss_bytes': 22585}
+{'size': 128, 'colors': 256, 'compressed_bytes': 75521, 'by_offset_bits': {12: 75521, 10: 78924, 11: 76812}, 'budget': 58432, 'miss_bytes': 17089}
+{'size': 128, 'colors': 64, 'compressed_bytes': 69064, 'by_offset_bits': {12: 69064, 10: 72581, 11: 70405}, 'budget': 58432, 'miss_bytes': 10632}
+{'size': 128, 'colors': 16, 'compressed_bytes': 63947, 'by_offset_bits': {12: 63947, 10: 66942, 11: 64946}, 'budget': 58432, 'miss_bytes': 5515}
+{'size': 64, 'colors': 256, 'compressed_bytes': 62948, 'by_offset_bits': {12: 62948, 10: 65548, 11: 63862}, 'budget': 58432, 'miss_bytes': 4516}
+{'size': 64, 'colors': 64, 'compressed_bytes': 61127, 'by_offset_bits': {12: 61127, 10: 63785, 11: 62046}, 'budget': 58432, 'miss_bytes': 2695}
+{'size': 64, 'colors': 16, 'compressed_bytes': 59521, 'by_offset_bits': {12: 59521, 10: 62171, 11: 60406}, 'budget': 58432, 'miss_bytes': 1089}

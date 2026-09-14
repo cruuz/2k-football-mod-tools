@@ -9,8 +9,10 @@ writer: ten HOME/AWAY ARGB values and exact eight-byte helmet/crest selectors.
 
 Raw payloads are written to a new file and independently verifiable receipt.
 For Xbox 360 STFS packages the verified inner ``Roster.ROS`` can be extracted
-or patched into a new raw handoff file.  The signed container is never written:
-reinjection, rehashing, and resigning still require an external save manager.
+or patched into a new raw handoff file by this CLI. The studio's separate
+roster_appearance_transfer service also offers a bounded Xenia-only STFS
+rehash through apf_stfs_roster_rehash. No route renews a console signature;
+real-console signing still requires an external save manager and owning keys.
 """
 
 from __future__ import annotations
@@ -618,6 +620,8 @@ def verify_patch(
         "schema": VERIFY_SCHEMA,
         "verified": True,
         "edit_count": len(rows),
+        "changed_slots": sorted(slot for slot in seen
+                                if source_slots[slot].appearance != output_slots[slot].appearance),
         "changed_byte_count": len(changed),
         "authorized_byte_count": len(allowed),
         "claims": {

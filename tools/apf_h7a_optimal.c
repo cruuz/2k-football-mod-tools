@@ -31,6 +31,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 
 #define HASH_BITS 16
 #define HASH_SIZE (1 << HASH_BITS)
@@ -45,11 +46,17 @@ static uint32_t hash3(const uint8_t *p) {
 }
 
 int main(int argc, char **argv) {
-    if (argc != 2) {
-        fprintf(stderr, "usage: apf_h7a_optimal <shift>  (raw on stdin)\n");
+    int greedy = argc == 4 && strcmp(argv[2], "--greedy") == 0;
+    if (argc != 2 && !greedy) {
+        fprintf(stderr, "usage: apf_h7a_optimal <shift> [--greedy candidates] (raw on stdin)\n");
         return 2;
     }
-    int shift = atoi(argv[1]);
+    char *end;
+    long parsed = strtol(argv[1], &end, 10);
+    int shift = (int)parsed;
+    if (*end || parsed < 1 || parsed > 15) return 2;
+    long candidate_limit = greedy ? strtol(argv[3], &end, 10) : MAX_CANDIDATES;
+    if (greedy && (*end || candidate_limit <= 0 || candidate_limit > INT_MAX)) return 2;
     if (shift < 1 || shift > 15) {
         fprintf(stderr, "invalid shift %d\n", shift);
         return 2;
@@ -62,6 +69,8 @@ int main(int argc, char **argv) {
     if (!data) return 3;
     for (;;) {
         if (size == capacity) {
+            /* Bound allocations and signed indexing, including n + 1. */
+            if (capacity >= (128u << 20)) { free(data); return 3; }
             capacity *= 2;
             uint8_t *grown = realloc(data, capacity);
             if (!grown) { free(data); return 3; }
@@ -71,6 +80,7 @@ int main(int argc, char **argv) {
         if (got == 0) break;
         size += got;
     }
+    if (ferror(stdin)) { free(data); return 3; }
     if (size == 0) { free(data); return 0; }
     const int32_t n = (int32_t)size;
 
@@ -111,7 +121,34 @@ int main(int argc, char **argv) {
         return 3;
     }
     cost[n] = 0;
-    for (int32_t i = n - 1; i >= 0; i--) {
+    if (greedy) {
+        /* Exact historical Python parse: nearest-first exact 3-byte keys,
+         * count only usable matches, farther-distance ties, and stop as soon
+         * as the format maximum is reached. The optimal mode below is intact.
+         */
+        for (int32_t i = 0; i < n;) {
+            int best = 0, distance_best = 0, candidates = 0;
+            if (i + 3 <= n) {
+                for (int32_t c = cand[i]; c != NO_POS && c >= i - max_distance; c = prev[c]) {
+                    int distance = i - c, limit = max_length;
+                    if (limit > n - i) limit = n - i;
+                    if (limit > distance) limit = distance;
+                    if (limit < 3 || memcmp(data + c, data + i, 3) != 0) continue;
+                    int length = 3;
+                    while (length < limit && data[c + length] == data[i + length]) length++;
+                    if (length > best || (length == best && distance > distance_best)) {
+                        best = length;
+                        distance_best = distance;
+                        if (best == max_length) break;
+                    }
+                    if (++candidates >= candidate_limit) break;
+                }
+            }
+            best_len[i] = (uint16_t)best;
+            best_dist[i] = (uint16_t)distance_best;
+            i += best >= 3 ? best : 1;
+        }
+    } else for (int32_t i = n - 1; i >= 0; i--) {
         uint32_t cheapest = 9 + cost[i + 1];   /* literal: 8 bits + descriptor */
         uint16_t chosen_len = 0, chosen_dist = 0;
         if (i + 3 <= n) {

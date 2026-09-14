@@ -1,0 +1,16 @@
+[
+  {
+    "job": "j3",
+    "path": "/home/noah/2k-worktrees/astra-b69-j3/ASTRA_J3.bundle",
+    "sha256": "c490808c5c46ff28144169a725527ea7a7f9c8413bfe9411fae501de7eb9d1c1",
+    "verification": "The bundle contains this ref:\ne6fae521988982eeb4a9102f476d18528f7e5292 refs/heads/astra/b69-j3-mycareer\nThe bundle requires this ref:\n922c009d65e35f8195762c31106789bb353fb43c \nThe bundle uses this hash algorithm: sha1\n/home/noah/2k-worktrees/astra-b69-j3/ASTRA_J3.bundle is okay\n",
+    "heads": "e6fae521988982eeb4a9102f476d18528f7e5292 refs/heads/astra/b69-j3-mycareer\n"
+  },
+  {
+    "job": "j5",
+    "path": "/home/noah/2k-worktrees/astra-b69-j5/ASTRA_J5.bundle",
+    "sha256": "9848b8351fa6130fd14f6ceee4d32d8d56d70440310b805a7977290b59cafec2",
+    "verification": "The bundle contains this ref:\nf7109c2ff08cea3ddc79c6c645d4b923b79b5b18 refs/heads/astra/b69-j5-rules\nThe bundle requires this ref:\n922c009d65e35f8195762c31106789bb353fb43c \nThe bundle uses this hash algorithm: sha1\n/home/noah/2k-worktrees/astra-b69-j5/ASTRA_J5.bundle is okay\n",
+    "heads": "f7109c2ff08cea3ddc79c6c645d4b923b79b5b18 refs/heads/astra/b69-j5-rules\n"
+  }
+]

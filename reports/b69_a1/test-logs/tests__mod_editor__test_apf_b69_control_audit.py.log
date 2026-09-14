@@ -1,0 +1,6 @@
+test_sparse_receipt_matches_pinned_private_image (__main__.AuditTests.test_sparse_receipt_matches_pinned_private_image) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.222s
+
+OK

@@ -19,8 +19,8 @@ import stat
 import sys
 
 
-SIZE = 14472
-SHA256 = '9061866e31f1a2930eceaa4fb8652ef1b7aa9b04cbce0174cc0eae125f8e49ab'
+SIZE = 18568
+SHA256 = 'd081d19c0078f768d2cb935732c910945c55d372dd9e1cc2b3e16ef9cfcf86a0'
 
 # Every reviewed helper, keyed by its repository-relative path. Each runtime
 # gate pins the same size/SHA-256 independently; this table only decides which

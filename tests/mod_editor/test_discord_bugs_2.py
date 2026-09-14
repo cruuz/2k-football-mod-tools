@@ -143,12 +143,14 @@ class ApfCompositionTests(unittest.TestCase):
         service = apfbuild.ApfBuildService(self.source)
         with patch.object(apfbuild.apf_team_crests, "crest_slots", return_value=[
                 SimpleNamespace(asset_index=i, outer_entry_index=36+i) for i in range(2)]), \
-             patch.object(apfbuild.apf_logo_patch, "build_patch", side_effect=lambda *a, **kw:
-                SimpleNamespace(entry_bytes=bytes([kw["entry_index"]]), manifest={"schema": "package"})) as packages, \
+             patch.object(apfbuild.apf_logo_patch, "build_crest_packages", side_effect=lambda index, requests, *a, **kw:
+                {row[0]: SimpleNamespace(entry_bytes=bytes([row[0]]), manifest={"schema": "package"}) for row in requests}) as packages, \
              patch.object(apfbuild.apf_logocache_patch, "build_cache_patch_many", return_value=
                 SimpleNamespace(directory_bytes=b"dir", payload_bytes=b"cache", manifest={"schema": "cache"})) as cache:
             entries, row = service._compile_helmet_crests(self.session.modifications)
-        self.assertEqual(packages.call_count, 2)
+        # beta 69 (J10): both crests go to build_crest_packages in ONE call (parallel compile, shared cache)
+        packages.assert_called_once()
+        self.assertEqual({row[0] for row in packages.call_args.args[1]}, {36, 37})
         cache.assert_called_once()
         self.assertEqual({s.catalog_index for s in cache.call_args.args[1]}, {0, 1})
         self.assertEqual((entries[36], entries[37]), (b"$", b"%"))

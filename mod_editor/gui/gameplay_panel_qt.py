@@ -7,6 +7,8 @@ rookie draft, or treat fixture save values as the user's live profile.
 
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import failure_body
+
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Mapping, Protocol, Sequence, runtime_checkable
@@ -546,7 +548,7 @@ class GameplayPanel(QWidget):
             )
         except BaseException as exc:
             message = str(exc).strip() or exc.__class__.__name__
-            QMessageBox.warning(self, "Gameplay report was not exported", message)
+            QMessageBox.warning(self, "Gameplay report was not exported", failure_body(message))
             self.error_raised.emit(message)
             return
         self.status_label.setText(f"Exported {output.name}")

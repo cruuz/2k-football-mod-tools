@@ -13,6 +13,9 @@ uniform browser shows metadata-only monograms generated from catalog labels.
 
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import plain_error, failure_body
+from mod_editor.gui.polish_qt import polish_controls
+
 from dataclasses import dataclass
 import json
 from pathlib import Path
@@ -1485,7 +1488,7 @@ class _BackgroundTask(QRunnable):
                     self.signals.progress.emit(stage, completed, total)
             result = self.operation(progress)
         except BaseException as exc:  # Qt must receive failures, never lose them.
-            message = str(exc).strip() or exc.__class__.__name__
+            message = plain_error(exc)
             self.signals.error.emit(message)
         else:
             self.signals.result.emit(result)
@@ -1511,7 +1514,8 @@ class _PngDropPreview(QFrame):
         self.image.setWordWrap(True)
         self.image.setObjectName("previewImage")
         self.image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.hint = QLabel("PNG preview  •  drag an edited PNG here to replace")
+        self.hint = QLabel("PNG preview • drop edited artwork here")
+        self.hint.setWordWrap(True)
         self.hint.setAlignment(Qt.AlignCenter)
         self.hint.setObjectName("mutedLabel")
         layout.addWidget(self.image, 1)
@@ -2106,6 +2110,7 @@ class StudioMainWindow(QMainWindow):
                 self._music_panel.set_playlist_options(visible)
         finally:
             self._restoring_music_playlist = False
+        self._refresh_build_includes()
 
     def _build_music_shuffle_changed(self, enabled):
         if self._restoring_music_playlist:
@@ -2459,7 +2464,7 @@ class StudioMainWindow(QMainWindow):
             except Exception as exc:
                 self._show_error(
                     "The first operation finished, but its next step could not "
-                    f"start: {str(exc).strip() or exc.__class__.__name__}"
+                    f"start: {plain_error(exc)}"
                 )
 
     def _prompt_recovery_decision(self, candidate: RecoveryCandidate) -> str:
@@ -2584,6 +2589,7 @@ class StudioMainWindow(QMainWindow):
         another.
         """
 
+        polish_controls(page)
         if isinstance(page, QScrollArea):
             page.setWidgetResizable(True)
             page.setMinimumHeight(PAGE_SCROLL_MIN_HEIGHT)
@@ -2739,6 +2745,7 @@ class StudioMainWindow(QMainWindow):
         self._roster_editor_panel = _BuildContextRosterPanel(self.facade)
         self.pages.addWidget(self._page_scroll_host(self._roster_editor_panel))
         self._models_panel = ModelsPanel(self.facade)
+        self._models_panel.project_changed.connect(self._models_project_changed)
         self.pages.addWidget(self._page_scroll_host(self._models_panel))
         self._animations_panel = AnimationsPanel(self.facade)
         self.pages.addWidget(self._page_scroll_host(self._animations_panel))
@@ -3092,6 +3099,7 @@ class StudioMainWindow(QMainWindow):
             # explanations, written through mod_build.
             self._gameplay_patches_panel = GameplayPatchesPanel(self.facade)
             self._gameplay_patches_panel.open_anniversary.connect(self._open_rosters_anniversary)
+            self._gameplay_patches_panel.open_weather.connect(self._open_weather_editor)
             self._connect_gameplay_build()
             # The Xbox save editor (sliders + franchise year) is a gameplay tool, not a
             # uniform tool: one instance, moved here from Uniforms & Equipment (GP-02).
@@ -5611,6 +5619,20 @@ class StudioMainWindow(QMainWindow):
         path = fitted
 
         def success(result: object) -> None:
+            nonlocal equipment_choice
+            from mod_editor.core.nfl2k5_uniform_equipment_writer import EquipmentFitError
+            from mod_editor.gui.equipment_texture_import_dialog import EquipmentFitRetryDialog
+            if isinstance(result, EquipmentFitError):
+                retry = EquipmentFitRetryDialog(asset, result, self)
+                if retry.exec_() == retry.Accepted and retry.scale is not None:
+                    independent, _old_scale, scope = equipment_choice
+                    equipment_choice = (independent, retry.scale, scope)
+                    self._defer_until_blocking_task_finished(lambda: self._start_task(
+                        replace_texture, success, label=f"Checking and replacing {asset.label}",
+                        blocking=True, on_error=failed))
+                else:
+                    failed(str(result))
+                return
             if getattr(result, "changed_asset_ids", None) == ():
                 if pending_master is not None:
                     pending_master.source_image.unlink(missing_ok=True)
@@ -5666,9 +5688,13 @@ class StudioMainWindow(QMainWindow):
         def replace_texture(progress: ProgressSink) -> object:
             if equipment_choice is not None:
                 independent, scale, scope = equipment_choice
-                return self.facade.replace_equipment_texture(
-                    asset, path, progress, independent=independent, scale=scale, scope=scope,
-                )
+                from mod_editor.core.nfl2k5_uniform_equipment_writer import EquipmentFitError
+                try:
+                    return self.facade.replace_equipment_texture(
+                        asset, path, progress, independent=independent, scale=scale, scope=scope,
+                    )
+                except EquipmentFitError as exc:
+                    return exc
             return self.facade.replace_asset(asset, path, progress)
 
         self._start_task(
@@ -7710,12 +7736,14 @@ class StudioMainWindow(QMainWindow):
                 self._load_selected_unif_colors()
 
             self._defer_until_blocking_task_finished(refresh_loaded_project)
+            self._refresh_build_includes(baseline=True)
 
         self._start_task(
             lambda progress: self.facade.load_project(source, progress),
             success,
             label="Opening and validating the project",
             blocking=True,
+            show_errors=False,
         )
 
     def _choose_replacement(self) -> None:
@@ -8380,6 +8408,11 @@ class StudioMainWindow(QMainWindow):
         if reset and self._playbooks_panel is not None:
             self._playbooks_panel.reset_for_source()
 
+    def _models_project_changed(self) -> None:
+        self._mark_workspace_changed()
+        if self._build_panel is not None:
+            self._build_panel._refresh()
+
     def _mark_workspace_changed(self, *, rebuild_components: bool = False) -> None:
         """Mark an authored change and immediately queue a safe autosave."""
 
@@ -8583,12 +8616,9 @@ class StudioMainWindow(QMainWindow):
             event.ignore()
 
     def _show_error(self, message: str) -> None:
-        hint = friendly_fix_hint(message)
-        body = message if hint is None else f"{message}\n\n{hint}"
         QMessageBox.warning(
-            self,
-            "Couldn't finish that",
-            body + "\n\nYour original game disc was not changed.",
+            self, "Couldn't finish that",
+            failure_body(message, hint=friendly_fix_hint(message)),
         )
 
     def _refresh_project_document_state(self) -> None:
@@ -8618,6 +8648,25 @@ class StudioMainWindow(QMainWindow):
         self.save_project_button.setToolTip(save_tip)
         if self._save_project_action is not None:
             self._save_project_action.setToolTip(save_tip)
+
+    def _refresh_build_includes(self, *, baseline=False):
+        from tools.nfl2k5_visual_mod_project import ProjectEditTimeline
+        session = getattr(self.facade, "_session", None)
+        if getattr(self, "_build_includes_session", None) is not session:
+            self._build_includes_session = session
+            self._build_includes_timeline = ProjectEditTimeline()
+            baseline = bool(session and getattr(session, "modified_count", 0))
+        if not hasattr(self, "_build_includes_timeline"):
+            self._build_includes_timeline = ProjectEditTimeline()
+        try:
+            document = session.canonical_document() if session and session.modified_count else {"edits": []}
+            rows = self._build_includes_timeline.observe(document, baseline=baseline)
+            text = "\n".join(row["label"] for row in rows)
+        except Exception as exc:
+            text = f"The project edit list could not be read: {exc}. Resolve this before building."
+        self._build_includes_text = text
+        if self._build_panel is not None:
+            self._build_panel.project_includes_list.setPlainText(text)
 
     def _refresh_edit_state(self, *, rebuild_components: bool = False) -> None:
         count = int(getattr(self.facade, "modified_count", 0))
@@ -8650,6 +8699,7 @@ class StudioMainWindow(QMainWindow):
             self._filter_uniforms()
         self._refresh_project_document_state()
         self._refresh_action_states()
+        self._refresh_build_includes()
 
     def _refresh_action_states(self) -> None:
         self._sync_music_service()
@@ -8974,6 +9024,7 @@ class StudioMainWindow(QMainWindow):
         tabs.setAccessibleName("Build and share workspaces")
         self._build_share_page = tabs
         self._build_panel = BuildPanel(self.facade, available=self._available_build_options)
+        self._refresh_build_includes()
         # The MyCareer picker follows the position-pools option (EDGE and LB only
         # when it is on); either panel may be built first.
         self._sync_mycareer_position_scheme()
@@ -9081,6 +9132,10 @@ class StudioMainWindow(QMainWindow):
         self._gameplay_build_link = GameplayBuildLink(
             build, gameplay, self._gameplay_build_changed,
             suspended=lambda: self._restoring_music_playlist)
+
+    def _open_weather_editor(self) -> None:
+        self.open_workspace("build_share")
+        self._build_panel._open_weather_editor()
 
     def _espn25_plan_saved(self, path: str) -> None:
         """A saved Anniversary plan is a project choice: tick it on Build and mark the project dirty."""

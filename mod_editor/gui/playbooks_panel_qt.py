@@ -9,6 +9,8 @@ and findings text; it never persists a playbook or contributes project edits.
 
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import failure_body
+
 from dataclasses import dataclass
 from pathlib import Path
 import re
@@ -995,7 +997,7 @@ class PlaybooksPanel(QWidget):
         self.donor_slot_combo.currentIndexChanged.connect(self._refresh_controls)
         self.formation_combo.currentIndexChanged.connect(lambda _i: self._refresh_controls())
         self.error_raised.connect(
-            lambda message: QMessageBox.warning(self, "Playbooks & Plays", message)
+            lambda message: QMessageBox.warning(self, "Couldn't finish that", failure_body(message))
         )
 
     def reset_for_source(self) -> None:
@@ -1789,7 +1791,7 @@ class PlaybooksPanel(QWidget):
         try:
             body = self.host.playbook_raw_body(book.asset_id)
         except Exception as exc:  # noqa: BLE001 - shown to the user
-            QMessageBox.warning(self, "Design Formation", str(exc))
+            QMessageBox.warning(self, "Couldn't finish that", failure_body(exc))
             return
         dialog = FormationDesignerDialog(book, body, int(donor_idx), self)
         if dialog.exec_() != dialog.Accepted or dialog.result_payload is None:
@@ -1800,7 +1802,7 @@ class PlaybooksPanel(QWidget):
                 book.asset_id, int(donor_idx), payload["custom_name"], payload["slot_positions"], payload["category_index"]
             )
         except Exception as exc:  # noqa: BLE001
-            QMessageBox.warning(self, "Design Formation", str(exc))
+            QMessageBox.warning(self, "Couldn't finish that", failure_body(exc))
             return
         designed = {
             "asset_id": book.asset_id, "selector": selector, "donor": int(donor_idx),
@@ -1839,7 +1841,7 @@ class PlaybooksPanel(QWidget):
         try:
             body = self.host.playbook_raw_body(book.asset_id)
         except Exception as exc:  # noqa: BLE001
-            QMessageBox.warning(self, "Design Play", str(exc))
+            QMessageBox.warning(self, "Couldn't finish that", failure_body(exc))
             return
         candidates = [d for d in getattr(self, "_designed_formations", []) if d["asset_id"] == book.asset_id]
         designed = None
@@ -1943,7 +1945,7 @@ class PlaybooksPanel(QWidget):
             dialog = PlaybookPackInstallDialog(self.host, path, self)
             dialog.exec_()
         except Exception as exc:
-            QMessageBox.warning(self, "Modern defense", str(exc))
+            QMessageBox.warning(self, "Couldn't finish that", failure_body(exc))
 
     def _install_playbook_pack(self) -> None:
         from mod_editor.gui.playbook_pack_dialog_qt import (
@@ -1956,7 +1958,7 @@ class PlaybooksPanel(QWidget):
         try:
             dialog = PlaybookPackInstallDialog(self.host, path, self)
         except Exception as exc:  # noqa: BLE001 - a bad file explains itself
-            QMessageBox.warning(self, "Install Playbook Pack", str(exc))
+            QMessageBox.warning(self, "Couldn't finish that", failure_body(exc))
             return
         if dialog.exec_() != dialog.Accepted:
             return

@@ -1,0 +1,14 @@
+[
+  {
+    "path": "tests/mod_editor/test_gameplay_patches_panel_qt.py",
+    "command": "python3 tests/mod_editor/test_gameplay_patches_panel_qt.py",
+    "exit": 0,
+    "status": "OK",
+    "ran": "Ran 1 test in 0.626s",
+    "final_line": "OK",
+    "seconds": 1.102,
+    "log": "reports/b69_a2b/final-gameplay-panel/test_gameplay_patches_panel_qt.log",
+    "log_sha256": "5dc8732b85aeb0608a20ecde43d0f097408cc93e3deec6ed554e664976e5877e",
+    "source_fingerprint": "ea86dd9fcd0b3d510cef356e34faf130e50142ea758ef0648f1a98bd504cd5ce"
+  }
+]

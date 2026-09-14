@@ -29,6 +29,8 @@ module says otherwise (the year rule, the IR move); the activation is the unlabe
 
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import plain_error
+
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Sequence
@@ -542,8 +544,9 @@ class FranchisePanel(QWidget):
         self.checks_refresh_button = QPushButton("Refresh")
         self.checks_refresh_button.clicked.connect(lambda: self._refresh_checks(force=True))
         top.addWidget(self.checks_refresh_button)
-        top.addWidget(QLabel("What is proved about this save's layout, what this page may edit, and every "
-                             "franchise edit since load in plain words."), 1)
+        explanation = QLabel("What this save supports, what you can edit here, and your franchise changes since opening it.")
+        explanation.setWordWrap(True)
+        top.addWidget(explanation, 1)
         box.addLayout(top)
         self.checks_text = QPlainTextEdit()
         self.checks_text.setReadOnly(True)
@@ -596,7 +599,7 @@ class FranchisePanel(QWidget):
         try:
             body = self._document.to_body()
         except Exception as exc:  # noqa: BLE001 - one message, the roster page's own write shows the same
-            self._last_error = f"the roster edits could not be applied first: {type(exc).__name__}: {exc}"
+            self._last_error = f"the roster edits could not be applied first: {plain_error(exc)}"
             self._set_status(f"Refused: {self._last_error}")
             return False
         if len(body) != len(self._base):

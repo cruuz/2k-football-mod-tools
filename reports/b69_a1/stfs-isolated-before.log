@@ -1,0 +1,20 @@
+...F
+======================================================================
+FAIL: test_stfs_rehasher_imports_in_isolated_installed_runtime (__main__.RuntimeImportsTests.test_stfs_rehasher_imports_in_isolated_installed_runtime)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/tests/mod_editor/test_b69_a1_runtime_imports.py", line 33, in test_stfs_rehasher_imports_in_isolated_installed_runtime
+    self.assertEqual(result.returncode, 0, result.stderr)
+AssertionError: 1 != 0 : Traceback (most recent call last):
+  File "<string>", line 5, in <module>
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/home/noah/2k-worktrees/astra-b69-a1/tools/apf_stfs_roster_rehash.py", line 13, in <module>
+    import apf_stfs_roster_extract as stfs
+ModuleNotFoundError: No module named 'apf_stfs_roster_extract'
+
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.221s
+
+FAILED (failures=1)

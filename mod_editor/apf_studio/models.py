@@ -154,8 +154,20 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
             "predicts calls in a worker. Gameplay UNWITNESSED."
         ),
     )
-    for feature in ("cpu_playcalling", "own_team_books", "master_personnel")
+    for feature in ("cpu_playcalling", "own_team_books", "master_personnel",
+                "offensive_schemes", "never_call")
 },
+    "apf2k8.playbooks.scheme_spreadsheet": CapabilityActionBinding(
+        "apf2k8.playbooks.scheme_spreadsheet",
+        "playbooks.cpu_playcalling",
+        _actions(ApfProductAction.PREVIEW, ApfProductAction.EXPORT),
+        product_note=(
+            "CPU Play Calling exports the current staged offense through "
+            "ApfStudioFacade.playcalling_scheme_csv. Twenty-three coaching buckets "
+            "map to representative engine rows; intent and predicted calls remain "
+            "separate. Gameplay UNWITNESSED."
+        ),
+    ),
 "apf2k8.playbooks.personnel_curve_patch": CapabilityActionBinding(
     "apf2k8.playbooks.personnel_curve_patch",
     "playbooks.personnel_curves",
@@ -213,7 +225,9 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
             "Rosters > Import PS3 Roster converts a PS3 APF 2K8 roster USERDATA "
             "into the raw Xbox 360 Roster.ROS layout as a new file with a counted "
             "receipt; the source is never modified and strict readers re-parse the "
-            "output. Loading it in Xenia is UNWITNESSED."
+            "output. Both uniform banks' selector bytes, colours and palette metadata "
+            "are compared after conversion, with carried/refused fields in the receipt. "
+            "Aszemple witnessed imports on September 13; in-game rendering is UNWITNESSED."
         ),
     ),
     "apf2k8.playbooks.identity": CapabilityActionBinding(
@@ -348,9 +362,12 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
             ApfProductAction.PREVIEW,
             ApfProductAction.REPLACE,
             ApfProductAction.REVERT,
+            ApfProductAction.BUILD_COPY,
         ),
         replace_method="replace_custom_team_appearance",
         revert_method="revert",
+        one_shot_target="mod_editor.apf_studio.roster_appearance_transfer:write_transfer",
+        output_kind="copied_roster_payload_or_xenia_stfs_with_receipt",
         product_note=(
             "Equipment Colors independently selects each HOME/AWAY facemask-bar "
             "and Team-turtleneck palette index for all 40 teams; it changes only "
@@ -363,7 +380,12 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
             "the helmet model and helmet tail, selects crest 30 with its complete "
             "Xenia-proved routing tail, and composes through the common "
             "ROST transaction. Team Logo builds can include the staged slot in "
-            "the same copied 0A as the crest package and logo cache."
+            "the same copied 0A as the crest package and logo cache. Apply my custom "
+            "team appearance to this roster save copies current controls and optional "
+            "other staged slots into a new raw roster, converted PS3 roster, or rehashed "
+            "STFS package with a receipt. Xenia only; a real console will reject this "
+            "package. Signature checks are absent in the pinned Xenia reader; full "
+            "loading is HYPOTHESIS and in-game appearance is UNWITNESSED."
         ),
     ),
     "apf2k8.cross_title_model_conversion.nfl_to_apf": CapabilityActionBinding(

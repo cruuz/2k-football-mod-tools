@@ -1,0 +1,24 @@
+[
+  {
+    "path": "tests/mod_editor/test_nfl2k5_cave_oracle.py",
+    "returncode": 1,
+    "seconds": 438.347,
+    "summary": [
+      "mod_editor.core.nfl2k5_cave_oracle.OracleError: stale reservation source: mod_editor/core/mod_build.py; regenerate manifest",
+      "mod_editor.core.nfl2k5_cave_oracle.OracleError: stale reservation source: mod_editor/core/mod_build.py; regenerate manifest",
+      "Ran 29 tests in 431.932s",
+      "FAILED (errors=2)"
+    ],
+    "log": "reports/b69_a1/gate-test-logs/tests__mod_editor__test_nfl2k5_cave_oracle.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py",
+    "returncode": 0,
+    "seconds": 2243.878,
+    "summary": [
+      "Ran 388 tests in 2243.575s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/gate-test-logs/tests__mod_editor__test_nfl2k5_owner_pairwise_composition.py.log"
+  }
+]

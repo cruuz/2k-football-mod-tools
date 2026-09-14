@@ -38,8 +38,8 @@ class IntegrationTests(unittest.TestCase):
         from mod_editor.core.product_catalog import build_nfl2k5_product_catalog
         registry = CapabilityRegistryLoader().load(allow_sample_fallback=False, check_files=False)
         catalog = build_nfl2k5_product_catalog(registry)
-        self.assertEqual(len(registry.capabilities), 161)
-        self.assertEqual(len(catalog.capabilities), 91)
+        self.assertEqual(len(registry.capabilities), 172)
+        self.assertEqual(len(catalog.capabilities), 99)
         path = ROOT / 'packaging/check_2k5_mod_studio_runtime.py'
         source = path.read_text()
         # Execute the production assertions against the actual registry, without
@@ -51,8 +51,8 @@ class IntegrationTests(unittest.TestCase):
                                           'require(len(product_catalog.capabilities)')):
                     with self.subTest(expression=expression):
                         exec(expression, dict(require=self.assertTrue, registry=registry, product_catalog=catalog))
-        self.assertTrue('registry=161 sections=12 nfl2k5_capabilities=91' in source)
-        self.assertIn('registry=161 sections=12 nfl2k5_capabilities=91',
+        self.assertTrue('registry=172 sections=12 nfl2k5_capabilities=99' in source)
+        self.assertIn('registry=172 sections=12 nfl2k5_capabilities=99',
                       (ROOT / 'tests/mod_editor/test_phase1_packaging.py').read_text())
 
     def test_new_core_modules_are_in_all_release_closures(self):
@@ -172,9 +172,10 @@ class CacheKeyTests(unittest.TestCase):
             observed = []
             def lookup(edit, *, index=pin, inventory=pin, reports=None):
                 project = tool.ProjectFile(root / 'project.json', b'{}', {'edits': [edit]}, (0, 0))
-                with patch.object(tool, 'CompileCache', ObservedCache), self.assertRaises(StopLookup):
+                with patch.object(tool, 'CompileCache', ObservedCache), self.assertRaises(tool.ProjectError) as stopped:
                     tool.prepare_project(project, index, inventory, reports or {'test': report},
                                          root, -1, {}, parallelism=1)
+                self.assertIsInstance(stopped.exception.__cause__, StopLookup)
                 return observed[-1]
             cache = CompileCache(root / '.nfl2k5-compile-cache')
             # All fields admitted by the cached kinds, including every selector

@@ -27,6 +27,23 @@ from tests.mod_editor.test_nfl2k5_my_career_inline import block_for
 
 
 class SaveChoiceTests(unittest.TestCase):
+    def test_playcall_round_trip_preserves_every_other_preference_and_tier(self):
+        source = draft_save()
+        for tier in range(5):
+            footer = bytearray(block_for(source)); footer[83] = tier
+            for flags in (0, 5, 8, 16, 29):
+                footer[82] = flags
+                payload = source + save.seal(footer)
+                for index, choice in enumerate(save.PLAYCALL_CHOICES):
+                    result = save.with_playcall(payload, choice)
+                    self.assertEqual(result[:-128], source)
+                    self.assertEqual(save.read(result)[82:84], bytes((flags | index << 5, tier)))
+                    self.assertEqual(save.playcall_choice(result), choice)
+                    self.assertEqual(save.with_playcall(result, choice), result)
+                    self.assertEqual(save.prospect(result)['tier'], tier)
+        with self.assertRaises(save.CareerSaveError):
+            save.with_playcall(payload, 'unknown')
+
     def test_studio_choice_preserves_native_bytes_and_other_preferences(self):
         source = draft_save()
         footer = bytearray(block_for(source))
@@ -66,6 +83,15 @@ class SaveChoiceTests(unittest.TestCase):
             self.assertEqual(original.read_bytes(), before)
             with self.assertRaises(records.RosterRecordError):
                 save.write_supersim(original, original, 'Off')
+            for index, choice in enumerate(save.PLAYCALL_CHOICES):
+                policy_target = Path(directory) / f'policy-{index}.zip'
+                receipt = save.write_settings(original, policy_target, supersim='Fast forward', playcall=choice)
+                reopened = records.SaveContainer.load(policy_target)
+                self.assertTrue(receipt['signed'] and receipt['readback_verified'])
+                self.assertEqual(save.playcall_choice(reopened.savegame), choice)
+                self.assertEqual(save.supersim_choice(reopened.savegame), 'Fast forward')
+                self.assertEqual(reopened.savegame[:-128], source)
+                self.assertEqual(original.read_bytes(), before)
 
 
 @unittest.skipUnless(HAVE_UC and XBE.is_file(), 'pinned USA retail XBE/ROST and Unicorn required')
@@ -117,11 +143,12 @@ class SettingsTests(unittest.TestCase):
     def test_all_footer_choices_match_host_and_native_and_reserved_bits_refuse(self):
         with Machine(self.payload) as m:
             m.native_load(self.source+self.footer)
-            for flags in [v for v in range(32) if v & 10 != 10]:
+            for flags in [v for v in range(128) if v & 10 != 10 and v & 96 != 96]:
                 m.put(0xE5FFE4, flags & 1)
                 m.put(m.state+2696, 2 if flags & 8 else (flags >> 1) & 1)
                 m.put(m.state+2700, (flags >> 2) & 1)
                 m.put(m.state+2712, (flags >> 4) & 1)
+                m.put(m.state+2736, (flags >> 5) & 3)
                 m.call('inline_encode', ecx=m.OUT)
                 block = bytes(m.uc.mem_read(m.OUT, 128))
                 self.assertEqual(block[82], flags)
@@ -129,7 +156,7 @@ class SettingsTests(unittest.TestCase):
                 self.assertEqual(save.from_runtime(save.to_runtime(block)), block)
                 self.assertEqual(save.from_runtime(bytes(m.uc.mem_read(m.state, 4096))), block)
                 self.assertEqual(m.call('inline_valid', ecx=m.OUT, edx=0x91000), 1)
-            for flags in (10,11,14,15,26,27,30,31,32,64,128,255):
+            for flags in (10,11,14,15,26,27,30,31,96,127,128,255):
                 block = bytearray(self.footer); block[82] = flags; block = save.seal(block)
                 with self.assertRaises(save.CareerSaveError): save.validate(block)
                 m.uc.mem_write(m.OUT, block)
@@ -158,11 +185,12 @@ class SettingsTests(unittest.TestCase):
         other = mode.apply(mode.space.apply(self.retail, REQUESTS, scaleout=True)[0])[0]
         # Stat line Off (bit 4, state+2712) persists; the Supersim wait flag
         # (+2708) and audio gate (+2716) are transient and never saved.
-        for choice, flags in ((1, 7|16), (2, 13|16)):
+        for choice, flags in ((1, 7|16|32), (2, 13|16|64)):
             with self.subTest(choice=choice), Machine(self.payload) as m:
                 m.native_load(self.source+self.footer)
                 m.put(0xE5FFE4, 1); m.put(m.state+2696, choice); m.put(m.state+2700, 1)
                 m.put(m.state+2712, 1)
+                m.put(m.state+2736, (flags >> 5) & 3)
                 m.put(m.state+2708,1);m.put(m.state+2716,1)
                 output = m.native_save()
                 self.assertEqual(save.read(output)[82], flags)
@@ -171,6 +199,7 @@ class SettingsTests(unittest.TestCase):
                     cold.native_load(output)
                     self.assertNotEqual(cold.state, m.state)
                     self.assertEqual(cold.get(cold.state+2712),1)
+                    self.assertEqual(cold.get(cold.state+2736),(flags >> 5) & 3)
                     self.assertEqual((cold.get(0xE5FFE4), cold.get(cold.state+2696), cold.get(cold.state+2700)), (1, choice, 1))
                     self.assertEqual((cold.get(cold.state+2708),cold.get(cold.state+2716)),(0,0))
                     self.assertEqual(cold.uc.mem_read(cold.call('primary')+0x53, 1)[0] & 1, 0)
@@ -206,7 +235,7 @@ class SettingsTests(unittest.TestCase):
             texts = checker.rendered(m)
             self.assertIn("MyPlayer stat line: On",[r["text"] for r in m.native_rows])
             self.assertIn('Supersim runs while you wait. B returns to Apartment.', texts)
-            for index, expected in ((0, 'First Person Football: On'), (1, 'Supersim: Off'), (2, 'MyPlayer star: Off'), (3, 'MyPlayer stat line: Off')):
+            for index, expected in ((0, 'First Person Football: On'), (1, 'Supersim: Off'), (2, 'MyPlayer star: Off'), (3, 'MyPlayer stat line: Off'), (4, 'By position'), (4, 'Coach calls the plays'), (4, 'You call every play')):
                 m.select(index)
                 m.native_rows.clear(); checker.rendered(m)
                 selected = [r['text'] for r in m.native_rows if r['color'] & 0xFFFFFF == 0xFFFF00]

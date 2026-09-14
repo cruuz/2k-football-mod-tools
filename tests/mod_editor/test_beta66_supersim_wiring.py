@@ -52,7 +52,9 @@ class FooterCodecTests(unittest.TestCase):
             self.assertEqual(int.from_bytes(state[2712:2716], "little"), 1)
             self.assertEqual(int.from_bytes(state[2696:2700], "little"), (1, 0, 2)[(2, 0, 8).index(bits)])
             self.assertEqual(save.from_runtime(state), save.read(result))
-        for invalid in (0x0A, 0x1A, 0x20, 0x30):
+        # Beta 69 owns bits 5..6 for caller values 0/1/2. Value 3 and
+        # bit 7 remain reserved alongside contradictory Supersim bits.
+        for invalid in (0x0A, 0x1A, 0x60, 0x80):
             block = bytearray(footer); block[82] = invalid
             with self.assertRaises(save.CareerSaveError):
                 save.validate(save.seal(block))

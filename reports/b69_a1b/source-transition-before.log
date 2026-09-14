@@ -1,0 +1,71 @@
+FFFFFF
+======================================================================
+FAIL: test_new_source_does_not_inherit_modern_scrambles_from_previous_disc (__main__.SourceTransitionTests.test_new_source_does_not_inherit_modern_scrambles_from_previous_disc) (panel='BuildPanel', mode='retail')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_b69_a1b_game_audit.py", line 29, in test_new_source_does_not_inherit_modern_scrambles_from_previous_disc
+    self.assertEqual(panel.plan().cpu_scrambles, 'retail')
+AssertionError: 'modern' != 'retail'
+- modern
++ retail
+
+
+======================================================================
+FAIL: test_new_source_does_not_inherit_modern_scrambles_from_previous_disc (__main__.SourceTransitionTests.test_new_source_does_not_inherit_modern_scrambles_from_previous_disc) (panel='BuildPanel', mode='foreign')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_b69_a1b_game_audit.py", line 29, in test_new_source_does_not_inherit_modern_scrambles_from_previous_disc
+    self.assertEqual(panel.plan().cpu_scrambles, 'retail')
+AssertionError: 'modern' != 'retail'
+- modern
++ retail
+
+
+======================================================================
+FAIL: test_new_source_does_not_inherit_modern_scrambles_from_previous_disc (__main__.SourceTransitionTests.test_new_source_does_not_inherit_modern_scrambles_from_previous_disc) (panel='BuildPanel', mode='unknown')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_b69_a1b_game_audit.py", line 29, in test_new_source_does_not_inherit_modern_scrambles_from_previous_disc
+    self.assertEqual(panel.plan().cpu_scrambles, 'retail')
+AssertionError: 'modern' != 'retail'
+- modern
++ retail
+
+
+======================================================================
+FAIL: test_new_source_does_not_inherit_modern_scrambles_from_previous_disc (__main__.SourceTransitionTests.test_new_source_does_not_inherit_modern_scrambles_from_previous_disc) (panel='GameplayPatchesPanel', mode='retail')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_b69_a1b_game_audit.py", line 29, in test_new_source_does_not_inherit_modern_scrambles_from_previous_disc
+    self.assertEqual(panel.plan().cpu_scrambles, 'retail')
+AssertionError: 'modern' != 'retail'
+- modern
++ retail
+
+
+======================================================================
+FAIL: test_new_source_does_not_inherit_modern_scrambles_from_previous_disc (__main__.SourceTransitionTests.test_new_source_does_not_inherit_modern_scrambles_from_previous_disc) (panel='GameplayPatchesPanel', mode='foreign')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_b69_a1b_game_audit.py", line 29, in test_new_source_does_not_inherit_modern_scrambles_from_previous_disc
+    self.assertEqual(panel.plan().cpu_scrambles, 'retail')
+AssertionError: 'modern' != 'retail'
+- modern
++ retail
+
+
+======================================================================
+FAIL: test_new_source_does_not_inherit_modern_scrambles_from_previous_disc (__main__.SourceTransitionTests.test_new_source_does_not_inherit_modern_scrambles_from_previous_disc) (panel='GameplayPatchesPanel', mode='unknown')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_b69_a1b_game_audit.py", line 29, in test_new_source_does_not_inherit_modern_scrambles_from_previous_disc
+    self.assertEqual(panel.plan().cpu_scrambles, 'retail')
+AssertionError: 'modern' != 'retail'
+- modern
++ retail
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.930s
+
+FAILED (failures=6)

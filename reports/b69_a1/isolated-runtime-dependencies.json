@@ -1,0 +1,20 @@
+{
+  "environment": "/tmp/astra-b69-a1-runtime-env",
+  "system_site_packages": true,
+  "packages": [
+    {
+      "module": "capstone",
+      "version": "5.0.7",
+      "source": "/home/noah/.local/lib/python3.12/site-packages/capstone",
+      "venv_path": "/tmp/astra-b69-a1-runtime-env/lib/python3.12/site-packages/capstone",
+      "method": "read-only link to already installed dependency"
+    },
+    {
+      "module": "unicorn",
+      "version": "2.1.4",
+      "source": "/home/noah/.local/lib/python3.12/site-packages/unicorn",
+      "venv_path": "/tmp/astra-b69-a1-runtime-env/lib/python3.12/site-packages/unicorn",
+      "method": "read-only link to already installed dependency"
+    }
+  ]
+}

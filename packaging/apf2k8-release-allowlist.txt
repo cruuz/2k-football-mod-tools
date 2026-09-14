@@ -72,6 +72,8 @@ mod_editor/apf_studio/playbook_membership_qt.py
 mod_editor/apf_studio/playbook_package_map_qt.py
 mod_editor/apf_studio/product_findings.py
 mod_editor/apf_studio/project.py
+mod_editor/apf_studio/roster_appearance_transfer.py
+mod_editor/apf_studio/roster_appearance_transfer_qt.py
 mod_editor/apf_studio/roster_workspace.py
 mod_editor/apf_studio/roster_workspace_qt.py
 mod_editor/apf_studio/save_appearance.py
@@ -167,6 +169,8 @@ tools/apf_roster_identity_patch.py
 tools/apf_save_custom_team_appearance.py
 tools/apf_save_playbook_assignments.py
 tools/apf_stfs_roster_extract.py
+tools/apf_stfs_roster_rehash.py
+docs/research/apf_stfs_rehash.md
 tools/apf_scene.py
 tools/apf_stadium_catalog_position_patch.py
 tools/apf_stadium_catalog_position_verify.py
@@ -269,6 +273,9 @@ mod_editor/core/apf2k8_master_writer.py
 mod_editor/core/apf2k8_playcall_curves_patch.py
 mod_editor/core/apf2k8_playcall_model.py
 mod_editor/core/apf2k8_team_tendency.py
+mod_editor/core/apf2k8_offensive_schemes.py
+mod_editor/core/apf2k8_formation_calling.py
+docs/mod_editor/apf_b69_schemes.md
 
 # Beta 67 P4: CPU Play Calling editor.
 docs/mod_editor/apf_b67_play_calling_editor.md
@@ -276,3 +283,8 @@ mod_editor/apf_studio/playcalling_build.py
 mod_editor/apf_studio/playcalling_editor_qt.py
 mod_editor/apf_studio/playcalling_patches.py
 mod_editor/apf_studio/playcalling_service.py
+
+# Beta 69 shared UI help and product FAQ
+mod_editor/gui/ux_text.py
+mod_editor/gui/polish_qt.py
+docs/mod_editor/apf2k8_mod_studio_faq.md

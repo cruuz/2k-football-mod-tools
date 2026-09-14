@@ -169,6 +169,7 @@ def validate_state(state, payload=None):
                 for recipe, identity in ((96, 84), (112, 88), (116, 92))),
             "MyPlayer recipe pointer offsets differ from its identity")
     require(state[POSITION_OFFSET] < POSITION_COUNT, "MyPlayer position code is not one of the 17 retail codes")
+    require(struct.unpack_from("<I", state, 212)[0] <= 4, "invalid prospect tier")
     require(struct.unpack_from("<I", state, STARTER_LOCK_OFFSET)[0] <= 1
             and struct.unpack_from("<I", state, STARTER_DONE_OFFSET)[0] <= 1, "invalid MyPlayer starter lock flags")
     if payload is not None:
@@ -276,7 +277,7 @@ def templates_for(position, *, scheme="retail"):
 
 
 def prepare(payload, *, first, last, position=0, template=0, port=0, camera=0, starter_lock=True, token=None,
-            scheme="retail"):
+            scheme="retail", prospect_tier=0):
     """Prepare one existing prospect at the chosen position in a genuine draft save.
 
     Returns fixed-length save bytes, setup JSON and an exact receipt. Publication
@@ -285,6 +286,8 @@ def prepare(payload, *, first, last, position=0, template=0, port=0, camera=0, s
     generated ratings. The one_pool scheme hides OLB and uses EDGE templates.
     """
     from . import nfl2k5_roster_records as rr, nfl2k5_franchise_save as fs
+    from . import nfl2k5_my_career_prospects as prospects
+    tier = prospects.tier_id(prospect_tier)
     save_key(payload)
     require(payload[fs.SEASON_BLOCK + fs.S_MODE] == 2, "the save is not Franchise")
     # Retail stage table 0x515140: Combine is 4, Draft is 5, Signing is 6.
@@ -309,6 +312,16 @@ def prepare(payload, *, first, last, position=0, template=0, port=0, camera=0, s
     doc.set_name(player, "last", last)
     if template is not None:
         rr.apply_template(player.record, choices[template])
+    if tier:
+        prospects.apply_tier(player.record, tier)
+        # The draft selects the destination. Rank seven is the bounded last
+        # row until that club's actual same-position membership is known.
+        rank = prospects.starting_rank(tier, code)
+        raw = bytearray(player.record.encode())
+        raw[41] = (raw[41] & 3) | (rank * 36)
+        raw[82] |= 3
+        player.record.values.update(rr.decode_record(raw))
+        starter_lock = False
     player.record.set("position", code)
     player.record.set("years_pro", 0)
     player.record.set("player_type", player.record.get("player_type") | 0x10)
@@ -337,11 +350,16 @@ def prepare(payload, *, first, last, position=0, template=0, port=0, camera=0, s
         struct.pack_into("<I", state, RECIPE_OFFSET + field, offset)
     require(state[POSITION_OFFSET] == code, "MyPlayer recipe position disagrees with the chosen position")
     struct.pack_into("<2I", state, STARTER_LOCK_OFFSET, int(starter_lock), 0)
+    struct.pack_into("<I", state, 212, tier)
     state = seal_state(state)
     validate_state(state, result)
     setup = {"schema": SCHEMA, "mode": "MyCareer", "myplayer": chosen.display,
              "position": rr.position_name(code), "state": state.hex(),
              "save_sha256": hashlib.sha256(result).hexdigest()}
+    if tier:
+        setup["prospect"] = dict(tier=tier, label=prospects.TIERS[tier][0],
+                                 starting_overall=prospects.TIERS[tier][1],
+                                 career_goal=prospects.TIERS[tier][2], starting_rank=rank)
     receipt = {"mode": "MyCareer", "myplayer": chosen.display, "experimental": True,
                "runtime_witnessed": False, "pool": "primary", "index": player.index,
                "position": rr.position_name(code, scheme), "position_code": code,
@@ -361,6 +379,10 @@ def prepare(payload, *, first, last, position=0, template=0, port=0, camera=0, s
                "class_count_before": sum(bool(p.record.get("player_type") & 0x10) for p in doc.players),
                "class_count_after": sum(bool(p.record.get("player_type") & 0x10) for p in reopened.players),
                "team_assignment": "normal draft", "witness_list": list(WITNESS_LIST)}
+    if tier:
+        require(prospects.native_overall(chosen.record) == prospects.TIERS[tier][1],
+                "prospect overall read-back differs")
+        receipt["prospect"] = setup["prospect"]
     return result, setup, receipt
 
 
@@ -606,6 +628,8 @@ def main(argv=None):
                         help="one_pool offers EDGE/LB templates and refuses retired OLB (10)")
     create.add_argument("--template", default="0",
                         help="retail create-a-player template 0..2 for the position, or 'generated' to keep the prospect's ratings")
+    create.add_argument("--prospect-tier", default="Original creation",
+                        choices=("Original creation", "1st Day", "2nd Day", "3rd Day", "Undrafted"))
     create.add_argument("--port", type=int, choices=range(1, 9), default=1)
     create.add_argument("--camera", choices=("Standard", "Far"), default="Standard")
     create.add_argument("--no-starter-lock", action="store_true",
@@ -622,7 +646,8 @@ def main(argv=None):
         template = None if args.template == "generated" else int(args.template)
         result = prepare_save(args.source, args.output, first=args.first, last=args.last,
                               position=args.position, scheme=args.scheme, template=template, port=args.port - 1,
-                              camera=(args.camera == "Far") * 1, starter_lock=not args.no_starter_lock)
+                              camera=(args.camera == "Far") * 1, starter_lock=not args.no_starter_lock,
+                              prospect_tier=args.prospect_tier)
     print(json.dumps(result, indent=2))
 
 

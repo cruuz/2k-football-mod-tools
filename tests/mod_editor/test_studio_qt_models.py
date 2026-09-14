@@ -30,6 +30,10 @@ from mod_editor.gui.text_rosters_panel import TextRosterPanelHost
 class StudioQtViewModelTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        from pathlib import Path
+        report = Path(__file__).resolve().parents[2] / "reports/assets/nfl2k5_team_select_card_inventory.json"
+        if not report.is_file():
+            raise unittest.SkipTest(f"Private uniform catalog audit absent: {report}")
         cls.uniforms = load_nfl2k5_uniform_catalog()
         cls.product = build_nfl2k5_product_catalog(
             CapabilityRegistryLoader().load(
@@ -156,7 +160,7 @@ class StudioQtViewModelTests(unittest.TestCase):
             if binding.status == ProductStatus.EVIDENCE
         ]
         self.assertEqual(len(research), 3)
-        self.assertEqual(len(evidence), 8)  # +1 the in-game MyCareer (evidence status, opt-in)
+        self.assertEqual(len(evidence), 10)  # beta 69: +2 (MyCareer prospect tiers and MyCareer play calling ship as evidence-status opt-ins)
         for binding in research:
             # Some reviewed registry rows intentionally have no porting list,
             # but this helper must remain deterministic and string-only.

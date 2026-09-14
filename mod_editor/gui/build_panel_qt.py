@@ -8,6 +8,9 @@ thread.  Optional modules that are not present in this build are shown disabled 
 
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import plain_error
+from mod_editor.core.update_check import BUILD_RELEASE_TAG
+
 from collections.abc import Callable
 from pathlib import Path
 
@@ -93,7 +96,7 @@ class _Task(QRunnable):
                     self.signals.progress.emit(message)
             result = self._operation(progress)
         except BaseException as exc:  # worker failures must always reach Qt
-            self.signals.failed.emit(f"{type(exc).__name__}: {exc}")
+            self.signals.failed.emit(plain_error(exc))
         else:
             self.signals.finished.emit(result)
 
@@ -151,14 +154,28 @@ class BuildPanel(QWidget):
         title.setObjectName("throwTitle")
         root.addWidget(title)
         intro = QLabel("Choose a preset or select changes, then Make my disc. The source stays unchanged. "
-                       "This uses the selections on this tab; project edits (art, text, audio) use Make disc "
-                       "from project on their own pages. " + XEMU_LINE + " "
+                       "This build includes the selected Build options and every edit listed below from the open project, "
+                       "including staged model, art, text and audio edits. Equipment keeps the game's existing compressed "
+                       "allocation; larger equipment art is not available. Review each import's chosen size and colour-loss report. " + XEMU_LINE + " "
                        "Your disc: ~/2K5 Mod Studio Builds/NFL 2K5 Modded.xiso.iso. "
                        "To play again later: open xemu, then Machine > Load Disc. "
                        "Launch shows the exact file and folder if you saved elsewhere.")
         intro.setObjectName("throwMuted")
         intro.setWordWrap(True)
         root.addWidget(intro)
+        self.project_includes_heading = QLabel("What this build includes")
+        root.addWidget(self.project_includes_heading)
+        self.project_includes_list = QPlainTextEdit()
+        self.project_includes_list.setObjectName("buildProjectIncludes")
+        self.project_includes_list.setReadOnly(True)
+        self.project_includes_list.setMaximumHeight(200)
+        self.project_includes_list.setPlaceholderText("No project edits. Selected Build options are listed below.")
+        root.addWidget(self.project_includes_list)
+        self.project_includes_note = QLabel(
+            "Newest changes in this session first. Older project files do not record original edit times. "
+            "The project edit index identifies the edit if a build refuses it.")
+        self.project_includes_note.setWordWrap(True)
+        root.addWidget(self.project_includes_note)
 
         src = QHBoxLayout()
         self.source_caption = QLabel("Game disc (.iso)")
@@ -252,6 +269,14 @@ class BuildPanel(QWidget):
         self.cancel_button.setEnabled(False)
         self.cancel_button.clicked.connect(lambda: self._task.cancelled.set() if self._task else None)
         actions.addWidget(self.cancel_button)
+        self._last_build_summary = ""
+        self._requested_build_summary = ""
+        self._requested_build_labels = []
+        self.copy_summary_button = QPushButton("Copy Build summary")
+        self.copy_summary_button.setToolTip("Copy this build's source, selected changes, result and first error for a help request.")
+        self.copy_summary_button.setEnabled(False)
+        self.copy_summary_button.clicked.connect(self._copy_build_summary)
+        actions.addWidget(self.copy_summary_button)
         self.blocker_label = QLabel("")
         self.blocker_label.setObjectName("throwMuted")
         self.blocker_label.setWordWrap(True)
@@ -436,6 +461,30 @@ class BuildPanel(QWidget):
         g.addWidget(QLabel("Minimum Play Clock Time"))
         g.addWidget(self.accelerated_clock_minimum)
         self.accelerated_clock_minimum.currentIndexChanged.connect(lambda _index: self._refresh())
+        self.decided_clock_margin = QComboBox()
+        self.decided_clock_seconds = QComboBox()
+        for value in tt.decided_clock_patch.MARGINS:
+            self.decided_clock_margin.addItem(f"{value} points", value)
+        for value in tt.decided_clock_patch.SECONDS:
+            self.decided_clock_seconds.addItem(f"{value} seconds", value)
+        for widget, title, default in (
+            (self.decided_clock_margin, "Leading possession: minimum lead", 17),
+            (self.decided_clock_seconds, "Remaining game time: at most", 60),
+        ):
+            g.addWidget(QLabel(title))
+            g.addWidget(widget)
+            widget.setAccessibleName(title)
+            widget.setToolTip(tt.decided_clock_patch.HELP_TEXT)
+            widget.setCurrentIndex(widget.findData(default))
+            widget.currentIndexChanged.connect(lambda _index: self._refresh())
+        self.cpu_scrambles_level = QComboBox()
+        self.cpu_scrambles_level.addItem("Retail", "retail")
+        self.cpu_scrambles_level.addItem("Modern (experimental)", "modern")
+        self.cpu_scrambles_level.setAccessibleName(tt.cpu_scrambles_patch.BUILD_CAPTION)
+        self.cpu_scrambles_level.setToolTip(tt.cpu_scrambles_patch.HELP_TEXT)
+        g.addWidget(QLabel(tt.cpu_scrambles_patch.BUILD_CAPTION))
+        g.addWidget(self.cpu_scrambles_level)
+        self.cpu_scrambles_level.currentIndexChanged.connect(lambda _index: self._refresh())
         for parent, children in r62_ui.CHILDREN.items():
             getattr(self, parent + "_check").toggled.connect(lambda on, p=parent: self._parent_toggled(p, on))
             for child in children:
@@ -717,6 +766,29 @@ class BuildPanel(QWidget):
         self.espn25_rosters_check = self._option(r, "espn25_rosters", "Historic moments: real rosters",
                                                  tt.espn25_rosters_patch.HELP_TEXT, needs_image=True)
         self._espn25_plan_cache: tuple[tuple[str, int, int] | None, str] = (None, "")
+        from mod_editor.core import nfl2k5_weather as weather
+        from mod_editor.core import nfl2k5_weather_haze as haze
+        self.weather_plan_check = self._option(
+            r, "weather_plan", weather.BUILD_CAPTION, weather.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        weather_row = QHBoxLayout()
+        self.weather_plan_field = QLineEdit()
+        self.weather_plan_field.setPlaceholderText("Save build edits in Weather editor, or choose a plan JSON")
+        weather_row.addWidget(self.weather_plan_field, 1)
+        self.weather_plan_button = QPushButton("Choose…")
+        self.weather_plan_button.clicked.connect(self._choose_weather_plan)
+        weather_row.addWidget(self.weather_plan_button)
+        r.addLayout(weather_row)
+        self.weather_editor_button = QPushButton("Weather editor…")
+        self.weather_editor_button.clicked.connect(self._open_weather_editor)
+        r.addWidget(self.weather_editor_button)
+        self.weather_status = QLabel("")
+        self.weather_status.setWordWrap(True)
+        r.addWidget(self.weather_status)
+        self.weather_plan_field.textChanged.connect(self._refresh)
+        self.weather_haze_check = self._option(
+            r, "weather_haze", haze.BUILD_CAPTION, haze.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED")
         self.player_star_check = self._option(
             r, "player_star", "Show a filled star under selected players",
             "A filled white star with a dark edge under every tagged player on the field; in-game appearance unwitnessed.",
@@ -982,8 +1054,9 @@ class BuildPanel(QWidget):
         rl.setSpacing(1)
         head = QHBoxLayout()
         head.setSpacing(8)
-        box = QCheckBox(label)
+        box = QCheckBox(tab_title(label))
         box.setAccessibleDescription(helper)
+        box.setToolTip(helper or details or label)
         head.addWidget(box)
         badge_label = QLabel(badge)
         badge_label.setObjectName("optionBadge")
@@ -1054,6 +1127,12 @@ class BuildPanel(QWidget):
             details = mod_build.inspect_screen_timing(state["path"], combo.currentText())
             state = {**state, "screen_timing": details["status"], "screen_timing_details": details}
         self._state = state
+        # Source inspection starts a new selection; installed choices are
+        # projected from this disc, then saved project choices can be restored.
+        self.cpu_scrambles_level.blockSignals(True)
+        self.cpu_scrambles_level.setCurrentIndex(self.cpu_scrambles_level.findData(
+            "modern" if state.get("cpu_scrambles") == "applied" else "retail"))
+        self.cpu_scrambles_level.blockSignals(False)
         self._reading = False
         self.source_field.setText(str(state.get("path", "")))
         is_image = state.get("container") == "xiso"
@@ -1127,7 +1206,7 @@ class BuildPanel(QWidget):
                 box.setToolTip("Full disc required (not a bare default.xbe).")
                 self._set_badge(key, "Full disc required")
             else:
-                box.setToolTip("")
+                box.setToolTip(box.accessibleDescription())
                 self._set_badge(key, self._static_badges.get(key, ""))
         self.hires_pack_check.setEnabled(is_image and self._available.get("hires_pack", False))
         self.hires_pack_check.setChecked(False)
@@ -1149,10 +1228,25 @@ class BuildPanel(QWidget):
         # an already-edited roster can take more edits: gate on availability and the container only
         self.roster_edits_check.setEnabled(self._available.get("roster_edits", True) and is_image)
         self.roster_edits_check.setChecked(False)
-        self.roster_edits_check.setToolTip("" if is_image else "Full disc required (not a bare default.xbe).")
+        self.roster_edits_check.setToolTip(self.roster_edits_check.accessibleDescription() if is_image else "Full disc required (not a bare default.xbe).")
         self._set_badge("roster_edits", "" if is_image else "Full disc required")
         # the Anniversary plan is a source-specific resource plan: only an image with the fixed retail
         # scenario / historic-roster layout can take it (the plan itself is checked when chosen and at build)
+        climate_ok = bool(is_image and self._available.get("weather_plan", False)
+                          and state.get("weather_plan") == "available")
+        self.weather_plan_check.setEnabled(climate_ok)
+        self.weather_plan_check.setChecked(False)
+        self.weather_editor_button.setEnabled(climate_ok)
+        self.weather_plan_button.setEnabled(climate_ok)
+        self.weather_plan_field.setEnabled(climate_ok)
+        self._set_badge("weather_plan", "EXPERIMENTAL / UNWITNESSED" if climate_ok else
+                        "Choose a supported USA disc; climate table unavailable")
+        haze_state = state.get("weather_haze")
+        haze_ok = bool(self._available.get("weather_haze", False) and haze_state in ("retail", "applied"))
+        self.weather_haze_check.setEnabled(haze_ok)
+        self.weather_haze_check.setChecked(haze_ok and haze_state == "applied")
+        self._set_badge("weather_haze", "EXPERIMENTAL / UNWITNESSED" if haze_ok else
+                        "Haze reader unavailable; choose a supported USA source")
         espn_state = str(state.get("espn25_plan"))
         espn_available = self._available.get("espn25_plan", True)
         self.espn25_plan_check.setEnabled(espn_available and is_image and espn_state == "available")
@@ -1168,7 +1262,7 @@ class BuildPanel(QWidget):
                                               "are not the fixed retail layout, so a saved plan can't be applied here.")
             self._set_badge("espn25_plan", "Unrecognized source data")
         else:
-            self.espn25_plan_check.setToolTip("")
+            self.espn25_plan_check.setToolTip(self.espn25_plan_check.accessibleDescription())
             self._set_badge("espn25_plan", self._static_badges.get("espn25_plan", ""))
         gate(self.kick_rules_check, "kick_rules")
         gate(self.kick_power_check, "kick_power", module="kick_rules")
@@ -1288,6 +1382,14 @@ class BuildPanel(QWidget):
         self.accelerated_clock_minimum.setCurrentIndex(
             self.accelerated_clock_minimum.findData(values.get("accelerated_clock_minimum_seconds", 20)))
         self.accelerated_clock_minimum.blockSignals(False)
+        for widget, key, default in (
+            (self.decided_clock_margin, "decided_clock_margin", 17),
+            (self.decided_clock_seconds, "decided_clock_seconds", 60),
+            (self.cpu_scrambles_level, "cpu_scrambles", "retail"),
+        ):
+            widget.blockSignals(True)
+            widget.setCurrentIndex(widget.findData(values.get(key, default)))
+            widget.blockSignals(False)
         self.my_career_setup_field.clear()
         self.screen_timing_combo.setCurrentText(values.get("screen_timing") or "D")
         boxes = self._boxes()
@@ -1356,6 +1458,7 @@ class BuildPanel(QWidget):
             "kick_laces": self.kick_laces_check, "franchise_practice": self.franchise_practice_check,
             "practice_squad": self.practice_squad_check, "depth_locks": self.depth_locks_check,
             "player_star": self.player_star_check, "roster_edits": self.roster_edits_check,
+            "weather_plan": self.weather_plan_check, "weather_haze": self.weather_haze_check,
             "espn25_plan": self.espn25_plan_check, "espn25_rosters": self.espn25_rosters_check,
             "realistic_flight": self.realistic_check, "arc_by_distance": self.arc_by_distance_check,
         }
@@ -1453,6 +1556,8 @@ class BuildPanel(QWidget):
             prospect_names=((self.prospect_names_field.text().strip() or "modern") if self.prospect_names_check.isChecked() else ""),
             roster_edits=(self.roster_edits_field.text().strip() if self.roster_edits_check.isChecked() else ""),
             espn25_plan=(self.espn25_plan_field.text().strip() if self.espn25_plan_check.isChecked() else ""),
+            weather_plan=(self.weather_plan_field.text().strip() if self.weather_plan_check.isChecked() else ""),
+            weather_haze=self.weather_haze_check.isChecked(),
             screen_timing=(self.screen_timing_combo.currentText() if self.screen_timing_check.isChecked() else None),
             scorebug_runtime=self.scorebug_runtime_check.isChecked(),
             music_policy="jukebox_menus" if self.music_policy_check.isChecked() else "retail",
@@ -1477,6 +1582,9 @@ class BuildPanel(QWidget):
             setattr(plan, key, getattr(self, key + "_check").isChecked())
         plan.cpu_money_downs = self._money_downs_level() if self.cpu_money_downs_check.isChecked() else "retail"
         plan.accelerated_clock_minimum_seconds = int(self.accelerated_clock_minimum.currentData() or 20)
+        plan.decided_clock_margin = int(self.decided_clock_margin.currentData())
+        plan.decided_clock_seconds = int(self.decided_clock_seconds.currentData())
+        plan.cpu_scrambles = str(self.cpu_scrambles_level.currentData())
         plan.created_teams_extra = 2 if self.created_teams_extra_check.isChecked() else 0
         plan.momentum_collision_level = int(self.momentum_collision_level.currentData() or 50) if plan.momentum_collisions else 0
         plan.guardian_everyone_practice = self.guardian_everyone_practice_check.isChecked()
@@ -1494,7 +1602,8 @@ class BuildPanel(QWidget):
         return bool(self._include_session_project() or p.throw or p.catch_slider or p.accel_ramp or p.draft_ai or p.returner_fix or p.progression
                     or any(getattr(p, key) for key in r62_ui.KEYS if key not in r62_ui.LEVELS) or p.cpu_money_downs != "retail" or p.scorebug_runtime or p.momentum > 0 or p.defensive_try or p.zone_drop_cap or p.all_stadiums or p.coverage_slider or p.scramble_tuning or p.flatter_deep_ball or p.chop_block_toggle or p.team_names_2026 or p.music_shuffle or p.practice_squad_screen or p.abilities or p.qb_spy or p.music_policy != "retail" or p.music_unlock or p.music_userlist or p.music_project or p.music_library or p.edge_rename or p.screen_timing is not None or p.hires_pack or p.guardian_cap or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
                     or p.kickoff_alignment or p.dynamic_kickoff or p.xbe_space or p.kickoff_relocated or p.season_cap or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.franchise_practice or p.practice_squad or p.depth_locks or p.prospect_names or p.player_star or p.player_tags or p.roster_edits or p.espn25_plan
-                    or p.commentary or p.playbook_packs or self._helmet_finish_changed())
+                    or p.commentary or p.playbook_packs or self._helmet_finish_changed()
+                    or p.weather_plan or self._weather_haze_changed() or p.cpu_scrambles == "modern")
 
     def _helmet_finish_changed(self) -> bool:
         """True when the chosen finish differs from what the source carries (a Glossy restoration counts)."""
@@ -1534,9 +1643,17 @@ class BuildPanel(QWidget):
                     text += f" ({self.hires_scale_combo.currentText()}, {self.hires_target_combo.currentText()}, {self.hires_folder_field.text().strip()})"
                 if key == "throw":
                     text += f" ({self.ceiling_spin.value()} yd)"
+                if key == "weather_haze" and not self._weather_haze_changed():
+                    continue
+                if key == "decided_clock":
+                    text += f" ({self.decided_clock_margin.currentData()} points, {self.decided_clock_seconds.currentData()} seconds)"
                 if key == "helmet_finish" and not self._helmet_finish_changed():
                     continue
                 labels.append(text)
+        if self._weather_haze_changed() and not self.weather_haze_check.isChecked():
+            labels.append("Restore retail dry-weather haze response")
+        if self.cpu_scrambles_level.currentData() == "modern":
+            labels.append(tt.cpu_scrambles_patch.BUILD_CAPTION + ": Modern")
         if self.star_players:
             labels.append(f"star players ({len(self.star_players)})")
         if self.commentary:
@@ -1555,6 +1672,13 @@ class BuildPanel(QWidget):
             return denial
         if self._reading:
             return "Reading disc…"
+        if self._include_session_project():
+            from mod_editor.core.nfl2k5_model_project import validate_build_plan
+            from mod_editor.core.errors import ValidationError
+            try:
+                validate_build_plan(replace(self.plan(), hires_pack=False), self._facade._session)
+            except (ValueError, ValidationError) as exc:
+                return str(exc)
         conflicts = getattr(self, "_playbook_blockers", ())
         if conflicts:
             return " ".join(conflicts)
@@ -1580,6 +1704,10 @@ class BuildPanel(QWidget):
             if not espn_path:
                 return "Save build edits on ★ Rosters > ESPN Anniversary or choose a plan JSON file."
             problem = self._espn25_plan_problem(espn_path)
+            if problem:
+                return problem
+        if self.weather_plan_check.isChecked():
+            problem = self._weather_plan_problem()
             if problem:
                 return problem
         if not self.has_work():
@@ -1694,6 +1822,37 @@ class BuildPanel(QWidget):
             combo.setEnabled(False)
         else:
             combo.setEnabled(clock.isEnabled() and clock.isChecked())
+        for key in ("coin_defer", "decided_clock"):
+            if (self._state or {}).get(key) == "applied":
+                box = getattr(self, key + "_check")
+                box.blockSignals(True)
+                box.setChecked(True)
+                box.blockSignals(False)
+                box.setEnabled(False)
+        state = self._state or {}
+        installed = state.get("decided_clock_settings") or {}
+        cutoff = installed.get("settings") or {}
+        for widget, key in ((self.decided_clock_margin, "margin"),
+                            (self.decided_clock_seconds, "seconds")):
+            if installed.get("status") == "applied":
+                widget.blockSignals(True)
+                widget.setCurrentIndex(widget.findData(cutoff[key]))
+                widget.blockSignals(False)
+            widget.setEnabled(self.decided_clock_check.isEnabled()
+                              and self.decided_clock_check.isChecked()
+                              and installed.get("status") != "applied")
+        mode = state.get("cpu_scrambles", "unknown")
+        if mode == "applied":
+            self.cpu_scrambles_level.blockSignals(True)
+            self.cpu_scrambles_level.setCurrentIndex(self.cpu_scrambles_level.findData("modern"))
+            self.cpu_scrambles_level.blockSignals(False)
+        self.cpu_scrambles_level.setEnabled(self._available.get("cpu_scrambles", False) and state.get("container") == "xiso" and mode == "retail")
+        if mode in ("applied", "foreign"):
+            self.cpu_scrambles_level.setToolTip(
+                "This executable already has the patch or has incompatible instructions. "
+                "Choose a verified base disc to change CPU QB scrambles.")
+        else:
+            self.cpu_scrambles_level.setToolTip(tt.cpu_scrambles_patch.HELP_TEXT)
         for key, reason in r62_ui.UNAVAILABLE.items():
             getattr(self, key + "_check").setEnabled(False)
             getattr(self, key + "_check").setToolTip(reason)
@@ -1890,6 +2049,47 @@ class BuildPanel(QWidget):
             problem = f"The Anniversary plan cannot be used: {exc}"
         self._espn25_plan_cache = (key, problem)
         return problem
+
+    def _choose_weather_plan(self):
+        name, _ = QFileDialog.getOpenFileName(self, "Choose weather build edits", "", "Climate plan (*.json)")
+        if name:
+            self.set_weather_plan(name)
+
+    def set_weather_plan(self, name):
+        self.weather_plan_field.setText(str(name))
+        self.weather_plan_check.setChecked(bool(name) and self.weather_plan_check.isEnabled())
+        self.weather_status.setText(f"Saved climate plan: {Path(name).name}. EXPERIMENTAL / UNWITNESSED.")
+        self._refresh()
+
+    def _open_weather_editor(self):
+        module = mod_build._tools_module("nfl2k5_weather_editor")
+        if module is None:
+            self.weather_status.setText("Weather editor is not included in this installation. Install a complete release or choose a saved climate plan.")
+            return
+        dialog = module.WeatherDialog(self.source_field.text().strip(), self)
+        dialog.saved.connect(self.set_weather_plan)
+        dialog.exec()
+
+    def _weather_haze_changed(self):
+        state = (self._state or {}).get("weather_haze")
+        return (self.weather_haze_check.isEnabled() and state in ("retail", "applied")
+                and self.weather_haze_check.isChecked() != (state == "applied"))
+
+    def _weather_plan_problem(self):
+        from mod_editor.core import nfl2k5_weather as weather
+        name = self.weather_plan_field.text().strip()
+        if not name:
+            return "Open Weather editor and save build edits, or choose a climate plan JSON."
+        if self.reserves_16_check.isChecked() or self.created_teams_extra_check.isChecked():
+            return "Climate edits support the version-17 roster. Turn off 16 reserves and extra created teams."
+        try:
+            document = weather.read_json(name)
+            if not isinstance(document, dict) or not document.get("changes"):
+                return "This climate plan has no edits. Open Weather editor and change at least one field."
+            weather.apply(weather.load_resource(self.source_field.text().strip()), document)
+        except (OSError, ValueError) as exc:
+            return f"Climate plan cannot be used: {exc}. Reopen Weather editor on this source and save the edits again."
+        return ""
 
     def _choose_espn25_plan(self) -> None:
         chosen, _f = QFileDialog.getOpenFileName(self, "Choose a saved ESPN Anniversary plan", str(Path.home()),
@@ -2148,12 +2348,16 @@ class BuildPanel(QWidget):
             files.append(f"prospect names CSV: {Path(plan.prospect_names).name}")
         if plan.roster_edits:
             files.append(f"roster edits: {Path(plan.roster_edits).name}")
+        if plan.weather_plan:
+            files.append(f"Climate plan: {Path(plan.weather_plan).name}")
         if plan.espn25_plan:
             files.append(f"ESPN Anniversary plan: {Path(plan.espn25_plan).name}")
         if plan.playbook_packs:
             files.append(f"playbook packs: {len(plan.playbook_packs)}")
         if self._include_session_project():
             files.append("shared project: all current edits, including Music replacements")
+            for model in getattr(self._facade, "model_project_plan", ()):
+                lines.append("Model: " + model["summary"] + " (saved checked bytes; in-game UNWITNESSED)")
         if plan.commentary:
             files.append(f"commentary lines: {len(plan.commentary)}")
         if plan.player_tags:
@@ -2268,6 +2472,10 @@ class BuildPanel(QWidget):
                                       QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
         if answer != QMessageBox.Ok:
             return
+        self._requested_build_summary = f"2K5 Mod Studio {BUILD_RELEASE_TAG}\n" + self.confirmation_text(plan)
+        self._requested_build_labels = self.selected_labels()
+        self._last_build_summary = self._requested_build_summary + "\n\nBuild in progress."
+        self.copy_summary_button.setEnabled(True)
         include_session = self._include_session_project()
         task = _Task(lambda progress: self._build_operation(plan, progress, include_session))
         task.signals.progress.connect(self.progress_label.setText)
@@ -2290,14 +2498,27 @@ class BuildPanel(QWidget):
         assert isinstance(receipt, dict)
         state = receipt.pop("_build_panel_state", receipt.get("result"))
         target = str(receipt.get("target"))
-        steps = ", ".join(str(s.get("step")) for s in receipt.get("steps", []))
         from mod_editor.core.build_feedback import completion
         title, message = completion(receipt)
         if receipt.get("play_intents_summary"):
             message += "\n\n" + receipt["play_intents_summary"]
+        labels = list(self._requested_build_labels)
+        if not labels:
+            names = {key: box.text().replace("&&", "&") for key, box in self._boxes().items()}
+            names.update({"xbe": "gameplay and game settings", "position_pool_filters": "position lists",
+                          "visual_project": "project artwork", "project": "project edits"})
+            labels = list(dict.fromkeys(names.get(str(step.get("step")), "other selected project changes")
+                        for step in receipt.get("steps", ()) if isinstance(step, dict)))
+        contents = "Build selection: " + (", ".join(labels) if labels else "no recorded changes") + "."
+        next_step = "Open this copy in xemu, or use Play latest disc in xemu in the studio."
+        if not tt.is_disc_image(target):
+            next_step = "This is an executable copy. Build from a game disc to make a playable disc image."
+        body = f"{target}\n\n{message}\n\n{contents}\n\nYour original game disc was not changed.\n\n{next_step}"
+        self._last_build_summary = (self._requested_build_summary or f"2K5 Mod Studio {BUILD_RELEASE_TAG}") + f"\n\n{title}\n{body}"
+        self.copy_summary_button.setEnabled(True)
         self.status_label.setText(f"{title}: {target}. {message}")
         self.built.emit(dict(receipt))
-        QMessageBox.information(self, title, f"{target}\n\n{message}\n\nSteps checked: {steps}.")
+        QMessageBox.information(self, title, body)
         try:
             self.apply_state(state)
             hires = next((step for step in receipt.get("steps", []) if step.get("step") == "hires_pack"), None)
@@ -2320,7 +2541,15 @@ class BuildPanel(QWidget):
                 f"Build source is now: {Path(str(receipt.get('target'))).name}. " + self.source_status.text())
         self._refresh()
 
+    def _copy_build_summary(self) -> None:
+        from PyQt5.QtWidgets import QApplication
+        QApplication.clipboard().setText(self._last_build_summary)
+        self.status_label.setText("Build summary copied. Paste it with the first error in your help request.")
+
     def _failed(self, message: str) -> None:
+        message = plain_error(message)
+        self._last_build_summary = (self._requested_build_summary or f"2K5 Mod Studio {BUILD_RELEASE_TAG}") + f"\n\nFirst error: {message}"
+        self.copy_summary_button.setEnabled(True)
         self._heartbeat_timer.stop()
         self._task = None
         self.operation_state_changed.emit(False)

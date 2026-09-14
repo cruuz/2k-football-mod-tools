@@ -59,10 +59,10 @@ REPORT_RESIDUAL_LIMITATION = (
     "runner does not print its success marker."
 )
 ALLOWED_LAUNCHERS = {"bash", "python3"}
-EXPECTED_CAPABILITIES = 108
-EXPECTED_COVERED_CAPABILITIES = 103
+EXPECTED_CAPABILITIES = 172
+EXPECTED_COVERED_CAPABILITIES = 167
 EXPECTED_DEFERRED_CAPABILITIES = 5
-EXPECTED_UNIQUE_VALIDATORS = 83
+EXPECTED_UNIQUE_VALIDATORS = 125
 EXPECTED_DEFERRED_IDS = (
     "apf2k8.catching_drops.behavior",
     "apf2k8.franchise_restoration_cross_title.mode",
@@ -408,7 +408,8 @@ def read_pinned_file(path: Path, *, allow_empty: bool = False) -> tuple[FileSnap
         )
     descriptor = os.open(
         path,
-        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+        os.O_RDONLY | getattr(os, "O_BINARY", 0)
+        | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
     )
     try:
         opened = os.fstat(descriptor)
@@ -850,8 +851,10 @@ def parse_validation_command(command: str) -> tuple[str, ...]:
     tool = Path(tool_text)
     if tool.is_absolute() or ".." in tool.parts or not tool.parts:
         raise ValidationRunError("validation tool must be repository-relative")
-    if tool.parts[0] != "tools":
-        raise ValidationRunError("validation tool must live under tools/")
+    if tool.parts[0] != "tools" and not (
+        launcher == "python3" and tool_text == "packaging/check_apf2k8_mod_studio_runtime.py"
+    ):
+        raise ValidationRunError("validation tool must live under tools/ or name the reviewed APF runtime check")
     expected_suffix = ".sh" if launcher == "bash" else ".py"
     if tool.suffix != expected_suffix:
         raise ValidationRunError(f"{launcher} validation tool must end in {expected_suffix}")

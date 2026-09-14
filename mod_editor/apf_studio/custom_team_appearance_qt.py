@@ -301,6 +301,10 @@ class CustomTeamAppearancePanel(QFrame):
         actions.addWidget(self.write_raw_button)
         actions.addStretch(1)
         outer.addLayout(actions)
+        self.apply_roster_button = QPushButton("Apply my custom team appearance to this roster save…")
+        self.apply_roster_button.setObjectName("secondaryButton")
+        self.apply_roster_button.clicked.connect(self._apply_to_roster)
+        outer.addWidget(self.apply_roster_button)
         self.status = QLabel("Load your game to read the safe custom-team records.")
         self.status.setObjectName("metadataText")
         self.status.setWordWrap(True)
@@ -709,6 +713,24 @@ class CustomTeamAppearancePanel(QFrame):
     def _mutation_complete(self) -> None:
         self.set_context()
         self.modifiedChanged.emit()
+
+    def _apply_to_roster(self) -> None:
+        if (self._raw_mode() and self.raw_document is None) or (
+                not self._raw_mode() and not self.facade.source_ready):
+            self.status.setText("Load your game or a raw roster appearance first, then choose the roster save to receive it.")
+            return
+        try:
+            current = self._appearance_from_controls()
+            staged = () if self._raw_mode() else tuple(
+                self.facade.custom_team_appearance_value(slot)
+                for slot in apf_custom_team_appearance_patch.USER_SLOTS
+                if apf_custom_team_appearance_patch.asset_id(slot) in self.facade.modified_asset_ids)
+        except Exception as exc:
+            self.status.setText(f"Could not read the appearance to apply: {exc}")
+            return
+        from .roster_appearance_transfer_qt import RosterAppearanceTransferDialog
+        dialog = RosterAppearanceTransferDialog(current, staged, self.run_task, self)
+        dialog.exec_()
 
 
 __all__ = ["CustomTeamAppearancePanel"]

@@ -216,6 +216,42 @@ class SyntheticConversionTests(unittest.TestCase):
         with self.assertRaisesRegex(subject.PS3RosterConvertError, "expected 2715908"):
             subject.convert(self.source[:-1])
 
+    def test_uniform_codes_colour_order_and_metadata_are_verified(self) -> None:
+        raw = bytearray(self.source)
+        banks = subject.team_appearance(self.source)[32]["banks"]
+        for bank in banks:
+            for slot in (3, 4, 5, 9, 11):
+                offset = bank["selectors"][slot]["offset"]
+                raw[offset:offset + 8] = bytes((slot + 2, 7, 93, 84, 75, 66, 57, 48))
+            palette = bank["palette_offset"]
+            raw[palette:palette + 4] = b"\x12\x34\x56\xff"
+        output, receipt = subject.convert(bytes(raw))
+        appearance = receipt["team_appearance"]
+        self.assertEqual(appearance["verification"]["selector_records"], 1120)
+        self.assertEqual(appearance["verification"]["colours"], 800)
+        self.assertEqual(len(appearance["carried"]), 3)
+        self.assertIn("texture", appearance["refused"][0]["field"])
+        for bank in banks:
+            self.assertEqual(output[bank["palette_offset"]:bank["palette_offset"] + 4], b"\xff\x12\x34\x56")
+            for slot in (3, 4, 5, 9, 11):
+                offset = bank["selectors"][slot]["offset"]
+                self.assertEqual(output[offset:offset + 8], raw[offset:offset + 8])
+        for offset in (banks[0]["palette_offset"], banks[1]["palette_offset"] + 40,
+                       banks[1]["selectors"][4]["offset"] + 7):
+            tampered = bytearray(output)
+            tampered[offset] ^= 1
+            with self.assertRaises(subject.PS3RosterConvertError):
+                subject.verify_appearance_carry(bytes(raw), bytes(tampered))
+
+    def test_retaining_xbox_uniforms_is_explicitly_receipted(self) -> None:
+        baseline = bytearray(self.output)
+        bank = subject.team_appearance(self.output)[32]["banks"][0]
+        baseline[bank["selectors"][4]["offset"]] = 71
+        baseline[bank["palette_offset"]:bank["palette_offset"] + 4] = b"\xff\xab\xcd\xef"
+        output, receipt = subject.convert(self.source, apply_team_appearance=False, xbox_appearance=bytes(baseline))
+        self.assertTrue(subject.verify_appearance_carry(bytes(baseline), output, from_ps3=False)["verified"])
+        self.assertIn("PS3 appearance values", [row["field"] for row in receipt["team_appearance"]["refused"]])
+
     def test_round_trip_edit_through_the_roster_writer(self) -> None:
         document = players.inspect_bytes(self.output)
         patched, manifest = players.make_patch(

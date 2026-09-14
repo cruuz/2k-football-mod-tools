@@ -45,7 +45,7 @@ class XbeManifestTests(unittest.TestCase):
         # These helpers accept sites from their callers; they are not owners.
         # Record the outer writer, or its adapter, instead of assigning those
         # same bytes a second, incorrect helper owner.
-        helpers = {'mod_editor.core.nfl2k5_rdata_sites', 'mod_editor.core.nfl2k5_gameplay_lever'}
+        helpers = {'mod_editor.core.nfl2k5_rdata_sites', 'mod_editor.core.nfl2k5_gameplay_lever', 'mod_editor.core.nfl2k5_rules_patch'}
         modules = [m for name,m in tuple(sys.modules.items())
                    if name.startswith('mod_editor.core.nfl2k5_') and name not in helpers]
         with ExitStack() as stack:

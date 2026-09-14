@@ -1,0 +1,14 @@
+[
+  {
+    "path": "tests/mod_editor/test_b69_a2b_game_wiring.py",
+    "command": "python3 tests/mod_editor/test_b69_a2b_game_wiring.py",
+    "exit": 1,
+    "status": "FAILED (failures=1, errors=6)",
+    "ran": "Ran 8 tests in 28.436s",
+    "final_line": "FAILED (failures=1, errors=6)",
+    "seconds": 28.907,
+    "log": "reports/b69_a2b/integration/test_b69_a2b_game_wiring.log",
+    "log_sha256": "92ce3d02dab91e3092f23c20bfd63f4bc7d141798a9eeaa33b8a903445fc7f2b",
+    "source_fingerprint": "a4567a886a1f724c131a26b7a0bba54d471e1e15400e8ae73e8117c6c8504c96"
+  }
+]

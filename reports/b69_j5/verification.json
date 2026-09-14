@@ -1,0 +1,50 @@
+{
+  "runtime_witnessed": false,
+  "suites": [
+    {
+      "test": "test_xbe_patch_memory_writes.py",
+      "tests": 119,
+      "seconds": 1787.272,
+      "result": "OK"
+    },
+    {
+      "test": "test_xbe_patch_cave_references.py",
+      "tests": 131,
+      "seconds": 2045.808,
+      "result": "OK"
+    },
+    {
+      "test": "test_nfl2k5_owner_pairwise_composition.py",
+      "tests": 475,
+      "seconds": 3235.993,
+      "result": "OK"
+    },
+    {
+      "test": "test_nfl2k5_cave_oracle.py",
+      "tests": 29,
+      "seconds": 423.534,
+      "result": "OK"
+    },
+    {
+      "test": "test_nfl2k5_b69_rules.py",
+      "tests": 16,
+      "seconds": 133.447,
+      "result": "OK"
+    },
+    {
+      "test": "test_nfl2k5_b69_rules_series.py",
+      "tests": 1,
+      "seconds": 73.363,
+      "result": "OK"
+    },
+    {
+      "test": "test_nfl2k5_accelerated_clock.py",
+      "tests": 40,
+      "seconds": 47.533,
+      "result": "OK"
+    }
+  ],
+  "four_xbe_gates": "green",
+  "total_tests": 811,
+  "git_delivery": "bundle; shared worktree Git metadata is read-only"
+}

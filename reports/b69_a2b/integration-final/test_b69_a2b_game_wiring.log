@@ -1,0 +1,37 @@
+....E...
+======================================================================
+ERROR: test_new_options_compose_with_career_and_relocated_climate_then_replay (__main__.CompactBuildTests.test_new_options_compose_with_career_and_relocated_climate_then_replay)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a2b/mod_editor/core/mod_build.py", line 990, in build
+    receipt = _build(replace(plan, source=str(effective_source), target=str(directory / target.name), overwrite=False), progress,
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a2b/mod_editor/core/mod_build.py", line 1526, in _build
+    step = tt.write_copy(source, target, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a2b/mod_editor/core/nfl2k5_throw_tuning.py", line 2387, in write_copy
+    return write_image_copy(source, target, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a2b/mod_editor/core/nfl2k5_throw_tuning.py", line 2042, in write
+    receipt = writer(source, stage, **{**kwargs, "overwrite": False})
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a2b/mod_editor/core/nfl2k5_throw_tuning.py", line 2186, in write_image_copy
+    _require(defer_grown or reserves_16 or created_teams_extra or crib_reclaim or modern_naming or patched != original or disc_before.get("status") == "retail",
+  File "/home/noah/2k-worktrees/astra-b69-a2b/mod_editor/core/nfl2k5_throw_tuning.py", line 202, in _require
+    raise ThrowTuningError(message)
+mod_editor.core.nfl2k5_throw_tuning.ThrowTuningError: nothing to write: the requested curves and patches already match the image
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a2b/tests/mod_editor/test_b69_a2b_game_wiring.py", line 193, in test_new_options_compose_with_career_and_relocated_climate_then_replay
+    with simulated_non_posix():build.build(replace(plan,source=str(target),target=str(repeat)))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a2b/mod_editor/core/mod_build.py", line 1023, in build
+    raise _with_identity(exc, source, tt.is_disc_image(source)) from exc
+ValueError: nothing to write: the requested curves and patches already match the image. This image is: unknown image. This is an xiso holding ESPN NFL 2K5, but default.xbe, vc_53450030/0, vc_53450030/1, vc_53450030/2 is missing or not its retail size. Neither Build nor Apply can trust it; use a dump of your own retail disc. (dashupdate.xbe, update.xbe is missing or not its retail size; a full dump has it, and nothing the studio reads depends on it.)
+
+----------------------------------------------------------------------
+Ran 8 tests in 69.461s
+
+FAILED (errors=1)

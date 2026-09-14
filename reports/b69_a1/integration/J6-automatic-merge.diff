@@ -1,0 +1,335 @@
+diff --git a/ASTRA_REPORT.md b/ASTRA_B69_J6_REPORT.md
+similarity index 100%
+rename from ASTRA_REPORT.md
+rename to ASTRA_B69_J6_REPORT.md
+diff --git a/WIRING.md b/WIRING_B69_J6.md
+similarity index 100%
+rename from WIRING.md
+rename to WIRING_B69_J6.md
+diff --git a/docs/mod_editor/2k5_mod_studio_changelog.md b/docs/mod_editor/2k5_mod_studio_changelog.md
+index f95b2306..070aae75 100644
+--- a/docs/mod_editor/2k5_mod_studio_changelog.md
++++ b/docs/mod_editor/2k5_mod_studio_changelog.md
+@@ -2,15 +2,12 @@
+ 
+ ## v1.0 RC94, beta 69: new features, the reports after beta 68, and a polish pass (2026-09-13)
+ 
+-<<<<<<< 89c51e2be1b47a3a05d923ac97f24d8780952f39
+ - **Build failures identify the edit and the cause (Coach Edwards).** “The era is not descriptive as to what exact texture I should change or remove” exposed a timing marker replacing the actual refusal. Failures now name the active phase and the project's original edit index, page, part, uniform set and texture. The Build list shows every project edit, with changes observed in this session newest first; old files do not record their original edit times. This addresses “there is no way to tell specifically what needs to change” without asking players to keep a separate list.
+ - **Valid older shoe and glove records stay usable (Coach Edwards).** “shoes that I'd imported from a much older release (maybe release 49)” prompted a history-based reconstruction. One proved regression was an older own-texture copy that beta 68 correctly recognized as retail, then wrongly refused because it changed no bytes. That copy now builds and is named as unchanged in the receipt. Project-load preflight checks restored equipment groups and names any part that must be reimported or removed. The exact cause in Coach Edwards' unavailable project remains unresolved; this is not a claim to have reproduced his file.
+ - **Equipment fit errors give numbers and a checked retry (maumau78).** “if i use 128x128 or 256x256 I got this error” is a real allocation limit. The import reports how many bytes it missed by and offers Try that when a smaller image actually passes the full group check. His orange atlas stand-in still misses a 58,432-byte slot by 1,089 bytes at 64x64 with 16 colours. Lower shades can fit but lose detail. A grown chunk passed bounded native allocation, decode and descriptor checks; archive relocation has not passed the disc proof, so Larger equipment art is not offered.
+ - **The Style 6 claim is narrower (maumau78).** “Using shoe slot 10 the texture was replaced correctly” described Edit Player; “shoe slot 10 / style 6 is not show in-game” described a Bears game. The new test executes the real cache fill and field selector, rather than filling the cache by hand. Clean shoes10 and shoes10_mud bind separately through HOME/AWAY; missing local names fall back to the newest package. The orange stand-in became four-colour 64x64 art in Bears 05H0; palette-only mode kept the retail shape. This explains two measured sources of distortion, without claiming to explain the dark shoe in his game. That report remains unresolved and all current in-game outcomes remain UNWITNESSED.
+-=======
+ - **Player CSV edits now have a complete preview and one Undo.** MacDog850 asked, "id recommend also adding a csv roster import/export for the extension too... makes player editing easier". On ★ Rosters, CSV exports every player or the visible list with the loaded position labels, all attribute cards, ratings, appearance, styles, contracts and exact pool/index identities. Import previews changed fields and refused rows, applies valid rows together, and restores the complete edit through Undo and Redo. UTF-8 text protects leading zeros, long numeric names and formula prefixes with a reversible apostrophe; the CSV menu explains Excel handling. Disc, Xbox-save and franchise-layout round trips pass on synthetic documents; source files stay unchanged and in-game results remain UNWITNESSED.
+ - **Historic moments: real rosters remains blocked pending the actual failing load state.** heaven asked, "Will we be able to have every player with names on them, currently in 2k5's 25th anniversary mode it's WR CB etc". The native archive wait now has a bounded reproduction: withholding completion stops at its exact loop instruction, and supplying completion resumes the same Wide Right selection. All 25 selections and return visits pass that wait, team import, scenario setup and roster export with the existing 12-byte repair on retail and Practice Squad configurations. This does not reproduce the reported music freeze or prove a complete scene load; the failing archive/scene state is still needed. The all-moments option stays EXPERIMENTAL, blocked, OFF in every preset and UNWITNESSED in game.
+->>>>>>> c43a12b578db25fcb7b6f9c2290c771392490cd0
+ 
+ Beta 69 adds planned features, answers every ESPN NFL 2K5 report in Discord after beta 68 and polishes both studios; bullets are added as each change lands.
+ 
+diff --git a/mod_editor/capabilities/registry.v1.json b/mod_editor/capabilities/registry.v1.json
+index 853c2fdc..df661313 100644
+--- a/mod_editor/capabilities/registry.v1.json
++++ b/mod_editor/capabilities/registry.v1.json
+@@ -9146,14 +9146,16 @@
+         "tests/mod_editor/test_nfl2k5_espn25_rosters_native.py",
+         "docs/mod_editor/nfl2k5_espn25_inventory.json",
+         "ASTRA_ESPN25_EXACT_LINEUPS_REPORT.md",
+-        "tests/mod_editor/test_nfl2k5_espn25_exact_lineups.py"
++        "tests/mod_editor/test_nfl2k5_espn25_exact_lineups.py",
++        "ASTRA_B69_J6_REPORT.md",
++        "tests/mod_editor/test_nfl2k5_espn25_loading_wait.py"
+       ],
+       "game": "nfl2k5_xbox",
+       "gui": {
+         "default_enabled": false,
+         "expose": true,
+         "mode": "edit",
+-        "reason": "EXPERIMENTAL / UNWITNESSED. All presets off. Chosen-side box-score starters are established; shared files, incomplete bench lists and snap-specific players remain limited."
++        "reason": "Historic moment rosters cannot be built: Wide Right has an unresolved loading freeze. Native team reload completes with supplied archive completions; the failing game load still needs its archive completion and scene state captured. Keep this option off. EXPERIMENTAL / UNWITNESSED."
+       },
+       "id": "nfl2k5.rosters.espn25_real_rosters",
+       "input_constraints": [
+@@ -9162,8 +9164,7 @@
+         "Season rosters are incomplete: named same-franchise nearby-season role fillers and retained unknown numbers are disclosed per player."
+       ],
+       "portme": [
+-        "The existing Build option is wired; keep it off in every preset and retain the image/layout compatibility checks.",
+-        "Noah must load each of the 25 moments and check on-field and pause-menu identities, numbers, formations and gameplay."
++        "Retain the build block until the failing game's archive completion and scene state are captured and diagnosed; do not infer scene readiness from native roster import/export."
+       ],
+       "public_distribution": {
+         "game_data": "never-bundle-retail-data",
+@@ -9173,27 +9174,29 @@
+       },
+       "runtime": {
+         "evidence": [
+-          "ASTRA_ESPN25_ROSTERS_REPORT.md"
++          "ASTRA_ESPN25_IN_GAME_REPORT.md",
++          "ASTRA_B69_J6_REPORT.md",
++          "tests/mod_editor/test_nfl2k5_espn25_loading_wait.py"
+         ],
+-        "scope": "Bounded native selection/import/setup traces for all 25 moments; substituted archive I/O, controller, weather and presentation. No game played.",
++        "scope": "Native team import, archive wait with supplied completion, scenario setup and export. Complete scene/graphics/audio load and the reported music freeze remain unproved.",
+         "status": "not-tested"
+       },
+       "selectors": {
+         "fields": [
+           {
+-            "allowed": "boolean; false in Basic, Advanced and Experimental; opt-in only",
++            "allowed": "false in every preset; build is blocked even when explicitly selected",
+             "name": "espn25_rosters",
+             "required": true
+           }
+         ],
+-        "notes": "Retail: position-name placeholders. Patch: box-score starters and season numbers for each chosen shared file, with every shared-season and incomplete-data exception recorded."
++        "notes": "Historic moment rosters cannot be built: Wide Right has an unresolved loading freeze. Native team reload completes with supplied archive completions; the failing game load still needs its archive completion and scene state captured. Keep this option off."
+       },
+       "source_container": {
+         "format": "uncompressed ROST resources in XDVDFS outer archive",
+         "hash_pins": [
+           "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+         ],
+-        "resource": "35 whole-resource pins in data/nfl2k5_espn25_moment_rosters/manifest.json; no XBE edit",
++        "resource": "35 pinned historic roster resources plus the existing guarded 12-byte native team-release repair at C2319; no cave or allocation.",
+         "retail_file": "user-owned NFL 2K5 USA disc or extraction"
+       },
+       "summary": "Replace the 35 shared Anniversary rosters with 53 real identities each, using explicitly documented season and reserve approximations.",
+@@ -9201,6 +9204,75 @@
+       "title": "Historic moments: real rosters (experimental, unwitnessed)",
+       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_espn25_rosters"
+     },
++    {
++      "backend": {
++        "command": "Python API: export_csv(document), preview_csv(document, text), apply_csv_preview(document, preview)",
++        "module": "mod_editor/core/nfl2k5_roster_records.py",
++        "operation": "write"
++      },
++      "classification": "offline-writer-proved",
++      "evidence": [
++        "ASTRA_B69_J6_REPORT.md",
++        "tests/mod_editor/test_nfl2k5_roster_csv.py",
++        "tests/mod_editor/test_nfl2k5_roster_records.py",
++        "tests/mod_editor/test_roster_editor_panel_qt.py"
++      ],
++      "game": "nfl2k5_xbox",
++      "gui": {
++        "default_enabled": false,
++        "expose": true,
++        "mode": "edit",
++        "reason": "Explicit CSV action on the loaded Rosters document. Preview before apply; source unchanged; one Undo. In-game outcomes UNWITNESSED."
++      },
++      "id": "nfl2k5.rosters.player_csv",
++      "input_constraints": [
++        "Loaded disc ROST, verified Xbox save or franchise document; UTF-8 CSV, at most 16 MiB and 100,000 rows.",
++        "Every row needs pool + index. Duplicate or unknown identities refuse; never match by name. Fields use the loaded scheme and editor bounds. Unknown/duplicate headers refuse the sheet.",
++        "An invalid row is refused whole. Unchanged out-of-range stored fields are preserved. Name pool and team membership constraints still apply."
++      ],
++      "portme": [
++        "Witness Excel open/edit/save with leading-zero and long numeric text.",
++        "Witness copied disc/save/franchise edits, including contracts and one Undo/Redo."
++      ],
++      "public_distribution": {
++        "game_data": "never-bundle-retail-data",
++        "mod_payload": "user-authored-inputs-and-recipes",
++        "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
++        "tooling": "source-and-schemas-only"
++      },
++      "runtime": {
++        "evidence": [
++          "ASTRA_B69_J6_REPORT.md"
++        ],
++        "scope": "Synthetic document and offscreen page checks; no played disc/save/franchise result.",
++        "status": "not-tested"
++      },
++      "selectors": {
++        "fields": [
++          {
++            "allowed": "Exact player identity in the loaded document",
++            "name": "pool + index",
++            "required": true
++          },
++          {
++            "allowed": "CSV_COLUMNS in nfl2k5_roster_records; loaded scheme position labels; card bounds",
++            "name": "player columns",
++            "required": true
++          }
++        ],
++        "notes": "CSV menu on \u2605 Rosters; export every player or this list, import with preview. Numeric contract_value is in $10,000 units."
++      },
++      "source_container": {
++        "format": "ROST/save body",
++        "hash_pins": [],
++        "resource": "Loaded RosterDocument, all pools; 0x54 player records, name pools and team lists",
++        "retail_file": "User-owned disc roster or verified signed save"
++      },
++      "summary": "Export player fields and preview exact pool/index imports with per-row refusals and one complete Undo/Redo action.",
++      "surface": "players_rosters",
++      "title": "Player CSV export and import",
++      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_roster_csv"
++    },
+     {
+       "backend": {
+         "command": "python3 -m mod_editor.core.nfl2k5_roster_save_to_disc --disc source.iso --save SAVEGAME.DAT --output roster_edits.json",
+diff --git a/mod_editor/core/mod_build.py b/mod_editor/core/mod_build.py
+index b325bc6b..b4f21555 100644
+--- a/mod_editor/core/mod_build.py
++++ b/mod_editor/core/mod_build.py
+@@ -1232,6 +1232,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
+         module = _core_module("nfl2k5_espn25_rosters")
+         if module is None:
+             raise RuntimeError("Historic moment rosters are unavailable in this build")
++        module.require_build_ready()
+         _, roster_preview = module.apply(module.read_resources(source))
+         receipt["espn25_rosters_preflight"] = roster_preview
+     if plan.team_names_2026:
+@@ -1911,7 +1912,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
+         else:
+             receipt["result"] = inspect(target, screen_timing=plan.screen_timing)
+     if plan.espn25_rosters:
+-        # data-only pass on the copy after every relocation pass; the option excludes a saved Anniversary plan
++        # Historic resource pass plus the guarded native reload repair, on the copy after relocations.
+         progress("Applying historic moment rosters", 0, 0)
+         module = _core_module("nfl2k5_espn25_rosters")
+         historic_receipt = module.apply_to_image(target)
+diff --git a/mod_editor/core/providers.py b/mod_editor/core/providers.py
+index 91f34a29..90106f9a 100644
+--- a/mod_editor/core/providers.py
++++ b/mod_editor/core/providers.py
+@@ -521,7 +521,7 @@ class Nfl2k5UnifiedVisualProvider:
+         "mod_editor/core/image_use.py": "78794c08fcf52debcb24d54cf62c8b1936463aedbe74929cdb5037f117b9c14d",
+         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
+         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
+-        "mod_editor/core/mod_build.py": "f80a5fa664d9a7d3328172bfb069f667b5b464cf621ba8976bc59dff0ca93815",
++        "mod_editor/core/mod_build.py": "d9a8f64d252044acd777456d5747a74e6b8d35ffc30ca80affee771f86150102",
+         "mod_editor/core/model.py": "292f0c5444e32f5cea000fd3cabd6963d7d805a5434dcbc364a36ca2c0f0d228",
+         "mod_editor/core/modpack.py": "7524c5de4d03c23997f88355c6888f1e013e5d5e62a995d07e8b963d1be9fd2a",
+         "mod_editor/core/modpack_ops.py": "897f364a0cfe42bb8fbd33f8bc97166ea25520a379a612431f00d8aefca8e5c5",
+diff --git a/packaging/check_2k5_mod_studio_runtime.py b/packaging/check_2k5_mod_studio_runtime.py
+index f81a0b48..43be448e 100644
+--- a/packaging/check_2k5_mod_studio_runtime.py
++++ b/packaging/check_2k5_mod_studio_runtime.py
+@@ -99,7 +99,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
+     "mod_editor/gui/audio_panel_qt.py":
+         "64ac47e2f3d28c374d4b0b8d44e5eba16b69ce5d70bbbeb6288ddadeb2be10ed",
+     "mod_editor/gui/studio_qt.py":
+-        "3b81d497bd50523562abae7f66b56be120ac8de959be4158562c6e3b654e4a4c",
++        "3b60f0e4b991686561c60a7586289c325a10a3e5aa8f79055584dd51477904f2",
+     "mod_editor/studio/audio_annotations.py":
+         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
+     "mod_editor/studio/audio_replacement_pack.py":
+@@ -109,7 +109,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
+     "mod_editor/studio/project_archive.py":
+         "3556062a7cf178ef416706543e71270783d04439494420810fb7a10ca7f01479",
+     "mod_editor/studio/session.py":
+-        "665ab4888cfdf5999eb7aeeb50ef870bfbed759c7d42f945a9fe054404779715",
++        "a2d52608660eae69c9cf384f2f42248daf73397a49b80ca1f622f24e1082abf0",
+ }
+ 
+ REQUIRED_UNIFIED_PROVIDER_CLOSURE = frozenset(
+@@ -2100,11 +2100,11 @@ def main() -> int:
+         check_files=False,
+     )
+     product_catalog = product_catalog_module.build_nfl2k5_product_catalog(registry)
+-    require(len(registry.capabilities) == 161,
++    require(len(registry.capabilities) == 162,
+             "canonical capability registry row count changed")
+     require(len(product_catalog.sections) == 12,
+             "product sidebar category count changed")
+-    require(len(product_catalog.capabilities) == 91,
++    require(len(product_catalog.capabilities) == 92,
+             "NFL 2K5 product capability count changed")
+     _exercise_default_provider_controller(
+         modules["mod_editor.core.controller"],
+@@ -2507,7 +2507,7 @@ def main() -> int:
+     print(
+         "2K5_MOD_STUDIO_RUNTIME_CLOSURE_PASS "
+         f"product_modules={len(product_modules)} tool_modules={len(tool_modules)} "
+-        "registry=161 sections=12 nfl2k5_capabilities=91 "
++        "registry=162 sections=12 nfl2k5_capabilities=92 "
+         "reports=16 reviewed_metadata=24 sets=634 visuals=71963 "
+         "team_kit_sets=634 team_kit_assets_per_set=39 "
+         "text_banks=716 text_strings=23346 text_editable=20074 "
+diff --git a/packaging/check_apf2k8_mod_studio_runtime.py b/packaging/check_apf2k8_mod_studio_runtime.py
+index 5a6aacdf..1464c467 100644
+--- a/packaging/check_apf2k8_mod_studio_runtime.py
++++ b/packaging/check_apf2k8_mod_studio_runtime.py
+@@ -1332,7 +1332,7 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
+         check_files=False,
+     )
+     require(
+-        len(registry.capabilities) == 161
++        len(registry.capabilities) == 162
+         and len(registry.for_game(core_model.GameId.APF2K8)) == 69,
+         "shared/APF capability registry counts changed",
+     )
+diff --git a/tests/mod_editor/test_apf_studio_installer.py b/tests/mod_editor/test_apf_studio_installer.py
+index 729c16bb..1a956364 100644
+--- a/tests/mod_editor/test_apf_studio_installer.py
++++ b/tests/mod_editor/test_apf_studio_installer.py
+@@ -357,7 +357,7 @@ class ReleaseClosureTests(unittest.TestCase):
+             runtime,
+         )
+         self.assertIn("STADIUM_MATERIAL_FINDINGS_SHA256", runtime)
+-        self.assertIn("len(registry.capabilities) == 161", runtime)
++        self.assertIn("len(registry.capabilities) == 162", runtime)
+ 
+ 
+ @unittest.skipIf(
+diff --git a/tests/mod_editor/test_phase1_packaging.py b/tests/mod_editor/test_phase1_packaging.py
+index 3ef8e546..c8254aab 100644
+--- a/tests/mod_editor/test_phase1_packaging.py
++++ b/tests/mod_editor/test_phase1_packaging.py
+@@ -568,7 +568,7 @@ class ModStudioPackagingTests(unittest.TestCase):
+         self.assertIn('"mod_editor.studio.uniform_bundle"', runtime_probe)
+         self.assertIn("_exercise_team_kit", runtime_probe)
+         self.assertIn("_exercise_workspace_recovery", runtime_probe)
+-        self.assertIn("registry=161 sections=12 nfl2k5_capabilities=91", runtime_probe)
++        self.assertIn("registry=162 sections=12 nfl2k5_capabilities=92", runtime_probe)
+         self.assertIn("stadium_textures_editable=23838", runtime_probe)
+         self.assertIn("audio=850 audio_editable=850 audio_export_only=0", runtime_probe)
+         self.assertIn("audio_streaming_ranges=53571", runtime_probe)
+diff --git a/tests/mod_editor/test_product_catalog.py b/tests/mod_editor/test_product_catalog.py
+index 7cecc65c..76805d19 100644
+--- a/tests/mod_editor/test_product_catalog.py
++++ b/tests/mod_editor/test_product_catalog.py
+@@ -152,11 +152,12 @@ class ProductCatalogTests(unittest.TestCase):
+             'nfl2k5.scripts.play_rules',
+             'nfl2k5.screens.timing',
+             'nfl2k5.textures.all_p8',
++            'nfl2k5.rosters.player_csv',
+         }
+         first_ids = [binding.capability_id for binding in first.capabilities]
+         second_ids = [binding.capability_id for binding in second.capabilities]
+ 
+-        self.assertEqual(len(first_ids), 91)  # beta 68: + uniform/shoe bump maps; beta 66: + Broadcast camera v6 (beta 65: filled star + accelerated clock)
++        self.assertEqual(len(first_ids), 92)  # beta 68: + uniform/shoe bump maps; beta 66: + Broadcast camera v6 (beta 65: filled star + accelerated clock)
+         self.assertEqual(len(first_ids), len(set(first_ids)))
+         self.assertEqual(set(first_ids), expected)
+         self.assertEqual(first_ids, second_ids)
+@@ -191,7 +192,7 @@ class ProductCatalogTests(unittest.TestCase):
+         catalog = build_nfl2k5_product_catalog(self.registry)
+         expected = {
+             ProductCategory.UNIFORMS_EQUIPMENT: (6, 5, 0, 0, 0, 1, 0),  # beta 68: + uniform/shoe bump maps
+-            ProductCategory.ROSTERS_PLAYERS: (13, 13, 0, 0, 0, 0, 0),
++            ProductCategory.ROSTERS_PLAYERS: (14, 14, 0, 0, 0, 0, 0),
+             ProductCategory.TEAM_IDENTITY: (0, 0, 0, 0, 0, 0, 0),
+             ProductCategory.FIELD_ART_CREATE_TEAM: (1, 1, 0, 0, 0, 0, 0),
+             ProductCategory.STADIUMS: (10, 6, 1, 0, 0, 3, 0),
+@@ -228,7 +229,7 @@ class ProductCatalogTests(unittest.TestCase):
+                 catalog.counts.evidence,
+                 catalog.counts.research,
+             ),
+-            (91, 71, 8, 1, 0, 8, 3),  # beta 68: + uniform/shoe bump maps
++            (92, 72, 8, 1, 0, 8, 3),  # beta 68: + uniform/shoe bump maps
+         )
+ 
+     def test_ambiguous_stadium_surface_and_team_identity_are_explicit(self) -> None:
+@@ -281,7 +282,7 @@ class ProductCatalogTests(unittest.TestCase):
+         )
+         binding = catalog.binding("nfl2k5.audio.audo_wav")
+ 
+-        self.assertEqual(len(seen), 91)
++        self.assertEqual(len(seen), 92)
+         self.assertEqual(
+             binding.findings_notes,
+             ("850 AUDO records mapped", "Export stays local"),

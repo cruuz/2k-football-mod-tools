@@ -25,7 +25,7 @@ sys.dont_write_bytecode = True
 
 ROOT = Path(__file__).resolve().parents[1]
 TOOLS = ROOT / "tools"
-EXPECTED_PRODUCT_VERSION = "0.1.0-alpha.89"
+EXPECTED_PRODUCT_VERSION = "0.1.0-alpha.90"
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 if str(TOOLS) not in sys.path:
@@ -47,9 +47,9 @@ EXTRACTOR_WINDOWS_SHA256 = (
 EXTRACTOR_LICENSE_SIZE = 3_115
 EXTRACTOR_LICENSE_SHA256 = "719d9e9a12c470a20d9f1988a03108fd99bb0b07a5340c6bbf3caf524b7adf01"
 H7A_ENCODER = ROOT / "tools/apf_h7a_optimal"
-H7A_ENCODER_SIZE = 14_472
+H7A_ENCODER_SIZE = 18_568
 H7A_ENCODER_SHA256 = (
-    "9061866e31f1a2930eceaa4fb8652ef1b7aa9b04cbce0174cc0eae125f8e49ab"
+    "d081d19c0078f768d2cb935732c910945c55d372dd9e1cc2b3e16ef9cfcf86a0"
 )
 INSTALLER = ROOT / "packaging/apf2k8_mod_studio_installer.py"
 STADIUM_MATERIAL_FINDINGS_SIZE = 2_341
@@ -108,6 +108,8 @@ PRODUCT_MODULES = (
     'mod_editor.core.apf2k8_playcall_model',
     'mod_editor.core.apf2k8_master_writer',
     'mod_editor.core.apf2k8_team_tendency',
+    'mod_editor.core.apf2k8_offensive_schemes',
+    'mod_editor.core.apf2k8_formation_calling',
     'mod_editor.core.apf2k8_playcall_curves_patch',
     'mod_editor.core.apf2k8_xex',
     'mod_editor.core.xex_codec',
@@ -149,6 +151,8 @@ PRODUCT_MODULES = (
     "mod_editor.apf_studio.roster_workspace",
     "mod_editor.apf_studio.roster_workspace_qt",
     "mod_editor.apf_studio.save_appearance",
+    "mod_editor.apf_studio.roster_appearance_transfer",
+    "mod_editor.apf_studio.roster_appearance_transfer_qt",
     "mod_editor.apf_studio.save_playbooks",
     "mod_editor.apf_studio.save_playbooks_qt",
     "mod_editor.apf_studio.session",
@@ -200,6 +204,7 @@ TOOL_MODULES = (
     "apf_roster_identity_patch",
     "apf_save_custom_team_appearance",
     "apf_stfs_roster_extract",
+    "apf_stfs_roster_rehash",
     "apf_scene",
     "apf_stadium_catalog_position_patch",
     "apf_stadium_catalog_position_verify",
@@ -1329,17 +1334,19 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
         check_files=False,
     )
     require(
-        len(registry.capabilities) == 161
-        and len(registry.for_game(core_model.GameId.APF2K8)) == 69,
+        len(registry.capabilities) == 172
+        and len(registry.for_game(core_model.GameId.APF2K8)) == 72,
         "shared/APF capability registry counts changed",
     )
     cards = catalog.build_capability_cards()
-    require(len(cards) == 69 and len({item.capability_id for item in cards}) == 69,
-            "APF capability surface is not exactly 69 unique rows")
+    require(len(cards) == 72 and len({item.capability_id for item in cards}) == 72,
+            "APF capability surface is not exactly 72 unique rows")
     require(len(models.APF_CATEGORY_ORDER) == 14,
             "APF complete sidebar category count changed")
     editable = {item.capability_id for item in cards if item.status is models.ApfStatus.EDITABLE}
     expected_editable = {
+        "apf2k8.playbooks.offensive_schemes",
+        "apf2k8.playbooks.never_call",
         'apf2k8.cpu_ai_draft.play_design.concept_recipes',
         'apf2k8.cpu_ai_draft.play_design.cpu_calls',
         'apf2k8.cpu_ai_draft.play_design.create_formation',
@@ -1985,6 +1992,21 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
         ].default
         is False,
         "raw/STFS custom-team appearance safety/runtime boundary changed",
+    )
+    transfer = modules["mod_editor.apf_studio.roster_appearance_transfer"]
+    transfer_qt = modules["mod_editor.apf_studio.roster_appearance_transfer_qt"]
+    rehash = importlib.import_module("apf_stfs_roster_rehash")
+    require(
+        transfer.SCHEMA == "apf2k8_roster_appearance_transfer/v1"
+        and callable(transfer.inspect_transfer_source)
+        and callable(transfer.write_transfer)
+        and callable(transfer.verify_transfer)
+        and hasattr(transfer_qt, "RosterAppearanceTransferDialog")
+        and rehash.SCHEMA == "apf2k8_stfs_roster_rehash/v1"
+        and callable(rehash.rehash_roster)
+        and callable(rehash.verify_rehash)
+        and rehash.XENIA_ONLY == "Xenia only; a real console will reject this package",
+        "Roster appearance transfer/Xenia-only rehash contract changed",
     )
     for refused_slot in (31, 40, True):
         try:

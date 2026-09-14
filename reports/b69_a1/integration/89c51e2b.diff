@@ -1,0 +1,390 @@
+diff --git a/mod_editor/capabilities/registry.v1.json b/mod_editor/capabilities/registry.v1.json
+index 3d2777cb..853c2fdc 100644
+--- a/mod_editor/capabilities/registry.v1.json
++++ b/mod_editor/capabilities/registry.v1.json
+@@ -10714,7 +10714,11 @@
+         "tests/mod_editor/test_nfl2k5_equipment_texture_native.py",
+         "tests/mod_editor/test_nfl2k5_equipment_retail_roundtrip.py",
+         "tests/mod_editor/test_nfl2k5_equipment_consumers.py",
+-        "ASTRA_B68_T2_REPORT.md"
++        "ASTRA_B68_T2_REPORT.md",
++        "tests/mod_editor/test_b69_j1_build.py",
++        "tests/mod_editor/test_b69_j1_fit.py",
++        "tests/mod_editor/test_b69_j1_native.py",
++        "ASTRA_B69_J1_REPORT.md"
+       ],
+       "game": "nfl2k5_xbox",
+       "gui": {
+@@ -10729,7 +10733,7 @@
+         "The catalog keeps all 11,395 standalone targets editable: 7,315 reviewed P8 targets and all 4,080 reviewed explicit-size A1R5G5B5 p001..p006/p011..p016 player strips. Outer 581 p005 is a proved transactional two-piece span across physical packs 0 and 1. A8R8G8B8, DXT1, VC_P8_LINEAR, crowdbase, seat, and unreviewed A1R5G5B5 layouts remain refused.",
+         "The 1,585 team-linked slots in logos.cdf, mini.cdf, and flipchip.cdf are raw P8 fixed-slot resources: imports preserve their wrapper, descriptor/system bytes, exact resource span, and 96-byte slot padding, regenerate only swizzled indices plus palette, and never invoke VC-LZ. The 170 franchise-office and draft/PDA logo resources retain their exact compressed P8 spans.",
+         "All Textures also edits 28,530 reviewed package-local socks, elbow-pad, glove, long-sleeve, shoe, and wristband P8 palettes. Each import preserves that TSET's shared retail index/mip chain and every unselected sibling palette and decoded image.",
+-        "Socks, gloves and shoes can own a selected independent mip chain; new imports default to that choice. Global equipment rows offer All teams only, and explicit per-team requests are refused. shoes09/Style 3 and shoes10/Style 6 read each team's selected uniform package; players must select the corresponding shoe style. Unchanged retail exports at original size preserve the pinned palette and all distance images, reusing an identical shared chain when possible; otherwise exact allocation must fit or the import is refused. Half/quarter images explicitly discard detail; new art can also merge colours to fit P8 or the fixed span, with measured errors in the receipt. Siblings and retail wrapper scratch stay exact. All new in-game appearance remains unwitnessed.",
++        "Socks, gloves and shoes can own a selected independent mip chain; new imports default to that choice. Global equipment rows offer All teams only. The beta-69 bounded native cache fill, HOME/AWAY lookup and field selector bind shoes10/Style 6 through separate clean and _mud rows; the earlier Style 3/shoes09 selector proof remains narrower; missing local names fall back to the newest loaded package. maumau78 reported a Style 6 Edit Player success and Bears in-game failure on beta 68; that report remains unresolved. Package, clean/mud state, roster transport and GPU visibility need a played retest. Original-size recognized retail artwork preserves its palette and complete mip chain, including legacy imports now compiled as an exact no-op. Unhonourable restored equipment groups are refused before publishing a loaded session. Fit refusals report measured byte shortfalls and offer a checked smaller-size retry when available. A smaller size and fewer shades lose detail. No larger-allocation option is shipped: chunk-loader growth alone does not prove archive relocation. Wrapper +0x14 and unselected sibling images remain exact. All current in-game outcomes are UNWITNESSED.",
+         "Compressed replacements are recompressed into the original byte span, while reviewed raw replacements retain the complete fixed-slot structure; an image that cannot satisfy its owning transport is refused rather than moving anything on the disc.",
+         "Targets are addressed by outer package index and texture name. Uniform and menu-presentation targets also carry typed team names, abbreviations, asset code, style, physical-set selectors, archive name, and consumer scope; unresolved stadium targets still use package indices and preview identification.",
+         "Franchise-office team logos are presentation assets, not midfield art. Stock midfield center_logo exists only in the create-team packages."
+@@ -10781,7 +10785,7 @@
+       "summary": "Replace all 11,395 standalone textures, including every uniform package's four P8 presentation variants, all raw aggregate menu-logo/mini-card slots, every franchise/draft logo surface, and all 4,080 explicit-size A1 player strips through a transactional cross-pack route where needed; also replace 28,530 package-local uniform-equipment palettes while preserving fixed spans and all unselected siblings.",
+       "surface": "textures",
+       "title": "NFL 2K5 All Textures \u2014 standalone and uniform-equipment editing",
+-      "validation_command": "bash tools/validate_nfl_all_texture_lane.sh"
++      "validation_command": "python3 -m tests.mod_editor.test_b69_j1_fit"
+     },
+     {
+       "backend": {
+@@ -10903,7 +10907,11 @@
+         "tests/mod_editor/test_nfl2k5_equipment_texture_native.py",
+         "tests/mod_editor/test_nfl2k5_equipment_retail_roundtrip.py",
+         "tests/mod_editor/test_nfl2k5_equipment_consumers.py",
+-        "ASTRA_B68_T2_REPORT.md"
++        "ASTRA_B68_T2_REPORT.md",
++        "tests/mod_editor/test_b69_j1_build.py",
++        "tests/mod_editor/test_b69_j1_fit.py",
++        "tests/mod_editor/test_b69_j1_native.py",
++        "ASTRA_B69_J1_REPORT.md"
+       ],
+       "game": "nfl2k5_xbox",
+       "gui": {
+@@ -10920,11 +10928,12 @@
+         "Player portraits are exact 128x128 RGBA8 PNGs selected by a proved four-digit numeric portrait ID; cross-pack slots are reconstructed as bounded physical spans.",
+         "Crib Team Photos are exact 128x128 RGBA8 PNGs selected by a canonical crib_team_photo:##_photo_0# selector; all five fixed P8 mips are regenerated.",
+         "The Stadium texture route accepts an exact 64x64 RGBA8 PNG only for nfl2k5.stadium.o3280.c0005.scene2648.texture0002 (cement01); all 33 linked surfaces change together, and fixed-allocation compression overflow is refused.",
+-        "Socks, gloves and shoes can own a selected independent mip chain; new imports default to that choice. Global equipment rows offer All teams only, and explicit per-team requests are refused. shoes09/Style 3 and shoes10/Style 6 read each team's selected uniform package; players must select the corresponding shoe style. Unchanged retail exports at original size preserve the pinned palette and all distance images, reusing an identical shared chain when possible; otherwise exact allocation must fit or the import is refused. Half/quarter images explicitly discard detail; new art can also merge colours to fit P8 or the fixed span, with measured errors in the receipt. Siblings and retail wrapper scratch stay exact. All new in-game appearance remains unwitnessed.",
++        "Socks, gloves and shoes can own a selected independent mip chain; new imports default to that choice. Global equipment rows offer All teams only. The beta-69 bounded native cache fill, HOME/AWAY lookup and field selector bind shoes10/Style 6 through separate clean and _mud rows; the earlier Style 3/shoes09 selector proof remains narrower; missing local names fall back to the newest loaded package. maumau78 reported a Style 6 Edit Player success and Bears in-game failure on beta 68; that report remains unresolved. Package, clean/mud state, roster transport and GPU visibility need a played retest. Original-size recognized retail artwork preserves its palette and complete mip chain, including legacy imports now compiled as an exact no-op. Unhonourable restored equipment groups are refused before publishing a loaded session. Fit refusals report measured byte shortfalls and offer a checked smaller-size retry when available. A smaller size and fewer shades lose detail. No larger-allocation option is shipped: chunk-loader growth alone does not prove archive relocation. Wrapper +0x14 and unselected sibling images remain exact. All current in-game outcomes are UNWITNESSED.",
+         "Menu Back accepts only mono PCM16LE at exactly 16,000 Hz and 5,696 frames; it is encoded into the one proved fixed AUDO payload while preserving its wrapper and metadata.",
+         "Additional standalone audio accepts any of 849 non-Menu-Back catalog asset IDs plus a strict PCM16LE WAV matching that row's exact channel count, rate, and frame count; 697 alias-related rows carry a prominent warning because their runtime cue meaning remains unproved.",
+         "Equal decoded uniform content across selectors is not shared storage: all 3,170 audited torso, pants, sleeve, and live-helmet targets have distinct non-overlapping XISO spans.",
+-        "Every target must exist in the canonical compatibility inventory; compressed artwork that does not fit is refused."
++        "Every target must exist in the canonical compatibility inventory; compressed artwork that does not fit is refused.",
++        "Build failures name the active phase, original project edit index, page, part, uniform set and texture. The Build list enumerates all canonical project edits and ranks changes observed in the current session newest first; old archives have no historical edit times, which the list explicitly discloses."
+       ],
+       "portme": [
+         "Runtime-capture every supported family and selector class.",
+@@ -10967,7 +10976,7 @@
+       "summary": "Build one verified copied NFL 2K5 XISO containing a composed set of supported visual, text, roster, portrait, Crib, Stadium, package-local equipment, Menu Back, and exact standalone-audio physical-slot edits.",
+       "surface": "uniforms",
+       "title": "NFL 2K5 unified visual/data/audio mod project",
+-      "validation_command": "bash tools/validate_nfl2k5_visual_mod_project.sh"
++      "validation_command": "python3 -m tests.mod_editor.test_b69_j1_fit"
+     },
+     {
+       "backend": {
+diff --git a/mod_editor/core/nfl2k5_equipment_import.py b/mod_editor/core/nfl2k5_equipment_import.py
+index 863545a9..e0cdb663 100644
+--- a/mod_editor/core/nfl2k5_equipment_import.py
++++ b/mod_editor/core/nfl2k5_equipment_import.py
+@@ -29,11 +29,10 @@ CONSUMER_SCHEMA = "nfl2k5_equipment_consumer_fanout/v1"
+ GLOBAL_RULE = (
+     "All teams share this style because the game reads its texture from the most recently loaded uniform package."
+ )
+-CONTEXT_FIRST_RULE = "The game reads this variant from each team's own uniform package."
+-PACKAGE_LOCAL_SHOE_HELP = (
+-    "For team-specific shoe artwork, import shoes09 (Style 3) or shoes10 (Style 6) "
+-    "in each uniform package you use, and select that style for each player's left and right shoe."
+-)
++CONTEXT_FIRST_RULE = (
++    "Native lookup checks the selected HOME/AWAY package, with separate clean and dirty artwork. "
++    "A missing local texture falls back to the newest loaded package. In-game outcome UNWITNESSED.")
++from .nfl2k5_equipment_import_intent import SHOE_ROUTE_HELP as PACKAGE_LOCAL_SHOE_HELP
+ ALL_TEAMS = "all-teams"
+ SELECTED_PACKAGE = "selected-package"
+ 
+@@ -160,7 +159,7 @@ def stage_equipment_import(session: Any, asset: Any, path: Path, *,
+         requested = sorted(current if restoring else [*current, (asset.asset_id, staged)])
+         if requested:
+             _span, _previews, receipt, _selector, _target = build_unified_uniform_equipment_imports(
+-                session.cache.pack0, requested,
++                session.cache.pack0, requested, fit_asset_id=asset.asset_id,
+             )
+         else:
+             receipt = {"schema": "nfl2k5_equipment_import_restore/v1", "asset_id": asset.asset_id,
+@@ -186,6 +185,15 @@ def stage_equipment_import(session: Any, asset: Any, path: Path, *,
+                 canonical, copy.asset_id, rgba, independent=independent, scale=scale,
+             ))
+             rows.append((copy_asset, copy_png))
++        from mod_editor.core.nfl2k5_uniform_equipment_writer import preflight_project_equipment
++        incoming = {row_asset.asset_id: row_path for row_asset, row_path in rows}
++        complete = {edit.asset_id: edit.replacement_path for edit in session.iter_edits()
++                    if edit.asset_id in by_id and edit.asset_id not in incoming}
++        if not restoring:
++            complete.update(incoming)
++        preflight_project_equipment(session.cache.pack0, [
++            (None, asset_id, png) for asset_id, png in sorted(complete.items())
++        ])
+         result = session.replace_batch(tuple(rows), label="Import equipment texture")
+     staged_ids = tuple(row_asset.asset_id for row_asset, _row_path in rows)
+     consumer_ids = tuple(item.asset_id for item in consumers)
+diff --git a/mod_editor/core/providers.py b/mod_editor/core/providers.py
+index ba126799..cef37535 100644
+--- a/mod_editor/core/providers.py
++++ b/mod_editor/core/providers.py
+@@ -729,7 +729,7 @@ class Nfl2k5UnifiedVisualProvider:
+         "mod_editor/studio/audio_bundle.py": "fafc659024246d1cff782ab07f6c744c97a563f64fedca8a288f3126fbeb4604",
+         "mod_editor/studio/music_service.py": "594e9e51859e1387c887da8f5f7a2299bd3657ef44443936d23b4e80d1838a04",
+         "mod_editor/studio/project_archive.py": "3556062a7cf178ef416706543e71270783d04439494420810fb7a10ca7f01479",
+-        "mod_editor/studio/session.py": "665ab4888cfdf5999eb7aeeb50ef870bfbed759c7d42f945a9fe054404779715",
++        "mod_editor/studio/session.py": "a2d52608660eae69c9cf384f2f42248daf73397a49b80ca1f622f24e1082abf0",
+         "tools/apf_inner.py": "4175688c9df2cb8d8253f5b4d08570a3a3486cb9856d000a4146e5a952982847",
+         "tools/apf_outer.py": "e9ce600393f9c9f6b372bb385e9486a655167bf6cc9ef256cc96c8439957cd31",
+         "tools/game_audio_convert.py": "3ba3f1f4c2aa452198a12e65d8e93e8d690988d0a6a88c80d7c5de91c1e5a983",
+diff --git a/mod_editor/gui/build_panel_qt.py b/mod_editor/gui/build_panel_qt.py
+index bb609711..3af77948 100644
+--- a/mod_editor/gui/build_panel_qt.py
++++ b/mod_editor/gui/build_panel_qt.py
+@@ -151,14 +151,28 @@ class BuildPanel(QWidget):
+         title.setObjectName("throwTitle")
+         root.addWidget(title)
+         intro = QLabel("Choose a preset or select changes, then Make my disc. The source stays unchanged. "
+-                       "This uses the selections on this tab; project edits (art, text, audio) use Make disc "
+-                       "from project on their own pages. " + XEMU_LINE + " "
++                       "This build includes the selected Build options and every edit listed below from the open project, "
++                       "including staged model, art, text and audio edits. Equipment keeps the game's existing compressed "
++                       "allocation; larger equipment art is not available. Review each import's chosen size and colour-loss report. " + XEMU_LINE + " "
+                        "Your disc: ~/2K5 Mod Studio Builds/NFL 2K5 Modded.xiso.iso. "
+                        "To play again later: open xemu, then Machine > Load Disc. "
+                        "Launch shows the exact file and folder if you saved elsewhere.")
+         intro.setObjectName("throwMuted")
+         intro.setWordWrap(True)
+         root.addWidget(intro)
++        self.project_includes_heading = QLabel("What this build includes")
++        root.addWidget(self.project_includes_heading)
++        self.project_includes_list = QPlainTextEdit()
++        self.project_includes_list.setObjectName("buildProjectIncludes")
++        self.project_includes_list.setReadOnly(True)
++        self.project_includes_list.setMaximumHeight(200)
++        self.project_includes_list.setPlaceholderText("No project edits. Selected Build options are listed below.")
++        root.addWidget(self.project_includes_list)
++        self.project_includes_note = QLabel(
++            "Newest changes in this session first. Older project files do not record original edit times. "
++            "The project edit index identifies the edit if a build refuses it.")
++        self.project_includes_note.setWordWrap(True)
++        root.addWidget(self.project_includes_note)
+ 
+         src = QHBoxLayout()
+         self.source_caption = QLabel("Game disc (.iso)")
+diff --git a/mod_editor/gui/studio_qt.py b/mod_editor/gui/studio_qt.py
+index 32489f80..9d7e4f00 100644
+--- a/mod_editor/gui/studio_qt.py
++++ b/mod_editor/gui/studio_qt.py
+@@ -2106,6 +2106,7 @@ class StudioMainWindow(QMainWindow):
+                 self._music_panel.set_playlist_options(visible)
+         finally:
+             self._restoring_music_playlist = False
++        self._refresh_build_includes()
+ 
+     def _build_music_shuffle_changed(self, enabled):
+         if self._restoring_music_playlist:
+@@ -5612,6 +5613,20 @@ class StudioMainWindow(QMainWindow):
+         path = fitted
+ 
+         def success(result: object) -> None:
++            nonlocal equipment_choice
++            from mod_editor.core.nfl2k5_uniform_equipment_writer import EquipmentFitError
++            from mod_editor.gui.equipment_texture_import_dialog import EquipmentFitRetryDialog
++            if isinstance(result, EquipmentFitError):
++                retry = EquipmentFitRetryDialog(asset, result, self)
++                if retry.exec_() == retry.Accepted and retry.scale is not None:
++                    independent, _old_scale, scope = equipment_choice
++                    equipment_choice = (independent, retry.scale, scope)
++                    self._defer_until_blocking_task_finished(lambda: self._start_task(
++                        replace_texture, success, label=f"Checking and replacing {asset.label}",
++                        blocking=True, on_error=failed))
++                else:
++                    failed(str(result))
++                return
+             if getattr(result, "changed_asset_ids", None) == ():
+                 if pending_master is not None:
+                     pending_master.source_image.unlink(missing_ok=True)
+@@ -5667,9 +5682,13 @@ class StudioMainWindow(QMainWindow):
+         def replace_texture(progress: ProgressSink) -> object:
+             if equipment_choice is not None:
+                 independent, scale, scope = equipment_choice
+-                return self.facade.replace_equipment_texture(
+-                    asset, path, progress, independent=independent, scale=scale, scope=scope,
+-                )
++                from mod_editor.core.nfl2k5_uniform_equipment_writer import EquipmentFitError
++                try:
++                    return self.facade.replace_equipment_texture(
++                        asset, path, progress, independent=independent, scale=scale, scope=scope,
++                    )
++                except EquipmentFitError as exc:
++                    return exc
+             return self.facade.replace_asset(asset, path, progress)
+ 
+         self._start_task(
+@@ -7711,12 +7730,14 @@ class StudioMainWindow(QMainWindow):
+                 self._load_selected_unif_colors()
+ 
+             self._defer_until_blocking_task_finished(refresh_loaded_project)
++            self._refresh_build_includes(baseline=True)
+ 
+         self._start_task(
+             lambda progress: self.facade.load_project(source, progress),
+             success,
+             label="Opening and validating the project",
+             blocking=True,
++            show_errors=False,
+         )
+ 
+     def _choose_replacement(self) -> None:
+@@ -8625,6 +8646,25 @@ class StudioMainWindow(QMainWindow):
+         if self._save_project_action is not None:
+             self._save_project_action.setToolTip(save_tip)
+ 
++    def _refresh_build_includes(self, *, baseline=False):
++        from tools.nfl2k5_visual_mod_project import ProjectEditTimeline
++        session = getattr(self.facade, "_session", None)
++        if getattr(self, "_build_includes_session", None) is not session:
++            self._build_includes_session = session
++            self._build_includes_timeline = ProjectEditTimeline()
++            baseline = bool(session and getattr(session, "modified_count", 0))
++        if not hasattr(self, "_build_includes_timeline"):
++            self._build_includes_timeline = ProjectEditTimeline()
++        try:
++            document = session.canonical_document() if session and session.modified_count else {"edits": []}
++            rows = self._build_includes_timeline.observe(document, baseline=baseline)
++            text = "\n".join(row["label"] for row in rows)
++        except Exception as exc:
++            text = f"The project edit list could not be read: {exc}. Resolve this before building."
++        self._build_includes_text = text
++        if self._build_panel is not None:
++            self._build_panel.project_includes_list.setPlainText(text)
++
+     def _refresh_edit_state(self, *, rebuild_components: bool = False) -> None:
+         count = int(getattr(self.facade, "modified_count", 0))
+         metadata_count = int(getattr(self.facade, "project_metadata_count", 0))
+@@ -8656,6 +8696,7 @@ class StudioMainWindow(QMainWindow):
+             self._filter_uniforms()
+         self._refresh_project_document_state()
+         self._refresh_action_states()
++        self._refresh_build_includes()
+ 
+     def _refresh_action_states(self) -> None:
+         self._sync_music_service()
+@@ -8980,6 +9021,7 @@ class StudioMainWindow(QMainWindow):
+         tabs.setAccessibleName("Build and share workspaces")
+         self._build_share_page = tabs
+         self._build_panel = BuildPanel(self.facade, available=self._available_build_options)
++        self._refresh_build_includes()
+         # The MyCareer picker follows the position-pools option (EDGE and LB only
+         # when it is on); either panel may be built first.
+         self._sync_mycareer_position_scheme()
+diff --git a/mod_editor/studio/session.py b/mod_editor/studio/session.py
+index 561609e6..c44e56dc 100644
+--- a/mod_editor/studio/session.py
++++ b/mod_editor/studio/session.py
+@@ -4179,6 +4179,12 @@ class StudioSession:
+             private_root=self.root,
+         )
+         try:
++            from mod_editor.core.nfl2k5_uniform_equipment_writer import preflight_project_equipment
++            preflight_project_equipment(self.cache.pack0, [
++                (None, row.asset.asset_id, row.staged_path)
++                for row in loaded.edits
++                if getattr(row.asset, "kind", None) == "uniform_equipment_texture"
++            ])
+             new_play_routes: dict[str, PlayRouteCloneRequest] = {}
+             if loaded.play_route_edits:
+                 inspector = self.playbook_inspector
+diff --git a/tests/mod_editor/test_b69_j1_wiring.py b/tests/mod_editor/test_b69_j1_wiring.py
+index f8d03729..104e88a4 100644
+--- a/tests/mod_editor/test_b69_j1_wiring.py
++++ b/tests/mod_editor/test_b69_j1_wiring.py
+@@ -1,4 +1,4 @@
+-"""Execute the complete proposed Studio method with real offscreen dialogs."""
++"""Exercise both the handoff and applied Studio wiring with real offscreen dialogs."""
+ import os
+ import inspect
+ from pathlib import Path
+@@ -23,10 +23,28 @@ class WiringTests(unittest.TestCase):
+     @classmethod
+     def setUpClass(cls): cls.app=QApplication.instance() or QApplication([])
+ 
++    def equipment_method_source(self):
++        return (ROOT/'reports/b69_j1/studio-equipment-method.py.txt').read_text()
++
++    def build_list_method_source(self):
++        wiring=(ROOT/'WIRING_B69_J1.md').read_text()
++        return next(block for block in re.findall(r'```python\n(.*?)```',wiring,re.S)
++                    if 'def _refresh_build_includes(' in block)
++
++    def load_method_source(self, session_module):
++        wiring=(ROOT/'WIRING_B69_J1.md').read_text()
++        hook=next(block for block in re.findall(r'```python\n(.*?)```',wiring,re.S)
++                  if 'preflight_project_equipment(self.cache.pack0' in block)
++        source=textwrap.dedent(inspect.getsource(session_module.StudioSession.load_shareable_project))
++        # The handoff is idempotent when the protected hook has already landed.
++        if 'preflight_project_equipment(self.cache.pack0' not in source:
++            source=source.replace('    try:\n', '    try:\n'+textwrap.indent(textwrap.dedent(hook),'        '),1)
++        return source
++
+     def test_try_that_restarts_after_blocking_task_and_keeps_scope_and_pixels(self):
+         namespace={'Path':Path,'ValidationError':ValidationError,
+                    '_result_message':lambda result,default:getattr(result,'message',default)}
+-        source=(ROOT/'reports/b69_j1/studio-equipment-method.py.txt').read_text()
++        source=self.equipment_method_source()
+         exec('from __future__ import annotations\n'+source,namespace)
+         calls=[]
+         asset=SimpleNamespace(asset_id='tset:3653:9:4:shoes10',label='Bears shoe',
+@@ -72,9 +90,7 @@ class WiringTests(unittest.TestCase):
+         self.assertEqual(owner.changes,1)
+ 
+     def test_build_list_method_renders_all_original_indices_and_newest_observed_edit(self):
+-        wiring=(ROOT/'WIRING_B69_J1.md').read_text()
+-        block=next(block for block in re.findall(r'```python\n(.*?)```',wiring,re.S)
+-                   if 'def _refresh_build_includes(' in block)
++        block=self.build_list_method_source()
+         namespace={}
+         exec(textwrap.dedent(block),namespace)
+         doc={'edits':[dict(kind='torso',asset_code='02',side='H',variant=0),
+@@ -95,11 +111,7 @@ class WiringTests(unittest.TestCase):
+     def test_load_hook_refuses_real_unfit_group_and_cleans_before_session_mutation(self):
+         from mod_editor.studio import session as session_module
+         from test_b69_j1_fit import tight_fixture
+-        wiring=(ROOT/'WIRING_B69_J1.md').read_text()
+-        hook=next(block for block in re.findall(r'```python\n(.*?)```',wiring,re.S)
+-                  if 'preflight_project_equipment(self.cache.pack0' in block)
+-        source=textwrap.dedent(inspect.getsource(session_module.StudioSession.load_shareable_project))
+-        source=source.replace('    try:\n', '    try:\n'+textwrap.indent(textwrap.dedent(hook),'        '),1)
++        source=self.load_method_source(session_module)
+         with tempfile.TemporaryDirectory() as folder:
+             root=Path(folder).resolve();fixture,rgba=tight_fixture(root)
+             asset,png=fixture.png(rgba=rgba)
+@@ -118,4 +130,36 @@ class WiringTests(unittest.TestCase):
+             self.assertIs(owner._edits,sentinel)
+ 
+ 
++class AppliedWiringTests(WiringTests):
++    """Run the same behavioral contracts against the installed production methods."""
++
++    def equipment_method_source(self):
++        from mod_editor.gui.studio_qt import StudioMainWindow
++        return textwrap.dedent(inspect.getsource(StudioMainWindow._replace_visual_asset))
++
++    def build_list_method_source(self):
++        from mod_editor.gui.studio_qt import StudioMainWindow
++        return textwrap.dedent(inspect.getsource(StudioMainWindow._refresh_build_includes))
++
++    def load_method_source(self, session_module):
++        return textwrap.dedent(inspect.getsource(session_module.StudioSession.load_shareable_project))
++
++    def test_applied_shell_keeps_model_signal_and_inline_load_errors(self):
++        from mod_editor.gui.studio_qt import StudioMainWindow
++        for name in ('_refresh_edit_state', '_build_build_share_page', '_restore_music_build_settings'):
++            self.assertIn('self._refresh_build_includes()', inspect.getsource(getattr(StudioMainWindow,name)))
++        source=inspect.getsource(StudioMainWindow._load_project_path)
++        self.assertIn('_refresh_build_includes(baseline=True)',source)
++        self.assertIn('show_errors=False',source)
++        self.assertIn('project_changed.connect(self._models_project_changed)',inspect.getsource(StudioMainWindow))
++        self.assertTrue(callable(StudioMainWindow._models_project_changed))
++        from mod_editor.core import nfl2k5_equipment_import as imports
++        from mod_editor.core.nfl2k5_equipment_import_intent import SHOE_ROUTE_HELP
++        self.assertEqual(imports.PACKAGE_LOCAL_SHOE_HELP,SHOE_ROUTE_HELP)
++        source=inspect.getsource(imports.stage_equipment_import)
++        self.assertIn('fit_asset_id=asset.asset_id',source)
++        self.assertLess(source.index('preflight_project_equipment(session.cache.pack0'),source.index('session.replace_batch'))
++        self.assertIn('UNWITNESSED',imports.CONTEXT_FIRST_RULE)
++
++
+ if __name__=='__main__':unittest.main()

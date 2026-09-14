@@ -1,0 +1,8 @@
+.....serror: /tmp/tmpkt94ft6z/missing.img is not a file
+.....
+----------------------------------------------------------------------
+Ran 11 tests in 0.303s
+
+OK (skipped=1)
+49 files written, 0 identical files skipped, 7 saves -> /tmp/tmpkt94ft6z/fixtures3
+wrote /tmp/tmpkt94ft6z/fixtures3/CATALOGUE.md

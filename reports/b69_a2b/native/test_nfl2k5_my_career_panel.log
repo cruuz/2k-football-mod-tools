@@ -1,0 +1,22 @@
+.F..
+======================================================================
+FAIL: test_position_choice_drives_templates_contract_and_options (__main__.PanelTests.test_position_choice_drives_templates_contract_and_options)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a2b/tests/mod_editor/test_nfl2k5_my_career_panel.py", line 67, in test_position_choice_drives_templates_contract_and_options
+    self.assertEqual([self.page.template.itemText(i) for i in range(self.page.template.count())],
+AssertionError: Lists differ: ['Scrambling QB', 'Gunslinger QB (Pocket template)', 'Balanced QB', 'Pocket QB'] != ['Scrambling QB', 'Gunslinger QB', 'Balanced QB', 'Pocket QB']
+
+First differing element 1:
+'Gunslinger QB (Pocket template)'
+'Gunslinger QB'
+
+- ['Scrambling QB', 'Gunslinger QB (Pocket template)', 'Balanced QB', 'Pocket QB']
+?                                 ------------------
+
++ ['Scrambling QB', 'Gunslinger QB', 'Balanced QB', 'Pocket QB']
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.178s
+
+FAILED (failures=1)

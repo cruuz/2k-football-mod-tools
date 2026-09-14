@@ -1,0 +1,314 @@
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+...This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+.Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/apf_studio/gui.py", line 20924, in _activate_page
+    polish_controls(page)
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/gui/polish_qt.py", line 52, in polish_controls
+    label = _field_label(widget)
+            ^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/gui/polish_qt.py", line 21, in _field_label
+    layout = parent.layout()
+             ^^^^^^^^^^^^^^^
+TypeError: 'QHBoxLayout' object is not callable
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/apf_studio/gui.py", line 20924, in _activate_page
+    polish_controls(page)
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/gui/polish_qt.py", line 52, in polish_controls
+    label = _field_label(widget)
+            ^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/gui/polish_qt.py", line 21, in _field_label
+    layout = parent.layout()
+             ^^^^^^^^^^^^^^^
+TypeError: 'QHBoxLayout' object is not callable
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/apf_studio/gui.py", line 20924, in _activate_page
+    polish_controls(page)
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/gui/polish_qt.py", line 52, in polish_controls
+    label = _field_label(widget)
+            ^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/gui/polish_qt.py", line 21, in _field_label
+    layout = parent.layout()
+             ^^^^^^^^^^^^^^^
+TypeError: 'QHBoxLayout' object is not callable
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/apf_studio/gui.py", line 20924, in _activate_page
+    polish_controls(page)
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/gui/polish_qt.py", line 52, in polish_controls
+    label = _field_label(widget)
+            ^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/gui/polish_qt.py", line 21, in _field_label
+    layout = parent.layout()
+             ^^^^^^^^^^^^^^^
+TypeError: 'QHBoxLayout' object is not callable
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/apf_studio/gui.py", line 20924, in _activate_page
+    polish_controls(page)
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/gui/polish_qt.py", line 52, in polish_controls
+    label = _field_label(widget)
+            ^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/gui/polish_qt.py", line 21, in _field_label
+    layout = parent.layout()
+             ^^^^^^^^^^^^^^^
+TypeError: 'QHBoxLayout' object is not callable
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/apf_studio/gui.py", line 20924, in _activate_page
+    polish_controls(page)
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/gui/polish_qt.py", line 52, in polish_controls
+    label = _field_label(widget)
+            ^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/gui/polish_qt.py", line 21, in _field_label
+    layout = parent.layout()
+             ^^^^^^^^^^^^^^^
+TypeError: 'QHBoxLayout' object is not callable
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/apf_studio/gui.py", line 20924, in _activate_page
+    polish_controls(page)
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/gui/polish_qt.py", line 52, in polish_controls
+    label = _field_label(widget)
+            ^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/gui/polish_qt.py", line 21, in _field_label
+    layout = parent.layout()
+             ^^^^^^^^^^^^^^^
+TypeError: 'QHBoxLayout' object is not callable
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/apf_studio/gui.py", line 20924, in _activate_page
+    polish_controls(page)
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/gui/polish_qt.py", line 52, in polish_controls
+    label = _field_label(widget)
+            ^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/gui/polish_qt.py", line 21, in _field_label
+    layout = parent.layout()
+             ^^^^^^^^^^^^^^^
+TypeError: 'QHBoxLayout' object is not callable
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/apf_studio/gui.py", line 20924, in _activate_page
+    polish_controls(page)
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/gui/polish_qt.py", line 52, in polish_controls
+    label = _field_label(widget)
+            ^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/gui/polish_qt.py", line 21, in _field_label
+    layout = parent.layout()
+             ^^^^^^^^^^^^^^^
+TypeError: 'QHBoxLayout' object is not callable
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/apf_studio/gui.py", line 20924, in _activate_page
+    polish_controls(page)
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/gui/polish_qt.py", line 52, in polish_controls
+    label = _field_label(widget)
+            ^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/gui/polish_qt.py", line 21, in _field_label
+    layout = parent.layout()
+             ^^^^^^^^^^^^^^^
+TypeError: 'QHBoxLayout' object is not callable
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/apf_studio/gui.py", line 20924, in _activate_page
+    polish_controls(page)
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/gui/polish_qt.py", line 52, in polish_controls
+    label = _field_label(widget)
+            ^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/gui/polish_qt.py", line 21, in _field_label
+    layout = parent.layout()
+             ^^^^^^^^^^^^^^^
+TypeError: 'QHBoxLayout' object is not callable
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/apf_studio/gui.py", line 20924, in _activate_page
+    polish_controls(page)
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/gui/polish_qt.py", line 52, in polish_controls
+    label = _field_label(widget)
+            ^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/gui/polish_qt.py", line 21, in _field_label
+    layout = parent.layout()
+             ^^^^^^^^^^^^^^^
+TypeError: 'QHBoxLayout' object is not callable
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/apf_studio/gui.py", line 20924, in _activate_page
+    polish_controls(page)
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/gui/polish_qt.py", line 52, in polish_controls
+    label = _field_label(widget)
+            ^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/gui/polish_qt.py", line 21, in _field_label
+    layout = parent.layout()
+             ^^^^^^^^^^^^^^^
+TypeError: 'QHBoxLayout' object is not callable
+...Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/apf_studio/gui.py", line 20924, in _activate_page
+    polish_controls(page)
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/gui/polish_qt.py", line 52, in polish_controls
+    label = _field_label(widget)
+            ^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1/mod_editor/gui/polish_qt.py", line 21, in _field_label
+    layout = parent.layout()
+             ^^^^^^^^^^^^^^^
+TypeError: 'QHBoxLayout' object is not callable
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+.
+----------------------------------------------------------------------
+Ran 8 tests in 18.123s
+
+OK

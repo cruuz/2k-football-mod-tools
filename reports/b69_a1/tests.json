@@ -1,0 +1,3857 @@
+[
+  {
+    "path": "tests/mod_editor/test_apf_b69_build.py",
+    "returncode": 0,
+    "seconds": 31.778,
+    "summary": [
+      "Ran 1 test in 30.909s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_b69_build.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_control_audit.py",
+    "returncode": 0,
+    "seconds": 0.372,
+    "summary": [
+      "Ran 1 test in 0.222s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_b69_control_audit.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_editor_qt.py",
+    "returncode": 0,
+    "seconds": 80.318,
+    "summary": [
+      "Ran 4 tests in 79.458s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_b69_editor_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_formation_calling.py",
+    "returncode": 0,
+    "seconds": 0.565,
+    "summary": [
+      "Ran 2 tests in 0.100s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_b69_formation_calling.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_launch_patches.py",
+    "returncode": 0,
+    "seconds": 0.415,
+    "summary": [
+      "Ran 5 tests in 0.217s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_b69_launch_patches.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_native.py",
+    "returncode": 0,
+    "seconds": 774.216,
+    "summary": [
+      "Ran 5 tests in 773.954s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_b69_native.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_retirement_native.py",
+    "returncode": 0,
+    "seconds": 77.66,
+    "summary": [
+      "Ran 3 tests in 77.456s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_b69_retirement_native.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_schemes.py",
+    "returncode": 0,
+    "seconds": 39.437,
+    "summary": [
+      "Ran 5 tests in 39.089s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_b69_schemes.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_wiring.py",
+    "returncode": 0,
+    "seconds": 0.415,
+    "summary": [
+      "Ran 2 tests in 0.060s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_b69_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_stfs_roster_rehash.py",
+    "returncode": 0,
+    "seconds": 0.666,
+    "summary": [
+      "Ran 7 tests in 0.508s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_stfs_roster_rehash.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b69_a2_wiring.py",
+    "returncode": 0,
+    "seconds": 1.267,
+    "summary": [
+      "Ran 4 tests in 0.393s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_b69_a2_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b69_j1_build.py",
+    "returncode": 0,
+    "seconds": 2.719,
+    "summary": [
+      "Ran 5 tests in 2.486s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_b69_j1_build.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b69_j1_fit.py",
+    "returncode": 0,
+    "seconds": 5.124,
+    "summary": [
+      "Ran 5 tests in 4.908s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_b69_j1_fit.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b69_j1_native.py",
+    "returncode": 0,
+    "seconds": 1.567,
+    "summary": [
+      "Ran 1 test in 1.351s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_b69_j1_native.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b69_j1_wiring.py",
+    "returncode": 0,
+    "seconds": 6.076,
+    "summary": [
+      "Ran 7 tests in 5.818s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_b69_j1_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_beta69_doc_links.py",
+    "returncode": 0,
+    "seconds": 0.065,
+    "summary": [
+      "Ran 3 tests in 0.010s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_beta69_doc_links.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_beta69_feedback_qt.py",
+    "returncode": 0,
+    "seconds": 1.417,
+    "summary": [
+      "Ran 5 tests in 0.356s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_beta69_feedback_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_beta69_string_hygiene.py",
+    "returncode": 0,
+    "seconds": 2.769,
+    "summary": [
+      "Ran 4 tests in 2.583s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_beta69_string_hygiene.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_beta69_studios_offscreen.py",
+    "returncode": 0,
+    "seconds": 8.43,
+    "summary": [
+      "Ran 1 test in 8.342s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_beta69_studios_offscreen.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_models_project_wiring.py",
+    "returncode": 0,
+    "seconds": 0.465,
+    "summary": [
+      "Ran 0 tests in 0.000s",
+      "OK (skipped=1)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_models_project_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_model_project.py",
+    "returncode": 0,
+    "seconds": 0.465,
+    "summary": [
+      "Ran 4 tests in 0.040s",
+      "OK (skipped=1)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_model_project.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_roster_csv.py",
+    "returncode": 0,
+    "seconds": 1.367,
+    "summary": [
+      "Ran 14 tests in 1.075s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_roster_csv.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_product_catalog.py",
+    "returncode": 0,
+    "seconds": 0.165,
+    "summary": [
+      "Ran 9 tests in 0.044s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_product_catalog.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_provider_integrity.py",
+    "returncode": 0,
+    "seconds": 8.281,
+    "summary": [
+      "Ran 7 tests in 8.110s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_provider_integrity.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_2k5_audio_operation_integration.py",
+    "returncode": 1,
+    "seconds": 3.622,
+    "summary": [
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1/reports/assets'",
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1/reports/assets'",
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1/reports/assets'",
+      "Ran 17 tests in 2.621s",
+      "FAILED (errors=13)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_2k5_audio_operation_integration.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_2k5_bounded_vclz_palette.py",
+    "returncode": 0,
+    "seconds": 3.17,
+    "summary": [
+      "Ran 7 tests in 3.085s",
+      "OK (skipped=2)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_2k5_bounded_vclz_palette.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_2k5_build_is_explainable.py",
+    "returncode": 0,
+    "seconds": 0.616,
+    "summary": [
+      "Ran 16 tests in 0.017s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_2k5_build_is_explainable.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_2k5_bump_retail_probe.py",
+    "returncode": 0,
+    "seconds": 0.165,
+    "summary": [
+      "Ran 7 tests in 0.005s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_2k5_bump_retail_probe.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_2k5_check_my_images.py",
+    "returncode": 1,
+    "seconds": 2.018,
+    "summary": [
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1/reports/assets'",
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1/reports/assets'",
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1/reports/assets'",
+      "Ran 21 tests in 1.299s",
+      "FAILED (errors=6, skipped=5)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_2k5_check_my_images.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_2k5_import_offers_resize.py",
+    "returncode": 1,
+    "seconds": 2.469,
+    "summary": [
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1/reports/assets'",
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1/reports/assets'",
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1/reports/assets'",
+      "Ran 11 tests in 1.700s",
+      "FAILED (errors=5)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_2k5_import_offers_resize.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_2k5_stale_original_cache.py",
+    "returncode": 0,
+    "seconds": 0.215,
+    "summary": [
+      "Ran 10 tests in 0.019s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_2k5_stale_original_cache.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_2k5_uniform_equipment_export.py",
+    "returncode": 1,
+    "seconds": 1.618,
+    "summary": [
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1/reports/assets/nfl2k5_player_portrait_compatibility.json'",
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1/reports/assets/nfl2k5_player_portrait_compatibility.json'",
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1/reports/assets/nfl2k5_player_portrait_compatibility.json'",
+      "Ran 13 tests in 0.926s",
+      "FAILED (errors=6, skipped=2)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_2k5_uniform_equipment_export.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_2k5_vclz_bounded_importers.py",
+    "returncode": 0,
+    "seconds": 0.766,
+    "summary": [
+      "Ran 16 tests in 0.430s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_2k5_vclz_bounded_importers.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_all_textures_workspace.py",
+    "returncode": 1,
+    "seconds": 0.215,
+    "summary": [
+      "mod_editor.core.errors.RegistryError: Cannot read capability registry: capabilities[0].evidence[0]: missing local file docs/research/apf_audio.md",
+      "mod_editor.capabilities.validate_registry.RegistryError: capabilities[0].evidence[0]: missing local file docs/research/apf_audio.md",
+      "mod_editor.core.errors.RegistryError: Cannot read capability registry: capabilities[0].evidence[0]: missing local file docs/research/apf_audio.md",
+      "Ran 23 tests in 0.058s",
+      "FAILED (errors=17)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_all_textures_workspace.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_animations_panel_qt.py",
+    "returncode": 0,
+    "seconds": 0.766,
+    "summary": [
+      "Ran 12 tests in 0.537s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_animations_panel_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf2k8_playbook_route_writer.py",
+    "returncode": 0,
+    "seconds": 0.465,
+    "summary": [
+      "Ran 12 tests in 0.174s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf2k8_playbook_route_writer.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_all_crest_slots.py",
+    "returncode": 0,
+    "seconds": 0.665,
+    "summary": [
+      "Ran 15 tests in 0.553s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_all_crest_slots.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_annotation_facade.py",
+    "returncode": 0,
+    "seconds": 0.365,
+    "summary": [
+      "Ran 4 tests in 0.010s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_audio_annotation_facade.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_annotations.py",
+    "returncode": 0,
+    "seconds": 0.315,
+    "summary": [
+      "Ran 11 tests in 0.010s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_audio_annotations.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_batch_facade.py",
+    "returncode": 0,
+    "seconds": 0.365,
+    "summary": [
+      "Ran 3 tests in 0.007s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_audio_batch_facade.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_batch_gui.py",
+    "returncode": 0,
+    "seconds": 0.816,
+    "summary": [
+      "Ran 7 tests in 0.338s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_audio_batch_gui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_decode_cancellation.py",
+    "returncode": 0,
+    "seconds": 2.018,
+    "summary": [
+      "Ran 7 tests in 1.863s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_audio_decode_cancellation.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_drop_zone_gui.py",
+    "returncode": 0,
+    "seconds": 0.666,
+    "summary": [
+      "Ran 9 tests in 0.156s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_audio_drop_zone_gui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_encoder_gui.py",
+    "returncode": 0,
+    "seconds": 0.666,
+    "summary": [
+      "Ran 8 tests in 0.144s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_audio_encoder_gui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_encoding.py",
+    "returncode": 0,
+    "seconds": 11.735,
+    "summary": [
+      "Ran 21 tests in 11.590s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_audio_encoding.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_import_idle_barrier.py",
+    "returncode": 0,
+    "seconds": 3.771,
+    "summary": [
+      "Ran 1 test in 3.143s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_audio_import_idle_barrier.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_pcm_product_backend.py",
+    "returncode": 0,
+    "seconds": 1.016,
+    "summary": [
+      "Ran 11 tests in 0.672s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_audio_pcm_product_backend.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_replacement_pack.py",
+    "returncode": 0,
+    "seconds": 0.666,
+    "summary": [
+      "Ran 57 tests in 0.285s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_audio_replacement_pack.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_waveform_qt.py",
+    "returncode": 0,
+    "seconds": 0.666,
+    "summary": [
+      "Ran 9 tests in 0.162s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_audio_waveform_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audo_product_backend.py",
+    "returncode": 0,
+    "seconds": 0.315,
+    "summary": [
+      "Ran 3 tests in 0.016s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_audo_product_backend.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audo_project.py",
+    "returncode": 0,
+    "seconds": 0.215,
+    "summary": [
+      "Ran 3 tests in 0.004s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_audo_project.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_ausb_product_backend.py",
+    "returncode": 0,
+    "seconds": 0.365,
+    "summary": [
+      "Ran 7 tests in 0.036s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_ausb_product_backend.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b661_book_content.py",
+    "returncode": 0,
+    "seconds": 26.262,
+    "summary": [
+      "Ran 5 tests in 26.001s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_b661_book_content.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b66_appearance.py",
+    "returncode": 0,
+    "seconds": 2.669,
+    "summary": [
+      "Ran 3 tests in 2.486s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_b66_appearance.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b67_books_qt.py",
+    "returncode": 0,
+    "seconds": 65.436,
+    "summary": [
+      "Ran 3 tests in 65.170s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_b67_books_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b67_xenia_patch.py",
+    "returncode": 0,
+    "seconds": 0.265,
+    "summary": [
+      "Ran 3 tests in 0.118s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_b67_xenia_patch.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_browser_workspace_handoff.py",
+    "returncode": 0,
+    "seconds": 0.566,
+    "summary": [
+      "Ran 20 tests in 0.393s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_browser_workspace_handoff.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_build_ausb_overlays.py",
+    "returncode": 0,
+    "seconds": 0.315,
+    "summary": [
+      "Ran 5 tests in 0.038s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_build_ausb_overlays.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_build_raw_span_overlays.py",
+    "returncode": 0,
+    "seconds": 0.315,
+    "summary": [
+      "Ran 7 tests in 0.044s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_build_raw_span_overlays.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_capability_action_parity.py",
+    "returncode": 0,
+    "seconds": 0.465,
+    "summary": [
+      "Ran 11 tests in 0.117s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_capability_action_parity.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_cpu_audibles.py",
+    "returncode": 0,
+    "seconds": 3.221,
+    "summary": [
+      "Ran 18 tests in 3.016s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_cpu_audibles.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_crest_budget_import.py",
+    "returncode": 0,
+    "seconds": 0.866,
+    "summary": [
+      "Ran 12 tests in 0.437s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_crest_budget_import.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_cross_domain_audio_safety.py",
+    "returncode": 0,
+    "seconds": 0.365,
+    "summary": [
+      "Ran 4 tests in 0.001s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_cross_domain_audio_safety.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_cubemap_face0_preview.py",
+    "returncode": 0,
+    "seconds": 21.714,
+    "summary": [
+      "Ran 4 tests in 21.544s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_cubemap_face0_preview.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_custom_team_appearance_gui.py",
+    "returncode": 0,
+    "seconds": 0.315,
+    "summary": [
+      "Ran 5 tests in 0.123s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_custom_team_appearance_gui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_custom_team_appearance_patch.py",
+    "returncode": 0,
+    "seconds": 7.329,
+    "summary": [
+      "Ran 8 tests in 7.095s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_custom_team_appearance_patch.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_digital_font.py",
+    "returncode": 0,
+    "seconds": 0.365,
+    "summary": [
+      "Ran 14 tests in 0.187s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_digital_font.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_dxn_base_only_namefont.py",
+    "returncode": 0,
+    "seconds": 13.244,
+    "summary": [
+      "Ran 4 tests in 13.110s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_dxn_base_only_namefont.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_dxt5a_general_preview.py",
+    "returncode": 0,
+    "seconds": 22.355,
+    "summary": [
+      "Ran 3 tests in 22.194s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_dxt5a_general_preview.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_endzone_dxt5a.py",
+    "returncode": 0,
+    "seconds": 39.849,
+    "summary": [
+      "Ran 10 tests in 39.632s",
+      "OK (skipped=1)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_endzone_dxt5a.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_external_audio_bank_bundle.py",
+    "returncode": 0,
+    "seconds": 0.365,
+    "summary": [
+      "Ran 8 tests in 0.016s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_external_audio_bank_bundle.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_field_art.py",
+    "returncode": 0,
+    "seconds": 0.215,
+    "summary": [
+      "Ran 6 tests in 0.014s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_field_art.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_field_art_gui.py",
+    "returncode": 0,
+    "seconds": 0.916,
+    "summary": [
+      "Ran 17 tests in 0.356s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_field_art_gui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_field_art_patch.py",
+    "returncode": 0,
+    "seconds": 299.898,
+    "summary": [
+      "Ran 26 tests in 299.684s",
+      "OK (skipped=2)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_field_art_patch.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_field_art_stock_label.py",
+    "returncode": 0,
+    "seconds": 0.466,
+    "summary": [
+      "Ran 13 tests in 0.004s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_field_art_stock_label.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_field_material_project.py",
+    "returncode": 0,
+    "seconds": 0.566,
+    "summary": [
+      "Ran 4 tests in 0.231s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_field_material_project.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_g12_surfaces.py",
+    "returncode": 0,
+    "seconds": 0.516,
+    "summary": [
+      "Ran 12 tests in 0.333s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_g12_surfaces.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_helmet_crest_design_product.py",
+    "returncode": 0,
+    "seconds": 1.518,
+    "summary": [
+      "Ran 13 tests in 1.169s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_helmet_crest_design_product.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_helmet_logo_placement.py",
+    "returncode": 0,
+    "seconds": 7.48,
+    "summary": [
+      "Ran 15 tests in 6.921s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_helmet_logo_placement.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_import_offers_resize.py",
+    "returncode": 0,
+    "seconds": 0.666,
+    "summary": [
+      "Ran 5 tests in 0.535s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_import_offers_resize.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_logo_patch.py",
+    "returncode": 0,
+    "seconds": 90.352,
+    "summary": [
+      "Ran 18 tests in 90.197s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_logo_patch.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_logo_surface_ownership.py",
+    "returncode": 0,
+    "seconds": 64.892,
+    "summary": [
+      "Ran 4 tests in 64.808s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_logo_surface_ownership.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_model_export_gui.py",
+    "returncode": 0,
+    "seconds": 2.67,
+    "summary": [
+      "Ran 5 tests in 2.436s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_model_export_gui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_number_texture_writer.py",
+    "returncode": 0,
+    "seconds": 273.102,
+    "summary": [
+      "Ran 25 tests in 272.737s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_number_texture_writer.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_package_map_writer.py",
+    "returncode": 0,
+    "seconds": 1.367,
+    "summary": [
+      "Ran 40 tests in 1.176s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_package_map_writer.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_pass_fetch_export_qt.py",
+    "returncode": 0,
+    "seconds": 0.515,
+    "summary": [
+      "Ran 7 tests in 0.280s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_pass_fetch_export_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_play_designer_project.py",
+    "returncode": 0,
+    "seconds": 0.515,
+    "summary": [
+      "Ran 5 tests in 0.148s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_play_designer_project.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_play_designer_qt.py",
+    "returncode": 0,
+    "seconds": 0.365,
+    "summary": [
+      "Ran 5 tests in 0.125s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_play_designer_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_playbook_route_gui.py",
+    "returncode": 0,
+    "seconds": 0.315,
+    "summary": [
+      "Ran 7 tests in 0.058s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_playbook_route_gui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_playcalling_editor_build.py",
+    "returncode": 0,
+    "seconds": 72.442,
+    "summary": [
+      "Ran 3 tests in 72.065s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_playcalling_editor_build.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_playcalling_editor_facade.py",
+    "returncode": 0,
+    "seconds": 3.07,
+    "summary": [
+      "Ran 7 tests in 2.704s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_playcalling_editor_facade.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_playcalling_editor_patches.py",
+    "returncode": 0,
+    "seconds": 0.565,
+    "summary": [
+      "Ran 3 tests in 0.196s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_playcalling_editor_patches.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_playcalling_editor_qt.py",
+    "returncode": 0,
+    "seconds": 4.723,
+    "summary": [
+      "Ran 10 tests in 4.202s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_playcalling_editor_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_player_position_product_backend.py",
+    "returncode": 0,
+    "seconds": 23.174,
+    "summary": [
+      "Ran 7 tests in 22.769s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_player_position_product_backend.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_player_rating_patch.py",
+    "returncode": 0,
+    "seconds": 4.625,
+    "summary": [
+      "Ran 12 tests in 4.279s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_player_rating_patch.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_player_rating_product_backend.py",
+    "returncode": 0,
+    "seconds": 10.24,
+    "summary": [
+      "Ran 5 tests in 9.821s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_player_rating_product_backend.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_player_rating_sheet_import.py",
+    "returncode": 0,
+    "seconds": 15.848,
+    "summary": [
+      "Ran 7 tests in 15.164s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_player_rating_sheet_import.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_product_findings_gui.py",
+    "returncode": 0,
+    "seconds": 0.666,
+    "summary": [
+      "Ran 2 tests in 0.093s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_product_findings_gui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_project_document_workflow.py",
+    "returncode": 0,
+    "seconds": 30.578,
+    "summary": [
+      "Ran 13 tests in 29.903s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_project_document_workflow.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_project_streaming.py",
+    "returncode": 0,
+    "seconds": 0.265,
+    "summary": [
+      "Ran 6 tests in 0.009s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_project_streaming.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_ps3_roster_convert.py",
+    "returncode": 0,
+    "seconds": 17.352,
+    "summary": [
+      "Ran 13 tests in 17.168s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_ps3_roster_convert.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_ps3_roster_import_qt.py",
+    "returncode": 0,
+    "seconds": 1.718,
+    "summary": [
+      "Ran 3 tests in 1.472s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_ps3_roster_import_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_ps3_texture_bundle.py",
+    "returncode": 0,
+    "seconds": 69.665,
+    "summary": [
+      "Ran 28 tests in 69.482s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_ps3_texture_bundle.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_public_docs_registry_current.py",
+    "returncode": 0,
+    "seconds": 0.215,
+    "summary": [
+      "Ran 5 tests in 0.120s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_public_docs_registry_current.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_roster_appearance_transfer.py",
+    "returncode": 0,
+    "seconds": 8.831,
+    "summary": [
+      "Ran 5 tests in 8.629s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_roster_appearance_transfer.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_roster_appearance_transfer_qt.py",
+    "returncode": 0,
+    "seconds": 5.124,
+    "summary": [
+      "Ran 3 tests in 4.888s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_roster_appearance_transfer_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_roster_identity.py",
+    "returncode": 0,
+    "seconds": 12.591,
+    "summary": [
+      "Ran 18 tests in 12.188s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_roster_identity.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_roster_identity_gui.py",
+    "returncode": 0,
+    "seconds": 1.417,
+    "summary": [
+      "Ran 17 tests in 0.851s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_roster_identity_gui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_roster_workspace_gui.py",
+    "returncode": 0,
+    "seconds": 0.415,
+    "summary": [
+      "Ran 1 test in 0.023s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_roster_workspace_gui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_save_playbook_assignments_gui.py",
+    "returncode": 0,
+    "seconds": 1.317,
+    "summary": [
+      "Ran 8 tests in 1.044s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_save_playbook_assignments_gui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_save_roster_players_gui.py",
+    "returncode": 0,
+    "seconds": 0.816,
+    "summary": [
+      "Ran 4 tests in 0.550s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_save_roster_players_gui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_scorebug_workspace_qt.py",
+    "returncode": 0,
+    "seconds": 0.666,
+    "summary": [
+      "Ran 11 tests in 0.111s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_scorebug_workspace_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_shell_search_accessibility_qt.py",
+    "returncode": 0,
+    "seconds": 10.737,
+    "summary": [
+      "Ran 3 tests in 9.920s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_shell_search_accessibility_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_splb_add_multiple_formations.py",
+    "returncode": 0,
+    "seconds": 0.966,
+    "summary": [
+      "Ran 14 tests in 0.688s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_splb_add_multiple_formations.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_splb_formation_personnel.py",
+    "returncode": 0,
+    "seconds": 1.868,
+    "summary": [
+      "Ran 11 tests in 1.528s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_splb_formation_personnel.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_splb_tag_reassignment.py",
+    "returncode": 0,
+    "seconds": 3.421,
+    "summary": [
+      "Ran 86 tests in 3.112s",
+      "OK (skipped=1)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_splb_tag_reassignment.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_splb_writer.py",
+    "returncode": 0,
+    "seconds": 0.416,
+    "summary": [
+      "Ran 22 tests in 0.227s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_splb_writer.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_stadium_studio.py",
+    "returncode": 0,
+    "seconds": 0.315,
+    "summary": [
+      "Ran 4 tests in 0.011s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_stadium_studio.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_stadium_studio_gui.py",
+    "returncode": 0,
+    "seconds": 0.666,
+    "summary": [
+      "Ran 2 tests in 0.072s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_stadium_studio_gui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_studio_audio_gui.py",
+    "returncode": 0,
+    "seconds": 1.667,
+    "summary": [
+      "Ran 32 tests in 0.922s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_studio_audio_gui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_studio_core.py",
+    "returncode": 0,
+    "seconds": 0.316,
+    "summary": [
+      "Ran 9 tests in 0.025s",
+      "OK (skipped=1)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_studio_core.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_studio_draft_logo.py",
+    "returncode": 0,
+    "seconds": 0.667,
+    "summary": [
+      "Ran 7 tests in 0.236s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_studio_draft_logo.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_studio_inspectors.py",
+    "returncode": 0,
+    "seconds": 3.674,
+    "summary": [
+      "Ran 11 tests in 3.377s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_studio_inspectors.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_studio_installer.py",
+    "returncode": 1,
+    "seconds": 0.365,
+    "summary": [
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1/tools/vendor/extract-xiso/BUILDING-THE-BUNDLED-BINARIES.md'",
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1/tools/vendor/extract-xiso/BUILDING-THE-BUNDLED-BINARIES.md'",
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1/tools/vendor/extract-xiso/BUILDING-THE-BUNDLED-BINARIES.md'",
+      "Ran 16 tests in 0.174s",
+      "FAILED (errors=3)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_studio_installer.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_studio_safety.py",
+    "returncode": 0,
+    "seconds": 0.666,
+    "summary": [
+      "Ran 27 tests in 0.150s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_studio_safety.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_studio_text_edit.py",
+    "returncode": 0,
+    "seconds": 0.766,
+    "summary": [
+      "Ran 7 tests in 0.033s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_studio_text_edit.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_team_art.py",
+    "returncode": 0,
+    "seconds": 54.331,
+    "summary": [
+      "Ran 10 tests in 53.796s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_team_art.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_team_art_qt.py",
+    "returncode": 0,
+    "seconds": 0.866,
+    "summary": [
+      "Ran 6 tests in 0.234s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_team_art_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_team_crest_selection.py",
+    "returncode": 0,
+    "seconds": 0.967,
+    "summary": [
+      "Ran 9 tests in 0.144s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_team_crest_selection.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_team_logo_gui.py",
+    "returncode": 0,
+    "seconds": 3.324,
+    "summary": [
+      "Ran 23 tests in 2.427s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_team_logo_gui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_text_sheet_gui.py",
+    "returncode": 0,
+    "seconds": 0.967,
+    "summary": [
+      "Ran 3 tests in 0.094s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_text_sheet_gui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_textlogo_gui.py",
+    "returncode": 0,
+    "seconds": 1.117,
+    "summary": [
+      "Ran 5 tests in 0.330s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_textlogo_gui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_textlogo_writer.py",
+    "returncode": 0,
+    "seconds": 68.706,
+    "summary": [
+      "Ran 8 tests in 68.252s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_textlogo_writer.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_theme_layout_qt.py",
+    "returncode": 0,
+    "seconds": 18.808,
+    "summary": [
+      "TypeError: 'QHBoxLayout' object is not callable",
+      "TypeError: 'QHBoxLayout' object is not callable",
+      "TypeError: 'QHBoxLayout' object is not callable",
+      "Ran 8 tests in 18.123s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_theme_layout_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_uniform_equipment_colors.py",
+    "returncode": 0,
+    "seconds": 8.533,
+    "summary": [
+      "Ran 7 tests in 8.222s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_uniform_equipment_colors.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_uniform_equipment_colors_gui.py",
+    "returncode": 0,
+    "seconds": 0.265,
+    "summary": [
+      "Ran 3 tests in 0.043s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_uniform_equipment_colors_gui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_uniform_inventory_gui.py",
+    "returncode": 0,
+    "seconds": 0.866,
+    "summary": [
+      "Ran 6 tests in 0.222s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_uniform_inventory_gui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_wave_integration.py",
+    "returncode": 0,
+    "seconds": 18.552,
+    "summary": [
+      "Ran 8 tests in 18.131s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_wave_integration.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_workspace_recovery.py",
+    "returncode": 0,
+    "seconds": 66.751,
+    "summary": [
+      "Ran 20 tests in 65.800s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_workspace_recovery.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_xma1_wizard_gui.py",
+    "returncode": 0,
+    "seconds": 2.169,
+    "summary": [
+      "Ran 17 tests in 1.472s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_apf_xma1_wizard_gui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_audio_annotations.py",
+    "returncode": 0,
+    "seconds": 0.916,
+    "summary": [
+      "Ran 16 tests in 0.296s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_audio_annotations.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_audio_annotations_product.py",
+    "returncode": 0,
+    "seconds": 1.417,
+    "summary": [
+      "Ran 5 tests in 0.803s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_audio_annotations_product.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_audio_panel_qt.py",
+    "returncode": 0,
+    "seconds": 5.526,
+    "summary": [
+      "Ran 50 tests in 4.848s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_audio_panel_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_audio_replacement_pack.py",
+    "returncode": 1,
+    "seconds": 10.133,
+    "summary": [
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1/reports/assets/nfl2k5_audo_import_capacity.json'",
+      "Ran 41 tests in 9.499s",
+      "FAILED (errors=1)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_audio_replacement_pack.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_audio_waveform_qt.py",
+    "returncode": 0,
+    "seconds": 0.967,
+    "summary": [
+      "Ran 7 tests in 0.324s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_audio_waveform_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b661_kit_build.py",
+    "returncode": 0,
+    "seconds": 2.972,
+    "summary": [
+      "Ran 2 tests in 2.478s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_b661_kit_build.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b661_workspace_qt.py",
+    "returncode": 0,
+    "seconds": 4.023,
+    "summary": [
+      "Ran 7 tests in 3.067s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_b661_workspace_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b66_coach_digits.py",
+    "returncode": 0,
+    "seconds": 6.275,
+    "summary": [
+      "Ran 12 tests in 6.087s",
+      "OK (skipped=1)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_b66_coach_digits.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b66_coach_wiring.py",
+    "returncode": 0,
+    "seconds": 1.067,
+    "summary": [
+      "Ran 5 tests in 0.854s",
+      "OK (skipped=2)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_b66_coach_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b68_a1_audit.py",
+    "returncode": 0,
+    "seconds": 8.83,
+    "summary": [
+      "Ran 10 tests in 8.610s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_b68_a1_audit.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b68_t1_build.py",
+    "returncode": 0,
+    "seconds": 6.776,
+    "summary": [
+      "Ran 6 tests in 6.537s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_b68_t1_build.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b68_t1_ui.py",
+    "returncode": 0,
+    "seconds": 1.468,
+    "summary": [
+      "Ran 2 tests in 0.766s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_b68_t1_ui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_beta45_honesty_freeze.py",
+    "returncode": 0,
+    "seconds": 3.872,
+    "summary": [
+      "Ran 9 tests in 3.669s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_beta45_honesty_freeze.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_beta61_allocator_integration.py",
+    "returncode": 0,
+    "seconds": 450.297,
+    "summary": [
+      "Ran 7 tests in 449.845s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_beta61_allocator_integration.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_beta61_integration.py",
+    "returncode": 0,
+    "seconds": 10.286,
+    "summary": [
+      "Ran 5 tests in 10.007s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_beta61_integration.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_beta62_integration3_qt.py",
+    "returncode": 0,
+    "seconds": 1.868,
+    "summary": [
+      "Ran 8 tests in 1.472s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_beta62_integration3_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_beta66_1_adapter_imports.py",
+    "returncode": 0,
+    "seconds": 0.465,
+    "summary": [
+      "Ran 3 tests in 0.358s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_beta66_1_adapter_imports.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_beta66_d1_images.py",
+    "returncode": 0,
+    "seconds": 1.869,
+    "summary": [
+      "Ran 6 tests in 1.411s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_beta66_d1_images.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_beta66_d1_panels.py",
+    "returncode": 0,
+    "seconds": 1.969,
+    "summary": [
+      "Ran 4 tests in 1.584s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_beta66_d1_panels.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_beta66_helmet_finish_wiring.py",
+    "returncode": 1,
+    "seconds": 9.935,
+    "summary": [
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1/reports/assets/nfl2k5_team_select_card_inventory.json'",
+      "Ran 8 tests in 9.445s",
+      "FAILED (errors=1)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_beta66_helmet_finish_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_beta66_supersim_wiring.py",
+    "returncode": 0,
+    "seconds": 0.62,
+    "summary": [
+      "Ran 3 tests in 0.343s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_beta66_supersim_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_broken_play_annotations.py",
+    "returncode": 0,
+    "seconds": 0.215,
+    "summary": [
+      "Ran 7 tests in 0.001s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_broken_play_annotations.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_build_panel_qt.py",
+    "returncode": 0,
+    "seconds": 2.921,
+    "summary": [
+      "Ran 13 tests in 2.373s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_build_panel_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_caller_windows_pins.py",
+    "returncode": 0,
+    "seconds": 0.666,
+    "summary": [
+      "Ran 19 tests in 0.094s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_caller_windows_pins.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_commentary_panel_qt.py",
+    "returncode": 1,
+    "seconds": 1.417,
+    "summary": [
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1/reports/assets/nfl2k5_team_select_card_inventory.json'",
+      "Ran 3 tests in 1.084s",
+      "FAILED (errors=1)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_commentary_panel_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_core.py",
+    "returncode": 0,
+    "seconds": 0.465,
+    "summary": [
+      "Ran 11 tests in 0.247s",
+      "OK (skipped=1)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_core.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_crib_panel_qt.py",
+    "returncode": 0,
+    "seconds": 0.415,
+    "summary": [
+      "Ran 6 tests in 0.136s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_crib_panel_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_discord_bugs_1.py",
+    "returncode": 0,
+    "seconds": 1.918,
+    "summary": [
+      "Ran 17 tests in 1.241s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_discord_bugs_1.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_discord_bugs_1_wiring.py",
+    "returncode": 0,
+    "seconds": 2.82,
+    "summary": [
+      "Ran 10 tests in 2.464s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_discord_bugs_1_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_discord_bugs_2.py",
+    "returncode": 0,
+    "seconds": 1.718,
+    "summary": [
+      "Ran 11 tests in 1.216s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_discord_bugs_2.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_discord_bugs_2_research.py",
+    "returncode": 0,
+    "seconds": 0.315,
+    "summary": [
+      "Ran 4 tests in 0.222s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_discord_bugs_2_research.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_discord_bugs_2_wiring.py",
+    "returncode": 0,
+    "seconds": 1.518,
+    "summary": [
+      "Ran 6 tests in 0.832s",
+      "OK (skipped=2)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_discord_bugs_2_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_emulator_launch_polish.py",
+    "returncode": 0,
+    "seconds": 0.766,
+    "summary": [
+      "Ran 11 tests in 0.201s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_emulator_launch_polish.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_facade_external_build.py",
+    "returncode": 0,
+    "seconds": 0.365,
+    "summary": [
+      "Ran 2 tests in 0.002s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_facade_external_build.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_franchise_panel_qt.py",
+    "returncode": 0,
+    "seconds": 30.672,
+    "summary": [
+      "Ran 16 tests in 30.209s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_franchise_panel_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_gameplay_patches_panel_qt.py",
+    "returncode": 0,
+    "seconds": 0.616,
+    "summary": [
+      "Ran 1 test in 0.317s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_gameplay_patches_panel_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_gui.py",
+    "returncode": 0,
+    "seconds": 1.216,
+    "summary": [
+      "Ran 14 tests in 1.065s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_gui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_gui_drop_parity.py",
+    "returncode": 0,
+    "seconds": 0.866,
+    "summary": [
+      "Ran 7 tests in 0.294s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_gui_drop_parity.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_gui_refusal_wording.py",
+    "returncode": 0,
+    "seconds": 1.117,
+    "summary": [
+      "Ran 23 tests in 0.505s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_gui_refusal_wording.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_hotfix63_digit_budget.py",
+    "returncode": 0,
+    "seconds": 0.465,
+    "summary": [
+      "Ran 5 tests in 0.029s",
+      "OK (skipped=3)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_hotfix63_digit_budget.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_image_fit.py",
+    "returncode": 0,
+    "seconds": 3.222,
+    "summary": [
+      "Ran 21 tests in 3.070s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_image_fit.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_keyboard_search_polish.py",
+    "returncode": 0,
+    "seconds": 1.567,
+    "summary": [
+      "Ran 4 tests in 1.349s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_keyboard_search_polish.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_local_windows_ci.py",
+    "returncode": 0,
+    "seconds": 2.519,
+    "summary": [
+      "Ran 51 tests in 2.384s",
+      "OK (skipped=1)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_local_windows_ci.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_mod_build.py",
+    "returncode": 0,
+    "seconds": 1.867,
+    "summary": [
+      "Ran 11 tests in 1.549s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_mod_build.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_mod_build_beta62_integration.py",
+    "returncode": 0,
+    "seconds": 212.315,
+    "summary": [
+      "Ran 8 tests in 211.975s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_mod_build_beta62_integration.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_mod_build_beta62_integration3.py",
+    "returncode": 0,
+    "seconds": 191.002,
+    "summary": [
+      "Ran 11 tests in 190.591s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_mod_build_beta62_integration3.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_mod_build_performance.py",
+    "returncode": 0,
+    "seconds": 7.781,
+    "summary": [
+      "Ran 6 tests in 7.321s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_mod_build_performance.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_model_import_disable_reason.py",
+    "returncode": 0,
+    "seconds": 0.766,
+    "summary": [
+      "Ran 7 tests in 0.458s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_model_import_disable_reason.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_models_panel_qt.py",
+    "returncode": 0,
+    "seconds": 1.669,
+    "summary": [
+      "Ran 8 tests in 1.319s",
+      "OK (skipped=1)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_models_panel_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_models_skeleton_wiring.py",
+    "returncode": 0,
+    "seconds": 0.366,
+    "summary": [
+      "Ran 2 tests in 0.054s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_models_skeleton_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_modern_naming_panel.py",
+    "returncode": 0,
+    "seconds": 0.315,
+    "summary": [
+      "Ran 2 tests in 0.061s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_modern_naming_panel.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_modpack_growth_acceptance.py",
+    "returncode": 0,
+    "seconds": 0.416,
+    "summary": [
+      "Ran 1 test in 0.000s",
+      "OK (skipped=1)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_modpack_growth_acceptance.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_music_all_modes_wiring.py",
+    "returncode": 0,
+    "seconds": 2.671,
+    "summary": [
+      "Ran 4 tests in 1.706s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_music_all_modes_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_music_panel_qt.py",
+    "returncode": 0,
+    "seconds": 4.024,
+    "summary": [
+      "Ran 9 tests in 3.236s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_music_panel_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_music_playlist_project.py",
+    "returncode": 0,
+    "seconds": 1.617,
+    "summary": [
+      "Ran 4 tests in 0.964s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_music_playlist_project.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_music_service.py",
+    "returncode": 0,
+    "seconds": 4.475,
+    "summary": [
+      "Ran 10 tests in 3.740s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_music_service.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_music_simple.py",
+    "returncode": 0,
+    "seconds": 25.425,
+    "summary": [
+      "Ran 12 tests in 24.609s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_music_simple.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_music_simple_qt.py",
+    "returncode": 0,
+    "seconds": 5.528,
+    "summary": [
+      "Ran 9 tests in 4.734s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_music_simple_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_music_simple_wiring.py",
+    "returncode": 0,
+    "seconds": 1.62,
+    "summary": [
+      "Ran 3 tests in 0.743s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_music_simple_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_never_silent_gray_boot.py",
+    "returncode": 0,
+    "seconds": 1.426,
+    "summary": [
+      "Ran 4 tests in 1.190s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_never_silent_gray_boot.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k3_2k4_compatibility_boundary.py",
+    "returncode": 0,
+    "seconds": 0.165,
+    "summary": [
+      "Ran 4 tests in 0.001s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k3_2k4_compatibility_boundary.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_abilities_v2.py",
+    "returncode": 0,
+    "seconds": 42.575,
+    "summary": [
+      "Ran 15 tests in 42.296s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_abilities_v2.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_abilities_v2_manifest.py",
+    "returncode": 5,
+    "seconds": 349.195,
+    "summary": [
+      "mod_editor.core.nfl2k5_cave_oracle.OracleError: sources changed during observed XBE composition",
+      "Ran 0 tests in 348.889s",
+      "FAILED (errors=1)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_abilities_v2_manifest.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_abilities_v2_qt.py",
+    "returncode": 0,
+    "seconds": 1.317,
+    "summary": [
+      "Ran 5 tests in 1.077s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_abilities_v2_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_animation_import_retail.py",
+    "returncode": 0,
+    "seconds": 14.701,
+    "summary": [
+      "Ran 3 tests in 14.434s",
+      "OK (skipped=2)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_animation_import_retail.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_audio_backend_origin.py",
+    "returncode": 0,
+    "seconds": 0.466,
+    "summary": [
+      "Ran 5 tests in 0.034s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_audio_backend_origin.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_audio_catalog.py",
+    "returncode": 0,
+    "seconds": 1.067,
+    "summary": [
+      "Ran 13 tests in 0.745s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_audio_catalog.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_audo_fixed_slots.py",
+    "returncode": 5,
+    "seconds": 0.617,
+    "summary": [
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1/reports/assets/nfl2k5_audo_import_capacity.json'",
+      "Ran 0 tests in 0.001s",
+      "FAILED (errors=1)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_audo_fixed_slots.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_b661_transition.py",
+    "returncode": 0,
+    "seconds": 494.224,
+    "summary": [
+      "Ran 11 tests in 493.817s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_b661_transition.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_boot_logo.py",
+    "returncode": 0,
+    "seconds": 2.027,
+    "summary": [
+      "Ran 7 tests in 1.704s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_boot_logo.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_build_service.py",
+    "returncode": 0,
+    "seconds": 0.365,
+    "summary": [
+      "Ran 28 tests in 0.189s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_build_service.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_camera_broadcast.py",
+    "returncode": 0,
+    "seconds": 31.536,
+    "summary": [
+      "Ran 9 tests in 31.010s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_camera_broadcast.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_camera_far.py",
+    "returncode": 0,
+    "seconds": 97.57,
+    "summary": [
+      "Ran 16 tests in 97.175s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_camera_far.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_career_stats.py",
+    "returncode": 0,
+    "seconds": 10.19,
+    "summary": [
+      "Ran 18 tests in 9.856s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_career_stats.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_college_check.py",
+    "returncode": 0,
+    "seconds": 8.14,
+    "summary": [
+      "Ran 17 tests in 7.903s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_college_check.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_college_check_page_qt.py",
+    "returncode": 0,
+    "seconds": 2.622,
+    "summary": [
+      "Ran 11 tests in 2.101s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_college_check_page_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_college_check_qt.py",
+    "returncode": 0,
+    "seconds": 1.018,
+    "summary": [
+      "Ran 3 tests in 0.639s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_college_check_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_create_play_wizard_qt.py",
+    "returncode": 0,
+    "seconds": 42.793,
+    "summary": [
+      "Ran 2 tests in 41.459s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_create_play_wizard_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_crib_geometry_writer.py",
+    "returncode": 1,
+    "seconds": 3.326,
+    "summary": [
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1/assets/intermediate/nfl2k5/models/4248_0105_phone.gltf'",
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1/assets/intermediate/nfl2k5/models/4248_0105_phone.gltf'",
+      "Ran 4 tests in 2.883s",
+      "FAILED (errors=2)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_crib_geometry_writer.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_crib_standalone_texture_writer.py",
+    "returncode": 0,
+    "seconds": 2.921,
+    "summary": [
+      "Ran 3 tests in 2.541s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_crib_standalone_texture_writer.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_defense_play_qt.py",
+    "returncode": 0,
+    "seconds": 3.624,
+    "summary": [
+      "Ran 4 tests in 3.379s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_defense_play_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_depth_locks.py",
+    "returncode": 0,
+    "seconds": 104.612,
+    "summary": [
+      "Ran 22 tests in 104.334s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_depth_locks.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_digit_sheet_quality.py",
+    "returncode": 0,
+    "seconds": 7.434,
+    "summary": [
+      "Ran 13 tests in 7.220s",
+      "OK (skipped=1)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_digit_sheet_quality.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_disc_identity.py",
+    "returncode": 0,
+    "seconds": 1.067,
+    "summary": [
+      "Ran 29 tests in 0.635s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_disc_identity.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_draft_start.py",
+    "returncode": 0,
+    "seconds": 52.945,
+    "summary": [
+      "Ran 11 tests in 52.707s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_draft_start.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_equipment_consumers.py",
+    "returncode": 0,
+    "seconds": 41.268,
+    "summary": [
+      "Ran 19 tests in 40.500s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_equipment_consumers.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_equipment_import.py",
+    "returncode": 0,
+    "seconds": 3.173,
+    "summary": [
+      "Ran 13 tests in 2.647s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_equipment_import.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_equipment_import_wiring.py",
+    "returncode": 0,
+    "seconds": 0.967,
+    "summary": [
+      "Ran 6 tests in 0.664s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_equipment_import_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_equipment_retail_roundtrip.py",
+    "returncode": 0,
+    "seconds": 16.951,
+    "summary": [
+      "Ran 2 tests in 16.635s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_equipment_retail_roundtrip.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_equipment_scope_wiring.py",
+    "returncode": 0,
+    "seconds": 2.62,
+    "summary": [
+      "Ran 3 tests in 2.503s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_equipment_scope_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_equipment_texture_chain.py",
+    "returncode": 0,
+    "seconds": 3.723,
+    "summary": [
+      "Ran 19 tests in 3.523s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_equipment_texture_chain.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_equipment_texture_native.py",
+    "returncode": 0,
+    "seconds": 0.365,
+    "summary": [
+      "Ran 7 tests in 0.247s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_equipment_texture_native.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_espn25_exact_lineups.py",
+    "returncode": 0,
+    "seconds": 0.416,
+    "summary": [
+      "Ran 2 tests in 0.131s",
+      "OK (skipped=1)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_espn25_exact_lineups.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_espn25_in_game.py",
+    "returncode": 0,
+    "seconds": 3.171,
+    "summary": [
+      "Ran 4 tests in 2.859s",
+      "OK (skipped=1)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_espn25_in_game.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_espn25_integration_qt.py",
+    "returncode": 0,
+    "seconds": 18.403,
+    "summary": [
+      "Ran 13 tests in 17.713s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_espn25_integration_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_espn25_loading_wait.py",
+    "returncode": 0,
+    "seconds": 27.277,
+    "summary": [
+      "Ran 4 tests in 26.966s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_espn25_loading_wait.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_espn25_panel_qt.py",
+    "returncode": 0,
+    "seconds": 5.532,
+    "summary": [
+      "Ran 5 tests in 5.203s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_espn25_panel_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_espn25_rosters.py",
+    "returncode": 0,
+    "seconds": 239.928,
+    "summary": [
+      "Ran 23 tests in 239.562s",
+      "OK (skipped=1)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_espn25_rosters.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_espn25_rosters_native.py",
+    "returncode": 0,
+    "seconds": 48.735,
+    "summary": [
+      "Ran 1 test in 48.414s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_espn25_rosters_native.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_face_shield_registry.py",
+    "returncode": 1,
+    "seconds": 0.123,
+    "summary": [
+      "mod_editor.capabilities.validate_registry.RegistryError: capabilities[0].evidence[0]: missing local file docs/research/apf_audio.md",
+      "Ran 2 tests in 0.004s",
+      "FAILED (errors=1)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_face_shield_registry.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_franchise_2026.py",
+    "returncode": 0,
+    "seconds": 6.029,
+    "summary": [
+      "Ran 20 tests in 5.831s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_franchise_2026.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_franchise_2026_runtime.py",
+    "returncode": 0,
+    "seconds": 66.89,
+    "summary": [
+      "Ran 10 tests in 66.618s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_franchise_2026_runtime.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_franchise_edit_player.py",
+    "returncode": 0,
+    "seconds": 35.15,
+    "summary": [
+      "Ran 12 tests in 34.793s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_franchise_edit_player.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_franchise_practice.py",
+    "returncode": 0,
+    "seconds": 13.401,
+    "summary": [
+      "Ran 22 tests in 13.215s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_franchise_practice.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_franchise_practice_exit.py",
+    "returncode": 0,
+    "seconds": 17.063,
+    "summary": [
+      "Ran 13 tests in 16.879s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_franchise_practice_exit.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_franchise_save.py",
+    "returncode": 0,
+    "seconds": 1.973,
+    "summary": [
+      "Ran 13 tests in 1.739s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_franchise_save.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_franchise_schedule_college.py",
+    "returncode": 0,
+    "seconds": 2.422,
+    "summary": [
+      "Ran 8 tests in 2.075s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_franchise_schedule_college.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_guardian_cap.py",
+    "returncode": 0,
+    "seconds": 67.183,
+    "summary": [
+      "Ran 18 tests in 66.900s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_guardian_cap.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_guardian_manifest.py",
+    "returncode": 0,
+    "seconds": 375.029,
+    "summary": [
+      "Ran 1 test in 374.475s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_guardian_manifest.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_guardian_overlay.py",
+    "returncode": 0,
+    "seconds": 9.696,
+    "summary": [
+      "Ran 6 tests in 9.374s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_guardian_overlay.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_guardian_resources.py",
+    "returncode": 0,
+    "seconds": 90.34,
+    "summary": [
+      "Ran 9 tests in 89.916s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_guardian_resources.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_guardian_unicorn.py",
+    "returncode": 0,
+    "seconds": 301.138,
+    "summary": [
+      "Ran 7 tests in 237.500s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_guardian_unicorn.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_helmet_finish.py",
+    "returncode": 0,
+    "seconds": 60.763,
+    "summary": [
+      "Ran 4 tests in 60.511s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_helmet_finish.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_hires_pack_retail.py",
+    "returncode": 0,
+    "seconds": 15.506,
+    "summary": [
+      "Ran 4 tests in 15.279s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_hires_pack_retail.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_kick_laces.py",
+    "returncode": 0,
+    "seconds": 11.098,
+    "summary": [
+      "Ran 18 tests in 10.849s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_kick_laces.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_match_coverage_qt.py",
+    "returncode": 0,
+    "seconds": 6.382,
+    "summary": [
+      "Ran 4 tests in 5.609s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_match_coverage_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_model_skeleton.py",
+    "returncode": 0,
+    "seconds": 0.266,
+    "summary": [
+      "Ran 3 tests in 0.046s",
+      "OK (skipped=1)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_model_skeleton.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_models.py",
+    "returncode": 0,
+    "seconds": 0.216,
+    "summary": [
+      "Ran 37 tests in 0.031s",
+      "OK (skipped=11)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_models.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_music_fresh_rip.py",
+    "returncode": 0,
+    "seconds": 1.068,
+    "summary": [
+      "Ran 2 tests in 0.530s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_music_fresh_rip.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_music_fresh_rip_gui.py",
+    "returncode": 0,
+    "seconds": 0.116,
+    "summary": [
+      "Ran 1 test in 0.000s",
+      "OK (skipped=1)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_music_fresh_rip_gui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_my_career.py",
+    "returncode": 0,
+    "seconds": 21.226,
+    "summary": [
+      "Ran 13 tests in 21.024s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_my_career.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_my_career_completion.py",
+    "returncode": 0,
+    "seconds": 35.318,
+    "summary": [
+      "Ran 6 tests in 35.056s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_my_career_completion.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_my_career_draft.py",
+    "returncode": 0,
+    "seconds": 1161.153,
+    "summary": [
+      "Ran 6 tests in 1160.887s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_my_career_draft.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_my_career_frontend.py",
+    "returncode": 0,
+    "seconds": 57.902,
+    "summary": [
+      "Ran 7 tests in 57.612s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_my_career_frontend.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_my_career_generic_build.py",
+    "returncode": 0,
+    "seconds": 11.055,
+    "summary": [
+      "Ran 5 tests in 10.831s",
+      "OK (skipped=1)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_my_career_generic_build.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_my_career_mode4.py",
+    "returncode": 0,
+    "seconds": 502.442,
+    "summary": [
+      "Ran 8 tests in 502.171s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_my_career_mode4.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_my_career_panel.py",
+    "returncode": 0,
+    "seconds": 0.416,
+    "summary": [
+      "Ran 4 tests in 0.228s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_my_career_panel.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_my_career_settings.py",
+    "returncode": 0,
+    "seconds": 30.747,
+    "summary": [
+      "Ran 9 tests in 30.419s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_my_career_settings.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_myplayer_hud.py",
+    "returncode": 0,
+    "seconds": 43.99,
+    "summary": [
+      "Ran 5 tests in 43.668s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_myplayer_hud.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_play_designer_qt.py",
+    "returncode": 0,
+    "seconds": 0.516,
+    "summary": [
+      "Ran 4 tests in 0.318s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_play_designer_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_play_intents_build.py",
+    "returncode": 0,
+    "seconds": 33.393,
+    "summary": [
+      "Ran 5 tests in 32.714s",
+      "OK (skipped=2)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_play_intents_build.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_play_rules_qt.py",
+    "returncode": 0,
+    "seconds": 4.732,
+    "summary": [
+      "Ran 6 tests in 4.108s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_play_rules_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_playbook_pack.py",
+    "returncode": 0,
+    "seconds": 64.778,
+    "summary": [
+      "Ran 39 tests in 62.754s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_playbook_pack.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_playbook_pack_ui.py",
+    "returncode": 0,
+    "seconds": 0.968,
+    "summary": [
+      "Ran 13 tests in 0.565s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_playbook_pack_ui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_playbook_pair.py",
+    "returncode": 0,
+    "seconds": 8.688,
+    "summary": [
+      "Ran 7 tests in 8.414s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_playbook_pair.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_playbook_pair_manifest.py",
+    "returncode": 0,
+    "seconds": 366.002,
+    "summary": [
+      "Ran 1 test in 365.736s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_playbook_pair_manifest.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_player_star.py",
+    "returncode": 0,
+    "seconds": 2.27,
+    "summary": [
+      "Ran 14 tests in 1.981s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_player_star.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_player_star_draw.py",
+    "returncode": 0,
+    "seconds": 199.695,
+    "summary": [
+      "Ran 19 tests in 199.494s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_player_star_draw.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_position_choices.py",
+    "returncode": 0,
+    "seconds": 13.046,
+    "summary": [
+      "Ran 11 tests in 12.712s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_position_choices.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_practice_squad_screen.py",
+    "returncode": 0,
+    "seconds": 429.814,
+    "summary": [
+      "Ran 10 tests in 429.620s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_practice_squad_screen.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_prospect_names.py",
+    "returncode": 0,
+    "seconds": 10.543,
+    "summary": [
+      "Ran 21 tests in 10.135s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_prospect_names.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_qb_spy_runtime.py",
+    "returncode": 0,
+    "seconds": 437.051,
+    "summary": [
+      "Ran 13 tests in 436.795s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_qb_spy_runtime.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_read_option_diagnostic_manifest.py",
+    "returncode": 5,
+    "seconds": 0.465,
+    "summary": [
+      "AssertionError: unobserved source drift: ['mod_editor/core/nfl2k5_roster_records.py']",
+      "Ran 0 tests in 0.281s",
+      "FAILED (errors=1)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_read_option_diagnostic_manifest.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_read_option_qt.py",
+    "returncode": 0,
+    "seconds": 1.518,
+    "summary": [
+      "Ran 7 tests in 1.249s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_read_option_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_roster_arena_growth.py",
+    "returncode": 0,
+    "seconds": 33.443,
+    "summary": [
+      "Ran 13 tests in 33.257s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_roster_arena_growth.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_roster_reclassify_grown_arena.py",
+    "returncode": 0,
+    "seconds": 2.17,
+    "summary": [
+      "Ran 11 tests in 2.045s",
+      "OK (skipped=2)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_roster_reclassify_grown_arena.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_roster_records.py",
+    "returncode": 0,
+    "seconds": 14.4,
+    "summary": [
+      "Ran 108 tests in 14.119s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_roster_records.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_roster_storage.py",
+    "returncode": 0,
+    "seconds": 397.803,
+    "summary": [
+      "Ran 11 tests in 397.550s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_roster_storage.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_save_rost.py",
+    "returncode": 0,
+    "seconds": 2.822,
+    "summary": [
+      "Ran 9 tests in 2.643s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_save_rost.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_exact.py",
+    "returncode": 0,
+    "seconds": 51.898,
+    "summary": [
+      "Ran 8 tests in 51.544s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_scorebug_exact.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_screen_hooks.py",
+    "returncode": 0,
+    "seconds": 12.198,
+    "summary": [
+      "Ran 10 tests in 12.012s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_screen_hooks.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_screen_preset_qt.py",
+    "returncode": 0,
+    "seconds": 0.567,
+    "summary": [
+      "Ran 4 tests in 0.279s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_screen_preset_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_season_cap.py",
+    "returncode": 0,
+    "seconds": 3.925,
+    "summary": [
+      "Ran 7 tests in 3.802s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_season_cap.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_season_cap_saves.py",
+    "returncode": 0,
+    "seconds": 0.365,
+    "summary": [
+      "Ran 7 tests in 0.211s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_season_cap_saves.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_senior_bowl.py",
+    "returncode": 0,
+    "seconds": 4.876,
+    "summary": [
+      "Ran 26 tests in 4.686s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_senior_bowl.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_seven_on_seven.py",
+    "returncode": 0,
+    "seconds": 3.524,
+    "summary": [
+      "Ran 19 tests in 3.198s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_seven_on_seven.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_stadium_blender_panel.py",
+    "returncode": 0,
+    "seconds": 0.215,
+    "summary": [
+      "Ran 2 tests in 0.022s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_stadium_blender_panel.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_stadium_cache.py",
+    "returncode": 0,
+    "seconds": 0.265,
+    "summary": [
+      "Ran 15 tests in 0.058s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_stadium_cache.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_stadium_editor_roundtrip.py",
+    "returncode": 0,
+    "seconds": 0.666,
+    "summary": [
+      "Ran 12 tests in 0.235s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_stadium_editor_roundtrip.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_stadium_gltf_export.py",
+    "returncode": 0,
+    "seconds": 0.366,
+    "summary": [
+      "Ran 36 tests in 0.192s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_stadium_gltf_export.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_stadium_studio.py",
+    "returncode": 0,
+    "seconds": 0.165,
+    "summary": [
+      "Ran 6 tests in 0.014s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_stadium_studio.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_streaming_audio_ui.py",
+    "returncode": 0,
+    "seconds": 1.017,
+    "summary": [
+      "Ran 9 tests in 0.480s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_streaming_audio_ui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_team_column.py",
+    "returncode": 0,
+    "seconds": 6.132,
+    "summary": [
+      "Ran 13 tests in 5.788s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_team_column.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_team_history.py",
+    "returncode": 0,
+    "seconds": 5.429,
+    "summary": [
+      "Ran 19 tests in 5.024s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_team_history.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_team_names_2026.py",
+    "returncode": 0,
+    "seconds": 5.477,
+    "summary": [
+      "Ran 9 tests in 5.229s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_team_names_2026.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_text_catalog.py",
+    "returncode": 0,
+    "seconds": 2.884,
+    "summary": [
+      "Ran 9 tests in 2.521s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_text_catalog.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_weekly_prep.py",
+    "returncode": 0,
+    "seconds": 13.498,
+    "summary": [
+      "Ran 11 tests in 13.315s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_weekly_prep.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_weekly_prep_unicorn.py",
+    "returncode": 0,
+    "seconds": 15.35,
+    "summary": [
+      "Ran 17 tests in 15.147s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_weekly_prep_unicorn.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_widescreen_polish.py",
+    "returncode": 0,
+    "seconds": 8.184,
+    "summary": [
+      "Ran 13 tests in 7.975s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl2k5_widescreen_polish.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl_audio.py",
+    "returncode": 0,
+    "seconds": 1.017,
+    "summary": [
+      "Ran 18 tests in 0.796s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_nfl_audio.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_no_capability_is_invisible.py",
+    "returncode": 1,
+    "seconds": 0.165,
+    "summary": [
+      "mod_editor.core.errors.RegistryError: Cannot read capability registry: capabilities[0].evidence[0]: missing local file docs/research/apf_audio.md",
+      "mod_editor.capabilities.validate_registry.RegistryError: capabilities[0].evidence[0]: missing local file docs/research/apf_audio.md",
+      "mod_editor.core.errors.RegistryError: Cannot read capability registry: capabilities[0].evidence[0]: missing local file docs/research/apf_audio.md",
+      "Ran 2 tests in 0.016s",
+      "FAILED (errors=2)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_no_capability_is_invisible.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_number_sheet_quality_wiring.py",
+    "returncode": 0,
+    "seconds": 1.368,
+    "summary": [
+      "Ran 6 tests in 1.051s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_number_sheet_quality_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_pack_extent_resolver.py",
+    "returncode": 0,
+    "seconds": 1.519,
+    "summary": [
+      "Ran 6 tests in 1.189s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_pack_extent_resolver.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_phase1_packaging.py",
+    "returncode": 0,
+    "seconds": 2.52,
+    "summary": [
+      "Ran 23 tests in 2.387s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_phase1_packaging.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_platform_compat_ownership.py",
+    "returncode": 0,
+    "seconds": 0.366,
+    "summary": [
+      "Ran 19 tests in 0.135s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_platform_compat_ownership.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_platform_compat_paths.py",
+    "returncode": 0,
+    "seconds": 0.416,
+    "summary": [
+      "Ran 15 tests in 0.038s",
+      "OK (skipped=2)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_platform_compat_paths.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_playbooks_link_table_export_ui.py",
+    "returncode": 0,
+    "seconds": 0.516,
+    "summary": [
+      "Ran 3 tests in 0.291s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_playbooks_link_table_export_ui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_playbooks_panel_qt.py",
+    "returncode": 0,
+    "seconds": 0.366,
+    "summary": [
+      "Ran 8 tests in 0.167s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_playbooks_panel_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_player_assets.py",
+    "returncode": 0,
+    "seconds": 0.165,
+    "summary": [
+      "Ran 15 tests in 0.004s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_player_assets.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_presentation_panel_qt.py",
+    "returncode": 0,
+    "seconds": 7.88,
+    "summary": [
+      "Ran 2 tests in 7.101s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_presentation_panel_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_product_inspection_panels_qt.py",
+    "returncode": 0,
+    "seconds": 8.083,
+    "summary": [
+      "Ran 7 tests in 6.952s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_product_inspection_panels_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_product_shell_accessibility_qt.py",
+    "returncode": 0,
+    "seconds": 71.735,
+    "summary": [
+      "Ran 6 tests in 67.960s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_product_shell_accessibility_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_project_document_workflow.py",
+    "returncode": 0,
+    "seconds": 17.906,
+    "summary": [
+      "Ran 13 tests in 16.546s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_project_document_workflow.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_providers.py",
+    "returncode": 0,
+    "seconds": 3.922,
+    "summary": [
+      "Ran 33 tests in 3.723s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_providers.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_ps2_lane.py",
+    "returncode": 0,
+    "seconds": 0.266,
+    "summary": [
+      "Ran 16 tests in 0.102s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_ps2_lane.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_ps2_save_dialog_qt.py",
+    "returncode": 0,
+    "seconds": 0.867,
+    "summary": [
+      "Ran 44 tests in 0.636s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_ps2_save_dialog_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_roster_editor_panel_franchise.py",
+    "returncode": 0,
+    "seconds": 0.716,
+    "summary": [
+      "Ran 2 tests in 0.468s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_roster_editor_panel_franchise.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_roster_editor_panel_qt.py",
+    "returncode": 0,
+    "seconds": 11.993,
+    "summary": [
+      "Ran 50 tests in 10.712s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_roster_editor_panel_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_roster_save_to_disc.py",
+    "returncode": 0,
+    "seconds": 19.411,
+    "summary": [
+      "Ran 21 tests in 19.222s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_roster_save_to_disc.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_roster_save_to_disc_wiring.py",
+    "returncode": 0,
+    "seconds": 2.02,
+    "summary": [
+      "Ran 6 tests in 1.658s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_roster_save_to_disc_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_rosters_data.py",
+    "returncode": 0,
+    "seconds": 4.626,
+    "summary": [
+      "Ran 10 tests in 4.436s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_rosters_data.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_rosters_data_qt.py",
+    "returncode": 0,
+    "seconds": 0.917,
+    "summary": [
+      "Ran 6 tests in 0.609s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_rosters_data_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_rosters_reserves_abilities.py",
+    "returncode": 0,
+    "seconds": 12.491,
+    "summary": [
+      "Ran 13 tests in 12.292s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_rosters_reserves_abilities.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_rosters_reserves_abilities_qt.py",
+    "returncode": 0,
+    "seconds": 4.075,
+    "summary": [
+      "Ran 7 tests in 3.690s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_rosters_reserves_abilities_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_save_roster_import.py",
+    "returncode": 0,
+    "seconds": 0.115,
+    "summary": [
+      "Ran 12 tests in 0.001s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_save_roster_import.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_scorebug_studio_panel_qt.py",
+    "returncode": 0,
+    "seconds": 7.383,
+    "summary": [
+      "Ran 11 tests in 7.199s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_scorebug_studio_panel_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_security_blockers_remediation.py",
+    "returncode": 0,
+    "seconds": 0.266,
+    "summary": [
+      "Ran 11 tests in 0.008s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_security_blockers_remediation.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_self_update.py",
+    "returncode": 0,
+    "seconds": 1.619,
+    "summary": [
+      "Ran 26 tests in 1.414s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_self_update.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_senior_bowl_panel_qt.py",
+    "returncode": 0,
+    "seconds": 0.265,
+    "summary": [
+      "Ran 5 tests in 0.083s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_senior_bowl_panel_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_share_panel_qt.py",
+    "returncode": 0,
+    "seconds": 8.085,
+    "summary": [
+      "Ran 7 tests in 7.211s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_share_panel_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_sounds_panel_qt.py",
+    "returncode": 0,
+    "seconds": 9.237,
+    "summary": [
+      "Ran 10 tests in 8.468s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_sounds_panel_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_stadium_editable_discovery.py",
+    "returncode": 0,
+    "seconds": 14.199,
+    "summary": [
+      "Ran 6 tests in 13.134s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_stadium_editable_discovery.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_stadium_viewer.py",
+    "returncode": 0,
+    "seconds": 0.165,
+    "summary": [
+      "Ran 3 tests in 0.002s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_stadium_viewer.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_stage_release.py",
+    "returncode": 0,
+    "seconds": 0.165,
+    "summary": [
+      "Ran 10 tests in 0.092s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_stage_release.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_startup_performance.py",
+    "returncode": 0,
+    "seconds": 2.972,
+    "summary": [
+      "Ran 8 tests in 2.010s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_startup_performance.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_studio_facade.py",
+    "returncode": 0,
+    "seconds": 0.416,
+    "summary": [
+      "Ran 11 tests in 0.019s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_studio_facade.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_studio_inspection.py",
+    "returncode": 0,
+    "seconds": 0.616,
+    "summary": [
+      "Ran 2 tests in 0.321s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_studio_inspection.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_studio_qt_models.py",
+    "returncode": 0,
+    "seconds": 1.067,
+    "summary": [
+      "Ran 9 tests in 0.295s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_studio_qt_models.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_studio_session.py",
+    "returncode": 0,
+    "seconds": 1.017,
+    "summary": [
+      "Ran 18 tests in 0.538s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_studio_session.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_studio_shell_layout_qt.py",
+    "returncode": 0,
+    "seconds": 41.664,
+    "summary": [
+      "Ran 18 tests in 39.570s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_studio_shell_layout_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_studio_visual_asset_routing.py",
+    "returncode": 0,
+    "seconds": 5.678,
+    "summary": [
+      "Ran 14 tests in 4.971s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_studio_visual_asset_routing.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_task_delivery.py",
+    "returncode": 0,
+    "seconds": 0.266,
+    "summary": [
+      "Ran 4 tests in 0.051s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_task_delivery.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_team_kit_bundle.py",
+    "returncode": 0,
+    "seconds": 6.43,
+    "summary": [
+      "Ran 8 tests in 5.753s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_team_kit_bundle.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_team_kit_product_integration.py",
+    "returncode": 0,
+    "seconds": 18.807,
+    "summary": [
+      "Ran 7 tests in 17.007s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_team_kit_product_integration.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_teamkit_import_wiring.py",
+    "returncode": 0,
+    "seconds": 0.816,
+    "summary": [
+      "Ran 3 tests in 0.354s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_teamkit_import_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_text_rosters_panel.py",
+    "returncode": 0,
+    "seconds": 0.415,
+    "summary": [
+      "Ran 14 tests in 0.182s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_text_rosters_panel.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_texture_editor.py",
+    "returncode": 0,
+    "seconds": 1.168,
+    "summary": [
+      "Ran 21 tests in 0.957s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_texture_editor.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_texture_master_facades.py",
+    "returncode": 0,
+    "seconds": 0.666,
+    "summary": [
+      "Ran 2 tests in 0.001s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_texture_master_facades.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_throw_tuning_panel_qt.py",
+    "returncode": 0,
+    "seconds": 2.17,
+    "summary": [
+      "Ran 13 tests in 1.800s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_throw_tuning_panel_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_unif_color_argb_parse.py",
+    "returncode": 0,
+    "seconds": 0.717,
+    "summary": [
+      "Ran 2 tests in 0.005s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_unif_color_argb_parse.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_unif_color_control.py",
+    "returncode": 1,
+    "seconds": 8.835,
+    "summary": [
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1/reports/assets/nfl2k5_resource_chunks_v2.json'",
+      "mod_editor.core.errors.ValidationError: Could not open the private game index: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1/reports/assets/nfl2k5_resource_chunks_v2.json'",
+      "Ran 15 tests in 7.471s",
+      "FAILED (errors=1, skipped=2)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_unif_color_control.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_unified_audio_composition.py",
+    "returncode": 0,
+    "seconds": 0.967,
+    "summary": [
+      "Ran 3 tests in 0.598s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_unified_audio_composition.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_unified_stadium_texture_composition.py",
+    "returncode": 0,
+    "seconds": 0.365,
+    "summary": [
+      "Ran 5 tests in 0.012s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_unified_stadium_texture_composition.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_uniform_bundle_cross_project.py",
+    "returncode": 0,
+    "seconds": 2.971,
+    "summary": [
+      "Ran 8 tests in 2.481s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_uniform_bundle_cross_project.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_update_check.py",
+    "returncode": 0,
+    "seconds": 0.215,
+    "summary": [
+      "Ran 21 tests in 0.006s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_update_check.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_ux_build_plan_coverage_qt.py",
+    "returncode": 0,
+    "seconds": 1.97,
+    "summary": [
+      "Ran 7 tests in 1.557s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_ux_build_plan_coverage_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_ux_open_disc_hook_qt.py",
+    "returncode": 0,
+    "seconds": 16.053,
+    "summary": [
+      "Ran 7 tests in 14.698s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_ux_open_disc_hook_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_ux_rosters_words_qt.py",
+    "returncode": 0,
+    "seconds": 0.516,
+    "summary": [
+      "Ran 4 tests in 0.231s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_ux_rosters_words_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_validate_all_capabilities.py",
+    "returncode": 0,
+    "seconds": 0.967,
+    "summary": [
+      "Ran 36 tests in 0.754s",
+      "OK (skipped=1)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_validate_all_capabilities.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_visual_export_and_preview.py",
+    "returncode": 0,
+    "seconds": 6.331,
+    "summary": [
+      "Ran 11 tests in 5.307s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_visual_export_and_preview.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_workspace_recovery.py",
+    "returncode": 0,
+    "seconds": 0.817,
+    "summary": [
+      "Ran 7 tests in 0.037s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_workspace_recovery.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_xbe_patch_cave_references.py",
+    "returncode": 0,
+    "seconds": 1698.653,
+    "summary": [
+      "Ran 127 tests in 1698.219s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_xbe_patch_cave_references.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_xbe_patch_memory_writes.py",
+    "returncode": 0,
+    "seconds": 1502.401,
+    "summary": [
+      "Ran 115 tests in 1502.202s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_xbe_patch_memory_writes.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_xemu_settings.py",
+    "returncode": 0,
+    "seconds": 0.486,
+    "summary": [
+      "Ran 5 tests in 0.015s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__mod_editor__test_xemu_settings.py.log"
+  },
+  {
+    "path": "tests/test_apf_membership_consumer_census.py",
+    "returncode": 0,
+    "seconds": 0.265,
+    "summary": [
+      "Ran 32 tests in 0.141s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__test_apf_membership_consumer_census.py.log"
+  },
+  {
+    "path": "tests/test_apf_save_custom_team_appearance.py",
+    "returncode": 0,
+    "seconds": 2.069,
+    "summary": [
+      "Ran 12 tests in 1.908s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__test_apf_save_custom_team_appearance.py.log"
+  },
+  {
+    "path": "tests/test_apf_slot43_xenia_experiment.py",
+    "returncode": 0,
+    "seconds": 0.216,
+    "summary": [
+      "Ran 12 tests in 0.085s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__test_apf_slot43_xenia_experiment.py.log"
+  },
+  {
+    "path": "tests/test_crash_report.py",
+    "returncode": 0,
+    "seconds": 0.165,
+    "summary": [
+      "ValueError: repeating fault",
+      "ValueError: repeating fault",
+      "ValueError: repeating fault",
+      "Ran 18 tests in 0.044s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__test_crash_report.py.log"
+  },
+  {
+    "path": "tests/test_nfl2k5_xemu_saves.py",
+    "returncode": 0,
+    "seconds": 0.467,
+    "summary": [
+      "Ran 11 tests in 0.303s",
+      "OK (skipped=1)"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__test_nfl2k5_xemu_saves.py.log"
+  },
+  {
+    "path": "tests/test_nfl_away_loader_safe_virtual_xiso_verify.py",
+    "returncode": 0,
+    "seconds": 0.216,
+    "summary": [],
+    "log": "reports/b69_a1/test-logs/tests__test_nfl_away_loader_safe_virtual_xiso_verify.py.log"
+  },
+  {
+    "path": "tests/test_nfl_player_roster_general_workflow.py",
+    "returncode": 0,
+    "seconds": 0.416,
+    "summary": [
+      "Ran 19 tests in 0.005s",
+      "OK"
+    ],
+    "log": "reports/b69_a1/test-logs/tests__test_nfl_player_roster_general_workflow.py.log"
+  },
+  {
+    "path": "tools/test_nfl2k5_visual_mod_project.py",
+    "returncode": 0,
+    "seconds": 2.82,
+    "summary": [
+      "Ran 46 tests in 2.187s",
+      "OK (skipped=7)"
+    ],
+    "log": "reports/b69_a1/test-logs/tools__test_nfl2k5_visual_mod_project.py.log"
+  }
+]

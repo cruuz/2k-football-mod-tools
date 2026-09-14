@@ -12,6 +12,8 @@ Everything heavy runs on one background thread; the widget stays live.
 
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import failure_body, plain_error
+
 from pathlib import Path
 from typing import Callable
 
@@ -39,6 +41,7 @@ from mod_editor.gui.ux_text import Details, suggest_copy_name
 from mod_editor.gui.task_delivery import bound
 
 from mod_editor.core import nfl2k5_models as models
+from mod_editor.core import nfl2k5_model_project as model_project
 from mod_editor.core.nfl2k5_model_skeleton import HELP as SKELETON_HELP
 
 IMAGE_FILTER = "Disc images (*.iso *.xiso);;All files (*)"
@@ -88,10 +91,11 @@ class _Task(QRunnable):
         try:
             self.signals.finished.emit(self._operation())
         except Exception as exc:  # noqa: BLE001 - one message for the status line
-            self.signals.failed.emit(f"{type(exc).__name__}: {exc}")
+            self.signals.failed.emit(plain_error(exc))
 
 
 class ModelsPanel(QWidget):
+    project_changed = pyqtSignal()
     disc_written = pyqtSignal(str)   # a disc copy this page wrote and verified (Play latest can start it)
 
     """Export & Import Models."""
@@ -108,6 +112,10 @@ class ModelsPanel(QWidget):
         self._compiled: models.CompiledModelImport | None = None
         self._compiled_set: models.CompiledModelSet | None = None
         self._last_export: models.ExportResult | None = None
+        self._checked_sources = []
+        self._checked_files = []
+        self._checked_options = {}
+        self._check_generation = 0
         self._busy = False
         self._build()
 
@@ -124,7 +132,7 @@ class ModelsPanel(QWidget):
         layout = QVBoxLayout(self)
         intro = QLabel(
             "Export a model for Blender, then check whether your edited model can be imported. "
-            "Same vertices and faces only; a passing check writes into a copy of your disc."
+            "Same vertices and faces only. Add a passing check to your project, then build it with your other edits."
         )
         intro.setWordWrap(True)
         layout.addWidget(intro)
@@ -247,9 +255,14 @@ class ModelsPanel(QWidget):
         import_layout.addWidget(self.import_options_details)
         for box in (self.normals_check, self.uvs_check, self.colours_check, self.rescale_check):
             box.toggled.connect(lambda _c: self._refresh_import_summary())
+            box.toggled.connect(self._invalidate_import)
         self._refresh_import_summary()
+        self.add_project_button = QPushButton("Add model edit to project")
+        self.add_project_button.setToolTip("Save the checked model bytes with textures, equipment and gameplay edits. Undo removes this set.")
+        self.add_project_button.clicked.connect(self._add_to_project)
+        import_layout.addWidget(self.add_project_button)
         row = QHBoxLayout()
-        row.addWidget(QLabel("3. Game disc (.iso)"))
+        row.addWidget(QLabel("3. Quick disc copy (.iso)"))
         self.source_field = QLineEdit()
         self.source_field.setPlaceholderText("The game disc to copy (never written); filled in when you open a disc")
         self.source_field.textChanged.connect(self._refresh)
@@ -268,9 +281,11 @@ class ModelsPanel(QWidget):
         choose_target.clicked.connect(self._choose_target)
         row.addWidget(choose_target)
         self.write_button = QPushButton("Make disc with this model")
+        self.write_button.setToolTip("Quick path: the same Models fixed-span writer used by project builds, for this checked model only.")
         self.write_button.clicked.connect(self._write)
         row.addWidget(self.write_button)
         import_layout.addLayout(row)
+        import_layout.addWidget(QLabel("Quick path uses the same model writer as Make disc from project."))
         right_layout.addWidget(import_box)
 
         set_box = QGroupBox("Whole player (3 models)")
@@ -326,6 +341,8 @@ class ModelsPanel(QWidget):
         return models.body_set_for_key(self._entries, key)
 
     def _invalidate_import(self, *_args) -> None:
+        self._check_generation += 1
+        self._checked_sources = []
         self._compiled = self._compiled_set = None
         self._refresh()
 
@@ -351,6 +368,8 @@ class ModelsPanel(QWidget):
         source = self.source_field.text().strip()
         target = self.target_field.text().strip()
         ready = self._compiled is not None or self._compiled_set is not None
+        self.add_project_button.setEnabled(not self._busy and ready
+            and callable(getattr(self._facade, "stage_model_edit", None)))
         self.write_button.setEnabled(not self._busy and ready and bool(source) and bool(target)
                                      and Path(source) != Path(target))
 
@@ -400,7 +419,7 @@ class ModelsPanel(QWidget):
         self.status_label.setText(message)
         self.details.appendPlainText("\n" + message)
         if self.isVisible():                    # never a modal box for a widget nobody can see (tests, headless)
-            QMessageBox.critical(self, "Couldn't finish that", message)
+            QMessageBox.critical(self, "Couldn't finish that", failure_body(message))
 
     # ------------------------------------------------------------------ catalog
     def reload(self) -> None:
@@ -466,8 +485,7 @@ class ModelsPanel(QWidget):
         return [str(self.model_list.item(i).data(Qt.UserRole)) for i in range(self.model_list.count())]
 
     def _selected(self) -> None:
-        self._compiled = None
-        self._compiled_set = None
+        self._invalidate_import()
         key = self.current_key()
         self._refresh()
         if key is None or self._source is None:
@@ -559,18 +577,27 @@ class ModelsPanel(QWidget):
         source = self._source
         normals, uvs, rescale = self.normals_check.isChecked(), self.uvs_check.isChecked(), self.rescale_check.isChecked()
         colours = self.colours_check.isChecked()
-        self._compiled = self._compiled_set = None
+        self._invalidate_import()
+        generation = self._check_generation
         self.status_label.setText(f"Fitting {edited.name} onto the game's vertices…")
 
         def operation() -> object:
-            return models.compile_import(source, key, edited, write_normals=normals, write_uvs=uvs, allow_rescale=rescale,
-                                         write_colours=colours)
+            pins = model_project.source_files([edited])
+            compiled = models.compile_import(source, key, edited, write_normals=normals, write_uvs=uvs, allow_rescale=rescale,
+                                             write_colours=colours)
+            model_project.require(pins == model_project.source_files([edited]), f"{edited}: file changed during the model check. Check it again.")
+            return compiled, pins, model_project.checked_disc_summary(source, compiled)
 
         def done(result: object) -> None:
+            result, pins, summary = result
+            if generation != self._check_generation:
+                return
             assert isinstance(result, models.CompiledModelImport)
+            self._checked_sources, self._checked_files = pins, [str(edited)]
+            self._checked_options = dict(write_normals=normals, write_uvs=uvs, allow_rescale=rescale, write_colours=colours)
             self._compiled = result
-            self.details.setPlainText(import_report_text(result))
-            self.status_label.setText(f"Ready to write: {result.summary()}")
+            self.details.setPlainText(import_report_text(result).replace(result.summary(), summary, 1))
+            self.status_label.setText(f"Ready to write: {summary}")
             self._refresh()
 
         self._run(operation, done)
@@ -629,20 +656,46 @@ class ModelsPanel(QWidget):
             return
         normals, uvs, rescale = self.normals_check.isChecked(), self.uvs_check.isChecked(), self.rescale_check.isChecked()
         colours = self.colours_check.isChecked()
-        self._compiled = self._compiled_set = None
+        self._invalidate_import()
+        generation = self._check_generation
         self.status_label.setText(f"Fitting the body set in {folder}…")
 
         def operation() -> object:
-            return models.compile_body_set_import(source, body_set, folder, write_normals=normals, write_uvs=uvs,
-                                                  allow_rescale=rescale, write_colours=colours,
-                                                  import_skeleton=import_skeleton)
+            files = list(models.find_body_set_files(body_set, folder).values())
+            pins = model_project.source_files(files)
+            compiled = models.compile_body_set_import(source, body_set, folder, write_normals=normals, write_uvs=uvs,
+                                                      allow_rescale=rescale, write_colours=colours,
+                                                      import_skeleton=import_skeleton)
+            model_project.require(pins == model_project.source_files(files), f"{folder}: files changed during the model check. Check them again.")
+            return compiled, pins, files, model_project.checked_disc_summary(source, compiled)
 
         def done(result: object) -> None:
+            result, pins, files, summary = result
+            if generation != self._check_generation:
+                return
             assert isinstance(result, models.CompiledModelSet)
+            self._checked_sources, self._checked_files = pins, [str(path) for path in files]
+            self._checked_options = dict(write_normals=normals, write_uvs=uvs, allow_rescale=rescale,
+                                         write_colours=colours, import_skeleton=import_skeleton)
             self._compiled_set = result
-            self.details.setPlainText(set_report_text(result))
-            self.status_label.setText(f"Ready to write: {result.summary()}")
+            self.details.setPlainText(set_report_text(result).replace(result.summary(), summary, 1))
+            self.status_label.setText(f"Ready to write: {summary}")
             self._refresh()
+
+        self._run(operation, done)
+
+    def _add_to_project(self) -> None:
+        source, compiled = self._source, self._compiled_set or self._compiled
+        if source is None or compiled is None:
+            return
+        files, pins, options = list(self._checked_files), list(self._checked_sources), dict(self._checked_options)
+
+        def operation():
+            return self._facade.stage_model_edit(source, compiled, files, options=options, pinned_sources=pins)
+
+        def done(result):
+            self.status_label.setText(getattr(result, "message", str(result)))
+            self.project_changed.emit()
 
         self._run(operation, done)
 
@@ -720,7 +773,7 @@ def import_report_text(compiled: models.CompiledModelImport) -> str:
     if compiled.notes:
         lines.append("")
         lines.extend(f"- {note}" for note in compiled.notes)
-    lines += ["", "Nothing has been written yet. Choose the source image and where to write the copy, then Write the copy."]
+    lines += ["", "Nothing has been written yet. Add model edit to project to save it with your other edits, or use the quick disc path."]
     return "\n".join(lines)
 
 
@@ -737,7 +790,7 @@ def set_report_text(compiled: models.CompiledModelSet) -> str:
             lines.append(f"{row['member']} / {row['bone']}: {row['before_cm']:.5f} -> {row['after_cm']:.5f}")
         lines += ["", "SKEL directions recomputed and checked against the retained canonical axes.",
                   "All four resources, including head and SKEL, are preflighted as one transaction.",
-                  "Choose a new output disc path, then Make disc with this model.", "", SKELETON_HELP]
+                  "Add model edit to project, or choose a new output disc path and Make disc with this model.", "", SKELETON_HELP]
         return "\n".join(lines)
     lines = [f"Body set check: {compiled.summary()}", ""]
     for member in compiled.members:
@@ -752,7 +805,7 @@ def set_report_text(compiled: models.CompiledModelSet) -> str:
     if compiled.notes:
         lines.extend(f"- {note}" for note in compiled.notes)
         lines.append("")
-    lines += ["Nothing has been written yet. All three go into ONE copy of the disc: choose the source image and",
+    lines += ["Nothing has been written yet. Add model edit to project to save this checked set. All three go into ONE copy of the disc: choose the source image and",
               "where to write the copy, then Write the copy. If any member could not fit, this check would have",
               "refused the whole set instead."]
     return "\n".join(lines)

@@ -1,0 +1,13 @@
+F
+======================================================================
+FAIL: test_caller_and_tier_bytes_are_owned_settings_not_reserved_zero_storage (__main__.SaveOwnershipTests.test_caller_and_tier_bytes_are_owned_settings_not_reserved_zero_storage)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_nfl2k5_franchise_2026_runtime.py", line 83, in test_caller_and_tier_bytes_are_owned_settings_not_reserved_zero_storage
+    self.assertFalse(any(start <= offset < end for start, end in contract['reserved_zero_spans']),
+AssertionError: True is not false : owned setting byte 83 is incorrectly described as reserved zero
+
+----------------------------------------------------------------------
+Ran 1 test in 0.046s
+
+FAILED (failures=1)

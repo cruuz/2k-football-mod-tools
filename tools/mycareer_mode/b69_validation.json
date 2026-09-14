@@ -1,0 +1,3033 @@
+{
+  "allocation": {
+    "content_bytes": 20168,
+    "machine_code_bytes": 15792,
+    "requests": [
+      [
+        "nfl2k5_my_career",
+        "code",
+        20480,
+        16
+      ],
+      [
+        "nfl2k5_my_career",
+        "data",
+        4096,
+        16
+      ],
+      [
+        "nfl2k5_my_career_m3",
+        "data",
+        4096,
+        16
+      ]
+    ],
+    "same_file_size": true,
+    "spare_rx_bytes": 295
+  },
+  "existing_free_space_skip": [
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_generic_build.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/14/test_nfl2k5_my_career_generic_build.log",
+      "log_sha256": "1d65e389e87103277fa6af4ef37957e44ccc9de796791f01e953b590d41128eb",
+      "max_rss_kib": 162396,
+      "result": "passed",
+      "seconds": 13.503,
+      "skipped": 1,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 5,
+      "wall_seconds": 13.813
+    }
+  ],
+  "experimental": true,
+  "feature_content_growth": {
+    "additional_rw_words": 4,
+    "allocation_changes": false,
+    "combined": 1387,
+    "handback_and_caller": 424,
+    "prospects": 963
+  },
+  "limits": [
+    "Declared scene/device and ready-animation boundaries; no console or framebuffer.",
+    "Human selection enters native menu callback 207440; physical cursor input is unwitnessed.",
+    "Snap, fourth-down, dead-ball and game completion are explicit inputs.",
+    "The optional CB probe exposed a corrected clip-slot fixture input, but did not produce an accepted selected-player return; no CB possession proof.",
+    "Release manifest and protected studio/build/registry wiring await integration."
+  ],
+  "manifest_sha256": "63c21d74ff7917edc1050da4355966795c013bc0b0d93068df3b38eee26d9e85",
+  "native": [
+    {
+      "kind": "B69_PLAYCALL_RECEIPT",
+      "result": {
+        "cadence": {
+          "complete_updates": 44,
+          "match_rng_draws": 1414,
+          "polls": 10,
+          "presents": 10,
+          "updates": 44
+        },
+        "handbacks": [
+          {
+            "controller_port": 0,
+            "drive": 2,
+            "menu": false,
+            "next_fast_forward_updates": 8,
+            "policy": 1,
+            "position": 7,
+            "pre_snap_state": 13,
+            "selected": true,
+            "snap_state": 14
+          }
+        ],
+        "postgame_policy": 1,
+        "postgame_supersim": 2,
+        "saved_bits": 40
+      }
+    },
+    {
+      "kind": "B69_PLAYCALL_RECEIPT",
+      "result": {
+        "cadence": {
+          "complete_updates": 86,
+          "match_rng_draws": 2995,
+          "polls": 25,
+          "presents": 25,
+          "updates": 86
+        },
+        "handbacks": [
+          {
+            "controller_port": 0,
+            "drive": 2,
+            "menu": true,
+            "next_fast_forward_updates": 8,
+            "policy": 0,
+            "position": 0,
+            "pre_snap_state": 13,
+            "selected": true,
+            "snap_state": 14
+          },
+          {
+            "controller_port": 0,
+            "drive": 4,
+            "menu": true,
+            "next_fast_forward_updates": 8,
+            "policy": 0,
+            "position": 0,
+            "pre_snap_state": 13,
+            "selected": true,
+            "snap_state": 14
+          }
+        ],
+        "postgame_policy": 0,
+        "postgame_supersim": 2,
+        "saved_bits": 8
+      }
+    },
+    {
+      "kind": "B69_PLAYCALL_RECEIPT",
+      "result": {
+        "cadence": {
+          "complete_updates": 86,
+          "match_rng_draws": 2995,
+          "polls": 25,
+          "presents": 25,
+          "updates": 86
+        },
+        "handbacks": [
+          {
+            "controller_port": 0,
+            "drive": 2,
+            "menu": true,
+            "next_fast_forward_updates": 8,
+            "policy": 1,
+            "position": 0,
+            "pre_snap_state": 13,
+            "selected": true,
+            "snap_state": 14
+          },
+          {
+            "controller_port": 0,
+            "drive": 4,
+            "menu": true,
+            "next_fast_forward_updates": 8,
+            "policy": 1,
+            "position": 0,
+            "pre_snap_state": 13,
+            "selected": true,
+            "snap_state": 14
+          }
+        ],
+        "postgame_policy": 1,
+        "postgame_supersim": 2,
+        "saved_bits": 40
+      }
+    },
+    {
+      "kind": "B69_PLAYCALL_RECEIPT",
+      "result": {
+        "cadence": {
+          "complete_updates": 78,
+          "match_rng_draws": 2368,
+          "polls": 17,
+          "presents": 17,
+          "updates": 78
+        },
+        "handbacks": [
+          {
+            "controller_port": 0,
+            "drive": 2,
+            "menu": false,
+            "next_fast_forward_updates": 8,
+            "policy": 2,
+            "position": 0,
+            "pre_snap_state": 13,
+            "selected": true,
+            "snap_state": 14
+          },
+          {
+            "controller_port": 0,
+            "drive": 4,
+            "menu": false,
+            "next_fast_forward_updates": 8,
+            "policy": 2,
+            "position": 0,
+            "pre_snap_state": 13,
+            "selected": true,
+            "snap_state": 14
+          }
+        ],
+        "postgame_policy": 2,
+        "postgame_supersim": 2,
+        "saved_bits": 72
+      }
+    },
+    {
+      "kind": "B69_PLAYCALL_RECEIPT",
+      "result": {
+        "cadence": {
+          "complete_updates": 86,
+          "match_rng_draws": 2972,
+          "polls": 25,
+          "presents": 25,
+          "updates": 86
+        },
+        "handbacks": [
+          {
+            "controller_port": 0,
+            "drive": 2,
+            "menu": true,
+            "next_fast_forward_updates": 8,
+            "policy": 0,
+            "position": 11,
+            "pre_snap_state": 13,
+            "selected": true,
+            "snap_state": 14
+          },
+          {
+            "controller_port": 0,
+            "drive": 4,
+            "menu": true,
+            "next_fast_forward_updates": 8,
+            "policy": 0,
+            "position": 11,
+            "pre_snap_state": 13,
+            "selected": true,
+            "snap_state": 14
+          }
+        ],
+        "postgame_policy": 0,
+        "postgame_supersim": 2,
+        "saved_bits": 8
+      }
+    },
+    {
+      "kind": "B69_PLAYCALL_RECEIPT",
+      "result": {
+        "cadence": {
+          "complete_updates": 86,
+          "match_rng_draws": 2972,
+          "polls": 25,
+          "presents": 25,
+          "updates": 86
+        },
+        "handbacks": [
+          {
+            "controller_port": 0,
+            "drive": 2,
+            "menu": true,
+            "next_fast_forward_updates": 8,
+            "policy": 1,
+            "position": 11,
+            "pre_snap_state": 13,
+            "selected": true,
+            "snap_state": 14
+          },
+          {
+            "controller_port": 0,
+            "drive": 4,
+            "menu": true,
+            "next_fast_forward_updates": 8,
+            "policy": 1,
+            "position": 11,
+            "pre_snap_state": 13,
+            "selected": true,
+            "snap_state": 14
+          }
+        ],
+        "postgame_policy": 1,
+        "postgame_supersim": 2,
+        "saved_bits": 40
+      }
+    },
+    {
+      "kind": "B69_PLAYCALL_RECEIPT",
+      "result": {
+        "cadence": {
+          "complete_updates": 78,
+          "match_rng_draws": 2368,
+          "polls": 17,
+          "presents": 17,
+          "updates": 78
+        },
+        "handbacks": [
+          {
+            "controller_port": 0,
+            "drive": 2,
+            "menu": false,
+            "next_fast_forward_updates": 8,
+            "policy": 2,
+            "position": 11,
+            "pre_snap_state": 13,
+            "selected": true,
+            "snap_state": 14
+          },
+          {
+            "controller_port": 0,
+            "drive": 4,
+            "menu": false,
+            "next_fast_forward_updates": 8,
+            "policy": 2,
+            "position": 11,
+            "pre_snap_state": 13,
+            "selected": true,
+            "snap_state": 14
+          }
+        ],
+        "postgame_policy": 2,
+        "postgame_supersim": 2,
+        "saved_bits": 72
+      }
+    },
+    {
+      "kind": "B68_SUPERSIM_RECEIPT",
+      "result": {
+        "apartment_label": "Supersim: Fast forward",
+        "cadence": {
+          "complete_updates": 27,
+          "match_rng_draws": 1393,
+          "polls": 6,
+          "presents": 6,
+          "updates": 27
+        },
+        "drives": [
+          {
+            "drive": 0,
+            "next_offense": "0xe5fc60",
+            "offense": "0xe5fc20",
+            "plays": 1,
+            "saved_supersim": 2
+          },
+          {
+            "drive": 1,
+            "next_offense": "0xe5fc20",
+            "offense": "0xe5fc60",
+            "plays": 2,
+            "saved_supersim": 2
+          },
+          {
+            "drive": 2,
+            "next_offense": "0xe5fc60",
+            "offense": "0xe5fc20",
+            "plays": 3,
+            "saved_supersim": 2
+          }
+        ],
+        "postgame_word": 2,
+        "save_supersim_bits": 8
+      }
+    },
+    {
+      "kind": "B68_PAT_RECEIPT",
+      "result": {
+        "choices": [
+          {
+            "approach_state": 14,
+            "cadence": {
+              "complete_updates": 8,
+              "match_rng_draws": 452,
+              "polls": 1,
+              "presents": 1,
+              "updates": 8
+            },
+            "choice": "two points",
+            "kickoff_phase": 2,
+            "ready_state": 13,
+            "saved_supersim": 2,
+            "spot_cm": 4389.1201171875
+          },
+          {
+            "approach_state": 14,
+            "cadence": {
+              "complete_updates": 8,
+              "match_rng_draws": 452,
+              "polls": 1,
+              "presents": 1,
+              "updates": 8
+            },
+            "choice": "kick",
+            "kickoff_phase": 2,
+            "ready_state": 13,
+            "saved_supersim": 2,
+            "spot_cm": 4389.1201171875
+          }
+        ],
+        "modern_kick_rules_and_clock": false
+      }
+    },
+    {
+      "kind": "B68_PAT_RECEIPT",
+      "result": {
+        "choices": [
+          {
+            "approach_state": 14,
+            "cadence": {
+              "complete_updates": 8,
+              "match_rng_draws": 452,
+              "polls": 1,
+              "presents": 1,
+              "updates": 8
+            },
+            "choice": "two points",
+            "kickoff_phase": 2,
+            "ready_state": 13,
+            "saved_supersim": 2,
+            "spot_cm": 4389.1201171875
+          },
+          {
+            "approach_state": 14,
+            "cadence": {
+              "complete_updates": 8,
+              "match_rng_draws": 452,
+              "polls": 1,
+              "presents": 1,
+              "updates": 8
+            },
+            "choice": "kick",
+            "kickoff_phase": 2,
+            "ready_state": 13,
+            "saved_supersim": 2,
+            "spot_cm": 3200.39990234375
+          }
+        ],
+        "modern_kick_rules_and_clock": true
+      }
+    },
+    {
+      "kind": "NATIVE_SUPERSIM_RECEIPT",
+      "result": {
+        "cadence": [
+          {
+            "complete_updates": 8,
+            "group": 1,
+            "match_rng_draws": 21,
+            "polls": 8,
+            "presents": 8,
+            "state_sha256": "5befa5e20f9f0101dd975882fc32d1495fc82d05bebd0411deed65787726e1a5",
+            "updates": 8
+          },
+          {
+            "complete_updates": 8,
+            "group": 2,
+            "match_rng_draws": 21,
+            "polls": 4,
+            "presents": 4,
+            "state_sha256": "5befa5e20f9f0101dd975882fc32d1495fc82d05bebd0411deed65787726e1a5",
+            "updates": 8
+          },
+          {
+            "complete_updates": 8,
+            "group": 4,
+            "match_rng_draws": 21,
+            "polls": 2,
+            "presents": 2,
+            "state_sha256": "5befa5e20f9f0101dd975882fc32d1495fc82d05bebd0411deed65787726e1a5",
+            "updates": 8
+          },
+          {
+            "complete_updates": 8,
+            "group": 8,
+            "match_rng_draws": 21,
+            "polls": 1,
+            "presents": 1,
+            "state_sha256": "5befa5e20f9f0101dd975882fc32d1495fc82d05bebd0411deed65787726e1a5",
+            "updates": 8
+          }
+        ],
+        "complete_updates": 3376,
+        "handoffs": [
+          {
+            "clock": 40.0,
+            "frames": 53,
+            "phase": 13,
+            "position": 4,
+            "scenario": "scrimmage CB",
+            "updates": 418
+          },
+          {
+            "clock": 40.0,
+            "frames": 48,
+            "phase": 13,
+            "position": 0,
+            "scenario": "native injury replacement QB",
+            "updates": 379
+          },
+          {
+            "clock": 40.0,
+            "frames": 1,
+            "phase": 13,
+            "position": 1,
+            "scenario": "native kickoff K",
+            "updates": 4
+          },
+          {
+            "clock": 40.0,
+            "frames": 1,
+            "phase": 13,
+            "position": 2,
+            "scenario": "native punt P",
+            "updates": 5
+          }
+        ],
+        "match_rng_draws": 23223,
+        "plays": 3,
+        "polls": 422,
+        "positions": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16
+        ],
+        "presented_frames": 422,
+        "renders": [
+          {
+            "empty_caption": 71,
+            "gpu_commands": 1,
+            "player_pass": 1,
+            "player_registration": 22,
+            "player_visit": 22,
+            "scenario": "replacement scrimmage"
+          },
+          {
+            "empty_caption": 71,
+            "gpu_commands": 1,
+            "player_pass": 1,
+            "player_registration": 22,
+            "player_visit": 22,
+            "scenario": "punt"
+          }
+        ],
+        "substitution": {
+          "injured_position": 0,
+          "native_record_changed": true,
+          "replacement_position": 0
+        },
+        "transitions": [
+          [
+            304,
+            13
+          ],
+          [
+            308,
+            14
+          ],
+          [
+            523,
+            18
+          ],
+          [
+            599,
+            11
+          ],
+          [
+            1053,
+            12
+          ],
+          [
+            1378,
+            13
+          ],
+          [
+            1500,
+            14
+          ],
+          [
+            1989,
+            18
+          ],
+          [
+            2065,
+            11
+          ],
+          [
+            2493,
+            12
+          ],
+          [
+            2807,
+            13
+          ],
+          [
+            3208,
+            14
+          ],
+          [
+            3376,
+            18
+          ]
+        ],
+        "updates": 3376
+      }
+    }
+  ],
+  "negative_control": {
+    "base": "922c009d",
+    "expected_failure": "first-play caller differs from saved policy",
+    "trace": [
+      {
+        "call_complete": false,
+        "pc": "0xa1412",
+        "phase": 11,
+        "present": "0x2a40000",
+        "team": "0xe5fc60",
+        "wait": 0
+      },
+      {
+        "call_complete": false,
+        "pc": "0xa1419",
+        "phase": 11,
+        "present": "0x0",
+        "team": "0xe5fc60",
+        "wait": 0
+      },
+      {
+        "call_complete": false,
+        "pc": "0xa1412",
+        "phase": 11,
+        "present": "0x0",
+        "team": "0xe5fc20",
+        "wait": 1
+      },
+      {
+        "call_complete": false,
+        "pc": "0xa1419",
+        "phase": 11,
+        "present": "0x2a40000",
+        "team": "0xe5fc20",
+        "wait": 1
+      },
+      {
+        "call_complete": true,
+        "pc": "0x1891f3",
+        "phase": 13,
+        "present": "0x2a40000",
+        "team": "0xe5fc20",
+        "wait": 0
+      }
+    ]
+  },
+  "pending_protected_wiring": [
+    {
+      "command": "python3 tests/mod_editor/test_provider_integrity.py",
+      "exit_code": 1,
+      "log": ".scratch/j3/verified/13/test_provider_integrity.log",
+      "log_sha256": "63b4a415efefbd491039e4feb8b1ac22947de3c03336a9b7e18d9952e43f3550",
+      "max_rss_kib": 184432,
+      "result": "failed",
+      "seconds": 14.181,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 7,
+      "wall_seconds": 14.403
+    }
+  ],
+  "prior_failures": [
+    {
+      "cause": "Draft expanded default lineman mask; restored beta-68 eligibility.",
+      "suite": "test_nfl2k5_my_career_control.py"
+    },
+    {
+      "cause": "Bits 5..6 now own caller policy; refusal cases use value 3 and bit 7.",
+      "suite": "test_beta66_supersim_wiring.py"
+    },
+    {
+      "cause": "B68 clip address supplied at D4 instead of a slot; 1FE0E3 read header as pointer and DED13 faulted. Correcting the slot removes that fault, but the supplied CB scenario has no selected-player hand-back; it is excluded from accepted possession evidence.",
+      "suite": "optional CB extension"
+    }
+  ],
+  "proof_source_sha256_at_collection": {
+    "tests/mod_editor/test_beta66_supersim_wiring.py": "3d4fa703c43a84acb03530b1742601755269a911d40795caf909438c6683323f",
+    "tests/mod_editor/test_nfl2k5_my_career.py": "49a6db609c119defbc4e44327e16593475509bb667c2c2c68a8248785de9f247",
+    "tests/mod_editor/test_nfl2k5_my_career_b69_wiring.py": "a53792987f5caf4296d5f6145bfcb792e3b47c3fe69402c26a3141c39cc7486e",
+    "tests/mod_editor/test_nfl2k5_my_career_completion.py": "8788d1a460270828112f51719f9574c58bdfde8e25e83ca953763f5e053dd980",
+    "tests/mod_editor/test_nfl2k5_my_career_control.py": "c9dddb8bebbe17e05830c9574ea8f7ef40d61c63d0ec1f0e53e9895ba281a591",
+    "tests/mod_editor/test_nfl2k5_my_career_cpu_choice.py": "e649e7c6a037cf255b45414cb02b36dbc7eb3f2c5545ea4c444e1b79dea74758",
+    "tests/mod_editor/test_nfl2k5_my_career_cpu_frame.py": "b348da60863c950ab3263cf3ac06e5915b4f15f02b64f34f5029b3a198f31042",
+    "tests/mod_editor/test_nfl2k5_my_career_cpu_injury.py": "822512080e1ba3eb0ad21aeeffcd40ee4687d2ae92ea66973d93faeab47f5a45",
+    "tests/mod_editor/test_nfl2k5_my_career_cpu_period.py": "482e1788cdbf00be75838b42ab824a04327cbf776599c246e0a7ccc191ce3a78",
+    "tests/mod_editor/test_nfl2k5_my_career_cpu_timeout.py": "e5bdf5f8d5ff538489351f9497eb3be90ae91c9261fdc8ece98f6d918ae99717",
+    "tests/mod_editor/test_nfl2k5_my_career_cpu_turnover.py": "a8416834d8ab8793e02069be880ad1e8e59e8af2bd4df39634c0870b3fcd0eeb",
+    "tests/mod_editor/test_nfl2k5_my_career_creation_boundary.py": "305b726526e05f8179a5105c3728608d1e67f71016ca3c19992ca20c2f68ba10",
+    "tests/mod_editor/test_nfl2k5_my_career_draft.py": "5758788619161868c603814463f0d335d0356e69848ee128fc958b9d3b2ad752",
+    "tests/mod_editor/test_nfl2k5_my_career_frontend.py": "59a0624f8464e045f419c147b4af79c8e709aa1af827a101287b0462e4128522",
+    "tests/mod_editor/test_nfl2k5_my_career_generic_build.py": "b924e3475f72be67f2d0ba507e3c7a81d0a8106552061e92c5bbb2ebbbe34555",
+    "tests/mod_editor/test_nfl2k5_my_career_inline.py": "f3f10d401c35c8df78c75cea7d828e6cff4c397ebd7bfb0d89447adf5e630a58",
+    "tests/mod_editor/test_nfl2k5_my_career_m3_budget.py": "a0a2ee6c7e35e3489c2514439af8d9cb526ac9dfb4dda35b8f73dbd39c334b63",
+    "tests/mod_editor/test_nfl2k5_my_career_m3_menus.py": "9967ba6cb9247366ca26f65f5d5dd1e38848ff6a73ad2bae23630adb8808cb87",
+    "tests/mod_editor/test_nfl2k5_my_career_manifest.py": "5f863be1d76e800cfe7326e7ed3f0ce3d2cd7dea189cc3259f8dd0f0be1eaf50",
+    "tests/mod_editor/test_nfl2k5_my_career_mode4.py": "6030e36315f2320f18caa0556bb0e082e9c31be2cf336ac7012212c839d23f89",
+    "tests/mod_editor/test_nfl2k5_my_career_mode5.py": "eaa25270cd9dc5d64a94e89ffb5bdbd488857238ce4c5614945579e111cdf3e2",
+    "tests/mod_editor/test_nfl2k5_my_career_mode_audit.py": "b756f92522a410b2fb1a4f491ed99bb3b15e498ce319226392fd15aa6eeac324",
+    "tests/mod_editor/test_nfl2k5_my_career_mode_routes.py": "63963056231ea328ae0a0e8cebedc70ab6077219843f3c39bf347689a27d0adc",
+    "tests/mod_editor/test_nfl2k5_my_career_panel.py": "52dbe6510b52f0d636cb108df9e088a426e3228cb1ca3d3bf4e6f4353fc00efd",
+    "tests/mod_editor/test_nfl2k5_my_career_playcalling.py": "40d7684642a5032828236bed545f41e5266907dceceb65b55798432ad6695ad4",
+    "tests/mod_editor/test_nfl2k5_my_career_played.py": "4f11b84b73df95ce46819cb7909290ba5eb7ebd08677522d629423b1accf96e8",
+    "tests/mod_editor/test_nfl2k5_my_career_position_inputs.py": "5242785ca31691496e112e8fc8664bca825bbe83eaf9edc8d0bb48e4456cccb6",
+    "tests/mod_editor/test_nfl2k5_my_career_prospects.py": "0d1970c4964150696c7afe20c557865a442c1af802d9cdc86eddd301d186ac8c",
+    "tests/mod_editor/test_nfl2k5_my_career_season.py": "220019cdfa28146c3b80133ce204dabdbb0297b9f35240818cd5fdd3dfb4a220",
+    "tests/mod_editor/test_nfl2k5_my_career_settings.py": "cb67260dfbabdd591b47c47782fa000b614d59615cd764ad0223946fa1eecfa4",
+    "tests/mod_editor/test_nfl2k5_my_career_signing.py": "50f799e7bb2bae5feeb6939657719d57387d896ff28b52ba0b873f1ee0d2c66d",
+    "tests/mod_editor/test_nfl2k5_my_career_unicorn.py": "c4de32479ba67fcffbc5c2ea6da32cc465cd1f018e785749d46676571070ab85",
+    "tests/mod_editor/test_nfl2k5_my_career_upgrades.py": "70ab3d5eb80451e4eb1c52d2d816bf60f7dc13b88b571c12d70c75a9118b6ca5",
+    "tests/mod_editor/test_nfl2k5_my_career_week.py": "48adcea14f4b945c54e7de7536c838de3660464f11e101dedd870ea842c48ced",
+    "tests/mod_editor/test_nfl2k5_supersim_live.py": "87eb7a97e21bdec2dbffec48fccd6d3a8e45b99de1cc58a21296b514917ade52",
+    "tests/nfl2k5_b69_series.py": "4e5434bcc7edf0ddc86aaec2ea6a60704facbcc42c16d27185b3c58c3940d433",
+    "tools/mycareer_mode/b69_registry_rows.json": "cffe16c67eaec9ddd17a22967eb20e75051980e4ae5123cf61653078e05f89f5",
+    "tools/mycareer_mode/b69_wiring.py": "0b68440ff1be45d90fb517c0e55dd10227bcf26c6bc28f831780130d827ad21f"
+  },
+  "proposed_provider": {
+    "exact_changes": "WIRING.md: helper pin and unified closure 271 -> 272",
+    "log_sha256": "341630d685382ebe77df14010c23a6820f910b554d07375f9660da0d9d8f8935",
+    "result": "Ran 7 tests in 8.027s; OK"
+  },
+  "runtime_witnessed": false,
+  "schema": "nfl2k5.mycareer.b69-validation.v1",
+  "source_sha256": {
+    "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+    "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+    "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+    "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+    "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+    "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+    "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+    "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+    "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+    "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+    "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+  },
+  "standalone_suites": [
+    {
+      "command": "python3 tests/mod_editor/test_xbe_patch_memory_writes.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/0/test_xbe_patch_memory_writes.log",
+      "log_sha256": "b6197ee5dd35e54d1233b411c47b19e387270aa0dc791d256f96b0d4c17af910",
+      "max_rss_kib": 330420,
+      "result": "passed",
+      "seconds": 1947.348,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 115,
+      "wall_seconds": 1947.679
+    },
+    {
+      "command": "python3 tests/mod_editor/test_xbe_patch_cave_references.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/1/test_xbe_patch_cave_references.log",
+      "log_sha256": "d07108d8425892970ce1f36b81b481e3941c672aff97f3ee27be35c64630fd45",
+      "max_rss_kib": 556928,
+      "result": "passed",
+      "seconds": 2206.297,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 127,
+      "wall_seconds": 2206.831
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_b661_transition.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/10/test_nfl2k5_b661_transition.log",
+      "log_sha256": "a0fc601fb981114e52ebd05a7bf4e80b90ca69fe04f6c20494a678fc29cab337",
+      "max_rss_kib": 364168,
+      "result": "passed",
+      "seconds": 623.941,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 11,
+      "wall_seconds": 624.495
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_b68_game_composition.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/11/test_nfl2k5_b68_game_composition.log",
+      "log_sha256": "8b5ddc88fa1a619ee40ed5c239275f102d42a36a7315b2e7a44aed7f543b8260",
+      "max_rss_kib": 321776,
+      "result": "passed",
+      "seconds": 559.176,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 3,
+      "wall_seconds": 559.776
+    },
+    {
+      "command": "python3 tests/mod_editor/test_beta66_supersim_wiring.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified-fixes/footer/test_beta66_supersim_wiring.log",
+      "log_sha256": "fa21297a5cc82cc374e8f446d9facc6e98bb421abbf50a2fa2ceb90c8c87a607",
+      "max_rss_kib": 78420,
+      "result": "passed",
+      "seconds": 0.348,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 3,
+      "wall_seconds": 0.621
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_completion.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/12/test_nfl2k5_my_career_completion.log",
+      "log_sha256": "7f9f9510646ff346bac6bea55bede2b01bf6f770a756720810ec0bb164aa2006",
+      "max_rss_kib": 303428,
+      "result": "passed",
+      "seconds": 33.177,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 6,
+      "wall_seconds": 33.443
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_cpu_injury.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/12/test_nfl2k5_my_career_cpu_injury.log",
+      "log_sha256": "ad50ab01e24af3efc1b14cd40f5a40393eebd721e8a77a14703281371526bf5a",
+      "max_rss_kib": 133640,
+      "result": "passed",
+      "seconds": 21.866,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 1,
+      "wall_seconds": 22.07
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_creation_boundary.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/12/test_nfl2k5_my_career_creation_boundary.log",
+      "log_sha256": "4843cef9e49bd840935bb7ee469161c7bb951064375d514979a2944683178434",
+      "max_rss_kib": 168288,
+      "result": "passed",
+      "seconds": 2.139,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 4,
+      "wall_seconds": 2.319
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_m3_budget.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/12/test_nfl2k5_my_career_m3_budget.log",
+      "log_sha256": "8ff51c7081f96100886acb6c7a1567da1b87c1f26872f24b0e7e398e6535a10d",
+      "max_rss_kib": 126396,
+      "result": "passed",
+      "seconds": 4.338,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 5,
+      "wall_seconds": 4.676
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_mode_routes.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/12/test_nfl2k5_my_career_mode_routes.log",
+      "log_sha256": "d39346878bbca85e61455d4e5c0e5945770164a4305d6dfdc69ab3208ce0d7e1",
+      "max_rss_kib": 322728,
+      "result": "passed",
+      "seconds": 3.028,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 7,
+      "wall_seconds": 3.222
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_season.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/12/test_nfl2k5_my_career_season.log",
+      "log_sha256": "8f287617da3b1bd4a1678cfe5f0c8cbefa539ae762486b80e6fa33ffb09ed0cc",
+      "max_rss_kib": 193756,
+      "result": "passed",
+      "seconds": 231.655,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 1,
+      "wall_seconds": 231.919
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_upgrades.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/12/test_nfl2k5_my_career_upgrades.log",
+      "log_sha256": "f7285992eaf92238c0d4823c5cb83558c11f5bda21ad87385e2c2cc0b33e98cf",
+      "max_rss_kib": 370060,
+      "result": "passed",
+      "seconds": 371.268,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 4,
+      "wall_seconds": 371.596
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_supersim.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/12/test_nfl2k5_supersim.log",
+      "log_sha256": "b61e9a68571d123874ffe06e3962083f2faf04fb47159efc099ee82712386de0",
+      "max_rss_kib": 263788,
+      "result": "passed",
+      "seconds": 11.369,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 12,
+      "wall_seconds": 11.65
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_accelerated_clock.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/13/test_nfl2k5_accelerated_clock.log",
+      "log_sha256": "0567a4fc79a9b9d204b72b7efad750aa80927067c18f4a516e91bcd76e2ec205",
+      "max_rss_kib": 660404,
+      "result": "passed",
+      "seconds": 43.041,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 40,
+      "wall_seconds": 43.512
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_control.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/13/test_nfl2k5_my_career_control.log",
+      "log_sha256": "a92544633c9eba4ad1debacff9aa49ddbbc3bb809f281c22619066272a2542f8",
+      "max_rss_kib": 238864,
+      "result": "passed",
+      "seconds": 15.132,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 2,
+      "wall_seconds": 15.344
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_cpu_period.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/13/test_nfl2k5_my_career_cpu_period.log",
+      "log_sha256": "05ed5af34517804987f7d987bfc00fd03fc9d20cdfd084de261ca0bc0d09a092",
+      "max_rss_kib": 170560,
+      "result": "passed",
+      "seconds": 36.792,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 2,
+      "wall_seconds": 37.015
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_frontend.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/13/test_nfl2k5_my_career_frontend.log",
+      "log_sha256": "39f607fdb3c6c50ed3624305c5aac9ddf5383a32b5a40707d620ba5070e1d957",
+      "max_rss_kib": 227612,
+      "result": "passed",
+      "seconds": 82.453,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 7,
+      "wall_seconds": 82.734
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_m3_menus.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/13/test_nfl2k5_my_career_m3_menus.log",
+      "log_sha256": "9f011a17512bbc2e6990a443257c4d0473efe9d1a7931dc451b045924a93550d",
+      "max_rss_kib": 186056,
+      "result": "passed",
+      "seconds": 39.479,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 4,
+      "wall_seconds": 39.768
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_panel.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/13/test_nfl2k5_my_career_panel.log",
+      "log_sha256": "e579edb00050251fb260377cbb6e8fa47599bf769fd8971960e596203bc05a4b",
+      "max_rss_kib": 69352,
+      "result": "passed",
+      "seconds": 0.268,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 4,
+      "wall_seconds": 0.472
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_settings.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/13/test_nfl2k5_my_career_settings.log",
+      "log_sha256": "8f5cff2aa39a5df5458c351a4f4123a73b7dc3543b4830df8c09410d070fe060",
+      "max_rss_kib": 226872,
+      "result": "passed",
+      "seconds": 43.374,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 10,
+      "wall_seconds": 43.786
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_week.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/13/test_nfl2k5_my_career_week.log",
+      "log_sha256": "86efe03eb5fdbe8225f752ad3bc20b586844141150a24b2273b45ab29080d91f",
+      "max_rss_kib": 168364,
+      "result": "passed",
+      "seconds": 539.765,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 1,
+      "wall_seconds": 539.969
+    },
+    {
+      "command": "python3 tests/mod_editor/test_provider_integrity.py",
+      "exit_code": 1,
+      "log": ".scratch/j3/verified/13/test_provider_integrity.log",
+      "log_sha256": "63b4a415efefbd491039e4feb8b1ac22947de3c03336a9b7e18d9952e43f3550",
+      "max_rss_kib": 184432,
+      "result": "failed",
+      "seconds": 14.181,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 7,
+      "wall_seconds": 14.403
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/14/test_nfl2k5_my_career.log",
+      "log_sha256": "ea304910fa38b42ac90d96de1f026e846eaecbef6169f1314c15232e0b417502",
+      "max_rss_kib": 132612,
+      "result": "passed",
+      "seconds": 20.003,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 13,
+      "wall_seconds": 20.205
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_cpu_choice.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/14/test_nfl2k5_my_career_cpu_choice.log",
+      "log_sha256": "0b0a0237a03271602931a6a2790611f28fcfa719e997a6fb05ba60c936ce5d5e",
+      "max_rss_kib": 146380,
+      "result": "passed",
+      "seconds": 24.46,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 1,
+      "wall_seconds": 24.64
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_cpu_timeout.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/14/test_nfl2k5_my_career_cpu_timeout.log",
+      "log_sha256": "6d3b1d03a740f4468cd7f7e9bdeab327bf2b6b5966ecc233a69dbde6f4b4a512",
+      "max_rss_kib": 133312,
+      "result": "passed",
+      "seconds": 27.664,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 1,
+      "wall_seconds": 27.901
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_generic_build.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/14/test_nfl2k5_my_career_generic_build.log",
+      "log_sha256": "1d65e389e87103277fa6af4ef37957e44ccc9de796791f01e953b590d41128eb",
+      "max_rss_kib": 162396,
+      "result": "passed",
+      "seconds": 13.503,
+      "skipped": 1,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 5,
+      "wall_seconds": 13.813
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_manifest.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/14/test_nfl2k5_my_career_manifest.log",
+      "log_sha256": "7b3f60a5cc49cf52aa2ade2353c0ccf9cc270a7a089cfaba76affae9778af926",
+      "max_rss_kib": 140036,
+      "result": "passed",
+      "seconds": 11.254,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 3,
+      "wall_seconds": 11.654
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_played.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/14/test_nfl2k5_my_career_played.log",
+      "log_sha256": "d149f6fe1fdfcb89cd00546ebc2302051dff65fd7e48fa28c2450a1dc7b17b55",
+      "max_rss_kib": 199324,
+      "result": "passed",
+      "seconds": 71.241,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 4,
+      "wall_seconds": 71.476
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_signing.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/14/test_nfl2k5_my_career_signing.log",
+      "log_sha256": "045c4ea367e453c1de82e1ae16408da416bb5484b2da2aa12192cb74ea941757",
+      "max_rss_kib": 365412,
+      "result": "passed",
+      "seconds": 75.567,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 6,
+      "wall_seconds": 75.839
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_practice_reserves.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/14/test_nfl2k5_practice_reserves.log",
+      "log_sha256": "823764517ecff35a513aa602bda813dac09a1cd5902c4024b344769f4ee67071",
+      "max_rss_kib": 173824,
+      "result": "passed",
+      "seconds": 33.615,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 9,
+      "wall_seconds": 33.872
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_b69_wiring.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/accepted-wiring/test_nfl2k5_my_career_b69_wiring.log",
+      "log_sha256": "829230a591f409503adfb584ebfac23528bce429a548fa0b51eaf6f0f2f593f3",
+      "max_rss_kib": 189020,
+      "result": "passed",
+      "seconds": 1.067,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 3,
+      "wall_seconds": 1.42
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_cpu_frame.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/15/test_nfl2k5_my_career_cpu_frame.log",
+      "log_sha256": "b91c34666d507ef45b2514aed7e2aff3797091ffec367aaab84a304055362804",
+      "max_rss_kib": 133560,
+      "result": "passed",
+      "seconds": 77.882,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 1,
+      "wall_seconds": 78.129
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_cpu_turnover.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/15/test_nfl2k5_my_career_cpu_turnover.log",
+      "log_sha256": "9615afda7f592ef1aa8ed3c43865595ca4b1429b347d23a6f181cff2e4656697",
+      "max_rss_kib": 169248,
+      "result": "passed",
+      "seconds": 109.779,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 3,
+      "wall_seconds": 110.023
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_inline.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/15/test_nfl2k5_my_career_inline.log",
+      "log_sha256": "83c4f78ed7a840f04395a184512d5435566cd732c49ae585dc8dfff56eb39820",
+      "max_rss_kib": 291664,
+      "result": "passed",
+      "seconds": 19.66,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 8,
+      "wall_seconds": 20.003
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_mode_audit.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/15/test_nfl2k5_my_career_mode_audit.log",
+      "log_sha256": "83852b810f9eaa59d5b9d191f3d539e8be1a8d5417ff329a7324f306c055e37c",
+      "max_rss_kib": 65828,
+      "result": "passed",
+      "seconds": 0.136,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 6,
+      "wall_seconds": 0.418
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_position_inputs.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/15/test_nfl2k5_my_career_position_inputs.log",
+      "log_sha256": "350b29ce09eb99af8f7cf958c4ab0bd7c83340aece6d300fe9566e14e2372e14",
+      "max_rss_kib": 262652,
+      "result": "passed",
+      "seconds": 26.799,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 9,
+      "wall_seconds": 27.075
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_unicorn.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/15/test_nfl2k5_my_career_unicorn.log",
+      "log_sha256": "5269352891909b3397671b9be45a7bea0830dc96e78be2534d475400964ca320",
+      "max_rss_kib": 298300,
+      "result": "passed",
+      "seconds": 19.752,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 18,
+      "wall_seconds": 20.028
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_roster_arena_growth.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/15/test_nfl2k5_roster_arena_growth.log",
+      "log_sha256": "6051b972d4b10af974dc182e9bcca178526c84013893ed853edc43b667e66c36",
+      "max_rss_kib": 244144,
+      "result": "passed",
+      "seconds": 49.42,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 13,
+      "wall_seconds": 49.782
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_cave_oracle.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/2/test_nfl2k5_cave_oracle.log",
+      "log_sha256": "edd01da5d27d3d4d17a8f1a73aa5c81724113c723d23c7e8fef68185fd25ca13",
+      "max_rss_kib": 907000,
+      "result": "passed",
+      "seconds": 441.671,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 29,
+      "wall_seconds": 447.666
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/3/test_nfl2k5_owner_pairwise_composition.log",
+      "log_sha256": "c88ec7c568ebf4b3853c85db7b5a1ddfbe114461f40b2050b354174a6b02f7de",
+      "max_rss_kib": 194696,
+      "result": "passed",
+      "seconds": 2709.848,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 388,
+      "wall_seconds": 2710.262
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_supersim_live.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/4/test_nfl2k5_supersim_live.log",
+      "log_sha256": "0db900c05c7770c1f711f7bcd83c39f4490825350d2515627514e0c57557ceeb",
+      "max_rss_kib": 450912,
+      "result": "passed",
+      "seconds": 3190.94,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 34,
+      "wall_seconds": 3191.211
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_playcalling.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/accepted-presnap/test_nfl2k5_my_career_playcalling.log",
+      "log_sha256": "77df31efd61d168dd5ba446f5c60269098c5616ec526c7a26e714a0abc0c615c",
+      "max_rss_kib": 353608,
+      "result": "passed",
+      "seconds": 717.029,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 3,
+      "wall_seconds": 717.236
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_prospects.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/6/test_nfl2k5_my_career_prospects.log",
+      "log_sha256": "fbeb61728fdb5e2b3a1ac114dde7afbc130c8cd78e77107ba92eaed461e450c6",
+      "max_rss_kib": 278220,
+      "result": "passed",
+      "seconds": 379.485,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 5,
+      "wall_seconds": 379.714
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_draft.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/7/test_nfl2k5_my_career_draft.log",
+      "log_sha256": "17ba5b906b5e6623802ce723ed6562aba13e9cee545bf062e45b5c2bef58d030",
+      "max_rss_kib": 287520,
+      "result": "passed",
+      "seconds": 1543.571,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 6,
+      "wall_seconds": 1543.864
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_mode4.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/8/test_nfl2k5_my_career_mode4.log",
+      "log_sha256": "311c7d1ca797d462b26df48c1aa791126629ae6066d664e09de32b4fa8fefe86",
+      "max_rss_kib": 325884,
+      "result": "passed",
+      "seconds": 619.946,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 8,
+      "wall_seconds": 620.311
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_mode5.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/9/test_nfl2k5_my_career_mode5.log",
+      "log_sha256": "ec00682c88aca659b83cd65179ec26b3a3f44188e8cb575226f41362ee19f346",
+      "max_rss_kib": 428156,
+      "result": "passed",
+      "seconds": 401.901,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 4,
+      "wall_seconds": 402.193
+    }
+  ],
+  "standalone_total_tests": 956,
+  "suites": [
+    {
+      "command": "python3 tests/mod_editor/test_beta66_supersim_wiring.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified-fixes/footer/test_beta66_supersim_wiring.log",
+      "log_sha256": "fa21297a5cc82cc374e8f446d9facc6e98bb421abbf50a2fa2ceb90c8c87a607",
+      "max_rss_kib": 78420,
+      "result": "passed",
+      "seconds": 0.348,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 3,
+      "wall_seconds": 0.621
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_accelerated_clock.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/13/test_nfl2k5_accelerated_clock.log",
+      "log_sha256": "0567a4fc79a9b9d204b72b7efad750aa80927067c18f4a516e91bcd76e2ec205",
+      "max_rss_kib": 660404,
+      "result": "passed",
+      "seconds": 43.041,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 40,
+      "wall_seconds": 43.512
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_b661_transition.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/10/test_nfl2k5_b661_transition.log",
+      "log_sha256": "a0fc601fb981114e52ebd05a7bf4e80b90ca69fe04f6c20494a678fc29cab337",
+      "max_rss_kib": 364168,
+      "result": "passed",
+      "seconds": 623.941,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 11,
+      "wall_seconds": 624.495
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_b68_game_composition.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/11/test_nfl2k5_b68_game_composition.log",
+      "log_sha256": "8b5ddc88fa1a619ee40ed5c239275f102d42a36a7315b2e7a44aed7f543b8260",
+      "max_rss_kib": 321776,
+      "result": "passed",
+      "seconds": 559.176,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 3,
+      "wall_seconds": 559.776
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_cave_oracle.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/2/test_nfl2k5_cave_oracle.log",
+      "log_sha256": "edd01da5d27d3d4d17a8f1a73aa5c81724113c723d23c7e8fef68185fd25ca13",
+      "max_rss_kib": 907000,
+      "result": "passed",
+      "seconds": 441.671,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 29,
+      "wall_seconds": 447.666
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/14/test_nfl2k5_my_career.log",
+      "log_sha256": "ea304910fa38b42ac90d96de1f026e846eaecbef6169f1314c15232e0b417502",
+      "max_rss_kib": 132612,
+      "result": "passed",
+      "seconds": 20.003,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 13,
+      "wall_seconds": 20.205
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_b69_wiring.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/accepted-wiring/test_nfl2k5_my_career_b69_wiring.log",
+      "log_sha256": "829230a591f409503adfb584ebfac23528bce429a548fa0b51eaf6f0f2f593f3",
+      "max_rss_kib": 189020,
+      "result": "passed",
+      "seconds": 1.067,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 3,
+      "wall_seconds": 1.42
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_completion.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/12/test_nfl2k5_my_career_completion.log",
+      "log_sha256": "7f9f9510646ff346bac6bea55bede2b01bf6f770a756720810ec0bb164aa2006",
+      "max_rss_kib": 303428,
+      "result": "passed",
+      "seconds": 33.177,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 6,
+      "wall_seconds": 33.443
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_control.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/13/test_nfl2k5_my_career_control.log",
+      "log_sha256": "a92544633c9eba4ad1debacff9aa49ddbbc3bb809f281c22619066272a2542f8",
+      "max_rss_kib": 238864,
+      "result": "passed",
+      "seconds": 15.132,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 2,
+      "wall_seconds": 15.344
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_cpu_choice.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/14/test_nfl2k5_my_career_cpu_choice.log",
+      "log_sha256": "0b0a0237a03271602931a6a2790611f28fcfa719e997a6fb05ba60c936ce5d5e",
+      "max_rss_kib": 146380,
+      "result": "passed",
+      "seconds": 24.46,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 1,
+      "wall_seconds": 24.64
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_cpu_frame.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/15/test_nfl2k5_my_career_cpu_frame.log",
+      "log_sha256": "b91c34666d507ef45b2514aed7e2aff3797091ffec367aaab84a304055362804",
+      "max_rss_kib": 133560,
+      "result": "passed",
+      "seconds": 77.882,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 1,
+      "wall_seconds": 78.129
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_cpu_injury.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/12/test_nfl2k5_my_career_cpu_injury.log",
+      "log_sha256": "ad50ab01e24af3efc1b14cd40f5a40393eebd721e8a77a14703281371526bf5a",
+      "max_rss_kib": 133640,
+      "result": "passed",
+      "seconds": 21.866,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 1,
+      "wall_seconds": 22.07
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_cpu_period.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/13/test_nfl2k5_my_career_cpu_period.log",
+      "log_sha256": "05ed5af34517804987f7d987bfc00fd03fc9d20cdfd084de261ca0bc0d09a092",
+      "max_rss_kib": 170560,
+      "result": "passed",
+      "seconds": 36.792,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 2,
+      "wall_seconds": 37.015
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_cpu_timeout.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/14/test_nfl2k5_my_career_cpu_timeout.log",
+      "log_sha256": "6d3b1d03a740f4468cd7f7e9bdeab327bf2b6b5966ecc233a69dbde6f4b4a512",
+      "max_rss_kib": 133312,
+      "result": "passed",
+      "seconds": 27.664,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 1,
+      "wall_seconds": 27.901
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_cpu_turnover.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/15/test_nfl2k5_my_career_cpu_turnover.log",
+      "log_sha256": "9615afda7f592ef1aa8ed3c43865595ca4b1429b347d23a6f181cff2e4656697",
+      "max_rss_kib": 169248,
+      "result": "passed",
+      "seconds": 109.779,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 3,
+      "wall_seconds": 110.023
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_creation_boundary.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/12/test_nfl2k5_my_career_creation_boundary.log",
+      "log_sha256": "4843cef9e49bd840935bb7ee469161c7bb951064375d514979a2944683178434",
+      "max_rss_kib": 168288,
+      "result": "passed",
+      "seconds": 2.139,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 4,
+      "wall_seconds": 2.319
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_draft.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/7/test_nfl2k5_my_career_draft.log",
+      "log_sha256": "17ba5b906b5e6623802ce723ed6562aba13e9cee545bf062e45b5c2bef58d030",
+      "max_rss_kib": 287520,
+      "result": "passed",
+      "seconds": 1543.571,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 6,
+      "wall_seconds": 1543.864
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_frontend.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/13/test_nfl2k5_my_career_frontend.log",
+      "log_sha256": "39f607fdb3c6c50ed3624305c5aac9ddf5383a32b5a40707d620ba5070e1d957",
+      "max_rss_kib": 227612,
+      "result": "passed",
+      "seconds": 82.453,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 7,
+      "wall_seconds": 82.734
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_inline.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/15/test_nfl2k5_my_career_inline.log",
+      "log_sha256": "83c4f78ed7a840f04395a184512d5435566cd732c49ae585dc8dfff56eb39820",
+      "max_rss_kib": 291664,
+      "result": "passed",
+      "seconds": 19.66,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 8,
+      "wall_seconds": 20.003
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_m3_budget.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/12/test_nfl2k5_my_career_m3_budget.log",
+      "log_sha256": "8ff51c7081f96100886acb6c7a1567da1b87c1f26872f24b0e7e398e6535a10d",
+      "max_rss_kib": 126396,
+      "result": "passed",
+      "seconds": 4.338,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 5,
+      "wall_seconds": 4.676
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_m3_menus.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/13/test_nfl2k5_my_career_m3_menus.log",
+      "log_sha256": "9f011a17512bbc2e6990a443257c4d0473efe9d1a7931dc451b045924a93550d",
+      "max_rss_kib": 186056,
+      "result": "passed",
+      "seconds": 39.479,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 4,
+      "wall_seconds": 39.768
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_manifest.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/14/test_nfl2k5_my_career_manifest.log",
+      "log_sha256": "7b3f60a5cc49cf52aa2ade2353c0ccf9cc270a7a089cfaba76affae9778af926",
+      "max_rss_kib": 140036,
+      "result": "passed",
+      "seconds": 11.254,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 3,
+      "wall_seconds": 11.654
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_mode4.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/8/test_nfl2k5_my_career_mode4.log",
+      "log_sha256": "311c7d1ca797d462b26df48c1aa791126629ae6066d664e09de32b4fa8fefe86",
+      "max_rss_kib": 325884,
+      "result": "passed",
+      "seconds": 619.946,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 8,
+      "wall_seconds": 620.311
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_mode5.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/9/test_nfl2k5_my_career_mode5.log",
+      "log_sha256": "ec00682c88aca659b83cd65179ec26b3a3f44188e8cb575226f41362ee19f346",
+      "max_rss_kib": 428156,
+      "result": "passed",
+      "seconds": 401.901,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 4,
+      "wall_seconds": 402.193
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_mode_audit.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/15/test_nfl2k5_my_career_mode_audit.log",
+      "log_sha256": "83852b810f9eaa59d5b9d191f3d539e8be1a8d5417ff329a7324f306c055e37c",
+      "max_rss_kib": 65828,
+      "result": "passed",
+      "seconds": 0.136,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 6,
+      "wall_seconds": 0.418
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_mode_routes.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/12/test_nfl2k5_my_career_mode_routes.log",
+      "log_sha256": "d39346878bbca85e61455d4e5c0e5945770164a4305d6dfdc69ab3208ce0d7e1",
+      "max_rss_kib": 322728,
+      "result": "passed",
+      "seconds": 3.028,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 7,
+      "wall_seconds": 3.222
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_panel.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/13/test_nfl2k5_my_career_panel.log",
+      "log_sha256": "e579edb00050251fb260377cbb6e8fa47599bf769fd8971960e596203bc05a4b",
+      "max_rss_kib": 69352,
+      "result": "passed",
+      "seconds": 0.268,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 4,
+      "wall_seconds": 0.472
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_playcalling.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/accepted-presnap/test_nfl2k5_my_career_playcalling.log",
+      "log_sha256": "77df31efd61d168dd5ba446f5c60269098c5616ec526c7a26e714a0abc0c615c",
+      "max_rss_kib": 353608,
+      "result": "passed",
+      "seconds": 717.029,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 3,
+      "wall_seconds": 717.236
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_played.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/14/test_nfl2k5_my_career_played.log",
+      "log_sha256": "d149f6fe1fdfcb89cd00546ebc2302051dff65fd7e48fa28c2450a1dc7b17b55",
+      "max_rss_kib": 199324,
+      "result": "passed",
+      "seconds": 71.241,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 4,
+      "wall_seconds": 71.476
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_position_inputs.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/15/test_nfl2k5_my_career_position_inputs.log",
+      "log_sha256": "350b29ce09eb99af8f7cf958c4ab0bd7c83340aece6d300fe9566e14e2372e14",
+      "max_rss_kib": 262652,
+      "result": "passed",
+      "seconds": 26.799,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 9,
+      "wall_seconds": 27.075
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_prospects.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/6/test_nfl2k5_my_career_prospects.log",
+      "log_sha256": "fbeb61728fdb5e2b3a1ac114dde7afbc130c8cd78e77107ba92eaed461e450c6",
+      "max_rss_kib": 278220,
+      "result": "passed",
+      "seconds": 379.485,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 5,
+      "wall_seconds": 379.714
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_season.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/12/test_nfl2k5_my_career_season.log",
+      "log_sha256": "8f287617da3b1bd4a1678cfe5f0c8cbefa539ae762486b80e6fa33ffb09ed0cc",
+      "max_rss_kib": 193756,
+      "result": "passed",
+      "seconds": 231.655,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 1,
+      "wall_seconds": 231.919
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_settings.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/13/test_nfl2k5_my_career_settings.log",
+      "log_sha256": "8f5cff2aa39a5df5458c351a4f4123a73b7dc3543b4830df8c09410d070fe060",
+      "max_rss_kib": 226872,
+      "result": "passed",
+      "seconds": 43.374,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 10,
+      "wall_seconds": 43.786
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_signing.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/14/test_nfl2k5_my_career_signing.log",
+      "log_sha256": "045c4ea367e453c1de82e1ae16408da416bb5484b2da2aa12192cb74ea941757",
+      "max_rss_kib": 365412,
+      "result": "passed",
+      "seconds": 75.567,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 6,
+      "wall_seconds": 75.839
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_unicorn.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/15/test_nfl2k5_my_career_unicorn.log",
+      "log_sha256": "5269352891909b3397671b9be45a7bea0830dc96e78be2534d475400964ca320",
+      "max_rss_kib": 298300,
+      "result": "passed",
+      "seconds": 19.752,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 18,
+      "wall_seconds": 20.028
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_upgrades.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/12/test_nfl2k5_my_career_upgrades.log",
+      "log_sha256": "f7285992eaf92238c0d4823c5cb83558c11f5bda21ad87385e2c2cc0b33e98cf",
+      "max_rss_kib": 370060,
+      "result": "passed",
+      "seconds": 371.268,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 4,
+      "wall_seconds": 371.596
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_my_career_week.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/13/test_nfl2k5_my_career_week.log",
+      "log_sha256": "86efe03eb5fdbe8225f752ad3bc20b586844141150a24b2273b45ab29080d91f",
+      "max_rss_kib": 168364,
+      "result": "passed",
+      "seconds": 539.765,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 1,
+      "wall_seconds": 539.969
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/3/test_nfl2k5_owner_pairwise_composition.log",
+      "log_sha256": "c88ec7c568ebf4b3853c85db7b5a1ddfbe114461f40b2050b354174a6b02f7de",
+      "max_rss_kib": 194696,
+      "result": "passed",
+      "seconds": 2709.848,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 388,
+      "wall_seconds": 2710.262
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_practice_reserves.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/14/test_nfl2k5_practice_reserves.log",
+      "log_sha256": "823764517ecff35a513aa602bda813dac09a1cd5902c4024b344769f4ee67071",
+      "max_rss_kib": 173824,
+      "result": "passed",
+      "seconds": 33.615,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 9,
+      "wall_seconds": 33.872
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_roster_arena_growth.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/15/test_nfl2k5_roster_arena_growth.log",
+      "log_sha256": "6051b972d4b10af974dc182e9bcca178526c84013893ed853edc43b667e66c36",
+      "max_rss_kib": 244144,
+      "result": "passed",
+      "seconds": 49.42,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 13,
+      "wall_seconds": 49.782
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_supersim.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/12/test_nfl2k5_supersim.log",
+      "log_sha256": "b61e9a68571d123874ffe06e3962083f2faf04fb47159efc099ee82712386de0",
+      "max_rss_kib": 263788,
+      "result": "passed",
+      "seconds": 11.369,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 12,
+      "wall_seconds": 11.65
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_supersim_live.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/4/test_nfl2k5_supersim_live.log",
+      "log_sha256": "0db900c05c7770c1f711f7bcd83c39f4490825350d2515627514e0c57557ceeb",
+      "max_rss_kib": 450912,
+      "result": "passed",
+      "seconds": 3190.94,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 34,
+      "wall_seconds": 3191.211
+    },
+    {
+      "command": "python3 tests/mod_editor/test_xbe_patch_cave_references.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/1/test_xbe_patch_cave_references.log",
+      "log_sha256": "d07108d8425892970ce1f36b81b481e3941c672aff97f3ee27be35c64630fd45",
+      "max_rss_kib": 556928,
+      "result": "passed",
+      "seconds": 2206.297,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 127,
+      "wall_seconds": 2206.831
+    },
+    {
+      "command": "python3 tests/mod_editor/test_xbe_patch_memory_writes.py",
+      "exit_code": 0,
+      "log": ".scratch/j3/verified/0/test_xbe_patch_memory_writes.log",
+      "log_sha256": "b6197ee5dd35e54d1233b411c47b19e387270aa0dc791d256f96b0d4c17af910",
+      "max_rss_kib": 330420,
+      "result": "passed",
+      "seconds": 1947.348,
+      "skipped": 0,
+      "source_sha256": {
+        "mod_editor/core/nfl2k5_my_career.py": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+        "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "5f1873564b2dae91d66075b2d085dbb2bb38d142618bb25dc8bcdc6abb9645d3",
+        "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
+        "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
+        "mod_editor/core/nfl2k5_my_career_save.py": "c9c833f499212722b260eaa465d8e0445c53281fc832a03c21814bd1b94886ea",
+        "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "tools/mycareer_mode/runtime.S": "74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64",
+        "tools/mycareer_mode/runtime.c": "531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3"
+      },
+      "tests": 115,
+      "wall_seconds": 1947.679
+    }
+  ],
+  "total_skipped": 0,
+  "total_suites": 44,
+  "total_tests": 944
+}

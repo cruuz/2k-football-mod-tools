@@ -97,19 +97,33 @@ EXPECTED_PRIVATE_STADIUM_TEXTURES = 23_838
 # widening Nfl2k5UnifiedVisualProvider.module_pins would misstate ownership.
 RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
-        "64ac47e2f3d28c374d4b0b8d44e5eba16b69ce5d70bbbeb6288ddadeb2be10ed",
+        "dd3529836c4ebdc5ddf344de19edca38191f918ca341248953cb289b56c5e42e",
     "mod_editor/gui/studio_qt.py":
-        "d098a2cdfe3d968efd3fdad6ddc155c3cbe149a13f858add76db13431c38e1a2",
+        "aa57c10348b6f148b03f21279f15366ab40c4221860f55d99d90a33d428c8862",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
         "68b6887e0778391916a6465a722b062d1c09afe3a376c318026e9db8bd7ed23a",
     "mod_editor/studio/facade.py":
-        "85146f862edce14622a0270a6a0fc2f47762685f2aa4d44868a6b1f9ff5d2622",
+        "2579f275b464874b93822bd6f04c391252814e8e589c77bba7b33930ab3c6af0",
     "mod_editor/studio/project_archive.py":
         "3556062a7cf178ef416706543e71270783d04439494420810fb7a10ca7f01479",
     "mod_editor/studio/session.py":
-        "665ab4888cfdf5999eb7aeeb50ef870bfbed759c7d42f945a9fe054404779715",
+        "a2d52608660eae69c9cf384f2f42248daf73397a49b80ca1f622f24e1082abf0",
+}
+
+B69_GAME_RUNTIME_PINS = {
+    "mod_editor/core/nfl2k5_weather.py": "6540d7ffc8d441898f5a89988752efd6aa0238c87b4a0941c1962b7b3feba380",
+    "mod_editor/core/nfl2k5_weather_haze.py": "3d045e099f1585658b899ab6e7d3560e92edb24529ca8d6f224e901dc7712ff9",
+    "mod_editor/gui/build_panel_qt.py": "86fa528e1d4ba4a4458badbb24b17a419c78e9253868859e02117cc333699629",
+    "mod_editor/gui/gameplay_patches_panel_qt.py": "cf9ce1e9d40902df978f8c54f1e02dbf3c137ec2e3f2c722c7a3f9cbd876322e",
+    "mod_editor/gui/my_career_panel_qt.py": "8a27ccdc2a649d122d6c21f9a646e47539b55c00653afc789e9b018fb581c823",
+    "mod_editor/gui/gameplay_project_ui.py": "7222713aaaa0efbcc8851eb4ad3efa4ef31e8ad5352919e95b1ff9b39634c905",
+    "mod_editor/gui/beta62_options.py": "d861f5656f98b0ee67cf4fe86a98bb95e5a79882e1a1066641f6b979ca835f84",
+    "tools/nfl2k5_weather_editor.py": "65b45c3b25d47dc9cc672bd46a4719264ce4033aeca76632aaf44e9023b6cbfd",
+    "tools/nfl2k5_weather_time_of_day.py": "37b2bd10f686db9fa99ba9034f9a7f68daa00bff516250ac0f67678880b98b47",
+    "tools/nfl2k5_weather_native_probe.py": "cd2776060c41a0831b1a15342a4486e739bbda5c633af5f4427217333885fde2",
+    "tools/nfl2k5_modern_rules.py": "59f798d8d7996c206461de914234f1f0b987881366ba2055a18beba3d31178f9",
 }
 
 REQUIRED_UNIFIED_PROVIDER_CLOSURE = frozenset(
@@ -147,6 +161,44 @@ REQUIRED_UNIFIED_PROVIDER_CLOSURE = frozenset(
         "tools/string_table_inventory.py",
     }
 )
+
+
+
+def _exercise_beta69_game_wiring(modules):
+    for relative, digest in B69_GAME_RUNTIME_PINS.items():
+        supplied = ROOT / relative
+        require(supplied.is_file() and not supplied.is_symlink()
+                and hashlib.sha256(supplied.read_bytes()).hexdigest() == digest,
+                f"Beta 69 game runtime pin changed: {relative}")
+    from mod_editor.core import mod_build, nfl2k5_build_settings as saved
+    from mod_editor.gui.build_panel_qt import BuildPanel
+    from mod_editor.gui.gameplay_patches_panel_qt import GameplayPatchesPanel
+    from mod_editor.gui.my_career_panel_qt import MyCareerPanel
+    expected = dict(weather_plan="", weather_haze=False, coin_defer=False,
+                    decided_clock=False, decided_clock_margin=17,
+                    decided_clock_seconds=60, cpu_scrambles="retail")
+    for values in mod_build.PRESETS.values():
+        require(all(values.get(key) == value for key, value in expected.items()),
+                "Beta 69 game options must remain Off/Retail in every preset")
+    require(set(expected) <= set(saved.FEATURE_KEYS), "Beta 69 saved choices missing")
+    require(modules["mod_editor.core.nfl2k5_weather_haze"].REQUESTS == (),
+            "Weather haze must not allocate executable space")
+    build, gameplay, career = BuildPanel(), GameplayPatchesPanel(), MyCareerPanel()
+    try:
+        for page in (build, gameplay):
+            require(page.cpu_scrambles_level.currentData() == "retail"
+                    and page.decided_clock_margin.currentData() == 17
+                    and page.decided_clock_seconds.currentData() == 60,
+                    "Beta 69 rule control defaults changed")
+            coin = build.coin_defer_check if page is build else gameplay.checks["coin_defer"]
+            require("CPU winners only" in coin.accessibleDescription() or "CPU winners only" in coin.text(),
+                    "Coin toss caption must retain CPU winners only")
+        require(career.template.count() == 4 and career.template.currentText() == "Pocket QB"
+                and career.prospect.currentData() == 0 and career.career_playcall.count() == 3,
+                "MyCareer caller, prototype or prospect controls missing")
+    finally:
+        for page in (build, gameplay, career):
+            page.close()
 
 
 def require(condition: bool, message: str) -> None:
@@ -1674,6 +1726,21 @@ def main() -> int:
                 f"private or retail-derived {forbidden} data was included in the release")
 
     product_modules = (
+        "mod_editor.core.nfl2k5_my_career_prospects",
+        "mod_editor.core.nfl2k5_weather",
+        "mod_editor.core.nfl2k5_weather_haze",
+        "mod_editor.core.nfl2k5_rules_patch",
+        "mod_editor.core.nfl2k5_coin_defer",
+        "mod_editor.core.nfl2k5_coin_defer_code",
+        "mod_editor.core.nfl2k5_decided_clock",
+        "mod_editor.core.nfl2k5_decided_clock_code",
+        "mod_editor.core.nfl2k5_cpu_scrambles",
+        "mod_editor.core.nfl2k5_cpu_scrambles_code",
+        "tools.nfl2k5_weather_editor",
+        "tools.nfl2k5_weather_time_of_day",
+        "tools.nfl2k5_weather_native_probe",
+        "tools.nfl2k5_modern_rules",
+
         "mod_editor.core.nfl2k5_momentum",
         "mod_editor.core.nfl2k5_momentum_code",
         "mod_editor.core.nfl2k5_defensive_try",
@@ -1767,6 +1834,8 @@ def main() -> int:
         "mod_editor.gui.playbook_pack_dialog_qt",
         "mod_editor.gui.stadium_viewer",
         "mod_editor.core.nfl2k5_models",
+        "mod_editor.core.nfl2k5_model_project",
+        "mod_editor.core.nfl2k5_model_project_session",
         "mod_editor.core.nfl2k5_model_skeleton",
         "mod_editor.core.self_update",
         "mod_editor.core.nfl2k5_team_column",
@@ -1959,6 +2028,7 @@ def main() -> int:
     os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
     from PyQt5.QtWidgets import QApplication
     qt_app = QApplication.instance() or QApplication([])
+    _exercise_beta69_game_wiring(modules)
     # A 4 KiB, one-player/one-team ROST constructed here keeps the shipped
     # closure independent of test fixtures, retail resources, and source paths.
     records = modules["mod_editor.core.nfl2k5_roster_records"]
@@ -2100,11 +2170,11 @@ def main() -> int:
         check_files=False,
     )
     product_catalog = product_catalog_module.build_nfl2k5_product_catalog(registry)
-    require(len(registry.capabilities) == 161,
+    require(len(registry.capabilities) == 172,
             "canonical capability registry row count changed")
     require(len(product_catalog.sections) == 12,
             "product sidebar category count changed")
-    require(len(product_catalog.capabilities) == 91,
+    require(len(product_catalog.capabilities) == 99,
             "NFL 2K5 product capability count changed")
     _exercise_default_provider_controller(
         modules["mod_editor.core.controller"],
@@ -2507,7 +2577,7 @@ def main() -> int:
     print(
         "2K5_MOD_STUDIO_RUNTIME_CLOSURE_PASS "
         f"product_modules={len(product_modules)} tool_modules={len(tool_modules)} "
-        "registry=161 sections=12 nfl2k5_capabilities=91 "
+        "registry=172 sections=12 nfl2k5_capabilities=99 "
         "reports=16 reviewed_metadata=24 sets=634 visuals=71963 "
         "team_kit_sets=634 team_kit_assets_per_set=39 "
         "text_banks=716 text_strings=23346 text_editable=20074 "

@@ -56,6 +56,9 @@ def restore(panel, state):
                              ("momentum_collision_level", choices["momentum_collision_level"]),
                              ("cpu_money_downs_level", choices["cpu_money_downs"] or "retail"),
                              ("accelerated_clock_minimum", choices["accelerated_clock_minimum_seconds"]),
+                             ("decided_clock_margin", choices["decided_clock_margin"]),
+                             ("decided_clock_seconds", choices["decided_clock_seconds"]),
+                             ("cpu_scrambles_level", choices["cpu_scrambles"]),
                              ("abilities_week", choices["abilities_off_week"]),
                              ("uniform_choice_mode", choices["uniform_choice"] or "choice"),
                              ("helmet_finish_combo", choices["helmet_finish"] or "glossy"),
@@ -65,7 +68,7 @@ def restore(panel, state):
         panel.screen_timing_combo.setCurrentText(choices["screen_timing"] or "D")
         for key, box in getattr(panel, "abilities_lock_checks", {}).items():
             box.setChecked(bool(choices.get(key, True)))
-        for key in ("team_history", "career_stats", "prospect_names", "roster_edits", "espn25_plan", "music_project",
+        for key in ("team_history", "career_stats", "prospect_names", "roster_edits", "espn25_plan", "weather_plan", "music_project",
                     "music_library", "hires_folder", "scorebug_folder", "my_career_setup", "name", "author"):
             getattr(panel, key + "_field").setText(choices[key] or "")
         panel.notes_field.setPlainText(choices["notes"])
@@ -91,7 +94,7 @@ class GameplayBuildLink:
         for key in self.shared:
             build._boxes()[key].toggled.connect(lambda _on, k=key: self.copy_from_build(k))
             gameplay.checks[key].toggled.connect(lambda _on, k=key: self.copy_from_gameplay(k))
-        for name in ("momentum_level", "momentum_collision_level", "cpu_money_downs_level", "accelerated_clock_minimum", "screen_timing_combo", "helmet_finish_combo"):
+        for name in ("momentum_level", "momentum_collision_level", "cpu_money_downs_level", "accelerated_clock_minimum", "decided_clock_margin", "decided_clock_seconds", "cpu_scrambles_level", "screen_timing_combo", "helmet_finish_combo"):
             for origin in (build, gameplay):
                 getattr(origin, name).currentIndexChanged.connect(
                     lambda _index, p=origin: self.copy_levels(p))
@@ -108,7 +111,7 @@ class GameplayBuildLink:
             self.gameplay._refresh()
 
     def _levels(self, origin, destination):
-        for name in ("momentum_level", "momentum_collision_level", "cpu_money_downs_level", "accelerated_clock_minimum", "screen_timing_combo", "helmet_finish_combo"):
+        for name in ("momentum_level", "momentum_collision_level", "cpu_money_downs_level", "accelerated_clock_minimum", "decided_clock_margin", "decided_clock_seconds", "cpu_scrambles_level", "screen_timing_combo", "helmet_finish_combo"):
             source = getattr(origin, name)
             _combo(getattr(destination, name), source.currentData() if name != "screen_timing_combo" else source.currentText())
         destination._momentum_last_positive = origin._momentum_last_positive
@@ -157,5 +160,6 @@ def observe_build_choices(panel, changed):
             widget.valueChanged.connect(changed)
         elif isinstance(widget, QLineEdit) and widget not in (panel.source_field, panel.target_field):
             widget.textChanged.connect(changed)
-        elif isinstance(widget, QPlainTextEdit):
+        elif isinstance(widget, QPlainTextEdit) and not widget.isReadOnly():
+            # Build summaries are refreshed by the shell, not authored project choices.
             widget.textChanged.connect(changed)

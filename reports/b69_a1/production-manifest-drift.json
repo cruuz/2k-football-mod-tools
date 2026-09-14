@@ -1,0 +1,14 @@
+{
+  "mod_editor/core/mod_build.py": {
+    "pinned": "71463608ba01afee4eca17528c42562c1d8d5e64274ef0f7b0a7fcc759b3a4fd",
+    "actual": "d9a8f64d252044acd777456d5747a74e6b8d35ffc30ca80affee771f86150102"
+  },
+  "mod_editor/core/nfl2k5_espn25_rosters.py": {
+    "pinned": "3cfe17df38d5d6d42bf31972848644ed32b7a0462f979b0380ad5c69e384c036",
+    "actual": "f5378d1d490d1e1432716d1879f14aeadc2f4f0878e3658a7761682393d5d82c"
+  },
+  "mod_editor/core/nfl2k5_roster_records.py": {
+    "pinned": "dcbbf5da41d8cae027ec89669a87f70703069fba3753e9ce8848b0e1029b9340",
+    "actual": "60754ad5765832e9b9856c59e4835aa8d10f94fc4daa941c59d243040d459137"
+  }
+}

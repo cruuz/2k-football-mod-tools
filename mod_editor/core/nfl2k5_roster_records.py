@@ -85,6 +85,7 @@ original.  Unwitnessed in game.
 from __future__ import annotations
 
 import csv
+import copy
 import datetime as dt
 import hashlib
 import hmac
@@ -3068,7 +3069,34 @@ CSV_IDENTITY = ("pool", "index", "team", "first", "last", "position", "jersey", 
                 "face_mask", "face_shield", "mouthpiece", "turtleneck", "sleeves", "neck_roll",
                 "left_glove", "right_glove", "left_wrist", "right_wrist", "left_elbow",
                 "right_elbow", "left_shoe", "right_shoe", "depth_rank", "depth_side", "player_type")
-CSV_COLUMNS = CSV_IDENTITY + RATING_BYTE_ORDER + tuple(ABILITY_BITS) + ("guardian_cap", "ability_tier")
+CSV_LOCK_COLUMNS = tuple("lock_" + role for role in ("rank", "side", "kr1", "kr2", "pr"))
+CSV_COLUMNS = (CSV_IDENTITY + RATING_BYTE_ORDER + tuple(ABILITY_BITS) +
+               ("guardian_cap", "ability_tier", "birth_month", "birth_day", "birth_year",
+                "power_run_style_bucket", "throw_style") + CSV_LOCK_COLUMNS)
+CSV_TEXT_COLUMNS = frozenset({"team", "first", "last", "college", "birth_date"})
+CSV_HELP = (
+    "CSV uses pool + index from the loaded roster; keep both columns. Import previews every changed "
+    "field and refused row before applying valid rows as one Undo action. Positions use this roster's "
+    "selected scheme. Height is inches, weight is pounds, contract value is in $10,000 units. "
+    "UTF-8, comma separated. Text starting with a digit, apostrophe or spreadsheet formula character "
+    "gets a protective apostrophe, removed on import; this preserves leading zeros and long numeric "
+    "names without formulas. Excel may display that apostrophe. Numeric fields are small whole numbers "
+    "without significant leading zeros; pointers and long numeric identifiers are never exported. "
+    "For Excel use Data > From Text/CSV, UTF-8, and Text for names, college and birth_date. "
+    "Conflicting edits to a raw field and its style/date view refuse the row. "
+    "Your source is unchanged; use the page's copy or saved-edits action after review."
+)
+CSV_MAX_BYTES = 16 * 1024 * 1024
+
+
+def _csv_protect(value: Any) -> Any:
+    if isinstance(value, str) and value and (value[0] in "'=+-@\t\r\n" or value[0].isdigit()):
+        return "'" + value
+    return value
+
+
+def _csv_unprotect(value: str) -> str:
+    return value[1:] if value.startswith("'") else value
 CSV_READ_ONLY = frozenset({"pool", "index"})
 FREE_AGENT_CSV_WORDS = frozenset({"free_agent", "free agents", "free agent", "fa"})
 
@@ -3111,16 +3139,18 @@ def _csv_row(document: RosterDocument, player: Player) -> dict[str, Any]:
     row["guardian_cap"] = int(record.guardian_cap)
     row["ability_tier"] = record.ability_tier
     row.update(record.ratings())
+    for name in ("birth_month", "birth_day", "birth_year", "power_run_style_bucket", "throw_style"):
+        row[name] = record.get(name)
+    row.update({"lock_" + role: int(value) for role, value in record.depth_locks.items()})
     return row
 
 
 def export_csv(document: RosterDocument, players: Sequence[Player] | None = None, *,
                delimiter: str = ",") -> str:
-    """Finn's "Export as Text", as a spreadsheet-friendly CSV (his own separator was ';').
+    """Export exact player identities and every card field in the loaded scheme.
 
-    The ``position`` column is written in the document's own scheme (``EDGE`` and ``LB`` on a
-    one-pool roster), and ``import_csv`` accepts **every** scheme's names whichever roster it is
-    reading into, so a sheet exported from a retail disc still loads onto a one-pool disc.
+    Text cells vulnerable to spreadsheet coercion/formulas carry an apostrophe.
+    No formula wrappers are emitted. See CSV_HELP for Excel import instructions.
     """
 
     stream = io.StringIO()
@@ -3128,7 +3158,9 @@ def export_csv(document: RosterDocument, players: Sequence[Player] | None = None
                             lineterminator="\n", extrasaction="ignore")
     writer.writeheader()
     for player in (players if players is not None else document.players):
-        writer.writerow(_csv_row(document, player))
+        row = _csv_row(document, player)
+        writer.writerow({key: _csv_protect(value) if key in CSV_TEXT_COLUMNS else value
+                         for key, value in row.items()})
     return stream.getvalue()
 
 
@@ -3147,55 +3179,133 @@ def _enum_value(name: str, text: str) -> int:
     return int(value)
 
 
-def import_csv(document: RosterDocument, text: str, *, delimiter: str | None = None) -> dict[str, Any]:
-    """Read back a CSV this module wrote (or Finn's semicolon export) and apply it.
+@dataclass(frozen=True)
+class CsvPreview:
+    before: bytes
+    after: bytes
+    scheme: str
+    reference_year: int | None
+    receipt: dict[str, Any]
 
-    Rows are matched by ``pool`` + ``index`` when present, otherwise by last+first name.  Only
-    columns present in the file are touched, so a spreadsheet with three columns is a legal edit.
-    The receipt reports ``rows`` matched, ``changed`` players and ``fields`` written."""
 
+def preview_csv(document: RosterDocument, text: str, *, delimiter: str | None = None) -> CsvPreview:
+    """Stage valid rows on a private document; a refused row contributes no edits.
+
+    Duplicate identities are ALL refused, including the first occurrence. Unknown
+    headers and malformed CSV refuse the sheet. No name matching or scheme conversion.
+    Unchanged cells preserve existing out-of-editor-range values byte for byte.
+    """
+    _require(isinstance(text, str) and len(text.encode("utf-8")) <= CSV_MAX_BYTES,
+             "Player CSV exceeds 16 MiB; export a smaller list and try again.")
+    text = text.lstrip("\ufeff")
     sample = text.splitlines()[0] if text.strip() else ""
-    if delimiter is None:
-        delimiter = ";" if sample.count(";") > sample.count(",") else ","
-    reader = csv.DictReader(io.StringIO(text), delimiter=delimiter)
-    by_key = {(p.pool, p.index): p for p in document.players}
-    by_name: dict[tuple[str, str], list[Player]] = {}
-    for player in document.players:
-        by_name.setdefault((player.last.casefold(), player.first.casefold()), []).append(player)
-    log: list[str] = []
-    matched = 0
-    changed_players = 0
-    changed_fields = 0
-    for number, row in enumerate(reader, start=2):
-        clean = {(key or "").strip().lower(): (value or "") for key, value in row.items() if key}
-        player = None
-        if clean.get("pool") and str(clean.get("index", "")).strip().isdigit():
-            player = by_key.get((clean["pool"].strip(), int(clean["index"])))
-        if player is None:
-            hits = by_name.get((clean.get("last", "").strip().casefold(), clean.get("first", "").strip().casefold()), [])
-            if len(hits) == 1:
-                player = hits[0]
-            elif len(hits) > 1:
-                log.append(f"row {number}: {clean.get('first', '')} {clean.get('last', '')} matches {len(hits)} records")
-                continue
-        if player is None:
-            log.append(f"row {number}: no roster record matches")
+    delimiter = delimiter or (";" if sample.count(";") > sample.count(",") else ",")
+    try:
+        reader = csv.DictReader(io.StringIO(text, newline=""), delimiter=delimiter, strict=True)
+        columns = reader.fieldnames or []
+        _require(len(columns) == len(set(columns)), "Duplicate CSV column; keep each header once.")
+        _require(CSV_READ_ONLY <= set(columns), "CSV needs pool + index columns; export players from this roster first.")
+        _require(set(columns) <= set(CSV_COLUMNS),
+                 "Unknown CSV columns: " + ", ".join(sorted(set(columns) - set(CSV_COLUMNS))))
+        rows = []
+        for row in reader:
+            _require(len(rows) < 100000, "CSV exceeds 100,000 rows; export a smaller list.")
+            rows.append((reader.line_num, row))
+    except csv.Error as exc:
+        raise RosterRecordError(f"Malformed player CSV: {exc}. Correct the quoting and try again.") from exc
+    before = document.to_body()
+    working = copy.deepcopy(document)
+    by_key = {(p.pool, p.index): p for p in working.players}
+    identities = []
+    counts: dict[tuple[str, int], int] = {}
+    for _, row in rows:
+        pool, index = row.get("pool"), row.get("index")
+        key = (pool, int(index)) if pool in POOLS and index and len(index) <= 10 and index.isascii() and index.isdecimal() else None
+        identities.append(key)
+        if key is not None:
+            counts[key] = counts.get(key, 0) + 1
+    changes, refused, matched = [], [], 0
+    for (number, row), key in zip(rows, identities):
+        reason = ("row width differs from header" if None in row or None in row.values() else
+                  "invalid pool + index; identity is never matched by name" if key is None else
+                  "duplicate pool + index; every occurrence refused" if counts[key] > 1 else
+                  "no roster record matches pool + index" if key not in by_key else "")
+        if reason:
+            refused.append({"row": number, "pool": row.get("pool"), "index": row.get("index"), "reason": reason})
             continue
         matched += 1
-        touched = 0
-        for column, value in clean.items():
-            if column in CSV_READ_ONLY or column not in CSV_COLUMNS or value == "":
-                continue
-            try:
-                changed_here, note = _apply_csv_cell(document, player, column, value)
-                touched += changed_here
-                if note:
-                    log.append(f"row {number} {column}: {note}")
-            except (RosterRecordError, ValueError) as exc:
-                log.append(f"row {number} {column}: {exc}")
-        changed_fields += touched
-        changed_players += 1 if touched else 0
-    return {"rows": matched, "changed": changed_players, "fields": changed_fields, "log": log}
+        player = by_key[key]
+        old = _csv_row(working, player)
+        clean = {k: _csv_unprotect(v) if k in CSV_TEXT_COLUMNS else v for k, v in row.items()}
+        # An untouched later row must not undo a prior row's membership/lock
+        # effects. User edits are relative to the initial import snapshot.
+        initial = _csv_row(document, document.by_offset[player.offset])
+        edits = {k: v for k, v in clean.items() if k not in CSV_READ_ONLY and v != str(initial[k])}
+        if not edits:
+            continue
+        # Scalar-only rows need only a record copy. Pool/membership operations can
+        # affect other players; use a complete checkpoint for those rows.
+        complex_row = any(k in {"first", "last", "college", "team"} or k in CSV_LOCK_COLUMNS for k in edits)
+        checkpoint = copy.deepcopy(working) if complex_row else None
+        original_record = player.record
+        player.record = original_record.copy()
+        try:
+            expected = {}
+            for column, value in edits.items():
+                _apply_csv_cell(working, player, column, value)
+                expected[column] = _csv_row(working, player)[column]
+            new = _csv_row(working, player)
+            _require(all(new[k] == v for k, v in expected.items()),
+                     "conflicting raw and derived fields; edit one style/date view at a time")
+            fields = [{"field": k, "before": old[k], "after": new[k]}
+                      for k in CSV_COLUMNS if old[k] != new[k]]
+            if fields:
+                changes.append({"row": number, "pool": key[0], "index": key[1], "changes": fields})
+        except (RosterRecordError, ValueError, OverflowError) as exc:
+            if checkpoint is not None:
+                working = checkpoint
+                by_key = {(p.pool, p.index): p for p in working.players}
+            else:
+                player.record = original_record
+            refused.append({"row": number, "pool": key[0], "index": key[1], "reason": f"{column}: {exc}"})
+    # Include changes to peers when a returner lock transfers to another player.
+    source_rows = {key: number for (number, _), key in zip(rows, identities) if key is not None}
+    final_changes = []
+    for old_player, new_player in zip(document.players, working.players):
+        old, new = _csv_row(document, old_player), _csv_row(working, new_player)
+        fields = [{"field": k, "before": old[k], "after": new[k]}
+                  for k in CSV_COLUMNS if old[k] != new[k]]
+        if fields:
+            key = (new_player.pool, new_player.index)
+            final_changes.append({"row": source_rows.get(key, "related player"),
+                                  "pool": key[0], "index": key[1], "changes": fields})
+    changes = final_changes
+    after = working.to_body() if changes else before
+    # Reparse the candidate and verify the canonical sheet, including side effects
+    # of team moves/locks. This is a writer/readback check, never source I/O.
+    verified = copy.deepcopy(document)
+    if changes:
+        verified.adopt_body(after)
+        _require([_csv_row(working, p) for p in working.players] ==
+                 [_csv_row(verified, p) for p in verified.players], "CSV candidate failed roster readback")
+    receipt = {"rows": matched, "changed": len(changes),
+               "fields": sum(len(row["changes"]) for row in changes), "changes": changes,
+               "refused": refused, "log": [f"row {r['row']}: {r['reason']}" for r in refused]}
+    return CsvPreview(before, after, document.scheme, document.reference_year, receipt)
+
+
+def apply_csv_preview(document: RosterDocument, preview: CsvPreview) -> dict[str, Any]:
+    _require(document.scheme == preview.scheme and document.reference_year == preview.reference_year and
+             document.to_body() == preview.before,
+             "The roster changed after the CSV preview; preview the CSV again before applying it.")
+    if preview.before != preview.after:
+        document.adopt_body(preview.after)
+    return copy.deepcopy(preview.receipt)
+
+
+def import_csv(document: RosterDocument, text: str, *, delimiter: str | None = None) -> dict[str, Any]:
+    """Apply a validated CSV as one candidate. The GUI displays preview_csv first."""
+    return apply_csv_preview(document, preview_csv(document, text, delimiter=delimiter))
 
 
 def _apply_csv_cell(document: RosterDocument, player: Player, column: str,
@@ -3224,42 +3334,37 @@ def _apply_csv_cell(document: RosterDocument, player: Player, column: str,
             return 0, ""
         record.birth_date = date
         return 1, ""
-    if column == "weight":
-        new = int(value)
-        if record.weight == new:
-            return 0, ""
-        record.weight = new
+    if column in CSV_LOCK_COLUMNS:
+        _require(value in ("0", "1"), f"{column} accepts 0 or 1")
+        document.set_depth_lock(player, column[5:], value == "1")
         return 1, ""
-    if column == "skin":
-        new = int(value)
-        if record.skin == new:
-            return 0, ""
-        record.skin = new
-        return 1, ""
-    if column in ("left_glove", "left_wrist", "left_elbow"):
-        new = int(value)
-        if getattr(record, column) == new:
-            return 0, ""
-        setattr(record, column, new)
-        return 1, ""
-    note = ""
     if column == "position":
-        # a sheet written against a retail roster carries OLB rows; on a one-pool roster that code
-        # is retired, so map it to the pool that absorbed it and SAY SO rather than writing a code
-        # no screen in the game fills
-        new = position_code(value, document.scheme)
-        if is_retired_position(new, document.scheme):
-            instead = replacement_position_code(new, document.scheme)
-            note = (f"{value!r} is {position_name(new, 'retail')} (code {new}), retired on this "
-                    f"{SCHEME_TITLES[document.scheme]} roster; wrote "
-                    f"{position_name(instead, document.scheme)} (code {instead}) instead")
-            new = instead
+        labels = position_names(document.scheme)
+        _require(value.upper() in labels,
+                 f"Position {value!r} is not in the loaded {document.scheme} scheme: {', '.join(labels)}")
+        new = labels.index(value.upper())
+        check_position_code(new, document.scheme)
     else:
         new = _enum_value(column, value) if column in ENUMS else int(value)
-    if (record.get(column) if column in ABILITY_BITS or column in VIRTUAL_FIELDS else record.values.get(column)) == new:
-        return 0, note
+        low, high = csv_field_limits(column, record)
+        _require(low <= new <= high, f"{column} accepts {low}..{high}, got {value}")
+    if record.get(column) == new:
+        return 0, ""
     record.set(column, new)
-    return 1, note
+    return 1, ""
+
+
+def csv_field_limits(name: str, record: PlayerRecord) -> tuple[int, int]:
+    """The page's card bounds plus the underlying record/century validator."""
+    if name in RATING_BYTE_ORDER:
+        return 0, RATING_MAX_LARGE
+    if name in ABILITY_BITS or name == "throw_style":
+        return 0, 1
+    if name == "power_run_style_bucket":
+        return 0, len(POWER_RUN_STYLES) - 1
+    if name in ENUMS:
+        return 0, len(ENUMS[name]) - 1
+    return NUMERIC_LIMITS.get(name, (0, 255))
 
 
 def _apply_csv_team(document: RosterDocument, player: Player, value: str) -> tuple[int, str]:

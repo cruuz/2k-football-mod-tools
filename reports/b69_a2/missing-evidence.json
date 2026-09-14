@@ -1,0 +1,566 @@
+[
+  {
+    "path": "docs/research/apf_assassins_helmet_selector_checkpoint.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/apf_audio.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/apf_custom_team_appearance.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/apf_digital_font_patch.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/apf_franchise_mod_feasibility.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/apf_franchise_runtime_ownership.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/apf_helmet_family_patch.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/apf_jersey_family_patch.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/apf_jersey_selector_writeback.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/apf_nfl_cut_content_lineage.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/apf_pants_family_patch.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/apf_roster.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/apf_scene.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/apf_scne_draw_topology_writeback.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/apf_scne_static_serializer_spec.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/apf_shoulder_family_patch.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/apf_stadium_catalog_position_writeback.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/apf_stadium_static_position_writeback.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/apf_stadium_static_target_catalog.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/apf_static_gltf.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/apf_texture_roundtrip.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/apf_uniform_selector_allocation.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/apf_uniform_selector_mod_release.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/apf_uniform_selector_writeback.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/apf_uniform_xenia_runtime.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/apf_uniforms.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/apf_xenia_patch_runtime.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/apf_xenia_season_coachdesk_experiment.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/audio_modding_compatibility.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/cross_title_model_compatibility.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/director_format.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/gameplay_tuning_ai_draft_modding.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/layout_format.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/main_menu_label_patch.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/main_menu_named_inspector.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/menu_state_trace_closure_v2.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/mod_editor_gameplay_franchise_inspection.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/nfl2k5_all_texture_replacement.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/nfl2k5_crib_electronics_model_swap_spike.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/nfl2k5_ps2_fixture_protocol.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/nfl2k5_unified_visual_mod_project.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/nfl2k5_xbox_save_inventory.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/nfl_actual_jersey_binding_away_loader_safe_xemu_runtime.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/nfl_create_team_field_art_pipeline.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/nfl_decompilation.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/nfl_draft_weight_xbe_integrity_probe.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/nfl_franchise_limit_feasibility.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/nfl_group36_geometry_xiso_transport.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/nfl_group36_same_footprint_geometry_writeback.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/nfl_group36_xemu_runtime_result_v2.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/nfl_live_face_texture_compatibility.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/nfl_main_menu_live_state.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/nfl_player_portrait_pipeline.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/nfl_player_roster_modding.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/nfl_scene_audio_assets.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/nfl_scne_embedded_texture_png.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/nfl_scorebug_font_xemu_runtime.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/nfl_scorebug_shield_xemu_runtime.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/nfl_scorebug_xemu_runtime.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/nfl_stadium_catalog_position_writeback.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/nfl_stadium_static_target_catalog.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/nfl_static_gltf.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/nfl_static_position_writeback.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/nfl_team_identity_modding.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/nfl_team_select_card_pipeline.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/nfl_uniform_color_xiso.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/nfl_upper_deck_changed_count_boundary.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/nfl_upper_deck_source_subset_writeback.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/playbook_format.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/scorebug_presentation_modding.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/static_topology_conformance_gap.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "docs/research/uniform_texture_sharing.md",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/asset_samples/apf/audio/ausb_halftime_0/report.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/asset_samples/apf_roster/uniform_all_families_built_in_capacity.v1.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/asset_samples/nfl_static_gltf/3161_0006_stadium.gltf",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_assassins_helmet_selector_checkpoint.v1.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_audio_inventory.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_ausb_inventory.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_digital_font_layout.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_digital_font_patch_roundtrip.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_field_art_roundtrip.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_franchise_mod_feasibility.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_franchise_runtime_ownership.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_helmet_family_layout.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_helmet_family_layout.tsv",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_helmet_family_patch_roundtrip.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_jersey_family_patch_roundtrip.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_jersey_selector_writeback_roundtrip.v1.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_logo_roundtrip.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_logocache_roundtrip.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_pants_family_layout.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_pants_family_layout.tsv",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_pants_family_patch_roundtrip.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_roster_inventory.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_roster_players.tsv",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_roster_stadiums.tsv",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_scene_hi_head_probe.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_scene_inventory.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_scne_catalog_position_roundtrip.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_scne_draw_topology_corpus.v1.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_scne_same_count_position_roundtrip.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_shoulder_family_layout.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_shoulder_family_layout.tsv",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_shoulder_family_patch_roundtrip.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_stadium_node17_same_footprint_topology_roundtrip.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_texture_roundtrip.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_uniform_inventory.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_uniform_logo_cache.tsv",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_uniform_selector_mod_release.v1.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_uniform_selector_writeback_roundtrip.v1.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_uniform_selector_xenia_runtime.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_uniform_team_assets.tsv",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_uniform_xenia_runtime.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_xenia_patch_runtime.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/apf_xenia_season_coachdesk_experiment.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/audio_modding_compatibility.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/cross_title_model_compatibility.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/menu_state_trace_closure_v2.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/nfl2k5_actual_jersey_binding_away_loader_safe_xemu_runtime.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/nfl2k5_all_txtr_inventory_v2.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/nfl2k5_audo_import_capacity.tsv",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/nfl2k5_audo_wav_all.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/nfl2k5_group36_s42_xemu_runtime_positive.v2.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/nfl2k5_player_rating_ui_bindings.tsv",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/nfl2k5_player_roster_audit.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/nfl2k5_scne_inventory.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/nfl2k5_scorebug_font_xemu_runtime.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/nfl2k5_scorebug_font_xemu_runtime/digital-font-magenta-not-visible-demo.png",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/nfl2k5_scorebug_mod_project.schema.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/nfl2k5_scorebug_shield_xemu_runtime.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/nfl2k5_scorebug_shield_xemu_runtime/shield-cyan-demo.png",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/nfl2k5_scorebug_xemu_runtime.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/nfl2k5_scorebug_xemu_runtime/score_buga-magenta-demo.png",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/nfl2k5_unif_color_ownership.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/nfl2k5_unif_color_ownership_ghidra/pseudo_c.c",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/nfl2k5_uniform_inventory.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/nfl_actual_jersey_binding_ghidra/nfl_actual_jersey_binding_trace.txt",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/nfl_stadium_catalog_position_patch_roundtrip.v2.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/nfl_stadium_group36_position_patch_roundtrip.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/nfl_stadium_group36_same_footprint_geometry_roundtrip.json",
+    "already_referenced_on_input_stack": true
+  },
+  {
+    "path": "reports/assets/nfl_stadium_upper_deck_source_subset_roundtrip.v1.json",
+    "already_referenced_on_input_stack": true
+  }
+]

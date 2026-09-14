@@ -1,0 +1,14 @@
+F......
+======================================================================
+FAIL: test_capacity_permissions_metadata_and_stable_existing_addresses (__main__.CompleteOwnerTests.test_capacity_permissions_metadata_and_stable_existing_addresses)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_beta61_allocator_integration.py", line 85, in test_capacity_permissions_metadata_and_stable_existing_addresses
+    self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "code"), 78439)  # beta 66: camera RX 160 -> 512 and MyCareer RX 16384 -> 20480 (Supersim); other owners retain their budgets
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 79335 != 78439
+
+----------------------------------------------------------------------
+Ran 7 tests in 256.650s
+
+FAILED (failures=1)

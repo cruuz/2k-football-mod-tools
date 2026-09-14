@@ -1,0 +1,402 @@
+[
+  {
+    "file": "tests/mod_editor/test_2k5_bump_retail_probe.py",
+    "status": "passed",
+    "tests_run": 7,
+    "seconds": 0.01,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_2k5_bump_retail_probe.log"
+  },
+  {
+    "file": "tests/mod_editor/test_animations_panel_qt.py",
+    "status": "passed",
+    "tests_run": 12,
+    "seconds": 0.854,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_animations_panel_qt.log"
+  },
+  {
+    "file": "tests/mod_editor/test_apf_audio_encoder_gui.py",
+    "status": "passed",
+    "tests_run": 8,
+    "seconds": 0.28,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_apf_audio_encoder_gui.log"
+  },
+  {
+    "file": "tests/mod_editor/test_apf_crest_budget_import.py",
+    "status": "passed",
+    "tests_run": 12,
+    "seconds": 0.514,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_apf_crest_budget_import.log"
+  },
+  {
+    "file": "tests/mod_editor/test_apf_package_map_writer.py",
+    "status": "passed",
+    "tests_run": 40,
+    "seconds": 2.04,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_apf_package_map_writer.log"
+  },
+  {
+    "file": "tests/mod_editor/test_apf_play_designer_qt.py",
+    "status": "passed",
+    "tests_run": 5,
+    "seconds": 0.287,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_apf_play_designer_qt.log"
+  },
+  {
+    "file": "tests/mod_editor/test_apf_playbook_route_gui.py",
+    "status": "passed",
+    "tests_run": 7,
+    "seconds": 0.111,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_apf_playbook_route_gui.log"
+  },
+  {
+    "file": "tests/mod_editor/test_apf_playcalling_editor_qt.py",
+    "status": "passed",
+    "tests_run": 10,
+    "seconds": 3.728,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_apf_playcalling_editor_qt.log"
+  },
+  {
+    "file": "tests/mod_editor/test_apf_product_findings_gui.py",
+    "status": "passed",
+    "tests_run": 2,
+    "seconds": 0.095,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_apf_product_findings_gui.log"
+  },
+  {
+    "file": "tests/mod_editor/test_apf_public_docs_registry_current.py",
+    "status": "passed",
+    "tests_run": 5,
+    "seconds": 0.129,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_apf_public_docs_registry_current.log"
+  },
+  {
+    "file": "tests/mod_editor/test_apf_roster_workspace_gui.py",
+    "status": "passed",
+    "tests_run": 1,
+    "seconds": 0.037,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_apf_roster_workspace_gui.log"
+  },
+  {
+    "file": "tests/mod_editor/test_apf_save_playbook_assignments_gui.py",
+    "status": "passed",
+    "tests_run": 8,
+    "seconds": 1.783,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_apf_save_playbook_assignments_gui.log"
+  },
+  {
+    "file": "tests/mod_editor/test_apf_save_roster_players_gui.py",
+    "status": "passed",
+    "tests_run": 4,
+    "seconds": 0.996,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_apf_save_roster_players_gui.log"
+  },
+  {
+    "file": "tests/mod_editor/test_apf_splb_writer.py",
+    "status": "passed",
+    "tests_run": 22,
+    "seconds": 0.447,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_apf_splb_writer.log"
+  },
+  {
+    "file": "tests/mod_editor/test_apf_stadium_studio_gui.py",
+    "status": "passed",
+    "tests_run": 2,
+    "seconds": 0.072,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_apf_stadium_studio_gui.log"
+  },
+  {
+    "file": "tests/mod_editor/test_apf_team_logo_gui.py",
+    "status": "passed",
+    "tests_run": 23,
+    "seconds": 2.383,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_apf_team_logo_gui.log"
+  },
+  {
+    "file": "tests/mod_editor/test_audio_panel_qt.py",
+    "status": "passed",
+    "tests_run": 50,
+    "seconds": 6.54,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_audio_panel_qt.log"
+  },
+  {
+    "file": "tests/mod_editor/test_beta69_doc_links.py",
+    "status": "passed",
+    "tests_run": 3,
+    "seconds": 0.015,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_beta69_doc_links.log"
+  },
+  {
+    "file": "tests/mod_editor/test_beta69_feedback_qt.py",
+    "status": "passed",
+    "tests_run": 5,
+    "seconds": 0.574,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_beta69_feedback_qt.log"
+  },
+  {
+    "file": "tests/mod_editor/test_beta69_string_hygiene.py",
+    "status": "passed",
+    "tests_run": 4,
+    "seconds": 5.503,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_beta69_string_hygiene.log"
+  },
+  {
+    "file": "tests/mod_editor/test_beta69_studios_offscreen.py",
+    "status": "passed",
+    "tests_run": 1,
+    "seconds": 11.488,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_beta69_studios_offscreen.log"
+  },
+  {
+    "file": "tests/mod_editor/test_build_panel_qt.py",
+    "status": "passed",
+    "tests_run": 13,
+    "seconds": 2.195,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_build_panel_qt.log"
+  },
+  {
+    "file": "tests/mod_editor/test_commentary_panel_qt.py",
+    "status": "passed",
+    "tests_run": 3,
+    "seconds": 6.687,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_commentary_panel_qt.log"
+  },
+  {
+    "file": "tests/mod_editor/test_crib_panel_qt.py",
+    "status": "passed",
+    "tests_run": 6,
+    "seconds": 0.187,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_crib_panel_qt.log"
+  },
+  {
+    "file": "tests/mod_editor/test_franchise_panel_qt.py",
+    "status": "passed",
+    "tests_run": 16,
+    "seconds": 34.634,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_franchise_panel_qt.log"
+  },
+  {
+    "file": "tests/mod_editor/test_gameplay_patches_panel_qt.py",
+    "status": "passed",
+    "tests_run": 1,
+    "seconds": 0.419,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_gameplay_patches_panel_qt.log"
+  },
+  {
+    "file": "tests/mod_editor/test_gui_refusal_wording.py",
+    "status": "passed",
+    "tests_run": 23,
+    "seconds": 0.826,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_gui_refusal_wording.log"
+  },
+  {
+    "file": "tests/mod_editor/test_models_panel_qt.py",
+    "status": "passed",
+    "tests_run": 8,
+    "seconds": 11.111,
+    "skipped": 1,
+    "log": "reports/b69_j7/test_models_panel_qt.log"
+  },
+  {
+    "file": "tests/mod_editor/test_music_panel_qt.py",
+    "status": "passed",
+    "tests_run": 9,
+    "seconds": 2.669,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_music_panel_qt.log"
+  },
+  {
+    "file": "tests/mod_editor/test_music_simple_qt.py",
+    "status": "passed",
+    "tests_run": 9,
+    "seconds": 4.282,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_music_simple_qt.log"
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_create_play_wizard_qt.py",
+    "status": "passed",
+    "tests_run": 2,
+    "seconds": 59.246,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_nfl2k5_create_play_wizard_qt.log"
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_defense_play_qt.py",
+    "status": "passed",
+    "tests_run": 4,
+    "seconds": 3.681,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_nfl2k5_defense_play_qt.log"
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_match_coverage_qt.py",
+    "status": "passed",
+    "tests_run": 4,
+    "seconds": 9.333,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_nfl2k5_match_coverage_qt.log"
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_play_designer_qt.py",
+    "status": "passed",
+    "tests_run": 4,
+    "seconds": 0.422,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_nfl2k5_play_designer_qt.log"
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_stadium_blender_panel.py",
+    "status": "passed",
+    "tests_run": 2,
+    "seconds": 0.055,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_nfl2k5_stadium_blender_panel.log"
+  },
+  {
+    "file": "tests/mod_editor/test_no_capability_is_invisible.py",
+    "status": "blocked",
+    "tests_run": 2,
+    "seconds": 0.013,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_no_capability_is_invisible.log"
+  },
+  {
+    "file": "tests/mod_editor/test_playbooks_panel_qt.py",
+    "status": "passed",
+    "tests_run": 8,
+    "seconds": 0.567,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_playbooks_panel_qt.log"
+  },
+  {
+    "file": "tests/mod_editor/test_presentation_panel_qt.py",
+    "status": "passed",
+    "tests_run": 2,
+    "seconds": 6.281,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_presentation_panel_qt.log"
+  },
+  {
+    "file": "tests/mod_editor/test_product_inspection_panels_qt.py",
+    "status": "passed",
+    "tests_run": 7,
+    "seconds": 10.202,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_product_inspection_panels_qt.log"
+  },
+  {
+    "file": "tests/mod_editor/test_ps2_save_dialog_qt.py",
+    "status": "passed",
+    "tests_run": 44,
+    "seconds": 0.684,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_ps2_save_dialog_qt.log"
+  },
+  {
+    "file": "tests/mod_editor/test_roster_editor_panel_qt.py",
+    "status": "passed",
+    "tests_run": 50,
+    "seconds": 18.125,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_roster_editor_panel_qt.log"
+  },
+  {
+    "file": "tests/mod_editor/test_self_update.py",
+    "status": "passed",
+    "tests_run": 26,
+    "seconds": 1.408,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_self_update.log"
+  },
+  {
+    "file": "tests/mod_editor/test_self_update_manual_layout.py",
+    "status": "passed",
+    "tests_run": 1,
+    "seconds": 0.003,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_self_update_manual_layout.log"
+  },
+  {
+    "file": "tests/mod_editor/test_senior_bowl_panel_qt.py",
+    "status": "passed",
+    "tests_run": 5,
+    "seconds": 0.121,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_senior_bowl_panel_qt.log"
+  },
+  {
+    "file": "tests/mod_editor/test_share_panel_qt.py",
+    "status": "passed",
+    "tests_run": 7,
+    "seconds": 6.303,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_share_panel_qt.log"
+  },
+  {
+    "file": "tests/mod_editor/test_sounds_panel_qt.py",
+    "status": "passed",
+    "tests_run": 10,
+    "seconds": 7.39,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_sounds_panel_qt.log"
+  },
+  {
+    "file": "tests/mod_editor/test_studio_shell_layout_qt.py",
+    "status": "passed",
+    "tests_run": 18,
+    "seconds": 41.718,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_studio_shell_layout_qt.log"
+  },
+  {
+    "file": "tests/mod_editor/test_update_check.py",
+    "status": "passed",
+    "tests_run": 21,
+    "seconds": 0.006,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_update_check.log"
+  },
+  {
+    "file": "tests/mod_editor/test_ux_build_plan_coverage_qt.py",
+    "status": "passed",
+    "tests_run": 7,
+    "seconds": 1.694,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_ux_build_plan_coverage_qt.log"
+  },
+  {
+    "file": "tests/mod_editor/test_ux_open_disc_hook_qt.py",
+    "status": "passed",
+    "tests_run": 7,
+    "seconds": 14.422,
+    "skipped": 0,
+    "log": "reports/b69_j7/test_ux_open_disc_hook_qt.log"
+  }
+]

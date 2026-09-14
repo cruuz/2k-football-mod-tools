@@ -556,22 +556,22 @@ class CsvTests(unittest.TestCase):
         self.assertEqual(self.document.players[0].record.values["years_pro"], 9)
 
     def test_a_semicolon_export_in_finn_s_shape_is_read(self) -> None:
-        text = "last;first;speed\nManning;Peyton;42\n"
+        text = "pool;index;last;first;speed\nprimary;0;Manning;Peyton;42\n"
         receipt = rr.import_csv(self.document, text)
         self.assertEqual((receipt["rows"], receipt["fields"]), (1, 1))
         self.assertEqual(self.document.players[0].record.values["speed"], 42)
 
     def test_enums_are_accepted_by_label_or_number_and_bad_ones_are_logged(self) -> None:
-        text = "last;first;body;position;hand\nManning;Peyton;Large;RB;Left\n"
+        text = "pool;index;last;first;body;position;hand\nprimary;0;Manning;Peyton;Large;HB;Left\n"
         rr.import_csv(self.document, text)
         self.assertEqual(self.document.players[0].record.values["body"], rr.BODIES.index("Large"))
         self.assertEqual(self.document.players[0].record.position_name, "HB")
         self.assertEqual(self.document.players[0].record.values["hand"], 0)
-        receipt = rr.import_csv(self.document, "last;first;body\nManning;Peyton;Enormous\n")
+        receipt = rr.import_csv(self.document, "pool;index;last;first;body\nprimary;0;Manning;Peyton;Enormous\n")
         self.assertTrue(any("Enormous" in line for line in receipt["log"]))
 
     def test_unmatched_rows_are_reported_not_guessed(self) -> None:
-        receipt = rr.import_csv(self.document, "last;first;speed\nNobody;At;50\n")
+        receipt = rr.import_csv(self.document, "pool;index;last;first;speed\nprimary;999;Nobody;At;50\n")
         self.assertEqual(receipt["rows"], 0)
         self.assertTrue(any("no roster record matches" in line for line in receipt["log"]))
 
@@ -1739,23 +1739,19 @@ class PositionSchemeTests(unittest.TestCase):
             self.assertEqual(receipt["log"], [])
             self.assertEqual(reloaded.to_body(), document.to_body())
 
-    def test_a_csv_written_on_a_retail_disc_loads_onto_a_one_pool_roster(self) -> None:
+    def test_csv_refuses_cross_scheme_labels_instead_of_remapping_positions(self) -> None:
         source = rr.load_body(retail_front_body(), scheme="retail")
-        text = rr.export_csv(source)
-        self.assertIn("OLB", text)
         target = rr.load_body(one_pool_body(), scheme="one_pool")
-        receipt = rr.import_csv(target, text)
-        moved = {p.last: p.record.values["position"] for p in target.players}
-        self.assertEqual(moved["Boulware"], 11, "an OLB row lands on LB, not on the retired code")
-        self.assertEqual(moved["Thomas"], 11)
-        notes = [line for line in receipt["log"] if "retired" in line]
-        self.assertEqual(len(notes), 2, "and the receipt says so for every row it moved")
-        self.assertIn("LB (code 11)", notes[0])
-        # the EDGE / LB names of a one-pool export read straight back onto a retail roster
+        before = target.to_body()
+        receipt = rr.import_csv(target, rr.export_csv(source))
+        self.assertEqual(target.to_body(), before)
+        self.assertEqual(len(receipt["refused"]), 4)  # ILB, two retired OLBs and DE
+        self.assertTrue(all("position" in row["reason"] for row in receipt["refused"]))
         back = rr.load_body(retail_front_body(), scheme="retail")
-        receipt = rr.import_csv(back, rr.export_csv(rr.load_body(one_pool_body(), scheme="one_pool")))
-        self.assertEqual(receipt["log"], [])
-        self.assertEqual(back.players[len(SAMPLE) + 1].record.values["position"], 16)
+        before = back.to_body()
+        receipt = rr.import_csv(back, rr.export_csv(target))
+        self.assertEqual(back.to_body(), before)
+        self.assertEqual(len(receipt["refused"]), 4)
 
 
 @unittest.skipUnless(HAVE_RETAIL, "the retail extraction is not mounted")

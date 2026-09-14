@@ -453,6 +453,9 @@ class ApfRosterIdentityGuiTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.application = QApplication.instance() or QApplication([])
+        # Theme before any widget, as the studio does (see test_apf_playbook_route_gui for the py3.11 crash).
+        from mod_editor.apf_studio.apf_theme import install_theme
+        install_theme(cls.application)
 
     @classmethod
     def tearDownClass(cls) -> None:

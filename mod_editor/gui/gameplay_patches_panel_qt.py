@@ -7,6 +7,8 @@ one receipt.  The throw curve tables keep their own richer editor (Throw Distanc
 
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import plain_error
+
 from collections.abc import Callable
 from pathlib import Path
 
@@ -108,10 +110,10 @@ PATCHES = (
      "downed in the end zone puts the ball on the 20, a kick straight into the end zone is a touchback to the 35 (30 for the 2024 "
      "spot), short of the landing zone or out of bounds is the 40; the CPU kicker aims for the landing zone 90 % of the time and the "
      "CPU returner takes the touchback 90 % of the time. Your own kicks and returns stay in your hands; onside and safety kicks are "
-     "untouched. Switches on the modern kick spots and the dynamic line-up with it. Beta 62: held players keep an idle "
+     "untouched. Switches on the modern kick spots and the dynamic line-up with it. Held players keep an idle "
      "pose facing the kick and release on contact, a ball fielded inside the landing zone is never a touchback, and the "
      "return blockers take close assignments (drive blocks in the setup zone, a lead block from the deep non-carrier). "
-     "Noah saw the 2024 rule play in beta 60; the beta-62 corrections are unwitnessed. Rebuild from retail."),
+     "The original 2024 rule has an in-game report; the stance and blocking corrections remain unwitnessed. Rebuild from retail."),
     ("overtime", "Modern overtime: both teams get a possession, 10 minutes with ties, playoffs to a winner",
      "Retail overtime is sudden death for the quarter length: any score ends it, even a first-possession "
      "touchdown, and the regular season ties after one period. Patch (the 2025 NFL rule): each team is "
@@ -257,7 +259,12 @@ PATCHES = (
 )
 # Rows that are informational here: their page action opens the page that authors the content, and they
 # never pass a Boolean through the BuildPlan (the field is a plan path chosen on Rosters / Build).
-INFORMATIONAL = {"espn25_plan"}
+from mod_editor.core import nfl2k5_weather as weather
+from mod_editor.core import nfl2k5_weather_haze as haze
+PATCHES += (("weather_plan", weather.BUILD_CAPTION, weather.HELP_TEXT),
+            ("weather_haze", haze.BUILD_CAPTION, haze.HELP_TEXT),
+            ("cpu_scrambles", tt.cpu_scrambles_patch.BUILD_CAPTION, tt.cpu_scrambles_patch.HELP_TEXT))
+INFORMATIONAL = {"espn25_plan", "weather_plan", "cpu_scrambles"}
 
 
 class _Signals(QObject):
@@ -277,7 +284,7 @@ class _Task(QRunnable):
         try:
             result = self._operation(lambda msg, _a, _b: self.signals.progress.emit(msg))
         except Exception as exc:  # noqa: BLE001
-            self.signals.failed.emit(f"{type(exc).__name__}: {exc}")
+            self.signals.failed.emit(plain_error(exc))
         else:
             self.signals.finished.emit(result)
 
@@ -324,6 +331,9 @@ LABELS: dict[str, tuple[str, str, str]] = {
                          "All 13 SPECIAL roles on one screen, with complete player names; offense and defense keep eleven rows.", NOT_TESTED),
     "edge_rename": ("Call defensive ends EDGE", "Rosters, depth charts, the draft, the formation editor and the scorebug legend say EDGE.", ""),
     "scheme_labels": ("Use scheme-specific depth-chart names", "4-3: SAM, MIKE, WILL; 3-4: EDGE, MIKE, WILL, NT.", ""),
+    "weather_plan": (weather.BUILD_CAPTION, weather.HELP_TEXT, "EXPERIMENTAL / UNWITNESSED"),
+    "weather_haze": (haze.BUILD_CAPTION, haze.HELP_TEXT, "EXPERIMENTAL / UNWITNESSED"),
+    "cpu_scrambles": (tt.cpu_scrambles_patch.BUILD_CAPTION, tt.cpu_scrambles_patch.HELP_TEXT, "EXPERIMENTAL / UNWITNESSED"),
     "espn25_plan": ("ESPN Anniversary setup and rosters (experimental)",
                     "Author and save the plan on Rosters > ESPN Anniversary; tick it on Build. This row only opens that page.", NOT_TESTED),
 }
@@ -336,7 +346,7 @@ NEEDS_IMAGE = {"camera", "seven_on_seven", "music_shuffle", "practice_squad_scre
 PATCHES = (*PATCHES, *r62_ui.OPTIONS)
 NEEDS_IMAGE.update(r62_ui.KEYS)
 NEEDS_IMAGE.add("position_pools")
-NEEDS_IMAGE.add("espn25_plan")
+NEEDS_IMAGE.update(("espn25_plan", "weather_plan", "cpu_scrambles"))
 NEEDS_IMAGE.add("espn25_rosters")
 
 TEXT_PATCHES = (
@@ -362,6 +372,7 @@ class GameplayPatchesPanel(QWidget):
     the EDGE rename); each key must be a BuildPlan field and an ``inspect`` state key.
     """
 
+    open_weather = pyqtSignal()
     open_anniversary = pyqtSignal()   # the ESPN Anniversary row's page action: open Rosters > ESPN Anniversary
 
     def __init__(self, facade: object | None = None, parent: QWidget | None = None, *,
@@ -464,13 +475,28 @@ class GameplayPatchesPanel(QWidget):
                 caption = QLabel(tab_title(short))
                 caption.setAccessibleDescription(helper or label)
                 head.addWidget(caption)
-                self.anniversary_button = QPushButton("Open Rosters > ESPN Anniversary")
-                self.anniversary_button.setToolTip(helper)
-                self.anniversary_button.clicked.connect(self.open_anniversary.emit)
-                head.addWidget(self.anniversary_button)
+                if key == "cpu_scrambles":
+                    self.cpu_scrambles_level = QComboBox()
+                    self.cpu_scrambles_level.addItem("Retail", "retail")
+                    self.cpu_scrambles_level.addItem("Modern (experimental)", "modern")
+                    self.cpu_scrambles_level.setAccessibleName(tt.cpu_scrambles_patch.BUILD_CAPTION)
+                    self.cpu_scrambles_level.setToolTip(tt.cpu_scrambles_patch.HELP_TEXT)
+                    self.cpu_scrambles_level.currentIndexChanged.connect(lambda _i: self._refresh())
+                    head.addWidget(self.cpu_scrambles_level)
+                elif key == "weather_plan":
+                    self.weather_editor_button = QPushButton("Weather editor…")
+                    self.weather_editor_button.setToolTip(helper)
+                    self.weather_editor_button.clicked.connect(self._open_weather_editor)
+                    head.addWidget(self.weather_editor_button)
+                else:
+                    self.anniversary_button = QPushButton("Open Rosters > ESPN Anniversary")
+                    self.anniversary_button.setToolTip(helper)
+                    self.anniversary_button.clicked.connect(self.open_anniversary.emit)
+                    head.addWidget(self.anniversary_button)
             else:
                 check = QCheckBox(tab_title(short))
                 check.setAccessibleDescription(helper or label)
+                check.setToolTip(helper or label)
                 check.toggled.connect(lambda _c: self._refresh())
                 head.addWidget(check)
             if key in r62_ui.CHILDREN:
@@ -486,6 +512,23 @@ class GameplayPatchesPanel(QWidget):
                 self.cpu_money_downs_level.currentIndexChanged.connect(self._money_downs_changed)
                 check.toggled.connect(self._money_downs_toggled)
                 head.addWidget(self.cpu_money_downs_level)
+            if key == "decided_clock":
+                self.decided_clock_margin = QComboBox()
+                self.decided_clock_seconds = QComboBox()
+                for value in tt.decided_clock_patch.MARGINS:
+                    self.decided_clock_margin.addItem(f"{value} points", value)
+                for value in tt.decided_clock_patch.SECONDS:
+                    self.decided_clock_seconds.addItem(f"{value} seconds", value)
+                for widget, title, default in (
+                    (self.decided_clock_margin, "Leading possession: minimum lead", 17),
+                    (self.decided_clock_seconds, "Remaining game time: at most", 60),
+                ):
+                    head.addWidget(QLabel(title))
+                    head.addWidget(widget)
+                    widget.setAccessibleName(title)
+                    widget.setToolTip(tt.decided_clock_patch.HELP_TEXT)
+                    widget.setCurrentIndex(widget.findData(default))
+                    widget.currentIndexChanged.connect(lambda _index: self._refresh())
             if key == "accelerated_clock":
                 self.accelerated_clock_minimum = QComboBox()
                 for seconds in tt.accelerated_clock_patch.MINIMUM_SECONDS:
@@ -599,6 +642,11 @@ class GameplayPatchesPanel(QWidget):
             details = mod_build.inspect_screen_timing(state["path"], combo.currentText())
             state = {**state, "screen_timing": details["status"], "screen_timing_details": details}
         self._state = state
+        if hasattr(self, "cpu_scrambles_level"):
+            self.cpu_scrambles_level.blockSignals(True)
+            self.cpu_scrambles_level.setCurrentIndex(self.cpu_scrambles_level.findData(
+                "modern" if state.get("cpu_scrambles") == "applied" else "retail"))
+            self.cpu_scrambles_level.blockSignals(False)
         self._reading = False
         self.source_field.setText(str(state.get("path", "")))
         is_image = state.get("container") == "xiso"
@@ -619,13 +667,20 @@ class GameplayPatchesPanel(QWidget):
                 self.badges[key].setVisible(bool(badge))
                 continue
             check = self.checks[key]
+            if key == "weather_haze":
+                enabled = value in ("retail", "applied")
+                check.setEnabled(enabled)
+                check.setChecked(value == "applied")
+                check.setToolTip(haze.HELP_TEXT if enabled else "Haze reader unavailable; choose a supported USA source")
+                self.badges[key].setText("EXPERIMENTAL / UNWITNESSED" if enabled else "Unrecognized source data")
+                continue
             if key == "helmet_finish":
                 enabled = value in ("retail", "applied")
                 check.setEnabled(enabled)
                 self.helmet_finish_combo.setEnabled(enabled)
                 check.setChecked(value == "applied")
                 self.helmet_finish_combo.setCurrentIndex(1 if value == "applied" else 0)
-                check.setToolTip("" if enabled else "Not recognised: the bytes at this change's sites are neither retail nor this patch "
+                check.setToolTip(check.accessibleDescription() if enabled else "Not recognised: the bytes at this change's sites are neither retail nor this patch "
                                  "(changed by another tool), so it can't be added here.")
                 self.badges[key].setText("ADVANCED / UNWITNESSED" if enabled else "Unrecognized source data")
                 self.badges[key].setVisible(True)
@@ -704,6 +759,11 @@ class GameplayPatchesPanel(QWidget):
                 plan.music_policy = "jukebox_menus" if on else "retail"
             else:
                 setattr(plan, key, (STRING_TOGGLES[key] if on else "") if key in STRING_TOGGLES else on)
+        if hasattr(self, "cpu_scrambles_level"):
+            plan.cpu_scrambles = str(self.cpu_scrambles_level.currentData())
+        if hasattr(self, "decided_clock_margin"):
+            plan.decided_clock_margin = int(self.decided_clock_margin.currentData())
+            plan.decided_clock_seconds = int(self.decided_clock_seconds.currentData())
         if "guardian_overlay" in self.checks:
             plan.guardian_everyone_practice = self.guardian_everyone_practice_check.isChecked()
         if "my_career" in self.checks:
@@ -862,10 +922,45 @@ class GameplayPatchesPanel(QWidget):
             self.guardian_everyone_practice_check.setEnabled(on and self.checks["guardian_overlay"].isEnabled())
             if on and "guardian_cap" in self.checks:
                 self.checks["guardian_cap"].setChecked(False)
+        for key in ("coin_defer", "decided_clock"):
+            if key in self.checks and (self._state or {}).get(key) == "applied":
+                box = self.checks[key]
+                box.blockSignals(True)
+                box.setChecked(True)
+                box.blockSignals(False)
+                box.setEnabled(False)
+        state = self._state or {}
+        if "decided_clock" in self.checks:
+            installed = state.get("decided_clock_settings") or {}
+            cutoff = installed.get("settings") or {}
+            for widget, key in ((self.decided_clock_margin, "margin"),
+                                (self.decided_clock_seconds, "seconds")):
+                if installed.get("status") == "applied":
+                    widget.blockSignals(True)
+                    widget.setCurrentIndex(widget.findData(cutoff[key]))
+                    widget.blockSignals(False)
+                widget.setEnabled(self.checks["decided_clock"].isEnabled()
+                                  and self.checks["decided_clock"].isChecked()
+                                  and installed.get("status") != "applied")
+        if hasattr(self, "cpu_scrambles_level"):
+            mode = state.get("cpu_scrambles", "unknown")
+            if mode == "applied":
+                self.cpu_scrambles_level.blockSignals(True)
+                self.cpu_scrambles_level.setCurrentIndex(self.cpu_scrambles_level.findData("modern"))
+                self.cpu_scrambles_level.blockSignals(False)
+            self.cpu_scrambles_level.setEnabled(state.get("container") == "xiso" and mode == "retail")
+            if mode in ("applied", "foreign"):
+                self.cpu_scrambles_level.setToolTip(
+                    "This executable already has the patch or has incompatible instructions. "
+                    "Choose a verified base disc to change CPU QB scrambles.")
+            else:
+                self.cpu_scrambles_level.setToolTip(tt.cpu_scrambles_patch.HELP_TEXT)
+        if hasattr(self, "weather_editor_button"):
+            self.weather_editor_button.setEnabled((self._state or {}).get("weather_plan") == "available")
         from mod_editor.studio.plan_controls import refresh_playbook_controls
         self._playbook_blockers = refresh_playbook_controls(
             self.checks, self._helpers, self._state)
-        any_on = any(c.isChecked() for key, c in self.checks.items() if key != "helmet_finish") or self._helmet_finish_changed()
+        any_on = any(c.isChecked() for key, c in self.checks.items() if key not in ("helmet_finish", "weather_haze")) or self._helmet_finish_changed() or self._weather_haze_changed() or self._modern_scrambles_selected()
         configured = True   # MyCareer no longer needs a setup file: an empty field selects in-game creation
         self.write_button.setEnabled(configured and any_on and bool(self.source_field.text()) and bool(self.target_field.text())
                                      and self._task is None and not self._reading
@@ -890,6 +985,25 @@ class GameplayPatchesPanel(QWidget):
             self._target_generated = False
             self._refresh()
 
+    def _modern_scrambles_selected(self):
+        return hasattr(self, "cpu_scrambles_level") and self.cpu_scrambles_level.currentData() == "modern"
+
+    def _weather_haze_changed(self):
+        box = self.checks.get("weather_haze")
+        state = (self._state or {}).get("weather_haze")
+        return bool(box is not None and box.isEnabled() and state in ("retail", "applied")
+                    and box.isChecked() != (state == "applied"))
+
+    def _open_weather_editor(self):
+        if self.receivers(self.open_weather):
+            self.open_weather.emit()
+            return
+        from tools.nfl2k5_weather_editor import WeatherDialog
+        dialog = WeatherDialog(self.source_field.text().strip(), self)
+        dialog.saved.connect(lambda name: self.status_label.setText(
+            f"Saved climate plan: {Path(name).name}. Select it on Build to include it in your disc."))
+        dialog.exec()
+
     def _helmet_finish_changed(self) -> bool:
         """True when the chosen finish differs from what the source carries (Glossy restoration counts)."""
         combo = getattr(self, "helmet_finish_combo", None)
@@ -902,10 +1016,17 @@ class GameplayPatchesPanel(QWidget):
         if self._playbook_blockers:
             return
         plan = self.plan()
-        if not (any(check.isChecked() for key, check in self.checks.items() if key != "helmet_finish") or self._helmet_finish_changed()):
+        if not (any(check.isChecked() for key, check in self.checks.items() if key not in ("helmet_finish", "weather_haze")) or self._helmet_finish_changed() or self._weather_haze_changed() or self._modern_scrambles_selected()):
             return
         is_image = tt.is_disc_image(plan.source)
-        chosen = [LABELS.get(key, (label, "", ""))[0] for key, label, _e in self._patches if key != "helmet_finish" and self.checks[key].isChecked()]
+        chosen = [LABELS.get(key, (label, "", ""))[0] for key, label, _e in self._patches if key in self.checks and key not in ("helmet_finish", "weather_haze") and self.checks[key].isChecked()]
+        if self._modern_scrambles_selected():
+            chosen.append(tt.cpu_scrambles_patch.BUILD_CAPTION + ": Modern")
+        if self._weather_haze_changed():
+            chosen.append(haze.BUILD_CAPTION if self.checks["weather_haze"].isChecked()
+                          else "Restore retail dry-weather haze response")
+        if plan.decided_clock:
+            chosen.append(f"Leading possession: {plan.decided_clock_margin} points; at most {plan.decided_clock_seconds} seconds")
         if self._helmet_finish_changed():
             chosen.append("Helmet finish: " + self.helmet_finish_combo.currentText())
         answer = QMessageBox.question(self, "Make disc with these changes?" if is_image else "Save a patched executable?",

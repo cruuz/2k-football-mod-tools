@@ -1,0 +1,136 @@
+[
+  {
+    "backend": {
+      "command": "python3 -m mod_editor.core.nfl2k5_my_career_mode apply source.xbe output.xbe",
+      "module": "mod_editor/core/nfl2k5_my_career_mode.py",
+      "operation": "write"
+    },
+    "classification": "offline-writer-proved",
+    "evidence": [
+      "ASTRA_B69_J3_REPORT.md",
+      "tests/mod_editor/test_nfl2k5_my_career_playcalling.py",
+      "tests/mod_editor/test_nfl2k5_my_career_settings.py",
+      "tests/mod_editor/test_nfl2k5_my_career_b69_wiring.py"
+    ],
+    "game": "nfl2k5_xbox",
+    "gui": {
+      "default_enabled": false,
+      "expose": false,
+      "mode": "edit",
+      "reason": "EXPERIMENTAL / UNWITNESSED. Protected MyCareerPanel wiring is supplied in WIRING_B69_J3.md."
+    },
+    "id": "nfl2k5.mode.my_career_playcalling",
+    "input_constraints": [
+      "Requires an enabled in-game MyCareer; off in every preset.",
+      "You call every play is the default; By position admits QB offense and ILB defense (LB in the one-pool model); Coach calls the plays keeps the native CPU selection.",
+      "Footer byte 82 bits 5..6 are 0/1/2; 3 is invalid. Preserve all existing Supersim and presentation bits. Signed export is a separate copy.",
+      "Default retains beta-68 eligibility, including existing offensive-lineman and K/P exclusions; no default position-mask expansion."
+    ],
+    "portme": [
+      "Complete the andrethealchemist and THE1WAM witness scripts in ASTRA_B69_J3_REPORT.md."
+    ],
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+      "tooling": "source-and-schemas-only"
+    },
+    "runtime": {
+      "evidence": [
+        "ASTRA_B69_J3_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_my_career_playcalling.py"
+      ],
+      "scope": "Saved three-value play selection policy and guarded native Fast-forward hand-back. Native selector and execution controller are separate owners. Physical play, menu pixels and audibles remain UNWITNESSED.",
+      "status": "not-tested"
+    },
+    "selectors": {
+      "fields": [
+        {
+          "allowed": "explicit opt-in only; false in every preset",
+          "name": "my_career",
+          "required": true
+        }
+      ],
+      "notes": "Use the saved career setting or creation tier in MyCareerPanel; exact wiring is in WIRING_B69_J3.md."
+    },
+    "source_container": {
+      "format": "XBE in XDVDFS",
+      "hash_pins": [
+        "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+      ],
+      "resource": "Game Modes and Apartment rows, pinned native hooks, owned 20480 RX/8192 RW and an appended 128-byte career save footer.",
+      "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+    },
+    "summary": "Saved three-value play selection policy and guarded native Fast-forward hand-back. Native selector and execution controller are separate owners. Physical play, menu pixels and audibles remain UNWITNESSED.",
+    "surface": "mode_state_routing",
+    "title": "MyCareer: who calls the plays (experimental)",
+    "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_my_career_playcalling"
+  },
+  {
+    "backend": {
+      "command": "python3 -m mod_editor.core.nfl2k5_my_career prepare source.zip output --first My --last Player --position QB --template 0 --prospect-tier \"1st Day\"",
+      "module": "mod_editor/core/nfl2k5_my_career.py",
+      "operation": "write"
+    },
+    "classification": "offline-writer-proved",
+    "evidence": [
+      "ASTRA_B69_J3_REPORT.md",
+      "tests/mod_editor/test_nfl2k5_my_career_prospects.py",
+      "tests/mod_editor/test_nfl2k5_my_career_settings.py",
+      "tests/mod_editor/test_nfl2k5_my_career_b69_wiring.py"
+    ],
+    "game": "nfl2k5_xbox",
+    "gui": {
+      "default_enabled": false,
+      "expose": false,
+      "mode": "edit",
+      "reason": "EXPERIMENTAL / UNWITNESSED. Protected MyCareerPanel wiring is supplied in WIRING_B69_J3.md."
+    },
+    "id": "nfl2k5.mode.my_career_prospects",
+    "input_constraints": [
+      "Original creation is the default. Explicit tiers start at 74/70/64/59 overall.",
+      "Tier and goal identity persist in the setup checkpoint and in-game footer byte 83; only IDs 0..4 are accepted.",
+      "Studio prepared saves require the existing depth-lock companion to preserve starting rank through native depth sorting.",
+      "Four QB labels alias three existing templates; Gunslinger and Pocket share template 0. Senior Bowl simulation, Combine, Pro Day, earned-points Apply Ratings and Draft Advisory remain unavailable."
+    ],
+    "portme": [
+      "Complete the andrethealchemist and THE1WAM witness scripts in ASTRA_B69_J3_REPORT.md."
+    ],
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+      "tooling": "source-and-schemas-only"
+    },
+    "runtime": {
+      "evidence": [
+        "ASTRA_B69_J3_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_my_career_prospects.py"
+      ],
+      "scope": "Native unboosted overall calibration, creation tier placement and persisted goal label. Existing CAP templates are reused. Goals, drills and draft advisory are roadmap, not simulated features.",
+      "status": "not-tested"
+    },
+    "selectors": {
+      "fields": [
+        {
+          "allowed": "explicit opt-in only; false in every preset",
+          "name": "my_career",
+          "required": true
+        }
+      ],
+      "notes": "Use the saved career setting or creation tier in MyCareerPanel; exact wiring is in WIRING_B69_J3.md."
+    },
+    "source_container": {
+      "format": "XBE in XDVDFS",
+      "hash_pins": [
+        "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+      ],
+      "resource": "Game Modes and Apartment rows, pinned native hooks, owned 20480 RX/8192 RW and an appended 128-byte career save footer.",
+      "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+    },
+    "summary": "Native unboosted overall calibration, creation tier placement and persisted goal label. Existing CAP templates are reused. Goals, drills and draft advisory are roadmap, not simulated features.",
+    "surface": "mode_state_routing",
+    "title": "MyCareer: creation prospect tiers (experimental)",
+    "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_my_career_prospects"
+  }
+]

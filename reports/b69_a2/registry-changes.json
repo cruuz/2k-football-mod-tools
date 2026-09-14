@@ -1,0 +1,42 @@
+[
+  {
+    "id": "apf2k8.playbooks.master_personnel",
+    "action": "updated"
+  },
+  {
+    "id": "apf2k8.playbooks.never_call",
+    "action": "added"
+  },
+  {
+    "id": "apf2k8.playbooks.offensive_schemes",
+    "action": "added"
+  },
+  {
+    "id": "apf2k8.playbooks.pass_fetch_te_bias",
+    "action": "updated"
+  },
+  {
+    "id": "apf2k8.playbooks.scheme_spreadsheet",
+    "action": "added"
+  },
+  {
+    "id": "nfl2k5.mode.my_career_inline",
+    "action": "updated"
+  },
+  {
+    "id": "nfl2k5.rosters.espn25_real_rosters",
+    "action": "updated"
+  },
+  {
+    "id": "nfl2k5.rosters.player_csv",
+    "action": "added"
+  },
+  {
+    "id": "nfl2k5.textures.all_p8",
+    "action": "updated"
+  },
+  {
+    "id": "nfl2k5.uniforms.all_visual",
+    "action": "updated"
+  }
+]

@@ -27,10 +27,21 @@ class GameplayPatchesPanelTests(unittest.TestCase):
         cls.app = QApplication.instance() or QApplication([])
 
     def test_three_patches_with_explanations_and_gating(self) -> None:
-        self.assertEqual([k for k, _l, _e in PATCHES], ['catch_slider', 'accel_ramp', 'momentum', 'momentum_contact', 'team_names_2026', 'coverage_slider', 'scramble_tuning', 'chop_block_toggle', 'flatter_deep_ball', 'all_stadiums', 'music_shuffle', 'practice_squad_screen', 'abilities', 'qb_spy', 'defensive_try', 'zone_drop_cap', 'draft_ai', 'returner_fix', 'progression', 'team_column', 'kick_rules', 'dynamic_kickoff', 'overtime', 'camera', 'position_row', 'probowl_order', 'penalties', 'uniform_choice', 'kick_laces', 'prospect_names', 'franchise_practice', 'seven_on_seven', 'player_star', 'position_pools', 'depth_roles', 'depth_chart_rows', 'practice_squad', 'xbe_space', 'kickoff_relocated', 'helmet_finish', 'screen_timing', 'music_policy', 'music_unlock', 'music_userlist', 'scorebug', 'scorebug_runtime', 'guardian_cap', 'season_cap', 'depth_locks', 'espn25_plan', 'espn25_rosters', 'momentum_collisions', 'read_option_runtime', 'screen_hooks', 'coverage_trail', 'franchise_edit_player', 'cpu_money_downs', 'accelerated_clock', 'playbook_pair', 'deep_zone_facing', 'deep_zone_bail', 'weekly_prep', 'weekly_prep_cpu', 'weekly_prep_remember', 'franchise_2026_rules', 'senior_bowl', 'guardian_overlay', 'my_career', 'franchise_autosave', 'crib_reclaim', 'modern_naming', 'reserves_16', 'created_teams_extra'])
-        for _k, _l, explanation in PATCHES:
-            self.assertIn("Retail", explanation)
-            self.assertIn("Patch", explanation)
+        self.assertEqual([k for k, _l, _e in PATCHES], ['catch_slider', 'accel_ramp', 'momentum', 'momentum_contact', 'team_names_2026', 'coverage_slider', 'scramble_tuning', 'chop_block_toggle', 'flatter_deep_ball', 'all_stadiums', 'music_shuffle', 'practice_squad_screen', 'abilities', 'qb_spy', 'defensive_try', 'zone_drop_cap', 'draft_ai', 'returner_fix', 'progression', 'team_column', 'kick_rules', 'dynamic_kickoff', 'overtime', 'camera', 'position_row', 'probowl_order', 'penalties', 'uniform_choice', 'kick_laces', 'prospect_names', 'franchise_practice', 'seven_on_seven', 'player_star', 'position_pools', 'depth_roles', 'depth_chart_rows', 'practice_squad', 'xbe_space', 'kickoff_relocated', 'helmet_finish', 'screen_timing', 'music_policy', 'music_unlock', 'music_userlist', 'scorebug', 'scorebug_runtime', 'guardian_cap', 'season_cap', 'depth_locks', 'espn25_plan', 'espn25_rosters', 'weather_plan', 'weather_haze', 'cpu_scrambles', 'momentum_collisions', 'read_option_runtime', 'screen_hooks', 'coverage_trail', 'franchise_edit_player', 'cpu_money_downs', 'accelerated_clock', 'playbook_pair', 'deep_zone_facing', 'deep_zone_bail', 'weekly_prep', 'weekly_prep_cpu', 'weekly_prep_remember', 'franchise_2026_rules', 'senior_bowl', 'guardian_overlay', 'my_career', 'franchise_autosave', 'crib_reclaim', 'modern_naming', 'reserves_16', 'created_teams_extra', 'coin_defer', 'decided_clock'])
+        new_help = {
+            "weather_plan": ("Edits temperature", "new franchise"),
+            "weather_haze": ("0.8 to 1.0", "Does not force fog"),
+            "cpu_scrambles": ("0.25 to 0.50", "per game are not established"),
+            "coin_defer": ("CPU winners", "a human Defer choice is not available"),
+            "decided_clock": ("your selected margin", "not mathematical elimination"),
+        }
+        for key, _label, explanation in PATCHES:
+            # These job captions describe their retail constraints directly;
+            # the older rows use literal Retail/Patch headings.
+            for phrase in new_help.get(key, ("Retail", "Patch")):
+                self.assertIn(phrase, explanation, key)
+            if key in new_help:
+                self.assertIn("unwitnessed", explanation.lower(), key)
         with tempfile.TemporaryDirectory() as tmp:
             source = Path(tmp) / "default.xbe"
             source.write_bytes(_build_synthetic_xbe())
@@ -38,16 +49,17 @@ class GameplayPatchesPanelTests(unittest.TestCase):
             try:
                 panel.apply_state(mod_build.inspect(source))
                 # the throw-tuning synthetic XBE models every cave site but not the camera preset
-                # table, the Edit Player row lists, the Pro Bowl tab list, the penalty curves or the held-ball hook, so those toggles must gate
+                # table, the dry-weather coefficient, the Edit Player row lists, the Pro Bowl tab list, the penalty curves or the held-ball hook, so those toggles must gate
                 # themselves off as "foreign" there
                 for key, check in panel.checks.items():
                     if key == "depth_roles":          # lives in the playbooks: a bare default.xbe cannot take it
                         self.assertFalse(check.isEnabled(), key)
                         self.assertIn("Full disc required", check.toolTip())
                         continue
-                    if key in ("chop_block_toggle", "depth_locks", "music_policy", "music_unlock", "music_userlist", "camera", "kick_rules", "overtime", "position_row", "probowl_order", "penalties", "uniform_choice", "helmet_finish", "kick_laces", "prospect_names", "dynamic_kickoff", "depth_chart_rows", "franchise_practice", "practice_squad", "player_star"):
+                    if key in ("weather_haze", "chop_block_toggle", "depth_locks", "music_policy", "music_unlock", "music_userlist", "camera", "kick_rules", "overtime", "position_row", "probowl_order", "penalties", "uniform_choice", "helmet_finish", "kick_laces", "prospect_names", "dynamic_kickoff", "depth_chart_rows", "franchise_practice", "practice_squad", "player_star"):
                         self.assertFalse(check.isEnabled(), key)
-                        self.assertIn("neither retail nor this patch", check.toolTip())
+                        self.assertIn("Haze reader unavailable; choose a supported USA source"
+                                      if key == "weather_haze" else "neither retail nor this patch", check.toolTip())
                     elif key in NEEDS_IMAGE:
                         self.assertFalse(check.isEnabled(), key)  # disc-only change on a loose executable
                     else:

@@ -1,0 +1,3 @@
+c50edfcb352a7eee54608de85b09bf5a08b8173c Add exact player CSV previews and bound the historic roster archive wait
+2bfe709c06438759eac0d0c74e96cbba331a7e6d Preserve CSV snapshot semantics and trace native completion dispatch efficiently
+c43a12b578db25fcb7b6f9c2290c771392490cd0 Document J6 CSV validation and unresolved Wide Right witness requirements

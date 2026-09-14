@@ -7,7 +7,8 @@ FNV is a corruption check, not authentication. Export uses SaveContainer's
 signature validation, separate-copy writer and signed read-back.
 Byte 82 stores first person On (bit 0), Supersim Off (bit 1), star Off
 (bit 2), Fast forward (bit 3) and stat line Off (bit 4; zero defaults On).
-Bits 1 and 3 are mutually exclusive.
+Bits 5..6 store who calls the plays: you=0, by position=1, coach=2.
+Bits 1 and 3 are mutually exclusive; value 3 and bit 7 are reserved.
 Old zero-filled footers retain the defaults Off / Skip presentation / star On.
 """
 from __future__ import annotations
@@ -23,6 +24,7 @@ BALANCE_CAP = 1000000
 BIRTH_MASK = 0x0FFFF000
 SUPERSIM_CHOICES = ("Off", "Skip presentation", "Fast forward")
 _SUPERSIM_BITS = (2, 0, 8)
+PLAYCALL_CHOICES = ("You call every play", "By position", "Coach calls the plays")
 
 
 class CareerSaveError(ValueError):
@@ -72,8 +74,8 @@ def validate(block, *, arena_size=0x92000):
     require(block[72] <= 2 and block[73] == 0 and (block[74] < 32 or block[74] == 255)
             and block[75] == 0 and block[80] <= 1 and block[81] <= 1,
             "invalid request or starter preference")
-    require(block[82] & ~31 == 0 and block[82] & 10 != 10
-            and block[83] == 0 and not any(block[88:]),
+    require(block[82] & 128 == 0 and block[82] & 96 != 96 and block[82] & 10 != 10
+            and block[83] <= 4 and not any(block[88:]),
             "unknown settings or nonzero reserved career bytes")
     require(word(block, 76) <= 0x7F92B1, "invalid request week key")
     require(block[72] != 0 or (block[74] == 255 and word(block, 76) == 0),
@@ -166,6 +168,41 @@ def write_supersim(source, target, choice):
     return receipt
 
 
+def playcall_choice(payload):
+    """Read the validated career's play selection policy."""
+    return PLAYCALL_CHOICES[(read(payload)[82] >> 5) & 3]
+
+
+def prospect(payload):
+    """The immutable creation tier also identifies its career-goal label."""
+    from .nfl2k5_my_career_prospects import TIERS
+    tier = read(payload)[83]
+    label, overall, goal = TIERS[tier]
+    return dict(tier=tier, label=label, starting_overall=overall, career_goal=goal)
+
+
+def with_playcall(payload, choice):
+    """Change only the policy bits and checksum; reparse the result."""
+    require(choice in PLAYCALL_CHOICES, "unknown play-calling choice")
+    block = bytearray(read(payload))
+    block[82] = (block[82] & ~96) | (PLAYCALL_CHOICES.index(choice) << 5)
+    result = bytes(payload[:-SIZE]) + seal(block)
+    require(playcall_choice(result) == choice, "play-calling read-back differs")
+    return result
+
+
+def write_settings(source, target, *, supersim, playcall):
+    """Export both preferences in one signature-verified separate save copy."""
+    from .nfl2k5_roster_records import SaveContainer
+    container = SaveContainer.load(source)
+    payload = with_playcall(with_supersim(container.savegame, supersim), playcall)
+    receipt = container.write(target, payload)
+    receipt.update(supersim=supersim, playcall=playcall,
+                   native_bytes_preserved=len(payload)-SIZE,
+                   experimental=True, runtime_witnessed=False)
+    return receipt
+
+
 def from_runtime(state):
     """Encode pointer-free fields; +2704 is the native encoder's FPF snapshot.
 
@@ -193,6 +230,10 @@ def from_runtime(state):
     if len(state) >= 2716:
         require(word(state, 2712) <= 1, "invalid stat-line setting")
         b[82] |= word(state, 2712) << 4
+    if len(state) >= 2740:
+        require(word(state, 2736) <= 2, "invalid play-calling setting")
+        b[82] |= word(state, 2736) << 5
+    b[83] = word(state, 2744) if len(state) >= 2748 else (word(state, 212) if len(state) >= 216 else 0)
     return validate(seal(b))
 
 
@@ -214,4 +255,6 @@ def to_runtime(block):
     if b[82] & 8:
         struct.pack_into("<I", s, 2696, 2)
     struct.pack_into("<I", s, 2712, (b[82] >> 4) & 1)
+    struct.pack_into("<I", s, 2736, (b[82] >> 5) & 3)
+    struct.pack_into("<I", s, 2744, b[83])
     return bytes(s)

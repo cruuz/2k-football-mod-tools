@@ -1,0 +1,21 @@
+FF
+======================================================================
+FAIL: test_a2b_report_describes_actual_runtime_pin_block_and_climate_controls (__main__.HandoffPathsTests.test_a2b_report_describes_actual_runtime_pin_block_and_climate_controls) (contract='pin count')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_b69_a1b_game_audit.py", line 20, in test_a2b_report_describes_actual_runtime_pin_block_and_climate_controls
+    self.assertTrue(f'| Additional B69 runtime pin entries | 0 | {len(pins)} |' in report,
+AssertionError: False is not true : A2b pin-block count differs from its implementation
+
+======================================================================
+FAIL: test_a2b_report_describes_actual_runtime_pin_block_and_climate_controls (__main__.HandoffPathsTests.test_a2b_report_describes_actual_runtime_pin_block_and_climate_controls) (contract='climate controls')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_b69_a1b_game_audit.py", line 23, in test_a2b_report_describes_actual_runtime_pin_block_and_climate_controls
+    self.assertFalse('climate path/choose/editor/clear controls' in report,
+AssertionError: True is not false : A2b describes a separate climate Clear control that does not exist
+
+----------------------------------------------------------------------
+Ran 1 test in 0.016s
+
+FAILED (failures=2)

@@ -198,17 +198,23 @@ class _StfsReader:
     def _data_backing_block(self, block: int) -> int:
         require(0 <= block < self.allocated_blocks,
                 f"STFS data block {block} is unallocated")
-        address = (
-            ((block + HASHES_PER_TABLE) // HASHES_PER_TABLE) << self.sex
-        ) + block
-        if block < HASHES_PER_TABLE:
-            return address
-        if block < HASHES_PER_TABLE**2:
-            return (
-                address
-                + (address + HASHES_PER_TABLE**2) // (HASHES_PER_TABLE**2)
-            ) << self.sex
-        raise StfsRosterError("STFS block requires an unsupported third-level hash tree")
+        # Count interleaved tables from the LOGICAL block number. Shifting
+        # the accumulated physical address doubles data offsets on writable
+        # (two-copy) packages after the first 170 blocks.
+        address = block
+        for level_base in (HASHES_PER_TABLE, HASHES_PER_TABLE**2):
+            address += ((block + level_base) // level_base) * (1 << self.sex)
+            if block < level_base:
+                break
+        return address
+
+    def level_zero_address(self, block: int) -> int:
+        if self.top_level == 0:
+            return self.top_table_address
+        parent = self.top_entries[block // HASHES_PER_TABLE]
+        return (self.first_table_address
+                + self._first_level_backing_block(block) * BLOCK_SIZE
+                + ((parent.status & 0x40) << 6))
 
     def block_address(self, block: int) -> int:
         address = self.first_table_address + self._data_backing_block(block) * BLOCK_SIZE
@@ -228,11 +234,7 @@ class _StfsReader:
             parent = self.top_entries[table_index]
             require(parent.status & 0x80,
                     "STFS level-zero hash table is not allocated")
-            base = (
-                self.first_table_address
-                + self._first_level_backing_block(block) * BLOCK_SIZE
-                + ((parent.status & 0x40) << 6)
-            )
+            base = self.level_zero_address(block)
             table = _slice(
                 self.data, base, BLOCK_SIZE,
                 f"active level-zero hash table {table_index}",
@@ -380,7 +382,15 @@ class _StfsReader:
                 "Roster.ROS payload exceeds the bounded extraction size")
         if entry.file_size == 0:
             return b""
+        blocks = self.file_blocks(entry)
+        output = b"".join(self.read_verified_block(block) for block in blocks)
+        return output[: entry.file_size]
+
+    def file_blocks(self, entry: StfsFileEntry) -> tuple[int, ...]:
+        """Resolve the declared allocation without scanning for payload bytes."""
         blocks: list[int] = []
+        if not entry.block_count:
+            return ()
         if entry.consecutive:
             blocks = [entry.starting_block + index for index in range(entry.block_count)]
             require(blocks[-1] < self.allocated_blocks,
@@ -400,8 +410,7 @@ class _StfsReader:
                     require(following != END_OF_CHAIN,
                             "STFS file block chain ended early")
                     block = following
-        output = b"".join(self.read_verified_block(block) for block in blocks)
-        return output[: entry.file_size]
+        return tuple(blocks)
 
 
 def list_files(data: bytes) -> tuple[str, tuple[StfsFileEntry, ...]]:

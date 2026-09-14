@@ -84,9 +84,11 @@ def persistence_contract():
         mycareer=dict(owner="nfl2k5_my_career", bytes=career.SIZE,
                       native_container_sizes=list(career.BASE_SIZES),
                       career_container_sizes=list(career.SIZES),
-                      # byte 82 = the MyCareer Settings bits (beta 65: first person, Spectate, star Off; values 0..7)
+                      # MyCareer owns the settings byte, including caller bits
+                      # 5..6, and byte 83 for the beta-69 creation tier.
                       settings_byte=82,
-                      reserved_zero_spans=[[83, 84], [88, 128]],
+                      prospect_tier_byte=83,
+                      reserved_zero_spans=[[88, 128]],
                       reusable_bytes=0, extensible=False),
         reserve_arena=dict(owner="nfl2k5_roster_arena_growth",
                            version=arena.SAVE_VERSION, bytes=arena.ARENA_SIZE,

@@ -1,0 +1,14 @@
+F
+======================================================================
+FAIL: test_fresh_observed_xbe_union_without_a_disc_copy (__main__.XbeManifestTests.test_fresh_observed_xbe_union_without_a_disc_copy)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a2b/tests/mod_editor/test_nfl2k5_playbook_pair_manifest.py", line 64, in test_fresh_observed_xbe_union_without_a_disc_copy
+    self.assertEqual(sources,manifest.source_fingerprints())
+AssertionError: {'mod[3014 chars]y': 'aa50ce8b583ad074f689033cfc4b7b68e5a68455f[33773 chars]ae8'} != {'mod[3014 chars]y': 'f6f81f7146e65cfb409025b0162d7b21ad52add14[33773 chars]ae8'}
+Diff is 37951 characters long. Set self.maxDiff to None to see it.
+
+----------------------------------------------------------------------
+Ran 1 test in 311.903s
+
+FAILED (failures=1)

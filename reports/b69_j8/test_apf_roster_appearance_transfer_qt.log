@@ -1,0 +1,6 @@
+QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_roster_appearance_transfer_qt.py
+...
+----------------------------------------------------------------------
+Ran 3 tests in 5.324s
+
+OK

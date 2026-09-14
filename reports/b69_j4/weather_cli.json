@@ -1,0 +1,16 @@
+{
+  "schema": "nfl2k5.weather.cli.v1",
+  "climate_changed_fields": 168,
+  "climate_readback": true,
+  "haze_readback": {
+    "state": "applied",
+    "enabled": true,
+    "coefficient": 1.0,
+    "label": "EXPERIMENTAL / UNWITNESSED",
+    "runtime_witnessed": false
+  },
+  "haze_exact_restoration": true,
+  "existing_output_refused": true,
+  "temporary_outputs_deleted": true,
+  "runtime_witnessed": false
+}

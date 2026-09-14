@@ -340,5 +340,47 @@
   "read_only",
   8,
   4
+ ],
+ [
+  "nfl2k5_coin_defer",
+  "code",
+  384,
+  16
+ ],
+ [
+  "nfl2k5_coin_defer",
+  "data",
+  4,
+  4
+ ],
+ [
+  "nfl2k5_coin_defer",
+  "read_only",
+  128,
+  4
+ ],
+ [
+  "nfl2k5_decided_clock",
+  "code",
+  384,
+  16
+ ],
+ [
+  "nfl2k5_decided_clock",
+  "read_only",
+  8,
+  4
+ ],
+ [
+  "nfl2k5_cpu_scrambles",
+  "code",
+  128,
+  16
+ ],
+ [
+  "nfl2k5_cpu_scrambles",
+  "read_only",
+  4,
+  4
  ]
 ]

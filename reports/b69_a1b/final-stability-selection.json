@@ -1,0 +1,12 @@
+[
+  "tests/mod_editor/test_apf_digital_font.py",
+  "tests/mod_editor/test_b66_coach_wiring.py",
+  "tests/mod_editor/test_b68_a1_audit.py",
+  "tests/mod_editor/test_beta66_helmet_finish_wiring.py",
+  "tests/mod_editor/test_beta69_feedback_qt.py",
+  "tests/mod_editor/test_discord_bugs_1_wiring.py",
+  "tests/mod_editor/test_nfl2k3_2k4_compatibility_boundary.py",
+  "tests/mod_editor/test_nfl2k5_franchise_2026_runtime.py",
+  "tests/mod_editor/test_xbe_patch_cave_references.py",
+  "tests/mod_editor/test_xbe_patch_memory_writes.py"
+]

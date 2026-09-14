@@ -1,0 +1,164 @@
+[
+  {
+    "path": "tests/mod_editor/test_2k5_audio_operation_integration.py",
+    "result": "Ran 17 tests in 2.607s; FAILED (errors=13)",
+    "log": "reports/b69_a1b/baseline/test_2k5_audio_operation_integration.log",
+    "errors": [
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1b/reports/assets'"
+    ]
+  },
+  {
+    "path": "tests/mod_editor/test_2k5_check_my_images.py",
+    "result": "Ran 21 tests in 1.240s; FAILED (errors=6, skipped=5)",
+    "log": "reports/b69_a1b/baseline/test_2k5_check_my_images.log",
+    "errors": [
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1b/reports/assets'"
+    ]
+  },
+  {
+    "path": "tests/mod_editor/test_2k5_import_offers_resize.py",
+    "result": "Ran 11 tests in 1.697s; FAILED (errors=5)",
+    "log": "reports/b69_a1b/baseline/test_2k5_import_offers_resize.log",
+    "errors": [
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1b/reports/assets'"
+    ]
+  },
+  {
+    "path": "tests/mod_editor/test_2k5_uniform_equipment_export.py",
+    "result": "Ran 13 tests in 0.888s; FAILED (errors=6, skipped=2)",
+    "log": "reports/b69_a1b/baseline/test_2k5_uniform_equipment_export.log",
+    "errors": [
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1b/reports/assets'",
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1b/reports/assets/nfl2k5_player_portrait_compatibility.json'"
+    ]
+  },
+  {
+    "path": "tests/mod_editor/test_apf_studio_installer.py",
+    "result": "Ran 16 tests in 0.127s; FAILED (errors=3)",
+    "log": "reports/b69_a1b/baseline/test_apf_studio_installer.log",
+    "errors": [
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1b/tools/vendor/extract-xiso/BUILDING-THE-BUNDLED-BINARIES.md'"
+    ]
+  },
+  {
+    "path": "tests/mod_editor/test_beta66_helmet_finish_wiring.py",
+    "result": "Ran 8 tests in 11.214s; FAILED (errors=1)",
+    "log": "reports/b69_a1b/final-stability/test_beta66_helmet_finish_wiring.log",
+    "errors": [
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1b/reports/assets'"
+    ]
+  },
+  {
+    "path": "tests/mod_editor/test_commentary_panel_qt.py",
+    "result": "Ran 3 tests in 0.873s; FAILED (errors=1)",
+    "log": "reports/b69_a1b/baseline/test_commentary_panel_qt.log",
+    "errors": [
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1b/reports/assets'"
+    ]
+  },
+  {
+    "path": "tests/mod_editor/test_no_capability_is_invisible.py",
+    "result": "Ran 2 tests in 0.013s; FAILED (errors=2)",
+    "log": "reports/b69_a1b/baseline/test_no_capability_is_invisible.log",
+    "errors": [
+      "mod_editor.capabilities.validate_registry.RegistryError: capabilities[0].evidence[0]: missing local file docs/research/apf_audio.md",
+      "mod_editor.core.errors.RegistryError: Cannot read capability registry: capabilities[0].evidence[0]: missing local file docs/research/apf_audio.md"
+    ]
+  },
+  {
+    "path": "tests/mod_editor/test_phase1_packaging.py",
+    "result": "Ran 23 tests in 0.080s; FAILED (errors=1)",
+    "log": "reports/b69_a1b/baseline/test_phase1_packaging.log",
+    "errors": [
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1b/reports/assets/menu_state_trace.json'"
+    ]
+  },
+  {
+    "path": "tests/mod_editor/test_presentation_panel_qt.py",
+    "result": "Ran 2 tests in 0.526s; FAILED (errors=1)",
+    "log": "reports/b69_a1b/baseline/test_presentation_panel_qt.log",
+    "errors": [
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1b/reports/assets'"
+    ]
+  },
+  {
+    "path": "tests/mod_editor/test_product_inspection_panels_qt.py",
+    "result": "Ran 7 tests in 0.245s; FAILED (errors=1)",
+    "log": "reports/b69_a1b/baseline/test_product_inspection_panels_qt.log",
+    "errors": [
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1b/reports/assets'"
+    ]
+  },
+  {
+    "path": "tests/mod_editor/test_product_shell_accessibility_qt.py",
+    "result": "Ran 6 tests in 1.150s; FAILED (errors=6)",
+    "log": "reports/b69_a1b/baseline/test_product_shell_accessibility_qt.log",
+    "errors": [
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1b/reports/assets'"
+    ]
+  },
+  {
+    "path": "tests/mod_editor/test_project_document_workflow.py",
+    "result": "Ran 13 tests in 1.165s; FAILED (errors=6)",
+    "log": "reports/b69_a1b/baseline/test_project_document_workflow.log",
+    "errors": [
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1b/reports/assets'"
+    ]
+  },
+  {
+    "path": "tests/mod_editor/test_share_panel_qt.py",
+    "result": "Ran 7 tests in 0.770s; FAILED (errors=1)",
+    "log": "reports/b69_a1b/baseline/test_share_panel_qt.log",
+    "errors": [
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1b/reports/assets'"
+    ]
+  },
+  {
+    "path": "tests/mod_editor/test_sounds_panel_qt.py",
+    "result": "Ran 10 tests in 1.845s; FAILED (errors=1)",
+    "log": "reports/b69_a1b/baseline/test_sounds_panel_qt.log",
+    "errors": [
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1b/reports/assets'"
+    ]
+  },
+  {
+    "path": "tests/mod_editor/test_studio_shell_layout_qt.py",
+    "result": "Ran 18 tests in 3.532s; FAILED (errors=18)",
+    "log": "reports/b69_a1b/baseline/test_studio_shell_layout_qt.log",
+    "errors": [
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1b/reports/assets'"
+    ]
+  },
+  {
+    "path": "tests/mod_editor/test_team_kit_product_integration.py",
+    "result": "Ran 6 tests in 1.135s; FAILED (errors=7)",
+    "log": "reports/b69_a1b/baseline/test_team_kit_product_integration.log",
+    "errors": [
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1b/reports/assets'"
+    ]
+  },
+  {
+    "path": "tests/mod_editor/test_unif_color_control.py",
+    "result": "Ran 11 tests in 0.273s; FAILED (errors=3, skipped=2)",
+    "log": "reports/b69_a1b/baseline/test_unif_color_control.log",
+    "errors": [
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1b/reports/assets'"
+    ]
+  },
+  {
+    "path": "tests/mod_editor/test_ux_open_disc_hook_qt.py",
+    "result": "Ran 7 tests in 0.835s; FAILED (errors=4)",
+    "log": "reports/b69_a1b/baseline/test_ux_open_disc_hook_qt.log",
+    "errors": [
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1b/reports/assets'"
+    ]
+  },
+  {
+    "path": "tests/mod_editor/test_visual_export_and_preview.py",
+    "result": "Ran 11 tests in 0.003s; FAILED (errors=2)",
+    "log": "reports/b69_a1b/baseline/test_visual_export_and_preview.log",
+    "errors": [
+      "FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1b/reports/assets/nfl2k5_player_portrait_compatibility.json'"
+    ]
+  }
+]

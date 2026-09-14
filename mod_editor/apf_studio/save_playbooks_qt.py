@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from mod_editor.gui.ux_text import failure_body
+
 from pathlib import Path
 from typing import Callable
 
@@ -277,7 +279,7 @@ class SavePlaybookAssignmentsPanel(QWidget):
                 int(self.defense.currentData()),
             )
         except SavePlaybookError as exc:
-            QMessageBox.information(self, "Assignment not staged", str(exc))
+            QMessageBox.information(self, "Assignment not staged", failure_body(exc))
             return
         if edit is None:
             self.staged.pop(team_index, None)

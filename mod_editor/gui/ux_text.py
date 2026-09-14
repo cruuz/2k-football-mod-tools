@@ -21,6 +21,7 @@ pages in one place, so they read the same everywhere:
 from __future__ import annotations
 
 from pathlib import Path
+import re
 
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QLabel, QMessageBox, QToolButton, QVBoxLayout, QWidget
@@ -140,11 +141,43 @@ def fix_hint(message: str) -> str | None:
     return None
 
 
+# These patterns recognize diagnostics coming from workers, never product copy.
+_CLASS_PREFIX = re.compile(r"\b(?:[A-Za-z_][A-Za-z0-9_.]*)?(?:Error|Exception):\s*")
+_PHASE_LINE = re.compile(r"(?:NFL2K5_)?BUILD" r"_PHASE\b[^\n]*")
+
+
+def plain_error(message: object) -> str:
+    """Keep the actual cause, excluding worker class names and progress records."""
+    text = str(message).strip()
+    text = _PHASE_LINE.sub("", text)
+    if "Traceback (most recent call last):" in text:
+        lines = text.splitlines()
+        causes = [i for i, line in enumerate(lines) if _CLASS_PREFIX.match(line)]
+        if causes:
+            text = "\n".join(lines[causes[-1]:])
+    text = _CLASS_PREFIX.sub("", text)
+    return text.strip() or "The operation stopped without an explanation."
+
+
+def failure_body(message: object, *, hint: str | None = None,
+                 source_unchanged: bool = True) -> str:
+    """A cause, a useful next step, and a narrowly scoped source assurance."""
+    cause = plain_error(message)
+    step = hint or fix_hint(cause)
+    if not step:
+        step = "Review the selected file and options, then try again. If it still fails, copy this message and share it on the Discord."
+    lines = [cause, step]
+    if source_unchanged and "Your original game disc was not changed." not in cause:
+        lines.append("Your original game disc was not changed.")
+    return "\n\n".join(lines)
+
+
 def plain_failure(operation: str, message: str) -> str:
     """The sentence a status line shows for a failed operation."""
 
+    message = plain_error(message)
     hint = fix_hint(message)
-    text = f"Couldn't {operation}: {message.strip()}"
+    text = f"Couldn't {operation}: {message}"
     return f"{text} {hint}" if hint else text
 
 
@@ -154,12 +187,12 @@ def show_operation_error(parent: QWidget | None, operation: str, message: str,
 
     hint = fix_hint(message)
     lines = [f"Couldn't {operation}."]
-    detail = message.strip()
+    detail = plain_error(message)
     # The cause is the first line of what the backend said; the rest stays under Details.
     first = detail.splitlines()[0] if detail else ""
     if first:
         lines.append(first)
-    lines.append(hint or f"See Details for the error. {DISCORD_HINT}")
+    lines.append(hint or f"Review the selected file and options, then try again. {DISCORD_HINT}")
     if source_unchanged:
         lines.append("Your original file was not changed.")
     box = QMessageBox(parent)
@@ -196,5 +229,5 @@ def suggest_copy_name(source: str | Path, *, suffix: str = "modded") -> str:
 
 __all__ = [
     "DISCORD_HINT", "Details", "NOT_TESTED", "XEMU_LINE", "fix_hint", "plain_failure",
-    "show_operation_error", "source_captions", "suggest_copy_name", "tab_title", "write_caption",
+    "plain_error", "failure_body", "show_operation_error", "source_captions", "suggest_copy_name", "tab_title", "write_caption",
 ]

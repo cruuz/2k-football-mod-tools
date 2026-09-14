@@ -565,7 +565,10 @@ class WriteIsAsynchronousTests(unittest.TestCase):
             dialog.deleteLater()
         self.assertFalse(dialog._busy, "a failed write left the dialog busy")
         self.assertFalse(dialog.progress_bar.isVisibleTo(dialog))
-        self.assertEqual(warnings, ["the card is write protected"])
+        self.assertEqual(len(warnings), 1)
+        self.assertTrue(warnings[0].startswith("the card is write protected"))
+        self.assertIn("try again", warnings[0])
+        self.assertNotIn("RuntimeError:", warnings[0])
         self.assertIn("write protected", dialog.status_label.text())
 
     def test_closing_is_allowed_again_once_the_write_finishes(self) -> None:

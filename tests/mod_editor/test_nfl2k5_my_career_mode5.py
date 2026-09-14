@@ -127,7 +127,7 @@ class Mode5Tests(unittest.TestCase):
             navigation(m, resources())
             # Native navigation displays seven rows at a time. Supersim is
             # the eighth Apartment row; its scroll/selection has its own test.
-            for label, count in (('entry_menu',4),('apartment',7),('team_menu',2)):
+            for label, count in (('entry_menu',5),('apartment',7),('team_menu',2)):
                 # Existing initialized owned descriptors, native stack replace.
                 m.call(0x6E2E0,ecx=m.manager,edx=m.labels[label])
                 m.put(m.manager+8*m.depth()+4,1)

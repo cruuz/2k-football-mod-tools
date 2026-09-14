@@ -1,0 +1,6 @@
+QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_apf_stfs_roster_rehash.py
+.......
+----------------------------------------------------------------------
+Ran 7 tests in 0.588s
+
+OK

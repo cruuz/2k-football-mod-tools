@@ -1,0 +1,4 @@
+tests/mod_editor/test_nfl2k5_espn25_integration_qt.py 0 Ran 13 tests in 18.284s OK
+tests/mod_editor/test_nfl2k5_franchise_edit_player.py 0 Ran 12 tests in 35.948s OK
+tests/mod_editor/test_nfl2k5_franchise_2026_runtime.py 0 Ran 11 tests in 67.370s OK
+COMPLETED 3 FAILED 0

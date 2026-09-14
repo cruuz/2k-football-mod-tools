@@ -1,0 +1,25 @@
+Implementation commits before the final audit and handoff commits:
+f445ad36 docs: record beta 69 studio polish audit before fixes
+9e9f1341 fix: show plain causes instead of exception class names
+b25bb4a0 fix: explain update failures and failed browser handoffs
+f5f257d2 docs: refresh 2K5 beta 69 first steps and community FAQ
+a186680e docs: refresh APF beta 69 first steps and community FAQ
+49975a57 fix: describe disc contents and retain a copyable Build summary
+8e69772e fix: keep Music actions readable in narrow windows
+169d6ec3 fix: wrap franchise check guidance and simplify its error
+e4f4547f fix: retain Game Fixes hover help without old beta captions
+82416933 fix: expose control help and full captions in the studio shell
+08357579 fix: wrap APF Stadium actions and headings at laptop widths
+5e30560c fix: describe APF artwork and Play Calling build results
+bd3394cc fix: bring APF shell errors and hover help into the shared voice
+313d58f1 fix: recover the cause from tracebacks and embedded build markers
+2be6988b test: audit both studios and current guides offline
+5f110502 docs: keep the APF FAQ cross-product link portable
+118da4a0 fix(gui): normalize remaining exception dialog causes
+f081bbfc fix(2k5): add next steps to asset editor failures
+369154b6 fix(2k5): explain playbook dialog failures
+8319f75e fix(2k5): explain save and roster dialog failures
+caf9594d fix(apf): explain playbook editor failures
+b2afa609 fix(apf): explain roster and save failures
+b1da8293 fix(apf): give art and encoder dialogs a next step
+e0572e85 docs(2k5): record the negative Style 6 played report

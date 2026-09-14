@@ -10,13 +10,37 @@ Only non-cube 2D textures and the explicitly implemented formats are accepted.
 from __future__ import annotations
 
 from functools import lru_cache
+from collections import OrderedDict
+import hashlib
 import io
 import struct
+from threading import Lock
 
 from PIL import Image
 
 MAX_PIXELS = 4096 * 4096
 MAX_TEXTURE_BYTES = 128 * 1024 * 1024
+_DECODED_SOURCES = OrderedDict()
+_DECODE_LOCK = Lock()
+
+
+def decode_source(data: bytes, extension: str) -> Image.Image:
+    """Content-keyed, bounded PS3 decode cache; callers own independent images."""
+    if extension not in ('dds', 'gtf'):
+        raise TextureDecodeError('Unsupported PS3 texture format')
+    key = (extension, hashlib.sha256(data).digest())
+    with _DECODE_LOCK:
+        cached = _DECODED_SOURCES.get(key)
+        if cached is not None:
+            _DECODED_SOURCES.move_to_end(key)
+            return Image.frombytes('RGBA', cached[0], cached[1])
+    image = decode_dds(data) if extension == 'dds' else decode_gtf(data)
+    rgba = image.tobytes()
+    with _DECODE_LOCK:
+        _DECODED_SOURCES[key] = (image.size, rgba)
+        while sum(len(value[1]) for value in _DECODED_SOURCES.values()) > 64 << 20:
+            _DECODED_SOURCES.popitem(last=False)
+    return image
 
 
 class TextureDecodeError(ValueError):

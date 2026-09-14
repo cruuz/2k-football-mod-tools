@@ -70,6 +70,11 @@ MODE_HOOKS = (
     ("mode_loaded_replace", 0x16DDE0, "e9fb04f0ff", 0xE9),
 )
 GUARDS = (
+    (0x9fbe0, 0x41, "c00bfff2b13dd91660707a54bbae6d5d792f750928f56b3dd4e925abfe51621b"),
+    (0xacb90, 0x17, "9b2a5dc083a819159900424bbdadfaf7e001024da8f0202e969e8c4bc878606e"),
+    (0xaca80, 0x48, "74f13a622b24bf44572181b9f6ff4500667004426695de90e31b10dd89fdf92e"),
+    (0xac480, 0x520, "d77fb84a385642b14aca536db9cd7f9e11760ca35e09734376f2fb4cbb939bc6"),
+    (0x246060, 0xd81, "6223479d143edda530da44580a0ffb62fe5ed9c8a894c113d3c148d2a5fa3cb4"),
     (0x83940, 0x1f, "818ae4133d0f5530eab6a475fb255da53c4f6fc4a365710688edb7f1233bbe5c"),
     (0x49410, 0x2f, "c9967c0bfbe41418d22b8d5b085d0510b0d32e1283cdc009e6ce24004be5b700"),
     (0x493e0, 0x27, "877d0a907ecec38e656c6473c23c71d50c0419586c3765d4c4d33487f94aae78"),
@@ -296,8 +301,19 @@ def code_for(code_va, data_va):
         ("m3_star_on_text", "MyPlayer star: On"),
         ("m3_stat_on_text", "MyPlayer stat line: On"),
         ("m3_stat_off_text", "MyPlayer stat line: Off"),
+        ("m3_call_every_text", "You call every play"),
+        ("m3_call_position_text", "By position"),
+        ("m3_call_coach_text", "Coach calls the plays"),
+        ("m3_prospect_0", "Prospect: Original creation"),
+        ("m3_prospect_1", "Prospect: 1st Day (74)"),
+        ("m3_prospect_2", "Prospect: 2nd Day (70)"),
+        ("m3_prospect_3", "Prospect: 3rd Day (64)"),
+        ("m3_prospect_4", "Prospect: Undrafted (59)"),
+        ("m3_prospect_error", "Overall unavailable. Change style or prospect tier."),
     ):
         string(name, value)
+    at = reserve("m3_prospect_labels", 20)
+    struct.pack_into("<5I", out, at, *(labels[f"m3_prospect_{i}"] for i in range(5)))
     names = []
     for field, key, label in progression.FIELDS:
         name = "m3_rating_" + key
@@ -345,7 +361,8 @@ def code_for(code_va, data_va):
         return at
 
     rows("entry_rows", (("draft_text", "mode_draft"), ("udfa_text", "mode_undrafted"),
-                        ("load_text", "mode_load"), ("quit_text", "mode_quit")))
+                        ("load_text", "mode_load"), ("quit_text", "mode_quit"),
+                        ("m3_prospect_0", "mode_prospect_toggle")))
     rows("hub_rows", (("play_text", "mode_play"), (0xE9C3BC, "mode_practice"),
                       ("card_text", "mode_card"), ("start_text", "mode_start"),
                       ("m3_upgrade_text", "m3_upgrade_open"),
@@ -356,7 +373,8 @@ def code_for(code_va, data_va):
     rows("settings_rows", (("m3_fpf_off_text", "mode_settings_toggle"),
                                 ("m3_supersim_skip_text", "mode_settings_toggle"),
                                 ("m3_star_on_text", "mode_settings_toggle"),
-                                ("m3_stat_on_text", "mode_settings_toggle")), extra=True)
+                                ("m3_stat_on_text", "mode_settings_toggle"),
+                                ("m3_call_every_text", "mode_settings_toggle")), extra=True)
     rows("team_rows", (("team_text", "mode_team_open"), ("sign_text", "mode_sign")))
     rows("m3_progress_rows", (("quit_text", "mode_quit"),), extra=True)
     rows("m3_draft_rows", (("save_text", "mode_save_menu"), ("quit_text", "mode_quit")), extra=True)

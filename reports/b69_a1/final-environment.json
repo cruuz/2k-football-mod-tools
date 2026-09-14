@@ -1,0 +1,14 @@
+{
+  "NFL2K5_CAVE_MANIFEST": null,
+  "common_environment": {
+    "PYTHONPATH": ".",
+    "QT_QPA_PLATFORM": "offscreen",
+    "MOD_STUDIO_NO_UPDATE_CHECK": "1",
+    "PYTHONHASHSEED": "0"
+  },
+  "production_manifest_unchanged": true,
+  "staged_runtime_cwd": [
+    "/tmp/astra-b69-a1-stage-2k5",
+    "/tmp/astra-b69-a1-stage-apf"
+  ]
+}

@@ -72,6 +72,10 @@ OPTIONS = (
      "Retail: two created-team records. Patch: two more records with separate names and inherited stock assets. "
      "EXPERIMENTAL / UNWITNESSED. The franchise league stays at 32 teams."),
 )
+OPTIONS += (
+    ("coin_defer", tt.coin_defer_patch.BUILD_CAPTION, tt.coin_defer_patch.HELP_TEXT),
+    ("decided_clock", tt.decided_clock_patch.BUILD_CAPTION, tt.decided_clock_patch.HELP_TEXT),
+)
 KEYS = tuple(row[0] for row in OPTIONS)
 # String-valued option rows: the checkbox means "not retail"; the adjacent combo picks the level.
 # Parent option -> child options: unchecking the parent clears the children; checking a child checks the parent.

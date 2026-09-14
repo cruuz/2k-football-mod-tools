@@ -1,0 +1,14 @@
+[
+  {
+    "id": "apf2k8.field_art.material_opacity",
+    "command": "python3 -m mod_editor.core.apf_field_material_writer --index <0A> --entry 53 --alpha graphic_overlay_4=0.25 --manifest <report.json>",
+    "error": "unreviewed validation module arguments",
+    "unchanged_from_a2b": true
+  },
+  {
+    "id": "nfl2k5.espn25.scenarios_rosters",
+    "command": "python3 -m mod_editor.core.nfl2k5_espn25_scenarios status source.iso espn25-plan.json",
+    "error": "unreviewed validation module arguments",
+    "unchanged_from_a2b": true
+  }
+]

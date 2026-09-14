@@ -1,0 +1,3 @@
+tests/mod_editor/test_nfl2k5_franchise_2026_unicorn.py 0 Ran 10 tests in 1.001s OK
+tests/mod_editor/test_nfl2k5_franchise_2026.py 0 Ran 20 tests in 5.945s OK
+COMPLETED 2 FAILED 0
