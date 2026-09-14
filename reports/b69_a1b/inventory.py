@@ -1,12 +1,13 @@
 """Reconstruct imported job and integrator changes without trusting A2b's ledger."""
 import ast
 import json
+import os
 from pathlib import Path
 import subprocess
 
 ROOT = Path.cwd()
 OUT = ROOT / 'reports/b69_a1b'
-GIT = '/tmp/a1b-git'
+GIT = os.environ.get('ASTRA_A1B_GIT', 'git')
 BASE = 'c2489fcadfe412e0ed0afe20d8654bdc3170bba2'
 
 def git(*args):
@@ -48,7 +49,21 @@ for p in ROOT.glob('tests/**/*.py'):
                 matches.add(m)
     if matches:
         reasons[str(p.relative_to(ROOT))] = sorted(matches)
-selected = {p for p in reasons if Path(p).name.startswith('test_')}
+# Older suites use *_test.py and some CI wrappers load them with __import__.
+# Include the developer suite itself and the wrapper (which can expose classes
+# declared after the developer file's __main__ block).
+legacy_aliases = {alias for p in reasons if Path(p).name.endswith('_test.py')
+                  for alias in (Path(p).stem, p[:-3].replace('/', '.'))}
+for p in ROOT.glob('tests/mod_editor/test_*.py'):
+    matches = set()
+    for n in ast.walk(ast.parse(p.read_text())):
+        if isinstance(n, ast.Call) and n.args and isinstance(n.args[0], ast.Constant):
+            name = n.func.id if isinstance(n.func, ast.Name) else n.func.attr if isinstance(n.func, ast.Attribute) else ''
+            if name in ('__import__', 'import_module') and n.args[0].value in legacy_aliases:
+                matches.add(n.args[0].value)
+    if matches:
+        reasons.setdefault(str(p.relative_to(ROOT)), []).extend(sorted(matches))
+selected = {p for p in reasons if Path(p).name.startswith('test_') or Path(p).name.endswith('_test.py')}
 selected.update(p for p in jobtests if Path(p).name.startswith('test_'))
 patterns = ['test_nfl2k5_my_career*.py', 'test_nfl2k5_supersim*.py', 'test_nfl2k5_weather*.py',
             'test_b69_a2b*.py', 'test_beta66_d1_panels.py', 'test_discord_bugs*_wiring.py',

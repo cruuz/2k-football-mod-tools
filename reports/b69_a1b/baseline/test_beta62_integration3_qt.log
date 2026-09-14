@@ -1,0 +1,13 @@
+F.......
+======================================================================
+FAIL: test_all_new_patch_help_is_actionable_and_short (__main__.IntegrationQtTests.test_all_new_patch_help_is_actionable_and_short)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_beta62_integration3_qt.py", line 99, in test_all_new_patch_help_is_actionable_and_short
+    self.assertLessEqual(len(caption),60)
+AssertionError: 61 not less than or equal to 60
+
+----------------------------------------------------------------------
+Ran 8 tests in 1.499s
+
+FAILED (failures=1)

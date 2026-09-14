@@ -49,6 +49,16 @@ plan = tt.xbe_space_patch.plan(REQUESTS, scaleout=True)
 path = ROOT / '.scratch/a2b/gate-manifest.json'
 projection = json.loads(path.read_text())
 assert projection['source_sha256'] == source_fingerprints()
+legacy_path = 'tools/validate_all_mod_editor_capabilities.py'
+legacy_source = (ROOT / legacy_path).read_bytes()
+legacy_counts = {n.targets[0].id: n.value.value for n in ast.walk(ast.parse(legacy_source))
+    if isinstance(n, ast.Assign) and len(n.targets) == 1 and isinstance(n.targets[0], ast.Name)
+    and n.targets[0].id in ('EXPECTED_CAPABILITIES', 'EXPECTED_COVERED_CAPABILITIES',
+                          'EXPECTED_DEFERRED_CAPABILITIES', 'EXPECTED_UNIQUE_VALIDATORS')
+    and isinstance(n.value, ast.Constant)}
+legacy = dict(path=legacy_path, counts=legacy_counts, excluded_known_red=True,
+    predates_game_integration=legacy_source == subprocess.check_output(
+        ['git', 'show', '05d3f0b5:' + legacy_path]))
 report = dict(canonical_registry=True, shared_rows=len(registry['capabilities']), new_rows=rows,
     presets=defaults, R62_SPACE_KEYS=tt.R62_SPACE_KEYS, R62_RUNTIME_KEYS=tt.R62_RUNTIME_KEYS,
     climate_requests=weather.REQUESTS, haze_requests=haze.REQUESTS, provider_pins=len(pins),
@@ -56,7 +66,8 @@ report = dict(canonical_registry=True, shared_rows=len(registry['capabilities'])
     product_imports=len(values['product_modules']), tool_imports=len(values['tool_modules']),
     runtime_game_pins=len(values['B69_GAME_RUNTIME_PINS']), runtime_game_hashes_match=True,
     allocation_records=len(plan['allocations']), allocation_file_size=plan['file_size'],
-    capacity=plan['capacity'], projection=dict(path=str(path.relative_to(ROOT)), sha256=digest(path),
+    capacity=plan['capacity'], legacy_exhaustive_validator=legacy,
+    projection=dict(path=str(path.relative_to(ROOT)), sha256=digest(path),
     source_hashes=len(projection['source_sha256']), transactions=len(projection['steps']),
     reservations=len(projection['spans']), source_fresh=True, release_manifest=False))
 (OUT / 'contract-audit.json').write_text(json.dumps(report, indent=2) + '\n')

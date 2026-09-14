@@ -1,0 +1,50 @@
+commit b594933581d18c3c344964788a9bde6cb7158c96
+Merge: 54f5b8c8 9afe21c0
+Author:     Noah <noah@local>
+AuthorDate: Sun Sep 13 17:41:08 2026 -0400
+Commit:     Noah <noah@local>
+CommitDate: Sun Sep 13 17:41:08 2026 -0400
+
+    Beta 69 A2b: merge J5 and preserve its named handoff
+
+diff --git a/ASTRA_REPORT.md b/ASTRA_B69_J5_REPORT.md
+similarity index 100%
+rename from ASTRA_REPORT.md
+rename to ASTRA_B69_J5_REPORT.md
+diff --git a/WIRING.md b/WIRING_B69_J5.md
+similarity index 100%
+rename from WIRING.md
+rename to WIRING_B69_J5.md
+diff --git a/docs/mod_editor/2k5_mod_studio_changelog.md b/docs/mod_editor/2k5_mod_studio_changelog.md
+remerge CONFLICT (content): Merge conflict in docs/mod_editor/2k5_mod_studio_changelog.md
+index e63daeff..735e91d7 100644
+--- a/docs/mod_editor/2k5_mod_studio_changelog.md
++++ b/docs/mod_editor/2k5_mod_studio_changelog.md
+@@ -11,7 +11,6 @@
+ 
+ Beta 69 adds planned features, answers every ESPN NFL 2K5 report in Discord after beta 68 and polishes both studios; bullets are added as each change lands.
+ 
+-<<<<<<< 54f5b8c8 (Beta 69 A2b: merge J3 and preserve its named handoff)
+ - **Checked model edits belong to the project.** maumau78 reported "there is no way to save into project and make a disc if I edit 3d models" and privately asked "so \"make my disc\" is the correct way to apply all the edits right?" Models now offers Add model edit to project. One checked set counts as one project edit, saves its source paths, hashes, check and compiled byte changes in the .2k5mod, and participates in Undo and Revert All. Make disc from project includes the saved model changes with the other project edits and gameplay passes. The quick Make disc with this model path uses the same model writer. Missing or changed authoring files are named when re-checking; the saved checked bytes remain buildable. Overlapping Guardian cap choices are refused before building. PROVED with compact disc round trips and an offscreen replay of the shell/build handoff; all in-game outcomes remain UNWITNESSED.
+ - **Skeleton pair refusals name the file and the next step.** maumau78 reported "Try also re-import skeleton but keep getting this error...." The message now names the missing, unedited or mismatched LOD file, gives Blender's File > Export > glTF 2.0 > Include > Data > Custom Properties path, and explains when Geometry only accepts a single LOD. Low and high bind records are separate, so a bone-length edit still requires the coordinated pair; the shared SKEL direction table cannot update the other LOD's length. The ModelsError class prefix is removed. The paired native pose gate still passes; in-game outcomes remain UNWITNESSED.
+ - **A second player witnessed beta 68's faster builds.** maumau78 built "gameplay mods and 3D model edit" in "just few minutes compared to 50 minutes of the previuos build". This is a build-time witness alongside Coach Edwards' "5 minutes or less", not an in-game model witness. Every in-game outcome from these changes remains UNWITNESSED.
+@@ -27,11 +26,9 @@ Beta 69 adds planned features, answers every ESPN NFL 2K5 report in Discord afte
+ - **MyCareer returns to play calling after Fast forward.** andrethealchemist confirmed “Wow! Everything I asked for was fixed in beta 68!” and then reported “my 1st down play is already selected for me.” The absent unit's CPU choice survived the hand-back. The owned runtime now clears that choice for a human caller at the guarded pre-snap return and opens the native play-call screen with its controller mapping. The saved Fast forward choice and beta-68 rearming remain intact. Bounded native series checks are separate from the new in-game outcome, which remains UNWITNESSED.
+ - **Choose who calls MyCareer plays.** THE1WAM said “I lowkey don't think we should be able to pick the plays in MyCareer imo”; Noah replied “Depends on position. QB should. But I can make it an option where you never choose you just execute”; THE1WAM added “Yea make it only for QBs and ILBs”. Apartment Settings adds You call every play as the default, By position for the QB and defensive ILB/LB, and Coach calls the plays. The native coach selector supplies the call while MyPlayer keeps execution control. The choice saves with the career; exact studio page/export wiring is supplied for integration. EXPERIMENTAL, with in-game menu/control behavior UNWITNESSED.
+ - **THE1WAM's creation tiers use the existing player writer.** His template asks to “Select Prospect” and start at 74, 70, 64 or 59 overall. Explicit 1st Day, 2nd Day, 3rd Day and Undrafted choices calibrate native overall, set the template's starting depth place and carry its career-goal label in the record. Original creation remains the default. Four QB prototype labels reuse three native styles, with Gunslinger sharing Pocket. The in-game entry uses an available list row; studio wiring is supplied. Senior Bowl performance goals, Combine drills and the 40-time table, Pro Day, earned-point Apply Ratings and Draft Advisory remain roadmap items with native prerequisites documented in ASTRA_REPORT.md. All played outcomes remain UNWITNESSED.
+-=======
+ - **CPU winners can defer the opening toss (experimental, Off).** BigTimeEmpire asked for "The ability to defer your choice on the coin toss to the second half with logic that makes it occur as often as it does in the NFL." CPU winners now have a bounded writer using the published 2023 count of 240 deferrals in 272 games (88.24%); the loser chooses for the first half and the CPU receives in the second. The retail menu's third row overwrites its controller field, so a human Defer choice is not shipped; the caption says CPU winners only. Native toss, choices and both kickoff transitions are PROVED. Menus, physical kickoffs and gameplay remain UNWITNESSED.
+ - **Optional clock cutoff at the next dead ball (experimental, Off).** CER asked "Is it doable to add the thing where the clock just auto goes to triple 0 in the 4th if the game isnt winnable like in one of the recent college football games?" The new writer uses a selectable lead/time cutoff, defaulting to 17 points with 60 seconds left, only when the leading team possesses the ball in the fourth quarter. This is a convenience cutoff, not mathematical elimination. Live plays, trailing possession and overtime bypass it; accelerated clock keeps its final-two-minute exclusions. Native decided/undecided series checks are PROVED; scorebug, postgame flow and every played outcome are UNWITNESSED.
+ - **One CPU QB scramble decision is now tunable (experimental, Retail).** BigTimeEmpire asked "And to get the CPU QB to scramble at NFL averages". Modern doubles one existing timer/pressure-gated escape lottery factor from .25 to .50, producing 41 branch hits against retail's 21 under the same 100 native inputs. That is not an NFL-average calibration. The observed roster Scramble bit consumer selects animation families; Slow-QB acceleration still changes carried-ball acceleration, not the leave-pocket decision. Native writer/branch proofs pass; actual scramble rates and animations remain UNWITNESSED.
+->>>>>>> 9afe21c0 (Record green beta-69 rules gates and final handoff)
+ 
+ ## v1.0 RC93, beta 68: fixes for the reports after beta 66.1 (2026-09-12)
+ 
+diff --git a/reports/b69_a2b/merge-j5-repin.log b/reports/b69_a2b/merge-j5-repin.log
+new file mode 100644
+index 00000000..525268eb
+--- /dev/null
++++ b/reports/b69_a2b/merge-j5-repin.log
+@@ -0,0 +1,2 @@
++
++applied 0 pin update(s)

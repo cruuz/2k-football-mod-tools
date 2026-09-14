@@ -1,0 +1,13 @@
+....F.....
+======================================================================
+FAIL: test_runtime_counts_match_the_canonical_registry (__main__.IntegrationTests.test_runtime_counts_match_the_canonical_registry)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_b68_a1_audit.py", line 41, in test_runtime_counts_match_the_canonical_registry
+    self.assertEqual(len(registry.capabilities), 165)
+AssertionError: 172 != 165
+
+----------------------------------------------------------------------
+Ran 10 tests in 6.411s
+
+FAILED (failures=1)

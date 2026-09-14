@@ -1,0 +1,555 @@
+diff --git a/ASTRA_B69_A2B_REPORT.md b/ASTRA_B69_A2B_REPORT.md
+index bfa5a35b..02129351 100644
+--- a/ASTRA_B69_A2B_REPORT.md
++++ b/ASTRA_B69_A2B_REPORT.md
+@@ -33,7 +33,7 @@ The complete before/after patch is [protected-wiring.patch](reports/b69_a2b/prot
+ | `nfl2k5_throw_tuning.py`, mutation ordering | The owner loop installs coin defer, decided clock and CPU scrambles immediately after accelerated clock. The public/final path rejects foreign instructions and changed/off installed settings. A private intermediate pass can defer those checks only after the complete plan preflight. An unchanged private copy pass is allowed so identical full-plan replay completes; final writers still verify. |
+ | `mod_editor/core/nfl2k5_build_settings.py` | Adds all seven fields to explicit FEATURE_KEYS so saved plans, restored controls and cache/build identity retain them. Older plans receive safe defaults. |
+ | `mod_editor/gui/beta62_options.py` | Adds the two rule booleans using the job's exact captions/help. CPU scrambles remains an enum. |
+-| `mod_editor/gui/build_panel_qt.py` | Adds climate path/choose/editor/clear controls and validation/help, a reversible haze control, decided-clock cutoff selectors, and CPU-scramble Retail/Modern selector. Projects all into plan/save/has_work/confirmation text; resets Off defaults on presets; restores and locks installed rule/settings values; confirms haze restoration. |
++| `mod_editor/gui/build_panel_qt.py` | Adds climate path/choose/editor/checkbox controls and validation/help, a reversible haze control, decided-clock cutoff selectors, and CPU-scramble Retail/Modern selector. Projects all into plan/save/has_work/confirmation text; resets Off defaults on presets; restores and locks installed rule/settings values; confirms haze restoration. |
+ | `mod_editor/gui/gameplay_patches_panel_qt.py` | Adds both rule checkboxes with exact captions, cutoff selectors and CPU enum; synchronizes selected values/summary/status and preserves installed choices. Adds haze's reversible toggle and climate editor entry. Climate action routes to Build via signal, with standalone dialog fallback. |
+ | `mod_editor/gui/gameplay_project_ui.py` | Shared Build/Gameplay link synchronizes margin, seconds and CPU level in both directions and persists weather path/haze with the other settings. |
+ | `mod_editor/gui/my_career_panel_qt.py` | Applies J3's exact proposed changes: three saved caller choices; one signed export carries caller and Supersim choices; prospect tiers on creation; four QB prototype aliases with Pocket default; tiered creation disables starter override and passes prospect_tier. Existing source/position behavior retained. |
+@@ -68,7 +68,7 @@ The new registry IDs are `nfl2k5.mode.my_career_playcalling`, `nfl2k5.mode.my_ca
+ | Release allowlist files | 824 | 840 |
+ | Runtime product imports | 231 | 245 |
+ | Runtime tool imports | 35 | 35 |
+-| Additional B69 runtime pin entries | 0 | 12 |
++| Additional B69 runtime pin entries | 0 | 11 |
+ | `space.plan(REQUESTS)` allocation records | 57 | 64 |
+ | `space.plan(REQUESTS)` file_size | 12300288 | 12300288 |
+ 
+diff --git a/docs/mod_editor/2k5_mod_studio_changelog.md b/docs/mod_editor/2k5_mod_studio_changelog.md
+index 735e91d7..36bd5fb3 100644
+--- a/docs/mod_editor/2k5_mod_studio_changelog.md
++++ b/docs/mod_editor/2k5_mod_studio_changelog.md
+@@ -11,6 +11,8 @@
+ 
+ Beta 69 adds planned features, answers every ESPN NFL 2K5 report in Discord after beta 68 and polishes both studios; bullets are added as each change lands.
+ 
++- **CPU scramble choices follow the disc being opened.** The independent game integration audit found that opening another disc after an installation with Modern scrambles could carry Modern into the new build, including an unrecognized source with a disabled selector. Build and Gameplay now read this choice from the new disc; saved project choices still restore afterward. Offscreen source transitions and project restoration are proved. In-game outcomes remain UNWITNESSED.
++
+ - **Checked model edits belong to the project.** maumau78 reported "there is no way to save into project and make a disc if I edit 3d models" and privately asked "so \"make my disc\" is the correct way to apply all the edits right?" Models now offers Add model edit to project. One checked set counts as one project edit, saves its source paths, hashes, check and compiled byte changes in the .2k5mod, and participates in Undo and Revert All. Make disc from project includes the saved model changes with the other project edits and gameplay passes. The quick Make disc with this model path uses the same model writer. Missing or changed authoring files are named when re-checking; the saved checked bytes remain buildable. Overlapping Guardian cap choices are refused before building. PROVED with compact disc round trips and an offscreen replay of the shell/build handoff; all in-game outcomes remain UNWITNESSED.
+ - **Skeleton pair refusals name the file and the next step.** maumau78 reported "Try also re-import skeleton but keep getting this error...." The message now names the missing, unedited or mismatched LOD file, gives Blender's File > Export > glTF 2.0 > Include > Data > Custom Properties path, and explains when Geometry only accepts a single LOD. Low and high bind records are separate, so a bone-length edit still requires the coordinated pair; the shared SKEL direction table cannot update the other LOD's length. The ModelsError class prefix is removed. The paired native pose gate still passes; in-game outcomes remain UNWITNESSED.
+ - **A second player witnessed beta 68's faster builds.** maumau78 built "gameplay mods and 3D model edit" in "just few minutes compared to 50 minutes of the previuos build". This is a build-time witness alongside Coach Edwards' "5 minutes or less", not an in-game model witness. Every in-game outcome from these changes remains UNWITNESSED.
+@@ -19,13 +21,13 @@ Beta 69 adds planned features, answers every ESPN NFL 2K5 report in Discord afte
+ - MacDog850: “i also had to have chat gpt fix it”. The new FAQ explains reinstalling from the official Setup.exe, rebuilding, and posting the Build summary and first error. It also answers CER's dropped interceptions, Mud's menu radio request and emulator questions. Getting Started follows the current sidebar and button names.
+ 
+ - maumau78: “shoe slot 10 / style 6 is not show in-game”. The FAQ records the negative Bears result: Edit Player showed the imported design, while the played shoe stayed dark. The previous package-local colour proof was offline and did not establish that played binding. This documentation correction does not claim an equipment fix.
+-- **Stadium climate authoring answers part of BigTimeEmpire's weather request.** "Choosing the temperature and wind speed" now has a bounded data writer, a small Weather editor, saved build edits and Undo. The 82 stadium rows have seven seasonal slots for temperature, precipitation chance and wind; rain or snow follows the native temperature test. The authored +2 °F example is a sensitivity preset, not measured modern NFL climate. The writer reparses every change and refuses stale plans. Build integration is supplied in `WIRING.md`; the option is Off in every preset. A franchise game-day weather menu, separate rain/snow probabilities and snow footprints are not implemented. EXPERIMENTAL / UNWITNESSED.
++- **Stadium climate authoring answers part of BigTimeEmpire's weather request.** "Choosing the temperature and wind speed" now has a bounded data writer, a small Weather editor, saved build edits and Undo. The 82 stadium rows have seven seasonal slots for temperature, precipitation chance and wind; rain or snow follows the native temperature test. The authored +2 °F example is a sensitivity preset, not measured modern NFL climate. The writer reparses every change and refuses stale plans. Build integration follows `WIRING_B69_J4.md`; the option is Off in every preset. A franchise game-day weather menu, separate rain/snow probabilities and snow footprints are not implemented. EXPERIMENTAL / UNWITNESSED.
+ - **maumau78's "Is dynamic weather / sunset possible? liek a game that start at 6PM become darker?" now has a pinned schedule trace.** Retail 2K5 already selects day, afternoon and night from the kickoff hour, and all 272 entries in the 2026 template run through that native selector. The earlier claim that the selector never picks the shipped variants came from APF research. No enabling toggle or dynamic sunset is claimed. The eight-byte schedule has no AM/PM flag, so hour 9 also selects night for a 9:30 AM entry; that limitation is documented. Stadium selection, lighting and played results remain UNWITNESSED.
+ - **BigTimeEmpire's "Overcast or cloudy weather, as well as fog" has one existing renderer parameter to test.** A separate optional dry-weather haze coefficient changes from 0.8 to 1.0, with a reparsing verifier and exact Off restoration. Bounded native execution reaches the camera field; it does not prove an image. The archive audit maps 477 stadium bundles and their 324 sky textures, with no separately named overcast, fog or dusk texture in that bounded inventory. This option does not force fog or add artwork. Build wiring is supplied separately; Off in every preset, EXPERIMENTAL / UNWITNESSED.
+ - **Retail weather already affects intermediate player attributes.** newerest asked for "The weather impacting gameplay is a real thing that if we can actually implement correctly will change everything" and said "I don't think any football video game really captures the insanity that weather can bring". Coach Edwards replied, "I think APF 2K8 does a pretty good job. The heavy rain games are insane to play. Lots of fun." This 2K5 research proves rain/snow penalties for speed, agility, catching, pass accuracy, kick accuracy and holding onto the ball, and maps further ball-contact and wind consumers. Final traction, fumble, catch and yardage outcomes remain UNWITNESSED. No gameplay penalty changes ship in this job.
+ - **MyCareer returns to play calling after Fast forward.** andrethealchemist confirmed “Wow! Everything I asked for was fixed in beta 68!” and then reported “my 1st down play is already selected for me.” The absent unit's CPU choice survived the hand-back. The owned runtime now clears that choice for a human caller at the guarded pre-snap return and opens the native play-call screen with its controller mapping. The saved Fast forward choice and beta-68 rearming remain intact. Bounded native series checks are separate from the new in-game outcome, which remains UNWITNESSED.
+ - **Choose who calls MyCareer plays.** THE1WAM said “I lowkey don't think we should be able to pick the plays in MyCareer imo”; Noah replied “Depends on position. QB should. But I can make it an option where you never choose you just execute”; THE1WAM added “Yea make it only for QBs and ILBs”. Apartment Settings adds You call every play as the default, By position for the QB and defensive ILB/LB, and Coach calls the plays. The native coach selector supplies the call while MyPlayer keeps execution control. The choice saves with the career; exact studio page/export wiring is supplied for integration. EXPERIMENTAL, with in-game menu/control behavior UNWITNESSED.
+-- **THE1WAM's creation tiers use the existing player writer.** His template asks to “Select Prospect” and start at 74, 70, 64 or 59 overall. Explicit 1st Day, 2nd Day, 3rd Day and Undrafted choices calibrate native overall, set the template's starting depth place and carry its career-goal label in the record. Original creation remains the default. Four QB prototype labels reuse three native styles, with Gunslinger sharing Pocket. The in-game entry uses an available list row; studio wiring is supplied. Senior Bowl performance goals, Combine drills and the 40-time table, Pro Day, earned-point Apply Ratings and Draft Advisory remain roadmap items with native prerequisites documented in ASTRA_REPORT.md. All played outcomes remain UNWITNESSED.
++- **THE1WAM's creation tiers use the existing player writer.** His template asks to “Select Prospect” and start at 74, 70, 64 or 59 overall. Explicit 1st Day, 2nd Day, 3rd Day and Undrafted choices calibrate native overall, set the template's starting depth place and carry its career-goal label in the record. Original creation remains the default. Four QB prototype labels reuse three native styles, with Gunslinger sharing Pocket. The in-game entry uses an available list row; studio wiring is supplied. Senior Bowl performance goals, Combine drills and the 40-time table, Pro Day, earned-point Apply Ratings and Draft Advisory remain roadmap items with native prerequisites documented in ASTRA_B69_J3_REPORT.md. All played outcomes remain UNWITNESSED.
+ - **CPU winners can defer the opening toss (experimental, Off).** BigTimeEmpire asked for "The ability to defer your choice on the coin toss to the second half with logic that makes it occur as often as it does in the NFL." CPU winners now have a bounded writer using the published 2023 count of 240 deferrals in 272 games (88.24%); the loser chooses for the first half and the CPU receives in the second. The retail menu's third row overwrites its controller field, so a human Defer choice is not shipped; the caption says CPU winners only. Native toss, choices and both kickoff transitions are PROVED. Menus, physical kickoffs and gameplay remain UNWITNESSED.
+ - **Optional clock cutoff at the next dead ball (experimental, Off).** CER asked "Is it doable to add the thing where the clock just auto goes to triple 0 in the 4th if the game isnt winnable like in one of the recent college football games?" The new writer uses a selectable lead/time cutoff, defaulting to 17 points with 60 seconds left, only when the leading team possesses the ball in the fourth quarter. This is a convenience cutoff, not mathematical elimination. Live plays, trailing possession and overtime bypass it; accelerated clock keeps its final-two-minute exclusions. Native decided/undecided series checks are PROVED; scorebug, postgame flow and every played outcome are UNWITNESSED.
+ - **One CPU QB scramble decision is now tunable (experimental, Retail).** BigTimeEmpire asked "And to get the CPU QB to scramble at NFL averages". Modern doubles one existing timer/pressure-gated escape lottery factor from .25 to .50, producing 41 branch hits against retail's 21 under the same 100 native inputs. That is not an NFL-average calibration. The observed roster Scramble bit consumer selects animation families; Slow-QB acceleration still changes carried-ball acceleration, not the leave-pocket decision. Native writer/branch proofs pass; actual scramble rates and animations remain UNWITNESSED.
+diff --git a/docs/research/nfl2k5_weather_time_of_day.md b/docs/research/nfl2k5_weather_time_of_day.md
+index 561f265a..93540e29 100644
+--- a/docs/research/nfl2k5_weather_time_of_day.md
++++ b/docs/research/nfl2k5_weather_time_of_day.md
+@@ -16,7 +16,7 @@ weather penalties to six effective player attributes.
+ This job supplies a small climate editor, its saved-plan writer and reparsing
+ verifier, plus a separate optional edit to one existing dry-weather haze
+ coefficient. Both are OFF by default, EXPERIMENTAL. The protected Build and
+-registry integration is supplied in [WIRING.md](../../WIRING.md). The independent
++registry integration is supplied in [WIRING_B69_J4.md](../../WIRING_B69_J4.md). The independent
+ editor and CLI work without that integration. No game instructions, hooks,
+ runtime globals, caves, sky art, gameplay penalties or saves are added or changed.
+ 
+diff --git a/mod_editor/core/nfl2k5_franchise_2026.py b/mod_editor/core/nfl2k5_franchise_2026.py
+index 07ad9c01..c62248b8 100644
+--- a/mod_editor/core/nfl2k5_franchise_2026.py
++++ b/mod_editor/core/nfl2k5_franchise_2026.py
+@@ -84,9 +84,11 @@ def persistence_contract():
+         mycareer=dict(owner="nfl2k5_my_career", bytes=career.SIZE,
+                       native_container_sizes=list(career.BASE_SIZES),
+                       career_container_sizes=list(career.SIZES),
+-                      # byte 82 = the MyCareer Settings bits (beta 65: first person, Spectate, star Off; values 0..7)
++                      # MyCareer owns the settings byte, including caller bits
++                      # 5..6, and byte 83 for the beta-69 creation tier.
+                       settings_byte=82,
+-                      reserved_zero_spans=[[83, 84], [88, 128]],
++                      prospect_tier_byte=83,
++                      reserved_zero_spans=[[88, 128]],
+                       reusable_bytes=0, extensible=False),
+         reserve_arena=dict(owner="nfl2k5_roster_arena_growth",
+                            version=arena.SAVE_VERSION, bytes=arena.ARENA_SIZE,
+diff --git a/mod_editor/core/nfl2k5_weather.py b/mod_editor/core/nfl2k5_weather.py
+index 7730a25c..1c05cc6f 100644
+--- a/mod_editor/core/nfl2k5_weather.py
++++ b/mod_editor/core/nfl2k5_weather.py
+@@ -77,7 +77,7 @@ def text_at(data, at):
+ def scalar_bytes(field, value):
+     require(field in FIELDS, "Unknown climate field")
+     _, low, high = FIELDS[field]
+-    require(type(value) in (int, float) and math.isfinite(value) and low <= value <= high,
++    require(type(value) in (int, float) and low <= value <= high and math.isfinite(value),
+             f"{field}: enter a finite value from {low} to {high}")
+     if field == "wind_mph":
+         value *= CM_PER_SECOND_PER_MPH
+diff --git a/mod_editor/core/providers.py b/mod_editor/core/providers.py
+index 4ddb04c7..938b1742 100644
+--- a/mod_editor/core/providers.py
++++ b/mod_editor/core/providers.py
+@@ -597,7 +597,7 @@ class Nfl2k5UnifiedVisualProvider:
+         "mod_editor/core/nfl2k5_extended_visual_catalog.py": "6576fc522bec39f163b851471ab9105db5080a5085681f3f27e626c6e50011f3",
+         "mod_editor/core/nfl2k5_extended_visual_io.py": "928a8367c3faf4f37adeb9fa11164529457d79a9bb03fb0f0ecaa0082863975b",
+         "mod_editor/core/nfl2k5_formation_play_writer.py": "fb09bdd724874d0a03488e12a046d8107221e99b52c77df21c04a7181d3508bf",
+-        "mod_editor/core/nfl2k5_franchise_2026.py": "1951dd3a20b35cec58814fcda757f2cda7a3220054615c9412a92f58faf6a79d",
++        "mod_editor/core/nfl2k5_franchise_2026.py": "e72fe54827d646a2d15107abaf4069b3460a6194898ca93239ccde989f2131b9",
+         "mod_editor/core/nfl2k5_franchise_2026_code.py": "3aaa62bc4282a7605823b30d20936d388916d2f5c51a4a4774f85c0af67efcfa",
+         "mod_editor/core/nfl2k5_franchise_autosave.py": "39fefc51d2b95fb56730ff1359c3fa9b73e0a4aa9302f38a32905efea791e3d3",
+         "mod_editor/core/nfl2k5_franchise_autosave_code.py": "bf06126a790642048aae92d57d3815d445560bc012ed02df5917648bcceec183",
+diff --git a/mod_editor/gui/build_panel_qt.py b/mod_editor/gui/build_panel_qt.py
+index aa56c37c..6d0eb98e 100644
+--- a/mod_editor/gui/build_panel_qt.py
++++ b/mod_editor/gui/build_panel_qt.py
+@@ -1127,6 +1127,12 @@ class BuildPanel(QWidget):
+             details = mod_build.inspect_screen_timing(state["path"], combo.currentText())
+             state = {**state, "screen_timing": details["status"], "screen_timing_details": details}
+         self._state = state
++        # Source inspection starts a new selection; installed choices are
++        # projected from this disc, then saved project choices can be restored.
++        self.cpu_scrambles_level.blockSignals(True)
++        self.cpu_scrambles_level.setCurrentIndex(self.cpu_scrambles_level.findData(
++            "modern" if state.get("cpu_scrambles") == "applied" else "retail"))
++        self.cpu_scrambles_level.blockSignals(False)
+         self._reading = False
+         self.source_field.setText(str(state.get("path", "")))
+         is_image = state.get("container") == "xiso"
+diff --git a/mod_editor/gui/gameplay_patches_panel_qt.py b/mod_editor/gui/gameplay_patches_panel_qt.py
+index b43cb7f1..71da9b28 100644
+--- a/mod_editor/gui/gameplay_patches_panel_qt.py
++++ b/mod_editor/gui/gameplay_patches_panel_qt.py
+@@ -642,6 +642,11 @@ class GameplayPatchesPanel(QWidget):
+             details = mod_build.inspect_screen_timing(state["path"], combo.currentText())
+             state = {**state, "screen_timing": details["status"], "screen_timing_details": details}
+         self._state = state
++        if hasattr(self, "cpu_scrambles_level"):
++            self.cpu_scrambles_level.blockSignals(True)
++            self.cpu_scrambles_level.setCurrentIndex(self.cpu_scrambles_level.findData(
++                "modern" if state.get("cpu_scrambles") == "applied" else "retail"))
++            self.cpu_scrambles_level.blockSignals(False)
+         self._reading = False
+         self.source_field.setText(str(state.get("path", "")))
+         is_image = state.get("container") == "xiso"
+diff --git a/packaging/check_2k5_mod_studio_runtime.py b/packaging/check_2k5_mod_studio_runtime.py
+index 0ab51703..b65bdaff 100644
+--- a/packaging/check_2k5_mod_studio_runtime.py
++++ b/packaging/check_2k5_mod_studio_runtime.py
+@@ -113,10 +113,10 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
+ }
+ 
+ B69_GAME_RUNTIME_PINS = {
+-    "mod_editor/core/nfl2k5_weather.py": "89526a7912340968cbe554aedf434d5a2c60a112f21a3d2d0564082b74ecd1ad",
++    "mod_editor/core/nfl2k5_weather.py": "6540d7ffc8d441898f5a89988752efd6aa0238c87b4a0941c1962b7b3feba380",
+     "mod_editor/core/nfl2k5_weather_haze.py": "3d045e099f1585658b899ab6e7d3560e92edb24529ca8d6f224e901dc7712ff9",
+-    "mod_editor/gui/build_panel_qt.py": "234030c6a8034cd2a02329c948e3b069073bc3f1f7b8e04c371fb73c9377f4f5",
+-    "mod_editor/gui/gameplay_patches_panel_qt.py": "2a7a24f9ec4ae2dcb1632d492ac42e7726548932e1eab409fc48c58cd45b8953",
++    "mod_editor/gui/build_panel_qt.py": "86fa528e1d4ba4a4458badbb24b17a419c78e9253868859e02117cc333699629",
++    "mod_editor/gui/gameplay_patches_panel_qt.py": "cf9ce1e9d40902df978f8c54f1e02dbf3c137ec2e3f2c722c7a3f9cbd876322e",
+     "mod_editor/gui/my_career_panel_qt.py": "8a27ccdc2a649d122d6c21f9a646e47539b55c00653afc789e9b018fb581c823",
+     "mod_editor/gui/gameplay_project_ui.py": "7222713aaaa0efbcc8851eb4ad3efa4ef31e8ad5352919e95b1ff9b39634c905",
+     "mod_editor/gui/beta62_options.py": "d861f5656f98b0ee67cf4fe86a98bb95e5a79882e1a1066641f6b979ca835f84",
+diff --git a/tests/fixtures/nfl2k5_allocator_beta62_requests.json b/tests/fixtures/nfl2k5_allocator_beta62_requests.json
+index 88dfc301..14994793 100644
+--- a/tests/fixtures/nfl2k5_allocator_beta62_requests.json
++++ b/tests/fixtures/nfl2k5_allocator_beta62_requests.json
+@@ -340,5 +340,47 @@
+   "read_only",
+   8,
+   4
++ ],
++ [
++  "nfl2k5_coin_defer",
++  "code",
++  384,
++  16
++ ],
++ [
++  "nfl2k5_coin_defer",
++  "data",
++  4,
++  4
++ ],
++ [
++  "nfl2k5_coin_defer",
++  "read_only",
++  128,
++  4
++ ],
++ [
++  "nfl2k5_decided_clock",
++  "code",
++  384,
++  16
++ ],
++ [
++  "nfl2k5_decided_clock",
++  "read_only",
++  8,
++  4
++ ],
++ [
++  "nfl2k5_cpu_scrambles",
++  "code",
++  128,
++  16
++ ],
++ [
++  "nfl2k5_cpu_scrambles",
++  "read_only",
++  4,
++  4
+  ]
+ ]
+diff --git a/tests/mod_editor/test_b68_a1_audit.py b/tests/mod_editor/test_b68_a1_audit.py
+index 6a88e97d..cffa6501 100644
+--- a/tests/mod_editor/test_b68_a1_audit.py
++++ b/tests/mod_editor/test_b68_a1_audit.py
+@@ -38,8 +38,8 @@ class IntegrationTests(unittest.TestCase):
+         from mod_editor.core.product_catalog import build_nfl2k5_product_catalog
+         registry = CapabilityRegistryLoader().load(allow_sample_fallback=False, check_files=False)
+         catalog = build_nfl2k5_product_catalog(registry)
+-        self.assertEqual(len(registry.capabilities), 165)
+-        self.assertEqual(len(catalog.capabilities), 92)
++        self.assertEqual(len(registry.capabilities), 172)
++        self.assertEqual(len(catalog.capabilities), 99)
+         path = ROOT / 'packaging/check_2k5_mod_studio_runtime.py'
+         source = path.read_text()
+         # Execute the production assertions against the actual registry, without
+@@ -51,8 +51,8 @@ class IntegrationTests(unittest.TestCase):
+                                           'require(len(product_catalog.capabilities)')):
+                     with self.subTest(expression=expression):
+                         exec(expression, dict(require=self.assertTrue, registry=registry, product_catalog=catalog))
+-        self.assertTrue('registry=165 sections=12 nfl2k5_capabilities=92' in source)
+-        self.assertIn('registry=165 sections=12 nfl2k5_capabilities=92',
++        self.assertTrue('registry=172 sections=12 nfl2k5_capabilities=99' in source)
++        self.assertIn('registry=172 sections=12 nfl2k5_capabilities=99',
+                       (ROOT / 'tests/mod_editor/test_phase1_packaging.py').read_text())
+ 
+     def test_new_core_modules_are_in_all_release_closures(self):
+diff --git a/tests/mod_editor/test_b69_a1b_game_audit.py b/tests/mod_editor/test_b69_a1b_game_audit.py
+new file mode 100644
+index 00000000..aa835542
+--- /dev/null
++++ b/tests/mod_editor/test_b69_a1b_game_audit.py
+@@ -0,0 +1,81 @@
++"""Independent beta-69 source-transition regressions; no game payload fixtures."""
++import os
++import ast
++from pathlib import Path
++import sys
++import unittest
++
++ROOT = Path(__file__).resolve().parents[2]
++sys.path.insert(0, str(ROOT))
++os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
++
++
++class HandoffPathsTests(unittest.TestCase):
++    def test_a2b_report_describes_actual_runtime_pin_block_and_climate_controls(self):
++        report = (ROOT / 'ASTRA_B69_A2B_REPORT.md').read_text()
++        tree = ast.parse((ROOT / 'packaging/check_2k5_mod_studio_runtime.py').read_text())
++        pins = next(ast.literal_eval(n.value) for n in tree.body if isinstance(n, ast.Assign)
++                    and any(isinstance(t, ast.Name) and t.id == 'B69_GAME_RUNTIME_PINS' for t in n.targets))
++        with self.subTest(contract='pin count'):
++            self.assertTrue(f'| Additional B69 runtime pin entries | 0 | {len(pins)} |' in report,
++                            'A2b pin-block count differs from its implementation')
++        with self.subTest(contract='climate controls'):
++            self.assertFalse('climate path/choose/editor/clear controls' in report,
++                             'A2b describes a separate climate Clear control that does not exist')
++
++    def test_beta69_handoffs_name_the_merged_job_documents(self):
++        changelog = (ROOT / 'docs/mod_editor/2k5_mod_studio_changelog.md').read_text()
++        beta69 = changelog.split('## v1.0 RC94', 1)[1].split('\n## ', 1)[0]
++        self.assertFalse('ASTRA_REPORT.md' in beta69, 'beta-69 notes still point at a generic job report')
++        self.assertFalse('`WIRING.md`' in beta69, 'beta-69 notes still point at generic wiring')
++        self.assertIn('ASTRA_B69_J3_REPORT.md', beta69)
++        weather = (ROOT / 'docs/research/nfl2k5_weather_time_of_day.md').read_text()
++        self.assertIn('(../../WIRING_B69_J4.md)', weather)
++        self.assertNotIn('(../../WIRING.md)', weather)
++        self.assertTrue((ROOT / 'ASTRA_B69_J3_REPORT.md').is_file())
++        self.assertTrue((ROOT / 'WIRING_B69_J4.md').is_file())
++
++
++class SourceTransitionTests(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        from PyQt5.QtWidgets import QApplication
++        cls.app = QApplication.instance() or QApplication([])
++
++    def test_new_source_does_not_inherit_modern_scrambles_from_previous_disc(self):
++        from mod_editor.gui.build_panel_qt import BuildPanel
++        from mod_editor.gui.gameplay_patches_panel_qt import GameplayPatchesPanel
++        for panel_class in (BuildPanel, GameplayPatchesPanel):
++            for mode in ('retail', 'foreign', 'unknown'):
++                with self.subTest(panel=panel_class.__name__, mode=mode):
++                    panel = panel_class()
++                    self.addCleanup(panel.close)
++                    panel.apply_state(dict(path='installed.iso', container='xiso', cpu_scrambles='applied'))
++                    self.assertEqual(panel.plan().cpu_scrambles, 'modern')
++                    panel.apply_state(dict(path='next.iso', container='xiso', cpu_scrambles=mode))
++                    self.assertEqual(panel.plan().cpu_scrambles, 'retail')
++                    self.assertEqual(panel.cpu_scrambles_level.isEnabled(), mode == 'retail')
++
++    def test_linked_source_transition_then_saved_project_restore(self):
++        from mod_editor.gui.build_panel_qt import BuildPanel
++        from mod_editor.gui.gameplay_patches_panel_qt import GameplayPatchesPanel
++        from mod_editor.gui.gameplay_project_ui import GameplayBuildLink
++        build, gameplay = BuildPanel(), GameplayPatchesPanel()
++        self.addCleanup(build.close)
++        self.addCleanup(gameplay.close)
++        link = GameplayBuildLink(build, gameplay, lambda: None)
++        for state in ('applied', 'retail'):
++            info = dict(path=state + '.iso', container='xiso', cpu_scrambles=state)
++            build.apply_state(info)
++            gameplay.apply_state(info)
++            link.refresh_from_build()
++            for panel in (build, gameplay):
++                self.assertEqual(panel.plan().cpu_scrambles, 'modern' if state == 'applied' else 'retail')
++        build.restore_project_build_settings({'cpu_scrambles': 'modern'})
++        link.refresh_from_build()
++        self.assertEqual(build.plan().cpu_scrambles, 'modern')
++        self.assertEqual(gameplay.plan().cpu_scrambles, 'modern')
++
++
++if __name__ == '__main__':
++    unittest.main()
+diff --git a/tests/mod_editor/test_beta61_allocator_integration.py b/tests/mod_editor/test_beta61_allocator_integration.py
+index 3fa3c5e9..c86798d9 100644
+--- a/tests/mod_editor/test_beta61_allocator_integration.py
++++ b/tests/mod_editor/test_beta61_allocator_integration.py
+@@ -82,8 +82,8 @@ class CompleteOwnerTests(unittest.TestCase):
+         layout = space.layout(self.full)
+         regions = layout["regions"]
+         self.assertEqual([r["size"] for r in regions if r["kind"] == "code"], [4096, 4096, 24 * 4096])
+-        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "code"), 78439)  # beta 66: camera RX 160 -> 512 and MyCareer RX 16384 -> 20480 (Supersim); other owners retain their budgets
+-        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "data"), 83758)  # complete beta-65 union (+ the accelerated clock latch): beta-63 union RW state, including the fixed M3 MyCareer state page at 0x1505000 (last RW page)
++        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "code"), 79335)  # beta 69: J5 adds 896 RX; existing owners retain their budgets
++        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "data"), 83762)  # beta 69: CPU defer adds 4 RW; existing owners retain their budgets
+         image = XbeImage(self.full)
+         for a in layout["allocations"]:
+             section = image.section(a["va"], a["size"])
+diff --git a/tests/mod_editor/test_beta62_integration3_qt.py b/tests/mod_editor/test_beta62_integration3_qt.py
+index b7bb4d6a..752ed1a9 100644
+--- a/tests/mod_editor/test_beta62_integration3_qt.py
++++ b/tests/mod_editor/test_beta62_integration3_qt.py
+@@ -96,8 +96,18 @@ class IntegrationQtTests(unittest.TestCase):
+ 
+     def test_all_new_patch_help_is_actionable_and_short(self):
+         for key,caption,help in ui.OPTIONS:
+-            self.assertLessEqual(len(caption),60)
+-            self.assertIn('Retail',help);self.assertIn('Patch',help)
++            if key in ('coin_defer', 'decided_clock'):
++                module = getattr(mod_build.tt, key + '_patch')
++                self.assertEqual(caption, module.BUILD_CAPTION)
++                self.assertEqual(help, module.HELP_TEXT)
++                self.assertIn('Off in every preset', help)
++                self.assertIn('UNWITNESSED', help)
++                if key == 'coin_defer':
++                    self.assertIn('CPU winners only', caption)
++                    self.assertIn('Human winners keep the retail menu', help)
++            else:
++                self.assertLessEqual(len(caption),60)
++                self.assertIn('Retail',help);self.assertIn('Patch',help)
+             self.assertIn(key,dict((key,label) for key,label,_ in PATCHES))
+ 
+     def test_guardian_bulk_undo_restores_exact_records_and_checkbox(self):
+diff --git a/tests/mod_editor/test_nfl2k5_allocator_scaleout.py b/tests/mod_editor/test_nfl2k5_allocator_scaleout.py
+index 9410a438..3e963d1b 100644
+--- a/tests/mod_editor/test_nfl2k5_allocator_scaleout.py
++++ b/tests/mod_editor/test_nfl2k5_allocator_scaleout.py
+@@ -38,7 +38,7 @@ class PlannerTests(unittest.TestCase):
+         self.assertEqual([report['capacity'][k]['capacity_bytes'] for k in ('code', 'data', 'read_only')],
+                          [106496, 86016, 20480])
+         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
+-                         [0, 0, 1936])  # beta 66: camera v6 adds 352 RX / 240 RO and MyCareer M3 4,096 RX; the 16 KiB synthetic RX fills the remaining code pages
++                         [0, 0, 1792])  # beta 69: J5 adds 140 RO bytes plus alignment; the synthetic RX still fills the code pages
+         self.assertEqual(len(report['pages']), 52)
+         for a in report['allocations']:
+             self.assertEqual(a['va'] % a['align'], 0)
+@@ -51,7 +51,7 @@ class PlannerTests(unittest.TestCase):
+             self.assertIn(list(request), requests)
+         report = space.plan(requests)
+         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
+-                         [16576, 0, 2968])  # complete beta-66 union incl. MyCareer M3 at 20,480 RX (Supersim); the M3 HUD stays within those reservations
++                         [15680, 0, 2824])  # beta 69: J5 adds 896 RX, 4 RW and 140 RO bytes; MyCareer remains 20,480 RX
+ 
+     def test_every_kind_exact_capacity_alignment_and_overflow(self):
+         for kind, capacity in [('code', 98304), ('data', 81920), ('read_only', 16384)]:
+diff --git a/tests/mod_editor/test_nfl2k5_espn25_integration_qt.py b/tests/mod_editor/test_nfl2k5_espn25_integration_qt.py
+index c9590175..779ef89f 100644
+--- a/tests/mod_editor/test_nfl2k5_espn25_integration_qt.py
++++ b/tests/mod_editor/test_nfl2k5_espn25_integration_qt.py
+@@ -318,7 +318,7 @@ class PanelTests(unittest.TestCase):
+     def test_gameplay_row_is_informational_image_only_and_opens_rosters(self):
+         keys = [key for key, _l, _e in PATCHES]
+         self.assertIn("espn25_plan", keys)
+-        self.assertEqual(INFORMATIONAL, {"espn25_plan"})
++        self.assertEqual(INFORMATIONAL, {"espn25_plan", "weather_plan", "cpu_scrambles"})
+         self.assertIn("espn25_plan", NEEDS_IMAGE)
+         text = dict((key, explanation) for key, _l, explanation in PATCHES)["espn25_plan"]
+         self.assertEqual(text, "Retail uses 25 moments and shared historic teams. Patch applies your saved Anniversary "
+diff --git a/tests/mod_editor/test_nfl2k5_franchise_2026_runtime.py b/tests/mod_editor/test_nfl2k5_franchise_2026_runtime.py
+index 2f05b6d5..aa3712b5 100644
+--- a/tests/mod_editor/test_nfl2k5_franchise_2026_runtime.py
++++ b/tests/mod_editor/test_nfl2k5_franchise_2026_runtime.py
+@@ -74,6 +74,16 @@ def week_save(*, grown=False, reserves=16):
+ 
+ 
+ class SaveOwnershipTests(unittest.TestCase):
++    def test_caller_and_tier_bytes_are_owned_settings_not_reserved_zero_storage(self):
++        block = bytearray(block_for(week_save()))
++        block[82], block[83] = 2 << 5, 4
++        career_save.validate(career_save.seal(block))
++        contract = f.persistence_contract()['mycareer']
++        for offset in (82, 83):
++            self.assertFalse(any(start <= offset < end for start, end in contract['reserved_zero_spans']),
++                             f'owned setting byte {offset} is incorrectly described as reserved zero')
++        self.assertEqual(contract['reusable_bytes'], 0)
++
+     def test_all_four_save_shapes_are_read_only_and_grant_no_ledger(self):
+         for grown in (False, True):
+             source = week_save(grown=grown)
+@@ -101,13 +111,17 @@ class SaveOwnershipTests(unittest.TestCase):
+     def test_resealed_reserved_footer_bytes_are_not_spare_storage(self):
+         source = week_save()
+         block = block_for(source)
+-        # Beta 66: byte 82 carries the five MyCareer Settings bits (0..31; bits 1 and 3 are exclusive); 83 and 88.. stay reserved.
+-        for at in (83, *range(88, 128)):
++        # Beta 69 owns caller bits 5..6 and tier byte 83; 88.. stay reserved.
++        for at in range(88, 128):
+             bad = bytearray(block)
+             bad[at] = 1
+             with self.subTest(offset=at), self.assertRaisesRegex(ValueError, 'reserved career bytes'):
+                 f.save_ownership_assessment(source + career_save.seal(bad))
+-        for value in (32, 10):
++        bad = bytearray(block)
++        bad[83] = 5
++        with self.assertRaisesRegex(ValueError, 'reserved career bytes'):
++            f.save_ownership_assessment(source + career_save.seal(bad))
++        for value in (96, 128, 10):
+             unknown = bytearray(block)
+             unknown[82] = value
+             with self.subTest(offset=82, value=value), self.assertRaisesRegex(ValueError, 'unknown settings'):
+@@ -215,12 +229,20 @@ class NativeBoundaryTests(unittest.TestCase):
+     def test_native_footer_validator_and_encoder_own_reserved_bytes(self):
+         block = block_for(self.grown)
+         with Machine(self.payload) as m:
+-            # Beta 66: byte 82 is the MyCareer Settings byte (0..31 valid, bits 1 and 3 exclusive); 83 and 88.. stay reserved.
+-            for at, value in ((83, 1), (82, 32), (82, 10), *((at, 1) for at in range(88, 128))):
++            # Keep invalid policy/tier and reserved-byte refusals strict.
++            for at, value in ((83, 5), (82, 96), (82, 128), (82, 10), *((at, 1) for at in range(88, 128))):
+                 bad = bytearray(block)
+                 bad[at] = value
+                 m.uc.mem_write(m.SAVE, career_save.seal(bad))
+                 self.assertEqual(m.call('inline_valid', ecx=m.SAVE, edx=arena.ARENA_SIZE), 0, at)
++            for caller in range(3):
++                for tier in range(5):
++                    valid = bytearray(block)
++                    valid[82], valid[83] = caller << 5, tier
++                    encoded = career_save.seal(valid)
++                    career_save.validate(encoded)
++                    m.uc.mem_write(m.SAVE, encoded)
++                    self.assertEqual(m.call('inline_valid', ecx=m.SAVE, edx=arena.ARENA_SIZE), 1)
+             m.uc.mem_write(m.state, career_save.to_runtime(block))
+             m.uc.mem_write(m.OUT, b'\xa5' * 128)
+             m.call('inline_encode', ecx=m.OUT)
+diff --git a/tests/mod_editor/test_nfl2k5_franchise_edit_player.py b/tests/mod_editor/test_nfl2k5_franchise_edit_player.py
+index b421e10b..5940a012 100644
+--- a/tests/mod_editor/test_nfl2k5_franchise_edit_player.py
++++ b/tests/mod_editor/test_nfl2k5_franchise_edit_player.py
+@@ -28,7 +28,7 @@ class PublicTests(unittest.TestCase):
+         self.assertTrue(set(edit.REQUESTS) <= set(REQUESTS))
+         self.assertTrue(set(edit.REQUESTS) <= set(space.dormant_union()))
+         plan = space.plan(rows, scaleout=True)
+-        self.assertEqual(plan['capacity']['read_only']['available_bytes'], 2968)  # beta 66: Broadcast camera v6 takes 320 RO (v5 took 80); beta 65: the accelerated clock's 8 RO bytes (16-aligned); beta 63 stack: 7400 alone; playbook pair 4096 RO
++        self.assertEqual(plan['capacity']['read_only']['available_bytes'], 2824)  # beta 69: J5's 140 RO bytes plus alignment; existing owner budgets unchanged
+         self.assertEqual(len(edit.read_only_bytes()), 704)
+         self.assertEqual(edit.EDIT_ROW[2:5], (1, 0, 0))
+         self.assertEqual(edit.EDIT_ROW[5:], (1,) * 10)
+diff --git a/tests/mod_editor/test_nfl2k5_weather.py b/tests/mod_editor/test_nfl2k5_weather.py
+index e4fb87f5..4187e7cd 100644
+--- a/tests/mod_editor/test_nfl2k5_weather.py
++++ b/tests/mod_editor/test_nfl2k5_weather.py
+@@ -2,6 +2,7 @@
+ from __future__ import annotations
+ 
+ import copy
++import json
+ import os
+ from pathlib import Path
+ import struct
+@@ -88,6 +89,22 @@ class ClimateTests(unittest.TestCase):
+         bad["changes"][0]["asset_code"] = "s99"
+         self.assertEqual(w.status(self.data, bad), "foreign")
+ 
++    def test_large_json_integers_refuse_with_climate_validation_error(self):
++        for field in w.FIELDS:
++            for value in (10**1000, -(10**1000)):
++                with self.subTest(field=field, sign=value > 0):
++                    with self.assertRaisesRegex(w.WeatherError, "finite value"):
++                        self.draft.set_value(5, 12, field, value)
++        for member in ("before", "after"):
++            for value in (10**1000, -(10**1000)):
++                with self.subTest(member=member, sign=value > 0):
++                    plan = self.plan()
++                    plan["changes"][0][member] = value
++                    plan = json.loads(json.dumps(plan))
++                    self.assertEqual(w.status(self.data, plan), "foreign")
++                    with self.assertRaisesRegex(w.WeatherError, "finite value"):
++                        w.apply(self.data, plan)
++
+     def test_validation_and_month_alias(self):
+         for value in (True, float("nan"), float("inf"), -1, 101, "20"):
+             with self.subTest(value=value), self.assertRaises(w.WeatherError):
+diff --git a/tests/mod_editor/test_ux_build_plan_coverage_qt.py b/tests/mod_editor/test_ux_build_plan_coverage_qt.py
+index 15a37f3a..7742e393 100644
+--- a/tests/mod_editor/test_ux_build_plan_coverage_qt.py
++++ b/tests/mod_editor/test_ux_build_plan_coverage_qt.py
+@@ -88,6 +88,7 @@ class BuildPlanCoverageTests(unittest.TestCase):
+             "max_deep_yards", "arc", "player_tags", "team_history", "career_stats", "prospect_names",
+             "roster_edits", "commentary", "playbook_packs", "name", "author", "notes",
+             "accelerated_clock_minimum_seconds",  # the Minimum Play Clock Time combo beside the clock check box
++            "decided_clock_margin", "decided_clock_seconds", "cpu_scrambles",
+         }
+         self.assertEqual(fields - bound, set(), "BuildPlan fields with no control on the Build tab")
+         self.assertEqual(bound - fields, set(), "controls that name a field BuildPlan no longer has")
+@@ -104,12 +105,17 @@ class BuildPlanCoverageTests(unittest.TestCase):
+         panel.notes_field.setPlainText("first try")
+         panel.set_commentary([mod_build.CommentarySwap("cutsceneaudio:3", "/tmp/line.wav")])
+         panel.set_playbook_packs(["/tmp/one.2k5book", "/tmp/two.2k5book"])
++        panel.decided_clock_margin.setCurrentIndex(panel.decided_clock_margin.findData(25))
++        panel.decided_clock_seconds.setCurrentIndex(panel.decided_clock_seconds.findData(90))
++        panel.cpu_scrambles_level.setCurrentIndex(panel.cpu_scrambles_level.findData("modern"))
+         plan = panel.plan()
+         self.assertAlmostEqual(plan.arc, 0.40)
+         self.assertEqual(plan.max_deep_yards, 75.0)
+         self.assertEqual((plan.name, plan.author, plan.notes), ("My mod", "me", "first try"))
+         self.assertEqual(plan.commentary[0].stream, "cutsceneaudio:3")
+         self.assertEqual(plan.playbook_packs, ("/tmp/one.2k5book", "/tmp/two.2k5book"))
++        self.assertEqual((plan.decided_clock_margin, plan.decided_clock_seconds,
++                          plan.cpu_scrambles), (25, 90, "modern"))
+         self.assertIn("commentary lines (1)", panel.selected_labels())
+         self.assertIn("playbook packs (2)", panel.selected_labels())
+         # the manual arc only applies while realistic flight is off
+@@ -162,7 +168,11 @@ class BuildPlanCoverageTests(unittest.TestCase):
+ 
+     def test_every_check_box_keeps_a_short_caption(self) -> None:
+         for box in self.panel.findChildren(QCheckBox):
+-            self.assertLessEqual(len(box.text()), 60, box.text())
++            if box is self.panel.coin_defer_check:
++                self.assertEqual(box.text(), mod_build.tt.coin_defer_patch.BUILD_CAPTION)
++                self.assertIn("CPU winners only", box.text())
++            else:
++                self.assertLessEqual(len(box.text()), 60, box.text())
+             self.assertTrue(box.text().strip(), "a nameless check box has no accessible name")
+ 
+     def test_source_and_output_as_the_same_file_is_blocked_with_a_fix(self) -> None:

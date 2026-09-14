@@ -1,0 +1,63 @@
+{
+  "required_files": 217,
+  "passing_files": 197,
+  "environment_failures": 20,
+  "final_native_runs": [
+    {
+      "path": "tests/mod_editor/test_nfl2k5_cave_oracle.py",
+      "ran": "Ran 29 tests in 374.766s",
+      "status": "OK (skipped=1)",
+      "seconds": 380.061,
+      "log": "reports/b69_a1b/gates-after-climate/test_nfl2k5_cave_oracle.log",
+      "log_sha256": "e471872764a098f182f8208d91e9526b5fa0680d24cf594b16e56eec7eb85d46",
+      "projection": ".scratch/a2b/gate-manifest.json"
+    },
+    {
+      "path": "tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py",
+      "ran": "Ran 506 tests in 2712.982s",
+      "status": "OK",
+      "seconds": 2713.283,
+      "log": "reports/b69_a1b/gates-after-climate/test_nfl2k5_owner_pairwise_composition.log",
+      "log_sha256": "2b69843ba3992983fa4a30715f278bbe6d9809d5d48b600d87b0176a13aa6348",
+      "projection": ".scratch/a2b/gate-manifest.json"
+    },
+    {
+      "path": "tests/mod_editor/test_xbe_patch_cave_references.py",
+      "ran": "Ran 131 tests in 1764.508s",
+      "status": "OK",
+      "seconds": 1764.885,
+      "log": "reports/b69_a1b/gates-after-climate/test_xbe_patch_cave_references.log",
+      "log_sha256": "3b62a8adf016331dff7eb139ef400afb5f1ddfc5ca2eb8ef79550b9c5abf43bd",
+      "projection": ".scratch/a2b/gate-manifest.json"
+    },
+    {
+      "path": "tests/mod_editor/test_xbe_patch_memory_writes.py",
+      "ran": "Ran 119 tests in 1564.983s",
+      "status": "OK",
+      "seconds": 1565.178,
+      "log": "reports/b69_a1b/gates-after-climate/test_xbe_patch_memory_writes.log",
+      "log_sha256": "89110028256ce65927d6e68a94076fc8601b8b1a98c1537923e91c6fbaf60c61",
+      "projection": ".scratch/a2b/gate-manifest.json"
+    },
+    {
+      "path": "tests/mod_editor/test_nfl2k5_supersim_live.py",
+      "ran": "Ran 34 tests in 2605.040s",
+      "status": "OK",
+      "seconds": 2605.235,
+      "log": "reports/b69_a1b/supersim-final/test_nfl2k5_supersim_live.log",
+      "log_sha256": "483a4ba5ff75e4f2f46f87ef84e4ac48e9ca44cc0d5523a8a4ab6aa359bbd738",
+      "projection": ".scratch/a2b/gate-manifest.json"
+    }
+  ],
+  "final_native_sources_match": true,
+  "retail_xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+  "projection": {
+    "path": ".scratch/a2b/gate-manifest.json",
+    "sha256": "168a4a6f4e47f5619cf1d6ef24bc5d89b836412aa69d1501952d6aa3da7f70a1",
+    "source_hashes": 331,
+    "transactions": 137,
+    "reservations": 12548,
+    "source_fresh": true,
+    "release_manifest": false
+  }
+}

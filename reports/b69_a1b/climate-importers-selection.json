@@ -1,0 +1,6 @@
+[
+  "tests/mod_editor/test_b69_a2b_game_wiring.py",
+  "tests/mod_editor/test_nfl2k5_weather.py",
+  "tests/mod_editor/test_nfl2k5_weather_editor.py",
+  "tests/mod_editor/test_nfl2k5_weather_native.py"
+]

@@ -178,9 +178,20 @@
       "available_bytes": 2824
     }
   },
+  "legacy_exhaustive_validator": {
+    "path": "tools/validate_all_mod_editor_capabilities.py",
+    "counts": {
+      "EXPECTED_CAPABILITIES": 108,
+      "EXPECTED_COVERED_CAPABILITIES": 103,
+      "EXPECTED_DEFERRED_CAPABILITIES": 5,
+      "EXPECTED_UNIQUE_VALIDATORS": 83
+    },
+    "excluded_known_red": true,
+    "predates_game_integration": true
+  },
   "projection": {
     "path": ".scratch/a2b/gate-manifest.json",
-    "sha256": "a5609746f3836d8fed9527a39bb8cef13f35a9542bd39b956552c8c4207c4f68",
+    "sha256": "168a4a6f4e47f5619cf1d6ef24bc5d89b836412aa69d1501952d6aa3da7f70a1",
     "source_hashes": 331,
     "transactions": 137,
     "reservations": 12548,

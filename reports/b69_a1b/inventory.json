@@ -939,6 +939,9 @@
     ],
     "tests/fixtures/profile_teamkit_import.py": [
       "mod_editor.gui.studio_qt"
+    ],
+    "tests/mod_editor/test_nfl2k5_throw_tuning.py": [
+      "nfl2k5_throw_tuning_test"
     ]
   },
   "standalone_tests": [
@@ -1113,6 +1116,7 @@
     "tests/mod_editor/test_nfl2k5_team_column.py",
     "tests/mod_editor/test_nfl2k5_team_history.py",
     "tests/mod_editor/test_nfl2k5_throw_arc.py",
+    "tests/mod_editor/test_nfl2k5_throw_tuning.py",
     "tests/mod_editor/test_nfl2k5_uniform_choice.py",
     "tests/mod_editor/test_nfl2k5_weather.py",
     "tests/mod_editor/test_nfl2k5_weather_editor.py",
@@ -1153,6 +1157,10 @@
     "tests/mod_editor/test_visual_export_and_preview.py",
     "tests/mod_editor/test_workspace_recovery.py",
     "tests/mod_editor/test_xbe_patch_cave_references.py",
-    "tests/mod_editor/test_xbe_patch_memory_writes.py"
+    "tests/mod_editor/test_xbe_patch_memory_writes.py",
+    "tests/nfl2k5_depth_chart_rows_test.py",
+    "tests/nfl2k5_edge_rename_test.py",
+    "tests/nfl2k5_scorebug_layout_test.py",
+    "tests/nfl2k5_throw_tuning_test.py"
   ]
 }

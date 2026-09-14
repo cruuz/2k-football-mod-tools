@@ -9,7 +9,7 @@ Every hunk below links to its full before/after diff. Merge-only resolutions are
 
 | ID | Job | File / hunk | Verdict | Review |
 | --- | --- | --- | --- | --- |
-| H001 | J3/J4/J5 | [ASTRA_B69_A2B_REPORT.md #1](integration-full.patch#L6) | wrong | A2b integration handoff; clear-button claim exceeds actual controls (D5), other results independently checked |
+| H001 | J3/J4/J5 | [ASTRA_B69_A2B_REPORT.md #1](integration-full.patch#L6) | wrong | A2b integration handoff; Clear-control claim and 12-entry runtime-block count are inaccurate (D5); other results independently checked |
 | H002 | J3/J4/J5 | [ASTRA_B69_J3_REPORT.md #1](integration-full.patch#L375) | documented deviation | Job handoff report/wiring links retargeted after rename; original handoff status retained |
 | H003 | J3/J4/J5 | [ASTRA_B69_J3_REPORT.md #2](integration-full.patch#L384) | documented deviation | Job handoff report/wiring links retargeted after rename; original handoff status retained |
 | H004 | J3/J4/J5 | [ASTRA_B69_J4_REPORT.md #1](integration-full.patch#L397) | documented deviation | Job handoff report/wiring links retargeted after rename; original handoff status retained |

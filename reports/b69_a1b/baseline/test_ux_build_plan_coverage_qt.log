@@ -1,0 +1,24 @@
+..FF...
+======================================================================
+FAIL: test_every_buildplan_field_has_a_binding_on_the_page (__main__.BuildPlanCoverageTests.test_every_buildplan_field_has_a_binding_on_the_page)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_ux_build_plan_coverage_qt.py", line 92, in test_every_buildplan_field_has_a_binding_on_the_page
+    self.assertEqual(fields - bound, set(), "BuildPlan fields with no control on the Build tab")
+AssertionError: Items in the first set but not the second:
+'decided_clock_seconds'
+'decided_clock_margin'
+'cpu_scrambles' : BuildPlan fields with no control on the Build tab
+
+======================================================================
+FAIL: test_every_check_box_keeps_a_short_caption (__main__.BuildPlanCoverageTests.test_every_check_box_keeps_a_short_caption)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_ux_build_plan_coverage_qt.py", line 165, in test_every_check_box_keeps_a_short_caption
+    self.assertLessEqual(len(box.text()), 60, box.text())
+AssertionError: 61 not less than or equal to 60 : Coin toss: CPU defer (modern, experimental; CPU winners only)
+
+----------------------------------------------------------------------
+Ran 7 tests in 1.503s
+
+FAILED (failures=2)

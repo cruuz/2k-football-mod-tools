@@ -132,7 +132,7 @@ for line, text in enumerate(patch.splitlines(), 1):
     if path.startswith(('WIRING_', 'ASTRA_B69_J')):
         desc = 'Job handoff report/wiring links retargeted after rename; original handoff status retained'
     if path == 'ASTRA_B69_A2B_REPORT.md':
-        desc = 'A2b integration handoff; clear-button claim exceeds actual controls (D5), other results independently checked'
+        desc = 'A2b integration handoff; Clear-control claim and 12-entry runtime-block count are inaccurate (D5); other results independently checked'
         verdict = 'wrong'
     assert desc, path
     job = '/'.join(j for j in ('J3', 'J4', 'J5') if j in desc) or 'J3/J4/J5'

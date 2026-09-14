@@ -1,0 +1,149 @@
+.EEEE..
+======================================================================
+ERROR: test_a_second_open_supersedes_the_first_inspection (__main__.OpenDiscHookTests.test_a_second_open_supersedes_the_first_inspection)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_ux_open_disc_hook_qt.py", line 66, in setUp
+    self.window = StudioMainWindow(eager_pages=True, facade=BrowseOnlyFacade(), offer_recovery=False)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/gui/studio_qt.py", line 1854, in __init__
+    self._ensure_workspace(row)
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/gui/studio_qt.py", line 2805, in _ensure_workspace
+    page = factory()
+           ^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/gui/studio_qt.py", line 2744, in <lambda>
+    self._add_lazy_page(category.value, lambda category=category: self._build_category_page(category))
+                                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/gui/studio_qt.py", line 2926, in _build_category_page
+    self._build_colors_page(section), tab_title("Colours & Other Tools")
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/gui/studio_qt.py", line 3718, in _build_colors_page
+    self._filter_unif_color_sets()
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/gui/studio_qt.py", line 3758, in _filter_unif_color_sets
+    for uniform_set in self.uniform_catalog.uniform_sets
+                       ^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/gui/studio_qt.py", line 2775, in uniform_catalog
+    self._uniform_catalog = load_nfl2k5_uniform_catalog()
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/core/nfl2k5_uniform_catalog.py", line 570, in load_nfl2k5_uniform_catalog
+    return _load_cached(str(report_path.expanduser().resolve(strict=True)))
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1242, in resolve
+    s = self._flavour.realpath(self, strict=strict)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen posixpath>", line 432, in realpath
+  File "<frozen posixpath>", line 476, in _joinrealpath
+FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1b/reports/assets'
+
+======================================================================
+ERROR: test_one_open_fills_the_build_and_patch_pages_with_the_right_captions (__main__.OpenDiscHookTests.test_one_open_fills_the_build_and_patch_pages_with_the_right_captions)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_ux_open_disc_hook_qt.py", line 66, in setUp
+    self.window = StudioMainWindow(eager_pages=True, facade=BrowseOnlyFacade(), offer_recovery=False)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/gui/studio_qt.py", line 1854, in __init__
+    self._ensure_workspace(row)
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/gui/studio_qt.py", line 2805, in _ensure_workspace
+    page = factory()
+           ^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/gui/studio_qt.py", line 2744, in <lambda>
+    self._add_lazy_page(category.value, lambda category=category: self._build_category_page(category))
+                                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/gui/studio_qt.py", line 2926, in _build_category_page
+    self._build_colors_page(section), tab_title("Colours & Other Tools")
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/gui/studio_qt.py", line 3718, in _build_colors_page
+    self._filter_unif_color_sets()
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/gui/studio_qt.py", line 3758, in _filter_unif_color_sets
+    for uniform_set in self.uniform_catalog.uniform_sets
+                       ^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/gui/studio_qt.py", line 2775, in uniform_catalog
+    self._uniform_catalog = load_nfl2k5_uniform_catalog()
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/core/nfl2k5_uniform_catalog.py", line 570, in load_nfl2k5_uniform_catalog
+    return _load_cached(str(report_path.expanduser().resolve(strict=True)))
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1242, in resolve
+    s = self._flavour.realpath(self, strict=strict)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen posixpath>", line 432, in realpath
+  File "<frozen posixpath>", line 476, in _joinrealpath
+FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1b/reports/assets'
+
+======================================================================
+ERROR: test_start_softdrink_basic_waits_for_the_inspection_and_only_ticks_a_fresh_selection (__main__.OpenDiscHookTests.test_start_softdrink_basic_waits_for_the_inspection_and_only_ticks_a_fresh_selection)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_ux_open_disc_hook_qt.py", line 66, in setUp
+    self.window = StudioMainWindow(eager_pages=True, facade=BrowseOnlyFacade(), offer_recovery=False)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/gui/studio_qt.py", line 1854, in __init__
+    self._ensure_workspace(row)
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/gui/studio_qt.py", line 2805, in _ensure_workspace
+    page = factory()
+           ^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/gui/studio_qt.py", line 2744, in <lambda>
+    self._add_lazy_page(category.value, lambda category=category: self._build_category_page(category))
+                                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/gui/studio_qt.py", line 2926, in _build_category_page
+    self._build_colors_page(section), tab_title("Colours & Other Tools")
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/gui/studio_qt.py", line 3718, in _build_colors_page
+    self._filter_unif_color_sets()
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/gui/studio_qt.py", line 3758, in _filter_unif_color_sets
+    for uniform_set in self.uniform_catalog.uniform_sets
+                       ^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/gui/studio_qt.py", line 2775, in uniform_catalog
+    self._uniform_catalog = load_nfl2k5_uniform_catalog()
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/core/nfl2k5_uniform_catalog.py", line 570, in load_nfl2k5_uniform_catalog
+    return _load_cached(str(report_path.expanduser().resolve(strict=True)))
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1242, in resolve
+    s = self._flavour.realpath(self, strict=strict)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen posixpath>", line 432, in realpath
+  File "<frozen posixpath>", line 476, in _joinrealpath
+FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1b/reports/assets'
+
+======================================================================
+ERROR: test_the_roster_page_follows_the_disc_lazily_and_never_resets_an_edited_roster (__main__.OpenDiscHookTests.test_the_roster_page_follows_the_disc_lazily_and_never_resets_an_edited_roster)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b69-a1b/tests/mod_editor/test_ux_open_disc_hook_qt.py", line 66, in setUp
+    self.window = StudioMainWindow(eager_pages=True, facade=BrowseOnlyFacade(), offer_recovery=False)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/gui/studio_qt.py", line 1854, in __init__
+    self._ensure_workspace(row)
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/gui/studio_qt.py", line 2805, in _ensure_workspace
+    page = factory()
+           ^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/gui/studio_qt.py", line 2744, in <lambda>
+    self._add_lazy_page(category.value, lambda category=category: self._build_category_page(category))
+                                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/gui/studio_qt.py", line 2926, in _build_category_page
+    self._build_colors_page(section), tab_title("Colours & Other Tools")
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/gui/studio_qt.py", line 3718, in _build_colors_page
+    self._filter_unif_color_sets()
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/gui/studio_qt.py", line 3758, in _filter_unif_color_sets
+    for uniform_set in self.uniform_catalog.uniform_sets
+                       ^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/gui/studio_qt.py", line 2775, in uniform_catalog
+    self._uniform_catalog = load_nfl2k5_uniform_catalog()
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b69-a1b/mod_editor/core/nfl2k5_uniform_catalog.py", line 570, in load_nfl2k5_uniform_catalog
+    return _load_cached(str(report_path.expanduser().resolve(strict=True)))
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1242, in resolve
+    s = self._flavour.realpath(self, strict=strict)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen posixpath>", line 432, in realpath
+  File "<frozen posixpath>", line 476, in _joinrealpath
+FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b69-a1b/reports/assets'
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.835s
+
+FAILED (errors=4)

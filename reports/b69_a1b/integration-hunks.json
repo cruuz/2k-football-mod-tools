@@ -7,7 +7,7 @@
     "diff_line": 6,
     "hunk": "@@ -0,0 +1,364 @@",
     "verdict": "wrong",
-    "review": "A2b integration handoff; clear-button claim exceeds actual controls (D5), other results independently checked"
+    "review": "A2b integration handoff; Clear-control claim and 12-entry runtime-block count are inaccurate (D5); other results independently checked"
   },
   {
     "id": "H002",

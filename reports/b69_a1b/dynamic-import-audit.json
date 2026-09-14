@@ -1,0 +1,16 @@
+{
+  "imports": {},
+  "additional_tests": {},
+  "legacy_suite_wrappers": {
+    "tests/mod_editor/test_nfl2k5_throw_tuning.py": [
+      "nfl2k5_throw_tuning_test"
+    ]
+  },
+  "legacy_test_files_added": [
+    "tests/mod_editor/test_nfl2k5_throw_tuning.py",
+    "tests/nfl2k5_depth_chart_rows_test.py",
+    "tests/nfl2k5_scorebug_layout_test.py",
+    "tests/nfl2k5_edge_rename_test.py",
+    "tests/nfl2k5_throw_tuning_test.py"
+  ]
+}
