@@ -576,6 +576,8 @@ def dormant_union():
     from . import nfl2k5_playbook_pair as playbook_pair
     from . import nfl2k5_deep_zone as deep_zone
     from . import nfl2k5_accelerated_clock as accelerated_clock
+    from . import nfl2k5_coin_defer as coin_defer, nfl2k5_decided_clock as decided_clock
+    from . import nfl2k5_cpu_scrambles as cpu_scrambles
     # keep this in step with tests/nfl2k5_allocator_stack.REQUESTS and the manifest builder's all_requests
     return (camera.REQUESTS + relocated.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + runtime.REQUESTS
             + zone_drop.REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS + playlist.REQUESTS
@@ -584,7 +586,8 @@ def dormant_union():
             + my_career.REQUESTS + screen_hooks.REQUESTS + arena_growth.REQUESTS + autosave.REQUESTS
             + espn25.REQUESTS + coverage_trail.REQUESTS + edit_player.REQUESTS + money_downs.REQUESTS
             + weekly_prep.REQUESTS + playbook_pair.REQUESTS + deep_zone.REQUESTS
-            + accelerated_clock.REQUESTS)
+            + accelerated_clock.REQUESTS
+            + coin_defer.REQUESTS + decided_clock.REQUESTS + cpu_scrambles.REQUESTS)
 
 
 def is_scaleout(payload):

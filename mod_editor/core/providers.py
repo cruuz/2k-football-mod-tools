@@ -726,7 +726,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_weekly_prep_code.py": "554fb7018dd0d2d5c59bd230cffd64d3be1cbc910df6410e40920cd3c08e97f8",
         "mod_editor/core/nfl2k5_weekly_prep_save.py": "aedb0576c3a19a3a6574362729f83d3dfac5bc4aae7eb203388403c721a83720",
         "mod_editor/core/nfl2k5_widescreen.py": "e3c24be27e02098ef981349aa9a1008b26d022bf655c0c0c6e4e70557c0f0f43",
-        "mod_editor/core/nfl2k5_xbe_space.py": "cba5f40d4dd7940032fb90b5554e1605f3f773c94b42871dbd119a9ede49e74b",
+        "mod_editor/core/nfl2k5_xbe_space.py": "f146c8ff8c5fdbb8da4db9a3acfe6102f1fff713e659158a0bc69b86481ea2c6",
         "mod_editor/core/nfl2k5_zone_drop.py": "96b915ac40cfbcb61b9bfa88a584a18841635e061947a7e1644ea193f83a94f0",
         "mod_editor/core/nfl_audio.py": "31193529647bd5fc35a2c25d38bccb83d20b16d46358169c26ced120c6c8e05c",
         "mod_editor/core/platform_compat.py": "cbcf52e782c474b91dbb2c36f35547e88e8062d4f3e0434baa8314e695a1e811",
