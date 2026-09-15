@@ -7,6 +7,8 @@ from .errors import ValidationError
 
 
 def fit_caption(row):
+    if row.get('fit_status') == 'needs refit':
+        return 'needs refit: ' + row['fit_error']
     dimensions = row.get('encoded_dimensions')
     colours = row.get('used_palette_entries')
     if (not isinstance(dimensions, (tuple, list)) or len(dimensions) != 2

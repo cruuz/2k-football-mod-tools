@@ -511,7 +511,7 @@ class Nfl2k5UnifiedVisualProvider:
         "--source-xiso <retail.xiso.iso> --output-xiso <new.xiso.iso> "
         "--manifest <manifest.json> --artifact-dir <artifact-dir>"
     )
-    backend_module_sha256 = "556e5cbbb128fc15bed5089f9b9ce1d1271cdc7f72c3be989b27e54ac847d5a5"
+    backend_module_sha256 = "e1b9a83d934a7cec7d354778f50981f463907e9e139200b2c0f21b3238593568"
     module_pins: Mapping[str, str] = {
         "mod_editor/core/nfl2k5_my_career_prospects.py": "6edcb1b6bc07bfb68c1317df5c8949596ae6d4ebcfb2fd13cace66b7539ae00a",
         "mod_editor/core/nfl2k5_rules_patch.py": "fa055e93835ad7c49196d361c7e0c9cfdec6fb620067ab7a0524e8a3cddcd15a",
@@ -525,8 +525,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/build_feedback.py": "c0bcebffa3491e2557b1e4bb8456edc3d7b80ed14aaa636d2eb740e4520b96f0",
         "mod_editor/core/build_io.py": "bb5bf2cf27bea644fa7f7ef694ff5a9368a076a04d59379fcdb568ace6167744",
         "mod_editor/core/equipment_palette.py": "0272af0ed054919fd21624a4a2adbeec97959f78036dd5932de3ef5211b8f844",
-        "mod_editor/core/equipment_reporting.py": "a4f451861dce2aaf39de9347570ee7a29a77c7acaa44be1dd7611488cd88a75c",
-        "mod_editor/core/equipment_staging.py": "22d41e2f4a5c71ddb85f38ca755df74273cca4fe33fb3b918da092de084070f5",
+        "mod_editor/core/equipment_reporting.py": "2f5f303aef2c7ee84aee4948e3fecd165949dcdd433330d4e917c439a371523c",
+        "mod_editor/core/equipment_staging.py": "c0b54c1d3168ebe6680b73297f4c2e105aee42ab90b1900f48b625db49996e2d",
         "mod_editor/core/errors.py": "4624e80f063f1e7db69ec6c20d2703f01eec49728b02c88792ccb309bd742de0",
         "mod_editor/core/image_use.py": "78794c08fcf52debcb24d54cf62c8b1936463aedbe74929cdb5037f117b9c14d",
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
@@ -725,7 +725,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_unif_color_writer.py": "5e950cc404e25c1fbeff7ee5aa2a3fad235115aeddd743e95be6862677a88324",
         "mod_editor/core/nfl2k5_uniform_catalog.py": "342964f000624ce7dcbc552fce01810a93704dca6bc62559cc7a73b89f8c59a1",
         "mod_editor/core/nfl2k5_uniform_choice.py": "d618e2d8ebeae1443b0e9846e4f26d53cbc8d74314253798b860ddf8e9c312d9",
-        "mod_editor/core/nfl2k5_uniform_equipment_writer.py": "8a0a583dd3ce9a3639e722942ae8be27f139b38162586fb8f901928f21114716",
+        "mod_editor/core/nfl2k5_uniform_equipment_writer.py": "92f19e14888344de43fb8a4a195ca1833e35a3b4ae939bfc66009f554f4138d4",
         "mod_editor/core/nfl2k5_universal_asset_index.py": "9df3c0a754abcb60fa4db3afd0f9b8af364f60551014d259e2713f5387491421",
         "mod_editor/core/nfl2k5_weekly_prep.py": "5b3b9847f24246b33be5d63d141908f7241ea3da7a62a8d9736c0964b0bff933",
         "mod_editor/core/nfl2k5_weekly_prep_code.py": "554fb7018dd0d2d5c59bd230cffd64d3be1cbc910df6410e40920cd3c08e97f8",
@@ -753,7 +753,7 @@ class Nfl2k5UnifiedVisualProvider:
         "tools/nfl2k5_scorebug_layout.py": "63ee159943a6494de331339e7460cb674955698c1d0d6a3aa8057e024967dcc5",
         "tools/nfl2k5_scorebug_position_patch.py": "eb2b913bd4d0620dcefc4f280db1f6d73e4a5c348b0483a246bbf587506cdbff",
         "tools/nfl2k5_scorebug_reference.py": "32ef741eb84bdf022de8cae357895eea891e6265c025e57afd4d49a37a6f4444",
-        "tools/nfl2k5_visual_mod_project.py": "556e5cbbb128fc15bed5089f9b9ce1d1271cdc7f72c3be989b27e54ac847d5a5",
+        "tools/nfl2k5_visual_mod_project.py": "e1b9a83d934a7cec7d354778f50981f463907e9e139200b2c0f21b3238593568",
         "tools/nfl_all_texture_xiso_workflow.py": "61d0574ae5320cb7b12b96f1be0b34dcf1fdef363091b00de0fd0fac7130bd91",
         "tools/nfl_audo_wav_xiso_workflow.py": "d684cbe7b30f77caf808bcef3d0219777b333336ae5bee4837d10f69cc1d13c6",
         "tools/nfl_create_team_field_art_inventory.py": "da59018f1417871516b75769ea53a351a1d2b03ed855f985c1f88ac333b42489",

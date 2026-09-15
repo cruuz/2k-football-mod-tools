@@ -97,7 +97,7 @@ class SearchTests(unittest.TestCase):
         with patch.object(lz, 'compress_equipment_optimal', wraps=lz.compress_equipment_optimal) as optimal:
             with self.assertRaises(lz.EquipmentSizeOverflow):
                 writer._cached_parse(source, 1, 10, 3000)
-            optimal.assert_not_called()  # greedy already proves too large
+            optimal.assert_called_once()  # a greedy cutoff still checks the optimal parse
         with patch.object(writer, 'compress_vc_lz', side_effect=AssertionError('repeated greedy')):
             with self.assertRaises(lz.EquipmentSizeOverflow):
                 writer._cached_parse(source, 1, 10, 3000)

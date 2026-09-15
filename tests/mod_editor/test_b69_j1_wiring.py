@@ -108,13 +108,14 @@ class WiringTests(unittest.TestCase):
         self.assertIn('Project edit index 1',output.toPlainText())
         self.assertIn('Uniforms / torso',output.toPlainText())
 
-    def test_load_hook_refuses_real_unfit_group_and_cleans_before_session_mutation(self):
+    def test_load_hook_refuses_corrupt_art_and_cleans_before_session_mutation(self):
         from mod_editor.studio import session as session_module
         from test_b69_j1_fit import tight_fixture
         source=self.load_method_source(session_module)
         with tempfile.TemporaryDirectory() as folder:
             root=Path(folder).resolve();fixture,rgba=tight_fixture(root)
             asset,png=fixture.png(rgba=rgba)
+            png.write_bytes(b'corrupt PNG')
             cleanup=Mock()
             loaded=SimpleNamespace(edits=[SimpleNamespace(
                 asset=SimpleNamespace(kind='uniform_equipment_texture',asset_id=asset),staged_path=png)],
@@ -124,7 +125,7 @@ class WiringTests(unittest.TestCase):
             sentinel={};owner=SimpleNamespace(modified_count=0,_audio_annotations={},_build_settings={},
                 _project_catalog_router=None,_project_io_router=None,root=root,
                 cache=SimpleNamespace(pack0=root/'0'),_edits=sentinel)
-            with fixture.context(), self.assertRaisesRegex(ValueError,'Cannot load equipment edits:.*shoes01.*200 bytes'):
+            with fixture.context(), self.assertRaisesRegex(ValueError,'Cannot load equipment edits:.*shoes01'):
                 namespace['load_shareable_project'](owner,root/'old.2k5mod')
             cleanup.assert_called_once_with()
             self.assertIs(owner._edits,sentinel)
