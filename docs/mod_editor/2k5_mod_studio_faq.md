@@ -79,13 +79,53 @@ image deliberately removes detail. Dirty socks are a separate import; relief map
 An unchanged retail export imported as own artwork at original size preserves its existing
 palette and distance images when the studio recognizes it. New artwork must pass the fit check.
 
-Global shoe rows offer **All teams** because the game shares those styles. The previous FAQ
-described a package-local colour route for shoes09/Style 3 and shoes10/Style 6, proved offline.
-maumau78 subsequently reported **Style 6 appearing in Edit Player but not in-game for the Bears**.
-That contradicts treating the preview as proof of the game's appearance. Check the current
-[changelog](2k5_mod_studio_changelog.md) for the equipment fix's scope; do not assume a visible
-preview establishes the correct kit or runtime binding. Choose the style on both feet and
-report the team, home/away kit and imported slot if they differ in-game.
+Global shoe rows offer **All teams** because the game shares those styles. Style 3 selects
+shoes09; Style 6 selects shoes10 in each worn uniform package. Choose the style on both feet.
+maumau78 reported “I assigned this shoe to both mud and normal slot and it finally show up
+in-game,” while it still looked buggy. A normal shoe, glove or pad import now stages its mud
+sibling wherever that sibling exists; a mud-only import stays separate. Revert on the normal
+slot restores the same group in one undoable action. Import each home/away uniform you wear.
+The tested field path chooses the normal/mud cache row from a runtime player-record flag,
+including under dry weather inputs. The flag's gameplay lifecycle is not established. These
+changes are **UNWITNESSED in game**; the earlier single-slot guidance was insufficient in
+maumau78's game.
+
+The import result, measured project rows and verified build summary identify the fitted
+size and the colours actually referenced across its mip chain, for example **fitted at
+64 x 64, 16 colours**. High-contrast bands keep a palette limit of at least 16 entries;
+if they do not fit, **Try that** offers an explicitly checked smaller image. A design with
+fewer colours may use fewer than 16 entries without losing any of those colours. Quantization
+uses the authored art with no dithering. A smaller image still loses fine detail. The actual
+source PNG for Coach Edwards' photographed socks was not available, so the photo's cause
+has not been isolated. Larger equipment allocations remain unavailable until the full
+archive relocation and disc round trip are proved.
+
+## Why are arm digits on the sleeve instead of the shoulder pad?
+
+The jersey mesh and its UV coordinates determine which body surface carries the artwork
+and how the picture maps onto it. Importing the digit changes the artwork, not its position.
+The retail model contains both sleeve and shoulder digit surface names; choosing and moving
+those surfaces needs model and visibility research. See the
+[arm-digit model research note](../research/nfl2k5_arm_digit_placement.md).
+
+## Do equipment textures replace existing ones or add extras?
+
+They replace an existing slot's artwork; they do not add another selectable shoe, sock or glove style.
+
+## Why can a modified stadium banner still look original in a game?
+
+Each venue has separate day, afternoon and night packages, each with dry, rain and snow
+variants. An import changes only its selected SCNE occurrence and the materials linked to
+that embedded texture. Choose the venue and conditions in the now-named scene list before
+importing; the build receipt names the exact package and texture occurrence. Other variants
+keep their own art. The generic old “stadium” labels hid this distinction.
+
+For a daytime dry Bears home test, search **Chicago Field**, select **Day / Dry (s05dd.iff)**,
+and edit **Texture 42 / banner_corp**. For Cincinnati choose **Paul Brown Stadium / Day / Dry
+(s06dd.iff)** and **Texture 29 / banner_corp**. Look at the corporate sponsor boards around
+the field. Different time/weather packages must be edited separately. The native material
+binding and written pixels pass offline checks; appearance in game remains **UNWITNESSED**.
+The stadium in andrethealchemist's report is unknown, and Texture 29 alone cannot identify it.
 
 ## What is the raised logo under my shoe artwork?
 

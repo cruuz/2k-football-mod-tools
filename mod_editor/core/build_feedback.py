@@ -49,7 +49,8 @@ def kept_retail_notes(receipt):
 
 
 def completion(receipt):
-    """A missing measurement never becomes a claim that patches were written."""
+    """Keep measured outcomes and summarize retained assets without changing receipts."""
+    from mod_editor.core.nfl2k5_build_service import summarize_kept_retail
     outcome = receipt.get("outcome", {})
     if outcome.get("status") == "unchanged":
         title, message = "No changes written", outcome["message"]
@@ -57,11 +58,14 @@ def completion(receipt):
         title, message = "Disc ready", outcome["message"]
     else:
         title, message = "Copy ready; changes not measured", "The copy was written, but this receipt does not say whether it differs from the source. Review the Build summary before using the copy."
-    notes = kept_retail_notes(receipt)
-    if notes:
-        message += (
-            f"\n\nKept retail for {len(notes)} uniform slot{'s' if len(notes) != 1 else ''} "
-            "whose art could not fit its fixed texture slot:\n"
-            + "\n".join(f"- {note}" for note in notes)
-        )
+    rows = [row for step in receipt.get("steps", []) or () if isinstance(step, dict)
+            for row in step.get("kept_retail", ()) or () if isinstance(row, dict)]
+    named = [row for row in rows if row.get("selector") or row.get("asset_id")]
+    if named:
+        message += "\n\n" + summarize_kept_retail(named)
+    # Very old/minimal receipts carry only a sentence, with no asset identity.
+    legacy = list(dict.fromkeys(str(row["message"]) for row in rows
+                               if row not in named and row.get("message")))
+    if legacy:
+        message += "\n\n" + "\n".join(legacy)
     return title, message

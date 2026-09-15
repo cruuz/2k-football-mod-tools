@@ -1,0 +1,17 @@
+[1] mod_editor/core/providers.py: mod_editor/core/nfl2k5_build_service.py
+    8185c350ebd2ebb97160b1709f2f7f960c57c5ea9344bf1b57e4a6c2c662eb50
+ -> 7e5ae1a8d535dba29841ced89a7ea380f82dfb886fb1eb3a7910760814f9f650
+[1] mod_editor/core/providers.py: mod_editor/core/nfl2k5_equipment_lz.py
+    3a0a3594115c227bafa2890153522c4d7be5377e013a15d56d57d4b71353b5a9
+ -> 047997819ae44347417e93f1c93b6027c3a800c9fe3c22596657acabb77eaf6d
+[1] mod_editor/core/providers.py: mod_editor/core/nfl2k5_uniform_equipment_writer.py
+    574a1a610a7733b0a71b494a3604599510b0ec6cf069fdde1c5e3cc255d7cb71
+ -> 3c2c1c8554b343a3c8ee79694dbaa638f8aecae64cbaaff90daa0129712bb5c9
+[1] mod_editor/core/providers.py: tools/nfl2k5_visual_mod_project.py
+    9ab6a1a04ebc05b292086f8eb18cdd42fe5089077f1f1c0e26f7ab3b8c7537ba
+ -> 556e5cbbb128fc15bed5089f9b9ce1d1271cdc7f72c3be989b27e54ac847d5a5
+[1] mod_editor/core/providers.py: backend_module_sha256 -> tools/nfl2k5_visual_mod_project.py
+    9ab6a1a04ebc05b292086f8eb18cdd42fe5089077f1f1c0e26f7ab3b8c7537ba
+ -> 556e5cbbb128fc15bed5089f9b9ce1d1271cdc7f72c3be989b27e54ac847d5a5
+
+applied 5 pin update(s)

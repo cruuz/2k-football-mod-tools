@@ -3523,20 +3523,22 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/mod_editor/apf_wave_2026_09_09.md",
-        "docs/mod_editor/apf_b661_cpu_book_control.md"
+        "docs/mod_editor/apf_b661_cpu_book_control.md",
+        "docs/mod_editor/apf2k8_book_identity_walkthrough.md"
       ],
       "game": "apf2k8_xbox360",
       "gui": {
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "Integrated in the APF Studio with offline validation; gameplay UNWITNESSED."
+        "reason": "Book Identity links the walkthrough and exposes replacement unchecked by default, per book. Offline writer/reparse proved; gameplay UNWITNESSED."
       },
       "id": "apf2k8.playbooks.scheme_presets",
       "input_constraints": [
         "Use a separate new destination; source game files remain read-only.",
         "Reject malformed ownership, hash collisions, shared clone labels, occupied directory slack, IFF overflow, and H7A length greater than distance.",
-        "Only existing plays/formations are used; no CPU situational frequency, WR depth flip, true RPO, or TU compatibility is established."
+        "Only existing plays/formations are used; no CPU situational frequency, WR depth flip, true RPO, or TU compatibility is established.",
+        "Stock replacement must fit the existing allocation, cover ordinary personnel rows and have no conflicting Fine-tune selectors. All users of the shared target receive the change."
       ],
       "portme": [
         "Witness base-XEX loading and per-team cloned-book consumption; reconstruct TU resolver before claiming TU compatibility."
@@ -3560,7 +3562,7 @@
             "required": true
           }
         ],
-        "notes": "Select existing plays and retarget tagged slots through the SPLB writer; preserve formations, personnel fields, fallback records, and all other bytes."
+        "notes": "Existing copy recipes retain their CLI. Book Identity also calls scheme_service.stage_replacement with a stock book name and one of eight beta-69 scheme IDs; it replaces the entire donor content and retains donor special-call tails. Existing target membership is not merged."
       },
       "source_container": {
         "format": "APF AA00B3BF four-volume archive, IFF/H7A, SPLB and ROST",
@@ -3570,9 +3572,9 @@
         "resource": "filename-addressed book resources and root[11] labels; root[4] team pointers",
         "retail_file": "user-owned extracted APF Xbox 360 game folder"
       },
-      "summary": "Fill one independent copy from Wide Zone, Spread-to-Run or Pro Power while keeping team, label and donor editable. Content remains editable in Fine-tune after building; the separate shared-book staging and CLI paths remain available.",
+      "summary": "Book Identity offers three copy recipes and opt-in replacement of any of eight stock offensive books with beta-69 scheme starting content. Whole-content reparse and fixed-allocation refusal precede staging; gameplay UNWITNESSED.",
       "surface": "scripts_config",
-      "title": "Wide Zone, Spread-to-Run, Pro Power",
+      "title": "Starting recipes and stock book replacement",
       "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
     },
     {
@@ -8868,14 +8870,18 @@
         "tests/mod_editor/test_nfl2k5_music_metadata.py",
         "tests/mod_editor/test_nfl2k5_music_acceptance.py",
         "tests/mod_editor/test_nfl2k5_jukebox_list.py",
-        "docs/mod_editor/nfl2k5_beta66_d2_validation.json"
+        "docs/mod_editor/nfl2k5_beta66_d2_validation.json",
+        "ASTRA_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_music_resample.py",
+        "tests/mod_editor/test_nfl2k5_music_conform_integration.py",
+        "tests/mod_editor/test_nfl2k5_music_queue.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "Rebuild a personal menu or jukebox bank with authored WAVs and retained source tracks. Jukebox mono twins and titles are one transaction. Experimental, not yet tested in game. EXPERIMENTAL / UNWITNESSED."
+        "reason": "Mud's beta-69 video confirms that imports appear in My songs and The Crib loads without a crash. He also reports poor audio; its cause is unresolved. Beta 70 warns before import about 22,050 Hz playback, uses stricter SoXR low-pass filtering and final TPDF PCM16 dither. Synthetic sweep and bounded queue checks are PROVED; listening quality and every beta-70 in-game outcome remain UNWITNESSED. Five identical visible queue titles alone do not prove duplicate automatic enqueueing."
       },
       "id": "nfl2k5.music.bank_rebuild",
       "input_constraints": [
@@ -8895,8 +8901,10 @@
         "tooling": "source-and-schemas-only"
       },
       "runtime": {
-        "evidence": [],
-        "scope": "EXPERIMENTAL / UNWITNESSED. Offline compiler and transport checks; no game playback witnessed.",
+        "evidence": [
+          "ASTRA_REPORT.md"
+        ],
+        "scope": "Mud's beta-69 video confirms that imports appear in My songs and The Crib loads without a crash. He also reports poor audio; its cause is unresolved. Beta 70 warns before import about 22,050 Hz playback, uses stricter SoXR low-pass filtering and final TPDF PCM16 dither. Synthetic sweep and bounded queue checks are PROVED; listening quality and every beta-70 in-game outcome remain UNWITNESSED. Five identical visible queue titles alone do not prove duplicate automatic enqueueing.",
         "status": "not-tested"
       },
       "selectors": {
@@ -8927,7 +8935,7 @@
         "resource": "Policy fields and seven fixed-slot music banks; full-library rebuild validates all 17 descriptor owners.",
         "retail_file": "default.xbe and vc_53450030/0..F"
       },
-      "summary": "Rebuild a personal menu or jukebox bank with authored WAVs and retained source tracks. Jukebox mono twins and titles are one transaction. Experimental, not yet tested in game. Beta 66 (Mud): the Crib collection-list builder is bounded by the label block (nfl2k5_jukebox_list) so an added-song collection no longer walks past its four disc rows; entering it in game is UNWITNESSED.",
+      "summary": "Rebuild a personal menu or jukebox bank with authored WAVs and retained source tracks. Jukebox mono twins and titles are one transaction. Experimental, not yet tested in game. Beta 66 (Mud): the Crib collection-list builder is bounded by the label block (nfl2k5_jukebox_list) so an added-song collection no longer walks past its four disc rows; entering it in game is UNWITNESSED. Mud's beta-69 video confirms that imports appear in My songs and The Crib loads without a crash. He also reports poor audio; its cause is unresolved. Beta 70 warns before import about 22,050 Hz playback, uses stricter SoXR low-pass filtering and final TPDF PCM16 dither. Synthetic sweep and bounded queue checks are PROVED; listening quality and every beta-70 in-game outcome remain UNWITNESSED. Five identical visible queue titles alone do not prove duplicate automatic enqueueing.",
       "surface": "audio",
       "title": "Music library (experimental)",
       "validation_command": "python3 tools/validate_beta61_integrated_features.py"
@@ -8943,14 +8951,16 @@
         "ASTRA_MUSIC_BUILD_REPORT.md",
         "tests/mod_editor/test_nfl2k5_music_build.py",
         "tests/mod_editor/test_music_service.py",
-        "tests/mod_editor/test_music_panel_qt.py"
+        "tests/mod_editor/test_music_panel_qt.py",
+        "tests/mod_editor/test_nfl2k5_music_resample.py",
+        "tests/mod_editor/test_nfl2k5_music_conform_integration.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "86 logical music slots; 59 jukebox entries update stereo and mono together. Exact-length fit, restore, Undo, authored projects and copy builds. In-game playback has not been witnessed. EXPERIMENTAL / UNWITNESSED."
+        "reason": "86 logical music slots; linked stereo/mono replacements remain one transaction. Before import, explain the game's 22,050 Hz playback. Converted inputs stay float through resampling, gain and fade, then receive one TPDF PCM16 conversion. Native PCM16 at unity gain without a fade stays exact. EXPERIMENTAL / UNWITNESSED in game."
       },
       "id": "nfl2k5.music.fixed_slot",
       "input_constraints": [
@@ -9012,7 +9022,9 @@
         "ASTRA_MUSIC_ALL_MODES_REPORT.md",
         "tests/mod_editor/test_nfl2k5_music_playlist_library.py",
         "tests/mod_editor/test_music_playlist_project.py",
-        "tests/mod_editor/test_music_all_modes_wiring.py"
+        "tests/mod_editor/test_music_all_modes_wiring.py",
+        "tests/mod_editor/test_nfl2k5_music_queue.py",
+        "ASTRA_REPORT.md"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -9043,7 +9055,7 @@
       },
       "runtime": {
         "evidence": [],
-        "scope": "EXPERIMENTAL / UNWITNESSED. All 24 named routing contracts have bounded native transitions with explicit rendering/resource/streaming stubs. This is not audible all-mode certification.",
+        "scope": "EXPERIMENTAL / UNWITNESSED. All 24 named routing contracts have bounded native transitions with explicit rendering/resource/streaming stubs. This is not audible all-mode certification. Beta 70: the manifest rejects duplicate (bank,index) records; bounded repeated active-enqueue and completion requests do not multiply automatic playback. The separate native NOW PLAYING pool permits explicit repeated adds in retail and My songs, and profile rebuild preserves their count. Mud must confirm whether his five visible repeats followed repeated adds; automatic duplication is unproved.",
         "status": "not-tested"
       },
       "selectors": {
@@ -9556,6 +9568,74 @@
       "surface": "portraits_faces",
       "title": "NFL 2K5 roster portraits",
       "validation_command": "bash tools/validate_nfl_player_portrait_pipeline.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_modern_color status <source>",
+        "module": "mod_editor/core/nfl2k5_modern_color.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_modern_color.py",
+        "data/nfl2k5_modern_color_pins.json",
+        "docs/modern_color/README.md"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Build tab checkbox; Off in every preset. Needs a disc image."
+      },
+      "id": "nfl2k5.presentation.modern_color_lighting",
+      "input_constraints": [
+        "Seven pinned .rdata light tables (0x120 bytes each) behind the retail selector FUN_000641c0 and installer FUN_000f2360; ambient colour/intensity and light colours/intensities rewritten, directions, counts and the shadow value unchanged.",
+        "477 pinned stadium bundles: Fldd tint word, detail_normal palette (uncompressed) and the field SCNE refit into its fixed VC-LZ span with the retail wrapper; only retail or already-modern bundles are accepted.",
+        "Targets measured from 2026 Week 1 broadcast stills per game; appearance in game is unwitnessed."
+      ],
+      "portme": [
+        "Witness one day, one late-afternoon, one night and one dome game against the broadcast stills; then tune per-bucket rigs."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute authoring tools, values and verified recipes only. Never bundle a retail roster, executable, disc or texture.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "docs/modern_color/README.md",
+          "tests/mod_editor/test_nfl2k5_modern_color.py"
+        ],
+        "scope": "Offline byte receipts and decoder read-back only; no played, appearance or performance outcome is witnessed.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false (default) or true",
+            "name": "enabled",
+            "required": false
+          }
+        ],
+        "notes": "Off restores the retail light rigs only; grass bundles stay as the source carries them."
+      },
+      "source_container": {
+        "format": "Xbox XBE .rdata tables with section-digest repair, plus in-place fixed-span archive resources in the stadium bundles",
+        "hash_pins": [
+          "8591344f69f7a0013c4e9cf9b5ae4e8dbc4f894488b97dd2a97be8885f9073e1",
+          "d27737d3020b5ae17ed9854c1a1f372f004b68ed7aca92d263b267414098d782",
+          "6ebd76243822a62010a280cf54d9b72974a6236501f68d45aad19421d3377e28",
+          "c9f0e5c7bd79926056f91cd21d8ae05b929eb5d635e22da5ea89d941bfdc7f9b"
+        ],
+        "resource": "VA 0x4E73B0..0x4E7B90 light tables; archive outers 3136..3625 field scenes, detail_normal and Fldd chunks",
+        "retail_file": "default.xbe (light tables) and the vc_53450030 archive packs holding the 477 stadium bundles"
+      },
+      "summary": "Change one existing dry outdoor haze endpoint from 0.8 to 1.0, with recognized Off restoration. Does not force fog or add sky art; camera parameter proof only.",
+      "surface": "stadiums_fields",
+      "title": "Modern colour and lighting (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_modern_color"
     },
     {
       "backend": {
@@ -10345,24 +10425,26 @@
         "tests/mod_editor/test_nfl2k5_scorebug_native.py",
         "ASTRA_B68_T3_REPORT.md",
         "tests/mod_editor/test_nfl2k5_b68_game_composition.py",
-        "docs/nfl2k5_b68_t3_composition.json"
+        "docs/nfl2k5_b68_t3_composition.json",
+        "tests/mod_editor/test_nfl2k5_scorebug_mnf.py",
+        "FABLE_B70_SCOREBUG_REPORT_2026-09-15.md"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "EXPERIMENTAL / UNWITNESSED. andrethealchemist reports the Berman freeze with this option selected and recovery when unselected. Leave off for normal play. Native entry, resource and draw checks are bounded proofs, not a played fix confirmation."
+        "reason": "EXPERIMENTAL / UNWITNESSED. Beta 70: the 2026 Monday Night Football bug (logos, possession plate, timeout dashes, ESPN red play clock, ESPN digits). The beta 69 freeze after Berman's intro was reproduced in the emulator on 2026-09-15: the 1.7 MB of appended HUD art made the resource loader read a chunk into a null buffer; the rebuilt option appends 0.35 MB, the size class that reached the coin toss in the same test. Not yet played by a person."
       },
       "id": "nfl2k5.scorebug_presentation.runtime",
       "input_constraints": [
         "User-owned pinned NFL 2K5 USA disc with retail HUD resources, or a completely recognized runtime installation.",
         "Use a disposable output copy; reserve the selected allocator owner union before installing hooks.",
-        "An XBE alone cannot install the required 264 native panel textures. Rebuild from a supported base for the new hooks or a changed owner set; old hook code is refused."
+        "An XBE alone cannot install the required 66 native panel textures. Rebuild from a supported base for the new hooks or a changed owner set; old hook code is refused."
       ],
       "portme": [
-        "Apply the beta 68 T3 section of WIRING_B68_T3.md; keep the reported Berman-freeze option off in every preset.",
-        "Run the six-profile and static 4:3/widescreen witness list in ASTRA_SCOREBUG_FREEZE_V2_REPORT.md."
+        "Witness the 2026 bar in Play Now with the Berman intro on (the beta 69 crash path), then in Franchise; report the wing logos, the plate colour on a change of possession, the dashes after a timeout, the red play clock under five seconds.",
+        "Logos, timeouts, possession colour and clock colours are unwitnessed; the static v3 scorebar remains the witnessed fallback."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -10377,9 +10459,13 @@
           "docs/scorebug_ingame/witness_r61b.md",
           "ASTRA_B68_T3_REPORT.md",
           "tests/mod_editor/test_nfl2k5_b68_game_composition.py",
-          "docs/nfl2k5_b68_t3_composition.json"
+          "docs/nfl2k5_b68_t3_composition.json",
+          "FABLE_B70_SCOREBUG_REPORT_2026-09-15.md",
+          "docs/scorebug_mnf/witness/run6_play4_live_play.jpg",
+          "docs/scorebug_mnf/witness/run6_gdb_registers.txt",
+          "tests/mod_editor/test_nfl2k5_scorebug_mnf.py"
         ],
-        "scope": "The previous GPU-fence repair passes its historical control. Beta 68 exercises scorebug-enabled composed BuildPlans, native collection loading, setup at FCE56, update at FCFA2, font glyph draws, re-entry and the separate presentation/kickoff fixtures. andrethealchemist's selected/unselected comparison identifies this option as a reported trigger, but the stopped instruction, real asynchronous loader/GPU state and full scene lifetime are unavailable. No Berman fix is claimed. In-game behavior remains UNWITNESSED.",
+        "scope": "The previous GPU-fence repair passes its historical control. Beta 68 exercises scorebug-enabled composed BuildPlans, native collection loading, setup at FCE56, update at FCFA2, font glyph draws, re-entry and the separate presentation/kickoff fixtures. andrethealchemist's selected/unselected comparison identifies this option as a reported trigger, but the stopped instruction, real asynchronous loader/GPU state and full scene lifetime are unavailable. No Berman fix is claimed. In-game behavior remains UNWITNESSED. Beta 70: the freeze was reproduced with the debugger (bugcheck 0x1E, a write to address 0 at kernel 0x8001DBD4 while the resource loader was busy) and removed; a second stop at the coin toss was removed the same day; one xemu run reached live play with the 2026 bar drawn (docs/scorebug_mnf/witness/). See FABLE_B70_SCOREBUG_REPORT_2026-09-15.md.",
         "status": "not-tested"
       },
       "selectors": {
@@ -10402,7 +10488,7 @@
         "resource": "owned RX/RW hook allocations plus HUD outer 346 and its archive index",
         "retail_file": "user-owned default.xbe and vc_53450030/0 in an NFL 2K5 USA disc"
       },
-      "summary": "Diagnostic team-panel and scorebug effects. andrethealchemist reports a freeze after Berman when selected and says: 'Unselecting that option fixed the issue for me.' Leave off for normal play; off in every preset. The player's failing state remains unreproduced in bounded native execution.",
+      "summary": "The ESPN Monday Night Football 2026 bar at runtime: team-colour wings with the current logos, white scores, a down plate in the possessing team's colour, the clock capsule and timeout dashes; 66 appended wing textures (0.35 MB) and no private fonts. The freeze after Berman's intro reported on beta 69 (andrethealchemist: 'Unselecting that option fixed the issue for me.') was reproduced in the emulator, a kernel bugcheck from a null loader buffer after an allocation failure under the 1.7 MB appended volume, and removed by the smaller volume. Seen by Claude in one xemu run into live play; not witnessed by a player. Off in every preset.",
       "surface": "scorebug_presentation",
       "title": "Scorebug effects (reported Berman freeze)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_b68_game_composition"
@@ -11279,7 +11365,9 @@
         "ASTRA_STADIUM_EDITOR_REPORT.md",
         "docs/mod_editor/nfl2k5_stadium_blender_workflow.md",
         "docs/mod_editor/nfl2k5_stadium_editor_retail_proof.json",
-        "tests/mod_editor/test_nfl2k5_stadium_editor_roundtrip.py"
+        "tests/mod_editor/test_nfl2k5_stadium_editor_roundtrip.py",
+        "tests/mod_editor/test_b70_t2_stadium.py",
+        "reports/b70_t2/stadium-banners.json"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -11292,7 +11380,8 @@
       "input_constraints": [
         "A privately indexed NFL 2K5 USA source and its verified Stadiums cache.",
         "Canonical texture IDs, one scene per bundle, original image dimensions, fixed P8 allocations and bounded lossless compression.",
-        "No new topology, UV, transform, material or collision write-back."
+        "No new topology, UV, transform, material or collision write-back.",
+        "Stadium imports edit the selected SCNE occurrence only. Venue/time/weather labels resolve the archive filename CRC; all other variants retain their own textures. The 18 Chicago/Cincinnati package traces and bounded native material relocations bind their own banner_corp occurrence. Retail banner writes reparse and close/reopen exactly. The reporter's played venue is unknown; in-game banner appearance remains UNWITNESSED. Build receipts identify the package, SCNE, embedded texture and linked material names."
       ],
       "portme": [
         "MisterAlex must inspect material preview and actual Blender image export. Noah must play the witness list in ASTRA_STADIUM_EDITOR_REPORT.md."
@@ -11305,7 +11394,9 @@
       },
       "runtime": {
         "evidence": [
-          "ASTRA_STADIUM_EDITOR_REPORT.md"
+          "ASTRA_STADIUM_EDITOR_REPORT.md",
+          "tests/mod_editor/test_b70_t2_stadium.py",
+          "reports/b70_t2/stadium-banners.json"
         ],
         "scope": "Offline source replay, UV equation checks, complete no-op spans and changed P8 round trips. bpy is mocked. No Blender UI or played-game witness.",
         "status": "not-tested"
@@ -11356,7 +11447,13 @@
         "tests/mod_editor/test_b69_j1_build.py",
         "tests/mod_editor/test_b69_j1_fit.py",
         "tests/mod_editor/test_b69_j1_native.py",
-        "ASTRA_B69_J1_REPORT.md"
+        "ASTRA_B69_J1_REPORT.md",
+        "tests/mod_editor/test_b70_t2_equipment.py",
+        "tests/mod_editor/test_b70_t2_native.py",
+        "tests/mod_editor/test_b70_t2_reporting.py",
+        "reports/b70_t2/sock-quality.json",
+        "reports/b70_t2/grown-loader.json",
+        "reports/b70_t2/growth-audit.json"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -11371,10 +11468,11 @@
         "The catalog keeps all 11,395 standalone targets editable: 7,315 reviewed P8 targets and all 4,080 reviewed explicit-size A1R5G5B5 p001..p006/p011..p016 player strips. Outer 581 p005 is a proved transactional two-piece span across physical packs 0 and 1. A8R8G8B8, DXT1, VC_P8_LINEAR, crowdbase, seat, and unreviewed A1R5G5B5 layouts remain refused.",
         "The 1,585 team-linked slots in logos.cdf, mini.cdf, and flipchip.cdf are raw P8 fixed-slot resources: imports preserve their wrapper, descriptor/system bytes, exact resource span, and 96-byte slot padding, regenerate only swizzled indices plus palette, and never invoke VC-LZ. The 170 franchise-office and draft/PDA logo resources retain their exact compressed P8 spans.",
         "All Textures also edits 28,530 reviewed package-local socks, elbow-pad, glove, long-sleeve, shoe, and wristband P8 palettes. Each import preserves that TSET's shared retail index/mip chain and every unselected sibling palette and decoded image.",
-        "Socks, gloves and shoes can own a selected independent mip chain; new imports default to that choice. Global equipment rows offer All teams only. The beta-69 bounded native cache fill, HOME/AWAY lookup and field selector bind shoes10/Style 6 through separate clean and _mud rows; the earlier Style 3/shoes09 selector proof remains narrower; missing local names fall back to the newest loaded package. maumau78 reported a Style 6 Edit Player success and Bears in-game failure on beta 68; that report remains unresolved. Package, clean/mud state, roster transport and GPU visibility need a played retest. Original-size recognized retail artwork preserves its palette and complete mip chain, including legacy imports now compiled as an exact no-op. Unhonourable restored equipment groups are refused before publishing a loaded session. Fit refusals report measured byte shortfalls and offer a checked smaller-size retry when available. A smaller size and fewer shades lose detail. No larger-allocation option is shipped: chunk-loader growth alone does not prove archive relocation. Wrapper +0x14 and unselected sibling images remain exact. All current in-game outcomes are UNWITNESSED.",
+        "Socks, gloves and shoes can own a selected independent mip chain; new imports default to that choice. Global equipment rows offer All teams only. The beta-69 bounded native cache fill, HOME/AWAY lookup and field selector bind shoes10/Style 6 through separate clean and _mud rows; the earlier Style 3/shoes09 selector proof remains narrower; missing local names fall back to the newest loaded package. maumau78 subsequently reported visibility after assigning both the normal and mud slots, while the artwork still looked buggy; this corrects the earlier single-slot guidance without establishing this change's in-game appearance. Package, clean/mud state, roster transport and GPU visibility need a played retest. Original-size recognized retail artwork preserves its palette and complete mip chain, including legacy imports now compiled as an exact no-op. Unhonourable restored equipment groups are refused before publishing a loaded session. Fit refusals report measured byte shortfalls and offer a checked smaller-size retry when available. A smaller size and fewer shades lose detail. No larger-allocation option is shipped: chunk-loader growth alone does not prove archive relocation. Wrapper +0x14 and unselected sibling images remain exact. All current in-game outcomes are UNWITNESSED.",
         "Compressed replacements are recompressed into the original byte span, while reviewed raw replacements retain the complete fixed-slot structure; an image that cannot satisfy its owning transport is refused rather than moving anything on the disc.",
         "Targets are addressed by outer package index and texture name. Uniform and menu-presentation targets also carry typed team names, abbreviations, asset code, style, physical-set selectors, archive name, and consumer scope; unresolved stadium targets still use package indices and preview identification.",
-        "Franchise-office team logos are presentation assets, not midfield art. Stock midfield center_logo exists only in the create-team packages."
+        "Franchise-office team logos are presentation assets, not midfield art. Stock midfield center_logo exists only in the create-team packages.",
+        "Normal shoe, glove and pad imports stage the mud sibling where the catalog contains one, with combined fit checking and grouped revert. Explicit mud-only imports stay separate. maumau78 reported visibility only after assigning both slots and still reported buggy artwork. Bounded native cache fill and field binding distinguish normal/mud rows; the caller transports runtime player record +0x18 bit 28 even under dry weather inputs. The flag's gameplay lifecycle and this change's appearance remain UNWITNESSED. Equipment reports actual fitted dimensions and referenced colours across all mips. High-contrast bands retain a palette limit of at least 16; a smaller checked image can still lose detail. Larger archive allocation remains UNPROVED and is unavailable."
       ],
       "portme": [
         "Capture a changed texture in an emulator; transport is proved, on-screen visibility is not.",
@@ -11388,8 +11486,15 @@
         "tooling": "source-and-schemas-only"
       },
       "runtime": {
-        "evidence": [],
-        "scope": "Byte-exact transport is proved on three differently packed dumps of the same game; modified visibility is untested. maumau78 reported Style 6/shoes10 visible in the Bears Edit Player preview but absent in-game on 2026-09-13. The earlier package-local colour proof is offline evidence and does not establish that played binding; preview visibility is not an in-game success.",
+        "evidence": [
+          "tests/mod_editor/test_b70_t2_equipment.py",
+          "tests/mod_editor/test_b70_t2_native.py",
+          "tests/mod_editor/test_b70_t2_reporting.py",
+          "reports/b70_t2/sock-quality.json",
+          "reports/b70_t2/grown-loader.json",
+          "reports/b70_t2/growth-audit.json"
+        ],
+        "scope": "Byte-exact transport is proved on three differently packed dumps of the same game; modified visibility is untested. maumau78 reported Style 6/shoes10 visible in the Bears Edit Player preview but absent in-game on 2026-09-13. The earlier package-local colour proof is offline evidence and does not establish that played binding; preview visibility is not an in-game success. maumau78 subsequently reported visibility after assigning both the normal and mud slots, while the artwork still looked buggy; this corrects the earlier single-slot guidance without establishing this change's in-game appearance.",
         "status": "not-tested"
       },
       "selectors": {
@@ -11549,7 +11654,15 @@
         "tests/mod_editor/test_b69_j1_build.py",
         "tests/mod_editor/test_b69_j1_fit.py",
         "tests/mod_editor/test_b69_j1_native.py",
-        "ASTRA_B69_J1_REPORT.md"
+        "ASTRA_B69_J1_REPORT.md",
+        "tests/mod_editor/test_b70_t2_equipment.py",
+        "tests/mod_editor/test_b70_t2_native.py",
+        "tests/mod_editor/test_b70_t2_reporting.py",
+        "reports/b70_t2/sock-quality.json",
+        "reports/b70_t2/grown-loader.json",
+        "reports/b70_t2/growth-audit.json",
+        "tests/mod_editor/test_b70_t2_stadium.py",
+        "reports/b70_t2/stadium-banners.json"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -11565,13 +11678,15 @@
         "Player-roster edits expose only same-allocation first/last names, masked jersey number, and per-player None/Clear/Dark face-shield type. Face shield is not a HOME/AWAY tint; reserved value 3 is refused, loaded saves may override the disc seed, and membership, position, face/head ID, ratings, and pointers remain unchanged.",
         "Player portraits are exact 128x128 RGBA8 PNGs selected by a proved four-digit numeric portrait ID; cross-pack slots are reconstructed as bounded physical spans.",
         "Crib Team Photos are exact 128x128 RGBA8 PNGs selected by a canonical crib_team_photo:##_photo_0# selector; all five fixed P8 mips are regenerated.",
-        "The Stadium texture route accepts an exact 64x64 RGBA8 PNG only for nfl2k5.stadium.o3280.c0005.scene2648.texture0002 (cement01); all 33 linked surfaces change together, and fixed-allocation compression overflow is refused.",
-        "Socks, gloves and shoes can own a selected independent mip chain; new imports default to that choice. Global equipment rows offer All teams only. The beta-69 bounded native cache fill, HOME/AWAY lookup and field selector bind shoes10/Style 6 through separate clean and _mud rows; the earlier Style 3/shoes09 selector proof remains narrower; missing local names fall back to the newest loaded package. maumau78 reported a Style 6 Edit Player success and Bears in-game failure on beta 68; that report remains unresolved. Package, clean/mud state, roster transport and GPU visibility need a played retest. Original-size recognized retail artwork preserves its palette and complete mip chain, including legacy imports now compiled as an exact no-op. Unhonourable restored equipment groups are refused before publishing a loaded session. Fit refusals report measured byte shortfalls and offer a checked smaller-size retry when available. A smaller size and fewer shades lose detail. No larger-allocation option is shipped: chunk-loader growth alone does not prove archive relocation. Wrapper +0x14 and unselected sibling images remain exact. All current in-game outcomes are UNWITNESSED.",
+        "The Stadium texture route accepts an exact-dimension RGBA8 PNG for a reviewed P8 embedded texture exposed as editable by the Stadiums delegate. Every material linked to that occurrence changes together. Fixed-allocation compression overflow is refused; geometry, UVs, shaders and collision are unchanged.",
+        "Socks, gloves and shoes can own a selected independent mip chain; new imports default to that choice. Global equipment rows offer All teams only. The beta-69 bounded native cache fill, HOME/AWAY lookup and field selector bind shoes10/Style 6 through separate clean and _mud rows; the earlier Style 3/shoes09 selector proof remains narrower; missing local names fall back to the newest loaded package. maumau78 subsequently reported visibility after assigning both the normal and mud slots, while the artwork still looked buggy; this corrects the earlier single-slot guidance without establishing this change's in-game appearance. Package, clean/mud state, roster transport and GPU visibility need a played retest. Original-size recognized retail artwork preserves its palette and complete mip chain, including legacy imports now compiled as an exact no-op. Unhonourable restored equipment groups are refused before publishing a loaded session. Fit refusals report measured byte shortfalls and offer a checked smaller-size retry when available. A smaller size and fewer shades lose detail. No larger-allocation option is shipped: chunk-loader growth alone does not prove archive relocation. Wrapper +0x14 and unselected sibling images remain exact. All current in-game outcomes are UNWITNESSED.",
         "Menu Back accepts only mono PCM16LE at exactly 16,000 Hz and 5,696 frames; it is encoded into the one proved fixed AUDO payload while preserving its wrapper and metadata.",
         "Additional standalone audio accepts any of 849 non-Menu-Back catalog asset IDs plus a strict PCM16LE WAV matching that row's exact channel count, rate, and frame count; 697 alias-related rows carry a prominent warning because their runtime cue meaning remains unproved.",
         "Equal decoded uniform content across selectors is not shared storage: all 3,170 audited torso, pants, sleeve, and live-helmet targets have distinct non-overlapping XISO spans.",
         "Every target must exist in the canonical compatibility inventory; compressed artwork that does not fit is refused.",
-        "Build failures name the active phase, original project edit index, page, part, uniform set and texture. The Build list enumerates all canonical project edits and ranks changes observed in the current session newest first; old archives have no historical edit times, which the list explicitly discloses."
+        "Build failures name the active phase, original project edit index, page, part, uniform set and texture. The Build list enumerates all canonical project edits and ranks changes observed in the current session newest first; old archives have no historical edit times, which the list explicitly discloses.",
+        "Normal shoe, glove and pad imports stage the mud sibling where the catalog contains one, with combined fit checking and grouped revert. Explicit mud-only imports stay separate. maumau78 reported visibility only after assigning both slots and still reported buggy artwork. Bounded native cache fill and field binding distinguish normal/mud rows; the caller transports runtime player record +0x18 bit 28 even under dry weather inputs. The flag's gameplay lifecycle and this change's appearance remain UNWITNESSED. Equipment reports actual fitted dimensions and referenced colours across all mips. High-contrast bands retain a palette limit of at least 16; a smaller checked image can still lose detail. Larger archive allocation remains UNPROVED and is unavailable.",
+        "Stadium imports edit the selected SCNE occurrence only. Venue/time/weather labels resolve the archive filename CRC; all other variants retain their own textures. The 18 Chicago/Cincinnati package traces and bounded native material relocations bind their own banner_corp occurrence. Retail banner writes reparse and close/reopen exactly. The reporter's played venue is unknown; in-game banner appearance remains UNWITNESSED. Build receipts identify the package, SCNE, embedded texture and linked material names."
       ],
       "portme": [
         "Runtime-capture every supported family and selector class.",
@@ -11584,8 +11699,17 @@
         "tooling": "source-and-schemas-only"
       },
       "runtime": {
-        "evidence": [],
-        "scope": "All supported spans have offline writer proof; only a Detroit away torso target has exact positive runtime proof. maumau78 reported Style 6/shoes10 visible in the Bears Edit Player preview but absent in-game on 2026-09-13. The earlier package-local colour proof is offline evidence and does not establish that played binding; preview visibility is not an in-game success.",
+        "evidence": [
+          "tests/mod_editor/test_b70_t2_equipment.py",
+          "tests/mod_editor/test_b70_t2_native.py",
+          "tests/mod_editor/test_b70_t2_reporting.py",
+          "reports/b70_t2/sock-quality.json",
+          "reports/b70_t2/grown-loader.json",
+          "reports/b70_t2/growth-audit.json",
+          "tests/mod_editor/test_b70_t2_stadium.py",
+          "reports/b70_t2/stadium-banners.json"
+        ],
+        "scope": "All supported spans have offline writer proof; only a Detroit away torso target has exact positive runtime proof. maumau78 reported Style 6/shoes10 visible in the Bears Edit Player preview but absent in-game on 2026-09-13. The earlier package-local colour proof is offline evidence and does not establish that played binding; preview visibility is not an in-game success. maumau78 subsequently reported visibility after assigning both the normal and mud slots, while the artwork still looked buggy; this corrects the earlier single-slot guidance without establishing this change's in-game appearance.",
         "status": "partial"
       },
       "selectors": {
@@ -11684,6 +11808,71 @@
       "surface": "uniforms",
       "title": "Uniform and shoe bump maps (experimental, unwitnessed)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_shoe_relief"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_uniform_choice apply <source.xbe> <output.xbe> --mode choice",
+        "module": "mod_editor/core/nfl2k5_uniform_choice.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_uniform_choice.py",
+        "tests/mod_editor/test_nfl2k5_uniform_choice_screens.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Build names choice versus rule; Gameplay Patches selects choice. Off in all presets after the T3 WIRING.md handoff. X_Ray reports failure; bounded checks do not identify his cause."
+      },
+      "id": "nfl2k5.uniforms.colour_choice",
+      "input_constraints": [
+        "Pinned retail-or-complete-applied uniform sites; reject foreign or mixed forms and changing an installed form. Rebuild from the original source to change forms.",
+        "Choice cycles twice the number of available eras per side, at most 30 states. Both sides can choose white. Initial colours preserve the retail Cowboys rule.",
+        "FUN_000e2d80 clears both era slots and colour flips; it does not preserve a previous choice. Bounded setup-reset -> screen callbacks -> kit-selector execution preserves choices made after reset. Full game transition remains UNWITNESSED."
+      ],
+      "portme": [
+        "Follow the X_Ray witness recipe in ASTRA_REPORT.md on both supported screens. Do not claim that Practice, Xbox Live or Team Select colour preview were extended."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and instructions; never distribute generated XBEs or retail resources.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "tests/mod_editor/test_nfl2k5_uniform_choice_screens.py",
+          "reports/b70_t3/uniform-screens.log"
+        ],
+        "scope": "PROVED: bounded execution of both retail screen wrappers, patched era handlers, reset and kit-letter selector. The flip words do not survive an explicit reset after selection. X_Ray's failing call order is HYPOTHESIS; every beta-70 in-game outcome is UNWITNESSED.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "empty string (off), rule, or choice",
+            "name": "uniform_choice",
+            "required": true
+          }
+        ],
+        "notes": "Build selects either form; Gameplay Patches installs choice. EXPERIMENTAL, off in all presets after wiring."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "Rule block 0x6160F, away-letter read 0x6168B, reset tail 0xE2D91 and four era handlers. Writable colour words 0xA69974/0xA69978 and loader scratch 0xA6997C.",
+        "retail_file": "user-owned NFL 2K5 USA default.xbe"
+      },
+      "summary": "Choice form: independent home/away colour cycling on Controller Assign and exhibition Team Select. Rule form: fixed home dark / away white, without in-game choice. Practice, Xbox Live and Team Select colour preview are not extended.",
+      "surface": "uniforms",
+      "title": "Jersey colour: choice or fixed rule (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_uniform_choice_screens"
     },
     {
       "backend": {

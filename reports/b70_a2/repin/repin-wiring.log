@@ -1,0 +1,23 @@
+[1] mod_editor/core/providers.py: mod_editor/core/audio_conform.py
+    db40b6f28dedf1deea7fad6306fe0afebf842a5ee113d5067f6b5b7721686c0f
+ -> b71528aa23b6dca49bbe023477920661da77cd7c34610dc8f6962be3a0cc9156
+[1] mod_editor/core/providers.py: mod_editor/core/build_feedback.py
+    2bcd6e65809444c593f66edac20a9e0d3fff43bf969da2454b8d088571e71535
+ -> c0bcebffa3491e2557b1e4bb8456edc3d7b80ed14aaa636d2eb740e4520b96f0
+[1] mod_editor/core/providers.py: mod_editor/core/mod_build.py
+    6955b82aa7f95fda834a8673efa3f31a0961473c9635f9ed308e3dc464fd60c0
+ -> f980bc9cffe6f1243e666db499cd252f6f8cb367200f5ef551ad6c42d29b48a7
+[1] mod_editor/core/providers.py: mod_editor/core/nfl2k5_throw_tuning.py
+    4f951f25922bb9e61349d29ebaffa7009d7fadbdfe0b98b44aa0b8fef0b0d121
+ -> b336d5419e5094cb7920b705651504bbe9d665ffe9016da726cb53cc3061719e
+[1] packaging/check_2k5_mod_studio_runtime.py: mod_editor/gui/studio_qt.py
+    aa57c10348b6f148b03f21279f15366ab40c4221860f55d99d90a33d428c8862
+ -> 45e3e2490e8aab314093d0378025f1b8f5ae689954a57ac49397d3f2e448675f
+[1] packaging/check_2k5_mod_studio_runtime.py: mod_editor/gui/build_panel_qt.py
+    40610a95e47ad7d8f1dd67d067c3e4efb10114e504d18eb4cd4835ef92f11616
+ -> fd6d7934c2ce348e22a999fb90d5637610c0fbfa989ffab63d2ab1f94005e3fa
+[1] packaging/check_2k5_mod_studio_runtime.py: mod_editor/gui/gameplay_patches_panel_qt.py
+    55cf864cc31256a0dc8f44a58f74865c8d2903bd338beda0ee1b7b0609a31c38
+ -> 6377a6089d0c01233b810e0ec82f962dfbc40cdea6d80cb8dbf092b2f83b8839
+
+applied 7 pin update(s)

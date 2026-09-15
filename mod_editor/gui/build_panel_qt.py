@@ -561,18 +561,20 @@ class BuildPanel(QWidget):
                                                     "On/Off toggle really works (switch it On in Penalty Settings). Rates are ESTIMATED pending a playtest.")
         self.kick_laces_check = self._option(g, "kick_laces", "Laces face the posts on kicks",
                                              "On field goals and PATs the held ball is turned so the laces face the posts.", badge=NOT_TESTED)
-        self.uniform_choice_check = self._option(g, "uniform_choice", "Choose home/away jerseys at any stadium",
-                                                 "Up/down past the last era on Controller Assign or Team Select flips that side's colour "
-                                                 "(era cycling continues after the flip).", badge=NOT_TESTED)
+        self.uniform_choice_check = self._option(
+            g, "uniform_choice", r62_ui.uniform_choice_caption(""),
+            r62_ui.UNIFORM_CHOICE_HELP, badge=NOT_TESTED)
         mode_row = QHBoxLayout()
         mode_row.addSpacing(30)
         mode_row.addWidget(QLabel("Jersey mode"))
         self.uniform_choice_mode = QComboBox()
         self.uniform_choice_mode.setAccessibleName("Jersey choice mode")
-        self.uniform_choice_mode.addItem("Choose either jersey", "choice")
-        self.uniform_choice_mode.addItem("Home dark / away white", "rule")
-        self.uniform_choice_mode.setToolTip("Choose either jersey keeps the original default and adds the flip; Home dark / away white "
-                                            "applies one rule to every game (no Cowboys exception). Leave the box unticked for the original behavior.")
+        self.uniform_choice_mode.addItem(
+            "choice: choose either colour on Controller Assign / exhibition Team Select", "choice")
+        self.uniform_choice_mode.addItem(
+            "rule: fixed home dark / away white (no colour choice)", "rule")
+        self.uniform_choice_mode.setToolTip(r62_ui.UNIFORM_CHOICE_HELP)
+        self.uniform_choice_mode.currentIndexChanged.connect(lambda _i: self._refresh())
         mode_row.addWidget(self.uniform_choice_mode)
         mode_row.addStretch(1)
         g.addLayout(mode_row)
@@ -789,6 +791,10 @@ class BuildPanel(QWidget):
         self.weather_haze_check = self._option(
             r, "weather_haze", haze.BUILD_CAPTION, haze.HELP_TEXT,
             badge="EXPERIMENTAL / UNWITNESSED")
+        from mod_editor.core import nfl2k5_modern_color as modern_color
+        self.modern_color_check = self._option(
+            r, "modern_color", modern_color.BUILD_CAPTION, modern_color.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
         self.player_star_check = self._option(
             r, "player_star", "Show a filled star under selected players",
             "A filled white star with a dark edge under every tagged player on the field; in-game appearance unwitnessed.",
@@ -870,7 +876,7 @@ class BuildPanel(QWidget):
         scorebar_row.addWidget(self.scorebug_folder_button)
         pl.addLayout(scorebar_row)
         self.scorebug_runtime_check = self._option(
-            pl, "scorebug_runtime", "Scorebug effects (reported Berman freeze)",
+            pl, "scorebug_runtime", "ESPN Monday Night Football 2026 scorebug (experimental)",
             r62_ui.SCOREBUG_RUNTIME_HELP, needs_image=True, badge=NOT_TESTED,
             details=r62_ui.SCOREBUG_RUNTIME_HELP)
         self.music_policy_check = self._option(pl, "music_policy", "Use jukebox songs in menus", "Retail: menus use the menu bank. Patch: menus use the 59 jukebox recordings in the game's random order. The 7 menu tracks are not included yet. Twelve jukebox tracks are spoken outtakes.", badge=NOT_TESTED)
@@ -1247,6 +1253,12 @@ class BuildPanel(QWidget):
         self.weather_haze_check.setChecked(haze_ok and haze_state == "applied")
         self._set_badge("weather_haze", "EXPERIMENTAL / UNWITNESSED" if haze_ok else
                         "Haze reader unavailable; choose a supported USA source")
+        modern_state = state.get("modern_color")
+        modern_ok = bool(self._available.get("modern_color", False) and is_image and modern_state in ("retail", "applied"))
+        self.modern_color_check.setEnabled(modern_ok)
+        self.modern_color_check.setChecked(modern_ok and modern_state == "applied")
+        self._set_badge("modern_color", "EXPERIMENTAL / UNWITNESSED" if modern_ok else
+                        "Needs a supported USA disc image; light rigs unavailable")
         espn_state = str(state.get("espn25_plan"))
         espn_available = self._available.get("espn25_plan", True)
         self.espn25_plan_check.setEnabled(espn_available and is_image and espn_state == "available")
@@ -1277,6 +1289,15 @@ class BuildPanel(QWidget):
         gate(self.probowl_order_check, "probowl_order")
         gate(self.penalties_check, "penalties")
         gate(self.uniform_choice_check, "uniform_choice")
+        if state.get("uniform_choice") == "applied":
+            installed_form = state.get("uniform_choice_mode")
+            self.uniform_choice_mode.setCurrentIndex(
+                self.uniform_choice_mode.findData(installed_form))
+        else:
+            self.uniform_choice_mode.setCurrentIndex(
+                self.uniform_choice_mode.findData("choice"))
+        self.uniform_choice_mode.setEnabled(
+            self.uniform_choice_check.isEnabled() and self.uniform_choice_check.isChecked())
         finish_state = str(state.get("helmet_finish"))
         finish_available = self._available.get("helmet_finish", False)
         finish_enabled = finish_available and finish_state in ("retail", "applied")
@@ -1459,6 +1480,7 @@ class BuildPanel(QWidget):
             "practice_squad": self.practice_squad_check, "depth_locks": self.depth_locks_check,
             "player_star": self.player_star_check, "roster_edits": self.roster_edits_check,
             "weather_plan": self.weather_plan_check, "weather_haze": self.weather_haze_check,
+            "modern_color": self.modern_color_check,
             "espn25_plan": self.espn25_plan_check, "espn25_rosters": self.espn25_rosters_check,
             "realistic_flight": self.realistic_check, "arc_by_distance": self.arc_by_distance_check,
         }
@@ -1558,6 +1580,7 @@ class BuildPanel(QWidget):
             espn25_plan=(self.espn25_plan_field.text().strip() if self.espn25_plan_check.isChecked() else ""),
             weather_plan=(self.weather_plan_field.text().strip() if self.weather_plan_check.isChecked() else ""),
             weather_haze=self.weather_haze_check.isChecked(),
+            modern_color=self.modern_color_check.isChecked(),
             screen_timing=(self.screen_timing_combo.currentText() if self.screen_timing_check.isChecked() else None),
             scorebug_runtime=self.scorebug_runtime_check.isChecked(),
             music_policy="jukebox_menus" if self.music_policy_check.isChecked() else "retail",
@@ -1603,7 +1626,7 @@ class BuildPanel(QWidget):
                     or any(getattr(p, key) for key in r62_ui.KEYS if key not in r62_ui.LEVELS) or p.cpu_money_downs != "retail" or p.scorebug_runtime or p.momentum > 0 or p.defensive_try or p.zone_drop_cap or p.all_stadiums or p.coverage_slider or p.scramble_tuning or p.flatter_deep_ball or p.chop_block_toggle or p.team_names_2026 or p.music_shuffle or p.practice_squad_screen or p.abilities or p.qb_spy or p.music_policy != "retail" or p.music_unlock or p.music_userlist or p.music_project or p.music_library or p.edge_rename or p.screen_timing is not None or p.hires_pack or p.guardian_cap or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
                     or p.kickoff_alignment or p.dynamic_kickoff or p.xbe_space or p.kickoff_relocated or p.season_cap or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.franchise_practice or p.practice_squad or p.depth_locks or p.prospect_names or p.player_star or p.player_tags or p.roster_edits or p.espn25_plan
                     or p.commentary or p.playbook_packs or self._helmet_finish_changed()
-                    or p.weather_plan or self._weather_haze_changed() or p.cpu_scrambles == "modern")
+                    or p.weather_plan or self._weather_haze_changed() or self._modern_color_changed() or p.cpu_scrambles == "modern")
 
     def _helmet_finish_changed(self) -> bool:
         """True when the chosen finish differs from what the source carries (a Glossy restoration counts)."""
@@ -1645,6 +1668,8 @@ class BuildPanel(QWidget):
                     text += f" ({self.ceiling_spin.value()} yd)"
                 if key == "weather_haze" and not self._weather_haze_changed():
                     continue
+                if key == "modern_color" and not self._modern_color_changed():
+                    continue
                 if key == "decided_clock":
                     text += f" ({self.decided_clock_margin.currentData()} points, {self.decided_clock_seconds.currentData()} seconds)"
                 if key == "helmet_finish" and not self._helmet_finish_changed():
@@ -1652,6 +1677,8 @@ class BuildPanel(QWidget):
                 labels.append(text)
         if self._weather_haze_changed() and not self.weather_haze_check.isChecked():
             labels.append("Restore retail dry-weather haze response")
+        if self._modern_color_changed() and not self.modern_color_check.isChecked():
+            labels.append("Restore retail light rigs (stadium grass stays as the source carries it)")
         if self.cpu_scrambles_level.currentData() == "modern":
             labels.append(tt.cpu_scrambles_patch.BUILD_CAPTION + ": Modern")
         if self.star_players:
@@ -1751,6 +1778,22 @@ class BuildPanel(QWidget):
         self._refresh()
 
     def _refresh(self) -> None:
+        if hasattr(self, "uniform_choice_mode"):
+            uniform_state = (self._state or {}).get("uniform_choice")
+            if uniform_state == "applied":
+                uniform_mode = (self._state or {}).get("uniform_choice_mode")
+                # Saved choices restore after source inspection. Keep the
+                # disabled selector faithful to the installed executable too.
+                blocked = self.uniform_choice_mode.blockSignals(True)
+                self.uniform_choice_mode.setCurrentIndex(
+                    self.uniform_choice_mode.findData(uniform_mode))
+                self.uniform_choice_mode.blockSignals(blocked)
+            else:
+                uniform_mode = (self.uniform_choice_mode.currentData()
+                                if self.uniform_choice_check.isChecked() else "")
+            self.uniform_choice_check.setText(r62_ui.uniform_choice_caption(uniform_mode))
+            self.uniform_choice_mode.setEnabled(
+                self.uniform_choice_check.isEnabled() and self.uniform_choice_check.isChecked())
         if hasattr(self, "momentum_contact_note"):
             enabled = self.momentum_check.isChecked()
             installed = ((self._state or {}).get("momentum_settings") or {}).get("status") == "applied"
@@ -2074,6 +2117,11 @@ class BuildPanel(QWidget):
         state = (self._state or {}).get("weather_haze")
         return (self.weather_haze_check.isEnabled() and state in ("retail", "applied")
                 and self.weather_haze_check.isChecked() != (state == "applied"))
+
+    def _modern_color_changed(self):
+        state = (self._state or {}).get("modern_color")
+        return (self.modern_color_check.isEnabled() and state in ("retail", "applied")
+                and self.modern_color_check.isChecked() != (state == "applied"))
 
     def _weather_plan_problem(self):
         from mod_editor.core import nfl2k5_weather as weather

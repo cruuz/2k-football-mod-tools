@@ -1,0 +1,123 @@
+FF.EEEEB70 IMPORT shoe32_noise_refused {"outcome": "refused", "budget": 464, "required": 664, "suggestion": {"asset_id": "tset:0:8:0:shoes01", "scale": 2, "width": 16, "height": 16, "colours": 2, "encoded_bytes": 459}, "seconds": 3.4137351289973594}
+FEE...B70 CODEC flat: 0.251093 s
+B70 CODEC repeated: 0.404254 s
+B70 CODEC palette: 0.112559 s
+.B70 EARLY EXIT: searched 1022 / 65536 positions
+..
+======================================================================
+ERROR: test_beta69_complete_span_bytes_and_helper_disabled_import_budget (__main__.SearchTests.test_beta69_complete_span_bytes_and_helper_disabled_import_budget) (case='sock256_stripes')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b70-a3/tests/mod_editor/test_b70_t1_build_speed.py", line 48, in test_beta69_complete_span_bytes_and_helper_disabled_import_budget
+    row = stage_case(case, repeat=True)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b70-a3/tests/mod_editor/b70_equipment_fixture.py", line 98, in stage_case
+    answer = dict(outcome="fit", span_sha256=result.receipt["replacement"]["span_sha256"],
+                                             ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+KeyError: 'replacement'
+
+======================================================================
+ERROR: test_beta69_complete_span_bytes_and_helper_disabled_import_budget (__main__.SearchTests.test_beta69_complete_span_bytes_and_helper_disabled_import_budget) (case='shoe64_stripes')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b70-a3/tests/mod_editor/test_b70_t1_build_speed.py", line 48, in test_beta69_complete_span_bytes_and_helper_disabled_import_budget
+    row = stage_case(case, repeat=True)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b70-a3/tests/mod_editor/b70_equipment_fixture.py", line 98, in stage_case
+    answer = dict(outcome="fit", span_sha256=result.receipt["replacement"]["span_sha256"],
+                                             ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+KeyError: 'replacement'
+
+======================================================================
+ERROR: test_beta69_complete_span_bytes_and_helper_disabled_import_budget (__main__.SearchTests.test_beta69_complete_span_bytes_and_helper_disabled_import_budget) (case='shoe64_diagonal')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b70-a3/tests/mod_editor/test_b70_t1_build_speed.py", line 48, in test_beta69_complete_span_bytes_and_helper_disabled_import_budget
+    row = stage_case(case, repeat=True)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b70-a3/tests/mod_editor/b70_equipment_fixture.py", line 98, in stage_case
+    answer = dict(outcome="fit", span_sha256=result.receipt["replacement"]["span_sha256"],
+                                             ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+KeyError: 'replacement'
+
+======================================================================
+ERROR: test_beta69_complete_span_bytes_and_helper_disabled_import_budget (__main__.SearchTests.test_beta69_complete_span_bytes_and_helper_disabled_import_budget) (case='shoe32_tight')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b70-a3/tests/mod_editor/test_b70_t1_build_speed.py", line 48, in test_beta69_complete_span_bytes_and_helper_disabled_import_budget
+    row = stage_case(case, repeat=True)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b70-a3/tests/mod_editor/b70_equipment_fixture.py", line 98, in stage_case
+    answer = dict(outcome="fit", span_sha256=result.receipt["replacement"]["span_sha256"],
+                                             ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+KeyError: 'replacement'
+
+======================================================================
+ERROR: test_beta69_complete_span_bytes_and_helper_disabled_import_budget (__main__.SearchTests.test_beta69_complete_span_bytes_and_helper_disabled_import_budget) (case='shoe32_noise_half')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b70-a3/tests/mod_editor/test_b70_t1_build_speed.py", line 48, in test_beta69_complete_span_bytes_and_helper_disabled_import_budget
+    row = stage_case(case, repeat=True)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b70-a3/tests/mod_editor/b70_equipment_fixture.py", line 98, in stage_case
+    answer = dict(outcome="fit", span_sha256=result.receipt["replacement"]["span_sha256"],
+                                             ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+KeyError: 'replacement'
+
+======================================================================
+ERROR: test_beta69_complete_span_bytes_and_helper_disabled_import_budget (__main__.SearchTests.test_beta69_complete_span_bytes_and_helper_disabled_import_budget) (case='shoe32_noise_quarter')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b70-a3/tests/mod_editor/test_b70_t1_build_speed.py", line 48, in test_beta69_complete_span_bytes_and_helper_disabled_import_budget
+    row = stage_case(case, repeat=True)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b70-a3/tests/mod_editor/b70_equipment_fixture.py", line 98, in stage_case
+    answer = dict(outcome="fit", span_sha256=result.receipt["replacement"]["span_sha256"],
+                                             ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+KeyError: 'replacement'
+
+======================================================================
+FAIL: test_corrupt_staged_cache_recompiles (__main__.ReopenTests.test_corrupt_staged_cache_recompiles)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b70-a3/tests/mod_editor/test_b70_t1_build_speed.py", line 217, in test_corrupt_staged_cache_recompiles
+    self.assertTrue(files)
+AssertionError: [] is not true
+
+======================================================================
+FAIL: test_real_import_reopen_memory_disk_art_and_target_invalidation (__main__.ReopenTests.test_real_import_reopen_memory_disk_art_and_target_invalidation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b70-a3/tests/mod_editor/test_b70_t1_build_speed.py", line 175, in test_real_import_reopen_memory_disk_art_and_target_invalidation
+    b.load_shareable_project(project)
+  File "/home/noah/2k-worktrees/astra-b70-a3/mod_editor/studio/session.py", line 4183, in load_shareable_project
+    equipment_fit_rows = preflight_project_equipment(self.cache.pack0, [
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b70-a3/mod_editor/core/nfl2k5_uniform_equipment_writer.py", line 1684, in preflight_project_equipment
+    compiled = build_unified_uniform_equipment_imports(index_path,
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b70-a3/mod_editor/core/nfl2k5_uniform_equipment_writer.py", line 1516, in build_unified_uniform_equipment_imports
+    compiled = _compile_group(template_span, chunk, decoded, decode_info, rows, authored, independent, retail,
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/unittest/mock.py", line 1134, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/unittest/mock.py", line 1138, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/unittest/mock.py", line 1193, in _execute_mock_call
+    raise effect
+AssertionError: open repeated fit search
+
+======================================================================
+FAIL: test_beta69_complete_span_bytes_and_helper_disabled_import_budget (__main__.SearchTests.test_beta69_complete_span_bytes_and_helper_disabled_import_budget) (case='shoe32_noise_refused')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b70-a3/tests/mod_editor/test_b70_t1_build_speed.py", line 56, in test_beta69_complete_span_bytes_and_helper_disabled_import_budget
+    self.assertEqual(row['required'], 666)
+AssertionError: 664 != 666
+
+----------------------------------------------------------------------
+Ran 10 tests in 16.190s
+
+FAILED (failures=3, errors=6)

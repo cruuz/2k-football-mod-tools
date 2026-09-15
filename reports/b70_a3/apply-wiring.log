@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b70-a3/.scratch/apply_a3.py", line 72, in <module>
+    assert original == json.dumps(registry, indent=2, ensure_ascii=False, sort_keys=True) + '\n'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

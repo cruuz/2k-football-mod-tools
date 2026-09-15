@@ -1,0 +1,141 @@
+{
+  "timing_note": "Early entries use exec_command wall_time_seconds; subsequent entries use tool-call wall clock. Validation/implementation commands use subprocess monotonic time in commands.jsonl.",
+  "commands": [
+    {
+      "command": "pwd && rg --files -g 'AGENTS.md' -g 'ASTRA_CONTEXT.md' -g 'WIRING_B70_T2.md' -g 'ASTRA*' -g '*b70*' -g '*repin*'",
+      "exit_code": 0,
+      "elapsed_seconds": 0.000005661
+    },
+    {
+      "command": "git status --short && git branch --show-current && git rev-parse HEAD",
+      "exit_code": 0,
+      "elapsed_seconds": 0.548398262
+    },
+    {
+      "command": "cat ASTRA_CONTEXT.md",
+      "exit_code": 0,
+      "elapsed_seconds": 0.00000538
+    },
+    {
+      "command": "cat WIRING_B70_T2.md",
+      "exit_code": 0,
+      "elapsed_seconds": 0.000004398
+    },
+    {
+      "command": "for f in /AGENTS.md /home/AGENTS.md /home/noah/AGENTS.md /home/noah/2k-worktrees/AGENTS.md /home/noah/2k-worktrees/astra-b70-a3/AGENTS.md; do if [ -f \"$f\" ]; then printf '%s\\n' \"$f\"; cat \"$f\"; fi; done; rg --files --hidden -g AGENTS.md -g '!\\.git' mod_editor tests packaging data .agents .codex",
+      "exit_code": 1,
+      "elapsed_seconds": 0.000003877
+    },
+    {
+      "command": "cat /home/noah/PROJECTS.md /home/noah/projects.json",
+      "exit_code": 0,
+      "elapsed_seconds": 0.000004288
+    },
+    {
+      "command": "cat ASTRA_BRIEF.md BETA70_TRIAGE.md",
+      "exit_code": 0,
+      "elapsed_seconds": 0.000004008,
+      "note": "Initial batched output was truncated; read again separately."
+    },
+    {
+      "command": "cat ASTRA_BRIEF.md; cat BETA70_TRIAGE.md",
+      "exit_code": 0,
+      "elapsed_seconds": 0.000004008
+    },
+    {
+      "command": "sed -n '4160,4290p' mod_editor/studio/session.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.089
+    },
+    {
+      "command": "sed -n '85,215p' mod_editor/core/nfl2k5_build_service.py; sed -n '1435,1485p' mod_editor/core/nfl2k5_build_service.py; sed -n '1628,1700p' mod_editor/core/nfl2k5_build_service.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.114
+    },
+    {
+      "command": "sed -n '5581,5695p' mod_editor/gui/studio_qt.py; sed -n '8640,8680p' mod_editor/gui/studio_qt.py; cat mod_editor/core/nfl2k5_equipment_import.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.122
+    },
+    {
+      "command": "cat mod_editor/core/equipment_reporting.py; sed -n '1,210p' mod_editor/core/equipment_staging.py; rg -n -B 14 -A 7 'return len\\(loaded.edits\\)' mod_editor/studio/session.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.093
+    },
+    {
+      "command": "python3 - <<'PY'\nimport json\nfrom pathlib import Path\nr=json.loads(Path('mod_editor/capabilities/registry.v1.json').read_text())\nprint(type(r), list(r) if isinstance(r,dict) else len(r))\nrows=r['capabilities']\nfor row in rows:\n if row['id'] in ('nfl2k5.textures.all_p8','nfl2k5.uniforms.all_visual','nfl2k5.stadiums_fields.blender_textures'):\n  print(json.dumps(row,indent=2))\nPY\nrg --files tests/mod_editor | rg '(studio_(facade|session|shell)|build_service|equipment_(import|consumers)|provider|b70_a2|build_feedback|b69_j1)'",
+      "exit_code": 0,
+      "elapsed_seconds": 0.117
+    },
+    {
+      "command": "python3 - <<'PY'\nimport json\nfrom pathlib import Path\np=Path('mod_editor/capabilities/registry.v1.json').read_text(); r=json.loads(p)\nfor ascii in (True,False):\n for sort in (True,False):\n  print(ascii,sort,p==json.dumps(r,indent=2,ensure_ascii=ascii,sort_keys=sort)+'\\n')\nPY\nsed -n '1,240p' tests/mod_editor/test_b70_t2_reporting.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.151
+    },
+    {
+      "command": "sed -n '1,220p' tests/mod_editor/test_nfl2k5_build_service.py; sed -n '1,120p' tests/mod_editor/test_b70_a2_wiring.py; sed -n '292,334p' ASTRA_B70_T2_REPORT.md",
+      "exit_code": 0,
+      "elapsed_seconds": 0.09
+    },
+    {
+      "command": "sed -n '250,415p' tests/mod_editor/test_nfl2k5_build_service.py; sed -n '1,130p' tests/mod_editor/test_b69_j1_wiring.py; sed -n '1,130p' tests/mod_editor/test_studio_session.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.112
+    },
+    {
+      "command": "git diff --stat; git ls-files docs/research/apf_audio.md; sed -n '100,145p' mod_editor/capabilities/validate_registry.py; sed -n '1,120p' packaging/repin.py; rg -n 'missing|hydrated|hydrate|strict|private|alternate' ASTRA_REPORT.md | tail -24; rg -n 'def setUp|def _build|FakeBackendRunner|assert.*ready|artifact_dir|write_text\\(' tests/mod_editor/test_nfl2k5_build_service.py | head -70",
+      "exit_code": 0,
+      "elapsed_seconds": 0.72
+    },
+    {
+      "command": "python3 - <<'PY'\nimport json\nfrom pathlib import Path\nr=json.loads(Path('mod_editor/capabilities/registry.v1.json').read_text())\nmissing={}\nfor row in r['capabilities']:\n for field,items in [('evidence',row['evidence']),('runtime.evidence',row['runtime']['evidence'])]:\n  for p in items:\n   if not Path(p).is_file():missing.setdefault(p,[]).append(row['id'])\nprint(json.dumps(missing,indent=2))\nPath('.scratch/registry-missing.json').write_text(json.dumps(missing,indent=2)+'\\n')\nPY\nrg -n 'apf_audio.md|menu_state_trace.json|hydrate' tools packaging | head -70\ngit log -1 --oneline --all -- docs/research/apf_audio.md",
+      "exit_code": 0,
+      "elapsed_seconds": 0.3
+    },
+    {
+      "command": "sed -n '1,225p' tests/mod_editor/test_nfl2k5_equipment_import_wiring.py; sed -n '220,247p' tests/mod_editor/test_nfl2k5_build_service.py; rg -n 'shareable|load_shareable|save_shareable|_Session|StudioSession' tests/mod_editor/test_b70_t2_equipment.py tests/mod_editor/test_b69_j1_fit.py tests/mod_editor/test_nfl2k5_equipment_import.py; git rev-parse --git-common-dir; git config user.name; git config user.email",
+      "exit_code": 0,
+      "elapsed_seconds": 0.103
+    },
+    {
+      "command": "rg --files tests/mod_editor | rg '(studio.*qt|build.*(feedback|panel)|project_document|b70_a2)'; sed -n '35,120p' tests/mod_editor/test_nfl2k5_equipment_import.py; sed -n '200,224p' tests/mod_editor/test_nfl2k5_equipment_import.py; sed -n '1,115p' tests/mod_editor/test_b70_t1_diagnostics.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.103
+    },
+    {
+      "command": "sed -n '1,38p' tests/mod_editor/test_nfl2k5_equipment_import.py; sed -n '317,375p' tests/mod_editor/test_b69_j1_wiring.py; sed -n '112,130p' tests/mod_editor/test_b70_t1_diagnostics.py; sed -n '1,85p' tests/mod_editor/test_b70_t2_native.py; sed -n '1,80p' tests/mod_editor/test_studio_shell_layout_qt.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.09
+    },
+    {
+      "command": "cat reports/b70_a3/test_b70_t1_build_speed.log; sed -n '165,284p' tests/mod_editor/test_provider_integrity.py; sed -n '1,215p' tests/mod_editor/test_b70_t1_build_speed.py; rg -n 'equipment_|def .*closure|module_pins' mod_editor/core/providers.py tests/mod_editor/test_provider_integrity.py | tail -35",
+      "exit_code": 0,
+      "elapsed_seconds": 0.098
+    },
+    {
+      "command": "sed -n '1410,1565p' mod_editor/core/nfl2k5_uniform_equipment_writer.py; sed -n '1610,1735p' mod_editor/core/nfl2k5_uniform_equipment_writer.py; sed -n '1,125p' tests/mod_editor/b70_equipment_fixture.py; sed -n '1,65p' tests/mod_editor/test_b70_t1_build_speed.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.095
+    },
+    {
+      "command": "sed -n '138,180p' tests/mod_editor/test_provider_integrity.py; sed -n '247,266p' tests/mod_editor/test_provider_integrity.py; rg -n '_stage_disk_cache|staged_equipment_cache|staged_cache|preflight_only' mod_editor/core/nfl2k5_uniform_equipment_writer.py; sed -n '1,78p' mod_editor/core/nfl2k5_uniform_equipment_writer.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.113
+    },
+    {
+      "command": "sed -n '1660,1705p' mod_editor/core/nfl2k5_uniform_equipment_writer.py; sed -n '948,1004p' mod_editor/core/nfl2k5_uniform_equipment_writer.py; rg -n '_equipment_staging_cache|compile_cache|call_count|checked_rows' tests/mod_editor/test_b70_t2_equipment.py; sed -n '1,110p' tests/mod_editor/test_b70_t2_equipment.py; sed -n '1150,1255p' mod_editor/core/nfl2k5_uniform_equipment_writer.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.095
+    },
+    {
+      "command": "rg -n -A 22 'def setUp\\(' tests/mod_editor/test_nfl2k5_equipment_consumers.py; sed -n '204,235p' tests/mod_editor/test_b70_t1_build_speed.py; git diff -- mod_editor/core/nfl2k5_build_service.py mod_editor/studio/session.py mod_editor/gui/studio_qt.py mod_editor/capabilities/registry.v1.json",
+      "exit_code": 0,
+      "elapsed_seconds": 0.117
+    },
+    {
+      "command": "sed -n '1,72p' reports/b70_a3/test_studio_shell_layout_qt.log; sed -n '1,60p' reports/b70_a3/test_phase1_packaging.log; cat reports/b70_a3/t1-build-speed-cache-fixed.log; rg -n 'fitted|staging|socks|banner|normal and mud' docs/mod_editor/2k5_mod_studio_changelog.md | head -20; git status --short",
+      "exit_code": 0,
+      "elapsed_seconds": 0.691
+    }
+  ]
+}

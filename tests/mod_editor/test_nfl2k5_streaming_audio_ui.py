@@ -466,6 +466,13 @@ class StreamingAudioFacadeTests(unittest.TestCase):
                     facade_module,
                     "project_target_identity",
                     return_value=identity,
+                ), patch.object(
+                    # Beta 70 hashes the project file when it opens (the
+                    # "changed outside Studio" refusal); this contract test
+                    # has no real file, so the hash is mocked like the identity.
+                    facade_module,
+                    "_project_open_hash",
+                    return_value="0" * 64,
                 ):
                     result = facade.load_project(
                         Path("project.2k5mod"), lambda *_args: None

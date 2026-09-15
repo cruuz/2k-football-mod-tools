@@ -77,6 +77,9 @@ def main():
         report['skip'] = f'APF retail 0A absent at {index}'
     else:
         reference = load('apf_logo_reference', args.reference_writer)
+        # Dynamically loaded historical modules cannot be imported by a spawn
+        # child. Serial reference execution changes timing, never encoded bytes.
+        reference._CREST_CHILD = True
         with patch.dict(sys.modules, {'apf_logo_patch': reference}):
             old_cache = load('apf_logocache_reference', args.reference_cache)
         pixels = tuple(Image.new('RGBA', (512, 512), color).tobytes()

@@ -516,6 +516,54 @@ def serialize_main_menu_inspection_csv(snapshot: dict[str, object]) -> bytes:
     )
 
 
+def _project_open_hash(path: Path) -> str:
+    """Hash a bounded regular project through a binary handle, including on Windows."""
+    from .project_archive import MAX_PROJECT_BYTES
+    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0)
+    descriptor = os.open(path, flags)
+    with os.fdopen(descriptor, "rb") as stream:
+        before = os.fstat(stream.fileno())
+        if not stat.S_ISREG(before.st_mode) or before.st_nlink != 1 or before.st_size > MAX_PROJECT_BYTES:
+            raise ValidationError(f"Project {path} is not a bounded regular file. Choose the saved .2k5mod file again.")
+        digest = hashlib.sha256()
+        remaining = before.st_size
+        while remaining:
+            data = stream.read(min(1024 * 1024, remaining))
+            if not data:
+                raise ValidationError(f"Project {path} became shorter while opening. Finish saving it, then open it again.")
+            remaining -= len(data)
+            digest.update(data)
+        after = os.fstat(stream.fileno())
+        named = path.lstat()
+    fingerprint = lambda value: (value.st_dev, value.st_ino, value.st_size, value.st_mtime_ns)
+    if (fingerprint(before) != fingerprint(after) or fingerprint(after) != fingerprint(named)
+            or stat.S_ISLNK(named.st_mode)):
+        raise ValidationError(
+            f"Project changed outside Mod Studio while reading {path}. "
+            f"Before: size {before.st_size}, mtime_ns {before.st_mtime_ns}; "
+            f"after: size {named.st_size}, mtime_ns {named.st_mtime_ns}. "
+            f"SHA-256 read: {digest.hexdigest()} (file changed during hashing). "
+            "Finish saving or syncing this file, then open it again.")
+    return digest.hexdigest()
+
+
+def _project_open_change(before, before_hash, after, after_hash, *, cause=""):
+    def describe(identity, digest):
+        if identity is None:
+            return f"path unavailable; size unavailable; mtime_ns unavailable; SHA-256 {digest}"
+        return (f"path {identity.path}; size {identity.size}; mtime_ns {identity.modified_ns}; "
+                f"SHA-256 {digest}; file ID {identity.device}:{identity.inode}; ctime_ns {identity.changed_ns}")
+    fields = [name for name in ("path", "size", "modified_ns", "device", "inode", "changed_ns")
+              if after is None or getattr(before, name) != getattr(after, name)]
+    if before_hash != after_hash:
+        fields.append("SHA-256")
+    return ("The project changed outside Mod Studio while it was opening: " + ", ".join(fields)
+            + f".\nBefore: {describe(before, before_hash)}\nAfter: {describe(after, after_hash)}. "
+            + (cause + " " if cause else "")
+            + "The current workspace was kept. Finish saving or syncing the named file, then open it again; "
+              "if another app is replacing it, save a separate .2k5mod copy and open that copy.")
+
+
 @dataclass(frozen=True)
 class ExternalBuild:
     """A disc written outside the texture-project build (Build & Share); only the path matters to Launch."""
@@ -3379,7 +3427,7 @@ class Nfl2k5StudioFacade:
         independent: bool | None = None, scale: int = 1, scope: str | None = None,
     ) -> object:
         """Compile the selected equipment choice before changing the project."""
-        from mod_editor.core.nfl2k5_equipment_import import stage_equipment_import
+        from mod_editor.core.equipment_staging import stage_equipment_import
 
         progress("Checking equipment artwork and available space", 0, 1)
         with self._lock:
@@ -3396,7 +3444,7 @@ class Nfl2k5StudioFacade:
             if getattr(asset, "kind", None) == "uniform_equipment_texture":
                 # A generic shoe/glove/pad variant was staged into every
                 # package the game samples it from; revert them together.
-                from mod_editor.core.nfl2k5_equipment_import import revert_equipment_import
+                from mod_editor.core.equipment_staging import revert_equipment_import
 
                 reverted = revert_equipment_import(self._require_session(), asset)
                 changed = bool(reverted)
@@ -3407,7 +3455,7 @@ class Nfl2k5StudioFacade:
         progress(f"{asset.label} reverted", 1, 1)
         return StudioOperationResult(
             (f"Reverted {asset.label}"
-             + (f" and the same texture in {extra} other uniform package{'s' if extra != 1 else ''}"
+             + (f" and {extra} related equipment slot{'s' if extra != 1 else ''}"
                 if extra else "") + ".")
             if changed else f"{asset.label} was already original."
         )
@@ -3495,6 +3543,7 @@ class Nfl2k5StudioFacade:
     def load_project(self, source: Path, progress: ProgressSink) -> object:
         progress("Checking every project replacement", 0, 2)
         opened_identity = project_target_identity(source)
+        opened_sha256 = _project_open_hash(source)
         with self._lock:
             cache = self._cache
             text_catalog = self._text_catalog
@@ -3514,6 +3563,7 @@ class Nfl2k5StudioFacade:
                 source=source,
                 progress=progress,
                 opened_identity=opened_identity,
+                opened_sha256=opened_sha256,
                 cache=cache,
                 text_catalog=text_catalog,
                 audio_service=audio_service,
@@ -3544,6 +3594,7 @@ class Nfl2k5StudioFacade:
         source: Path,
         progress: ProgressSink,
         opened_identity: ProjectTargetIdentity,
+        opened_sha256: str,
         cache: object,
         text_catalog: object | None,
         audio_service: object | None,
@@ -3627,12 +3678,15 @@ class Nfl2k5StudioFacade:
                 "preparation passes. The current workspace was kept."
             )
         progress("Project replacements validated", 1, 2)
-        current_identity = project_target_identity(source)
-        if current_identity != opened_identity:
-            raise ValidationError(
-                "The project changed outside Mod Studio while it was opening. "
-                "The current workspace was kept; open the project again."
-            )
+        try:
+            current_identity = project_target_identity(source)
+            current_sha256 = _project_open_hash(source)
+        except (OSError, ValidationError) as exc:
+            raise ValidationError(_project_open_change(opened_identity, opened_sha256,
+                None, "unavailable", cause=str(exc))) from exc
+        if current_identity != opened_identity or current_sha256 != opened_sha256:
+            raise ValidationError(_project_open_change(opened_identity, opened_sha256,
+                current_identity, current_sha256))
         with self._lock:
             if self._cache is not cache or self._session is not active_session:
                 raise ValidationError(

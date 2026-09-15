@@ -47,8 +47,8 @@ class FitTests(unittest.TestCase):
             with self.assertRaises(writer.EquipmentFitError) as caught:
                 f.build([f.png(rgba=rgba)])
             error = caught.exception
-            self.assertEqual((error.budget,error.required), (464,666))
-            self.assertIn('missed the 464-byte span by 202 bytes', str(error))
+            self.assertEqual((error.budget,error.required), (464,664))
+            self.assertIn('missed the 464-byte span by 200 bytes', str(error))
             self.assertEqual(error.suggestion['scale'],2)
             self.assertEqual(error.suggestion['colours'],2)
             span, _, receipt, _, _ = f.build([f.png(rgba=rgba,scale=error.suggestion['scale'])])
@@ -67,7 +67,7 @@ class FitTests(unittest.TestCase):
             project.write_bytes(tool.canonical_json(dict(schema=tool.SCHEMA,purpose='legacy own chain',
                 edits=[dict(kind=tool.UNIFORM_EQUIPMENT_KIND,asset_id=asset,png=str(png))])))
             with f.context(), patch.object(tool,'uniform_equipment_adapter',writer), \
-                 self.assertRaisesRegex(ValueError,'Cannot load equipment edits:.*shoes01.*202 bytes.*Reimport'):
+                 self.assertRaisesRegex(ValueError,'Cannot load equipment edits:.*shoes01.*200 bytes.*Reimport'):
                 tool.read_project(project,equipment_index=f.pack)
             self.assertEqual(f.pack.read_bytes(),f.span)
 

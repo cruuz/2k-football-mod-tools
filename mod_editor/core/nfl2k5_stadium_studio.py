@@ -88,7 +88,9 @@ EDITABLE_TEXTURE_FINDINGS = (
     "exact-dimension RGBA8 PNG. Every material/surface linked to this embedded "
     "texture changes together. If lossless SCNE compression exceeds the retail "
     "slot, simplify noisy detail and try again. Geometry, UVs, shaders, and "
-    "collision are unchanged."
+    "collision are unchanged. This edits only the selected scene's package. "
+    "Choose the venue and time/weather variant used by your game; other variants "
+    "keep their own textures. In-game appearance is UNWITNESSED."
 )
 
 GEOMETRY_FINDINGS = (
@@ -127,6 +129,7 @@ class StadiumScene:
     primitive_count: int
     vertex_count: int
     geometry_targets: tuple[StadiumGeometryTarget, ...]
+    label: str = ""
 
 
 @dataclass(frozen=True)
@@ -631,6 +634,7 @@ class Nfl2k5StadiumStudio:
                 scene for scene in rows
                 if needle in scene.scene_id.casefold()
                 or needle in scene.name.casefold()
+                or needle in scene.label.casefold()
                 or needle in str(scene.outer_index)
             )
         return rows[offset:] if limit is None else rows[offset:offset + limit]
@@ -1354,6 +1358,15 @@ class Nfl2k5StadiumStudio:
         }
 
     def _load_scenes(self) -> tuple[StadiumScene, ...]:
+        from .nfl2k5_stadium_texture_writer import stadium_package_identity
+
+        outer_ids = {}
+        for row in iter_top_level_array(self.texture_manifest, "occurrences", label="stadium texture manifest"):
+            if isinstance(row, dict) and isinstance(row.get("outer_id"), str):
+                outer = row.get("outer_index")
+                if outer in outer_ids and outer_ids[outer] != row["outer_id"]:
+                    raise ValidationError("Stadium manifest disagrees about a package identity")
+                outer_ids[outer] = row["outer_id"]
         try:
             manifest = json.loads(self.gltf_manifest.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError) as exc:
@@ -1387,6 +1400,8 @@ class Nfl2k5StadiumStudio:
                     chunk_index=chunk,
                     scene_index=scene_index,
                     name="stadium",
+                    label=stadium_package_identity(outer_ids.get(outer, "")).get(
+                        "label", f"Stadium / outer {outer} / chunk {chunk}"),
                     gltf_path=gltf,
                     bin_path=binary,
                     gltf_sha256=_text(raw.get("gltf_sha256"), "glTF hash"),
@@ -1661,7 +1676,7 @@ class Nfl2k5StadiumStudio:
                 StadiumTexture(**{
                     **base.__dict__,
                     "access_status": EDITABLE,
-                    "findings_note": EDITABLE_TEXTURE_FINDINGS,
+                    "findings_note": f"{scene.label or scene.scene_id}. {EDITABLE_TEXTURE_FINDINGS} Selected occurrence: {base.texture_id}.",
                 })
                 if self._delegate_supports(base) else base
             )

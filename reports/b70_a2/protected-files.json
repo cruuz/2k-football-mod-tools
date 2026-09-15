@@ -1,0 +1,519 @@
+{
+  "base": "8b4e3dbf",
+  "compared": 128,
+  "all_identical": true,
+  "files": [
+    {
+      "path": "data/nfl2k5_scorebug_assets/atlas_2026_preview.png",
+      "sha256": "ee12d2dbfee9384e2e4435f2183477dbcc933b73fe4922d27a563c527b03e90a"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/espn_glyphs.json",
+      "sha256": "3390740d16df8128a05c9ffd7a110f3d40f11fd89708f97977a9188b94754a0a"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/espn_glyphs.png",
+      "sha256": "f75f89fc47cf94f828e6d65961dd179101155a06bdaad813f843e4b60e72c44b"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/espn_wordmark.png",
+      "sha256": "978eb208cfdb56408a58e3f6c3889d7c5b1f39eb6bdfb805b2a14c8ffda55286"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/logos/ari.png",
+      "sha256": "f899241ab9dcfc73f4d963c817182866d435bb38d9750efb4031cc7cb62862a9"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/logos/atl.png",
+      "sha256": "d7ac93e8ad5f62fa0820d828e8b0e85d255d3c8f6c24385483fa0c3744bcabdb"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/logos/bal.png",
+      "sha256": "33a335e7797552a494877c2d963f91284e5140625a499ce99c0cf3e9997b2130"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/logos/buf.png",
+      "sha256": "fe1764236ce7fa9ae42025beb072409399e04ff3701b8d67e74a1aa928db5757"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/logos/car.png",
+      "sha256": "38bc14c0993d62e1d18001d1890ba0fcf0b5a09aeeab46fceebc2aafb1c7f954"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/logos/chi.png",
+      "sha256": "ab9a8c9b874c8af2e0d106be8ffd2d6f49a98b0d40a23083b7771e4c00957b7c"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/logos/cin.png",
+      "sha256": "e36713e4f0bcd7f350ad174888ce922a1c2b09f61e82dc5bc4fff08fe5ddeb34"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/logos/cle.png",
+      "sha256": "50bee168fdb27367798b08548762f98580e619b638652e426857a969bea4d944"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/logos/dal.png",
+      "sha256": "0da3876efa35e797b4c98c39f296dffc8bc5008e22ebc908642eeb7ebe10c463"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/logos/den.png",
+      "sha256": "637dad0b0a980a3088fb648538532f29f4ef86095038dd9f505a18960265fe96"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/logos/det.png",
+      "sha256": "bd5419a8affe8eb8f4dabe58c7207aec41731112558f8352cc61418d16d2038c"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/logos/gb.png",
+      "sha256": "e367f1f3b9192d2b411ec28bfead758c029d663f1a05f6622c6218080f8bd7fc"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/logos/hou.png",
+      "sha256": "b5e81eb52b428463f06d26a5a9e2accadcdf0aebf95c09a9dd346dfbb0161bee"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/logos/ind.png",
+      "sha256": "8c8941768036c38b481f5bbb288d1fa64085911efa679fdde50b1a21ce446c96"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/logos/jax.png",
+      "sha256": "b0ea8ee6f0b5c23c6009173b23360184d65d57afe34120d05e8fd01b3691787c"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/logos/kc.png",
+      "sha256": "9204ef23f5605c0df49a1bd0d4f78e6f7e3d9126b8854551774ec687a1e0e23c"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/logos/lac.png",
+      "sha256": "2ad3552a16b0d4014141171d43347222b156a05eaa4c53bcb30ad1eab285409f"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/logos/lar.png",
+      "sha256": "5325ff9f2c1556fc6f0ecb1471f44153fcb7d5d3722a2e6ce709912714d4a9ed"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/logos/lv.png",
+      "sha256": "993b10dd56023ba2888e865f089a8c15b97f9b1a079aec531b61e5616143594d"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/logos/mia.png",
+      "sha256": "65d290009c9d2379ca3c9f26ae423b0361ab1ea29ebde0055f90d334056c343c"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/logos/min.png",
+      "sha256": "bbd9ace4c43df698ff046818587759f68f84d44740da7e4c5558529184b2e7f3"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/logos/ne.png",
+      "sha256": "df1950e9729c9fe09dab937804edb9ea7d2e432232fdc716975b0137294c978f"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/logos/no.png",
+      "sha256": "4d3b90a183fcbe2828b602237770d513424e537a2c2b1f816b6c48c1d48f5c1c"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/logos/nyg.png",
+      "sha256": "2292e30c5aec89c7d75e3cc69aa721358ec543b9b35986b0923bc43c3c7772b3"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/logos/nyj.png",
+      "sha256": "5e5dd444d8f0992067ad6c45d8258e36934e81eab3043995be423d5cb0fe551b"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/logos/phi.png",
+      "sha256": "83d29218843a7e162cf32e3d93a67206e197681520992ebff05268b9ad3409e9"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/logos/pit.png",
+      "sha256": "8c10d1f56cc54b9347ad1b18e17cffb3c745546f1af39de247df3cdfd5b04855"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/logos/sea.png",
+      "sha256": "46afad5de0e936a7f1e9bb4b300751dac029664e8a74d60e03c907c189371aee"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/logos/sf.png",
+      "sha256": "4e5e5f32284f33de6d4b1dd03ff73298d099ff37acc7e148dfa3781997836079"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/logos/tb.png",
+      "sha256": "7337582ba98900cd9a8943856dd7db1746b2ae7443b4066f9e0623cc48c7765f"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/logos/ten.png",
+      "sha256": "5f8e644ae7ae13cc91029e295741ded17ed292ac8e752b6bf106028a30c825c4"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_assets/logos/wsh.png",
+      "sha256": "eb7f0990be9079e50cfa2c0b14890dd789a65f24f7bf6adac69da4b8282eb9a6"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/espn_glyphs.json",
+      "sha256": "3390740d16df8128a05c9ffd7a110f3d40f11fd89708f97977a9188b94754a0a"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/espn_glyphs.png",
+      "sha256": "f75f89fc47cf94f828e6d65961dd179101155a06bdaad813f843e4b60e72c44b"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/espn_wordmark.png",
+      "sha256": "978eb208cfdb56408a58e3f6c3889d7c5b1f39eb6bdfb805b2a14c8ffda55286"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/ari.png",
+      "sha256": "f899241ab9dcfc73f4d963c817182866d435bb38d9750efb4031cc7cb62862a9"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/atl.png",
+      "sha256": "d7ac93e8ad5f62fa0820d828e8b0e85d255d3c8f6c24385483fa0c3744bcabdb"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/bal.png",
+      "sha256": "33a335e7797552a494877c2d963f91284e5140625a499ce99c0cf3e9997b2130"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/buf.png",
+      "sha256": "fe1764236ce7fa9ae42025beb072409399e04ff3701b8d67e74a1aa928db5757"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/car.png",
+      "sha256": "38bc14c0993d62e1d18001d1890ba0fcf0b5a09aeeab46fceebc2aafb1c7f954"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/chi.png",
+      "sha256": "ab9a8c9b874c8af2e0d106be8ffd2d6f49a98b0d40a23083b7771e4c00957b7c"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/cin.png",
+      "sha256": "e36713e4f0bcd7f350ad174888ce922a1c2b09f61e82dc5bc4fff08fe5ddeb34"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/cle.png",
+      "sha256": "50bee168fdb27367798b08548762f98580e619b638652e426857a969bea4d944"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/dal.png",
+      "sha256": "0da3876efa35e797b4c98c39f296dffc8bc5008e22ebc908642eeb7ebe10c463"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/den.png",
+      "sha256": "637dad0b0a980a3088fb648538532f29f4ef86095038dd9f505a18960265fe96"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/det.png",
+      "sha256": "bd5419a8affe8eb8f4dabe58c7207aec41731112558f8352cc61418d16d2038c"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/gb.png",
+      "sha256": "e367f1f3b9192d2b411ec28bfead758c029d663f1a05f6622c6218080f8bd7fc"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/hou.png",
+      "sha256": "b5e81eb52b428463f06d26a5a9e2accadcdf0aebf95c09a9dd346dfbb0161bee"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/ind.png",
+      "sha256": "8c8941768036c38b481f5bbb288d1fa64085911efa679fdde50b1a21ce446c96"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/jax.png",
+      "sha256": "b0ea8ee6f0b5c23c6009173b23360184d65d57afe34120d05e8fd01b3691787c"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/kc.png",
+      "sha256": "9204ef23f5605c0df49a1bd0d4f78e6f7e3d9126b8854551774ec687a1e0e23c"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/lac.png",
+      "sha256": "2ad3552a16b0d4014141171d43347222b156a05eaa4c53bcb30ad1eab285409f"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/lar.png",
+      "sha256": "5325ff9f2c1556fc6f0ecb1471f44153fcb7d5d3722a2e6ce709912714d4a9ed"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/lv.png",
+      "sha256": "993b10dd56023ba2888e865f089a8c15b97f9b1a079aec531b61e5616143594d"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/mia.png",
+      "sha256": "65d290009c9d2379ca3c9f26ae423b0361ab1ea29ebde0055f90d334056c343c"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/min.png",
+      "sha256": "bbd9ace4c43df698ff046818587759f68f84d44740da7e4c5558529184b2e7f3"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/ne.png",
+      "sha256": "df1950e9729c9fe09dab937804edb9ea7d2e432232fdc716975b0137294c978f"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/no.png",
+      "sha256": "4d3b90a183fcbe2828b602237770d513424e537a2c2b1f816b6c48c1d48f5c1c"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/nyg.png",
+      "sha256": "2292e30c5aec89c7d75e3cc69aa721358ec543b9b35986b0923bc43c3c7772b3"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/nyj.png",
+      "sha256": "5e5dd444d8f0992067ad6c45d8258e36934e81eab3043995be423d5cb0fe551b"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/phi.png",
+      "sha256": "83d29218843a7e162cf32e3d93a67206e197681520992ebff05268b9ad3409e9"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/pit.png",
+      "sha256": "8c10d1f56cc54b9347ad1b18e17cffb3c745546f1af39de247df3cdfd5b04855"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/sea.png",
+      "sha256": "46afad5de0e936a7f1e9bb4b300751dac029664e8a74d60e03c907c189371aee"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/sf.png",
+      "sha256": "4e5e5f32284f33de6d4b1dd03ff73298d099ff37acc7e148dfa3781997836079"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/tb.png",
+      "sha256": "7337582ba98900cd9a8943856dd7db1746b2ae7443b4066f9e0623cc48c7765f"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/ten.png",
+      "sha256": "5f8e644ae7ae13cc91029e295741ded17ed292ac8e752b6bf106028a30c825c4"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/wsh.png",
+      "sha256": "eb7f0990be9079e50cfa2c0b14890dd789a65f24f7bf6adac69da4b8282eb9a6"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_studio_presets.json",
+      "sha256": "27429f4e740199c2c03ef6c359b2732c447d0d3ff78e1f99f63b3e403166602f"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_scorebar_v3.py",
+      "sha256": "406ed027b583e9d49dee9a671eab085af171c2d2b50ab5bc115e487ff45d5d91"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_scorebug_assets.py",
+      "sha256": "e5dbb12c95d0e3254d483f82fa301e31ddd2f4d6ca66f2add0c1b7eca902bcb7"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_scorebug_author.py",
+      "sha256": "edc8bc4e6fc8c53539bc8869852e78cde76c41b2b7ee4bbffb08ff4ac4a90db2"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_scorebug_exact.py",
+      "sha256": "a5bb9c277ea52f35e8dfa1e7e9a4126b16fb62ad527fcb80ab76cb98c05a1f87"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_scorebug_fonts.py",
+      "sha256": "b292f93b7bc25b64a379069b77c9172c1b92cf79553bfe4a7be835d1ad7119e9"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_scorebug_ingame.py",
+      "sha256": "f607fdea2b54829efc34b83d60bd6b85d7914a5acc769f9c08301ed07c2efea0"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_scorebug_mnf_font.py",
+      "sha256": "f8b1f288e9452b1eaff709026187595074f05fa797db6bc20ef088e584adb2e0"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_scorebug_resources.py",
+      "sha256": "e7d85a1ae6ce94e4dae6b12475329bd91152e629707cd92c7e5d712ab5bf63e1"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_scorebug_runtime.py",
+      "sha256": "9c4f17c5d6f4c57a93257dd88b0e5b8c92ec12609031723b47f9de82625ac13d"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_scorebug_source_art.py",
+      "sha256": "a3617552d90389df8e7ce4d78faa8fd64a1995c91e4e8ef93219007761ac27fd"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_scorebug_template.py",
+      "sha256": "409f7324352b88a6b4387b1f1a8ee1231c56f9674d7762ece24a8142fd2d2060"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_scorebug_unified_adapter.py",
+      "sha256": "3307d3b1777fcb51f112dea2c6c5290dd969c3037d5bc21112f9740b7cef9bfd"
+    },
+    {
+      "path": "tests/fixtures/nfl2k5_scorebar_callbacks_v3.py",
+      "sha256": "768d1307511cc6965ea7746649515f2ffe1e4cd2a12a32bb788f276a326345da"
+    },
+    {
+      "path": "tests/fixtures/nfl2k5_scorebug_exact_v1.py",
+      "sha256": "6489bdd9a06112180219bb6382bf9c570f2850ee7c7d847fcc38f2f653e0074c"
+    },
+    {
+      "path": "tests/fixtures/nfl2k5_scorebug_exact_v2.py",
+      "sha256": "7626ade9cf27019e86e13ee8bf5c69b74851620846edfcab0b5461c1d0d6faba"
+    },
+    {
+      "path": "tests/fixtures/nfl2k5_scorebug_exact_v3.py",
+      "sha256": "92dc368a99018159a3c2e84147138c81fe2424ec984c539f239d6f7bd9aa1772"
+    },
+    {
+      "path": "tests/fixtures/nfl2k5_scorebug_runtime_v4.py",
+      "sha256": "9d660b0b30a827ec03e04d4c4fce55063cb4068f54f96fed486ae307cecff90f"
+    },
+    {
+      "path": "tests/mod_editor/test_apf_scorebug_workspace_qt.py",
+      "sha256": "c9676e47fedb952aca718477d270b94cfeb9bc75a30b6262ae624b1ccdf8d268"
+    },
+    {
+      "path": "tests/mod_editor/test_nfl2k5_scorebar_rim.py",
+      "sha256": "f4d9862a2c0fb0540d28d7483fc61859e9a9f0ca8582a1b9183818518f1c3481"
+    },
+    {
+      "path": "tests/mod_editor/test_nfl2k5_scorebar_v3.py",
+      "sha256": "4fe0d68ff8c1538d3b04f17af070abc8b58f920df1c3c348d98044a3ceff43b0"
+    },
+    {
+      "path": "tests/mod_editor/test_nfl2k5_scorebug_assets.py",
+      "sha256": "a4caa86546e5eb0ef8e1c94b8035b4f00c3686fceb8dea2fd06046086da6f42a"
+    },
+    {
+      "path": "tests/mod_editor/test_nfl2k5_scorebug_author.py",
+      "sha256": "d4bc82c2f28e28f6ded0cfc26c53b285c368a7e47bc89dc27c87866fb03f5559"
+    },
+    {
+      "path": "tests/mod_editor/test_nfl2k5_scorebug_exact.py",
+      "sha256": "2bf9def0995ff9a7383deb3477903d606b1564e2af2628731d859d7a1306dbb9"
+    },
+    {
+      "path": "tests/mod_editor/test_nfl2k5_scorebug_fonts.py",
+      "sha256": "f40abdad98be16aab13b96cb34067959264ee0b07d767af27499df6c1cac16b7"
+    },
+    {
+      "path": "tests/mod_editor/test_nfl2k5_scorebug_freeze.py",
+      "sha256": "d25bab7cd680fe88ae5703ef3fc8adc4fc8e862fd5be40becc49e3a159526f81"
+    },
+    {
+      "path": "tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py",
+      "sha256": "1913e0e1fcf435a78b2b021fd7acbb068d0e184f692d30bdd52c9173b7b9c007"
+    },
+    {
+      "path": "tests/mod_editor/test_nfl2k5_scorebug_ingame.py",
+      "sha256": "37e3726e10028d06b80e73494b03bff017cc97d7f8411cf6b372ce1c9a8a445f"
+    },
+    {
+      "path": "tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py",
+      "sha256": "86843548ff69ecbab081034c2c2cd5f3f3d1f142ddd847dbbe2431365ce639a0"
+    },
+    {
+      "path": "tests/mod_editor/test_nfl2k5_scorebug_mnf.py",
+      "sha256": "2345d1a4bab507e60c587d25fa41673df2a951e038919b96f203fb20602c20b0"
+    },
+    {
+      "path": "tests/mod_editor/test_nfl2k5_scorebug_native.py",
+      "sha256": "9dae7c639587922e65936a18c28798239d27cb8dce43c788455a47c8f6e6580c"
+    },
+    {
+      "path": "tests/mod_editor/test_nfl2k5_scorebug_projection.py",
+      "sha256": "83a41de1cf66fbf462c0fe3b94e7584326537357f77a8494f67e8d2c0b8efea7"
+    },
+    {
+      "path": "tests/mod_editor/test_nfl2k5_scorebug_resources.py",
+      "sha256": "ac1fb3a06596d919b7cba8700fdfdad10cffef8c1be25a103b4fd9261ca89eb7"
+    },
+    {
+      "path": "tests/mod_editor/test_nfl2k5_scorebug_runtime.py",
+      "sha256": "7e15e8c313046dec4e092d48284067226902c862d7bb895b6521d5c9a75ffacd"
+    },
+    {
+      "path": "tests/mod_editor/test_nfl2k5_scorebug_source_art.py",
+      "sha256": "ed7a4f50f47ac583ccab85c3f25d9c97f7fe593ed9483914e945e39e98f30922"
+    },
+    {
+      "path": "tests/mod_editor/test_nfl2k5_scorebug_template.py",
+      "sha256": "77432ea01666f061b8f5e6e253b3d8a5d8d9f735ce7f06841f4198f1864954b3"
+    },
+    {
+      "path": "tests/mod_editor/test_nfl2k5_scorebug_template_release.py",
+      "sha256": "2ebf1c40873a21852f8f9a884e4b62a79b00b7dd4921cce6a3471795dd7ecabe"
+    },
+    {
+      "path": "tests/mod_editor/test_nfl2k5_scorebug_unified_adapter.py",
+      "sha256": "ada3f02b92a06cbbc182e3d0415b1a3a34128954b80c780aecf9746ee2b04c04"
+    },
+    {
+      "path": "tests/mod_editor/test_nfl2k5_scorebug_v10_ingame.py",
+      "sha256": "f3b3edc58b97ead1a8473bf2486ea3be9e3e1a895802e9d6009031468e6d5ab0"
+    },
+    {
+      "path": "tests/mod_editor/test_nfl2k5_scorebug_v10_projection.py",
+      "sha256": "5a666a8ef31d6681999d411474b9be3d63ac9f91b9c11c3173f0d69a75d7f045"
+    },
+    {
+      "path": "tests/mod_editor/test_nfl2k5_scorebug_versions.py",
+      "sha256": "65f3c1537c5bed888e3d8c63ef25977a59d932cf13bef1eafba3f2629b951e5a"
+    },
+    {
+      "path": "tests/mod_editor/test_scorebug_studio_panel_qt.py",
+      "sha256": "c14311f6d066019d3b3037cc27585498d76d9934429c982d3755cf1f5b3bf407"
+    },
+    {
+      "path": "tests/nfl2k5_scorebug_entry_fixture.py",
+      "sha256": "e5dfcb02b172c0074d0c1c9fcefd2092da98744b88e90a951121fbdf6b456d57"
+    },
+    {
+      "path": "tests/nfl2k5_scorebug_layout_test.py",
+      "sha256": "afc421a2a90350b4b14e9752bb70af2d54213db7682862fc18f7d890ad227377"
+    },
+    {
+      "path": "tests/nfl2k5_scorebug_mod_project_test.py",
+      "sha256": "575112e24b2ec2965e2544ec7a8c33941bd952615b9e0447e9a7de80c28b3a52"
+    },
+    {
+      "path": "tools/nfl2k5_scorebug_espn_art.py",
+      "sha256": "4bd1e9fb9166ddfbe1423f3e2c41ed2424841a0ae476270c2117de2a9e006780"
+    },
+    {
+      "path": "tools/nfl2k5_scorebug_exact.py",
+      "sha256": "4e71c5078905df8d315575dd41376ef7bf07a88d609dd227f6f4a8eb76cf9a50"
+    },
+    {
+      "path": "tools/nfl2k5_scorebug_exact2.py",
+      "sha256": "fc61f04a45d40be34e1a9885350528c8451eb2fac450b9463b78754aa42696a3"
+    },
+    {
+      "path": "tools/nfl2k5_scorebug_layout.py",
+      "sha256": "63ee159943a6494de331339e7460cb674955698c1d0d6a3aa8057e024967dcc5"
+    },
+    {
+      "path": "tools/nfl2k5_scorebug_mod_project.py",
+      "sha256": "98b3b656d9101afbed60b42f4390dcb50536e1202632553b8c099088e077f60a"
+    },
+    {
+      "path": "tools/nfl2k5_scorebug_position_patch.py",
+      "sha256": "eb2b913bd4d0620dcefc4f280db1f6d73e4a5c348b0483a246bbf587506cdbff"
+    },
+    {
+      "path": "tools/nfl2k5_scorebug_projection.py",
+      "sha256": "57d681e0188927f3532edc000f7582fafd812d248f3726632275a90c7e9b1486"
+    },
+    {
+      "path": "tools/nfl2k5_scorebug_reference.py",
+      "sha256": "32ef741eb84bdf022de8cae357895eea891e6265c025e57afd4d49a37a6f4444"
+    },
+    {
+      "path": "tools/nfl2k5_scorebug_template_art.py",
+      "sha256": "584e73d0b4c38e26dd1ff51c6716896c6a0a402f74802560593ea76dca610376"
+    },
+    {
+      "path": "tools/nfl2k5_scorebug_template_proof.py",
+      "sha256": "55b6bdc86169b8a7c8e0a15cc2329a593f6b40913b2c20894495d2507c087976"
+    },
+    {
+      "path": "tools/nfl2k5_scorebug_textures_into_xiso.py",
+      "sha256": "8eeeef8fbf6ea893bd9a37d4f79031de6caa6752bad7d70cc19aa6291f928de4"
+    },
+    {
+      "path": "tools/nfl2k5_scorebug_witness.py",
+      "sha256": "515d07d4d124919b8e4cfa21b1aaecc437b6e3b0b6beb38faec0897e68bfbe31"
+    }
+  ]
+}

@@ -25,7 +25,7 @@ sys.dont_write_bytecode = True
 
 ROOT = Path(__file__).resolve().parents[1]
 TOOLS = ROOT / "tools"
-EXPECTED_PRODUCT_VERSION = "0.1.0-alpha.90"
+EXPECTED_PRODUCT_VERSION = "0.1.0-alpha.91"
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 if str(TOOLS) not in sys.path:
@@ -579,6 +579,24 @@ def _check_apf_wave_contract(modules: dict[str, object]) -> None:
             or "unwitnessed" not in patch.status()
             or modules["capstone"].__version__ != "5.0.7"):
         raise RuntimeError("APF pass-fetch export ownership/status/verifier changed")
+
+
+REVIEWED_EDITOR_IMAGES = {'docs/mod_editor/apf2k8_book_identity/book-identity.png': (171333, '49031072810725b3835b2bdf76ae9380add77917f733fc5f5341acb9c3cf31b8'), 'docs/mod_editor/apf2k8_book_identity/stock-replacement.png': (211991, 'df3ba6f510754917d0aa376596daaca5f29888960eb25054ec2a32085f462b98'), 'docs/mod_editor/apf2k8_book_identity/walkthrough.png': (113176, '9062606c54d9198c9bc77dc4e7730a1fb0f66952a9d918fc38e3eef3c3e2a3d5')}
+
+def _check_book_identity_guide(modules):
+    guide = ROOT / "docs/mod_editor/apf2k8_book_identity_walkthrough.md"
+    require(guide.is_file(), "Book Identity walkthrough is absent")
+    for relative, (size, digest) in REVIEWED_EDITOR_IMAGES.items():
+        path = ROOT / relative
+        info = _require_regular(path, "reviewed editor image")
+        require(info.st_size == size and _sha256(path) == digest,
+                f"reviewed Book Identity image changed: {relative}")
+    service = modules["mod_editor.apf_studio.scheme_service"]
+    require(len(service.STOCK_TARGETS) == 8 and len(service.SCHEME_CONTENT) == 8,
+            "stock replacement book/scheme choices changed")
+    require(service.replacement_recipe("USER-o", "wide_zone") == {
+        "schema": service.REPLACEMENT_SCHEMA, "book_type": "USER-o", "scheme_id": "wide_zone"},
+        "stock replacement authoring contract changed")
 
 
 def _check_book_unlock_contract(modules: dict[str, object]) -> None:
@@ -1334,7 +1352,7 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
         check_files=False,
     )
     require(
-        len(registry.capabilities) == 172
+        len(registry.capabilities) == 174
         and len(registry.for_game(core_model.GameId.APF2K8)) == 72,
         "shared/APF capability registry counts changed",
     )
@@ -2661,6 +2679,7 @@ def main(argv: list[str] | None = None) -> int:
         for name in TOOL_MODULES:
             importlib.import_module(name)
         _check_book_unlock_contract(modules)
+        _check_book_identity_guide(modules)
         _check_apf_wave_contract(modules)
         _check_xex_image_contract(modules)
         _check_namespace_isolation()

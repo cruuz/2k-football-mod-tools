@@ -1,0 +1,19 @@
+{
+  "base_commit": "df9b9dcfbdc8e192e6edd37c4b8e5385bec92024",
+  "platform": "Linux-6.8.0-139-generic-x86_64-with-glibc2.39",
+  "python": "3.12.3",
+  "cpu_count": 32,
+  "affinity": 32,
+  "reference_sha256": {
+    "ps3_texture_bundle.py": "52d0de6bce2fb431157cc358a28ac514f217b34b307d25d696029d76ac325eda",
+    "apf_h7a_optimal": "d081d19c0078f768d2cb935732c910945c55d372dd9e1cc2b3e16ef9cfcf86a0",
+    "apf_logo_patch.py": "4fdb86dc16ab0a647407c60f538a43e34b141fdc079aa1b38e1e35e3deba9ce2",
+    "repeat_baseline.py": "3613d79b82eb3b53caf06d096f481614a01e812c10d48cf39796cade6e82e1c7",
+    "ps3_texture_bundle_qt.py": "fce56e096a5bce71c5df27366bafdf67b50b804fe8d25ba4251ba720a5be7eb1",
+    "baseline.py": "0c698b197d1aae8662a52f9a7dbb12509e96c357e6fdf85e7c12a0678c7b8ba2",
+    "apf_logocache_patch.py": "0bddddff674933d2ddd94345d3a1242df4d4dbe99662f4ad8220213d8c5533d2",
+    "apf_ps3_speed_benchmark.py": "91404c6b9943048d89af31240b4e110c1b214feab18dffd56a1fae0186d9ea5f"
+  },
+  "native_helper_disabled_measurements": "before_no_helper, after_no_helper, before_repeated_no_helper, after_repeated_no_helper",
+  "gameplay": "UNWITNESSED"
+}

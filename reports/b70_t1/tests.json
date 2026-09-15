@@ -1,0 +1,107 @@
+[
+  {
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_nfl2k5_equipment_texture_chain.py",
+    "returncode": 0,
+    "tail": "----------------------------------------------------------------------\nRan 19 tests in 3.333s\n\nOK"
+  },
+  {
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_nfl2k5_equipment_import.py",
+    "returncode": 0,
+    "tail": "----------------------------------------------------------------------\nRan 13 tests in 1.943s\n\nOK"
+  },
+  {
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_nfl2k5_equipment_consumers.py",
+    "returncode": 0,
+    "tail": "----------------------------------------------------------------------\nRan 19 tests in 32.269s\n\nOK"
+  },
+  {
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_b69_j1_fit.py",
+    "returncode": 0,
+    "tail": "----------------------------------------------------------------------\nRan 5 tests in 5.500s\n\nOK"
+  },
+  {
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_b69_j1_build.py",
+    "returncode": 0,
+    "tail": "----------------------------------------------------------------------\nRan 5 tests in 2.628s\n\nOK"
+  },
+  {
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_b69_j1_wiring.py",
+    "returncode": 0,
+    "tail": "----------------------------------------------------------------------\nRan 7 tests in 7.740s\n\nOK"
+  },
+  {
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_b68_t1_build.py",
+    "returncode": 0,
+    "tail": "----------------------------------------------------------------------\nRan 6 tests in 5.791s\n\nOK"
+  },
+  {
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_studio_facade.py",
+    "returncode": 0,
+    "tail": "----------------------------------------------------------------------\nRan 11 tests in 0.020s\n\nOK"
+  },
+  {
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_project_document_workflow.py",
+    "returncode": 1,
+    "tail": "----------------------------------------------------------------------\nRan 13 tests in 1.391s\n\nFAILED (errors=6)"
+  },
+  {
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_nfl2k5_equipment_texture_native.py",
+    "returncode": 0,
+    "tail": "----------------------------------------------------------------------\nRan 7 tests in 0.239s\n\nOK"
+  },
+  {
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_nfl2k5_equipment_retail_roundtrip.py",
+    "returncode": 0,
+    "tail": "----------------------------------------------------------------------\nRan 2 tests in 18.977s\n\nOK"
+  },
+  {
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_nfl2k5_equipment_import_wiring.py",
+    "returncode": 0,
+    "tail": "----------------------------------------------------------------------\nRan 6 tests in 0.878s\n\nOK"
+  },
+  {
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_nfl2k5_equipment_scope_wiring.py",
+    "returncode": 0,
+    "tail": "----------------------------------------------------------------------\nRan 3 tests in 2.663s\n\nOK"
+  },
+  {
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_2k5_uniform_equipment_export.py",
+    "returncode": 1,
+    "tail": "----------------------------------------------------------------------\nRan 13 tests in 1.086s\n\nFAILED (errors=6, skipped=2)"
+  },
+  {
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_b69_j1_native.py",
+    "returncode": 0,
+    "tail": "----------------------------------------------------------------------\nRan 1 test in 1.470s\n\nOK"
+  },
+  {
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_provider_integrity.py",
+    "returncode": 0,
+    "tail": "----------------------------------------------------------------------\nRan 7 tests in 9.385s\n\nOK"
+  },
+  {
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_b70_t1_build_speed.py",
+    "returncode": 0,
+    "tail": "----------------------------------------------------------------------\nRan 10 tests in 18.270s\n\nOK"
+  },
+  {
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_b70_t1_diagnostics.py",
+    "returncode": 0,
+    "tail": "----------------------------------------------------------------------\nRan 5 tests in 0.270s\n\nOK"
+  },
+  {
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_nfl2k5_build_service.py",
+    "returncode": 0,
+    "tail": "----------------------------------------------------------------------\nRan 28 tests in 0.171s\n\nOK"
+  },
+  {
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_hotfix63_digit_budget.py",
+    "returncode": 0,
+    "tail": "----------------------------------------------------------------------\nRan 5 tests in 0.025s\n\nOK (skipped=3)"
+  },
+  {
+    "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_b66_coach_digits.py",
+    "returncode": 0,
+    "tail": "----------------------------------------------------------------------\nRan 12 tests in 6.500s\n\nOK (skipped=1)"
+  }
+]

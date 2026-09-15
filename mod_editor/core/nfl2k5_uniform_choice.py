@@ -32,9 +32,15 @@ Two forms, ``BuildPlan.uniform_choice``:
     is mapped read-only): ``HOME_FLIP`` 0xA69974 and ``AWAY_FLIP`` 0xA69978, each 0 or 7, cleared
     where the era slots reset (the tail of ``FUN_000e2d80``).  ``AWAY_VALUE`` 0xA6997C is scratch
     the loader writes before the away letter site reads it.
+  * Reset lifetime (beta 70 bounded execution): the flip words do NOT survive an explicit
+    call to ``FUN_000e2d80``. The setup prefix at 0x77D20 calls it at 0x77D3B, clearing
+    both era slots and flips. Executing setup reset -> either screen's retail wrappers ->
+    the patched kit selector preserves the handler-written flips and produces the requested
+    letters. A reset after selection clears the choice. No such bad call order has been
+    reproduced; X_Ray's cause and full in-game transition remain UNWITNESSED.
   * The four slot handlers are rewritten in place: "next" past the last available era toggles that
     side's flip and restarts at era 0; "prev" below era 0 toggles and jumps to the last available
-    era.  Up/down therefore cycles 30 states (15 eras x 2 colours); no new button.
+    era.  Up/down therefore cycles twice the number of available eras (at most 30 states); no new button.
   * The rule block computes the retail swap (four equality calls, combined arithmetically:
     ``((hWAS | hTEN) & aDAL) | hDAL``), scales it to 0/7, stores ``AWAY_VALUE = 7*swap ^ AWAY_FLIP``
     and leaves ``esi = 7*swap ^ HOME_FLIP``.  The retail home letter site then yields
@@ -364,3 +370,32 @@ __all__ = ["UniformChoiceError", "MODES", "RULE_BLOCK_VA", "RULE_BLOCK_SIZE", "R
            "HOME_TEAM_PTR_VA", "AWAY_TEAM_PTR_VA", "HOME_ABBR_PTR_VA", "AWAY_ABBR_PTR_VA", "TEAM_YEARS_OFF", "LAST_SLOT",
            "apply", "applied_mode", "away_letter_bytes", "code_report", "handler_bytes", "reset_tail_bytes",
            "rule_block_bytes", "sites", "status"]
+
+
+def main(argv=None) -> int:
+    """Command line: ``status <default.xbe>`` or ``apply <source.xbe> <output.xbe> --mode choice``."""
+    import argparse
+    import json
+    from pathlib import Path
+
+    parser = argparse.ArgumentParser(prog="python3 -m mod_editor.core.nfl2k5_uniform_choice",
+                                     description="Jersey colour choice (executable patch): report or write a form.")
+    sub = parser.add_subparsers(dest="command", required=True)
+    report = sub.add_parser("status", help="print retail, applied or foreign for a default.xbe")
+    report.add_argument("xbe", type=Path)
+    write = sub.add_parser("apply", help="write the form into a copy of default.xbe")
+    write.add_argument("source", type=Path)
+    write.add_argument("output", type=Path)
+    write.add_argument("--mode", default="choice", choices=sorted(MODES))
+    args = parser.parse_args(argv)
+    if args.command == "status":
+        print(status(args.xbe.read_bytes()))
+        return 0
+    patched, receipt = apply(args.source.read_bytes(), mode=args.mode)
+    args.output.write_bytes(patched)
+    print(json.dumps(receipt, indent=2, sort_keys=True, default=str))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

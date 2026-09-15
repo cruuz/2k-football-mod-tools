@@ -203,32 +203,46 @@ class ExecutionTests(unittest.TestCase):
         m=self.machine()
         for team in art.TEAM_LOGOS.values():
             code=team['asset_code'];m.identity(code,code);m.setup()
-            self.assertEqual(m.get(m.mats['hscore_buga']+0x30),m.textures[f'sb{code}h3'])
-            self.assertEqual(m.get(m.mats['zscore_buga']+0x30),m.textures[f'sb{code}a3'])
+            self.assertEqual(m.get(m.mats['hscore_buga']+0x30),m.textures[f'sb{code}h0'])
+            self.assertEqual(m.get(m.mats['zscore_buga']+0x30),m.textures[f'sb{code}a0'])
         m.identity();m.setup();m.update()
-        for mat,name in [('hscore_buga','sb37h3'),('zscore_buga','sb20a3')]:
+        for mat,name in [('hscore_buga','sb37h0'),('zscore_buga','sb20a0')]:
             self.assertEqual(m.get(m.mats[mat]+0x30),m.textures[name]);self.assertFalse(m.get(m.mats[mat]+8)&1)
         self.assertEqual(m.get(0xa95b00),0)
         for home,away,kind in [('18','14',0),('02','22',0),('99',None,0),('20','37',2),('20','37',4),('20X','0/',0)]:
             m.identity(home,away,kind);m.setup();m.update()
             for side,code,mat in [('home',home,'hscore_buga'),('away',away,'zscore_buga')]:
                 valid=code in ('18','14','02','22') and kind==0
-                name=art.runtime_panel_name(code if valid else '--',side,3)
+                name=art.runtime_panel_name(code if valid else '--',side,0)
                 self.assertEqual(m.get(m.mats[mat]+0x30),m.textures[name])
             self.assertEqual(m.get(r.SCORE_COLORS[0]),r.WHITE)
         # A recognized but missing logo retries the neutral texture.
         m.identity('00','01')
         # Remove the named home texture object from lookup by renaming its name.
-        descriptor=m.textures['sb00h3'];m.uc.mem_write(descriptor-24,b'X\0')
+        descriptor=m.textures['sb00h0'];m.uc.mem_write(descriptor-24,b'X\0')
         m.setup();m.update()
-        self.assertEqual(m.get(m.mats['hscore_buga']+0x30),m.textures['sb--h3'])
+        self.assertEqual(m.get(m.mats['hscore_buga']+0x30),m.textures['sb--h0'])
     def test_timeout_counts_independent_reset_and_invalid(self):
+        """Beta 70: timeouts are text. The wing textures never change with the count;
+        the repurposed team-name callbacks write one dash per remaining timeout."""
         m=self.machine()
+        labels = m.labels
+        buffer=m.alloc(64)
         for home in (3,2,1,0,3,2,0xffffffff,4):
             for away in (3,2,1,0):
                 m.put(m.home+4,home);m.put(m.away+4,away);m.update()
-                self.assertEqual(m.get(m.mats['hscore_buga']+0x30),m.textures[f'sb37h{home if home<=3 else 0}'])
-                self.assertEqual(m.get(m.mats['zscore_buga']+0x30),m.textures[f'sb20a{away}'])
+                self.assertEqual(m.get(m.mats['hscore_buga']+0x30),m.textures['sb37h0'])
+                self.assertEqual(m.get(m.mats['zscore_buga']+0x30),m.textures['sb20a0'])
+                for side,count in ((0,home),(1,away)):
+                    m.uc.mem_write(buffer,b'\xee'*64)
+                    m.run(labels[f'dash_text{side}'],ecx=buffer,limit=2000)
+                    text=bytes(m.uc.mem_read(buffer,64)).decode('utf-16le').split('\0')[0]
+                    expected=' '.join('-'*1 for _ in range(count if count<=3 else 0))
+                    self.assertEqual(text,expected,(side,count))
+        # The setup installs the callbacks into the two retail team-name records.
+        self.assertEqual(m.get(r.CITY_CALLBACKS[0]),labels['dash_text0'])
+        self.assertEqual(m.get(r.CITY_CALLBACKS[1]),labels['dash_text1'])
+
     def test_score_flash_first_population_change_expiry_and_scene_reset(self):
         m=self.machine();m.put(m.home,7);m.update()
         self.assertEqual(m.get(r.SCORE_COLORS[0]),r.WHITE)

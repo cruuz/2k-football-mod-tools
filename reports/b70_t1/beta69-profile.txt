@@ -1,0 +1,36 @@
+         22037391 function calls (22037330 primitive calls) in 18.890 seconds
+
+   Ordered by: cumulative time
+   List reduced from 421 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000   18.891   18.891 nfl2k5_equipment_import.py:118(stage_equipment_import)
+        2    0.001    0.000   18.874    9.437 nfl2k5_uniform_equipment_writer.py:1178(build_unified_uniform_equipment_imports)
+        2    0.006    0.003   18.192    9.096 nfl2k5_uniform_equipment_writer.py:852(_compile_group)
+        2    0.000    0.000   15.041    7.520 nfl2k5_uniform_equipment_writer.py:684(_rebuild_fixed_span)
+        2    0.007    0.003   15.014    7.507 nfl2k5_uniform_equipment_writer.py:584(_rebuild_grown_video)
+        2    8.890    4.445   12.350    6.175 nfl2k5_equipment_lz.py:53(compress_equipment_optimal)
+        1    0.000    0.000   11.078   11.078 nfl2k5_uniform_equipment_writer.py:1447(preflight_project_equipment)
+ 15033568    3.460    0.000    3.460    0.000 {built-in method builtins.min}
+        4    1.438    0.359    2.555    0.639 nfl_txtr.py:360(compress_vc_lz)
+       38    0.980    0.026    1.623    0.043 nfl_txtr.py:836(texture_to_rgba)
+        8    0.849    0.106    1.290    0.161 nfl2k5_uniform_equipment_writer.py:800(_quality)
+       10    0.000    0.000    0.999    0.100 nfl2k5_uniform_equipment_writer.py:725(decode_equipment_levels)
+       50    0.790    0.016    0.790    0.016 nfl_txtr.py:760(unswizzle_2d)
+   558160    0.387    0.000    0.731    0.000 nfl_txtr.py:418(add_position)
+1259598/1259586    0.337    0.000    0.337    0.000 {built-in method builtins.max}
+       14    0.297    0.021    0.321    0.023 nfl_txtr.py:204(decompress_vc_lz)
+       10    0.000    0.000    0.319    0.032 __init__.py:595(__init__)
+       10    0.000    0.000    0.319    0.032 __init__.py:669(update)
+        8    0.137    0.017    0.318    0.040 {built-in method _collections._count_elements}
+        2    0.069    0.035    0.301    0.150 equipment_palette.py:40(quantize)
+        4    0.000    0.000    0.265    0.066 equipment_palette.py:71(quality)
+   583628    0.195    0.000    0.195    0.000 nfl_txtr.py:411(key_at)
+       10    0.000    0.000    0.191    0.019 nfl_txtr.py:666(decode_chunk)
+   262148    0.170    0.000    0.170    0.000 equipment_palette.py:72(<genexpr>)
+        4    0.000    0.000    0.149    0.037 nfl2k5_uniform_equipment_writer.py:429(_validate_layout)
+        2    0.000    0.000    0.145    0.073 nfl2k5_uniform_equipment_writer.py:519(_read_png)
+   909384    0.144    0.000    0.144    0.000 {method 'append' of 'collections.deque' objects}
+        2    0.143    0.071    0.143    0.071 nfl2k5_digit_texture.py:51(make_digit_mips)
+   736376    0.118    0.000    0.118    0.000 {method 'popleft' of 'collections.deque' objects}
+  1212464    0.117    0.000    0.117    0.000 {built-in method builtins.abs}

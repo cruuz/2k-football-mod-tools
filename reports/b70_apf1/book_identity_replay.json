@@ -1,0 +1,22 @@
+{
+  "dialogs": [],
+  "crashes": [],
+  "steps": [
+    "empty window",
+    "retail source loaded",
+    "playbooks",
+    "Book Identity assignments reparsed",
+    "Wide Zone starting recipe selected",
+    "Wide Zone stock replacement staged through real worker",
+    "Replacement choices expanded for guide",
+    "Replacement Save Project and reopen",
+    "How this works walkthrough rendered"
+  ],
+  "status": "APF_GUI_REPLAY_PASS",
+  "screenshots": [
+    "book-identity.png",
+    "stock-replacement.png",
+    "walkthrough.png"
+  ],
+  "runtime_status": "UNWITNESSED"
+}

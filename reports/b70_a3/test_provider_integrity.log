@@ -1,0 +1,13 @@
+F......
+======================================================================
+FAIL: test_all_external_writer_and_verifier_import_closures_are_exactly_pinned (__main__.ProviderIntegrityTests.test_all_external_writer_and_verifier_import_closures_are_exactly_pinned)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b70-a3/tests/mod_editor/test_provider_integrity.py", line 263, in test_all_external_writer_and_verifier_import_closures_are_exactly_pinned
+    self.assertEqual(len(provider.module_pins), len(expected_closure))
+AssertionError: 282 != 285
+
+----------------------------------------------------------------------
+Ran 7 tests in 7.447s
+
+FAILED (failures=1)

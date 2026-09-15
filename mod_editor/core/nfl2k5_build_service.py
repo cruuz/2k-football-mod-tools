@@ -30,7 +30,7 @@ import tempfile
 import time
 import threading
 import warnings
-from typing import Callable, Protocol, Sequence
+from typing import Callable, Iterable, Protocol, Sequence
 
 from . import platform_compat
 from .errors import ModEditorError, OutputRefusedError, ValidationError
@@ -109,25 +109,64 @@ class BuildResult:
     kept_retail: tuple[dict[str, object], ...] = ()
     source_sha256: str = ""
     stage_seconds: dict[str, float] = field(default_factory=dict)
+    texture_summary: tuple[str, ...] = ()
 
     @property
     def message(self) -> str:
-        """The status line the studio shows, or ``""`` for the plain default.
-
-        Empty when nothing was kept at retail so the GUI's own "Build complete"
-        wording stands; otherwise the same wording plus the warning rows, so a
-        slot that silently kept its retail digit is never mistaken for a
-        finished edit.
-        """
-
-        if not self.kept_retail:
+        if not self.kept_retail and not self.texture_summary:
             return ""
-        count = len(self.kept_retail)
-        rows = "; ".join(str(row.get("message", row.get("selector", ""))) for row in self.kept_retail)
-        return (
-            f"Build complete — {self.output_xiso.name} is ready for xemu. "
-            f"Kept retail for {count} uniform slot{'s' if count != 1 else ''}: {rows}"
-        )
+        lines = [f"Build complete: {self.output_xiso.name} is ready."]
+        if self.kept_retail:
+            lines.append(summarize_kept_retail(self.kept_retail))
+        lines.extend(self.texture_summary)
+        return "\n".join(lines)
+
+
+def summarize_kept_retail(rows: Iterable[dict[str, object]]) -> str:
+    """Shared completion text; original receipt dictionaries are never mutated."""
+    rows = tuple(rows)
+    if not rows:
+        return ""
+    # One concise line per named asset. The receipt retains every original
+    # message and fit attempt; shared next steps are printed only once.
+    assets: dict[tuple[str, str], list[dict[str, object]]] = {}
+    for row in rows:
+        key = (str(row.get("kind", "")), str(row.get("asset_id") or row.get("selector", "unknown")))
+        assets.setdefault(key, []).append(row)
+    lines = []
+    for (_kind, texture), group in assets.items():
+        row = group[0]
+        label = row.get("asset_label")
+        if not label:
+            equipment = row.get("kind") == "uniform_equipment_texture"
+            page = "Equipment" if equipment else "Uniforms"
+            part = str(row.get("family") or ("Equipment texture" if equipment else "Digit"))
+            if type(row.get("digit")) is int and "digit" not in part.lower():
+                part += f" digit {row['digit']}"
+            uniform = str(row.get("set_selector") or "".join(str(row.get(k, "")) for k in ("asset_code", "side", "variant")) or "unknown set")
+            label = f"{page} / {part} / {uniform} / texture {texture}"
+        if row.get("outcome") == "already_matches_source":
+            lines.append(f"{label}: already matches source.")
+            continue
+        shortfalls = [item.get("shortfall_bytes") for item in group]
+        measured = [n for n in shortfalls if type(n) is int and n > 0]
+        if measured:
+            qualifier = "at least " if any(item.get("shortfall_is_lower_bound") for item in group) else ""
+            shortfall = f"{qualifier}{max(measured):,} bytes over"
+        else:
+            shortfall = "byte shortfall unmeasured"
+        stored_size = row.get("stored_size")
+        if type(stored_size) is int and stored_size > 0:
+            shortfall += f" ({stored_size:,}-byte span)"
+        suggestions = [item.get("suggestion") for item in group]
+        checked = next((item for item in suggestions if isinstance(item, dict)
+            and all(type(item.get(k)) is int and item[k] > 0 for k in ("width", "height", "colours"))), None)
+        retry = (f"{checked['width']} x {checked['height']} at {checked['colours']} colours fits"
+                 if checked else "no checked size/colour retry")
+        lines.append(f"{label}: kept retail; {shortfall}; {retry}.")
+    return (f"Kept retail for {len(assets)} uniform slot{'s' if len(assets) != 1 else ''}:\n"
+            + "\n".join(lines)
+            + "\nEdit the named asset and preview again. Full fit details are in the build receipt.")
 
 
 @dataclass(frozen=True)
@@ -1414,6 +1453,7 @@ class Nfl2k5BuildService:
                 edit_count=result.edit_count,
                 changed_byte_count=result.changed_byte_count,
                 kept_retail=result.kept_retail,
+                texture_summary=result.texture_summary,
                 source_sha256=result.source_sha256,
                 stage_seconds={**timings, "publish": time.monotonic() - started},
             )
@@ -1628,6 +1668,8 @@ class Nfl2k5BuildService:
                 "The verified build receipt did not match the staged XISO. "
                 "No output was published."
             )
+        from mod_editor.core.equipment_reporting import verified_build_texture_lines
+        texture_summary = verified_build_texture_lines(manifest)
         return BuildResult(
             output_xiso=final_output,
             output_size=source_size,
@@ -1636,4 +1678,5 @@ class Nfl2k5BuildService:
             edit_count=project_row["edit_count"],
             changed_byte_count=patch_row["changed_byte_count"],
             kept_retail=tuple(dict(row) for row in value.get("kept_retail", [])),
+            texture_summary=texture_summary,
         ), staged_identity

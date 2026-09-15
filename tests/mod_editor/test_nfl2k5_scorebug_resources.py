@@ -179,7 +179,7 @@ class RetailTests(unittest.TestCase):
         # injection exercises IO rather than repeating artwork quantization.
         real_compile=a.compile_runtime_collection
         def compile(pack, *, probe='full'):
-            state=a.runtime_pack_status(pack)
+            state=a.runtime_pack_status(pack,probe=probe)
             if state=='applied':return pack,{'status':'already_applied','changed_bytes':0}
             self.assertEqual(state,'retail');return real_compile(pack,probe=probe)
         # A Mock retains every argument in call_args_list, including each
@@ -243,17 +243,18 @@ class RetailTests(unittest.TestCase):
                 compiled, receipt=a.compile_runtime_collection(self.before,probe=probe)
                 self.assertEqual(len(compiled),r.PACK_SIZE+growth)
                 self.assertEqual(receipt['texture_count'],count)
-                font_count = len(fonts.NAMES) if count else 0
+                font_count = len(fonts.NAMES) if count and probe != 'mnf' else 0
                 self.assertEqual(len(receipt['resources']),count + font_count)
                 self.assertEqual(receipt['font_count'], font_count)
-                self.assertEqual(receipt['native_heap_bytes'],count*5376 + (fonts.HEAP_BYTES if count else 0))
+                self.assertEqual(receipt['native_heap_bytes'],count*5376 + (fonts.HEAP_BYTES if font_count else 0))
                 self.assertEqual(a.runtime_pack_status(compiled,probe=probe),'applied')
                 self.assertIs(a.compile_runtime_collection(compiled,probe=probe)[0],compiled)
                 names={item['name'] for item in receipt['resources'] if item.get('kind') != 'FONT'}
+                states = 1 if probe == 'mnf' else 4
                 self.assertEqual(names,{a.runtime_panel_name(code,side,n) for code in a.probe_codes(probe)
-                                        for side in ('home','away') for n in range(4)})
+                                        for side in ('home','away') for n in range(states)})
                 for other in a.PROBES:
-                    same=a.probe_codes(probe)==a.probe_codes(other)
+                    same=a.probe_codes(probe)==a.probe_codes(other) and (probe=='mnf')==(other=='mnf')
                     self.assertEqual(a.runtime_pack_status(compiled,probe=other),'applied' if same else 'foreign')
                 self.image(path)
                 if probe=='transport':

@@ -265,6 +265,7 @@ class BuildPlan:
     espn25_plan: str = ""
     weather_plan: str = ""  # Saved nfl2k5.weather.edits.v1 JSON; EXPERIMENTAL, OFF
     weather_haze: bool = False  # Existing dry-weather coefficient; EXPERIMENTAL, OFF
+    modern_color: bool = False  # Broadcast light rigs and grass re-grade; EXPERIMENTAL, OFF
     # opt-in data patch: real historic players in the 35 shared historic roster files of the 25 moments
     espn25_rosters: bool = False
     # community playbook packs (.2k5book recipes) installed into the copy's team books.
@@ -308,7 +309,7 @@ class BuildPlan:
                 or self.position_row or self.probowl_order or bool(self.penalties) or bool(self.uniform_choice) or self.helmet_finish == "matte"
                 or self.kick_laces or self.franchise_practice or bool(self.prospect_names) or self.player_star
                 or self.modern_naming or self.crib_reclaim or self.read_option_runtime or self.franchise_2026_rules or self.senior_bowl
-                or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave
+                or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave
                 or self.momentum_collisions or self.scorebug_runtime or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
                 or bool(self.music_library and _music_library_document(self.music_library)["bank"] == "cribmusic"))
 
@@ -341,7 +342,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "kick_rules": False, "kick_power": True, "kickoff_alignment": False, "dynamic_kickoff": False, "xbe_space": False, "kickoff_relocated": False,
         "position_pools": False, "position_pools_keep_olb": False, "season_cap": False, "season_2026": False, "widescreen": False, "overtime": False, "team_column": True, "seven_on_seven": False, "team_history": "", "career_stats": "", "screen_timing": None, "depth_roles": False, "depth_chart_rows": False, "position_row": True, "probowl_order": True, "penalties": "", "uniform_choice": "", "helmet_finish": "glossy", "kick_laces": False, "franchise_practice": False, "practice_squad": False, "depth_locks": False, "prospect_names": "", "player_star": False,
         "espn25_plan": "", "espn25_rosters": False,
-        "weather_plan": "", "weather_haze": False,
+        "weather_plan": "", "weather_haze": False, "modern_color": False,
         "coin_defer": False, "decided_clock": False,
         "decided_clock_margin": 17, "decided_clock_seconds": 60,
         "cpu_scrambles": "retail",
@@ -360,9 +361,9 @@ PRESETS: dict[str, dict[str, Any]] = {
         "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True,
         "edge_rename": True, "scorebug": False, "guardian_cap": False, "scheme_labels": True, "camera": True,
         "kick_rules": True, "kick_power": False, "kickoff_alignment": False, "dynamic_kickoff": False, "xbe_space": False, "kickoff_relocated": False,
-        "position_pools": True, "position_pools_keep_olb": False, "season_cap": False, "season_2026": True, "widescreen": False, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "screen_timing": None, "depth_roles": True, "depth_chart_rows": False, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "choice", "helmet_finish": "glossy", "kick_laces": False, "franchise_practice": True, "practice_squad": False, "depth_locks": False, "prospect_names": "modern", "player_star": True,
+        "position_pools": True, "position_pools_keep_olb": False, "season_cap": False, "season_2026": True, "widescreen": False, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "screen_timing": None, "depth_roles": True, "depth_chart_rows": False, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "", "helmet_finish": "glossy", "kick_laces": False, "franchise_practice": True, "practice_squad": False, "depth_locks": False, "prospect_names": "modern", "player_star": True,
         "espn25_plan": "", "espn25_rosters": False,
-        "weather_plan": "", "weather_haze": False,
+        "weather_plan": "", "weather_haze": False, "modern_color": False,
         "coin_defer": False, "decided_clock": False,
         "decided_clock_margin": 17, "decided_clock_seconds": 60,
         "cpu_scrambles": "retail",
@@ -382,9 +383,9 @@ PRESETS: dict[str, dict[str, Any]] = {
         "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True,
         "edge_rename": True, "scorebug": True, "scheme_labels": True, "camera": True,
         "kick_rules": True, "kick_power": False, "kickoff_alignment": True, "dynamic_kickoff": True, "xbe_space": False, "kickoff_relocated": False,
-        "position_pools": True, "position_pools_keep_olb": False, "season_cap": True, "season_2026": True, "widescreen": True, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "screen_timing": "D", "depth_roles": True, "depth_chart_rows": True, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "choice", "helmet_finish": "glossy", "kick_laces": True, "franchise_practice": True, "practice_squad": True, "depth_locks": True, "prospect_names": "modern", "player_star": True,
+        "position_pools": True, "position_pools_keep_olb": False, "season_cap": True, "season_2026": True, "widescreen": True, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "screen_timing": "D", "depth_roles": True, "depth_chart_rows": True, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "", "helmet_finish": "glossy", "kick_laces": True, "franchise_practice": True, "practice_squad": True, "depth_locks": True, "prospect_names": "modern", "player_star": True,
         "espn25_plan": "", "espn25_rosters": False,
-        "weather_plan": "", "weather_haze": False,
+        "weather_plan": "", "weather_haze": False, "modern_color": False,
         "coin_defer": False, "decided_clock": False,
         "decided_clock_margin": 17, "decided_clock_seconds": 60,
         "cpu_scrambles": "retail",
@@ -437,6 +438,7 @@ def availability() -> dict[str, bool]:
         "helmet_finish": _core_module("nfl2k5_helmet_finish") is not None,
         "weather_plan": _core_module("nfl2k5_weather") is not None,
         "weather_haze": _core_module("nfl2k5_weather_haze") is not None,
+        "modern_color": _core_module("nfl2k5_modern_color") is not None,
         **{key: _core_module(module) is not None and _core_module("nfl2k5_xbe_space") is not None
            for key, module in (("momentum", "nfl2k5_momentum"), ("momentum_contact", "nfl2k5_momentum"),
                                ("momentum_collisions", "nfl2k5_momentum"),
@@ -586,6 +588,7 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
         "position_row": report.get("position_row", "unknown"), "probowl_order": report.get("probowl_order", "unknown"),
         "penalties": report.get("penalties", "unknown"),
         "uniform_choice": report.get("uniform_choice", "unknown"),
+        "uniform_choice_mode": report.get("uniform_choice_mode"),
         "kick_laces": report.get("kick_laces", "unknown"),
         "franchise_practice": report.get("franchise_practice", "unknown"),
         "practice_squad": report.get("practice_squad", "unknown"),
@@ -778,6 +781,14 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
             out["weather_haze"] = haze.status(_xbe_bytes(source))
         except (OSError, ValueError):
             out["weather_haze"] = "unknown"
+    modern = _core_module("nfl2k5_modern_color")
+    if modern is None:
+        out["modern_color"] = "unavailable"
+    else:
+        try:
+            out["modern_color"] = modern.xbe_status(_xbe_bytes(source))
+        except (OSError, ValueError):
+            out["modern_color"] = "unknown"
     finish = _core_module("nfl2k5_helmet_finish")
     if finish is None:
         out["helmet_finish"] = "unavailable"
@@ -1158,6 +1169,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Choose a saved weather plan JSON file, or leave climate edits off.")
     if type(plan.weather_haze) is not bool:
         raise ValueError("Existing dry-weather haze response must be Off or On.")
+    if type(plan.modern_color) is not bool:
+        raise ValueError("Modern colour and lighting must be Off or On.")
     plan = replace(plan, weather_plan=plan.weather_plan.strip())
     if type(plan.espn25_plan) is not str:
         raise ValueError("espn25_plan must be text: the path of a saved ESPN Anniversary plan, or empty")
@@ -1387,6 +1400,19 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         haze = _core_module("nfl2k5_weather_haze")
         if haze is None or haze.status(_xbe_bytes(source)) not in ("retail", "applied"):
             raise ValueError("The dry-weather haze reader is not recognized. Turn this option off or rebuild from a supported USA source.")
+    if plan.modern_color:
+        modern = _core_module("nfl2k5_modern_color")
+        if modern is None or not is_image:
+            raise ValueError("Modern colour and lighting needs a disc image (the stadium bundles live in the archive packs).")
+        if modern.xbe_status(_xbe_bytes(source)) not in ("retail", "applied"):
+            raise ValueError("The light rigs are not recognized. Turn Modern colour and lighting off or rebuild from a supported USA source.")
+        progress("Checking the stadium bundles for Modern colour and lighting", 0, 0)
+        try:
+            bundle_state = modern.image_status(source)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"Modern colour and lighting cannot read the stadium bundles: {exc}") from exc
+        if bundle_state not in ("retail", "applied"):
+            raise ValueError("The stadium bundles are not the supported retail or already-modern set. Turn Modern colour and lighting off or rebuild from a supported USA source.")
     if plan.playbook_packs and not is_image:
         raise ValueError("playbook packs need a disc image (the books live in the archive packs)")
     if plan.depth_chart_rows:
@@ -1941,6 +1967,20 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             _write_xbe_bytes(target, patched)
             haze.verify(_xbe_bytes(target), enabled=plan.weather_haze)
             receipt["steps"].append({"step": "weather_haze", **haze_receipt})
+    modern = _core_module("nfl2k5_modern_color")
+    if modern is not None:
+        try:
+            current = _xbe_bytes(target)
+        except (OSError, ValueError):
+            if plan.modern_color:
+                raise
+            current = None
+        if current is not None and (plan.modern_color or modern.xbe_status(current) == "applied"):
+            progress("Modern colour and lighting: light rigs", 0, 0)
+            patched, modern_receipt = modern.apply(current, enabled=plan.modern_color)
+            _write_xbe_bytes(target, patched)
+            modern.verify(_xbe_bytes(target), enabled=plan.modern_color)
+            receipt["steps"].append({"step": "modern_color_xbe", **modern_receipt})
     progress("Verifying the composed disc", 0, 0)
     inspection = inspect(target, screen_timing=plan.screen_timing)
     if plan.hires_pack:
@@ -2033,6 +2073,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         weather.verify(weather.load_resource(target), loaded_weather_plan)
         receipt["steps"].append({"step": "weather_plan", **climate_receipt})
         receipt["result"]["weather_plan"] = "applied"
+    if plan.modern_color:
+        modern = _core_module("nfl2k5_modern_color")
+        progress("Modern colour and lighting: stadium bundles", 0, 0)
+        bundle_receipt = modern.apply_to_image(target, progress=progress)
+        receipt["steps"].append({"step": "modern_color_bundles", **{k: v for k, v in bundle_receipt.items() if k != "edits"}})
+        receipt["result"]["modern_color"] = "applied"
     return receipt
 
 

@@ -94,7 +94,10 @@ class AssignmentReview(QDialog):
         self.assignments = tuple(assignments)
         layout = QVBoxLayout(self)
         note = QLabel("Files fill these slots in order. Drag files to reorder them. "
-                      "Jukebox slots also replace the linked mono stadium version.")
+                      "Jukebox slots also replace the linked mono stadium version. "
+                      "The game plays music at 22,050 Hz (16-bit). Higher-rate files will be "
+                      "downsampled before import, which removes the highest frequencies. "
+                      "Use your original file and listen to the prepared preview before building.")
         note.setWordWrap(True)
         layout.addWidget(note)
         self.targets = QLabel("\n".join(f"{i+1}. {catalog.get(row_id).title} "
@@ -415,7 +418,10 @@ class MusicPanel(QWidget):
         heading.setStyleSheet("font-size: 22px; font-weight: bold;")
         songs_layout.addWidget(heading)
         help_text = QLabel("Choose your original music files or drop them anywhere on this page. "
-                          "We prepare the sound and match the volume to the game's songs.")
+                          "The game plays music at 22,050 Hz (16-bit). Higher-rate files will be "
+                          "downsampled before import, which removes the highest frequencies. "
+                          "We match the volume to the game's songs. Use your original file, then "
+                          "listen to the prepared preview before building.")
         help_text.setWordWrap(True)
         songs_layout.addWidget(help_text)
         song_actions = QHBoxLayout()

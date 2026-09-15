@@ -4,6 +4,10 @@ This folder is a retail-free application. It contains no *All-Pro Football
 2K8* ISO, extracted game files, textures, audio, screenshots, or rollback
 bytes. You select your own legally dumped USA copy after the app opens.
 
+For starting play recipes, the eight scheme presets and independent CPU books,
+read the [Book Identity walkthrough](docs/mod_editor/apf2k8_book_identity_walkthrough.md).
+It is also available from **Playbooks → Book Identity → How this works**.
+
 ## Install
 
 APF 2K8 Mod Studio needs **Python 3, PyQt5, and Pillow**.
@@ -83,7 +87,7 @@ sudo apt install ffmpeg
 The Audio tab inventories all 2,261 standalone sounds, all 45,514 addressable
 substreams, both 15-track soundtrack encodings, and all 19 named physical XMA1
 banks. Original XMA1/WAV export and exact raw-bank export are available. The
-current release candidate, **`0.1.0-alpha.90`**, gives the 2,261 standalone
+current release candidate, **`0.1.0-alpha.91`**, gives the 2,261 standalone
 rows and all 45,514 individually addressed AUSB rows an advanced exact-slot
 replacement route, selected-sound PCM16 authoring through a separately
 installed encoder, and v1 XMA1 plus v2 exact-PCM16 folder/ZIP batch hand-off.

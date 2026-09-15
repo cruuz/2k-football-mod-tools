@@ -314,9 +314,12 @@ class RetailTests(unittest.TestCase):
                  patch.object(scene, "PACK_SIZE", len(blob)), \
                  patch.object(art, "runtime_pack_status", return_value="applied") as resources:
                 self.assertEqual(scene.runtime_image_status(path), "applied")
-                # v8 scorebug: the reader receives a bounded PackView over the pack extent, probed in full
+                # The reader receives a bounded PackView over the pack extent, probed with the
+                # runtime's default profile: beta 70's 2026 Monday Night Football package ("mnf";
+                # beta 69 probed the full v8 collection).
                 self.assertTrue(resources.called)
-                self.assertEqual(resources.call_args.kwargs.get('probe'), 'full')
+                self.assertEqual(resources.call_args.kwargs.get('probe'), scene.runtime_image_status.__kwdefaults__['probe'])
+                self.assertEqual(resources.call_args.kwargs.get('probe'), 'mnf')
                 bad = bytearray(full); bad[space.EXT_FILE_SIZE] ^= 1
                 path.write_bytes(bad + blob)
                 self.assertEqual(scene.runtime_image_status(path), "foreign")

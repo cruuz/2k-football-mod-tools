@@ -1,6 +1,29 @@
 """Shared captions for the beta-62 Build and Gameplay controls."""
 from mod_editor.core import nfl2k5_throw_tuning as tt
 
+UNIFORM_CHOICE_HELP = (
+    "Gameplay Patches selects the choice form for a new patch; the caption names the current form. "
+    "Build also offers rule: fixed home dark / away white, with no in-game colour choice. "
+    "The choice form uses the existing jersey-era up/down controls on Controller Assign "
+    "and exhibition Team Select. Next past the last available era flips that side's colour "
+    "and returns to era 0; previous below era 0 flips and goes to the last available era. "
+    "Only available eras count. The initial colours follow the retail Cowboys rule. "
+    "Team Select preview art shows the era only; check the uniforms on the field. "
+    "Practice and Xbox Live do not gain a jersey-choice control. "
+    "X_Ray reports that jersey choice did not work. The screen handlers and kit letters "
+    "pass bounded native checks; his cause remains unresolved. EXPERIMENTAL / UNWITNESSED.")
+
+
+def uniform_choice_caption(mode):
+    """Name the installed/selected form without turning a status into a guess."""
+    return {
+        "choice": "Jersey choice: choice form (Controller Assign / exhibition Team Select)",
+        "rule": "Jersey colour: rule form (fixed home dark / away white)",
+        "": "Jersey choice: off (retail colours)",
+        None: "Jersey colour: installed form unknown; inspect or rebuild from original source",
+    }.get(mode, "Jersey colour: unrecognized form")
+
+
 SCOREBUG_HELP = (
     "Retail: Uses the original scoreboard. Patch: Uses each team's primary "
     "color on its panel with readable white scores and yellow possession highlighting; "
@@ -12,14 +35,16 @@ SCOREBUG_HELP = (
     "A scorebar folder selects your painted template (the v10 layout). Moves the kick meter up and hides the "
     "lineup strip. EXPERIMENTAL / UNWITNESSED (the outline revision is unwitnessed); rebuild from a clean source.")
 SCOREBUG_RUNTIME_HELP = (
-    "Reported game freeze: andrethealchemist says the game freezes after Berman "
-    "when this option is selected: 'Unselecting that option fixed the issue for me.' "
-    "Leave this off for normal play. Retail: the game keeps its own scorebar effects. "
-    "Patch (diagnostic only; off in every preset): adds team gradients, logos, live "
-    "timeout marks, resized text, a white possession marker and three-digit scores "
-    "to the experimental scorebar. "
-    "Bounded native checks do not reproduce the player's freeze. "
-    "EXPERIMENTAL / UNWITNESSED. Rebuild from the original source for comparisons.")
+    "Retail: the ESPN scorebar stays static. Patch: the bar becomes the 2026 Monday Night Football "
+    "broadcast bug. Team logos on their colours in the wings, the down plate in the possessing team's "
+    "colour, timeout dashes under the scores, a white clock capsule with the play clock turning ESPN red "
+    "under five seconds, and ESPN digits painted into the game's own HUD fonts. Adds 66 small textures "
+    "to the HUD (0.35 MB). The beta 69 version added 1.7 MB, and that is what froze the game after "
+    "Berman's intro: the resource loader ran out of room and read a chunk into a null buffer, reproduced "
+    "in the emulator on 2026-09-15 (andrethealchemist: 'if you go into situation mode instead of play "
+    "now/franchise, (bypassing Berman) you can see how cool the scorebug effects looks in game'). Needs "
+    "the ESPN scorebar option and a disc image. Experimental, not yet witnessed in game."
+)
 PRACTICE_HELP = (
     "Retail: Practice is available from Game Modes. Patch: adds Practice below Schedule on the Coach's Desk. "
     "Practice uses your franchise roster and returns to the Coach's Desk when you quit. "

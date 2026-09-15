@@ -1,0 +1,13 @@
+[
+  {
+    "path": "tests/mod_editor/test_b70_a2_wiring.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_a2_wiring.py",
+    "exit_code": 0,
+    "seconds": 3.535,
+    "footer": [
+      "Ran 4 tests in 1.234s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/wiring-readback/tests__mod_editor__test_b70_a2_wiring.py.log"
+  }
+]

@@ -1,0 +1,3 @@
+usage: check_apf2k8_mod_studio_release.py [-h] [--allowlist ALLOWLIST]
+                                          release_root
+check_apf2k8_mod_studio_release.py: error: the following arguments are required: release_root

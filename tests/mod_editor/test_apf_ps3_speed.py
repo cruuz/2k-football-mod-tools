@@ -110,6 +110,51 @@ class EncoderTests(unittest.TestCase):
 
 
 class CacheAndWorkerTests(unittest.TestCase):
+    def test_repeated_six_mask_inputs_share_one_pending_fit_and_independent_receipts(self):
+        from dataclasses import replace
+        from test_apf_crest_budget_import import inputs
+        source, slots, _ = inputs()
+        pair = source.pairs[0]
+        pairs = tuple(replace(pair, pair_id=f'repeat-{i}') for i in range(32))
+        source = replace(source, pairs=pairs)
+        destinations = [s for s in slots if s.kind == 'logo' and s.writable]
+        identities = {s.outer_index: 'layout' for s in destinations}
+        jobs_seen = []
+        def jobs(_function, jobs, **_kwargs):
+            jobs_seen.extend(jobs)
+            return iter([({'layout': ({'shades_per_region': 16, 'encoder': 'greedy H7A',
+                                      'compressed_art_bytes': 42},)}, {}) for _ in jobs])
+        bundle._BUNDLE_MEASUREMENTS.clear()
+        with patch.object(writer, 'logo_measurement_templates', return_value=(identities, {'layout': object()})), \
+             patch.object(writer, 'ordered_crest_map', side_effect=jobs):
+            result = bundle.measure_bundle_logos(source, slots, Path('synthetic'))
+            self.assertEqual(len(jobs_seen), 1)
+            self.assertEqual(len(result), 32)
+            target = destinations[0].slot_id
+            result['repeat-0']['destinations'][target][0]['compressed_art_bytes'] = -1
+            self.assertEqual(result['repeat-1']['destinations'][target][0]['compressed_art_bytes'], 42)
+            again = bundle.measure_bundle_logos(source, slots, Path('synthetic'))
+            self.assertEqual(len(jobs_seen), 1)
+            self.assertEqual(again['repeat-0']['destinations'][target][0]['compressed_art_bytes'], 42)
+            # l1 contains three independent masks; changing just one invalidates reuse.
+            image = pairs[0].layers[1].image.copy()
+            image.putpixel((0, 0), (0, 1, 2, 3))
+            layers = (pairs[0].layers[0], replace(pairs[0].layers[1], image=image))
+            changed = replace(source, pairs=(replace(pairs[0], layers=layers),))
+            bundle.measure_bundle_logos(changed, slots, Path('synthetic'))
+            self.assertEqual(len(jobs_seen), 2)
+
+    def test_compression_cache_is_separate_for_portable_optimal_policy(self):
+        writer._STREAM_CACHE.clear()
+        data = b'abcabcabc'
+        with patch.object(field, '_optimal_binary', return_value=None), \
+             patch.object(writer, 'compress_h7a_best', wraps=writer.compress_h7a_best) as best:
+            with patch.dict(os.environ, {'APF_H7A_PYTHON_OPTIMAL': '0'}):
+                writer._compressed(data, 8, True)
+            with patch.dict(os.environ, {'APF_H7A_PYTHON_OPTIMAL': '1'}):
+                writer._compressed(data, 8, True)
+            self.assertEqual(best.call_count, 2)
+
     def test_worker_timeout_is_propagated_without_polling_forever(self):
         with patch.object(writer, 'crest_worker_count', return_value=2):
             with self.assertRaisesRegex(TimeoutError, 'crest source timed out'):

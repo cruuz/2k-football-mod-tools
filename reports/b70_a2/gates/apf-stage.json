@@ -1,0 +1,59 @@
+{
+  "scope": "Exact integrated APF allowlist staged from the worktree; missing existing extractor artifacts copied from the read-only alpha.69 release and checked by current release/runtime pins. No binaries committed.",
+  "hydrated": [
+    {
+      "path": "tools/vendor/extract-xiso/BUILDING-THE-BUNDLED-BINARIES.md",
+      "source": "/home/noah/Desktop/2K5-8 Editors/builds/apf2k8-mod-studio-0.1.0-alpha.69/tools/vendor/extract-xiso/BUILDING-THE-BUNDLED-BINARIES.md",
+      "size": 3426,
+      "sha256": "bf282b33027de33658edff1da34779cc14704c879dbf3472bdd48676f3b38adc"
+    },
+    {
+      "path": "tools/vendor/extract-xiso/LICENSE.TXT",
+      "source": "/home/noah/Desktop/2K5-8 Editors/builds/apf2k8-mod-studio-0.1.0-alpha.69/tools/vendor/extract-xiso/LICENSE.TXT",
+      "size": 3115,
+      "sha256": "719d9e9a12c470a20d9f1988a03108fd99bb0b07a5340c6bbf3caf524b7adf01"
+    },
+    {
+      "path": "tools/vendor/extract-xiso/build/extract-xiso",
+      "source": "/home/noah/Desktop/2K5-8 Editors/builds/apf2k8-mod-studio-0.1.0-alpha.69/tools/vendor/extract-xiso/build/extract-xiso",
+      "size": 51336,
+      "sha256": "222e7763df8f16d9b252c625fac5ef551cd25cdf031a785b3ec73c6e53c5d7f2"
+    },
+    {
+      "path": "tools/vendor/extract-xiso/build/extract-xiso.exe",
+      "source": "/home/noah/Desktop/2K5-8 Editors/builds/apf2k8-mod-studio-0.1.0-alpha.69/tools/vendor/extract-xiso/build/extract-xiso.exe",
+      "size": 293273,
+      "sha256": "e9567fe31b168b226531ed532714b3e1cc9070cdfac0c102fb881e2825aee68d"
+    }
+  ],
+  "checks": [
+    {
+      "command": [
+        "python3",
+        "/tmp/astra-b70-a2-apf-stage-ee8d38ci/packaging/check_apf2k8_mod_studio_release.py",
+        "/tmp/astra-b70-a2-apf-stage-ee8d38ci"
+      ],
+      "exit_code": 0,
+      "output": "APF2K8_MOD_STUDIO_RELEASE_PASS files=279 bytes=10273870 metadata=8 install_surface=8 retail_hashes=7 extractor=reviewed private=false retail=false symlinks=false undeclared=false\n"
+    },
+    {
+      "command": [
+        "python3",
+        "/tmp/astra-b70-a2-apf-stage-ee8d38ci/packaging/check_apf2k8_mod_studio_runtime.py"
+      ],
+      "exit_code": 0,
+      "output": "APF2K8_MOD_STUDIO_RUNTIME_PASS modules=156 capabilities=72 universal=private_source_not_provided uniforms=private_source_not_provided uniform_inventory=private_source_not_provided audio_query_lifecycle=applied_token_debounce_guarded audio_shortlist_clear=one_level_ordered_restore audio_preview_lifecycle=request_owned_success_failure audio_preview_cancellation=request_owned_process_group_cancel audio_waveform_cancellation=request_owned_process_group_cancel audio_add_all_matching=applied_query_atomic_256 audio_session_teardown=cancel_drain_before_close_source audio_replacement_confirmation=fully_validated_read_only_preview_then_explicit_apply audio_replacement_token=exact_member_result_source_session_project_revision audio_replacement_noop=cancel_unchanged audio_replacement_lifecycle=worker_drained_before_confirmation audio_direct_drop=selected_exact_slot_xma1_or_conformed_audio audio_mutation_lifecycle=submission_to_worker_idle retail_source_required=false\n"
+    },
+    {
+      "command": [
+        "python3",
+        "/tmp/astra-b70-a2-apf-stage-ee8d38ci/tests/mod_editor/test_apf_studio_installer.py"
+      ],
+      "exit_code": 1,
+      "output": "F.........F.....\n======================================================================\nFAIL: test_install_update_and_authenticated_uninstall (__main__.PerUserLifecycleTests.test_install_update_and_authenticated_uninstall)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/astra-b70-a2-apf-stage-ee8d38ci/tests/mod_editor/test_apf_studio_installer.py\", line 491, in test_install_update_and_authenticated_uninstall\n    self.assertEqual(runtime_result.returncode, 0, runtime_result.stderr)\nAssertionError: 1 != 0 : Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n  File \"/usr/lib/python3.12/importlib/__init__.py\", line 90, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1387, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1324, in _find_and_load_unlocked\nModuleNotFoundError: No module named 'capstone'\n\n\n======================================================================\nFAIL: test_clean_allowlist_stage_passes_the_alpha32_runtime_gate (__main__.ReleaseClosureTests.test_clean_allowlist_stage_passes_the_alpha32_runtime_gate)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/astra-b70-a2-apf-stage-ee8d38ci/tests/mod_editor/test_apf_studio_installer.py\", line 320, in test_clean_allowlist_stage_passes_the_alpha32_runtime_gate\n    self.assertEqual(result.returncode, 0, result.stderr)\nAssertionError: 1 != 0 : APF2K8_MOD_STUDIO_RUNTIME_REFUSED: No module named 'capstone'\n\n\n----------------------------------------------------------------------\nRan 16 tests in 10.065s\n\nFAILED (failures=2)\n"
+    }
+  ],
+  "file_count": 279,
+  "identical_worktree_files": 275,
+  "temporary_stage_removed": true
+}

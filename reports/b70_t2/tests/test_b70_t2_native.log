@@ -1,0 +1,11 @@
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.039s
+
+OK
+Weather temp=70.0, precipitation=0.0: record +0x18 bit28=0 -> field mud argument=0
+Weather temp=70.0, precipitation=0.0: record +0x18 bit28=1 -> field mud argument=1
+Weather temp=70.0, precipitation=0.5: record +0x18 bit28=0 -> field mud argument=0
+Weather temp=70.0, precipitation=0.5: record +0x18 bit28=1 -> field mud argument=1
+Weather temp=20.0, precipitation=0.5: record +0x18 bit28=0 -> field mud argument=0
+Weather temp=20.0, precipitation=0.5: record +0x18 bit28=1 -> field mud argument=1

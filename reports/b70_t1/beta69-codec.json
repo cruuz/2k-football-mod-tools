@@ -1,0 +1,17 @@
+{
+  "flat": {
+    "seconds": 2.3658199759993295,
+    "sha256": "e4d9e2284496f6dff41872714780d81b795a75f142b059c3ca535cd8bfeb41ee",
+    "bytes": 2131
+  },
+  "repeated": {
+    "seconds": 1.3208916759977,
+    "sha256": "ea51cf85241fcb90b51f3b60ec5f169f80a779f94baf2eb36efe9821b40d7909",
+    "bytes": 3259
+  },
+  "palette": {
+    "seconds": 0.10244265899746097,
+    "sha256": "114b3cc5513c23447940aafdfe789c089cf8feeac7be78d2cf0f044f45a00d87",
+    "bytes": 73737
+  }
+}
