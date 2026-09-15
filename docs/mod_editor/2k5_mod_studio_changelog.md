@@ -1,5 +1,7 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC96, beta 71: lighting and colour, a modern Arrowhead, and the 2026 scorebug closer to the broadcast (in progress, 2026-09-15)
+
 ## v1.0 RC95, beta 70: the ESPN Monday Night Football 2026 scorebug, modern colour and lighting, and the reports after beta 69 (2026-09-15)
 
 Beta 70 rebuilds the ESPN scorebug to the 2026 Monday Night Football broadcast package, adds a modern colour and lighting option, and answers the ESPN NFL 2K5 reports in Discord after beta 69; bullets are added as each change lands.

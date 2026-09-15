@@ -1,5 +1,7 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.92 — beta 71: CPU play calling situations and the play-calling page (in progress, 2026-09-15)
+
 ## 0.1.0-alpha.91 — beta 70: the APF 2K8 work after beta 69 — 2026-09-15
 
 Beta 70 carries the APF 2K8 changes made after beta 69; bullets are added as each change lands.
