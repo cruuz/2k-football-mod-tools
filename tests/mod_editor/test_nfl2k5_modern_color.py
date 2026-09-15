@@ -26,7 +26,7 @@ def _hsv(b, g, r):
 
 
 class PaletteTransformTests(unittest.TestCase):
-    def test_green_entries_move_toward_target_and_desaturate(self):
+    def test_green_entries_move_toward_target_brighter_and_more_saturated(self):
         pal = bytearray(1024)
         pal[0:4] = bytes((66, 125, 100, 255))   # retail Arrowhead colour-map median, B,G,R,A
         pal[4:8] = bytes((10, 10, 200, 255))    # red: untouched
@@ -34,8 +34,9 @@ class PaletteTransformTests(unittest.TestCase):
         out = mc.regrade_palette(bytes(pal))
         h0, s0, v0 = _hsv(*pal[0:3]); h1, s1, v1 = _hsv(*out[0:3])
         self.assertLess(abs(h1 - mc.HUE_TARGET), abs(h0 - mc.HUE_TARGET), "hue pulled toward the target")
-        self.assertLess(s1, s0); self.assertGreaterEqual(v1, v0 - 0.01)
-        far = bytes((30, 120, 120, 255)) * 256  # a yellow-green at 60 degrees moves up toward 82
+        self.assertGreater(s1, s0); self.assertGreater(v1, v0 * 1.5, "lifted well above retail"); self.assertLessEqual(v1, 1.0)
+        self.assertAlmostEqual(mc.lift_value(0.49), 1 - 0.51 ** mc.VAL_GAMMA); self.assertEqual(mc.lift_value(1.0), 1.0)
+        far = bytes((30, 120, 120, 255)) * 256  # a yellow-green at 60 degrees moves up toward the target
         fh0 = _hsv(*far[0:3])[0]; fh1 = _hsv(*mc.regrade_palette(far)[0:3])[0]
         self.assertGreater(fh1, fh0); self.assertLess(fh1, mc.HUE_TARGET)
         self.assertEqual(out[4:12], bytes(pal[4:12]))
@@ -64,15 +65,26 @@ class PaletteTransformTests(unittest.TestCase):
         plain = bytes(range(256)) * 4
         self.assertEqual(mc.flatten_normal_palette(plain), plain)
 
+    def test_divots_palette_fades_and_regrades(self):
+        pal = bytearray(1024)
+        pal[0:4] = bytes((48, 88, 70, 200))     # divot green, B,G,R,A
+        pal[4:8] = bytes((30, 40, 80, 120))     # brown dirt: alpha scaled, colour kept
+        out = mc.regrade_palette(bytes(pal), alpha_scale=mc.DIVOTS_ALPHA)
+        self.assertEqual(out[3], round(200 * mc.DIVOTS_ALPHA)); self.assertEqual(out[7], round(120 * mc.DIVOTS_ALPHA))
+        self.assertEqual(out[4:7], bytes(pal[4:7]))
+        self.assertGreater(_hsv(*out[0:3])[2], _hsv(*pal[0:3])[2], "divot green lifted")
+        lifted = mc.regrade_palette(bytes(pal), gain=1.3)
+        self.assertGreater(_hsv(*lifted[0:3])[2], _hsv(*out[0:3])[2], "gain raises the value")
+
     def test_tints(self):
         self.assertEqual(mc.TINTS[0xFFFFEECD], 0xFFFFF5E6)
-        self.assertEqual(mc.TINTS[0xFFF2FFFF], 0xFFF8FCFF)
+        self.assertEqual(mc.TINTS[0xFFF2FFFF], 0xFFFFFFFF)
         for before, after in mc.VERTEX_TINTS.items():
             self.assertEqual(after[3], 255)
-            self.assertLess(max(after[:3]) - min(after[:3]), max(before[:3]) - min(before[:3]), "tint moves toward neutral")
+            self.assertLessEqual(max(after[:3]) - min(after[:3]), max(before[:3]) - min(before[:3]), "tint moves toward neutral")
         for before, after in mc.TINTS.items():
             spread = lambda w: max((w >> 16) & 255, (w >> 8) & 255, w & 255) - min((w >> 16) & 255, (w >> 8) & 255, w & 255)
-            self.assertLess(spread(after), spread(before)); self.assertEqual(after >> 24, 0xFF)
+            self.assertLessEqual(spread(after), spread(before)); self.assertEqual(after >> 24, 0xFF)
 
 
 class LightRigTests(unittest.TestCase):
@@ -158,12 +170,18 @@ class BundleTests(unittest.TestCase):
         self.assertEqual(len(after), len(data))
         self.assertEqual(hashlib.sha256(after).hexdigest(), row["applied_sha256"])
         kinds = [e["kind"] for e in edits]
-        self.assertEqual(kinds, ["field", "normal", "tint"])
+        self.assertEqual(kinds[0], "field"); self.assertEqual(sorted(kinds), ["divots", "field", "normal", "tint"])
         field = edits[0]
-        self.assertTrue(field["refit"]); self.assertEqual(len(field["palettes"]), 2)
-        tint = edits[2]
+        self.assertTrue(field["refit"])
+        regraded = {row["material"]: row for row in field["palettes"]}
+        for name in (mc.COLOR_MAP_MATERIAL, mc.OUTSIDE_MATERIAL, "endzone_N_M"):
+            self.assertIn(name, regraded); self.assertGreater(regraded[name]["changed"], 0, name)
+        self.assertGreater(regraded[mc.OUTSIDE_MATERIAL]["gain"], 1.0, "outside grass lifted toward the field mean")
+        divots = edits[kinds.index("divots")]
+        self.assertNotEqual(divots["before_sha256"], divots["after_sha256"], "divots layer faded")
+        tint = edits[kinds.index("tint")]
         self.assertNotEqual(tint["before_sha256"], tint["after_sha256"], "night tint softened")
-        # Decoded colour map moved toward the broadcast turf: less yellow, less saturated.
+        # Decoded colour map moved toward the broadcast turf: about 1.7x brighter, a little more saturated, hue toward the target.
         tx, inv, ResourceRecord, HEADER = mc._tools()
         for payload in (data, after):
             chunk = tx.parse_chunks(payload, allow_trailing=True)[0]
@@ -177,7 +195,7 @@ class BundleTests(unittest.TestCase):
             if payload is data:
                 retail_hsv = (h * 360, s, v)
             else:
-                self.assertLess(s, retail_hsv[1], "less saturated"); self.assertGreater(v, retail_hsv[2] - 0.005, "not darker")
+                self.assertGreater(s, retail_hsv[1], "more saturated"); self.assertGreater(v, retail_hsv[2] * 1.5, "lifted well above retail")
                 self.assertLessEqual(abs(h * 360 - mc.HUE_TARGET), abs(retail_hsv[0] - mc.HUE_TARGET) + 0.5, "hue at or toward the target")
 
     @unittest.skipUnless(GAME and (GAME / "vc_53450030").is_dir(), "retail extraction not available")

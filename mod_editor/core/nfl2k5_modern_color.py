@@ -46,10 +46,11 @@ BUILD_CAPTION = "Modern colour and lighting (experimental)"
 HELP_TEXT = (
     "EXPERIMENTAL / UNWITNESSED. Rewrites the seven light rigs the game installs by time "
     "of day and weather to neutral, white-balanced broadcast values with more fill, and "
-    "re-grades every stadium's grass colour map, outside grass, grass bump map and afternoon "
-    "tint toward the turf measured in 2026 Week 1 broadcasts. Light directions, counts and "
-    "shadows keep retail values. Refits 362 field scenes: about eight minutes on an eight-core "
-    "Linux machine, longer on a laptop. Off in every preset."
+    "re-grades every stadium's grass colour map and outside grass about 1.7x brighter and "
+    "slightly more saturated (calibrated to the turf measured in 2026 Week 1 broadcasts), "
+    "flattens the grass bump map and neutralises the night and afternoon tints. Light "
+    "directions, counts and shadows keep retail values. Refits 362 field scenes: about eight "
+    "minutes on an eight-core Linux machine, longer on a laptop. Off in every preset."
 )
 ROOT = Path(__file__).resolve().parents[2]
 PINS_PATH = ROOT / "data" / "nfl2k5_modern_color_pins.json"
@@ -75,28 +76,55 @@ GUARDS = (
 # light in table order. Measured 2026 Week 1 whites sit at (215..245, 218..243,
 # 223..241): neutral to slightly cool, never yellow. Night is LED white.
 MODERN_RIGS = {
-    "day": dict(ambient=(0.92, 0.95, 1.00), ambient_intensity=0.45,
-                lights=(((1.00, 0.98, 0.94), 1.15), ((0.88, 0.93, 1.00), 0.30))),
-    "night_indoor": dict(ambient=(0.94, 0.96, 1.00), ambient_intensity=0.42,
-                         lights=(((1.00, 1.00, 1.00), 0.72),) * 3),
+    "day": dict(ambient=(0.94, 0.96, 1.00), ambient_intensity=0.58,
+                lights=(((1.00, 0.98, 0.94), 1.20), ((0.90, 0.94, 1.00), 0.48))),
+    "night_indoor": dict(ambient=(1.00, 1.00, 1.00), ambient_intensity=0.50,
+                         lights=(((1.00, 1.00, 1.00), 0.86),) * 3),
     "alt_day": dict(ambient=(0.92, 0.95, 1.00), ambient_intensity=0.45,
                     lights=(((1.00, 0.98, 0.94), 1.10), ((0.90, 0.94, 1.00), 0.40), ((0.90, 0.94, 1.00), 0.40))),
     "alt_dynamic": dict(ambient=(0.95, 0.97, 1.00), ambient_intensity=0.42,
                         lights=(((1.00, 0.97, 0.92), 1.10), ((0.90, 0.94, 1.00), 0.40), ((0.90, 0.94, 1.00), 0.40))),
-    "rain": dict(ambient=(0.92, 0.93, 0.98), ambient_intensity=0.42,
-                 lights=(((0.92, 0.94, 1.00), 0.62),) * 3),
-    "snow": dict(ambient=(0.96, 0.97, 1.00), ambient_intensity=0.45,
-                 lights=(((0.95, 0.96, 1.00), 0.55),) * 3),
-    "afternoon": dict(ambient=(1.00, 0.95, 0.86), ambient_intensity=0.40,
-                      lights=(((1.00, 0.94, 0.84), 1.10), ((0.70, 0.78, 1.00), 0.22), ((0.70, 0.78, 1.00), 0.22))),
+    "rain": dict(ambient=(0.92, 0.93, 0.98), ambient_intensity=0.46,
+                 lights=(((0.92, 0.94, 1.00), 0.70),) * 3),
+    "snow": dict(ambient=(0.96, 0.97, 1.00), ambient_intensity=0.50,
+                 lights=(((0.95, 0.96, 1.00), 0.62),) * 3),
+    "afternoon": dict(ambient=(1.00, 0.95, 0.86), ambient_intensity=0.45,
+                      lights=(((1.00, 0.94, 0.84), 1.20), ((0.70, 0.78, 1.00), 0.26), ((0.70, 0.78, 1.00), 0.26))),
 }
-# Bundle edits. Hue pull toward the broadcast turf median (82 degrees), saturation
-# and value scales, bump flattening, and the softened afternoon / night tints.
-HUE_TARGET, HUE_PULL, SAT_SCALE, VAL_SCALE = 82.0, 0.35, 0.90, 1.04
-NORMAL_FLATTEN = 0.55
-TINTS = {0xFFFFEECD: 0xFFFFF5E6, 0xFFF2FFFF: 0xFFF8FCFF}
-VERTEX_TINTS = {(255, 238, 205, 255): (255, 245, 230, 255), (242, 255, 255, 255): (248, 252, 255, 255),
+# Bundle edits (beta 71 calibration). The drawn field is far darker than the
+# colour map times the rig: the beta 70 build measured (51, 61, 32) at Arrowhead
+# at night where the flat estimate was (232, 255, 160), so on screen the field
+# is about 0.47 x colour map (0.43 on blue) under the night rig. The broadcast
+# turf there is (107, 121, 53). Hitting it needs the map about 1.7x brighter and
+# the rig about 1.2x stronger, kept slightly more saturated and pulled toward
+# the Arrowhead hue (73 degrees). Value is lifted through a curve, 1 - (1 - v)^G,
+# so the darkest blades gain the most and the brightest never clip.
+HUE_TARGET, HUE_PULL, SAT_SCALE, VAL_GAMMA = 72.0, 0.50, 1.12, 2.8
+NORMAL_FLATTEN = 0.32
+# v2.1 (2026-09-15, from the first colour v2 test): the field also draws a "divots"
+# wear layer (64x64 P8, dark green, about 36 percent alpha over most of the turf)
+# that read as player-sized dark blotches once the turf was bright; its greens are
+# re-graded like the turf and its alpha scaled down. The six end-zone maps carry
+# their own green background and are re-graded too; the outside grass texture is
+# 45 percent darker than the field map and its shape darkens toward the edges
+# through grey vertex colours, so its palette is lifted to the field's mean and
+# the grey falloff is halved; the end-zone overlays take the softened tint.
+DIVOTS_NAME = "divots"
+DIVOTS_ALPHA = 0.30
+END_ZONE_MATERIALS = ("endzone_N_L", "endzone_N_M", "endzone_N_R", "endzone_S_L", "endzone_S_M", "endzone_S_R", "center_logo")
+OVERLAY_SHAPES = ("D_graphic_overlays",)
+OUTSIDE_VERTEX_FALLOFF = 0.45
+TINTS = {0xFFFFEECD: 0xFFFFF5E6, 0xFFF2FFFF: 0xFFFFFFFF}
+VERTEX_TINTS = {(255, 238, 205, 255): (255, 245, 230, 255), (242, 255, 255, 255): (255, 255, 255, 255),
                 (255, 255, 229, 255): (255, 255, 240, 255)}
+# On-screen calibration per rig family: measured drawn turf divided by the flat
+# estimate, flat = map x (ambient x intensity + sum of light colour x intensity).
+# Night: the beta 70 build at Arrowhead (map (109, 130, 75) under the beta 70 rig,
+# gain (2.56, 2.56, 2.58), flat (278, 333, 194)) drew (51, 61, 32) on 2026-09-15.
+# Day: the retail build (map (100, 125, 66), retail day rig gain (1.61, 1.67, 1.34),
+# flat (161, 208, 88)) drew (34, 43, 2) on 2026-09-07; blue collapsed under the
+# yellow retail key, so the day blue factor is taken from green.
+SCREEN_FACTOR = {"night_indoor": (0.183, 0.183, 0.165), "day": (0.21, 0.21, 0.21)}
 FIELD_SCENE = "field"
 COLOR_MAP_MATERIAL = "color_premipped"
 OUTSIDE_MATERIAL = "grass_outside_premipped"
@@ -235,22 +263,71 @@ def _tools():
     return tx, inv, ResourceRecord, HEADER
 
 
-def regrade_palette(palette):
-    """Re-grade the green entries of a 256-entry B,G,R,A palette; others untouched."""
+def regrade_palette(palette, *, gain=1.0, alpha_scale=1.0):
+    """Re-grade the green entries of a 256-entry B,G,R,A palette; others untouched.
+
+    ``gain`` multiplies the lifted value (the outside grass is brought up to the
+    field's mean); ``alpha_scale`` scales every entry's alpha (the divots layer).
+    """
     require(len(palette) == 1024, "palette size")
     out = bytearray(palette)
     for i in range(256):
         b, g, r, a = palette[i * 4:i * 4 + 4]
         h, s, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
         h *= 360
+        new_a = min(255, max(0, round(a * alpha_scale)))
         if not (45 <= h <= 150 and s > 0.15 and v > 0.10):
+            if new_a != a:
+                out[i * 4 + 3] = new_a
             continue
         h = (h + (HUE_TARGET - h) * HUE_PULL) / 360
         s = min(1.0, s * SAT_SCALE)
-        v = min(1.0, v * VAL_SCALE)
+        v = min(1.0, lift_value(v) * gain)
         r2, g2, b2 = (min(255, max(0, round(c * 255))) for c in colorsys.hsv_to_rgb(h, s, v))
-        out[i * 4:i * 4 + 4] = bytes((b2, g2, r2, a))
+        out[i * 4:i * 4 + 4] = bytes((b2, g2, r2, new_a))
     return bytes(out)
+
+
+def _green_mean_value(out, system, texture, palette):
+    """Mean HSV value of the green palette entries actually used by the base level."""
+    tx, inv, ResourceRecord, HEADER = _tools()
+    width, height = texture["width"], texture["height"]
+    at = system + texture["pixel_offset"]
+    indices = tx.unswizzle_2d(out[at:at + width * height], width, height, 1)
+    counts = [0] * 256
+    for index in indices:
+        counts[index] += 1
+    total = weighted = 0.0
+    for i in range(256):
+        if not counts[i]:
+            continue
+        b, g, r, a = palette[i * 4:i * 4 + 4]
+        h, s, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
+        if 45 <= h * 360 <= 150 and s > 0.15 and v > 0.10:
+            total += counts[i]
+            weighted += counts[i] * v
+    return weighted / total if total else None
+
+
+def lift_value(v):
+    """The beta 71 brightness curve: 1 - (1 - v)^VAL_GAMMA, monotone, never clips."""
+    return 1.0 - (1.0 - v) ** VAL_GAMMA
+
+
+def predicted_on_screen(colour_map_rgb, rig="night_indoor"):
+    """Calibrated estimate of the drawn turf for a colour-map mean under a rig.
+
+    flat = map x (ambient x intensity + sum of light colour x intensity) per channel;
+    on screen = flat x SCREEN_FACTOR (the measured ratio, see the constants above).
+    Returns (retail-map estimate is the caller's business) an (r, g, b) tuple.
+    """
+    table = MODERN_RIGS[rig]
+    factor = SCREEN_FACTOR.get(rig, SCREEN_FACTOR["night_indoor"])
+    out = []
+    for c in range(3):
+        gain = table["ambient"][c] * table["ambient_intensity"] + sum(col[c] * i for col, i in table["lights"])
+        out.append(min(255, round(colour_map_rgb[c] * gain * factor[c])))
+    return tuple(out)
 
 
 def looks_like_normal_palette(palette):
@@ -388,15 +465,29 @@ def modern_field_scene(span, *, outer_index=0):
     for texture in rec["embedded_textures"]:
         for name in texture.get("mapped_material_names") or ():
             by_material[name] = texture
-    for name in (COLOR_MAP_MATERIAL, OUTSIDE_MATERIAL):
+    field_mean = None
+    done_palettes = set()
+    for name in (COLOR_MAP_MATERIAL, OUTSIDE_MATERIAL) + END_ZONE_MATERIALS:
         texture = by_material.get(name)
         if texture is None:
             continue
         require(texture["format_name"] == "P8", f"{name} is not P8")
         at = system + texture["palette_offset"]
+        if at in done_palettes:
+            continue  # the north and south end zones share one texture
+        done_palettes.add(at)
         before = bytes(out[at:at + 1024])
-        out[at:at + 1024] = regrade_palette(before)
-        receipt["palettes"].append(dict(material=name, offset=at, changed=sum(a != b for a, b in zip(before, out[at:at + 1024]))))
+        gain = 1.0
+        if name == COLOR_MAP_MATERIAL:
+            field_mean = _green_mean_value(out, system, texture, regrade_palette(before))
+        elif name == OUTSIDE_MATERIAL and field_mean:
+            # Lift the outside grass to the field's mean so the sidelines match the turf.
+            outside_mean = _green_mean_value(out, system, texture, regrade_palette(before))
+            if outside_mean:
+                gain = min(2.5, max(1.0, field_mean / outside_mean))
+        after = regrade_palette(before, gain=gain)
+        out[at:at + 1024] = after
+        receipt["palettes"].append(dict(material=name, offset=at, gain=round(gain, 3), changed=sum(a != b for a, b in zip(before, after))))
     if COLOR_MAP_MATERIAL not in by_material:
         # Turf stadiums draw the field from the material colour words instead.
         for material in rec["materials"]:
@@ -410,7 +501,7 @@ def modern_field_scene(span, *, outer_index=0):
                     struct.pack_into("<I", out, base + field, new)
                     receipt["materials"].append(dict(material=material["name"], field=hex(field), before=hex(word), after=hex(new)))
     for shape in rec["shapes"]:
-        if shape["name"] not in GRASS_SHAPES:
+        if shape["name"] not in GRASS_SHAPES + OVERLAY_SHAPES:
             continue
         colour = next((a for a in shape["attribute_descriptors"] if a["format_name"] == "D3DCOLOR"), None)
         if colour is None:
@@ -420,6 +511,10 @@ def modern_field_scene(span, *, outer_index=0):
             at = stream["offset"] + index * stream["stride"] + colour["byte_offset"]
             b, g, r, a = out[at:at + 4]
             new = VERTEX_TINTS.get((r, g, b, a))
+            if new is None and shape["name"] == "Outside_grass" and r == g == b and r < 255 and a == 255:
+                # The outside grass darkens toward the edges through grey vertex colours; keep less of the falloff.
+                lifted = 255 - round((255 - r) * OUTSIDE_VERTEX_FALLOFF)
+                new = (lifted, lifted, lifted, 255)
             if new is not None:
                 out[at:at + 4] = bytes((new[2], new[1], new[0], new[3]))
                 receipt["vertex_tints"] += 1
@@ -441,7 +536,9 @@ def modern_normal_span(span):
     info = tx.parse_texture(output, chunk)
     require(info.name == NORMAL_NAME and info.format_name == "P8", "not the P8 detail_normal texture")
     edited = bytearray(output)
-    at = info.palette_offset
+    # Texture offsets are relative to the video section, after the chunk's system bytes.
+    at = chunk.system_bytes + info.palette_offset
+    require(looks_like_normal_palette(bytes(output[at:at + 1024])), "detail_normal palette is not where the descriptor says")
     edited[at:at + 1024] = flatten_normal_palette(bytes(output[at:at + 1024]))
     if bytes(edited) == output:
         return bytes(span), dict(refit=False)
@@ -452,6 +549,29 @@ def modern_normal_span(span):
     rebuilt, fit_info = fit_fixed_span(span, bytes(edited))
     check, _ = tx.decode_chunk(rebuilt, tx.parse_chunks(rebuilt, allow_trailing=True)[0])
     require(check == bytes(edited), "detail_normal refit read-back differs")
+    return rebuilt, dict(refit=True, **fit_info)
+
+
+def modern_divots_span(span):
+    """Fade the divots wear layer: greens re-graded like the turf, alpha scaled down."""
+    tx, inv, ResourceRecord, HEADER = _tools()
+    chunks = tx.parse_chunks(span, allow_trailing=True)
+    require(len(chunks) == 1 and chunks[0].kind == "TXTR" and chunks[0].offset == 0, "not a single TXTR span")
+    chunk = chunks[0]
+    output, decode_info = tx.decode_chunk(span, chunk)
+    info = tx.parse_texture(output, chunk)
+    require(info.name == DIVOTS_NAME and info.format_name == "P8", "not the P8 divots texture")
+    edited = bytearray(output)
+    at = chunk.system_bytes + info.palette_offset
+    edited[at:at + 1024] = regrade_palette(bytes(output[at:at + 1024]), alpha_scale=DIVOTS_ALPHA)
+    if bytes(edited) == output:
+        return bytes(span), dict(refit=False)
+    if decode_info is None:
+        require(span[HEADER.size:HEADER.size + len(output)] == output, "raw chunk layout")
+        return span[:HEADER.size] + bytes(edited) + span[HEADER.size + len(output):], dict(refit=False, raw=True)
+    rebuilt, fit_info = fit_fixed_span(span, bytes(edited))
+    check, _ = tx.decode_chunk(rebuilt, tx.parse_chunks(rebuilt, allow_trailing=True)[0])
+    require(check == bytes(edited), "divots refit read-back differs")
     return rebuilt, dict(refit=True, **fit_info)
 
 
@@ -470,6 +590,8 @@ def bundle_plan(data):
             if info.name == NORMAL_NAME:
                 require(info.format_name == "P8", "detail_normal is not P8")
                 sites.append(("normal", chunk.offset, HEADER.size + chunk.stored_size))
+            elif info.name == DIVOTS_NAME and info.format_name == "P8":
+                sites.append(("divots", chunk.offset, HEADER.size + chunk.stored_size))
         if chunk.kind == "Fldd":
             body = data[chunk.offset + HEADER.size:chunk.offset + HEADER.size + chunk.stored_size]
             name_end = body[32:].decode("utf-16le", "ignore").split("\0")[0]
@@ -489,7 +611,7 @@ def modern_bundle(data, *, outer_index=0, field_cache=None):
     edits = []
     for kind, at, size in bundle_plan(data):
         before = bytes(data[at:at + size])
-        if kind in ("field", "normal"):
+        if kind in ("field", "normal", "divots"):
             key = sha(before)
             if field_cache is not None and key in field_cache:
                 after, receipt = field_cache[key]
@@ -581,6 +703,8 @@ def _refit_span(kind, span, outer_index):
     try:
         if kind == "field":
             return modern_field_scene(span, outer_index=outer_index)
+        if kind == "divots":
+            return modern_divots_span(span)
         return modern_normal_span(span)
     except tx.TxtrError as exc:
         message = str(exc)
@@ -605,7 +729,7 @@ def _refit_fields(spans, *, progress, workers=None):
     jobs = [(kind, outer, span.hex()) for kind, outer, span in spans.values()]
     count = workers or min(8, max(1, (os.cpu_count() or 2) - 1))
     results = {}
-    say(f"Modern colour: refitting {len(jobs)} distinct field scenes and bump maps", 0, len(jobs))
+    say(f"Modern colour: refitting {len(jobs)} distinct field scenes, bump maps and divot layers", 0, len(jobs))
     if count > 1 and len(jobs) > 1:
         from concurrent.futures import ProcessPoolExecutor
         with ProcessPoolExecutor(max_workers=count) as pool:
@@ -638,7 +762,7 @@ def apply_to_image(target, *, progress=None, workers=None):
     spans = {}
     for pin in todo:
         for kind, at, size in bundle_plan(sources[pin["name"]]):
-            if kind in ("field", "normal"):
+            if kind in ("field", "normal", "divots"):
                 span = sources[pin["name"]][at:at + size]
                 spans.setdefault(sha(span), (kind, pin["outer"], span))
     field_cache = _refit_fields(spans, progress=say, workers=workers) if spans else {}
@@ -692,7 +816,7 @@ def build_pins(source, *, progress=None, workers=None):
     spans = {}
     for bundle in inventory:
         for kind, at, size in bundle_plan(sources[bundle["name"]]):
-            if kind in ("field", "normal"):
+            if kind in ("field", "normal", "divots"):
                 span = sources[bundle["name"]][at:at + size]
                 spans.setdefault(sha(span), (kind, bundle["outer"], span))
     field_cache = _refit_fields(spans, progress=say, workers=workers)
@@ -713,7 +837,7 @@ def build_pins(source, *, progress=None, workers=None):
             require(sha(retail) == digest, f"retail light table {name} differs")
             tables.append(dict(name=name, va=hex(va), retail_hex=retail.hex(), applied_sha256=sha(modern_table(retail))))
     return dict(schema=PINS_SCHEMA, label=LABEL, hue_target=HUE_TARGET, hue_pull=HUE_PULL, sat_scale=SAT_SCALE,
-                val_scale=VAL_SCALE, normal_flatten=NORMAL_FLATTEN, tints={hex(k): hex(v) for k, v in TINTS.items()},
+                val_gamma=VAL_GAMMA, normal_flatten=NORMAL_FLATTEN, tints={hex(k): hex(v) for k, v in TINTS.items()},
                 light_tables=tables, bundles=rows)
 
 

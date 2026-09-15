@@ -88,3 +88,25 @@ Measured and mapped: day open air (six games), late afternoon open air (two), ni
 - `light_rigs_retail_vs_broadcast.png`: every table, retail against broadcast, with the flat-grass estimate.
 - `bundle_edits_before_after.png`: decoded colour map, outside grass and bump map for Arrowhead night, MetLife night, Seattle day (turf, material colour word) and Philadelphia afternoon, retail against the bytes the option writes.
 - `broadcast_targets_week1.png`: the measured per-game swatches.
+
+## Beta 71 calibration (2026-09-15)
+
+The beta 70 values were measured in game at Arrowhead at night on 2026-09-15: drawn turf (51, 61, 32), HSV 82 degrees /
+0.47 / 0.24, against the broadcast (107, 121, 53). The drawn field is far darker than "colour map times rig": with the
+beta 70 map (109, 130, 75) under the beta 70 night rig (gain 2.56, 2.56, 2.58 per channel) the flat estimate is
+(278, 333, 194), so the screen factor is (0.183, 0.183, 0.165). The 2026-09-07 retail day capture gives the day factor
+(0.21, 0.21, 0.21) the same way (blue collapsed under the yellow retail key, so day blue is taken from green). The
+module carries both as `SCREEN_FACTOR` and `predicted_on_screen()`; the model reproduces (51, 61, 32) exactly.
+
+Beta 71 therefore lifts the grass colour map through the curve `1 - (1 - v)^2.8` (Arrowhead's median (100, 125, 66)
+becomes (181, 216, 102): value 0.49 to 0.85, saturation x 1.12 to 0.53, hue 73 pulled half way toward 72), raises the
+night rig to neutral white (ambient 1.0 x 0.50, three lights x 0.86) and the day rig (ambient 0.58, key 1.20, fill
+0.48), and makes the night tint neutral (0xFFFFFFFF, vertex (255, 255, 255)). Predicted drawn turf: Arrowhead night
+(102, 122, 52) against the broadcast (107, 121, 53); day (83, 99, 47) against (88, 105, 61) (day blue stays low because
+one shared map serves every rig; night, Noah's anchor, takes priority). Domes share the night table. Rain and snow rigs
+rise by about 12 percent. The bump map flattens to 40 percent (beta 70: 55 percent), which lowers both the darkening
+and the amplitude of far-field shimmer; `detail_normal` ships a full mip chain (175,872 bytes for 512x256 P8 plus
+palette) and every level shares the one palette, so the flatten is consistent across distances. Whether the shimmer
+Noah saw at high internal resolution is retail behaviour or the option's is UNPROVED: it needs an A/B at the same
+camera and resolution. The far band of his screenshot carries more high-frequency energy (0.065 normalised) than the
+mid field (0.042), which is what detail-layer aliasing looks like, and the same detail layer is drawn by retail.
