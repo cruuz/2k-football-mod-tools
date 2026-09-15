@@ -10433,7 +10433,10 @@
         "reports/b71_s4/measurements.json",
         "reports/b71_s4/states.json",
         "reports/b71_s4/compare_43.png",
-        "reports/b71_s4/compare_wide.png"
+        "reports/b71_s4/compare_wide.png",
+        "reports/b71_s4/text_rgb_mae.json",
+        "reports/b71_s4/logo_fit.json",
+        "reports/b71_s4/final-delivery-suite-summary.json"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -10477,7 +10480,10 @@
           "reports/b71_s4/measurements.json",
           "reports/b71_s4/states.json",
           "reports/b71_s4/compare_43.png",
-          "reports/b71_s4/compare_wide.png"
+          "reports/b71_s4/compare_wide.png",
+          "reports/b71_s4/text_rgb_mae.json",
+          "reports/b71_s4/logo_fit.json",
+          "reports/b71_s4/final-delivery-suite-summary.json"
         ],
         "scope": "V4 uses native HUD collection lookup, a same-name 256x512 painted atlas, 33 shared logo textures, two appended FONTs, the fixed 4,800-byte scene and owned setup/update hooks. Score, clock and play-clock digits occupy separate slot-9 ranges; the red cell retains native urgency and visibility. Bounded native CPU execution and software raster comparisons keep every measured region and text box within one HUD pixel at 4:3 and widescreen. RGB comparisons still fail the exact-image threshold. Retail event states draw readably. These checks do not prove GPU appearance or intro peak-memory behavior in a played game.",
         "status": "not-tested"

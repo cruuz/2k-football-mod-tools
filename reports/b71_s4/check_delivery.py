@@ -41,10 +41,12 @@ for path,expected in summary['source_sha256'].items():
  assert hashlib.sha256((ROOT/path).read_bytes()).hexdigest()==expected,path
 for name in ('xbe-memory-final','xbe-cave-references-final','owner-pairwise-final','cave-oracle-final'):
  assert json.loads((out/(name+'.result.json')).read_bytes())['exit']==0
+assert json.loads((out/'registry-strict-final-evidence.result.json').read_bytes())['exit']==0
 result=dict(volume_bytes=append,sector_growth=growth,native_heap_bytes=414080,
             code_bytes=len(code),code_budget=owner.CODE_SIZE,data_budget=owner.DATA_SIZE,
             manifest_sources_fresh=True,final_suite_sources_fresh=True,
             builder_name=constants['NAME'],builder_options=constants['OPTIONS'],builder_executed=False,
-            boundary_acceptance=True,exact_pixel_match=False)
+            boundary_acceptance=True,exact_pixel_match=False,
+            registry_sha256=hashlib.sha256((ROOT/'mod_editor/capabilities/registry.v1.json').read_bytes()).hexdigest())
 (out/'delivery_checks.json').write_text(json.dumps(result,indent=2)+'\n')
 print(json.dumps(result,indent=2))

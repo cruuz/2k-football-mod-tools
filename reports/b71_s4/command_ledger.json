@@ -1520,6 +1520,17 @@
     "exit": 0
   },
   {
+    "name": "owner-pairwise-final",
+    "command": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py"
+    ],
+    "start": "2026-09-15T22:39:06.922991+00:00",
+    "end": "2026-09-15T23:32:07.713317+00:00",
+    "seconds": 3180.792,
+    "exit": 0
+  },
+  {
     "name": "test_nfl2k5_scorebug_mnf-delivery",
     "command": [
       "/usr/bin/python3",
@@ -1775,6 +1786,53 @@
     "start": "2026-09-15T23:04:30.216710+00:00",
     "end": "2026-09-15T23:04:30.571049+00:00",
     "seconds": 0.354,
+    "exit": 0
+  },
+  {
+    "name": "repin-evidence",
+    "command": [
+      "python3",
+      "packaging/repin.py",
+      "--apply"
+    ],
+    "start": "2026-09-15T23:05:58.619708+00:00",
+    "end": "2026-09-15T23:06:09.801257+00:00",
+    "seconds": 11.182,
+    "exit": 0
+  },
+  {
+    "name": "registry-strict-final-evidence",
+    "command": [
+      "python3",
+      "-m",
+      "mod_editor.capabilities.validate_registry"
+    ],
+    "start": "2026-09-15T23:19:06.074136+00:00",
+    "end": "2026-09-15T23:19:06.231647+00:00",
+    "seconds": 0.158,
+    "exit": 0
+  },
+  {
+    "name": "delivery-check",
+    "command": [
+      "/usr/bin/python3",
+      "reports/b71_s4/check_delivery.py"
+    ],
+    "start": "2026-09-15T23:32:17.856546+00:00",
+    "end": "2026-09-15T23:32:18.215929+00:00",
+    "seconds": 0.359,
+    "exit": 0
+  },
+  {
+    "name": "repin-delivery",
+    "command": [
+      "/usr/bin/python3",
+      "packaging/repin.py",
+      "--apply"
+    ],
+    "start": "2026-09-15T23:32:18.245757+00:00",
+    "end": "2026-09-15T23:32:28.329168+00:00",
+    "seconds": 10.083,
     "exit": 0
   }
 ]

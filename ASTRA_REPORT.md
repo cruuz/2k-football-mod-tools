@@ -6,7 +6,7 @@ The painted v4 implementation is delivered on the private branch `astra/b71-s4-p
 
 **Boundary acceptance is proved; visual equality is not.** Every measured region, native text box and thresholded text-ink box is within one HUD pixel in 4:3 and widescreen. The append is **410,624 bytes**, 2,944 bytes below v3. The code emits **1,380 bytes** inside the existing 1,408-byte RX allocation, with 128 bytes of RW state. `compare().exact_match` remains **false** in both aspects; this is not an exact ESPN image match.
 
-Final validation is still pending; this generated draft must be refreshed after all gates finish.
+All requested standalone suites, strict registry validation and both detached XBE gates passed on the final implementation.
 
 Compare the actual output: [4:3, ESPN above / native below at 2×](reports/b71_s4/compare_43.png), [widescreen at 2×](reports/b71_s4/compare_wide.png), [event and matchup contact sheet](reports/b71_s4/states_contact_sheet.png). The supplied `bar_compare_espn_vs_s3_render_2x.png` was inspected before editing.
 
@@ -63,6 +63,8 @@ Reference: `frame_012001.jpg`, 1920×1080, SHA-256 `01622a78b6778f089e4b242c8ded
 | pointer | 0.006285 | 0.006285 | 41.700 | 36.708 |
 | right_panel | 0.006285 | 0.006285 | 53.753 | 53.281 |
 | white_capsule | 0.413169 | 0.413169 | 39.046 | 38.606 |
+
+The separate away/home logo quads have maximum boundary error of 0.005534 HUD pixel. [logo_fit.json](reports/b71_s4/logo_fit.json) records the source hashes and transparent-cell bounds: DEN, KC and NO each fill 107 source pixels vertically, with fitted widths 178.125, 165.625 and 87.5. The uniform fit is rounded to the 64×64 texel grid. These cell bounds are distinct from a claim of exact photographed logo contours.
 
 Mean region RGB MAE: **36.479 / 35.514** (4:3 / wide). The comparison threshold is 8; neither image passes it. Full-frame containment is empty and every visible triangle has consistent winding. The reference still differs in bevel/reflection detail, plate colour (the requested v3 team table is retained), mark contours, text shapes and sampled edges. These differences must not be described as an exact ESPN match.
 
@@ -150,12 +152,13 @@ The `-delivery` driver runs every standalone scorebug suite plus provider integr
 | [test_product_catalog-delivery](reports/b71_s4/test_product_catalog-delivery.log) | 0 | 9 | 0 | 0.204 |
 | [test_phase1_packaging-delivery](reports/b71_s4/test_phase1_packaging-delivery.log) | 0 | 23 | 0 | 2.872 |
 | [registry-strict-delivery](reports/b71_s4/registry-strict-delivery.log) | 0 | — | 0 | 0.307 |
+| [registry-strict-final-evidence](reports/b71_s4/registry-strict-final-evidence.log) | 0 | — | 0 | 0.158 |
 | [xbe-memory-final](reports/b71_s4/xbe-memory-final.log) | 0 | 119 | 0 | 1732.185 |
 | [xbe-cave-references-final](reports/b71_s4/xbe-cave-references-final.log) | 0 | 131 | 0 | 1958.445 |
-| owner-pairwise-final | PENDING | | | |
+| [owner-pairwise-final](reports/b71_s4/owner-pairwise-final.log) | 0 | 506 | 0 | 3180.792 |
 | [cave-oracle-final](reports/b71_s4/cave-oracle-final.log) | 0 | 29 | 0 | 455.759 |
 
-Final reported unittest cases including gates: **561**, including **15 skips**. Frozen-source driver complete: **False**.
+Final reported unittest cases including gates: **1067**, including **15 skips**. Frozen-source driver complete: **True**.
 
 Skips retain the established precise boundaries: read-only Storage for the assets disc-copy transaction; five historical private-font-v8 cases; missing source-art fixtures; and historical layout image/glTF fixtures. Active current-font/native suites run. These skipped cases are not boot or disc evidence.
 
@@ -332,6 +335,7 @@ Bundle: `.scratch/astra-b71-s4.bundle`, prerequisite **`464423f0889581182f4a6de5
 | [repin-contracts](reports/b71_s4/repin-contracts.log) | 2026-09-15T22:37:52.427846+00:00 | 11.891 | 0 | `python3 packaging/repin.py --apply` |
 | [test_nfl2k5_scorebug_ingame_fix-delivery](reports/b71_s4/test_nfl2k5_scorebug_ingame_fix-delivery.log) | 2026-09-15T22:37:59.426491+00:00 | 140.809 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py` |
 | [cave-oracle-final](reports/b71_s4/cave-oracle-final.log) | 2026-09-15T22:39:06.899647+00:00 | 455.759 | 0 | `python3 tests/mod_editor/test_nfl2k5_cave_oracle.py` |
+| [owner-pairwise-final](reports/b71_s4/owner-pairwise-final.log) | 2026-09-15T22:39:06.922991+00:00 | 3180.792 | 0 | `python3 tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py` |
 | [test_nfl2k5_scorebug_mnf-delivery](reports/b71_s4/test_nfl2k5_scorebug_mnf-delivery.log) | 2026-09-15T22:40:13.709618+00:00 | 12.488 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_mnf.py` |
 | [test_nfl2k5_scorebug_mnf_v3-delivery](reports/b71_s4/test_nfl2k5_scorebug_mnf_v3-delivery.log) | 2026-09-15T22:40:20.271219+00:00 | 54.573 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py` |
 | [test_nfl2k5_scorebug_native-delivery](reports/b71_s4/test_nfl2k5_scorebug_native-delivery.log) | 2026-09-15T22:40:26.240029+00:00 | 152.177 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_native.py` |
@@ -355,3 +359,7 @@ Bundle: `.scratch/astra-b71-s4.bundle`, prerequisite **`464423f0889581182f4a6de5
 | [test_phase1_packaging-delivery](reports/b71_s4/test_phase1_packaging-delivery.log) | 2026-09-15T22:47:28.762747+00:00 | 2.872 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_phase1_packaging.py` |
 | [registry-strict-delivery](reports/b71_s4/registry-strict-delivery.log) | 2026-09-15T22:47:43.331218+00:00 | 0.307 | 0 | `/usr/bin/python3 -m mod_editor.capabilities.validate_registry` |
 | [text-rgb-final](reports/b71_s4/text-rgb-final.log) | 2026-09-15T23:04:30.216710+00:00 | 0.354 | 0 | `python3 reports/b71_s4/measure_text_rgb.py` |
+| [repin-evidence](reports/b71_s4/repin-evidence.log) | 2026-09-15T23:05:58.619708+00:00 | 11.182 | 0 | `python3 packaging/repin.py --apply` |
+| [registry-strict-final-evidence](reports/b71_s4/registry-strict-final-evidence.log) | 2026-09-15T23:19:06.074136+00:00 | 0.158 | 0 | `python3 -m mod_editor.capabilities.validate_registry` |
+| [delivery-check](reports/b71_s4/delivery-check.log) | 2026-09-15T23:32:17.856546+00:00 | 0.359 | 0 | `/usr/bin/python3 reports/b71_s4/check_delivery.py` |
+| [repin-delivery](reports/b71_s4/repin-delivery.log) | 2026-09-15T23:32:18.245757+00:00 | 10.083 | 0 | `/usr/bin/python3 packaging/repin.py --apply` |

@@ -13,7 +13,7 @@ programs=sorted((ROOT/'tests/mod_editor').glob('test_*scorebug*.py'))
 programs += [ROOT/'tests/nfl2k5_scorebug_layout_test.py',ROOT/'tests/nfl2k5_scorebug_mod_project_test.py']
 programs += [ROOT/'tests/mod_editor'/('test_'+n+'.py') for n in ('provider_integrity','product_catalog','phase1_packaging')]
 gates=['xbe-memory-final','xbe-cave-references-final','owner-pairwise-final','cave-oracle-final']
-names=[p.stem+'-delivery' for p in programs]+['registry-strict-delivery']+gates
+names=[p.stem+'-delivery' for p in programs]+['registry-strict-delivery','registry-strict-final-evidence']+gates
 summary_path=OUT/'final-delivery-suite-summary.json'
 summary=json.loads(summary_path.read_bytes()) if summary_path.exists() else {}
 ready=not summary.get('failed',True) and summary.get('sources_frozen') and all(n in by_name and by_name[n]['exit']==0 for n in names)
@@ -56,6 +56,7 @@ lines=['# Beta 71 S4 — painted ESPN bar','',
 for name,a in m['comparisons']['43']['regions'].items():
  b=m['comparisons']['wide']['regions'][name]
  lines.append(f"| {name} | {a['native_boundary_error_px']:.6f} | {b['native_boundary_error_px']:.6f} | {a['rgb_mae']:.3f} | {b['rgb_mae']:.3f} |")
+lines += ['', 'The separate away/home logo quads have maximum boundary error of '+f"{max(c['extra_regions'][side]['native_boundary_error_px'] for c in m['comparisons'].values() for side in ('away','home')):.6f}"+' HUD pixel. [logo_fit.json](reports/b71_s4/logo_fit.json) records the source hashes and transparent-cell bounds: DEN, KC and NO each fill 107 source pixels vertically, with fitted widths 178.125, 165.625 and 87.5. The uniform fit is rounded to the 64×64 texel grid. These cell bounds are distinct from a claim of exact photographed logo contours.']
 lines += ['', 'Mean region RGB MAE: **'+f"{m['comparisons']['43']['mean_region_rgb_mae']:.3f} / {m['comparisons']['wide']['mean_region_rgb_mae']:.3f}"+'** (4:3 / wide). The comparison threshold is 8; neither image passes it. Full-frame containment is empty and every visible triangle has consistent winding. The reference still differs in bevel/reflection detail, plate colour (the requested v3 team table is retained), mark contours, text shapes and sampled edges. These differences must not be described as an exact ESPN match.', '',
 '### Text boundaries','',
 'Each row reports the greatest coordinate error for the native quad and measured raster ink. Source rectangles use exclusive right/bottom edges.', '',

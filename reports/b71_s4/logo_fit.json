@@ -1,0 +1,83 @@
+{
+  "DEN": {
+    "source": "data/nfl2k5_scorebug_mnf/logos/den.png",
+    "source_sha256": "e96da6fee457ab2671c282143a8e5e98d7bdbd34bb79224e8e4ff746df0571d9",
+    "source_alpha_box": [
+      1,
+      13,
+      63,
+      50
+    ],
+    "texture_size": [
+      64,
+      64
+    ],
+    "texture_alpha_box": [
+      3,
+      0,
+      60,
+      64
+    ],
+    "target_source_quad": [
+      200,
+      107
+    ],
+    "fitted_source_ink_width": 178.125,
+    "fitted_source_ink_height": 107.0,
+    "fit": "Uniform source scale to 200x107, then round to 64x64 texel grid; no independent width/height stretch in source coordinates."
+  },
+  "KC": {
+    "source": "data/nfl2k5_scorebug_mnf/logos/kc.png",
+    "source_sha256": "9b21f1910368ddadabb1f51260367fa68e0a689d6dde818a4047bd785da5d2df",
+    "source_alpha_box": [
+      1,
+      12,
+      63,
+      52
+    ],
+    "texture_size": [
+      64,
+      64
+    ],
+    "texture_alpha_box": [
+      5,
+      0,
+      58,
+      64
+    ],
+    "target_source_quad": [
+      200,
+      107
+    ],
+    "fitted_source_ink_width": 165.625,
+    "fitted_source_ink_height": 107.0,
+    "fit": "Uniform source scale to 200x107, then round to 64x64 texel grid; no independent width/height stretch in source coordinates."
+  },
+  "NO": {
+    "source": "data/nfl2k5_scorebug_mnf/logos/no.png",
+    "source_sha256": "a837e8e770cd39c6372799fa6e80828c1ff78a3b51d720891de1a5fa76ecb378",
+    "source_alpha_box": [
+      6,
+      1,
+      57,
+      63
+    ],
+    "texture_size": [
+      64,
+      64
+    ],
+    "texture_alpha_box": [
+      18,
+      0,
+      46,
+      64
+    ],
+    "target_source_quad": [
+      200,
+      107
+    ],
+    "fitted_source_ink_width": 87.5,
+    "fitted_source_ink_height": 107.0,
+    "fit": "Uniform source scale to 200x107, then round to 64x64 texel grid; no independent width/height stretch in source coordinates."
+  }
+}
