@@ -242,7 +242,7 @@ def preview(slot: int, out: Path) -> Path:
 # so nothing has to fit a fixed span).
 CLOCK_FONT_NAME = "FirstPersonComic"      # the free tenth boot name, so the owner needs no new data for the lookup
 QUARTER_FONT_NAME = "core_bug"            # an existing UTF-16 literal (a FONT and a TXTR may share a name); the quarter label's smaller build
-QUARTER_FONT_SCALE = (0.62, 0.72)         # the quarter label is about two thirds of the clock on the broadcast
+QUARTER_FONT_SCALE = (0.50, 0.72)         # compact grey capitals beside the clock
 CLOCK_FONT_CHARS = "0123456789:stndrhOSTNDRH"   # repainted cells; every other cell keeps the retail shape
 CLOCK_FONT_SUFFIX = {"S": "s", "T": "t", "N": "n", "D": "d", "R": "r", "H": "h"}  # the game uppercases "1st" before drawing: the capitals carry the small broadcast suffix
 CLOCK_FONT_SCALE = (0.80, 0.92)           # (advance/x, y): retail font4 digits are 8 x 12, the clock wants about 6.4 x 11
@@ -302,6 +302,10 @@ def clock_font(donor_span: bytes, *, name: str = CLOCK_FONT_NAME, scale: tuple =
     for char, (x0, y0, x1, y1) in cells.items():
         cw, ch = x1 - x0, y1 - y0
         if cw <= 0 or ch <= 0:
+            continue
+        if name == QUARTER_FONT_NAME and char in CLOCK_FONT_SUFFIX:
+            # The quarter is small caps. Retain the donor's capital masks;
+            # the clock/down font keeps the sampled lowercase suffix shapes.
             continue
         if char in CLOCK_FONT_SUFFIX:
             # Small suffix letters at the digits' scale, on the baseline, centred in the capital's cell.
@@ -368,8 +372,8 @@ def clock_font(donor_span: bytes, *, name: str = CLOCK_FONT_NAME, scale: tuple =
                        ranges+8*i+4+struct.unpack_from("<I",body,ranges+8*i+4)[0]-1)
                       for i in range(count)]
         new_ranges = len(body)
-        body.extend(bytes(8*(count+1)))
-        struct.pack_into("<II",body,obj+4,count+1,new_ranges-(obj+8)+1)
+        body.extend(bytes(8*(count+2)))
+        struct.pack_into("<II",body,obj+4,count+2,new_ranges-(obj+8)+1)
         for i,((first,last),glyphs) in enumerate(old_ranges):
             at=new_ranges+8*i
             new_glyphs = len(body)
@@ -379,8 +383,10 @@ def clock_font(donor_span: bytes, *, name: str = CLOCK_FONT_NAME, scale: tuple =
         digits_at=len(body)
         at=new_ranges+8*count
         struct.pack_into("<HHI",body,at,0x80,0x89,digits_at-(at+4)+1)
-        body.extend(bytes(960))
-        struct.pack_into("<H",body,obj+2,0x89)
+        body.extend(bytes(1920))
+        at=new_ranges+8*(count+1)
+        struct.pack_into("<HHI",body,at,0x90,0x99,digits_at+960-(at+4)+1)
+        struct.pack_into("<H",body,obj+2,0x99)
         occupied = np.zeros((width,width),dtype=bool)
         for cp,off in records.items():
             x0,y0,x1,y1 = _cell(body,off,width)
@@ -405,6 +411,13 @@ def clock_font(donor_span: bytes, *, name: str = CLOCK_FONT_NAME, scale: tuple =
             struct.pack_into("<16f",body,dst+16,*pos)
             struct.pack_into("<4f",body,dst+80,x/width,y/width,(x+cw)/width,(y+ch)/width)
             struct.pack_into("<I",body,dst,14)
+            # Multi-digit scores reuse those masks with narrower metrics so
+            # even three digits remain outside the possession plate.
+            compact=dst+960
+            body[compact:compact+96]=body[dst:dst+96]
+            for j in range(4):pos[j*4]*=25/40
+            struct.pack_into("<16f",body,compact+16,*pos)
+            struct.pack_into("<I",body,compact,8)
         off = records[ord("~")]
         x0,y0,x1,y1 = _cell(body, off, width)
         plane[y0:y1,x0:x1] = 15
@@ -428,4 +441,3 @@ def clock_font(donor_span: bytes, *, name: str = CLOCK_FONT_NAME, scale: tuple =
     return result, dict(name=name, donor="font4", scale=scale, painted="".join(painted),
                         object_offset=obj, system_bytes=system, video_bytes=len(video), span_size=len(result),
                         sha256=digest(result))
-

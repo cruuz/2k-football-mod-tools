@@ -484,8 +484,8 @@ def _ORIGIN(px_top, glyph_y0, k):
 MNF_ANCHORS = {
     "away_city": (_SX(756), _ORIGIN(1032, 13, 27), -64), "home_city": (_SX(1160), _ORIGIN(1032, 13, 27), -64),   # private light-grey tick glyphs
     "away_score": (_SX(756), _ORIGIN(965, 0, 0), -59), "home_score": (_SX(1159), _ORIGIN(965, 0, 0), -59),
-    "quarter": (_SX(872), _ORIGIN(1008, 3, 15), -4), "clock_a": (_SX(963), _ORIGIN(1008, 3, 15), -4), "clock_b": (_SX(963), _ORIGIN(1008, 3, 15), -4),
-    "drop_clock": (_SX(1051), _ORIGIN(1008, 3, 15), -4), "drop_down": (_SX(974), _ORIGIN(958, 3.68, 15), -4),
+    "quarter": (_SX(875), _ORIGIN(1001, 3, 15), -4), "clock_a": (_SX(963), _ORIGIN(1001, 3, 15), -4), "clock_b": (_SX(963), _ORIGIN(1001, 3, 15), -4),
+    "drop_clock": (_SX(1051), _ORIGIN(1000, 3, 15), -4), "drop_down": (_SX(974), _ORIGIN(958, 3.68, 15), -4),
     "drop_yellow": (0, _ORIGIN(955, 4, 15), -8), "drop_red": (0, _ORIGIN(955, 4, 15), -8),
     "drop_hangtime": (0, _ORIGIN(955, 4, 15), -8), "drop_ball_on": (0, _ORIGIN(955, 4, 15), -8),
 }

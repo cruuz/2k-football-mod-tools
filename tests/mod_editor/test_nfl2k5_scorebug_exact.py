@@ -134,7 +134,7 @@ class NativeTests(unittest.TestCase):
         after = self.build.render(second, runtime=True, timeouts=(3, 1))
         self.assertEqual(before["positions"], after["positions"])
         self.assertEqual(before["rendered_materials"], after["rendered_materials"])
-        # The only change is the home timeout dashes ("- - -" to "-"), drawn as
+        # The only change is the home timeout dashes ("~ ~ ~" to "~"), drawn as
         # text through the team-name callback; its quad bounds the pixel change.
         differing = []
         for rb, ra in zip(before["draws"], after["draws"]):
@@ -143,8 +143,8 @@ class NativeTests(unittest.TestCase):
                 differing.append((rb, ra))
         self.assertEqual(len(differing), 1)
         rb, ra = differing[0]
-        self.assertEqual((rb["text"].count("-"), ra["text"].count("-")), (3, 1))
-        self.assertTrue(set(rb["text"]) <= set("- ") and set(ra["text"]) <= set("- "))
+        self.assertEqual((rb["text"].count("~"), ra["text"].count("~")), (3, 1))
+        self.assertTrue(set(rb["text"]) <= set("~ ") and set(ra["text"]) <= set("~ "))
         quads = [box_of([v["screen"] for v in row["vertices"]]) for row in (rb, ra) if row["vertices"]]
         self.assertTrue(quads)
         allowed = (min(q[0] for q in quads) - 1, min(q[1] for q in quads) - 1,

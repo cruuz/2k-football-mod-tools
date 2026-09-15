@@ -132,7 +132,7 @@ class ArtTests(unittest.TestCase):
         self.assertEqual(count, 66)
         # 66 wing panels plus the two appended clock fonts (FirstPersonComic and core_bug).
         self.assertEqual(appendix, 66 * resources.RUNTIME_TEXTURE_SPAN + resources.CLOCK_FONT_SPAN_SIZE)
-        self.assertEqual(resources.CLOCK_FONT_SPAN_SIZE, 37152 + 27040)
+        self.assertEqual(resources.CLOCK_FONT_SPAN_SIZE, 38048 + 27040)
         self.assertLess(count * 5376 + resources.CLOCK_FONT_SPAN_SIZE, 420_000)
         self.assertEqual(growth % 2048, 0)
 

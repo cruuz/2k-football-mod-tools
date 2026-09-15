@@ -293,6 +293,17 @@ class DiscTransactionTests(unittest.TestCase):
     def test_apply_in_place_grows_pack0_and_switches_the_node(self):
         if not SCRATCH.is_dir():
             self.skipTest("scratch directory for a disposable disc copy is absent")
+        # Validate the disposable output location before touching an old probe.
+        # Retail/native-loader checks above remain runnable on a read-only host.
+        import errno
+        import tempfile
+        try:
+            with tempfile.NamedTemporaryFile(prefix="scorebug-access-", dir=SCRATCH):
+                pass
+        except OSError as exc:
+            if exc.errno in (errno.EROFS, errno.EACCES, errno.EPERM):
+                self.skipTest(f"disposable disc scratch is not writable: {SCRATCH}: {exc}")
+            raise
         copy = SCRATCH / "test_assets_transaction.xiso.iso"
         if copy.exists():
             copy.unlink()

@@ -51,6 +51,7 @@ ESPN_RED, CAPSULE_INK = 0xFFE31937, 0xFF000000
 PLAY_CLOCK_CELL = 0xFF780E27
 SCORE_CALLBACKS = (0xA9594C, 0xA95984)
 SCORE_DIGIT_BASE = 0x80
+SCORE_COMPACT_BASE = 0x90
 CLOCK_CELL_MATERIAL = 68
 CLOCK_CELL_NAME = 0xE6C6E8  # UTF-16 score_buga, formerly the spare mark
 PLAY_CLOCK_NORMAL = WHITE
@@ -249,8 +250,10 @@ def code_for(code_va, data_va):
         a.label(f"score_text{side}"); b("b8" + _u(callback))
         if side == 0: a.j8("eb", "score_common")
     a.label("score_common"); b("51 ffd0 59")
+    b("ba50000000 6683790200"); a.j8("74", "score_loop")
+    b("b260")  # two or more digits use the narrow, equal-height metrics
     a.label("score_loop"); b("66833900"); a.j8("74", "score_end")
-    b("66830150 4141"); a.j8("eb", "score_loop")
+    b("660111 4141"); a.j8("eb", "score_loop")
     a.label("score_end"); b("c3")
 
     # One HUD-scoped TXTR lookup for this side at setup. The UTF-16 name is built

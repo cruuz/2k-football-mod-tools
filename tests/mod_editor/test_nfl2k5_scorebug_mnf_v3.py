@@ -14,7 +14,7 @@ class ContractTests(unittest.TestCase):
   self.assertEqual(exact.MNF_SOURCE['strip'],(839,1000,1082,1039))
   self.assertEqual(exact.plate_argb('KC'),0xffe31837)
   self.assertEqual(exact.plate_argb('LV'),0xffa5acaf)
-  self.assertEqual(art.probe_sizes('mnf')[1],412672)
+  self.assertEqual(art.probe_sizes('mnf')[1],413568)
   self.assertLess(art.probe_sizes('mnf')[1],420000)
   self.assertEqual(owner.PLAY_CLOCK_CELL,0xff780e27)
 
@@ -37,7 +37,8 @@ class NativeTests(unittest.TestCase):
    for score in (0,1,7,10,28,99,100):
     m.put(pointer,score);m.run(callback,ecx=buffer)
     text=m.read_string(buffer)
-    self.assertEqual(text,''.join(chr(owner.SCORE_DIGIT_BASE+int(ch)) for ch in str(score)))
+    base=owner.SCORE_DIGIT_BASE if score<10 else owner.SCORE_COMPACT_BASE
+    self.assertEqual(text,''.join(chr(base+int(ch)) for ch in str(score)))
   font=self.build.private_fonts[0];glyphs={g.codepoint:g for g in font.glyphs}
   self.assertTrue(all(cp in glyphs for cp in range(33,127)))
   boxes=[]
@@ -50,6 +51,10 @@ class NativeTests(unittest.TestCase):
   ascii_boxes=[tuple(round(v*128) for v in g.uv) for g in font.glyphs if g.codepoint<128]
   for i,(x,y,u,v) in enumerate(boxes):
    for a,b,c,d in ascii_boxes+boxes[:i]:self.assertFalse(x<c and a<u and y<d and b<v)
+  for digit in range(10):
+   large,compact=glyphs[0x80+digit],glyphs[0x90+digit]
+   self.assertEqual(large.uv,compact.uv)
+   self.assertAlmostEqual(compact.bottom-compact.top,45*448/1080,places=4)
  def test_clock_white_digit_red_cell_urgency_and_disabled_boundaries(self):
   _,capture=self.capture();m=capture['machine'];buffer=m.alloc(64)
   # The real material lookup, independently resolved by name.
@@ -58,11 +63,14 @@ class NativeTests(unittest.TestCase):
   payload=owner.apply(self.build.payload)[0];code,data=owner.sites(payload)
   update=owner.code_for(code['va'],data['va'])[1]['update']
   # The owner calls the displaced native frame update before applying its colours.
-  for seconds in (12,5,4,2.5,0,-1,float('nan')):
+  for seconds,expected in ((12,owner.PLAY_CLOCK_CELL),(5,owner.PLAY_CLOCK_CELL),
+                           (4,owner.ESPN_RED),(2.5,owner.PLAY_CLOCK_CELL),
+                           (0,owner.ESPN_RED),(-1,owner.PLAY_CLOCK_CELL),
+                           (float('nan'),owner.PLAY_CLOCK_CELL)):
    m.float(m.clock+16,seconds);m.put(m.clock+24,0);m.put(0xa95a70,1)
    m.run(update,(struct.unpack('<I',struct.pack('<f',1/60))[0],),limit=500000)
    self.assertEqual(m.get(0xa95a48),owner.WHITE)
-   self.assertIn(m.get(cell+0x18),(owner.PLAY_CLOCK_CELL,owner.ESPN_RED))
+   self.assertEqual(m.get(cell+0x18),expected,seconds)
   m.float(m.clock+16,4);m.run(m.get(0xa95a3c),ecx=buffer);self.assertEqual(m.read_string(buffer),'4')
  def test_native_geometry_both_aspects_and_all_visible_triangle_winding(self):
   from nfl2k5_scorebug_exact import box_of
@@ -76,5 +84,12 @@ class NativeTests(unittest.TestCase):
      if wide:
       for i in (0,2):want[i]=320+(want[i]-320)*27/32
      self.assertLess(max(abs(a-b) for a,b in zip(geometry[key],want)),.01)
+    for score in (28,100,999):
+     geometry=self.build.render(Path(directory)/f'{wide}-{score}.png',runtime=True,widescreen=wide,score_values=(score,score),previous_scores=(score,score))
+     plate=geometry['down'];scores=[r for r in geometry['draws'] if r['text'] and ord(r['text'][0])>=0x80]
+     self.assertEqual(len(scores),2)
+     for row in scores:
+      left,top,right,bottom=box_of([v['screen'] for v in row['vertices']])
+      self.assertTrue(right<=plate[0] or left>=plate[2],(score,wide,(left,right),plate))
 
 if __name__=='__main__':unittest.main()
