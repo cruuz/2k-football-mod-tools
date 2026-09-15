@@ -119,7 +119,7 @@ B69_GAME_RUNTIME_PINS = {
     "mod_editor/gui/gameplay_patches_panel_qt.py": "55cf864cc31256a0dc8f44a58f74865c8d2903bd338beda0ee1b7b0609a31c38",
     "mod_editor/gui/my_career_panel_qt.py": "8a27ccdc2a649d122d6c21f9a646e47539b55c00653afc789e9b018fb581c823",
     "mod_editor/gui/gameplay_project_ui.py": "7222713aaaa0efbcc8851eb4ad3efa4ef31e8ad5352919e95b1ff9b39634c905",
-    "mod_editor/gui/beta62_options.py": "1fa09c1aed813c62b30c614847d615190e3fcfd14c3e1fe4e1dd10f58a6f79fb",
+    "mod_editor/gui/beta62_options.py": "f952b005161209eef1b2fa090528f4a017a657718c034d122d9bcc6550c68e72",
     "tools/nfl2k5_weather_editor.py": "65b45c3b25d47dc9cc672bd46a4719264ce4033aeca76632aaf44e9023b6cbfd",
     "tools/nfl2k5_weather_time_of_day.py": "37b2bd10f686db9fa99ba9034f9a7f68daa00bff516250ac0f67678880b98b47",
     "tools/nfl2k5_weather_native_probe.py": "cd2776060c41a0831b1a15342a4486e739bbda5c633af5f4427217333885fde2",
