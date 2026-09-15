@@ -1,0 +1,13 @@
+F
+======================================================================
+FAIL: test_three_patches_with_explanations_and_gating (__main__.GameplayPatchesPanelTests.test_three_patches_with_explanations_and_gating)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b70-a2/tests/mod_editor/test_gameplay_patches_panel_qt.py", line 42, in test_three_patches_with_explanations_and_gating
+    self.assertIn(phrase, explanation, key)
+AssertionError: 'Retail' not found in "Gameplay Patches selects the choice form for a new patch; the caption names the current form. Build also offers rule: fixed home dark / away white, with no in-game colour choice. The choice form uses the existing jersey-era up/down controls on Controller Assign and exhibition Team Select. Next past the last available era flips that side's colour and returns to era 0; previous below era 0 flips and goes to the last available era. Only available eras count. The initial colours follow the retail Cowboys rule. Team Select preview art shows the era only; check the uniforms on the field. Practice and Xbox Live do not gain a jersey-choice control. X_Ray reports that jersey choice did not work. The screen handlers and kit letters pass bounded native checks; his cause remains unresolved. EXPERIMENTAL / UNWITNESSED." : uniform_choice
+
+----------------------------------------------------------------------
+Ran 1 test in 0.004s
+
+FAILED (failures=1)

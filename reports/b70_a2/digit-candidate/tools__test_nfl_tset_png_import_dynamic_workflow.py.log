@@ -1,0 +1,20 @@
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b70-a2/tools/test_nfl_tset_png_import_dynamic_workflow.py", line 276, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/home/noah/2k-worktrees/astra-b70-a2/tools/test_nfl_tset_png_import_dynamic_workflow.py", line 76, in main
+    report = importer.run(
+             ^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b70-a2/tools/nfl_tset_png_import.py", line 1051, in run
+    rebuilt_span, previews, report = import_png(
+                                     ^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b70-a2/tools/nfl_tset_png_import.py", line 808, in import_png
+    inventory = json.loads(inventory_path.read_text(encoding="utf-8"))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1029, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1015, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b70-a2/reports/assets/nfl2k5_resource_chunks_v2.json'

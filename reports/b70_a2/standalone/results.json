@@ -1,0 +1,882 @@
+[
+  {
+    "path": "tests/apf_h7a_no_overlap_test.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/apf_h7a_no_overlap_test.py",
+    "exit_code": 0,
+    "seconds": 18.441,
+    "footer": [
+      "Ran 4 tests in 18.068s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__apf_h7a_no_overlap_test.py.log"
+  },
+  {
+    "path": "tests/apf_h7a_optimal_is_bounded_test.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/apf_h7a_optimal_is_bounded_test.py",
+    "exit_code": 0,
+    "seconds": 21.756,
+    "footer": [
+      "Ran 4 tests in 21.548s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__apf_h7a_optimal_is_bounded_test.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_2k5_uniform_equipment_export.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_2k5_uniform_equipment_export.py",
+    "exit_code": 1,
+    "seconds": 4.195,
+    "footer": [
+      "Ran 13 tests in 1.435s",
+      "FAILED (errors=6, skipped=2)"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_2k5_uniform_equipment_export.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_all_crest_slots.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_all_crest_slots.py",
+    "exit_code": 0,
+    "seconds": 2.372,
+    "footer": [
+      "Ran 15 tests in 2.186s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_all_crest_slots.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b661_book_content.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_b661_book_content.py",
+    "exit_code": 0,
+    "seconds": 30.821,
+    "footer": [
+      "Ran 5 tests in 30.436s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_b661_book_content.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b67_writers.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_b67_writers.py",
+    "exit_code": 0,
+    "seconds": 0.645,
+    "footer": [
+      "Ran 6 tests in 0.248s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_b67_writers.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_build.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_b69_build.py",
+    "exit_code": 0,
+    "seconds": 34.633,
+    "footer": [
+      "Ran 1 test in 33.665s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_b69_build.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_editor_qt.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_b69_editor_qt.py",
+    "exit_code": 0,
+    "seconds": 101.846,
+    "footer": [
+      "Ran 4 tests in 100.730s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_b69_editor_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_formation_calling.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_b69_formation_calling.py",
+    "exit_code": 0,
+    "seconds": 1.309,
+    "footer": [
+      "Ran 2 tests in 0.113s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_b69_formation_calling.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_launch_patches.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_b69_launch_patches.py",
+    "exit_code": 0,
+    "seconds": 0.573,
+    "footer": [
+      "Ran 5 tests in 0.250s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_b69_launch_patches.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_retirement_native.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_b69_retirement_native.py",
+    "exit_code": 0,
+    "seconds": 164.489,
+    "footer": [
+      "Ran 3 tests in 164.140s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_b69_retirement_native.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_schemes.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_b69_schemes.py",
+    "exit_code": 0,
+    "seconds": 51.744,
+    "footer": [
+      "Ran 5 tests in 50.774s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_b69_schemes.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b70_stock_recipes.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_b70_stock_recipes.py",
+    "exit_code": 0,
+    "seconds": 217.724,
+    "footer": [
+      "Ran 5 tests in 216.895s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_b70_stock_recipes.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_book_identity_qt.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_book_identity_qt.py",
+    "exit_code": 0,
+    "seconds": 0.45,
+    "footer": [
+      "Ran 5 tests in 0.043s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_book_identity_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_book_unlock.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_book_unlock.py",
+    "exit_code": 0,
+    "seconds": 28.532,
+    "footer": [
+      "Ran 19 tests in 28.234s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_book_unlock.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_crest_budget_import.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_crest_budget_import.py",
+    "exit_code": 0,
+    "seconds": 1.983,
+    "footer": [
+      "Ran 12 tests in 1.003s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_crest_budget_import.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_crest_fit.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_crest_fit.py",
+    "exit_code": 0,
+    "seconds": 31.457,
+    "footer": [
+      "Ran 10 tests in 31.178s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_crest_fit.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_helmet_crest_design_product.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_helmet_crest_design_product.py",
+    "exit_code": 0,
+    "seconds": 2.244,
+    "footer": [
+      "Ran 13 tests in 1.267s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_helmet_crest_design_product.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_helmet_logo_regions.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_helmet_logo_regions.py",
+    "exit_code": 0,
+    "seconds": 4.636,
+    "footer": [
+      "Ran 12 tests in 4.450s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_helmet_logo_regions.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_logo_patch.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_logo_patch.py",
+    "exit_code": 0,
+    "seconds": 17.979,
+    "footer": [
+      "Ran 18 tests in 17.740s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_logo_patch.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_logocache_patch.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_logocache_patch.py",
+    "exit_code": 0,
+    "seconds": 49.263,
+    "footer": [
+      "Ran 14 tests in 48.980s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_logocache_patch.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_playcall_research_native.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_playcall_research_native.py",
+    "exit_code": 0,
+    "seconds": 120.445,
+    "footer": [
+      "Ran 22 tests in 120.136s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_playcall_research_native.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_playcalling_editor_build.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_playcalling_editor_build.py",
+    "exit_code": 0,
+    "seconds": 81.428,
+    "footer": [
+      "Ran 3 tests in 80.494s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_playcalling_editor_build.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_playcalling_editor_facade.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_playcalling_editor_facade.py",
+    "exit_code": 0,
+    "seconds": 3.489,
+    "footer": [
+      "Ran 7 tests in 2.652s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_playcalling_editor_facade.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_playcalling_editor_patches.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_playcalling_editor_patches.py",
+    "exit_code": 0,
+    "seconds": 1.113,
+    "footer": [
+      "Ran 3 tests in 0.201s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_playcalling_editor_patches.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_playcalling_editor_qt.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_playcalling_editor_qt.py",
+    "exit_code": 0,
+    "seconds": 4.84,
+    "footer": [
+      "Ran 10 tests in 3.906s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_playcalling_editor_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_ps3_speed.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_ps3_speed.py",
+    "exit_code": 0,
+    "seconds": 4.858,
+    "footer": [
+      "Ran 15 tests in 4.502s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_ps3_speed.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_ps3_speed_packages.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_ps3_speed_packages.py",
+    "exit_code": 0,
+    "seconds": 11.155,
+    "footer": [
+      "Ran 6 tests in 10.435s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_ps3_speed_packages.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_ps3_texture_bundle.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_ps3_texture_bundle.py",
+    "exit_code": 0,
+    "seconds": 31.426,
+    "footer": [
+      "Ran 28 tests in 31.227s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_ps3_texture_bundle.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_ps3_texture_bundle_qt.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_ps3_texture_bundle_qt.py",
+    "exit_code": 0,
+    "seconds": 0.408,
+    "footer": [
+      "Ran 4 tests in 0.189s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_ps3_texture_bundle_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_public_docs_registry_current.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_public_docs_registry_current.py",
+    "exit_code": 0,
+    "seconds": 0.157,
+    "footer": [
+      "Ran 5 tests in 0.108s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_public_docs_registry_current.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_studio_core.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_studio_core.py",
+    "exit_code": 0,
+    "seconds": 0.516,
+    "footer": [
+      "Ran 9 tests in 0.025s",
+      "OK (skipped=1)"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_studio_core.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_studio_installer.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_studio_installer.py",
+    "exit_code": 1,
+    "seconds": 0.253,
+    "footer": [
+      "Ran 16 tests in 0.118s",
+      "FAILED (errors=3)"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_studio_installer.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_studio_safety.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_studio_safety.py",
+    "exit_code": 0,
+    "seconds": 0.846,
+    "footer": [
+      "Ran 27 tests in 0.114s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_studio_safety.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_team_art.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_team_art.py",
+    "exit_code": 0,
+    "seconds": 16.489,
+    "footer": [
+      "Ran 10 tests in 15.601s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_team_art.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_team_art_qt.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_team_art_qt.py",
+    "exit_code": 0,
+    "seconds": 1.072,
+    "footer": [
+      "Ran 6 tests in 0.182s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_team_art_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_team_logo_gui.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_team_logo_gui.py",
+    "exit_code": 0,
+    "seconds": 3.071,
+    "footer": [
+      "Ran 23 tests in 1.591s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_team_logo_gui.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_wave_integration.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_wave_integration.py",
+    "exit_code": 0,
+    "seconds": 14.663,
+    "footer": [
+      "Ran 8 tests in 13.907s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_apf_wave_integration.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_audio_conform.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_audio_conform.py",
+    "exit_code": 0,
+    "seconds": 1.005,
+    "footer": [
+      "Ran 17 tests in 0.880s",
+      "OK (skipped=1)"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_audio_conform.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b66_coach_digits.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_b66_coach_digits.py",
+    "exit_code": 0,
+    "seconds": 6.162,
+    "footer": [
+      "Ran 12 tests in 5.934s",
+      "OK (skipped=1)"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_b66_coach_digits.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b68_t1_build.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_b68_t1_build.py",
+    "exit_code": 0,
+    "seconds": 5.941,
+    "footer": [
+      "Ran 6 tests in 5.661s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_b68_t1_build.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b69_j1_build.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_b69_j1_build.py",
+    "exit_code": 0,
+    "seconds": 3.689,
+    "footer": [
+      "Ran 5 tests in 3.396s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_b69_j1_build.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b69_j1_fit.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_b69_j1_fit.py",
+    "exit_code": 0,
+    "seconds": 5.735,
+    "footer": [
+      "Ran 5 tests in 5.460s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_b69_j1_fit.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b69_j1_native.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_b69_j1_native.py",
+    "exit_code": 0,
+    "seconds": 1.605,
+    "footer": [
+      "Ran 1 test in 1.364s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_b69_j1_native.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b69_j1_wiring.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_b69_j1_wiring.py",
+    "exit_code": 0,
+    "seconds": 7.015,
+    "footer": [
+      "Ran 7 tests in 6.717s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_b69_j1_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b70_a2_wiring.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_a2_wiring.py",
+    "exit_code": 0,
+    "seconds": 2.77,
+    "footer": [
+      "Ran 4 tests in 0.993s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_b70_a2_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b70_t1_build_speed.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_t1_build_speed.py",
+    "exit_code": 0,
+    "seconds": 18.251,
+    "footer": [
+      "Ran 10 tests in 17.343s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_b70_t1_build_speed.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b70_t1_diagnostics.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_t1_diagnostics.py",
+    "exit_code": 0,
+    "seconds": 1.795,
+    "footer": [
+      "Ran 5 tests in 0.966s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_b70_t1_diagnostics.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_beta45_honesty_freeze.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_beta45_honesty_freeze.py",
+    "exit_code": 0,
+    "seconds": 4.389,
+    "footer": [
+      "Ran 9 tests in 4.151s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_beta45_honesty_freeze.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_build_panel_qt.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_build_panel_qt.py",
+    "exit_code": 0,
+    "seconds": 3.606,
+    "footer": [
+      "Ran 13 tests in 2.813s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_build_panel_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_gameplay_patches_panel_qt.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_gameplay_patches_panel_qt.py",
+    "exit_code": 1,
+    "seconds": 0.723,
+    "footer": [
+      "Ran 1 test in 0.004s",
+      "FAILED (failures=1)"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_gameplay_patches_panel_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_hotfix63_digit_budget.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_hotfix63_digit_budget.py",
+    "exit_code": 0,
+    "seconds": 0.79,
+    "footer": [
+      "Ran 5 tests in 0.024s",
+      "OK (skipped=3)"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_hotfix63_digit_budget.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_mod_build.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_mod_build.py",
+    "exit_code": 0,
+    "seconds": 2.648,
+    "footer": [
+      "Ran 11 tests in 1.948s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_mod_build.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_music_conform.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_music_conform.py",
+    "exit_code": 0,
+    "seconds": 2.04,
+    "footer": [
+      "Ran 7 tests in 1.193s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_music_conform.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_music_panel_qt.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_music_panel_qt.py",
+    "exit_code": 0,
+    "seconds": 3.285,
+    "footer": [
+      "Ran 9 tests in 2.308s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_music_panel_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_music_service.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_music_service.py",
+    "exit_code": 0,
+    "seconds": 3.917,
+    "footer": [
+      "Ran 10 tests in 3.016s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_music_service.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_music_simple.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_music_simple.py",
+    "exit_code": 0,
+    "seconds": 18.81,
+    "footer": [
+      "Ran 12 tests in 17.860s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_music_simple.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_music_simple_qt.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_music_simple_qt.py",
+    "exit_code": 0,
+    "seconds": 5.283,
+    "footer": [
+      "Ran 9 tests in 4.230s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_music_simple_qt.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_build_service.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_build_service.py",
+    "exit_code": 0,
+    "seconds": 0.316,
+    "footer": [
+      "Ran 28 tests in 0.149s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_nfl2k5_build_service.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_equipment_consumers.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_equipment_consumers.py",
+    "exit_code": 0,
+    "seconds": 28.124,
+    "footer": [
+      "Ran 19 tests in 27.215s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_nfl2k5_equipment_consumers.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_equipment_import.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_equipment_import.py",
+    "exit_code": 0,
+    "seconds": 3.12,
+    "footer": [
+      "Ran 13 tests in 2.269s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_nfl2k5_equipment_import.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_equipment_import_wiring.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_equipment_import_wiring.py",
+    "exit_code": 0,
+    "seconds": 1.898,
+    "footer": [
+      "Ran 6 tests in 1.710s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_nfl2k5_equipment_import_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_equipment_retail_roundtrip.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_equipment_retail_roundtrip.py",
+    "exit_code": 0,
+    "seconds": 15.882,
+    "footer": [
+      "Ran 2 tests in 15.546s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_nfl2k5_equipment_retail_roundtrip.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_equipment_scope_wiring.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_equipment_scope_wiring.py",
+    "exit_code": 0,
+    "seconds": 1.903,
+    "footer": [
+      "Ran 3 tests in 1.789s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_nfl2k5_equipment_scope_wiring.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_equipment_texture_chain.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_equipment_texture_chain.py",
+    "exit_code": 0,
+    "seconds": 3.524,
+    "footer": [
+      "Ran 19 tests in 3.287s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_nfl2k5_equipment_texture_chain.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_equipment_texture_native.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_equipment_texture_native.py",
+    "exit_code": 0,
+    "seconds": 0.408,
+    "footer": [
+      "Ran 7 tests in 0.320s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_nfl2k5_equipment_texture_native.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_music_conform_integration.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_music_conform_integration.py",
+    "exit_code": 0,
+    "seconds": 24.473,
+    "footer": [
+      "Ran 29 tests in 23.470s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_nfl2k5_music_conform_integration.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_music_metadata.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_music_metadata.py",
+    "exit_code": 0,
+    "seconds": 23.601,
+    "footer": [
+      "Ran 7 tests in 23.440s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_nfl2k5_music_metadata.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_music_playlist.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_music_playlist.py",
+    "exit_code": 0,
+    "seconds": 13.161,
+    "footer": [
+      "Ran 15 tests in 12.951s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_nfl2k5_music_playlist.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_music_playlist_library.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_music_playlist_library.py",
+    "exit_code": 0,
+    "seconds": 19.578,
+    "footer": [
+      "Ran 7 tests in 19.276s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_nfl2k5_music_playlist_library.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_music_playlist_manifest.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_music_playlist_manifest.py",
+    "exit_code": 0,
+    "seconds": 4.341,
+    "footer": [
+      "Ran 2 tests in 4.129s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_nfl2k5_music_playlist_manifest.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_music_queue.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_music_queue.py",
+    "exit_code": 0,
+    "seconds": 4.01,
+    "footer": [
+      "Ran 3 tests in 3.803s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_nfl2k5_music_queue.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_music_resample.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_music_resample.py",
+    "exit_code": 0,
+    "seconds": 1.778,
+    "footer": [
+      "Ran 4 tests in 1.653s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_nfl2k5_music_resample.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_uniform_choice.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_uniform_choice.py",
+    "exit_code": 0,
+    "seconds": 8.455,
+    "footer": [
+      "Ran 18 tests in 8.289s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_nfl2k5_uniform_choice.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_uniform_choice_screens.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_uniform_choice_screens.py",
+    "exit_code": 0,
+    "seconds": 0.605,
+    "footer": [
+      "Ran 2 tests in 0.440s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_nfl2k5_uniform_choice_screens.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_phase1_packaging.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_phase1_packaging.py",
+    "exit_code": 1,
+    "seconds": 0.163,
+    "footer": [
+      "Ran 23 tests in 0.094s",
+      "FAILED (errors=1)"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_phase1_packaging.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_project_document_workflow.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_project_document_workflow.py",
+    "exit_code": 1,
+    "seconds": 3.366,
+    "footer": [
+      "Ran 13 tests in 1.447s",
+      "FAILED (errors=6)"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_project_document_workflow.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_provider_integrity.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_provider_integrity.py",
+    "exit_code": 1,
+    "seconds": 7.919,
+    "footer": [
+      "Ran 7 tests in 7.754s",
+      "FAILED (failures=1)"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_provider_integrity.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_studio_facade.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_studio_facade.py",
+    "exit_code": 0,
+    "seconds": 0.787,
+    "footer": [
+      "Ran 11 tests in 0.024s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_studio_facade.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_update_check.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_update_check.py",
+    "exit_code": 0,
+    "seconds": 0.185,
+    "footer": [
+      "Ran 21 tests in 0.004s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/standalone/tests__mod_editor__test_update_check.py.log"
+  }
+]

@@ -99,7 +99,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "dd3529836c4ebdc5ddf344de19edca38191f918ca341248953cb289b56c5e42e",
     "mod_editor/gui/studio_qt.py":
-        "aa57c10348b6f148b03f21279f15366ab40c4221860f55d99d90a33d428c8862",
+        "45e3e2490e8aab314093d0378025f1b8f5ae689954a57ac49397d3f2e448675f",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
@@ -115,8 +115,8 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
 B69_GAME_RUNTIME_PINS = {
     "mod_editor/core/nfl2k5_weather.py": "6540d7ffc8d441898f5a89988752efd6aa0238c87b4a0941c1962b7b3feba380",
     "mod_editor/core/nfl2k5_weather_haze.py": "3d045e099f1585658b899ab6e7d3560e92edb24529ca8d6f224e901dc7712ff9",
-    "mod_editor/gui/build_panel_qt.py": "40610a95e47ad7d8f1dd67d067c3e4efb10114e504d18eb4cd4835ef92f11616",
-    "mod_editor/gui/gameplay_patches_panel_qt.py": "55cf864cc31256a0dc8f44a58f74865c8d2903bd338beda0ee1b7b0609a31c38",
+    "mod_editor/gui/build_panel_qt.py": "fd6d7934c2ce348e22a999fb90d5637610c0fbfa989ffab63d2ab1f94005e3fa",
+    "mod_editor/gui/gameplay_patches_panel_qt.py": "6377a6089d0c01233b810e0ec82f962dfbc40cdea6d80cb8dbf092b2f83b8839",
     "mod_editor/gui/my_career_panel_qt.py": "8a27ccdc2a649d122d6c21f9a646e47539b55c00653afc789e9b018fb581c823",
     "mod_editor/gui/gameplay_project_ui.py": "7222713aaaa0efbcc8851eb4ad3efa4ef31e8ad5352919e95b1ff9b39634c905",
     "mod_editor/gui/beta62_options.py": "f952b005161209eef1b2fa090528f4a017a657718c034d122d9bcc6550c68e72",
@@ -133,6 +133,7 @@ REQUIRED_UNIFIED_PROVIDER_CLOSURE = frozenset(
         "mod_editor/core/nfl2k5_equipment_import_intent.py",
         "mod_editor/core/nfl2k5_equipment_lz.py",
         "mod_editor/core/nfl2k5_compile_cache.py",
+        "mod_editor/core/nfl2k5_music_conform.py",
         "mod_editor/core/nfl2k5_audio_containment_fingerprints.py",
         "mod_editor/core/nfl2k5_audio_origin_authorization.py",
         "mod_editor/core/nfl2k5_audio_source_containment.py",
@@ -1907,6 +1908,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_music_catalog",
         "mod_editor.core.nfl2k5_music_build",
         "mod_editor.core.nfl2k5_music_banks",
+        "mod_editor.core.nfl2k5_music_conform",
         "mod_editor.core.nfl2k5_music_metadata",
         "mod_editor.core.nfl2k5_music_storage",
         "mod_editor.core.nfl2k5_music_archive",
@@ -2170,11 +2172,11 @@ def main() -> int:
         check_files=False,
     )
     product_catalog = product_catalog_module.build_nfl2k5_product_catalog(registry)
-    require(len(registry.capabilities) == 172,
+    require(len(registry.capabilities) == 173,
             "canonical capability registry row count changed")
     require(len(product_catalog.sections) == 12,
             "product sidebar category count changed")
-    require(len(product_catalog.capabilities) == 99,
+    require(len(product_catalog.capabilities) == 100,
             "NFL 2K5 product capability count changed")
     _exercise_default_provider_controller(
         modules["mod_editor.core.controller"],
@@ -2577,7 +2579,7 @@ def main() -> int:
     print(
         "2K5_MOD_STUDIO_RUNTIME_CLOSURE_PASS "
         f"product_modules={len(product_modules)} tool_modules={len(tool_modules)} "
-        "registry=172 sections=12 nfl2k5_capabilities=99 "
+        "registry=173 sections=12 nfl2k5_capabilities=100 "
         "reports=16 reviewed_metadata=24 sets=634 visuals=71963 "
         "team_kit_sets=634 team_kit_assets_per_set=39 "
         "text_banks=716 text_strings=23346 text_editable=20074 "

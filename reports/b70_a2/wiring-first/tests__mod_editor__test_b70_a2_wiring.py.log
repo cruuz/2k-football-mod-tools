@@ -1,0 +1,16 @@
+.F.
+======================================================================
+FAIL: test_build_form_survives_source_and_saved_project_transitions (__main__.WiringTests.test_build_form_survives_source_and_saved_project_transitions)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b70-a2/tests/mod_editor/test_b70_a2_wiring.py", line 49, in test_build_form_survives_source_and_saved_project_transitions
+    self.assertEqual(panel.uniform_choice_mode.currentData(), 'rule')
+AssertionError: 'choice' != 'rule'
+- choice
++ rule
+
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.825s
+
+FAILED (failures=1)

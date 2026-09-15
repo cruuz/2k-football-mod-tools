@@ -1,0 +1,13 @@
+[
+  {
+    "path": "tests/mod_editor/test_gameplay_patches_panel_qt.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_gameplay_patches_panel_qt.py",
+    "exit_code": 0,
+    "seconds": 1.466,
+    "footer": [
+      "Ran 1 test in 0.665s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/gameplay-final/tests__mod_editor__test_gameplay_patches_panel_qt.py.log"
+  }
+]

@@ -99,6 +99,7 @@ mod_editor/capabilities/registry.schema.json
 mod_editor/capabilities/registry.v1.json
 mod_editor/capabilities/validate_registry.py
 mod_editor/core/audio_conform.py
+mod_editor/core/nfl2k5_music_conform.py
 mod_editor/core/apf2k8_playbook_route_writer.py
 mod_editor/core/apf2k8_package_map_writer.py
 mod_editor/core/apf2k8_splb_writer.py
@@ -288,3 +289,7 @@ mod_editor/apf_studio/playcalling_service.py
 mod_editor/gui/ux_text.py
 mod_editor/gui/polish_qt.py
 docs/mod_editor/apf2k8_mod_studio_faq.md
+docs/mod_editor/apf2k8_book_identity_walkthrough.md
+docs/mod_editor/apf2k8_book_identity/book-identity.png
+docs/mod_editor/apf2k8_book_identity/stock-replacement.png
+docs/mod_editor/apf2k8_book_identity/walkthrough.png

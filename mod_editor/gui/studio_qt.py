@@ -8015,18 +8015,9 @@ class StudioMainWindow(QMainWindow):
             self._set_status(
                 _result_message(result, f"Build complete — {name} is ready for xemu.")
             )
+            from mod_editor.core.nfl2k5_build_service import summarize_kept_retail
             kept = tuple(getattr(result, "kept_retail", ()) or ())
-            extra = ""
-            if kept:
-                extra = (
-                    "\n\nKept retail for %d uniform slot%s whose art could not fit "
-                    "its fixed texture slot:\n"
-                    % (len(kept), "" if len(kept) == 1 else "s")
-                    + "\n".join(
-                        "- " + str(row.get("message", row.get("selector")))
-                        for row in kept
-                    )
-                )
+            extra = "\n\n" + summarize_kept_retail(kept) if kept else ""
             QMessageBox.information(
                 self,
                 "Modded XISO ready",

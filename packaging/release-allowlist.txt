@@ -669,6 +669,7 @@ mod_editor/core/nfl2k5_music_policy.py
 mod_editor/core/nfl2k5_music_catalog.py
 mod_editor/core/nfl2k5_music_build.py
 mod_editor/core/nfl2k5_music_banks.py
+mod_editor/core/nfl2k5_music_conform.py
 mod_editor/core/nfl2k5_music_metadata.py
 mod_editor/core/nfl2k5_music_storage.py
 mod_editor/core/nfl2k5_music_archive.py
@@ -903,3 +904,4 @@ tools/nfl2k5_weather_native_probe.py
 tools/nfl2k5_modern_rules.py
 docs/research/nfl2k5_weather_time_of_day.md
 docs/research/nfl2k5_b69_rules.md
+docs/mod_editor/nfl2k5_uniform_choice_capability.json

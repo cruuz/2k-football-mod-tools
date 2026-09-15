@@ -1,0 +1,24 @@
+[
+  {
+    "path": "tests/mod_editor/test_b68_a1_audit.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_b68_a1_audit.py",
+    "exit_code": 0,
+    "seconds": 7.453,
+    "footer": [
+      "Ran 10 tests in 7.117s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/registry-consumers/tests__mod_editor__test_b68_a1_audit.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_product_catalog.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_product_catalog.py",
+    "exit_code": 1,
+    "seconds": 0.204,
+    "footer": [
+      "Ran 9 tests in 0.052s",
+      "FAILED (failures=4)"
+    ],
+    "log": "reports/b70_a2/registry-consumers/tests__mod_editor__test_product_catalog.py.log"
+  }
+]
