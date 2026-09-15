@@ -153,6 +153,8 @@ mod_editor/core/nfl2k5_scorebug_author.py
 mod_editor/core/build_feedback.py
 mod_editor/core/build_io.py
 mod_editor/core/equipment_palette.py
+mod_editor/core/equipment_staging.py
+mod_editor/core/equipment_reporting.py
 mod_editor/core/image_use.py
 mod_editor/core/metadata_cache.py
 docs/mod_editor/number_sheets.md

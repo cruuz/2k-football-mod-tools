@@ -5592,6 +5592,11 @@ class StudioMainWindow(QMainWindow):
                 "proved fixed-span importer."
             )
             return
+        if getattr(asset, "family", None) == "arm":
+            from mod_editor.gui.equipment_texture_import_dialog import ArmDigitImportDialog
+            dialog = ArmDigitImportDialog(asset, self)
+            if dialog.exec_() != dialog.Accepted:
+                return
         fitted = self._fit_for_slot(path, asset.width, asset.height, asset.label)
         if fitted is None:
             return
@@ -8642,6 +8647,7 @@ class StudioMainWindow(QMainWindow):
 
     def _refresh_build_includes(self, *, baseline=False):
         from tools.nfl2k5_visual_mod_project import ProjectEditTimeline
+        from mod_editor.core.equipment_reporting import project_fit_labels
         session = getattr(self.facade, "_session", None)
         if getattr(self, "_build_includes_session", None) is not session:
             self._build_includes_session = session
@@ -8652,7 +8658,17 @@ class StudioMainWindow(QMainWindow):
         try:
             document = session.canonical_document() if session and session.modified_count else {"edits": []}
             rows = self._build_includes_timeline.observe(document, baseline=baseline)
-            text = "\n".join(row["label"] for row in rows)
+            fits = project_fit_labels(session) if session and any(
+                e.get("kind") == "uniform_equipment_texture" for e in document["edits"]
+            ) else {}
+            labels = []
+            for row in rows:
+                edit = document["edits"][row["project_edit_index"]]
+                label = row["label"]
+                if edit.get("kind") == "uniform_equipment_texture":
+                    label += "; " + fits.get(edit["asset_id"], "fit measurement unavailable; reimport to check")
+                labels.append(label)
+            text = "\n".join(labels)
         except Exception as exc:
             text = f"The project edit list could not be read: {exc}. Resolve this before building."
         self._build_includes_text = text

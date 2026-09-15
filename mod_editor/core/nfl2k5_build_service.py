@@ -109,20 +109,17 @@ class BuildResult:
     kept_retail: tuple[dict[str, object], ...] = ()
     source_sha256: str = ""
     stage_seconds: dict[str, float] = field(default_factory=dict)
+    texture_summary: tuple[str, ...] = ()
 
     @property
     def message(self) -> str:
-        """The status line the studio shows, or ``""`` for the plain default.
-
-        Empty when nothing was kept at retail so the GUI's own "Build complete"
-        wording stands; otherwise the same wording plus the warning rows, so a
-        slot that silently kept its retail digit is never mistaken for a
-        finished edit.
-        """
-
-        if not self.kept_retail:
+        if not self.kept_retail and not self.texture_summary:
             return ""
-        return f"Build complete: {self.output_xiso.name}.\n" + summarize_kept_retail(self.kept_retail)
+        lines = [f"Build complete: {self.output_xiso.name} is ready."]
+        if self.kept_retail:
+            lines.append(summarize_kept_retail(self.kept_retail))
+        lines.extend(self.texture_summary)
+        return "\n".join(lines)
 
 
 def summarize_kept_retail(rows: Iterable[dict[str, object]]) -> str:
@@ -1456,6 +1453,7 @@ class Nfl2k5BuildService:
                 edit_count=result.edit_count,
                 changed_byte_count=result.changed_byte_count,
                 kept_retail=result.kept_retail,
+                texture_summary=result.texture_summary,
                 source_sha256=result.source_sha256,
                 stage_seconds={**timings, "publish": time.monotonic() - started},
             )
@@ -1670,6 +1668,8 @@ class Nfl2k5BuildService:
                 "The verified build receipt did not match the staged XISO. "
                 "No output was published."
             )
+        from mod_editor.core.equipment_reporting import verified_build_texture_lines
+        texture_summary = verified_build_texture_lines(manifest)
         return BuildResult(
             output_xiso=final_output,
             output_size=source_size,
@@ -1678,4 +1678,5 @@ class Nfl2k5BuildService:
             edit_count=project_row["edit_count"],
             changed_byte_count=patch_row["changed_byte_count"],
             kept_retail=tuple(dict(row) for row in value.get("kept_retail", [])),
+            texture_summary=texture_summary,
         ), staged_identity

@@ -11362,7 +11362,9 @@
         "ASTRA_STADIUM_EDITOR_REPORT.md",
         "docs/mod_editor/nfl2k5_stadium_blender_workflow.md",
         "docs/mod_editor/nfl2k5_stadium_editor_retail_proof.json",
-        "tests/mod_editor/test_nfl2k5_stadium_editor_roundtrip.py"
+        "tests/mod_editor/test_nfl2k5_stadium_editor_roundtrip.py",
+        "tests/mod_editor/test_b70_t2_stadium.py",
+        "reports/b70_t2/stadium-banners.json"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -11375,7 +11377,8 @@
       "input_constraints": [
         "A privately indexed NFL 2K5 USA source and its verified Stadiums cache.",
         "Canonical texture IDs, one scene per bundle, original image dimensions, fixed P8 allocations and bounded lossless compression.",
-        "No new topology, UV, transform, material or collision write-back."
+        "No new topology, UV, transform, material or collision write-back.",
+        "Stadium imports edit the selected SCNE occurrence only. Venue/time/weather labels resolve the archive filename CRC; all other variants retain their own textures. The 18 Chicago/Cincinnati package traces and bounded native material relocations bind their own banner_corp occurrence. Retail banner writes reparse and close/reopen exactly. The reporter's played venue is unknown; in-game banner appearance remains UNWITNESSED. Build receipts identify the package, SCNE, embedded texture and linked material names."
       ],
       "portme": [
         "MisterAlex must inspect material preview and actual Blender image export. Noah must play the witness list in ASTRA_STADIUM_EDITOR_REPORT.md."
@@ -11388,7 +11391,9 @@
       },
       "runtime": {
         "evidence": [
-          "ASTRA_STADIUM_EDITOR_REPORT.md"
+          "ASTRA_STADIUM_EDITOR_REPORT.md",
+          "tests/mod_editor/test_b70_t2_stadium.py",
+          "reports/b70_t2/stadium-banners.json"
         ],
         "scope": "Offline source replay, UV equation checks, complete no-op spans and changed P8 round trips. bpy is mocked. No Blender UI or played-game witness.",
         "status": "not-tested"
@@ -11439,7 +11444,13 @@
         "tests/mod_editor/test_b69_j1_build.py",
         "tests/mod_editor/test_b69_j1_fit.py",
         "tests/mod_editor/test_b69_j1_native.py",
-        "ASTRA_B69_J1_REPORT.md"
+        "ASTRA_B69_J1_REPORT.md",
+        "tests/mod_editor/test_b70_t2_equipment.py",
+        "tests/mod_editor/test_b70_t2_native.py",
+        "tests/mod_editor/test_b70_t2_reporting.py",
+        "reports/b70_t2/sock-quality.json",
+        "reports/b70_t2/grown-loader.json",
+        "reports/b70_t2/growth-audit.json"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -11454,10 +11465,11 @@
         "The catalog keeps all 11,395 standalone targets editable: 7,315 reviewed P8 targets and all 4,080 reviewed explicit-size A1R5G5B5 p001..p006/p011..p016 player strips. Outer 581 p005 is a proved transactional two-piece span across physical packs 0 and 1. A8R8G8B8, DXT1, VC_P8_LINEAR, crowdbase, seat, and unreviewed A1R5G5B5 layouts remain refused.",
         "The 1,585 team-linked slots in logos.cdf, mini.cdf, and flipchip.cdf are raw P8 fixed-slot resources: imports preserve their wrapper, descriptor/system bytes, exact resource span, and 96-byte slot padding, regenerate only swizzled indices plus palette, and never invoke VC-LZ. The 170 franchise-office and draft/PDA logo resources retain their exact compressed P8 spans.",
         "All Textures also edits 28,530 reviewed package-local socks, elbow-pad, glove, long-sleeve, shoe, and wristband P8 palettes. Each import preserves that TSET's shared retail index/mip chain and every unselected sibling palette and decoded image.",
-        "Socks, gloves and shoes can own a selected independent mip chain; new imports default to that choice. Global equipment rows offer All teams only. The beta-69 bounded native cache fill, HOME/AWAY lookup and field selector bind shoes10/Style 6 through separate clean and _mud rows; the earlier Style 3/shoes09 selector proof remains narrower; missing local names fall back to the newest loaded package. maumau78 reported a Style 6 Edit Player success and Bears in-game failure on beta 68; that report remains unresolved. Package, clean/mud state, roster transport and GPU visibility need a played retest. Original-size recognized retail artwork preserves its palette and complete mip chain, including legacy imports now compiled as an exact no-op. Unhonourable restored equipment groups are refused before publishing a loaded session. Fit refusals report measured byte shortfalls and offer a checked smaller-size retry when available. A smaller size and fewer shades lose detail. No larger-allocation option is shipped: chunk-loader growth alone does not prove archive relocation. Wrapper +0x14 and unselected sibling images remain exact. All current in-game outcomes are UNWITNESSED.",
+        "Socks, gloves and shoes can own a selected independent mip chain; new imports default to that choice. Global equipment rows offer All teams only. The beta-69 bounded native cache fill, HOME/AWAY lookup and field selector bind shoes10/Style 6 through separate clean and _mud rows; the earlier Style 3/shoes09 selector proof remains narrower; missing local names fall back to the newest loaded package. maumau78 subsequently reported visibility after assigning both the normal and mud slots, while the artwork still looked buggy; this corrects the earlier single-slot guidance without establishing this change's in-game appearance. Package, clean/mud state, roster transport and GPU visibility need a played retest. Original-size recognized retail artwork preserves its palette and complete mip chain, including legacy imports now compiled as an exact no-op. Unhonourable restored equipment groups are refused before publishing a loaded session. Fit refusals report measured byte shortfalls and offer a checked smaller-size retry when available. A smaller size and fewer shades lose detail. No larger-allocation option is shipped: chunk-loader growth alone does not prove archive relocation. Wrapper +0x14 and unselected sibling images remain exact. All current in-game outcomes are UNWITNESSED.",
         "Compressed replacements are recompressed into the original byte span, while reviewed raw replacements retain the complete fixed-slot structure; an image that cannot satisfy its owning transport is refused rather than moving anything on the disc.",
         "Targets are addressed by outer package index and texture name. Uniform and menu-presentation targets also carry typed team names, abbreviations, asset code, style, physical-set selectors, archive name, and consumer scope; unresolved stadium targets still use package indices and preview identification.",
-        "Franchise-office team logos are presentation assets, not midfield art. Stock midfield center_logo exists only in the create-team packages."
+        "Franchise-office team logos are presentation assets, not midfield art. Stock midfield center_logo exists only in the create-team packages.",
+        "Normal shoe, glove and pad imports stage the mud sibling where the catalog contains one, with combined fit checking and grouped revert. Explicit mud-only imports stay separate. maumau78 reported visibility only after assigning both slots and still reported buggy artwork. Bounded native cache fill and field binding distinguish normal/mud rows; the caller transports runtime player record +0x18 bit 28 even under dry weather inputs. The flag's gameplay lifecycle and this change's appearance remain UNWITNESSED. Equipment reports actual fitted dimensions and referenced colours across all mips. High-contrast bands retain a palette limit of at least 16; a smaller checked image can still lose detail. Larger archive allocation remains UNPROVED and is unavailable."
       ],
       "portme": [
         "Capture a changed texture in an emulator; transport is proved, on-screen visibility is not.",
@@ -11471,8 +11483,15 @@
         "tooling": "source-and-schemas-only"
       },
       "runtime": {
-        "evidence": [],
-        "scope": "Byte-exact transport is proved on three differently packed dumps of the same game; modified visibility is untested. maumau78 reported Style 6/shoes10 visible in the Bears Edit Player preview but absent in-game on 2026-09-13. The earlier package-local colour proof is offline evidence and does not establish that played binding; preview visibility is not an in-game success.",
+        "evidence": [
+          "tests/mod_editor/test_b70_t2_equipment.py",
+          "tests/mod_editor/test_b70_t2_native.py",
+          "tests/mod_editor/test_b70_t2_reporting.py",
+          "reports/b70_t2/sock-quality.json",
+          "reports/b70_t2/grown-loader.json",
+          "reports/b70_t2/growth-audit.json"
+        ],
+        "scope": "Byte-exact transport is proved on three differently packed dumps of the same game; modified visibility is untested. maumau78 reported Style 6/shoes10 visible in the Bears Edit Player preview but absent in-game on 2026-09-13. The earlier package-local colour proof is offline evidence and does not establish that played binding; preview visibility is not an in-game success. maumau78 subsequently reported visibility after assigning both the normal and mud slots, while the artwork still looked buggy; this corrects the earlier single-slot guidance without establishing this change's in-game appearance.",
         "status": "not-tested"
       },
       "selectors": {
@@ -11632,7 +11651,15 @@
         "tests/mod_editor/test_b69_j1_build.py",
         "tests/mod_editor/test_b69_j1_fit.py",
         "tests/mod_editor/test_b69_j1_native.py",
-        "ASTRA_B69_J1_REPORT.md"
+        "ASTRA_B69_J1_REPORT.md",
+        "tests/mod_editor/test_b70_t2_equipment.py",
+        "tests/mod_editor/test_b70_t2_native.py",
+        "tests/mod_editor/test_b70_t2_reporting.py",
+        "reports/b70_t2/sock-quality.json",
+        "reports/b70_t2/grown-loader.json",
+        "reports/b70_t2/growth-audit.json",
+        "tests/mod_editor/test_b70_t2_stadium.py",
+        "reports/b70_t2/stadium-banners.json"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -11648,13 +11675,15 @@
         "Player-roster edits expose only same-allocation first/last names, masked jersey number, and per-player None/Clear/Dark face-shield type. Face shield is not a HOME/AWAY tint; reserved value 3 is refused, loaded saves may override the disc seed, and membership, position, face/head ID, ratings, and pointers remain unchanged.",
         "Player portraits are exact 128x128 RGBA8 PNGs selected by a proved four-digit numeric portrait ID; cross-pack slots are reconstructed as bounded physical spans.",
         "Crib Team Photos are exact 128x128 RGBA8 PNGs selected by a canonical crib_team_photo:##_photo_0# selector; all five fixed P8 mips are regenerated.",
-        "The Stadium texture route accepts an exact 64x64 RGBA8 PNG only for nfl2k5.stadium.o3280.c0005.scene2648.texture0002 (cement01); all 33 linked surfaces change together, and fixed-allocation compression overflow is refused.",
-        "Socks, gloves and shoes can own a selected independent mip chain; new imports default to that choice. Global equipment rows offer All teams only. The beta-69 bounded native cache fill, HOME/AWAY lookup and field selector bind shoes10/Style 6 through separate clean and _mud rows; the earlier Style 3/shoes09 selector proof remains narrower; missing local names fall back to the newest loaded package. maumau78 reported a Style 6 Edit Player success and Bears in-game failure on beta 68; that report remains unresolved. Package, clean/mud state, roster transport and GPU visibility need a played retest. Original-size recognized retail artwork preserves its palette and complete mip chain, including legacy imports now compiled as an exact no-op. Unhonourable restored equipment groups are refused before publishing a loaded session. Fit refusals report measured byte shortfalls and offer a checked smaller-size retry when available. A smaller size and fewer shades lose detail. No larger-allocation option is shipped: chunk-loader growth alone does not prove archive relocation. Wrapper +0x14 and unselected sibling images remain exact. All current in-game outcomes are UNWITNESSED.",
+        "The Stadium texture route accepts an exact-dimension RGBA8 PNG for a reviewed P8 embedded texture exposed as editable by the Stadiums delegate. Every material linked to that occurrence changes together. Fixed-allocation compression overflow is refused; geometry, UVs, shaders and collision are unchanged.",
+        "Socks, gloves and shoes can own a selected independent mip chain; new imports default to that choice. Global equipment rows offer All teams only. The beta-69 bounded native cache fill, HOME/AWAY lookup and field selector bind shoes10/Style 6 through separate clean and _mud rows; the earlier Style 3/shoes09 selector proof remains narrower; missing local names fall back to the newest loaded package. maumau78 subsequently reported visibility after assigning both the normal and mud slots, while the artwork still looked buggy; this corrects the earlier single-slot guidance without establishing this change's in-game appearance. Package, clean/mud state, roster transport and GPU visibility need a played retest. Original-size recognized retail artwork preserves its palette and complete mip chain, including legacy imports now compiled as an exact no-op. Unhonourable restored equipment groups are refused before publishing a loaded session. Fit refusals report measured byte shortfalls and offer a checked smaller-size retry when available. A smaller size and fewer shades lose detail. No larger-allocation option is shipped: chunk-loader growth alone does not prove archive relocation. Wrapper +0x14 and unselected sibling images remain exact. All current in-game outcomes are UNWITNESSED.",
         "Menu Back accepts only mono PCM16LE at exactly 16,000 Hz and 5,696 frames; it is encoded into the one proved fixed AUDO payload while preserving its wrapper and metadata.",
         "Additional standalone audio accepts any of 849 non-Menu-Back catalog asset IDs plus a strict PCM16LE WAV matching that row's exact channel count, rate, and frame count; 697 alias-related rows carry a prominent warning because their runtime cue meaning remains unproved.",
         "Equal decoded uniform content across selectors is not shared storage: all 3,170 audited torso, pants, sleeve, and live-helmet targets have distinct non-overlapping XISO spans.",
         "Every target must exist in the canonical compatibility inventory; compressed artwork that does not fit is refused.",
-        "Build failures name the active phase, original project edit index, page, part, uniform set and texture. The Build list enumerates all canonical project edits and ranks changes observed in the current session newest first; old archives have no historical edit times, which the list explicitly discloses."
+        "Build failures name the active phase, original project edit index, page, part, uniform set and texture. The Build list enumerates all canonical project edits and ranks changes observed in the current session newest first; old archives have no historical edit times, which the list explicitly discloses.",
+        "Normal shoe, glove and pad imports stage the mud sibling where the catalog contains one, with combined fit checking and grouped revert. Explicit mud-only imports stay separate. maumau78 reported visibility only after assigning both slots and still reported buggy artwork. Bounded native cache fill and field binding distinguish normal/mud rows; the caller transports runtime player record +0x18 bit 28 even under dry weather inputs. The flag's gameplay lifecycle and this change's appearance remain UNWITNESSED. Equipment reports actual fitted dimensions and referenced colours across all mips. High-contrast bands retain a palette limit of at least 16; a smaller checked image can still lose detail. Larger archive allocation remains UNPROVED and is unavailable.",
+        "Stadium imports edit the selected SCNE occurrence only. Venue/time/weather labels resolve the archive filename CRC; all other variants retain their own textures. The 18 Chicago/Cincinnati package traces and bounded native material relocations bind their own banner_corp occurrence. Retail banner writes reparse and close/reopen exactly. The reporter's played venue is unknown; in-game banner appearance remains UNWITNESSED. Build receipts identify the package, SCNE, embedded texture and linked material names."
       ],
       "portme": [
         "Runtime-capture every supported family and selector class.",
@@ -11667,8 +11696,17 @@
         "tooling": "source-and-schemas-only"
       },
       "runtime": {
-        "evidence": [],
-        "scope": "All supported spans have offline writer proof; only a Detroit away torso target has exact positive runtime proof. maumau78 reported Style 6/shoes10 visible in the Bears Edit Player preview but absent in-game on 2026-09-13. The earlier package-local colour proof is offline evidence and does not establish that played binding; preview visibility is not an in-game success.",
+        "evidence": [
+          "tests/mod_editor/test_b70_t2_equipment.py",
+          "tests/mod_editor/test_b70_t2_native.py",
+          "tests/mod_editor/test_b70_t2_reporting.py",
+          "reports/b70_t2/sock-quality.json",
+          "reports/b70_t2/grown-loader.json",
+          "reports/b70_t2/growth-audit.json",
+          "tests/mod_editor/test_b70_t2_stadium.py",
+          "reports/b70_t2/stadium-banners.json"
+        ],
+        "scope": "All supported spans have offline writer proof; only a Detroit away torso target has exact positive runtime proof. maumau78 reported Style 6/shoes10 visible in the Bears Edit Player preview but absent in-game on 2026-09-13. The earlier package-local colour proof is offline evidence and does not establish that played binding; preview visibility is not an in-game success. maumau78 subsequently reported visibility after assigning both the normal and mud slots, while the artwork still looked buggy; this corrects the earlier single-slot guidance without establishing this change's in-game appearance.",
         "status": "partial"
       },
       "selectors": {

@@ -95,10 +95,20 @@ def stage_case(case, *, profile=None, repeat=False):
             if profile: profile.enable()
             try:
                 result = stage_equipment_import(harness.a, harness.asset, path, independent=True, scale=scale)
-                answer = dict(outcome="fit", span_sha256=result.receipt["replacement"]["span_sha256"],
-                    decoded_sha256=result.receipt["replacement"]["decoded_sha256"],
-                    attempts=result.receipt["bounded_palette_fit"]["attempts"],
-                    encoded_dimensions=result.receipt["edits"][0]["encoded_dimensions"])
+                receipt = result.receipt
+                if receipt['schema'] == 'nfl2k5_equipment_staging/v1':
+                    # Atomic staging now returns measured rows for every group.
+                    # Read this fixture's physical span from the same checked
+                    # cache, so historical byte assertions still test the bytes
+                    # that were actually staged without another fit search.
+                    _, _, receipt, _, _ = writer.build_unified_uniform_equipment_imports(
+                        harness.cache.pack0,
+                        [(edit.asset_id, edit.replacement_path) for edit in harness.a.iter_edits()],
+                        compile_cache=writer.staged_equipment_cache())
+                answer = dict(outcome="fit", span_sha256=receipt["replacement"]["span_sha256"],
+                    decoded_sha256=receipt["replacement"]["decoded_sha256"],
+                    attempts=receipt["bounded_palette_fit"]["attempts"],
+                    encoded_dimensions=receipt["edits"][0]["encoded_dimensions"])
             except writer.EquipmentFitError as error:
                 answer = dict(outcome="refused", budget=error.budget, required=error.required,
                               suggestion=error.suggestion)

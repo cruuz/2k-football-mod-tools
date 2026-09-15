@@ -4180,7 +4180,7 @@ class StudioSession:
         )
         try:
             from mod_editor.core.nfl2k5_uniform_equipment_writer import preflight_project_equipment
-            preflight_project_equipment(self.cache.pack0, [
+            equipment_fit_rows = preflight_project_equipment(self.cache.pack0, [
                 (None, row.asset.asset_id, row.staged_path)
                 for row in loaded.edits
                 if getattr(row.asset, "kind", None) == "uniform_equipment_texture"
@@ -4540,6 +4540,8 @@ class StudioSession:
                         f"{original_error}"
                     ) from original_error
                 raise
+            from mod_editor.core.equipment_staging import _remember_fit
+            _remember_fit(self, equipment_fit_rows)
             return len(loaded.edits) + (
                 new_text.modified_count if new_text is not None else 0
             ) + len(new_audio) + len(new_annotations) + len(new_unif_colors) \

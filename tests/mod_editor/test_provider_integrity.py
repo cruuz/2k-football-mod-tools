@@ -201,7 +201,7 @@ class ProviderIntegrityTests(unittest.TestCase):
             # formation/play clone writer, fixed-slot audio, the fail-closed
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
-            [282, 10, 8, 9, 8, 9]  # beta 70: + music conform and existing MNF font dependency; beta 69: + nfl2k5_model_project (J2); beta 68: + nfl2k5_compile_cache (T1 build reuse); beta 66.1: + responsive_json (H1, unified + scorebug), nfl2k5_model_skeleton (H4); beta 66: + nfl2k5_digit_art (G), build_io, metadata_cache (B), jukebox_list, helmet_finish (D2)
+            [285, 10, 8, 9, 8, 9]  # beta 70: + equipment staging/reporting/import, music conform and existing MNF font dependency; beta 69: + nfl2k5_model_project (J2); beta 68: + nfl2k5_compile_cache (T1 build reuse); beta 66.1: + responsive_json (H1, unified + scorebug), nfl2k5_model_skeleton (H4); beta 66: + nfl2k5_digit_art (G), build_io, metadata_cache (B), jukebox_list, helmet_finish (D2)
         )
         for provider in providers:
             entries = [provider.backend_module]

@@ -17,7 +17,7 @@ from test_nfl2k5_equipment_texture_chain import Fixture
 
 
 def snippet(phrase):
-    blocks=re.findall(r'```python\n(.*?)\n```',(ROOT/'WIRING.md').read_text(),re.S)
+    blocks=re.findall(r'```python\n(.*?)\n```',(ROOT/'WIRING_B70_T2.md').read_text(),re.S)
     return textwrap.dedent(next(b for b in blocks if phrase in b))
 
 

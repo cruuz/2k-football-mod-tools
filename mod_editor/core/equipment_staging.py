@@ -32,10 +32,10 @@ def staging_targets(target, by_id):
 
 
 def _checked_rows(session, paths, by_id, *, selected=None):
-    from .nfl2k5_uniform_equipment_writer import EquipmentCompileCache, build_unified_uniform_equipment_imports
-    cache = getattr(session, "_equipment_staging_cache", None)
-    if cache is None:
-        cache = session._equipment_staging_cache = EquipmentCompileCache()
+    from .nfl2k5_uniform_equipment_writer import staged_equipment_cache, build_unified_uniform_equipment_imports
+    # Use the same validated memory/disk cache as project-load preflight. A
+    # session-only cache makes reopening a saved import repeat the fit ladder.
+    cache = staged_equipment_cache()
     groups = defaultdict(list)
     for asset_id, path in sorted(paths.items()):
         t = by_id[asset_id]
