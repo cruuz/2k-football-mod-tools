@@ -1,23 +1,9 @@
-# Beta 71 APF-2
+APF-3 is a partial delivery. Independent per-situation exclusions remain unimplemented; bounded BASE/TU evidence shows the proposed existing fields cannot provide them.
 
-Private branch: `astra/b71-apf2-situations` from `local/stack-beta-71`.
-Bundle: `.scratch/astra-b71-apf2.bundle`; verification and final commit IDs:
-`.scratch/astra-b71-apf2-delivery.json`.
+The Straight-for-Queens export fits with APF-2's refit and has exact byte regressions. Native traces now reach all eleven player assignments and prove TE-to-FB depth fallback when the TE list is empty. Actual gameplay remains UNWITNESSED.
 
-Implemented the four CPU page/export fixes, one visible book workflow, the
-23-situation candidate/personnel view and explicit shared-book formation edits.
-The native suite now has 26 passing BASE/TU cases. All 183 requested standalone
-suite files have passing final runs, reporting 1,758 tests and 12 optional skips.
-APF installer, release and runtime checks pass. Repin reports zero updates.
+All 183 requested suite files pass: 1,763 reported tests, 12 optional skips. Native play-calling: 30/30 with no skips. Strict registry, repin, provider/catalog/phase1, installer and staged release/runtime pass.
 
-**Partial delivery:** independent per-situation whitelists remain unfinished.
-Removal currently applies to the whole book. The final on-field zero-TE producer
-remains unresolved beyond the proved call-tuple boundary. Every in-game outcome
-is UNWITNESSED.
-
-Strict registry validation fails on 75 missing baseline evidence paths.
-`WIRING.md` supplies five protected registry replacements and adds no rows.
-`ASTRA_REPORT.md` contains file/line evidence, command exits/timings and retest
-steps. No push.
+See ASTRA_REPORT.md, WIRING.md and .scratch/astra-b71-apf3-delivery.json. Commits use private .scratch/git; bundle: .scratch/astra-b71-apf3.bundle. No push.
 
 ASTRA_DONE
