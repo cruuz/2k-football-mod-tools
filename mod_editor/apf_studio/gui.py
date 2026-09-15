@@ -20158,6 +20158,9 @@ class ApfStudioMainWindow(QMainWindow):
         quit_action.setShortcut("Ctrl+Q")
         quit_action.triggered.connect(self.close)
         self._refresh_recent_menus()
+        tools_menu = self.menuBar().addMenu("&Tools")
+        self.fourth_down_action = tools_menu.addAction("CPU fourth-down triggers…")
+        self.fourth_down_action.triggered.connect(self._fourth_down_triggers)
         self._install_help_menu()
 
     def _install_help_menu(self) -> None:
@@ -20767,7 +20770,7 @@ class ApfStudioMainWindow(QMainWindow):
         self.launch_button.setObjectName("launchButton")
         self.undo_button.setToolTip("Undo the most recent edit in this project.")
         self.revert_all_button.setToolTip("Nothing to revert—there are no active edits.")
-        self.configure_xenia_button.setToolTip("Choose Xenia Canary and its Wine launcher.")
+        self.configure_xenia_button.setToolTip("Choose Xenia Edge (recommended) or Canary. Controllers use SDL; Windows executables need Wine on Linux.")
         self.title_update_button.setToolTip(
             "Choose the Xbox 360 APF 2K8 title update 1.1 LIVE package. It is "
             "required on Xenia/Xbox and never shipped for PS3. Launch copies it "
@@ -21881,12 +21884,16 @@ class ApfStudioMainWindow(QMainWindow):
             "This folder contains your retail game data. Do not redistribute it; share the .apf2k8mod project instead.",
         )
 
+    def _fourth_down_triggers(self) -> None:
+        from .fourth_down_qt import FourthDownDialog
+        FourthDownDialog(self.facade.launcher, self).exec_()
+
     def _configure_xenia(self) -> None:
         selected, _filter = QFileDialog.getOpenFileName(
             self,
-            "Choose Xenia Canary",
+            "Choose Xenia Edge (recommended) or Canary",
             str(Path.home()),
-            "Xenia Canary (xenia_canary.exe xenia.exe xenia*);;All files (*)",
+            "Xenia runtimes (xenia* Xenia*);;Xenia Edge, renamed executable (*);;Xenia Canary, renamed executable (*);;All files (*)",
         )
         if not selected:
             return
@@ -21902,7 +21909,7 @@ class ApfStudioMainWindow(QMainWindow):
             QMessageBox.information(
                 self,
                 "Wine is also required",
-                "Xenia Canary is a Windows application. Choose your Wine executable next.",
+                "This Xenia executable is a Windows application. Choose your Wine executable next.",
             )
             selected_wine, _wine_filter = QFileDialog.getOpenFileName(
                 self,
@@ -21914,11 +21921,14 @@ class ApfStudioMainWindow(QMainWindow):
                 return
             wine = Path(selected_wine)
         try:
-            self.facade.configure_xenia(executable, wine)
+            runtime = ("edge" if _filter.startswith("Xenia Edge,") else
+                       "canary" if _filter.startswith("Xenia Canary,") else None)
+            self.facade.configure_xenia(executable, wine, runtime=runtime)
         except Exception as exc:
             self._show_error(str(exc), traceback.format_exc())
             return
-        self._last_detail = "Xenia Canary is configured. Build a game folder, then click Launch."
+        self._last_detail = (f"{self.facade.launcher.settings.runtime_label} is configured with SDL controllers. "
+                             "Build a game folder, then click Launch.")
         self._update_product_state()
 
     def _configure_title_update(self) -> None:
@@ -21950,7 +21960,7 @@ class ApfStudioMainWindow(QMainWindow):
                 answer = QMessageBox.question(
                     self,
                     "Xenia is not configured yet",
-                    blocker + "\n\nChoose Xenia Canary now?",
+                    blocker + "\n\nChoose Xenia Edge or Canary now?",
                     QMessageBox.Yes | QMessageBox.No,
                     QMessageBox.Yes,
                 )
@@ -21979,7 +21989,7 @@ class ApfStudioMainWindow(QMainWindow):
                 if self.facade.launcher.settings.title_update_path is None:
                     return
         self._run_task(
-            "Starting the last verified build in Xenia Canary",
+            f"Starting the last verified build in {self.facade.launcher.settings.runtime_label}",
             lambda _progress: self.facade.launch_xenia(),
             self._launch_complete,
             True,
@@ -21993,7 +22003,7 @@ class ApfStudioMainWindow(QMainWindow):
         QMessageBox.information(
             self,
             "Xenia started",
-            f"Xenia Canary started the verified modded default.xex.\n\n"
+            f"{self.facade.launcher.settings.runtime_label} started the verified modded default.xex with SDL controllers.\n\n"
             f"Process: {pid}\nLog: {log}\n\n{patch_status}",
         )
 

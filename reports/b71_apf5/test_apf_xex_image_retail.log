@@ -1,0 +1,7 @@
+TU 1.1: {'update_sha256': '5f71cdf4ec679f8e33fd95e02ff2b67981fbf918d4d03a2099576734c5cfb42b', 'xexp_sha256': '14e272063536656d2aae9b4743fdcebb927566722dc1e2f34fe75029e1e8ada6', 'stfs_data_blocks_verified': 191, 'delta_blocks_sha1_verified': 12, 'delta_records': 3779, 'image_sha256': '65f522ce1cdda42cf19c112e9ec07302e89c81e4148c9f22e6db5e03952f9457', 'rsa_signature_verified': False}
+.BASE: {'xex_sha256': '981a57143b0a665b2220f72366e1368c5374b91c77a22d93945439d51a2cd28f', 'encryption': 1, 'compression': 2, 'image_size': 54001664, 'decoder': 'studio-python-xex/v1', 'compressed_blocks_sha1_verified': 642, 'window_size': 32768, 'window_bits': 15, 'lzx_bytes': 37717546, 'lzx_chunks': 1648, 'image_sha256': 'cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf'}; decode_seconds=70.24
+.
+----------------------------------------------------------------------
+Ran 2 tests in 72.883s
+
+OK

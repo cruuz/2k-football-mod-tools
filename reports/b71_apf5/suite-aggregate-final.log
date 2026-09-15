@@ -1,0 +1,18 @@
+{
+  "expected_standalone_suites": 187,
+  "passed_suite_files": 187,
+  "tests_reported_run": 1775,
+  "skips_reported": 11,
+  "failed_or_missing": []
+}
+Files with optional skips:
+tests/mod_editor/test_apf_b661_ladder.py skipped 1 log reports/b71_apf5/test_apf_b661_ladder.log
+tests/mod_editor/test_apf_b67_static_audit.py skipped 1 log reports/b71_apf5/test_apf_b67_static_audit.log
+tests/mod_editor/test_apf_b67_writers_native.py skipped 1 log reports/b71_apf5/test_apf_b67_writers_native.log
+tests/mod_editor/test_apf_b69_control_audit.py skipped 1 log reports/b71_apf5/test_apf_b69_control_audit.log
+tests/mod_editor/test_apf_book_unlock_retail.py skipped 1 log reports/b71_apf5/test_apf_book_unlock_retail.log
+tests/mod_editor/test_apf_defense_research_native.py skipped 1 log reports/b71_apf5/test_apf_defense_research_native.log
+tests/mod_editor/test_apf_endzone_dxt5a.py skipped 1 log reports/b71_apf5/test_apf_endzone_dxt5a.log
+tests/mod_editor/test_apf_field_art_patch.py skipped 2 log reports/b71_apf5/test_apf_field_art_patch.log
+tests/mod_editor/test_apf_splb_tag_reassignment.py skipped 1 log reports/b71_apf5/test_apf_splb_tag_reassignment.log
+tests/mod_editor/test_apf_stfs_roster_rehash.py skipped 1 log reports/b71_apf5/test_apf_stfs_roster_rehash.log

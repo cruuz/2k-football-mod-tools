@@ -117,6 +117,7 @@ class ExportPanelTests(unittest.TestCase):
         self.assertTrue(self.panel.patch_button.isEnabled())
 
     def test_cancel_after_check_writes_nothing(self):
+        before={path.relative_to(self.root):path.read_bytes() for path in self.root.rglob('*.toml')}
         with patch.object(ui.QFileDialog, "getExistingDirectory", return_value=str(self.game)), \
                 patch.object(ui.QMessageBox, "question", return_value=QMessageBox.No), \
                 patch.object(ui.game_image, "derive_image", return_value=(self.image, {"input_paths": [str(self.source)]})), \
@@ -124,7 +125,9 @@ class ExportPanelTests(unittest.TestCase):
             self.panel.export_patch(); self.complete_task()
         self.assertIn("installation cancelled", self.panel.patch_notice.text())
         self.assertEqual(self.tasks, [])
-        self.assertEqual(list(self.root.glob("*.toml")), [])
+        # Configuring the runtime now writes its SDL config. Cancelling patch
+        # installation must preserve it and create no additional TOML files.
+        self.assertEqual({path.relative_to(self.root):path.read_bytes() for path in self.root.rglob('*.toml')},before)
 
     def test_configured_and_explicit_updates_are_forwarded_only_for_game_mode(self):
         flat = self.root / "test.pe"; flat.write_bytes(self.image)

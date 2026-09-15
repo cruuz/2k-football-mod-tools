@@ -300,3 +300,8 @@ mod_editor/core/apf2k8_situation_mask.py
 mod_editor/apf_studio/situation_masks.py
 mod_editor/apf_studio/situation_mask_qt.py
 docs/research/apf_b71_apf4.md
+# Beta 71 APF-5 global fourth-down patch and independent editor.
+mod_editor/core/apf2k8_fourth_down.py
+mod_editor/apf_studio/fourth_down_qt.py
+docs/mod_editor/apf2k8_fourth_down_and_xenia.md
+docs/research/apf_b71_fourth_down.md

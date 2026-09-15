@@ -108,6 +108,14 @@ class CapabilityActionParityTests(unittest.TestCase):
                         self.assertEqual(curves.CLASSIFICATION, "EXPERIMENTAL")
                         self.assertFalse(curves.DEFAULT_ENABLED)
                         self.assertIn("UNWITNESSED", curves.DESCRIPTION.upper())
+                    elif capability_id == "apf2k8.playbooks.fourth_down":
+                        self.assertEqual(binding.output_kind, "authored-xenia-patch-toml")
+                        self.assertEqual(binding.one_shot_target,
+                                         "mod_editor.core.apf2k8_fourth_down:write_patch")
+                        fourth_down = importlib.import_module(module_name)
+                        self.assertFalse(fourth_down.DEFAULT_ENABLED)
+                        self.assertEqual(fourth_down.CLASSIFICATION, "EXPERIMENTAL")
+                        self.assertIn(ApfProductAction.EXPORT, binding.actions)
                     else:
                         self.assertIn("copied", binding.output_kind)
                 else:

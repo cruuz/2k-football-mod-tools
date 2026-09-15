@@ -1,7 +1,18 @@
-Implemented APF-4 and delivered the private bundle at `.scratch/astra-b71-apf4.bundle`.
+# APF-5 complete
 
-188/188 standalone suites pass; 36/36 expanded native tests include the original 30/30. Strict validator, repin, provider/catalog/phase1, APF release and runtime checks pass. Gameplay remains UNWITNESSED. Requested-row and static-reference limits are explicit in ASTRA_REPORT.md.
+Implemented the opt-in global fourth-down patch and independent Tools editor,
+plus Xenia Edge/Canary configuration with SDL input. Retail defaults, neutral
+preview, exact patch-byte tests and bounded BASE/TU witnesses are included.
 
-No push or emulator launch.
+Validation: 187/187 requested standalone suites passed;
+1775 tests reported, 11 explicit skips. Strict registry, repin,
+provider integrity, product catalog, phase1 packaging, APF release and runtime
+checks passed. No APF-4 situation code/table edits, tester names, push or Xenia
+launch. Full match behavior and real controller input remain UNWITNESSED.
+
+Private git: `.scratch/git`, branch `astra/b71-apf5-fourth-down-xenia`, base
+`dc87cd0f456cf4ad4f8a384bb698d005d3255fa0`. Bundle: `.scratch/astra-b71-apf5.bundle`.
+Final commits, bundle verification and SHA-256: `.scratch/astra-b71-apf5-delivery.json`.
+Addresses, proof limits, command ledger and retest steps: `ASTRA_REPORT.md`.
 
 ASTRA_DONE

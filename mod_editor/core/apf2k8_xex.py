@@ -289,7 +289,7 @@ def xenia_content_roots(executable, *, user_storage=()):
     roots = []
     for location in dict.fromkeys(locations):
         roots.append(location / "content")
-        for name in ("xenia-canary.config.toml", "xenia.config.toml"):
+        for name in ("xenia-edge.config.toml", "xenia-canary.config.toml", "xenia.config.toml"):
             config = location / name
             if not config.is_file():
                 continue

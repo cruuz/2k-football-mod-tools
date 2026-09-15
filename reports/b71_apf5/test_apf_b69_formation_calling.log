@@ -1,0 +1,7 @@
+test_changes_only_B_all_duplicates_and_restores_exactly (__main__.CallingTests.test_changes_only_B_all_duplicates_and_restores_exactly) ... ok
+test_last_personnel_record_special_and_stale_masks_refused (__main__.CallingTests.test_last_personnel_record_special_and_stale_masks_refused) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.098s
+
+OK

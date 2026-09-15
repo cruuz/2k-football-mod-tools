@@ -168,6 +168,19 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
             "separate. Gameplay UNWITNESSED."
         ),
     ),
+"apf2k8.playbooks.fourth_down": CapabilityActionBinding(
+    "apf2k8.playbooks.fourth_down",
+    "playbooks.fourth_down",
+    _actions(ApfProductAction.PREVIEW, ApfProductAction.EXPORT,
+             ApfProductAction.BUILD_COPY),
+    one_shot_target="mod_editor.core.apf2k8_fourth_down:write_patch",
+    output_kind="authored-xenia-patch-toml",
+    product_note=(
+        "Tools → CPU fourth-down triggers edits global thresholds, previews a "
+        "neutral scenario, exports a disabled patch by default and offers "
+        "explicit installation, status and removal. Gameplay UNWITNESSED."
+    ),
+),
 "apf2k8.playbooks.personnel_curve_patch": CapabilityActionBinding(
     "apf2k8.playbooks.personnel_curve_patch",
     "playbooks.personnel_curves",
