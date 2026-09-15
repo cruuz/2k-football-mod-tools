@@ -1,4 +1,4 @@
-# Beta 71: the 2026 scorebug's clock capsule in an ESPN-styled font (Claude Fable 5.1 fork, 2026-09-15)
+# Beta 71: the 2026 scorebug's clock capsule in an ESPN-styled font (2026-09-15)
 
 Branch `fable/b71-scorebug-font` (from `fable/b71-scorebug` at bcb0fcdf). EXPERIMENTAL / UNWITNESSED in a played game;
 everything below is proved offline with the native renderer and the repo's decoders.
@@ -71,4 +71,4 @@ Renders: `/tmp/claude-1000/font_capsule_zoom3.png` (capsule at 5x), `/tmp/claude
 
 The capsule tile separators moved (18 and 50 of 64); `MNF_ANCHORS` quarter/clock_a/clock_b/drop_clock changed; the
 resources module gained `clock_font_spans`, `CLOCK_FONT_SPAN_SIZE` (54,080) and `CLOCK_FONT_SHA256`; `probe_sizes("mnf")`
-and the compile append two FONT spans after the panels (the "mnf" appendix pin includes them); `CODE_SIZE` is 1,536.
+and the compile append two FONT spans after the panels (the "mnf" appendix pin includes them); `CODE_SIZE` is 1,408 (the 1,536-byte request was rejected; see the owner-capacity explanation above).

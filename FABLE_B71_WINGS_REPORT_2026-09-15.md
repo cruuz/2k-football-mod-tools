@@ -1,4 +1,4 @@
-# Beta 71: the 2026 scorebug wings at the broadcast's proportions with ESPN's marks (Claude Fable 5.1, 2026-09-15)
+# Beta 71: the 2026 scorebug wings at the broadcast's proportions with ESPN's marks (2026-09-15)
 
 Branch `fable/b71-scorebug-wings` on top of `fable/b71-scorebug` (bcb0fcdf: timeout dashes on the records the retail
 game binds to each team, event slabs on the charcoal tile). Proved offline by the native renderer; unwitnessed in game.

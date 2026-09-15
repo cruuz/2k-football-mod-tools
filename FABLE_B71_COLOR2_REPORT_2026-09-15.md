@@ -1,4 +1,4 @@
-# Beta 71: Modern colour and lighting, calibrated from the first in-game measurement (Claude Fable 5.1, 2026-09-15)
+# Beta 71: Modern colour and lighting, calibrated from the first in-game measurement (2026-09-15)
 
 EXPERIMENTAL / UNWITNESSED. Branch `fable/b71-color2` (worktree `~/2k-worktrees/fable-b71-color2`, base `local/stack-beta-71`
 = e2f5c6e6). Every number below is either measured from a screenshot or a broadcast frame, decoded from the disc, or
@@ -94,7 +94,7 @@ Widescreen 16:9; its `.2k5patch` sits beside it, 199,041,472 bytes, 4,498 runs).
 the new pins: light rigs `applied`, all 477 bundles `applied`. The builds folder holds three MOD TEST images (the rule's
 maximum): 15a, 15b and this one.
 
-## 6. What Noah should look at
+## 6. In-game checks
 
 1. Broncos at Chiefs, Arrowhead, night: the turf should read close to the broadcast green (107, 121, 53); compare a screenshot's field pixels with the earlier (51, 61, 32).
 2. A 1 PM day game (Jacksonville, Nashville) and a dome (Lucas Oil), then rain and snow (extrapolated).

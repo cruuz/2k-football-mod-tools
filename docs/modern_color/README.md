@@ -1,10 +1,10 @@
 # Modern colour and lighting: 2026 Week 1 broadcast references and the game's levers
 
-Written by Claude Fable 5.1 on 2026-09-15 for beta 70. EXPERIMENTAL / UNWITNESSED: every value below is measured from broadcast stills or decoded from the disc; nothing here is a claim about how the game looks after the option, which no one has watched yet.
+Documented on 2026-09-15 for beta 70. EXPERIMENTAL / UNWITNESSED: every value below is measured from broadcast stills or decoded from the disc; nothing here is a claim about how the game looks after the option, which no one has watched yet.
 
 ## Reference material
 
-- `Denver Broncos vs Kansas City Chiefs Game Highlights | 2026 NFL Season Week 1` (ESPN Monday Night Football, Arrowhead Stadium, 8:15 PM ET kickoff): 30,044 frames at 1920x1080, every 40th frame measured (752 frames). This is the anchor Noah named.
+- `Denver Broncos vs Kansas City Chiefs Game Highlights | 2026 NFL Season Week 1` (ESPN Monday Night Football, Arrowhead Stadium, 8:15 PM ET kickoff): 30,044 frames at 1920x1080, every 40th frame measured (752 frames). This is the night calibration reference.
 - `Best Play From EVERY Team In Week 1 | 2026 NFL Season` (NFL, 9:14, 554 frames at 1 fps, 31 scene cuts): one play per team; each game's frame range was assigned by hand from the scorebugs and end-zone art (contact sheets of all 554 frames).
 - `Cam Skattebo FLIPPING Into The Endzone For His First TD` (NFL, 28 s, 55 frames at 2 fps): Cowboys at Giants, MetLife Stadium, Sunday Night Football.
 - Schedule and kickoff times: nflschedules.com and nfl.com Week 1 pages (Wed 9/9 NE at SEA 8:20 PM ET; Thu 9/10 SF vs LAR at the MCG in Melbourne, 10:35 AM local; Sun 9/13 1:00 PM ET slate, 4:25 PM ET slate, 8:20 PM ET SNF; Mon 9/14 8:15 PM ET MNF).
@@ -69,7 +69,7 @@ Across every bucket the constants are: turf hue 73..96 degrees (median about 82)
 
 Light directions, light counts and the shadow value at +0x100 keep their retail bytes in every table. The stadium edits are the same for all buckets: colour map and outside grass pulled 35 percent toward hue 82 degrees, saturation x 0.90, value x 1.04; grass bump normals flattened to 55 percent; afternoon tint 0xFFFFEECD to 0xFFFFF5E6 and vertex (255, 238, 205) to (255, 245, 230); night tint 0xFFF2FFFF to 0xFFF8FCFF; the odd (255, 255, 229) vertex tint to (255, 255, 240).
 
-A flat-grass estimate (colour map lit by the rig, before the bump map): day retail (140, 181, 77) to broadcast (160, 200, 105); night retail (180, 231, 128) to (213, 255, 142); afternoon retail (74, 86, 36) to (97, 117, 58). The bump map and the in-game capture suggest the drawn field sits at roughly half of these; that is the comparison Noah should make against the stills.
+A flat-grass estimate (colour map lit by the rig, before the bump map): day retail (140, 181, 77) to broadcast (160, 200, 105); night retail (180, 231, 128) to (213, 255, 142); afternoon retail (74, 86, 36) to (97, 117, 58). The bump map and the in-game capture suggest the drawn field sits at roughly half of these; compare that result against the stills.
 
 ## What the pins record
 
@@ -103,10 +103,10 @@ becomes (181, 216, 102): value 0.49 to 0.85, saturation x 1.12 to 0.53, hue 73 p
 night rig to neutral white (ambient 1.0 x 0.50, three lights x 0.86) and the day rig (ambient 0.58, key 1.20, fill
 0.48), and makes the night tint neutral (0xFFFFFFFF, vertex (255, 255, 255)). Predicted drawn turf: Arrowhead night
 (102, 122, 52) against the broadcast (107, 121, 53); day (83, 99, 47) against (88, 105, 61) (day blue stays low because
-one shared map serves every rig; night, Noah's anchor, takes priority). Domes share the night table. Rain and snow rigs
+one shared map serves every rig; night, the calibration anchor, takes priority). Domes share the night table. Rain and snow rigs
 rise by about 12 percent. The bump map flattens to 40 percent (beta 70: 55 percent), which lowers both the darkening
 and the amplitude of far-field shimmer; `detail_normal` ships a full mip chain (175,872 bytes for 512x256 P8 plus
 palette) and every level shares the one palette, so the flatten is consistent across distances. Whether the shimmer
-Noah saw at high internal resolution is retail behaviour or the option's is UNPROVED: it needs an A/B at the same
+seen at high internal resolution is retail behaviour or the option's is UNPROVED: it needs an A/B at the same
 camera and resolution. The far band of his screenshot carries more high-frequency energy (0.065 normalised) than the
 mid field (0.042), which is what detail-layer aliasing looks like, and the same detail layer is drawn by retail.
