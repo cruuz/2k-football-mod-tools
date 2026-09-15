@@ -1,0 +1,11 @@
+{
+  "command": [
+    "python3",
+    "reports/b71_c5/prove_sidelines.py",
+    "--all"
+  ],
+  "start_utc": "2026-09-15T21:09:42.237614+00:00",
+  "end_utc": "2026-09-15T21:14:59.562012+00:00",
+  "seconds": 317.324,
+  "exit_code": 1
+}

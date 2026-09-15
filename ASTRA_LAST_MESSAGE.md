@@ -1,16 +1,10 @@
-# Beta 71 C4 complete
+C5 is ready on `astra/b71-c5-sidelines`, based on C4 `5eac51c7`.
 
-Merged C3 `45a5ade9` into A5 `a7440f05` first, preserving both reports and every RC96 feature bullet. Merge `ddaaf5c4`; implementation `f9c2ac27`; final evidence commit is the bundle branch tip. Commits use the private `.scratch/astra-c4.git`; no push.
-
-- Day prediction: (89,105,61), saturation 0.419, value 0.412.
-- Afternoon: (87,103,61), saturation 0.408, value 0.404.
-- Night remains (102,122,52), with its exact approved rig hash retained. All 477 bundle pins and five other rig pins are unchanged.
-- Warmer sunlight and distinct day/afternoon shadow terms are proved through decoded tables and bounded native execution. Light directions/counts stay retail. Rendered shadow length/softness and final appearance remain UNWITNESSED.
-- Both detached XBE gates pass (119 memory-write, 131 cave-reference tests); colour/control/reset suites, full bundle/rig pin verification, strict registry (174 capabilities), provider checks and final repin pass. The extra oracle passes 29 tests using the documented scratch projection.
-- Prepared, never executed: `reports/b71_c4/build_testdisc71.py`, image g on Advanced with scorebug, scorebug runtime, modern colour and widescreen enabled, including the three-image pruning rule and preservation of patch archives.
-- Report and exact command ledger: `ASTRA_REPORT.md`. Full proofs/logs: `reports/b71_c4/`.
-- Bundle: `.scratch/astra-b71-c4.bundle`, incremental from `a7440f05`, including C3 history.
-
-Integration follow-up: regenerate the protected release cave manifest. It was left untouched; the bounded scratch projection revalidates the current writes against existing reservations without claiming a new disc build.
+- Implementation: `f047f20c`. Final commits are in `.scratch/astra-c5.git`; deliver `.scratch/astra-b71-c5.bundle`.
+- Linked outside grass follows FIELD in every modeled condition, at most 8% darker and never more saturated. Unlinked custom colour remains independent. All C4 field data and seven rigs stay exact.
+- Completed: 477 bundle pin reproductions and decoder checks, seven rig pins, colour suites (10 / 11), page tests (6), provider integrity (8), strict registry (174 capabilities), and final repin. In-game appearance remains UNWITNESSED.
+- Prepared only: `reports/b71_c5/build_testdisc71.py`, named `NFL 2K5 MOD TEST 2026-09-15k (sidelines + day tuning + scorebug v2 + widescreen)`, Advanced with the same four options.
+- `ASTRA_REPORT.md` contains predictions, scope and exact check links. `WIRING.md` supplies four protected registry prose replacements and the inherited manifest integration follow-up. No functional wiring is outstanding.
+- No rig change, so no XBE gates rerun. No push, disc build or emulator launch.
 
 ASTRA_DONE

@@ -1,0 +1,487 @@
+Modern colour: refitting 390 distinct field scenes, bump maps and divot layers
+Modern colour: 50 of 390 field scenes refit
+Modern colour: 100 of 390 field scenes refit
+Modern colour: 150 of 390 field scenes refit
+Modern colour: 200 of 390 field scenes refit
+Modern colour: 250 of 390 field scenes refit
+Modern colour: 300 of 390 field scenes refit
+Modern colour: 350 of 390 field scenes refit
+PINS_WRITTEN 477 7
+PASS s00dd.iff seven conditions and every outside tint
+PASS s00dr.iff seven conditions and every outside tint
+PASS s00ds.iff non-green outside stays C4 exact
+PASS s00ad.iff seven conditions and every outside tint
+PASS s00ar.iff seven conditions and every outside tint
+PASS s00as.iff non-green outside stays C4 exact
+PASS s00nd.iff seven conditions and every outside tint
+PASS s00nr.iff seven conditions and every outside tint
+PASS s00ns.iff non-green outside stays C4 exact
+PASS s01dd.iff seven conditions and every outside tint
+PASS s01dr.iff seven conditions and every outside tint
+PASS s01ds.iff seven conditions and every outside tint
+PASS s01ad.iff seven conditions and every outside tint
+PASS s01ar.iff seven conditions and every outside tint
+PASS s01as.iff seven conditions and every outside tint
+PASS s01nd.iff seven conditions and every outside tint
+PASS s01nr.iff seven conditions and every outside tint
+PASS s01ns.iff seven conditions and every outside tint
+PASS s02dd.iff seven conditions and every outside tint
+PASS s02dr.iff seven conditions and every outside tint
+PASS s02ds.iff non-green outside stays C4 exact
+PASS s02ad.iff seven conditions and every outside tint
+PASS s02ar.iff seven conditions and every outside tint
+PASS s02as.iff non-green outside stays C4 exact
+PASS s02nd.iff seven conditions and every outside tint
+PASS s02nr.iff seven conditions and every outside tint
+PASS s02ns.iff non-green outside stays C4 exact
+PASS s03dd.iff seven conditions and every outside tint
+PASS s03dr.iff seven conditions and every outside tint
+PASS s03ds.iff non-green outside stays C4 exact
+PASS s03ad.iff seven conditions and every outside tint
+PASS s03ar.iff seven conditions and every outside tint
+PASS s03as.iff non-green outside stays C4 exact
+PASS s03nd.iff seven conditions and every outside tint
+PASS s03nr.iff seven conditions and every outside tint
+PASS s03ns.iff non-green outside stays C4 exact
+PASS s04dd.iff seven conditions and every outside tint
+PASS s04dr.iff seven conditions and every outside tint
+PASS s04ds.iff non-green outside stays C4 exact
+PASS s04ad.iff seven conditions and every outside tint
+PASS s04ar.iff seven conditions and every outside tint
+PASS s04as.iff non-green outside stays C4 exact
+PASS s04nd.iff seven conditions and every outside tint
+PASS s04nr.iff seven conditions and every outside tint
+PASS s04ns.iff non-green outside stays C4 exact
+PASS s05dd.iff seven conditions and every outside tint
+PASS s05dr.iff seven conditions and every outside tint
+PASS s05ds.iff non-green outside stays C4 exact
+PASS s05ad.iff seven conditions and every outside tint
+PASS s05ar.iff seven conditions and every outside tint
+PASS s05as.iff non-green outside stays C4 exact
+PASS s05nd.iff seven conditions and every outside tint
+PASS s05nr.iff seven conditions and every outside tint
+PASS s05ns.iff non-green outside stays C4 exact
+PASS s06dd.iff seven conditions and every outside tint
+PASS s06dr.iff seven conditions and every outside tint
+PASS s06ds.iff non-green outside stays C4 exact
+PASS s06ad.iff seven conditions and every outside tint
+PASS s06ar.iff seven conditions and every outside tint
+PASS s06as.iff non-green outside stays C4 exact
+PASS s06nd.iff seven conditions and every outside tint
+PASS s06nr.iff seven conditions and every outside tint
+PASS s06ns.iff non-green outside stays C4 exact
+PASS s07dd.iff seven conditions and every outside tint
+PASS s07dr.iff seven conditions and every outside tint
+PASS s07ds.iff seven conditions and every outside tint
+PASS s07ad.iff seven conditions and every outside tint
+PASS s07ar.iff seven conditions and every outside tint
+PASS s07as.iff seven conditions and every outside tint
+PASS s07nd.iff seven conditions and every outside tint
+PASS s07nr.iff seven conditions and every outside tint
+PASS s07ns.iff seven conditions and every outside tint
+PASS s08dd.iff seven conditions and every outside tint
+PASS s08dr.iff seven conditions and every outside tint
+PASS s08ds.iff non-green outside stays C4 exact
+PASS s08ad.iff seven conditions and every outside tint
+PASS s08ar.iff seven conditions and every outside tint
+PASS s08as.iff non-green outside stays C4 exact
+PASS s08nd.iff seven conditions and every outside tint
+PASS s08nr.iff seven conditions and every outside tint
+PASS s08ns.iff non-green outside stays C4 exact
+PASS s09dd.iff seven conditions and every outside tint
+PASS s09dr.iff seven conditions and every outside tint
+PASS s09ds.iff seven conditions and every outside tint
+PASS s09ad.iff seven conditions and every outside tint
+PASS s09ar.iff seven conditions and every outside tint
+PASS s09as.iff seven conditions and every outside tint
+PASS s09nd.iff seven conditions and every outside tint
+PASS s09nr.iff seven conditions and every outside tint
+PASS s09ns.iff seven conditions and every outside tint
+PASS s10dd.iff seven conditions and every outside tint
+PASS s10dr.iff seven conditions and every outside tint
+PASS s10ds.iff non-green outside stays C4 exact
+PASS s10ad.iff seven conditions and every outside tint
+PASS s10ar.iff seven conditions and every outside tint
+PASS s10as.iff non-green outside stays C4 exact
+PASS s10nd.iff seven conditions and every outside tint
+PASS s10nr.iff seven conditions and every outside tint
+PASS s10ns.iff non-green outside stays C4 exact
+PASS s11dd.iff seven conditions and every outside tint
+PASS s11dr.iff seven conditions and every outside tint
+PASS s11ds.iff seven conditions and every outside tint
+PASS s11ad.iff seven conditions and every outside tint
+PASS s11ar.iff seven conditions and every outside tint
+PASS s11as.iff seven conditions and every outside tint
+PASS s11nd.iff seven conditions and every outside tint
+PASS s11nr.iff seven conditions and every outside tint
+PASS s11ns.iff seven conditions and every outside tint
+PASS s12dd.iff seven conditions and every outside tint
+PASS s12dr.iff seven conditions and every outside tint
+PASS s12ds.iff non-green outside stays C4 exact
+PASS s12ad.iff seven conditions and every outside tint
+PASS s12ar.iff seven conditions and every outside tint
+PASS s12as.iff non-green outside stays C4 exact
+PASS s12nd.iff seven conditions and every outside tint
+PASS s12nr.iff seven conditions and every outside tint
+PASS s12ns.iff non-green outside stays C4 exact
+PASS s13dd.iff seven conditions and every outside tint
+PASS s13dr.iff seven conditions and every outside tint
+PASS s13ds.iff non-green outside stays C4 exact
+PASS s13ad.iff seven conditions and every outside tint
+PASS s13ar.iff seven conditions and every outside tint
+PASS s13as.iff non-green outside stays C4 exact
+PASS s13nd.iff seven conditions and every outside tint
+PASS s13nr.iff seven conditions and every outside tint
+PASS s13ns.iff non-green outside stays C4 exact
+PASS s14dd.iff seven conditions and every outside tint
+PASS s14dr.iff seven conditions and every outside tint
+PASS s14ds.iff non-green outside stays C4 exact
+PASS s14ad.iff seven conditions and every outside tint
+PASS s14ar.iff seven conditions and every outside tint
+PASS s14as.iff non-green outside stays C4 exact
+PASS s14nd.iff seven conditions and every outside tint
+PASS s14nr.iff seven conditions and every outside tint
+PASS s14ns.iff non-green outside stays C4 exact
+PASS s15dd.iff seven conditions and every outside tint
+PASS s15dr.iff seven conditions and every outside tint
+PASS s15ds.iff seven conditions and every outside tint
+PASS s15ad.iff seven conditions and every outside tint
+PASS s15ar.iff seven conditions and every outside tint
+PASS s15as.iff seven conditions and every outside tint
+PASS s15nd.iff seven conditions and every outside tint
+PASS s15nr.iff seven conditions and every outside tint
+PASS s15ns.iff seven conditions and every outside tint
+PASS s16dd.iff seven conditions and every outside tint
+PASS s16dr.iff seven conditions and every outside tint
+PASS s16ds.iff non-green outside stays C4 exact
+PASS s16ad.iff seven conditions and every outside tint
+PASS s16ar.iff seven conditions and every outside tint
+PASS s16as.iff non-green outside stays C4 exact
+PASS s16nd.iff seven conditions and every outside tint
+PASS s16nr.iff seven conditions and every outside tint
+PASS s16ns.iff non-green outside stays C4 exact
+PASS s17dd.iff seven conditions and every outside tint
+PASS s17dr.iff seven conditions and every outside tint
+PASS s17ds.iff seven conditions and every outside tint
+PASS s17ad.iff seven conditions and every outside tint
+PASS s17ar.iff seven conditions and every outside tint
+PASS s17as.iff seven conditions and every outside tint
+PASS s17nd.iff seven conditions and every outside tint
+PASS s17nr.iff seven conditions and every outside tint
+PASS s17ns.iff seven conditions and every outside tint
+PASS s18dd.iff seven conditions and every outside tint
+PASS s18dr.iff seven conditions and every outside tint
+PASS s18ds.iff non-green outside stays C4 exact
+PASS s18ad.iff seven conditions and every outside tint
+PASS s18ar.iff seven conditions and every outside tint
+PASS s18as.iff non-green outside stays C4 exact
+PASS s18nd.iff seven conditions and every outside tint
+PASS s18nr.iff seven conditions and every outside tint
+PASS s18ns.iff non-green outside stays C4 exact
+PASS s19dd.iff seven conditions and every outside tint
+PASS s19dr.iff seven conditions and every outside tint
+PASS s19ds.iff non-green outside stays C4 exact
+PASS s19ad.iff seven conditions and every outside tint
+PASS s19ar.iff seven conditions and every outside tint
+PASS s19as.iff non-green outside stays C4 exact
+PASS s19nd.iff seven conditions and every outside tint
+PASS s19nr.iff seven conditions and every outside tint
+PASS s19ns.iff non-green outside stays C4 exact
+PASS s20dd.iff seven conditions and every outside tint
+PASS s20dr.iff seven conditions and every outside tint
+PASS s20ds.iff non-green outside stays C4 exact
+PASS s20ad.iff seven conditions and every outside tint
+PASS s20ar.iff seven conditions and every outside tint
+PASS s20as.iff non-green outside stays C4 exact
+PASS s20nd.iff seven conditions and every outside tint
+PASS s20nr.iff seven conditions and every outside tint
+PASS s20ns.iff non-green outside stays C4 exact
+PASS s21dd.iff seven conditions and every outside tint
+PASS s21dr.iff seven conditions and every outside tint
+PASS s21ds.iff non-green outside stays C4 exact
+PASS s21ad.iff seven conditions and every outside tint
+PASS s21ar.iff seven conditions and every outside tint
+PASS s21as.iff non-green outside stays C4 exact
+PASS s21nd.iff seven conditions and every outside tint
+PASS s21nr.iff seven conditions and every outside tint
+PASS s21ns.iff non-green outside stays C4 exact
+PASS s22dd.iff seven conditions and every outside tint
+PASS s22dr.iff seven conditions and every outside tint
+PASS s22ds.iff non-green outside stays C4 exact
+PASS s22ad.iff seven conditions and every outside tint
+PASS s22ar.iff seven conditions and every outside tint
+PASS s22as.iff non-green outside stays C4 exact
+PASS s22nd.iff seven conditions and every outside tint
+PASS s22nr.iff seven conditions and every outside tint
+PASS s22ns.iff non-green outside stays C4 exact
+PASS s23dd.iff seven conditions and every outside tint
+PASS s23dr.iff seven conditions and every outside tint
+PASS s23ds.iff seven conditions and every outside tint
+PASS s23ad.iff seven conditions and every outside tint
+PASS s23ar.iff seven conditions and every outside tint
+PASS s23as.iff seven conditions and every outside tint
+PASS s23nd.iff seven conditions and every outside tint
+PASS s23nr.iff seven conditions and every outside tint
+PASS s23ns.iff seven conditions and every outside tint
+PASS s24dd.iff seven conditions and every outside tint
+PASS s24dr.iff seven conditions and every outside tint
+PASS s24ds.iff non-green outside stays C4 exact
+PASS s24ad.iff seven conditions and every outside tint
+PASS s24ar.iff seven conditions and every outside tint
+PASS s24as.iff non-green outside stays C4 exact
+PASS s24nd.iff seven conditions and every outside tint
+PASS s24nr.iff seven conditions and every outside tint
+PASS s24ns.iff non-green outside stays C4 exact
+PASS s25dd.iff seven conditions and every outside tint
+PASS s25dr.iff seven conditions and every outside tint
+PASS s25ds.iff non-green outside stays C4 exact
+PASS s25ad.iff seven conditions and every outside tint
+PASS s25ar.iff seven conditions and every outside tint
+PASS s25as.iff non-green outside stays C4 exact
+PASS s25nd.iff seven conditions and every outside tint
+PASS s25nr.iff seven conditions and every outside tint
+PASS s25ns.iff non-green outside stays C4 exact
+PASS s26dd.iff seven conditions and every outside tint
+PASS s26dr.iff seven conditions and every outside tint
+PASS s26ds.iff non-green outside stays C4 exact
+PASS s26ad.iff seven conditions and every outside tint
+PASS s26ar.iff seven conditions and every outside tint
+PASS s26as.iff non-green outside stays C4 exact
+PASS s26nd.iff seven conditions and every outside tint
+PASS s26nr.iff seven conditions and every outside tint
+PASS s26ns.iff non-green outside stays C4 exact
+PASS s27dd.iff seven conditions and every outside tint
+PASS s27dr.iff seven conditions and every outside tint
+PASS s27ds.iff non-green outside stays C4 exact
+PASS s27ad.iff seven conditions and every outside tint
+PASS s27ar.iff seven conditions and every outside tint
+PASS s27as.iff non-green outside stays C4 exact
+PASS s27nd.iff seven conditions and every outside tint
+PASS s27nr.iff seven conditions and every outside tint
+PASS s27ns.iff non-green outside stays C4 exact
+PASS s28dd.iff seven conditions and every outside tint
+PASS s28dr.iff seven conditions and every outside tint
+PASS s28ds.iff non-green outside stays C4 exact
+PASS s28ad.iff seven conditions and every outside tint
+PASS s28ar.iff seven conditions and every outside tint
+PASS s28as.iff non-green outside stays C4 exact
+PASS s28nd.iff seven conditions and every outside tint
+PASS s28nr.iff seven conditions and every outside tint
+PASS s28ns.iff non-green outside stays C4 exact
+PASS s29dd.iff seven conditions and every outside tint
+PASS s29dr.iff seven conditions and every outside tint
+PASS s29ds.iff non-green outside stays C4 exact
+PASS s29ad.iff seven conditions and every outside tint
+PASS s29ar.iff seven conditions and every outside tint
+PASS s29as.iff non-green outside stays C4 exact
+PASS s29nd.iff seven conditions and every outside tint
+PASS s29nr.iff seven conditions and every outside tint
+PASS s29ns.iff non-green outside stays C4 exact
+PASS s30dd.iff seven conditions and every outside tint
+PASS s30dr.iff seven conditions and every outside tint
+PASS s30ds.iff non-green outside stays C4 exact
+PASS s30ad.iff seven conditions and every outside tint
+PASS s30ar.iff seven conditions and every outside tint
+PASS s30as.iff non-green outside stays C4 exact
+PASS s30nd.iff seven conditions and every outside tint
+PASS s30nr.iff seven conditions and every outside tint
+PASS s30ns.iff non-green outside stays C4 exact
+PASS s31dd.iff seven conditions and every outside tint
+PASS s31dr.iff seven conditions and every outside tint
+PASS s31ds.iff non-green outside stays C4 exact
+PASS s31ad.iff seven conditions and every outside tint
+PASS s31ar.iff seven conditions and every outside tint
+PASS s31as.iff non-green outside stays C4 exact
+PASS s31nd.iff seven conditions and every outside tint
+PASS s31nr.iff seven conditions and every outside tint
+PASS s31ns.iff non-green outside stays C4 exact
+PASS s32dd.iff seven conditions and every outside tint
+PASS s32dr.iff seven conditions and every outside tint
+PASS s32ds.iff non-green outside stays C4 exact
+PASS s32ad.iff seven conditions and every outside tint
+PASS s32ar.iff seven conditions and every outside tint
+PASS s32as.iff non-green outside stays C4 exact
+PASS s32nd.iff seven conditions and every outside tint
+PASS s32nr.iff seven conditions and every outside tint
+PASS s32ns.iff non-green outside stays C4 exact
+PASS s36dd.iff seven conditions and every outside tint
+PASS s36dr.iff seven conditions and every outside tint
+PASS s36ds.iff seven conditions and every outside tint
+PASS s36ad.iff seven conditions and every outside tint
+PASS s36ar.iff seven conditions and every outside tint
+PASS s36as.iff seven conditions and every outside tint
+PASS s36nd.iff seven conditions and every outside tint
+PASS s36nr.iff seven conditions and every outside tint
+PASS s36ns.iff seven conditions and every outside tint
+PASS s37dd.iff seven conditions and every outside tint
+PASS s37dr.iff seven conditions and every outside tint
+PASS s37ds.iff seven conditions and every outside tint
+PASS s37ad.iff seven conditions and every outside tint
+PASS s37ar.iff seven conditions and every outside tint
+PASS s37as.iff seven conditions and every outside tint
+PASS s37nd.iff seven conditions and every outside tint
+PASS s37nr.iff seven conditions and every outside tint
+PASS s37ns.iff seven conditions and every outside tint
+PASS s39dd.iff seven conditions and every outside tint
+PASS s39dr.iff seven conditions and every outside tint
+PASS s39ds.iff non-green outside stays C4 exact
+PASS s39ad.iff seven conditions and every outside tint
+PASS s39ar.iff seven conditions and every outside tint
+PASS s39as.iff non-green outside stays C4 exact
+PASS s39nd.iff seven conditions and every outside tint
+PASS s39nr.iff seven conditions and every outside tint
+PASS s39ns.iff non-green outside stays C4 exact
+PASS s40dd.iff seven conditions and every outside tint
+PASS s40dr.iff seven conditions and every outside tint
+PASS s40ds.iff non-green outside stays C4 exact
+PASS s40ad.iff seven conditions and every outside tint
+PASS s40ar.iff seven conditions and every outside tint
+PASS s40as.iff non-green outside stays C4 exact
+PASS s40nd.iff seven conditions and every outside tint
+PASS s40nr.iff seven conditions and every outside tint
+PASS s40ns.iff non-green outside stays C4 exact
+PASS s41dd.iff seven conditions and every outside tint
+PASS s41dr.iff seven conditions and every outside tint
+PASS s41ds.iff non-green outside stays C4 exact
+PASS s41ad.iff seven conditions and every outside tint
+PASS s41ar.iff seven conditions and every outside tint
+PASS s41as.iff non-green outside stays C4 exact
+PASS s41nd.iff seven conditions and every outside tint
+PASS s41nr.iff seven conditions and every outside tint
+PASS s41ns.iff non-green outside stays C4 exact
+PASS s42dd.iff seven conditions and every outside tint
+PASS s42dr.iff seven conditions and every outside tint
+PASS s42ds.iff seven conditions and every outside tint
+PASS s42ad.iff seven conditions and every outside tint
+PASS s42ar.iff seven conditions and every outside tint
+PASS s42as.iff seven conditions and every outside tint
+PASS s42nd.iff seven conditions and every outside tint
+PASS s42nr.iff seven conditions and every outside tint
+PASS s42ns.iff seven conditions and every outside tint
+PASS s43dd.iff seven conditions and every outside tint
+PASS s43dr.iff seven conditions and every outside tint
+PASS s43ds.iff non-green outside stays C4 exact
+PASS s43ad.iff seven conditions and every outside tint
+PASS s43ar.iff seven conditions and every outside tint
+PASS s43as.iff non-green outside stays C4 exact
+PASS s43nd.iff seven conditions and every outside tint
+PASS s43nr.iff seven conditions and every outside tint
+PASS s43ns.iff non-green outside stays C4 exact
+PASS s44dd.iff seven conditions and every outside tint
+PASS s44dr.iff seven conditions and every outside tint
+PASS s44ds.iff non-green outside stays C4 exact
+PASS s44ad.iff seven conditions and every outside tint
+PASS s44ar.iff seven conditions and every outside tint
+PASS s44as.iff non-green outside stays C4 exact
+PASS s44nd.iff seven conditions and every outside tint
+PASS s44nr.iff seven conditions and every outside tint
+PASS s44ns.iff non-green outside stays C4 exact
+PASS s45dd.iff seven conditions and every outside tint
+PASS s45dr.iff seven conditions and every outside tint
+PASS s45ds.iff non-green outside stays C4 exact
+PASS s45ad.iff seven conditions and every outside tint
+PASS s45ar.iff seven conditions and every outside tint
+PASS s45as.iff non-green outside stays C4 exact
+PASS s45nd.iff seven conditions and every outside tint
+PASS s45nr.iff seven conditions and every outside tint
+PASS s45ns.iff non-green outside stays C4 exact
+PASS s48dd.iff seven conditions and every outside tint
+PASS s48dr.iff seven conditions and every outside tint
+PASS s48ds.iff seven conditions and every outside tint
+PASS s48ad.iff seven conditions and every outside tint
+PASS s48ar.iff seven conditions and every outside tint
+PASS s48as.iff seven conditions and every outside tint
+PASS s48nd.iff seven conditions and every outside tint
+PASS s48nr.iff seven conditions and every outside tint
+PASS s48ns.iff seven conditions and every outside tint
+PASS s50dd.iff seven conditions and every outside tint
+PASS s50dr.iff seven conditions and every outside tint
+PASS s50ds.iff seven conditions and every outside tint
+PASS s50ad.iff seven conditions and every outside tint
+PASS s50ar.iff seven conditions and every outside tint
+PASS s50as.iff seven conditions and every outside tint
+PASS s50nd.iff seven conditions and every outside tint
+PASS s50nr.iff seven conditions and every outside tint
+PASS s50ns.iff seven conditions and every outside tint
+PASS s51dd.iff seven conditions and every outside tint
+PASS s51dr.iff seven conditions and every outside tint
+PASS s51ds.iff seven conditions and every outside tint
+PASS s51ad.iff seven conditions and every outside tint
+PASS s51ar.iff seven conditions and every outside tint
+PASS s51as.iff seven conditions and every outside tint
+PASS s51nd.iff seven conditions and every outside tint
+PASS s51nr.iff seven conditions and every outside tint
+PASS s51ns.iff seven conditions and every outside tint
+PASS s52dd.iff seven conditions and every outside tint
+PASS s52dr.iff seven conditions and every outside tint
+PASS s52ds.iff seven conditions and every outside tint
+PASS s52ad.iff seven conditions and every outside tint
+PASS s52ar.iff seven conditions and every outside tint
+PASS s52as.iff seven conditions and every outside tint
+PASS s52nd.iff seven conditions and every outside tint
+PASS s52nr.iff seven conditions and every outside tint
+PASS s52ns.iff seven conditions and every outside tint
+PASS s53dd.iff seven conditions and every outside tint
+PASS s53dr.iff seven conditions and every outside tint
+PASS s53ds.iff seven conditions and every outside tint
+PASS s53ad.iff seven conditions and every outside tint
+PASS s53ar.iff seven conditions and every outside tint
+PASS s53as.iff seven conditions and every outside tint
+PASS s53nd.iff seven conditions and every outside tint
+PASS s53nr.iff seven conditions and every outside tint
+PASS s53ns.iff seven conditions and every outside tint
+PASS s54dd.iff seven conditions and every outside tint
+PASS s54dr.iff seven conditions and every outside tint
+PASS s54ds.iff seven conditions and every outside tint
+PASS s54ad.iff seven conditions and every outside tint
+PASS s54ar.iff seven conditions and every outside tint
+PASS s54as.iff seven conditions and every outside tint
+PASS s54nd.iff seven conditions and every outside tint
+PASS s54nr.iff seven conditions and every outside tint
+PASS s54ns.iff seven conditions and every outside tint
+PASS s55dd.iff seven conditions and every outside tint
+PASS s55dr.iff seven conditions and every outside tint
+PASS s55ds.iff seven conditions and every outside tint
+PASS s55ad.iff seven conditions and every outside tint
+PASS s55ar.iff seven conditions and every outside tint
+PASS s55as.iff seven conditions and every outside tint
+PASS s55nd.iff seven conditions and every outside tint
+PASS s55nr.iff seven conditions and every outside tint
+PASS s55ns.iff seven conditions and every outside tint
+PASS s56dd.iff seven conditions and every outside tint
+PASS s56dr.iff seven conditions and every outside tint
+PASS s56ds.iff seven conditions and every outside tint
+PASS s56ad.iff seven conditions and every outside tint
+PASS s56ar.iff seven conditions and every outside tint
+PASS s56as.iff seven conditions and every outside tint
+PASS s56nd.iff seven conditions and every outside tint
+PASS s56nr.iff seven conditions and every outside tint
+PASS s56ns.iff seven conditions and every outside tint
+PASS s57dd.iff seven conditions and every outside tint
+PASS s57dr.iff seven conditions and every outside tint
+PASS s57ds.iff seven conditions and every outside tint
+PASS s57ad.iff seven conditions and every outside tint
+PASS s57ar.iff seven conditions and every outside tint
+PASS s57as.iff seven conditions and every outside tint
+PASS s57nd.iff seven conditions and every outside tint
+PASS s57nr.iff seven conditions and every outside tint
+PASS s57ns.iff seven conditions and every outside tint
+PASS s58dd.iff seven conditions and every outside tint
+PASS s58dr.iff seven conditions and every outside tint
+PASS s58ds.iff seven conditions and every outside tint
+PASS s58ad.iff seven conditions and every outside tint
+PASS s58ar.iff seven conditions and every outside tint
+PASS s58as.iff seven conditions and every outside tint
+PASS s58nd.iff seven conditions and every outside tint
+PASS s58nr.iff seven conditions and every outside tint
+PASS s58ns.iff seven conditions and every outside tint
+PASS s59dd.iff seven conditions and every outside tint
+PASS s59dr.iff seven conditions and every outside tint
+PASS s59ds.iff seven conditions and every outside tint
+PASS s59ad.iff seven conditions and every outside tint
+PASS s59ar.iff seven conditions and every outside tint
+PASS s59as.iff seven conditions and every outside tint
+PASS s59nd.iff seven conditions and every outside tint
+PASS s59nr.iff seven conditions and every outside tint
+PASS s59ns.iff seven conditions and every outside tint
+PASS 477 decoded bundles; seven identical C4 rigs; exact complete applied XBE

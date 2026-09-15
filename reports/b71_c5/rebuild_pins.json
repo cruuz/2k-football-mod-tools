@@ -1,0 +1,16 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "mod_editor.core.nfl2k5_modern_color",
+    "pins",
+    "extracted/ESPN NFL 2K5 (USA)/vc_53450030/0",
+    "--write",
+    "--workers",
+    "8"
+  ],
+  "start_utc": "2026-09-15T21:04:50.309440+00:00",
+  "end_utc": "2026-09-15T21:09:23.990846+00:00",
+  "seconds": 273.681,
+  "exit_code": 0
+}

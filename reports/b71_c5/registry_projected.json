@@ -1,0 +1,13 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "mod_editor.capabilities.validate_registry",
+    "--registry",
+    ".scratch/b71_c5_registry.json"
+  ],
+  "start_utc": "2026-09-15T21:14:57.486439+00:00",
+  "end_utc": "2026-09-15T21:14:57.730166+00:00",
+  "seconds": 0.244,
+  "exit_code": 0
+}

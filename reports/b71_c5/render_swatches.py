@@ -33,4 +33,4 @@ fig.text(.05,.025,'MODEL ONLY • Outside response calibrated from one supplied 
 fig.subplots_adjust(left=.035,right=.99,top=.91,bottom=.13)
 fig.savefig(ROOT/'reports/b71_c5/predicted-swatches.png',dpi=140)
 plt.close(fig)
-print('PASS: six paired FIELD/outside model swatches exported')
+print('PASS: seven paired FIELD/outside model swatches exported')

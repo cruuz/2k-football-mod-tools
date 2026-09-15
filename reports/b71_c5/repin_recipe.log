@@ -1,0 +1,8 @@
+[1] mod_editor/core/providers.py: mod_editor/core/nfl2k5_modern_color.py
+    9677b81fd1be0b252b113ef7a6678c8817fcc178941c1499615f54095b18c0c9
+ -> 60f0bb0fed14152307b851b645691348fa1d13a44b3a5bd910fbf2fd150714ab
+[1] mod_editor/core/providers.py: data/nfl2k5_modern_color_pins.json
+    394b1926eb4603d54d5ca7effbadaf4364c74b3ae1d72ddac24654349e2ec75d
+ -> 2cc7795351990f2eca5a6d8fa71973d45d7e9e5869c8553c98ca40f0beed50c7
+
+applied 2 pin update(s)

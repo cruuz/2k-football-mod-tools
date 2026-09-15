@@ -1,0 +1,11 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "mod_editor.capabilities.validate_registry"
+  ],
+  "start_utc": "2026-09-15T21:29:18.411082+00:00",
+  "end_utc": "2026-09-15T21:29:18.558191+00:00",
+  "seconds": 0.147,
+  "exit_code": 0
+}

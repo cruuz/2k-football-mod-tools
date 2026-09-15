@@ -1,0 +1,33 @@
+test_custom_refit_wrappers_mips_cache_and_retail_identity (__main__.BundleParameterTests.test_custom_refit_wrappers_mips_cache_and_retail_identity) ... ok
+test_image_writer_receipt_replay_tamper_scope_and_regrade_refusal (__main__.BundleParameterTests.test_image_writer_receipt_replay_tamper_scope_and_regrade_refusal) ... FAIL
+test_unlinked_outside_palette_retains_own_custom_colour (__main__.BundleParameterTests.test_unlinked_outside_palette_retains_own_custom_colour) ... ok
+test_custom_xbe_receipt_replay_restore_and_tamper (__main__.RigParameterTests.test_custom_xbe_receipt_replay_restore_and_tamper) ... ok
+test_every_rig_lever_writes_only_owned_floats_and_default_pins_hold (__main__.RigParameterTests.test_every_rig_lever_writes_only_owned_floats_and_default_pins_hold) ... ok
+test_all_controls_validate_and_roundtrip_without_changing_presets (__main__.SettingsModelTests.test_all_controls_validate_and_roundtrip_without_changing_presets) ... ok
+test_bump_tints_and_retail_reset_are_exact (__main__.SettingsModelTests.test_bump_tints_and_retail_reset_are_exact) ... ok
+test_calibration_reproduces_captured_night_and_v21_prediction (__main__.SettingsModelTests.test_calibration_reproduces_captured_night_and_v21_prediction) ... ok
+test_day_afternoon_defaults_and_shadow_reset_keep_night_pinned (__main__.SettingsModelTests.test_day_afternoon_defaults_and_shadow_reset_keep_night_pinned) ... ok
+test_outside_calibration_link_custom_and_every_condition (__main__.SettingsModelTests.test_outside_calibration_link_custom_and_every_condition) ... FAIL
+test_palette_controls_linking_switches_and_paint_preservation (__main__.SettingsModelTests.test_palette_controls_linking_switches_and_paint_preservation) ... ok
+
+======================================================================
+FAIL: test_image_writer_receipt_replay_tamper_scope_and_regrade_refusal (__main__.BundleParameterTests.test_image_writer_receipt_replay_tamper_scope_and_regrade_refusal)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-c5/tests/mod_editor/test_colour_lighting.py", line 300, in test_image_writer_receipt_replay_tamper_scope_and_regrade_refusal
+    self.assertEqual(mc.read_image_receipt(target), receipt)
+AssertionError: {'already_applied': 0, 'bundle_pins': {'s13[5102 chars]om)'} != {'schema': 'nfl2k5_colour_lighting_receipt/[5102 chars]60}}}
+Diff is 11506 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_outside_calibration_link_custom_and_every_condition (__main__.SettingsModelTests.test_outside_calibration_link_custom_and_every_condition)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-c5/tests/mod_editor/test_colour_lighting.py", line 80, in test_outside_calibration_link_custom_and_every_condition
+    self.assertLessEqual(colorsys.rgb_to_hsv(*o)[1], colorsys.rgb_to_hsv(*f)[1], (stadium, rig, f, o))
+AssertionError: 0.4215686274509804 not less than or equal to 0.41904761904761906 : ('outdoor', 'day', (89, 105, 61), (86, 102, 59))
+
+----------------------------------------------------------------------
+Ran 11 tests in 31.551s
+
+FAILED (failures=2)

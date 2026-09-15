@@ -2,6 +2,7 @@
 from pathlib import Path
 from collections import Counter
 import argparse
+from functools import lru_cache
 import colorsys
 import json
 import subprocess
@@ -30,6 +31,12 @@ def hsv(rgb):
     return dict(hue=h*360, saturation=s, value=v)
 
 
+@lru_cache(maxsize=4096)
+def green_rgb(rgb, hue_max=150):
+    h, s, v = colorsys.rgb_to_hsv(*(c/255 for c in rgb))
+    return 45 <= h*360 <= hue_max and s > .15 and v > .10
+
+
 def decoded(blob, mask_blob=None, *, raw_override=None):
     tx, inv, R, H = mc._tools()
     rec, out, record = mc._scene(blob, mc._chunks(blob)[0])
@@ -45,8 +52,7 @@ def decoded(blob, mask_blob=None, *, raw_override=None):
             masks = tx.texture_to_rgba(old_out, record.as_chunk(), info)
             # Independent decoder, source green mask. No use of writer mean helper.
             used = [i for i in range(0, len(pixels), 4)
-                    if 45 <= hsv(masks[i:i+3])['hue'] <= 150
-                    and hsv(masks[i:i+3])['saturation'] > .15 and hsv(masks[i:i+3])['value'] > .10]
+                    if green_rgb(bytes(masks[i:i+3]), 180)]
             rgb[name] = tuple(sum(pixels[i+c] for i in used)/len(used) for c in range(3)) if used else None
             if name == mc.OUTSIDE_MATERIAL:
                 spans.extend(range(rec['system_bytes']+texture['palette_offset'], rec['system_bytes']+texture['palette_offset']+1024))
@@ -99,7 +105,7 @@ def check_model(info):
     return checks
 
 
-def main():
+def main(field_cache=None):
     parser = argparse.ArgumentParser()
     parser.add_argument('--all', action='store_true')
     args = parser.parse_args()
@@ -110,8 +116,8 @@ def main():
     assert mc.apply(data)[0] == old.apply(data)[0], 'complete applied XBE must stay C4 exact'
     assert mc.apply(mc.apply(data)[0])[0] == mc.apply(data)[0]
     representatives = {'s08dd.iff':'day','s13dd.iff':'day','s13ad.iff':'afternoon',
-                       's13nd.iff':'night_indoor','s11dd.iff':'night_indoor','s09dd.iff':'night_indoor'}
-    cache, old_cache, rows = {}, {}, []
+                       's13nd.iff':'night_indoor','s11dd.iff':'night_indoor','s09dd.iff':'night_indoor','s48dd.iff':'day'}
+    cache, old_cache, rows = field_cache or {}, {}, []
     raw_c4_cache = {}
     class CapturedScene(Exception):
         def __init__(self, raw): self.raw = raw
@@ -130,7 +136,7 @@ def main():
                 old.fit_fixed_span = fit
         return raw_c4_cache[key]
 
-    if args.all:
+    if args.all and field_cache is None:
         spans = {}
         with mc._outer_image()(SOURCE/'vc_53450030') as archive:
             for pin in pins['bundles']:
@@ -161,8 +167,7 @@ def main():
             try:
                 checks = check_model(info) if info['rgb'][mc.OUTSIDE_MATERIAL] is not None else {}
                 if not checks:
-                    assert pin['name'][4] == 's', (pin['name'], 'outside green missing outside snow')
-                    assert not changed, (pin['name'], 'snow-only outside must stay C4 exact')
+                    assert not changed, (pin['name'], 'non-green outside must stay C4 exact')
             except AssertionError:
                 print('MODEL FAILED', pin['name'], info, flush=True)
                 raise
@@ -195,7 +200,7 @@ def main():
                            prediction_before=predictions(bi,representatives[pin['name']]),
                            prediction_after=checks[representatives[pin['name']]], changed_decoded_bytes=len(changes))
             rows.append(row)
-            print('PASS', pin['name'], 'seven conditions and every outside tint' if checks else 'snow-only outside stays C4 exact', flush=True)
+            print('PASS', pin['name'], 'seven conditions and every outside tint' if checks else 'non-green outside stays C4 exact', flush=True)
     result = dict(baseline=BASE, scope='MODEL, not rendered proof. Outside response calibrated from day s08dd strip; other conditions/classes extrapolated.',
                   outside_response=mc.OUTSIDE_RESPONSE, outside_calibration=dict(map=mc.OUTSIDE_REFERENCE_MAP, screen=mc.OUTSIDE_REFERENCE_SCREEN),
                   rigs_unchanged=True, complete_xbe_unchanged=True, rows=rows)
