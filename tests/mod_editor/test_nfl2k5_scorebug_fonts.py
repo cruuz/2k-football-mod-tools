@@ -34,6 +34,9 @@ class PublicTests(unittest.TestCase):
         self.assertLess(labels['setup'], labels['update'])
 
 
+V8_ONLY = unittest.skip("beta 69 private-font runtime (scoped FONT binding, possession glyph, compact score fonts): beta 70 binds no private FONT and draws the 2026 bar with the native fonts; see test_nfl2k5_scorebug_mnf.py, test_nfl2k5_scorebug_exact.py and test_nfl2k5_scorebug_freeze_v2.py")
+
+
 @unittest.skipUnless(XBE.is_file() and PACK.is_file() and HAVE_UC and HAVE_IMAGES,
                      'pinned USA XBE/pack, Unicorn, Pillow and numpy required')
 class NativeTests(unittest.TestCase):
@@ -111,6 +114,17 @@ class NativeTests(unittest.TestCase):
             self.addCleanup(capture['machine'].close)
         return geometry, capture
 
+    def test_beta70_runtime_binds_no_private_font_and_keeps_the_native_score_fonts(self):
+        # Beta 70 contract: the runtime scene installs with no private FONT resource, so
+        # every HUD text record still resolves to a boot font (font4 / font8).
+        pointers = (0xa95a10, 0xa95918, 0xa95940, 0xa95968, 0xa959a0, 0xa958f0, 0xa95a80)
+        geometry, capture = self.capture(private=False)
+        m = capture['machine']
+        self.assertEqual(list(geometry.get('private_fonts', [])), [])
+        for pointer in pointers:
+            self.assertIn(m.fonts[m.get(pointer)].name, ('font4', 'font8'), hex(pointer))
+
+    @V8_ONLY
     def test_native_setup_binds_only_scoped_roles_and_null_lookup_retains_fallback(self):
         expected = {0xa95a10: 0, 0xa95918: 1, 0xa95940: 1, 0xa95968: 2,
                     0xa959a0: 2, 0xa958f0: 5, 0xa95a80: 6}
@@ -124,6 +138,7 @@ class NativeTests(unittest.TestCase):
         for pointer in expected:
             self.assertIn(m.fonts[m.get(pointer)].name, ('font4', 'font8'))
 
+    @V8_ONLY
     def test_possession_is_one_scoped_glyph_on_the_correct_side_and_reload_hides_missing_font(self):
         if not fonts.CHEVRON:
             self.skipTest('possession compiler stage has not been enabled')
@@ -163,6 +178,7 @@ class NativeTests(unittest.TestCase):
         # not be the FONT4/FONT8 selectors used by the visible clock and scores.
         self.assertTrue(all(m.get(va) in native_slots for va in (0xa958a0,0xa958c8)))
 
+    @V8_ONLY
     def test_native_glyph_caps_positions_and_uvs_match_measured_sizes(self):
         from PIL import Image
         from nfl2k5_scorebug_exact import compare
@@ -180,6 +196,7 @@ class NativeTests(unittest.TestCase):
                 for vertex in row['vertices']:
                     self.assertTrue(all(0 <= v <= 1 for v in vertex['uv']))
 
+    @V8_ONLY
     def test_compact_fonts_follow_each_current_and_cached_score_and_restore_with_null_fallback(self):
         if not fonts.COMPACT_SCORES:
             self.skipTest('compact score compiler stage has not been enabled')
@@ -209,6 +226,7 @@ class NativeTests(unittest.TestCase):
         m.put(runtime.SCORE_FONTS[0],retail);m.run(update,(0,))
         self.assertEqual(m.get(runtime.SCORE_FONTS[0]),retail)
 
+    @V8_ONLY
     def test_widest_three_digit_scores_clear_the_pill_through_native_flip_phases(self):
         if not fonts.COMPACT_SCORES:
             self.skipTest('compact score compiler stage has not been enabled')
