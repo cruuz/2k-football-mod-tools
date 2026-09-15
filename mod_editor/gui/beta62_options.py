@@ -1,6 +1,29 @@
 """Shared captions for the beta-62 Build and Gameplay controls."""
 from mod_editor.core import nfl2k5_throw_tuning as tt
 
+UNIFORM_CHOICE_HELP = (
+    "Gameplay Patches selects the choice form for a new patch; the caption names the current form. "
+    "Build also offers rule: fixed home dark / away white, with no in-game colour choice. "
+    "The choice form uses the existing jersey-era up/down controls on Controller Assign "
+    "and exhibition Team Select. Next past the last available era flips that side's colour "
+    "and returns to era 0; previous below era 0 flips and goes to the last available era. "
+    "Only available eras count. The initial colours follow the retail Cowboys rule. "
+    "Team Select preview art shows the era only; check the uniforms on the field. "
+    "Practice and Xbox Live do not gain a jersey-choice control. "
+    "X_Ray reports that jersey choice did not work. The screen handlers and kit letters "
+    "pass bounded native checks; his cause remains unresolved. EXPERIMENTAL / UNWITNESSED.")
+
+
+def uniform_choice_caption(mode):
+    """Name the installed/selected form without turning a status into a guess."""
+    return {
+        "choice": "Jersey choice: choice form (Controller Assign / exhibition Team Select)",
+        "rule": "Jersey colour: rule form (fixed home dark / away white)",
+        "": "Jersey choice: off (retail colours)",
+        None: "Jersey colour: installed form unknown; inspect or rebuild from original source",
+    }.get(mode, "Jersey colour: unrecognized form")
+
+
 SCOREBUG_HELP = (
     "Retail: Uses the original scoreboard. Patch: Uses each team's primary "
     "color on its panel with readable white scores and yellow possession highlighting; "

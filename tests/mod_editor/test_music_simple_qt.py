@@ -62,6 +62,9 @@ class SongsPageTests(unittest.TestCase):
         self.assertEqual(self.panel.pages.tabText(self.panel.pages.currentIndex()), 'Songs')
         self.assertFalse(self.panel.pages.isTabVisible(1))
         self.assertEqual(self.panel.songs_table.rowCount(), 66)
+        before_import = ' '.join(w.text() for w in self.panel.findChildren(QLabel) if w.isVisible())
+        self.assertIn('22,050 Hz', before_import)
+        self.assertIn('downsampled before import', before_import)
         with patch('mod_editor.gui.music_panel_qt.QFileDialog.getOpenFileNames', return_value=([str(self.wav)]*2, '')) as choose:
             self.panel.add_songs_button.click()
             self.drain()
@@ -72,7 +75,7 @@ class SongsPageTests(unittest.TestCase):
         self.assertEqual(self.panel.songs_summary.text(), '2 of your songs will be added; the game keeps its 66.')
         recipe = json.loads(Path(self.events[-1]).read_text())
         self.assertEqual(len(recipe['tracks']), 61)
-        for word in ('WAV', '22,050', 'mono', 'stereo', 'slots', 'twins', 'recipes', 'banks'):
+        for word in ('WAV', 'mono', 'stereo', 'slots', 'twins', 'recipes', 'banks'):
             visible = ' '.join(w.text() for w in self.panel.findChildren(QLabel) if w.isVisible())
             self.assertNotIn(word, visible)
         self.assertEqual(self.panel.player.state(), 0)

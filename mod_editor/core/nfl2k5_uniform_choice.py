@@ -32,9 +32,15 @@ Two forms, ``BuildPlan.uniform_choice``:
     is mapped read-only): ``HOME_FLIP`` 0xA69974 and ``AWAY_FLIP`` 0xA69978, each 0 or 7, cleared
     where the era slots reset (the tail of ``FUN_000e2d80``).  ``AWAY_VALUE`` 0xA6997C is scratch
     the loader writes before the away letter site reads it.
+  * Reset lifetime (beta 70 bounded execution): the flip words do NOT survive an explicit
+    call to ``FUN_000e2d80``. The setup prefix at 0x77D20 calls it at 0x77D3B, clearing
+    both era slots and flips. Executing setup reset -> either screen's retail wrappers ->
+    the patched kit selector preserves the handler-written flips and produces the requested
+    letters. A reset after selection clears the choice. No such bad call order has been
+    reproduced; X_Ray's cause and full in-game transition remain UNWITNESSED.
   * The four slot handlers are rewritten in place: "next" past the last available era toggles that
     side's flip and restarts at era 0; "prev" below era 0 toggles and jumps to the last available
-    era.  Up/down therefore cycles 30 states (15 eras x 2 colours); no new button.
+    era.  Up/down therefore cycles twice the number of available eras (at most 30 states); no new button.
   * The rule block computes the retail swap (four equality calls, combined arithmetically:
     ``((hWAS | hTEN) & aDAL) | hDAL``), scales it to 0/7, stores ``AWAY_VALUE = 7*swap ^ AWAY_FLIP``
     and leaves ``esi = 7*swap ^ HOME_FLIP``.  The retail home letter site then yields

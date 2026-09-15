@@ -11,7 +11,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[2]))
 try:
     from PyQt5.QtCore import QMimeData,QUrl,Qt,QPoint,QPointF
     from PyQt5.QtGui import QDropEvent
-    from PyQt5.QtWidgets import QApplication,QDialog
+    from PyQt5.QtWidgets import QApplication,QDialog,QLabel
     from mod_editor.gui.music_panel_qt import MusicPanel,MusicTable,AssignmentReview,FitReview
 except ImportError:
     QApplication=None
@@ -72,6 +72,9 @@ class MusicPanelTests(unittest.TestCase):
         self.assertEqual(drops[-1],((self.wav,),'femusic:1'))
         assignments=self.service.catalog.assignments([self.wav,self.root/'z.ogg'],self.panel.visible_ids(),'femusic:6')
         review=AssignmentReview(assignments,self.service.catalog)
+        warning=' '.join(label.text() for label in review.findChildren(QLabel))
+        self.assertIn('22,050 Hz',warning)
+        self.assertIn('downsampled before import',warning)
         item=review.files.takeItem(1);review.files.insertItem(0,item)
         self.assertEqual(review.result_assignments()[0],('femusic:6',self.root/'z.ogg'))
         self.panel.drop_files([self.wav,self.wav],'cribmusic:58')
