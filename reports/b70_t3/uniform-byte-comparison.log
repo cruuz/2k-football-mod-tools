@@ -1,0 +1,2 @@
+rule identical generated sites: 1 patch_sha256: 58766d43aff1a2c6cf49fd82d235250f4fc041fde2336ec3020b98dc09df0a48
+choice identical generated sites: 7 patch_sha256: 928f125f974ed0d28b9886da11fa8a11f6f48af404246a3107f728d230f0d45a

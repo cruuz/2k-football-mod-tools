@@ -1,0 +1,7 @@
+...
+----------------------------------------------------------------------
+Ran 3 tests in 3.705s
+
+OK
+collection=0: 5 explicit appends -> 5 distinct pool nodes, same title; 2 rebuilds -> 5 nodes
+collection=18: 5 explicit appends -> 5 distinct pool nodes, same title; 2 rebuilds -> 5 nodes

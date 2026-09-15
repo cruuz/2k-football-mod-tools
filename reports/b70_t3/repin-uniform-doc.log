@@ -1,0 +1,8 @@
+[1] mod_editor/core/providers.py: mod_editor/core/nfl2k5_uniform_choice.py
+    485a0b64855836d03573381281b079a9cdab814996fa83b894046d8b29f93d6a
+ -> a56c487332bb06889ac51919d8b60f702948e02042c5ae71f8cf2f1da293656e
+[1] packaging/check_2k5_mod_studio_runtime.py: mod_editor/gui/beta62_options.py
+    d861f5656f98b0ee67cf4fe86a98bb95e5a79882e1a1066641f6b979ca835f84
+ -> 08aa9ed041aa4fcdbf6ecad52d45ad97976897513d056bad215b67c7c81d3f56
+
+applied 2 pin update(s)
