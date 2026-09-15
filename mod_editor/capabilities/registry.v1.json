@@ -10380,9 +10380,12 @@
           "ASTRA_B68_T3_REPORT.md",
           "tests/mod_editor/test_nfl2k5_b68_game_composition.py",
           "docs/nfl2k5_b68_t3_composition.json",
-          "FABLE_B70_SCOREBUG_REPORT_2026-09-15.md"
+          "FABLE_B70_SCOREBUG_REPORT_2026-09-15.md",
+          "docs/scorebug_mnf/witness/run6_play4_live_play.jpg",
+          "docs/scorebug_mnf/witness/run6_gdb_registers.txt",
+          "tests/mod_editor/test_nfl2k5_scorebug_mnf.py"
         ],
-        "scope": "The previous GPU-fence repair passes its historical control. Beta 68 exercises scorebug-enabled composed BuildPlans, native collection loading, setup at FCE56, update at FCFA2, font glyph draws, re-entry and the separate presentation/kickoff fixtures. andrethealchemist's selected/unselected comparison identifies this option as a reported trigger, but the stopped instruction, real asynchronous loader/GPU state and full scene lifetime are unavailable. No Berman fix is claimed. In-game behavior remains UNWITNESSED.",
+        "scope": "The previous GPU-fence repair passes its historical control. Beta 68 exercises scorebug-enabled composed BuildPlans, native collection loading, setup at FCE56, update at FCFA2, font glyph draws, re-entry and the separate presentation/kickoff fixtures. andrethealchemist's selected/unselected comparison identifies this option as a reported trigger, but the stopped instruction, real asynchronous loader/GPU state and full scene lifetime are unavailable. No Berman fix is claimed. In-game behavior remains UNWITNESSED. Beta 70: the freeze was reproduced with the debugger (bugcheck 0x1E, a write to address 0 at kernel 0x8001DBD4 while the resource loader was busy) and removed; a second stop at the coin toss was removed the same day; one xemu run reached live play with the 2026 bar drawn (docs/scorebug_mnf/witness/). See FABLE_B70_SCOREBUG_REPORT_2026-09-15.md.",
         "status": "not-tested"
       },
       "selectors": {
@@ -10405,7 +10408,7 @@
         "resource": "owned RX/RW hook allocations plus HUD outer 346 and its archive index",
         "retail_file": "user-owned default.xbe and vc_53450030/0 in an NFL 2K5 USA disc"
       },
-      "summary": "Diagnostic team-panel and scorebug effects. andrethealchemist reports a freeze after Berman when selected and says: 'Unselecting that option fixed the issue for me.' Leave off for normal play; off in every preset. The player's failing state remains unreproduced in bounded native execution.",
+      "summary": "The ESPN Monday Night Football 2026 bar at runtime: team-colour wings with the current logos, white scores, a down plate in the possessing team's colour, the clock capsule and timeout dashes; 66 appended wing textures (0.35 MB) and no private fonts. The freeze after Berman's intro reported on beta 69 (andrethealchemist: 'Unselecting that option fixed the issue for me.') was reproduced in the emulator, a kernel bugcheck from a null loader buffer after an allocation failure under the 1.7 MB appended volume, and removed by the smaller volume. Seen by Claude in one xemu run into live play; not witnessed by a player. Off in every preset.",
       "surface": "scorebug_presentation",
       "title": "Scorebug effects (reported Berman freeze)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_b68_game_composition"

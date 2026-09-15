@@ -1,0 +1,17 @@
+The target architecture is set to "i386".
+warning: No executable has been specified and target does not support
+determining executable automatically.  Try using the "file" command.
+0x000248f0 in ?? ()
+eip            0x248f0             0x248f0
+eax            0x822f983c          -2110810052
+ecx            0x822f9c7c          -2110808964
+edx            0x1930193           26411411
+0xe60280:	0x00e5fc20	0x00e5fc60	0x00e5fc20	0x00b28680
+0xe60290:	0x00b2869c	0x00b286b8
+0xe5fc28:	0x00b25e30	0x00aabce0
+0xe5fc68:	0x00b25e48	0x00aabdb0
+0xd00463d8:	0x82288500	0x8228a3c0	0x00000000	0x00096547
+0xd00463e8:	0x8228f7e0	0x822f8e70	0x8228f7e0	0x82294be0
+0xd00463f8:	0xbf4740bd	0x00000001	0x82296420	0x00000008
+0xd0046408:	0x00a6aa74	0x00000000	0x82288500	0x0000004f
+[Inferior 1 (process 1) detached]
