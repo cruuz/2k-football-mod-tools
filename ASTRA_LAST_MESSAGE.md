@@ -1,9 +1,18 @@
-APF-3 is a partial delivery. Independent per-situation exclusions remain unimplemented; bounded BASE/TU evidence shows the proposed existing fields cannot provide them.
+# APF-5 complete
 
-The Straight-for-Queens export fits with APF-2's refit and has exact byte regressions. Native traces now reach all eleven player assignments and prove TE-to-FB depth fallback when the TE list is empty. Actual gameplay remains UNWITNESSED.
+Implemented the opt-in global fourth-down patch and independent Tools editor,
+plus Xenia Edge/Canary configuration with SDL input. Retail defaults, neutral
+preview, exact patch-byte tests and bounded BASE/TU witnesses are included.
 
-All 183 requested suite files pass: 1,763 reported tests, 12 optional skips. Native play-calling: 30/30 with no skips. Strict registry, repin, provider/catalog/phase1, installer and staged release/runtime pass.
+Validation: 187/187 requested standalone suites passed;
+1775 tests reported, 11 explicit skips. Strict registry, repin,
+provider integrity, product catalog, phase1 packaging, APF release and runtime
+checks passed. No APF-4 situation code/table edits, tester names, push or Xenia
+launch. Full match behavior and real controller input remain UNWITNESSED.
 
-See ASTRA_REPORT.md, WIRING.md and .scratch/astra-b71-apf3-delivery.json. Commits use private .scratch/git; bundle: .scratch/astra-b71-apf3.bundle. No push.
+Private git: `.scratch/git`, branch `astra/b71-apf5-fourth-down-xenia`, base
+`dc87cd0f456cf4ad4f8a384bb698d005d3255fa0`. Bundle: `.scratch/astra-b71-apf5.bundle`.
+Final commits, bundle verification and SHA-256: `.scratch/astra-b71-apf5-delivery.json`.
+Addresses, proof limits, command ledger and retest steps: `ASTRA_REPORT.md`.
 
 ASTRA_DONE

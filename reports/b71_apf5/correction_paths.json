@@ -1,0 +1,13 @@
+[
+  "WIRING.md",
+  "mod_editor/apf_studio/fourth_down_qt.py",
+  "mod_editor/apf_studio/gui.py",
+  "mod_editor/apf_studio/launcher.py",
+  "mod_editor/core/apf2k8_xex.py",
+  "tests/mod_editor/test_apf_fourth_down.py",
+  "tests/mod_editor/test_apf_fourth_down_native.py",
+  "tests/mod_editor/test_apf_fourth_down_qt.py",
+  "tests/mod_editor/test_apf_pass_fetch_export_qt.py",
+  "tests/mod_editor/test_apf_xenia_edge.py",
+  "tests/mod_editor/test_apf_xex_image.py"
+]

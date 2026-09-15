@@ -1,7 +1,27 @@
-# Beta 71 APF-5 delivery
+"""Write the APF-5 handoff from completed, recorded gates."""
+import json
+from pathlib import Path
+import subprocess
+
+root=Path(__file__).resolve().parents[2]
+folder=Path(__file__).parent
+suite=json.loads((folder/'suite_results.json').read_text())
+assert not suite['failed_or_missing']
+native=json.loads((folder/'native_receipts.json').read_text())
+assert all(r['retail_literal_bytes_equal'] for r in native['native']['APF5_RESERVATION'])
+records=[json.loads(s) for s in (folder/'commands.jsonl').read_text().splitlines()]
+required=['strict-registry-final','provider-integrity-final','product-catalog-final','phase1-final',
+          'apf-release-check-final','apf-runtime-final','repin-corrections']
+checks={label:next(r for r in reversed(records) if r['log'].endswith('/'+label+'.log')) for label in required}
+assert all(r['exit_code']==0 for r in checks.values())
+git=['git','--git-dir=.scratch/git','--work-tree=.']
+base='dc87cd0f456cf4ad4f8a384bb698d005d3255fa0'
+commits=subprocess.check_output(git+['log','--oneline',base+'..HEAD'],text=True,cwd=root).strip()
+check_table='\n'.join(f"| {name} | PASS | {r['elapsed_seconds']:.3f}s | [{Path(r['log']).name}]({r['log']}) |" for name,r in checks.items())
+report=f'''# Beta 71 APF-5 delivery
 
 Branch: `astra/b71-apf5-fourth-down-xenia`, based on APF-3
-`dc87cd0f456cf4ad4f8a384bb698d005d3255fa0`. Commits use `.scratch/git`, with explicit path lists.
+`{base}`. Commits use `.scratch/git`, with explicit path lists.
 Bundle: `.scratch/astra-b71-apf5.bundle`; final bundle verification, commit IDs
 and SHA-256 are in `.scratch/astra-b71-apf5-delivery.json` (outside the bundle to
 avoid a self-referential digest). No push. No Xenia, displayed GUI or audio.
@@ -28,8 +48,7 @@ table changed; APF-4 retains those owners.
 Implementation commits before this evidence commit:
 
 ```
-15928546 APF: use Studio Qt binding and preserve Edge update and patch state
-7c77229b APF: add opt-in fourth-down thresholds and Xenia Edge SDL configuration
+{commits}
 ```
 
 ## Addresses, data and patch contract
@@ -150,8 +169,8 @@ no-network preference and is not presented as an offline source check.
 
 ## Validation and command ledger
 
-**187/187 requested standalone suites pass**, reporting
-**1775 tests and 11 explicit skips**. Latest results are in
+**{suite['passed_suite_files']}/{suite['expected_standalone_suites']} requested standalone suites pass**, reporting
+**{suite['tests_reported_run']} tests and {suite['skips_reported']} explicit skips**. Latest results are in
 [suite_results.json](reports/b71_apf5/suite_results.json), including each skipped
 suite and log. APF-5's six native tests and offscreen editor test do not skip.
 The suite set includes every `test_apf*.py`, beta-69 A1 playcalling, provider
@@ -159,13 +178,7 @@ integrity, product catalog, phase1 packaging and registry module commands.
 
 | Gate | Result | Elapsed | Output |
 | --- | --- | ---: | --- |
-| strict-registry-final | PASS | 0.150s | [strict-registry-final.log](reports/b71_apf5/strict-registry-final.log) |
-| provider-integrity-final | PASS | 8.560s | [provider-integrity-final.log](reports/b71_apf5/provider-integrity-final.log) |
-| product-catalog-final | PASS | 0.169s | [product-catalog-final.log](reports/b71_apf5/product-catalog-final.log) |
-| phase1-final | PASS | 2.192s | [phase1-final.log](reports/b71_apf5/phase1-final.log) |
-| apf-release-check-final | PASS | 0.399s | [apf-release-check-final.log](reports/b71_apf5/apf-release-check-final.log) |
-| apf-runtime-final | PASS | 10.067s | [apf-runtime-final.log](reports/b71_apf5/apf-runtime-final.log) |
-| repin-corrections | PASS | 11.586s | [repin-corrections.log](reports/b71_apf5/repin-corrections.log) |
+{check_table}
 
 Release: **285 declared files**, no absent inputs, no undeclared/private/retail
 payloads. Runtime: **158 imported modules, 73 APF capabilities**; the release
@@ -202,7 +215,7 @@ were restored from the archived public build with exact pins. H7A remains
 
 ## Retest and integration
 
-1. Import the private bundle on top of `dc87cd0f456cf4ad4f8a384bb698d005d3255fa0`; do not push from this job.
+1. Import the private bundle on top of `{base}`; do not push from this job.
    Inspect `WIRING.md`, the explicit implementation paths and the reservation
    warning above when integrating the parallel APF-4 branch.
 2. Configure Edge or Canary in Studio. For a renamed executable choose its
@@ -223,3 +236,26 @@ were restored from the archived public build with exact pins. H7A remains
    message alone does not establish the on-field outcome.
 
 User-facing instructions: [fourth-down and Xenia guide](docs/mod_editor/apf2k8_fourth_down_and_xenia.md).
+'''
+(root/'ASTRA_REPORT.md').write_bytes(report.encode())
+last=f'''# APF-5 complete
+
+Implemented the opt-in global fourth-down patch and independent Tools editor,
+plus Xenia Edge/Canary configuration with SDL input. Retail defaults, neutral
+preview, exact patch-byte tests and bounded BASE/TU witnesses are included.
+
+Validation: {suite['passed_suite_files']}/{suite['expected_standalone_suites']} requested standalone suites passed;
+{suite['tests_reported_run']} tests reported, {suite['skips_reported']} explicit skips. Strict registry, repin,
+provider integrity, product catalog, phase1 packaging, APF release and runtime
+checks passed. No APF-4 situation code/table edits, tester names, push or Xenia
+launch. Full match behavior and real controller input remain UNWITNESSED.
+
+Private git: `.scratch/git`, branch `astra/b71-apf5-fourth-down-xenia`, base
+`{base}`. Bundle: `.scratch/astra-b71-apf5.bundle`.
+Final commits, bundle verification and SHA-256: `.scratch/astra-b71-apf5-delivery.json`.
+Addresses, proof limits, command ledger and retest steps: `ASTRA_REPORT.md`.
+
+ASTRA_DONE
+'''
+(root/'ASTRA_LAST_MESSAGE.md').write_bytes(last.encode())
+print('Wrote ASTRA_REPORT.md and ASTRA_LAST_MESSAGE.md from passing gate receipts')
