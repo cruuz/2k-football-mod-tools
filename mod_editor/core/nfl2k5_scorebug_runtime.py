@@ -39,7 +39,7 @@ HOME_CONTEXT, AWAY_CONTEXT = 0xB30864, 0xB30A58
 SCORE_POINTERS = (0xE5FC28, 0xE5FC68)
 TEAM_OBJECTS = (0xE5FC20, 0xE5FC60)  # home, away team objects; 0xE60280 holds the one with possession
 SCORE_COLORS = (0xA95958, 0xA95990)
-CITY_CALLBACKS = (0xA958AC, 0xA95884)  # home, away text records (retail 0xFC030 / 0xFC010), same order as SCORE_POINTERS
+CITY_CALLBACKS = (0xA95884, 0xA958AC)  # home, away text records: retail binds 0xA95884 to 0xFC010 (getter 0x61C50 = context 0xB30864, whose +0x108 is the HOME abbreviation) and 0xA958AC to 0xFC030 (0x61C60 = 0xB30A58, away); same order as SCORE_POINTERS
 PLATE_MATERIAL_NAME = 0xE6C5D4        # UTF-16 "dscore_buga"
 WHITE, ACCENT = 0xFFFFFFFF, 0xFFFFD166
 ESPN_RED, CAPSULE_INK = 0xFFE31937, 0xFF14171C
@@ -299,7 +299,7 @@ def override_edits():
 
 def _abi_valid(payload):
     from .nfl2k5_scorebug_resources import RUNTIME_ABI_GUARDS
-    for va, callback in zip(CITY_CALLBACKS, (0xfc030, 0xfc010)):
+    for va, callback in zip(CITY_CALLBACKS, (0xfc010, 0xfc030)):
         off = scene.layout.sbpos.va_to_off(payload, va)
         if payload[off:off+4] != struct.pack('<I', callback):
             return False

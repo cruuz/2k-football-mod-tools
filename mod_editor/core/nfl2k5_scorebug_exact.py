@@ -473,7 +473,8 @@ MNF_ANCHORS = {
     "drop_yellow": (0, _ORIGIN(955, 4, 15), -8), "drop_red": (0, _ORIGIN(955, 4, 15), -8),
     "drop_hangtime": (0, _ORIGIN(955, 4, 15), -8), "drop_ball_on": (0, _ORIGIN(955, 4, 15), -8),
 }
-MNF_REGIONS = {"frame": (0, 0, 24, 24), "plate": (0, 24, 64, 40), "strip": (0, 40, 64, 60), "solid": (1, 62, 2, 63)}
+MNF_REGIONS = {"frame": (0, 0, 24, 24), "plate": (0, 24, 64, 40), "strip": (0, 40, 64, 60), "solid": (1, 62, 2, 63),
+               "body": (5, 62, 6, 63)}  # the charcoal pixel block at (4..7, 61..63)
 MNF_COLORS = {"body": (11, 14, 20), "body_hi": (23, 27, 35), "lip": (201, 208, 218),
               "plate": (240, 240, 244), "capsule": (236, 239, 243), "capsule_ink": (20, 23, 28),
               "separator": (196, 200, 208)}
@@ -585,9 +586,10 @@ def mesh_mnf(retail):
         m.pos[v] = m.pos[49][:]
         m.uv_edit[v] = m.uv_edit[49]
     quad(range(64, 80), MNF_PLATE, MNF_REGIONS["plate"], z=-3)
-    # Events (flag, score, hang time, ball on) cover the plate with the same tile.
+    # Events (flag, score, hang time, ball on) cover the plate with the charcoal body tile so
+    # their white text stays readable (the light plate tile hid "Ball on ..." behind a pale oval).
     for vertices in (range(0, 16), range(16, 32), range(32, 48)):
-        quad(vertices, MNF_PLATE, MNF_REGIONS["plate"], z=-7)
+        quad(vertices, MNF_PLATE, MNF_REGIONS["body"], z=-7)
     name = "score_buga\0".encode("utf-16le")
     m.buf[0x3f8c:0x3f8c+len(name)] = name
     # Wings: the away panel keeps zscore_buga, the home panel takes hscore_buga; both
