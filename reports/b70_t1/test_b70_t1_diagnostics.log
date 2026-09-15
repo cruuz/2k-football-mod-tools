@@ -1,0 +1,30 @@
+B70 BUILD SUMMARY
+Build complete: out.iso.
+Kept retail for 9 uniform slots:
+Uniforms / arm digit 1 / 26A0 / texture arm:1: kept retail; 28 bytes over; 32 x 32 at 16 colours fits.
+Uniforms / arm digit 2 / 26A0 / texture arm:2: kept retail; 29 bytes over; 32 x 32 at 16 colours fits.
+Uniforms / arm digit 3 / 26A0 / texture arm:3: kept retail; 30 bytes over; 32 x 32 at 16 colours fits.
+Uniforms / arm digit 4 / 26A0 / texture arm:4: kept retail; 31 bytes over; 32 x 32 at 16 colours fits.
+Uniforms / arm digit 5 / 26A0 / texture arm:5: kept retail; 32 bytes over; 32 x 32 at 16 colours fits.
+Uniforms / jersey digit 1 / 26A0 / texture jersey:1: kept retail; 28 bytes over; 32 x 32 at 16 colours fits.
+Uniforms / jersey digit 2 / 26A0 / texture jersey:2: kept retail; 29 bytes over; 32 x 32 at 16 colours fits.
+Uniforms / jersey digit 3 / 26A0 / texture jersey:3: kept retail; 30 bytes over; 32 x 32 at 16 colours fits.
+Uniforms / jersey digit 4 / 26A0 / texture jersey:4: kept retail; 31 bytes over; 32 x 32 at 16 colours fits.
+Edit the named asset and preview again. Full fit details are in the build receipt.
+B70 OPEN REFUSAL content The project changed outside Mod Studio while it was opening: changed_ns, SHA-256.
+Before: path /tmp/tmp4mczmhse/named.2k5mod; size 8; mtime_ns 1789464090525401914; SHA-256 0682c5f2076f099c34cfdd15a9e063849ed437a49677e6fcc5b4198c76575be5; file ID 66306:5270794; ctime_ns 1789464090525401914
+After: path /tmp/tmp4mczmhse/named.2k5mod; size 8; mtime_ns 1789464090525401914; SHA-256 a2f387ddf02ebad30df26469b5b7f43c1e3ace647661b2852ac8e04c462ea5b2; file ID 66306:5270794; ctime_ns 1789464090526401926. The current workspace was kept. Finish saving or syncing the named file, then open it again; if another app is replacing it, save a separate .2k5mod copy and open that copy.
+B70 OPEN REFUSAL size The project changed outside Mod Studio while it was opening: size, SHA-256.
+Before: path /tmp/tmpq4yea1e8/named.2k5mod; size 8; mtime_ns 1789464090526401926; SHA-256 0682c5f2076f099c34cfdd15a9e063849ed437a49677e6fcc5b4198c76575be5; file ID 66306:5270794; ctime_ns 1789464090526401926
+After: path /tmp/tmpq4yea1e8/named.2k5mod; size 18; mtime_ns 1789464090526401926; SHA-256 d9e1f3dd13cf3970d4a0483572f3527c9122645dd2461d2f007f75ae465e814e; file ID 66306:5270794; ctime_ns 1789464090526401926. The current workspace was kept. Finish saving or syncing the named file, then open it again; if another app is replacing it, save a separate .2k5mod copy and open that copy.
+B70 OPEN REFUSAL mtime The project changed outside Mod Studio while it was opening: modified_ns.
+Before: path /tmp/tmpomych2s1/named.2k5mod; size 8; mtime_ns 1789464090527401939; SHA-256 0682c5f2076f099c34cfdd15a9e063849ed437a49677e6fcc5b4198c76575be5; file ID 66306:5270794; ctime_ns 1789464090527401939
+After: path /tmp/tmpomych2s1/named.2k5mod; size 8; mtime_ns 1789464090537401939; SHA-256 0682c5f2076f099c34cfdd15a9e063849ed437a49677e6fcc5b4198c76575be5; file ID 66306:5270794; ctime_ns 1789464090527401939. The current workspace was kept. Finish saving or syncing the named file, then open it again; if another app is replacing it, save a separate .2k5mod copy and open that copy.
+B70 OPEN REFUSAL deleted The project changed outside Mod Studio while it was opening: path, size, modified_ns, device, inode, changed_ns, SHA-256.
+Before: path /tmp/tmpf5ahnrdr/named.2k5mod; size 8; mtime_ns 1789464090527401939; SHA-256 0682c5f2076f099c34cfdd15a9e063849ed437a49677e6fcc5b4198c76575be5; file ID 66306:5270794; ctime_ns 1789464090527401939
+After: path unavailable; size unavailable; mtime_ns unavailable; SHA-256 unavailable. The active project file is missing. Use Save Project As to choose a new destination. The current workspace was kept. Finish saving or syncing the named file, then open it again; if another app is replacing it, save a separate .2k5mod copy and open that copy.
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 0.270s
+
+OK

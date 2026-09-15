@@ -1,0 +1,38 @@
+         4519221 function calls (4518819 primitive calls) in 2.958 seconds
+
+   Ordered by: cumulative time
+   List reduced from 472 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    2.958    2.958 nfl2k5_equipment_import.py:118(stage_equipment_import)
+        2    0.000    0.000    2.948    1.474 nfl2k5_uniform_equipment_writer.py:1303(build_unified_uniform_equipment_imports)
+        1    0.002    0.002    2.643    2.643 nfl2k5_uniform_equipment_writer.py:961(_compile_group)
+        1    0.000    0.000    1.482    1.482 nfl2k5_uniform_equipment_writer.py:738(_rebuild_fixed_span)
+        1    0.000    0.000    1.470    1.470 nfl2k5_uniform_equipment_writer.py:655(_rebuild_grown_video)
+        2    0.001    0.001    1.433    0.716 nfl2k5_uniform_equipment_writer.py:609(_cached_parse)
+        2    0.721    0.360    1.269    0.635 nfl_txtr.py:360(compress_vc_lz)
+       19    0.408    0.021    0.675    0.036 nfl_txtr.py:836(texture_to_rgba)
+        5    0.000    0.000    0.422    0.084 nfl2k5_uniform_equipment_writer.py:779(decode_equipment_levels)
+        4    0.254    0.064    0.382    0.096 nfl2k5_uniform_equipment_writer.py:854(_quality)
+       25    0.334    0.013    0.334    0.013 nfl_txtr.py:760(unswizzle_2d)
+   351232    0.176    0.000    0.322    0.000 nfl_txtr.py:418(add_position)
+        1    0.112    0.112    0.162    0.162 nfl2k5_equipment_lz.py:73(compress_equipment_optimal)
+        1    0.049    0.049    0.151    0.151 equipment_palette.py:40(quantize)
+        5    0.000    0.000    0.122    0.024 __init__.py:595(__init__)
+        5    0.000    0.000    0.122    0.024 __init__.py:669(update)
+        4    0.055    0.014    0.122    0.030 {built-in method _collections._count_elements}
+        7    0.107    0.015    0.116    0.017 nfl_txtr.py:204(decompress_vc_lz)
+   637845    0.116    0.000    0.116    0.000 {built-in method builtins.min}
+638193/638187    0.099    0.000    0.099    0.000 {built-in method builtins.max}
+        2    0.000    0.000    0.099    0.049 equipment_palette.py:71(quality)
+   368066    0.085    0.000    0.085    0.000 nfl_txtr.py:411(key_at)
+        5    0.000    0.000    0.073    0.015 nfl_txtr.py:666(decode_chunk)
+        2    0.000    0.000    0.067    0.033 nfl2k5_uniform_equipment_writer.py:434(_validate_layout)
+        2    0.000    0.000    0.066    0.033 nfl2k5_uniform_equipment_writer.py:524(_read_png)
+        1    0.065    0.065    0.065    0.065 nfl2k5_digit_texture.py:51(make_digit_mips)
+   131074    0.062    0.000    0.062    0.000 equipment_palette.py:72(<genexpr>)
+   364102    0.053    0.000    0.053    0.000 {method 'get' of 'dict' objects}
+   467116    0.039    0.000    0.039    0.000 {built-in method builtins.len}
+   351228    0.037    0.000    0.037    0.000 {method 'append' of 'collections.deque' objects}
+
+
