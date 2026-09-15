@@ -1,4 +1,7 @@
-"""Modern colour and lighting for ESPN NFL 2K5. EXPERIMENTAL / UNWITNESSED.
+"""Configurable v2.1 colour and lighting for ESPN NFL 2K5.
+
+The approved Broadcast baseline is preserved. Custom looks are EXPERIMENTAL /
+UNWITNESSED; the swatch model is a calibrated estimate, not an in-game render.
 
 Two families of data edits, no executable code, no cave, no hook, no runtime
 allocation:
@@ -14,7 +17,7 @@ allocation:
 
 2. Stadium bundles (``sNN{d,a,n}{d,r,s}.iff``, 477 archive outers). Per bundle:
    the Fldd time-of-day tint word (uncompressed), the ``detail_normal`` grass
-   bump palette (uncompressed) flattened, and the ``field`` scene refit into the
+   bump palette flattened, and the ``field`` scene refit into the
    same fixed VC-LZ span with the grass colour-map and outside-grass palettes
    re-graded toward the measured broadcast turf and the afternoon vertex tint
    softened. Bundles without a colour-map texture re-grade their grass material
@@ -22,7 +25,7 @@ allocation:
 
 Targets come from 2026 Week 1 broadcast stills measured per game (see
 docs/modern_color/ and FABLE_B70_COLOR_REPORT_2026-09-15.md). Proved offline by
-byte receipts and decoder read-back; appearance in game is UNWITNESSED.
+byte receipts and decoder read-back; custom appearance in game is UNWITNESSED.
 """
 from __future__ import annotations
 
@@ -46,13 +49,12 @@ REQUESTS = CAVES = RUNTIME_GLOBALS = ()
 DEFAULT_ENABLED = False
 BUILD_CAPTION = "Modern colour and lighting (experimental)"
 HELP_TEXT = (
-    "EXPERIMENTAL / UNWITNESSED. Rewrites the seven light rigs the game installs by time "
-    "of day and weather to neutral, white-balanced broadcast values with more fill, and "
-    "re-grades every stadium's grass colour map and outside grass about 1.7x brighter and "
-    "slightly more saturated (calibrated to the turf measured in 2026 Week 1 broadcasts), "
-    "flattens the grass bump map and neutralises the night and afternoon tints. Light "
-    "directions, counts and shadows keep retail values. Refits 362 field scenes: about eight "
-    "minutes on an eight-core Linux machine, longer on a laptop. Off in every preset."
+    "Enable the saved Colour & lighting controls below. Broadcast (default) keeps the v2.1 look. "
+    "Tune turf, linked end zones and outside grass, wear, bump detail, tints and seven existing light rigs. "
+    "Each slider has an Off switch; values stay with the project. Directions, counts, shadows and "
+    "retail wrappers stay unchanged. Refits add build time; any span that cannot fit stays retail "
+    "and is named in the receipt. Swatches are predicted means, and custom appearance is unwitnessed. "
+    "Off in every preset. Use the original retail source to change or reset an already-built grade."
 )
 ROOT = Path(__file__).resolve().parents[2]
 PINS_PATH = ROOT / "data" / "nfl2k5_modern_color_pins.json"
@@ -225,7 +227,8 @@ def normalize_settings(settings=None):
     require(type(out["disabled"]) is list and all(type(k) is str and k in control_specs() for k in out["disabled"])
             and len(out["disabled"]) == len(set(out["disabled"])), "Colour & lighting disabled controls are invalid")
     out["disabled"] = sorted(out["disabled"])
-    require(out["preview_class"] in ("outdoor", "dome", "material") and out["preview_rig"] in MODERN_RIGS,
+    require(type(out["preview_class"]) is str and type(out["preview_rig"]) is str
+            and out["preview_class"] in ("outdoor", "dome", "material") and out["preview_rig"] in MODERN_RIGS,
             "Choose a supported stadium class and light condition")
     return out
 
@@ -774,7 +777,7 @@ def modern_divots_span(span, settings=None):
 
 
 def bundle_plan(data):
-    """Locate the three edit sites of one bundle: (kind, offset, size, before, after)."""
+    """Locate the fixed edit sites of one bundle: (kind, offset, size, before, after)."""
     tx, inv, ResourceRecord, HEADER = _tools()
     chunks = tx.parse_chunks(data, allow_trailing=True)
     require(chunks and chunks[0].kind == "SCNE" and chunks[0].index == 0, "bundle does not start with the field scene")
@@ -889,14 +892,16 @@ def read_image_receipt(source):
     require(path.stat().st_size <= 4 * 1024 * 1024, "Colour & lighting receipt is too large")
     doc = json.loads(path.read_text(encoding="utf-8"))
     require(type(doc) is dict and doc.get("schema") == RECEIPT_SCHEMA, "Unsupported colour & lighting receipt")
-    require(doc.get("settings_sha256") == settings_id(doc.get("settings")), "Colour & lighting receipt settings changed")
+    require(type(doc.get("settings")) is dict and doc.get("settings_sha256") == settings_id(doc["settings"]),
+            "Colour & lighting receipt settings changed")
     return doc
 
 
 def _receipt_bundle_state(archive, pin, receipt):
     rows = receipt.get("bundle_pins", {})
+    require(type(rows) is dict, "Colour & lighting receipt bundle pins are invalid")
     row = rows.get(pin["name"], {})
-    require(row.get("retail_sha256") == pin["retail_sha256"] and row.get("size") == pin["size"]
+    require(type(row) is dict and row.get("retail_sha256") == pin["retail_sha256"] and row.get("size") == pin["size"]
             and row.get("outer") == pin["outer"], f"{pin['name']}: custom receipt scope differs")
     entry = archive.entries[pin["outer"]]
     require(entry.name_id == pin["name_id"] and entry.size == pin["size"], f"{pin['name']}: archive entry differs")
@@ -904,9 +909,9 @@ def _receipt_bundle_state(archive, pin, receipt):
     if sha(data) != row.get("applied_sha256"):
         return "foreign"
     sites = row.get("sites", [])
-    require(len(sites) == len(pin["sites"]), f"{pin['name']}: custom receipt sites differ")
+    require(type(sites) is list and len(sites) == len(pin["sites"]), f"{pin['name']}: custom receipt sites differ")
     for site, original in zip(sites, pin["sites"]):
-        require(all(site.get(k) == original[k] for k in ("kind", "offset", "size", "retail")),
+        require(type(site) is dict and all(site.get(k) == original[k] for k in ("kind", "offset", "size", "retail")),
                 f"{pin['name']}: custom receipt escaped its pinned span")
         if sha(data[site["offset"]:site["offset"] + site["size"]]) != site.get("applied"):
             return "foreign"
@@ -921,9 +926,10 @@ def image_status(source, *, receipt=_AUTO_RECEIPT):
     pins = _pins()
     receipt = read_image_receipt(source) if receipt is _AUTO_RECEIPT else receipt
     if receipt is not None:
-        require(receipt.get("schema") == RECEIPT_SCHEMA and receipt.get("settings_sha256") == settings_id(receipt.get("settings")),
+        require(type(receipt) is dict and receipt.get("schema") == RECEIPT_SCHEMA and type(receipt.get("settings")) is dict
+                and receipt.get("settings_sha256") == settings_id(receipt["settings"]),
                 "Colour & lighting receipt settings changed")
-        require(set(receipt.get("bundle_pins", {})) == {p["name"] for p in pins["bundles"]},
+        require(type(receipt.get("bundle_pins")) is dict and set(receipt["bundle_pins"]) == {p["name"] for p in pins["bundles"]},
                 "Colour & lighting receipt does not cover every bundle")
     with _outer_image()(source) as archive:
         states = {(_receipt_bundle_state(archive, pin, receipt) if receipt is not None else _bundle_state(archive, pin))

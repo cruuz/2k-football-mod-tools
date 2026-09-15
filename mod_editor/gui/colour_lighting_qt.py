@@ -16,8 +16,7 @@ class ColourLightingControls(QWidget):
         self._settings = colour.default_settings()
         self.rows, self.groups, self.links = {}, {}, {}
         root = QVBoxLayout(self)
-        title = QLabel("Colour && lighting")
-        title.setText("Colour & lighting")
+        title = QLabel("Colour & lighting")
         root.addWidget(title)
         buttons = QHBoxLayout()
         self.broadcast_button = QPushButton("Broadcast (default)")
@@ -73,6 +72,7 @@ class ColourLightingControls(QWidget):
     def _group(self, group):
         page = QWidget()
         layout = QGridLayout(page)
+        layout.setAlignment(Qt.AlignTop)
         toggle = QCheckBox("Adjust " + colour.GROUPS[group].lower())
         toggle.setObjectName("colour_group_" + group)
         self.groups[group] = toggle

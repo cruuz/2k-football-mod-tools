@@ -997,6 +997,10 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_bui
                 project_result = _project_builder(effective_source)
                 if effective_source.is_symlink() or effective_source.stat().st_nlink != 1:
                     raise ValueError("Project builder did not produce a private image")
+                from . import nfl2k5_modern_color as colour
+                original_colour_receipt = colour.read_image_receipt(source)
+                if original_colour_receipt is not None:
+                    colour._save_image_receipt(effective_source, original_colour_receipt)
             if plan.music_project:
                 if not tt.is_disc_image(source):
                     raise ValueError("Music replacements need a disc image")
@@ -1033,7 +1037,13 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_bui
             if progress:
                 progress(receipt["outcome"]["message"], 0, 0)
             progress("Publishing the verified disc", 0, 0)
+            from . import nfl2k5_modern_color as colour
+            colour_receipt = colour.read_image_receipt(directory / target.name)
             publish_image(directory / target.name, target, previous_target)
+            if colour_receipt is not None:
+                colour._save_image_receipt(target, colour_receipt)
+            else:
+                colour.receipt_path(target).unlink(missing_ok=True)
             receipt["stage_seconds"] = progress.finish()
             receipt["target"] = str(target)
             receipt["result"]["path"] = str(target)

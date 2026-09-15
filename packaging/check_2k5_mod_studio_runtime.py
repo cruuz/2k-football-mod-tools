@@ -128,6 +128,7 @@ B69_GAME_RUNTIME_PINS = {
 
 REQUIRED_UNIFIED_PROVIDER_CLOSURE = frozenset(
     {
+        "mod_editor/core/nfl2k5_modern_color.py",
         "mod_editor/core/responsive_json.py",
         "mod_editor/core/nfl2k5_digit_texture.py",
         "mod_editor/core/nfl2k5_equipment_import_intent.py",
@@ -1917,6 +1918,7 @@ def main() -> int:
         "mod_editor.gui.music_panel_qt",
         "mod_editor.gui.scorebug_studio_panel_qt",
         "mod_editor.gui.gameplay_project_ui",
+        "mod_editor.gui.colour_lighting_qt",
         "mod_editor.core.nfl2k5_animation_bones",
         "mod_editor.core.nfl2k5_animation_import",
         "mod_editor.core.nfl2k5_animation_xbe",
