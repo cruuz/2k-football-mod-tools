@@ -1,0 +1,183 @@
+...
+----------------------------------------------------------------------
+Ran 3 tests in 28.996s
+
+OK
+[
+  {
+    "selector": "nfl2k5.stadium.o3141.c0006.scene1998.texture0042",
+    "metadata": {
+      "selector": "nfl2k5.stadium.o3141.c0006.scene1998.texture0042",
+      "texture_id": "nfl2k5.stadium.o3141.c0006.scene1998.texture0042",
+      "scene_id": "nfl2k5.stadium.o3141.c0006.scene1998",
+      "outer_index": 3141,
+      "outer_id": "0xbf1dbe9a",
+      "chunk_index": 6,
+      "scene_index": 1998,
+      "stadium_package": {
+        "filename": "s05dd.iff",
+        "venue": "Chicago Field",
+        "asset_code": "s05",
+        "time": "Day",
+        "weather": "Dry",
+        "label": "Chicago Field / Day / Dry (s05dd.iff)"
+      },
+      "write_scope": "Selected SCNE occurrence only; other venue/time/weather packages are separate",
+      "in_game_outcome": "UNWITNESSED",
+      "descriptor_offset": 22176,
+      "pixel_offset": 611328,
+      "texture_index": 42,
+      "dimensions": [
+        256,
+        256
+      ],
+      "mip_dimensions": [
+        [
+          256,
+          256
+        ],
+        [
+          128,
+          128
+        ],
+        [
+          64,
+          64
+        ],
+        [
+          32,
+          32
+        ],
+        [
+          16,
+          16
+        ],
+        [
+          8,
+          8
+        ]
+      ],
+      "format": "P8",
+      "mapped_material_names": [
+        "banner_corp"
+      ],
+      "mapped_material_count": 1,
+      "shared_ownership_note": "This embedded texture is shared by 1 material: banner_corp. Every surface linked to those materials changes together.",
+      "xiso_pack_path": "vc_53450030/8",
+      "xiso_pack_sector": 1574589,
+      "xiso_pack_size": 929370112,
+      "xiso_pack_sha256": "265560a55bebc13e5c8bfbe7770dac2032624946b4767fad72191bb3266aca14",
+      "pack_offset": 857618784,
+      "xiso_absolute_span_offset": 4082377056,
+      "span_size": 879408,
+      "span_sha256": "7165622593824c64a739a2024a395a1d0c70fb188c1ee51fbd794f5f64c6d0e5"
+    },
+    "stored_bytes": 879408,
+    "encoded_bytes": 879359,
+    "decoded_changed_bytes": 83419,
+    "editable_delegate_staged": true,
+    "reopened_base_rgba_exact": true,
+    "native": {
+      "start": "0x45BC0",
+      "stop": "0x2F20A",
+      "instruction_cap": 200000,
+      "timeout_microseconds": 1000000,
+      "external_doubles": [],
+      "material_offsets": [
+        29440
+      ],
+      "descriptor_offset": 22176,
+      "material_to_descriptor_exact": true,
+      "pixel_palette_pointers_exact": true
+    },
+    "in_game_outcome": "UNWITNESSED"
+  },
+  {
+    "selector": "nfl2k5.stadium.o3142.c0005.scene2003.texture0029",
+    "metadata": {
+      "selector": "nfl2k5.stadium.o3142.c0005.scene2003.texture0029",
+      "texture_id": "nfl2k5.stadium.o3142.c0005.scene2003.texture0029",
+      "scene_id": "nfl2k5.stadium.o3142.c0005.scene2003",
+      "outer_index": 3142,
+      "outer_id": "0xc37c9b41",
+      "chunk_index": 5,
+      "scene_index": 2003,
+      "stadium_package": {
+        "filename": "s06dd.iff",
+        "venue": "Paul Brown Stadium",
+        "asset_code": "s06",
+        "time": "Day",
+        "weather": "Dry",
+        "label": "Paul Brown Stadium / Day / Dry (s06dd.iff)"
+      },
+      "write_scope": "Selected SCNE occurrence only; other venue/time/weather packages are separate",
+      "in_game_outcome": "UNWITNESSED",
+      "descriptor_offset": 21344,
+      "pixel_offset": 436096,
+      "texture_index": 29,
+      "dimensions": [
+        256,
+        256
+      ],
+      "mip_dimensions": [
+        [
+          256,
+          256
+        ],
+        [
+          128,
+          128
+        ],
+        [
+          64,
+          64
+        ],
+        [
+          32,
+          32
+        ],
+        [
+          16,
+          16
+        ],
+        [
+          8,
+          8
+        ]
+      ],
+      "format": "P8",
+      "mapped_material_names": [
+        "banner_corp"
+      ],
+      "mapped_material_count": 1,
+      "shared_ownership_note": "This embedded texture is shared by 1 material: banner_corp. Every surface linked to those materials changes together.",
+      "xiso_pack_path": "vc_53450030/8",
+      "xiso_pack_sector": 1574589,
+      "xiso_pack_size": 929370112,
+      "xiso_pack_sha256": "265560a55bebc13e5c8bfbe7770dac2032624946b4767fad72191bb3266aca14",
+      "pack_offset": 859117616,
+      "xiso_absolute_span_offset": 4083875888,
+      "span_size": 906944,
+      "span_sha256": "0cd2a449e7154def9c4935b1413e69928459d09a4cb92edc736e1faa325c033c"
+    },
+    "stored_bytes": 906944,
+    "encoded_bytes": 906896,
+    "decoded_changed_bytes": 83419,
+    "editable_delegate_staged": true,
+    "reopened_base_rgba_exact": true,
+    "native": {
+      "start": "0x45BC0",
+      "stop": "0x2F20A",
+      "instruction_cap": 200000,
+      "timeout_microseconds": 1000000,
+      "external_doubles": [],
+      "material_offsets": [
+        27808
+      ],
+      "descriptor_offset": 21344,
+      "material_to_descriptor_exact": true,
+      "pixel_palette_pointers_exact": true
+    },
+    "in_game_outcome": "UNWITNESSED"
+  }
+]

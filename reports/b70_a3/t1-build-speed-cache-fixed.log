@@ -1,0 +1,49 @@
+.B70 OPEN warm: 0.004061 s
+B70 OPEN fresh-process-cache: 0.006756 s
+B70 OPEN new interpreter: no fit search
+..B70 IMPORT sock256_stripes {"outcome": "fit", "span_sha256": "1cd108128cc224f2bd92fdf26b76e3e79ab220bbd500df25825fd547e6bc9aeb", "decoded_sha256": "973cfa0ed50439f0ad916b143f3f5eb422a49f9b19b3f464829a8956e043ae11", "attempts": [{"encoded_bytes": 9216, "maximum_palette_entries": 256, "palette_entries": {"0": 12}, "result": "fit"}], "encoded_dimensions": [256, 256], "seconds": 2.024165147999156, "repeat_seconds": 0.006031498000083957}
+B70 IMPORT shoe64_stripes {"outcome": "fit", "span_sha256": "fd090c83614b221547b3f2dad47eb2a2002c82aeb3c2460edad6070410e8b9bf", "decoded_sha256": "d3884c3883f282898a5159dcee93dd952095f75b47ee245fc5bfde63cdaecf95", "attempts": [{"encoded_bytes": 3692, "maximum_palette_entries": 256, "palette_entries": {"0": 11}, "result": "fit"}], "encoded_dimensions": [64, 64], "seconds": 0.13737863300048048, "repeat_seconds": 0.002030340001510922}
+B70 IMPORT shoe64_diagonal {"outcome": "fit", "span_sha256": "473086c049a1585b29e19528e9d997b13d3b40c964637d9cbe57b97046802afd", "decoded_sha256": "3f1721238bc83119c6a430acfa0bdfaf788ef147e9c327053394d7c51e9a79ac", "attempts": [{"encoded_bytes": 3712, "maximum_palette_entries": 256, "palette_entries": {"0": 13}, "result": "fit"}], "encoded_dimensions": [64, 64], "seconds": 0.1443843349989038, "repeat_seconds": 0.0021946189990558196}
+B70 IMPORT shoe32_tight {"outcome": "fit", "span_sha256": "290ac5c940eb438468b1be42ed313b54693f1970e773f8a54e64c4e0beb2fc67", "decoded_sha256": "2a673429706186ac23c85de4605dc088a4c4b834d0f5c66a869bac1a9b456abc", "attempts": [{"encoded_bytes": 2763, "maximum_palette_entries": 256, "palette_entries": {"0": 13}, "result": "fit"}], "encoded_dimensions": [32, 32], "seconds": 0.05084509399966919, "repeat_seconds": 0.0017573460027051624}
+B70 IMPORT shoe32_noise_refused {"outcome": "refused", "budget": 464, "required": 664, "suggestion": {"asset_id": "tset:0:8:0:shoes01", "scale": 2, "width": 16, "height": 16, "colours": 2, "encoded_bytes": 459}, "seconds": 3.4656539890020213}
+FB70 IMPORT shoe32_noise_half {"outcome": "fit", "span_sha256": "d7929c8fed8c3863e91d5a6cde5c81c80fcd3bf72a7012e7f336e5896aa9814c", "decoded_sha256": "9f1f9752bcb8b3730efedf445cdcc7d4b4c6ca055018ee5ea869c7f6ae671cac", "attempts": [{"maximum_palette_entries": 256, "palette_entries": {"0": 256}, "result": "vc_lz_overflow", "required_bytes": 792, "required_is_lower_bound": true}, {"maximum_palette_entries": 128, "palette_entries": {"0": 124}, "result": "vc_lz_overflow", "required_bytes": 792, "required_is_lower_bound": true}, {"maximum_palette_entries": 64, "palette_entries": {"0": 64}, "result": "vc_lz_overflow", "required_bytes": 978, "required_is_lower_bound": true}, {"maximum_palette_entries": 32, "palette_entries": {"0": 32}, "result": "vc_lz_overflow", "required_bytes": 845, "required_is_lower_bound": false}, {"maximum_palette_entries": 16, "palette_entries": {"0": 16}, "result": "vc_lz_overflow", "required_bytes": 760, "required_is_lower_bound": false}, {"maximum_palette_entries": 8, "palette_entries": {"0": 8}, "result": "vc_lz_overflow", "required_bytes": 676, "required_is_lower_bound": false}, {"maximum_palette_entries": 4, "palette_entries": {"0": 4}, "result": "vc_lz_overflow", "required_bytes": 553, "required_is_lower_bound": false}, {"encoded_bytes": 459, "maximum_palette_entries": 2, "palette_entries": {"0": 2}, "result": "fit"}], "encoded_dimensions": [16, 16], "seconds": 1.2565699170008884, "repeat_seconds": 0.0019230279976909515}
+FB70 IMPORT shoe32_noise_quarter {"outcome": "fit", "span_sha256": "80f42a2ea0df9452234af4080df2666f60ce7fad316bc50ee1f5d6cd3f672c19", "decoded_sha256": "7b20ed78d07357cb4765b4150cb8187821b1402004f320f8a4c7307e53a6b77c", "attempts": [{"maximum_palette_entries": 256, "palette_entries": {"0": 64}, "result": "vc_lz_overflow", "required_bytes": 697, "required_is_lower_bound": false}, {"maximum_palette_entries": 32, "palette_entries": {"0": 30}, "result": "vc_lz_overflow", "required_bytes": 548, "required_is_lower_bound": false}, {"maximum_palette_entries": 16, "palette_entries": {"0": 16}, "result": "vc_lz_overflow", "required_bytes": 488, "required_is_lower_bound": false}, {"encoded_bytes": 454, "maximum_palette_entries": 8, "palette_entries": {"0": 8}, "result": "fit"}], "encoded_dimensions": [8, 8], "seconds": 0.5886045920015022, "repeat_seconds": 0.0019859669992001727}
+F...B70 CODEC flat: 0.251013 s
+B70 CODEC repeated: 0.397028 s
+B70 CODEC palette: 0.121391 s
+.B70 EARLY EXIT: searched 1022 / 65536 positions
+..
+======================================================================
+FAIL: test_beta69_complete_span_bytes_and_helper_disabled_import_budget (__main__.SearchTests.test_beta69_complete_span_bytes_and_helper_disabled_import_budget) (case='shoe32_noise_refused')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b70-a3/tests/mod_editor/test_b70_t1_build_speed.py", line 56, in test_beta69_complete_span_bytes_and_helper_disabled_import_budget
+    self.assertEqual(row['required'], 666)
+AssertionError: 664 != 666
+
+======================================================================
+FAIL: test_beta69_complete_span_bytes_and_helper_disabled_import_budget (__main__.SearchTests.test_beta69_complete_span_bytes_and_helper_disabled_import_budget) (case='shoe32_noise_half')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b70-a3/tests/mod_editor/test_b70_t1_build_speed.py", line 53, in test_beta69_complete_span_bytes_and_helper_disabled_import_budget
+    self.assertEqual(row['span_sha256'], BETA69_SPANS[case[0]])
+AssertionError: 'd7929c8fed8c3863e91d5a6cde5c81c80fcd3bf72a7012e7f336e5896aa9814c' != '409e6651e5724eadfcfe36db593d9f0fded63ab3b14a8a76e04432bb313bb624'
+- d7929c8fed8c3863e91d5a6cde5c81c80fcd3bf72a7012e7f336e5896aa9814c
++ 409e6651e5724eadfcfe36db593d9f0fded63ab3b14a8a76e04432bb313bb624
+
+
+======================================================================
+FAIL: test_beta69_complete_span_bytes_and_helper_disabled_import_budget (__main__.SearchTests.test_beta69_complete_span_bytes_and_helper_disabled_import_budget) (case='shoe32_noise_quarter')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b70-a3/tests/mod_editor/test_b70_t1_build_speed.py", line 53, in test_beta69_complete_span_bytes_and_helper_disabled_import_budget
+    self.assertEqual(row['span_sha256'], BETA69_SPANS[case[0]])
+AssertionError: '80f42a2ea0df9452234af4080df2666f60ce7fad316bc50ee1f5d6cd3f672c19' != 'fed500b1e0aa7af58dfcd7e17a9bb4808a7d1b0509ce229c5ca87af3f2d9f97a'
+- 80f42a2ea0df9452234af4080df2666f60ce7fad316bc50ee1f5d6cd3f672c19
++ fed500b1e0aa7af58dfcd7e17a9bb4808a7d1b0509ce229c5ca87af3f2d9f97a
+
+
+----------------------------------------------------------------------
+Ran 10 tests in 16.688s
+
+FAILED (failures=3)

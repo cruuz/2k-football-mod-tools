@@ -1,0 +1,202 @@
+[
+  {
+    "command": "env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_t2_wiring.py",
+    "exit_code": 0,
+    "elapsed_seconds": 1.027828,
+    "log": "reports/b70_a3/test_b70_t2_wiring.log",
+    "tests": 2,
+    "skips": []
+  },
+  {
+    "command": "env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_t2_reporting.py",
+    "exit_code": 0,
+    "elapsed_seconds": 0.24725,
+    "log": "reports/b70_a3/test_b70_t2_reporting.log",
+    "tests": 5,
+    "skips": []
+  },
+  {
+    "command": "env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_t2_equipment.py",
+    "exit_code": 0,
+    "elapsed_seconds": 1.194307,
+    "log": "reports/b70_a3/t2-equipment-cache-fixed.log",
+    "tests": 8,
+    "skips": []
+  },
+  {
+    "command": "env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_t2_stadium.py",
+    "exit_code": 0,
+    "elapsed_seconds": 29.513545,
+    "log": "reports/b70_a3/test_b70_t2_stadium.log",
+    "tests": 3,
+    "skips": []
+  },
+  {
+    "command": "env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_t2_native.py",
+    "exit_code": 0,
+    "elapsed_seconds": 0.10078,
+    "log": "reports/b70_a3/test_b70_t2_native.log",
+    "tests": 1,
+    "skips": []
+  },
+  {
+    "command": "env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_a2_wiring.py",
+    "exit_code": 0,
+    "elapsed_seconds": 2.306946,
+    "log": "reports/b70_a3/test_b70_a2_wiring.log",
+    "tests": 4,
+    "skips": []
+  },
+  {
+    "command": "env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_studio_facade.py",
+    "exit_code": 0,
+    "elapsed_seconds": 0.368252,
+    "log": "reports/b70_a3/test_studio_facade.log",
+    "tests": 11,
+    "skips": []
+  },
+  {
+    "command": "env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_studio_session.py",
+    "exit_code": 0,
+    "elapsed_seconds": 0.834327,
+    "log": "reports/b70_a3/test_studio_session.log",
+    "tests": 18,
+    "skips": []
+  },
+  {
+    "command": "env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_build_service.py",
+    "exit_code": 0,
+    "elapsed_seconds": 0.270314,
+    "log": "reports/b70_a3/test_nfl2k5_build_service.log",
+    "tests": 28,
+    "skips": []
+  },
+  {
+    "command": "env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_studio_shell_layout_qt.py",
+    "exit_code": 1,
+    "elapsed_seconds": 4.601301,
+    "log": "reports/b70_a3/test_studio_shell_layout_qt.log",
+    "tests": 18,
+    "skips": []
+  },
+  {
+    "command": "env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_equipment_import.py",
+    "exit_code": 0,
+    "elapsed_seconds": 2.147515,
+    "log": "reports/b70_a3/equipment-import-final.log",
+    "tests": 13,
+    "skips": []
+  },
+  {
+    "command": "env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_equipment_import_wiring.py",
+    "exit_code": 0,
+    "elapsed_seconds": 0.72485,
+    "log": "reports/b70_a3/test_nfl2k5_equipment_import_wiring.log",
+    "tests": 6,
+    "skips": []
+  },
+  {
+    "command": "env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_equipment_consumers.py",
+    "exit_code": 0,
+    "elapsed_seconds": 25.990167,
+    "log": "reports/b70_a3/equipment-consumers-final.log",
+    "tests": 19,
+    "skips": []
+  },
+  {
+    "command": "env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_equipment_scope_wiring.py",
+    "exit_code": 0,
+    "elapsed_seconds": 1.761725,
+    "log": "reports/b70_a3/test_nfl2k5_equipment_scope_wiring.log",
+    "tests": 3,
+    "skips": []
+  },
+  {
+    "command": "env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_providers.py",
+    "exit_code": 0,
+    "elapsed_seconds": 3.542769,
+    "log": "reports/b70_a3/providers-final.log",
+    "tests": 33,
+    "skips": []
+  },
+  {
+    "command": "env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_provider_integrity.py",
+    "exit_code": 0,
+    "elapsed_seconds": 8.060924,
+    "log": "reports/b70_a3/provider-integrity-fixed.log",
+    "tests": 7,
+    "skips": []
+  },
+  {
+    "command": "env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_product_catalog.py",
+    "exit_code": 0,
+    "elapsed_seconds": 0.155282,
+    "log": "reports/b70_a3/test_product_catalog.log",
+    "tests": 9,
+    "skips": []
+  },
+  {
+    "command": "env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b68_a1_audit.py",
+    "exit_code": 0,
+    "elapsed_seconds": 5.744885,
+    "log": "reports/b70_a3/test_b68_a1_audit.log",
+    "tests": 10,
+    "skips": []
+  },
+  {
+    "command": "env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_phase1_packaging.py",
+    "exit_code": 1,
+    "elapsed_seconds": 0.136386,
+    "log": "reports/b70_a3/test_phase1_packaging.log",
+    "tests": 23,
+    "skips": []
+  },
+  {
+    "command": "env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_t1_build_speed.py",
+    "exit_code": 1,
+    "elapsed_seconds": 17.098285,
+    "log": "reports/b70_a3/t1-build-speed-cache-fixed.log",
+    "tests": 10,
+    "skips": []
+  },
+  {
+    "command": "env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_t1_diagnostics.py",
+    "exit_code": 0,
+    "elapsed_seconds": 0.622733,
+    "log": "reports/b70_a3/test_b70_t1_diagnostics.log",
+    "tests": 5,
+    "skips": []
+  },
+  {
+    "command": "env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_a3_integration.py",
+    "exit_code": 0,
+    "elapsed_seconds": 1.263702,
+    "log": "reports/b70_a3/a3-integration-final.log",
+    "tests": 6,
+    "skips": []
+  },
+  {
+    "command": "env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b69_j1_wiring.py",
+    "exit_code": 0,
+    "elapsed_seconds": 5.796468,
+    "log": "reports/b70_a3/test_b69_j1_wiring.log",
+    "tests": 7,
+    "skips": []
+  },
+  {
+    "command": "env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b69_j1_fit.py",
+    "exit_code": 0,
+    "elapsed_seconds": 5.279821,
+    "log": "reports/b70_a3/test_b69_j1_fit.log",
+    "tests": 5,
+    "skips": []
+  },
+  {
+    "command": "env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_build_panel_qt.py",
+    "exit_code": 0,
+    "elapsed_seconds": 2.223747,
+    "log": "reports/b70_a3/build-panel.log",
+    "tests": 13,
+    "skips": []
+  }
+]

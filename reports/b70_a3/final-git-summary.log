@@ -1,0 +1,15 @@
+cbcccaee Wire beta 70 T2 equipment fits and stadium summaries into the stack
+ mod_editor/capabilities/registry.v1.json    |  66 ++++++++---
+ mod_editor/core/equipment_staging.py        |   8 +-
+ mod_editor/core/nfl2k5_build_service.py     |  21 ++--
+ mod_editor/core/nfl2k5_equipment_import.py  | 140 ++---------------------
+ mod_editor/core/providers.py                |   7 +-
+ mod_editor/gui/studio_qt.py                 |  18 ++-
+ mod_editor/studio/session.py                |   4 +-
+ packaging/check_2k5_mod_studio_runtime.py   |   4 +-
+ packaging/release-allowlist.txt             |   2 +
+ tests/mod_editor/b70_equipment_fixture.py   |  18 ++-
+ tests/mod_editor/test_b70_a3_integration.py | 170 ++++++++++++++++++++++++++++
+ tests/mod_editor/test_b70_t2_wiring.py      |   2 +-
+ tests/mod_editor/test_provider_integrity.py |   2 +-
+ 13 files changed, 290 insertions(+), 172 deletions(-)

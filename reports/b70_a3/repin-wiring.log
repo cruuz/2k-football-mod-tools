@@ -1,0 +1,14 @@
+[1] mod_editor/core/providers.py: mod_editor/core/nfl2k5_build_service.py
+    7e5ae1a8d535dba29841ced89a7ea380f82dfb886fb1eb3a7910760814f9f650
+ -> 3a92a92a018809d4217c0cbe548b45dfa46434d64f16c98565babbcb87b55cd0
+[1] mod_editor/core/providers.py: mod_editor/studio/session.py
+    a2d52608660eae69c9cf384f2f42248daf73397a49b80ca1f622f24e1082abf0
+ -> 95d654407e3bf191d86c7817e9d380ce65e025439a83df52a00dea97cc1a413a
+[1] packaging/check_2k5_mod_studio_runtime.py: mod_editor/gui/studio_qt.py
+    45e3e2490e8aab314093d0378025f1b8f5ae689954a57ac49397d3f2e448675f
+ -> 6233a90611431c29ec899c91f52f0169c7b6defc832ec40a6ffc172beb6d46dd
+[1] packaging/check_2k5_mod_studio_runtime.py: mod_editor/studio/session.py
+    a2d52608660eae69c9cf384f2f42248daf73397a49b80ca1f622f24e1082abf0
+ -> 95d654407e3bf191d86c7817e9d380ce65e025439a83df52a00dea97cc1a413a
+
+applied 4 pin update(s)

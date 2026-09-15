@@ -1,0 +1,3 @@
+[astra/b70-a3-t2-wiring cbcccaee] Wire beta 70 T2 equipment fits and stadium summaries into the stack
+ 13 files changed, 290 insertions(+), 172 deletions(-)
+ create mode 100644 tests/mod_editor/test_b70_a3_integration.py
