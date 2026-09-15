@@ -115,11 +115,11 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
 B69_GAME_RUNTIME_PINS = {
     "mod_editor/core/nfl2k5_weather.py": "6540d7ffc8d441898f5a89988752efd6aa0238c87b4a0941c1962b7b3feba380",
     "mod_editor/core/nfl2k5_weather_haze.py": "3d045e099f1585658b899ab6e7d3560e92edb24529ca8d6f224e901dc7712ff9",
-    "mod_editor/gui/build_panel_qt.py": "40610a95e47ad7d8f1dd67d067c3e4efb10114e504d18eb4cd4835ef92f11616",
-    "mod_editor/gui/gameplay_patches_panel_qt.py": "55cf864cc31256a0dc8f44a58f74865c8d2903bd338beda0ee1b7b0609a31c38",
+    "mod_editor/gui/build_panel_qt.py": "fa9033f5614462e46035345f6cb9643622d82e4f2e885cfc31c5511b9851bc5a",
+    "mod_editor/gui/gameplay_patches_panel_qt.py": "cf9ce1e9d40902df978f8c54f1e02dbf3c137ec2e3f2c722c7a3f9cbd876322e",
     "mod_editor/gui/my_career_panel_qt.py": "8a27ccdc2a649d122d6c21f9a646e47539b55c00653afc789e9b018fb581c823",
     "mod_editor/gui/gameplay_project_ui.py": "7222713aaaa0efbcc8851eb4ad3efa4ef31e8ad5352919e95b1ff9b39634c905",
-    "mod_editor/gui/beta62_options.py": "1fa09c1aed813c62b30c614847d615190e3fcfd14c3e1fe4e1dd10f58a6f79fb",
+    "mod_editor/gui/beta62_options.py": "d861f5656f98b0ee67cf4fe86a98bb95e5a79882e1a1066641f6b979ca835f84",
     "tools/nfl2k5_weather_editor.py": "65b45c3b25d47dc9cc672bd46a4719264ce4033aeca76632aaf44e9023b6cbfd",
     "tools/nfl2k5_weather_time_of_day.py": "37b2bd10f686db9fa99ba9034f9a7f68daa00bff516250ac0f67678880b98b47",
     "tools/nfl2k5_weather_native_probe.py": "cd2776060c41a0831b1a15342a4486e739bbda5c633af5f4427217333885fde2",
@@ -1729,6 +1729,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_my_career_prospects",
         "mod_editor.core.nfl2k5_weather",
         "mod_editor.core.nfl2k5_weather_haze",
+        "mod_editor.core.nfl2k5_modern_color",
         "mod_editor.core.nfl2k5_rules_patch",
         "mod_editor.core.nfl2k5_coin_defer",
         "mod_editor.core.nfl2k5_coin_defer_code",
@@ -2170,11 +2171,11 @@ def main() -> int:
         check_files=False,
     )
     product_catalog = product_catalog_module.build_nfl2k5_product_catalog(registry)
-    require(len(registry.capabilities) == 172,
+    require(len(registry.capabilities) == 173,
             "canonical capability registry row count changed")
     require(len(product_catalog.sections) == 12,
             "product sidebar category count changed")
-    require(len(product_catalog.capabilities) == 99,
+    require(len(product_catalog.capabilities) == 100,
             "NFL 2K5 product capability count changed")
     _exercise_default_provider_controller(
         modules["mod_editor.core.controller"],
@@ -2577,7 +2578,7 @@ def main() -> int:
     print(
         "2K5_MOD_STUDIO_RUNTIME_CLOSURE_PASS "
         f"product_modules={len(product_modules)} tool_modules={len(tool_modules)} "
-        "registry=172 sections=12 nfl2k5_capabilities=99 "
+        "registry=173 sections=12 nfl2k5_capabilities=100 "
         "reports=16 reviewed_metadata=24 sets=634 visuals=71963 "
         "team_kit_sets=634 team_kit_assets_per_set=39 "
         "text_banks=716 text_strings=23346 text_editable=20074 "

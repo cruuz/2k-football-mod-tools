@@ -890,6 +890,8 @@ docs/mod_editor/2k5_mod_studio_faq.md
 mod_editor/core/nfl2k5_my_career_prospects.py
 mod_editor/core/nfl2k5_weather.py
 mod_editor/core/nfl2k5_weather_haze.py
+mod_editor/core/nfl2k5_modern_color.py
+data/nfl2k5_modern_color_pins.json
 mod_editor/core/nfl2k5_rules_patch.py
 mod_editor/core/nfl2k5_coin_defer.py
 mod_editor/core/nfl2k5_coin_defer_code.py
