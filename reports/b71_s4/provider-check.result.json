@@ -1,0 +1,11 @@
+{
+  "name": "provider-check",
+  "command": [
+    "python3",
+    "tests/mod_editor/test_provider_integrity.py"
+  ],
+  "start": "2026-09-15T22:16:22.530719+00:00",
+  "end": "2026-09-15T22:16:30.596717+00:00",
+  "seconds": 8.066,
+  "exit": 1
+}

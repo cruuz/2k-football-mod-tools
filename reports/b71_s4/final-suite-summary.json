@@ -1,0 +1,189 @@
+{
+  "results": [
+    [
+      "tests/mod_editor/test_apf_scorebug_workspace_qt.py",
+      0
+    ],
+    [
+      "tests/mod_editor/test_nfl2k5_scorebug_assets.py",
+      0
+    ],
+    [
+      "tests/mod_editor/test_nfl2k5_scorebug_author.py",
+      0
+    ],
+    [
+      "tests/mod_editor/test_nfl2k5_scorebug_exact.py",
+      0
+    ],
+    [
+      "tests/mod_editor/test_nfl2k5_scorebug_fonts.py",
+      0
+    ],
+    [
+      "tests/mod_editor/test_nfl2k5_scorebug_freeze.py",
+      0
+    ],
+    [
+      "tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py",
+      1
+    ],
+    [
+      "tests/mod_editor/test_nfl2k5_scorebug_ingame.py",
+      1
+    ],
+    [
+      "tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py",
+      0
+    ],
+    [
+      "tests/mod_editor/test_nfl2k5_scorebug_mnf.py",
+      0
+    ],
+    [
+      "tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py",
+      0
+    ],
+    [
+      "tests/mod_editor/test_nfl2k5_scorebug_native.py",
+      1
+    ],
+    [
+      "tests/mod_editor/test_nfl2k5_scorebug_projection.py",
+      0
+    ],
+    [
+      "tests/mod_editor/test_nfl2k5_scorebug_resources.py",
+      1
+    ],
+    [
+      "tests/mod_editor/test_nfl2k5_scorebug_runtime.py",
+      0
+    ],
+    [
+      "tests/mod_editor/test_nfl2k5_scorebug_source_art.py",
+      0
+    ],
+    [
+      "tests/mod_editor/test_nfl2k5_scorebug_template.py",
+      0
+    ],
+    [
+      "tests/mod_editor/test_nfl2k5_scorebug_template_release.py",
+      0
+    ],
+    [
+      "tests/mod_editor/test_nfl2k5_scorebug_unified_adapter.py",
+      0
+    ],
+    [
+      "tests/mod_editor/test_nfl2k5_scorebug_v10_ingame.py",
+      0
+    ],
+    [
+      "tests/mod_editor/test_nfl2k5_scorebug_v10_projection.py",
+      0
+    ],
+    [
+      "tests/mod_editor/test_nfl2k5_scorebug_versions.py",
+      0
+    ],
+    [
+      "tests/mod_editor/test_scorebug_studio_panel_qt.py",
+      0
+    ],
+    [
+      "tests/nfl2k5_scorebug_layout_test.py",
+      0
+    ],
+    [
+      "tests/nfl2k5_scorebug_mod_project_test.py",
+      0
+    ],
+    [
+      "tests/mod_editor/test_provider_integrity.py",
+      1
+    ],
+    [
+      "tests/mod_editor/test_product_catalog.py",
+      0
+    ],
+    [
+      "tests/mod_editor/test_phase1_packaging.py",
+      0
+    ]
+  ],
+  "failed": [
+    "tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py",
+    "tests/mod_editor/test_nfl2k5_scorebug_ingame.py",
+    "tests/mod_editor/test_nfl2k5_scorebug_native.py",
+    "tests/mod_editor/test_nfl2k5_scorebug_resources.py",
+    "tests/mod_editor/test_provider_integrity.py",
+    "registry-strict",
+    "source drift during final suites"
+  ],
+  "source_sha256": {
+    "tests/mod_editor/test_apf_scorebug_workspace_qt.py": "c9676e47fedb952aca718477d270b94cfeb9bc75a30b6262ae624b1ccdf8d268",
+    "tests/mod_editor/test_nfl2k5_scorebug_assets.py": "691f2679e0097a55a73145c13d480677fc5d32067009469ae658408ec8115328",
+    "tests/mod_editor/test_nfl2k5_scorebug_author.py": "d4bc82c2f28e28f6ded0cfc26c53b285c368a7e47bc89dc27c87866fb03f5559",
+    "tests/mod_editor/test_nfl2k5_scorebug_exact.py": "fc4a11490ab2ffb3c7265c568261004ce6f3ec18c8ae942f1f16953d15d5f223",
+    "tests/mod_editor/test_nfl2k5_scorebug_fonts.py": "b34a54900f80658ab7ae5dadace5fdfd2d6eaeb48f9361bbee9a2ef441cdd47f",
+    "tests/mod_editor/test_nfl2k5_scorebug_freeze.py": "d25bab7cd680fe88ae5703ef3fc8adc4fc8e862fd5be40becc49e3a159526f81",
+    "tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py": "537e7ad882739b4a957e69107b805016ce822ebbe371a7c7185457bd30e5f543",
+    "tests/mod_editor/test_nfl2k5_scorebug_ingame.py": "622f6daaa7dee4c8203d170aa23cfb9a40ff570a01d7d6eb60c93368d7a98689",
+    "tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py": "8a32609401a59ce44ecfad74b8d20a4f5162258914e5cf5629c08be2fbc93dea",
+    "tests/mod_editor/test_nfl2k5_scorebug_mnf.py": "30587da52d1e92da33ad21b21149bd532e9cdfdd059dfb22204226960462b1e5",
+    "tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py": "d7957f97b41af65bec61a1077e77fd9bc0cdef0c20550b81aadecc53e6fedd66",
+    "tests/mod_editor/test_nfl2k5_scorebug_native.py": "6bffbc5d03408946d6b1625603b45fb9e9575e64ba784fe59d276847fd54f7f0",
+    "tests/mod_editor/test_nfl2k5_scorebug_projection.py": "83a41de1cf66fbf462c0fe3b94e7584326537357f77a8494f67e8d2c0b8efea7",
+    "tests/mod_editor/test_nfl2k5_scorebug_resources.py": "1cd03743cf1b6cc3fc20820d68279ffa1e26b22b7fad22a84d6bce76c493339e",
+    "tests/mod_editor/test_nfl2k5_scorebug_runtime.py": "69048395cb21e5ffeb69bf5289e23a7ff389c1b0cb4b728fc22229b1fbfb3046",
+    "tests/mod_editor/test_nfl2k5_scorebug_source_art.py": "ed7a4f50f47ac583ccab85c3f25d9c97f7fe593ed9483914e945e39e98f30922",
+    "tests/mod_editor/test_nfl2k5_scorebug_template.py": "77432ea01666f061b8f5e6e253b3d8a5d8d9f735ce7f06841f4198f1864954b3",
+    "tests/mod_editor/test_nfl2k5_scorebug_template_release.py": "2ebf1c40873a21852f8f9a884e4b62a79b00b7dd4921cce6a3471795dd7ecabe",
+    "tests/mod_editor/test_nfl2k5_scorebug_unified_adapter.py": "ada3f02b92a06cbbc182e3d0415b1a3a34128954b80c780aecf9746ee2b04c04",
+    "tests/mod_editor/test_nfl2k5_scorebug_v10_ingame.py": "f3b3edc58b97ead1a8473bf2486ea3be9e3e1a895802e9d6009031468e6d5ab0",
+    "tests/mod_editor/test_nfl2k5_scorebug_v10_projection.py": "5a666a8ef31d6681999d411474b9be3d63ac9f91b9c11c3173f0d69a75d7f045",
+    "tests/mod_editor/test_nfl2k5_scorebug_versions.py": "65f3c1537c5bed888e3d8c63ef25977a59d932cf13bef1eafba3f2629b951e5a",
+    "tests/mod_editor/test_scorebug_studio_panel_qt.py": "c14311f6d066019d3b3037cc27585498d76d9934429c982d3755cf1f5b3bf407",
+    "tests/nfl2k5_scorebug_layout_test.py": "afc421a2a90350b4b14e9752bb70af2d54213db7682862fc18f7d890ad227377",
+    "tests/nfl2k5_scorebug_mod_project_test.py": "575112e24b2ec2965e2544ec7a8c33941bd952615b9e0447e9a7de80c28b3a52",
+    "tests/mod_editor/test_provider_integrity.py": "94bf63be805ffc8a550a264b8ba91332b6cc8ba62838f530e8ba5b7e043f9e56",
+    "tests/mod_editor/test_product_catalog.py": "d8697ea51d21fa29d38941ae393fe58c1b24716ff4c8b51e0bf3043fcd5eacd1",
+    "tests/mod_editor/test_phase1_packaging.py": "2cadf635e3c773e2f98796344f803148639c206407176ec7388777249fe5b397",
+    "mod_editor/core/nfl2k5_scorebug_runtime.py": "b5f8df09c543eed8786dcafa80b30e6eb731e69e3bba90dd44e4fc2ae1dd035c",
+    "mod_editor/core/nfl2k5_scorebug_ingame.py": "cc8699a8555492a9977728a5b1befbe02611e665ac6a2115547ef707ac9b13c3",
+    "mod_editor/core/nfl2k5_scorebug_fonts.py": "b292f93b7bc25b64a379069b77c9172c1b92cf79553bfe4a7be835d1ad7119e9",
+    "mod_editor/core/nfl2k5_scorebug_template.py": "409f7324352b88a6b4387b1f1a8ee1231c56f9674d7762ece24a8142fd2d2060",
+    "mod_editor/core/nfl2k5_scorebug_exact.py": "ea1b0c44cf7a65e8e4b0444ecc0856faca1f1e0f7e1cd36e6e3d6b0c99b6128a",
+    "mod_editor/core/nfl2k5_scorebug_resources.py": "3ce353fc6e10c5eaddf2c03cf4cd99de13610f6d4b285554fb2158d2c495fcad",
+    "mod_editor/core/nfl2k5_scorebug_assets.py": "e5dbb12c95d0e3254d483f82fa301e31ddd2f4d6ca66f2add0c1b7eca902bcb7",
+    "mod_editor/core/nfl2k5_scorebug_source_art.py": "a3617552d90389df8e7ce4d78faa8fd64a1995c91e4e8ef93219007761ac27fd",
+    "mod_editor/core/nfl2k5_scorebug_mnf_font.py": "fa2c3a006af66af408345ace6bc43870d8b92dae90b93cb8c8969628737cffd7",
+    "mod_editor/core/nfl2k5_scorebug_author.py": "edc8bc4e6fc8c53539bc8869852e78cde76c41b2b7ee4bbffb08ff4ac4a90db2",
+    "mod_editor/core/nfl2k5_scorebug_unified_adapter.py": "3307d3b1777fcb51f112dea2c6c5290dd969c3037d5bc21112f9740b7cef9bfd",
+    "tools/nfl_scorebug_xiso_workflow.py": "461481e67a257c1d10132b2d80688d4530149b5f6fc3d4d948771eff13b66926",
+    "tools/nfl2k5_scorebug_exact.py": "9541b744aaaa3c839526349b2eb3e65e4631ea4e72d9dc79aa6bdd667c1911bb",
+    "tools/nfl2k5_scorebug_espn_art.py": "4bd1e9fb9166ddfbe1423f3e2c41ed2424841a0ae476270c2117de2a9e006780",
+    "tools/nfl_scorebug_runtime_receipt_verify.py": "d9d560928dbb6614d2e62f5d622efb146d9208f4579b6b1d3407664ea71f754b",
+    "tools/nfl2k5_scorebug_template_art.py": "584e73d0b4c38e26dd1ff51c6716896c6a0a402f74802560593ea76dca610376",
+    "tools/nfl2k5_scorebug_template_proof.py": "55b6bdc86169b8a7c8e0a15cc2329a593f6b40913b2c20894495d2507c087976",
+    "tools/nfl2k5_scorebug_reference.py": "32ef741eb84bdf022de8cae357895eea891e6265c025e57afd4d49a37a6f4444",
+    "tools/nfl2k5_scorebug_textures_into_xiso.py": "8eeeef8fbf6ea893bd9a37d4f79031de6caa6752bad7d70cc19aa6291f928de4",
+    "tools/nfl2k5_scorebug_position_patch.py": "eb2b913bd4d0620dcefc4f280db1f6d73e4a5c348b0483a246bbf587506cdbff",
+    "tools/nfl_scorebug_xemu_runtime_report.py": "1228a370bdf1c28b493e08ec51fde6b485ab035013eadd783f19ab99a26acd0a",
+    "tools/nfl2k5_scorebug_exact2.py": "fc61f04a45d40be34e1a9885350528c8451eb2fac450b9463b78754aa42696a3",
+    "tools/nfl_scorebug_font_xemu_runtime_report.py": "e86fe20989ede51eea98554205b064dd23e02dded175aa7441cbfbd4cc8cbd60",
+    "tools/nfl_scorebug_png_import_verify.py": "2643d1517775067c7059946269c892fa2cb3118cb6d0d3addcc35b15c337cc68",
+    "tools/nfl2k5_scorebug_witness.py": "515d07d4d124919b8e4cfa21b1aaecc437b6e3b0b6beb38faec0897e68bfbe31",
+    "tools/scorebug_presentation_audit.py": "f2b85de33fbf398a6544e94b032ab56b8b3abd30fdb4cd7aa774af14b34ce198",
+    "tools/nfl2k5_scorebug_mod_project.py": "98b3b656d9101afbed60b42f4390dcb50536e1202632553b8c099088e077f60a",
+    "tools/nfl2k5_scorebug_projection.py": "c1fe6b594b11e91fa0b765e308b794a25855dd63ed27d8e4ad291ce09993b833",
+    "tools/nfl_scorebug_xiso_verify.py": "7c7317e6747feb6120866d48a2f4b10ca2136a3762d36d2d8fb193ff9b232a07",
+    "tools/nfl_scorebug_fixture.py": "559f9cb9cb69756fb74af2e79a7a27da1c00d20f89f95f355198de6abfeecd56",
+    "tools/nfl2k5_scorebug_layout.py": "63ee159943a6494de331339e7460cb674955698c1d0d6a3aa8057e024967dcc5",
+    "tools/nfl_scorebug_png_import.py": "0dbef5f87476633d91ebea19aeb86451dd5ac434743ef80a5a694cf4e3975440",
+    "tools/nfl_scorebug_shield_xemu_runtime_report.py": "057f68df4bbd5d0bebe8810e729da44a4b788dccccbf78e2820575cd21b2f9df"
+  },
+  "sources_frozen": false
+}

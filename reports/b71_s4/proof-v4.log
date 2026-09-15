@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s4/reports/b71_s4/prove_v4.py", line 135, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s4/reports/b71_s4/prove_v4.py", line 126, in main
+    assert len(boxes)==2 and all(box[2]<=g['down'][0] or box[0]>=g['down'][2] for box in boxes)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

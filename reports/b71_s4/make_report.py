@@ -5,13 +5,14 @@ import hashlib,json,re,shlex,subprocess
 ROOT=Path(__file__).resolve().parents[2]
 OUT=ROOT/'reports/b71_s4'
 m=json.loads((OUT/'measurements.json').read_bytes())
+text_rgb=json.loads((OUT/'text_rgb_mae.json').read_bytes())
 manifest=json.loads((ROOT/'data/nfl2k5_cave_reservations.json').read_bytes())
 results=sorted((json.loads(p.read_bytes()) for p in OUT.glob('*.result.json')),key=lambda r:r['start'])
 by_name={r['name']:r for r in results}
 programs=sorted((ROOT/'tests/mod_editor').glob('test_*scorebug*.py'))
 programs += [ROOT/'tests/nfl2k5_scorebug_layout_test.py',ROOT/'tests/nfl2k5_scorebug_mod_project_test.py']
 programs += [ROOT/'tests/mod_editor'/('test_'+n+'.py') for n in ('provider_integrity','product_catalog','phase1_packaging')]
-gates=['xbe-memory-final','xbe-cave-references-final']
+gates=['xbe-memory-final','xbe-cave-references-final','owner-pairwise-final','cave-oracle-final']
 names=[p.stem+'-delivery' for p in programs]+['registry-strict-delivery']+gates
 summary_path=OUT/'final-delivery-suite-summary.json'
 summary=json.loads(summary_path.read_bytes()) if summary_path.exists() else {}
@@ -70,6 +71,12 @@ lines += ['', '| Text | Source-restored ink, 4:3 | Source-restored ink, wide | M
 for role in m['reference']['text_source_boxes']:
  a,b=[m['comparisons'][aspect]['rendered_text_source_boxes'][role] for aspect in ('43','wide')]
  lines.append(f"| {role} | {a['box']} | {b['box']} | {a['max_hud_pixel_error']:.6f} / {b['max_hud_pixel_error']:.6f} |")
+lines += ['', '### Per-text RGB MAE','',
+'These use the same rounded HUD reference rectangles as `compare()`, including the background inside each ink bounding box. No glyph segmentation or alignment adjustment is applied. [text_rgb_mae.json](reports/b71_s4/text_rgb_mae.json) seals the rendered image hashes.', '',
+'| Text | 4:3 RGB MAE | Wide RGB MAE |', '| --- | ---: | ---: |']
+for role in m['reference']['text_source_boxes']:
+ a,b=[text_rgb['comparisons'][aspect]['text'][role]['rgb_mae'] for aspect in ('43','wide')]
+ lines.append(f'| {role} | {a:.3f} | {b:.3f} |')
 lines += ['', '## Regeneration and tests','',
 'Compiler pins were regenerated after the final UV correction: [compiler_pins.json](reports/b71_s4/compiler_pins.json), `pins-uv.log`. `packaging/repin.py --apply` refreshed provider seals. The unified visual provider now seals the assets module used for arbitrary atlas dimensions; its product allowlist includes that module and the two authored label files. The strict provider count is 286.', '',
 'The S3 `refresh_manifest.py` recipe observed the complete forward XBE stack from the A5 manifest, retaining historical retail reservations and excluding the shared rules helper from duplicate ownership. The final manifest has **13,095 spans**, with **138 observed calls**. SHA-256: `'+hashlib.sha256((ROOT/'data/nfl2k5_cave_reservations.json').read_bytes()).hexdigest()+'`. Scorebug owner code is `0x14BAA60..0x14BAFE0`; RW data is `0x14BB010..0x14BB090` in this union. The projection records `release_manifest=false`, `disc_built=false`, `runtime_witnessed=false`, `production_regeneration_required=true`; inherited disc fields are historical. External production packaging must regenerate its disc receipt.', '',

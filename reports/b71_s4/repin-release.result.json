@@ -1,0 +1,12 @@
+{
+  "name": "repin-release",
+  "command": [
+    "python3",
+    "packaging/repin.py",
+    "--apply"
+  ],
+  "start": "2026-09-15T22:09:32.925801+00:00",
+  "end": "2026-09-15T22:09:52.871193+00:00",
+  "seconds": 19.945,
+  "exit": 0
+}

@@ -1,0 +1,13 @@
+F...
+======================================================================
+FAIL: test_exact_async_chain_old_and_new_end_and_setup_registration_order (__main__.NativeTests.test_exact_async_chain_old_and_new_end_and_setup_registration_order)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_native.py", line 136, in test_exact_async_chain_old_and_new_end_and_setup_registration_order
+    self.assertEqual(m.get(m.mats['zscore_buga'] + 0x30), m.textures['sb27a0'])
+AssertionError: 69081656 != 69103160
+
+----------------------------------------------------------------------
+Ran 4 tests in 100.227s
+
+FAILED (failures=1)

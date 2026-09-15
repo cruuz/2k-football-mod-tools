@@ -1,0 +1,11 @@
+{
+  "name": "test_nfl2k5_scorebug_projection-sealed",
+  "command": [
+    "/usr/bin/python3",
+    "/home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_projection.py"
+  ],
+  "start": "2026-09-15T22:25:15.521873+00:00",
+  "end": "2026-09-15T22:26:13.768299+00:00",
+  "seconds": 58.246,
+  "exit": 0
+}

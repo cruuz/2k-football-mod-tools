@@ -1,0 +1,14 @@
+.........E
+======================================================================
+ERROR: test_runtime_scene_and_atlas_refit (__main__.RetailFontTests.test_runtime_scene_and_atlas_refit)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_mnf.py", line 156, in test_runtime_scene_and_atlas_refit
+    self.assertTrue(ainfo["wrapper_identical"])
+                    ~~~~~^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'wrapper_identical'
+
+----------------------------------------------------------------------
+Ran 10 tests in 11.561s
+
+FAILED (errors=1)

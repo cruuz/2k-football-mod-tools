@@ -24,6 +24,9 @@ prepared=json.loads((out/'builder_prepared.json').read_bytes())
 assert prepared['builder_sha256']==hashlib.sha256(builder.read_bytes()).hexdigest()
 assert prepared['executed'] is False
 m=json.loads((out/'measurements.json').read_bytes())
+text_rgb=json.loads((out/'text_rgb_mae.json').read_bytes())
+for aspect,row in text_rgb['comparisons'].items():
+ assert row['render_sha256']==hashlib.sha256((out/('render_'+aspect+'.png')).read_bytes()).hexdigest()
 for aspect in m['comparisons'].values():
  assert all(r['native_boundary_error_px']<=1 for r in aspect['regions'].values())
  assert all(r['max_error_px']<=1 and r['rendered_ink_max_error_px']<=1 for r in aspect['text'].values())
@@ -36,7 +39,7 @@ summary=json.loads((out/'final-delivery-suite-summary.json').read_bytes())
 assert summary['sources_frozen'] and not summary['failed']
 for path,expected in summary['source_sha256'].items():
  assert hashlib.sha256((ROOT/path).read_bytes()).hexdigest()==expected,path
-for name in ('xbe-memory-final','xbe-cave-references-final'):
+for name in ('xbe-memory-final','xbe-cave-references-final','owner-pairwise-final','cave-oracle-final'):
  assert json.loads((out/(name+'.result.json')).read_bytes())['exit']==0
 result=dict(volume_bytes=append,sector_growth=growth,native_heap_bytes=414080,
             code_bytes=len(code),code_budget=owner.CODE_SIZE,data_budget=owner.DATA_SIZE,

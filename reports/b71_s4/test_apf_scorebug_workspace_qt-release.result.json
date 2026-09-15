@@ -1,0 +1,11 @@
+{
+  "name": "test_apf_scorebug_workspace_qt-release",
+  "command": [
+    "/usr/bin/python3",
+    "/home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_apf_scorebug_workspace_qt.py"
+  ],
+  "start": "2026-09-15T22:09:34.131540+00:00",
+  "end": "2026-09-15T22:09:35.428423+00:00",
+  "seconds": 1.297,
+  "exit": 0
+}

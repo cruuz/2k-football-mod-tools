@@ -1,0 +1,11 @@
+{
+  "name": "test_nfl2k5_scorebug_mnf-delivery",
+  "command": [
+    "/usr/bin/python3",
+    "/home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_mnf.py"
+  ],
+  "start": "2026-09-15T22:40:13.709618+00:00",
+  "end": "2026-09-15T22:40:26.197640+00:00",
+  "seconds": 12.488,
+  "exit": 0
+}

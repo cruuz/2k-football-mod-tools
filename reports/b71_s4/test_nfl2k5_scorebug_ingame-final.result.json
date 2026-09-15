@@ -1,0 +1,11 @@
+{
+  "name": "test_nfl2k5_scorebug_ingame-final",
+  "command": [
+    "/usr/bin/python3",
+    "/home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_ingame.py"
+  ],
+  "start": "2026-09-15T22:28:02.567484+00:00",
+  "end": "2026-09-15T22:28:17.675715+00:00",
+  "seconds": 15.108,
+  "exit": 0
+}

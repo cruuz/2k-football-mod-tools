@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s4/reports/b71_s4/refresh_manifest.py", line 35, in <module>
+    summary=projection.refresh(output)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s4/tools/mycareer_mode/refresh_settings_manifest.py", line 137, in refresh
+    raise ValueError('sources changed during observation')
+ValueError: sources changed during observation

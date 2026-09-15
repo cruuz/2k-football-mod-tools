@@ -1,312 +1,357 @@
-# Beta 71 S3: scorebug v3
+# Beta 71 S4 — painted ESPN bar
 
-## Outcome
+## Result
 
-V3 is implemented and committed on `astra/b71-s3-scorebug-v3`, from `a7440f05` (A5 integration). Every final standalone suite, strict registry validation and both detached XBE gates passed.
+The painted v4 implementation is delivered on the private branch `astra/b71-s4-painted-bar`, based on the completed S3 HEAD `464423f0889581182f4a6de53971ecab23be19d5`.
 
-The native bar boundaries follow the requested source boxes within 0.007 HUD pixels in both aspects. The native comparison does **not** pass pixel-exact acceptance: text and RGB differences remain, and the supplied numeric plate/score dimensions differ from the photographed frame. The paired crops expose those differences. Appended data is **413,568 bytes / 0.394409 MiB**, only 11,008 bytes above A5.
+**Boundary acceptance is proved; visual equality is not.** Every measured region, native text box and thresholded text-ink box is within one HUD pixel in 4:3 and widescreen. The append is **410,624 bytes**, 2,944 bytes below v3. The code emits **1,380 bytes** inside the existing 1,408-byte RX allocation, with 128 bytes of RW state. `compare().exact_match` remains **false** in both aspects; this is not an exact ESPN image match.
 
-**PROVED:** generated resource identities, bounded native collection/font lookup, actual score/timeout/play-clock callbacks, geometry and software raster output, multi-digit score separation, and the completed checks listed below. **UNWITNESSED:** booting or playing this build, GPU filtering, real-match transitions, the final disc and its option read-back. No emulator, disc build or push was run.
+Final validation is still pending; this generated draft must be refreshed after all gates finish.
 
-## Inputs and interpretation
+Compare the actual output: [4:3, ESPN above / native below at 2×](reports/b71_s4/compare_43.png), [widescreen at 2×](reports/b71_s4/compare_wide.png), [event and matchup contact sheet](reports/b71_s4/states_contact_sheet.png). The supplied `bar_compare_espn_vs_s3_render_2x.png` was inspected before editing.
 
-- Read `ASTRA_CONTEXT.md`, the scorebug-v2 verdict in `BETA71_TRIAGE.md`, all four requested B70/B71 source reports, and the A5 `ASTRA_REPORT.md` at the parent revision. The S3 brief expressly authorizes scorebug writers, registry evidence, RC96 and the cave-manifest update despite the older general context exclusions.
-- Opened `/home/noah/Desktop/2K5-8 Editors/beta71_evidence/bar_compare_espn_vs_disc_f.png`: ESPN above, disc f below. The stated verdict was “it doesn’t look exactly like espn ... not close yet”.
-- Measured source: `/home/noah/Desktop/Broncos-vs-Chiefs-Week1-Highlights/frames/frame_012001.jpg`, 1920×1080, SHA-256 `01622a78b6778f089e4b242c8deda42833b10ae123150ed5bc8989dc483929d7`.
-- The explicit plate is `(828,946,1120,1000)`, larger than the approximately `(837,947,1084,983)` plate in the frame. The frame’s score “7” has 53 pixels of thresholded ink, while this brief requests 45. V3 follows the explicit numeric dimensions and reports the resulting photograph comparison honestly.
-- The HUD transform is `x/3`, `16 + y*448/1080`; authored scene coordinates use `exact.scene_box`. Widescreen applies the existing `27/32` horizontal contraction about HUD x=320. Crops undo that contraction before restoring the 1920×1080 source coordinates.
+## The six residuals
 
-## Implementation and injection routes
+1. **Painted body and ramps.** `atlas_mnf()` paints at twice source resolution, then downsamples tiles into a same-name **256×512 P8** `score_buga` atlas. The frame tile is 256×110, stretched over the 1,041×110 source rectangle; this horizontal storage limit remains visible in fine edges. Body RGB is (37,37,37), with an r=8 silhouette, two-source-pixel top rim (60,64,70) and bottom rim (13,20,28). Two neutral white alpha ramps are tinted by the owner and blend smoothly to the charcoal inner wing edge. Score-panel slabs are gone: score digits sit over the same flat body. The housing, capsule, red-cell silhouette and plate are painted tiles.
+2. **Plate and label.** Plate 837..1083 × 947..983; a separate top-centre triangle uses the same tintable white mask. The complete v3 primary/near-black-secondary table stays. Roboto Condensed Bold is rasterized at 64 pixels (46-pixel cap, twice the target 23), retained as a checked-in mask sheet, and downsampled into existing ASCII cells in slot 9. Digits, ordinal letters, ampersand, Goal/and letters and space remain available to native formatting. The font authoring source and SHA are in `painted_label_2x.json`; no installed font is required at runtime.
+3. **Capsule.** White 839..1019 × 999..1039 and red (215,0,51) cell 1019..1082 × 999..1040. A 41-source-pixel painted backing covers the capsule; the white region bottom is therefore 0.413 HUD pixel below its 40-pixel reference box. Quarter is dark (30,30,30), with raised smaller capitals; clock is black bold; play-clock digits are white. Native countdown and visibility remain, with the existing below-five-seconds red pulse. Hidden play clock removes its digit/pulse layer; the painted red backing remains.
+4. **Scores and ticks.** Private large-score cells are now 26×48 texels, with 53-source-pixel draw height and RGB (225,225,225). Compact multi-digit cells share those UVs and remain clear of the plate for 28, 100 and 999. Three bright (246,246,246) 20-source-pixel ticks use native timeout callbacks with 10-pixel gaps. Their ink lands within one HUD pixel of the requested y=1032..1038 boxes.
+5. **Logos.** One shared 64×64 logo cell per team replaces separate home/away textures. The v3 aspect fit is retained in a 200×107 source quad; DEN is enlarged to fill that height. The original small source marks still limit edge quality. Both DEN at KC and NO at DEN were rendered in both aspects; NO uses its gold secondary possession plate.
+6. **Retail states.** Native flag, score-event (FUMBLE), hang-time, ball-on and hidden play-clock states were rendered individually at both aspects. Their slabs sample flat charcoal and their native text remains readable. `all_events` intentionally overlays incompatible labels and is diagnostic only. Native formatting, callback ABI, missing-FONT fallback, score ranges, timeouts and urgency cases are covered by active native suites.
 
-### Bar, wings and possession plate
+## Native routes and allocation
 
-The retail frame mesh uses an authored 64×64 atlas nine-slice with a real rounded corner, a light rim and vertical charcoal shading. The per-team 64×64 wing textures retain the proved small collection route. Each packs a height-filling logo and a two-dimensional colour ramp; the ramp reaches the body at about 65% of the wing width. Logo fitting uses the final source box aspect, preserving the mark’s proportions even when the texture cell itself is stretched. DEN uses the lit wing RGB `(56,89,144)`; KC uses `(180,56,86)`. No 256×512 atlas is added.
+The appended same-name atlas wins the ordinary HUD resource lookup. The original 64×64 static fallback atlas remains in its fixed span. Slot 9 uses an appended same-name `FirstPersonComic` FONT, preserving the retail root/boot-loop lookup; quarter uses appended `core_bug`. Their live descriptor references are field-relative, including a backwards range-table reference resolved with x86 32-bit wrapping. No parallel invented FONT record replaces the native loader.
 
-The plate is a white mask multiplied by full team colour, with a small pointer. Every other team uses its complete primary; the explicit near-black secondary choices are:
+The scene stays in its **4,800-byte compressed span** with retail wrapper/scratch size retained by the fill compressor. Existing NV2A command spans are rewritten to plain quads (13 quads plus the pointer triangle across 11 submeshes). The steady visible bar has 19 triangles. Retail nine-slice indices and score slabs no longer draw. SHAPE UV scale/bias is normalized to (0.5,0.5,0.5,0.5), avoiding the retail 64-pixel correction sampling a neighbouring white atlas texel on event slabs.
 
-| Team | Plate secondary |
-| --- | --- |
-| CHI | `#C83803` |
-| DEN | `#FB4F14` |
-| HOU | `#C8102E` |
-| LV | `#A5ACAF` |
-| NE | `#C60C30` |
-| NO | `#D3BC8D` |
-| PIT | `#FFB612` |
-| SEA | `#69BE28` |
-| TEN | `#4B92DB` |
+Material ownership: `cscore_buga` draws body, housing and capsule; `yscore_buga` / `yscore_buga1` draw tintable away/home masks; `zscore_buga` / `hscore_buga` draw shared logos; `dscore_buga` draws plate and pointer. The spare `score_buga` material owns the red pulse cell. Native event materials retain separate charcoal quads. Hang time owns the spare event slab, preserving its formatter and visibility.
 
-Unknown asset codes retain the neutral table value. The existing 40-entry asset-code table and owner lookup provide the tint; created-team fallbacks remain guarded.
+Both sides resolve the canonical `sbXXh0` resource. Per-team plate and wing ARGB words occupy unused TXTR header padding immediately before the native descriptor (descriptor −8 / −4), sealed by full compiler hashes. Setup caches them in RW state and updates the masks and possession plate. This removes inline colour tables and keeps the owner in the established legacy allocation. Missing HUD/FONT lookups retain native score and clock callbacks; private codepoints are installed only after successful slot-9 lookup.
 
-### Scores, timeout ticks and capsule
+Score ranges are U+0080..0089 (large) and U+0090..0099 (compact), clock U+00B0..00B9 and play clock U+00C0..00C9. Native clock formatters still produce the values before remapping. Event ASCII remains available. The owner setup and update displaced calls execute once, with their original ABI.
 
-- The appended `FirstPersonComic` FONT uses the existing tenth boot name (slot 9), copied from the complete retail font4 donor including its loader object tail. Its original ASCII cells remain available. The owner binds only the intended scorebug descriptors; global retail font slots stay unchanged.
-- `U+0080..U+0089` provide 40×45 source-pixel score quads from 13×20 masks packed in previously unused 128×128 atlas space. `U+0090..U+0099` reuse those exact UV cells at narrower metrics for multi-digit scores. Native score formatters at `0xFC050` and `0xFC070` still determine the string, then the owner callbacks at records `0xA9594C` and `0xA95984` select the appropriate range. Scores 28, 100 and 999 remain outside the down plate in both aspects. No additional texture pixels are allocated for compact scores.
-- Timeout callbacks write `~ ~ ~`, trimmed to 0–3 timeouts. The private tilde is a solid small tick with explicit advance and spacing; colour is `0xFFC8CACE`. This is not a FONT8 hyphen.
-- The grey quarter uses the smaller `core_bug` font with capital suffix masks. The game clock uses the broadcast digit fork in black. The play-clock callback wraps native `0xFBE30` and removes the leading zero from `04`; its digit stays white.
-- Spare material `score_buga` supplies the 61×39 geometry box from `(1021,1000)` to `(1082,1039)`, corresponding to the brief’s nominal 61×40 cell. Base tint is `(120,14,39)`, with the existing urgency behavior expressed as a bright-red pulse on the cell under five seconds. The pulse derives from the countdown bits, not a promised fixed-Hz timer. Boundary tests cover 12, 5, 4, 2.5, 0, negative and NaN values, with white text in both red phases.
-- The capsule backing is on the always-visible alternate frame material. Hiding the play-clock element during live play therefore keeps a light backing behind the black game clock and grey quarter.
+### Exact volume
 
-### Retail states and owner capacity
+| Appended component | Count × bytes | Total bytes | Native heap bytes |
+| --- | ---: | ---: | ---: |
+| Shared 64×64 team TXTR | 32 × 5,280 | 168,960 | 172,032 |
+| Neutral 32×32 TXTR | 1 × 2,208 | 2,208 | 2,304 |
+| Painted 256×512 P8 atlas | 1 × 132,256 | 132,256 | 132,352 |
+| Slot-9 FirstPersonComic FONT, 256×256 | 1 × 80,160 | 80,160 | 80,256 |
+| core_bug quarter FONT, 128×128 | 1 × 27,040 | 27,040 | 27,136 |
+| **Total** | **34 TXTR + 2 FONT** | **410,624** | **414,080** |
 
-Native event formatters and visibility remain in use. A separate charcoal material, `zz_ESPN_bug1`, restores independent hang-time visibility at descriptor `0xA95AEC`; v2 had cleared its availability. Individual FLAG, Hangtime, Ball at Midfield, FUMBLE and hidden-play-clock renders are in [states.json](reports/b71_s3/states.json). `score_*` images refer to the retail FUMBLE event formatter, not a newly authored TOUCHDOWN slab. The `all_events_*` image deliberately forces incompatible simultaneous elements and is a stress diagnostic, not an accepted retail display state.
+The pack grows by **411,648 bytes** after sector alignment. V3 appended 413,568 bytes: v4 saves **2,944 bytes (0.71%)**. The payload stays in the historically viable ~0.4 MB class. This is a byte/loader-allocation proof, not a played-game peak-memory or freeze guarantee.
 
-Owner revision 7 occupies **1,386 / 1,408 code bytes**, plus the existing 128-byte data allocation. Shared wing setup and score-flash helpers recovered room; `CODE_SIZE` did not need to grow. Runtime data remains in its named writable allocation. The slot-9 lookup failure retains native descriptor fallbacks. Tests cover register/FPU preservation, native visibility, write ownership, foreign-byte refusal, idempotence and composition.
+## Measurements
 
-## Volume and freeze boundary
+Reference: `frame_012001.jpg`, 1920×1080, SHA-256 `01622a78b6778f089e4b242c8deda42833b10ae123150ed5bc8989dc483929d7`. The corrected S4 boxes supersede the older broad v3 comparison rectangles. Source coordinates map to the active 640×448 HUD with y inset 16; widescreen additionally contracts x around 320 by 27/32. Boundary errors below are HUD pixels, not pixels of the enlarged comparison sheet.
 
-| Component | Bytes |
-| --- | ---: |
-| 66 texture spans × 5,280 | 348,480 |
-| FirstPersonComic FONT | 38,048 |
-| core_bug FONT | 27,040 |
-| Appended payload | **413,568** |
-| Sector-rounded resource growth | 413,696 |
-| Native rounded heap estimate for appended spans | 420,096 |
+`prove_v4.py` executes the native callbacks and scene transforms, then calls `compare()` with `MNF_V4_COMPARE_REGIONS` and the requested text boxes. Software raster output is measured independently for text ink. [measurements.json](reports/b71_s4/measurements.json) includes full native boxes, thresholded ink boxes and source-restored ink boxes.
 
-The new FONT metadata adds 11,008 bytes over the 402,560-byte A5 appendix. Atlas video sizes remain unchanged. This stays near the historically successful 0.4 MB class rather than the roughly 1.7 MB expansion associated with a failed loader allocation and subsequent null read. That historical evidence and the bounded loader tests are not a new boot witness; in-game freeze freedom remains UNWITNESSED.
+### Per-region boundary error and RGB MAE
 
-## Native measurements
+| Region | 4:3 boundary | Wide boundary | 4:3 RGB MAE | Wide RGB MAE |
+| --- | ---: | ---: | ---: | ---: |
+| centre_pill | 0.005273 | 0.005273 | 42.503 | 42.540 |
+| clock_strip | 0.004964 | 0.004189 | 32.807 | 32.417 |
+| frame_rim | 0.006285 | 0.006285 | 40.227 | 39.743 |
+| housing | 0.005273 | 0.005273 | 29.650 | 29.048 |
+| left_panel | 0.006285 | 0.006285 | 33.642 | 33.431 |
+| play_clock_cell | 0.004344 | 0.003666 | 14.979 | 13.848 |
+| pointer | 0.006285 | 0.006285 | 41.700 | 36.708 |
+| right_panel | 0.006285 | 0.006285 | 53.753 | 53.281 |
+| white_capsule | 0.413169 | 0.413169 | 39.046 | 38.606 |
 
-[4:3 ESPN/native comparison](reports/b71_s3/compare_43.png) · [Widescreen ESPN/native comparison](reports/b71_s3/compare_wide.png) · [Full JSON](reports/b71_s3/measurements.json)
+Mean region RGB MAE: **36.479 / 35.514** (4:3 / wide). The comparison threshold is 8; neither image passes it. Full-frame containment is empty and every visible triangle has consistent winding. The reference still differs in bevel/reflection detail, plate colour (the requested v3 team table is retained), mark contours, text shapes and sampled edges. These differences must not be described as an exact ESPN match.
 
-`prove_v3.py` executes the native HUD/formatters with the compiled collection, then calls `compare()` with `MNF_COMPARE_REGIONS` and text boxes independently thresholded from the broadcast frame. Text components touching ROI edges are discarded to exclude capsule-rim fragments. The v3 role map supplies the right light/dark polarity for relocated callbacks. Native glyph quads include transparent padding; source-restored raster ink is reported separately.
+### Text boundaries
 
-### Region errors
+Each row reports the greatest coordinate error for the native quad and measured raster ink. Source rectangles use exclusive right/bottom edges.
 
-Boundary and edge-distance values below are HUD pixels; RGB MAE is on the 0–255 channel scale. Geometry matching is distinct from photo matching.
+| Text | Requested source box | 4:3 native / ink HUD error | Wide native / ink HUD error |
+| --- | --- | ---: | ---: |
+| away_score | [736, 965, 776, 1018] | 0.333597 / 0.666667 | 0.281472 / 0.296296 |
+| away_ticks | [717, 1032, 796, 1038] | 0.333323 / 0.666667 | 0.325939 / 0.422222 |
+| clock | [920, 1006, 1000, 1033] | 0.696309 / 0.696296 | 0.696309 / 0.696296 |
+| down | [898, 955, 1021, 978] | 0.851852 / 0.666667 | 0.851852 / 0.437500 |
+| home_score | [1138, 965, 1180, 1018] | 0.333105 / 0.666667 | 0.281058 / 0.296296 |
+| home_ticks | [1120, 1032, 1198, 1038] | 0.333333 / 0.666667 | 0.325939 / 0.422222 |
+| play_clock | [1042, 1009, 1057, 1028] | 0.666667 / 0.666667 | 0.562500 / 0.937500 |
+| quarter | [850, 1009, 892, 1028] | 0.451852 / 0.666667 | 0.451852 / 0.570370 |
 
-| Region | Boundary 4:3 | Boundary wide | RGB MAE 4:3 | RGB MAE wide | Edge p95 4:3 / wide |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| centre_pill | 0.005859 | 0.005254 | 62.641 | 62.537 | 7.071 / 6.356 |
-| clock_strip | 0.005254 | 0.005254 | 53.613 | 52.020 | 3.000 / 2.236 |
-| frame_rim | 0.006285 | 0.006285 | 60.683 | 60.160 | 43.000 / 43.000 |
-| left_panel | 0.006285 | 0.006285 | 47.050 | 46.647 | 9.849 / 8.944 |
-| right_panel | 0.006285 | 0.006285 | 68.272 | 68.203 | 7.000 / 6.083 |
-
-| Extra region | Boundary 4:3 | Boundary wide |
-| --- | ---: | ---: |
-| away | 0.004801 | 0.004051 |
-| home | 0.006285 | 0.006285 |
-| play_clock_cell | 0.005254 | 0.005254 |
-| pointer | 0.006285 | 0.006285 |
-
-### Text errors in source pixels
-
-All boxes are `[left, top, right, bottom]`, with exclusive right/bottom. These are independently measured ink boxes. The quarter’s capitals are now within 3–4 pixels; the widest remaining text difference is the down label (20 pixels at its right edge), which is centered on the larger requested plate.
-
-| Text | Broadcast ink | 4:3 rendered ink | Max error 4:3 / wide |
+| Text | Source-restored ink, 4:3 | Source-restored ink, wide | Max HUD error, 4:3 / wide |
 | --- | --- | --- | ---: |
-| away_score | `[736, 965, 776, 1018]` | `[735, 965, 773, 1010]` | 8 / 8 |
-| away_ticks | `[717, 1032, 796, 1038]` | `[718, 1032, 794, 1037]` | 2 / 2 |
-| clock | `[920, 1006, 1000, 1033]` | `[929, 1008, 1000, 1032]` | 9 / 8 |
-| down | `[898, 955, 1021, 978]` | `[904, 960, 1041, 985]` | 20 / 20 |
-| home_score | `[1139, 965, 1179, 1018]` | `[1138, 965, 1178, 1010]` | 8 / 8 |
-| home_ticks | `[1120, 1032, 1198, 1038]` | `[1120, 1032, 1196, 1037]` | 2 / 1 |
-| play_clock | `[1042, 1009, 1057, 1028]` | `[1044, 1007, 1061, 1026]` | 4 / 6 |
-| quarter | `[850, 1009, 892, 1028]` | `[852, 1010, 895, 1029]` | 3 / 4 |
+| away_score | [736, 965, 773, 1017] | [737, 965, 774, 1017] | 1.000000 / 0.562500 |
+| away_ticks | [717, 1032, 798, 1039] | [719, 1032, 796, 1039] | 0.666667 / 0.562500 |
+| clock | [921, 1007, 999, 1035] | [920, 1007, 999, 1035] | 0.829630 / 0.829630 |
+| down | [899, 955, 1020, 980] | [899, 955, 1020, 980] | 0.829630 / 0.829630 |
+| home_score | [1141, 965, 1178, 1017] | [1139, 965, 1180, 1017] | 1.000000 / 0.414815 |
+| home_ticks | [1119, 1032, 1200, 1039] | [1120, 1032, 1198, 1039] | 0.666667 / 0.414815 |
+| play_clock | [1044, 1008, 1058, 1027] | [1045, 1008, 1059, 1027] | 0.666667 / 0.843750 |
+| quarter | [850, 1010, 891, 1030] | [850, 1010, 892, 1030] | 0.829630 / 0.829630 |
 
-`compare().exact_match` is **false in both aspects**. Mean region RGB MAE is 58.452 / 57.914. All measured native frame containment checks are empty and visible triangle winding is consistent. Software raster sampling, low-resolution marks, differing text proportions, the larger plate and the specified shorter score explain why boundary agreement is not visual equality. No claim is made that GPU output will remove those residuals.
+### Per-text RGB MAE
 
-## Regeneration and validation
+These use the same rounded HUD reference rectangles as `compare()`, including the background inside each ink bounding box. No glyph segmentation or alignment adjustment is applied. [text_rgb_mae.json](reports/b71_s4/text_rgb_mae.json) seals the rendered image hashes.
 
-Compiler pins were regenerated from the actual final `Build` output, including the whole appended FONT hash: [compiler_pins.json](reports/b71_s3/compiler_pins.json). `packaging/repin.py --apply` updated provider seals. The resource identity is `scorebug-mnf-2026-v3`.
+| Text | 4:3 RGB MAE | Wide RGB MAE |
+| --- | ---: | ---: |
+| away_score | 34.472 | 32.800 |
+| away_ticks | 48.556 | 46.348 |
+| clock | 90.504 | 89.806 |
+| down | 67.260 | 67.482 |
+| home_score | 31.718 | 32.066 |
+| home_ticks | 50.291 | 43.323 |
+| play_clock | 63.333 | 60.500 |
+| quarter | 46.214 | 43.964 |
 
-The cave manifest contains 13,081 reservations and 138 observed steps. Its final SHA-256 is `06609653fb463e26f05c90d3db8aaede996201000c6c3f0afbe3941da2af9e2a`. The scorebug owner occupies code `0x14BAA60..0x14BAFE0` and data `0x14BB010..0x14BB090` in this union. This is a **bounded complete forward XBE projection**, freshly observed from the A5 parent. It retains historical retail reservations and records final owner bytes/source hashes. It is not a production disc receipt: `release_manifest=false`, `disc_built=false`, `production_regeneration_required=true`, and inherited disc fields are explicitly historical. The external production build must regenerate its full receipt.
+## Regeneration and tests
 
-The first projection accidentally recorded `nfl2k5_rules_patch.apply` and its named caller as two owners of the same rule bytes. The cave gate rejected `nfl2k5_coin_defer/choose` at `0x25E7B5`. The corrected local projection recipe excludes that shared helper from independent observation, retains the real rule writers, and always starts from the A5 manifest. No gate or oracle assertion was relaxed.
+Compiler pins were regenerated after the final UV correction: [compiler_pins.json](reports/b71_s4/compiler_pins.json), `pins-uv.log`. `packaging/repin.py --apply` refreshed provider seals. The unified visual provider now seals the assets module used for arbitrary atlas dimensions; its product allowlist includes that module and the two authored label files. The strict provider count is 286.
+
+The S3 `refresh_manifest.py` recipe observed the complete forward XBE stack from the A5 manifest, retaining historical retail reservations and excluding the shared rules helper from duplicate ownership. The final manifest has **13,095 spans**, with **138 observed calls**. SHA-256: `0a182996cecebcc5efacedb1fd3b04949fb59a612a2167b9d2fb9c1af6dfbcb6`. Scorebug owner code is `0x14BAA60..0x14BAFE0`; RW data is `0x14BB010..0x14BB090` in this union. The projection records `release_manifest=false`, `disc_built=false`, `runtime_witnessed=false`, `production_regeneration_required=true`; inherited disc fields are historical. External production packaging must regenerate its disc receipt.
+
+Both XBE gates were launched **detached** using `setsid nohup`, redirected logs and stdin `/dev/null`, then polled. A foreground shell waited for each detached child to keep the sandbox session alive. No `pkill -f` was used. Their full classes cover both installation orders, allocation scale-out and oracle checks.
 
 ### Final standalone results
 
-The final driver completed 28 standalone programs: 279 reported unittest cases, including 15 skips, with no failures and unchanged source snapshots. Each final command is an independent Python process with `PYTHONPATH=<repo>:<repo>/tools` and `QT_QPA_PLATFORM=offscreen`. Two independent suites run concurrently. Strict registry validation uses default file checking, without `--skip-file-checks`. The final driver snapshots source hashes before and after.
+The `-delivery` driver runs every standalone scorebug suite plus provider integrity, product catalog and phase1 packaging in independent offscreen Python processes. It records source hashes before and after. Strict validation retains default file checks. Earlier runs remain diagnostic; only this final frozen-source run and the named final gates are the delivery verdict.
 
-| Command/result | Exit | Tests | Skips | Wall seconds |
+| Command | Exit | Tests | Skips | Seconds |
 | --- | ---: | ---: | ---: | ---: |
-| [test_apf_scorebug_workspace_qt-release](reports/b71_s3/test_apf_scorebug_workspace_qt-release.log) | 0 | 11 | 0 | 0.658 |
-| [test_nfl2k5_scorebug_assets-release](reports/b71_s3/test_nfl2k5_scorebug_assets-release.log) | 0 | 8 | 1 | 170.202 |
-| [test_nfl2k5_scorebug_author-release](reports/b71_s3/test_nfl2k5_scorebug_author-release.log) | 0 | 12 | 0 | 6.953 |
-| [test_nfl2k5_scorebug_exact-release](reports/b71_s3/test_nfl2k5_scorebug_exact-release.log) | 0 | 8 | 0 | 83.77 |
-| [test_nfl2k5_scorebug_fonts-release](reports/b71_s3/test_nfl2k5_scorebug_fonts-release.log) | 0 | 10 | 5 | 9.0 |
-| [test_nfl2k5_scorebug_freeze-release](reports/b71_s3/test_nfl2k5_scorebug_freeze-release.log) | 0 | 7 | 0 | 332.317 |
-| [test_nfl2k5_scorebug_freeze_v2-release](reports/b71_s3/test_nfl2k5_scorebug_freeze_v2-release.log) | 0 | 7 | 0 | 418.219 |
-| [test_nfl2k5_scorebug_ingame-release](reports/b71_s3/test_nfl2k5_scorebug_ingame-release.log) | 0 | 11 | 0 | 16.002 |
-| [test_nfl2k5_scorebug_ingame_fix-release](reports/b71_s3/test_nfl2k5_scorebug_ingame_fix-release.log) | 0 | 9 | 0 | 135.588 |
-| [test_nfl2k5_scorebug_mnf-release](reports/b71_s3/test_nfl2k5_scorebug_mnf-release.log) | 0 | 10 | 0 | 12.08 |
-| [test_nfl2k5_scorebug_mnf_v3-release](reports/b71_s3/test_nfl2k5_scorebug_mnf_v3-release.log) | 0 | 4 | 0 | 32.929 |
-| [test_nfl2k5_scorebug_native-release](reports/b71_s3/test_nfl2k5_scorebug_native-release.log) | 0 | 4 | 0 | 130.74 |
-| [test_nfl2k5_scorebug_projection-release](reports/b71_s3/test_nfl2k5_scorebug_projection-release.log) | 0 | 14 | 0 | 56.575 |
-| [test_nfl2k5_scorebug_resources-release](reports/b71_s3/test_nfl2k5_scorebug_resources-release.log) | 0 | 6 | 0 | 244.834 |
-| [test_nfl2k5_scorebug_runtime-release](reports/b71_s3/test_nfl2k5_scorebug_runtime-release.log) | 0 | 12 | 0 | 117.87 |
-| [test_nfl2k5_scorebug_source_art-release](reports/b71_s3/test_nfl2k5_scorebug_source_art-release.log) | 0 | 13 | 3 | 0.49 |
-| [test_nfl2k5_scorebug_template-release](reports/b71_s3/test_nfl2k5_scorebug_template-release.log) | 0 | 19 | 0 | 9.906 |
-| [test_nfl2k5_scorebug_template_release-release](reports/b71_s3/test_nfl2k5_scorebug_template_release-release.log) | 0 | 5 | 0 | 0.575 |
-| [test_nfl2k5_scorebug_unified_adapter-release](reports/b71_s3/test_nfl2k5_scorebug_unified_adapter-release.log) | 0 | 5 | 0 | 0.167 |
-| [test_nfl2k5_scorebug_v10_ingame-release](reports/b71_s3/test_nfl2k5_scorebug_v10_ingame-release.log) | 0 | 11 | 0 | 9.182 |
-| [test_nfl2k5_scorebug_v10_projection-release](reports/b71_s3/test_nfl2k5_scorebug_v10_projection-release.log) | 0 | 14 | 0 | 28.071 |
-| [test_nfl2k5_scorebug_versions-release](reports/b71_s3/test_nfl2k5_scorebug_versions-release.log) | 0 | 4 | 0 | 9.357 |
-| [test_scorebug_studio_panel_qt-release](reports/b71_s3/test_scorebug_studio_panel_qt-release.log) | 0 | 11 | 0 | 7.251 |
-| [nfl2k5_scorebug_layout_test-release](reports/b71_s3/nfl2k5_scorebug_layout_test-release.log) | 0 | 15 | 6 | 1.35 |
-| [nfl2k5_scorebug_mod_project_test-release](reports/b71_s3/nfl2k5_scorebug_mod_project_test-release.log) | 0 | 10 | 0 | 1.304 |
-| [test_provider_integrity-release](reports/b71_s3/test_provider_integrity-release.log) | 0 | 7 | 0 | 8.225 |
-| [test_product_catalog-release](reports/b71_s3/test_product_catalog-release.log) | 0 | 9 | 0 | 0.15 |
-| [test_phase1_packaging-release](reports/b71_s3/test_phase1_packaging-release.log) | 0 | 23 | 0 | 2.079 |
-| [registry-strict-release](reports/b71_s3/registry-strict-release.log) | 0 | — | 0 | 0.159 |
-| [xbe-memory-release](reports/b71_s3/xbe-memory-release.log) | 0 | 119 | 0 | 1579.189 |
-| [xbe-caves-release](reports/b71_s3/xbe-caves-release.log) | 0 | 131 | 0 | 1771.283 |
+| [test_apf_scorebug_workspace_qt-delivery](reports/b71_s4/test_apf_scorebug_workspace_qt-delivery.log) | 0 | 11 | 0 | 0.604 |
+| [test_nfl2k5_scorebug_assets-delivery](reports/b71_s4/test_nfl2k5_scorebug_assets-delivery.log) | 0 | 8 | 1 | 150.732 |
+| [test_nfl2k5_scorebug_author-delivery](reports/b71_s4/test_nfl2k5_scorebug_author-delivery.log) | 0 | 12 | 0 | 6.704 |
+| [test_nfl2k5_scorebug_exact-delivery](reports/b71_s4/test_nfl2k5_scorebug_exact-delivery.log) | 0 | 8 | 0 | 78.833 |
+| [test_nfl2k5_scorebug_fonts-delivery](reports/b71_s4/test_nfl2k5_scorebug_fonts-delivery.log) | 0 | 10 | 5 | 8.912 |
+| [test_nfl2k5_scorebug_freeze-delivery](reports/b71_s4/test_nfl2k5_scorebug_freeze-delivery.log) | 0 | 7 | 0 | 238.596 |
+| [test_nfl2k5_scorebug_freeze_v2-delivery](reports/b71_s4/test_nfl2k5_scorebug_freeze_v2-delivery.log) | 0 | 7 | 0 | 333.344 |
+| [test_nfl2k5_scorebug_ingame-delivery](reports/b71_s4/test_nfl2k5_scorebug_ingame-delivery.log) | 0 | 11 | 0 | 16.023 |
+| [test_nfl2k5_scorebug_ingame_fix-delivery](reports/b71_s4/test_nfl2k5_scorebug_ingame_fix-delivery.log) | 0 | 9 | 0 | 140.809 |
+| [test_nfl2k5_scorebug_mnf-delivery](reports/b71_s4/test_nfl2k5_scorebug_mnf-delivery.log) | 0 | 10 | 0 | 12.488 |
+| [test_nfl2k5_scorebug_mnf_v3-delivery](reports/b71_s4/test_nfl2k5_scorebug_mnf_v3-delivery.log) | 0 | 7 | 0 | 54.573 |
+| [test_nfl2k5_scorebug_native-delivery](reports/b71_s4/test_nfl2k5_scorebug_native-delivery.log) | 0 | 4 | 0 | 152.177 |
+| [test_nfl2k5_scorebug_projection-delivery](reports/b71_s4/test_nfl2k5_scorebug_projection-delivery.log) | 0 | 14 | 0 | 65.083 |
+| [test_nfl2k5_scorebug_resources-delivery](reports/b71_s4/test_nfl2k5_scorebug_resources-delivery.log) | 0 | 6 | 0 | 307.742 |
+| [test_nfl2k5_scorebug_runtime-delivery](reports/b71_s4/test_nfl2k5_scorebug_runtime-delivery.log) | 0 | 12 | 0 | 180.567 |
+| [test_nfl2k5_scorebug_source_art-delivery](reports/b71_s4/test_nfl2k5_scorebug_source_art-delivery.log) | 0 | 13 | 3 | 0.974 |
+| [test_nfl2k5_scorebug_template-delivery](reports/b71_s4/test_nfl2k5_scorebug_template-delivery.log) | 0 | 19 | 0 | 12.228 |
+| [test_nfl2k5_scorebug_template_release-delivery](reports/b71_s4/test_nfl2k5_scorebug_template_release-delivery.log) | 0 | 5 | 0 | 0.977 |
+| [test_nfl2k5_scorebug_unified_adapter-delivery](reports/b71_s4/test_nfl2k5_scorebug_unified_adapter-delivery.log) | 0 | 5 | 0 | 0.328 |
+| [test_nfl2k5_scorebug_v10_ingame-delivery](reports/b71_s4/test_nfl2k5_scorebug_v10_ingame-delivery.log) | 0 | 11 | 0 | 14.083 |
+| [test_nfl2k5_scorebug_v10_projection-delivery](reports/b71_s4/test_nfl2k5_scorebug_v10_projection-delivery.log) | 0 | 14 | 0 | 35.786 |
+| [test_nfl2k5_scorebug_versions-delivery](reports/b71_s4/test_nfl2k5_scorebug_versions-delivery.log) | 0 | 4 | 0 | 12.658 |
+| [test_scorebug_studio_panel_qt-delivery](reports/b71_s4/test_scorebug_studio_panel_qt-delivery.log) | 0 | 11 | 0 | 7.685 |
+| [nfl2k5_scorebug_layout_test-delivery](reports/b71_s4/nfl2k5_scorebug_layout_test-delivery.log) | 0 | 15 | 6 | 2.296 |
+| [nfl2k5_scorebug_mod_project_test-delivery](reports/b71_s4/nfl2k5_scorebug_mod_project_test-delivery.log) | 0 | 10 | 0 | 1.912 |
+| [test_provider_integrity-delivery](reports/b71_s4/test_provider_integrity-delivery.log) | 0 | 7 | 0 | 15.476 |
+| [test_product_catalog-delivery](reports/b71_s4/test_product_catalog-delivery.log) | 0 | 9 | 0 | 0.204 |
+| [test_phase1_packaging-delivery](reports/b71_s4/test_phase1_packaging-delivery.log) | 0 | 23 | 0 | 2.872 |
+| [registry-strict-delivery](reports/b71_s4/registry-strict-delivery.log) | 0 | — | 0 | 0.307 |
+| [xbe-memory-final](reports/b71_s4/xbe-memory-final.log) | 0 | 119 | 0 | 1732.185 |
+| [xbe-cave-references-final](reports/b71_s4/xbe-cave-references-final.log) | 0 | 131 | 0 | 1958.445 |
+| owner-pairwise-final | PENDING | | | |
+| [cave-oracle-final](reports/b71_s4/cave-oracle-final.log) | 0 | 29 | 0 | 455.759 |
 
-The assets suite precisely skips its disc-copy transaction when the required Storage scratch directory is read-only (EROFS/EACCES/EPERM). Its other checks still execute. The font suite retains five historical private-font-v8 skips; current v3 lookup, relocation, glyphs and callbacks have active native tests. The source-art suite has three skips for missing developer PNG/scene fixtures and the corresponding old disc comparison. The layout suite has five skips for an absent historical Create-a-Play image and one for a missing glTF research export. A verbose rerun with its CPU-emulation flag enabled confirmed the image blocker. These skips are not boot or disc evidence; exact reasons are in `source-art-skip-details.log` and `layout-skip-details.log`.
+Final reported unittest cases including gates: **561**, including **15 skips**. Frozen-source driver complete: **False**.
 
-Preliminary failures are retained in the ledger: read-only Storage, stale hyphen/dark-text/fixed-callback assertions, pin changes while early exploratory suites were already loaded, a mistaken test expectation for the pulse phase, the font-span rounding correction, and the duplicate shared-helper manifest owner. The final `-release` runs supersede those exploratory verdicts. The old sequential driver retains its failure exit; it is not advertised as a passing final run.
+Skips retain the established precise boundaries: read-only Storage for the assets disc-copy transaction; five historical private-font-v8 cases; missing source-art fixtures; and historical layout image/glTF fixtures. Active current-font/native suites run. These skipped cases are not boot or disc evidence.
 
-Initial strict registry validation lacked 75 ignored evidence files. Real copies were restored from the existing read-only local evidence source, matching the A5 per-file hashes (2,063,157 bytes); [evidence_hydration.json](reports/b71_s3/evidence_hydration.json) records them. They are neither staged nor bundled.
+Exploratory failures are retained in the command ledger. An initial larger owner exceeded the full legacy allocator capacity; caching colours from logo header padding reduced it to 1,380 bytes. A manifest attempt detected source edits during observation and was rerun after freezing code. Later suite failures were obsolete separate-away-resource and FONT-state assertions, a missing-font callback guard, provider closure and missing ignored registry evidence. The final tests assert the new shared resources, native fallback callbacks and preserved event sampling. No gate assertions or registry file checks were relaxed. A misspelled cave-gate filename exited before execution; the correctly named detached gate supersedes it.
 
-## Registry, RC96 and builder
+Strict registry validation initially lacked the same 75 ignored evidence files as S3. Real copies were restored from the existing read-only checkout, checked against S3 hashes: **2,063,157 bytes**. [evidence_hydration.json](reports/b71_s4/evidence_hydration.json) records them. These baseline ignored files are neither staged nor bundled.
 
-The existing `nfl2k5.scorebug_presentation.runtime` capability row was updated with v3 scope, volume and proof paths. No capability rows were added. Runtime witness status remains `not-tested`, experimental and off in every preset. The RC96 scorebug bullet is anonymous and states the native proof limits.
+## Registry, RC96 and prepared builder
 
-The prepared [builder](reports/b71_s3/build_testdisc71.py) follows A5: Advanced preset with scorebug, scorebug runtime, modern colour and widescreen all enabled. Output:
+The existing runtime capability row now describes v4 resource counts, measured boundaries, failed exact-pixel acceptance and evidence links. Runtime status remains `not-tested`, experimental and off in every preset. The RC96 bullet is anonymous and states the software-render/played-game limits.
 
-`/home/noah/2K5 Mod Studio Builds/NFL 2K5 MOD TEST 2026-09-15h (scorebug v3 + colour + widescreen).xiso.iso`
+[build_testdisc71.py](reports/b71_s4/build_testdisc71.py) follows the S3 builder pattern: `softdrink_advanced` preset, `scorebug`, `scorebug_runtime`, `modern_color`, `widescreen` all true. Prepared output:
 
-Only `--plan-only` ran here. The builds folder is read-only in this session. The external builder first checks destination access, refuses an existing named output, preserves every patch archive, and follows A5’s at-most-three MOD TEST image policy. It removes incomplete discs on failure. After building it reparses the scorebug resources, XBE owner, all 477 colour bundles and widescreen sites, requires every status to be `applied` and aspect `16:9`, then exports the patch.
+`NFL 2K5 MOD TEST 2026-09-15j (painted bar + colour + widescreen)`
 
-Import the bundle into the integration checkout (or fast-forward this worktree’s ordinary branch outside the sandbox) before building, so build receipts record the final source head. The private branch does not update the ordinary read-only HEAD. Then run externally from that checkout:
+**The builder was not run, including `--plan-only`.** It was parsed/compiled and its literal name/options checked without importing or executing it; [builder_prepared.json](reports/b71_s4/builder_prepared.json) seals the file. The builds folder is read-only here. When run externally, it checks output access, refuses an existing named output, preserves patches, applies the inherited three-test-image retention policy, checks resource/XBE/477-colour-bundle/widescreen readback, and removes an incomplete disc on failure.
 
-```bash
-bash reports/b71_s3/launch_testdisc71.sh
-```
+Import the bundle into the integration checkout before running the builder so external receipts record the delivered source head. No disc, patch archive or disc readback receipt was generated in this task.
 
-Expected external receipts are `.scratch/testdisc71h/{plan,pruning,receipt,readback,patch-receipt,result}.json` plus `build.log`, `pid` and `exit`. No disc image, patch or read-back receipt was created here.
+## PROVED / UNWITNESSED
 
-### Played-game witness still required
+**PROVED:** authored atlas/FONT compilation and full hashes; same-name native resource binding; owner ABI, fallback, state and formatter execution; exact byte budgets; fixed scene span; corrected native boundaries and measured ink within one HUD pixel; both aspect transforms; individual event renders; multi-digit clearance; final passing suites and XBE gates as listed.
 
-- Intro/coin toss/kickoff load without the historical allocation crash.
-- Steady bar in 4:3 and widescreen; large marks, gradients, rim and score font match the supplied crops.
-- Possession changes including near-black teams; single-, double- and triple-digit score updates; timeout consumption.
-- Clock running/paused/hidden, urgency below five seconds, quarter and overtime labels.
-- Native flag, hang-time, ball-on and score events stay readable through their real transitions.
+**NOT ACHIEVED:** pixel equality to the ESPN crop. The side-by-side is the review artifact, and RGB MAE remains above acceptance. It would be incorrect to call this the same image or to attribute remaining differences to untested GPU filtering.
+
+**UNWITNESSED:** an actual intro/coin toss/kickoff load, peak memory during the intro, played-game transitions and visibility, GPU filtering, real score/timeout/possession changes and event animation. No emulator was opened. These require the external test build and a played match.
 
 ## Commits and delivery
 
-- Base: `a7440f05`, branch `astra/b71-s3-scorebug-v3`. The ordinary worktree `.git` is read-only, so commits live in `.scratch/private.git` using `.scratch/g`. No shared branch refs or other worktrees were changed.
-- Implementation commits: `374872cd` and `d18939b250dcf7863c729ac7ad29a30fdbe7dd18`. Staging and commits use enumerated paths; the second list is in [source_commit.json](reports/b71_s3/source_commit.json). Evidence/manifest/report commits follow after the checks.
-- Bundle: `.scratch/astra-b71-s3.bundle`, prerequisite `a7440f05`. It is created from the final private branch and verified locally. The final delivery receipt records head, size and SHA-256.
-- Retail inputs remain read-only and no retail pack/XBE/disc bytes are stored in the report or bundle. Scratch remains under 200 MB. No push or emulator launch.
+The ordinary worktree `.git` and shared repository remain untouched. All commits use enumerated explicit paths in `.scratch/private.git`, branch `astra/b71-s4-painted-bar`. Implementation commits include `d74418b8` and `52cd8348`; later test/evidence/report commits are in the bundle. No push.
+
+Bundle: `.scratch/astra-b71-s4.bundle`, prerequisite **`464423f0889581182f4a6de53971ecab23be19d5`**, the actual completed S3 worktree HEAD. The shared S3 branch name was stale, so the prerequisite uses that exact commit. The external delivery receipt in `.scratch/b71-s4-delivery.json` records the final head, bundle size and SHA after verification. Retail inputs remain read-only; no retail native FONT/TXTR/XBE/pack/disc binaries are bundled. Scratch usage is below 200 MB.
 
 ## Command ledger
 
-[command_ledger.json](reports/b71_s3/command_ledger.json) contains exact argv, UTC start/end, elapsed seconds and exit status for all recorded commands; each named log contains the complete output. Early read-only discovery and editing commands are in the session tool transcript rather than this runner. The first aborted manifest observation was overwritten by its retry; it is not counted as a proof. No validation claim relies on an unrecorded run.
+[command_ledger.json](reports/b71_s4/command_ledger.json) contains exact argv, UTC start/end, duration and exit status for recorded compilation, proof and verification commands. Each named log retains complete output. Read-only discovery, patching, private-git setup, detached shell wrappers and report assembly are also in the session tool transcript. Failed exploratory runs are explicitly superseded, not erased.
 
 | Name | UTC start | Seconds | Exit | Exact command |
 | --- | --- | ---: | ---: | --- |
-| [pin-compiler](reports/b71_s3/pin-compiler.log) | 2026-09-15T20:34:17.093185+00:00 | 43.989 | 0 | `python3 reports/b71_s3/regenerate_pins.py` |
-| [render-check](reports/b71_s3/render-check.log) | 2026-09-15T20:36:54.138861+00:00 | 11.046 | 0 | `python3 -` |
-| [pin-compiler-final](reports/b71_s3/pin-compiler-final.log) | 2026-09-15T20:38:35.172278+00:00 | 44.93 | 0 | `python3 reports/b71_s3/regenerate_pins.py` |
-| [proof-v3](reports/b71_s3/proof-v3.log) | 2026-09-15T20:40:13.957437+00:00 | 38.17 | 0 | `python3 reports/b71_s3/prove_v3.py` |
-| [repin-initial](reports/b71_s3/repin-initial.log) | 2026-09-15T20:41:53.323250+00:00 | 19.745 | 0 | `python3 packaging/repin.py --apply` |
-| [test_nfl2k5_scorebug_mnf_v3-rerun](reports/b71_s3/test_nfl2k5_scorebug_mnf_v3-rerun.log) | 2026-09-15T20:44:01.066266+00:00 | 16.491 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py` |
-| [proof-v3-events](reports/b71_s3/proof-v3-events.log) | 2026-09-15T20:44:20.519889+00:00 | 38.436 | 0 | `python3 reports/b71_s3/prove_v3.py` |
-| [pin-compiler-release](reports/b71_s3/pin-compiler-release.log) | 2026-09-15T20:44:53.806440+00:00 | 44.718 | 0 | `python3 reports/b71_s3/regenerate_pins.py` |
-| [repin-source](reports/b71_s3/repin-source.log) | 2026-09-15T20:46:03.666330+00:00 | 20.849 | 0 | `python3 packaging/repin.py --apply` |
-| [proof-v3-final](reports/b71_s3/proof-v3-final.log) | 2026-09-15T20:47:19.230102+00:00 | 45.166 | 0 | `python3 reports/b71_s3/prove_v3.py` |
-| [pin-compiler-v3](reports/b71_s3/pin-compiler-v3.log) | 2026-09-15T20:47:20.378696+00:00 | 45.094 | 0 | `python3 reports/b71_s3/regenerate_pins.py` |
-| [registry-preflight](reports/b71_s3/registry-preflight.log) | 2026-09-15T20:47:45.757330+00:00 | 0.175 | 1 | `python3 -m mod_editor.capabilities.validate_registry` |
-| [test_nfl2k5_scorebug_exact-preflight](reports/b71_s3/test_nfl2k5_scorebug_exact-preflight.log) | 2026-09-15T20:47:46.037033+00:00 | 68.333 | 1 | `python3 tests/mod_editor/test_nfl2k5_scorebug_exact.py` |
-| [repin-validation](reports/b71_s3/repin-validation.log) | 2026-09-15T20:48:22.376586+00:00 | 21.491 | 0 | `python3 packaging/repin.py --apply` |
-| [manifest](reports/b71_s3/manifest.log) | 2026-09-15T20:48:23.503627+00:00 | 336.65 | 0 | `python3 reports/b71_s3/refresh_manifest.py` |
-| [test_apf_scorebug_workspace_qt](reports/b71_s3/test_apf_scorebug_workspace_qt.log) | 2026-09-15T20:48:34.064803+00:00 | 1.52 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_apf_scorebug_workspace_qt.py` |
-| [builder-plan](reports/b71_s3/builder-plan.log) | 2026-09-15T20:48:35.221648+00:00 | 0.303 | 0 | `python3 reports/b71_s3/build_testdisc71.py --plan-only` |
-| [test_nfl2k5_scorebug_assets](reports/b71_s3/test_nfl2k5_scorebug_assets.log) | 2026-09-15T20:48:35.614943+00:00 | 150.403 | 1 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_assets.py` |
-| [proof-v3-measured-text](reports/b71_s3/proof-v3-measured-text.log) | 2026-09-15T20:49:25.355800+00:00 | 46.405 | 0 | `python3 reports/b71_s3/prove_v3.py` |
-| [test_nfl2k5_scorebug_author](reports/b71_s3/test_nfl2k5_scorebug_author.log) | 2026-09-15T20:51:06.048537+00:00 | 6.552 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_author.py` |
-| [test_nfl2k5_scorebug_exact](reports/b71_s3/test_nfl2k5_scorebug_exact.log) | 2026-09-15T20:51:12.630575+00:00 | 84.262 | 1 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_exact.py` |
-| [proof-v3-ink](reports/b71_s3/proof-v3-ink.log) | 2026-09-15T20:51:31.168503+00:00 | 45.985 | 0 | `python3 reports/b71_s3/prove_v3.py` |
-| [test_nfl2k5_scorebug_assets-rerun](reports/b71_s3/test_nfl2k5_scorebug_assets-rerun.log) | 2026-09-15T20:52:06.844121+00:00 | 154.124 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_assets.py` |
-| [test_nfl2k5_scorebug_fonts](reports/b71_s3/test_nfl2k5_scorebug_fonts.log) | 2026-09-15T20:52:36.921099+00:00 | 8.157 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_fonts.py` |
-| [test_nfl2k5_scorebug_freeze](reports/b71_s3/test_nfl2k5_scorebug_freeze.log) | 2026-09-15T20:52:45.108080+00:00 | 243.839 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_freeze.py` |
-| [xbe-memory](reports/b71_s3/xbe-memory.log) | 2026-09-15T20:54:00.187826+00:00 | 1625.046 | 0 | `python3 tests/mod_editor/test_xbe_patch_memory_writes.py` |
-| [xbe-caves](reports/b71_s3/xbe-caves.log) | 2026-09-15T20:54:00.187953+00:00 | 1114.998 | 1 | `python3 tests/mod_editor/test_xbe_patch_cave_references.py` |
-| [delivery-check](reports/b71_s3/delivery-check.log) | 2026-09-15T20:55:38.947128+00:00 | 0.293 | 0 | `python3 reports/b71_s3/check_delivery.py` |
-| [test_nfl2k5_scorebug_exact-rerun](reports/b71_s3/test_nfl2k5_scorebug_exact-rerun.log) | 2026-09-15T20:56:04.665488+00:00 | 81.518 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_exact.py` |
-| [test_nfl2k5_scorebug_freeze_v2](reports/b71_s3/test_nfl2k5_scorebug_freeze_v2.log) | 2026-09-15T20:56:48.978583+00:00 | 60.46 | 1 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py` |
-| [pin-compiler-capsule](reports/b71_s3/pin-compiler-capsule.log) | 2026-09-15T20:57:17.412176+00:00 | 44.036 | 0 | `python3 reports/b71_s3/regenerate_pins.py` |
-| [proof-v3-capsule](reports/b71_s3/proof-v3-capsule.log) | 2026-09-15T20:57:28.667167+00:00 | 45.49 | 0 | `python3 reports/b71_s3/prove_v3.py` |
-| [test_nfl2k5_scorebug_ingame](reports/b71_s3/test_nfl2k5_scorebug_ingame.log) | 2026-09-15T20:57:49.467693+00:00 | 14.909 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_ingame.py` |
-| [repin-capsule](reports/b71_s3/repin-capsule.log) | 2026-09-15T20:57:49.823216+00:00 | 32.591 | 0 | `python3 packaging/repin.py --apply` |
-| [test_nfl2k5_scorebug_ingame_fix](reports/b71_s3/test_nfl2k5_scorebug_ingame_fix.log) | 2026-09-15T20:58:04.405281+00:00 | 109.093 | 1 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py` |
-| [manifest-capsule](reports/b71_s3/manifest-capsule.log) | 2026-09-15T20:58:51.268795+00:00 | 0.481 | 1 | `python3 reports/b71_s3/refresh_manifest.py` |
-| [test_nfl2k5_scorebug_mnf_v3-final](reports/b71_s3/test_nfl2k5_scorebug_mnf_v3-final.log) | 2026-09-15T20:58:51.842495+00:00 | 17.154 | 1 | `python3 tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py` |
-| [test_nfl2k5_scorebug_assets-final](reports/b71_s3/test_nfl2k5_scorebug_assets-final.log) | 2026-09-15T20:58:53.170838+00:00 | 146.533 | 0 | `/usr/bin/python3 tests/mod_editor/test_nfl2k5_scorebug_assets.py` |
-| [manifest-final](reports/b71_s3/manifest-final.log) | 2026-09-15T20:59:33.766259+00:00 | 313.013 | 1 | `python3 reports/b71_s3/refresh_manifest.py` |
-| [test_nfl2k5_scorebug_mnf](reports/b71_s3/test_nfl2k5_scorebug_mnf.log) | 2026-09-15T20:59:53.526353+00:00 | 11.777 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_mnf.py` |
-| [test_nfl2k5_scorebug_mnf_v3](reports/b71_s3/test_nfl2k5_scorebug_mnf_v3.log) | 2026-09-15T21:00:05.333079+00:00 | 16.539 | 1 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py` |
-| [proof-v3-final-metrics](reports/b71_s3/proof-v3-final-metrics.log) | 2026-09-15T21:00:21.476411+00:00 | 44.77 | 0 | `python3 reports/b71_s3/prove_v3.py` |
-| [test_nfl2k5_scorebug_native](reports/b71_s3/test_nfl2k5_scorebug_native.log) | 2026-09-15T21:00:21.900819+00:00 | 129.678 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_native.py` |
-| [test_nfl2k5_scorebug_mnf_v3-verified](reports/b71_s3/test_nfl2k5_scorebug_mnf_v3-verified.log) | 2026-09-15T21:00:54.540627+00:00 | 16.812 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py` |
-| [test_nfl2k5_scorebug_author-final](reports/b71_s3/test_nfl2k5_scorebug_author-final.log) | 2026-09-15T21:01:19.732684+00:00 | 6.451 | 0 | `/usr/bin/python3 tests/mod_editor/test_nfl2k5_scorebug_author.py` |
-| [test_nfl2k5_scorebug_ingame_fix-final](reports/b71_s3/test_nfl2k5_scorebug_ingame_fix-final.log) | 2026-09-15T21:01:25.691419+00:00 | 127.882 | 1 | `python3 tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py` |
-| [test_nfl2k5_scorebug_exact-final](reports/b71_s3/test_nfl2k5_scorebug_exact-final.log) | 2026-09-15T21:01:26.211286+00:00 | 83.085 | 0 | `/usr/bin/python3 tests/mod_editor/test_nfl2k5_scorebug_exact.py` |
-| [repin-capsule-final](reports/b71_s3/repin-capsule-final.log) | 2026-09-15T21:02:06.361653+00:00 | 11.035 | 0 | `python3 packaging/repin.py --apply` |
-| [test_nfl2k5_scorebug_projection](reports/b71_s3/test_nfl2k5_scorebug_projection.log) | 2026-09-15T21:02:31.610116+00:00 | 57.746 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_projection.py` |
-| [test_nfl2k5_scorebug_fonts-final](reports/b71_s3/test_nfl2k5_scorebug_fonts-final.log) | 2026-09-15T21:02:49.325022+00:00 | 8.132 | 0 | `/usr/bin/python3 tests/mod_editor/test_nfl2k5_scorebug_fonts.py` |
-| [test_nfl2k5_scorebug_freeze-final](reports/b71_s3/test_nfl2k5_scorebug_freeze-final.log) | 2026-09-15T21:02:57.484726+00:00 | 243.26 | 0 | `/usr/bin/python3 tests/mod_editor/test_nfl2k5_scorebug_freeze.py` |
-| [test_nfl2k5_scorebug_resources](reports/b71_s3/test_nfl2k5_scorebug_resources.log) | 2026-09-15T21:03:29.388546+00:00 | 112.248 | 1 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_resources.py` |
-| [pin-compiler-compact](reports/b71_s3/pin-compiler-compact.log) | 2026-09-15T21:05:01.429100+00:00 | 1.144 | 1 | `python3 reports/b71_s3/regenerate_pins.py` |
-| [test_nfl2k5_scorebug_runtime](reports/b71_s3/test_nfl2k5_scorebug_runtime.log) | 2026-09-15T21:05:21.666878+00:00 | 117.973 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_runtime.py` |
-| [test_nfl2k5_scorebug_mnf_v3-compact](reports/b71_s3/test_nfl2k5_scorebug_mnf_v3-compact.log) | 2026-09-15T21:06:00.051937+00:00 | 1.082 | 1 | `python3 tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py` |
-| [pin-compiler-compact-verified](reports/b71_s3/pin-compiler-compact-verified.log) | 2026-09-15T21:06:39.982534+00:00 | 45.645 | 0 | `python3 reports/b71_s3/regenerate_pins.py` |
-| [test_nfl2k5_scorebug_freeze_v2-final](reports/b71_s3/test_nfl2k5_scorebug_freeze_v2-final.log) | 2026-09-15T21:07:00.779612+00:00 | 61.497 | 1 | `/usr/bin/python3 tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py` |
-| [test_nfl2k5_scorebug_source_art](reports/b71_s3/test_nfl2k5_scorebug_source_art.log) | 2026-09-15T21:07:19.668334+00:00 | 0.482 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_source_art.py` |
-| [test_nfl2k5_scorebug_template](reports/b71_s3/test_nfl2k5_scorebug_template.log) | 2026-09-15T21:07:20.180040+00:00 | 9.899 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_template.py` |
-| [test_nfl2k5_scorebug_mnf_v3-compact-final](reports/b71_s3/test_nfl2k5_scorebug_mnf_v3-compact-final.log) | 2026-09-15T21:07:25.723824+00:00 | 33.784 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py` |
-| [test_nfl2k5_scorebug_template_release](reports/b71_s3/test_nfl2k5_scorebug_template_release.log) | 2026-09-15T21:07:30.110175+00:00 | 0.583 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_template_release.py` |
-| [test_nfl2k5_scorebug_unified_adapter](reports/b71_s3/test_nfl2k5_scorebug_unified_adapter.log) | 2026-09-15T21:07:30.723045+00:00 | 0.17 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_unified_adapter.py` |
-| [test_nfl2k5_scorebug_v10_ingame](reports/b71_s3/test_nfl2k5_scorebug_v10_ingame.log) | 2026-09-15T21:07:30.922806+00:00 | 9.155 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_v10_ingame.py` |
-| [test_nfl2k5_scorebug_v10_projection](reports/b71_s3/test_nfl2k5_scorebug_v10_projection.log) | 2026-09-15T21:07:40.107871+00:00 | 29.951 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_v10_projection.py` |
-| [repin-release](reports/b71_s3/repin-release.log) | 2026-09-15T21:07:48.561283+00:00 | 22.366 | 0 | `python3 packaging/repin.py --apply` |
-| [test_nfl2k5_scorebug_versions](reports/b71_s3/test_nfl2k5_scorebug_versions.log) | 2026-09-15T21:08:10.088157+00:00 | 10.023 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_versions.py` |
-| [test_scorebug_studio_panel_qt](reports/b71_s3/test_scorebug_studio_panel_qt.log) | 2026-09-15T21:08:20.141962+00:00 | 7.443 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_scorebug_studio_panel_qt.py` |
-| [proof-v3-release](reports/b71_s3/proof-v3-release.log) | 2026-09-15T21:08:26.353394+00:00 | 63.729 | 0 | `python3 reports/b71_s3/prove_v3.py` |
-| [manifest-release](reports/b71_s3/manifest-release.log) | 2026-09-15T21:08:27.524667+00:00 | 368.874 | 0 | `python3 reports/b71_s3/refresh_manifest.py` |
-| [test_apf_scorebug_workspace_qt-release](reports/b71_s3/test_apf_scorebug_workspace_qt-release.log) | 2026-09-15T21:08:27.565544+00:00 | 0.658 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_apf_scorebug_workspace_qt.py` |
-| [test_nfl2k5_scorebug_assets-release](reports/b71_s3/test_nfl2k5_scorebug_assets-release.log) | 2026-09-15T21:08:27.567180+00:00 | 170.202 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_assets.py` |
-| [nfl2k5_scorebug_layout_test](reports/b71_s3/nfl2k5_scorebug_layout_test.log) | 2026-09-15T21:08:27.615405+00:00 | 1.493 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/nfl2k5_scorebug_layout_test.py` |
-| [test_nfl2k5_scorebug_author-release](reports/b71_s3/test_nfl2k5_scorebug_author-release.log) | 2026-09-15T21:08:28.256884+00:00 | 6.953 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_author.py` |
-| [nfl2k5_scorebug_mod_project_test](reports/b71_s3/nfl2k5_scorebug_mod_project_test.log) | 2026-09-15T21:08:29.137318+00:00 | 1.37 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/nfl2k5_scorebug_mod_project_test.py` |
-| [test_provider_integrity](reports/b71_s3/test_provider_integrity.log) | 2026-09-15T21:08:30.540888+00:00 | 9.223 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_provider_integrity.py` |
-| [test_nfl2k5_scorebug_exact-release](reports/b71_s3/test_nfl2k5_scorebug_exact-release.log) | 2026-09-15T21:08:35.242273+00:00 | 83.77 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_exact.py` |
-| [test_product_catalog](reports/b71_s3/test_product_catalog.log) | 2026-09-15T21:08:39.795806+00:00 | 0.16 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_product_catalog.py` |
-| [test_phase1_packaging](reports/b71_s3/test_phase1_packaging.log) | 2026-09-15T21:08:39.985496+00:00 | 2.353 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_phase1_packaging.py` |
-| [registry-strict](reports/b71_s3/registry-strict.log) | 2026-09-15T21:08:42.371603+00:00 | 0.17 | 0 | `/usr/bin/python3 -m mod_editor.capabilities.validate_registry` |
-| [repin-before-source-commit](reports/b71_s3/repin-before-source-commit.log) | 2026-09-15T21:08:56.316751+00:00 | 11.145 | 0 | `python3 packaging/repin.py --apply` |
-| [test_nfl2k5_scorebug_fonts-release](reports/b71_s3/test_nfl2k5_scorebug_fonts-release.log) | 2026-09-15T21:09:59.041491+00:00 | 9.0 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_fonts.py` |
-| [test_nfl2k5_scorebug_freeze-release](reports/b71_s3/test_nfl2k5_scorebug_freeze-release.log) | 2026-09-15T21:10:08.072000+00:00 | 332.317 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_freeze.py` |
-| [test_nfl2k5_scorebug_freeze_v2-release](reports/b71_s3/test_nfl2k5_scorebug_freeze_v2-release.log) | 2026-09-15T21:11:17.809800+00:00 | 418.219 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py` |
-| [builder-plan-release](reports/b71_s3/builder-plan-release.log) | 2026-09-15T21:14:24.793293+00:00 | 0.363 | 0 | `python3 reports/b71_s3/build_testdisc71.py --plan-only` |
-| [xbe-memory-release](reports/b71_s3/xbe-memory-release.log) | 2026-09-15T21:14:36.436663+00:00 | 1579.189 | 0 | `python3 tests/mod_editor/test_xbe_patch_memory_writes.py` |
-| [xbe-caves-release](reports/b71_s3/xbe-caves-release.log) | 2026-09-15T21:14:36.443914+00:00 | 1771.283 | 0 | `python3 tests/mod_editor/test_xbe_patch_cave_references.py` |
-| [delivery-check-release](reports/b71_s3/delivery-check-release.log) | 2026-09-15T21:15:17.994071+00:00 | 0.45 | 0 | `python3 reports/b71_s3/check_delivery.py` |
-| [test_nfl2k5_scorebug_ingame-release](reports/b71_s3/test_nfl2k5_scorebug_ingame-release.log) | 2026-09-15T21:15:40.431297+00:00 | 16.002 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_ingame.py` |
-| [test_nfl2k5_scorebug_ingame_fix-release](reports/b71_s3/test_nfl2k5_scorebug_ingame_fix-release.log) | 2026-09-15T21:15:56.464240+00:00 | 135.588 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py` |
-| [test_nfl2k5_scorebug_mnf-release](reports/b71_s3/test_nfl2k5_scorebug_mnf-release.log) | 2026-09-15T21:18:12.082605+00:00 | 12.08 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_mnf.py` |
-| [test_nfl2k5_scorebug_mnf_v3-release](reports/b71_s3/test_nfl2k5_scorebug_mnf_v3-release.log) | 2026-09-15T21:18:16.059198+00:00 | 32.929 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py` |
-| [test_nfl2k5_scorebug_native-release](reports/b71_s3/test_nfl2k5_scorebug_native-release.log) | 2026-09-15T21:18:24.193681+00:00 | 130.74 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_native.py` |
-| [test_nfl2k5_scorebug_projection-release](reports/b71_s3/test_nfl2k5_scorebug_projection-release.log) | 2026-09-15T21:18:49.017483+00:00 | 56.575 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_projection.py` |
-| [test_nfl2k5_scorebug_resources-release](reports/b71_s3/test_nfl2k5_scorebug_resources-release.log) | 2026-09-15T21:19:45.621536+00:00 | 244.834 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_resources.py` |
-| [test_nfl2k5_scorebug_runtime-release](reports/b71_s3/test_nfl2k5_scorebug_runtime-release.log) | 2026-09-15T21:20:34.963148+00:00 | 117.87 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_runtime.py` |
-| [test_nfl2k5_scorebug_source_art-release](reports/b71_s3/test_nfl2k5_scorebug_source_art-release.log) | 2026-09-15T21:22:32.864880+00:00 | 0.49 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_source_art.py` |
-| [test_nfl2k5_scorebug_template-release](reports/b71_s3/test_nfl2k5_scorebug_template-release.log) | 2026-09-15T21:22:33.383822+00:00 | 9.906 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_template.py` |
-| [test_nfl2k5_scorebug_template_release-release](reports/b71_s3/test_nfl2k5_scorebug_template_release-release.log) | 2026-09-15T21:22:43.319796+00:00 | 0.575 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_template_release.py` |
-| [test_nfl2k5_scorebug_unified_adapter-release](reports/b71_s3/test_nfl2k5_scorebug_unified_adapter-release.log) | 2026-09-15T21:22:43.924081+00:00 | 0.167 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_unified_adapter.py` |
-| [test_nfl2k5_scorebug_v10_ingame-release](reports/b71_s3/test_nfl2k5_scorebug_v10_ingame-release.log) | 2026-09-15T21:22:44.120010+00:00 | 9.182 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_v10_ingame.py` |
-| [test_nfl2k5_scorebug_v10_projection-release](reports/b71_s3/test_nfl2k5_scorebug_v10_projection-release.log) | 2026-09-15T21:22:53.334695+00:00 | 28.071 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_v10_projection.py` |
-| [test_nfl2k5_scorebug_versions-release](reports/b71_s3/test_nfl2k5_scorebug_versions-release.log) | 2026-09-15T21:23:21.434239+00:00 | 9.357 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_versions.py` |
-| [test_scorebug_studio_panel_qt-release](reports/b71_s3/test_scorebug_studio_panel_qt-release.log) | 2026-09-15T21:23:30.820569+00:00 | 7.251 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_scorebug_studio_panel_qt.py` |
-| [nfl2k5_scorebug_layout_test-release](reports/b71_s3/nfl2k5_scorebug_layout_test-release.log) | 2026-09-15T21:23:38.099322+00:00 | 1.35 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/nfl2k5_scorebug_layout_test.py` |
-| [nfl2k5_scorebug_mod_project_test-release](reports/b71_s3/nfl2k5_scorebug_mod_project_test-release.log) | 2026-09-15T21:23:39.477483+00:00 | 1.304 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/nfl2k5_scorebug_mod_project_test.py` |
-| [test_provider_integrity-release](reports/b71_s3/test_provider_integrity-release.log) | 2026-09-15T21:23:40.809626+00:00 | 8.225 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_provider_integrity.py` |
-| [test_product_catalog-release](reports/b71_s3/test_product_catalog-release.log) | 2026-09-15T21:23:49.065788+00:00 | 0.15 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_product_catalog.py` |
-| [test_phase1_packaging-release](reports/b71_s3/test_phase1_packaging-release.log) | 2026-09-15T21:23:49.245319+00:00 | 2.079 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_phase1_packaging.py` |
-| [registry-strict-release](reports/b71_s3/registry-strict-release.log) | 2026-09-15T21:23:51.355126+00:00 | 0.159 | 0 | `/usr/bin/python3 -m mod_editor.capabilities.validate_registry` |
-| [source-art-skip-details](reports/b71_s3/source-art-skip-details.log) | 2026-09-15T21:24:48.344334+00:00 | 0.761 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_source_art.py -v` |
-| [layout-skip-details](reports/b71_s3/layout-skip-details.log) | 2026-09-15T21:24:48.357031+00:00 | 1.478 | 0 | `env NFL2K5_SCOREBUG_EMULATION_TEST=1 python3 tests/nfl2k5_scorebug_layout_test.py -v` |
+| [initial-render](reports/b71_s4/initial-render.log) | 2026-09-15T21:57:39.460927+00:00 | 5.896 | 0 | `python3 -c 'from pathlib import Path;from nfl2k5_scorebug_exact import Build;p=Path("extracted/ESPN NFL 2K5 (USA)/vc_53450030/0");b=Build(p,p.parents[1]/"default.xbe");g=b.render(Path("reports/b71_s4/initial.png"),runtime=True,matchup=("DEN","KC"),score_values=(7,7),previous_scores=(7,7),quarter=2,game_seconds=273,play_seconds=4,down=3);import json;Path("reports/b71_s4/initial.json").write_text(json.dumps(g));b.close()'` |
+| [second-render](reports/b71_s4/second-render.log) | 2026-09-15T21:59:47.122414+00:00 | 6.07 | 0 | `python3 -c 'from pathlib import Path;from nfl2k5_scorebug_exact import Build;p=Path("extracted/ESPN NFL 2K5 (USA)/vc_53450030/0");b=Build(p,p.parents[1]/"default.xbe");g=b.render(Path("reports/b71_s4/second.png"),runtime=True,matchup=("DEN","KC"),score_values=(7,7),previous_scores=(7,7),quarter=2,game_seconds=273,play_seconds=4,down=3);import json;Path("reports/b71_s4/second.json").write_text(json.dumps(g));b.close()'` |
+| [proof-v4](reports/b71_s4/proof-v4.log) | 2026-09-15T22:01:21.671849+00:00 | 57.818 | 1 | `python3 reports/b71_s4/prove_v4.py` |
+| [pins](reports/b71_s4/pins.log) | 2026-09-15T22:01:35.262086+00:00 | 40.246 | 0 | `python3 reports/b71_s4/regenerate_pins.py` |
+| [proof-density](reports/b71_s4/proof-density.log) | 2026-09-15T22:03:53.752094+00:00 | 61.787 | 1 | `python3 reports/b71_s4/prove_v4.py` |
+| [pins-density](reports/b71_s4/pins-density.log) | 2026-09-15T22:04:59.768687+00:00 | 39.582 | 0 | `python3 reports/b71_s4/regenerate_pins.py` |
+| [mnf-contract](reports/b71_s4/mnf-contract.log) | 2026-09-15T22:05:10.323110+00:00 | 11.777 | 1 | `python3 tests/mod_editor/test_nfl2k5_scorebug_mnf.py` |
+| [mnf-native](reports/b71_s4/mnf-native.log) | 2026-09-15T22:05:22.127326+00:00 | 36.748 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py` |
+| [proof-current](reports/b71_s4/proof-current.log) | 2026-09-15T22:06:05.912566+00:00 | 77.424 | 0 | `python3 reports/b71_s4/prove_v4.py` |
+| [repin-preflight](reports/b71_s4/repin-preflight.log) | 2026-09-15T22:07:01.797004+00:00 | 19.955 | 0 | `python3 packaging/repin.py --apply` |
+| [proof-text-fit](reports/b71_s4/proof-text-fit.log) | 2026-09-15T22:08:32.713562+00:00 | 77.928 | 0 | `python3 reports/b71_s4/prove_v4.py` |
+| [pins-final](reports/b71_s4/pins-final.log) | 2026-09-15T22:08:33.864082+00:00 | 39.993 | 0 | `python3 reports/b71_s4/regenerate_pins.py` |
+| [manifest](reports/b71_s4/manifest.log) | 2026-09-15T22:09:32.388896+00:00 | 0.448 | 1 | `python3 reports/b71_s4/refresh_manifest.py` |
+| [repin-release](reports/b71_s4/repin-release.log) | 2026-09-15T22:09:32.925801+00:00 | 19.945 | 0 | `python3 packaging/repin.py --apply` |
+| [test_nfl2k5_scorebug_assets-release](reports/b71_s4/test_nfl2k5_scorebug_assets-release.log) | 2026-09-15T22:09:34.131369+00:00 | 144.48 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_assets.py` |
+| [test_apf_scorebug_workspace_qt-release](reports/b71_s4/test_apf_scorebug_workspace_qt-release.log) | 2026-09-15T22:09:34.131540+00:00 | 1.297 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_apf_scorebug_workspace_qt.py` |
+| [test_nfl2k5_scorebug_author-release](reports/b71_s4/test_nfl2k5_scorebug_author-release.log) | 2026-09-15T22:09:35.457739+00:00 | 6.359 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_author.py` |
+| [test_nfl2k5_scorebug_exact-release](reports/b71_s4/test_nfl2k5_scorebug_exact-release.log) | 2026-09-15T22:09:41.844574+00:00 | 75.64 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_exact.py` |
+| [manifest-full](reports/b71_s4/manifest-full.log) | 2026-09-15T22:09:53.425779+00:00 | 11.554 | 1 | `python3 reports/b71_s4/refresh_manifest.py` |
+| [xbe-memory](reports/b71_s4/xbe-memory.log) | 2026-09-15T22:09:54.576804+00:00 | 40.661 | 1 | `python3 tests/mod_editor/test_xbe_patch_memory_writes.py` |
+| [test_nfl2k5_scorebug_fonts-release](reports/b71_s4/test_nfl2k5_scorebug_fonts-release.log) | 2026-09-15T22:10:57.511927+00:00 | 8.39 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_fonts.py` |
+| [test_nfl2k5_scorebug_freeze-release](reports/b71_s4/test_nfl2k5_scorebug_freeze-release.log) | 2026-09-15T22:11:05.928933+00:00 | 235.356 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_freeze.py` |
+| [test_nfl2k5_scorebug_freeze_v2-release](reports/b71_s4/test_nfl2k5_scorebug_freeze_v2-release.log) | 2026-09-15T22:11:58.638941+00:00 | 322.774 | 1 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py` |
+| [pins-compact](reports/b71_s4/pins-compact.log) | 2026-09-15T22:13:13.067189+00:00 | 42.562 | 0 | `python3 reports/b71_s4/regenerate_pins.py` |
+| [native-compact](reports/b71_s4/native-compact.log) | 2026-09-15T22:13:14.212751+00:00 | 43.925 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py` |
+| [owner-compact](reports/b71_s4/owner-compact.log) | 2026-09-15T22:13:58.164892+00:00 | 114.555 | 1 | `python3 tests/mod_editor/test_nfl2k5_scorebug_runtime.py` |
+| [repin-compact](reports/b71_s4/repin-compact.log) | 2026-09-15T22:15:01.079453+00:00 | 20.441 | 0 | `python3 packaging/repin.py --apply` |
+| [test_nfl2k5_scorebug_ingame-release](reports/b71_s4/test_nfl2k5_scorebug_ingame-release.log) | 2026-09-15T22:15:01.314231+00:00 | 14.68 | 1 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_ingame.py` |
+| [manifest-compact](reports/b71_s4/manifest-compact.log) | 2026-09-15T22:15:15.516370+00:00 | 335.752 | 1 | `python3 reports/b71_s4/refresh_manifest.py` |
+| [test_nfl2k5_scorebug_ingame_fix-release](reports/b71_s4/test_nfl2k5_scorebug_ingame_fix-release.log) | 2026-09-15T22:15:16.022269+00:00 | 126.134 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py` |
+| [xbe-memory-compact](reports/b71_s4/xbe-memory-compact.log) | 2026-09-15T22:15:16.689169+00:00 | 1593.524 | 0 | `python3 tests/mod_editor/test_xbe_patch_memory_writes.py` |
+| [proof-release](reports/b71_s4/proof-release.log) | 2026-09-15T22:15:17.852508+00:00 | 81.033 | 0 | `python3 reports/b71_s4/prove_v4.py` |
+| [test_nfl2k5_scorebug_assets-sealed](reports/b71_s4/test_nfl2k5_scorebug_assets-sealed.log) | 2026-09-15T22:16:21.436034+00:00 | 146.822 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_assets.py` |
+| [test_apf_scorebug_workspace_qt-sealed](reports/b71_s4/test_apf_scorebug_workspace_qt-sealed.log) | 2026-09-15T22:16:21.437307+00:00 | 0.648 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_apf_scorebug_workspace_qt.py` |
+| [test_nfl2k5_scorebug_author-sealed](reports/b71_s4/test_nfl2k5_scorebug_author-sealed.log) | 2026-09-15T22:16:22.114991+00:00 | 6.56 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_author.py` |
+| [provider-check](reports/b71_s4/provider-check.log) | 2026-09-15T22:16:22.530719+00:00 | 8.066 | 1 | `python3 tests/mod_editor/test_provider_integrity.py` |
+| [test_nfl2k5_scorebug_exact-sealed](reports/b71_s4/test_nfl2k5_scorebug_exact-sealed.log) | 2026-09-15T22:16:28.705288+00:00 | 77.779 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_exact.py` |
+| [contract-compact](reports/b71_s4/contract-compact.log) | 2026-09-15T22:16:30.625992+00:00 | 12.305 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_mnf.py` |
+| [test_nfl2k5_scorebug_mnf-release](reports/b71_s4/test_nfl2k5_scorebug_mnf-release.log) | 2026-09-15T22:17:21.440581+00:00 | 12.375 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_mnf.py` |
+| [test_nfl2k5_scorebug_mnf_v3-release](reports/b71_s4/test_nfl2k5_scorebug_mnf_v3-release.log) | 2026-09-15T22:17:22.185702+00:00 | 45.355 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py` |
+| [test_nfl2k5_scorebug_native-release](reports/b71_s4/test_nfl2k5_scorebug_native-release.log) | 2026-09-15T22:17:33.843799+00:00 | 130.321 | 1 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_native.py` |
+| [test_nfl2k5_scorebug_fonts-sealed](reports/b71_s4/test_nfl2k5_scorebug_fonts-sealed.log) | 2026-09-15T22:17:46.516145+00:00 | 8.684 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_fonts.py` |
+| [test_nfl2k5_scorebug_freeze-sealed](reports/b71_s4/test_nfl2k5_scorebug_freeze-sealed.log) | 2026-09-15T22:17:55.228206+00:00 | 245.016 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_freeze.py` |
+| [test_nfl2k5_scorebug_projection-release](reports/b71_s4/test_nfl2k5_scorebug_projection-release.log) | 2026-09-15T22:18:07.569006+00:00 | 56.75 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_projection.py` |
+| [provider-closure](reports/b71_s4/provider-closure.log) | 2026-09-15T22:18:35.819342+00:00 | 8.286 | 0 | `python3 tests/mod_editor/test_provider_integrity.py` |
+| [phase1-closure](reports/b71_s4/phase1-closure.log) | 2026-09-15T22:18:44.135592+00:00 | 2.089 | 0 | `python3 tests/mod_editor/test_phase1_packaging.py` |
+| [test_nfl2k5_scorebug_freeze_v2-sealed](reports/b71_s4/test_nfl2k5_scorebug_freeze_v2-sealed.log) | 2026-09-15T22:18:48.286838+00:00 | 336.001 | 1 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py` |
+| [test_nfl2k5_scorebug_resources-release](reports/b71_s4/test_nfl2k5_scorebug_resources-release.log) | 2026-09-15T22:19:04.346805+00:00 | 178.911 | 1 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_resources.py` |
+| [test_nfl2k5_scorebug_runtime-release](reports/b71_s4/test_nfl2k5_scorebug_runtime-release.log) | 2026-09-15T22:19:44.194282+00:00 | 119.309 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_runtime.py` |
+| [proof-uv](reports/b71_s4/proof-uv.log) | 2026-09-15T22:20:05.507952+00:00 | 82.233 | 0 | `python3 reports/b71_s4/prove_v4.py` |
+| [pins-uv](reports/b71_s4/pins-uv.log) | 2026-09-15T22:20:06.659697+00:00 | 41.725 | 0 | `python3 reports/b71_s4/regenerate_pins.py` |
+| [repin-uv](reports/b71_s4/repin-uv.log) | 2026-09-15T22:20:58.450618+00:00 | 21.547 | 0 | `python3 packaging/repin.py --apply` |
+| [test_nfl2k5_scorebug_source_art-release](reports/b71_s4/test_nfl2k5_scorebug_source_art-release.log) | 2026-09-15T22:21:43.531699+00:00 | 0.495 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_source_art.py` |
+| [test_nfl2k5_scorebug_template-release](reports/b71_s4/test_nfl2k5_scorebug_template-release.log) | 2026-09-15T22:21:44.055363+00:00 | 9.777 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_template.py` |
+| [test_nfl2k5_scorebug_template_release-release](reports/b71_s4/test_nfl2k5_scorebug_template_release-release.log) | 2026-09-15T22:21:53.861894+00:00 | 0.536 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_template_release.py` |
+| [test_nfl2k5_scorebug_unified_adapter-release](reports/b71_s4/test_nfl2k5_scorebug_unified_adapter-release.log) | 2026-09-15T22:21:54.428037+00:00 | 0.163 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_unified_adapter.py` |
+| [test_nfl2k5_scorebug_v10_ingame-release](reports/b71_s4/test_nfl2k5_scorebug_v10_ingame-release.log) | 2026-09-15T22:21:54.620107+00:00 | 9.023 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_v10_ingame.py` |
+| [test_nfl2k5_scorebug_ingame-sealed](reports/b71_s4/test_nfl2k5_scorebug_ingame-sealed.log) | 2026-09-15T22:22:00.274604+00:00 | 15.06 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_ingame.py` |
+| [native-final](reports/b71_s4/native-final.log) | 2026-09-15T22:22:02.319794+00:00 | 50.792 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py` |
+| [test_nfl2k5_scorebug_v10_projection-release](reports/b71_s4/test_nfl2k5_scorebug_v10_projection-release.log) | 2026-09-15T22:22:03.285914+00:00 | 28.69 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_v10_projection.py` |
+| [test_nfl2k5_scorebug_versions-release](reports/b71_s4/test_nfl2k5_scorebug_versions-release.log) | 2026-09-15T22:22:03.672540+00:00 | 9.822 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_versions.py` |
+| [test_scorebug_studio_panel_qt-release](reports/b71_s4/test_scorebug_studio_panel_qt-release.log) | 2026-09-15T22:22:13.525503+00:00 | 7.365 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_scorebug_studio_panel_qt.py` |
+| [test_nfl2k5_scorebug_ingame_fix-sealed](reports/b71_s4/test_nfl2k5_scorebug_ingame_fix-sealed.log) | 2026-09-15T22:22:15.362249+00:00 | 127.525 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py` |
+| [nfl2k5_scorebug_layout_test-release](reports/b71_s4/nfl2k5_scorebug_layout_test-release.log) | 2026-09-15T22:22:20.921009+00:00 | 1.388 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/nfl2k5_scorebug_layout_test.py` |
+| [nfl2k5_scorebug_mod_project_test-release](reports/b71_s4/nfl2k5_scorebug_mod_project_test-release.log) | 2026-09-15T22:22:22.337558+00:00 | 1.329 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/nfl2k5_scorebug_mod_project_test.py` |
+| [repin-final](reports/b71_s4/repin-final.log) | 2026-09-15T22:22:22.483444+00:00 | 21.642 | 0 | `python3 packaging/repin.py --apply` |
+| [test_provider_integrity-release](reports/b71_s4/test_provider_integrity-release.log) | 2026-09-15T22:22:23.694544+00:00 | 6.159 | 1 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_provider_integrity.py` |
+| [test_nfl2k5_scorebug_assets-final](reports/b71_s4/test_nfl2k5_scorebug_assets-final.log) | 2026-09-15T22:22:23.701077+00:00 | 149.481 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_assets.py` |
+| [test_apf_scorebug_workspace_qt-final](reports/b71_s4/test_apf_scorebug_workspace_qt-final.log) | 2026-09-15T22:22:23.701856+00:00 | 0.602 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_apf_scorebug_workspace_qt.py` |
+| [test_nfl2k5_scorebug_author-final](reports/b71_s4/test_nfl2k5_scorebug_author-final.log) | 2026-09-15T22:22:24.334100+00:00 | 6.493 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_author.py` |
+| [test_product_catalog-release](reports/b71_s4/test_product_catalog-release.log) | 2026-09-15T22:22:29.884703+00:00 | 0.177 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_product_catalog.py` |
+| [test_phase1_packaging-release](reports/b71_s4/test_phase1_packaging-release.log) | 2026-09-15T22:22:30.091568+00:00 | 2.159 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_phase1_packaging.py` |
+| [test_nfl2k5_scorebug_exact-final](reports/b71_s4/test_nfl2k5_scorebug_exact-final.log) | 2026-09-15T22:22:30.855421+00:00 | 78.327 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_exact.py` |
+| [registry-strict-release](reports/b71_s4/registry-strict-release.log) | 2026-09-15T22:22:32.280361+00:00 | 0.134 | 1 | `/usr/bin/python3 -m mod_editor.capabilities.validate_registry` |
+| [manifest-final](reports/b71_s4/manifest-final.log) | 2026-09-15T22:23:11.423363+00:00 | 339.029 | 0 | `python3 reports/b71_s4/refresh_manifest.py` |
+| [xbe-memory-final](reports/b71_s4/xbe-memory-final.log) | 2026-09-15T22:23:12.498575+00:00 | 1732.185 | 0 | `python3 tests/mod_editor/test_xbe_patch_memory_writes.py` |
+| [proof-final](reports/b71_s4/proof-final.log) | 2026-09-15T22:23:13.665625+00:00 | 81.882 | 0 | `python3 reports/b71_s4/prove_v4.py` |
+| [test_nfl2k5_scorebug_fonts-final](reports/b71_s4/test_nfl2k5_scorebug_fonts-final.log) | 2026-09-15T22:23:49.211808+00:00 | 8.808 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_fonts.py` |
+| [test_nfl2k5_scorebug_freeze-final](reports/b71_s4/test_nfl2k5_scorebug_freeze-final.log) | 2026-09-15T22:23:58.048201+00:00 | 244.487 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_freeze.py` |
+| [test_nfl2k5_scorebug_mnf-sealed](reports/b71_s4/test_nfl2k5_scorebug_mnf-sealed.log) | 2026-09-15T22:24:22.917066+00:00 | 12.136 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_mnf.py` |
+| [test_nfl2k5_scorebug_mnf_v3-sealed](reports/b71_s4/test_nfl2k5_scorebug_mnf_v3-sealed.log) | 2026-09-15T22:24:24.318934+00:00 | 51.172 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py` |
+| [test_nfl2k5_scorebug_native-sealed](reports/b71_s4/test_nfl2k5_scorebug_native-sealed.log) | 2026-09-15T22:24:35.084326+00:00 | 132.325 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_native.py` |
+| [test_nfl2k5_scorebug_freeze_v2-final](reports/b71_s4/test_nfl2k5_scorebug_freeze_v2-final.log) | 2026-09-15T22:24:53.210851+00:00 | 337.908 | 1 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py` |
+| [test_nfl2k5_scorebug_projection-sealed](reports/b71_s4/test_nfl2k5_scorebug_projection-sealed.log) | 2026-09-15T22:25:15.521873+00:00 | 58.246 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_projection.py` |
+| [test_nfl2k5_scorebug_resources-sealed](reports/b71_s4/test_nfl2k5_scorebug_resources-sealed.log) | 2026-09-15T22:26:13.803453+00:00 | 178.9 | 1 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_resources.py` |
+| [test_nfl2k5_scorebug_runtime-sealed](reports/b71_s4/test_nfl2k5_scorebug_runtime-sealed.log) | 2026-09-15T22:26:47.440489+00:00 | 118.87 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_runtime.py` |
+| [test_nfl2k5_scorebug_ingame-final](reports/b71_s4/test_nfl2k5_scorebug_ingame-final.log) | 2026-09-15T22:28:02.567484+00:00 | 15.108 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_ingame.py` |
+| [test_nfl2k5_scorebug_ingame_fix-final](reports/b71_s4/test_nfl2k5_scorebug_ingame_fix-final.log) | 2026-09-15T22:28:17.706788+00:00 | 127.728 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py` |
+| [test_nfl2k5_scorebug_source_art-sealed](reports/b71_s4/test_nfl2k5_scorebug_source_art-sealed.log) | 2026-09-15T22:28:46.341859+00:00 | 0.527 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_source_art.py` |
+| [test_nfl2k5_scorebug_template-sealed](reports/b71_s4/test_nfl2k5_scorebug_template-sealed.log) | 2026-09-15T22:28:46.898263+00:00 | 9.605 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_template.py` |
+| [test_nfl2k5_scorebug_template_release-sealed](reports/b71_s4/test_nfl2k5_scorebug_template_release-sealed.log) | 2026-09-15T22:28:56.531710+00:00 | 0.536 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_template_release.py` |
+| [test_nfl2k5_scorebug_unified_adapter-sealed](reports/b71_s4/test_nfl2k5_scorebug_unified_adapter-sealed.log) | 2026-09-15T22:28:57.097646+00:00 | 0.164 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_unified_adapter.py` |
+| [test_nfl2k5_scorebug_v10_ingame-sealed](reports/b71_s4/test_nfl2k5_scorebug_v10_ingame-sealed.log) | 2026-09-15T22:28:57.289488+00:00 | 8.911 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_v10_ingame.py` |
+| [test_nfl2k5_scorebug_v10_projection-sealed](reports/b71_s4/test_nfl2k5_scorebug_v10_projection-sealed.log) | 2026-09-15T22:29:06.229918+00:00 | 28.648 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_v10_projection.py` |
+| [test_nfl2k5_scorebug_versions-sealed](reports/b71_s4/test_nfl2k5_scorebug_versions-sealed.log) | 2026-09-15T22:29:12.733493+00:00 | 9.74 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_versions.py` |
+| [test_scorebug_studio_panel_qt-sealed](reports/b71_s4/test_scorebug_studio_panel_qt-sealed.log) | 2026-09-15T22:29:22.508015+00:00 | 7.252 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_scorebug_studio_panel_qt.py` |
+| [nfl2k5_scorebug_layout_test-sealed](reports/b71_s4/nfl2k5_scorebug_layout_test-sealed.log) | 2026-09-15T22:29:29.790744+00:00 | 1.44 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/nfl2k5_scorebug_layout_test.py` |
+| [nfl2k5_scorebug_mod_project_test-sealed](reports/b71_s4/nfl2k5_scorebug_mod_project_test-sealed.log) | 2026-09-15T22:29:31.261400+00:00 | 1.374 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/nfl2k5_scorebug_mod_project_test.py` |
+| [test_provider_integrity-sealed](reports/b71_s4/test_provider_integrity-sealed.log) | 2026-09-15T22:29:32.669398+00:00 | 9.018 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_provider_integrity.py` |
+| [test_product_catalog-sealed](reports/b71_s4/test_product_catalog-sealed.log) | 2026-09-15T22:29:34.917285+00:00 | 0.157 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_product_catalog.py` |
+| [test_phase1_packaging-sealed](reports/b71_s4/test_phase1_packaging-sealed.log) | 2026-09-15T22:29:35.105979+00:00 | 2.156 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_phase1_packaging.py` |
+| [registry-strict-sealed](reports/b71_s4/registry-strict-sealed.log) | 2026-09-15T22:29:41.719032+00:00 | 0.138 | 1 | `/usr/bin/python3 -m mod_editor.capabilities.validate_registry` |
+| [test_nfl2k5_scorebug_mnf-final](reports/b71_s4/test_nfl2k5_scorebug_mnf-final.log) | 2026-09-15T22:30:25.466041+00:00 | 11.959 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_mnf.py` |
+| [xbe-caves-final](reports/b71_s4/xbe-caves-final.log) | 2026-09-15T22:30:28.069742+00:00 | 0.015 | 2 | `python3 tests/mod_editor/test_xbe_patch_caves.py` |
+| [test_nfl2k5_scorebug_mnf_v3-final](reports/b71_s4/test_nfl2k5_scorebug_mnf_v3-final.log) | 2026-09-15T22:30:31.149000+00:00 | 50.529 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py` |
+| [test_nfl2k5_scorebug_native-final](reports/b71_s4/test_nfl2k5_scorebug_native-final.log) | 2026-09-15T22:30:37.453874+00:00 | 131.517 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_native.py` |
+| [xbe-cave-references-final](reports/b71_s4/xbe-cave-references-final.log) | 2026-09-15T22:30:38.313768+00:00 | 1958.445 | 0 | `python3 tests/mod_editor/test_xbe_patch_cave_references.py` |
+| [registry-strict-hydrated](reports/b71_s4/registry-strict-hydrated.log) | 2026-09-15T22:31:15.222295+00:00 | 0.159 | 0 | `python3 -m mod_editor.capabilities.validate_registry` |
+| [test_nfl2k5_scorebug_projection-final](reports/b71_s4/test_nfl2k5_scorebug_projection-final.log) | 2026-09-15T22:31:21.707142+00:00 | 57.253 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_projection.py` |
+| [test_apf_scorebug_workspace_qt-delivery](reports/b71_s4/test_apf_scorebug_workspace_qt-delivery.log) | 2026-09-15T22:32:09.564437+00:00 | 0.604 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_apf_scorebug_workspace_qt.py` |
+| [test_nfl2k5_scorebug_assets-delivery](reports/b71_s4/test_nfl2k5_scorebug_assets-delivery.log) | 2026-09-15T22:32:09.565251+00:00 | 150.732 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_assets.py` |
+| [test_nfl2k5_scorebug_author-delivery](reports/b71_s4/test_nfl2k5_scorebug_author-delivery.log) | 2026-09-15T22:32:10.197840+00:00 | 6.704 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_author.py` |
+| [test_nfl2k5_scorebug_exact-delivery](reports/b71_s4/test_nfl2k5_scorebug_exact-delivery.log) | 2026-09-15T22:32:16.934458+00:00 | 78.833 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_exact.py` |
+| [test_nfl2k5_scorebug_resources-final](reports/b71_s4/test_nfl2k5_scorebug_resources-final.log) | 2026-09-15T22:32:18.991884+00:00 | 204.176 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_resources.py` |
+| [test_nfl2k5_scorebug_runtime-final](reports/b71_s4/test_nfl2k5_scorebug_runtime-final.log) | 2026-09-15T22:32:49.002511+00:00 | 117.777 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_runtime.py` |
+| [registry-strict-v4](reports/b71_s4/registry-strict-v4.log) | 2026-09-15T22:32:55.559372+00:00 | 0.155 | 0 | `python3 -m mod_editor.capabilities.validate_registry` |
+| [test_nfl2k5_scorebug_fonts-delivery](reports/b71_s4/test_nfl2k5_scorebug_fonts-delivery.log) | 2026-09-15T22:33:35.797172+00:00 | 8.912 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_fonts.py` |
+| [test_nfl2k5_scorebug_freeze-delivery](reports/b71_s4/test_nfl2k5_scorebug_freeze-delivery.log) | 2026-09-15T22:33:44.742529+00:00 | 238.596 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_freeze.py` |
+| [test_nfl2k5_scorebug_freeze_v2-delivery](reports/b71_s4/test_nfl2k5_scorebug_freeze_v2-delivery.log) | 2026-09-15T22:34:40.329279+00:00 | 333.344 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py` |
+| [test_nfl2k5_scorebug_source_art-final](reports/b71_s4/test_nfl2k5_scorebug_source_art-final.log) | 2026-09-15T22:34:46.809013+00:00 | 0.472 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_source_art.py` |
+| [test_nfl2k5_scorebug_template-final](reports/b71_s4/test_nfl2k5_scorebug_template-final.log) | 2026-09-15T22:34:47.310438+00:00 | 9.623 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_template.py` |
+| [test_nfl2k5_scorebug_template_release-final](reports/b71_s4/test_nfl2k5_scorebug_template_release-final.log) | 2026-09-15T22:34:56.964121+00:00 | 0.538 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_template_release.py` |
+| [test_nfl2k5_scorebug_unified_adapter-final](reports/b71_s4/test_nfl2k5_scorebug_unified_adapter-final.log) | 2026-09-15T22:34:57.530452+00:00 | 0.163 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_unified_adapter.py` |
+| [test_nfl2k5_scorebug_v10_ingame-final](reports/b71_s4/test_nfl2k5_scorebug_v10_ingame-final.log) | 2026-09-15T22:34:57.723019+00:00 | 9.075 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_v10_ingame.py` |
+| [test_nfl2k5_scorebug_v10_projection-final](reports/b71_s4/test_nfl2k5_scorebug_v10_projection-final.log) | 2026-09-15T22:35:06.833076+00:00 | 28.641 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_v10_projection.py` |
+| [test_nfl2k5_scorebug_versions-final](reports/b71_s4/test_nfl2k5_scorebug_versions-final.log) | 2026-09-15T22:35:35.504659+00:00 | 9.704 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_versions.py` |
+| [test_scorebug_studio_panel_qt-final](reports/b71_s4/test_scorebug_studio_panel_qt-final.log) | 2026-09-15T22:35:43.201338+00:00 | 7.464 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_scorebug_studio_panel_qt.py` |
+| [nfl2k5_scorebug_layout_test-final](reports/b71_s4/nfl2k5_scorebug_layout_test-final.log) | 2026-09-15T22:35:45.238758+00:00 | 1.398 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/nfl2k5_scorebug_layout_test.py` |
+| [nfl2k5_scorebug_mod_project_test-final](reports/b71_s4/nfl2k5_scorebug_mod_project_test-final.log) | 2026-09-15T22:35:46.667041+00:00 | 1.334 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/nfl2k5_scorebug_mod_project_test.py` |
+| [test_provider_integrity-final](reports/b71_s4/test_provider_integrity-final.log) | 2026-09-15T22:35:48.030617+00:00 | 8.504 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_provider_integrity.py` |
+| [test_product_catalog-final](reports/b71_s4/test_product_catalog-final.log) | 2026-09-15T22:35:50.698794+00:00 | 0.154 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_product_catalog.py` |
+| [test_phase1_packaging-final](reports/b71_s4/test_phase1_packaging-final.log) | 2026-09-15T22:35:50.884028+00:00 | 2.131 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_phase1_packaging.py` |
+| [registry-strict-final](reports/b71_s4/registry-strict-final.log) | 2026-09-15T22:35:56.567056+00:00 | 0.151 | 0 | `/usr/bin/python3 -m mod_editor.capabilities.validate_registry` |
+| [test_nfl2k5_scorebug_ingame-delivery](reports/b71_s4/test_nfl2k5_scorebug_ingame-delivery.log) | 2026-09-15T22:37:43.371656+00:00 | 16.023 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_ingame.py` |
+| [repin-contracts](reports/b71_s4/repin-contracts.log) | 2026-09-15T22:37:52.427846+00:00 | 11.891 | 0 | `python3 packaging/repin.py --apply` |
+| [test_nfl2k5_scorebug_ingame_fix-delivery](reports/b71_s4/test_nfl2k5_scorebug_ingame_fix-delivery.log) | 2026-09-15T22:37:59.426491+00:00 | 140.809 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py` |
+| [cave-oracle-final](reports/b71_s4/cave-oracle-final.log) | 2026-09-15T22:39:06.899647+00:00 | 455.759 | 0 | `python3 tests/mod_editor/test_nfl2k5_cave_oracle.py` |
+| [test_nfl2k5_scorebug_mnf-delivery](reports/b71_s4/test_nfl2k5_scorebug_mnf-delivery.log) | 2026-09-15T22:40:13.709618+00:00 | 12.488 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_mnf.py` |
+| [test_nfl2k5_scorebug_mnf_v3-delivery](reports/b71_s4/test_nfl2k5_scorebug_mnf_v3-delivery.log) | 2026-09-15T22:40:20.271219+00:00 | 54.573 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py` |
+| [test_nfl2k5_scorebug_native-delivery](reports/b71_s4/test_nfl2k5_scorebug_native-delivery.log) | 2026-09-15T22:40:26.240029+00:00 | 152.177 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_native.py` |
+| [test_nfl2k5_scorebug_projection-delivery](reports/b71_s4/test_nfl2k5_scorebug_projection-delivery.log) | 2026-09-15T22:41:14.877164+00:00 | 65.083 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_projection.py` |
+| [test_nfl2k5_scorebug_resources-delivery](reports/b71_s4/test_nfl2k5_scorebug_resources-delivery.log) | 2026-09-15T22:42:19.993994+00:00 | 307.742 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_resources.py` |
+| [test_nfl2k5_scorebug_runtime-delivery](reports/b71_s4/test_nfl2k5_scorebug_runtime-delivery.log) | 2026-09-15T22:42:58.469344+00:00 | 180.567 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_runtime.py` |
+| [layout-skip-details](reports/b71_s4/layout-skip-details.log) | 2026-09-15T22:45:21.978257+00:00 | 2.563 | 0 | `env NFL2K5_SCOREBUG_EMULATION_TEST=1 python3 tests/nfl2k5_scorebug_layout_test.py -v` |
+| [source-art-skip-details](reports/b71_s4/source-art-skip-details.log) | 2026-09-15T22:45:21.994111+00:00 | 0.997 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_source_art.py -v` |
+| [test_nfl2k5_scorebug_source_art-delivery](reports/b71_s4/test_nfl2k5_scorebug_source_art-delivery.log) | 2026-09-15T22:45:59.108114+00:00 | 0.974 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_source_art.py` |
+| [test_nfl2k5_scorebug_template-delivery](reports/b71_s4/test_nfl2k5_scorebug_template-delivery.log) | 2026-09-15T22:46:00.146410+00:00 | 12.228 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_template.py` |
+| [test_nfl2k5_scorebug_template_release-delivery](reports/b71_s4/test_nfl2k5_scorebug_template_release-delivery.log) | 2026-09-15T22:46:12.413719+00:00 | 0.977 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_template_release.py` |
+| [test_nfl2k5_scorebug_unified_adapter-delivery](reports/b71_s4/test_nfl2k5_scorebug_unified_adapter-delivery.log) | 2026-09-15T22:46:13.444696+00:00 | 0.328 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_unified_adapter.py` |
+| [test_nfl2k5_scorebug_v10_ingame-delivery](reports/b71_s4/test_nfl2k5_scorebug_v10_ingame-delivery.log) | 2026-09-15T22:46:13.829371+00:00 | 14.083 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_v10_ingame.py` |
+| [test_nfl2k5_scorebug_v10_projection-delivery](reports/b71_s4/test_nfl2k5_scorebug_v10_projection-delivery.log) | 2026-09-15T22:46:27.962762+00:00 | 35.786 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_v10_projection.py` |
+| [test_nfl2k5_scorebug_versions-delivery](reports/b71_s4/test_nfl2k5_scorebug_versions-delivery.log) | 2026-09-15T22:47:03.790315+00:00 | 12.658 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_versions.py` |
+| [test_scorebug_studio_panel_qt-delivery](reports/b71_s4/test_scorebug_studio_panel_qt-delivery.log) | 2026-09-15T22:47:16.480711+00:00 | 7.685 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_scorebug_studio_panel_qt.py` |
+| [nfl2k5_scorebug_layout_test-delivery](reports/b71_s4/nfl2k5_scorebug_layout_test-delivery.log) | 2026-09-15T22:47:24.210373+00:00 | 2.296 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/nfl2k5_scorebug_layout_test.py` |
+| [nfl2k5_scorebug_mod_project_test-delivery](reports/b71_s4/nfl2k5_scorebug_mod_project_test-delivery.log) | 2026-09-15T22:47:26.556581+00:00 | 1.912 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/nfl2k5_scorebug_mod_project_test.py` |
+| [test_provider_integrity-delivery](reports/b71_s4/test_provider_integrity-delivery.log) | 2026-09-15T22:47:27.785956+00:00 | 15.476 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_provider_integrity.py` |
+| [test_product_catalog-delivery](reports/b71_s4/test_product_catalog-delivery.log) | 2026-09-15T22:47:28.517901+00:00 | 0.204 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_product_catalog.py` |
+| [test_phase1_packaging-delivery](reports/b71_s4/test_phase1_packaging-delivery.log) | 2026-09-15T22:47:28.762747+00:00 | 2.872 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_phase1_packaging.py` |
+| [registry-strict-delivery](reports/b71_s4/registry-strict-delivery.log) | 2026-09-15T22:47:43.331218+00:00 | 0.307 | 0 | `/usr/bin/python3 -m mod_editor.capabilities.validate_registry` |
+| [text-rgb-final](reports/b71_s4/text-rgb-final.log) | 2026-09-15T23:04:30.216710+00:00 | 0.354 | 0 | `python3 reports/b71_s4/measure_text_rgb.py` |

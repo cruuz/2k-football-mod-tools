@@ -1,0 +1,12 @@
+{
+  "name": "repin-evidence",
+  "command": [
+    "python3",
+    "packaging/repin.py",
+    "--apply"
+  ],
+  "start": "2026-09-15T23:05:58.619708+00:00",
+  "end": "2026-09-15T23:06:09.801257+00:00",
+  "seconds": 11.182,
+  "exit": 0
+}

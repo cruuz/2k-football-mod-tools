@@ -1,0 +1,11 @@
+{
+  "name": "test_provider_integrity-release",
+  "command": [
+    "/usr/bin/python3",
+    "/home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_provider_integrity.py"
+  ],
+  "start": "2026-09-15T22:22:23.694544+00:00",
+  "end": "2026-09-15T22:22:29.853771+00:00",
+  "seconds": 6.159,
+  "exit": 1
+}

@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s4/reports/b71_s4/prove_v4.py", line 135, in <module>
+    
+  File "/home/noah/2k-worktrees/astra-b71-s4/reports/b71_s4/prove_v4.py", line 126, in main
+    boxes=[comparison.box_of([v['screen'] for v in r['vertices']]) for r in g['draws'] if r['text'] and 0x80<=ord(r['text'][0])<=0x99]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError
