@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t4/tools/b71_t4_equipment_probe.py", line 152, in <module>
+    result = run(index, ROOT / 'reports/b71_t4/reproduction')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-t4/tools/b71_t4_equipment_probe.py", line 104, in run
+    ('beta70_old_quantizer_only', patch.object(beta70, '_quantize_art', old.palette_tools.quantize)),
+                                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'nfl_tset_png_import' has no attribute 'quantize'

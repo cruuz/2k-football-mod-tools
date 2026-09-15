@@ -1,13 +1,14 @@
-T2 wiring delivered on astra/b70-a3-t2-wiring from ded9c222.
+Implemented on `astra/b71-t4-project-load-equipment-fit` from `e2f5c6e6`.
 
-Bundle: .scratch/astra-b70-a3.bundle
-Source/test commit: cbcccaee; final report commit and bundle verification details: .scratch/astra-b70-a3-delivery.json.
-Report: ASTRA_REPORT.md. Complete logs: reports/b70_a3/.
+- Projects retain unfitting equipment with its exact “needs refit” message.
+- Normal/mud checks preserve fitting variants; optimal encoding precedes a compressed-size miss.
+- Build offers one-click colour/size refitting with measured results and Undo.
+- Reproduced the real 22H2 boundary: greedy 6,785 bytes, optimal 6,764 bytes, capacity 6,784 bytes. The generated beta 69/70 regression isolates the stripe palette floor.
+- 31 standalone suites passed, 362 cases, no final skips. No emulator or push. In-game appearance and the original unavailable project remain UNWITNESSED.
 
-25 standalone suites: 22 pass, 3 nonzero. All T2/A3 and provider integrity checks pass. Registry remains 174 rows; all capability count pins and protected scorebug/modern-color files are preserved.
-
-Strict validation remains blocked by 148 baseline evidence paths, first docs/research/apf_audio.md. Shell and packaging suites also lack private inputs. The extra T1 speed suite retains three old T2-encoding expectation failures; exact assertions are in the report. No test was weakened. Cache reuse and provider closure seams are fixed.
-
-Claude must regenerate the cave manifest and run the hydrated gates. Every in-game outcome remains UNWITNESSED. No push.
+Implementation commits: `e67a097f`, `b96f6791`.
+Full evidence: [ASTRA_REPORT.md](ASTRA_REPORT.md).
+Delivery: [.scratch/astra-b71-t4.bundle](.scratch/astra-b71-t4.bundle).
+The sandbox makes shared Git metadata read-only; explicit-path commits live in `.scratch/t4.git` and the bundle.
 
 ASTRA_DONE

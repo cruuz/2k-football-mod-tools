@@ -1,252 +1,132 @@
-# Beta 70 A3: T2 wiring handoff
+# Beta 71 T4: project-open equipment fit recovery
 
-## Delivery and gate status
+Base: `local/stack-beta-71`, `e2f5c6e6`. Branch: `astra/b71-t4-project-load-equipment-fit`.
+Implementation commits: `e67a097f` and `b96f6791`. The final documentation commit carries the evidence and handoff.
 
-Implemented every item in `WIRING_B70_T2.md` on input stack **ded9c222a7df40c2e2d9b69c37c6464f72fc8fb4**, branch **astra/b70-a3-t2-wiring**. Production/test commit: **cbcccaee**. The following report commit includes this report, the final message and retained command logs. No push.
+## Result
 
-**25 distinct standalone suites ran: 22 exit zero, 3 nonzero, 267 test cases, no skips.** All five T2 suites, the new six-case A3 live integration suite, landed A2 wiring, facade/session/build-service, equipment import/consumer suites, provider/integrity suites and registry count consumers pass. Three suites remain nonzero as detailed below. The strict registry validator also remains nonzero because baseline evidence is absent. This is **not a green strict or hydrated release gate**.
+**PROVED offline:** a saved project retains oversized equipment PNGs and every other edit. The affected item displays **needs refit** with the original fit message. Build identifies the unresolved item. Build's **Refit equipment: reduce colours, then size** action checks the selected item, reports measured dimensions, colours and encoded bytes, and creates one Undo entry. A failed refit leaves the edits and Undo history intact.
 
-The exact requested strict command was run, including after repinning. It did **not** print the required PASS banner. The supplemental structural validation prints `MOD_CAPABILITY_REGISTRY_VALIDATION_PASS schema=vc_mod_capability_registry/v1 games=3 surfaces=21 capabilities=174` with `--skip-file-checks`; that is recorded separately and is not substituted for strict success.
+**UNWITNESSED:** appearance in a running game, Windows/macOS execution, and the unavailable original reported project. No emulator, displayed GUI, audio, network or push was used. Qt ran offscreen. The supplied screenshot path exists, but its image shows an unrelated Discord channel rather than the reported error dialog; it does not independently establish the error or source artwork.
 
-Private Git metadata: `.scratch/git-a3`, with the shared object store as a read-only alternate. The normal worktree branch remains at the input head; the new commits belong to the private Git branch. Portable delivery: **`.scratch/astra-b70-a3.bundle`**, incremental from `ded9c222`, containing `astra/b70-a3-t2-wiring`. Final bundle creation, verification, local fetch/readback, exact head/tree identity, byte size/hash and command timings are recorded in [.scratch/astra-b70-a3-delivery.json](.scratch/astra-b70-a3-delivery.json). That post-commit sidecar avoids a self-referential bundle hash in a bundled report. Scratch contains no retail payload and remains below 200 MB.
+## Root cause, with source locations
 
-```sh
-git bundle verify .scratch/astra-b70-a3.bundle
-git fetch .scratch/astra-b70-a3.bundle astra/b70-a3-t2-wiring
-```
+Historical line numbers below refer to beta 70 (`3c98d433`, unchanged at this job's base).
 
-Use those commands in Claude's writable integration checkout. The bundle prerequisite is the stated input stack. Claude owns the cave-manifest regeneration and hydrated gates. This job adds no XBE writes, cave reservations, runtime allocations, presets or capability rows.
+1. `mod_editor/core/nfl2k5_uniform_equipment_writer.py:187` constructs **Equipment art cannot fit**. `:620-632` can turn a bounded greedy failure into `budget + 1`, explicitly marked as a lower bound. Thus **at least 6,785** is not necessarily a measured 6,785-byte greedy stream.
+2. `mod_editor/core/nfl2k5_uniform_equipment_writer.py:1693` catches that fit error together with other validation failures and raises **Cannot load equipment edits**, appending the advice to remove the edit in the older studio.
+3. `mod_editor/studio/session.py:4183` invokes that preflight after unpacking the project and before adopting its edits. The exception prevents the session transaction from committing. `mod_editor/studio/facade.py:3543` creates a disposable candidate and discards it on failure; `:3591` adopts it only after this load succeeds. This is why one failed art item blocks the whole project.
+4. Beta 69 already had project-open preflight (`f7d6fc07:mod_editor/core/nfl2k5_uniform_equipment_writer.py:1447`) and the greedy-then-optimal fallback. The load check was **not newly introduced in beta 70**.
+5. Beta 70 changed the quantiser and added the stripe floor at `mod_editor/core/nfl2k5_uniform_equipment_writer.py:1080-1083`. Automatically fitting striped art now stops at a palette limit of 16; beta 69 could continue to two. The generated regression below isolates that policy change: disabling only the stripe floor restores the fit; replacing only the quantiser does not. The distance-bit encoder order remains source geometry, then 10/11/12 in both versions.
+6. `mod_editor/core/equipment_staging.py:17` pairs normal shoes, gloves and elbow pads with existing mud siblings. It does **not** pair socks. Project restore uses only the PNGs already in the archive and does not invoke that staging fanout. Normal and mud socks occupy two descriptors in the same physical TSET. Naming both in a preflight error does not prove the loader synthesized either variant from the other.
 
-## Wiring locations
+The original project's exact causal combination remains **UNWITNESSED** without its PNGs. The generated project proves an actual beta-69-accepted / beta-70-refused regression and the requested exact greedy boundary, without claiming that it is the original file.
 
-The exact registry reconstruction and preservation checks are reproducible with `python3 reports/b70_a3/audit_wiring.py`; output is [wiring-audit.log](reports/b70_a3/wiring-audit.log). All existing capability count pins remain unchanged, and the registry remains at **174** rows.
+## Reproduction
 
-| Wiring item | Final location |
+Run `PYTHONPATH=. python3 tools/b71_t4_equipment_probe.py`.
+
+The probe reads only the selected retail package, constructs deterministic authored three-colour bands with 34 seeded speckles, and loads the original beta 69 and beta 70 writer source from Git. The historical optimal implementation uses the worktree's reviewed executable helper. It never writes decoded retail data or a rebuilt retail span to the repository.
+
+| Measurement | Result |
 | --- | --- |
-| Load: assign the existing preflight rows | [mod_editor/studio/session.py:4183](mod_editor/studio/session.py#L4183) |
-| Load: remember rows after commit; retain cleanup finally | [mod_editor/studio/session.py:4544](mod_editor/studio/session.py#L4544) |
-| Build list: exact T2 method, cached captions, stale-fit fallback | [mod_editor/gui/studio_qt.py:8648](mod_editor/gui/studio_qt.py#L8648) |
-| BuildResult.texture_summary default | [mod_editor/core/nfl2k5_build_service.py:112](mod_editor/core/nfl2k5_build_service.py#L112) |
-| BuildResult.message: T2 summary with T1 digit grouping | [mod_editor/core/nfl2k5_build_service.py:115](mod_editor/core/nfl2k5_build_service.py#L115) |
-| Verified result: read and hash-check texture receipts before cleanup | [mod_editor/core/nfl2k5_build_service.py:1672](mod_editor/core/nfl2k5_build_service.py#L1672) |
-| Verified result: pass texture_summary to BuildResult | [mod_editor/core/nfl2k5_build_service.py:1681](mod_editor/core/nfl2k5_build_service.py#L1681) |
-| Published result: retain texture_summary before COMPLETE | [mod_editor/core/nfl2k5_build_service.py:1456](mod_editor/core/nfl2k5_build_service.py#L1456) |
-| Arm import help before slot fitting | [mod_editor/gui/studio_qt.py:5595](mod_editor/gui/studio_qt.py#L5595) |
-| Legacy staging lazy forward | [mod_editor/core/nfl2k5_equipment_import.py:118](mod_editor/core/nfl2k5_equipment_import.py#L118) |
-| Legacy revert lazy forward | [mod_editor/core/nfl2k5_equipment_import.py:123](mod_editor/core/nfl2k5_equipment_import.py#L123) |
-| Release allowlist: staging | [packaging/release-allowlist.txt:156](packaging/release-allowlist.txt#L156) |
-| Release allowlist: reporting | [packaging/release-allowlist.txt:157](packaging/release-allowlist.txt#L157) |
-| Staging seam: shared T1 import/open memory and disk cache | [mod_editor/core/equipment_staging.py:38](mod_editor/core/equipment_staging.py#L38) |
-| Provider closure seam: reporting pin | [mod_editor/core/providers.py:528](mod_editor/core/providers.py#L528) |
-| Provider closure seam: staging pin | [mod_editor/core/providers.py:529](mod_editor/core/providers.py#L529) |
-| Provider closure seam: compatibility import pin | [mod_editor/core/providers.py:590](mod_editor/core/providers.py#L590) |
-| Provider exact closure expectation (not a capability count) | [tests/mod_editor/test_provider_integrity.py:204](tests/mod_editor/test_provider_integrity.py#L204) |
-| T2 snippet test uses its retained named brief | [tests/mod_editor/test_b70_t2_wiring.py:20](tests/mod_editor/test_b70_t2_wiring.py#L20) |
-| T1 synthetic fixture consumes T2 aggregate receipt via checked physical span | [tests/mod_editor/b70_equipment_fixture.py:99](tests/mod_editor/b70_equipment_fixture.py#L99) |
-| Preserved T1 shared kept-retail grouping | [mod_editor/core/nfl2k5_build_service.py:125](mod_editor/core/nfl2k5_build_service.py#L125) |
-| Preserved T1 Build completion consumer | [mod_editor/core/build_feedback.py:51](mod_editor/core/build_feedback.py#L51) |
-| Preserved T1 shell completion consumer | [mod_editor/gui/studio_qt.py:7987](mod_editor/gui/studio_qt.py#L7987) |
-| Preserved T1 offset-tier caching/search bounds | [mod_editor/core/nfl2k5_uniform_equipment_writer.py:612](mod_editor/core/nfl2k5_uniform_equipment_writer.py#L612) |
-| Preserved T1/T2 union of palette and stripe floors | [mod_editor/core/nfl2k5_uniform_equipment_writer.py:1018](mod_editor/core/nfl2k5_uniform_equipment_writer.py#L1018) |
-| Live session/GUI/summary coverage | [tests/mod_editor/test_b70_a3_integration.py:54](tests/mod_editor/test_b70_a3_integration.py#L54) |
-| Live verified publication and tamper refusal coverage | [tests/mod_editor/test_b70_a3_integration.py:142](tests/mod_editor/test_b70_a3_integration.py#L142) |
-| nfl2k5.textures.all_p8: existing row | [mod_editor/capabilities/registry.v1.json:11462](mod_editor/capabilities/registry.v1.json#L11462) |
-| nfl2k5.textures.all_p8: appended evidence | [mod_editor/capabilities/registry.v1.json:11448](mod_editor/capabilities/registry.v1.json#L11448) |
-| nfl2k5.textures.all_p8: replace only stale equipment sentence | [mod_editor/capabilities/registry.v1.json:11468](mod_editor/capabilities/registry.v1.json#L11468) |
-| nfl2k5.textures.all_p8: exact normal/mud constraint | [mod_editor/capabilities/registry.v1.json:11472](mod_editor/capabilities/registry.v1.json#L11472) |
-| nfl2k5.textures.all_p8: append witness update to runtime.scope | [mod_editor/capabilities/registry.v1.json:11494](mod_editor/capabilities/registry.v1.json#L11494) |
-| nfl2k5.uniforms.all_visual: existing row | [mod_editor/capabilities/registry.v1.json:11671](mod_editor/capabilities/registry.v1.json#L11671) |
-| nfl2k5.uniforms.all_visual: appended evidence | [mod_editor/capabilities/registry.v1.json:11655](mod_editor/capabilities/registry.v1.json#L11655) |
-| nfl2k5.uniforms.all_visual: replace only stale equipment sentence | [mod_editor/capabilities/registry.v1.json:11679](mod_editor/capabilities/registry.v1.json#L11679) |
-| nfl2k5.uniforms.all_visual: exact normal/mud constraint | [mod_editor/capabilities/registry.v1.json:11685](mod_editor/capabilities/registry.v1.json#L11685) |
-| nfl2k5.uniforms.all_visual: append witness update to runtime.scope | [mod_editor/capabilities/registry.v1.json:11709](mod_editor/capabilities/registry.v1.json#L11709) |
-| nfl2k5.uniforms.all_visual: selected-occurrence constraint | [mod_editor/capabilities/registry.v1.json:11686](mod_editor/capabilities/registry.v1.json#L11686) |
-| nfl2k5.uniforms.all_visual: replace obsolete 64x64 restriction | [mod_editor/capabilities/registry.v1.json:11678](mod_editor/capabilities/registry.v1.json#L11678) |
-| nfl2k5.stadiums_fields.blender_textures: existing row | [mod_editor/capabilities/registry.v1.json:11376](mod_editor/capabilities/registry.v1.json#L11376) |
-| nfl2k5.stadiums_fields.blender_textures: appended evidence | [mod_editor/capabilities/registry.v1.json:11366](mod_editor/capabilities/registry.v1.json#L11366) |
-| nfl2k5.stadiums_fields.blender_textures: selected-occurrence constraint | [mod_editor/capabilities/registry.v1.json:11381](mod_editor/capabilities/registry.v1.json#L11381) |
+| Retail selector | `22H2`, `tset:3800:4:0:socks00` |
+| Physical allocation | outer 3800, chunk 4, offset 139648; body 6,784 bytes; complete span 6,816 bytes |
+| Retail system/video/scratch | 256 / 7,552 / 16 bytes |
+| Authored RGBA SHA-256 | `177bef6023ec297ef5e8feeeb930c15ab8a5432a8a2497ac0d677b63f038de4a` |
+| Beta 69 final candidate, greedy at 10 distance bits | **6,785 bytes**, one over capacity |
+| Same candidate through the current optimal fallback | **6,764 bytes**, `optimal_token_parse` |
+| Beta 69 emitted body after loader-safe fill | 6,768 bytes, two-colour palette limit |
+| Beta 70 normal policy | refuses; smallest result 7,004 bytes with stripe floor |
+| Beta 70 with only stripe floor disabled | fits, 6,768 bytes, two-colour limit |
+| Beta 70 with only old quantiser restored | still refuses, 7,007 bytes |
+| Complete span and wrapper +0x14 | unchanged |
 
-## Integration seams fixed
+Evidence: [measurements](reports/b71_t4/reproduction/measurements.json), [authored PNG](reports/b71_t4/reproduction/sock.png), [replacement-only project](reports/b71_t4/reproduction/one-byte.2k5mod). The `.2k5mod` was written and reparsed by the production archive functions. Its save-time no-op comparison uses an explicitly synthetic comparison image; the compression measurements use the real pinned retail span in memory.
 
-1. **Stale handoff filename.** Both T2 wiring cases initially errored with `StopIteration` in `snippet`, because the shared `WIRING.md` contains T1. The test now reads `WIRING_B70_T2.md`. No assertion changed. The additional live tests exercise the actual shipped methods, preserving the original proposal checks.
-2. **Lost import/open cache reuse.** T2's `_checked_rows` created a separate session cache, so the newly forwarded compatibility imports no longer populated T1's validated `_STAGED_CACHE`/disk cache. Reopening hit `_compile_group` and failed `AssertionError: open repeated fit search`; corrupt-cache testing also found no disk files. `_checked_rows` now uses `staged_equipment_cache()` for the same complete physical groups. T1's memory, disk, fresh-interpreter, changed-art, changed-descriptor and corrupt-cache checks pass. The selected normal/mud group still receives one combined check before mutation; captions consume returned rows without compiling. No search bound, offset-tier logic, stripe/palette floor, quantizer or writer byte changed.
-3. **Provider import closure.** `test_all_external_writer_and_verifier_import_closures_are_exactly_pinned` exposed `AssertionError: 282 != 285`. The newly reachable `equipment_reporting.py`, `equipment_staging.py` and `nfl2k5_equipment_import.py` need explicit hashes; automatic repin cannot add missing entries. Added those three exact pins and changed only the exact provider-module count to 285, retaining complete closure-set and hash equality. This is a compiler module count, not a capability count. The suite passes. This necessary integration correction goes beyond the brief's expectation of automatic-only provider changes. Runtime-checker changes remain automatic SHA updates only.
-4. **T1 fixture's receipt consumer.** Atomic T2 staging returns aggregate measured rows rather than the old single-span `replacement` object, causing six `KeyError: 'replacement'` errors in the timing fixture. The fixture now obtains the selected physical span through the same checked cache and retains every original byte assertion. It adds no fit ladder. Four old complete-span goldens still match; three genuinely different old expectations remain explicitly failing below.
+The exact **6,785 versus 6,784** greedy case and the reported **at least 6,785** diagnostic are distinct assertions. The retail probe proves the former. A separate fault-injection test proves that the latter exact error string survives project open unchanged, alongside a fitting mud edit. It does not pass an injected compressor result off as a measured retail encoding.
 
-An initial registry editing helper stopped on a formatting assertion before changing the JSON: the canonical registry uses escaped Unicode. The helper was corrected to preserve that exact format, and the registry-only step was rerun. No unrelated row was rewritten.
+## Fix
 
-## Preservation and evidence boundary
+- `mod_editor/core/nfl2k5_uniform_equipment_writer.py:1661`: preflight catches fit-specific exceptions and returns `fit_status`, exact `fit_error`, byte bounds and retry data. Invalid PNGs, invalid targets, changed source pins and other integrity errors still refuse safely. Fit state is derived again on reopening, so old archives need no schema migration.
+- `mod_editor/core/nfl2k5_uniform_equipment_writer.py:1697`: first check the combined physical group. On a miss, check each addition to a fitting subset. A rejected normal variant does not prevent checking mud or later groups. Every accepted subset is recompressed together; independent success is never treated as proof that two edits share the allocation safely. No source edit is dropped or silently resized.
+- `mod_editor/core/nfl2k5_uniform_equipment_writer.py:616`: a greedy cutoff now proceeds to bounded optimal encoding before reporting a compressed-size miss. Exact decode, scratch and fixed-span checks remain. The format-only impossibility bound is retained. The helper is mode **0755**, Git mode **100755**, link count 1, passes its pinned size/hash gate, and was actually executed. Existing native/codec tests continue to enforce non-overlapping matches and preserve wrapper +0x14.
+- `mod_editor/core/equipment_staging.py:33`: imports and worker-side status checks use the same tolerant measurements. A fitting selected variant can be staged while a different variant remains unresolved. Selected imports that still fail retain their existing explicit retry/refusal contract.
+- `mod_editor/core/equipment_staging.py:52` and `tools/nfl2k5_visual_mod_project.py:4071`: Studio and CLI build paths name the unresolved equipment item and its cause. Other project edits remain staged. The output is not published while an included item needs refit; the user can refit or revert that item.
+- `mod_editor/core/equipment_staging.py:185`: one-click refit tries colour reductions at the current scale, then smaller scales. It checks the complete prospective project before replacement, including fit status for unresolved siblings, then commits only the selected PNG as one undoable batch. It reports the actual compiled palette count and size, not the requested quantiser limit. Save/reopen and Undo preserve the result and the original artwork respectively.
+- `mod_editor/core/equipment_reporting.py:9`, `mod_editor/studio/facade.py:3715`, and `mod_editor/gui/studio_qt.py:8648`: load messages are inline, the Build list shows the exact per-item error, and a selector plus one-click refit button appears for unresolved items. Compression runs in the existing blocking worker; rendering the list uses cached receipts. Controls respect other active Studio operations.
 
-**PROVED in this run:** the exact registry strings/evidence append operations and 174-row count; hash-pinned provider closure; byte equality of the entire landed equipment writer and LZ module to the input stack; bounded native dry/wet transport of runtime record `+0x18` bit 28; T2's selected stadium occurrence/native material and close/reopen checks. Synthetic tests verify atomic staging, real save/reopen fit-row retention, cache invalidation, arm import accept/cancel ordering, T1 warning grouping, verified texture summaries after staging cleanup, and refusal to publish after receipt tampering.
+The brief's requirement for an in-studio action authorizes the narrow direct `studio_qt.py` integration. No separate WIRING handoff remains. `packaging/check_2k5_mod_studio_runtime.py` changes are generated digest updates only. No registry text, preset, XBE writer or cave owner changed; registry count delta is zero. The conditional strict registry validator is therefore not applicable. Repin updates are included; integration should perform its usual shared-manifest regeneration without adding a new cave owner.
 
-T1's `summarize_kept_retail`, `build_feedback.completion` and `_choose_build_output` are unchanged. The facade and visual-project owner are unchanged. The writer retains Claude's union of T1's palette lower bound and T2's stripe floor. Its input and output source hash is `8a0a583dd3ce9a3639e722942ae8be27f139b38162586fb8f901928f21114716`. All protected scorebug/scorebar/modern-color implementation, data, docs and tests remain untouched; the cave manifest is unchanged.
+## Beta 70 T2 claims rechecked
 
-**HYPOTHESIS / UNWITNESSED:** every in-game outcome of this change, including sock clarity at distance, the lifecycle of the mud flag, arm-digit placement on models, and the played stadium's selected banner occurrence. Larger archive allocation is still UNPROVED and unavailable. No emulator, GUI display, network, disc build, retail-data copy or game-code write was used.
+- Its quality analysis correctly describes a new median-cut quantiser and a 16-colour stripe floor. That floor also excludes some previously accepted two-colour saved imports; its report did not test that compatibility boundary. The generated reproduction establishes this omission.
+- Its normal/mud discussion refers to shoes, gloves and elbow pads. The current source confirms that scope. It does not establish automatic sock pairing as the cause of this load failure.
+- Its atomic combined preflight refused an entire staging transaction. This job retains atomicity for a failing selected import, while allowing a fitting selected variant to coexist with an explicitly unresolved sibling. Project open now has a different contract: retain all valid art regardless of fit.
+- Its “fitted at W x H, N colours” receipt and cached caption contracts remain tested. The new “needs refit” branch does not invent dimensions or colours for a failed compile.
+- Its warning against silently destructive two-colour stripe imports remains the default. The new colour/size reduction occurs only through the explicit refit action, with an explanation and Undo.
+- The prior aggregate equipment-export inventory failures do not recur here. Real inventory-backed tests run in this worktree. The initial composer skip was a missing root XISO alias; a final standalone rerun supplies a temporary read-only symlink and removes it in `finally`.
+- Native binding, dirt-selection timing, larger allocation/disc relocation and in-game artwork claims were not expanded. No disc image was built and no game rendering is claimed.
 
-The landed beta-70 changelog/FAQ already carry T2's reporter context and were preserved. Coach Edwards reported “these sock textures are still distorted”; maumau78 reported visibility after assigning normal and mud while artwork still looked buggy. andrethealchemist reported “The old banners around the stadium are still in the game.” His played venue is unknown; Texture 29 does not establish Cincinnati. Noah/reporters must witness the changed artwork at near/distant views, both normal/mud states, the chosen venue/time/weather and the corresponding banner package. Texture import does not move the jersey model's sleeve/shoulder UV surface.
+## Validation and command ledger
 
-## Exact remaining failures
+**Final result: 31 standalone suites passed, 362 test cases, no remaining skips.** The last refit suite ran 12 tests; the final equipment-export rerun ran all 16. Every suite runs as a standalone `python3` process with `QT_QPA_PLATFORM=offscreen PYTHONPATH=.`; the orchestrator runs at most two processes concurrently. Full stdout/stderr is retained.
 
-### Strict registry validator: baseline evidence unavailable
+- [Initial broad run](reports/b71_t4/tests-initial/validation.json): 30 of 31 suites passed. The old J1 wiring suite expected fit failure to abort open, and its lightweight UI stub could not construct the newly added controls. Its corruption test now checks corrupt art; empty refit controls are created only when needed.
+- [Broad rerun](reports/b71_t4/tests/validation.json): 31 suites passed. The one initially skipped retail composer test is rerun separately with its source alias present.
+- [Final probe, refit, repin and whitespace checks](reports/b71_t4/final-checks.json).
+- [Final complete equipment-export suite](reports/b71_t4/final-export.json).
+- [Shell command ledger](reports/b71_t4/commands.json): shell batches, observed exit codes, UTC observation times and tool-reported execution time. For asynchronous commands the initial tool time is only time until yielding, not total command duration. Exact standalone-suite durations and start times are in the validation ledgers above; no unmeasured duration is presented as measured.
 
-`python3 -m mod_editor.capabilities.validate_registry`, exit 1:
+Earlier development failures remain in their logs: the first refit test attempted to overwrite an archive without `replace=True`; an initial facade stub lacked equipment iteration; the first historical probe referenced the old quantiser through the wrong module. These were corrected and their complete suites rerun. Scratch-only exploratory scripts also had a mock-cache type mistake and a missing mock attribute before the deterministic reproduction was isolated. No failing assertion was relaxed to accept corrupt bytes or an oversized encoding.
 
-```text
-RegistryError: capabilities[0].evidence[0]: missing local file docs/research/apf_audio.md
-```
+### Final command results
 
-Root cause: `mod_editor/capabilities/validate_registry.py:129` requires the evidence path to be a real file. The audit finds **148 missing unique evidence paths**, exactly the same set in `ded9c222` and the wired registry. Every newly appended T2 evidence path exists. No placeholder, removed constraint or bypass was used to make the strict command pass. See [registry-after-repin.log](reports/b70_a3/registry-after-repin.log) and [wiring-audit.log](reports/b70_a3/wiring-audit.log) for the complete missing set. Claude's hydrated checkout must supply the original research/evidence and rerun strict validation.
+All commands below use `QT_QPA_PLATFORM=offscreen PYTHONPATH=.`. UTC starts, durations and complete logs are also retained in the JSON ledgers.
 
-### Studio shell: missing uniform inventory
+| Command | Start (UTC) | Seconds | Exit |
+| --- | --- | ---: | ---: |
+| `python3 tests/mod_editor/test_b71_t4_equipment_project.py` | 23:01:47 | 67.812 | 0 |
+| `python3 tests/mod_editor/test_b69_j1_fit.py` | 22:59:16 | 12.288 | 0 |
+| `python3 tests/mod_editor/test_b69_j1_build.py` | 22:59:29 | 2.436 | 0 |
+| `python3 tests/mod_editor/test_b69_j1_wiring.py` | 22:59:31 | 1.424 | 0 |
+| `python3 tests/mod_editor/test_b70_t1_build_speed.py` | 22:59:32 | 19.416 | 0 |
+| `python3 tests/mod_editor/test_b70_t2_equipment.py` | 22:59:52 | 1.515 | 0 |
+| `python3 tests/mod_editor/test_b70_t2_reporting.py` | 22:59:53 | 0.258 | 0 |
+| `python3 tests/mod_editor/test_b70_t2_wiring.py` | 22:59:54 | 0.780 | 0 |
+| `python3 tests/mod_editor/test_nfl2k5_equipment_import.py` | 22:59:54 | 2.300 | 0 |
+| `python3 tests/mod_editor/test_nfl2k5_equipment_consumers.py` | 22:59:57 | 30.083 | 0 |
+| `python3 tests/mod_editor/test_nfl2k5_equipment_import_wiring.py` | 23:00:18 | 0.859 | 0 |
+| `python3 tests/mod_editor/test_nfl2k5_equipment_scope_wiring.py` | 23:00:19 | 2.005 | 0 |
+| `python3 tests/mod_editor/test_nfl2k5_equipment_texture_chain.py` | 23:00:21 | 3.206 | 0 |
+| `python3 tests/mod_editor/test_nfl2k5_equipment_texture_native.py` | 23:00:24 | 0.269 | 0 |
+| `python3 tests/mod_editor/test_nfl2k5_equipment_retail_roundtrip.py` | 23:00:24 | 15.385 | 0 |
+| `python3 tests/mod_editor/test_2k5_uniform_equipment_export.py` | 23:03:00 | 26.616 | 0 |
+| `python3 tests/mod_editor/test_project_document_workflow.py` | 23:00:40 | 15.836 | 0 |
+| `python3 tests/mod_editor/test_studio_session.py` | 23:00:51 | 0.911 | 0 |
+| `python3 tests/mod_editor/test_studio_facade.py` | 23:00:52 | 0.374 | 0 |
+| `python3 tests/mod_editor/test_studio_shell_layout_qt.py` | 23:00:52 | 40.654 | 0 |
+| `python3 tests/mod_editor/test_studio_qt_models.py` | 23:00:55 | 0.925 | 0 |
+| `python3 tests/mod_editor/test_studio_visual_asset_routing.py` | 23:00:56 | 3.527 | 0 |
+| `python3 tests/mod_editor/test_facade_external_build.py` | 23:01:00 | 0.326 | 0 |
+| `python3 tests/mod_editor/test_uniform_bundle_cross_project.py` | 23:01:00 | 2.790 | 0 |
+| `python3 tests/mod_editor/test_nfl2k5_model_project.py` | 23:01:03 | 37.880 | 0 |
+| `python3 tests/mod_editor/test_models_project_wiring.py` | 23:01:33 | 9.283 | 0 |
+| `python3 tests/mod_editor/test_provider_integrity.py` | 23:01:41 | 9.694 | 0 |
+| `python3 tests/mod_editor/test_providers.py` | 23:01:42 | 3.762 | 0 |
+| `python3 tests/mod_editor/test_product_catalog.py` | 23:01:46 | 0.167 | 0 |
+| `python3 tests/mod_editor/test_phase1_packaging.py` | 23:01:46 | 2.171 | 0 |
+| `python3 tools/test_nfl2k5_visual_mod_project.py` | 23:01:48 | 2.512 | 0 |
+| `python3 tools/b71_t4_equipment_probe.py` | 23:01:43 | 4.541 | 0 |
+| `python3 packaging/repin.py --apply` | 23:02:55 | 11.843 | 0 |
+| `git diff --check` | 23:03:07 | 0.652 | 0 |
 
-`test_studio_shell_layout_qt.py`, exit 1, 18 cases / 18 setup errors:
+Commit commands and their timings are in [delivery-code.json](reports/b71_t4/delivery-code.json). The [delivery ledger](reports/b71_t4/delivery.json) records implementation-bundle verification. After the documentation commit the final bundle is regenerated and verified; its receipt accompanies it at `.scratch/bundle-final-verification.json`.
 
-```text
-FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b70-a3/reports/assets'
-```
+## Delivery and limits
 
-The failure is before an assertion: `StudioMainWindow.__init__` → `_build_colors_page` → `_filter_unif_color_sets` → `uniform_catalog` → `nfl2k5_uniform_catalog.py:570`, which resolves the missing private uniform inventory. The shell never reaches the changed import/build-list action. No production fallback or test skip was added. See [test_studio_shell_layout_qt.log](reports/b70_a3/test_studio_shell_layout_qt.log).
+The worktree already had the requested branch at `e2f5c6e6`. The shared Git directory is outside the writable sandbox. Commits therefore live in `.scratch/t4.git`, with the same branch name and base, and are delivered in **`.scratch/astra-b71-t4.bundle`**. The shared worktree index still reports those edits relative to the base; the bundle carries the committed result. All commits use explicit paths. Task input files and the extracted-source symlink are excluded.
 
-### Packaging: missing reviewed metadata
+The evidence directory contains authored artwork, metadata and logs only. Retail inputs remain read-only. Temporary test spans and comparison PNGs are cleaned by their context managers; no disc or pack copy was made. Scratch remains far below 200 MB.
 
-`test_phase1_packaging.py`, exit 1, 23 cases / 1 error, in `ModStudioPackagingTests.test_reviewed_metadata_files_match_exact_contract_and_have_no_payload` at line 374:
-
-```text
-FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b70-a3/reports/assets/menu_state_trace.json'
-```
-
-The exact reviewed-metadata read fails before an assertion. The registry-count checks pass. See [test_phase1_packaging.log](reports/b70_a3/test_phase1_packaging.log).
-
-### Additional T1 byte-golden regression: landed T2 encoding differs
-
-`test_b70_t1_build_speed.py`, exit 1, 10 cases / 3 subtest failures, all in `SearchTests.test_beta69_complete_span_bytes_and_helper_disabled_import_budget`. These are the unchanged assertions; actual and expected values follow. The equipment writer is byte-identical to the input stack, and T2 intentionally changed the low-colour quantizer before A3. No old golden was regenerated or loosened.
-
-```text
-FAIL: test_beta69_complete_span_bytes_and_helper_disabled_import_budget (__main__.SearchTests.test_beta69_complete_span_bytes_and_helper_disabled_import_budget) (case='shoe32_noise_refused')
-----------------------------------------------------------------------
-Traceback (most recent call last):
-  File "/home/noah/2k-worktrees/astra-b70-a3/tests/mod_editor/test_b70_t1_build_speed.py", line 56, in test_beta69_complete_span_bytes_and_helper_disabled_import_budget
-    self.assertEqual(row['required'], 666)
-AssertionError: 664 != 666
-```
-
-```text
-FAIL: test_beta69_complete_span_bytes_and_helper_disabled_import_budget (__main__.SearchTests.test_beta69_complete_span_bytes_and_helper_disabled_import_budget) (case='shoe32_noise_half')
-----------------------------------------------------------------------
-Traceback (most recent call last):
-  File "/home/noah/2k-worktrees/astra-b70-a3/tests/mod_editor/test_b70_t1_build_speed.py", line 53, in test_beta69_complete_span_bytes_and_helper_disabled_import_budget
-    self.assertEqual(row['span_sha256'], BETA69_SPANS[case[0]])
-AssertionError: 'd7929c8fed8c3863e91d5a6cde5c81c80fcd3bf72a7012e7f336e5896aa9814c' != '409e6651e5724eadfcfe36db593d9f0fded63ab3b14a8a76e04432bb313bb624'
-- d7929c8fed8c3863e91d5a6cde5c81c80fcd3bf72a7012e7f336e5896aa9814c
-+ 409e6651e5724eadfcfe36db593d9f0fded63ab3b14a8a76e04432bb313bb624
-```
-
-```text
-FAIL: test_beta69_complete_span_bytes_and_helper_disabled_import_budget (__main__.SearchTests.test_beta69_complete_span_bytes_and_helper_disabled_import_budget) (case='shoe32_noise_quarter')
-----------------------------------------------------------------------
-Traceback (most recent call last):
-  File "/home/noah/2k-worktrees/astra-b70-a3/tests/mod_editor/test_b70_t1_build_speed.py", line 53, in test_beta69_complete_span_bytes_and_helper_disabled_import_budget
-    self.assertEqual(row['span_sha256'], BETA69_SPANS[case[0]])
-AssertionError: '80f42a2ea0df9452234af4080df2666f60ce7fad316bc50ee1f5d6cd3f672c19' != 'fed500b1e0aa7af58dfcd7e17a9bb4808a7d1b0509ce229c5ca87af3f2d9f97a'
-- 80f42a2ea0df9452234af4080df2666f60ce7fad316bc50ee1f5d6cd3f672c19
-+ fed500b1e0aa7af58dfcd7e17a9bb4808a7d1b0509ce229c5ca87af3f2d9f97a
-```
-
-All nine other top-level T1 cases pass, including search budgets/bounds, parse caching and restored-project invalidation. Four complete compressed-span hashes still equal beta-69: `sock256_stripes`, `shoe64_stripes`, `shoe64_diagonal`, `shoe32_tight`. The changed half/quarter noise images and refused-noise byte count require an explicit upstream decision about the historical byte contract. See [t1-build-speed-cache-fixed.log](reports/b70_a3/t1-build-speed-cache-fixed.log).
-
-`test_b70_a2_integration.py` is absent. The landed `test_b70_a2_wiring.py` was run instead, with 4 cases passing. A3's separate live integration file has 6 passing cases.
-
-## Final standalone results
-
-Every suite is a separate Python process with the requested `QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools` environment, launched through `env`. These are final full-file executions; earlier failures remain in the command ledger and logs. [final-tests.json](reports/b70_a3/final-tests.json) is machine-readable.
-
-| Exact command | Exit | Elapsed seconds | Cases | Output |
-| --- | ---: | ---: | ---: | --- |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_t2_wiring.py` | 0 | 1.027828 | 2 | [test_b70_t2_wiring.log](reports/b70_a3/test_b70_t2_wiring.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_t2_reporting.py` | 0 | 0.247250 | 5 | [test_b70_t2_reporting.log](reports/b70_a3/test_b70_t2_reporting.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_t2_equipment.py` | 0 | 1.194307 | 8 | [t2-equipment-cache-fixed.log](reports/b70_a3/t2-equipment-cache-fixed.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_t2_stadium.py` | 0 | 29.513545 | 3 | [test_b70_t2_stadium.log](reports/b70_a3/test_b70_t2_stadium.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_t2_native.py` | 0 | 0.100780 | 1 | [test_b70_t2_native.log](reports/b70_a3/test_b70_t2_native.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_a2_wiring.py` | 0 | 2.306946 | 4 | [test_b70_a2_wiring.log](reports/b70_a3/test_b70_a2_wiring.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_studio_facade.py` | 0 | 0.368252 | 11 | [test_studio_facade.log](reports/b70_a3/test_studio_facade.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_studio_session.py` | 0 | 0.834327 | 18 | [test_studio_session.log](reports/b70_a3/test_studio_session.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_build_service.py` | 0 | 0.270314 | 28 | [test_nfl2k5_build_service.log](reports/b70_a3/test_nfl2k5_build_service.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_studio_shell_layout_qt.py` | 1 | 4.601301 | 18 | [test_studio_shell_layout_qt.log](reports/b70_a3/test_studio_shell_layout_qt.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_equipment_import.py` | 0 | 2.147515 | 13 | [equipment-import-final.log](reports/b70_a3/equipment-import-final.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_equipment_import_wiring.py` | 0 | 0.724850 | 6 | [test_nfl2k5_equipment_import_wiring.log](reports/b70_a3/test_nfl2k5_equipment_import_wiring.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_equipment_consumers.py` | 0 | 25.990167 | 19 | [equipment-consumers-final.log](reports/b70_a3/equipment-consumers-final.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_equipment_scope_wiring.py` | 0 | 1.761725 | 3 | [test_nfl2k5_equipment_scope_wiring.log](reports/b70_a3/test_nfl2k5_equipment_scope_wiring.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_providers.py` | 0 | 3.542769 | 33 | [providers-final.log](reports/b70_a3/providers-final.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_provider_integrity.py` | 0 | 8.060924 | 7 | [provider-integrity-fixed.log](reports/b70_a3/provider-integrity-fixed.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_product_catalog.py` | 0 | 0.155282 | 9 | [test_product_catalog.log](reports/b70_a3/test_product_catalog.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b68_a1_audit.py` | 0 | 5.744885 | 10 | [test_b68_a1_audit.log](reports/b70_a3/test_b68_a1_audit.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_phase1_packaging.py` | 1 | 0.136386 | 23 | [test_phase1_packaging.log](reports/b70_a3/test_phase1_packaging.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_t1_build_speed.py` | 1 | 17.098285 | 10 | [t1-build-speed-cache-fixed.log](reports/b70_a3/t1-build-speed-cache-fixed.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_t1_diagnostics.py` | 0 | 0.622733 | 5 | [test_b70_t1_diagnostics.log](reports/b70_a3/test_b70_t1_diagnostics.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_a3_integration.py` | 0 | 1.263702 | 6 | [a3-integration-final.log](reports/b70_a3/a3-integration-final.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b69_j1_wiring.py` | 0 | 5.796468 | 7 | [test_b69_j1_wiring.log](reports/b70_a3/test_b69_j1_wiring.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b69_j1_fit.py` | 0 | 5.279821 | 5 | [test_b69_j1_fit.log](reports/b70_a3/test_b69_j1_fit.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_build_panel_qt.py` | 0 | 2.223747 | 13 | [build-panel.log](reports/b70_a3/build-panel.log) |
-
-## Complete recorded implementation and verification command ledger
-
-Elapsed times below use a monotonic subprocess clock. Full stdout/stderr and nonzero results are retained in [commands.jsonl](reports/b70_a3/commands.jsonl), including the report-writing command completed after the table was generated. Read-only discovery/inspection commands and their tool wall-clock times are separately recorded in [inspection-commands.json](reports/b70_a3/inspection-commands.json). `python3 -` entries used the inline scripts from the session; the exact resulting source/pin changes are in commit `cbcccaee`. Applied edits are additionally reconstructed by the retained audit program. The final report commit and bundle verification occur after this report is frozen; their exact commands, exits and timings are in [.scratch/astra-b70-a3-delivery.json](.scratch/astra-b70-a3-delivery.json).
-
-| Exact command | Exit | Elapsed seconds | Output |
-| --- | ---: | ---: | --- |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_t2_wiring.py` | 1 | 0.367178 | [wiring-before.log](reports/b70_a3/wiring-before.log) |
-| `python3 .scratch/apply_a3.py` | 1 | 0.241202 | [apply-wiring.log](reports/b70_a3/apply-wiring.log) |
-| `python3 -c 'from pathlib import Path; s=Path('"'"'.scratch/apply_a3.py'"'"').read_text(); exec(s[:s.index('"'"'session = '"'"')] + s[s.index("path = Path('"'"'mod_editor/capabilities/registry.v1.json'"'"')"):])'` | 0 | 0.052233 | [apply-registry.log](reports/b70_a3/apply-registry.log) |
-| `python3 -m mod_editor.capabilities.validate_registry` | 1 | 0.145476 | [registry-strict.log](reports/b70_a3/registry-strict.log) |
-| `python3 packaging/repin.py --apply` | 0 | 20.046894 | [repin-wiring.log](reports/b70_a3/repin-wiring.log) |
-| `python3 -m mod_editor.capabilities.validate_registry` | 1 | 0.130807 | [registry-after-repin.log](reports/b70_a3/registry-after-repin.log) |
-| `git diff --check` | 0 | 0.646177 | [diff-wiring.log](reports/b70_a3/diff-wiring.log) |
-| `python3 .scratch/setup_git_a3.py` | 0 | 0.054993 | [setup-private-git.log](reports/b70_a3/setup-private-git.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_t2_wiring.py` | 0 | 1.027828 | [test_b70_t2_wiring.log](reports/b70_a3/test_b70_t2_wiring.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_t2_reporting.py` | 0 | 0.247250 | [test_b70_t2_reporting.log](reports/b70_a3/test_b70_t2_reporting.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_t2_equipment.py` | 0 | 1.345134 | [test_b70_t2_equipment.log](reports/b70_a3/test_b70_t2_equipment.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_t2_stadium.py` | 0 | 29.513545 | [test_b70_t2_stadium.log](reports/b70_a3/test_b70_t2_stadium.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_t2_native.py` | 0 | 0.100780 | [test_b70_t2_native.log](reports/b70_a3/test_b70_t2_native.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_a2_wiring.py` | 0 | 2.306946 | [test_b70_a2_wiring.log](reports/b70_a3/test_b70_a2_wiring.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_studio_facade.py` | 0 | 0.368252 | [test_studio_facade.log](reports/b70_a3/test_studio_facade.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_studio_session.py` | 0 | 0.834327 | [test_studio_session.log](reports/b70_a3/test_studio_session.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_build_service.py` | 0 | 0.270314 | [test_nfl2k5_build_service.log](reports/b70_a3/test_nfl2k5_build_service.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_studio_shell_layout_qt.py` | 1 | 4.601301 | [test_studio_shell_layout_qt.log](reports/b70_a3/test_studio_shell_layout_qt.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_equipment_import.py` | 0 | 2.038292 | [test_nfl2k5_equipment_import.log](reports/b70_a3/test_nfl2k5_equipment_import.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_equipment_import_wiring.py` | 0 | 0.724850 | [test_nfl2k5_equipment_import_wiring.log](reports/b70_a3/test_nfl2k5_equipment_import_wiring.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_equipment_consumers.py` | 0 | 25.600566 | [test_nfl2k5_equipment_consumers.log](reports/b70_a3/test_nfl2k5_equipment_consumers.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_equipment_scope_wiring.py` | 0 | 1.761725 | [test_nfl2k5_equipment_scope_wiring.log](reports/b70_a3/test_nfl2k5_equipment_scope_wiring.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_providers.py` | 0 | 3.535609 | [test_providers.log](reports/b70_a3/test_providers.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_provider_integrity.py` | 1 | 7.581762 | [test_provider_integrity.log](reports/b70_a3/test_provider_integrity.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_product_catalog.py` | 0 | 0.155282 | [test_product_catalog.log](reports/b70_a3/test_product_catalog.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b68_a1_audit.py` | 0 | 5.744885 | [test_b68_a1_audit.log](reports/b70_a3/test_b68_a1_audit.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_phase1_packaging.py` | 1 | 0.136386 | [test_phase1_packaging.log](reports/b70_a3/test_phase1_packaging.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_t1_build_speed.py` | 1 | 16.603923 | [test_b70_t1_build_speed.log](reports/b70_a3/test_b70_t1_build_speed.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_t1_diagnostics.py` | 0 | 0.622733 | [test_b70_t1_diagnostics.log](reports/b70_a3/test_b70_t1_diagnostics.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_a3_integration.py` | 0 | 1.240089 | [test_b70_a3_integration.log](reports/b70_a3/test_b70_a3_integration.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b69_j1_wiring.py` | 0 | 5.796468 | [test_b69_j1_wiring.log](reports/b70_a3/test_b69_j1_wiring.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b69_j1_fit.py` | 0 | 5.279821 | [test_b69_j1_fit.log](reports/b70_a3/test_b69_j1_fit.log) |
-| `python3 -c 'from tests.mod_editor.test_provider_integrity import local_import_closure; from mod_editor.core.providers import Nfl2k5UnifiedVisualProvider as P; p=P(); print(sorted(local_import_closure('"'"'mod_editor/studio/session.py'"'"') - set(p.module_pins)))'` | 0 | 2.741786 | [provider-missing.log](reports/b70_a3/provider-missing.log) |
-| `python3 -` | 0 | 0.024997 | [add-provider-pins.log](reports/b70_a3/add-provider-pins.log) |
-| `python3 packaging/repin.py --apply` | 0 | 10.070944 | [repin-cache-seam.log](reports/b70_a3/repin-cache-seam.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_t2_equipment.py` | 0 | 1.194307 | [t2-equipment-cache-fixed.log](reports/b70_a3/t2-equipment-cache-fixed.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_provider_integrity.py` | 0 | 8.060924 | [provider-integrity-fixed.log](reports/b70_a3/provider-integrity-fixed.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_t1_build_speed.py` | 1 | 17.098285 | [t1-build-speed-cache-fixed.log](reports/b70_a3/t1-build-speed-cache-fixed.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_b70_a3_integration.py` | 0 | 1.263702 | [a3-integration-final.log](reports/b70_a3/a3-integration-final.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_equipment_import.py` | 0 | 2.147515 | [equipment-import-final.log](reports/b70_a3/equipment-import-final.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_build_panel_qt.py` | 0 | 2.223747 | [build-panel.log](reports/b70_a3/build-panel.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_equipment_consumers.py` | 0 | 25.990167 | [equipment-consumers-final.log](reports/b70_a3/equipment-consumers-final.log) |
-| `python3 -m mod_editor.capabilities.validate_registry --skip-file-checks` | 0 | 0.103569 | [registry-structure-only.log](reports/b70_a3/registry-structure-only.log) |
-| `git --git-dir=.scratch/git-a3 --work-tree=. add -- mod_editor/studio/session.py mod_editor/gui/studio_qt.py mod_editor/core/nfl2k5_build_service.py mod_editor/core/nfl2k5_equipment_import.py mod_editor/core/equipment_staging.py mod_editor/core/providers.py mod_editor/capabilities/registry.v1.json packaging/release-allowlist.txt packaging/check_2k5_mod_studio_runtime.py tests/mod_editor/test_b70_t2_wiring.py tests/mod_editor/test_b70_a3_integration.py tests/mod_editor/test_provider_integrity.py tests/mod_editor/b70_equipment_fixture.py` | 0 | 0.041187 | [stage-code.log](reports/b70_a3/stage-code.log) |
-| `python3 packaging/repin.py --apply` | 0 | 10.081278 | [repin-before-code-commit.log](reports/b70_a3/repin-before-code-commit.log) |
-| `git --git-dir=.scratch/git-a3 --work-tree=. commit -m 'Wire beta 70 T2 equipment fits and stadium summaries into the stack' -- mod_editor/studio/session.py mod_editor/gui/studio_qt.py mod_editor/core/nfl2k5_build_service.py mod_editor/core/nfl2k5_equipment_import.py mod_editor/core/equipment_staging.py mod_editor/core/providers.py mod_editor/capabilities/registry.v1.json packaging/release-allowlist.txt packaging/check_2k5_mod_studio_runtime.py tests/mod_editor/test_b70_t2_wiring.py tests/mod_editor/test_b70_a3_integration.py tests/mod_editor/test_provider_integrity.py tests/mod_editor/b70_equipment_fixture.py` | 0 | 2.247999 | [commit-code.log](reports/b70_a3/commit-code.log) |
-| `python3 reports/b70_a3/audit_wiring.py` | 0 | 1.074790 | [wiring-audit.log](reports/b70_a3/wiring-audit.log) |
-| `python3 -` | 0 | 0.023881 | [audit-summary.log](reports/b70_a3/audit-summary.log) |
-| `git --git-dir=.scratch/git-a3 --work-tree=. diff ded9c222 --check` | 0 | 0.025750 | [final-whitespace.log](reports/b70_a3/final-whitespace.log) |
-| `git --git-dir=.scratch/git-a3 --work-tree=. show --stat --oneline HEAD` | 0 | 0.021538 | [final-git-summary.log](reports/b70_a3/final-git-summary.log) |
-| `python3 packaging/repin.py --apply` | 0 | 9.890954 | [final-repin.log](reports/b70_a3/final-repin.log) |
-| `python3 -m mod_editor.capabilities.validate_registry` | 1 | 0.129052 | [registry-final-strict.log](reports/b70_a3/registry-final-strict.log) |
-| `python3 .scratch/write_report_a3.py` | 0 | 0.169213 | [write-report.log](reports/b70_a3/write-report.log) |
-| `env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_providers.py` | 0 | 3.542769 | [providers-final.log](reports/b70_a3/providers-final.log) |
-
-ASTRA_DONE
+Still to witness: open the original affected project in the released Studio, inspect its per-item message, use Refit equipment, save/reopen, and inspect socks at close range and distance in game. The generated reproduction and bounded native codec tests do not establish its visual quality or identify the original PNG's precise failure mechanism.

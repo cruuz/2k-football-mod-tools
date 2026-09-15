@@ -1,0 +1,55 @@
+EEE........
+======================================================================
+ERROR: test_crib_catalog_callbacks_and_unified_build_dispatch (__main__.StudioFacadeTests.test_crib_catalog_callbacks_and_unified_build_dispatch)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t4/tests/mod_editor/test_studio_facade.py", line 697, in test_crib_catalog_callbacks_and_unified_build_dispatch
+    facade.build_iso(self.output, progress).output_xiso, self.output
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-t4/mod_editor/studio/facade.py", line 3745, in build_iso
+    require_equipment_fit(session)
+  File "/home/noah/2k-worktrees/astra-b71-t4/mod_editor/core/equipment_staging.py", line 54, in require_equipment_fit
+    failed = [r for r in equipment_fit_rows(session) if r.get('fit_status') == 'needs refit']
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-t4/mod_editor/core/equipment_staging.py", line 71, in equipment_fit_rows
+    for edit in session.iter_edits():
+                ^^^^^^^^^^^^^^^^^^
+AttributeError: '_CribSession' object has no attribute 'iter_edits'
+
+======================================================================
+ERROR: test_full_facade_flow_and_xemu_argv (__main__.StudioFacadeTests.test_full_facade_flow_and_xemu_argv)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t4/tests/mod_editor/test_studio_facade.py", line 415, in test_full_facade_flow_and_xemu_argv
+    built = self.facade.build_iso(self.output, progress)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-t4/mod_editor/studio/facade.py", line 3745, in build_iso
+    require_equipment_fit(session)
+  File "/home/noah/2k-worktrees/astra-b71-t4/mod_editor/core/equipment_staging.py", line 54, in require_equipment_fit
+    failed = [r for r in equipment_fit_rows(session) if r.get('fit_status') == 'needs refit']
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-t4/mod_editor/core/equipment_staging.py", line 71, in equipment_fit_rows
+    for edit in session.iter_edits():
+                ^^^^^^^^^^^^^^^^^^
+AttributeError: '_Session' object has no attribute 'iter_edits'
+
+======================================================================
+ERROR: test_loading_a_new_source_clears_last_build (__main__.StudioFacadeTests.test_loading_a_new_source_clears_last_build)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t4/tests/mod_editor/test_studio_facade.py", line 439, in test_loading_a_new_source_clears_last_build
+    self.facade.build_iso(self.output, progress)
+  File "/home/noah/2k-worktrees/astra-b71-t4/mod_editor/studio/facade.py", line 3745, in build_iso
+    require_equipment_fit(session)
+  File "/home/noah/2k-worktrees/astra-b71-t4/mod_editor/core/equipment_staging.py", line 54, in require_equipment_fit
+    failed = [r for r in equipment_fit_rows(session) if r.get('fit_status') == 'needs refit']
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-t4/mod_editor/core/equipment_staging.py", line 71, in equipment_fit_rows
+    for edit in session.iter_edits():
+                ^^^^^^^^^^^^^^^^^^
+AttributeError: '_Session' object has no attribute 'iter_edits'
+
+----------------------------------------------------------------------
+Ran 11 tests in 1.391s
+
+FAILED (errors=3)

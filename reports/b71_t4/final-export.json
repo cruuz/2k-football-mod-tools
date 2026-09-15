@@ -1,0 +1,8 @@
+{
+  "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_2k5_uniform_equipment_export.py",
+  "started": "2026-09-15T23:03:00.082366+00:00",
+  "exit_code": 0,
+  "seconds": 26.616,
+  "log": "reports/b71_t4/final-export.log",
+  "setup": "Temporary read-only retail XISO symlink; removed in finally"
+}

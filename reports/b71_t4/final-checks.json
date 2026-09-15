@@ -1,0 +1,30 @@
+[
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tools/b71_t4_equipment_probe.py",
+    "started": "2026-09-15T23:01:43.426006+00:00",
+    "exit_code": 0,
+    "seconds": 4.541,
+    "log": "reports/b71_t4/final-0.log"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_b71_t4_equipment_project.py",
+    "started": "2026-09-15T23:01:47.967187+00:00",
+    "exit_code": 0,
+    "seconds": 67.812,
+    "log": "reports/b71_t4/final-1.log"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 packaging/repin.py --apply",
+    "started": "2026-09-15T23:02:55.779557+00:00",
+    "exit_code": 0,
+    "seconds": 11.843,
+    "log": "reports/b71_t4/final-2.log"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. git diff --check",
+    "started": "2026-09-15T23:03:07.622615+00:00",
+    "exit_code": 0,
+    "seconds": 0.652,
+    "log": "reports/b71_t4/final-3.log"
+  }
+]
