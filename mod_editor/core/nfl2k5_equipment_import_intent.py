@@ -26,11 +26,13 @@ SCHEMA = "nfl2k5_equipment_import_intent/v1"
 CHOICE_CAPTION = "Give this sock, glove or shoe its own texture"
 CHOICE_HELP = (
     "Import a new design for this selected sock, glove or shoe. Other variants keep "
-    "their artwork, including the separate dirty version. Smaller copies are "
+    "their artwork. A normal shoe/glove/pad import also fills its mud sibling where one exists; "
+    "a mud-only import stays separate. Smaller copies are "
     "made for distance. The original image size often cannot fit. Choose a "
     "smaller game image below, or use fewer colours and simpler shapes. If it misses the slot, "
     "the check reports the byte shortfall and offers a checked smaller size when one fits. "
-    "Smaller images lose fine detail. Uses more game memory. Experimental / unwitnessed: check close up "
+    "Striped artwork keeps a palette limit of at least 16 colours; try a checked smaller image before merging more shades. "
+    "The result reports the actual fitted size and colours. Smaller images lose fine detail. Uses more game memory. Experimental / unwitnessed: check close up "
     "and at distance in a game."
 )
 PALETTE_HELP = (
@@ -41,10 +43,16 @@ PALETTE_HELP = (
 
 SHOE_ROUTE_HELP = (
     "Style 3 selects shoes09; Style 6 selects shoes10. The native field path checks "
-    "HOME or AWAY, and clean or _mud artwork separately. Import each uniform and "
-    "dirty variant you need. Both feet must use that style. maumau78 reported that "
-    "Style 6 appeared in Edit Player but not in a Bears game; that report is unresolved. "
-    "Package-local lookup is proved only in bounded native tests. In-game results are UNWITNESSED."
+    "HOME or AWAY, and normal or _mud artwork separately. Normal imports now stage both slots "
+    "where a mud sibling exists. Import each uniform you use and select that style on both feet. "
+    "maumau78 reported that Style 6 appeared on the field only after assigning both slots, "
+    "and still looked buggy. The earlier single-slot route was insufficient in his game. "
+    "The bounded native checks do not establish the state in his game. This change is UNWITNESSED in game."
+)
+ARM_DIGIT_HELP = (
+    "Arm digits are placed on the outer sleeve by the jersey mesh's UV coordinates, "
+    "which map the image onto the model. Importing a digit changes its artwork, not its position. "
+    "Moving it to the shoulder pad needs model UV research; the texture importer cannot do that."
 )
 LARGER_ART_HELP = (
     "Larger equipment art is unavailable: moving the equipment to more space has not "

@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (
     QCheckBox, QComboBox, QDialog, QDialogButtonBox, QLabel, QVBoxLayout,
 )
 from mod_editor.core.nfl2k5_equipment_import_intent import (
-    CHOICE_CAPTION, CHOICE_HELP, PALETTE_HELP, SHOE_ROUTE_HELP, LARGER_ART_HELP, supports_own_texture,
+    CHOICE_CAPTION, CHOICE_HELP, PALETTE_HELP, SHOE_ROUTE_HELP, LARGER_ART_HELP, ARM_DIGIT_HELP, supports_own_texture,
 )
 
 
@@ -24,7 +24,14 @@ class EquipmentTextureImportDialog(QDialog):
         target = QLabel(f"{asset.label}\nPNG size: {asset.width} x {asset.height}")
         target.setWordWrap(True)
         layout.addWidget(target)
-        choices, rule = equipment_import_scope(asset.asset_id)
+        if getattr(asset, "family", None) == "arm":
+            arm_note = QLabel(ARM_DIGIT_HELP)
+            arm_note.setObjectName("armDigitPlacementHelp")
+            arm_note.setWordWrap(True)
+            layout.addWidget(arm_note)
+            choices, rule = (("selected-package", "Selected uniform package"),), ARM_DIGIT_HELP
+        else:
+            choices, rule = equipment_import_scope(asset.asset_id)
         layout.addWidget(QLabel("Import applies to:"))
         self.import_scope = QComboBox()
         self.import_scope.setObjectName("equipmentImportScope")

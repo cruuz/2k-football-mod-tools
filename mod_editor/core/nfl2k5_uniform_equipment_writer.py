@@ -818,6 +818,57 @@ def _quality(requested: bytes, actual: bytes) -> dict[str, int]:
     }
 
 
+def _striped_art(rgba: bytes, width: int, height: int) -> bool:
+    """Conservative stripe detector: repeated, coherent high-contrast edges.
+
+    Horizontal or vertical bands must cross at least half the image. A photo,
+    isolated logo or a smooth ramp does not qualify merely for being colourful.
+    Inspect the authored base, so choosing a smaller mip cannot erase the rule.
+    """
+    pixels = [tuple(rgba[i:i + 4]) for i in range(0, len(rgba), 4)]
+    def edge(a, b):
+        return min(a[3], b[3]) >= 192 and max(abs(a[i] - b[i]) for i in range(3)) >= 80
+    def coherent(a, b):
+        means = [tuple(sum(c[i] for c in line) // len(line) for i in range(4)) for line in (a, b)]
+        return edge(*means) and sum(edge(x, y) for x, y in zip(a, b)) >= len(a) / 2
+    horizontal = sum(coherent(pixels[(y - 1) * width:y * width], pixels[y * width:(y + 1) * width])
+                     for y in range(1, height))
+    vertical = sum(coherent(pixels[x - 1::width], pixels[x::width]) for x in range(1, width))
+    return horizontal >= 2 or vertical >= 2
+
+
+def _quantize_art(levels, maximum):
+    """Median cut of actual base artwork; nearest-colour mapping, no dither.
+
+    Keep an already representable base exact. Filtered distance colours use
+    remaining entries, and cannot replace a base colour. Under pressure, use
+    weighted median-cut regions of the base (never a fixed colour ramp).
+    """
+    from mod_editor.core.equipment_palette import distance, quality
+    pixels = [[tuple(level.rgba[i:i + 4]) for i in range(0, len(level.rgba), 4)]
+              for level in levels]
+    base = Counter(pixels[0])
+    histogram = Counter(c for row in pixels for c in row)
+    def medoids(hist, limit):
+        if len(hist) <= limit:
+            return sorted(hist)
+        return sorted(set(min(hist, key=lambda c: (distance(c, centre), -hist[c], c))
+                          for centre in palette_tools.median_cut_palette(hist, limit)))
+    if len(base) <= maximum:
+        palette = sorted(base)
+        room = maximum - len(palette)
+        if room:
+            palette += medoids(Counter({c: n for c, n in histogram.items() if c not in base}), room)
+    else:
+        palette = medoids(base, maximum)
+    exact = {c: i for i, c in enumerate(palette)}
+    mapping = {c: exact[c] if c in exact else min(range(len(palette)),
+               key=lambda i: (distance(c, palette[i]), i)) for c in histogram}
+    indices = [bytes(mapping[c] for c in row) for row in pixels]
+    actual = b"".join(bytes(palette[i]) for i in indices[0])
+    return palette, indices, quality(levels[0].rgba, actual)
+
+
 @dataclass(frozen=True)
 class _CompiledGroup:
     """One physical TSET compile, independent of which package asked for it.
@@ -905,7 +956,10 @@ def _compile_group(
     selected_entries: dict[int, int] = {}
     selected_quality: dict[int, Any] = {}
     tried: set[str] = set()
-    for maximum in PALETTE_LIMITS:
+    stripe_floor = any(ref in independent and ref not in retail
+                       and _striped_art(rgba, target.width, target.height)
+                       for ref, (target, _payload, rgba, _levels) in authored.items())
+    for maximum in (limit for limit in PALETTE_LIMITS if not stripe_floor or limit >= 16):
         candidate = bytearray(decoded + bytes(video_end - chunk.video_bytes))
         entries: dict[int, int] = {}
         qualities: dict[int, Any] = {}
@@ -921,9 +975,7 @@ def _compile_group(
                         start = chunk.system_bytes + texture.pixel_offset
                         candidate[start:start + len(chain)] = chain
                 elif reference in independent:
-                    from mod_editor.core.equipment_palette import quantize
-
-                    colors, index_levels, quality = quantize(levels, maximum)
+                    colors, index_levels, quality = _quantize_art(levels, maximum)
                     palette, actual_entries = palette_tools.palette_bytes(colors), len(colors)
                     qualities[reference] = quality
                     texture = updated_textures[reference]
@@ -1010,7 +1062,7 @@ def _compile_group(
                         continue
                     suggestion = {"asset_id": target.asset_id, "scale": scale,
                         "width": levels[0].width, "height": levels[0].height,
-                        "colours": checked.attempts[-1]["maximum_palette_entries"],
+                        "colours": checked.edit_templates[reference]["palette_entries"],
                         "encoded_bytes": checked.rebuild_info.recompressed_bytes}
                     break
                 if suggestion:
@@ -1073,6 +1125,7 @@ def _compile_group(
             rebuilt_decoded, replace(chunk, video_bytes=video_end), texture,
         )
         after = after_levels[0]
+        used_entries = len({actual[i:i + 4] for actual in after_levels for i in range(0, len(actual), 4)})
         try:
             from .equipment_palette import quality as palette_quality
         except ImportError:  # loaded by file path (no package)
@@ -1093,6 +1146,11 @@ def _compile_group(
         edit_templates[reference] = {
             "name": target.name,
             "palette_entries": selected_entries[reference],
+            "used_palette_entries": used_entries,
+            "fit_summary": f"fitted at {texture.width} x {texture.height}, {used_entries} colours",
+            "palette_method": "preserved_retail" if reference in retail else
+                              "base_art_median_cut_no_dither" if reference in independent else "shared_index_projection",
+            "stripe_palette_floor": 16 if stripe_floor and reference in independent else None,
             "palette_offset": target.palette_offset,
             "preview_sha256": _digest(preview),
             "projection_quality": _quality(
@@ -1338,6 +1396,10 @@ def build_unified_uniform_equipment_imports(
             "asset_id": target.asset_id,
             "name": template["name"],
             "palette_entries": template["palette_entries"],
+            "used_palette_entries": template["used_palette_entries"],
+            "fit_summary": template["fit_summary"],
+            "palette_method": template["palette_method"],
+            "stripe_palette_floor": template["stripe_palette_floor"],
             "palette_offset": template["palette_offset"],
             "preview_file": preview_name,
             "preview_sha256": template["preview_sha256"],
