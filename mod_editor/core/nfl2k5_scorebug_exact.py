@@ -450,6 +450,10 @@ MNF_BAR = scene_box(MNF_SOURCE["bar"])
 MNF_PANELS = {"away": scene_box(MNF_SOURCE["away_wing"]), "home": scene_box(MNF_SOURCE["home_wing"])}
 MNF_PLATE = scene_box(MNF_SOURCE["plate"])
 MNF_STRIP = scene_box(MNF_SOURCE["strip"])
+# The 2026 layout's regions in the retail comparison's vocabulary (frame, wings, plate, strip).
+MNF_COMPARE_REGIONS = {"frame_rim": MNF_SOURCE["bar"], "left_panel": MNF_SOURCE["away_wing"],
+                       "centre_pill": MNF_SOURCE["plate"], "clock_strip": MNF_SOURCE["strip"],
+                       "right_panel": MNF_SOURCE["home_wing"]}
 # Text anchors: x is the alignment point (scores/quarter/play clock centred,
 # the game clock right-aligned like retail), y the text bottom in scene units.
 _SX = lambda px: px / 3 - 320
@@ -464,8 +468,8 @@ def _ORIGIN(px_top, glyph_y0, k):
 MNF_ANCHORS = {
     "away_city": (_SX(755), _ORIGIN(1033, 15, 27), -64), "home_city": (_SX(1165), _ORIGIN(1033, 15, 27), -64),   # timeout dashes (FONT8 hyphen rows 15..20)
     "away_score": (_SX(755), _ORIGIN(955, 7, 0), -59), "home_score": (_SX(1165), _ORIGIN(955, 7, 0), -59),
-    "quarter": (_SX(875), _ORIGIN(1015, 4, 15), -4), "clock_a": (_SX(1010), _ORIGIN(1008, 4, 15), -4), "clock_b": (_SX(1010), _ORIGIN(1008, 4, 15), -4),
-    "drop_clock": (_SX(1053), _ORIGIN(1008, 4, 15), -4), "drop_down": (0, _ORIGIN(955, 4, 15), -4),
+    "quarter": (_SX(883), _ORIGIN(1015, 4, 15), -4), "clock_a": (_SX(978), _ORIGIN(1008, 4, 15), -4), "clock_b": (_SX(978), _ORIGIN(1008, 4, 15), -4),
+    "drop_clock": (_SX(1055), _ORIGIN(1008, 4, 15), -4), "drop_down": (0, _ORIGIN(955, 4, 15), -4),
     "drop_yellow": (0, _ORIGIN(955, 4, 15), -8), "drop_red": (0, _ORIGIN(955, 4, 15), -8),
     "drop_hangtime": (0, _ORIGIN(955, 4, 15), -8), "drop_ball_on": (0, _ORIGIN(955, 4, 15), -8),
 }
@@ -531,8 +535,10 @@ def atlas_mnf():
     # Clock capsule tile: white pill with the two cell separators.
     d.rectangle((0, 40, 63, 59), fill=(0, 0, 0, 0))
     d.rounded_rectangle((0, 40, 63, 59), 9, fill=MNF_COLORS["capsule"] + (255,), outline=(190, 194, 202, 255))
-    d.line((21, 42, 21, 57), fill=MNF_COLORS["separator"] + (255,))
-    d.line((47, 42, 47, 57), fill=MNF_COLORS["separator"] + (255,))
+    # Cells sized for the retail HUD glyphs: "1ST" (27 px), "13:10" (34 px) and the
+    # two-digit play clock each sit centred with clearance; 64 tile px span 81.3 HUD px.
+    d.line((24, 42, 24, 57), fill=MNF_COLORS["separator"] + (255,))
+    d.line((50, 42, 50, 57), fill=MNF_COLORS["separator"] + (255,))
     d.rectangle((0, 61, 3, 63), fill=(248, 250, 243, 255))
     d.rectangle((4, 61, 7, 63), fill=body + (255,))
     return im

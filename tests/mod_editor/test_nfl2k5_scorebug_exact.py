@@ -21,7 +21,7 @@ HAVE_IMAGES = all(importlib.util.find_spec(name) for name in ("PIL", "numpy"))
 class ContractTests(unittest.TestCase):
     def test_all_32_team_wordmarks_and_runtime_default_off(self):
         self.assertEqual(set(exact.NICKNAMES), set(art.TEAM_LOGOS))
-        self.assertEqual(art.PROBES, ("transport", "hooks", "resources", "neutral", "pair", "full"))
+        self.assertEqual(art.PROBES, ("transport", "hooks", "resources", "neutral", "pair", "full", "mnf"))
         from mod_editor.core import mod_build
         self.assertFalse(mod_build.BuildPlan(source="unused", target="unused").scorebug_runtime)
         for name, preset in mod_build.PRESETS.items():
@@ -107,31 +107,53 @@ class NativeTests(unittest.TestCase):
                     self.assertNotEqual(materials[name]["texture"], "0x0")
                     self.assertNotEqual(materials[name]["texture"], materials["cscore_buga"]["texture"])
                 self.assertNotEqual(materials["hscore_buga"]["texture"], materials["zscore_buga"]["texture"])
-                for name, expected_name in (("hscore_buga", "sb37h3"), ("zscore_buga", "sb20a3")):
+                for name, expected_name in (("hscore_buga", "sb37h0"), ("zscore_buga", "sb20a0")):
                     self.assertEqual(geometry["rendered_materials"][name]["name"], expected_name)
                     self.assertEqual(geometry["rendered_materials"][name]["dimensions"], [128, 32])
                 for row in geometry["winding"].values(): self.assertEqual(row["positive"], 0)
                 with Image.open(path) as image: pictures.append(image.convert("RGB"))
                 if not wide:
-                    score = compare(self.reference, pictures[-1], geometry, self.text_boxes, runtime=True)
+                    # The runtime scene is the 2026 layout: its native boxes are
+                    # checked against the broadcast regions, not the retail ones.
+                    from mod_editor.core import nfl2k5_scorebug_exact as exact
+                    score = compare(self.reference, pictures[-1], geometry, self.text_boxes, runtime=True,
+                                    regions=exact.MNF_COMPARE_REGIONS)
                     for name, region in score["regions"].items():
                         self.assertLess(region["native_boundary_error_px"], .01, name)
             self.assertIsNone(ImageChops.difference(pictures[0], pictures[1]).getbbox())
 
     def test_live_timeouts_change_only_the_selected_runtime_panel(self):
+        """Beta 70: timeouts are text through the team-name callbacks; the wing
+        textures no longer encode them, so a timeout changes no panel pixel and
+        only the dash text of the side that changed."""
         from PIL import Image, ImageChops
+        from nfl2k5_scorebug_exact import box_of
         first = self.out / "three.png"
         second = self.out / "one.png"
         before = self.build.render(first, runtime=True, timeouts=(3, 3))
         after = self.build.render(second, runtime=True, timeouts=(3, 1))
         self.assertEqual(before["positions"], after["positions"])
+        self.assertEqual(before["rendered_materials"], after["rendered_materials"])
+        # The only change is the home timeout dashes ("- - -" to "-"), drawn as
+        # text through the team-name callback; its quad bounds the pixel change.
+        differing = []
+        for rb, ra in zip(before["draws"], after["draws"]):
+            self.assertEqual(rb["callback"], ra["callback"])
+            if rb["text"] != ra["text"]:
+                differing.append((rb, ra))
+        self.assertEqual(len(differing), 1)
+        rb, ra = differing[0]
+        self.assertEqual((rb["text"].count("-"), ra["text"].count("-")), (3, 1))
+        self.assertTrue(set(rb["text"]) <= set("- ") and set(ra["text"]) <= set("- "))
+        quads = [box_of([v["screen"] for v in row["vertices"]]) for row in (rb, ra) if row["vertices"]]
+        self.assertTrue(quads)
+        allowed = (min(q[0] for q in quads) - 1, min(q[1] for q in quads) - 1,
+                   max(q[2] for q in quads) + 1, max(q[3] for q in quads) + 1)
         with Image.open(first) as a, Image.open(second) as b:
             changed = ImageChops.difference(a, b).getbbox()
         self.assertIsNotNone(changed)
-        expected = exact.hud_box(exact.SOURCE_REGIONS["left_panel"])
-        self.assertGreaterEqual(changed[0], int(expected[0]))
-        self.assertLessEqual(changed[2], int(expected[2]) + 1)
-        self.assertGreaterEqual(changed[1], 440)
+        self.assertTrue(allowed[0] <= changed[0] and allowed[1] <= changed[1]
+                        and changed[2] <= allowed[2] and changed[3] <= allowed[3], (changed, allowed))
 
     def test_comparator_reports_pixel_mismatches_even_when_geometry_is_exact(self):
         from PIL import ImageDraw
@@ -157,7 +179,7 @@ class NativeTests(unittest.TestCase):
         for probe in art.PROBES:
             compiled, receipt = art.compile_runtime_collection(self.build.view, probe=probe)
             self.assertEqual(art.runtime_pack_status(compiled, probe=probe), "applied")
-            self.assertEqual(receipt["version"], art.RUNTIME_VERSION)
+            self.assertEqual(receipt["version"], art.MNF_VERSION if probe == "mnf" else art.RUNTIME_VERSION)
             self.assertEqual(receipt["texture_count"], art.probe_sizes(probe)[0])
 
 

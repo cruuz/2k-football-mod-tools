@@ -37,6 +37,7 @@ SCENE, POPULATED, MATERIALS, PLATE, TEXTURES = 0, 4, 8, 16, 20
 SCORES, FLASH, DOWN, POSSESSION, BALL, LINE, PHASE = 32, 40, 48, 52, 56, 60, 64
 HOME_CONTEXT, AWAY_CONTEXT = 0xB30864, 0xB30A58
 SCORE_POINTERS = (0xE5FC28, 0xE5FC68)
+TEAM_OBJECTS = (0xE5FC20, 0xE5FC60)  # home, away team objects; 0xE60280 holds the one with possession
 SCORE_COLORS = (0xA95958, 0xA95990)
 CITY_CALLBACKS = (0xA958AC, 0xA95884)  # home, away text records (retail 0xFC030 / 0xFC010), same order as SCORE_POINTERS
 PLATE_MATERIAL_NAME = 0xE6C5D4        # UTF-16 "dscore_buga"
@@ -69,6 +70,7 @@ STATIC_OVERRIDES = {
     0xA9590C: CAPSULE_INK, 0xA95910: CAPSULE_INK,   # game clock
     0xA95934: CAPSULE_INK, 0xA95938: CAPSULE_INK,   # game clock (second record)
     0xA95A48: CAPSULE_INK,                          # play clock (rewritten per frame)
+    0xA95904: 3, 0xA9592C: 3,                       # game clock centred in its capsule cell (retail: right-aligned)
 }
 LITERALS = {0xE6C404: ("Goal", "GOAL")}  # the down plate reads "1st & GOAL" like the broadcast
 
@@ -177,11 +179,22 @@ def code_for(code_va, data_va):
     # Native ramp already ran, and visibility was just written by FC9C0. Reset
     # to 1/30 open (visible, 0.2 HUD units); next updates finish the 0.2 s ramp.
     store(0xA95A04, 0x3F800000)
-    # Down plate: the possessing team's colour, from the two-digit asset code.
+    # Down plate: the possessing team's colour. The possession word names one of the
+    # two team objects; the colour comes from that side's context (the same validated
+    # asset-code path load_side uses), so an unexpected word tints nothing.
     a.label("plate")
     absop("8b0d", data_va + PLATE); b("85c9"); jump("0f84", "clock")
     absop("a1", 0xE60280); b("85c0"); jump("0f84", "clock")
-    b("8b800c010000 85c0"); jump("0f84", "clock")           # UTF-16 asset code
+    b("be" + _u(HOME_CONTEXT))
+    b("3d" + _u(TEAM_OBJECTS[0])); jump("0f84", "plate_side")
+    absop("3b05", SCORE_POINTERS[0]); jump("0f84", "plate_side")
+    b("be" + _u(AWAY_CONTEXT))
+    b("3d" + _u(TEAM_OBJECTS[1])); jump("0f84", "plate_side")
+    absop("3b05", SCORE_POINTERS[1]); jump("0f85", "clock")
+    a.label("plate_side")
+    b("83be2801000002"); jump("0f84", "clock")
+    b("83be2801000004"); jump("0f84", "clock")
+    b("8b860c010000 85c0"); jump("0f84", "clock")           # UTF-16 asset code
     b("0fb710 83ea30 83fa03"); jump("0f87", "clock")         # tens digit 0..3
     b("0fb74002 83e830 83f809"); jump("0f87", "clock")       # ones digit 0..9
     b("6bd20a 01d0 8b0485"); a.label("plate_table_ref"); b("00000000")

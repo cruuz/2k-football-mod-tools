@@ -1,0 +1,83 @@
+wait 150
+hold START
+wait 1
+release START
+wait 7
+hold START
+wait 1
+release START
+wait 7
+hold START
+wait 1
+release START
+wait 7
+hold START
+wait 1
+release START
+wait 7
+hold START
+wait 1
+release START
+wait 7
+hold START
+wait 1
+release START
+wait 7
+hold A
+wait 2
+release A
+wait 8
+hold A
+wait 2
+release A
+wait 8
+hold A
+wait 2
+release A
+wait 8
+shot start
+tap A 0.2
+wait 6
+tap A 0.2
+wait 6
+tap A 0.2
+wait 6
+shot g03
+tap A 0.2
+wait 6
+tap A 0.2
+wait 6
+tap A 0.2
+wait 6
+shot g06
+tap A 0.2
+wait 6
+tap A 0.2
+wait 6
+tap A 0.2
+wait 6
+shot g09
+tap A 0.2
+wait 6
+tap A 0.2
+wait 6
+tap A 0.2
+wait 6
+shot g12
+wait 20
+shot toss
+tap A 0.2
+wait 8
+tap A 0.2
+wait 10
+shot kick
+tap A 0.2
+wait 12
+shot play1
+wait 15
+shot play2
+tap A 0.2
+wait 10
+shot play3
+wait 20
+shot play4

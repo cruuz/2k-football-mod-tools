@@ -18,15 +18,16 @@ import test_nfl2k5_equipment_import as session_tests
 from test_nfl2k5_equipment_texture_chain import digest, artwork
 from nfl_txtr import HEADER, compress_vc_lz, parse_chunks, decode_chunk
 
-# Captured from the unchanged writer in d208076c, before any production edit.
+# Captured from the writer after T2's quantizer and stripe floor landed (beta 70 stack, 5ce880d9): T1's search
+# bounds and caching must not change these bytes. (Before T2 the noise cases were 409e6651.., fed500b1.. and 666.)
 # Complete compressed span, including wrapper, scratch-preserving fill and pad.
 BETA69_SPANS = {
     'sock256_stripes': '1cd108128cc224f2bd92fdf26b76e3e79ab220bbd500df25825fd547e6bc9aeb',
     'shoe64_stripes': 'fd090c83614b221547b3f2dad47eb2a2002c82aeb3c2460edad6070410e8b9bf',
     'shoe64_diagonal': '473086c049a1585b29e19528e9d997b13d3b40c964637d9cbe57b97046802afd',
     'shoe32_tight': '290ac5c940eb438468b1be42ed313b54693f1970e773f8a54e64c4e0beb2fc67',
-    'shoe32_noise_half': '409e6651e5724eadfcfe36db593d9f0fded63ab3b14a8a76e04432bb313bb624',
-    'shoe32_noise_quarter': 'fed500b1e0aa7af58dfcd7e17a9bb4808a7d1b0509ce229c5ca87af3f2d9f97a',
+    'shoe32_noise_half': 'd7929c8fed8c3863e91d5a6cde5c81c80fcd3bf72a7012e7f336e5896aa9814c',
+    'shoe32_noise_quarter': '80f42a2ea0df9452234af4080df2666f60ce7fad316bc50ee1f5d6cd3f672c19',
 }
 IMPORT_BUDGET_SECONDS = 30.0  # Generous for CI; measurements are printed, not hidden.
 
@@ -53,7 +54,7 @@ class SearchTests(unittest.TestCase):
                     self.assertEqual(row['span_sha256'], BETA69_SPANS[case[0]])
                 else:
                     self.assertEqual(row['outcome'], 'refused')
-                    self.assertEqual(row['required'], 666)
+                    self.assertEqual(row['required'], 664)
                     self.assertEqual(row['suggestion']['scale'], 2)
 
     def test_python_parser_golden_bytes_and_timing(self):

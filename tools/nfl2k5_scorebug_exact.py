@@ -169,8 +169,9 @@ def rendered_text_ink(pixels, callback, widescreen=False):
     return [a+min(xs),b+min(ys),a+max(xs)+1,b+max(ys)+1]
 
 
-def compare(reference_image, rendered, geometry, text_boxes, *, runtime=False):
+def compare(reference_image, rendered, geometry, text_boxes, *, runtime=False, regions=None):
     import numpy as np
+    regions_source = exact.SOURCE_REGIONS if regions is None else regions
     ref, out = np.asarray(reference_image), np.asarray(rendered.convert("RGB"))
     regions = {}
     meshes = {"frame_rim": geometry["frame"], "centre_pill": geometry["down"],
@@ -178,7 +179,7 @@ def compare(reference_image, rendered, geometry, text_boxes, *, runtime=False):
     if runtime:
         meshes.update(left_panel=geometry["objects"].get("zscore_buga"),
                       right_panel=geometry["objects"].get("hscore_buga"))
-    for name, box in exact.SOURCE_REGIONS.items():
+    for name, box in regions_source.items():
         target = list(exact.hud_box(box))
         if geometry["widescreen"]:
             target[0] = 320 + (target[0] - 320) * 27 / 32
@@ -263,7 +264,8 @@ class Build:
         if mesh is None:
             mesh = exact.mesh(self.retail_scene, runtime=runtime)
         if atlas_image is None:
-            atlas_image = exact.atlas()
+            # The runtime scene ships the 2026 atlas (compiler_pins pins the same).
+            atlas_image = exact.atlas_mnf() if runtime else exact.atlas()
         span, _ = scene.layout.refit(self.spans["score_bug"], scene.serialize(mesh))
         decoded = scene.decode(span)[1]  # Installed bytes, including normshort quantization.
         texture, receipt = scene.encode_atlas(self.spans["score_buga"], atlas_image)
@@ -291,8 +293,10 @@ def compiler_pins(build):
     static = scene.layout.refit(build.spans["score_bug"], scene.serialize(exact.mesh(build.retail_scene)))[0]
     runtime = scene.stage_binding_scene(build.spans["score_bug"], runtime=True)[0]
     texture = scene.encode_atlas(build.spans["score_buga"], exact.atlas())[0]
+    # The runtime collection carries the 2026 atlas; the static pin keeps the v3 atlas.
+    runtime_texture = scene.encode_atlas(build.spans["score_buga"], exact.atlas_mnf())[0]
     hud = bytearray(build.view[art.HUD_START:art.HUD_START + art.HUD_SIZE])
-    for name, data in (("score_bug", runtime), ("score_buga", texture)):
+    for name, data in (("score_bug", runtime), ("score_buga", runtime_texture)):
         off = art.RESOURCES[name]["pack_offset"] - art.HUD_START
         hud[off:off + len(data)] = data
     panels = []
@@ -306,9 +310,12 @@ def compiler_pins(build):
                 RUNTIME_SCENE_SHA256=scene.digest(scene.decode(runtime)[1]),
                 RUNTIME_PINS={**art.RUNTIME_PINS, "hud_after": scene.digest(hud),
                               "appendix": scene.digest(b"".join(data for _, data in panels) + b"".join(scoped.compile_collection(build.view)))},
-                PROBE_APPEND_PINS={probe: scene.digest(b"".join(data for code, data in panels
-                                                               if code in art.probe_codes(probe)) + (b"".join(scoped.compile_collection(build.view)) if art.probe_codes(probe) else b""))
-                                   for probe in ("transport", "hooks", "neutral", "pair")})
+                PROBE_APPEND_PINS={**{probe: scene.digest(b"".join(data for code, data in panels
+                                                                  if code in art.probe_codes(probe)) + (b"".join(scoped.compile_collection(build.view)) if art.probe_codes(probe) else b""))
+                                      for probe in ("transport", "hooks", "neutral", "pair")},
+                                   "mnf": scene.digest(b"".join(art.mnf_panel_span(build.spans["score_buga"], team, side)
+                                                                for team, _record in [(None, None)] + sorted(art.TEAM_LOGOS.items())
+                                                                for side in ("home", "away")))})
 
 
 def supplemental_evidence(build, output):
