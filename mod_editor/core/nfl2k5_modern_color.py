@@ -713,7 +713,7 @@ def modern_field_scene(span, *, outer_index=0, settings=None):
                 # The outside grass darkens toward the edges through grey vertex colours; keep less of the falloff.
                 lifted = 255 - round((255 - r) * control_value(doc, "outside.falloff"))
                 new = (lifted, lifted, lifted, 255)
-            if new is not None:
+            if new is not None and new != (r, g, b, a):
                 out[at:at + 4] = bytes((new[2], new[1], new[0], new[3]))
                 receipt["vertex_tints"] += 1
     if bytes(out) == output:
@@ -1029,8 +1029,9 @@ def apply_to_image(target, *, progress=None, workers=None, settings=None, source
     previous = read_image_receipt(target) if source_receipt is _AUTO_RECEIPT else source_receipt
     state = check_image_request(target, settings, receipt=previous)
     if previous is not None:
-        _save_image_receipt(target, previous)
-        return dict(previous, already_applied=len(pins["bundles"]), rewritten=0)
+        replay = dict(previous, already_applied=len(pins["bundles"]), rewritten=0)
+        _save_image_receipt(target, replay)
+        return replay
     todo, done, sources = [], [], {}
     with _outer_image()(target) as archive:
         for pin in pins["bundles"]:

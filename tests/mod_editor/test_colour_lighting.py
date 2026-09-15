@@ -188,8 +188,9 @@ class BundleParameterTests(unittest.TestCase):
                 self.assertEqual(before_raw[palette_at+1024:], after_raw[palette_at+1024:])
         original, default_edits = mc.modern_bundle(self.data, outer_index=self.pin['outer'], field_cache=cache)
         self.assertEqual(mc.sha(original), self.pin['applied_sha256'], 'custom cache cannot pollute Broadcast')
-        restored, _ = mc.modern_bundle(self.data, settings=mc.default_settings(retail=True))
+        restored, retail_edits = mc.modern_bundle(self.data, settings=mc.default_settings(retail=True))
         self.assertEqual(restored, self.data)
+        self.assertEqual(retail_edits[0]['vertex_tints'], 0)
         Path(ROOT / 'reports/b71_c3/bundle-parameter-proof.json').write_text(json.dumps(dict(
             name=self.pin['name'], custom_settings_sha256=mc.settings_id(custom), custom_sha256=mc.sha(after),
             broadcast_sha256=mc.sha(original), edits=edits), indent=1)+'\n')
@@ -223,6 +224,7 @@ class BundleParameterTests(unittest.TestCase):
             writes = Archive.writes
             again = mc.apply_to_image(target, settings=custom, workers=1)
             self.assertEqual(again['rewritten'], 0)
+            self.assertEqual(mc.read_image_receipt(target), again)
             self.assertEqual(Archive.writes, writes)
             with self.assertRaisesRegex(ValueError, 'original retail'):
                 mc.apply_to_image(target, settings=mc.default_settings(), workers=1)
