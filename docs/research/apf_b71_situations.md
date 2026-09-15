@@ -1,5 +1,7 @@
 # CPU situation candidates, beta 71
 
+APF-2 evidence snapshot. [APF-3 extends this work](apf_b71_apf3.md) with exhaustive rating checks, the exact named export edit and native depth selection through all eleven assignments. The shared-data exclusion limit remains.
+
 **PROVED** below means pinned data or bounded native execution. Editor tests are
 reported separately as offline validation. Every in-game outcome is **UNWITNESSED**.
 

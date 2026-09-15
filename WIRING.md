@@ -1,15 +1,10 @@
-# APF-2 protected registry integration
+# APF-3 integration
 
-Only `mod_editor/capabilities/registry.v1.json` needs protected wiring.
-All APF application changes and the APF release allowlist change are implemented
-in the worktree. No protected GUI, build owner, release check, installer test,
-registry file or unrelated game writer was edited.
+All wiring is implemented in this branch. No remaining integration code is delegated to another checkout.
 
-## Replace five existing rows, add zero rows
+## Registry
 
-At the root `capabilities` array, replace rows by their exact `id` using
-[`docs/research/apf_b71_situations_registry.json`](docs/research/apf_b71_situations_registry.json).
-This file contains the complete replacement objects. The five IDs are:
+The job explicitly requests registry rows/evidence. Five existing objects in `mod_editor/capabilities/registry.v1.json` are replaced by the complete objects in `docs/research/apf_b71_apf3_registry.json`:
 
 - `apf2k8.playbooks.cpu_playcalling`
 - `apf2k8.playbooks.identity`
@@ -17,31 +12,22 @@ This file contains the complete replacement objects. The five IDs are:
 - `apf2k8.playbooks.scheme_presets`
 - `apf2k8.playbooks.scheme_spreadsheet`
 
-The scheme rows remain available to legacy recipes and scripts but stop claiming
-visible controls in the integrated editor. The CPU row explicitly says shared
-membership edits affect every situation and independent per-situation whitelists
-are not implemented. Runtime status remains not-tested / UNWITNESSED.
+This integrates APF-2's pending handoff and adds APF-3's native weight, export and final-lineup evidence. Independent situation exclusion stays explicitly unimplemented. Gameplay status remains not-tested / UNWITNESSED.
 
-Exact merge code, from the repository root:
+There are **zero new rows**. Shared and APF counts remain **174 / 72**. No row count pins change.
 
-```python
-import json
-from pathlib import Path
-path = Path("mod_editor/capabilities/registry.v1.json")
-document = json.loads(path.read_text(encoding="utf-8"))
-updates = json.loads(Path("docs/research/apf_b71_situations_registry.json").read_text(encoding="utf-8"))
-by_id = {row["id"]: row for row in document["capabilities"]}
-assert len(by_id) == 174
-assert len(updates) == 5
-assert all(row["id"] in by_id for row in updates)
-by_id.update({row["id"]: row for row in updates})
-document["capabilities"] = sorted(by_id.values(), key=lambda row: row["id"])
-assert len(document["capabilities"]) == 174
-path.write_bytes((json.dumps(document, indent=2, sort_keys=True) + "\n").encode("utf-8"))
-```
+## Required APF runtime contract update
 
-The registry count remains **174**; change no count pins. Re-run
-`python3 packaging/repin.py --apply` and strict
-`python3 -m mod_editor.capabilities.validate_registry` after integration.
-The input worktree's missing baseline evidence is recorded in `ASTRA_REPORT.md`;
-the proposed schema/new-evidence check does not replace that strict gate.
+Applying the registry replacements exposed an omitted APF-2 integration step: `packaging/check_apf2k8_mod_studio_runtime.py` still required the two hidden scheme cards to be Editable. The unchanged checker rejected the integrated registry with `public editable capability/action boundary changed`.
+
+As part of the requested registry integration and runtime gate, the exact `expected_editable` set drops `apf2k8.playbooks.offensive_schemes` and `apf2k8.playbooks.scheme_presets`. An additional assertion requires both cards to have `ApfStatus.EVIDENCE`. Exact equality and complete-editor/writer checks for every remaining editable card are preserved. This changes the protected APF checker only to match the approved consolidated workflow; no installer test, 2K5 checker, build owner or 2K5 GUI is edited.
+
+## Packaged research
+
+`packaging/apf2k8-release-allowlist.txt` includes `docs/research/apf_b71_apf3.md`, linked by the book walkthrough. The native instrument and private command logs are not packaged with the product.
+
+## Private hydration
+
+Despite the supplied hydration expectation, the first strict validator found 75 missing evidence paths. They were restored as ordinary, independent files from narrowly scoped read-only access to the original evidence copies. `reports/b71_apf3/hydration.json` records sizes, hashes and source paths. These private research/assets copies are excluded from the commit path list and release. The source checkout was not modified.
+
+Run the normal repin, strict validator, provider integrity, product catalog, phase1 packaging, APF installer, staged release and staged runtime checks. The final commands and results are recorded in `ASTRA_REPORT.md`.

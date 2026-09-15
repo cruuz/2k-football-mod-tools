@@ -1363,7 +1363,6 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
             "APF complete sidebar category count changed")
     editable = {item.capability_id for item in cards if item.status is models.ApfStatus.EDITABLE}
     expected_editable = {
-        "apf2k8.playbooks.offensive_schemes",
         "apf2k8.playbooks.never_call",
         'apf2k8.cpu_ai_draft.play_design.concept_recipes',
         'apf2k8.cpu_ai_draft.play_design.cpu_calls',
@@ -1380,7 +1379,6 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
         'apf2k8.playbooks.own_team_books',
         'apf2k8.playbooks.pass_fetch_te_bias',
         'apf2k8.playbooks.personnel_curve_patch',
-        'apf2k8.playbooks.scheme_presets',
 
         "apf2k8.audio.ausb_xma_export",
         "apf2k8.audio.xma_export",
@@ -1415,6 +1413,14 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
             for capability_id in editable
         ),
         "public editable capability/action boundary changed",
+    )
+    # The integrated book workflow hides the legacy scheme editors. Keep their
+    # recipes readable without advertising those cards as editable controls.
+    legacy_schemes = {"apf2k8.playbooks.offensive_schemes", "apf2k8.playbooks.scheme_presets"}
+    require(
+        {item.capability_id for item in cards
+         if item.capability_id in legacy_schemes and item.status is models.ApfStatus.EVIDENCE} == legacy_schemes,
+        "legacy scheme cards must retain their explicit proof boundary",
     )
     textlogo_patch = importlib.import_module("apf_textlogo_patch")
     textlogo_verify = importlib.import_module("apf_textlogo_verify")

@@ -127,6 +127,48 @@ class RetailAdditionsTests(unittest.TestCase):
         cls.index = INDEX
         cls.donor = splb.read_book(INDEX, 1411)
 
+    def test_straight_for_three_queens_reparses_every_byte_inside_2048(self):
+        from mod_editor.core import apf2k8_book_identity as identity
+        from tools.apf_b71_situation_probe import straight_for_queens
+        import hashlib
+        for ids in (None, tuple(range(84))):
+            book, stages = straight_for_queens(self.index, ids)
+            source = identity.read_resource(self.index, identity.filename_id(book.name), 'spb', 'SPLB')
+            _, entry, record, _, decoded, original = source
+            part = record.files[0].parts[0]
+            for removed, body in stages:
+                with patch.object(splb.apf_texture_patch, '_optimal_binary', return_value=None):
+                    packed, receipt = clone.rebuild_resource(source, body)
+                self.assertEqual(len(packed), 2048)
+                reader = splb.apf_texture_patch.BytesReader(packed)
+                parsed = splb.apf_inner.parse_iff(reader, entry)
+                expanded = splb.apf_inner.decode_block(reader, parsed, 0, 16 * 1024 * 1024)
+                self.assertEqual(expanded, decoded[:part.offset] + body + decoded[part.offset + part.length:])
+                self.assertEqual(parsed.files, record.files)
+                footer_size = 8 + record.footer.payload_size
+                self.assertEqual(packed[parsed.file_length:parsed.file_length + footer_size],
+                                 original[record.file_length:record.file_length + footer_size])
+                self.assertFalse(any(packed[parsed.file_length + footer_size:]))
+                self.assertEqual(receipt['h7a_overlapping_matches'], 0)
+                self.assertTrue(receipt['h7a_round_trip_exact'])
+                print('PROVED O-ManBlock Straight export:', 'donor 25 plays' if ids is None else 'authored plays 0..83',
+                      'removed', removed, 'active', receipt['active_bytes'], 'allocation', len(packed),
+                      'transport', receipt['transport'], 'entry_sha256', hashlib.sha256(packed).hexdigest(), flush=True)
+            after = splb.parse_book(stages[-1][1], 130)
+            expected = {r.formation_index: r for r in book.records if r.populated and r.category_index != 6}
+            actual = {r.formation_index: r for r in after.records if r.populated}
+            self.assertEqual(set(actual), set(expected) | {133})
+            for form, r in expected.items():
+                self.assertEqual(actual[form].entries, r.entries)
+                self.assertEqual(actual[form].trailer, r.trailer)
+            self.assertEqual(splb.read_book(self.index, 130).body, book.body)
+            if ids is None:
+                self.assertEqual(receipt['active_bytes'], 2019)
+            else:
+                self.assertEqual(receipt['transport']['strategy'], 'greedy-refit')
+                self.assertEqual(receipt['transport']['token_preserving_bytes'] + record.header_size + 20 + footer_size, 2275)
+                self.assertEqual(receipt['active_bytes'], 1634)
+
     def test_fine_tune_additions_export_inside_original_allocations_without_helper(self):
         from mod_editor.core import apf2k8_book_identity as identity
         for outer, count in ((767, 23), (130, 18), (369, 19)):

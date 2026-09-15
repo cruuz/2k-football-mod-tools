@@ -47,9 +47,11 @@ experimental edits shared by all books. No preset stages any new control.
 Bounded BASE and TU 1.1 tests prove the shared membership fields, selected
 category/formation/play tuples, minimum-rating behavior and complete removal
 from the tested book. A category's eleven role bytes supply its TE count.
-The final on-field lineup builder, saved-book lifecycle and later substitutions
-are not witnessed by that test boundary. A one-TE preview is not an on-field
-TE guarantee. See [the situation research](../research/apf_b71_situations.md).
+The later native depth selector and eleven-player builder now have bounded
+BASE/TU tests with supplied player pools. An empty TE depth list can supply a
+fullback for a requested TE role, so the table shows **Requested TEs**. Actual
+saved rosters, the saved-book lifecycle and in-game lineups remain UNWITNESSED.
+See [the extended situation and lineup research](../research/apf_b71_apf3.md).
 
 Independent per-situation formation whitelists still need a new runtime selector
 and exclusion gate. The ordinary editor does not write a guessed mask or present

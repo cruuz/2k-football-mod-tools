@@ -176,7 +176,7 @@ class ApfPlayCallingEditor(QWidget):
         self.situation_note = note(situation_root, "")
         note(situation_root, "Select a candidate to edit its ratings and personnel below. Adding, removing or changing personnel edits the shared book, "
              "so it affects every situation using that data. These 23 preview buckets are not independent stored formation lists.")
-        self.candidate_table = table(("Formation", "Personnel", "Tight ends", "Personnel weight", "Formation weight"), "All ordinary situation candidates before the draw")
+        self.candidate_table = table(("Formation", "Personnel", "Requested TEs", "Personnel weight", "Formation weight"), "All ordinary situation candidates before the draw")
         self.candidate_table.setMaximumHeight(260)
         situation_root.addWidget(self.candidate_table)
         self.situation_remove = button(situation_root, "Review removal from this book", "Remove the selected ordinary formation completely from this book, including every situation; review remaining personnel first.", self.remove_candidate)
@@ -580,7 +580,8 @@ class ApfPlayCallingEditor(QWidget):
             return
         row = self._situations[self.situation_picker.currentIndex()]
         self.situation_note.setText(f"Requested personnel row {row['row']}. " + row["note"] +
-                                   " Weights are not percentages or exclusions. Later on-field substitutions remain unproved.")
+                                   " Weights are not percentages or exclusions. TE counts are requested roles; "
+                                   "the game can use another position when the TE depth list is empty.")
         names = {f["id"]: f["name"] for f in self._context["formations"]}
         self._updating = True
         fill(self.candidate_table, [(names.get(c["formation"], c["formation"]), c["personnel"], c["tight_ends"],
