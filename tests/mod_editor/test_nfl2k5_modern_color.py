@@ -65,6 +65,17 @@ class PaletteTransformTests(unittest.TestCase):
         plain = bytes(range(256)) * 4
         self.assertEqual(mc.flatten_normal_palette(plain), plain)
 
+    def test_divots_palette_fades_and_regrades(self):
+        pal = bytearray(1024)
+        pal[0:4] = bytes((48, 88, 70, 200))     # divot green, B,G,R,A
+        pal[4:8] = bytes((30, 40, 80, 120))     # brown dirt: alpha scaled, colour kept
+        out = mc.regrade_palette(bytes(pal), alpha_scale=mc.DIVOTS_ALPHA)
+        self.assertEqual(out[3], round(200 * mc.DIVOTS_ALPHA)); self.assertEqual(out[7], round(120 * mc.DIVOTS_ALPHA))
+        self.assertEqual(out[4:7], bytes(pal[4:7]))
+        self.assertGreater(_hsv(*out[0:3])[2], _hsv(*pal[0:3])[2], "divot green lifted")
+        lifted = mc.regrade_palette(bytes(pal), gain=1.3)
+        self.assertGreater(_hsv(*lifted[0:3])[2], _hsv(*out[0:3])[2], "gain raises the value")
+
     def test_tints(self):
         self.assertEqual(mc.TINTS[0xFFFFEECD], 0xFFFFF5E6)
         self.assertEqual(mc.TINTS[0xFFF2FFFF], 0xFFFFFFFF)
@@ -159,10 +170,16 @@ class BundleTests(unittest.TestCase):
         self.assertEqual(len(after), len(data))
         self.assertEqual(hashlib.sha256(after).hexdigest(), row["applied_sha256"])
         kinds = [e["kind"] for e in edits]
-        self.assertEqual(kinds, ["field", "normal", "tint"])
+        self.assertEqual(kinds[0], "field"); self.assertEqual(sorted(kinds), ["divots", "field", "normal", "tint"])
         field = edits[0]
-        self.assertTrue(field["refit"]); self.assertEqual(len(field["palettes"]), 2)
-        tint = edits[2]
+        self.assertTrue(field["refit"])
+        regraded = {row["material"]: row for row in field["palettes"]}
+        for name in (mc.COLOR_MAP_MATERIAL, mc.OUTSIDE_MATERIAL, "endzone_N_M"):
+            self.assertIn(name, regraded); self.assertGreater(regraded[name]["changed"], 0, name)
+        self.assertGreater(regraded[mc.OUTSIDE_MATERIAL]["gain"], 1.0, "outside grass lifted toward the field mean")
+        divots = edits[kinds.index("divots")]
+        self.assertNotEqual(divots["before_sha256"], divots["after_sha256"], "divots layer faded")
+        tint = edits[kinds.index("tint")]
         self.assertNotEqual(tint["before_sha256"], tint["after_sha256"], "night tint softened")
         # Decoded colour map moved toward the broadcast turf: about 1.7x brighter, a little more saturated, hue toward the target.
         tx, inv, ResourceRecord, HEADER = mc._tools()

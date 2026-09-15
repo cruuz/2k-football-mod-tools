@@ -37,6 +37,32 @@ against (88, 105, 61). One colour map serves every rig of a stadium, so night (t
 stays a little low. Domes share the night table. Every refit stays inside its retail wrapper and fixed span as before;
 the pins (`data/nfl2k5_modern_color_pins.json`) were regenerated for the new bytes.
 
+
+## 3b. v2.1, from the first test of v2 (Jets at Chiefs, afternoon)
+
+The v2 disc drew the playing surface at (79..91, 85..103, 32..46), value 0.33..0.41 against the broadcast's 0.41..0.47,
+so the brightness landed; but the end zones and the area behind the goal posts were darker, the outside grass by the
+benches darker still, the turf showed player-sized dark blotches, and the far field stayed noisy. Decoding the Arrowhead
+afternoon bundle explained each one:
+
+- The colour map is almost flat (luminance 111 with a standard deviation of 3), so the blotches are not in it. The field
+  also draws a `divots` wear layer: 64x64 P8, mean colour (70, 88, 48), alpha 36 percent over 79 percent of its pixels.
+  Beta 70 and v2 never touched it, so on a bright field it read as dark patches. v2.1 re-grades its greens like the turf
+  and scales every alpha to 30 percent of retail (`DIVOTS_ALPHA`), as a fourth pinned site per bundle (refit inside its
+  compressed span like the bump map).
+- The six end-zone maps (`endzone_N_L/M/R`, `endzone_S_L/M/R`, three shared 256x128 P8 textures) and the centre logo carry
+  their own green background; v2.1 re-grades their green palette entries (painted art untouched). The end-zone overlay
+  shape kept the darker afternoon vertex tint (255, 238, 205); it now takes the softened tint like the grass.
+- The outside grass texture is 45 percent darker than the field map (mean luminance 62 against 111), and its shape
+  darkens toward the edges through grey vertex colours (255, 229, 204, 178). v2.1 lifts the outside palette by the
+  ratio of the two textures' used-green means (1.46 at Arrowhead) and keeps only 45 percent of the grey falloff.
+- The bump map flattens to 32 percent. Its palette was also being edited 128 bytes early since beta 70 (the texture
+  descriptor's offsets are relative to the video section after the chunk's 128 system bytes), which left the last 32
+  palette entries unflattened and wrote normal bytes over the smallest mip levels; v2.1 edits the right bytes and
+  refuses if the palette is not where the descriptor says.
+
+{{V21_RESULTS}}
+
 ## 4. The far-field shimmer
 
 `detail_normal` (512x256 P8) ships a full mip chain (175,872 bytes) and every level shares its one palette, so the palette
@@ -48,7 +74,25 @@ retail draws the same layer. It needs an A/B at the same camera and internal res
 
 ## 5. Tests and gates
 
-{{RESULTS}}
+Pins: `python3 -m mod_editor.core.nfl2k5_modern_color pins <retail extraction> --write --workers 8` (5 minutes here): 477 bundles, 7 light
+tables; sites changed 1,175 of 1,431 (field scene 456 of 477, grass bump map 459 of 477, tint 260 of 477; the same 21 field
+scenes and 18 bump spans keep retail bytes because their retail streams leave no room inside the wrapper).
+
+Standalone runs on this branch (c9401398), `python3 tests/mod_editor/<file>.py`:
+
+| File | Result |
+|---|---|
+| `test_nfl2k5_modern_color.py` (palette curve and direction, colour word, bump flatten, tints, rig definitions, retail XBE apply/replay/restore/foreign, Arrowhead night bundle equals its pin, pins cover 477 and the extraction reads retail) | 9 passed |
+| `test_build_panel_qt.py`, `test_mod_build.py`, `test_phase1_packaging.py`, `test_b68_a1_audit.py`, `test_b69_a1_registry.py`, `test_product_catalog.py` | 13, 11, 23, 10, 7, 9 passed |
+| `python3 -m mod_editor.capabilities.validate_registry` on the hydrated tree | PASS, capabilities=174 |
+| `python3 packaging/repin.py --apply` | no pin changes (the module is not hash-pinned; it is in the runtime module list) |
+| XBE gates, `test_xbe_patch_memory_writes.py` and `test_xbe_patch_cave_references.py`, run detached on this branch | {{GATES}} |
+
+Test disc: `~/2K5 Mod Studio Builds/NFL 2K5 MOD TEST 2026-09-15c (colour v2 + 2026 scorebug + widescreen).xiso.iso`
+(6,506,858,496 bytes, built in 400 s from this branch: Advanced preset plus modern colour v2, the 2026 scorebug and
+Widescreen 16:9; its `.2k5patch` sits beside it, 199,041,472 bytes, 4,498 runs). Read back from the built image with
+the new pins: light rigs `applied`, all 477 bundles `applied`. The builds folder holds three MOD TEST images (the rule's
+maximum): 15a, 15b and this one.
 
 ## 6. What Noah should look at
 
