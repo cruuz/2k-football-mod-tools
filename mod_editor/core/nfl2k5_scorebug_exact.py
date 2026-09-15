@@ -468,8 +468,8 @@ def _ORIGIN(px_top, glyph_y0, k):
 MNF_ANCHORS = {
     "away_city": (_SX(755), _ORIGIN(1033, 15, 27), -64), "home_city": (_SX(1165), _ORIGIN(1033, 15, 27), -64),   # timeout dashes (FONT8 hyphen rows 15..20)
     "away_score": (_SX(755), _ORIGIN(955, 7, 0), -59), "home_score": (_SX(1165), _ORIGIN(955, 7, 0), -59),
-    "quarter": (_SX(883), _ORIGIN(1015, 4, 15), -4), "clock_a": (_SX(978), _ORIGIN(1008, 4, 15), -4), "clock_b": (_SX(978), _ORIGIN(1008, 4, 15), -4),
-    "drop_clock": (_SX(1055), _ORIGIN(1008, 4, 15), -4), "drop_down": (0, _ORIGIN(955, 4, 15), -4),
+    "quarter": (_SX(872), _ORIGIN(1008, 3, 15), -4), "clock_a": (_SX(963), _ORIGIN(1008, 3, 15), -4), "clock_b": (_SX(963), _ORIGIN(1008, 3, 15), -4),
+    "drop_clock": (_SX(1051), _ORIGIN(1008, 3, 15), -4), "drop_down": (0, _ORIGIN(955, 4, 15), -4),
     "drop_yellow": (0, _ORIGIN(955, 4, 15), -8), "drop_red": (0, _ORIGIN(955, 4, 15), -8),
     "drop_hangtime": (0, _ORIGIN(955, 4, 15), -8), "drop_ball_on": (0, _ORIGIN(955, 4, 15), -8),
 }
@@ -536,10 +536,10 @@ def atlas_mnf():
     # Clock capsule tile: white pill with the two cell separators.
     d.rectangle((0, 40, 63, 59), fill=(0, 0, 0, 0))
     d.rounded_rectangle((0, 40, 63, 59), 9, fill=MNF_COLORS["capsule"] + (255,), outline=(190, 194, 202, 255))
-    # Cells sized for the retail HUD glyphs: "1ST" (27 px), "13:10" (34 px) and the
-    # two-digit play clock each sit centred with clearance; 64 tile px span 81.3 HUD px.
-    d.line((24, 42, 24, 57), fill=MNF_COLORS["separator"] + (255,))
-    d.line((50, 42, 50, 57), fill=MNF_COLORS["separator"] + (255,))
+    # Cells for the ESPN clock font (11 px condensed digits, 7 px suffix letters): quarter,
+    # game clock and play clock cells of about 23, 38 and 21 HUD px; 64 tile px span 81.3.
+    d.line((18, 42, 18, 57), fill=MNF_COLORS["separator"] + (255,))
+    d.line((48, 42, 48, 57), fill=MNF_COLORS["separator"] + (255,))
     d.rectangle((0, 61, 3, 63), fill=(248, 250, 243, 255))
     d.rectangle((4, 61, 7, 63), fill=body + (255,))
     return im

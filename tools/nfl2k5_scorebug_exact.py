@@ -247,9 +247,9 @@ class Build:
                 v = art.TEAM_LOGOS[team]
                 span = self.view[v["pack_offset"]:v["pack_offset"] + v["span_size"]]
                 self.panels.extend(art._compiled_panels(self.spans["score_buga"], span, team, side))
-            self.font_spans = scoped.compile_collection(self.view)
-            self.private_fonts = [projection.private_font(span, self.fonts[slot])
-                                  for span, (slot, _sx, _sy) in zip(self.font_spans, scoped.SCALES)]
+            # The mnf runtime collection appends two FONTs (the ESPN clock and quarter fonts, font4-sized masks).
+            self.font_spans = art.clock_font_spans(self.view)
+            self.private_fonts = [projection.private_font(span, self.fonts[3]) for span in self.font_spans]
             self._files = stack.pop_all()
 
     def close(self):
@@ -315,7 +315,7 @@ def compiler_pins(build):
                                       for probe in ("transport", "hooks", "neutral", "pair")},
                                    "mnf": scene.digest(b"".join(art.mnf_panel_span(build.spans["score_buga"], team, side)
                                                                 for team, _record in [(None, None)] + sorted(art.TEAM_LOGOS.items())
-                                                                for side in ("home", "away")))})
+                                                                for side in ("home", "away")) + art.clock_font_span(build.view))})
 
 
 def supplemental_evidence(build, output):

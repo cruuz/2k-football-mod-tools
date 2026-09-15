@@ -416,7 +416,10 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
             raise ValueError('private fonts require the exact runtime and retail font sources')
         from mod_editor.core import nfl2k5_scorebug_fonts as scoped
         for span, (slot, _sx, _sy) in zip(runtime_fonts, scoped.SCALES):
-            private_receipts.append(m.load_private_font(span, private_font(span, fonts[slot])))
+            # Runtime fonts with a 128-square mask (the ESPN clock font) parse against font4;
+            # the v8 collection's slots come from SCALES.
+            source = fonts[3] if r.decode(span)[0].video_bytes == 128 * 128 + 1024 else fonts[slot]
+            private_receipts.append(m.load_private_font(span, private_font(span, source)))
     m.put(0xa6a9d0, 720); m.put(0xa6a9d4, 480)
     m.run(0xfccd0, limit=500000)
     instance = m.get(0xa9552c)
