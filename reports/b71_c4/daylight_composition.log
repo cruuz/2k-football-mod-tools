@@ -1,0 +1,6 @@
+test_all_orders_preserve_peers_replay_and_independent_colour_restore (__main__.DaylightCompositionTests.test_all_orders_preserve_peers_replay_and_independent_colour_restore) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 26.329s
+
+OK

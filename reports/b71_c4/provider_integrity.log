@@ -1,0 +1,14 @@
+F.......
+======================================================================
+FAIL: test_all_external_writer_and_verifier_import_closures_are_exactly_pinned (__main__.ProviderIntegrityTests.test_all_external_writer_and_verifier_import_closures_are_exactly_pinned)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-c4/tests/mod_editor/test_provider_integrity.py", line 286, in test_all_external_writer_and_verifier_import_closures_are_exactly_pinned
+    self.assertEqual(
+AssertionError: {'dat[30 chars]n': '394b1926eb4603d54d5ca7effbadaf4364c74b3ae[652 chars]b4f'} != {'dat[30 chars]n': '56d7dc81e9b21eeed00ca456a9d8f486966d86091[652 chars]b4f'}
+Diff is 865 characters long. Set self.maxDiff to None to see it.
+
+----------------------------------------------------------------------
+Ran 8 tests in 12.821s
+
+FAILED (failures=1)

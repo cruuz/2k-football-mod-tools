@@ -1,18 +1,16 @@
-Integrated scorebug v2 wings and capsule fonts with colour v2.1 on `astra/b71-a5-scorebug-integrate` in `.scratch/private.git`.
+# Beta 71 C4 complete
 
-All 14 standalone test programs passed, with five existing legacy-case skips in the font suite. Strict registry validation passed after restoring missing local evidence files. XBE gates passed: 119 memory-write tests and 131 cave-reference tests.
+Merged C3 `45a5ade9` into A5 `a7440f05` first, preserving both reports and every RC96 feature bullet. Merge `ddaaf5c4`; implementation `f9c2ac27`; final evidence commit is the bundle branch tip. Commits use the private `.scratch/astra-c4.git`; no push.
 
-The detached combined disc build was attempted with Advanced and all four requested options enabled. The session mounts `/home/noah/2K5 Mod Studio Builds` read-only, so the access check failed before creating a disc or deleting anything. No disc option read-back is claimed. Run `bash reports/b71_a5/launch_testdisc71.sh` once that directory is writable.
+- Day prediction: (89,105,61), saturation 0.419, value 0.412.
+- Afternoon: (87,103,61), saturation 0.408, value 0.404.
+- Night remains (102,122,52), with its exact approved rig hash retained. All 477 bundle pins and five other rig pins are unchanged.
+- Warmer sunlight and distinct day/afternoon shadow terms are proved through decoded tables and bounded native execution. Light directions/counts stay retail. Rendered shadow length/softness and final appearance remain UNWITNESSED.
+- Both detached XBE gates pass (119 memory-write, 131 cave-reference tests); colour/control/reset suites, full bundle/rig pin verification, strict registry (174 capabilities), provider checks and final repin pass. The extra oracle passes 29 tests using the documented scratch projection.
+- Prepared, never executed: `reports/b71_c4/build_testdisc71.py`, image g on Advanced with scorebug, scorebug runtime, modern colour and widescreen enabled, including the three-image pruning rule and preservation of patch archives.
+- Report and exact command ledger: `ASTRA_REPORT.md`. Full proofs/logs: `reports/b71_c4/`.
+- Bundle: `.scratch/astra-b71-c4.bundle`, incremental from `a7440f05`, including C3 history.
 
-Delivery: `.scratch/astra-b71-a5.bundle`, `ASTRA_REPORT.md`, and `reports/b71_a5/` with the builder, pin recipe, previews, and validation evidence. No push. No emulator launch.
-Implemented Colour & lighting with 55 sliders, individual and group toggles, linked surfaces, calibrated swatches, resets, saved project settings and custom receipts.
-
-All requested suites and the strict registry validator pass. Both detached XBE gates pass. All 477 bundle pins and seven rig pins retain v2.1. Custom in-game appearance remains UNWITNESSED.
-
-Private Git: `.scratch/astra-c3.git`, branch `astra/b71-c3-lighting-controls`.
-Bundle: `.scratch/astra-b71-c3.bundle`.
-Report: `ASTRA_REPORT.md`.
-
-No push or emulator. No scorebug modules changed.
+Integration follow-up: regenerate the protected release cave manifest. It was left untouched; the bounded scratch projection revalidates the current writes against existing reservations without claiming a new disc build.
 
 ASTRA_DONE

@@ -1,4 +1,18 @@
-# Beta 71 C4: day and afternoon Broadcast defaults
+"""Summarize reproducible C4 evidence and every recorded check attempt."""
+from pathlib import Path
+import colorsys
+import json
+import re
+import shlex
+import subprocess
+
+ROOT=Path(__file__).resolve().parents[2]
+F=ROOT/'reports/b71_c4'
+proof=json.loads((F/'daylight-proof.json').read_text())
+rows={r['name']:r for r in proof['rigs']}
+checks={p.stem:json.loads(p.read_text()) for p in F.glob('*.json') if 'exit_code' in json.loads(p.read_text())}
+fmt=lambda rgb:'('+', '.join(map(str,rgb))+')'
+lines=['''# Beta 71 C4: day and afternoon Broadcast defaults
 
 All required checks pass, including both detached XBE gates (119 / 131 tests), all 477 bundle pins, seven rig read-backs, controls/reset suites, strict registry and final repin. The additional oracle passes 29 tests against the documented scratch projection; the protected release manifest still needs integration regeneration.
 
@@ -17,15 +31,11 @@ All required checks pass, including both detached XBE gates (119 / 131 tests), a
 The reference map below is the calibrated report’s (181,216,102), not a decoded stadium mean. SCREEN_FACTOR remains exactly day (0.21,0.21,0.21), night (0.183,0.183,0.165); afternoon keeps the existing night-factor fallback and is explicitly an extrapolation. The beta-70 model still reproduces (51,61,32).
 
 | Condition | v2.1 prediction | C4 prediction | Broadcast reference | C4 saturation | C4 value |
-|---|---|---|---|---:|---:|
-| day | (83, 99, 47) | (89, 105, 61) | (88, 105, 61) | 0.419 | 0.412 |
-| afternoon | (67, 78, 32) | (87, 103, 61) | (98, 119, 72) | 0.408 | 0.404 |
-| night_indoor | (102, 122, 52) | (102, 122, 52) | (107, 121, 53) | 0.574 | 0.478 |
-| alt_day | (74, 89, 38) | (74, 89, 38) | No separate C4 target | 0.573 | 0.349 |
-| alt_dynamic | (73, 88, 38) | (73, 88, 38) | No separate C4 target | 0.568 | 0.345 |
-| rain | (78, 95, 43) | (78, 95, 43) | No separate C4 target | 0.547 | 0.373 |
-| snow | (74, 90, 40) | (74, 90, 40) | No separate C4 target | 0.556 | 0.353 |
-
+|---|---|---|---|---:|---:|''']
+for name in ('day','afternoon','night_indoor','alt_day','alt_dynamic','rain','snow'):
+    r=rows[name]
+    lines.append(f"| {name} | {fmt(r['prediction_before'])} | {fmt(r['prediction_after'])} | {fmt(r['reference']) if r['reference'] else 'No separate C4 target'} | {r['hsv']['saturation']:.3f} | {r['hsv']['value']:.3f} |")
+lines.append('''
 Day is within one red level of (88,105,61). Afternoon remains below its broadcast median (98,119,72), intentionally retaining value 0.404 rather than pushing to 0.467. The day reference RGB actually computes to hue 83.18°; C4 is 81.82°. The supplied screenshot sample (80,95,45) computes to 78°. The tune follows the supplied RGB/saturation target and warms the direct sun, rather than claiming a lower turf hue angle.
 
 ![Model-only turf swatches](reports/b71_c4/predicted-swatches.png)
@@ -54,15 +64,10 @@ Gain and colour-recipe sliders still default to 1. The stronger blue fill compen
 **PROVED:** default XBE apply, exact replay and restore; custom recipe apply/replay/restore; foreign-byte refusal; section digests; all changed offsets confined to owned colour/intensity floats and the two +0x100 words. Full tables are already reserved in place in writable `.rdata`, with no code/cave/request growth. `daylight-proof.json` includes every rig’s retail, old applied and new applied SHA-256, decoded values, exact changed offsets, directions, native descriptor and code fingerprints.
 
 | Rig | C4 applied SHA-256 | Change from v2.1 |
-|---|---|---|
-| day | `e77439624117ce755c72533701ad83395cd60e071ec0c7ad4b9b3a3d190df7bf` | Daylight tune |
-| night_indoor | `18c6d914b12edc22d092cea97b7839d4f4611e23b5a898cbceeb4d74222b9fb9` | Exact pin retained |
-| alt_day | `f6f80216e8cf2010b84fcaa46a9a6b50728c27bca47b1ed7c13810fdc220751c` | Exact pin retained |
-| alt_dynamic | `00ce7e0fafa7b22c47925dd57ca01e8f362930627478f127023f797de8818887` | Exact pin retained |
-| rain | `ccfb026911c23bd9f5505f98599b70e19cb8b2e17b9412a6f3cdc64c65bec890` | Exact pin retained |
-| snow | `8c95f170e019d0eb8654b3b3e23fc1c6d78d4d593f5ad1df6c32c00c493d5ee4` | Exact pin retained |
-| afternoon | `f025a2fa059ad96e560c05b331a530dfef1bbd076a362f1982c903b6d0f8deeb` | Daylight tune |
-
+|---|---|---|''')
+for name,r in rows.items():
+    lines.append(f"| {name} | `{r['after_sha256']}` | {'Daylight tune' if r['before_sha256']!=r['after_sha256'] else 'Exact pin retained'} |")
+lines.append('''
 ## Bundle and decoder proof
 
 **PROVED:** all 477 complete retail/applied bundle records exactly retain v2.1. The canonical bundle-record digest is `f4ef2c5a179ad39a07f4670ed924e3c4a605a6a2775518a78aa790306c706295`. `data/nfl2k5_modern_color_pins.json` changes only the two applied rig hashes; it contains the retail/modern pins for every bundle and rig. The exhaustive verifier rebuilds all pins from read-only retail, refits 390 distinct spans, reparses the outputs and compares the complete records. It passed in 331.847 seconds. Palette, divot, bump/mips, tint, outside grass, end zones and fixed wrappers receive no new changes.
@@ -70,14 +75,10 @@ Gain and colour-recipe sliders still default to 1. The stronger blue fill compen
 Six representative bundles were also rebuilt in memory, checked against the full pins and decoded independently. All 32-byte wrappers and decoded sizes remain exact. Rounded decoded means differ from the calibrated report’s median; they must not be presented as the same sample.
 
 | Bundle | Retail decoded map / word | C4 decoded map / word | Rig | Predicted turf |
-|---|---|---|---|---|
-| s08dd.iff | (98, 128, 60) | (177, 219, 88) | day | (87, 107, 52) |
-| s13dd.iff | (103, 125, 65) | (183, 216, 100) | day | (90, 105, 60) |
-| s13ad.iff | (103, 125, 65) | (183, 216, 100) | afternoon | (88, 103, 60) |
-| s13nd.iff | (103, 125, 65) | (183, 216, 100) | night_indoor | (103, 122, 51) |
-| s11dd.iff | (52, 90, 61) | (119, 180, 95) | night_indoor | (67, 101, 48) |
-| s09dd.iff | (64, 96, 51) | (142, 187, 89) | night_indoor | (80, 105, 45) |
-
+|---|---|---|---|---|''')
+for b in proof['decoded_bundles']:
+    lines.append(f"| {b['name']} | {fmt(b['decoded'][0]['rgb'])} | {fmt(b['decoded'][1]['rgb'])} | {b['rig']} | {fmt(b['prediction'])} |")
+lines.append('''
 The s08 day mean still predicts more saturation than the broadcast day reference: (87,107,52), saturation 0.514. That is a limitation of a shared rig across different maps, not a hidden exact-match claim. The supplied measured screenshot sample (80,95,45), far-field saturation 0.69, bump shading and wear coverage are not a fresh calibration here. The model does not prove the far-field band reaches 0.42. Night/dome decoded maps and their predictions above are unchanged from v2.1.
 
 ## Gates and regressions
@@ -93,29 +94,18 @@ wait
 The global gates are supplemented with the actual C4 writer read-back and focused composition proof: six application orders of lighting, scorebug runtime and widescreen give identical bytes, all three statuses stay applied, replay is exact, and restoring lighting independently preserves its peers.
 
 | Check | Result | Process seconds |
-|---|---|---:|
-| [colour_legacy](reports/b71_c4/colour_legacy.log) | PASS (10 tests) | 6.771 |
-| [colour_controls_final](reports/b71_c4/colour_controls_final.log) | PASS (9 tests) | 14.317 |
-| [colour_gui](reports/b71_c4/colour_gui.log) | PASS (5 tests) | 2.097 |
-| [all_default_pins](reports/b71_c4/all_default_pins.log) | PASS | 331.847 |
-| [daylight_readback](reports/b71_c4/daylight_readback.log) | PASS | 33.246 |
-| [daylight_composition](reports/b71_c4/daylight_composition.log) | PASS (1 tests) | 26.542 |
-| [build_panel](reports/b71_c4/build_panel.log) | PASS (13 tests) | 4.326 |
-| [mod_build](reports/b71_c4/mod_build.log) | PASS (13 tests) | 3.102 |
-| [project_settings](reports/b71_c4/project_settings.log) | PASS (17 tests) | 1.574 |
-| [providers](reports/b71_c4/providers.log) | PASS (33 tests) | 4.073 |
-| [provider_integrity_updated](reports/b71_c4/provider_integrity_updated.log) | PASS (8 tests) | 10.405 |
-| [phase1_packaging](reports/b71_c4/phase1_packaging.log) | PASS (23 tests) | 3.049 |
-| [product_catalog](reports/b71_c4/product_catalog.log) | PASS (9 tests) | 0.221 |
-| [registry_final](reports/b71_c4/registry_final.log) | PASS | 0.159 |
-| [builder_source](reports/b71_c4/builder_source.log) | PASS | 0.038 |
-| [xbe_memory_writes](reports/b71_c4/xbe_memory_writes.log) | PASS (119 tests) | 1595.995 |
-| [xbe_cave_references](reports/b71_c4/xbe_cave_references.log) | PASS (131 tests) | 1780.148 |
-| [manifest_projection_final](reports/b71_c4/manifest_projection_final.log) | PASS | 9.220 |
-| [cave_oracle_projected](reports/b71_c4/cave_oracle_projected.log) | PASS (29 tests) | 369.076 |
-| [scope_audit](reports/b71_c4/scope_audit.log) | PASS | 0.194 |
-| [repin_final](reports/b71_c4/repin_final.log) | PASS | 10.660 |
-
+|---|---|---:|''')
+important=['colour_legacy','colour_controls_final','colour_gui','all_default_pins','daylight_readback','daylight_composition','build_panel','mod_build','project_settings','providers','provider_integrity_updated','phase1_packaging','product_catalog','registry_final','builder_source','xbe_memory_writes','xbe_cave_references','manifest_projection_final','cave_oracle_projected','scope_audit','repin_final']
+for name in important:
+    d=checks.get(name)
+    if d:
+        log=(F/(name+'.log')).read_text()
+        m=re.search(r'Ran (\d+) tests?',log)
+        verdict=('PASS' if d['exit_code']==0 else 'FAIL')+(f" ({m.group(1)} tests)" if m else '')
+        lines.append(f"| [{name}](reports/b71_c4/{name}.log) | {verdict} | {d['seconds']:.3f} |")
+    else:
+        lines.append(f"| {name} | RUNNING / not yet recorded | — |")
+lines.append('''
 ### Failed attempts and their disposition
 
 - Strict registry initially failed on missing `docs/research/apf_audio.md`. The existing C3 inventory supplied 75 missing research/metadata documents by read-only byte copies; no retail executable, texture, pack, disc, embedded GLTF buffer or hard link was introduced. These hydrated documents are excluded from commits; `evidence-hydration.json` records their identities. Strict validation then passes with 174 capabilities.
@@ -154,41 +144,9 @@ Witness recipe: build image g from original retail, compare day and afternoon at
 `run_check.py` records each command’s exact argument vector, UTC start/end, process exit and monotonic duration beside its complete log. The table includes failed attempts. Final commit/bundle/import commands are recorded separately in `.scratch/handoff-ledger.json` to avoid a self-referential evidence commit. Git setup/merge ancestry and its explicit path inventory are in `merge.json`; exploratory read-only searches are not test claims.
 
 | Check / log | Exact command | Exit | Seconds | UTC start | UTC end |
-|---|---|---:|---:|---|---|
-| [repin_merge](reports/b71_c4/repin_merge.log) | `python3 packaging/repin.py --apply` | 0 | 10.838 | 2026-09-15T19:56:38.447072+00:00 | 2026-09-15T19:56:49.284792+00:00 |
-| [repin_tuning](reports/b71_c4/repin_tuning.log) | `python3 packaging/repin.py --apply` | 0 | 22.633 | 2026-09-15T19:58:23.239247+00:00 | 2026-09-15T19:58:45.871781+00:00 |
-| [xbe_memory_writes](reports/b71_c4/xbe_memory_writes.log) | `python3 tests/mod_editor/test_xbe_patch_memory_writes.py` | 0 | 1595.995 | 2026-09-15T19:58:24.508738+00:00 | 2026-09-15T20:25:00.503469+00:00 |
-| [xbe_cave_references](reports/b71_c4/xbe_cave_references.log) | `python3 tests/mod_editor/test_xbe_patch_cave_references.py` | 0 | 1780.148 | 2026-09-15T19:58:24.510917+00:00 | 2026-09-15T20:28:04.658738+00:00 |
-| [colour_legacy](reports/b71_c4/colour_legacy.log) | `python3 tests/mod_editor/test_nfl2k5_modern_color.py` | 0 | 6.771 | 2026-09-15T19:59:53.776365+00:00 | 2026-09-15T20:00:00.547446+00:00 |
-| [colour_gui](reports/b71_c4/colour_gui.log) | `python3 tests/mod_editor/test_colour_lighting_qt.py` | 0 | 2.097 | 2026-09-15T19:59:54.934654+00:00 | 2026-09-15T19:59:57.031459+00:00 |
-| [registry_strict](reports/b71_c4/registry_strict.log) | `python3 -m mod_editor.capabilities.validate_registry` | 1 | 0.137 | 2026-09-15T19:59:54.945216+00:00 | 2026-09-15T19:59:55.081993+00:00 |
-| [colour_controls](reports/b71_c4/colour_controls.log) | `python3 tests/mod_editor/test_colour_lighting.py` | 0 | 14.173 | 2026-09-15T19:59:54.956793+00:00 | 2026-09-15T20:00:09.129568+00:00 |
-| [all_default_pins](reports/b71_c4/all_default_pins.log) | `python3 tools/verify_colour_lighting_pins.py 'extracted/ESPN NFL 2K5 (USA)/vc_53450030/0' --workers 8` | 0 | 331.847 | 2026-09-15T19:59:54.961428+00:00 | 2026-09-15T20:05:26.808338+00:00 |
-| [evidence_hydration](reports/b71_c4/evidence_hydration.log) | `python3 reports/b71_c4/hydrate_evidence.py` | 0 | 0.114 | 2026-09-15T20:01:16.240860+00:00 | 2026-09-15T20:01:16.355138+00:00 |
-| [registry_hydrated](reports/b71_c4/registry_hydrated.log) | `python3 -m mod_editor.capabilities.validate_registry` | 0 | 0.237 | 2026-09-15T20:01:56.852352+00:00 | 2026-09-15T20:01:57.088887+00:00 |
-| [repin_controls](reports/b71_c4/repin_controls.log) | `python3 packaging/repin.py --apply` | 0 | 12.577 | 2026-09-15T20:01:57.127679+00:00 | 2026-09-15T20:02:09.704526+00:00 |
-| [daylight_readback](reports/b71_c4/daylight_readback.log) | `python3 reports/b71_c4/prove_daylight.py` | 0 | 33.246 | 2026-09-15T20:03:57.664254+00:00 | 2026-09-15T20:04:30.910556+00:00 |
-| [mod_build](reports/b71_c4/mod_build.log) | `python3 tests/mod_editor/test_mod_build.py` | 0 | 3.102 | 2026-09-15T20:04:16.512576+00:00 | 2026-09-15T20:04:19.614182+00:00 |
-| [build_panel](reports/b71_c4/build_panel.log) | `python3 tests/mod_editor/test_build_panel_qt.py` | 0 | 4.326 | 2026-09-15T20:04:16.543176+00:00 | 2026-09-15T20:04:20.869315+00:00 |
-| [provider_integrity](reports/b71_c4/provider_integrity.log) | `python3 tests/mod_editor/test_provider_integrity.py` | 1 | 13.032 | 2026-09-15T20:04:16.567393+00:00 | 2026-09-15T20:04:29.599549+00:00 |
-| [product_catalog](reports/b71_c4/product_catalog.log) | `python3 tests/mod_editor/test_product_catalog.py` | 0 | 0.221 | 2026-09-15T20:04:16.591283+00:00 | 2026-09-15T20:04:16.812064+00:00 |
-| [phase1_packaging](reports/b71_c4/phase1_packaging.log) | `python3 tests/mod_editor/test_phase1_packaging.py` | 0 | 3.049 | 2026-09-15T20:04:16.612504+00:00 | 2026-09-15T20:04:19.661274+00:00 |
-| [cave_oracle](reports/b71_c4/cave_oracle.log) | `python3 tests/mod_editor/test_nfl2k5_cave_oracle.py` | 1 | 369.854 | 2026-09-15T20:04:16.627020+00:00 | 2026-09-15T20:10:26.481469+00:00 |
-| [daylight_composition](reports/b71_c4/daylight_composition.log) | `python3 tests/mod_editor/test_nfl2k5_daylight_composition.py` | 0 | 26.542 | 2026-09-15T20:05:36.055009+00:00 | 2026-09-15T20:06:02.596926+00:00 |
-| [colour_controls_final](reports/b71_c4/colour_controls_final.log) | `python3 tests/mod_editor/test_colour_lighting.py` | 0 | 14.317 | 2026-09-15T20:05:37.198110+00:00 | 2026-09-15T20:05:51.515478+00:00 |
-| [project_settings](reports/b71_c4/project_settings.log) | `python3 tests/mod_editor/test_discord_bugs_1.py` | 0 | 1.574 | 2026-09-15T20:05:37.228648+00:00 | 2026-09-15T20:05:38.802336+00:00 |
-| [provider_integrity_updated](reports/b71_c4/provider_integrity_updated.log) | `python3 tests/mod_editor/test_provider_integrity.py` | 0 | 10.405 | 2026-09-15T20:05:37.240069+00:00 | 2026-09-15T20:05:47.645479+00:00 |
-| [providers](reports/b71_c4/providers.log) | `python3 tests/mod_editor/test_providers.py` | 0 | 4.073 | 2026-09-15T20:05:37.253190+00:00 | 2026-09-15T20:05:41.325910+00:00 |
-| [builder_source](reports/b71_c4/builder_source.log) | `python3 reports/b71_c4/check_builder_source.py` | 0 | 0.038 | 2026-09-15T20:07:07.327971+00:00 | 2026-09-15T20:07:07.366169+00:00 |
-| [repin_checkpoint](reports/b71_c4/repin_checkpoint.log) | `python3 packaging/repin.py --apply` | 0 | 10.627 | 2026-09-15T20:07:34.214286+00:00 | 2026-09-15T20:07:44.840988+00:00 |
-| [registry_final](reports/b71_c4/registry_final.log) | `python3 -m mod_editor.capabilities.validate_registry` | 0 | 0.159 | 2026-09-15T20:08:04.137702+00:00 | 2026-09-15T20:08:04.296852+00:00 |
-| [commit_daylight](reports/b71_c4/commit_daylight.log) | `git --git-dir=.scratch/astra-c4.git commit -m 'Tune Broadcast day and afternoon rigs while pinning approved night and all turf bundles' -- data/nfl2k5_modern_color_pins.json docs/mod_editor/2k5_mod_studio_changelog.md docs/modern_color/CONTROLS.md mod_editor/capabilities/registry.v1.json mod_editor/core/nfl2k5_modern_color.py mod_editor/core/providers.py mod_editor/gui/colour_lighting_qt.py tests/mod_editor/test_colour_lighting.py tests/mod_editor/test_colour_lighting_qt.py tests/mod_editor/test_nfl2k5_modern_color.py tests/mod_editor/test_provider_integrity.py tests/mod_editor/test_nfl2k5_daylight_composition.py tools/verify_colour_lighting_pins.py` | 0 | 0.080 | 2026-09-15T20:08:04.446222+00:00 | 2026-09-15T20:08:04.526082+00:00 |
-| [swatches](reports/b71_c4/swatches.log) | `python3 reports/b71_c4/render_swatches.py` | 0 | 1.343 | 2026-09-15T20:08:37.188957+00:00 | 2026-09-15T20:08:38.531466+00:00 |
-| [manifest_projection](reports/b71_c4/manifest_projection.log) | `python3 reports/b71_c4/project_manifest.py` | 1 | 5.995 | 2026-09-15T20:11:35.651285+00:00 | 2026-09-15T20:11:41.646555+00:00 |
-| [manifest_projection_digest](reports/b71_c4/manifest_projection_digest.log) | `python3 reports/b71_c4/project_manifest.py` | 1 | 5.637 | 2026-09-15T20:12:36.452353+00:00 | 2026-09-15T20:12:42.089133+00:00 |
-| [manifest_projection_owned](reports/b71_c4/manifest_projection_owned.log) | `python3 reports/b71_c4/project_manifest.py` | 1 | 9.075 | 2026-09-15T20:13:49.571699+00:00 | 2026-09-15T20:13:58.646600+00:00 |
-| [manifest_projection_final](reports/b71_c4/manifest_projection_final.log) | `python3 reports/b71_c4/project_manifest.py` | 0 | 9.220 | 2026-09-15T20:14:30.964242+00:00 | 2026-09-15T20:14:40.183896+00:00 |
-| [cave_oracle_projected](reports/b71_c4/cave_oracle_projected.log) | `env NFL2K5_CAVE_MANIFEST=.scratch/b71_c4_manifest.json python3 tests/mod_editor/test_nfl2k5_cave_oracle.py` | 0 | 369.076 | 2026-09-15T20:17:22.262170+00:00 | 2026-09-15T20:23:31.337909+00:00 |
-| [scope_audit](reports/b71_c4/scope_audit.log) | `python3 reports/b71_c4/audit_delivery.py` | 0 | 0.194 | 2026-09-15T20:19:09.943187+00:00 | 2026-09-15T20:19:10.137392+00:00 |
-| [repin_final](reports/b71_c4/repin_final.log) | `python3 packaging/repin.py --apply` | 0 | 10.660 | 2026-09-15T20:27:54.232204+00:00 | 2026-09-15T20:28:04.892583+00:00 |
-| [final_checks](reports/b71_c4/final_checks.log) | `python3 reports/b71_c4/final_checks.py` | 0 | 0.045 | 2026-09-15T20:29:15.487043+00:00 | 2026-09-15T20:29:15.532543+00:00 |
+|---|---|---:|---:|---|---|''')
+for name,d in sorted(checks.items(),key=lambda x:x[1]['start_utc']):
+    command=shlex.join(d['command']).replace('|','\\|')
+    lines.append(f"| [{name}](reports/b71_c4/{name}.log) | `{command}` | {d['exit_code']} | {d['seconds']:.3f} | {d['start_utc']} | {d['end_utc']} |")
+(ROOT/'ASTRA_REPORT.md').write_text('\n'.join(lines)+'\n')
+print('Wrote C4 report with',len(checks),'recorded command attempts')

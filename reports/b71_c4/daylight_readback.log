@@ -1,0 +1,8 @@
+day (83, 99, 47) -> (89, 105, 61) shadow -0.3199999928474426
+night_indoor (102, 122, 52) -> (102, 122, 52) shadow -0.16500000655651093
+alt_day (74, 89, 38) -> (74, 89, 38) shadow -0.2750000059604645
+alt_dynamic (73, 88, 38) -> (73, 88, 38) shadow -0.2750000059604645
+rain (78, 95, 43) -> (78, 95, 43) shadow -0.029999999329447746
+snow (74, 90, 40) -> (74, 90, 40) shadow -0.11500000208616257
+afternoon (67, 78, 32) -> (87, 103, 61) shadow -0.2199999988079071
+PASS: seven rig read-backs, bounded native shadow descriptor, six decoded bundles, all bundle pins unchanged

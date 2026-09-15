@@ -1,0 +1,1 @@
+{"name": "xbe_memory_writes", "command": ["python3", "tests/mod_editor/test_xbe_patch_memory_writes.py"], "start_utc": "2026-09-15T19:58:24.508738+00:00", "end_utc": "2026-09-15T20:25:00.503469+00:00", "seconds": 1595.995, "exit_code": 0}

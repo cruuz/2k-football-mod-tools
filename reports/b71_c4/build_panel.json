@@ -1,0 +1,10 @@
+{
+  "command": [
+    "python3",
+    "tests/mod_editor/test_build_panel_qt.py"
+  ],
+  "start_utc": "2026-09-15T20:04:16.543176+00:00",
+  "end_utc": "2026-09-15T20:04:20.869315+00:00",
+  "seconds": 4.326,
+  "exit_code": 0
+}

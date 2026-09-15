@@ -1,0 +1,1 @@
+{"name": "cave_oracle_projected", "command": ["env", "NFL2K5_CAVE_MANIFEST=.scratch/b71_c4_manifest.json", "python3", "tests/mod_editor/test_nfl2k5_cave_oracle.py"], "start_utc": "2026-09-15T20:17:22.262170+00:00", "end_utc": "2026-09-15T20:23:31.337909+00:00", "seconds": 369.076, "exit_code": 0}

@@ -1,0 +1,10 @@
+{
+  "command": [
+    "python3",
+    "reports/b71_c4/project_manifest.py"
+  ],
+  "start_utc": "2026-09-15T20:14:30.964242+00:00",
+  "end_utc": "2026-09-15T20:14:40.183896+00:00",
+  "seconds": 9.22,
+  "exit_code": 0
+}
