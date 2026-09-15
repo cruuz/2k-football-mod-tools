@@ -909,3 +909,6 @@ tools/nfl2k5_modern_rules.py
 docs/research/nfl2k5_weather_time_of_day.md
 docs/research/nfl2k5_b69_rules.md
 docs/mod_editor/nfl2k5_uniform_choice_capability.json
+mod_editor/core/nfl2k5_scorebug_assets.py
+data/nfl2k5_scorebug_mnf/painted_label_2x.png
+data/nfl2k5_scorebug_mnf/painted_label_2x.json

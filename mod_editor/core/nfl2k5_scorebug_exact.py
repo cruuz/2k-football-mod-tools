@@ -452,24 +452,17 @@ MNF_BAR = scene_box(MNF_SOURCE["bar"])
 MNF_PANELS = {"away": scene_box(MNF_SOURCE["away_wing"]), "home": scene_box(MNF_SOURCE["home_wing"])}
 MNF_PLATE = scene_box(MNF_SOURCE["plate"])
 MNF_LOGOS = {"away": scene_box(MNF_SOURCE["away_logo"]), "home": scene_box(MNF_SOURCE["home_logo"])}
-# The 64x64 wing texture: the logo in rows 0..33 (64x34, the box aspect), the team colour ramp in rows 44..63.
+# One orientation-independent 64x64 logo per team, fitted to a 200x107 source box.
 MNF_WING_LOGO_ROWS, MNF_WING_RAMP_ROWS = (0, 64), (0, 0)
-# Each retail wing object is one triangle strip over 32 vertices with repeated ids. Two clean
-# quads exist: the first four ids (the fade) and the window below (the logo); every other id
-# collapses onto the listed corner so all remaining strip triangles are degenerate (verified
-# against the retail strips by test_nfl2k5_scorebug_mnf).
-MNF_WING_LAYOUT = {
-    "away": dict(fade=(230, 231, 232, 233), logo=(242, 243, 244, 245),
-                 collapse={234: "A2", 235: "A2", **{i: "A0" for i in (236, 237, 238, 239, 240, 241)},
-                           **{i: "A0" for i in range(246, 262)}}),
-    "home": dict(fade=(80, 81, 82, 83), logo=(85, 87, 90, 91),
-                 collapse={84: "A3", 86: "B0", 88: "A1", 89: "A1", 92: "A0", 93: "A0", 94: "A0", 95: "A0"}),
-}
+MNF_WING_LAYOUT = {"away": {"logo": (242,243,244,245)}, "home": {"logo": (85,87,90,91)}}
 MNF_STRIP = scene_box(MNF_SOURCE["strip"])
 # The 2026 layout's regions in the retail comparison's vocabulary (frame, wings, plate, strip).
 MNF_COMPARE_REGIONS = {"frame_rim": MNF_SOURCE["bar"], "left_panel": MNF_SOURCE["away_wing"],
                        "centre_pill": MNF_SOURCE["plate"], "clock_strip": MNF_SOURCE["strip"],
                        "right_panel": MNF_SOURCE["home_wing"]}
+MNF_V4_COMPARE_REGIONS = {**MNF_COMPARE_REGIONS,
+    "housing": (837,983,1083,1045), "white_capsule": (839,999,1019,1039),
+    "play_clock_cell": (1019,999,1082,1040), "pointer": (951,942,965,947)}
 # Text anchors: x is the alignment point (scores/quarter/play clock centred,
 # the game clock right-aligned like retail), y the text bottom in scene units.
 _SX = lambda px: px / 3 - 320
@@ -577,9 +570,12 @@ def atlas_mnf():
 
 
 def mesh_mnf(retail):
-    """Runtime scene: wings on their own materials, plate, capsule, nine-slice pill."""
+    """Painted masks and plain quads inside the unchanged 4,800-byte scene span."""
     from . import nfl2k5_scorebug_ingame as r
     m = r.layout.Mesh(retail)
+    # Retail's UV affine includes a small scale/bias correction for its 64px
+    # atlas. The painted atlas and logo cells use exact normalized coordinates.
+    struct.pack_into("<4f",m.buf,r.layout.SHAPE+0x30,.5,.5,.5,.5)
     for v in range(r.layout.VCOUNT):
         m.pos[v] = [0, 0, -3]
         m.uv_edit[v] = (-1 + 1.5 / 32, -1 + 62.5 / 32)
@@ -635,12 +631,7 @@ def mesh_mnf(retail):
 
 
 def mnf_panel(team, side):
-    """64x64 RGBA wing texture: the ESPN mark in rows 0..33, the team-colour ramp in rows 44..63.
-
-    The mesh draws the ramp row stretched across the wing (team colour at the outer edge
-    fading to charcoal) and the logo rows at their own aspect near the outer edge, so the
-    art is never squashed. Logos are ESPN's marks from data/nfl2k5_scorebug_mnf/logos.
-    """
+    """Shared transparent logo cell, fitted at the final quad's source aspect."""
     from pathlib import Path
     from PIL import Image
     if side not in ("home", "away"):

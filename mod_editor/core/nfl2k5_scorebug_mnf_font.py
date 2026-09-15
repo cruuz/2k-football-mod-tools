@@ -5,7 +5,9 @@ spans; only the mask pixels inside the chosen glyph cells change, so every
 HUD text that used those fonts keeps its layout and shows the broadcast
 digit shapes. The glyph sources are masks sampled from a 2026 Monday Night
 Football broadcast capture (data/nfl2k5_scorebug_mnf/espn_glyphs.png), not a
-font file. EXPERIMENTAL / UNWITNESSED in game.
+font file. The appended slot-9 variant also uses the checked-in 2x raster of
+Roboto Condensed Bold for its down label, plus private score/clock sizes.
+EXPERIMENTAL / UNWITNESSED in game.
 """
 from __future__ import annotations
 

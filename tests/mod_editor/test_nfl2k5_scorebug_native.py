@@ -133,7 +133,7 @@ class NativeTests(unittest.TestCase):
         m.identity('16', art.TEAM_LOGOS['TB']['asset_code'])
         m.setup()
         self.assertEqual(m.get(m.mats['hscore_buga'] + 0x30), m.textures['sb16h0'])
-        self.assertEqual(m.get(m.mats['zscore_buga'] + 0x30), m.textures['sb27a0'])
+        self.assertEqual(m.get(m.mats['zscore_buga'] + 0x30), m.textures['sb27h0'])
         # Beta 70 binds no private FONT: the text records keep the native descriptors.
         for pointer in (0xa95968, 0xa959a0):
             self.assertEqual(m.get(pointer), m.get(pointer))

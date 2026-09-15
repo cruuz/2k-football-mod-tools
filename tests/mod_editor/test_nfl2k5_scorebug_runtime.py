@@ -195,6 +195,16 @@ class ExecutionTests(unittest.TestCase):
         cls.spans=[art.runtime_panel(cls.template,cls.panel,art.runtime_panel_name(code,side,count))
                    for code in ['--']+[v['asset_code'] for v in art.TEAM_LOGOS.values()]
                    for side in ('home','away') for count in range(4)]
+        from mod_editor.core import nfl2k5_scorebug_exact as exact
+        # Legacy collection-loop coverage retains its 264 spans; install the
+        # same two metadata words now carried by the production logo resources.
+        for i,span in enumerate(cls.spans):
+            chunk,body,_=r.scene.decode(span);tex=r.scene.tx.parse_texture(body,chunk)
+            code=tex.name[2:4];index=None if code=='--' else int(code)
+            copy=bytearray(span)
+            struct.pack_into('<II',copy,80,0xff3a3f48 if index is None else exact.plate_table()[index],
+                             0xff4a4e58 if index is None else exact.wing_table()[index])
+            cls.spans[i]=bytes(copy)
     def machine(self):
         m=Machine(self.payload)
         for span in self.spans:m.load(span)
@@ -213,7 +223,7 @@ class ExecutionTests(unittest.TestCase):
             m.identity(home,away,kind);m.setup();m.update()
             for side,code,mat in [('home',home,'hscore_buga'),('away',away,'zscore_buga')]:
                 valid=code in ('18','14','02','22') and kind==0
-                name=art.runtime_panel_name(code if valid else '--',side,0)
+                name=art.runtime_panel_name(code if valid else '--','home',0)
                 self.assertEqual(m.get(m.mats[mat]+0x30),m.textures[name])
             self.assertEqual(m.get(r.SCORE_COLORS[0]),0xffe1e1e1)
         # A recognized but missing logo retries the neutral texture.

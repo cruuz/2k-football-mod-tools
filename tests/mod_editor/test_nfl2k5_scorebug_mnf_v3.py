@@ -24,12 +24,23 @@ class NativeTests(unittest.TestCase):
  def setUpClass(cls):
   from nfl2k5_scorebug_exact import Build
   cls.build=Build(PACK,PACK.parents[1]/'default.xbe');cls.addClassCleanup(cls.build.close)
- def capture(self,**state):
+ def capture(self,private=True,**state):
   b=self.build;span=scene.stage_binding_scene(b.spans['score_bug'],runtime=True)[0]
   tex=scene.encode_atlas(b.spans['score_buga'],exact.atlas_mnf())[0];capture={}
-  geometry=projection.native_geometry(b.payload,scene.decode(span)[1],fonts=b.fonts,texture_span=tex,runtime_textures=b.panels,runtime_fonts=b.font_spans,capture=capture,**state)
+  geometry=projection.native_geometry(b.payload,scene.decode(span)[1],fonts=b.fonts,texture_span=tex,runtime_textures=b.panels,runtime_fonts=b.font_spans if private else (),capture=capture,**state)
   self.addCleanup(capture['machine'].close)
   return geometry,capture
+ def test_missing_private_font_keeps_native_clock_formatters(self):
+  _,capture=self.capture(private=False);m=capture['machine']
+  for record,formatter in ((0xa958fc,0xfc100),(0xa95924,0xfc150),(0xa95a3c,0xfbe30)):
+   self.assertEqual(m.get(record),formatter)
+ def test_event_slab_samples_charcoal_after_atlas_uv_normalization(self):
+  from PIL import Image
+  with tempfile.TemporaryDirectory() as directory:
+   path=Path(directory)/'flag.png'
+   g=self.build.render(path,runtime=True,visible_elements=(1,3))
+   self.assertTrue(next(r for r in g['materials'] if r['name']=='bscore_buga2')['visible'])
+   self.assertEqual(Image.open(path).convert('RGB').getpixel((282,415)),(37,37,37))
  def test_native_score_callback_decimal_range_and_ascii_preservation(self):
   geometry,capture=self.capture();m=capture['machine'];buffer=m.alloc(64)
   for side,pointer in enumerate((m.home,m.away)):
@@ -72,6 +83,16 @@ class NativeTests(unittest.TestCase):
    self.assertEqual(m.get(0xa95a48),owner.WHITE)
    self.assertEqual(m.get(cell+0x18),expected,seconds)
   m.float(m.clock+16,4);m.run(m.get(0xa95a3c),ecx=buffer);self.assertEqual(m.read_string(buffer),'Ä')
+ def test_painted_mask_tints_come_from_native_logo_lookup(self):
+  from tempfile import TemporaryDirectory
+  with TemporaryDirectory() as directory:
+   for matchup,possession in ((('DEN','KC'),'home'),(('NO','DEN'),'away')):
+    g=self.build.render(Path(directory)/'tints.png',runtime=True,matchup=matchup,possession=possession)
+    rows={row['name']:int(row['tint'],16) for row in g['materials']}
+    self.assertEqual(rows['dscore_buga'],exact.plate_argb(matchup[1 if possession=='home' else 0]))
+    for side,material in ((0,'yscore_buga'),(1,'yscore_buga1')):
+     self.assertEqual(rows[material],exact.wing_table()[int(art.TEAM_LOGOS[matchup[side]]['asset_code'])])
+    self.assertEqual(rows['cscore_buga'],0xffffffff)
  def test_native_geometry_both_aspects_and_all_visible_triangle_winding(self):
   from nfl2k5_scorebug_exact import box_of
   with tempfile.TemporaryDirectory() as directory:

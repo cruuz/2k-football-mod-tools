@@ -1,15 +1,12 @@
 """EXPERIMENTAL / UNWITNESSED 2026 Monday Night Football scorebug owner in owned RX/RW pages.
 
-Beta 70 (revision 6): the owner binds ONE 128x32 wing texture per side (the
-team's current logo on its colour fading into the bar), so the resident cost
-of the option is 64 small textures instead of the 264 textures and 7 fonts of
-beta 69, which the intro's resource loader could not fit (a null read buffer
-kernel fault after the Berman intro, reproduced 2026-09-15). Timeout marks are
-text: the two retail team-name callbacks now write the remaining timeouts as
-dashes. The down plate takes the possessing team's colour every frame, the
-play clock turns ESPN red under five seconds, scores flash on a change and
-the native slide re-fires on a new down. No private FONT is bound; the ESPN
-digits live in the private HUD fonts (nfl2k5_scorebug_mnf_font).
+Beta 71 revision 8 uses one shared logo texture per team, two team-tinted
+atlas masks and a painted charcoal body. Colour constants travel in the
+logo's unused name padding and are cached in the existing 128-byte state.
+The owner remains within its 1,408-byte legacy RX allocation. Native score,
+timeout, clock, down and event callbacks retain their gameplay predicates.
+The slot-9 font carries dense score, clock and label cells; core_bug supplies
+the quarter. All texture/font lookup stays scoped to the resident HUD.
 
 Private textures are resolved in GAMEDATA, the resident HUD collection.
 Reserve the union of REQUESTS and other owners before applying either patch.
@@ -25,14 +22,14 @@ from .nfl2k5_draft_ai import _Asm
 from .nfl2k5_bump_strength import _sections, section_digest
 
 OWNER = "nfl2k5_scorebug_runtime"
-CODE_SIZE, DATA_SIZE = 1792, 128
+CODE_SIZE, DATA_SIZE = 1408, 128
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
 HOOKS = {"setup": (0xFCE56, bytes.fromhex("e845f3ffff")),
          "update": (0xFCFA2, bytes.fromhex("e819faffff"))}
 REVISION = 8
 # State (128 bytes): scene, populated, two wing materials, the plate material,
 # two wing textures, two scores, two flash timers, down, possession, ball/line,
-# phase. All state stays inside the owned RW page.
+# phase, red cell, wing colours and plate colours. All state stays in the owned RW page.
 SCENE, POPULATED, MATERIALS, PLATE, TEXTURES = 0, 4, 8, 16, 20
 SCORES, FLASH, DOWN, POSSESSION, BALL, LINE, PHASE = 32, 40, 48, 52, 56, 60, 64
 HOME_CONTEXT, AWAY_CONTEXT = 0xB30864, 0xB30A58
@@ -75,7 +72,7 @@ LOOKUP_GUARDS = (
 STATIC_OVERRIDES = {
     0xA95888: 7, 0xA958B0: 7,            # native fallback slot; setup binds the private tick font
     0xA9588C: 3, 0xA958B4: 3,            # centred under the scores
-    0xA95894: 0xFFF6F6F6, 0xA958BC: 0xFFF6F6F6,    # light-grey timeout ticks
+    0xA95894: 0xFFF6F6F6, 0xA958BC: 0xFFF6F6F6,    # bright white timeout ticks
     0xA95898: 0xFFF6F6F6, 0xA958C0: 0xFFF6F6F6,    # no possession yellow on the dashes
     0xA958E4: 0xFF1E1E1E, 0xA958E8: 0xFF1E1E1E,   # quarter
     0xA9590C: CAPSULE_INK, 0xA95910: CAPSULE_INK,   # game clock
@@ -100,7 +97,6 @@ def _restore(a):
 
 
 def code_for(code_va, data_va):
-    from . import nfl2k5_scorebug_exact as exact
     a = _Asm(code_va)
     def b(s): a.b(s)
     def absop(op, va): b(op + _u(va))
@@ -140,6 +136,10 @@ def code_for(code_va, data_va):
         if label == "clock":
             for side in (0, 1):
                 a.label(f"score_callback{side}"); store(SCORE_CALLBACKS[side], 0)
+            # Private-codepoint callbacks require a successful slot-9 lookup.
+            a.label("play_callback"); store(0xA95A3C, 0)
+            for side,va in enumerate((0xA958FC,0xA95924)):
+                a.label(f"clock_callback{side}");store(va,0)
         a.label(f"{label}_font_done")
     # Hang time retains its native text and visibility, on the spare event slab
     # instead of the home-wing material that v2 had to disable.
@@ -148,9 +148,6 @@ def code_for(code_va, data_va):
     # The retail team-name callbacks become the timeout marks (dashes).
     for side in (0, 1):
         a.label(f"dash_callback{side}"); store(CITY_CALLBACKS[side], 0)
-    a.label("play_callback"); store(0xA95A3C, 0)
-    for side,va in enumerate((0xA958FC,0xA95924)):
-        a.label(f"clock_callback{side}");store(va,0)
     a.label("setup_done"); _restore(a); b("c3")
 
     # A real stdcall call site: forward its float argument, native RET 4 consumes
@@ -194,20 +191,14 @@ def code_for(code_va, data_va):
     a.label("plate")
     absop("8b0d", data_va + PLATE); b("85c9"); jump("0f84", "clock")
     absop("a1", 0xE60280); b("85c0"); jump("0f84", "clock")
-    b("be" + _u(HOME_CONTEXT))
+    b("be" + _u(data_va+80))
     b("3d" + _u(TEAM_OBJECTS[0])); jump("0f84", "plate_side")
     absop("3b05", SCORE_POINTERS[0]); jump("0f84", "plate_side")
-    b("be" + _u(AWAY_CONTEXT))
+    b("be" + _u(data_va+84))
     b("3d" + _u(TEAM_OBJECTS[1])); jump("0f84", "plate_side")
     absop("3b05", SCORE_POINTERS[1]); jump("0f85", "clock")
     a.label("plate_side")
-    b("83be2801000002"); jump("0f84", "clock")
-    b("83be2801000004"); jump("0f84", "clock")
-    b("8b860c010000 85c0"); jump("0f84", "clock")           # UTF-16 asset code
-    b("0fb710 83ea30 83fa03"); jump("0f87", "clock")         # tens digit 0..3
-    b("0fb74002 83e830 83f809"); jump("0f87", "clock")       # ones digit 0..9
-    b("6bd20a 01d0 8d0440 8b80"); a.label("plate_table_ref"); b("00000000")
-    b("0d000000ff 894118")
+    b("8b06 894118")  # plate colour cached from this side's resolved logo descriptor
     a.label("clock")
     store(0xA95A48, PLAY_CLOCK_NORMAL)
     absop("8b0d",data_va+CLOCK_CELL_MATERIAL)
@@ -249,7 +240,7 @@ def code_for(code_va, data_va):
     b("836108fe"); a.j8("eb", "setup_mask")
     a.label("setup_hide"); b("83490801")
     a.label("setup_mask")
-    # The second frame and old clock material are now the independent wing masks.
+    # Both former frame materials now carry the independent wing masks.
     b("b8"+_u(0xe6c700)+" 81ff"+_u(data_va+TEXTURES))
     a.j8("74","mask_name"); b("b8"+_u(0xe6c71c))
     a.label("mask_name"); b("50")
@@ -273,7 +264,7 @@ def code_for(code_va, data_va):
     # One HUD-scoped TXTR lookup for this side at setup. The UTF-16 name is built
     # on the stack. Validate two numeric asset-code chars and reject created-team kinds.
     a.label("load_side")
-    b("c74734"+_u(0xff4a4e58))
+    b("c74734"+_u(0xff4a4e58)+" c7473c"+_u(0xff3a3f48))
     b("83ec10 c7042473006200 c74424042d002d00 6689542408 c744240a30000000")
     b("83be2801000002"); jump("0f84", "neutral")
     b("83be2801000004"); jump("0f84", "neutral")
@@ -283,7 +274,7 @@ def code_for(code_va, data_va):
     b("0fb75002 83ea30 83fa09"); jump("0f87", "neutral")
     b("6bc90a 03ca 83f91e"); jump("0f86", "identity_ok")
     b("83f925"); jump("0f85", "neutral")
-    a.label("identity_ok"); b("8b00 89442404 8d0c49 8b91"); a.label("wing_table_ref"); b("00000000 81ca000000ff 895734")
+    a.label("identity_ok"); b("8b00 89442404")
     a.label("neutral")
     b("8d0424 50 ba54585452 b9" + _u(HUD_COLLECTION_NAME))
     a.call(0x449E0)
@@ -292,7 +283,9 @@ def code_for(code_va, data_va):
     b("817c24042d002d00"); jump("0f84", "texture_found")
     b("c74424042d002d00 8d0424 50 ba54585452 b9" + _u(HUD_COLLECTION_NAME))
     a.call(0x449E0)
-    a.label("texture_found"); b("8907 83c410 c3")
+    a.label("texture_found"); b("8907 85c0");a.j8("74","color_done")
+    b("8b50fc 895734 8b50f8 89573c")
+    a.label("color_done");b("83c410 c3")
     a.label("play_text")
     b("51"); a.call(0xFBE30); b("59 66833930")
     a.j8("75", "play_text_done")
@@ -323,15 +316,6 @@ def code_for(code_va, data_va):
     b("66c7017e00 83c102 4a"); a.j8("74", "dash_end")
     b("66c7012000 83c102"); a.j8("eb", "dash_loop")
     a.label("dash_end"); b("66c7010000 c3")
-    # The plate colours packed as three bytes (B, G, R) per asset code; the lookup reads a
-    # dword at 3 * code and forces the alpha byte, so the table costs 120 bytes, not 160.
-    a.label("plate_table")
-    for word in exact.plate_table():
-        b(_u(word)[:6])
-    b("00")  # the final entry's dword read stays inside the owner's bytes
-    a.label("wing_table")
-    for word in exact.wing_table(): b(_u(word)[:6])
-    b("00")
     # Shorten only local branches whose whole displacement already fits.
     # Every target and external call is reassembled after each shrinking pass.
     while True:
@@ -355,8 +339,6 @@ def code_for(code_va, data_va):
     for side in (0, 1):
         struct.pack_into("<I", content, a.labels[f"score_callback{side}"] + 6, code_va + a.labels[f"score_text{side}"])
     struct.pack_into("<I", content, a.labels["play_callback"] + 6, code_va + a.labels["play_text"])
-    struct.pack_into("<I", content, a.labels["plate_table_ref"], code_va + a.labels["plate_table"])
-    struct.pack_into("<I", content, a.labels["wing_table_ref"], code_va + a.labels["wing_table"])
     for side in (0,1):
         struct.pack_into("<I",content,a.labels[f"clock_callback{side}"]+6,code_va+a.labels[f"clock_text{side}"])
     if len(content) > CODE_SIZE:

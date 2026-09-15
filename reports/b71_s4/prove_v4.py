@@ -71,7 +71,12 @@ def main():
     try:return measure(Image.fromarray(pixels),tuple(map(round,box)),polarity)
     except ValueError:return None
    comparison.rendered_text_ink=native_ink
-   result=comparison.compare(comparison.wide_reference(target) if wide else target,Image.open(path),g,text_boxes,runtime=True,regions=exact.MNF_COMPARE_REGIONS)
+   g['comparison_regions']={name:comparison.box_of([g['positions'][i] for i in ids])
+       for name,ids in {'housing':range(52,56),'play_clock_cell':range(262,266),'pointer':range(76,80)}.items()}
+   # The capsule white/red split is painted at atlas x=180 inside the 243px tile.
+   capsule=list(g['clock']);capsule[2]=capsule[0]+(capsule[2]-capsule[0])*180/243
+   g['comparison_regions']['white_capsule']=capsule
+   result=comparison.compare(comparison.wide_reference(target) if wide else target,Image.open(path),g,text_boxes,runtime=True,regions=exact.MNF_V4_COMPARE_REGIONS)
    # Native vertices are measured separately for the logo quad, cell and pointer.
    vertices={name:layout['logo'] for name,layout in exact.MNF_WING_LAYOUT.items()}
    vertices.update(play_clock_cell=range(262,266),pointer=range(76,80))
@@ -95,7 +100,8 @@ def main():
     try: ink=measure(render_source,*spec)
     except ValueError: ink=None
     result['rendered_text_source_boxes'][role]=dict(box=ink,reference_box=measured[role],
-        max_source_pixel_error=None if ink is None else max(abs(a-b) for a,b in zip(ink,measured[role])))
+        max_source_pixel_error=None if ink is None else max(abs(a-b) for a,b in zip(ink,measured[role])),
+        max_hud_pixel_error=None if ink is None else max(abs(a-b)*((27/32 if wide else 1)/3 if i%2==0 else 448/1080) for i,(a,b) in enumerate(zip(ink,measured[role]))))
    crop_box=(425,933,1490,1060)
    ref_crop=source.crop(crop_box);crop=render_source.crop(crop_box)
    crop.save(OUT/('render_'+label+'_crop.png'))
@@ -107,6 +113,10 @@ def main():
    label='no_den_'+('wide' if wide else '43')
    g=build.render(OUT/(label+'.png'),runtime=True,widescreen=wide,matchup=('NO','DEN'),possession='away',score_values=(7,7),previous_scores=(7,7))
    comparison.write_json(OUT/(label+'.json'),g)
+  for c in results.values():
+   assert all(r['native_boundary_error_px']<=1 for r in c['regions'].values())
+   assert all(r['max_error_px']<=1 and r['rendered_ink_max_error_px'] is not None and r['rendered_ink_max_error_px']<=1 for r in c['text'].values())
+   assert all(r['max_hud_pixel_error'] is not None and r['max_hud_pixel_error']<=1 for r in c['rendered_text_source_boxes'].values())
   comparison.write_json(OUT/'comparison-diagnostic.json',results)
   # Every retail event uses its native visibility and formatter in both aspects.
   states={'live_clock_hidden':(), 'flag':(3,), 'score':(5,), 'hang_time':(2,), 'ball_on':(4,), 'all_events':(0,1,2,3,4,5)}
@@ -129,7 +139,7 @@ def main():
     Image.open(path).crop((140,397,499,459)).resize((1077,186)).save(OUT/('scores_'+label+'_crop.png'))
   comparison.write_json(OUT/'multi_digit_scores.json',multi)
  finally:build.close()
- result=dict(reference=dict(path=str(args.reference),sha256=hashlib.sha256(args.reference.read_bytes()).hexdigest(),size=source.size,text_source_boxes=measured),volume=dict(appended_bytes=resources.probe_sizes('mnf')[1],font_bytes=resources.CLOCK_FONT_SPAN_SIZE,texture_count=66),comparisons=results,limits='Native CPU execution with software raster; no GPU or played-game witness. Widescreen comparison includes the existing 27/32 HUD transform.')
+ result=dict(reference=dict(path=str(args.reference),sha256=hashlib.sha256(args.reference.read_bytes()).hexdigest(),size=source.size,text_source_boxes=measured),volume=dict(appended_bytes=resources.probe_sizes('mnf')[1],font_bytes=resources.CLOCK_FONT_SPAN_SIZE,logo_count=33,atlas_bytes=132256,team_logo_bytes=32*5280,neutral_logo_bytes=2208,first_person_font_bytes=80160,quarter_font_bytes=27040),comparisons=results,limits='Native CPU execution with software raster; no GPU or played-game witness. Widescreen comparison includes the existing 27/32 HUD transform.')
  comparison.write_json(OUT/'measurements.json',result)
  print(json.dumps(result,indent=2))
 

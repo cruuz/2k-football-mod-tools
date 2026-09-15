@@ -179,6 +179,7 @@ def compare(reference_image, rendered, geometry, text_boxes, *, runtime=False, r
     if runtime:
         meshes.update(left_panel=geometry["objects"].get("yscore_buga"),
                       right_panel=geometry["objects"].get("yscore_buga1"))
+    meshes.update(geometry.get("comparison_regions", {}))
     for name, box in regions_source.items():
         target = list(exact.hud_box(box))
         if geometry["widescreen"]:

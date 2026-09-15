@@ -42,13 +42,6 @@ class OwnerCodeTests(unittest.TestCase):
             self.assertEqual(content[at:at + 2], b"\xc7\x05")
             self.assertEqual(struct.unpack_from("<I", content, at + 2)[0], runtime.CITY_CALLBACKS[side])
             self.assertEqual(struct.unpack_from("<I", content, at + 6)[0], labels[f"dash_text{side}"])
-        at = labels["plate_table_ref"] - code_va
-        self.assertEqual(struct.unpack_from("<I", content, at)[0], labels["plate_table"])
-        # Beta 71: three bytes (B, G, R) per asset code, the lookup ORs the alpha byte in.
-        start = labels["plate_table"] - code_va
-        table = [0xFF000000 | int.from_bytes(content[start + 3 * i:start + 3 * i + 3], "little") for i in range(40)]
-        self.assertEqual(table, exact.plate_table())
-        self.assertEqual(content[start + 120], 0)
 
     def test_plate_table_is_indexed_by_asset_code(self):
         table = exact.plate_table()
