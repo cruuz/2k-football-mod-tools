@@ -230,3 +230,136 @@ def preview(slot: int, out: Path) -> Path:
     sheet.paste(Image.fromarray(b * 17), (width + 8, 0))
     sheet.save(out)
     return out
+
+
+# ---------------------------------------------------------------- the ESPN clock font
+# One FONT appended to the runtime collection and bound by the owner to the quarter, game
+# clock and play clock records. Built the way the beta 69 private fonts were (they drew in
+# game): the retail font4 chunk copied whole, including the object tail the loader fills at
+# registration, under a new name; every glyph record's advance and quad scaled so the digits
+# come out about 11 HUD units tall and condensed; the clock characters' cells repainted from
+# the broadcast glyph sheet at all sixteen alpha levels (the chunk is appended uncompressed,
+# so nothing has to fit a fixed span).
+CLOCK_FONT_NAME = "FirstPersonComic"      # the free tenth boot name, so the owner needs no new data for the lookup
+QUARTER_FONT_NAME = "core_bug"            # an existing UTF-16 literal (a FONT and a TXTR may share a name); the quarter label's smaller build
+QUARTER_FONT_SCALE = (0.62, 0.72)         # the quarter label is about two thirds of the clock on the broadcast
+CLOCK_FONT_CHARS = "0123456789:stndrhOSTNDRH"   # repainted cells; every other cell keeps the retail shape
+CLOCK_FONT_SUFFIX = {"S": "s", "T": "t", "N": "n", "D": "d", "R": "r", "H": "h"}  # the game uppercases "1st" before drawing: the capitals carry the small broadcast suffix
+CLOCK_FONT_SCALE = (0.80, 0.92)           # (advance/x, y): retail font4 digits are 8 x 12, the clock wants about 6.4 x 11
+CLOCK_FONT_DONOR = 3
+
+
+def _fit_source(char, cw, ch, sources):
+    """The broadcast glyph fitted into a retail cell (same rule as _paint), or None."""
+    from PIL import Image
+    if char == ":":
+        glyph = Image.new("L", (cw, ch), 0)
+        dot = max(1, round(min(cw, ch) * 0.28))
+        for cy in (round(ch * 0.30), round(ch * 0.72)):
+            for y in range(cy - dot // 2, cy - dot // 2 + dot):
+                for x in range((cw - dot) // 2, (cw - dot) // 2 + dot):
+                    if 0 <= x < cw and 0 <= y < ch:
+                        glyph.putpixel((x, y), 255)
+        return glyph
+    source = sources.get(char)
+    if source is None:
+        return None
+    sw, sh = source.size
+    scale = ch / sh
+    new_w = max(1, round(sw * scale))
+    if new_w > cw:
+        scale = cw / sw
+        new_w = cw
+    new_h = max(1, round(sh * scale))
+    fitted = source.resize((new_w, new_h), Image.Resampling.LANCZOS)
+    glyph = Image.new("L", (cw, ch), 0)
+    glyph.paste(fitted, ((cw - new_w) // 2, ch - new_h))
+    return glyph
+
+
+def clock_font(donor_span: bytes, *, name: str = CLOCK_FONT_NAME, scale: tuple = CLOCK_FONT_SCALE) -> tuple[bytes, dict]:
+    import numpy as np
+    from . import nfl2k5_scorebug_ingame as r
+    chunk, source, _ = r.decode(donor_span)
+    if (chunk.kind, chunk.system_bytes, chunk.video_bytes) != ("FONT", 9472, 17408) or digest(source) != RETAIL_DECODED_SHA256[CLOCK_FONT_DONOR]:
+        raise FontError("clock font donor must be the retail font4 span")
+    width = FONTS[CLOCK_FONT_DONOR]["width"]
+    system_size, old_object = chunk.system_bytes, 48
+    body = bytearray(source[:32] + (name + "\0").encode("utf-16le"))
+    body.extend(b"\xff" * (-len(body) % 16))
+    obj = len(body)
+    body.extend(source[old_object:system_size])
+    body.extend(b"\xff" * (-len(body) % 128))
+    system = len(body)
+    struct.pack_into("<I", body, 20, obj - 20 + 1)   # field-relative object pointer; the name pointer at +16 is unchanged
+    sx, sy = scale
+    video = bytearray(source[system_size:])
+    plane = np.frombuffer(bytes(r.tx.unswizzle_2d(video[:width * width], width, width, 1)), dtype=np.uint8).reshape(width, width).copy()
+    sources = _glyph_sources()
+    cells = {chr(cp): _cell(source, rec, width) for cp, rec in _records(source) if chr(cp) in CLOCK_FONT_CHARS}
+    painted, narrow = [], {}
+    digit_h = sources["0"].height
+    for char, (x0, y0, x1, y1) in cells.items():
+        cw, ch = x1 - x0, y1 - y0
+        if cw <= 0 or ch <= 0:
+            continue
+        if char in CLOCK_FONT_SUFFIX:
+            # Small suffix letters at the digits' scale, on the baseline, centred in the capital's cell.
+            from PIL import Image
+            src = sources.get(CLOCK_FONT_SUFFIX[char])
+            if src is None:
+                continue
+            scale = ch / digit_h
+            new_w, new_h = max(1, round(src.width * scale)), max(1, round(src.height * scale))
+            if new_w > cw or new_h > ch:
+                continue
+            glyph = Image.new("L", (cw, ch), 0)
+            glyph.paste(src.resize((new_w, new_h), Image.Resampling.LANCZOS), (0, ch - new_h))
+            narrow[char] = new_w
+        else:
+            glyph = _fit_source(char, cw, ch, sources)
+        if glyph is None:
+            continue
+        levels = (np.asarray(glyph, dtype=np.float32) * MASK_LEVELS / 255.0 + 0.5).astype(np.uint8)
+        plane[y0:y1, x0:x1] = np.clip(levels, 0, MASK_LEVELS)
+        painted.append(char)
+    video[:width * width] = r.tx.swizzle_2d(plane.tobytes(), width, width, 1)
+    # Records: every advance and quad scaled to the clock size; the suffix capitals narrowed to
+    # their painted width (UV cell and quad), so "1ST" sets tight like the broadcast "1st".
+    ranges = obj + 8 + struct.unpack_from("<I", body, obj + 8)[0] - 1
+    count = struct.unpack_from("<I", body, obj + 4)[0]
+    for i in range(count):
+        rec = ranges + 8 * i
+        first, last, relative = struct.unpack_from("<HHI", body, rec)
+        glyphs = rec + 4 + relative - 1
+        for cp in range(first, last + 1):
+            off = glyphs + 96 * (cp - first)
+            char = chr(cp)
+            advance = struct.unpack_from("<I", body, off)[0]
+            pos = list(struct.unpack_from("<16f", body, off + 16))
+            u0, v0, u1, v1 = struct.unpack_from("<4f", body, off + 80)
+            if char in narrow:
+                x0, _y0, x1, _y1 = cells[char]
+                fraction = narrow[char] / (x1 - x0)
+                u1 = u0 + (u1 - u0) * fraction
+                pos[4] = pos[12] = pos[0] + (pos[4] - pos[0]) * fraction
+                advance = round(advance * fraction) + 1
+                struct.pack_into("<4f", body, off + 80, u0, v0, u1, v1)
+            for j in range(4):
+                pos[4 * j] *= sx
+                pos[4 * j + 1] *= sy
+            struct.pack_into("<I", body, off, round(advance * sx))
+            struct.pack_into("<16f", body, off + 16, *pos)
+    for off, scale in ((12, sx), (16, sy), (20, sy), (24, sy), (28, sy)):
+        value = struct.unpack_from("<i", body, obj + off)[0]
+        struct.pack_into("<i", body, obj + off, round(value * scale))
+    body.extend(video)
+    header = struct.pack("<4s7I", b"FONT", len(body), system, len(video), 0, 0, 0, 0)
+    result = header + bytes(body)
+    check, again, _ = r.decode(result)
+    if check.kind != "FONT" or again != bytes(body):
+        raise FontError("clock font round trip failed")
+    return result, dict(name=name, donor="font4", scale=scale, painted="".join(painted),
+                        object_offset=obj, system_bytes=system, video_bytes=len(video), span_size=len(result),
+                        sha256=digest(result))
+

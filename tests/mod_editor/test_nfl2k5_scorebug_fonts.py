@@ -28,7 +28,7 @@ class PublicTests(unittest.TestCase):
                                       (fonts.NAMES[0], 3, 1, 1, True)):
             with self.assertRaises(ValueError): fonts.compile_font(b'', name, slot, x, y, weight)
         code, labels = runtime.code_for(0x14da000, 0x14f2000)
-        self.assertEqual(len(code), 1408)
+        self.assertEqual(len(code), runtime.CODE_SIZE)
         self.assertEqual(runtime.DATA_SIZE, 128)
         self.assertLess(runtime.FONT_COMPACT + 4, runtime.DATA_SIZE)
         self.assertLess(labels['setup'], labels['update'])
@@ -58,7 +58,8 @@ class NativeTests(unittest.TestCase):
         global_slots = bytes(m.uc.mem_read(0xa90ecc, 9*4))
         originals = {obj: bytes(m.uc.mem_read(obj, len(font.decoded) - font.object_offset))
                      for obj, font in m.fonts.items()}
-        self.assertEqual(tuple(map(len, self.build.font_spans)), fonts.SPAN_SIZES)
+        # Beta 71: the runtime collection carries the two clock fonts, not the beta 69 seven.
+        self.assertEqual(tuple(map(len, self.build.font_spans)), (27040, 27040))
         for span, parsed in zip(self.build.font_spans, self.build.private_fonts):
             receipt = m.load_private_font(span, parsed)
             self.assertFalse(receipt['global_slot_changed'])
@@ -114,14 +115,22 @@ class NativeTests(unittest.TestCase):
             self.addCleanup(capture['machine'].close)
         return geometry, capture
 
-    def test_beta70_runtime_binds_no_private_font_and_keeps_the_native_score_fonts(self):
-        # Beta 70 contract: the runtime scene installs with no private FONT resource, so
-        # every HUD text record still resolves to a boot font (font4 / font8).
-        pointers = (0xa95a10, 0xa95918, 0xa95940, 0xa95968, 0xa959a0, 0xa958f0, 0xa95a80)
-        geometry, capture = self.capture(private=False)
+    def test_beta71_runtime_binds_the_clock_fonts_and_keeps_the_native_score_fonts(self):
+        # Beta 71 contract: the runtime collection appends the two ESPN clock fonts; the owner
+        # binds the game clock and play clock to FirstPersonComic and the quarter label to the
+        # smaller core_bug build, while the score records keep their boot font (font8).
+        geometry, capture = self.capture(private=True)
         m = capture['machine']
-        self.assertEqual(list(geometry.get('private_fonts', [])), [])
-        for pointer in pointers:
+        self.assertEqual([f['name'] for f in geometry['private_fonts']], ['FirstPersonComic', 'core_bug'])
+        self.assertTrue(all(not f['global_slot_changed'] for f in geometry['private_fonts']))
+        for pointer in (0xa95918, 0xa95940, 0xa95a80):
+            self.assertEqual(m.fonts[m.get(pointer)].name, 'FirstPersonComic', hex(pointer))
+        self.assertEqual(m.fonts[m.get(0xa958f0)].name, 'core_bug')
+        for pointer in (0xa95968, 0xa959a0):
+            self.assertEqual(m.fonts[m.get(pointer)].name, 'font8', hex(pointer))
+        _geometry, fallback = self.capture(private=False)
+        m = fallback['machine']
+        for pointer in (0xa95918, 0xa95940, 0xa95a80, 0xa958f0):
             self.assertIn(m.fonts[m.get(pointer)].name, ('font4', 'font8'), hex(pointer))
 
     @V8_ONLY

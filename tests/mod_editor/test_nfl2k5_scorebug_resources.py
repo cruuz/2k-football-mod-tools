@@ -243,10 +243,11 @@ class RetailTests(unittest.TestCase):
                 compiled, receipt=a.compile_runtime_collection(self.before,probe=probe)
                 self.assertEqual(len(compiled),r.PACK_SIZE+growth)
                 self.assertEqual(receipt['texture_count'],count)
-                font_count = len(fonts.NAMES) if count and probe != 'mnf' else 0
+                font_count = 2 if probe == 'mnf' else (len(fonts.NAMES) if count else 0)
+                font_heap = 2 * ((27040 + 127) // 128 * 128) if probe == 'mnf' else (fonts.HEAP_BYTES if font_count else 0)
                 self.assertEqual(len(receipt['resources']),count + font_count)
                 self.assertEqual(receipt['font_count'], font_count)
-                self.assertEqual(receipt['native_heap_bytes'],count*5376 + (fonts.HEAP_BYTES if font_count else 0))
+                self.assertEqual(receipt['native_heap_bytes'],count*5376 + font_heap)
                 self.assertEqual(a.runtime_pack_status(compiled,probe=probe),'applied')
                 self.assertIs(a.compile_runtime_collection(compiled,probe=probe)[0],compiled)
                 names={item['name'] for item in receipt['resources'] if item.get('kind') != 'FONT'}

@@ -40,7 +40,12 @@ SCORE_POINTERS = (0xE5FC28, 0xE5FC68)
 TEAM_OBJECTS = (0xE5FC20, 0xE5FC60)  # home, away team objects; 0xE60280 holds the one with possession
 SCORE_COLORS = (0xA95958, 0xA95990)
 CITY_CALLBACKS = (0xA95884, 0xA958AC)  # home, away text records: retail binds 0xA95884 to 0xFC010 (getter 0x61C50 = context 0xB30864, whose +0x108 is the HOME abbreviation) and 0xA958AC to 0xFC030 (0x61C60 = 0xB30A58, away); same order as SCORE_POINTERS
-PLATE_MATERIAL_NAME = 0xE6C5D4        # UTF-16 "dscore_buga"
+PLATE_MATERIAL_NAME = 0xE6C5D4
+CLOCK_FONT_NAME_VA = 0xE6B490   # UTF-16 "FirstPersonComic", the retail tenth boot font name: the clock font
+QUARTER_FONT_NAME_VA = 0xE6C79A  # UTF-16 "core_bug" inside the retail "score_bug" literal: the quarter label's smaller font
+CLOCK_FONT_RECORDS = (0xA95918, 0xA95940, 0xA95A80)  # resolved FONT descriptors the draw reads: game clock x2 (+0x1C) and the play clock (+0x48)
+QUARTER_FONT_RECORDS = (0xA958F0,)                   # the quarter record's resolved descriptor (+0x1C); the +4/+8 slot indices stay retail for the native init
+FONT_TAG = 0x544E4F46           # 'FONT' as the lookup tag word (TXTR is 0x52545854)        # UTF-16 "dscore_buga"
 WHITE, ACCENT = 0xFFFFFFFF, 0xFFFFD166
 ESPN_RED, CAPSULE_INK = 0xFFE31937, 0xFF14171C
 PLAY_CLOCK_NORMAL = CAPSULE_INK
@@ -120,6 +125,17 @@ def code_for(code_va, data_va):
     # The down plate material takes the possessing team's colour every frame.
     absop("8b35", 0xA95528); b("68" + _u(PLATE_MATERIAL_NAME)); a.call(0xFBC70)
     absop("a3", data_va + PLATE)
+    # The ESPN clock font: after the native init resolved every record's slot index into a
+    # descriptor, look the appended FONT up in the HUD collection and overwrite the quarter,
+    # game clock and play clock descriptors (the beta 69 owner bound its fonts the same way; a
+    # missing font leaves the retail descriptors alone).
+    for label, name_va, records in (("clock", CLOCK_FONT_NAME_VA, CLOCK_FONT_RECORDS), ("quarter", QUARTER_FONT_NAME_VA, QUARTER_FONT_RECORDS)):
+        b("68" + _u(name_va) + " ba" + _u(FONT_TAG) + " b9" + _u(HUD_COLLECTION_NAME))
+        a.call(0x449E0)
+        b("85c0"); jump("0f84", f"{label}_font_done")
+        for va in records:
+            absop("a3", va)
+        a.label(f"{label}_font_done")
     b("31c0")
     absop("a3", 0xA95B00)  # stop native hangtime from hiding the repurposed home panel
     # The retail team-name callbacks become the timeout marks (dashes).
@@ -197,8 +213,8 @@ def code_for(code_va, data_va):
     b("8b860c010000 85c0"); jump("0f84", "clock")           # UTF-16 asset code
     b("0fb710 83ea30 83fa03"); jump("0f87", "clock")         # tens digit 0..3
     b("0fb74002 83e830 83f809"); jump("0f87", "clock")       # ones digit 0..9
-    b("6bd20a 01d0 8b0485"); a.label("plate_table_ref"); b("00000000")
-    b("894118")
+    b("6bd20a 01d0 8d0440 8b80"); a.label("plate_table_ref"); b("00000000")
+    b("0d000000ff 894118")
     a.label("clock")
     store(0xA95A48, PLAY_CLOCK_NORMAL)
     absop("a1", 0xE60294); b("85c0"); jump("0f84", "populated")
@@ -234,20 +250,25 @@ def code_for(code_va, data_va):
     a.label("texture_found"); b("8907 83c410 c3")
     # Timeout marks: the team-name callbacks receive ECX = the caller's UTF-16
     # buffer. Write "- - -" trimmed to the remaining timeouts (0..3), then NUL.
-    for side, score_ptr in enumerate(SCORE_POINTERS):
-        a.label(f"dash_text{side}")
-        absop("a1", score_ptr); b("31d2 85c0"); a.j8("74", f"dash_write{side}")
-        b("8b5004 83fa03"); a.j8("76", f"dash_write{side}")
-        b("31d2")
-        a.label(f"dash_write{side}")
-        b("85d2"); a.j8("74", f"dash_end{side}")
-        a.label(f"dash_loop{side}")
-        b("66c7012d00 83c102 4a"); a.j8("74", f"dash_end{side}")
-        b("66c7012000 83c102"); a.j8("eb", f"dash_loop{side}")
-        a.label(f"dash_end{side}"); b("66c7010000 c3")
+    # One shared writer; each side's callback entry loads its score object (EAX) and joins it.
+    a.label("dash_text0"); absop("a1", SCORE_POINTERS[0]); a.j8("eb", "dash_common")
+    a.label("dash_text1"); absop("a1", SCORE_POINTERS[1])
+    a.label("dash_common")
+    b("31d2 85c0"); a.j8("74", "dash_write")
+    b("8b5004 83fa03"); a.j8("76", "dash_write")
+    b("31d2")
+    a.label("dash_write")
+    b("85d2"); a.j8("74", "dash_end")
+    a.label("dash_loop")
+    b("66c7012d00 83c102 4a"); a.j8("74", "dash_end")
+    b("66c7012000 83c102"); a.j8("eb", "dash_loop")
+    a.label("dash_end"); b("66c7010000 c3")
+    # The plate colours packed as three bytes (B, G, R) per asset code; the lookup reads a
+    # dword at 3 * code and forces the alpha byte, so the table costs 120 bytes, not 160.
     a.label("plate_table")
     for word in exact.plate_table():
-        b(_u(word))
+        b(_u(word)[:6])
+    b("00")  # the final entry's dword read stays inside the owner's bytes
     # Shorten only local branches whose whole displacement already fits.
     # Every target and external call is reassembled after each shrinking pass.
     while True:

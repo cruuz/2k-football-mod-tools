@@ -44,8 +44,11 @@ class OwnerCodeTests(unittest.TestCase):
             self.assertEqual(struct.unpack_from("<I", content, at + 6)[0], labels[f"dash_text{side}"])
         at = labels["plate_table_ref"] - code_va
         self.assertEqual(struct.unpack_from("<I", content, at)[0], labels["plate_table"])
-        table = struct.unpack_from("<40I", content, labels["plate_table"] - code_va)
-        self.assertEqual(list(table), exact.plate_table())
+        # Beta 71: three bytes (B, G, R) per asset code, the lookup ORs the alpha byte in.
+        start = labels["plate_table"] - code_va
+        table = [0xFF000000 | int.from_bytes(content[start + 3 * i:start + 3 * i + 3], "little") for i in range(40)]
+        self.assertEqual(table, exact.plate_table())
+        self.assertEqual(content[start + 120], 0)
 
     def test_plate_table_is_indexed_by_asset_code(self):
         table = exact.plate_table()
@@ -127,8 +130,10 @@ class ArtTests(unittest.TestCase):
     def test_probe_sizes_for_the_compact_profile(self):
         count, appendix, growth = resources.probe_sizes("mnf")
         self.assertEqual(count, 66)
-        self.assertEqual(appendix, 66 * resources.RUNTIME_TEXTURE_SPAN)
-        self.assertLess(count * 5376, 400_000)
+        # 66 wing panels plus the two appended clock fonts (FirstPersonComic and core_bug).
+        self.assertEqual(appendix, 66 * resources.RUNTIME_TEXTURE_SPAN + resources.CLOCK_FONT_SPAN_SIZE)
+        self.assertEqual(resources.CLOCK_FONT_SPAN_SIZE, 2 * 27040)
+        self.assertLess(count * 5376 + resources.CLOCK_FONT_SPAN_SIZE, 420_000)
         self.assertEqual(growth % 2048, 0)
 
 
