@@ -43,8 +43,7 @@ class SettingsModelTests(unittest.TestCase):
         pins = {r['name']: r for r in mc._pins()['light_tables']}
         self.assertEqual(pins['night_indoor']['applied_sha256'],
                          '18c6d914b12edc22d092cea97b7839d4f4611e23b5a898cbceeb4d74222b9fb9')
-        self.assertEqual(mc.sha(json.dumps(mc._pins()['bundles'], sort_keys=True, separators=(',', ':')).encode()),
-                         'f4ef2c5a179ad39a07f4670ed924e3c4a605a6a2775518a78aa790306c706295')
+        self.assertEqual(len(mc._pins()['bundles']), 477)
         for name, expected, strengths, shadow, target in (
                 ('day', (89, 105, 61), (.44, 1.60, .99), .32, (88, 105, 61)),
                 ('afternoon', (87, 103, 61), (.60, 1.20, 1.04), .22, (98, 119, 72))):
@@ -67,10 +66,57 @@ class SettingsModelTests(unittest.TestCase):
                 self.assertAlmostEqual(mixed, (mc.read_rig(retail)['shadow'] + shadow)/2)
                 doc = mc.default_settings()
 
+    def test_outside_calibration_link_custom_and_every_condition(self):
+        import colorsys
+        self.assertEqual(mc.predicted_on_screen(mc.OUTSIDE_REFERENCE_MAP, 'day', surface='outside'), (101, 151, 76))
+        for stadium in mc.PREVIEW_CLASSES:
+            for rig in mc.MODERN_RIGS:
+                doc = mc.default_settings()
+                doc.update(preview_class=stadium, preview_rig=rig)
+                field, outside = mc.preview(doc), mc.preview(doc, surface='outside')
+                f, o = field['predicted'], outside['predicted']
+                self.assertEqual(outside['target'], f)
+                self.assertTrue(.92 <= max(o)/max(f) <= 1, (stadium, rig, f, o))
+                self.assertLessEqual(colorsys.rgb_to_hsv(*o)[1], colorsys.rgb_to_hsv(*f)[1], (stadium, rig, f, o))
+        doc = mc.default_settings()
+        teal = bytes((59, 72, 40, 255)) * 256  # s48 outside hue exceeds the old 150-degree mask
+        self.assertNotEqual(mc.regrade_palette(teal, surface='outside'), teal)
+        self.assertEqual(mc.regrade_palette(teal), teal, 'FIELD hue mask stays unchanged')
+        self.assertEqual(mc._palette_mean(teal, [1]*256, hue_max=180), (40,72,59))
+        matched = mc.match_outside_palette(teal, (181, 216, 102), [1]*256)
+        self.assertNotEqual(matched, teal)
+        self.assertEqual(mc.match_outside_palette(bytes((255,255,255,255))*256, (181,216,102), [1]*256), bytes((255,255,255,255))*256)
+        for tint in ((204, 216, 216, 255), (255, 238, 205, 255), (178, 178, 178, 128)):
+            corrected = mc.linked_outside_tint(tint, doc)
+            self.assertEqual(len(set(corrected[:3])), 1)
+            self.assertGreaterEqual(min(corrected[:3]), 246)
+            self.assertEqual(corrected[3], tint[3])
+            self.assertEqual(mc.linked_outside_tint(tint, mc.default_settings(retail=True)), tint)
+        doc['linked']['outside'] = False
+        baseline = mc.preview(doc, surface='outside')['predicted']
+        doc['values']['outside.saturation'] = .5
+        custom = mc.preview(doc, surface='outside')['predicted']
+        self.assertNotEqual(custom, baseline)
+        doc['values']['turf.value_lift'] = 1.5
+        self.assertEqual(mc.preview(doc, surface='outside')['predicted'], custom)
+        doc['linked']['outside'] = True
+        self.assertNotEqual(mc.preview(doc, surface='outside')['predicted'], custom)
+        doc['linked']['outside'] = False
+        self.assertEqual(mc.preview(doc, surface='outside')['predicted'], custom)
+
+
     def test_all_controls_validate_and_roundtrip_without_changing_presets(self):
         doc = mc.default_settings()
         self.assertEqual(len(mc.control_specs()), 55)
         self.assertFalse(mc.is_custom(doc))
+        legacy = {k: v for k, v in mc.normalize_settings().items() if not k.startswith('preview_')}
+        old_id = mc.sha(json.dumps(legacy, sort_keys=True, separators=(',', ':')).encode())
+        self.assertNotEqual(mc.settings_id(), old_id, 'C4 receipts/caches must not bypass the C5 transform')
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp) / 'old-disc.iso'
+            mc._save_image_receipt(target, dict(schema=mc.RECEIPT_SCHEMA, settings=mc.normalize_settings(), settings_sha256=old_id))
+            with self.assertRaisesRegex(ValueError, 'original retail source'):
+                mc.read_image_receipt(target)
         displayed = deepcopy(doc)
         displayed['values'] = {k: round(v, 3) for k, v in doc['values'].items()}
         self.assertFalse(mc.is_custom(displayed), 'returning sliders to their displayed defaults restores Broadcast')
@@ -226,9 +272,28 @@ class BundleParameterTests(unittest.TestCase):
         restored, retail_edits = mc.modern_bundle(self.data, settings=mc.default_settings(retail=True))
         self.assertEqual(restored, self.data)
         self.assertEqual(retail_edits[0]['vertex_tints'], 0)
-        Path(ROOT / 'reports/b71_c4/bundle-parameter-proof.json').write_text(json.dumps(dict(
-            name=self.pin['name'], custom_settings_sha256=mc.settings_id(custom), custom_sha256=mc.sha(after),
-            broadcast_sha256=mc.sha(original), edits=edits), indent=1)+'\n')
+
+
+    def test_unlinked_outside_palette_retains_own_custom_colour(self):
+        def outside(doc):
+            after, edits = mc.modern_bundle(self.data, settings=doc)
+            tx, inv, R, H = mc._tools()
+            rec, raw, _ = mc._scene(after, mc._chunks(after)[0])
+            t = next(t for t in rec['embedded_textures'] if mc.OUTSIDE_MATERIAL in t['mapped_material_names'])
+            at = rec['system_bytes'] + t['palette_offset']
+            self.assertFalse(edits[0].get('unfit'))
+            return raw[at:at+1024]
+        doc = mc.default_settings()
+        doc['linked']['outside'] = False
+        doc['values']['outside.saturation'] = .6
+        custom = outside(doc)
+        doc['values']['turf.value_lift'] = 1.5
+        self.assertEqual(outside(doc), custom, 'unlinked outside ignores field changes')
+        doc['linked']['outside'] = True
+        self.assertNotEqual(outside(doc), custom, 'link uses the changed field target')
+        doc['linked']['outside'] = False
+        self.assertEqual(outside(doc), custom, 'relinking retains the saved independent colour')
+
 
     def test_image_writer_receipt_replay_tamper_scope_and_regrade_refusal(self):
         pin = self.pin

@@ -286,7 +286,7 @@ class ProviderIntegrityTests(unittest.TestCase):
         self.assertEqual(
             unified.data_pins,
             {
-                "data/nfl2k5_modern_color_pins.json": "394b1926eb4603d54d5ca7effbadaf4364c74b3ae1d72ddac24654349e2ec75d",
+                "data/nfl2k5_modern_color_pins.json": "244dc1edd173de8acf2f6cafbfacaa5b7a09d5abc1bda277201369dd28262c15",
                 "mod_editor/data/nfl2k5_crib_catalog.v1.json":
                     "c78801144df2f070e003ba458c5affa15a52cc00221cc1a3d9983f1fbf172cd8",
                 "mod_editor/data/nfl2k5_equipment_chain_pins.v1.json":

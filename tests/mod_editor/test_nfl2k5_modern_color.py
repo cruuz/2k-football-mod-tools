@@ -178,7 +178,7 @@ class BundleTests(unittest.TestCase):
         regraded = {row["material"]: row for row in field["palettes"]}
         for name in (mc.COLOR_MAP_MATERIAL, mc.OUTSIDE_MATERIAL, "endzone_N_M"):
             self.assertIn(name, regraded); self.assertGreater(regraded[name]["changed"], 0, name)
-        self.assertGreater(regraded[mc.OUTSIDE_MATERIAL]["gain"], 1.0, "outside grass lifted toward the field mean")
+        self.assertEqual(field["outside"]["link_amount"], 1.0, "outside grass linked to the field prediction")
         divots = edits[kinds.index("divots")]
         self.assertNotEqual(divots["before_sha256"], divots["after_sha256"], "divots layer faded")
         tint = edits[kinds.index("tint")]

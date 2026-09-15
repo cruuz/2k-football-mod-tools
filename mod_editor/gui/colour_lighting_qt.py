@@ -79,12 +79,14 @@ class ColourLightingControls(QWidget):
         layout.addWidget(toggle, 0, 0, 1, 3)
         toggle.toggled.connect(lambda on, g=group: self._group_changed(g, on))
         if group in ("endzones", "outside"):
-            link = QCheckBox("Follow turf colour")
+            link = QCheckBox("Link surfaces: follow field" if group == "outside" else "Follow turf colour")
+            if group == "outside":
+                link.setToolTip("Linked outside grass follows the field target for each condition. Unlink to use your saved outside colour.")
             self.links[group] = link
             layout.addWidget(link, 1, 0, 1, 3)
             link.toggled.connect(lambda on, g=group: self._link_changed(g, on))
-        layout.addWidget(QLabel("PREDICTED turf"), 1, 3)
-        layout.addWidget(QLabel("Broadcast target"), 1, 4)
+        layout.addWidget(QLabel("PREDICTED outside" if group == "outside" else "PREDICTED turf"), 1, 3)
+        layout.addWidget(QLabel("Field target" if group == "outside" else "Broadcast target"), 1, 4)
         n = 2
         for key, spec in colour.control_specs().items():
             if spec["group"] != group:
@@ -195,17 +197,21 @@ class ColourLightingControls(QWidget):
 
     def _refresh(self):
         estimate = colour.preview(self._settings)
+        outside = colour.preview(self._settings, surface="outside")
         if hasattr(self, "light_stack"):
             self.light_stack.setCurrentIndex(list(colour.RIG_LABELS).index(self._settings["preview_rig"]))
         for key, row in self.rows.items():
             group = colour.control_specs()[key]["group"]
             linked = group in self.links and self._settings["linked"][group] and key.split(".")[1] not in ("match", "falloff")
             available = self._settings["enabled"][group] and not linked
+            if key == "outside.match":
+                available = available and self._settings["linked"]["outside"]
             if key == "turf.map_contrast":
                 available = available and estimate["map"]
             row["use"].setEnabled(available)
             for w in (row["slider"], row["spin"]):
                 w.setEnabled(available and key not in self._settings["disabled"])
-            self._swatch(row["prediction"], estimate["predicted"])
-            self._swatch(row["target"], estimate["target"])
-            row["prediction"].setToolTip(estimate["scope"] + " Reference: " + estimate["source"])
+            swatch = outside if group == "outside" else estimate
+            self._swatch(row["prediction"], swatch["predicted"])
+            self._swatch(row["target"], swatch["target"])
+            row["prediction"].setToolTip(swatch["scope"] + " Reference: " + swatch["source"])

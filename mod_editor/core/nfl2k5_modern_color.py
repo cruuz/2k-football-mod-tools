@@ -1,6 +1,6 @@
 """Configurable broadcast colour and lighting for ESPN NFL 2K5.
 
-The approved night/dome baseline is preserved; day and afternoon are tuned separately. Custom looks are EXPERIMENTAL /
+The C4 field and light rigs are preserved; linked outside grass follows their predicted colour. Custom looks are EXPERIMENTAL /
 UNWITNESSED; the swatch model is a calibrated estimate, not an in-game render.
 
 Two families of data edits, no executable code, no cave, no hook, no runtime
@@ -50,7 +50,7 @@ REQUESTS = CAVES = RUNTIME_GLOBALS = ()
 DEFAULT_ENABLED = False
 BUILD_CAPTION = "Modern colour and lighting (experimental)"
 HELP_TEXT = (
-    "Enable the saved Colour & lighting controls below. Broadcast (default) tunes daylight and keeps the approved night/dome look. "
+    "Enable the saved Colour & lighting controls below. Broadcast (default) tunes daylight and links outside grass to the field. "
     "Tune turf, linked end zones and outside grass, wear, bump detail, tints and seven existing light rigs. "
     "Each slider has an Off switch; values stay with the project. Directions, counts and retail wrappers stay unchanged. "
     "Day and afternoon colour balance also blends their shadow strength. Refits add build time; any span that cannot fit stays retail "
@@ -97,8 +97,8 @@ MODERN_RIGS = {
                       lights=(((1.00, 0.91, 0.78), 1.20), ((0.40, 0.445, 1.00), 1.04), ((0.40, 0.445, 1.00), 1.04))),
 }
 # Day/afternoon desaturation is in the channel gains, not the shared grass map.
-# Cool sky fill restores blue while the direct sun stays warm. All 477 bundle
-# pins, the five other rigs and the calibrated SCREEN_FACTOR stay v2.1 exact.
+# Cool sky fill restores blue while the direct sun stays warm. C5 keeps every
+# field map and all seven C4 rigs; only outside-grass bundle data changes.
 # Day key/ambient = 3.64, afternoon = 2.0; +0x100 controls the negative
 # shadow-light term read by 0x64000 -> 0x12fb8d -> 0x2af50. It is not a blur
 # radius or a sun-angle control. Actual shadow shape remains game-dependent.
@@ -116,10 +116,9 @@ NORMAL_FLATTEN = 0.32
 # wear layer (64x64 P8, dark green, about 36 percent alpha over most of the turf)
 # that read as player-sized dark blotches once the turf was bright; its greens are
 # re-graded like the turf and its alpha scaled down. The six end-zone maps carry
-# their own green background and are re-graded too; the outside grass texture is
-# 45 percent darker than the field map and its shape darkens toward the edges
-# through grey vertex colours, so its palette is lifted to the field's mean and
-# the grey falloff is halved; the end-zone overlays take the softened tint.
+# their own green background and are re-graded too. C5 replaces the old outside
+# brightness lift with a FIELD prediction match, including its separate vertex
+# tints. The end-zone overlays still take the v2.1 softened tint.
 DIVOTS_NAME = "divots"
 DIVOTS_ALPHA = 0.30
 END_ZONE_MATERIALS = ("endzone_N_L", "endzone_N_M", "endzone_N_R", "endzone_S_L", "endzone_S_M", "endzone_S_R", "center_logo")
@@ -136,6 +135,19 @@ VERTEX_TINTS = {(255, 238, 205, 255): (255, 245, 230, 255), (242, 255, 255, 255)
 # flat (161, 208, 88)) drew (34, 43, 2) on 2026-09-07; blue collapsed under the
 # yellow retail key, so the day blue factor is taken from green.
 SCREEN_FACTOR = {"night_indoor": (0.183, 0.183, 0.165), "day": (0.21, 0.21, 0.21)}
+# Outside grass has a different drawn response from the layered playing field.
+# Calibration: C4 s08dd decoded outside mean below -> supplied day strip sample
+# (101,151,76). Divide by that map's unrounded C4 field-model prediction. This
+# is a surface-response estimate, not a shader proof. Applying this ratio to
+# other rigs/classes is explicitly an extrapolation; do not alter FIELD factors.
+OUTSIDE_REFERENCE_MAP = (175.833251953125, 218.8282470703125, 85.738525390625)
+OUTSIDE_REFERENCE_SCREEN = (101, 151, 76)
+OUTSIDE_RESPONSE = tuple(
+    observed / (sample * (MODERN_RIGS["day"]["ambient"][c] * MODERN_RIGS["day"]["ambient_intensity"]
+                          + sum(rgb[c] * power for rgb, power in MODERN_RIGS["day"]["lights"])) * SCREEN_FACTOR["day"][c])
+    for c, (sample, observed) in enumerate(zip(OUTSIDE_REFERENCE_MAP, OUTSIDE_REFERENCE_SCREEN)))
+OUTSIDE_FIELD_RATIO = .97
+OUTSIDE_MIN_SHADE = 246  # neutral tint: at most 3.53% darker, including old coloured edge tints
 FIELD_SCENE = "field"
 COLOR_MAP_MATERIAL = "color_premipped"
 OUTSIDE_MATERIAL = "grass_outside_premipped"
@@ -160,6 +172,7 @@ def sha(data):
 # never preset edits. Disabled controls retain their authored value for re-use.
 SETTINGS_SCHEMA = "nfl2k5_colour_lighting/v1"
 RECEIPT_SCHEMA = "nfl2k5_colour_lighting_receipt/v1"
+TRANSFORM_REVISION = "c5-field-linked-outside-v1"
 RIG_LABELS = {"day": "Day", "afternoon": "Afternoon", "night_indoor": "Night / dome (shared)",
               "rain": "Rain", "snow": "Snow", "alt_day": "Alternate day", "alt_dynamic": "Alternate dynamic"}
 GROUPS = {"turf": "Turf", "endzones": "End zones / centre logo", "outside": "Outside grass",
@@ -190,7 +203,7 @@ def control_specs():
         add(group, "saturation", "Saturation", SAT_SCALE, 1, 0, 2, .01)
         add(group, "value_lift", "Brightness curve", VAL_GAMMA, 1, .25, 5, .01)
     add("turf", "map_contrast", "Map contrast / mowing stripes", 1, 1, 0, 2, .01)
-    add("outside", "match", "Match field brightness", 1, 0, 0, 1, .01)
+    add("outside", "match", "Match field colour", 1, 0, 0, 1, .01)
     add("outside", "falloff", "Edge shade strength", OUTSIDE_VERTEX_FALLOFF, 1, 0, 1, .01)
     add("divots", "contrast", "Blotch / wear contrast", DIVOTS_ALPHA, 1, 0, 1, .01)
     add("normal", "flatten", "Bump flatten amount", round(1 - NORMAL_FLATTEN, 6), 0, 0, 1, .01)
@@ -244,6 +257,8 @@ def normalize_settings(settings=None):
 def settings_id(settings=None):
     doc = normalize_settings(settings)
     doc = {k: v for k, v in doc.items() if not k.startswith("preview_")}
+    # Do not reuse a C4 baked-grade receipt/cache for the new linked transform.
+    doc["transform_revision"] = TRANSFORM_REVISION
     # All numeric inputs use a canonical representation (1 and 1.0 are equal).
     doc["values"] = {k: float(v) for k, v in doc["values"].items()}
     return sha(json.dumps(doc, sort_keys=True, separators=(",", ":")).encode("utf-8"))
@@ -432,8 +447,8 @@ def _tools():
 def regrade_palette(palette, *, gain=1.0, alpha_scale=1.0, settings=None, surface="turf", mean_value=None):
     """Re-grade the green entries of a 256-entry B,G,R,A palette; others untouched.
 
-    ``gain`` multiplies the lifted value (the outside grass is brought up to the
-    field's mean); ``alpha_scale`` scales every entry's alpha (the divots layer).
+    ``gain`` multiplies the lifted value; ``alpha_scale`` scales every entry's
+    alpha (the divots layer). Linked outside matching is a separate transform.
     """
     require(len(palette) == 1024, "palette size")
     doc = normalize_settings(settings)
@@ -447,7 +462,7 @@ def regrade_palette(palette, *, gain=1.0, alpha_scale=1.0, settings=None, surfac
         h, s, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
         h *= 360
         new_a = min(255, max(0, round(a * alpha_scale)))
-        if not (45 <= h <= 150 and s > 0.15 and v > 0.10):
+        if not (45 <= h <= (180 if surface == "outside" else 150) and s > 0.15 and v > 0.10):
             if new_a != a:
                 out[i * 4 + 3] = new_a
             continue
@@ -461,8 +476,7 @@ def regrade_palette(palette, *, gain=1.0, alpha_scale=1.0, settings=None, surfac
     return bytes(out)
 
 
-def _green_mean_value(out, system, texture, palette):
-    """Mean HSV value of the green palette entries actually used by the base level."""
+def _palette_counts(out, system, texture):
     tx, inv, ResourceRecord, HEADER = _tools()
     width, height = texture["width"], texture["height"]
     at = system + texture["pixel_offset"]
@@ -470,16 +484,82 @@ def _green_mean_value(out, system, texture, palette):
     counts = [0] * 256
     for index in indices:
         counts[index] += 1
-    total = weighted = 0.0
+    return counts
+
+
+def _green_entry(entry, *, hue_max=150):
+    b, g, r, a = entry
+    h, s, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
+    return 45 <= h * 360 <= hue_max and s > .15 and v > .10
+
+
+def _palette_mean(palette, counts, *, mask=None, hue_max=150):
+    # Select greens using the source palette, even when custom controls make
+    # the result grey. Non-green paint and unused entries cannot bias the mean.
+    mask = palette if mask is None else mask
+    used = [(i, count) for i, count in enumerate(counts)
+            if count and _green_entry(mask[i*4:i*4+4], hue_max=hue_max)]
+    total = sum(count for i, count in used)
+    if not total:
+        return None
+    return tuple(sum(palette[i*4+c] * count for i, count in used) / total for c in (2, 1, 0))
+
+
+def _green_mean_value(out, system, texture, palette):
+    """Mean HSV value of used green entries (the original field contrast input)."""
+    counts = _palette_counts(out, system, texture)
+    used = [(i, count) for i, count in enumerate(counts)
+            if count and _green_entry(palette[i*4:i*4+4])]
+    total = sum(count for i, count in used)
+    return sum(max(palette[i*4:i*4+3]) * count for i, count in used) / (255 * total) if total else None
+
+
+def outside_link_amount(settings):
+    return control_value(settings, "outside.match") if settings["linked"]["outside"] else 0.0
+
+
+def match_outside_palette(palette, field_rgb, counts, settings=None, *, mask=None):
+    """Match the FIELD prediction under every rig through the surface response.
+
+    Rig gain and FIELD screen factors cancel from the inverse: outside map =
+    field map / OUTSIDE_RESPONSE. Keep the texture's value variation, use field
+    chroma, and leave 3% brightness and 8% saturation headroom for byte rounding.
+    Only the linked match control opts in; unlinked custom colour remains free.
+    """
+    doc = normalize_settings(settings)
+    amount = outside_link_amount(doc)
+    mask = palette if mask is None else mask
+    mean = _palette_mean(palette, counts, mask=mask, hue_max=180)
+    if not amount or mean is None or field_rgb is None:
+        return palette
+    peak = max(field_rgb)
+    target = tuple(OUTSIDE_FIELD_RATIO * (v + (peak-v) * .08) / response
+                   for v, response in zip(field_rgb, OUTSIDE_RESPONSE))
+    value_mean = sum(max(palette[i*4:i*4+3]) * count for i, count in enumerate(counts)
+                     if _green_entry(mask[i*4:i*4+4], hue_max=180))
+    total = sum(count for i, count in enumerate(counts) if _green_entry(mask[i*4:i*4+4], hue_max=180))
+    value_mean /= total
+    if not value_mean:
+        return palette
+    result = bytearray(palette)
     for i in range(256):
-        if not counts[i]:
+        entry = palette[i*4:i*4+4]
+        if not _green_entry(mask[i*4:i*4+4], hue_max=180):
             continue
-        b, g, r, a = palette[i * 4:i * 4 + 4]
-        h, s, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
-        if 45 <= h * 360 <= 150 and s > 0.15 and v > 0.10:
-            total += counts[i]
-            weighted += counts[i] * v
-    return weighted / total if total else None
+        detail = max(entry[:3]) / value_mean
+        for c, channel in enumerate((2, 1, 0)):
+            value = entry[channel] + (target[c] * detail - entry[channel]) * amount
+            result[i*4+channel] = min(255, max(0, round(value)))
+    return bytes(result)
+
+
+def linked_outside_tint(rgba, settings=None):
+    """Remove separate colour casts and bound edge shade for a linked surface."""
+    doc = normalize_settings(settings)
+    amount = outside_link_amount(doc)
+    r, g, b, a = rgba
+    shade = max(OUTSIDE_MIN_SHADE, 255 - round((255-max(r, g, b)) * control_value(doc, "outside.falloff")))
+    return tuple(round(v + (shade-v) * amount) for v in (r, g, b)) + (a,)
 
 
 def lift_value(v, gamma=VAL_GAMMA):
@@ -487,19 +567,23 @@ def lift_value(v, gamma=VAL_GAMMA):
     return 1.0 - (1.0 - v) ** gamma
 
 
-def predicted_on_screen(colour_map_rgb, rig="night_indoor", *, settings=None, table=None):
+def predicted_on_screen(colour_map_rgb, rig="night_indoor", *, settings=None, table=None, surface="turf", tint=(255, 255, 255), rounded=True):
     """Calibrated estimate of the drawn turf for a colour-map mean under a rig.
 
     flat = map x (ambient x intensity + sum of light colour x intensity) per channel;
     on screen = flat x SCREEN_FACTOR (the measured ratio, see the constants above).
-    Returns (retail-map estimate is the caller's business) an (r, g, b) tuple.
+    Outside uses the separately calibrated surface response and optional vertex
+    tint. rounded=False exposes float predictions for value/saturation bounds.
     """
     table = table if table is not None else configured_rig(rig, settings)
     factor = SCREEN_FACTOR.get(rig, SCREEN_FACTOR["night_indoor"])
     out = []
     for c in range(3):
         gain = table["ambient"][c] * table["ambient_intensity"] + sum(col[c] * i for col, i in table["lights"])
-        out.append(min(255, round(colour_map_rgb[c] * gain * factor[c])))
+        value = colour_map_rgb[c] * gain * factor[c] * tint[c] / 255
+        if surface == "outside":
+            value *= OUTSIDE_RESPONSE[c]
+        out.append(min(255, round(value) if rounded else value))
     return tuple(out)
 
 
@@ -515,7 +599,7 @@ PREVIEW_CLASSES = {
 }
 
 
-def preview(settings=None):
+def preview(settings=None, *, surface="turf"):
     doc = normalize_settings(settings)
     reference = PREVIEW_CLASSES[doc["preview_class"]]
     r, g, b = reference["rgb"]
@@ -523,11 +607,20 @@ def preview(settings=None):
     rgb = (entry[2], entry[1], entry[0])
     targets = {"day": (88, 105, 61), "afternoon": (98, 119, 72)}
     target = targets.get(doc["preview_rig"], reference["target"]) if doc["preview_class"] == "outdoor" else reference["target"]
-    return dict(predicted=predicted_on_screen(rgb, doc["preview_rig"], settings=doc), target=target,
+    field_prediction = predicted_on_screen(rgb, doc["preview_rig"], settings=doc)
+    if surface == "outside":
+        # Same numeric class reference for the custom swatch; actual builds use
+        # the stadium's own outside texture and decoded field mean.
+        palette = regrade_palette(bytes((b, g, r, 255)) * 256, settings=doc, surface="outside")
+        palette = match_outside_palette(palette, rgb, [1] * 256, doc, mask=bytes((b, g, r, 255)) * 256)
+        rgb = (palette[2], palette[1], palette[0])
+        target = field_prediction
+    return dict(predicted=predicted_on_screen(rgb, doc["preview_rig"], settings=doc, surface=surface), target=target,
                 colour_map=rgb, source=reference["source"], map=reference["map"],
                 scope="PREDICTED mean only: map × light rig × calibrated screen factor. "
-                      "Wear, bump detail, tints, edge shade and stripe contrast are outside this model. "
-                      "Only outdoor day/night are calibrated; other classes and conditions are extrapolated.")
+                      "Wear, bump detail and stripe contrast are outside this model. Outside swatches use the unshaded mean; "
+                      "builds also bound linked outside tints. Outside response is calibrated from one day strip; "
+                      "FIELD is calibrated for outdoor day/night; other classes and conditions, and outside response beyond its day reference, are extrapolated.")
 
 
 def looks_like_normal_palette(palette):
@@ -671,7 +764,22 @@ def modern_field_scene(span, *, outer_index=0, settings=None):
     for texture in rec["embedded_textures"]:
         for name in texture.get("mapped_material_names") or ():
             by_material[name] = texture
-    field_mean = None
+    field_rgb = None
+    outside_linked = False
+    # Material-only fields need their target before processing the outside map.
+    if COLOR_MAP_MATERIAL not in by_material:
+        for material in rec["materials"]:
+            if material["name"] != COLOR_MAP_MATERIAL or material.get("texture_index") is not None:
+                continue
+            base = material["record_offset"]
+            for field in (0x14, 0x18):
+                word = struct.unpack_from("<I", out, base + field)[0]
+                new = regrade_colour_word(word, doc)
+                if field == 0x18:
+                    field_rgb = ((new >> 16) & 255, (new >> 8) & 255, new & 255)
+                if new != word:
+                    struct.pack_into("<I", out, base + field, new)
+                    receipt["materials"].append(dict(material=material["name"], field=hex(field), before=hex(word), after=hex(new)))
     done_palettes = set()
     for name in (COLOR_MAP_MATERIAL, OUTSIDE_MATERIAL) + END_ZONE_MATERIALS:
         texture = by_material.get(name)
@@ -686,29 +794,19 @@ def modern_field_scene(span, *, outer_index=0, settings=None):
         surface = "turf" if name == COLOR_MAP_MATERIAL else "outside" if name == OUTSIDE_MATERIAL else "endzones"
         mean = _green_mean_value(out, system, texture, before)
         graded = regrade_palette(before, settings=doc, surface=surface, mean_value=mean)
-        gain = 1.0
+        counts = _palette_counts(out, system, texture)
         if name == COLOR_MAP_MATERIAL:
-            field_mean = _green_mean_value(out, system, texture, graded)
-        elif name == OUTSIDE_MATERIAL and field_mean:
-            # Lift the outside grass to the field's mean so the sidelines match the turf.
-            outside_mean = _green_mean_value(out, system, texture, graded)
-            if outside_mean:
-                gain = 1 + (min(2.5, max(1.0, field_mean / outside_mean)) - 1) * control_value(doc, "outside.match")
-        after = regrade_palette(before, gain=gain, settings=doc, surface=surface, mean_value=mean)
+            # Measure blue-green fields too, without changing their C4 grading mask.
+            field_rgb = _palette_mean(graded, counts, mask=before, hue_max=180)
+        after = match_outside_palette(graded, field_rgb, counts, doc, mask=before) if name == OUTSIDE_MATERIAL else graded
         out[at:at + 1024] = after
-        receipt["palettes"].append(dict(material=name, offset=at, gain=round(gain, 3), changed=sum(a != b for a, b in zip(before, after))))
-    if COLOR_MAP_MATERIAL not in by_material:
-        # Turf stadiums draw the field from the material colour words instead.
-        for material in rec["materials"]:
-            if material["name"] != COLOR_MAP_MATERIAL or material.get("texture_index") is not None:
-                continue
-            base = material["record_offset"]
-            for field in (0x14, 0x18):
-                word = struct.unpack_from("<I", out, base + field)[0]
-                new = regrade_colour_word(word, doc)
-                if new != word:
-                    struct.pack_into("<I", out, base + field, new)
-                    receipt["materials"].append(dict(material=material["name"], field=hex(field), before=hex(word), after=hex(new)))
+        receipt["palettes"].append(dict(material=name, offset=at, changed=sum(a != b for a, b in zip(before, after))))
+        if name == OUTSIDE_MATERIAL:
+            outside_mean = _palette_mean(graded, counts, mask=before, hue_max=180)
+            outside_linked = bool(field_rgb is not None and outside_mean and max(outside_mean) and outside_link_amount(doc))
+            receipt["outside"] = dict(link_amount=outside_link_amount(doc) if outside_linked else 0, field_rgb=list(field_rgb) if field_rgb is not None else None,
+                                      before_rgb=list(_palette_mean(graded, counts, mask=before, hue_max=180) or ()),
+                                      after_rgb=list(_palette_mean(after, counts, mask=before, hue_max=180) or ()))
     for shape in rec["shapes"]:
         if shape["name"] not in GRASS_SHAPES + OVERLAY_SHAPES:
             continue
@@ -724,6 +822,8 @@ def modern_field_scene(span, *, outer_index=0, settings=None):
                 # The outside grass darkens toward the edges through grey vertex colours; keep less of the falloff.
                 lifted = 255 - round((255 - r) * control_value(doc, "outside.falloff"))
                 new = (lifted, lifted, lifted, 255)
+            if shape["name"] == "Outside_grass" and outside_linked:
+                new = linked_outside_tint((r, g, b, a), doc)
             if new is not None and new != (r, g, b, a):
                 out[at:at + 4] = bytes((new[2], new[1], new[0], new[3]))
                 receipt["vertex_tints"] += 1
@@ -904,7 +1004,7 @@ def read_image_receipt(source):
     doc = json.loads(path.read_text(encoding="utf-8"))
     require(type(doc) is dict and doc.get("schema") == RECEIPT_SCHEMA, "Unsupported colour & lighting receipt")
     require(type(doc.get("settings")) is dict and doc.get("settings_sha256") == settings_id(doc["settings"]),
-            "Colour & lighting receipt settings changed")
+            "Colour & lighting receipt uses a different recipe or settings. Choose the original retail source.")
     return doc
 
 
@@ -939,7 +1039,7 @@ def image_status(source, *, receipt=_AUTO_RECEIPT):
     if receipt is not None:
         require(type(receipt) is dict and receipt.get("schema") == RECEIPT_SCHEMA and type(receipt.get("settings")) is dict
                 and receipt.get("settings_sha256") == settings_id(receipt["settings"]),
-                "Colour & lighting receipt settings changed")
+                "Colour & lighting receipt uses a different recipe or settings. Choose the original retail source.")
         require(type(receipt.get("bundle_pins")) is dict and set(receipt["bundle_pins"]) == {p["name"] for p in pins["bundles"]},
                 "Colour & lighting receipt does not cover every bundle")
     with _outer_image()(source) as archive:

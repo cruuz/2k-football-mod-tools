@@ -70,6 +70,33 @@ class ColourControlsQtTests(unittest.TestCase):
         self.assertEqual(w.settings(), mc.normalize_settings())
         self.assertIn('Option is Off', w.state_label.text())
 
+    def test_outside_swatch_follows_field_and_unlinked_saved_colour(self):
+        w = self.control()
+        row = w.rows['outside.saturation']
+        for rig in mc.MODERN_RIGS:
+            w.rig_combo.setCurrentIndex(w.rig_combo.findData(rig))
+            self.assertEqual(row['target'].text(), w.rows['turf.saturation']['prediction'].text())
+            expected = mc.preview(w.settings(), surface='outside')['predicted']
+            self.assertEqual(row['prediction'].text(), ', '.join(map(str, expected)))
+        before = row['prediction'].text()
+        w.rows['turf.value_lift']['spin'].setValue(1.5)
+        self.assertNotEqual(row['prediction'].text(), before)
+        w.links['outside'].setChecked(False)
+        self.assertTrue(row['spin'].isEnabled())
+        self.assertFalse(w.rows['outside.match']['spin'].isEnabled())
+        row['spin'].setValue(.6)
+        custom = row['prediction'].text()
+        w.rows['turf.value_lift']['spin'].setValue(2.8)
+        self.assertEqual(row['prediction'].text(), custom)
+        w.links['outside'].setChecked(True)
+        self.assertNotEqual(row['prediction'].text(), custom)
+        w.links['outside'].setChecked(False)
+        self.assertEqual(row['prediction'].text(), custom)
+        w.broadcast_button.click()
+        self.assertTrue(w.links['outside'].isChecked())
+        self.assertFalse(mc.is_custom(w.settings()))
+
+
     def panel(self):
         p = BuildPanel()
         self.addCleanup(p.deleteLater)
