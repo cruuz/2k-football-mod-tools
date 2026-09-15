@@ -44,6 +44,21 @@ class BuildTests(FacadeFixture):
                 {"formations": [{"index": 0, "name": "Synthetic formation"}], "plays": []})
         self.backend.load = load
 
+    def test_situation_only_build_preserves_archives_and_reparses_both_patches(self):
+        from mod_editor.apf_studio.situation_masks import export_build
+        from mod_editor.core.apf2k8_situation_mask import canonical_payload,decode_data
+        import hashlib
+        before={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in self.index.parent.iterdir() if p.is_file()}
+        self.stage(dict(kind="situation_masks_enabled",enabled=True))
+        self.stage(dict(kind="situation_mask",book="O-ManBlock",key=8,formation=0,exclude=True))
+        receipt=playcalling_build.finalize(self.index,self.facade.session.modifications[0],backend=self.facade._playcalling.backend)
+        self.assertEqual(receipt["resources"],[])
+        self.assertEqual(len(receipt["situation_masks"]["patches"]),2)
+        for patch in receipt["situation_masks"]["patches"]:
+            canonical_payload((self.index.parent/patch["file"]).read_bytes())
+        self.assertEqual(decode_data((self.index.parent/"situation-masks.bin").read_bytes())["O-ManBlock"][8],[0])
+        self.assertEqual(before,{name:hashlib.sha256((self.index.parent/name).read_bytes()).hexdigest() for name in before})
+
     def test_twenty_four_clones_insert_once_then_name_bound_rating_readback(self):
         donor_before = identity.read_resource(self.index, identity.filename_id("O-ManBlock"), "spb", "SPLB")[3]
         plan = self.facade.playcalling_plan("offense")

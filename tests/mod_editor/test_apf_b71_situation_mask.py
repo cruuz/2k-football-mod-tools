@@ -17,6 +17,7 @@ class DataTests(unittest.TestCase):
         data=m.encode_data(policy())
         self.assertEqual(m.decode_data(data),policy())
         self.assertEqual(len(data),13824)
+        self.assertEqual(hashlib.sha256(data).hexdigest(),"ba2f34bcd2a76502f51a2e0e5103675a7b00e7601208c6c8b3e23270ffce0cca")
         self.assertEqual(data[16:44],b'O-ManBlock'.ljust(28,b'\0'))
         expected=struct.pack('>4I',0x41504634,1,1,268)+b'O-ManBlock'.ljust(28,b'\0')+bytes(8*20)+struct.pack('>5I',1<<14,0,0,0,0)+bytes(3*20)
         self.assertEqual(data,expected.ljust(13824,b'\0'))

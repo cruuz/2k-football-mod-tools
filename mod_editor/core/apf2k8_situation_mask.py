@@ -56,6 +56,8 @@ def situation_key(situation):
 def canonical_policies(policies):
     if not isinstance(policies, dict) or len(policies) > MAX_BOOKS:
         raise ValidationError(f'Choose at most {MAX_BOOKS} named books for the situation patch')
+    if any(not isinstance(name, str) for name in policies):
+        raise ValidationError("Situation profiles need named books")
     result = {}
     for name, rows in sorted(policies.items()):
         if not isinstance(name, str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9 -]{0,26}', name):
@@ -210,6 +212,7 @@ def _leaf(start, hook, profile, category):
         a.bits(25, 25, 28, 4, 31)
         a.li(26, 0)
         for pass_number in (0, 1):
+            if pass_number == 1: a.li(19, 0)  # only remove categories actually emptied by this mask
             a.addi(27, 14, 0x70); a.li(28, 176)
             a.label(f'record{pass_number}')
             a.d(40, 3, 27, 0); a.bits(3, 3, 0, 22, 31)
@@ -238,10 +241,12 @@ def _leaf(start, hook, profile, category):
                 a.bits(30, 3, 29, 3, 29); e(_x(3, 16, 3, 23))
                 a.bits(30, 4, 0, 27, 31); a.li(5, 1); e(_x(5, 5, 4, 24))
                 e(_x(3, 3, 5, 28)); a.cmpi(3, 0); a.jump('keep', 'eq')
+                a.li(19, 1)
             a.label(f'next{pass_number}')
             a.addi(27, 27, 176); a.addi(28, 28, -1); a.cmpi(28, 0)
             a.jump(f'record{pass_number}', 'ne')
             a.label(f'end{pass_number}')
+        a.cmpi(19, 0); a.jump('keep', 'eq')
         a.jump('next_candidate')
     else:
         a.addi(3, 15, 0x244); e(_x(4, 3, 24, 40))
@@ -405,7 +410,7 @@ def filter_categories(book, master, candidates, excluded):
         members = [r for r in records if (not primary or r.category_index == category)
                    and int.from_bytes(r.trailer[4:], 'big') & (1 << category)
                    and not struct.unpack_from('>I', master, 0x24C + r.formation_index*184)[0] & 1]
-        if any(r.formation_index not in excluded for r in members):
+        if not members or any(r.formation_index not in excluded for r in members):
             result.append((category, weight))
     return (tuple(result) or candidates), bool(candidates and not result)
 
@@ -418,7 +423,8 @@ def filter_formations(candidates, excluded):
 def audit_reservations(image):
     """Pinned image, PE/XEX-mapped section padding and direct-reference audit.
 
-    This checks aligned absolute pointers and relative branches. It does not
+    This inventories aligned address-like words and checks relative branches
+    and nearby native address construction. Data words are not typed pointers. It does not
     claim to disprove arbitrary computed addresses. The reservations lie past
     the declared virtual data/string contents, and past executable contents.
     """
@@ -445,32 +451,20 @@ def audit_reservations(image):
             raise ValidationError('Draw receipt padding is not writable')
         if name == '.text' and not flags&0x20000000:
             raise ValidationError('Situation code padding is not executable')
-    # An arbitrary word in .rdata includes compressed assets and floats. Only
-    # PE relocation entries identify absolute pointer fields. Keep the raw
-    # collisions in the receipt instead of calling asset words pointers.
-    relocation_sites = set()
-    types = set()
+    # This fixed-address XEX retains an opaque .reloc payload, not decoded
+    # IMAGE_BASE_RELOCATION blocks. Do not label arbitrary compressed/data
+    # words absolute pointers. Enumerate all numeric collisions for review and
+    # separately reject executable direct branches and address construction.
     reloc_start, reloc_size, _, _ = sections['.reloc']
-    at, end = reloc_start-IMAGE_BASE, reloc_start-IMAGE_BASE+reloc_size
-    while at < end:
-        page, size = struct.unpack_from('<II', image, at)
-        if size < 8 or size % 2 or at+size > end:
-            raise ValidationError('The pinned PE relocation block is malformed')
-        for cursor in range(at+8,at+size,2):
-            value = struct.unpack_from('<H',image,cursor)[0]
-            kind, offset = value >> 12, value & 0xFFF
-            types.add(kind)
-            if kind == 3: relocation_sites.add(IMAGE_BASE+page+offset)
-            elif kind != 0: raise ValidationError(f'Unreviewed PE relocation type {kind}')
-        at += size
+    reloc = image[reloc_start-IMAGE_BASE:reloc_start-IMAGE_BASE+reloc_size]
     direct, collisions = [], []
     text_start,text_size,_,_=sections['.text']
     words = memoryview(image)
     for offset,(word,) in enumerate(struct.iter_unpack('>I',words)):
         pc=IMAGE_BASE+offset*4
         if any(lo<=word<hi for lo,hi,_ in ranges):
-            if pc in relocation_sites:direct.append((pc,word,'relocated pointer'))
-            else:collisions.append((pc,word))
+            collisions.append((pc,word))
+            if text_start<=pc<text_start+text_size:direct.append((pc,word,'executable literal'))
         if text_start<=pc<text_start+text_size:
             if word>>26 in (16,18) and not word&2:
                 width=26 if word>>26==18 else 16
@@ -493,7 +487,8 @@ def audit_reservations(image):
                     if op in (14,15,32,34,40,42) and rt==register:break
     if direct:raise ValidationError(f'Retail references reach situation storage: {direct[:8]}')
     return {'profile':profile.name,'sections':sections,'ranges':ranges,
-            'relocated_absolute_references':0,'direct_branch_references':0,
-            'lis_displacement_references':0,'relocation_sites_checked':len(relocation_sites),
-            'relocation_types':sorted(types),'untyped_word_collisions':collisions,
+            'direct_branch_references':0,'executable_literal_references':0,
+            'lis_displacement_references':0,'untyped_word_collisions':collisions,
+            'relocation_status':'Opaque XEX section; not claimed as decoded PE relocation blocks',
+            'relocation_sha256':hashlib.sha256(reloc).hexdigest(),
             'computed_address_limit':'No claim about arbitrary computed addresses; owned ranges are mapped section padding beyond declared content.'}

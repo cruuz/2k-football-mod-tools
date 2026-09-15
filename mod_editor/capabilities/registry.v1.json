@@ -2632,7 +2632,9 @@
         "docs/research/apf_b71_apf4.md",
         "tests/mod_editor/test_apf_b71_situation_mask.py",
         "tests/mod_editor/test_apf_b71_situation_mask_native.py",
-        "tests/mod_editor/test_apf_b71_situation_mask_qt.py"
+        "tests/mod_editor/test_apf_b71_situation_mask_qt.py",
+        "tests/mod_editor/test_apf_b71_situation_mask_abi.py",
+        "tests/mod_editor/test_apf_b71_situation_mask_install.py"
       ],
       "game": "apf2k8_xbox360",
       "gui": {

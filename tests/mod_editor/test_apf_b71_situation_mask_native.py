@@ -25,6 +25,58 @@ class MaskNativeTests(previous.NativePlaycallTests):
         install(m, policies or {})
         return m
 
+    def test_apf4_preview_filters_match_native_draw_buffers(self):
+        from mod_editor.core import apf2k8_playcall_model as model
+        situation=model.Situation(3,8,50,1,900,0,3)
+        comparisons=0
+        for updated in (False,True):
+            for excluded in ([14],[2,14,24],sorted({r.formation_index for r in self.books[130].records if r.populated and r.formation_index<151})):
+                policies={'O-ManBlock':[[] for _ in range(12)]};policies['O-ManBlock'][8]=excluded
+                machine=self.machine(130,updated,policies=policies,down=3,yards=8,goal_yards=50,run_share=0)
+                for category in (True,False):
+                    observed=[]
+                    def capture(z):
+                        count=z.reg(4);sp=z.reg(1)
+                        pointer_offset,base,stride=(0x110,0x44,16) if category else (0xF0,0x244,184)
+                        weights=struct.unpack('>'+str(count)+'f',z.cpu.mem_read(z.reg(3),4*count))
+                        observed.extend(((z.get(sp+pointer_offset+i*4)-MASTER-base)//stride,w) for i,w in enumerate(weights))
+                    machine.observers[machine.va(0x84863388)]=capture
+                    if category:
+                        machine.call(machine.va(0x8486AEB0),MANAGER,10,0,bound=2000000)
+                        expected,_=mask.filter_categories(self.books[130].body,self.master,model.category_weights(self.books[130].body,self.master,10,situation,run_share=0),excluded)
+                    else:
+                        machine.call(machine.va(0x848693F8),MANAGER,14,MASTER+0x44+6*16,0,0,bound=2000000)
+                        expected,_=mask.filter_formations(model.formation_weights(self.books[130].body,self.master,6,situation,run_share=0),excluded)
+                    self.assertEqual(tuple(observed),expected)
+                    comparisons+=1
+        print('PROVED mask preview/native candidate and weight buffers:',comparisons)
+
+    def test_apf4_unaffected_call_bytes_and_rng_are_identical(self):
+        from tools.apf_playcall_research_probe import TEAM
+        for updated in (False,True):
+            for down,yards,goal in ((1,10,50),(2,2,20),(3,3,50),(3,8,50),(4,1,30),(1,1,1)):
+                for policies in ({},{'AnotherBook':[[14] for _ in range(12)]}):
+                    original=previous.NativePlaycallTests.machine(self,130,updated,down=down,yards=yards,goal_yards=goal)
+                    changed=self.machine(130,updated,policies=policies,down=down,yards=yards,goal_yards=goal)
+                    counts=[]
+                    for machine in (original,changed):
+                        count=[0,0]
+                        for i,address in enumerate((0x84B3E858,0x84B3E8B8)):
+                            address+=0xFD0 if updated else 0
+                            callback=machine.boundaries[address]
+                            def counted(z,i=i,callback=callback,count=count):
+                                count[i]+=1;return callback(z)
+                            machine.boundaries[address]=counted
+                        machine.call(machine.va(0x8486CE88),MANAGER,OUTPUT,stop=machine.va(0x8486D0CC),bound=2000000)
+                        counts.append(count)
+                    self.assertEqual(counts[0],counts[1])
+                    for address,size in ((OUTPUT,32),(TEAM,0x100),(BOOK,0x7E20)):
+                        self.assertEqual(bytes(original.cpu.mem_read(address,size)),bytes(changed.cpu.mem_read(address,size)))
+                    self.assertEqual([original.reg(i) for i in range(32)],[changed.reg(i) for i in range(32)])
+                    self.assertEqual(original.cpu.reg_read(original.r.UC_PPC_REG_CR),changed.cpu.reg_read(changed.r.UC_PPC_REG_CR))
+                    self.assertEqual(bytes(changed.cpu.mem_read(mask.RECEIPT_START,48)),bytes(48))
+        print('PROVED 24 unfiltered call comparisons: output/team/book bytes, registers/CR and RNG consumption identical')
+
     def test_apf4_elsewhere_presence_name_isolation_and_normalization(self):
         for updated in (False,True):
             policies={'O-ManBlock':[[] for _ in range(12)]};policies['O-ManBlock'][8]=[14]
@@ -65,6 +117,9 @@ class MaskNativeTests(previous.NativePlaycallTests):
                 self.assertEqual(patched[cursor:start],image[cursor:start]);cursor=end
             self.assertEqual(patched[cursor:],image[cursor:])
             import hashlib
+            expected={'base':'de19823f326573ffd8a6279e79afc981a9003f304ad572d5aee1ed463df504a5',
+                      'tu_1_1':'fb9edef7ddb700b95c6fa0f07dce530bf416e664d4dcdb4046d14fe831aa23aa'}
+            self.assertEqual(hashlib.sha256(patched).hexdigest(),expected[patch.profile.name])
             evidence.append({'profile':patch.profile.name,'patched_flat_sha256':hashlib.sha256(patched).hexdigest(),
                              'receipt':patch.receipt,'audit':audit})
         import os
@@ -111,8 +166,8 @@ class MaskNativeTests(previous.NativePlaycallTests):
                     for fraction in (.01,.25,.5,.75,.99):
                         m=self.machine(130,updated,policies=policies,down=down,yards=yards,goal_yards=50,run_share=0,fraction=fraction)
                         traces=[]
-                        for hook in mask.HOOKS['tu_1_1' if updated else 'base']:
-                            m.observers[hook]=lambda z: traces.append({'pc':z.cpu.reg_read(z.r.UC_PPC_REG_PC),'down':z.get(STATE+4),'ball':z.get(STATE+0x18),'target':z.get(STATE+0x28),'book':bytes(z.cpu.mem_read(BOOK+0x30,56)).decode('utf-16-be').rstrip('\0')})
+                        for hook in (*mask.HOOKS['tu_1_1' if updated else 'base'],m.va(0x848693F8)):
+                            m.observers[hook]=lambda z: traces.append({'pc':z.cpu.reg_read(z.r.UC_PPC_REG_PC),'gprs_3_through_7':[z.reg(i) for i in range(3,8)],'state_pointer':z.get(GAME+(0x30 if z.updated else 0)+0x6C),'down':z.get(STATE+4),'ball':z.get(STATE+0x18),'target':z.get(STATE+0x28),'book':bytes(z.cpu.mem_read(BOOK+0x30,56)).decode('utf-16-be').rstrip('\0')})
                         m.call(m.va(0x8486CE88),MANAGER,OUTPUT,stop=m.va(0x8486D0CC),bound=2000000)
                         call=tuple((m.get(OUTPUT+d)-MASTER-off)//stride for d,off,stride in ((0,0x44,16),(4,0x244,184),(12,0x80C4,100)))
                         stats=[struct.unpack('>6I',m.cpu.mem_read(mask.RECEIPT_START+i*24,24)) for i in range(2)]

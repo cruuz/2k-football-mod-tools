@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/noah/2k-worktrees/astra-b71-apf4/mod_editor/capabilities/validate_registry.py", line 337, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-apf4/mod_editor/capabilities/validate_registry.py", line 327, in main
+    data = load_and_validate(args.registry, check_files=not args.skip_file_checks)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-apf4/mod_editor/capabilities/validate_registry.py", line 314, in load_and_validate
+    _require(raw == canonical, "registry JSON is not canonical sorted pretty JSON")
+  File "/home/noah/2k-worktrees/astra-b71-apf4/mod_editor/capabilities/validate_registry.py", line 107, in _require
+    raise RegistryError(message)
+RegistryError: registry JSON is not canonical sorted pretty JSON

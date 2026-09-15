@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-apf4/reports/b71_apf4/audit_delivery.py", line 30, in <module>
+    assert not any(re.search(r'\b' + re.escape(name) + r'\b', body, re.IGNORECASE) for name in attributions), path
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: docs/mod_editor/apf2k8_mod_studio_changelog.md

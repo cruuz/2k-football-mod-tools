@@ -6,6 +6,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (QCheckBox,QComboBox,QFileDialog,QFormLayout,QGroupBox,
     QHBoxLayout,QLabel,QMessageBox,QPushButton,QSpinBox,QTableWidget,QTableWidgetItem,QVBoxLayout)
 from mod_editor.core.apf2k8_situation_mask import KEY_LABELS
+from mod_editor.core.errors import ValidationError
 
 
 class SituationMaskPanel(QGroupBox):
@@ -18,7 +19,8 @@ class SituationMaskPanel(QGroupBox):
         root.addWidget(self.enabled)
         label=QLabel('Each bucket uses actual down and distance. Clock, score and field position can change the native personnel request within a bucket. '
                      'These exclusions apply only to ordinary CPU offense calls. If exclusions empty a draw, the game uses its original draw and records the fallback. '
-                     'Exported builds include BASE and TU 1.1 patches; install the matching patch to enable them in game.')
+                     'Exported builds include BASE and TU 1.1 patches; install the matching patch to enable them in game. '
+                     'Undo or disabling this project option does not remove an installed patch. Remove it or install an empty mask, then restart the game.')
         label.setWordWrap(True);root.addWidget(label)
         self.bucket=QComboBox();self.bucket.addItems(KEY_LABELS);root.addWidget(self.bucket)
         self.request=QLabel();self.request.setWordWrap(True);root.addWidget(self.request)
@@ -151,7 +153,7 @@ class SituationMaskPanel(QGroupBox):
                 _atomic_bytes(path,prepared['payload']);canonical_payload(path.read_bytes())
                 _atomic_bytes(path.with_suffix('.receipt.json'),(json.dumps(prepared['receipt'],indent=2)+'\n').encode())
                 self.status.setText(f'Exported {path.name}. Install it for {profile}; gameplay UNWITNESSED.')
-            except (OSError,ValueError) as exc:self.status.setText(f'Could not export situation patch: {exc}')
+            except (OSError,ValueError,ValidationError) as exc:self.status.setText(f'Could not export situation patch: {exc}')
         self.owner._task('Prepare situation patch',lambda p:self.owner.facade.prepare_situation_patch(profile),done)
 
     def install_patch(self):

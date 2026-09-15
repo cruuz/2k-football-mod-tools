@@ -156,6 +156,12 @@ class AbiTests(unittest.TestCase):
                     if excluded:
                         self.assertEqual(machine.get(receipt,4),8)
                     if len(excluded)==4:self.assertEqual(machine.get(receipt+16,4),1)
+    def test_unrelated_mask_keeps_original_empty_category(self):
+        for profile in m.PROFILES:
+            machine=MaskMachine(profile,True,[14])
+            machine.put(machine.master+0x244+30*184+8,1,4)
+            self.assertEqual(machine.run(),[3,6])
+
     def test_special_phases_are_byte_identical(self):
         for profile in m.PROFILES:
             for category in (False,True):

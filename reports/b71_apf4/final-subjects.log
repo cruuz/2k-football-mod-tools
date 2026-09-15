@@ -1,0 +1,15 @@
+test_apf_b71_situation_mask.py 0
+test_apf_playcalling_editor_facade.py 0
+test_apf_b71_situation_mask_qt.py 0
+test_apf_b71_situation_mask_install.py 0
+test_apf_b67_xenia_patch.py 0
+test_apf_b71_situation_mask_abi.py 0
+test_apf_b69_launch_patches.py 0
+test_apf_playcalling_editor_patches.py 0
+test_apf_playcalling_editor_qt.py 0
+test_product_catalog.py 0
+test_apf_playcall_patch.py 0
+test_capability_registry_module_commands.py 0
+test_phase1_packaging.py 0
+test_provider_integrity.py 0
+Failures: []
