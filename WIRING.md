@@ -79,3 +79,12 @@ Private evidence hydration repeats APF-3's 75 missing inherited files with
 exact prior SHA-256 checks; no copy enters the implementation commit. See
 `reports/b71_apf5/hydration.json`. Test/release results and proof limits are in
 `ASTRA_REPORT.md`. No manual integration patch is outstanding.
+
+APF-5 follow-up: `mod_editor/core/apf2k8_xex.py:xenia_content_roots` also reads
+`xenia-edge.config.toml`, preserving custom Edge title-update storage discovery.
+Its existing content-root regression now covers Canary and Edge. Repin was
+rerun and required zero pin updates.
+
+The existing pass-fetch cancellation regression now snapshots TOML files before
+and after cancellation. Configuring Xenia intentionally creates its SDL config;
+cancellation still must preserve every existing file and add no patch.

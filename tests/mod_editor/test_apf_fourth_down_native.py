@@ -32,6 +32,16 @@ class FourthDownNativeTests(unittest.TestCase):
             m = self.machine(updated)
             doc = f.PatchDocument(f.PROFILES[int(updated)])
             receipt = f.verify_image(m.image, doc)
+            data=b''.join(value.to_bytes(4,'big') for _,value in doc.words[:10])
+            for hi,lo,upper,base_load,tu_load,offset in f.SITES:
+                load=tu_load if updated else base_load
+                displacement=load&0xFFFF
+                if displacement&0x8000:displacement-=0x10000
+                original=((upper&0xFFFF)<<16)+displacement
+                size=8 if load>>26==50 else 4
+                self.assertEqual(data[offset:offset+size],m.image[original-IMAGE_BASE:original-IMAGE_BASE+size])
+            self.assertEqual(data[4:8],struct.pack('>f',4572.))
+            receipt['retail_literal_bytes_equal']=True
             # No aligned absolute pointer to either reservation in the entire
             # reconstructed image. This cannot rule out computed references.
             pointers = [i*4+IMAGE_BASE for i, (word,) in enumerate(struct.iter_unpack('>I', m.image))

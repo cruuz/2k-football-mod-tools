@@ -21886,7 +21886,7 @@ class ApfStudioMainWindow(QMainWindow):
 
     def _fourth_down_triggers(self) -> None:
         from .fourth_down_qt import FourthDownDialog
-        FourthDownDialog(self.facade.launcher, self).exec()
+        FourthDownDialog(self.facade.launcher, self).exec_()
 
     def _configure_xenia(self) -> None:
         selected, _filter = QFileDialog.getOpenFileName(

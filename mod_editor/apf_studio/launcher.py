@@ -723,6 +723,10 @@ class XeniaLauncher:
         except OSError as exc:
             raise LaunchError(f"Xenia could not be started: {exc}") from exc
         patch_note = self.pass_fetch_status()["message"]
+        for kind in ("curves", "fourth_down"):
+            status = self.pass_fetch_status(kind=kind)
+            if status["installed"]:
+                patch_note += "\n" + status["message"]
         patch_note += f" Launch patch directory: {storage / 'patches'}. Check the Xenia log for application to the matching module."
         return LaunchReceipt(process.pid, log_path, xenia, game, patch_note)
 

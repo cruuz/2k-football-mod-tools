@@ -6,7 +6,7 @@ import tempfile
 import unittest
 
 try:
-    from PySide6.QtWidgets import QApplication
+    from PyQt5.QtWidgets import QApplication
     from mod_editor.apf_studio.fourth_down_qt import FourthDownDialog
 except ImportError:
     QApplication = None
@@ -15,7 +15,7 @@ from mod_editor.apf_studio.launcher import XeniaSettings, XeniaLauncher
 from mod_editor.core import apf2k8_fourth_down as f
 
 
-@unittest.skipIf(QApplication is None, 'Optional PySide6 is absent')
+@unittest.skipIf(QApplication is None, 'Optional PyQt5 is absent')
 class FourthDownQtTests(unittest.TestCase):
     def test_defaults_preview_and_reopen(self):
         app=QApplication.instance() or QApplication([])

@@ -18,6 +18,7 @@ from mod_editor.apf_studio.launcher import XeniaSettings, XeniaLauncher
 
 class FourthDownTests(unittest.TestCase):
     def test_exact_patch_words_and_disabled_default(self):
+        from mod_editor.core import apf2k8_playcall_patch as fetch, apf2k8_playcall_curves_patch as curves
         # Authored bytes, not retail fixtures. Deliberate changes require review.
         expected = {
             'base': '7577de81d3448e93089cf893c13ed269aa66ffe9bb474003d2be01cae54b2c33',
@@ -33,6 +34,10 @@ class FourthDownTests(unittest.TestCase):
             self.assertEqual(digest, expected[profile.name])
             self.assertEqual(len(f.trampoline(profile)), 40)
             self.assertNotIn(0x84D0E000, dict(doc.words))
+            other = (fetch.PlaycallPatch(profile,fetch.assemble_cave(profile.hook),{}),
+                     curves.PatchDocument(profile,curves.OFFENSE_CURVE,curves.DEFENSE_CURVE))
+            for patch_document in other:
+                self.assertFalse(set(dict(doc.words)) & set(dict(patch_document.words)))
 
     def test_invalid_parameters_and_foreign_payloads_refused(self):
         for value in (float('nan'), float('inf'), True, -1, 11, '2'):
@@ -69,7 +74,8 @@ class FourthDownTests(unittest.TestCase):
             self.assertEqual(f.parse_payload((settings.patches_folder/f.FILENAME).read_bytes()), doc)
             game=root/'game';game.mkdir();(game/'default.xex').write_bytes(b'fake')
             with patch('mod_editor.apf_studio.launcher.subprocess.Popen', return_value=SimpleNamespace(pid=12)) as popen:
-                launcher.launch(game)
+                receipt=launcher.launch(game)
+                self.assertIn('Fourth-down patch installed',receipt.patch_status)
                 args=popen.call_args.args[0]
                 storage=Path(next(a.split('=',1)[1] for a in args if a.startswith('--storage_root=')))
                 self.assertEqual((storage/'patches'/f.FILENAME).read_bytes(),path.read_bytes())

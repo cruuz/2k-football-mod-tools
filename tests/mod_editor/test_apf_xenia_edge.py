@@ -112,6 +112,18 @@ class EdgeTests(unittest.TestCase):
         start.assert_not_called()
         self.assertEqual(settings.emulator_config.read_bytes(), b'invalid!')
 
+    def test_failed_configuration_preserves_previous_runtime(self):
+        settings=XeniaSettings(self.root/'settings.json')
+        settings.configure(self.executable('xenia_canary'))
+        before=settings.config_path.read_bytes()
+        broken=self.root/'bad.toml';broken.write_bytes(b'invalid!')
+        with self.assertRaises(LaunchError):
+            settings.configure(self.executable('xenia_edge'),xenia_config=broken)
+        self.assertEqual(settings.runtime,'canary')
+        self.assertEqual(settings.xenia_path.name,'xenia_canary')
+        self.assertEqual(settings.config_path.read_bytes(),before)
+        self.assertEqual(broken.read_bytes(),b'invalid!')
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

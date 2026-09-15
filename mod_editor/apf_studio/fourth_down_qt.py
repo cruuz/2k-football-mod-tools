@@ -2,7 +2,7 @@
 from pathlib import Path
 import tempfile
 
-from PySide6.QtWidgets import (QCheckBox, QComboBox, QDialog, QDialogButtonBox, QDoubleSpinBox,
+from PyQt5.QtWidgets import (QCheckBox, QComboBox, QDialog, QDialogButtonBox, QDoubleSpinBox,
                                QFileDialog, QFormLayout, QHBoxLayout, QLabel, QMessageBox,
                                QPushButton, QTableWidget, QTableWidgetItem, QVBoxLayout)
 from mod_editor.core import apf2k8_fourth_down as model
