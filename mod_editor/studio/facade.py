@@ -3427,7 +3427,7 @@ class Nfl2k5StudioFacade:
         independent: bool | None = None, scale: int = 1, scope: str | None = None,
     ) -> object:
         """Compile the selected equipment choice before changing the project."""
-        from mod_editor.core.nfl2k5_equipment_import import stage_equipment_import
+        from mod_editor.core.equipment_staging import stage_equipment_import
 
         progress("Checking equipment artwork and available space", 0, 1)
         with self._lock:
@@ -3444,7 +3444,7 @@ class Nfl2k5StudioFacade:
             if getattr(asset, "kind", None) == "uniform_equipment_texture":
                 # A generic shoe/glove/pad variant was staged into every
                 # package the game samples it from; revert them together.
-                from mod_editor.core.nfl2k5_equipment_import import revert_equipment_import
+                from mod_editor.core.equipment_staging import revert_equipment_import
 
                 reverted = revert_equipment_import(self._require_session(), asset)
                 changed = bool(reverted)
@@ -3455,7 +3455,7 @@ class Nfl2k5StudioFacade:
         progress(f"{asset.label} reverted", 1, 1)
         return StudioOperationResult(
             (f"Reverted {asset.label}"
-             + (f" and the same texture in {extra} other uniform package{'s' if extra != 1 else ''}"
+             + (f" and {extra} related equipment slot{'s' if extra != 1 else ''}"
                 if extra else "") + ".")
             if changed else f"{asset.label} was already original."
         )

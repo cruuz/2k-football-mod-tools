@@ -1,0 +1,51 @@
+{
+  "package_outer": 3734,
+  "package_bytes": 1513424,
+  "tset_chunk": 9,
+  "chunk_offset": 292432,
+  "original_body_bytes": 58432,
+  "grown_body_bytes": 128912,
+  "whole_package_growth": 70480,
+  "grown_package_bytes": 1583904,
+  "entry_record_offset": 44964,
+  "candidate_append_virtual_offset": 6227718144,
+  "candidate_entry_sector": 3040878,
+  "candidate_final_volume": "F",
+  "candidate_added_volume_blocks": 774,
+  "largest_inter_entry_gap": 2032,
+  "tail_free_bytes": 0,
+  "index_fields_roundtrip": true,
+  "offline_disc_roundtrip": false,
+  "native_archive_lookup": false,
+  "growth_conclusion": "UNPROVED. Serialization arithmetic and isolated TSET load do not establish archive/XDVDFS relocation.",
+  "loader_instructions": [
+    {
+      "va": "0x451d0",
+      "instruction": "mov edx, dword ptr [eax + 8]"
+    },
+    {
+      "va": "0x451da",
+      "instruction": "mov esi, dword ptr [eax + 0xc]"
+    },
+    {
+      "va": "0x451ec",
+      "instruction": "mov ecx, dword ptr [eax + 4]"
+    },
+    {
+      "va": "0x451f5",
+      "instruction": "mov ecx, dword ptr [eax + 0x14]"
+    },
+    {
+      "va": "0x45228",
+      "instruction": "add esi, ecx"
+    },
+    {
+      "va": "0x4522a",
+      "instruction": "add esi, edx"
+    },
+    {
+      "va": "0x45235",
+      "instruction": "call 0x48700"
+    }
+  ]
+}

@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (
     QCheckBox, QComboBox, QDialog, QDialogButtonBox, QLabel, QVBoxLayout,
 )
 from mod_editor.core.nfl2k5_equipment_import_intent import (
-    CHOICE_CAPTION, CHOICE_HELP, PALETTE_HELP, SHOE_ROUTE_HELP, LARGER_ART_HELP, supports_own_texture,
+    CHOICE_CAPTION, CHOICE_HELP, PALETTE_HELP, SHOE_ROUTE_HELP, LARGER_ART_HELP, ARM_DIGIT_HELP, supports_own_texture,
 )
 
 
@@ -24,7 +24,14 @@ class EquipmentTextureImportDialog(QDialog):
         target = QLabel(f"{asset.label}\nPNG size: {asset.width} x {asset.height}")
         target.setWordWrap(True)
         layout.addWidget(target)
-        choices, rule = equipment_import_scope(asset.asset_id)
+        if getattr(asset, "family", None) == "arm":
+            arm_note = QLabel(ARM_DIGIT_HELP)
+            arm_note.setObjectName("armDigitPlacementHelp")
+            arm_note.setWordWrap(True)
+            layout.addWidget(arm_note)
+            choices, rule = (("selected-package", "Selected uniform package"),), ARM_DIGIT_HELP
+        else:
+            choices, rule = equipment_import_scope(asset.asset_id)
         layout.addWidget(QLabel("Import applies to:"))
         self.import_scope = QComboBox()
         self.import_scope.setObjectName("equipmentImportScope")
@@ -80,6 +87,24 @@ class EquipmentTextureImportDialog(QDialog):
     @property
     def scope(self) -> str:
         return str(self.import_scope.currentData())
+
+
+class ArmDigitImportDialog(QDialog):
+    """Placement help at the explicit arm-digit import action."""
+    def __init__(self, asset, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Import arm digit artwork")
+        self.setMinimumWidth(460)
+        layout = QVBoxLayout(self)
+        label = QLabel(f"{asset.label}\n\n{ARM_DIGIT_HELP}")
+        label.setObjectName("armDigitPlacementHelp")
+        label.setWordWrap(True)
+        layout.addWidget(label)
+        buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        buttons.button(QDialogButtonBox.Ok).setText("Import artwork")
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+        layout.addWidget(buttons)
 
 
 class EquipmentFitRetryDialog(QDialog):

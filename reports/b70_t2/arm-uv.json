@@ -1,0 +1,1268 @@
+[
+  {
+    "key": "o3c114",
+    "scene": "hi_body",
+    "decoded_sha256": "43c95e150c72805b419e05db3cff6cacc69c56791c349caa2f0456782775893b",
+    "shape_count": 1,
+    "digit_surfaces": [
+      {
+        "material": "NECKROLL123_NUMBER_shoulder_A_L",
+        "material_index": 24,
+        "submesh_index": 50,
+        "vertex_count": 8,
+        "uv_min": [
+          0.02943641039018985,
+          -0.030844335014990065
+        ],
+        "uv_max": [
+          0.217447993112728,
+          0.5561822858086896
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          0.5520892143249512,
+          0.6043403148651123
+        ],
+        "uv_offset": [
+          0.44901275634765625,
+          0.41575297713279724
+        ],
+        "shape_record": 22848
+      },
+      {
+        "material": "NECKROLL123_NUMBER_shoulder_A_M",
+        "material_index": 25,
+        "submesh_index": 51,
+        "vertex_count": 12,
+        "uv_min": [
+          -0.04424175532767549,
+          -0.03313126735883998
+        ],
+        "uv_max": [
+          0.28915489302016795,
+          0.559336135530725
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          0.5520892143249512,
+          0.6043403148651123
+        ],
+        "uv_offset": [
+          0.44901275634765625,
+          0.41575297713279724
+        ],
+        "shape_record": 22848
+      },
+      {
+        "material": "NECKROLL123_NUMBER_shoulder_A_R",
+        "material_index": 26,
+        "submesh_index": 52,
+        "vertex_count": 8,
+        "uv_min": [
+          0.035434449950116687,
+          -0.03034637394011952
+        ],
+        "uv_max": [
+          0.2241199697018601,
+          0.5528808875616467
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          0.5520892143249512,
+          0.6043403148651123
+        ],
+        "uv_offset": [
+          0.44901275634765625,
+          0.41575297713279724
+        ],
+        "shape_record": 22848
+      },
+      {
+        "material": "NECKROLL123_NUMBER_shoulder_B_L",
+        "material_index": 27,
+        "submesh_index": 53,
+        "vertex_count": 12,
+        "uv_min": [
+          0.02943641039018985,
+          -0.18737009954929817
+        ],
+        "uv_max": [
+          0.217447993112728,
+          0.6258805203091096
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          0.5520892143249512,
+          0.6043403148651123
+        ],
+        "uv_offset": [
+          0.44901275634765625,
+          0.41575297713279724
+        ],
+        "shape_record": 22848
+      },
+      {
+        "material": "NECKROLL123_NUMBER_shoulder_B_M",
+        "material_index": 28,
+        "submesh_index": 54,
+        "vertex_count": 18,
+        "uv_min": [
+          -0.05335675364767667,
+          -0.1860422033496434
+        ],
+        "uv_max": [
+          0.2982698913401691,
+          0.6376106280472061
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          0.5520892143249512,
+          0.6043403148651123
+        ],
+        "uv_offset": [
+          0.44901275634765625,
+          0.41575297713279724
+        ],
+        "shape_record": 22848
+      },
+      {
+        "material": "NECKROLL123_NUMBER_shoulder_B_R",
+        "material_index": 29,
+        "submesh_index": 55,
+        "vertex_count": 12,
+        "uv_min": [
+          0.02943641039018985,
+          -0.18737009954929817
+        ],
+        "uv_max": [
+          0.217447993112728,
+          0.6258805203091096
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          0.5520892143249512,
+          0.6043403148651123
+        ],
+        "uv_offset": [
+          0.44901275634765625,
+          0.41575297713279724
+        ],
+        "shape_record": 22848
+      },
+      {
+        "material": "NECKROLL4_NUMBER_shoulder_A_L",
+        "material_index": 37,
+        "submesh_index": 61,
+        "vertex_count": 8,
+        "uv_min": [
+          0.02943641039018985,
+          -0.030844335014990065
+        ],
+        "uv_max": [
+          0.217447993112728,
+          0.5561822858086896
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          0.5520892143249512,
+          0.6043403148651123
+        ],
+        "uv_offset": [
+          0.44901275634765625,
+          0.41575297713279724
+        ],
+        "shape_record": 22848
+      },
+      {
+        "material": "NECKROLL4_NUMBER_shoulder_A_M",
+        "material_index": 38,
+        "submesh_index": 62,
+        "vertex_count": 12,
+        "uv_min": [
+          -0.04424175532767549,
+          -0.03313126735883998
+        ],
+        "uv_max": [
+          0.28915489302016795,
+          0.559336135530725
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          0.5520892143249512,
+          0.6043403148651123
+        ],
+        "uv_offset": [
+          0.44901275634765625,
+          0.41575297713279724
+        ],
+        "shape_record": 22848
+      },
+      {
+        "material": "NECKROLL4_NUMBER_shoulder_A_R",
+        "material_index": 39,
+        "submesh_index": 63,
+        "vertex_count": 8,
+        "uv_min": [
+          0.035434449950116687,
+          -0.03034637394011952
+        ],
+        "uv_max": [
+          0.2241199697018601,
+          0.5528808875616467
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          0.5520892143249512,
+          0.6043403148651123
+        ],
+        "uv_offset": [
+          0.44901275634765625,
+          0.41575297713279724
+        ],
+        "shape_record": 22848
+      },
+      {
+        "material": "NECKROLL4_NUMBER_shoulder_B_L",
+        "material_index": 40,
+        "submesh_index": 64,
+        "vertex_count": 12,
+        "uv_min": [
+          0.02943641039018985,
+          -0.18737009954929817
+        ],
+        "uv_max": [
+          0.217447993112728,
+          0.6258805203091096
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          0.5520892143249512,
+          0.6043403148651123
+        ],
+        "uv_offset": [
+          0.44901275634765625,
+          0.41575297713279724
+        ],
+        "shape_record": 22848
+      },
+      {
+        "material": "NECKROLL4_NUMBER_shoulder_B_M",
+        "material_index": 41,
+        "submesh_index": 65,
+        "vertex_count": 18,
+        "uv_min": [
+          -0.05335675364767667,
+          -0.1860422033496434
+        ],
+        "uv_max": [
+          0.2982698913401691,
+          0.6376106280472061
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          0.5520892143249512,
+          0.6043403148651123
+        ],
+        "uv_offset": [
+          0.44901275634765625,
+          0.41575297713279724
+        ],
+        "shape_record": 22848
+      },
+      {
+        "material": "NECKROLL4_NUMBER_shoulder_B_R",
+        "material_index": 42,
+        "submesh_index": 66,
+        "vertex_count": 12,
+        "uv_min": [
+          0.02943641039018985,
+          -0.18737009954929817
+        ],
+        "uv_max": [
+          0.217447993112728,
+          0.6258805203091096
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          0.5520892143249512,
+          0.6043403148651123
+        ],
+        "uv_offset": [
+          0.44901275634765625,
+          0.41575297713279724
+        ],
+        "shape_record": 22848
+      },
+      {
+        "material": "NUMBER_shoulder_A_L",
+        "material_index": 5,
+        "submesh_index": 72,
+        "vertex_count": 8,
+        "uv_min": [
+          0.02943641039018985,
+          -0.030844335014990065
+        ],
+        "uv_max": [
+          0.217447993112728,
+          0.5561822858086896
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          0.5520892143249512,
+          0.6043403148651123
+        ],
+        "uv_offset": [
+          0.44901275634765625,
+          0.41575297713279724
+        ],
+        "shape_record": 22848
+      },
+      {
+        "material": "NUMBER_shoulder_A_M",
+        "material_index": 6,
+        "submesh_index": 73,
+        "vertex_count": 12,
+        "uv_min": [
+          -0.04424175532767549,
+          -0.03313126735883998
+        ],
+        "uv_max": [
+          0.28915489302016795,
+          0.559336135530725
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          0.5520892143249512,
+          0.6043403148651123
+        ],
+        "uv_offset": [
+          0.44901275634765625,
+          0.41575297713279724
+        ],
+        "shape_record": 22848
+      },
+      {
+        "material": "NUMBER_shoulder_A_R",
+        "material_index": 7,
+        "submesh_index": 74,
+        "vertex_count": 8,
+        "uv_min": [
+          0.035434449950116687,
+          -0.03034637394011952
+        ],
+        "uv_max": [
+          0.2241199697018601,
+          0.5528808875616467
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          0.5520892143249512,
+          0.6043403148651123
+        ],
+        "uv_offset": [
+          0.44901275634765625,
+          0.41575297713279724
+        ],
+        "shape_record": 22848
+      },
+      {
+        "material": "NUMBER_shoulder_B_L",
+        "material_index": 8,
+        "submesh_index": 75,
+        "vertex_count": 12,
+        "uv_min": [
+          0.02943641039018985,
+          -0.18737009954929817
+        ],
+        "uv_max": [
+          0.217447993112728,
+          0.6258805203091096
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          0.5520892143249512,
+          0.6043403148651123
+        ],
+        "uv_offset": [
+          0.44901275634765625,
+          0.41575297713279724
+        ],
+        "shape_record": 22848
+      },
+      {
+        "material": "NUMBER_shoulder_B_M",
+        "material_index": 9,
+        "submesh_index": 76,
+        "vertex_count": 18,
+        "uv_min": [
+          -0.05335675364767667,
+          -0.1860422033496434
+        ],
+        "uv_max": [
+          0.2982698913401691,
+          0.6376106280472061
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          0.5520892143249512,
+          0.6043403148651123
+        ],
+        "uv_offset": [
+          0.44901275634765625,
+          0.41575297713279724
+        ],
+        "shape_record": 22848
+      },
+      {
+        "material": "NUMBER_shoulder_B_R",
+        "material_index": 10,
+        "submesh_index": 77,
+        "vertex_count": 12,
+        "uv_min": [
+          0.02943641039018985,
+          -0.18737009954929817
+        ],
+        "uv_max": [
+          0.217447993112728,
+          0.6258805203091096
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          0.5520892143249512,
+          0.6043403148651123
+        ],
+        "uv_offset": [
+          0.44901275634765625,
+          0.41575297713279724
+        ],
+        "shape_record": 22848
+      },
+      {
+        "material": "NUMBER_sleeve_A_L",
+        "material_index": 11,
+        "submesh_index": 78,
+        "vertex_count": 12,
+        "uv_min": [
+          -0.00960139202652499,
+          -0.06533275020046858
+        ],
+        "uv_max": [
+          0.21468485129298642,
+          0.5818188420287436
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          0.5520892143249512,
+          0.6043403148651123
+        ],
+        "uv_offset": [
+          0.44901275634765625,
+          0.41575297713279724
+        ],
+        "shape_record": 22848
+      },
+      {
+        "material": "NUMBER_sleeve_A_M",
+        "material_index": 12,
+        "submesh_index": 79,
+        "vertex_count": 18,
+        "uv_min": [
+          -0.07470370904775336,
+          -0.033703000444802456
+        ],
+        "uv_max": [
+          0.31980217942327727,
+          0.6278539818310849
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          0.5520892143249512,
+          0.6043403148651123
+        ],
+        "uv_offset": [
+          0.44901275634765625,
+          0.41575297713279724
+        ],
+        "shape_record": 22848
+      },
+      {
+        "material": "NUMBER_sleeve_A_R",
+        "material_index": 13,
+        "submesh_index": 80,
+        "vertex_count": 12,
+        "uv_min": [
+          0.02835811114346143,
+          -0.08632088735612342
+        ],
+        "uv_max": [
+          0.25500313406519126,
+          0.5582848522900465
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          0.5520892143249512,
+          0.6043403148651123
+        ],
+        "uv_offset": [
+          0.44901275634765625,
+          0.41575297713279724
+        ],
+        "shape_record": 22848
+      },
+      {
+        "material": "NUMBER_sleeve_B_L",
+        "material_index": 14,
+        "submesh_index": 81,
+        "vertex_count": 15,
+        "uv_min": [
+          -0.0010086949041578919,
+          -0.17121402912016492
+        ],
+        "uv_max": [
+          0.24149069662962575,
+          0.8160336819125309
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          0.5520892143249512,
+          0.6043403148651123
+        ],
+        "uv_offset": [
+          0.44901275634765625,
+          0.41575297713279724
+        ],
+        "shape_record": 22848
+      },
+      {
+        "material": "NUMBER_sleeve_B_M",
+        "material_index": 15,
+        "submesh_index": 82,
+        "vertex_count": 18,
+        "uv_min": [
+          -0.10196446187910624,
+          -0.16571801429381594
+        ],
+        "uv_max": [
+          0.3138546851405408,
+          0.7794232041450438
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          0.5520892143249512,
+          0.6043403148651123
+        ],
+        "uv_offset": [
+          0.44901275634765625,
+          0.41575297713279724
+        ],
+        "shape_record": 22848
+      },
+      {
+        "material": "NUMBER_sleeve_B_R",
+        "material_index": 16,
+        "submesh_index": 83,
+        "vertex_count": 15,
+        "uv_min": [
+          0.011307504304568283,
+          -0.17121402912016492
+        ],
+        "uv_max": [
+          0.25271174816589337,
+          0.8160336819125309
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          0.5520892143249512,
+          0.6043403148651123
+        ],
+        "uv_offset": [
+          0.44901275634765625,
+          0.41575297713279724
+        ],
+        "shape_record": 22848
+      }
+    ],
+    "in_game_outcome": "UNWITNESSED"
+  },
+  {
+    "key": "o3c113",
+    "scene": "lo_body",
+    "decoded_sha256": "2a89df4b2e83dee4c7937194e5cd885c4b3662720bf976d8440ab5c3fb423e56",
+    "shape_count": 1,
+    "digit_surfaces": [
+      {
+        "material": "NECKROLL123_NUMBER_shoulder_A_L",
+        "material_index": 50,
+        "submesh_index": 63,
+        "vertex_count": 8,
+        "uv_min": [
+          0.029458177807100583,
+          -0.030834593195322668
+        ],
+        "uv_max": [
+          0.21746593406351167,
+          0.5561731686264164
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          1.2418137788772583,
+          0.6043778657913208
+        ],
+        "uv_offset": [
+          0.24221277236938477,
+          0.41579046845436096
+        ],
+        "shape_record": 26432
+      },
+      {
+        "material": "NECKROLL123_NUMBER_shoulder_A_M",
+        "material_index": 51,
+        "submesh_index": 64,
+        "vertex_count": 12,
+        "uv_min": [
+          -0.04421387987531489,
+          -0.033121667638624785
+        ],
+        "uv_max": [
+          0.28913087467505955,
+          0.5593456590257849
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          1.2418137788772583,
+          0.6043778657913208
+        ],
+        "uv_offset": [
+          0.24221277236938477,
+          0.41579046845436096
+        ],
+        "shape_record": 26432
+      },
+      {
+        "material": "NECKROLL123_NUMBER_shoulder_A_R",
+        "material_index": 52,
+        "submesh_index": 65,
+        "vertex_count": 8,
+        "uv_min": [
+          0.03544592735124752,
+          -0.03033660117944237
+        ],
+        "uv_max": [
+          0.2241358322899032,
+          0.5528715652456784
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          1.2418137788772583,
+          0.6043778657913208
+        ],
+        "uv_offset": [
+          0.24221277236938477,
+          0.41579046845436096
+        ],
+        "shape_record": 26432
+      },
+      {
+        "material": "NECKROLL123_NUMBER_shoulder_B_L",
+        "material_index": 53,
+        "submesh_index": 66,
+        "vertex_count": 12,
+        "uv_min": [
+          0.029458177807100583,
+          -0.18737008352036355
+        ],
+        "uv_max": [
+          0.21746593406351167,
+          0.625875733854402
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          1.2418137788772583,
+          0.6043778657913208
+        ],
+        "uv_offset": [
+          0.24221277236938477,
+          0.41579046845436096
+        ],
+        "shape_record": 26432
+      },
+      {
+        "material": "NECKROLL123_NUMBER_shoulder_B_M",
+        "material_index": 54,
+        "submesh_index": 67,
+        "vertex_count": 18,
+        "uv_min": [
+          -0.053347092787589645,
+          -0.18604210481134942
+        ],
+        "uv_max": [
+          0.29822646801380104,
+          0.6376065704474156
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          1.2418137788772583,
+          0.6043778657913208
+        ],
+        "uv_offset": [
+          0.24221277236938477,
+          0.41579046845436096
+        ],
+        "shape_record": 26432
+      },
+      {
+        "material": "NECKROLL123_NUMBER_shoulder_B_R",
+        "material_index": 55,
+        "submesh_index": 68,
+        "vertex_count": 12,
+        "uv_min": [
+          0.029458177807100583,
+          -0.18737008352036355
+        ],
+        "uv_max": [
+          0.21746593406351167,
+          0.625875733854402
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          1.2418137788772583,
+          0.6043778657913208
+        ],
+        "uv_offset": [
+          0.24221277236938477,
+          0.41579046845436096
+        ],
+        "shape_record": 26432
+      },
+      {
+        "material": "NECKROLL4_NUMBER_shoulder_A_L",
+        "material_index": 63,
+        "submesh_index": 74,
+        "vertex_count": 8,
+        "uv_min": [
+          0.029458177807100583,
+          -0.030834593195322668
+        ],
+        "uv_max": [
+          0.21746593406351167,
+          0.5561731686264164
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          1.2418137788772583,
+          0.6043778657913208
+        ],
+        "uv_offset": [
+          0.24221277236938477,
+          0.41579046845436096
+        ],
+        "shape_record": 26432
+      },
+      {
+        "material": "NECKROLL4_NUMBER_shoulder_A_M",
+        "material_index": 64,
+        "submesh_index": 75,
+        "vertex_count": 12,
+        "uv_min": [
+          -0.04421387987531489,
+          -0.033121667638624785
+        ],
+        "uv_max": [
+          0.28913087467505955,
+          0.5593456590257849
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          1.2418137788772583,
+          0.6043778657913208
+        ],
+        "uv_offset": [
+          0.24221277236938477,
+          0.41579046845436096
+        ],
+        "shape_record": 26432
+      },
+      {
+        "material": "NECKROLL4_NUMBER_shoulder_A_R",
+        "material_index": 65,
+        "submesh_index": 76,
+        "vertex_count": 8,
+        "uv_min": [
+          0.03544592735124752,
+          -0.03033660117944237
+        ],
+        "uv_max": [
+          0.2241358322899032,
+          0.5528715652456784
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          1.2418137788772583,
+          0.6043778657913208
+        ],
+        "uv_offset": [
+          0.24221277236938477,
+          0.41579046845436096
+        ],
+        "shape_record": 26432
+      },
+      {
+        "material": "NECKROLL4_NUMBER_shoulder_B_L",
+        "material_index": 66,
+        "submesh_index": 77,
+        "vertex_count": 12,
+        "uv_min": [
+          0.029458177807100583,
+          -0.18737008352036355
+        ],
+        "uv_max": [
+          0.21746593406351167,
+          0.625875733854402
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          1.2418137788772583,
+          0.6043778657913208
+        ],
+        "uv_offset": [
+          0.24221277236938477,
+          0.41579046845436096
+        ],
+        "shape_record": 26432
+      },
+      {
+        "material": "NECKROLL4_NUMBER_shoulder_B_M",
+        "material_index": 67,
+        "submesh_index": 78,
+        "vertex_count": 18,
+        "uv_min": [
+          -0.053347092787589645,
+          -0.18604210481134942
+        ],
+        "uv_max": [
+          0.29822646801380104,
+          0.6376065704474156
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          1.2418137788772583,
+          0.6043778657913208
+        ],
+        "uv_offset": [
+          0.24221277236938477,
+          0.41579046845436096
+        ],
+        "shape_record": 26432
+      },
+      {
+        "material": "NECKROLL4_NUMBER_shoulder_B_R",
+        "material_index": 68,
+        "submesh_index": 79,
+        "vertex_count": 12,
+        "uv_min": [
+          0.029458177807100583,
+          -0.18737008352036355
+        ],
+        "uv_max": [
+          0.21746593406351167,
+          0.625875733854402
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          1.2418137788772583,
+          0.6043778657913208
+        ],
+        "uv_offset": [
+          0.24221277236938477,
+          0.41579046845436096
+        ],
+        "shape_record": 26432
+      },
+      {
+        "material": "NUMBER_shoulder_A_L",
+        "material_index": 31,
+        "submesh_index": 97,
+        "vertex_count": 8,
+        "uv_min": [
+          0.029458177807100583,
+          -0.030834593195322668
+        ],
+        "uv_max": [
+          0.21746593406351167,
+          0.5561731686264164
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          1.2418137788772583,
+          0.6043778657913208
+        ],
+        "uv_offset": [
+          0.24221277236938477,
+          0.41579046845436096
+        ],
+        "shape_record": 26432
+      },
+      {
+        "material": "NUMBER_shoulder_A_M",
+        "material_index": 32,
+        "submesh_index": 98,
+        "vertex_count": 12,
+        "uv_min": [
+          -0.04421387987531489,
+          -0.033121667638624785
+        ],
+        "uv_max": [
+          0.28913087467505955,
+          0.5593456590257849
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          1.2418137788772583,
+          0.6043778657913208
+        ],
+        "uv_offset": [
+          0.24221277236938477,
+          0.41579046845436096
+        ],
+        "shape_record": 26432
+      },
+      {
+        "material": "NUMBER_shoulder_A_R",
+        "material_index": 33,
+        "submesh_index": 99,
+        "vertex_count": 8,
+        "uv_min": [
+          0.03544592735124752,
+          -0.03033660117944237
+        ],
+        "uv_max": [
+          0.2241358322899032,
+          0.5528715652456784
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          1.2418137788772583,
+          0.6043778657913208
+        ],
+        "uv_offset": [
+          0.24221277236938477,
+          0.41579046845436096
+        ],
+        "shape_record": 26432
+      },
+      {
+        "material": "NUMBER_shoulder_B_L",
+        "material_index": 34,
+        "submesh_index": 100,
+        "vertex_count": 12,
+        "uv_min": [
+          0.029458177807100583,
+          -0.18737008352036355
+        ],
+        "uv_max": [
+          0.21746593406351167,
+          0.625875733854402
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          1.2418137788772583,
+          0.6043778657913208
+        ],
+        "uv_offset": [
+          0.24221277236938477,
+          0.41579046845436096
+        ],
+        "shape_record": 26432
+      },
+      {
+        "material": "NUMBER_shoulder_B_M",
+        "material_index": 35,
+        "submesh_index": 101,
+        "vertex_count": 18,
+        "uv_min": [
+          -0.053347092787589645,
+          -0.18604210481134942
+        ],
+        "uv_max": [
+          0.29822646801380104,
+          0.6376065704474156
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          1.2418137788772583,
+          0.6043778657913208
+        ],
+        "uv_offset": [
+          0.24221277236938477,
+          0.41579046845436096
+        ],
+        "shape_record": 26432
+      },
+      {
+        "material": "NUMBER_shoulder_B_R",
+        "material_index": 36,
+        "submesh_index": 102,
+        "vertex_count": 12,
+        "uv_min": [
+          0.029458177807100583,
+          -0.18737008352036355
+        ],
+        "uv_max": [
+          0.21746593406351167,
+          0.625875733854402
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          1.2418137788772583,
+          0.6043778657913208
+        ],
+        "uv_offset": [
+          0.24221277236938477,
+          0.41579046845436096
+        ],
+        "shape_record": 26432
+      },
+      {
+        "material": "NUMBER_sleeve_A_L",
+        "material_index": 37,
+        "submesh_index": 103,
+        "vertex_count": 12,
+        "uv_min": [
+          -0.012607657597982325,
+          -0.08115023094796925
+        ],
+        "uv_max": [
+          0.24300863678652465,
+          0.6754735634119708
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          1.2418137788772583,
+          0.6043778657913208
+        ],
+        "uv_offset": [
+          0.24221277236938477,
+          0.41579046845436096
+        ],
+        "shape_record": 26432
+      },
+      {
+        "material": "NUMBER_sleeve_A_M",
+        "material_index": 38,
+        "submesh_index": 104,
+        "vertex_count": 18,
+        "uv_min": [
+          -0.07881397692472092,
+          -0.08921032394573558
+        ],
+        "uv_max": [
+          0.3291893836711001,
+          0.7091904962610732
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          1.2418137788772583,
+          0.6043778657913208
+        ],
+        "uv_offset": [
+          0.24221277236938477,
+          0.41579046845436096
+        ],
+        "shape_record": 26432
+      },
+      {
+        "material": "NUMBER_sleeve_A_R",
+        "material_index": 39,
+        "submesh_index": 105,
+        "vertex_count": 12,
+        "uv_min": [
+          0.013730860966461478,
+          -0.08115023094796925
+        ],
+        "uv_max": [
+          0.269840637135812,
+          0.6754735634119708
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          1.2418137788772583,
+          0.6043778657913208
+        ],
+        "uv_offset": [
+          0.24221277236938477,
+          0.41579046845436096
+        ],
+        "shape_record": 26432
+      },
+      {
+        "material": "NUMBER_sleeve_B_L",
+        "material_index": 40,
+        "submesh_index": 106,
+        "vertex_count": 15,
+        "uv_min": [
+          -0.001011129999824334,
+          -0.17121300922735827
+        ],
+        "uv_max": [
+          0.2414927265381266,
+          0.8160222659886446
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          1.2418137788772583,
+          0.6043778657913208
+        ],
+        "uv_offset": [
+          0.24221277236938477,
+          0.41579046845436096
+        ],
+        "shape_record": 26432
+      },
+      {
+        "material": "NUMBER_sleeve_B_M",
+        "material_index": 41,
+        "submesh_index": 107,
+        "vertex_count": 18,
+        "uv_min": [
+          -0.10196913497202331,
+          -0.16571665290393867
+        ],
+        "uv_max": [
+          0.3138405699119739,
+          0.7794095134145373
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          1.2418137788772583,
+          0.6043778657913208
+        ],
+        "uv_offset": [
+          0.24221277236938477,
+          0.41579046845436096
+        ],
+        "shape_record": 26432
+      },
+      {
+        "material": "NUMBER_sleeve_B_R",
+        "material_index": 42,
+        "submesh_index": 108,
+        "vertex_count": 15,
+        "uv_min": [
+          0.011305443429591833,
+          -0.17121300922735827
+        ],
+        "uv_max": [
+          0.2526727047089375,
+          0.8160222659886446
+        ],
+        "uv_stream": 1,
+        "uv_byte_offset": 0,
+        "uv_stride": 6,
+        "uv_scale": [
+          1.2418137788772583,
+          0.6043778657913208
+        ],
+        "uv_offset": [
+          0.24221277236938477,
+          0.41579046845436096
+        ],
+        "shape_record": 26432
+      }
+    ],
+    "in_game_outcome": "UNWITNESSED"
+  }
+]
