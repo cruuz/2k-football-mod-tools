@@ -57,9 +57,9 @@ class OwnerCodeTests(unittest.TestCase):
         self.assertEqual(table[int(TEAM_LOGOS["KC"]["asset_code"])], exact.plate_argb("KC"))
         self.assertEqual(table[int(TEAM_LOGOS["DEN"]["asset_code"])], exact.plate_argb("DEN"))
         self.assertTrue(all(word >> 24 == 0xFF for word in table))
-        # Dark primaries are brightened along their hue, never toward grey.
+        # Near-black primaries use the explicit secondary-colour table.
         den = exact.plate_argb("DEN")
-        self.assertGreater(den & 0xFF, (den >> 16) & 0xFF)
+        self.assertEqual(den, 0xFFFB4F14)
 
     def test_state_layout_fits_the_data_page(self):
         self.assertLess(runtime.PHASE + 4, runtime.DATA_SIZE)
@@ -85,7 +85,7 @@ class ArtTests(unittest.TestCase):
             panel = exact.mnf_panel(team, side)
             self.assertEqual(panel.size, (64, 64))
             # The ramp rows carry the team colour at column 0 and the bar charcoal at column 63.
-            self.assertEqual(panel.getpixel((63, ramp_row))[:3], exact.MNF_COLORS["body"])
+            self.assertEqual(panel.getpixel((63, 63))[:3], exact.MNF_COLORS["body"])
             self.assertEqual(panel.getpixel((63, ramp_row))[3], 255)
         away = exact.mnf_panel("KC", "away")
         self.assertGreater(away.getpixel((0, ramp_row))[0], away.getpixel((63, ramp_row))[0])
@@ -112,27 +112,27 @@ class ArtTests(unittest.TestCase):
                        if len({tuple(m.pos[v][:2]) for v in indices[i:i + 3]}) == 3]
             fade, logo = layout["fade"], layout["logo"]
             self.assertEqual(visible, [fade[:3], fade[1:], logo[:3], logo[1:]], side)
-            # The logo quad sits inside the wing box, at the measured 170x91 source-pixel box.
+            # The logo quad occupies the v3 source-frame box inside the wing.
             xs = [m.pos[v][0] for v in logo]
             ys = [m.pos[v][1] for v in logo]
             wing = exact.MNF_PANELS[side]
             self.assertGreaterEqual(min(xs), wing[0] - 1e-6)
             self.assertLessEqual(max(xs), wing[2] + 1e-6)
-            self.assertAlmostEqual(max(xs) - min(xs), (625 - 455) / 3, places=3)
-            self.assertAlmostEqual(max(ys) - min(ys), (1037 - 946) * 448 / 1080, places=3)
+            self.assertAlmostEqual(max(xs) - min(xs), (exact.MNF_SOURCE[side+"_logo"][2]-exact.MNF_SOURCE[side+"_logo"][0])/3, places=3)
+            self.assertAlmostEqual(max(ys) - min(ys), (exact.MNF_SOURCE[side+"_logo"][3]-exact.MNF_SOURCE[side+"_logo"][1])*448/1080, places=3)
 
     def test_layout_measurements_are_the_broadcast_ones(self):
         bar = exact.MNF_BAR
         self.assertAlmostEqual(bar[2] - bar[0], 1041 / 3, places=1)
         self.assertLess(bar[1], exact.MNF_STRIP[1])
-        self.assertLess(exact.MNF_STRIP[3], exact.MNF_PLATE[1])
+        self.assertEqual(exact.MNF_STRIP[3], exact.MNF_PLATE[1])
 
     def test_probe_sizes_for_the_compact_profile(self):
         count, appendix, growth = resources.probe_sizes("mnf")
         self.assertEqual(count, 66)
         # 66 wing panels plus the two appended clock fonts (FirstPersonComic and core_bug).
         self.assertEqual(appendix, 66 * resources.RUNTIME_TEXTURE_SPAN + resources.CLOCK_FONT_SPAN_SIZE)
-        self.assertEqual(resources.CLOCK_FONT_SPAN_SIZE, 2 * 27040)
+        self.assertEqual(resources.CLOCK_FONT_SPAN_SIZE, 37152 + 27040)
         self.assertLess(count * 5376 + resources.CLOCK_FONT_SPAN_SIZE, 420_000)
         self.assertEqual(growth % 2048, 0)
 

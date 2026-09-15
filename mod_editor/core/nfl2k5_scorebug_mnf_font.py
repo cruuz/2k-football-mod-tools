@@ -353,6 +353,72 @@ def clock_font(donor_span: bytes, *, name: str = CLOCK_FONT_NAME, scale: tuple =
     for off, scale in ((12, sx), (16, sy), (20, sy), (24, sy), (28, sy)):
         value = struct.unpack_from("<i", body, obj + off)[0]
         struct.pack_into("<i", body, obj + off, round(value * scale))
+    if name == CLOCK_FONT_NAME:
+        from PIL import Image
+        # The private U+0080..U+0089 cells are a second size of 0..9.
+        # Retail/global fonts and every existing ASCII glyph stay intact.
+        records = {}
+        for i in range(count):
+            rec = ranges + 8 * i
+            first, last, relative = struct.unpack_from("<HHI", body, rec)
+            glyphs = rec + 4 + relative - 1
+            records.update((cp, glyphs + 96 * (cp-first)) for cp in range(first, last+1))
+        # Append one isolated range, retaining all existing ASCII glyphs.
+        old_ranges = [(struct.unpack_from("<HH", body, ranges+8*i),
+                       ranges+8*i+4+struct.unpack_from("<I",body,ranges+8*i+4)[0]-1)
+                      for i in range(count)]
+        new_ranges = len(body)
+        body.extend(bytes(8*(count+1)))
+        struct.pack_into("<II",body,obj+4,count+1,new_ranges-(obj+8)+1)
+        for i,((first,last),glyphs) in enumerate(old_ranges):
+            at=new_ranges+8*i
+            new_glyphs = len(body)
+            body.extend(body[glyphs:glyphs+96*(last-first+1)])
+            struct.pack_into("<HHI",body,at,first,last,new_glyphs-(at+4)+1)
+            records.update((cp,new_glyphs+96*(cp-first)) for cp in range(first,last+1))
+        digits_at=len(body)
+        at=new_ranges+8*count
+        struct.pack_into("<HHI",body,at,0x80,0x89,digits_at-(at+4)+1)
+        body.extend(bytes(960))
+        struct.pack_into("<H",body,obj+2,0x89)
+        occupied = np.zeros((width,width),dtype=bool)
+        for cp,off in records.items():
+            x0,y0,x1,y1 = _cell(body,off,width)
+            occupied[y0:y1,x0:x1] = True
+        for digit in range(10):
+            src, dst = records[48+digit], digits_at+96*digit
+            body[dst:dst+96] = body[src:src+96]
+            # Pack sharper score masks into unused atlas cells. Existing ASCII
+            # masks remain disjoint, and the 128x128 video allocation is unchanged.
+            cw,ch = 13,20
+            cell = next(((x,y) for y in range(width-ch+1) for x in range(width-cw+1)
+                         if not occupied[y:y+ch,x:x+cw].any()),None)
+            if cell is None: raise FontError("score glyph cells exceed the spare atlas area")
+            x,y=cell; occupied[y:y+ch,x:x+cw]=True
+            mask=sources[str(digit)].resize((cw,ch),Image.Resampling.LANCZOS)
+            plane[y:y+ch,x:x+cw]=np.clip((np.asarray(mask,dtype=float)*15/255+.5).astype(np.uint8),0,15)
+            pos = list(struct.unpack_from("<16f", body, dst+16))
+            x0,y0=pos[0],pos[1];w0,h0=pos[4]-x0,pos[9]-y0
+            for j in range(4):
+                pos[j*4]=(pos[j*4]-x0)*(40/3)/w0
+                pos[j*4+1]=(pos[j*4+1]-y0)*(45*448/1080)/h0
+            struct.pack_into("<16f",body,dst+16,*pos)
+            struct.pack_into("<4f",body,dst+80,x/width,y/width,(x+cw)/width,(y+ch)/width)
+            struct.pack_into("<I",body,dst,14)
+        off = records[ord("~")]
+        x0,y0,x1,y1 = _cell(body, off, width)
+        plane[y0:y1,x0:x1] = 15
+        pos = list(struct.unpack_from("<16f", body, off+16))
+        for j,(x,y) in enumerate(((0,0),(1,0),(0,1),(1,1))):
+            pos[j*4] = x*6.4
+            pos[j*4+1] = y*2.5
+        struct.pack_into("<16f",body,off+16,*pos)
+        struct.pack_into("<I",body,off,7)
+        # A 3-unit space gives three 6.4-unit ticks a 26.4-unit overall width.
+        struct.pack_into("<I",body,obj+12,3)
+        video[:width*width] = r.tx.swizzle_2d(plane.tobytes(),width,width,1)
+    body.extend(b"\xff" * (-len(body) % 128))
+    system = len(body)
     body.extend(video)
     header = struct.pack("<4s7I", b"FONT", len(body), system, len(video), 0, 0, 0, 0)
     result = header + bytes(body)
