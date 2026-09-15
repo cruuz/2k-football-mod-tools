@@ -1,0 +1,1055 @@
+[
+  {
+    "label": "private-git",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T18:57:24.593166+00:00",
+    "end_utc": "2026-09-15T18:57:26.944605+00:00",
+    "seconds": 2.351,
+    "exit_code": 0,
+    "log": ".scratch/audit/private-git.log"
+  },
+  {
+    "label": "font-diff",
+    "command": ".scratch/g diff bcb0fcdf fable/b71-scorebug-font -- mod_editor/core/nfl2k5_scorebug_exact.py mod_editor/core/nfl2k5_scorebug_resources.py mod_editor/core/nfl2k5_scorebug_runtime.py tools/nfl2k5_scorebug_exact.py tests/mod_editor/test_nfl2k5_scorebug_fonts.py",
+    "start_utc": "2026-09-15T18:57:44.024754+00:00",
+    "end_utc": "2026-09-15T18:57:44.032651+00:00",
+    "seconds": 0.008,
+    "exit_code": 0,
+    "log": ".scratch/audit/font-diff.log"
+  },
+  {
+    "label": "build-and-test-inspection",
+    "command": "bash -c 'sed -n \"230,330p\" tools/nfl2k5_scorebug_exact.py; sed -n \"1,75p\" tests/mod_editor/test_nfl2k5_scorebug_exact.py; tail -55 mod_editor/capabilities/validate_registry.py; sed -n \"175,300p\" packaging/repin.py; rg -n \"option.*read|read.*option|inspect.*build|def status|modern_color|widescreen\" mod_editor/core/nfl2k5_build_service.py | head -55; ls -lh \"/home/noah/2K5 Mod Studio Builds\"; rg --files -g AGENTS.md mod_editor tools tests packaging data docs'",
+    "start_utc": "2026-09-15T18:57:44.046448+00:00",
+    "end_utc": "2026-09-15T18:57:44.072719+00:00",
+    "seconds": 0.026,
+    "exit_code": 1,
+    "log": ".scratch/audit/build-and-test-inspection.log"
+  },
+  {
+    "label": "merge-font",
+    "command": ".scratch/g merge --no-commit --no-ff fable/b71-scorebug-font",
+    "start_utc": "2026-09-15T18:57:44.193478+00:00",
+    "end_utc": "2026-09-15T18:57:44.285055+00:00",
+    "seconds": 0.092,
+    "exit_code": 1,
+    "log": ".scratch/audit/merge-font.log"
+  },
+  {
+    "label": "conflicts-and-runtime",
+    "command": "bash -c 'rg -n -C 7 \"^(<<<<<<<|=======|>>>>>>>)\" docs/mod_editor/2k5_mod_studio_changelog.md mod_editor/capabilities/registry.v1.json mod_editor/core/nfl2k5_scorebug_resources.py tools/nfl2k5_scorebug_exact.py; rg -n \"CODE_SIZE|CLOCK_FONT|MNF_BOXES|MNF_ANCHORS\" mod_editor/core/nfl2k5_scorebug_runtime.py mod_editor/core/nfl2k5_scorebug_mnf_font.py mod_editor/core/nfl2k5_scorebug_exact.py; .scratch/g diff --stat; .scratch/g diff --cached --stat; rg -n \"registry|sha256|read_bytes\" packaging/repin.py | tail -20; sed -n \"1,170p\" tests/mod_editor/test_provider_integrity.py; rg -n \"def .*inspect|def .*status|receipt|read_back|readback\" mod_editor/core/mod_build.py | tail -55'",
+    "start_utc": "2026-09-15T18:58:05.378141+00:00",
+    "end_utc": "2026-09-15T18:58:05.432506+00:00",
+    "seconds": 0.054,
+    "exit_code": 0,
+    "log": ".scratch/audit/conflicts-and-runtime.log"
+  },
+  {
+    "label": "conflict-hunks",
+    "command": "bash -c 'rg -n -C 4 \"^(<<<<<<<|=======|>>>>>>>)\" docs/mod_editor/2k5_mod_studio_changelog.md mod_editor/core/nfl2k5_scorebug_resources.py tools/nfl2k5_scorebug_exact.py; sed -n \"10420,10480p\" mod_editor/capabilities/registry.v1.json; sed -n \"465,510p\" mod_editor/core/nfl2k5_scorebug_exact.py; sed -n \"645,700p\" mod_editor/core/nfl2k5_scorebug_resources.py'",
+    "start_utc": "2026-09-15T18:58:15.769556+00:00",
+    "end_utc": "2026-09-15T18:58:15.782406+00:00",
+    "seconds": 0.013,
+    "exit_code": 0,
+    "log": ".scratch/audit/conflict-hunks.log"
+  },
+  {
+    "label": "conflict-bodies",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T18:58:22.946457+00:00",
+    "end_utc": "2026-09-15T18:58:22.971363+00:00",
+    "seconds": 0.025,
+    "exit_code": 0,
+    "log": ".scratch/audit/conflict-bodies.log"
+  },
+  {
+    "label": "resolve-font",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T18:58:58.957560+00:00",
+    "end_utc": "2026-09-15T18:58:59.027517+00:00",
+    "seconds": 0.07,
+    "exit_code": 0,
+    "log": ".scratch/audit/resolve-font.log"
+  },
+  {
+    "label": "registry-pin-structure",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T18:59:13.664225+00:00",
+    "end_utc": "2026-09-15T18:59:13.693157+00:00",
+    "seconds": 0.029,
+    "exit_code": 0,
+    "log": ".scratch/audit/registry-pin-structure.log"
+  },
+  {
+    "label": "color-changes",
+    "command": ".scratch/g diff e2f5c6e6 fable/b71-color2 --stat",
+    "start_utc": "2026-09-15T18:59:13.724654+00:00",
+    "end_utc": "2026-09-15T18:59:13.747998+00:00",
+    "seconds": 0.023,
+    "exit_code": 0,
+    "log": ".scratch/audit/color-changes.log"
+  },
+  {
+    "label": "option-readback-inspection",
+    "command": "bash -c 'rg -n \"^def inspect|scorebug_runtime|modern_color|widescreen\" mod_editor/core/mod_build.py | head -65; rg -n \"^def |VERSION\" mod_editor/core/nfl2k5_modern_color.py; sed -n \"1,130p\" tests/mod_editor/test_xbe_patch_cave_references.py; sed -n \"1,80p\" tests/mod_editor/test_xbe_patch_memory_writes.py'",
+    "start_utc": "2026-09-15T18:59:13.778779+00:00",
+    "end_utc": "2026-09-15T18:59:13.789267+00:00",
+    "seconds": 0.01,
+    "exit_code": 0,
+    "log": ".scratch/audit/option-readback-inspection.log"
+  },
+  {
+    "label": "inspect-colour-report",
+    "command": ".scratch/g show fable/b71-color2:FABLE_B71_COLOR2_REPORT_2026-09-15.md",
+    "start_utc": "2026-09-15T18:59:34.546284+00:00",
+    "end_utc": "2026-09-15T18:59:34.550358+00:00",
+    "seconds": 0.004,
+    "exit_code": 0,
+    "log": ".scratch/audit/inspect-colour-report.log"
+  },
+  {
+    "label": "inspect-live-jobs",
+    "command": "bash -c 'ps -eo pid,ppid,sid,etime,pcpu,rss,args | rg \"regenerate_pins.py|audit.py|test_xbe\"; tail -8 .scratch/audit/regenerate-pins.log; du -sh .scratch'",
+    "start_utc": "2026-09-15T18:59:34.579602+00:00",
+    "end_utc": "2026-09-15T18:59:34.590378+00:00",
+    "seconds": 0.011,
+    "exit_code": 0,
+    "log": ".scratch/audit/inspect-live-jobs.log"
+  },
+  {
+    "label": "regenerate-pins",
+    "command": "env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 .scratch/regenerate_pins.py",
+    "start_utc": "2026-09-15T18:58:59.059129+00:00",
+    "end_utc": "2026-09-15T18:59:39.765804+00:00",
+    "seconds": 40.707,
+    "exit_code": 0,
+    "log": ".scratch/audit/regenerate-pins.log"
+  },
+  {
+    "label": "commit-font",
+    "command": "python3 .scratch/commit_merge.py 'Merge scorebug clock fonts with wings and regenerate combined resource pins' fable/b71-scorebug-font",
+    "start_utc": "2026-09-15T19:00:05.627478+00:00",
+    "end_utc": "2026-09-15T19:00:05.768979+00:00",
+    "seconds": 0.142,
+    "exit_code": 0,
+    "log": ".scratch/audit/commit-font.log"
+  },
+  {
+    "label": "merge-colour",
+    "command": ".scratch/g merge --no-commit --no-ff fable/b71-color2",
+    "start_utc": "2026-09-15T19:00:05.799639+00:00",
+    "end_utc": "2026-09-15T19:00:05.894400+00:00",
+    "seconds": 0.095,
+    "exit_code": 1,
+    "log": ".scratch/audit/merge-colour.log"
+  },
+  {
+    "label": "repin-font",
+    "command": "python3 packaging/repin.py --apply",
+    "start_utc": "2026-09-15T18:59:50.951626+00:00",
+    "end_utc": "2026-09-15T19:00:11.998152+00:00",
+    "seconds": 21.047,
+    "exit_code": 0,
+    "log": ".scratch/audit/repin-font.log"
+  },
+  {
+    "label": "resolve-colour",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:00:26.005131+00:00",
+    "end_utc": "2026-09-15T19:00:26.033328+00:00",
+    "seconds": 0.028,
+    "exit_code": 0,
+    "log": ".scratch/audit/resolve-colour.log"
+  },
+  {
+    "label": "manifest-and-ownership",
+    "command": "bash -c '.scratch/g diff fable/b71-scorebug -- data/nfl2k5_cave_reservations.json; .scratch/g diff fable/b71-scorebug-font -- mod_editor/core/nfl2k5_scorebug_runtime.py; .scratch/g diff fable/b71-color2 -- mod_editor/core/nfl2k5_modern_color.py data/nfl2k5_modern_color_pins.json; rg -n \"^<<<<<<<|^=======|^>>>>>>>\" mod_editor/core/nfl2k5_scorebug_resources.py tools/nfl2k5_scorebug_exact.py docs/mod_editor/2k5_mod_studio_changelog.md; .scratch/g status --short'",
+    "start_utc": "2026-09-15T19:00:26.062686+00:00",
+    "end_utc": "2026-09-15T19:00:26.119064+00:00",
+    "seconds": 0.056,
+    "exit_code": 0,
+    "log": ".scratch/audit/manifest-and-ownership.log"
+  },
+  {
+    "label": "repin-combined",
+    "command": "python3 packaging/repin.py --apply",
+    "start_utc": "2026-09-15T19:00:52.661810+00:00",
+    "end_utc": "2026-09-15T19:01:03.540514+00:00",
+    "seconds": 10.879,
+    "exit_code": 0,
+    "log": ".scratch/audit/repin-combined.log"
+  },
+  {
+    "label": "commit-colour",
+    "command": "python3 .scratch/commit_merge.py 'Merge colour v2.1 with combined scorebug wings and clock fonts' fable/b71-color2",
+    "start_utc": "2026-09-15T19:01:03.570498+00:00",
+    "end_utc": "2026-09-15T19:01:03.669683+00:00",
+    "seconds": 0.099,
+    "exit_code": 0,
+    "log": ".scratch/audit/commit-colour.log"
+  },
+  {
+    "label": "launch-checks",
+    "command": "bash -c 'setsid nohup python3 .scratch/audit.py all-suites python3 .scratch/run_suites.py > .scratch/suites.detached.log 2>&1 < /dev/null & echo $! > .scratch/suites.pid\nsetsid nohup python3 .scratch/audit.py xbe-memory env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_xbe_patch_memory_writes.py > .scratch/xbe-memory.detached.log 2>&1 < /dev/null & echo $! > .scratch/xbe-memory.pid\nsetsid nohup python3 .scratch/audit.py xbe-caves env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_xbe_patch_cave_references.py > .scratch/xbe-caves.detached.log 2>&1 < /dev/null & echo $! > .scratch/xbe-caves.pid\ncat .scratch/suites.pid .scratch/xbe-memory.pid .scratch/xbe-caves.pid'",
+    "start_utc": "2026-09-15T19:01:03.699070+00:00",
+    "end_utc": "2026-09-15T19:01:03.702581+00:00",
+    "seconds": 0.004,
+    "exit_code": 0,
+    "log": ".scratch/audit/launch-checks.log"
+  },
+  {
+    "label": "build-readback-code",
+    "command": "bash -c 'sed -n \"655,745p\" mod_editor/core/mod_build.py; sed -n \"1,80p\" mod_editor/core/nfl2k5_modern_color.py; sed -n \"645,685p\" mod_editor/core/nfl2k5_modern_color.py; rg -n \"scorebug_runtime|scorebug\" mod_editor/core/nfl2k5_throw_tuning.py | tail -25; rg -n \"MODERN|version|v2.1\" data/nfl2k5_modern_color_pins.json | head -10; rg -n \"def _check_floor|space.*floor|ensure.*space|TMPDIR|TemporaryDirectory|cache_dir\" mod_editor/core/mod_build.py mod_editor/core/nfl2k5_build_cache.py'",
+    "start_utc": "2026-09-15T19:01:10.874384+00:00",
+    "end_utc": "2026-09-15T19:01:10.895093+00:00",
+    "seconds": 0.021,
+    "exit_code": 2,
+    "log": ".scratch/audit/build-readback-code.log"
+  },
+  {
+    "label": "build-output-access",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:01:11.012204+00:00",
+    "end_utc": "2026-09-15T19:01:11.117496+00:00",
+    "seconds": 0.105,
+    "exit_code": 1,
+    "log": ".scratch/audit/build-output-access.log"
+  },
+  {
+    "label": "check-progress",
+    "command": "bash -c 'tail -12 .scratch/audit/all-suites.log; tail -8 .scratch/audit/xbe-memory.log; tail -8 .scratch/audit/xbe-caves.log; cat .scratch/suites.pid .scratch/xbe-memory.pid .scratch/xbe-caves.pid; rg -n \"^def inspect|widescreen|scorebug_runtime|modern_color\" mod_editor/core/mod_build.py | head -25; sed -n \"685,705p\" mod_editor/core/nfl2k5_modern_color.py; rg -n \"def .*runtime_image_status|def status\" tools/nfl2k5_scorebug_reference.py tools/nfl2k5_scorebug_layout.py'",
+    "start_utc": "2026-09-15T19:01:24.823219+00:00",
+    "end_utc": "2026-09-15T19:01:24.839319+00:00",
+    "seconds": 0.016,
+    "exit_code": 0,
+    "log": ".scratch/audit/check-progress.log"
+  },
+  {
+    "label": "test_nfl2k5_scorebug_mnf",
+    "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_mnf.py",
+    "start_utc": "2026-09-15T19:01:44.881815+00:00",
+    "end_utc": "2026-09-15T19:01:56.682273+00:00",
+    "seconds": 11.8,
+    "exit_code": 0,
+    "log": ".scratch/audit/test_nfl2k5_scorebug_mnf.log"
+  },
+  {
+    "label": "readback-contracts",
+    "command": "bash -c 'sed -n \"1,100p\" tools/nfl2k5_scorebug_reference.py; rg -n \"def runtime_image_status|def runtime_status|def status\" mod_editor/core/nfl2k5_scorebug_ingame.py mod_editor/core/nfl2k5_scorebug_runtime.py; sed -n \"850,885p\" tools/nfl2k5_scorebug_layout.py; sed -n \"575,635p\" mod_editor/core/mod_build.py; sed -n \"815,850p\" mod_editor/core/nfl2k5_scorebug_resources.py; ls -lh .scratch/audit/test* .scratch/audit/xbe*'",
+    "start_utc": "2026-09-15T19:02:02.009595+00:00",
+    "end_utc": "2026-09-15T19:02:02.025278+00:00",
+    "seconds": 0.016,
+    "exit_code": 0,
+    "log": ".scratch/audit/readback-contracts.log"
+  },
+  {
+    "label": "inventory-layout",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:02:02.027387+00:00",
+    "end_utc": "2026-09-15T19:02:02.064333+00:00",
+    "seconds": 0.037,
+    "exit_code": 0,
+    "log": ".scratch/audit/inventory-layout.log"
+  },
+  {
+    "label": "test_nfl2k5_scorebug_exact",
+    "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_exact.py",
+    "start_utc": "2026-09-15T19:01:56.717102+00:00",
+    "end_utc": "2026-09-15T19:03:11.074895+00:00",
+    "seconds": 74.358,
+    "exit_code": 0,
+    "log": ".scratch/audit/test_nfl2k5_scorebug_exact.log"
+  },
+  {
+    "label": "testdisc-plan",
+    "command": "env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 reports/b71_a5/build_testdisc71.py --plan-only",
+    "start_utc": "2026-09-15T19:03:15.666264+00:00",
+    "end_utc": "2026-09-15T19:03:15.929057+00:00",
+    "seconds": 0.263,
+    "exit_code": 0,
+    "log": ".scratch/audit/testdisc-plan.log"
+  },
+  {
+    "label": "check-progress-2",
+    "command": "bash -c 'tail -12 .scratch/audit/all-suites.log; tail -8 .scratch/audit/xbe-memory.log; tail -8 .scratch/audit/xbe-caves.log; rg -n \"^def status\" mod_editor/core/nfl2k5_widescreen.py'",
+    "start_utc": "2026-09-15T19:03:15.961336+00:00",
+    "end_utc": "2026-09-15T19:03:15.970677+00:00",
+    "seconds": 0.009,
+    "exit_code": 0,
+    "log": ".scratch/audit/check-progress-2.log"
+  },
+  {
+    "label": "merged-intent-review",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:03:54.660854+00:00",
+    "end_utc": "2026-09-15T19:03:54.930694+00:00",
+    "seconds": 0.27,
+    "exit_code": 0,
+    "log": ".scratch/audit/merged-intent-review.log"
+  },
+  {
+    "label": "detached-status",
+    "command": "bash -c 'tail -12 .scratch/audit/all-suites.log; tail -10 .scratch/audit/xbe-memory.log; tail -10 .scratch/audit/xbe-caves.log; du -sh .scratch'",
+    "start_utc": "2026-09-15T19:03:54.983871+00:00",
+    "end_utc": "2026-09-15T19:03:54.991655+00:00",
+    "seconds": 0.008,
+    "exit_code": 0,
+    "log": ".scratch/audit/detached-status.log"
+  },
+  {
+    "label": "combined-native-renders",
+    "command": "env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 .scratch/render_combined.py",
+    "start_utc": "2026-09-15T19:04:22.784646+00:00",
+    "end_utc": "2026-09-15T19:04:32.929186+00:00",
+    "seconds": 10.145,
+    "exit_code": 0,
+    "log": ".scratch/audit/combined-native-renders.log"
+  },
+  {
+    "label": "changed-prose-check",
+    "command": "bash -c '.scratch/g diff e2f5c6e6 HEAD -- docs/mod_editor/2k5_mod_studio_changelog.md docs/modern_color/README.md mod_editor/capabilities/registry.v1.json | rg -n \"^\\+.*([attribution]|[attribution]|[attribution]|[attribution]|reporter|tester)\" || test $? = 1\nrg -n \"[attribution]|[attribution]|[attribution]|[attribution]\" FABLE_B71_FONT_REPORT_2026-09-15.md FABLE_B71_COLOR2_REPORT_2026-09-15.md FABLE_B71_WINGS_REPORT_2026-09-15.md || test $? = 1'",
+    "start_utc": "2026-09-15T19:04:35.626685+00:00",
+    "end_utc": "2026-09-15T19:04:35.657612+00:00",
+    "seconds": 0.031,
+    "exit_code": 0,
+    "log": ".scratch/audit/changed-prose-check.log"
+  },
+  {
+    "label": "check-progress-3",
+    "command": "bash -c 'tail -10 .scratch/audit/test_nfl2k5_scorebug_runtime.log; tail -10 .scratch/audit/xbe-memory.log; tail -10 .scratch/audit/xbe-caves.log; tail -6 .scratch/audit/combined-native-renders.log'",
+    "start_utc": "2026-09-15T19:04:35.687484+00:00",
+    "end_utc": "2026-09-15T19:04:35.695643+00:00",
+    "seconds": 0.008,
+    "exit_code": 0,
+    "log": ".scratch/audit/check-progress-3.log"
+  },
+  {
+    "label": "anonymous-handoff-docs",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:05:00.735111+00:00",
+    "end_utc": "2026-09-15T19:05:00.758462+00:00",
+    "seconds": 0.023,
+    "exit_code": 0,
+    "log": ".scratch/audit/anonymous-handoff-docs.log"
+  },
+  {
+    "label": "corrected-report-footer",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:05:00.789154+00:00",
+    "end_utc": "2026-09-15T19:05:00.812081+00:00",
+    "seconds": 0.023,
+    "exit_code": 0,
+    "log": ".scratch/audit/corrected-report-footer.log"
+  },
+  {
+    "label": "current-tests",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:05:00.841591+00:00",
+    "end_utc": "2026-09-15T19:05:00.867231+00:00",
+    "seconds": 0.026,
+    "exit_code": 0,
+    "log": ".scratch/audit/current-tests.log"
+  },
+  {
+    "label": "image-evidence",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:05:09.451099+00:00",
+    "end_utc": "2026-09-15T19:05:09.514516+00:00",
+    "seconds": 0.063,
+    "exit_code": 0,
+    "log": ".scratch/audit/image-evidence.log"
+  },
+  {
+    "label": "test_nfl2k5_scorebug_runtime",
+    "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_runtime.py",
+    "start_utc": "2026-09-15T19:03:11.107687+00:00",
+    "end_utc": "2026-09-15T19:05:10.310502+00:00",
+    "seconds": 119.203,
+    "exit_code": 0,
+    "log": ".scratch/audit/test_nfl2k5_scorebug_runtime.log"
+  },
+  {
+    "label": "builder-contract-review",
+    "command": "bash -c 'sed -n \"877,937p\" mod_editor/core/nfl2k5_scorebug_ingame.py; sed -n \"560,605p\" mod_editor/core/nfl2k5_widescreen.py; rg -n \"def export|def changed_file_operations\" mod_editor/core/modpack.py mod_editor/core/modpack_ops.py; sed -n \"1,40p\" docs/modern_color/README.md; tail -12 .scratch/audit/all-suites.log'",
+    "start_utc": "2026-09-15T19:05:18.235718+00:00",
+    "end_utc": "2026-09-15T19:05:18.248363+00:00",
+    "seconds": 0.013,
+    "exit_code": 0,
+    "log": ".scratch/audit/builder-contract-review.log"
+  },
+  {
+    "label": "finish-doc-sanitizing",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:05:50.114682+00:00",
+    "end_utc": "2026-09-15T19:05:50.137126+00:00",
+    "seconds": 0.022,
+    "exit_code": 0,
+    "log": ".scratch/audit/finish-doc-sanitizing.log"
+  },
+  {
+    "label": "script-syntax",
+    "command": "bash -c 'python3 -m py_compile reports/b71_a5/build_testdisc71.py; bash -n reports/b71_a5/launch_testdisc71.sh'",
+    "start_utc": "2026-09-15T19:05:50.168695+00:00",
+    "end_utc": "2026-09-15T19:05:50.205154+00:00",
+    "seconds": 0.036,
+    "exit_code": 0,
+    "log": ".scratch/audit/script-syntax.log"
+  },
+  {
+    "label": "progress-4",
+    "command": "bash -c 'tail -12 .scratch/audit/all-suites.log; tail -10 .scratch/audit/xbe-memory.log; tail -10 .scratch/audit/xbe-caves.log'",
+    "start_utc": "2026-09-15T19:05:50.233637+00:00",
+    "end_utc": "2026-09-15T19:05:50.239370+00:00",
+    "seconds": 0.006,
+    "exit_code": 0,
+    "log": ".scratch/audit/progress-4.log"
+  },
+  {
+    "label": "branch-integrity",
+    "command": ".scratch/g diff --check",
+    "start_utc": "2026-09-15T19:06:19.678659+00:00",
+    "end_utc": "2026-09-15T19:06:19.687654+00:00",
+    "seconds": 0.009,
+    "exit_code": 0,
+    "log": ".scratch/audit/branch-integrity.log"
+  },
+  {
+    "label": "delivery-snapshot",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:06:19.718248+00:00",
+    "end_utc": "2026-09-15T19:06:19.758989+00:00",
+    "seconds": 0.041,
+    "exit_code": 0,
+    "log": ".scratch/audit/delivery-snapshot.log"
+  },
+  {
+    "label": "progress-5",
+    "command": "bash -c 'tail -12 .scratch/audit/all-suites.log; tail -10 .scratch/audit/test_nfl2k5_scorebug_native.log; tail -10 .scratch/audit/xbe-memory.log; tail -10 .scratch/audit/xbe-caves.log'",
+    "start_utc": "2026-09-15T19:06:19.791133+00:00",
+    "end_utc": "2026-09-15T19:06:19.799837+00:00",
+    "seconds": 0.009,
+    "exit_code": 0,
+    "log": ".scratch/audit/progress-5.log"
+  },
+  {
+    "label": "test_nfl2k5_scorebug_native",
+    "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_native.py",
+    "start_utc": "2026-09-15T19:05:10.344040+00:00",
+    "end_utc": "2026-09-15T19:07:22.583716+00:00",
+    "seconds": 132.24,
+    "exit_code": 0,
+    "log": ".scratch/audit/test_nfl2k5_scorebug_native.log"
+  },
+  {
+    "label": "draft-report",
+    "command": "python3 .scratch/make_report.py",
+    "start_utc": "2026-09-15T19:08:12.590921+00:00",
+    "end_utc": "2026-09-15T19:08:12.634638+00:00",
+    "seconds": 0.044,
+    "exit_code": 0,
+    "log": ".scratch/audit/draft-report.log"
+  },
+  {
+    "label": "progress-6",
+    "command": "bash -c 'tail -12 .scratch/audit/all-suites.log; tail -10 .scratch/audit/xbe-memory.log; tail -10 .scratch/audit/xbe-caves.log'",
+    "start_utc": "2026-09-15T19:08:12.664565+00:00",
+    "end_utc": "2026-09-15T19:08:12.669526+00:00",
+    "seconds": 0.005,
+    "exit_code": 0,
+    "log": ".scratch/audit/progress-6.log"
+  },
+  {
+    "label": "progress-7",
+    "command": "bash -c 'tail -10 .scratch/audit/test_nfl2k5_scorebug_ingame_fix.log; tail -10 .scratch/audit/xbe-memory.log; tail -10 .scratch/audit/xbe-caves.log; rg -n \"^ASPECTS|16:9|def export\\(\" mod_editor/core/nfl2k5_widescreen.py mod_editor/core/modpack.py | head -10; sed -n \"1420,1445p\" mod_editor/core/modpack.py; du -sh .scratch; .scratch/g status --short'",
+    "start_utc": "2026-09-15T19:08:26.144276+00:00",
+    "end_utc": "2026-09-15T19:08:26.179546+00:00",
+    "seconds": 0.035,
+    "exit_code": 0,
+    "log": ".scratch/audit/progress-7.log"
+  },
+  {
+    "label": "strengthen-disc-readback",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:08:57.744732+00:00",
+    "end_utc": "2026-09-15T19:08:57.777863+00:00",
+    "seconds": 0.033,
+    "exit_code": 0,
+    "log": ".scratch/audit/strengthen-disc-readback.log"
+  },
+  {
+    "label": "handoff-script-check",
+    "command": "bash -c 'python3 -m py_compile reports/b71_a5/build_testdisc71.py && bash -n reports/b71_a5/launch_testdisc71.sh'",
+    "start_utc": "2026-09-15T19:08:57.809608+00:00",
+    "end_utc": "2026-09-15T19:08:57.850465+00:00",
+    "seconds": 0.041,
+    "exit_code": 0,
+    "log": ".scratch/audit/handoff-script-check.log"
+  },
+  {
+    "label": "progress-8",
+    "command": "bash -c 'tail -12 .scratch/audit/all-suites.log; tail -10 .scratch/audit/xbe-memory.log; tail -10 .scratch/audit/xbe-caves.log'",
+    "start_utc": "2026-09-15T19:08:57.900554+00:00",
+    "end_utc": "2026-09-15T19:08:57.907436+00:00",
+    "seconds": 0.007,
+    "exit_code": 0,
+    "log": ".scratch/audit/progress-8.log"
+  },
+  {
+    "label": "gate-age",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:09:13.367591+00:00",
+    "end_utc": "2026-09-15T19:09:13.390141+00:00",
+    "seconds": 0.023,
+    "exit_code": 0,
+    "log": ".scratch/audit/gate-age.log"
+  },
+  {
+    "label": "test_nfl2k5_scorebug_ingame_fix",
+    "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py",
+    "start_utc": "2026-09-15T19:07:22.618708+00:00",
+    "end_utc": "2026-09-15T19:09:32.772570+00:00",
+    "seconds": 130.154,
+    "exit_code": 0,
+    "log": ".scratch/audit/test_nfl2k5_scorebug_ingame_fix.log"
+  },
+  {
+    "label": "preserve-reproduction-files",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:09:48.051699+00:00",
+    "end_utc": "2026-09-15T19:09:48.077289+00:00",
+    "seconds": 0.026,
+    "exit_code": 0,
+    "log": ".scratch/audit/preserve-reproduction-files.log"
+  },
+  {
+    "label": "public-diff-check",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:09:48.108962+00:00",
+    "end_utc": "2026-09-15T19:09:48.208508+00:00",
+    "seconds": 0.1,
+    "exit_code": 1,
+    "log": ".scratch/audit/public-diff-check.log"
+  },
+  {
+    "label": "remaining-attribution",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:09:58.202788+00:00",
+    "end_utc": "2026-09-15T19:09:58.226279+00:00",
+    "seconds": 0.023,
+    "exit_code": 0,
+    "log": ".scratch/audit/remaining-attribution.log"
+  },
+  {
+    "label": "remove-final-attribution",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:10:12.681514+00:00",
+    "end_utc": "2026-09-15T19:10:12.706098+00:00",
+    "seconds": 0.025,
+    "exit_code": 0,
+    "log": ".scratch/audit/remove-final-attribution.log"
+  },
+  {
+    "label": "public-diff-check-final",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:10:12.736398+00:00",
+    "end_utc": "2026-09-15T19:10:12.824235+00:00",
+    "seconds": 0.088,
+    "exit_code": 0,
+    "log": ".scratch/audit/public-diff-check-final.log"
+  },
+  {
+    "label": "progress-9",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:10:59.020089+00:00",
+    "end_utc": "2026-09-15T19:10:59.047044+00:00",
+    "seconds": 0.027,
+    "exit_code": 0,
+    "log": ".scratch/audit/progress-9.log"
+  },
+  {
+    "label": "gate-progress-map",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:11:22.295414+00:00",
+    "end_utc": "2026-09-15T19:11:22.347921+00:00",
+    "seconds": 0.053,
+    "exit_code": 0,
+    "log": ".scratch/audit/gate-progress-map.log"
+  },
+  {
+    "label": "startup-journal-and-helper",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:12:13.023127+00:00",
+    "end_utc": "2026-09-15T19:12:13.052499+00:00",
+    "seconds": 0.029,
+    "exit_code": 0,
+    "log": ".scratch/audit/startup-journal-and-helper.log"
+  },
+  {
+    "label": "progress-10",
+    "command": "bash -c 'tail -12 .scratch/audit/all-suites.log; tail -12 .scratch/audit/xbe-memory.log; tail -12 .scratch/audit/xbe-caves.log'",
+    "start_utc": "2026-09-15T19:12:13.085707+00:00",
+    "end_utc": "2026-09-15T19:12:13.092937+00:00",
+    "seconds": 0.007,
+    "exit_code": 0,
+    "log": ".scratch/audit/progress-10.log"
+  },
+  {
+    "label": "progress-11",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:13:19.657367+00:00",
+    "end_utc": "2026-09-15T19:13:19.681444+00:00",
+    "seconds": 0.024,
+    "exit_code": 0,
+    "log": ".scratch/audit/progress-11.log"
+  },
+  {
+    "label": "test_nfl2k5_scorebug_freeze",
+    "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_freeze.py",
+    "start_utc": "2026-09-15T19:09:32.804835+00:00",
+    "end_utc": "2026-09-15T19:13:39.249324+00:00",
+    "seconds": 246.444,
+    "exit_code": 0,
+    "log": ".scratch/audit/test_nfl2k5_scorebug_freeze.log"
+  },
+  {
+    "label": "progress-12",
+    "command": "bash -c 'tail -18 .scratch/audit/all-suites.log; tail -12 .scratch/audit/xbe-memory.log; tail -12 .scratch/audit/xbe-caves.log; ls -lh .scratch/audit/test_nfl2k5_scorebug_resources.log'",
+    "start_utc": "2026-09-15T19:14:27.020231+00:00",
+    "end_utc": "2026-09-15T19:14:27.030080+00:00",
+    "seconds": 0.01,
+    "exit_code": 0,
+    "log": ".scratch/audit/progress-12.log"
+  },
+  {
+    "label": "progress-13",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:15:40.808139+00:00",
+    "end_utc": "2026-09-15T19:15:40.842630+00:00",
+    "seconds": 0.034,
+    "exit_code": 0,
+    "log": ".scratch/audit/progress-13.log"
+  },
+  {
+    "label": "final-source-identity",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:16:08.171360+00:00",
+    "end_utc": "2026-09-15T19:16:08.285791+00:00",
+    "seconds": 0.114,
+    "exit_code": 0,
+    "log": ".scratch/audit/final-source-identity.log"
+  },
+  {
+    "label": "progress-14",
+    "command": "bash -c 'tail -18 .scratch/audit/all-suites.log; tail -12 .scratch/audit/xbe-memory.log; tail -12 .scratch/audit/xbe-caves.log; tail -12 .scratch/audit/test_nfl2k5_scorebug_resources.log'",
+    "start_utc": "2026-09-15T19:17:14.976700+00:00",
+    "end_utc": "2026-09-15T19:17:14.985540+00:00",
+    "seconds": 0.009,
+    "exit_code": 0,
+    "log": ".scratch/audit/progress-14.log"
+  },
+  {
+    "label": "test_nfl2k5_scorebug_resources",
+    "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_resources.py",
+    "start_utc": "2026-09-15T19:13:39.282575+00:00",
+    "end_utc": "2026-09-15T19:17:25.945206+00:00",
+    "seconds": 226.663,
+    "exit_code": 0,
+    "log": ".scratch/audit/test_nfl2k5_scorebug_resources.log"
+  },
+  {
+    "label": "gate-counts",
+    "command": "env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 -",
+    "start_utc": "2026-09-15T19:17:33.930142+00:00",
+    "end_utc": "2026-09-15T19:17:34.094247+00:00",
+    "seconds": 0.164,
+    "exit_code": 0,
+    "log": ".scratch/audit/gate-counts.log"
+  },
+  {
+    "label": "progress-15",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:18:39.520276+00:00",
+    "end_utc": "2026-09-15T19:18:39.550227+00:00",
+    "seconds": 0.03,
+    "exit_code": 0,
+    "log": ".scratch/audit/progress-15.log"
+  },
+  {
+    "label": "progress-16",
+    "command": "bash -c 'tail -18 .scratch/audit/all-suites.log; tail -8 .scratch/audit/xbe-memory.log; tail -8 .scratch/audit/xbe-caves.log; tail -8 .scratch/audit/test_nfl2k5_scorebug_freeze_v2.log'",
+    "start_utc": "2026-09-15T19:19:50.708770+00:00",
+    "end_utc": "2026-09-15T19:19:50.719743+00:00",
+    "seconds": 0.011,
+    "exit_code": 0,
+    "log": ".scratch/audit/progress-16.log"
+  },
+  {
+    "label": "progress-17",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:21:00.844997+00:00",
+    "end_utc": "2026-09-15T19:21:00.877409+00:00",
+    "seconds": 0.032,
+    "exit_code": 0,
+    "log": ".scratch/audit/progress-17.log"
+  },
+  {
+    "label": "checkpoint-bundle",
+    "command": ".scratch/g bundle create .scratch/astra-b71-a5.bundle astra/b71-a5-scorebug-integrate '^e2f5c6e6'",
+    "start_utc": "2026-09-15T19:21:17.813108+00:00",
+    "end_utc": "2026-09-15T19:21:17.906578+00:00",
+    "seconds": 0.093,
+    "exit_code": 0,
+    "log": ".scratch/audit/checkpoint-bundle.log"
+  },
+  {
+    "label": "checkpoint-bundle-verify",
+    "command": ".scratch/g bundle verify .scratch/astra-b71-a5.bundle",
+    "start_utc": "2026-09-15T19:21:17.942794+00:00",
+    "end_utc": "2026-09-15T19:21:17.957252+00:00",
+    "seconds": 0.014,
+    "exit_code": 0,
+    "log": ".scratch/audit/checkpoint-bundle-verify.log"
+  },
+  {
+    "label": "checkpoint-size",
+    "command": "du -sh .scratch",
+    "start_utc": "2026-09-15T19:21:18.000839+00:00",
+    "end_utc": "2026-09-15T19:21:18.004536+00:00",
+    "seconds": 0.004,
+    "exit_code": 0,
+    "log": ".scratch/audit/checkpoint-size.log"
+  },
+  {
+    "label": "reproduction-script-portability",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:21:39.071550+00:00",
+    "end_utc": "2026-09-15T19:21:39.100722+00:00",
+    "seconds": 0.029,
+    "exit_code": 0,
+    "log": ".scratch/audit/reproduction-script-portability.log"
+  },
+  {
+    "label": "progress-18",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:22:31.761684+00:00",
+    "end_utc": "2026-09-15T19:22:31.789568+00:00",
+    "seconds": 0.028,
+    "exit_code": 0,
+    "log": ".scratch/audit/progress-18.log"
+  },
+  {
+    "label": "preserve-merge-evidence",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:22:54.705649+00:00",
+    "end_utc": "2026-09-15T19:22:54.736008+00:00",
+    "seconds": 0.03,
+    "exit_code": 0,
+    "log": ".scratch/audit/preserve-merge-evidence.log"
+  },
+  {
+    "label": "progress-19",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:23:44.474758+00:00",
+    "end_utc": "2026-09-15T19:23:44.502562+00:00",
+    "seconds": 0.028,
+    "exit_code": 0,
+    "log": ".scratch/audit/progress-19.log"
+  },
+  {
+    "label": "test_nfl2k5_scorebug_freeze_v2",
+    "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py",
+    "start_utc": "2026-09-15T19:17:25.983794+00:00",
+    "end_utc": "2026-09-15T19:23:48.325207+00:00",
+    "seconds": 382.341,
+    "exit_code": 0,
+    "log": ".scratch/audit/test_nfl2k5_scorebug_freeze_v2.log"
+  },
+  {
+    "label": "test_nfl2k5_scorebug_fonts",
+    "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_fonts.py",
+    "start_utc": "2026-09-15T19:23:48.356638+00:00",
+    "end_utc": "2026-09-15T19:23:56.901210+00:00",
+    "seconds": 8.545,
+    "exit_code": 0,
+    "log": ".scratch/audit/test_nfl2k5_scorebug_fonts.log"
+  },
+  {
+    "label": "test_nfl2k5_scorebug_template_release",
+    "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_template_release.py",
+    "start_utc": "2026-09-15T19:23:56.934213+00:00",
+    "end_utc": "2026-09-15T19:23:57.530051+00:00",
+    "seconds": 0.596,
+    "exit_code": 0,
+    "log": ".scratch/audit/test_nfl2k5_scorebug_template_release.log"
+  },
+  {
+    "label": "test_provider_integrity",
+    "command": "python3 tests/mod_editor/test_provider_integrity.py",
+    "start_utc": "2026-09-15T19:23:57.563436+00:00",
+    "end_utc": "2026-09-15T19:24:06.778170+00:00",
+    "seconds": 9.215,
+    "exit_code": 0,
+    "log": ".scratch/audit/test_provider_integrity.log"
+  },
+  {
+    "label": "test_product_catalog",
+    "command": "python3 tests/mod_editor/test_product_catalog.py",
+    "start_utc": "2026-09-15T19:24:06.810343+00:00",
+    "end_utc": "2026-09-15T19:24:06.960233+00:00",
+    "seconds": 0.15,
+    "exit_code": 0,
+    "log": ".scratch/audit/test_product_catalog.log"
+  },
+  {
+    "label": "test_phase1_packaging",
+    "command": "python3 tests/mod_editor/test_phase1_packaging.py",
+    "start_utc": "2026-09-15T19:24:06.993096+00:00",
+    "end_utc": "2026-09-15T19:24:09.242169+00:00",
+    "seconds": 2.249,
+    "exit_code": 0,
+    "log": ".scratch/audit/test_phase1_packaging.log"
+  },
+  {
+    "label": "test_nfl2k5_modern_color",
+    "command": "python3 tests/mod_editor/test_nfl2k5_modern_color.py",
+    "start_utc": "2026-09-15T19:24:09.274853+00:00",
+    "end_utc": "2026-09-15T19:24:16.547213+00:00",
+    "seconds": 7.272,
+    "exit_code": 0,
+    "log": ".scratch/audit/test_nfl2k5_modern_color.log"
+  },
+  {
+    "label": "registry-strict",
+    "command": "python3 -m mod_editor.capabilities.validate_registry",
+    "start_utc": "2026-09-15T19:24:16.580360+00:00",
+    "end_utc": "2026-09-15T19:24:16.729349+00:00",
+    "seconds": 0.149,
+    "exit_code": 1,
+    "log": ".scratch/audit/registry-strict.log"
+  },
+  {
+    "label": "all-suites",
+    "command": "python3 .scratch/run_suites.py",
+    "start_utc": "2026-09-15T19:01:44.833651+00:00",
+    "end_utc": "2026-09-15T19:24:16.742534+00:00",
+    "seconds": 1351.909,
+    "exit_code": 1,
+    "log": ".scratch/audit/all-suites.log"
+  },
+  {
+    "label": "progress-20",
+    "command": "bash -c 'tail -22 .scratch/audit/all-suites.log; tail -10 .scratch/audit/xbe-memory.log; tail -10 .scratch/audit/xbe-caves.log; tail -8 .scratch/audit/test_nfl2k5_scorebug_fonts.log'",
+    "start_utc": "2026-09-15T19:24:55.082571+00:00",
+    "end_utc": "2026-09-15T19:24:55.090744+00:00",
+    "seconds": 0.008,
+    "exit_code": 0,
+    "log": ".scratch/audit/progress-20.log"
+  },
+  {
+    "label": "registry-missing-evidence",
+    "command": "bash -c 'rg -n \"_local_path\" mod_editor/capabilities/validate_registry.py; .scratch/g ls-files docs/research/apf_audio.md; ls -ld docs/research docs/research/apf_audio.md; .scratch/g status --short'",
+    "start_utc": "2026-09-15T19:25:21.372524+00:00",
+    "end_utc": "2026-09-15T19:25:21.406636+00:00",
+    "seconds": 0.034,
+    "exit_code": 0,
+    "log": ".scratch/audit/registry-missing-evidence.log"
+  },
+  {
+    "label": "missing-registry-files",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:25:21.437436+00:00",
+    "end_utc": "2026-09-15T19:25:21.740055+00:00",
+    "seconds": 0.303,
+    "exit_code": 0,
+    "log": ".scratch/audit/missing-registry-files.log"
+  },
+  {
+    "label": "evidence-source-locations",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:25:48.441115+00:00",
+    "end_utc": "2026-09-15T19:25:48.466642+00:00",
+    "seconds": 0.026,
+    "exit_code": 0,
+    "log": ".scratch/audit/evidence-source-locations.log"
+  },
+  {
+    "label": "hydrate-registry-evidence",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:26:19.922656+00:00",
+    "end_utc": "2026-09-15T19:26:19.989420+00:00",
+    "seconds": 0.067,
+    "exit_code": 0,
+    "log": ".scratch/audit/hydrate-registry-evidence.log"
+  },
+  {
+    "label": "registry-strict-rerun",
+    "command": "env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 -m mod_editor.capabilities.validate_registry",
+    "start_utc": "2026-09-15T19:26:20.020247+00:00",
+    "end_utc": "2026-09-15T19:26:20.171805+00:00",
+    "seconds": 0.152,
+    "exit_code": 0,
+    "log": ".scratch/audit/registry-strict-rerun.log"
+  },
+  {
+    "label": "gates-after-hydration",
+    "command": "bash -c 'tail -10 .scratch/audit/xbe-memory.log; tail -10 .scratch/audit/xbe-caves.log'",
+    "start_utc": "2026-09-15T19:26:20.201388+00:00",
+    "end_utc": "2026-09-15T19:26:20.207737+00:00",
+    "seconds": 0.006,
+    "exit_code": 0,
+    "log": ".scratch/audit/gates-after-hydration.log"
+  },
+  {
+    "label": "validation-summary",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:26:47.196949+00:00",
+    "end_utc": "2026-09-15T19:26:47.223303+00:00",
+    "seconds": 0.026,
+    "exit_code": 0,
+    "log": ".scratch/audit/validation-summary.log"
+  },
+  {
+    "label": "update-registry-report",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:26:47.253458+00:00",
+    "end_utc": "2026-09-15T19:26:47.275829+00:00",
+    "seconds": 0.022,
+    "exit_code": 0,
+    "log": ".scratch/audit/update-registry-report.log"
+  },
+  {
+    "label": "progress-21",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:27:51.968131+00:00",
+    "end_utc": "2026-09-15T19:27:51.990149+00:00",
+    "seconds": 0.022,
+    "exit_code": 0,
+    "log": ".scratch/audit/progress-21.log"
+  },
+  {
+    "label": "repin-handoff",
+    "command": "python3 packaging/repin.py --apply",
+    "start_utc": "2026-09-15T19:28:36.174442+00:00",
+    "end_utc": "2026-09-15T19:28:46.411534+00:00",
+    "seconds": 10.237,
+    "exit_code": 0,
+    "log": ".scratch/audit/repin-handoff.log"
+  },
+  {
+    "label": "commit-handoff",
+    "command": "python3 .scratch/commit_handoff.py",
+    "start_utc": "2026-09-15T19:28:46.444731+00:00",
+    "end_utc": "2026-09-15T19:28:46.528876+00:00",
+    "seconds": 0.084,
+    "exit_code": 0,
+    "log": ".scratch/audit/commit-handoff.log"
+  },
+  {
+    "label": "xbe-memory",
+    "command": "env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_xbe_patch_memory_writes.py",
+    "start_utc": "2026-09-15T19:01:44.830809+00:00",
+    "end_utc": "2026-09-15T19:29:09.741976+00:00",
+    "seconds": 1644.911,
+    "exit_code": 0,
+    "log": ".scratch/audit/xbe-memory.log"
+  },
+  {
+    "label": "progress-22",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:30:06.906252+00:00",
+    "end_utc": "2026-09-15T19:30:06.929271+00:00",
+    "seconds": 0.023,
+    "exit_code": 0,
+    "log": ".scratch/audit/progress-22.log"
+  },
+  {
+    "label": "progress-23",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:31:06.045158+00:00",
+    "end_utc": "2026-09-15T19:31:06.074623+00:00",
+    "seconds": 0.029,
+    "exit_code": 0,
+    "log": ".scratch/audit/progress-23.log"
+  },
+  {
+    "label": "progress-24",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:32:13.908161+00:00",
+    "end_utc": "2026-09-15T19:32:13.930645+00:00",
+    "seconds": 0.022,
+    "exit_code": 0,
+    "log": ".scratch/audit/progress-24.log"
+  },
+  {
+    "label": "xbe-caves",
+    "command": "env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_xbe_patch_cave_references.py",
+    "start_utc": "2026-09-15T19:01:44.831693+00:00",
+    "end_utc": "2026-09-15T19:32:18.711853+00:00",
+    "seconds": 1833.88,
+    "exit_code": 0,
+    "log": ".scratch/audit/xbe-caves.log"
+  },
+  {
+    "label": "supervised-detached-checks",
+    "command": "bash .scratch/launch_checks.sh",
+    "start_utc": "2026-09-15T19:01:44.801352+00:00",
+    "end_utc": "2026-09-15T19:32:18.717905+00:00",
+    "seconds": 1833.917,
+    "exit_code": 1,
+    "log": ".scratch/audit/supervised-detached-checks.log"
+  },
+  {
+    "label": "progress-25",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:33:13.717050+00:00",
+    "end_utc": "2026-09-15T19:33:13.740232+00:00",
+    "seconds": 0.023,
+    "exit_code": 0,
+    "log": ".scratch/audit/progress-25.log"
+  },
+  {
+    "label": "confirm-required-verdicts",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:33:31.739088+00:00",
+    "end_utc": "2026-09-15T19:33:31.763186+00:00",
+    "seconds": 0.024,
+    "exit_code": 0,
+    "log": ".scratch/audit/confirm-required-verdicts.log"
+  },
+  {
+    "label": "testdisc-build",
+    "command": "bash reports/b71_a5/launch_testdisc71.sh",
+    "start_utc": "2026-09-15T19:33:31.790924+00:00",
+    "end_utc": "2026-09-15T19:33:32.068813+00:00",
+    "seconds": 0.278,
+    "exit_code": 1,
+    "log": ".scratch/audit/testdisc-build.log"
+  },
+  {
+    "label": "testdisc-log-and-output-state",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:33:48.702143+00:00",
+    "end_utc": "2026-09-15T19:33:48.728633+00:00",
+    "seconds": 0.026,
+    "exit_code": 0,
+    "log": ".scratch/audit/testdisc-log-and-output-state.log"
+  },
+  {
+    "label": "finish-report-content",
+    "command": "python3 -",
+    "start_utc": "2026-09-15T19:34:30.748879+00:00",
+    "end_utc": "2026-09-15T19:34:30.772976+00:00",
+    "seconds": 0.024,
+    "exit_code": 0,
+    "log": ".scratch/audit/finish-report-content.log"
+  },
+  {
+    "label": "repin-final",
+    "command": "python3 packaging/repin.py --apply",
+    "start_utc": "2026-09-15T19:34:30.801340+00:00",
+    "end_utc": "2026-09-15T19:34:40.945286+00:00",
+    "seconds": 10.144,
+    "exit_code": 0,
+    "log": ".scratch/audit/repin-final.log"
+  }
+]

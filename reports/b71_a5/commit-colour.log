@@ -1,0 +1,19 @@
++ /home/noah/2k-worktrees/astra-b71-a5/.scratch/g rev-parse HEAD
++ /home/noah/2k-worktrees/astra-b71-a5/.scratch/g rev-parse fable/b71-color2
++ /home/noah/2k-worktrees/astra-b71-a5/.scratch/g diff --name-only HEAD
++ /home/noah/2k-worktrees/astra-b71-a5/.scratch/g diff --cached --name-only
++ /home/noah/2k-worktrees/astra-b71-a5/.scratch/g add -- FABLE_B71_COLOR2_REPORT_2026-09-15.md data/nfl2k5_modern_color_pins.json docs/mod_editor/2k5_mod_studio_changelog.md docs/modern_color/README.md mod_editor/capabilities/registry.v1.json mod_editor/core/nfl2k5_modern_color.py tests/mod_editor/test_nfl2k5_modern_color.py
++ /home/noah/2k-worktrees/astra-b71-a5/.scratch/g ls-files --unmerged
++ /home/noah/2k-worktrees/astra-b71-a5/.scratch/g diff --cached --name-only
++ /home/noah/2k-worktrees/astra-b71-a5/.scratch/g write-tree
++ /home/noah/2k-worktrees/astra-b71-a5/.scratch/g commit-tree 955e4828544001fd55e0fe13a42250aadb8e806b -p 5dc29e391463ec1e8289030648d7910ba4e88b58 -p a7ada82e3d55b0f6c207770fc5da838886feff9b
++ /home/noah/2k-worktrees/astra-b71-a5/.scratch/g update-ref refs/heads/astra/b71-a5-scorebug-integrate e5afc22e33715d5c91d2f1dd25c8dc27a75b307a 5dc29e391463ec1e8289030648d7910ba4e88b58
+MERGE_COMMIT e5afc22e33715d5c91d2f1dd25c8dc27a75b307a
+EXPLICIT_PATHS
+FABLE_B71_COLOR2_REPORT_2026-09-15.md
+data/nfl2k5_modern_color_pins.json
+docs/mod_editor/2k5_mod_studio_changelog.md
+docs/modern_color/README.md
+mod_editor/capabilities/registry.v1.json
+mod_editor/core/nfl2k5_modern_color.py
+tests/mod_editor/test_nfl2k5_modern_color.py

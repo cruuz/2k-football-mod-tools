@@ -1,0 +1,17 @@
+test_nfl2k5_scorebug_mnf 0 11.8 Ran 10 tests in 11.532s; OK
+test_nfl2k5_scorebug_exact 0 74.358 Ran 8 tests in 74.038s; OK
+test_nfl2k5_scorebug_runtime 0 119.203 Ran 12 tests in 106.881s; OK
+test_nfl2k5_scorebug_native 0 132.24 Ran 4 tests in 101.377s; OK
+test_nfl2k5_scorebug_ingame_fix 0 130.154 Ran 9 tests in 129.813s; OK
+test_nfl2k5_scorebug_freeze 0 246.444 Ran 7 tests in 203.794s; OK
+test_nfl2k5_scorebug_resources 0 226.663 Ran 6 tests in 226.331s; OK
+test_nfl2k5_scorebug_freeze_v2 0 382.341 Ran 7 tests in 313.026s; OK
+test_nfl2k5_scorebug_fonts 0 8.545 Ran 10 tests in 8.260s; OK (skipped=5)
+test_nfl2k5_scorebug_template_release 0 0.596 Ran 5 tests in 0.529s; OK
+test_provider_integrity 0 9.215 Ran 7 tests in 9.060s; OK
+test_product_catalog 0 0.15 Ran 9 tests in 0.044s; OK
+test_phase1_packaging 0 2.249 Ran 23 tests in 2.174s; OK
+test_nfl2k5_modern_color 0 7.272 Ran 10 tests in 7.140s; OK
+registry-strict-rerun 0 0.152 MOD_CAPABILITY_REGISTRY_VALIDATION_PASS schema=vc_mod_capability_registry/v1 games=3 surfaces=21 capabilities=174
+Font skip declaration:
+V8_ONLY = unittest.skip("beta 69 private-font runtime (scoped FONT binding, possession glyph, compact score fonts): beta 70 binds no private FONT and draws the 2026 bar with the native fonts; see test_nfl2k5_scorebug_mnf.py, test_nfl2k5_scorebug_exact.py and test_nfl2k5_scorebug_freeze_v2.py")

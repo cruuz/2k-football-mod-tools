@@ -1,13 +1,9 @@
-T2 wiring delivered on astra/b70-a3-t2-wiring from ded9c222.
+Integrated scorebug v2 wings and capsule fonts with colour v2.1 on `astra/b71-a5-scorebug-integrate` in `.scratch/private.git`.
 
-Bundle: .scratch/astra-b70-a3.bundle
-Source/test commit: cbcccaee; final report commit and bundle verification details: .scratch/astra-b70-a3-delivery.json.
-Report: ASTRA_REPORT.md. Complete logs: reports/b70_a3/.
+All 14 standalone test programs passed, with five existing legacy-case skips in the font suite. Strict registry validation passed after restoring missing local evidence files. XBE gates passed: 119 memory-write tests and 131 cave-reference tests.
 
-25 standalone suites: 22 pass, 3 nonzero. All T2/A3 and provider integrity checks pass. Registry remains 174 rows; all capability count pins and protected scorebug/modern-color files are preserved.
+The detached combined disc build was attempted with Advanced and all four requested options enabled. The session mounts `/home/noah/2K5 Mod Studio Builds` read-only, so the access check failed before creating a disc or deleting anything. No disc option read-back is claimed. Run `bash reports/b71_a5/launch_testdisc71.sh` once that directory is writable.
 
-Strict validation remains blocked by 148 baseline evidence paths, first docs/research/apf_audio.md. Shell and packaging suites also lack private inputs. The extra T1 speed suite retains three old T2-encoding expectation failures; exact assertions are in the report. No test was weakened. Cache reuse and provider closure seams are fixed.
-
-Claude must regenerate the cave manifest and run the hydrated gates. Every in-game outcome remains UNWITNESSED. No push.
+Delivery: `.scratch/astra-b71-a5.bundle`, `ASTRA_REPORT.md`, and `reports/b71_a5/` with the builder, pin recipe, previews, and validation evidence. No push. No emulator launch.
 
 ASTRA_DONE

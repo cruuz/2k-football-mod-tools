@@ -1,0 +1,20 @@
+{
+  "status": "blocked",
+  "reason": "output directory is read-only in the session sandbox",
+  "exit_code": 1,
+  "disc": "/home/noah/2K5 Mod Studio Builds/NFL 2K5 MOD TEST 2026-09-15f (scorebug v2 + colour v2.1 + widescreen).xiso.iso",
+  "disc_exists": false,
+  "option_readback": null,
+  "planned_options": {
+    "scorebug": true,
+    "scorebug_runtime": true,
+    "modern_color": true,
+    "widescreen": true
+  },
+  "pruning_occurred": false,
+  "remaining_mod_test_images": [
+    "/home/noah/2K5 Mod Studio Builds/NFL 2K5 MOD TEST 2026-09-15b (advanced + 2026 scorebug + modern colour + widescreen).xiso.iso",
+    "/home/noah/2K5 Mod Studio Builds/NFL 2K5 MOD TEST 2026-09-15c (colour v2 + 2026 scorebug + widescreen).xiso.iso",
+    "/home/noah/2K5 Mod Studio Builds/NFL 2K5 MOD TEST 2026-09-15e (colour v2.1 + 2026 scorebug + widescreen).xiso.iso"
+  ]
+}
