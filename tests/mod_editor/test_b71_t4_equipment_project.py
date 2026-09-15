@@ -138,6 +138,17 @@ class ProjectRecoveryTests(unittest.TestCase):
         self.assertEqual(session.current_path(self.h.assets[self.normal.asset_id]).read_bytes(), self.originals[self.normal.asset_id])
         self.assertIn('needs refit', project_fit_labels(session)[self.normal.asset_id])
 
+    def test_failed_refit_preserves_all_pixels_and_undo(self):
+        session = self.reopen()
+        before = session._manifest_document()
+        undo = len(session._undo)
+        with self.f.context(), patch.object(writer, 'build_unified_uniform_equipment_imports',
+                side_effect=writer.EquipmentFitError(6784, 6785, ())), self.assertRaises(ValidationError):
+            staging.refit_equipment(session, self.normal.asset_id)
+        self.assertEqual(session._manifest_document(), before)
+        self.assertEqual(len(session._undo), undo)
+        self.assertEqual({e.asset_id: e.replacement_path.read_bytes() for e in session.iter_edits()}, self.originals)
+
     def test_corrupt_png_still_refuses_before_session_mutation(self):
         self.png.write_bytes(b'not a PNG')
         with self.f.context(), self.assertRaises(ValueError):

@@ -227,12 +227,15 @@ def refit_equipment(session, asset_id):
                 try:
                     compiled = writer.build_unified_uniform_equipment_imports(session.cache.pack0,
                         group + [(asset_id, png)], preflight_only=True, fit_asset_id=asset_id)
+                    prospective = {key: edit.replacement_path for key, edit in edits.items()}
+                    prospective[asset_id] = png
+                    checked = _checked_rows(session, prospective, by_id, selected=asset_id)
                 except writer.EquipmentRefitError as exc:
                     last = exc
                     continue
                 row = compiled.edit_templates[target.reference_index]
                 result = session.replace_batch(((asset, png),), label='Refit equipment')
-                checked = equipment_fit_rows(session)
+                _remember_fit(session, checked)
                 message = (f"Equipment {target.set_selector} / {target.name} {row['fit_summary']}; "
                            f"{compiled.rebuild_info.recompressed_bytes:,} bytes encoded. "
                            "Fine detail and shades may change. Undo restores the original artwork.")
