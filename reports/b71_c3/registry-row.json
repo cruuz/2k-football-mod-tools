@@ -1,0 +1,82 @@
+{
+  "backend": {
+    "command": "python3 -m mod_editor.core.nfl2k5_modern_color status <source>",
+    "module": "mod_editor/core/nfl2k5_modern_color.py",
+    "operation": "write"
+  },
+  "classification": "offline-writer-proved",
+  "evidence": [
+    "tests/mod_editor/test_nfl2k5_modern_color.py",
+    "data/nfl2k5_modern_color_pins.json",
+    "docs/modern_color/README.md",
+    "tests/mod_editor/test_colour_lighting.py",
+    "tests/mod_editor/test_colour_lighting_qt.py",
+    "docs/modern_color/CONTROLS.md"
+  ],
+  "game": "nfl2k5_xbox",
+  "gui": {
+    "default_enabled": false,
+    "expose": true,
+    "mode": "edit",
+    "reason": "EXPERIMENTAL. Build: Colour & lighting controls with predicted swatches, per-lever toggles and Broadcast / Retail resets. Off in every preset; settings persist with the project."
+  },
+  "id": "nfl2k5.presentation.modern_color_lighting",
+  "input_constraints": [
+    "Seven pinned .rdata light tables (0x120 bytes each) behind the retail selector and installer. Ambient, key, fill and white balance use the existing owner; directions, counts and shadow bytes stay retail. Night and dome share one table.",
+    "477 pinned stadium bundles: field SCNE, detail_normal, divots and Fldd tint. Fixed spans and retail wrappers remain unchanged. Unfit spans retain retail bytes and their receipts name the limitation.",
+    "Custom settings are validated finite values with bounded ranges. Each slider and group has an Off switch. End-zone and outside colour follow turf unless unlinked. Map contrast only adjusts variation already encoded in a colour map.",
+    "Regrading needs the original retail source. Same-recipe builds can replay only recognized bytes; custom status requires its own per-bundle receipt. Default retail/modern pins are unchanged.",
+    "PREDICTED turf uses the calibrated map-times-rig model. Wear, bump detail, tints, stripes and edge shade are outside the mean model. Dome, material turf, afternoon, rain, snow and alternate rigs are extrapolations."
+  ],
+  "portme": [
+    "Witness custom settings in day, afternoon, night, dome, rain and snow games; check whites and skin, painted end zones, outside grass, mowing contrast and far-field shimmer at matching resolution."
+  ],
+  "public_distribution": {
+    "game_data": "never-bundle-retail-data",
+    "mod_payload": "user-authored-inputs-and-recipes",
+    "rule": "Distribute authoring tools, values and verified recipes only. Never bundle a retail roster, executable, disc or texture.",
+    "tooling": "source-and-schemas-only"
+  },
+  "runtime": {
+    "evidence": [
+      "docs/modern_color/README.md",
+      "tests/mod_editor/test_nfl2k5_modern_color.py",
+      "FABLE_B71_COLOR2_REPORT_2026-09-15.md",
+      "tests/mod_editor/test_colour_lighting.py",
+      "tests/mod_editor/test_colour_lighting_qt.py",
+      "docs/modern_color/CONTROLS.md"
+    ],
+    "scope": "Offline custom parameter writes, decode read-back, byte-preserving wrappers, swatch calibration and offscreen project save/reload. The approved v2.1 Broadcast baseline is retained. New custom settings, other stadium/condition predictions and shimmer behaviour remain UNWITNESSED.",
+    "status": "not-tested"
+  },
+  "selectors": {
+    "fields": [
+      {
+        "allowed": "false (default) or true",
+        "name": "enabled",
+        "required": false
+      },
+      {
+        "name": "modern_color_settings",
+        "required": false,
+        "allowed": "nfl2k5_colour_lighting/v1 project document; 55 bounded numeric controls, group switches, per-control disabled list, surface links and preview selectors"
+      }
+    ],
+    "notes": "Option remains Off in all presets. Broadcast resets project controls to v2.1; Retail resets every lever to its retail value. To change or reset an already-graded disc, choose its original retail source. Custom status is applied (custom) with a matching .colour-lighting.json receipt."
+  },
+  "source_container": {
+    "format": "Xbox XBE .rdata tables with section-digest repair, plus in-place fixed-span archive resources in the stadium bundles",
+    "hash_pins": [
+      "8591344f69f7a0013c4e9cf9b5ae4e8dbc4f894488b97dd2a97be8885f9073e1",
+      "d27737d3020b5ae17ed9854c1a1f372f004b68ed7aca92d263b267414098d782",
+      "6ebd76243822a62010a280cf54d9b72974a6236501f68d45aad19421d3377e28",
+      "c9f0e5c7bd79926056f91cd21d8ae05b929eb5d635e22da5ea89d941bfdc7f9b"
+    ],
+    "resource": "VA 0x4E73B0..0x4E7B90 light tables; 477 archive bundles with field scenes, detail_normal, divots and Fldd tint",
+    "retail_file": "default.xbe (light tables) and the vc_53450030 archive packs holding the 477 stadium bundles"
+  },
+  "summary": "Tune stadium turf, linked end zones and outside grass, divot contrast, bump flattening, time-of-day tints and seven existing light rigs. Preview the calibrated mean turf colour, save custom project settings and build with fixed-span receipts.",
+  "surface": "stadiums_fields",
+  "title": "Modern colour and lighting (experimental)",
+  "validation_command": "python3 -m tests.mod_editor.test_colour_lighting"
+}

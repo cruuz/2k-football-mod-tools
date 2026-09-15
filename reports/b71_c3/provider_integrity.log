@@ -1,0 +1,28 @@
+E
+======================================================================
+ERROR: setUpClass (__main__.ProviderIntegrityTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-c3/mod_editor/core/capabilities.py", line 184, in load
+    document = load_and_validate(
+               ^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-c3/mod_editor/capabilities/validate_registry.py", line 314, in load_and_validate
+    _require(raw == canonical, "registry JSON is not canonical sorted pretty JSON")
+  File "/home/noah/2k-worktrees/astra-b71-c3/mod_editor/capabilities/validate_registry.py", line 107, in _require
+    raise RegistryError(message)
+mod_editor.capabilities.validate_registry.RegistryError: registry JSON is not canonical sorted pretty JSON
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-c3/tests/mod_editor/test_provider_integrity.py", line 182, in setUpClass
+    cls.registry = CapabilityRegistryLoader().load(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-c3/mod_editor/core/capabilities.py", line 188, in load
+    raise RegistryError(f"Cannot read capability registry: {exc}") from exc
+mod_editor.core.errors.RegistryError: Cannot read capability registry: registry JSON is not canonical sorted pretty JSON
+
+----------------------------------------------------------------------
+Ran 0 tests in 0.117s
+
+FAILED (errors=1)

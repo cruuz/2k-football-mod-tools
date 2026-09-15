@@ -5,5 +5,14 @@ All 14 standalone test programs passed, with five existing legacy-case skips in 
 The detached combined disc build was attempted with Advanced and all four requested options enabled. The session mounts `/home/noah/2K5 Mod Studio Builds` read-only, so the access check failed before creating a disc or deleting anything. No disc option read-back is claimed. Run `bash reports/b71_a5/launch_testdisc71.sh` once that directory is writable.
 
 Delivery: `.scratch/astra-b71-a5.bundle`, `ASTRA_REPORT.md`, and `reports/b71_a5/` with the builder, pin recipe, previews, and validation evidence. No push. No emulator launch.
+Implemented Colour & lighting with 55 sliders, individual and group toggles, linked surfaces, calibrated swatches, resets, saved project settings and custom receipts.
+
+All requested suites and the strict registry validator pass. Both detached XBE gates pass. All 477 bundle pins and seven rig pins retain v2.1. Custom in-game appearance remains UNWITNESSED.
+
+Private Git: `.scratch/astra-c3.git`, branch `astra/b71-c3-lighting-controls`.
+Bundle: `.scratch/astra-b71-c3.bundle`.
+Report: `ASTRA_REPORT.md`.
+
+No push or emulator. No scorebug modules changed.
 
 ASTRA_DONE

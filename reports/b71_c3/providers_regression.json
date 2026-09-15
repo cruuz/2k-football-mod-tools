@@ -1,0 +1,10 @@
+{
+  "command": [
+    "python3",
+    "tests/mod_editor/test_providers.py"
+  ],
+  "exit_code": 0,
+  "seconds": 3.927,
+  "started_utc": "2026-09-15T19:25:03.660747+00:00",
+  "log": "providers_regression.log"
+}

@@ -266,6 +266,7 @@ class BuildPlan:
     weather_plan: str = ""  # Saved nfl2k5.weather.edits.v1 JSON; EXPERIMENTAL, OFF
     weather_haze: bool = False  # Existing dry-weather coefficient; EXPERIMENTAL, OFF
     modern_color: bool = False  # Broadcast light rigs and grass re-grade; EXPERIMENTAL, OFF
+    modern_color_settings: dict = field(default_factory=dict)  # Project recipe; {} means v2.1
     # opt-in data patch: real historic players in the 35 shared historic roster files of the 25 moments
     espn25_rosters: bool = False
     # community playbook packs (.2k5book recipes) installed into the copy's team books.
@@ -786,7 +787,15 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
         out["modern_color"] = "unavailable"
     else:
         try:
-            out["modern_color"] = modern.xbe_status(_xbe_bytes(source))
+            colour_receipt = modern.read_image_receipt(source)
+            colour_settings = colour_receipt["settings"] if colour_receipt else None
+            out["modern_color"] = modern.xbe_status(_xbe_bytes(source), colour_settings)
+            if colour_receipt is not None:
+                bundles = modern.image_status(source, receipt=colour_receipt)
+                if bundles != out["modern_color"]:
+                    out["modern_color"] = "foreign"
+                else:
+                    out["modern_color_settings"] = colour_settings
         except (OSError, ValueError):
             out["modern_color"] = "unknown"
     finish = _core_module("nfl2k5_helmet_finish")
@@ -988,6 +997,10 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_bui
                 project_result = _project_builder(effective_source)
                 if effective_source.is_symlink() or effective_source.stat().st_nlink != 1:
                     raise ValueError("Project builder did not produce a private image")
+                from . import nfl2k5_modern_color as colour
+                original_colour_receipt = colour.read_image_receipt(source)
+                if original_colour_receipt is not None:
+                    colour._save_image_receipt(effective_source, original_colour_receipt)
             if plan.music_project:
                 if not tt.is_disc_image(source):
                     raise ValueError("Music replacements need a disc image")
@@ -1024,7 +1037,13 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_bui
             if progress:
                 progress(receipt["outcome"]["message"], 0, 0)
             progress("Publishing the verified disc", 0, 0)
+            from . import nfl2k5_modern_color as colour
+            colour_receipt = colour.read_image_receipt(directory / target.name)
             publish_image(directory / target.name, target, previous_target)
+            if colour_receipt is not None:
+                colour._save_image_receipt(target, colour_receipt)
+            else:
+                colour.receipt_path(target).unlink(missing_ok=True)
             receipt["stage_seconds"] = progress.finish()
             receipt["target"] = str(target)
             receipt["result"]["path"] = str(target)
@@ -1171,6 +1190,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Existing dry-weather haze response must be Off or On.")
     if type(plan.modern_color) is not bool:
         raise ValueError("Modern colour and lighting must be Off or On.")
+    from . import nfl2k5_modern_color as colour
+    colour.normalize_settings(plan.modern_color_settings)
     plan = replace(plan, weather_plan=plan.weather_plan.strip())
     if type(plan.espn25_plan) is not str:
         raise ValueError("espn25_plan must be text: the path of a saved ESPN Anniversary plan, or empty")
@@ -1404,15 +1425,23 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         modern = _core_module("nfl2k5_modern_color")
         if modern is None or not is_image:
             raise ValueError("Modern colour and lighting needs a disc image (the stadium bundles live in the archive packs).")
-        if modern.xbe_status(_xbe_bytes(source)) not in ("retail", "applied"):
-            raise ValueError("The light rigs are not recognized. Turn Modern colour and lighting off or rebuild from a supported USA source.")
-        progress("Checking the stadium bundles for Modern colour and lighting", 0, 0)
-        try:
-            bundle_state = modern.image_status(source)
-        except (OSError, ValueError) as exc:
-            raise ValueError(f"Modern colour and lighting cannot read the stadium bundles: {exc}") from exc
-        if bundle_state not in ("retail", "applied"):
-            raise ValueError("The stadium bundles are not the supported retail or already-modern set. Turn Modern colour and lighting off or rebuild from a supported USA source.")
+        previous_colour = modern.read_image_receipt(source)
+        previous_settings = previous_colour["settings"] if previous_colour else None
+        if modern.xbe_status(_xbe_bytes(source), previous_settings) not in ("retail", "applied", "applied (custom)"):
+            raise ValueError("The light rigs are not recognized. Choose the original retail source.")
+        progress("Checking the stadium bundles for Colour & lighting", 0, 0)
+        modern.check_image_request(source, plan.modern_color_settings, receipt=previous_colour)
+    elif is_image:
+        modern = _core_module("nfl2k5_modern_color")
+        if modern is not None:
+            previous_colour = modern.read_image_receipt(source)
+            previous_settings = previous_colour["settings"] if previous_colour else None
+            try:
+                source_colour_state = modern.xbe_status(_xbe_bytes(source), previous_settings)
+            except (OSError, ValueError):
+                source_colour_state = "unknown"
+            if previous_colour is not None or source_colour_state == "applied":
+                raise ValueError("This disc already has a colour grade. Choose the original retail disc as the source to turn it off or reset it.")
     if plan.playbook_packs and not is_image:
         raise ValueError("playbook packs need a disc image (the books live in the archive packs)")
     if plan.depth_chart_rows:
@@ -1975,11 +2004,13 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             if plan.modern_color:
                 raise
             current = None
-        if current is not None and (plan.modern_color or modern.xbe_status(current) == "applied"):
+        previous_colour = modern.read_image_receipt(source)
+        previous_settings = previous_colour["settings"] if previous_colour else None
+        if current is not None and (plan.modern_color or modern.xbe_status(current, previous_settings) in ("applied", "applied (custom)")):
             progress("Modern colour and lighting: light rigs", 0, 0)
-            patched, modern_receipt = modern.apply(current, enabled=plan.modern_color)
+            patched, modern_receipt = modern.apply(current, enabled=plan.modern_color, settings=plan.modern_color_settings, previous_settings=previous_settings)
             _write_xbe_bytes(target, patched)
-            modern.verify(_xbe_bytes(target), enabled=plan.modern_color)
+            modern.verify(_xbe_bytes(target), enabled=plan.modern_color, settings=plan.modern_color_settings)
             receipt["steps"].append({"step": "modern_color_xbe", **modern_receipt})
     progress("Verifying the composed disc", 0, 0)
     inspection = inspect(target, screen_timing=plan.screen_timing)
@@ -2076,9 +2107,10 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if plan.modern_color:
         modern = _core_module("nfl2k5_modern_color")
         progress("Modern colour and lighting: stadium bundles", 0, 0)
-        bundle_receipt = modern.apply_to_image(target, progress=progress)
+        bundle_receipt = modern.apply_to_image(target, progress=progress, settings=plan.modern_color_settings, source_receipt=modern.read_image_receipt(source))
         receipt["steps"].append({"step": "modern_color_bundles", **{k: v for k, v in bundle_receipt.items() if k != "edits"}})
-        receipt["result"]["modern_color"] = "applied"
+        receipt["result"]["modern_color"] = bundle_receipt["state"]
+        receipt["result"]["modern_color_settings"] = bundle_receipt["settings"]
     return receipt
 
 

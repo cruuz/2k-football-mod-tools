@@ -19,6 +19,50 @@ from nfl2k5_throw_tuning_test import _build_synthetic_xbe  # noqa: E402
 
 
 class ModBuildTests(unittest.TestCase):
+    def test_colour_receipt_is_published_with_the_disc_and_stale_receipts_are_removed(self):
+        from mod_editor.core import nfl2k5_modern_color as colour
+        settings = colour.default_settings()
+        settings["values"]["turf.value_lift"] = 3.1
+        colour_receipt = dict(schema=colour.RECEIPT_SCHEMA, settings=settings,
+                              settings_sha256=colour.settings_id(settings), bundle_pins={})
+        def staged(plan, *_args, **_kwargs):
+            Path(plan.target).write_bytes(b"built synthetic image")
+            if plan.modern_color:
+                colour._save_image_receipt(plan.target, colour_receipt)
+            return dict(steps=[], result={}, plan=plan.to_recipe())
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.object(mod_build, "_build", side_effect=staged):
+            source, target = Path(tmp) / "source.iso", Path(tmp) / "output.iso"
+            source.write_bytes(b"synthetic source")
+            result = mod_build.build(mod_build.BuildPlan(str(source), str(target), modern_color=True,
+                                                       modern_color_settings=settings))
+            self.assertEqual(colour.read_image_receipt(target), colour_receipt)
+            self.assertEqual(result["target"], str(target))
+            self.assertEqual(target.read_bytes(), b"built synthetic image")
+            mod_build.build(mod_build.BuildPlan(str(source), str(target), overwrite=True))
+            self.assertFalse(colour.receipt_path(target).exists())
+
+    def test_colour_preflight_routes_custom_parameters_and_refuses_before_copy(self):
+        from mod_editor.core import nfl2k5_modern_color as colour
+        from mod_editor.core import build_io
+        settings = colour.default_settings()
+        settings["values"]["turf.value_lift"] = 3.1
+        with tempfile.TemporaryDirectory() as tmp:
+            source, target = Path(tmp) / "source.iso", Path(tmp) / "output.iso"
+            source.write_bytes(b"synthetic source")
+            with mock.patch.object(tt, "is_disc_image", return_value=True), \
+                 mock.patch.object(tt, "_naming_source_preflight", return_value=None), \
+                 mock.patch.object(tt, "_check_installed_runtime_settings"), \
+                 mock.patch.object(mod_build, "_xbe_bytes", return_value=b"synthetic executable"), \
+                 mock.patch.object(colour, "xbe_status", return_value="retail"), \
+                 mock.patch.object(colour, "check_image_request", side_effect=ValueError("Choose original retail source")) as check, \
+                 mock.patch.object(build_io, "copy_image") as copy:
+                with self.assertRaisesRegex(ValueError, "original retail"):
+                    mod_build.preflight_plan(mod_build.BuildPlan(str(source), str(target), modern_color=True,
+                                                                 modern_color_settings=settings))
+                check.assert_called_once_with(source, settings, receipt=None)
+                copy.assert_not_called()
+                self.assertFalse(target.exists())
+
     def test_plan_applies_all_xbe_patches_in_one_copy(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             source = Path(tmp) / "default.xbe"

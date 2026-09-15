@@ -1,0 +1,14 @@
+[1] mod_editor/core/providers.py: mod_editor/core/mod_build.py
+    1607ab241b172b9cc0474c38c3ec28ee93660e39b56acce9e8779b98911fbbf0
+ -> bb289ee52c87212c73d8f9fbd3f664d795dbc27a578bf8545e9d0e2a37bcaee5
+[1] mod_editor/core/providers.py: mod_editor/core/nfl2k5_build_settings.py
+    bf578257897988e6efcf9942495537a32190f748e9bf89c935c0f971274affb9
+ -> cb615ee4856c60d371e1e4a4eba1b26f28fd855e02853626695d8644979ae237
+[1] packaging/check_2k5_mod_studio_runtime.py: mod_editor/gui/build_panel_qt.py
+    bedcea420e93793ccffe216a1a72b80751e895caaed7f7865cf3751eec62e680
+ -> 0c30daf1bc1b4b0f1227a807fbcc118f5715f0da020ba91d4a9cd47a2806ac28
+[1] packaging/check_2k5_mod_studio_runtime.py: mod_editor/gui/gameplay_project_ui.py
+    7222713aaaa0efbcc8851eb4ad3efa4ef31e8ad5352919e95b1ff9b39634c905
+ -> c867b725390e80e47a8a38a58859bd8e1dff1d41f82dfd60f7713f552af532f7
+
+applied 4 pin update(s)

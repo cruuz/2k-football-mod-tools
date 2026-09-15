@@ -115,10 +115,10 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
 B69_GAME_RUNTIME_PINS = {
     "mod_editor/core/nfl2k5_weather.py": "6540d7ffc8d441898f5a89988752efd6aa0238c87b4a0941c1962b7b3feba380",
     "mod_editor/core/nfl2k5_weather_haze.py": "3d045e099f1585658b899ab6e7d3560e92edb24529ca8d6f224e901dc7712ff9",
-    "mod_editor/gui/build_panel_qt.py": "bedcea420e93793ccffe216a1a72b80751e895caaed7f7865cf3751eec62e680",
+    "mod_editor/gui/build_panel_qt.py": "0c30daf1bc1b4b0f1227a807fbcc118f5715f0da020ba91d4a9cd47a2806ac28",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "6377a6089d0c01233b810e0ec82f962dfbc40cdea6d80cb8dbf092b2f83b8839",
     "mod_editor/gui/my_career_panel_qt.py": "8a27ccdc2a649d122d6c21f9a646e47539b55c00653afc789e9b018fb581c823",
-    "mod_editor/gui/gameplay_project_ui.py": "7222713aaaa0efbcc8851eb4ad3efa4ef31e8ad5352919e95b1ff9b39634c905",
+    "mod_editor/gui/gameplay_project_ui.py": "c867b725390e80e47a8a38a58859bd8e1dff1d41f82dfd60f7713f552af532f7",
     "mod_editor/gui/beta62_options.py": "f952b005161209eef1b2fa090528f4a017a657718c034d122d9bcc6550c68e72",
     "tools/nfl2k5_weather_editor.py": "65b45c3b25d47dc9cc672bd46a4719264ce4033aeca76632aaf44e9023b6cbfd",
     "tools/nfl2k5_weather_time_of_day.py": "37b2bd10f686db9fa99ba9034f9a7f68daa00bff516250ac0f67678880b98b47",
@@ -128,6 +128,7 @@ B69_GAME_RUNTIME_PINS = {
 
 REQUIRED_UNIFIED_PROVIDER_CLOSURE = frozenset(
     {
+        "mod_editor/core/nfl2k5_modern_color.py",
         "mod_editor/core/responsive_json.py",
         "mod_editor/core/nfl2k5_digit_texture.py",
         "mod_editor/core/nfl2k5_equipment_import_intent.py",
@@ -1917,6 +1918,7 @@ def main() -> int:
         "mod_editor.gui.music_panel_qt",
         "mod_editor.gui.scorebug_studio_panel_qt",
         "mod_editor.gui.gameplay_project_ui",
+        "mod_editor.gui.colour_lighting_qt",
         "mod_editor.core.nfl2k5_animation_bones",
         "mod_editor.core.nfl2k5_animation_import",
         "mod_editor.core.nfl2k5_animation_xbe",

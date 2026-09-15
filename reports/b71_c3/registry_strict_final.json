@@ -1,0 +1,11 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "mod_editor.capabilities.validate_registry"
+  ],
+  "exit_code": 0,
+  "seconds": 0.167,
+  "started_utc": "2026-09-15T19:25:03.669295+00:00",
+  "log": "registry_strict_final.log"
+}

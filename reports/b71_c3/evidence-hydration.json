@@ -1,0 +1,381 @@
+{
+  "source": "/home/noah/2k-football-mod-tools",
+  "operation": "read-only text copy; source unchanged; evidence excluded from commits",
+  "files": [
+    {
+      "path": "docs/research/apf_assassins_helmet_selector_checkpoint.md",
+      "sha256": "56e922eb776e8386e600eed094eeef2adbb5f71b1184523fc97cfeceaf787acd",
+      "bytes": 4050
+    },
+    {
+      "path": "docs/research/apf_audio.md",
+      "sha256": "ea5b76b0ff06a620b59fbfae064c369331100078ce32aceff52575d97387ce47",
+      "bytes": 20240
+    },
+    {
+      "path": "docs/research/apf_custom_team_appearance.md",
+      "sha256": "512e34093b013945ef2de8e1c0055452491348af07ca6c22e999b575fbeb5a00",
+      "bytes": 6605
+    },
+    {
+      "path": "docs/research/apf_digital_font_patch.md",
+      "sha256": "2c3c5f862dce132ce207885614e643e8eac65a6d35a9b2087a4d61303f85b673",
+      "bytes": 9843
+    },
+    {
+      "path": "docs/research/apf_franchise_mod_feasibility.md",
+      "sha256": "4d7b6b6b3d14b18a8bc758b87bfb0b39b80647a36346ae9e88bbd08f0113f1f9",
+      "bytes": 7376
+    },
+    {
+      "path": "docs/research/apf_franchise_runtime_ownership.md",
+      "sha256": "e1a6f348d63f6d426c27c884470633fc0d8a776c7e5cba1eb42163d3e3a7050a",
+      "bytes": 10656
+    },
+    {
+      "path": "docs/research/apf_helmet_family_patch.md",
+      "sha256": "b569ea23a494ccb90aa3070a56768b6eb58585b51b73b728102a428ab23e5896",
+      "bytes": 6781
+    },
+    {
+      "path": "docs/research/apf_jersey_family_patch.md",
+      "sha256": "bd082dd5dace3d76ec8b80907226210a5367572a7f6a6ac3210baffc76bf34eb",
+      "bytes": 6470
+    },
+    {
+      "path": "docs/research/apf_jersey_selector_writeback.md",
+      "sha256": "5cd947d51b25cc8e9ebbfb4bd3afe81c9d4fb4418fd573cf1f19a589bc1d92ac",
+      "bytes": 7229
+    },
+    {
+      "path": "docs/research/apf_nfl_cut_content_lineage.md",
+      "sha256": "51558d4b10c3fe916f2350d9f77be2920cca0436fc1d77896153e78516d654fb",
+      "bytes": 36690
+    },
+    {
+      "path": "docs/research/apf_pants_family_patch.md",
+      "sha256": "3635658e824b7622f43d8eade7a52e03e5e42a98363f24d9ab4d6d4d17825326",
+      "bytes": 8403
+    },
+    {
+      "path": "docs/research/apf_roster.md",
+      "sha256": "c387fb9946c7bec889f4c1dba418b84927ad936abe73f41a78bad857bc531be6",
+      "bytes": 19368
+    },
+    {
+      "path": "docs/research/apf_scene.md",
+      "sha256": "3c972eab05effe039e26ac620b639c918f21733b946884aafecf4cc4dc9216c4",
+      "bytes": 24735
+    },
+    {
+      "path": "docs/research/apf_scne_draw_topology_writeback.md",
+      "sha256": "c517bb4ba0207b385f114ba06a738e3a9e63a0d4929f6e2c9522207ac316b3e8",
+      "bytes": 7186
+    },
+    {
+      "path": "docs/research/apf_scne_static_serializer_spec.md",
+      "sha256": "fb663606c8439b083c632e1d78a3100ec7f957280923e2adfb14d6367e7cc6e3",
+      "bytes": 9855
+    },
+    {
+      "path": "docs/research/apf_shoulder_family_patch.md",
+      "sha256": "d06025b8b18e57ba646b01b90fece0702402e7a2a6a0dedc3c7de8c6b1bfdc40",
+      "bytes": 6084
+    },
+    {
+      "path": "docs/research/apf_stadium_catalog_position_writeback.md",
+      "sha256": "28e7cd0f91ca70dd0140104237093cba8be1b657d6d0f1a61a5f13d75ed0d4b7",
+      "bytes": 5679
+    },
+    {
+      "path": "docs/research/apf_stadium_static_position_writeback.md",
+      "sha256": "5a547fd27059b553acec56005d041ae6e1d0401125221bf732fd8e7e69a98581",
+      "bytes": 7946
+    },
+    {
+      "path": "docs/research/apf_stadium_static_target_catalog.md",
+      "sha256": "8eb81e7afaa065fedaef9a338ef5fc5c541268e57da52060a0b3c879d49a7fbe",
+      "bytes": 2700
+    },
+    {
+      "path": "docs/research/apf_static_gltf.md",
+      "sha256": "6eb87bd39efe136b60d9596f66aa70acc4ce8c591aba68d2aa4f893db6160da5",
+      "bytes": 4930
+    },
+    {
+      "path": "docs/research/apf_texture_roundtrip.md",
+      "sha256": "05393176c9a41c9b6143fc94d99ca2e8469e19b7949a5561dbc1efbe7da381d2",
+      "bytes": 10171
+    },
+    {
+      "path": "docs/research/apf_uniform_selector_allocation.md",
+      "sha256": "8be60f8154466061244fba2d03abb85aa1f429e65687013ef46f8a0b7c7d9918",
+      "bytes": 6433
+    },
+    {
+      "path": "docs/research/apf_uniform_selector_mod_release.md",
+      "sha256": "0274885f07c4b510e680458c79eaf74b3bdeb26de11cf99e20670919886468f7",
+      "bytes": 7959
+    },
+    {
+      "path": "docs/research/apf_uniform_selector_writeback.md",
+      "sha256": "28df88feac8cafe29d93bfa34a1f738524bd96597f2f9192be582db98d15b1f4",
+      "bytes": 9930
+    },
+    {
+      "path": "docs/research/apf_uniform_xenia_runtime.md",
+      "sha256": "02b2677a3470b2f1dc8be554ac1fdaa894649c5b941b285e92717858647dd183",
+      "bytes": 5719
+    },
+    {
+      "path": "docs/research/apf_uniforms.md",
+      "sha256": "ed5b379ca7d3c92ae769486beed6f7a6d05378d9e9ec0ee761ee21cdb1db5c61",
+      "bytes": 20220
+    },
+    {
+      "path": "docs/research/apf_xenia_patch_runtime.md",
+      "sha256": "87326a1536265e38e7f879db189cb112c90a206f99f5bd4cf4f9e01c83d71e00",
+      "bytes": 5955
+    },
+    {
+      "path": "docs/research/apf_xenia_season_coachdesk_experiment.md",
+      "sha256": "dbdd7f762b184d97a8a1582cd81c83593d6fb531efa3ea3ff3af6df6e11be12e",
+      "bytes": 3245
+    },
+    {
+      "path": "docs/research/audio_modding_compatibility.md",
+      "sha256": "6496292000926dd00fbb407927339ff95f198e3745e9f388021a70c8574fd951",
+      "bytes": 9687
+    },
+    {
+      "path": "docs/research/cross_title_model_compatibility.md",
+      "sha256": "447f43b3e149b2189556dc17bfdf2a6958ec5dcb4c866d2851de7ef3b99b63fc",
+      "bytes": 11493
+    },
+    {
+      "path": "docs/research/director_format.md",
+      "sha256": "56abf644adbd889d66f7e0c6a35751f1719f7cb9e804f13952298db4b5a5e649",
+      "bytes": 15478
+    },
+    {
+      "path": "docs/research/gameplay_tuning_ai_draft_modding.md",
+      "sha256": "9de79e8094c1160ec9883dddfb42a81bc000ce592c55472c29ef5afd716808be",
+      "bytes": 12660
+    },
+    {
+      "path": "docs/research/layout_format.md",
+      "sha256": "0bf1f9cd11040e3914a800d95aa00e51a96f02913944216081a538f398cb4973",
+      "bytes": 7250
+    },
+    {
+      "path": "docs/research/main_menu_label_patch.md",
+      "sha256": "bd6ebbdd6536a073879742ff686cb2b59b1d445f692a78a0616c56ec57ef81ba",
+      "bytes": 7125
+    },
+    {
+      "path": "docs/research/main_menu_named_inspector.md",
+      "sha256": "e59f653180bd256e97346ccf5397eda5af484a8f35e2df441cf86aa5dc2c3ba2",
+      "bytes": 2536
+    },
+    {
+      "path": "docs/research/menu_state_trace_closure_v2.md",
+      "sha256": "c524e8aacf565dceb81f356734b091cb01d2a96bf5c4868b3b7dd9d15757207a",
+      "bytes": 11515
+    },
+    {
+      "path": "docs/research/mod_editor_gameplay_franchise_inspection.md",
+      "sha256": "1cbb3a468b44d98b3f078e8567449ed11cb3a9c0b2f1681365560a60e29fe9d5",
+      "bytes": 2576
+    },
+    {
+      "path": "docs/research/nfl2k5_all_texture_replacement.md",
+      "sha256": "c722eabe791f3b3eaabb4c6a020950b4d0f549d39a75b886d2d9658fc056ca12",
+      "bytes": 4695
+    },
+    {
+      "path": "docs/research/nfl2k5_crib_electronics_model_swap_spike.md",
+      "sha256": "dc858b83a0eaaa95939099680e77b547b03821f40084c6472bedf79d96027589",
+      "bytes": 14764
+    },
+    {
+      "path": "docs/research/nfl2k5_ps2_fixture_protocol.md",
+      "sha256": "792f59c620be88fd4708c76db5940c6f6b949e6dfac1e97e880076812c495aef",
+      "bytes": 6691
+    },
+    {
+      "path": "docs/research/nfl2k5_unified_visual_mod_project.md",
+      "sha256": "761097822f8c590a3b2dea0c7fff05b00d919f9e758f1ba235060eab07212e14",
+      "bytes": 17295
+    },
+    {
+      "path": "docs/research/nfl2k5_xbox_save_inventory.md",
+      "sha256": "b2e7b3d6cc1fff09eb23c87200d3a60be2bb08817801780e462383959252e755",
+      "bytes": 8372
+    },
+    {
+      "path": "docs/research/nfl_actual_jersey_binding_away_loader_safe_xemu_runtime.md",
+      "sha256": "8259a15b369535841043ee4ee63e7db0e5002100e5206d8047c99005820e4507",
+      "bytes": 9014
+    },
+    {
+      "path": "docs/research/nfl_create_team_field_art_pipeline.md",
+      "sha256": "8a0a57ef813051d13f031dc244dd87f5d753b302b0a48032524d3f50fbb34096",
+      "bytes": 9460
+    },
+    {
+      "path": "docs/research/nfl_decompilation.md",
+      "sha256": "c414a5bd3587c02288dcbe1559390cbb1673a10efdf299043e4b7d30df8e3ea7",
+      "bytes": 17718
+    },
+    {
+      "path": "docs/research/nfl_draft_weight_xbe_integrity_probe.md",
+      "sha256": "21c582cbcb280ca01259569157adf3f01b40e8368beeb6d8ddd1299b686650b7",
+      "bytes": 1985
+    },
+    {
+      "path": "docs/research/nfl_franchise_limit_feasibility.md",
+      "sha256": "4ae922da52639f721b42aaee6aaf265650f271fb4354519ffcc6d9d179596af7",
+      "bytes": 5228
+    },
+    {
+      "path": "docs/research/nfl_group36_geometry_xiso_transport.md",
+      "sha256": "5a39d3de1a628e5c13cb53e3d3046a9cc9e192e57457d2a182c11e9d2140b7da",
+      "bytes": 7824
+    },
+    {
+      "path": "docs/research/nfl_group36_same_footprint_geometry_writeback.md",
+      "sha256": "cdb12e741c376e2764ddbc60dc93960551f8bc1e9b0cad0834ae0dad65325edf",
+      "bytes": 7391
+    },
+    {
+      "path": "docs/research/nfl_group36_xemu_runtime_result_v2.md",
+      "sha256": "8029d75627b01f1a5870b4b8e33eaeb3957865ae123ea6e50b90019dcc6a28cc",
+      "bytes": 10452
+    },
+    {
+      "path": "docs/research/nfl_live_face_texture_compatibility.md",
+      "sha256": "ee2fa0075db015ea4d692a35b003c7865700c428338cbe5dec11f7b64d0d2eb5",
+      "bytes": 7865
+    },
+    {
+      "path": "docs/research/nfl_main_menu_live_state.md",
+      "sha256": "315d96e025cb08867aa69f8f9d0b0c640f2af2572837e8075d473900f26ad4e4",
+      "bytes": 7804
+    },
+    {
+      "path": "docs/research/nfl_player_portrait_pipeline.md",
+      "sha256": "b83c763210910bc2cf491dcf194b9a993afadaba780902f5d3865a71708d07df",
+      "bytes": 10194
+    },
+    {
+      "path": "docs/research/nfl_player_roster_modding.md",
+      "sha256": "a84d21d562a467beca625303720dfc3d12b25ef86e1f3b16b92e3a86a77dfa35",
+      "bytes": 13387
+    },
+    {
+      "path": "docs/research/nfl_scene_audio_assets.md",
+      "sha256": "96d1fc97f7a542275ca3698f96969948ccdef47ad905831b5759407c7512c9b4",
+      "bytes": 26575
+    },
+    {
+      "path": "docs/research/nfl_scne_embedded_texture_png.md",
+      "sha256": "03af7829133e141b280c29a4c76289e66b4a72a12ee4bf615b0181434acf450f",
+      "bytes": 7855
+    },
+    {
+      "path": "docs/research/nfl_scorebug_font_xemu_runtime.md",
+      "sha256": "786c6cfb186e8381a6c8f98541d75b396a76a82458381efef13b92f5e11ea71c",
+      "bytes": 5030
+    },
+    {
+      "path": "docs/research/nfl_scorebug_shield_xemu_runtime.md",
+      "sha256": "53b47042722f7146cfd1ff5254683f8b63a2b39704aba8cdd442b748fe7afa02",
+      "bytes": 4932
+    },
+    {
+      "path": "docs/research/nfl_scorebug_xemu_runtime.md",
+      "sha256": "c71f1c2f63cd7f966f4864763b3ccff13bca5d6bdb990d99d2f9bc9c3366cc14",
+      "bytes": 4920
+    },
+    {
+      "path": "docs/research/nfl_stadium_catalog_position_writeback.md",
+      "sha256": "70814b7af841359ec638cce98ac934afa000f987cb05d6c7b07469523ffee7a1",
+      "bytes": 8327
+    },
+    {
+      "path": "docs/research/nfl_stadium_static_target_catalog.md",
+      "sha256": "42c2e7973cea97565e4e15c2b2771b065a2a51e35e77fe8fa33c1d2877c71fa9",
+      "bytes": 4334
+    },
+    {
+      "path": "docs/research/nfl_static_gltf.md",
+      "sha256": "7eda23f5bab9c75da9dadca53ce85bfa37ca3d6f188f7c8271142bafebbfc1ba",
+      "bytes": 6576
+    },
+    {
+      "path": "docs/research/nfl_static_position_writeback.md",
+      "sha256": "36dcdca66043e8cf6f44f35febdb2801802dd389bd8785c380b4f9fbcbb81687",
+      "bytes": 8045
+    },
+    {
+      "path": "docs/research/nfl_team_identity_modding.md",
+      "sha256": "fc579fd743e852fa5d1a4fd5a0259eb92ddc8ca5ce07d307858c53eebd305033",
+      "bytes": 11673
+    },
+    {
+      "path": "docs/research/nfl_team_select_card_pipeline.md",
+      "sha256": "bb96b306a287310dbe3d234335132d4a6cbb040b76d9cdedb78dfb52d03334fa",
+      "bytes": 10544
+    },
+    {
+      "path": "docs/research/nfl_uniform_color_xiso.md",
+      "sha256": "2621720d5fd97df00609cf58938cf201cf0ebf22ed7b46db1c874c55e8e29e9a",
+      "bytes": 8292
+    },
+    {
+      "path": "docs/research/nfl_upper_deck_changed_count_boundary.md",
+      "sha256": "d0913413403425a312240192c101f216871d4144f9b2027dbd10488d69d08176",
+      "bytes": 8051
+    },
+    {
+      "path": "docs/research/nfl_upper_deck_source_subset_writeback.md",
+      "sha256": "eb8254c3ed5939377010d9e4966b501dd36ad2410505ed3f860080ecce3d2ec8",
+      "bytes": 7025
+    },
+    {
+      "path": "docs/research/playbook_format.md",
+      "sha256": "476807c9b9d9c3991c4d2420990a91862d8514f20d5405eee47861eb40f55e88",
+      "bytes": 14199
+    },
+    {
+      "path": "docs/research/scorebug_presentation_modding.md",
+      "sha256": "dc94dea6d813aeb356385fb359a5d4b655f77522350e5a1ab3e6241a3cf8107d",
+      "bytes": 16946
+    },
+    {
+      "path": "docs/research/static_topology_conformance_gap.md",
+      "sha256": "54e8546d868b3e7765ad4ee60cad37b8a85cdf9892ca195015b558c16dda543d",
+      "bytes": 19396
+    },
+    {
+      "path": "docs/research/uniform_texture_sharing.md",
+      "sha256": "bf26bdaed259e280266aa806ac67e34c1227256cd78c4f91ca8591c24eb2dbb5",
+      "bytes": 11229
+    },
+    {
+      "path": "reports/asset_samples/apf/audio/ausb_halftime_0/report.json",
+      "bytes": 2277,
+      "sha256": "7ba851832ad1cec5543fac06869c07ea3f2f56338d1c122c86860b8493a9c06e"
+    },
+    {
+      "path": "reports/asset_samples/apf_roster/uniform_all_families_built_in_capacity.v1.json",
+      "bytes": 38317,
+      "sha256": "440226a974aa9719b706a039eafafb7ffef9c2389b2e461c8ba25bcf22e24727"
+    },
+    {
+      "path": "reports/asset_samples/nfl_static_gltf/3161_0006_stadium.gltf",
+      "bytes": 1315697,
+      "sha256": "9dd367962fad9a974e1341746b1254f2efaf6d765fa68f41d0b31c10a37b10e8"
+    }
+  ]
+}

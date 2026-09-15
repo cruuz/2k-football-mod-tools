@@ -183,6 +183,20 @@ class ProviderIntegrityTests(unittest.TestCase):
             allow_sample_fallback=False, check_files=False
         )
 
+    def test_colour_defaults_load_inside_the_isolated_provider_bundle(self):
+        import subprocess
+        import sys
+        provider = Nfl2k5UnifiedVisualProvider()
+        with _pinned_execution_bundle(self.provider_workspace, {**provider.module_pins, **provider.data_pins},
+                                      provider.backend_module, "colour settings") as module:
+            result = subprocess.run([sys.executable, "-I", "-c",
+                "import sys; sys.path.insert(0, sys.argv[1]); "
+                "from mod_editor.core.nfl2k5_build_settings import build_settings; "
+                "from mod_editor.core.nfl2k5_modern_color import default_settings; "
+                "assert build_settings({'modern_color_settings': default_settings()})['modern_color_settings']['values']['turf.value_lift'] == 2.8",
+                str(module.parents[1])], capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+
     def test_all_external_writer_and_verifier_import_closures_are_exactly_pinned(self) -> None:
         providers = (
             Nfl2k5UnifiedVisualProvider(),
@@ -201,7 +215,7 @@ class ProviderIntegrityTests(unittest.TestCase):
             # formation/play clone writer, fixed-slot audio, the fail-closed
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
-            [285, 10, 8, 9, 8, 9]  # beta 70: + equipment staging/reporting/import, music conform and existing MNF font dependency; beta 69: + nfl2k5_model_project (J2); beta 68: + nfl2k5_compile_cache (T1 build reuse); beta 66.1: + responsive_json (H1, unified + scorebug), nfl2k5_model_skeleton (H4); beta 66: + nfl2k5_digit_art (G), build_io, metadata_cache (B), jukebox_list, helmet_finish (D2)
+            [286, 10, 8, 9, 8, 9]  # beta 71: + existing colour owner for saved recipes; beta 70: + equipment staging/reporting/import, music conform and existing MNF font dependency; beta 69: + nfl2k5_model_project (J2); beta 68: + nfl2k5_compile_cache (T1 build reuse); beta 66.1: + responsive_json (H1, unified + scorebug), nfl2k5_model_skeleton (H4); beta 66: + nfl2k5_digit_art (G), build_io, metadata_cache (B), jukebox_list, helmet_finish (D2)
         )
         for provider in providers:
             entries = [provider.backend_module]
@@ -272,6 +286,7 @@ class ProviderIntegrityTests(unittest.TestCase):
         self.assertEqual(
             unified.data_pins,
             {
+                "data/nfl2k5_modern_color_pins.json": "56d7dc81e9b21eeed00ca456a9d8f486966d860912986517871b713b770a8c89",
                 "mod_editor/data/nfl2k5_crib_catalog.v1.json":
                     "c78801144df2f070e003ba458c5affa15a52cc00221cc1a3d9983f1fbf172cd8",
                 "mod_editor/data/nfl2k5_equipment_chain_pins.v1.json":

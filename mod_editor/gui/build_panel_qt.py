@@ -795,6 +795,11 @@ class BuildPanel(QWidget):
         self.modern_color_check = self._option(
             r, "modern_color", modern_color.BUILD_CAPTION, modern_color.HELP_TEXT,
             badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        from .colour_lighting_qt import ColourLightingControls
+        self.colour_lighting = ColourLightingControls()
+        r.addWidget(self.colour_lighting)
+        self.colour_lighting.changed.connect(self._refresh)
+        self.modern_color_check.toggled.connect(self.colour_lighting.set_active)
         self.player_star_check = self._option(
             r, "player_star", "Show a filled star under selected players",
             "A filled white star with a dark edge under every tagged player on the field; in-game appearance unwitnessed.",
@@ -1254,9 +1259,11 @@ class BuildPanel(QWidget):
         self._set_badge("weather_haze", "EXPERIMENTAL / UNWITNESSED" if haze_ok else
                         "Haze reader unavailable; choose a supported USA source")
         modern_state = state.get("modern_color")
-        modern_ok = bool(self._available.get("modern_color", False) and is_image and modern_state in ("retail", "applied"))
+        modern_ok = bool(self._available.get("modern_color", False) and is_image and modern_state in ("retail", "applied", "applied (custom)"))
         self.modern_color_check.setEnabled(modern_ok)
-        self.modern_color_check.setChecked(modern_ok and modern_state == "applied")
+        self.modern_color_check.setChecked(modern_ok and modern_state in ("applied", "applied (custom)"))
+        if modern_ok and state.get("modern_color_settings"):
+            self.colour_lighting.set_settings(state["modern_color_settings"])
         self._set_badge("modern_color", "EXPERIMENTAL / UNWITNESSED" if modern_ok else
                         "Needs a supported USA disc image; light rigs unavailable")
         espn_state = str(state.get("espn25_plan"))
@@ -1581,6 +1588,7 @@ class BuildPanel(QWidget):
             weather_plan=(self.weather_plan_field.text().strip() if self.weather_plan_check.isChecked() else ""),
             weather_haze=self.weather_haze_check.isChecked(),
             modern_color=self.modern_color_check.isChecked(),
+            modern_color_settings=self.colour_lighting.settings(),
             screen_timing=(self.screen_timing_combo.currentText() if self.screen_timing_check.isChecked() else None),
             scorebug_runtime=self.scorebug_runtime_check.isChecked(),
             music_policy="jukebox_menus" if self.music_policy_check.isChecked() else "retail",
@@ -1678,7 +1686,7 @@ class BuildPanel(QWidget):
         if self._weather_haze_changed() and not self.weather_haze_check.isChecked():
             labels.append("Restore retail dry-weather haze response")
         if self._modern_color_changed() and not self.modern_color_check.isChecked():
-            labels.append("Restore retail light rigs (stadium grass stays as the source carries it)")
+            labels.append("Retail colour & lighting (choose the original retail source)")
         if self.cpu_scrambles_level.currentData() == "modern":
             labels.append(tt.cpu_scrambles_patch.BUILD_CAPTION + ": Modern")
         if self.star_players:
@@ -2119,9 +2127,14 @@ class BuildPanel(QWidget):
                 and self.weather_haze_check.isChecked() != (state == "applied"))
 
     def _modern_color_changed(self):
+        from mod_editor.core import nfl2k5_modern_color as colour
         state = (self._state or {}).get("modern_color")
-        return (self.modern_color_check.isEnabled() and state in ("retail", "applied")
-                and self.modern_color_check.isChecked() != (state == "applied"))
+        if not self.modern_color_check.isEnabled() or state not in ("retail", "applied", "applied (custom)"):
+            return False
+        enabled = self.modern_color_check.isChecked()
+        return (enabled != (state in ("applied", "applied (custom)")) or
+                enabled and colour.settings_id(self.colour_lighting.settings()) !=
+                colour.settings_id((self._state or {}).get("modern_color_settings")))
 
     def _weather_plan_problem(self):
         from mod_editor.core import nfl2k5_weather as weather

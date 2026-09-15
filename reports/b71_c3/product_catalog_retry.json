@@ -1,0 +1,10 @@
+{
+  "command": [
+    "python3",
+    "tests/mod_editor/test_product_catalog.py"
+  ],
+  "exit_code": 0,
+  "seconds": 0.254,
+  "started_utc": "2026-09-15T19:18:18.203805+00:00",
+  "log": "product_catalog_retry.log"
+}
