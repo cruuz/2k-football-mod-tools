@@ -1,0 +1,11 @@
+{
+  "command": [
+    "python3",
+    "packaging/repin.py",
+    "--apply"
+  ],
+  "exit_code": 0,
+  "seconds": 20.248,
+  "started_utc": "2026-09-15T19:28:00.624628+00:00",
+  "log": "repin_receipts.log"
+}

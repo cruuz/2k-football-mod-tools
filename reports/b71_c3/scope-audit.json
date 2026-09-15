@@ -1,0 +1,29 @@
+{
+  "base": "a7ada82e3d55b0f6c207770fc5da838886feff9b",
+  "changed_source_paths": [
+    "docs/mod_editor/2k5_mod_studio_changelog.md",
+    "docs/modern_color/CONTROLS.md",
+    "mod_editor/capabilities/registry.v1.json",
+    "mod_editor/core/mod_build.py",
+    "mod_editor/core/nfl2k5_build_settings.py",
+    "mod_editor/core/nfl2k5_modern_color.py",
+    "mod_editor/core/providers.py",
+    "mod_editor/gui/build_panel_qt.py",
+    "mod_editor/gui/colour_lighting_qt.py",
+    "mod_editor/gui/gameplay_project_ui.py",
+    "packaging/check_2k5_mod_studio_runtime.py",
+    "packaging/release-allowlist.txt",
+    "tests/mod_editor/test_colour_lighting.py",
+    "tests/mod_editor/test_colour_lighting_qt.py",
+    "tests/mod_editor/test_mod_build.py",
+    "tests/mod_editor/test_provider_integrity.py",
+    "tools/verify_colour_lighting_pins.py"
+  ],
+  "scorebug_modules_changed": false,
+  "modern_pins_unchanged": true,
+  "modern_pins_sha256": "56d7dc81e9b21eeed00ca456a9d8f486966d860912986517871b713b770a8c89",
+  "registry_count": 174,
+  "changed_registry_rows": [
+    "nfl2k5.presentation.modern_color_lighting"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "command": [
+    "python3",
+    "tests/mod_editor/test_mod_build.py"
+  ],
+  "exit_code": 1,
+  "seconds": 1.792,
+  "started_utc": "2026-09-15T19:06:32.373707+00:00",
+  "log": "mod_build_initial.log"
+}

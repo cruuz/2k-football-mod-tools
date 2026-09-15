@@ -1,0 +1,15 @@
+test_sites_the_option_leaves_alone_do_not_make_a_bundle_mixed (__main__.BundleStateTests.test_sites_the_option_leaves_alone_do_not_make_a_bundle_mixed) ... ok
+test_arrowhead_night_bundle_transform_matches_pins (__main__.BundleTests.test_arrowhead_night_bundle_transform_matches_pins) ... ok
+test_pins_cover_every_bundle_and_statuses (__main__.BundleTests.test_pins_cover_every_bundle_and_statuses) ... ok
+test_retail_tables_apply_replay_restore_and_foreign (__main__.LightRigTests.test_retail_tables_apply_replay_restore_and_foreign) ... ok
+test_rig_definitions_match_retail_light_counts (__main__.LightRigTests.test_rig_definitions_match_retail_light_counts) ... ok
+test_divots_palette_fades_and_regrades (__main__.PaletteTransformTests.test_divots_palette_fades_and_regrades) ... ok
+test_green_entries_move_toward_target_brighter_and_more_saturated (__main__.PaletteTransformTests.test_green_entries_move_toward_target_brighter_and_more_saturated) ... ok
+test_material_colour_word_regrade_keeps_alpha_and_non_greens (__main__.PaletteTransformTests.test_material_colour_word_regrade_keeps_alpha_and_non_greens) ... ok
+test_normal_flatten_raises_z_and_leaves_non_normal_palettes (__main__.PaletteTransformTests.test_normal_flatten_raises_z_and_leaves_non_normal_palettes) ... ok
+test_tints (__main__.PaletteTransformTests.test_tints) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 7.815s
+
+OK
