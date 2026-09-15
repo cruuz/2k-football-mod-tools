@@ -111,6 +111,8 @@ These are authored starting choices using existing scheme data, not exact
 historical coaching playbooks. The receipt names all selected content. This
 replacement does not set a team's run percentage; use CPU Play Calling for that.
 Choose its matching scheme if desired after reopening the replacement build.
+Donors come from the selected source game. Start from your clean original when
+you want stock donor content; an already edited donor supplies its edited plays.
 
 ![A checked and staged stock replacement](apf2k8_book_identity/stock-replacement.png)
 

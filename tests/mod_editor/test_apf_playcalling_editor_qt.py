@@ -135,7 +135,7 @@ class QtTests(FacadeFixture):
         self.assertIn("0/0/0", service.RATING_MAPPING)
         self.assertIn("0.1", service.RATING_MAPPING)
         for slider in self.panel.ratings:
-            self.assertIn("lower", slider.accessibleDescription().casefold())
+            self.assertIn("category", slider.accessibleDescription().casefold())
         self.assertIn("initial play weight", self.panel.play_rating.accessibleDescription())
         self.assertIn("weighs less", self.panel.ratings[0].accessibleDescription())
         self.assertEqual(self.panel.master_row.maximum(), 27)

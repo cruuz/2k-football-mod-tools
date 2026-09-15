@@ -1,318 +1,319 @@
-# Beta 70 T3: jersey choice and music imports
+# Beta 70 APF-1: Book Identity, portable bundle fits and Urianus handoff
 
-Branch: `astra/b70-t3-game-audio`, based on `df9b9dcf`. Implementation commit:
-`e64d61aa`. No emulator, GUI display, audio playback, network, disc copy or
-retail-byte fixture was used. Qt ran offscreen. Retail input was read-only.
+Branch `astra/b70-apf1`. Implementation checkpoint `665b1cb6`.
+Read `ASTRA_CONTEXT.md`, beta-70 rows 18–20 and Carried/additional requests,
+the hub's beta-69 triage, J9/J10, and all four beta-67 reports.
 
-## Outcome and integration boundary
+**Every in-game outcome is UNWITNESSED.** PROVED here means the named offline
+writer/reparse, test execution or bounded native experiment. HYPOTHESIS covers
+the football effect, reporter-specific cause and platform performance beyond
+this host. No emulator, display, audio, network, Discord message or push was used.
 
-- **PROVED:** both retail Controller Assign and exhibition Team Select callback
-  sets reach the patched choice handlers; crossing the available-era boundary
-  toggles only the selected side, and the kit selector consumes those words.
-  An explicit era reset **clears** the words. They do not survive it. No new
-  uniform-code defect or failing game transition was reproduced.
-- **Implemented:** the Music page warns before import about 22,050 Hz playback
-  and downsampling. A Music-only conversion owner tightens the existing SoXR
-  filter and adds deterministic TPDF dither at the final PCM16 conversion.
-- **PROVED:** the native NOW PLAYING list permits explicit repeated adds in both
-  retail and My songs. Five adds produce five nodes; profile rebuild does not
-  multiply them. The separate automatic playlist rejects duplicate records and
-  suppresses repeated active enqueue/completion requests.
-- **Required integrator work:** [WIRING.md](WIRING.md) supplies the two shared
-  `audio_conform.py` forwarders, release allowlist entry, selected-form inspection
-  field, Build/Gameplay captions and badges, preset default correction, and
-  registry edits. Until the shared forwarders land, the studio still calls the
-  old audio conversion path. This is not claimed as already wired.
-- **Every beta-70 in-game outcome is UNWITNESSED.** X_Ray's failure and Mud's audio
-  quality complaint remain unresolved. Keep the option EXPERIMENTAL. Existing
-  ADVANCED/EXPERIMENTAL presets currently enable jersey choice; WIRING requests
-  turning those two fields off to meet the shared beta-70 instructions. BASIC
-  already keeps it off. Practice/Xbox Live are not extended.
+## Delivered
 
-## 1. Uniform choice: executable facts versus hypothesis
+- [Walkthrough](docs/mod_editor/apf2k8_book_identity_walkthrough.md), linked
+  from Book Identity's **How this works** button and `APF2K8-README.md`.
+  It distinguishes labels/resources, independent CPU books, three existing
+  starting recipes, eight beta-69 calling schemes, Fine-tune, offline
+  `A_PROVEN` readback and the Xenia launch/patch boundary.
+- Three offscreen editor screenshots from the real replay tool. The focused
+  replay loads the retail identity table, selects Wide Zone, stages a stock
+  replacement through the real background worker, saves/reopens its project,
+  and opens the bundled guide. No game pixels are captured; the source-path
+  label is replaced with “Your built APF game folder”. The panel scrolls when
+  its expanded controls exceed the available height. Screenshots were opened
+  and visually inspected after fixing an overlap in the first layout.
+- ADVANCED **Replace starting content of a stock book**, unchecked by default
+  and reset after each successful staging. One explicit book/scheme choice
+  replaces that target; other staged target choices remain. Save/reopen, Undo,
+  source preservation, complete copied-build readback and allocation refusal
+  use the existing Scheme Presets provider and build dispatcher.
+  CPU Play Calling's staged preview also composes the replacement, reading
+  every donor from the source so two target choices cannot change each other's
+  inputs through their order. This integration was added during the final
+  consumer review and tested against the compiled replacement hashes.
+- Deduplication of pending six-mask fits, bounded transfer of fitted streams
+  from preflight to package workers, and cache keys that include encoder policy.
+  New `--disable-helper` and `--repeat-inputs` benchmark switches reproduce
+  portable and repeated-input cases across spawned workers.
+- Corrected rating help discovered during Urianus's review. Raw 0 is not
+  universally strongest: neutral equal 0 ratings give category weight 3 and
+  formation weight 0.5; equal 1 ratings give 2 and 2. Play X changes initial
+  weight, not a guaranteed call frequency. Numeric writers remain unchanged.
 
-X_Ray, September 14, 6:50 AM: “Also I don't even think the mod is even working
-properly. I can't pick away jerseys at home and vice versa.” The screenshot
-labels the option “Not yet tested in game”; it does not establish which form
-was actually built or which screen he used.
+## Stock replacement proof and limits
 
-### PROVED with retail bytes and bounded Unicorn execution
+The eight target names are **O-ManBlock, O-TwoBack, O-SinglebackAce,
+O-Singleback3WR, O-WestCoast, O-ZoneBlock, O-Shotgun, USER-o**. They resolve by
+filename/name, never assumed archive ordinal. The user's “O-ZoneBack” and
+“USER-0” are corrected to the actual resource names in the guide.
 
-`test_nfl2k5_uniform_choice_screens.py` installs `choice` with the real writer.
-It executes all eight retail screen wrappers, including their real team getter,
-era-validity lookup and preview-update callee. Synthetic team data contains
-sparse eras 0, 1, 5 and 14. No flip word is reseeded before the kit selector.
+`scheme_service.SCHEME_CONTENT` explicitly maps the eight beta-69 scheme IDs
+to named donors. Wide Zone, Spread-to-Run and Power/Gap apply the existing
+membership/audible recipes. The other schemes start from complete named donor
+content. All eight reuse beta-69 personnel preferences and formation deltas.
+This is an authored starting-content mapping, **HYPOTHESIS as a coaching scheme
+approximation**, not newly researched historical playbooks, new routes, blocking,
+motion or a team tendency write. The guide and each receipt state that limit.
 
-| Screen | Home next / away next | Home previous / away previous |
-| --- | --- | --- |
-| Controller Assign | `0x27AF50` / `0x27AF70` | `0x27AF90` / `0x27AFB0` |
-| Exhibition Team Select | `0x2C0BA0` / `0x2C0BC0` | `0x2C0BE0` / `0x2C0C00` |
+PROVED: replacement begins from the donor's whole book, so old target plays
+are not merged back. Existing writers apply membership, tags, ratings, name
+replacement, cache normalization and fixed-allocation H7A transport. The
+independent census verifies donor play memberships, audible slots, formation
+and personnel fields, allowed rating changes, rebuilt caches and the donor's
+special-call tail. Every ordinary personnel row must remain covered. A repeat
+compile from the same donor is identical. Conflicting Fine-tune selectors
+refuse with “build those first or revert them”.
 
-Next walks 0 → 1 → 5 → 14 → 0, toggling that side's colour word on the wrap.
-Previous from 0 goes to 14 and toggles. The other side's word stays unchanged.
-The wrappers return with the correct stack cleanup. The existing 18-test suite
-also covers all 30 states when all 15 eras exist, no-throwback/no-team cases,
-retail clamping, both forms, foreign rejection, idempotence and composition.
+The existing build receipt, **`.apf2k8-mod-studio-build.json`** in the output
+folder, includes complete before/after content, target/donor hashes, scheme,
+membership recipe, ratings, compressed allocation sizes and verification.
+The actual build reparses changed entries and compares unrelated bytes.
+`A_PROVEN: resource reparsed` remains an offline resource/assignment status.
 
-**The requested reset-survival premise is false.** The choice patch's reset
-at `0xE2D80` zeroes the eras at `0xE60210/0xE60214` and, at its patched tail
-`0xE2D91`, stores zero into `0xA69974/0xA69978`. The native setup prefix
-`0x77D20..0x77D40` executes this reset at `0x77D3B`; the test runs its two real
-bulk clears and the real reset. A direct-relative-call scan found the setup
-caller at `0x74AA6` and the reset caller at `0x77D3B`. That does not exclude
-indirect calls or establish a complete in-game event order.
+The read-only retail matrix tried **64 combinations: 38 fit, 26 named capacity
+refusals**. Example: Air Coryell into O-Singleback3WR needs **2,448 bytes**;
+that book holds **2,048**. No overflow is published, and no plays are silently
+dropped to fit. Choose another stock target or copy the scheme's donor into an
+independent book. Some target/recipe combinations are therefore intentionally
+unavailable. Every team sharing a replaced stock book receives its new content.
+Build and reopen before further Fine-tune or independent-copy work.
 
-The harness executes **setup reset → screen callbacks → kit selector**, then
-explicitly tries **screen callbacks → reset → kit selector** as a control. In
-the first case the choices reach the selector; in the control they are cleared.
-This distinguishes lifetime behavior from a claim to have reproduced X_Ray's
-failing transition. Clearing old game state during setup is not by itself a
-proved bug, so the reset bytes were retained.
+## PS3 bundle measurements and byte proof
 
-At game asset selection, `0x6160F` computes the retail Cowboys swap and combines
-it independently with the two words. The away read at `0x6168B` uses scratch
-`0xA6997C`; the home site uses `ESI`. The test observes the characters passed to
-the real name-formatting call sites `0x616B4/0x616FA`:
+Aszemple: “only thing is its very slow to import and build the logos from the
+PS3 Bundle”. The carried statement that the PS3 path never uses the helper is
+stale: J10 added that Linux path. This job measures with it **disabled in the
+parent and spawn workers**. The helper itself remains unchanged, 0755,
+18,568 bytes, SHA-256 `d081d19c0078f768d2cb935732c910945c55d372dd9e1cc2b3e16ef9cfcf86a0`.
 
-| Ordinary matchup, e.g. NYG home / PHI away | Home word | Away word | Home / away kit letters |
-| --- | --- | --- | --- |
-| Default | 0 | 0 | `h` dark / `a` white |
-| Home flipped | 7 | 0 | `a` white / `a` white |
-| Away flipped | 0 | 7 | `h` dark / `h` dark |
-| Both flipped | 7 | 7 | `a` white / `h` dark |
-
-Dallas at home starts with the opposite retail default; flipping both yields
-`h/a`. The final loader seam stubs only era-number lookup (`0xE2F20` returns 0)
-and formatting (`0x4A410`, `ret 8`), matching the existing harness. This proves
-colour characters supplied to the kit-name formatter, not archive resolution,
-rendered uniforms, preview art or a full playable game.
-
-The `rule` form remains one fixed home-dark/away-white rule, without a colour
-choice. WIRING names that distinction and reads the installed form from bytes.
-The core file changed only its explanatory docstring. Comparison against the
-pre-T3 source confirms identical generated sites in both forms:
-
-```text
-rule:   1 site, SHA256 58766d43aff1a2c6cf49fd82d235250f4fc041fde2336ec3020b98dc09df0a48
-choice: 7 sites, SHA256 928f125f974ed0d28b9886da11fa8a11f6f48af404246a3107f728d230f0d45a
-```
-
-### HYPOTHESIS / still needed
-
-Wrong form, unsupported screen, misunderstanding an era-only preview, or a
-reset on an unexecuted transition could explain X_Ray's report. None is proved
-as his cause. Do not present the bounded tests as overturning his report.
-
-### X_Ray witness recipe (integrator supplies the build)
-
-1. Rebuild from the original supported disc. Enable the jersey option and choose
-   **choice**, not **rule**. Keep the build receipt showing `uniform_choice:
-   choice`. Confirm the revised caption names that form.
-2. Use **Play Now / exhibition Team Select**, with NYG at home and PHI away (or
-   another ordinary non-Cowboys matchup). Use the normal jersey-era **D-pad
-   Up/Down** controls on the side being tested. Tap **Up** through the available
-   eras; one more Up past the last era returns to the current era. That wrap
-   should flip that side's colour. With no throwbacks, one tap should suffice.
-3. Flip **both** sides once, leave the teams/eras alone, and start the game.
-   Expected on the field: the home side wears white and the visitor dark.
-   Team Select's artwork still shows era only; a colour change in that preview
-   is not promised. Record the receipt and a field screenshot or short video.
-4. Repeat on **Controller Assign**, after team selection. Exercise **Down**
-   below the current/first era: it should jump to the last available era and
-   flip that side. Start without changing teams again and compare on the field.
-   Also try a one-side flip to check independence; both teams may then wear white.
-5. Report which screen, side, direction, era before/after, and whether the
-   failure happens before or only after advancing to game load. If it still
-   fails, keep the exact receipt/XBE identity and the complete transition video.
-   Practice and Xbox Live are outside this witness and outside this job.
-
-## 2. Music quality
-
-Mud, September 14, 3:46 AM: “Audio imports to its own playlist and doesn't crash
-the game when loading from The Crib but audio sound bad”.
-
-### PROVED: warning before import and conversion behavior
-
-The visible Songs page now explains: “The game plays music at 22,050 Hz
-(16-bit). Higher-rate files will be downsampled before import, which removes
-the highest frequencies.” It asks for the original file and a prepared-preview
-check. The fixed-slot Assignment Review repeats that warning before its worker
-starts. Offscreen tests assert that the warning exists before selecting files,
-and in the assignment dialog. No extra confirmation dialog was introduced.
-
-The input contract is PCM16 at 22,050 Hz; the existing bank writer still encodes
-Xbox IMA audio. The original Music importer already used SoXR precision 28;
-it was **not** an unfiltered decimator. The new Music owner uses the existing
-FFmpeg/SoXR implementation with `precision=33:cutoff=0.90:cheby=1`. This tightens
-rejection with slightly earlier top-end rolloff. Decode and resample stay float;
-gain, peak protection and any fixed-slot fade precede one PCM16 conversion.
-Native PCM16 fixed-slot input at unity gain without a fade stays exact.
-
-TPDF is triangular noise formed by subtracting two independent uniforms,
-spanning ±1 least-significant 16-bit step before rounding. One locally seeded
-generator persists across chunks, so repeat imports are reproducible and
-channels receive different noise. Exact digital zeros and padding stay zero.
-The ten-minute song bound, decode ceiling, cancellation, volume cap, source
-validation, twin transaction and archive writers keep their existing contracts.
-
-### Synthetic measurement (no listening)
-
-Two-second 48,000-Hz **float64** WAV sweeps, amplitude 0.75, converted to
-22,050-Hz float output. Discard 100 ms at each edge. The stopband sweep runs
-11,026–20,000 Hz, wholly above the output Nyquist limit of 11,025 Hz. Its
-residual output energy measures folding/error **before dither**. There cannot
-be output frequencies above Nyquist; the test measures energy folded down
-from input above that limit. Float64 avoids mistaking PCM16 source noise for
-filter leakage.
-
-| Measurement | Current shared path | New Music path |
+| Synthetic pipeline | Before, seconds | After, seconds |
 | --- | ---: | ---: |
-| Stopband residual, dBFS | -205.127294 | -228.323402 |
-| Passband 100–8,000 Hz, dBFS | -5.5090754 | -5.5090742 |
-| Stopband improvement | | **23.196108 dB** |
+| One six-mask crest | 17.179 | 14.171 |
+| 32 distinct six-mask crests | 102.174 | 72.916 |
+| 32 destinations repeating one six-mask input | 58.212 | 49.507 |
 
-The regression requires >6 dB improvement, <0.01 dB passband level difference,
-matching frame counts and a new residual below -150 dBFS. Both measured filter
-floors were already far below 16-bit noise; these numbers do not show an audible
-improvement or explain Mud's complaint. Dither adds low-level noise and reduces
-quantization bias; it is deliberately excluded from the alias measurement.
+For 32 distinct crests, measurement fell **36.647 → 28.197 s**, package
+compilation **28.890 → 12.911 s**, linked cache **28.583 → 25.197 s**.
+For the repeated-input case, measurement fell **23.393 → 12.929 s**. The
+baseline already reused worker-local results in some later phases; deduplication
+does not imply a 32-fold end-to-end speedup. The linked cache remains about
+24 seconds in that repeated case. No greater speed claim is made.
 
-For 100,000 samples at 0.25 LSB, the old quantizer outputs mean 0; the new mean
-is **0.24922 LSB**, with error variance **0.24871 LSB²** (target 0.25). Chunk
-splitting produces identical bytes; tests cover silence, clipping, independent
-channel noise, invalid floats, both import routes, frame counts and repeatability.
+These are single, shared-host Linux/Python 3.12.3 runs using J10's generated
+512×512 pairs, independent l0/l1 RGB masks, shade ladder, package writer,
+linked cache, span application, fsync and readback. Fixture generation, full
+game-folder copying, actual reporter files and normal source opening are
+outside the timer. Windows/macOS native execution and wall times are
+**UNWITNESSED**; equivalent improvement there is **HYPOTHESIS**. Inventory
+timings cover synthetic layouts, not a scan of all retail destination sources.
 
-The integration harness runs the existing 29 Music conform/simple/service tests
-against the new functions. This catches gain/peak behavior, padding, trim fades,
-mono cancellation, missing FFmpeg, codec import, cancellation, authored projects,
-encoded preview and source preservation. Shared callers still need WIRING.
+PROVED in [synthetic parity](reports/b70_apf1/synthetic_parity.json): all
+packages, complete fit receipts, written archive hashes and linked-cache
+directory/payload hashes match the beta-69 portable baseline for `[1,32]`,
+and for the separate repeated 32 case. The canonical native `[1,32]` outputs
+also match J10's committed `after_complete.json` exactly. The retained J10
+retail parity tool passes full packages at **36, 1133, 712** and linked-cache
+catalog **1**, including forced Python packages. No retail parity case skipped.
 
-### Mud quality witness recipe
+### Encoder policy, explicitly preserved
 
-Use the same short passage from a high-quality original, retaining its source
-rate and codec. Reimport with the integrated beta-70 build; compare the prepared
-encoded preview with the same passage in My songs/The Crib at similar volume.
-Report whether “bad” means hiss, distortion, dull treble, wrong speed, stuttering
-or a channel problem, and whether it already occurs in the studio preview.
-Retain the import notes and the source file privately for diagnosis. Also check
-that imports still appear under My songs and that entering The Crib still works.
-22,050 Hz cannot retain content above 11,025 Hz; restored high-frequency detail
-and audible quality are not claimed.
+The shipped beta-69 `compress_h7a_best` returns greedy without the Linux helper
+unless `APF_H7A_PYTHON_OPTIMAL=1`. Its broad changelog wording claiming default
+portable optimal was inaccurate. This job preserves the actual beta-69 output
+policy, rather than silently changing selected fit rungs on Windows/macOS.
+Greedy always runs first; the optimal rung is requested only after a miss and
+uses the established native/explicit portable policy. The optional portable
+optimal transcription remains byte-tested against the helper. Enabling it by
+default would be a separate behavior change and can take minutes on difficult
+art; that change is not included in these helper-disabled speed measurements.
 
-## 3. NOW PLAYING: two different lists
+Pending jobs now group by both input image hashes, the encoder policy, exact
+destination-layout signatures, minimum budgets, descriptors, offsets and all
+preserved seed bytes. Fits remain pairs of three region masks; no layer is
+mirrored or replaced by the other. Fitted streams are bounded to 64 MiB and
+keyed by the exact encoded block, shift, candidate limit, parse and policy.
+Package workers reread/hash the source before using them, then retain existing
+independent package verification. Altered masks, layout, source or policy miss
+the corresponding cache. No persistent disk cache or new binary was added.
 
-I inspected the saved frames `2k5-bugs_9ac2dfdc_1_11.png` and `_12.png` in the
-read-only Discord evidence folder. Both show five visible entries with the
-same truncated title, “27 Sam Spence, Da R…”, duration 1:32, collection My songs
-and artist Custom. NOR is selected; the selected row changes. This establishes
-repeated **display labels**, not how many add-button presses occurred, whether
-IDs differ, or whether automatic playback independently duplicated a track.
+## Claude → Noah: ready-to-send Urianus DM handoff
 
-### PROVED native queue and manifest trace
+Urianus's September 15 reply was “Not yet, got caught up with RL stuff. I'll do
+it in an hour or so”. His September 11 reports predate beta 67; this is not a
+claim that he tested and rejected beta 67/69. Nothing was sent to him by this
+job. The text below can be handed to Noah for the DM.
 
-- `nfl2k5_music_metadata` / `nfl2k5_music_collections` write the immutable
-  collection table, track IDs, titles and stream indices. They do not populate
-  NOW PLAYING by duplicating automatic shuffle records.
-- Native `0x27F1B0..0x27F33E` initializes the 400-node pool at `0xC3AC94`.
-  The harness executes this loop, stopping before sound-device setup.
-- `0x27F5F0` takes one free node and appends `{collection, song, identity}` to
-  the active list rooted at `0xC3CBE8`, incrementing count `0xC3CC04`.
-  It has no duplicate-ID guard. Five calls with the same tuple
-  yield five distinct nodes in **both retail collection 0 and My songs 18**.
-- Real scroll lookup `0x27F900` and title consumer `0x27F9A0` return the five
-  repeated entries. Profile writer `0x27F3A0` persists all five; two calls to
-  profile rebuilder `0x280530` each leave exactly five nodes. The only stub in
-  these operations is `0x191D20`, which selects synthetic profile zero.
-- `nfl2k5_music_playlist.Selection` rejects duplicate `(bank,index)` pairs.
-  Its installed read-only manifest describes a separate automatic background
-  shuffle bag, not the native display pool. `tools/nfl2k5_music_playlist.S`
-  guards active enqueue, advances through unique records, and suppresses a
-  boundary repeat when more than one item is enabled. Zero items stop; a single
-  enabled item naturally repeats after completion. Different IDs with the same
-  content/title are permitted.
-- The new test calls automatic enqueue five times while active and observes
-  **one** packet. Repeated completion/frame notifications over a five-song cycle
-  yield **five unique** packets. Existing playlist tests cover the broader
-  shuffled cycles, runtime descriptor bounds and replay/modal guards.
+**Before all four checks:** build a new folder, fully close Xenia, launch that
+folder through Studio and start a fresh matchup. Record BASE or TU 1.1, team,
+book name, saved roster/USER A/B override, down/distance, field position, score
+and clock. Keep the project and build receipt. The checks below are all
+**UNWITNESSED in game**; offline previews alone do not close them.
 
-No new duplicate-enqueue defect was proved, so neither native repeat semantics
-nor the playlist XBE writer was changed. The video alone does not justify
-removing the ability to deliberately add the same track twice.
+### 1. “REMOVING formations”
 
-### Mud queue witness recipe
+Beta 67 already removes all ordinary records for a formation, compacts complete
+surviving records and rebuilds caches. Beta 69 adds reversible **Never call
+(ordinary CPU lottery)**: it clears the formation's B membership masks while
+retaining its plays for explicit calls. It requires another surviving formation
+for every affected category. Special formations **151–162** stay protected;
+a cached Hail Mary can bypass ordinary membership.
 
-In a fresh/cleared NOW PLAYING list, add three visibly different songs once
-each, recording the queue after each press. Let them advance without pressing
-Add again. Then intentionally add one of them twice and compare. Report whether
-the original five repeats followed repeated Add presses, loading an existing
-saved queue, identical imported files/titles, or passive playback. Include the
-playlist choice manifest and whether background shuffle was enabled. Do not
-clear his only saved playlist; retain a copy or use a fresh test profile.
+**PROVED offline:** beta-67 native normalization retains compact removal;
+beta-69's prior 10,240-tuple test excludes ordinary formation 68. This job reruns
+the ordinary run/pass boundary and defensive exclusion suites, with real
+normalization. Saved working books, global merges and hot special caches remain
+outside that exclusion promise.
 
-## 4. Historical positive witness and release wording
+**Your exact check:** in O-Singleback3WR, remove an ordinary stock formation
+with surviving row coverage, build/restart and check both its menu absence and
+repeated CPU calls at 1st-and-10, 3rd-and-8 and goal line. Separately try Never
+call on a covered ordinary formation: it should remain available for explicit
+calls and disappear from the ordinary CPU preview/calls. Uncheck it and compare
+again. If it reappears, retain the active saved book and matchup context so we
+can identify the load/merge source. A special-call result does not test the
+ordinary Never call promise.
 
-Mud's beta-69 report/video positively witnesses imports in their own playlist
-and no crash while entering The Crib in that run. The beta-70 changelog quotes
-that success together with “audio sound bad”; it does not reopen the old Crib
-crash or claim new listening validation. It also quotes X_Ray's negative report,
-explains form/screen scope and leaves his cause unresolved.
+### 2. Added heavy sets and situational personnel gating
 
-## 5. Verification commands and results
+You reported added Jacks/Jokers “doesn't trigger them in run situations, like
+on GL”. Beta 67/69 already uses per-book category, formation and play lotteries;
+the separate seven-step lineup search is not that CPU selector. Add Formation
+already writes the required primary category and membership. USER-o copies use
+the same selector and do not bypass situations. Category roles are in shared
+MASTER, not a private per-book XEX personnel table.
 
-All commands ran from this worktree. Complete output is in `reports/b70_t3/`.
-No skips occurred in these runs. Each test file ran as a standalone Python
-entry point; the integration file loads the three existing suites under scoped
-Music delegation.
+**PROVED offline:** native O-Shotgun, O-Singleback3WR with added Jacks/Jokers,
+and a named clone select heavy run plays in the supplied goal-line state.
+This is a counterexample to a universal admission restriction; it does not
+reproduce your exact loaded-game result. Team tendency, history, loaded USER
+content and distinct special callers remain possible explanations, **HYPOTHESIS**.
 
-| Command | Output | Log |
-| --- | --- | --- |
-| `PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_uniform_choice.py` | 18 tests, OK | `uniform-existing.log` |
-| `PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_uniform_choice_screens.py` | 2 tests, OK | `uniform-screens.log` |
-| `PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_music_resample.py` | 4 tests, OK + sweep/dither numbers | `resample.log` |
-| `PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_music_queue.py` | 3 tests, OK + retail/custom queue counts | `music-queue.log` |
-| `QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_music_conform_integration.py` | 29 tests, OK | `conform-integration.log` |
-| `QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_music_panel_qt.py` | 9 tests, OK | `music-qt.log` |
-| `QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_music_simple_qt.py` | 9 tests, OK | `music-simple-qt.log` |
-| `PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_music_playlist.py` | 15 tests, OK; template verified | `music-playlist.log` |
-| `PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_music_metadata.py` | 7 tests, OK | `music-metadata.log` |
-| `PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_music_playlist_library.py` | 7 tests, OK | `music-playlist-library.log` |
-| `PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_music_playlist_manifest.py` | 2 tests, OK | `music-playlist-manifest.log` |
+**Your exact check:** add Jacks formation 9/category 0 and Jokers formation
+5/category 1 from O-Shotgun to O-Singleback3WR, carrying compatible run and pass
+plays. For a donor comparison, set their raw ratings to **2/4/4**. Preview
+1st-and-goal at the one, neutral tied first-quarter state. Build/restart, compare
+O-Shotgun, the edited stock book and an independently assigned copy, and log
+CPU goal-line run calls and visible personnel. If only the added/copy version
+fails, keep that saved book/project. Do not use 7/7/7 to favor heavy categories;
+the rating direction and the special 0-versus-1 distinction are now explicit.
 
-**105 passing test cases**, including the nested integration suites. The first
-Songs UI run failed because its old contract explicitly forbade showing
-“22,050”; it now requires the warning before import. A first queue harness
-attempt reached unrelated audio-device setup; it was bounded at `0x27F33E`
-after the complete pool loop. Both complete suites then passed as reported.
+### 3. “Except 5-2, which is never selected if added”
 
-`git diff --check` passed. `python3 packaging/repin.py --apply` ran after each
-pinned owner/help edit and before commits. Automatic changes only repinned the
-uniform provider hash and the shared-help hash in the packaging check; no
-packaging logic was edited. No uniform/playlist XBE bytes changed, as verified
-against the pre-T3 generator, so the conditional XBE memory-write/cave-reference
-and pairwise/oracle gates were not rerun. The existing uniform composition and
-playlist manifest tests passed. Integrator must regenerate the cave manifest
-as requested by the shared pinned-writer handoff and repin again after wiring.
+Beta 67 proved the ordinary defense request is row 13 in the mapped midfield
+matchup, while `5-2:Big` is stock row 12 and gets zero below-request weight.
+Beta 69 fixed the row-13 button to recognize the actual `5-2:Big` name.
+The EXPERIMENTAL MASTER edit affects every book carrying that category.
 
-Registry handoff adds one missing uniform-choice capability (172 → 173 rows)
-and updates existing audio evidence; it does not upgrade runtime status.
+**PROVED offline:** the prior beta-69 native 128-state comparison selected
+5-2 **0 times at row 12, 63 times after changing only its row to 13**. That is
+a supplied-state availability proof, not an in-game percentage. Near-goal
+requests differ, so “never in any situation” is too broad.
 
-The proposed registry handoff validates structurally at 173 rows, and every
-new row's backend/evidence path exists. Full registry file checks already fail
-on the unchanged base row 0 at `docs/research/apf_audio.md` (missing locally).
-That unrelated baseline gap is recorded in `registry-handoff.log`; it was not
-repaired or suppressed. Tool versions are in `environment.json`: Python 3.12.3,
-Unicorn 2.1.4, Capstone 5.0.7, FFmpeg 6.1.1-3ubuntu5.
+**Your exact check:** add formation 150/5-2 to X-43Cover2 from X-34Base. In
+Experimental MASTER personnel choose **Make 5-2 an ordinary candidate (row 13)**.
+Compare the defense preview against offensive personnel row 3 at midfield with
+Undo/reapply. Build/restart and repeat that matchup, recording actual 5-2 calls
+and its on-field lineup. Keep the MASTER edit separate from any executable
+curve or pass-fetch experiment so the result identifies the change.
 
-## Commit transport limitation
+### 4. “TEs are still not on 3rd”
 
-The implementation commit `e64d61aa` is on the requested branch. The final
-report/changelog commit could not update that branch because Git could not
-create `/home/noah/2k-football-mod-tools/.git/worktrees/astra-b70-t3/index.lock`:
-**Read-only file system**. No permission escalation was requested.
+Beta 67 proved third down itself does not forbid TEs: in a neutral cold native
+state, O-Shotgun uses Straight with a TE on 3rd-and-8/15, while the compared
+O-Singleback3WR chooses Flush without one. Ordinary category/formation ratings
+are the relevant book controls. Editing a MASTER role is shared by all books.
 
-The final documentation commit is instead supplied in `ASTRA_T3_HANDOFF.bundle`,
-created with temporary Git metadata inside an allowed scratch directory and the
-implementation commit as its prerequisite. The original repository metadata
-was not changed by this fallback. The bundle contains only the documentation,
-capability handoff and small test logs added by this job; no retail media.
-Import it in a writable integration checkout as described in WIRING.md.
+Beta 69 also fixed patch delivery: Studio copies its managed files into the
+actual launch storage's `patches` folder and forwards `--apply_patches`.
+The pass-fetch experiment affects only pass fetch subtypes 2/3/4, on any down.
+It does not intercept a successful ordinary third-down selection, or generic
+emergency subtype -1. Correct installation can therefore leave ordinary
+third-down calls unchanged.
+
+**PROVED offline:** native third-down tuples/TE role requests; authored role
+writer and bounded eleven-player-builder work in beta 67; fake-process argv,
+file placement, readback, enable/disable/removal tests in beta 69. Actual Xenia
+module application, depth eligibility and rendered substitutions are still
+UNWITNESSED.
+
+**Your exact check:** compare 3rd-and-3, 3rd-and-8 and 3rd-and-15 at midfield
+with O-Shotgun and the edited book carrying Straight/TE groups. Record formation,
+category, called play and visible TE count. Compare rating changes through
+preview and a fresh build. If testing pass-fetch separately, install the
+matching BASE/TU file, restart via Studio, and check Xenia's **Storage root:**
+and **Patcher: Applying patch for:** the intended TE-bias patch. The title count
+only proves discovery. BASE selector hash is `5447E5428AA2D52A`; TU 1.1 is
+`CEA825F7C2012F5A`. Retain rejection/hash logs if it does not apply.
+
+## Validation and integration
+
+Exact standalone commands, exit codes, counts and output tails are collected
+in [the test receipt](reports/b70_apf1/tests/results.json). The focused replay
+receipt is [here](reports/b70_apf1/book_identity_replay.json). Final test totals
+and gate output are listed below. Reproduction commands are in
+[the measurement recipe](reports/b70_apf1/REPRODUCE.md).
+
+Protected packaging/registry implementation files are unchanged in this
+worktree. [WIRING.md](WIRING.md) contains the exact existing capability-row
+replacement, four allowlist paths and narrowly pinned editor-image checks for
+both APF gates. **New capability rows: 0; shared/APF counts remain 172/72.**
+The tests use a temporary release stage with precisely that wiring applied.
+Its missing vendored extractors and their two accompanying text files are
+copied from the read-only alpha.69 release under the hub. The binaries are
+checked against the current exact pins; none of those four files is committed.
+Reports, test fixtures and game data do not enter the public stage.
+
+`packaging/repin.py --apply` is run after APF writer edits and last before each
+explicit-path commit; it has reported **applied 0 pin update(s)**. The helper
+mode remains 0755. No complete retail game folder or disc image was built;
+the stock build proof uses tiny synthetic archives. Retail matrix/parity/native
+inputs are read directly or decoded in memory. The existing mandatory
+`test_apf_logo_patch.py` source-preservation test does create and delete one
+temporary retail `0A` volume copy; its before/after source hashes agree. This
+is an exception to the supplied no-large-root-scratch rule, not an assertion
+that no retail bytes reached test scratch. The measured root free space was
+134 GB after the suites, above the context's reported initial state. Temporary
+test/staging files are removed when verification finishes.
+
+### Final results
+
+- **35 standalone suites, 343 cases: 342 passed, 1 skipped, 0 failures.**
+  The single skip is the core suite's missing worktree extractors; both
+  reviewed extractors are exercised by the staged release gate. All five
+  stock-replacement tests pass, including the 64-case retail matrix and a
+  copied synthetic build. The synthetic MASTER fixture is fully parseable;
+  the production compiler retains its strict upstream MASTER validation.
+- **22 native play-call research tests and 3 beta-69 retirement tests pass**,
+  included in the totals above. They remain bounded offline executions.
+  Offscreen UI, Undo/persistence, preview/build composition, source
+  preservation, crest fit, package and cache regressions also pass.
+- **Release gate: PASS**, 278 files, 10,260,794 bytes. **Runtime gate: PASS**,
+  156 modules and 72 APF capabilities. [Exact commands and output](reports/b70_apf1/gates.json)
+  record the temporary staging scope. A final comparison found 270 identical
+  product files, precisely the four protected WIRING differences, and the
+  four reviewed vendor files absent from this worktree. The guide and image
+  files in that stage match the committed product files.
+- [Synthetic parity](reports/b70_apf1/synthetic_parity.json) and
+  [retail parity](reports/b70_apf1/retail_parity.json) pass with no skips.
+  These establish byte preservation for the recorded fixtures and policies;
+  actual Windows/macOS execution and gameplay remain **UNWITNESSED**.
+
+Implementation checkpoint on `astra/b70-apf1`: `665b1cb6`. The final explicit-path commit includes
+the preview integration, strict-fixture regression, this report, and all
+measurement/test/gate receipts. No protected packaging or registry edits, user
+context files, retail data or temporary release tree are included. The remaining
+integration action is to apply **WIRING.md** in the owning packaging job; the
+remaining gameplay action is to run the four DM checks above in Xenia.
+
+The last `git add -- <explicit paths>` was blocked with **Read-only file system**
+at `/home/noah/2k-football-mod-tools/.git/worktrees/astra-b70-apf1/index.lock`.
+No approval or protected metadata write was attempted after that rejection.
+The final commit is therefore delivered using separate writable Git metadata in
+[the commit bundle](reports/b70_apf1-final.bundle), with an equivalent
+[mail patch](reports/b70_apf1-final.patch). The checked-out branch remains at
+the implementation checkpoint; the verified final files remain in the worktree.
+The bundle's `astra/b70-apf1-final` ref descends directly from `665b1cb6`.
+From a writable integration checkout at that checkpoint, fetch the bundle's
+`astra/b70-apf1-final` ref and merge `FETCH_HEAD` with `--ff-only`, or apply the
+mail patch with `git am`. Do not apply it over the same uncommitted changes.

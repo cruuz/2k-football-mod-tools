@@ -11,14 +11,47 @@ import unittest
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from mod_editor.apf_studio import scheme_service as service, build
+from mod_editor.apf_studio import scheme_service as service, build, playcalling_service, book_content
 from mod_editor.apf_studio.models import ApfSource
 from mod_editor.apf_studio.session import ApfSession
 from mod_editor.core import apf2k8_splb_writer as splb, apf2k8_book_clone as clone
 from mod_editor.core.apf2k8_book_identity import read_resource, filename_id
 from mod_editor.core.errors import ValidationError
 from tests.mod_editor import test_apf_book_unlock as fixture
-from tests.mod_editor.test_apf_b69_schemes import fixture as scheme_fixture
+from tests.mod_editor.test_apf2k8_playbook_route_writer import _synthetic_master
+
+
+def master_body():
+    """A fully parseable authored MASTER, including names and slot pointers."""
+    body = bytearray(_synthetic_master())
+    inventory = service.playbook_inventory
+    struct.pack_into('>IIII', body, 0x34, 3, 6, 28, 2)
+    body[inventory.APF_STRING_BASE:inventory.APF_FORMATION_MEMBERSHIP_BASE] = bytes(
+        inventory.APF_FORMATION_MEMBERSHIP_BASE - inventory.APF_STRING_BASE)
+    cursor = inventory.APF_STRING_BASE
+    def name(field, value):
+        nonlocal cursor
+        text = (value+'\0').encode('utf-16-be')
+        body[cursor:cursor+len(text)] = text
+        struct.pack_into('>i', body, field, cursor-field+1)
+        cursor += len(text)
+    name(0x30, 'MASTER')
+    for i in range(28):
+        at = inventory.APF_CATEGORY_BASE + i*16
+        name(at, f'Category {i}')
+        body[at+4] = splb.PERSONNEL_ROWS[i]
+        body[at+5:at+16] = bytes((0,5,5,6,7,7,10,8,9,9,9))
+    for i in range(3):
+        name(inventory.APF_FORMATION_BASE+i*inventory.APF_FORMATION_SIZE, f'Formation {i}')
+    for i in range(6):
+        at = inventory.APF_PLAY_BASE+i*inventory.APF_PLAY_SIZE
+        name(at, f'Play {i}')
+        struct.pack_into('>II', body, at+4, 0, 2 if i%2 else 8)
+        for slot in range(inventory.SLOT_COUNT):
+            pointer = at+0x10+slot*8
+            struct.pack_into('>i', body, pointer, inventory.APF_ROUTE_BASE-pointer+1)
+    inventory.parse_apf_body(bytes(body), 180, 0)
+    return bytes(body)
 
 
 def book_body(name):
@@ -46,7 +79,7 @@ class StockRecipeTests(unittest.TestCase):
                 return book_body(name)
         with patch.object(fixture, 'book_body', factory):
             self.index = fixture.archive_fixture(self.root/'game')
-        self.master = scheme_fixture()[1]
+        self.master = master_body()
         self.master_patch = patch.object(service, 'read_master_play_body', return_value=self.master)
         self.master_patch.start()
         self.addCleanup(self.master_patch.stop)
@@ -80,6 +113,9 @@ class StockRecipeTests(unittest.TestCase):
         reports = service.stage_replacement(self.session, 'O-ManBlock', 'air_coryell')
         self.assertIn(55, reports[0]['before_content'][0]['plays'])
         self.assertTrue(all(55 not in r['plays'] for r in reports[0]['after_content']))
+        with patch.object(book_content, 'master_inventory', return_value=({}, self.master)):
+            state = playcalling_service.Backend().load(self.session)
+        self.assertEqual(hashlib.sha256(state.books['O-ManBlock']).hexdigest(), reports[0]['output_sha256'])
         with patch.object(build, 'EXPECTED_TREE', self.tree), patch.object(build, 'EXPECTED_0A_SHA256', self.source.source_sha256):
             result = build.ApfBuildService(self.source).build(self.session.modifications, self.root/'output')
         output = self.root/'output/0A'
@@ -91,6 +127,13 @@ class StockRecipeTests(unittest.TestCase):
         self.assertTrue(result.manifest.is_file())
         self.assertIn('replaced_entire_content', result.manifest.read_text())
         self.assertIn('UNWITNESSED', result.manifest.read_text())
+        # Another replacement targets the first recipe's donor. Preview must
+        # continue to use the source donor, matching the build's order policy.
+        combined = service.stage_replacement(self.session, 'O-TwoBack', 'pro_spread')
+        with patch.object(book_content, 'master_inventory', return_value=({}, self.master)):
+            state = playcalling_service.Backend().load(self.session)
+        for report in combined:
+            self.assertEqual(hashlib.sha256(state.books[report['book_type']]).hexdigest(), report['output_sha256'])
 
     def test_capacity_refusal_is_atomic_and_names_next_step(self):
         with patch.object(service, 'rebuild_resource', side_effect=ValidationError('Rebuilt IFF needs 5000 bytes; allocation is 2048')):

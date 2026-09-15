@@ -222,12 +222,21 @@ class Backend:
             selected = tuple(c for c in changes if c.outer_index == outer)
             bodies[book.name] = self.splb.compile_book(book, selected).replacement if selected else book.body
         from . import scheme_service
+        source_books = {book.name: book for book in books.values()}
         for modification in session.modifications:
             if modification.kind == scheme_service.PROVIDER_KIND:
                 from mod_editor.core import apf2k8_scheme_presets as presets
                 for recipe in scheme_service.read_profile(modification):
                     name = recipe["book_type"]
-                    bodies[name] = presets.apply_preset(self.splb.parse_book(bodies[name], 0), recipe, inventory)[0]
+                    if recipe.get("schema") == scheme_service.REPLACEMENT_SCHEMA:
+                        donor_name = scheme_service.SCHEME_CONTENT[recipe["scheme_id"]][0]
+                        # Every replacement reads its donor from the source,
+                        # matching build compilation even when that donor is
+                        # also a target elsewhere in this staged profile.
+                        bodies[name] = scheme_service.replace_starting_content(
+                            source_books[name], source_books[donor_name], master, recipe)[0]
+                    else:
+                        bodies[name] = presets.apply_preset(self.splb.parse_book(bodies[name], 0), recipe, inventory)[0]
         sides = dict(self.splb.BOOK_SIDES)
         sides.update({label.kind: label.side for label in parsed.labels})
         return State(bodies, master, rost, teams, sides, inventory)

@@ -164,7 +164,7 @@ def read_profile(modification):
 
 def compile_recipes(index, recipes, changes=(), *, encode=True):
     master_body = read_master_play_body(index)
-    master = None
+    master = playbook_inventory.parse_apf_body(master_body, 180, 0)
     results = []
     for recipe in recipes:
         source = read_resource(index, filename_id(recipe["book_type"]), "spb", "SPLB")
@@ -182,8 +182,6 @@ def compile_recipes(index, recipes, changes=(), *, encode=True):
             donor = splb.parse_book(donor_source[3], donor_source[1].table_index)
             replacement, report = replace_starting_content(original, donor, master_body, recipe)
         else:
-            if master is None:
-                master = playbook_inventory.parse_apf_body(master_body, 180, 0)
             replacement, report = presets.apply_preset(current, recipe, master)
         final = splb.parse_book(replacement, outer)
         report["composition"] = {
