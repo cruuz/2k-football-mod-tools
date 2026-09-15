@@ -1,19 +1,25 @@
-"""EXPERIMENTAL / UNWITNESSED scorebug events in owned RX/RW pages.
+"""EXPERIMENTAL / UNWITNESSED 2026 Monday Night Football scorebug owner in owned RX/RW pages.
 
-The companion compiler loads native TXTRs and private FONTs with the HUD collection.
-Only loader-returned descriptors are bound; no raw pixel pointer is used.
+Beta 70 (revision 6): the owner binds ONE 128x32 wing texture per side (the
+team's current logo on its colour fading into the bar), so the resident cost
+of the option is 64 small textures instead of the 264 textures and 7 fonts of
+beta 69, which the intro's resource loader could not fit (a null read buffer
+kernel fault after the Berman intro, reproduced 2026-09-15). Timeout marks are
+text: the two retail team-name callbacks now write the remaining timeouts as
+dashes. The down plate takes the possessing team's colour every frame, the
+play clock turns ESPN red under five seconds, scores flash on a change and
+the native slide re-fires on a new down. No private FONT is bound; the ESPN
+digits live in the restyled retail fonts (nfl2k5_scorebug_mnf_font).
+
+Private textures are resolved in GAMEDATA, the resident HUD collection.
 Reserve the union of REQUESTS and other owners before applying either patch.
-
-Private resources are resolved in GAMEDATA, the resident HUD collection.
-The global registry also visits caches and type-blind indexed collections;
-it is not a safe namespace for the private FONT/TXTR names.
 """
 from __future__ import annotations
 
 import struct
 
 from . import nfl2k5_xbe_space as space
-from . import nfl2k5_scorebug_fonts as fonts
+from . import nfl2k5_scorebug_fonts as fonts  # noqa: F401 - the historical beta 61 emitter test runs old code in this namespace
 from . import nfl2k5_scorebug_ingame as scene
 from .nfl2k5_draft_ai import _Asm
 from .nfl2k5_bump_strength import _sections, section_digest
@@ -23,18 +29,24 @@ CODE_SIZE, DATA_SIZE = 1408, 128
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
 HOOKS = {"setup": (0xFCE56, bytes.fromhex("e845f3ffff")),
          "update": (0xFCFA2, bytes.fromhex("e819faffff"))}
-# State: scene, populated, two material pointers, eight resident texture pointers,
-# two scores, two flash timers, down, possession, ball/line positions, phase,
-# normal/compact score FONT descriptors. All state stays inside 128 bytes.
-SCENE, POPULATED, MATERIALS, TEXTURES = 0, 4, 8, 16
-SCORES, FLASH, DOWN, POSSESSION, BALL, LINE, PHASE = 48, 56, 64, 68, 72, 76, 80
-FONT_SCORE, FONT_COMPACT = 84, 88
-SCORE_FONTS = (0xa95968, 0xa959a0)
+REVISION = 6
+# State (128 bytes): scene, populated, two wing materials, the plate material,
+# two wing textures, two scores, two flash timers, down, possession, ball/line,
+# phase. All state stays inside the owned RW page.
+SCENE, POPULATED, MATERIALS, PLATE, TEXTURES = 0, 4, 8, 16, 20
+SCORES, FLASH, DOWN, POSSESSION, BALL, LINE, PHASE = 32, 40, 48, 52, 56, 60, 64
 HOME_CONTEXT, AWAY_CONTEXT = 0xB30864, 0xB30A58
 SCORE_POINTERS = (0xE5FC28, 0xE5FC68)
 SCORE_COLORS = (0xA95958, 0xA95990)
-DARK, RED, WHITE, ACCENT = 0xFF111118, 0xFFD0021B, 0xFFFFFFFF, 0xFFFFD166
-PLAY_CLOCK_NORMAL = WHITE
+CITY_CALLBACKS = (0xA958AC, 0xA95884)  # home, away text records (retail 0xFC030 / 0xFC010), same order as SCORE_POINTERS
+PLATE_MATERIAL_NAME = 0xE6C5D4        # UTF-16 "dscore_buga"
+WHITE, ACCENT = 0xFFFFFFFF, 0xFFFFD166
+ESPN_RED, CAPSULE_INK = 0xFFE31937, 0xFF14171C
+PLAY_CLOCK_NORMAL = CAPSULE_INK
+RED, DARK = ESPN_RED, CAPSULE_INK  # names kept for the existing suites
+# Beta 61..69 state names, kept only so the pinned historical emitter still evaluates in this namespace.
+FONT_SCORE, FONT_COMPACT = 84, 88
+SCORE_FONTS = (0xA95968, 0xA959A0)
 HUD_COLLECTION_NAME = 0xE614B8  # UTF-16 GAMEDATA, used by the retail loader.
 # The loader at 6310E opens gamedata.iff into B33D5C with ordinary context
 # fields. Pin its call, both names and the named-context lookup dependency.
@@ -45,6 +57,20 @@ LOOKUP_GUARDS = (
     (0x42F50, 44, "9193d3ee49c7eabfc4646ffbae6c3e12a76e43a051e890a4f8971b2dba4fc81b"),
     (0x43F50, 606, "9bf8b19d176dc9169c8d7b13af5887ce474ed202990d91f77b5601baccd21b71"),
 )
+# Static text-record fields this owner overrides on top of the static v3 layer
+# (font slot, alignment and colours of the repurposed team-name records, the
+# capsule text colours, the plate text). Recognized by nfl2k5_scorebug_ingame.
+STATIC_OVERRIDES = {
+    0xA95888: 7, 0xA958B0: 7,            # timeout dashes use FONT8's bold hyphen
+    0xA9588C: 3, 0xA958B4: 3,            # centred under the scores
+    0xA95894: WHITE, 0xA958BC: WHITE,    # dashes white
+    0xA95898: WHITE, 0xA958C0: WHITE,    # no possession yellow on the dashes
+    0xA958E4: CAPSULE_INK, 0xA958E8: CAPSULE_INK,   # quarter
+    0xA9590C: CAPSULE_INK, 0xA95910: CAPSULE_INK,   # game clock
+    0xA95934: CAPSULE_INK, 0xA95938: CAPSULE_INK,   # game clock (second record)
+    0xA95A48: CAPSULE_INK,                          # play clock (rewritten per frame)
+}
+LITERALS = {0xE6C404: ("Goal", "GOAL")}  # the down plate reads "1st & GOAL" like the broadcast
 
 
 def _u(value):
@@ -61,6 +87,7 @@ def _restore(a):
 
 
 def code_for(code_va, data_va):
+    from . import nfl2k5_scorebug_exact as exact
     a = _Asm(code_va)
     def b(s): a.b(s)
     def absop(op, va): b(op + _u(va))
@@ -77,51 +104,25 @@ def code_for(code_va, data_va):
     for side, context, name in ((0, HOME_CONTEXT, 0xE6C638), (1, AWAY_CONTEXT, 0xE6C734)):
         absop("8b35", 0xA95528); b("68" + _u(name)); a.call(0xFBC70)
         absop("a3", data_va + MATERIALS + side * 4)
-        b("be" + _u(context) + " bf" + _u(data_va + TEXTURES + side * 16))
+        b("be" + _u(context) + " bf" + _u(data_va + TEXTURES + side * 4))
         b("ba" + _u(ord("h" if side == 0 else "a")))
         call("load_side")
         absop("8b0d", data_va + MATERIALS + side * 4)
         b("85c9"); jump("0f84", f"setup_side_done{side}")
-        absop("a1", SCORE_POINTERS[side]); b("31d2 85c0"); jump("0f84", f"setup_count{side}")
-        b("8b5004 83fa03"); jump("0f86", f"setup_count{side}")
-        b("31d2")
-        a.label(f"setup_count{side}")
-        b("8b0495" + _u(data_va + TEXTURES + side * 16) + " 894130 85c0")
+        absop("a1", data_va + TEXTURES + side * 4)
+        b("894130 85c0")
         jump("0f84", f"setup_hide{side}")
         b("836108fe"); jump("e9", f"setup_side_done{side}")
         a.label(f"setup_hide{side}"); b("83490801")
         a.label(f"setup_side_done{side}")
+    # The down plate material takes the possessing team's colour every frame.
+    absop("8b35", 0xA95528); b("68" + _u(PLATE_MATERIAL_NAME)); a.call(0xFBC70)
+    absop("a3", data_va + PLATE)
     b("31c0")
     absop("a3", 0xA95B00)  # stop native hangtime from hiding the repurposed home panel
-    if fonts.CHEVRON:
-        # A later game's missing FONT must not expose the old white city text.
-        for va in (0xa95898, 0xa958c0): absop("a3", va)
-    # Only descriptors returned by the real FONT registry are installed.
-    # Missing resources retain the native FONT pointers from FC1A0's caller.
-    for index, name_va in enumerate(fonts.NAME_VAS):
-        b("68" + _u(name_va)); call("find_font")
-        b("85c0"); a.j8("74", f"font_missing{index}")
-        if index == 0:
-            b("b9105aa900 ba06000000")
-            a.label("font_elements")
-            b("8901 83c170 4a"); a.j8("75", "font_elements")
-        elif index == 1:
-            for va in (0xa95918, 0xa95940): absop("a3", va)
-        elif index == 2:
-            absop("a3", data_va + FONT_SCORE)
-            for va in SCORE_FONTS: absop("a3", va)
-        elif index == 3:
-            absop("a3", data_va + FONT_COMPACT)
-        elif index == 4 and fonts.CHEVRON:
-            for va in (0xa958a0, 0xa958c8): absop("a3", va)
-            for va in (0xa95898, 0xa958c0): store(va, WHITE)
-            for side, va in enumerate((0xa95884, 0xa958ac)):
-                a.label(f"possession_callback{side}"); store(va, 0)
-        elif index == 5:
-            absop("a3", 0xa958f0)
-        elif index == 6:
-            absop("a3", 0xa95a80)
-        a.label(f"font_missing{index}")
+    # The retail team-name callbacks become the timeout marks (dashes).
+    for side in (0, 1):
+        a.label(f"dash_callback{side}"); store(CITY_CALLBACKS[side], 0)
     a.label("setup_done"); _restore(a); b("c3")
 
     # A real stdcall call site: forward its float argument, native RET 4 consumes
@@ -140,33 +141,15 @@ def code_for(code_va, data_va):
     b("89842410020000")
     for side, score_ptr in enumerate(SCORE_POINTERS):
         absop("a1", score_ptr); b("85c0"); jump("0f84", f"side_done{side}")
-        b("8b5004 83fa03"); jump("0f86", f"count_ok{side}")
-        b("31d2")  # invalid counts dim all; never show fictitious remaining timeouts
-        a.label(f"count_ok{side}")
+        # Keep the wing bound to its texture; hide the panel while a texture is missing.
         absop("8b0d", data_va + MATERIALS + side * 4)
         b("85c9"); jump("0f84", f"no_material{side}")
-        b("8b1495" + _u(data_va + TEXTURES + side * 16))
+        absop("8b15", data_va + TEXTURES + side * 4)
         b("895130 85d2"); jump("0f84", f"hide{side}")
         b("836108fe"); jump("e9", f"no_material{side}")
         a.label(f"hide{side}"); b("83490801")
         a.label(f"no_material{side}")
         b("8b10")
-        if fonts.COMPACT_SCORES:
-            absop("8b0d", data_va + FONT_SCORE)
-            a.j8("e3", f"score_font_done{side}")  # JECXZ retains the native fallback.
-            b("83fa64"); a.j8("7d", f"score_font_compact{side}")
-            # A flip can still draw the old cached string after a score drops.
-            # Check BOTH second/third UTF-16 digits: after "999" -> "9", the
-            # third slot may contain stale bytes beyond the second-slot NUL.
-            for offset in (6,8):
-                absop("803d", SCORE_FONTS[side] + offset); b("00")
-                a.j8("74", f"score_font_store{side}")
-            a.label(f"score_font_compact{side}")
-            absop("a1", data_va + FONT_COMPACT); b("85c0")
-            a.j8("74", f"score_font_store{side}")
-            b("8bc8")
-            a.label(f"score_font_store{side}"); absop("890d", SCORE_FONTS[side])
-            a.label(f"score_font_done{side}")
         absop("833d", data_va + POPULATED); b("00"); jump("0f84", f"seed{side}")
         absop("3b15", data_va + SCORES + side * 4); jump("0f84", f"seed{side}")
         store(data_va + FLASH + side * 4, struct.unpack("<I", struct.pack("<f", .18))[0])
@@ -179,7 +162,7 @@ def code_for(code_va, data_va):
         a.label(f"side_done{side}")
     # The native formatter reads down and both line/ball Z positions from this
     # same state; compare all bits plus possession and phase once per update.
-    absop("a1", 0xE602EC); b("85c0"); jump("0f84", "clock")
+    absop("a1", 0xE602EC); b("85c0"); jump("0f84", "plate")
     b("31d2")
     for off, state in ((4, DOWN), (0x18, BALL), (0x28, LINE)):
         b("8b48" + f"{off:02x}")
@@ -188,12 +171,21 @@ def code_for(code_va, data_va):
     for ptr, state in ((0xE60280, POSSESSION), (0xE602B4, PHASE)):
         absop("8b0d", ptr); absop("3b0d", data_va + state); b("0f95c3 08da")
         absop("890d", data_va + state)
-    b("84d2"); jump("0f84", "clock")
-    absop("833d", data_va + POPULATED); b("00"); jump("0f84", "clock")
-    absop("833d", 0xA95A00); b("00"); jump("0f84", "clock")
+    b("84d2"); jump("0f84", "plate")
+    absop("833d", data_va + POPULATED); b("00"); jump("0f84", "plate")
+    absop("833d", 0xA95A00); b("00"); jump("0f84", "plate")
     # Native ramp already ran, and visibility was just written by FC9C0. Reset
     # to 1/30 open (visible, 0.2 HUD units); next updates finish the 0.2 s ramp.
     store(0xA95A04, 0x3F800000)
+    # Down plate: the possessing team's colour, from the two-digit asset code.
+    a.label("plate")
+    absop("8b0d", data_va + PLATE); b("85c9"); jump("0f84", "clock")
+    absop("a1", 0xE60280); b("85c0"); jump("0f84", "clock")
+    b("8b800c010000 85c0"); jump("0f84", "clock")           # UTF-16 asset code
+    b("0fb710 83ea30 83fa03"); jump("0f87", "clock")         # tens digit 0..3
+    b("0fb74002 83e830 83f809"); jump("0f87", "clock")       # ones digit 0..9
+    b("6bd20a 01d0 8b0485"); a.label("plate_table_ref"); b("00000000")
+    b("894118")
     a.label("clock")
     store(0xA95A48, PLAY_CLOCK_NORMAL)
     absop("a1", 0xE60294); b("85c0"); jump("0f84", "populated")
@@ -201,12 +193,12 @@ def code_for(code_va, data_va):
     absop("833d", 0xA95A70); b("00"); jump("0f84", "populated")
     b("8b4010 3d0000a040"); jump("0f83", "populated")
     # unsigned < 5.0 accepts +0 and positive finite seconds; -0 is harmless.
-    store(0xA95A48, RED)
+    store(0xA95A48, ESPN_RED)
     a.label("populated"); store(data_va + POPULATED, 1)
     a.label("update_done"); _restore(a); b("c20400")
 
-    # Four HUD-scoped TXTR lookups for this side at setup. UTF-16 names are built on
-    # stack. Validate two numeric asset-code chars and reject created-team kinds.
+    # One HUD-scoped TXTR lookup for this side at setup. The UTF-16 name is built
+    # on the stack. Validate two numeric asset-code chars and reject created-team kinds.
     a.label("load_side")
     b("83ec10 c7042473006200 c74424042d002d00 6689542408 c744240a30000000")
     b("83be2801000002"); jump("0f84", "neutral")
@@ -218,25 +210,31 @@ def code_for(code_va, data_va):
     b("6bc90a 03ca 83f91e"); jump("0f86", "identity_ok")
     b("83f925"); jump("0f85", "neutral")
     a.label("identity_ok"); b("8b00 89442404")
-    a.label("neutral"); b("31f6")
-    a.label("texture_loop")
-    b("8d4630 668944240a 8d0424 50 ba54585452 b9" + _u(HUD_COLLECTION_NAME))
+    a.label("neutral")
+    b("8d0424 50 ba54585452 b9" + _u(HUD_COLLECTION_NAME))
     a.call(0x449E0)
-    # Retry neutral for a missing team texture, retaining count and orientation.
+    # Retry neutral for a missing team texture, retaining orientation.
     b("85c0"); jump("0f85", "texture_found")
     b("817c24042d002d00"); jump("0f84", "texture_found")
-    b("8b542404 52 c74424082d002d00 8d442404 50 ba54585452 b9" + _u(HUD_COLLECTION_NAME))
-    a.call(0x449E0); b("5a 89542404")
-    a.label("texture_found"); b("8904b7 46 83fe04"); jump("0f82", "texture_loop")
-    b("83c410 c3")
-    # Forward the original UTF-16 name through the HUD's real stdcall registry.
-    # Its RET 4 consumes the copy; ours consumes the original argument.
-    a.label("find_font")
-    b("ff742404 ba464f4e54 b9" + _u(HUD_COLLECTION_NAME)); a.call(0x449e0); b("c20400")
-    if fonts.CHEVRON:
-        # Native city callbacks fill the caller's UTF-16 scratch buffer.
-        # Exactly one glyph avoids team-name-length-dependent alpha overdraw.
-        a.label("possession_text"); b("c70176000000 c3")
+    b("c74424042d002d00 8d0424 50 ba54585452 b9" + _u(HUD_COLLECTION_NAME))
+    a.call(0x449E0)
+    a.label("texture_found"); b("8907 83c410 c3")
+    # Timeout marks: the team-name callbacks receive ECX = the caller's UTF-16
+    # buffer. Write "- - -" trimmed to the remaining timeouts (0..3), then NUL.
+    for side, score_ptr in enumerate(SCORE_POINTERS):
+        a.label(f"dash_text{side}")
+        absop("a1", score_ptr); b("31d2 85c0"); a.j8("74", f"dash_write{side}")
+        b("8b5004 83fa03"); a.j8("76", f"dash_write{side}")
+        b("31d2")
+        a.label(f"dash_write{side}")
+        b("85d2"); a.j8("74", f"dash_end{side}")
+        a.label(f"dash_loop{side}")
+        b("66c7012d00 83c102 4a"); a.j8("74", f"dash_end{side}")
+        b("66c7012000 83c102"); a.j8("eb", f"dash_loop{side}")
+        a.label(f"dash_end{side}"); b("66c7010000 c3")
+    a.label("plate_table")
+    for word in exact.plate_table():
+        b(_u(word))
     # Shorten only local branches whose whole displacement already fits.
     # Every target and external call is reassembled after each shrinking pass.
     while True:
@@ -255,10 +253,9 @@ def code_for(code_va, data_va):
             offset += size
         if not changed: break
     content = bytearray(a.assemble())
-    if fonts.CHEVRON:
-        for side in (0,1):
-            struct.pack_into('<I', content, a.labels[f"possession_callback{side}"]+6,
-                             code_va+a.labels['possession_text'])
+    for side in (0, 1):
+        struct.pack_into("<I", content, a.labels[f"dash_callback{side}"] + 6, code_va + a.labels[f"dash_text{side}"])
+    struct.pack_into("<I", content, a.labels["plate_table_ref"], code_va + a.labels["plate_table"])
     if len(content) > CODE_SIZE:
         raise ValueError(f"scorebug code exceeds its named allocation: {len(content)}")
     return bytes(content).ljust(CODE_SIZE, b"\xcc"), {k: code_va + v for k, v in a.labels.items()}
@@ -277,20 +274,25 @@ def hook_bytes(name, labels):
     return b"\xe8" + struct.pack("<i", labels[name] - va - 5)
 
 
+def override_edits():
+    """(va, static bytes, owner bytes, label) for the text-record overrides and literals."""
+    from . import nfl2k5_scorebug_exact as exact
+    static = {va: new for va, _old, new, _ in exact.xbe_specs(scene.xbe_specs(baseline_v8=True))}
+    rows = [(va, static.get(va), struct.pack("<I", value), "mnf text record") for va, value in STATIC_OVERRIDES.items()]
+    for va, (old, new) in LITERALS.items():
+        rows.append((va, (old + "\0").encode("utf-16le"), (new + "\0").encode("utf-16le"), "mnf literal"))
+    return rows
+
+
 def _abi_valid(payload):
     from .nfl2k5_scorebug_resources import RUNTIME_ABI_GUARDS
-    for va, name in zip(fonts.NAME_VAS, fonts.NAMES):
-        wanted = (name + "\0").encode("utf-16le")
+    for va, callback in zip(CITY_CALLBACKS, (0xfc030, 0xfc010)):
         off = scene.layout.sbpos.va_to_off(payload, va)
-        if payload[off:off+len(wanted)] != wanted:
-            return False
-    for va, callback in ((0xa95884,0xfc010),(0xa958ac,0xfc030)):
-        off = scene.layout.sbpos.va_to_off(payload,va)
-        if payload[off:off+4] != struct.pack('<I',callback):
+        if payload[off:off+4] != struct.pack('<I', callback):
             return False
     normal = [(va, old) for va, old, _, _ in scene.xbe_specs()]
     normal += list(HOOKS.values())
-    for va, size, sha in (*RUNTIME_ABI_GUARDS, *fonts.CODE_GUARDS, *LOOKUP_GUARDS):
+    for va, size, sha in (*RUNTIME_ABI_GUARDS, *LOOKUP_GUARDS):
         off = scene.layout.sbpos.va_to_off(payload, va)
         body = bytearray(payload[off:off + size])
         for address, old in normal:
@@ -323,6 +325,11 @@ def status(payload):
                 return "foreign"
         if code_state == "applied" and scene.xbe_status(payload, scorebug_folder=None) != "applied":
             return "foreign"
+        if code_state == "applied":
+            for va, _old, new, _ in override_edits():
+                off = scene.layout.sbpos.va_to_off(payload, va)
+                if payload[off:off + len(new)] != new:
+                    return "foreign"
         return code_state
     except (ValueError, KeyError, IndexError, struct.error, SystemExit):
         return "foreign"
@@ -349,14 +356,12 @@ def apply(payload):
         after = hook_bytes(name, labels)
         buf[off:off + 5] = after
         edits.append(dict(label=name, va=hex(va), size=5, before=original.hex(), after=after.hex()))
-    # Build-time descriptor defaults only. The static layer restores white
-    # team names; this owner uses those same records for a one-sided chevron.
-    # Binding is scoped to the resident HUD; both hook ABIs remain unchanged.
-    for va in (0xa95894, 0xa958bc):
+    # Build-time descriptor defaults on top of the static layer: the repurposed
+    # team-name records, the capsule text colours and the GOAL literal.
+    for va, _old, new, label in override_edits():
         off = scene.layout.sbpos.va_to_off(installed, va)
-        edits.append(dict(label="runtime identity default", va=hex(va), size=4,
-                          before=bytes(buf[off:off+4]).hex(), after="00000000"))
-        buf[off:off+4] = bytes(4)
+        edits.append(dict(label=label, va=hex(va), size=len(new), before=bytes(buf[off:off+len(new)]).hex(), after=new.hex()))
+        buf[off:off+len(new)] = new
     for s in _sections(buf):
         buf[s.header_offset + 36:s.header_offset + 56] = section_digest(buf, s)
     result = bytes(buf)
@@ -364,7 +369,7 @@ def apply(payload):
     return result, dict(status="applied", experimental=True, runtime_witnessed=False,
                         changed_bytes=sum(a != b for a, b in zip(payload, result)) + len(result) - len(payload),
                         code_va=hex(code["va"]), data_va=hex(data["va"]), edits=edits,
-                        binding_collection="GAMEDATA", binding_revision=5,
+                        binding_collection="GAMEDATA", binding_revision=REVISION,
                         allocation=ar, installation=ir, scorebug=sr,
                         reservations=space.reservations(result),
-                        requires_resources="scorebug-runtime-v4-scoped-fonts; XBE alone does not install logos")
+                        requires_resources="scorebug-mnf-2026-v1; XBE alone does not install logos")

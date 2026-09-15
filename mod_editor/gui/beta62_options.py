@@ -12,14 +12,16 @@ SCOREBUG_HELP = (
     "A scorebar folder selects your painted template (the v10 layout). Moves the kick meter up and hides the "
     "lineup strip. EXPERIMENTAL / UNWITNESSED (the outline revision is unwitnessed); rebuild from a clean source.")
 SCOREBUG_RUNTIME_HELP = (
-    "Reported game freeze: andrethealchemist says the game freezes after Berman "
-    "when this option is selected: 'Unselecting that option fixed the issue for me.' "
-    "Leave this off for normal play. Retail: the game keeps its own scorebar effects. "
-    "Patch (diagnostic only; off in every preset): adds team gradients, logos, live "
-    "timeout marks, resized text, a white possession marker and three-digit scores "
-    "to the experimental scorebar. "
-    "Bounded native checks do not reproduce the player's freeze. "
-    "EXPERIMENTAL / UNWITNESSED. Rebuild from the original source for comparisons.")
+    "Retail: the ESPN scorebar stays static. Patch: the bar becomes the 2026 Monday Night Football "
+    "broadcast bug. Team logos on their colours in the wings, the down plate in the possessing team's "
+    "colour, timeout dashes under the scores, a white clock capsule with the play clock turning ESPN red "
+    "under five seconds, and ESPN digits painted into the game's own HUD fonts. Adds 66 small textures "
+    "to the HUD (0.35 MB). The beta 69 version added 1.7 MB, and that is what froze the game after "
+    "Berman's intro: the resource loader ran out of room and read a chunk into a null buffer, reproduced "
+    "in the emulator on 2026-09-15 (andrethealchemist: 'if you go into situation mode instead of play "
+    "now/franchise, (bypassing Berman) you can see how cool the scorebug effects looks in game'). Needs "
+    "the ESPN scorebar option and a disc image. Experimental, not yet witnessed in game."
+)
 PRACTICE_HELP = (
     "Retail: Practice is available from Game Modes. Patch: adds Practice below Schedule on the Coach's Desk. "
     "Practice uses your franchise roster and returns to the Coach's Desk when you quit. "

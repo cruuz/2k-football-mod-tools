@@ -183,15 +183,13 @@ class NativeFixTests(unittest.TestCase):
 
     def test_play_clock_color_isolated_and_static_composes_in_both_orders(self):
         code, labels = runtime.code_for(0x14ba2c0,0x14bb000)
-        with mock.patch.object(runtime,'PLAY_CLOCK_NORMAL',runtime.DARK):
-            dark, dark_labels = runtime.code_for(0x14ba2c0,0x14bb000)
-        self.assertEqual(labels,dark_labels)
-        at = dark.index(bytes.fromhex('c705485aa900181111ff'))+6
-        self.assertEqual(code[:at],dark[:at]); self.assertEqual(code[at+4:],dark[at+4:])
-        self.assertEqual(code[at:at+4],b'\xff'*4)
-        # R65 scopes binding to GAMEDATA; the color variant still changes only
-        # this word. Native before/after entry controls live in freeze_v2.
-        self.assertEqual(scene.digest(dark),'e6aebda915ab509f9d4873393b28c12a88bf186cb5ed16d3c6950d5bd8113a28')
+        with mock.patch.object(runtime,'PLAY_CLOCK_NORMAL',runtime.WHITE):
+            light, light_labels = runtime.code_for(0x14ba2c0,0x14bb000)
+        self.assertEqual(labels,light_labels)
+        at = code.index(bytes.fromhex('c705485aa900')+struct.pack('<I',runtime.DARK))+6
+        self.assertEqual(code[:at],light[:at]); self.assertEqual(code[at+4:],light[at+4:])
+        self.assertEqual(light[at:at+4],b'\xff'*4)
+        # Beta 70 keeps the capsule ink dark and turns the play clock ESPN red under five.
         first = runtime.apply(scene.apply_xbe(self.build.payload)[0])[0]
         second = scene.apply_xbe(runtime.apply(self.build.payload)[0])[0]
         self.assertEqual(first,second)
@@ -199,8 +197,8 @@ class NativeFixTests(unittest.TestCase):
         self.assertEqual(scene.apply_xbe(first)[0],first)
         for va in (0xa95894,0xa958bc):
             off=scene.layout.sbpos.va_to_off(first,va)
-            self.assertEqual(first[off:off+4],bytes(4))
-            bad=bytearray(first);bad[off:off+4]=b'\xff'*4
+            self.assertEqual(first[off:off+4],struct.pack('<I',runtime.WHITE))
+            bad=bytearray(first);bad[off:off+4]=bytes.fromhex('78563412')
             self.assertEqual(runtime.status(bytes(bad)),'foreign')
             with self.assertRaises(ValueError): runtime.apply(bytes(bad))
 
@@ -220,7 +218,8 @@ class NativeFixTests(unittest.TestCase):
                     rows={d['callback']:d for d in drawn['draws']}
                     self.assertEqual(rows['0xfbeb0']['text'],'Ball on HOU 35')
                     event=box(rows['0xfbeb0'])
-                    for callback in ('0xfc7d0','0xfc050','0xfc070'):
+                    # Beta 70: events cover the down plate on purpose; the scores stay clear.
+                    for callback in ('0xfc050','0xfc070'):
                         self.assertFalse(overlap(event,box(rows[callback])))
                     self.assertEqual(projection.containment_failures({**geometry,**drawn},geometry['frame'],.02),{})
                 finally:

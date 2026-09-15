@@ -10345,24 +10345,26 @@
         "tests/mod_editor/test_nfl2k5_scorebug_native.py",
         "ASTRA_B68_T3_REPORT.md",
         "tests/mod_editor/test_nfl2k5_b68_game_composition.py",
-        "docs/nfl2k5_b68_t3_composition.json"
+        "docs/nfl2k5_b68_t3_composition.json",
+        "tests/mod_editor/test_nfl2k5_scorebug_mnf.py",
+        "FABLE_B70_SCOREBUG_REPORT_2026-09-15.md"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "EXPERIMENTAL / UNWITNESSED. andrethealchemist reports the Berman freeze with this option selected and recovery when unselected. Leave off for normal play. Native entry, resource and draw checks are bounded proofs, not a played fix confirmation."
+        "reason": "EXPERIMENTAL / UNWITNESSED. Beta 70: the 2026 Monday Night Football bug (logos, possession plate, timeout dashes, ESPN red play clock, ESPN digits). The beta 69 freeze after Berman's intro was reproduced in the emulator on 2026-09-15: the 1.7 MB of appended HUD art made the resource loader read a chunk into a null buffer; the rebuilt option appends 0.35 MB, the size class that reached the coin toss in the same test. Not yet played by a person."
       },
       "id": "nfl2k5.scorebug_presentation.runtime",
       "input_constraints": [
         "User-owned pinned NFL 2K5 USA disc with retail HUD resources, or a completely recognized runtime installation.",
         "Use a disposable output copy; reserve the selected allocator owner union before installing hooks.",
-        "An XBE alone cannot install the required 264 native panel textures. Rebuild from a supported base for the new hooks or a changed owner set; old hook code is refused."
+        "An XBE alone cannot install the required 66 native panel textures. Rebuild from a supported base for the new hooks or a changed owner set; old hook code is refused."
       ],
       "portme": [
-        "Apply the beta 68 T3 section of WIRING_B68_T3.md; keep the reported Berman-freeze option off in every preset.",
-        "Run the six-profile and static 4:3/widescreen witness list in ASTRA_SCOREBUG_FREEZE_V2_REPORT.md."
+        "Witness the 2026 bar in Play Now with the Berman intro on (the beta 69 crash path), then in Franchise; report the wing logos, the plate colour on a change of possession, the dashes after a timeout, the red play clock under five seconds.",
+        "Logos, timeouts, possession colour and clock colours are unwitnessed; the static v3 scorebar remains the witnessed fallback."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -10377,7 +10379,8 @@
           "docs/scorebug_ingame/witness_r61b.md",
           "ASTRA_B68_T3_REPORT.md",
           "tests/mod_editor/test_nfl2k5_b68_game_composition.py",
-          "docs/nfl2k5_b68_t3_composition.json"
+          "docs/nfl2k5_b68_t3_composition.json",
+          "FABLE_B70_SCOREBUG_REPORT_2026-09-15.md"
         ],
         "scope": "The previous GPU-fence repair passes its historical control. Beta 68 exercises scorebug-enabled composed BuildPlans, native collection loading, setup at FCE56, update at FCFA2, font glyph draws, re-entry and the separate presentation/kickoff fixtures. andrethealchemist's selected/unselected comparison identifies this option as a reported trigger, but the stopped instruction, real asynchronous loader/GPU state and full scene lifetime are unavailable. No Berman fix is claimed. In-game behavior remains UNWITNESSED.",
         "status": "not-tested"

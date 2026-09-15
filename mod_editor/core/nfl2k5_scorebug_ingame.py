@@ -542,7 +542,8 @@ def xbe_version(payload: bytes) -> str:
         for version, specs in versions.items():
             expected = {**union, **{va: new for va, _old, new, _ in specs}}
             if version == VERSION and runtime_identity_installed(payload):
-                expected.update({va: bytes(4) for va in (0xa95894, 0xa958bc)})
+                from . import nfl2k5_scorebug_runtime as runtime
+                expected.update({va: new for va, _old, new, _ in runtime.override_edits() if va in expected})
             if have == expected:
                 return version
     except (ValueError, struct.error, SystemExit):
@@ -601,8 +602,11 @@ def apply_xbe(payload: bytes, *, scorebug_folder=None) -> tuple[bytes, dict]:
     edits, touched = [], set()
     sections = bs._sections(payload)
     for va,old,new,label in xbe_specs(scorebug_folder=scorebug_folder):
-        if scorebug_folder is None and va in (0xa95894, 0xa958bc) and runtime_identity_installed(payload):
-            new = bytes(4)
+        if scorebug_folder is None and runtime_identity_installed(payload):
+            from . import nfl2k5_scorebug_runtime as runtime
+            for ova, _old, onew, _ in runtime.override_edits():
+                if ova == va:
+                    new = onew
         off = layout.sbpos.va_to_off(payload,va)
         if before == "retail":
             buf[off:off+len(new)] = new
@@ -835,7 +839,7 @@ def preview_data(source: Path, *, scorebug_folder=None):
     return m,image
 
 
-def runtime_image_plan(fd: int, *, with_kickoff: bool = False, extra_requests=(), probe="full"):
+def runtime_image_plan(fd: int, *, with_kickoff: bool = False, extra_requests=(), probe="mnf"):
     """Preflight both files before any write; use the generalized extent reader."""
     from . import nfl2k5_scorebug_runtime as runtime, nfl2k5_scorebug_resources as resources
     from . import nfl2k5_xbe_space as space, nfl2k5_dynamic_kickoff_relocated as kickoff
@@ -870,7 +874,7 @@ def runtime_image_plan(fd: int, *, with_kickoff: bool = False, extra_requests=()
         score_flash=hooks, down_refresh=hooks, under_5_color=hooks, resources=pr, xbe=xr)
 
 
-def runtime_image_status(path, *, probe="full"):
+def runtime_image_status(path, *, probe="mnf"):
     """Recognize the complete owned HUD and XBE, resolving current archive offsets."""
     from . import nfl2k5_scorebug_runtime as runtime, nfl2k5_scorebug_resources as resources
     from . import nfl2k5_xbe_space as space, platform_compat as io
@@ -908,7 +912,7 @@ def runtime_image_status(path, *, probe="full"):
         return "foreign"
 
 
-def runtime_apply_in_place(path, *, with_kickoff=False, extra_requests=(), probe="full"):
+def runtime_apply_in_place(path, *, with_kickoff=False, extra_requests=(), probe="mnf"):
     """Transactional resource growth and allocator XBE transport on an output copy.
 
     Pack 0 is appended intact, then its existing XDVDFS node is switched. The

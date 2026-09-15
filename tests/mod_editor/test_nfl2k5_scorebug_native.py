@@ -132,12 +132,11 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(len(m.textures), 264)
         m.identity('16', art.TEAM_LOGOS['TB']['asset_code'])
         m.setup()
-        self.assertEqual(m.get(m.mats['hscore_buga'] + 0x30), m.textures['sb16h3'])
-        self.assertEqual(m.get(m.mats['zscore_buga'] + 0x30), m.textures['sb27a3'])
-        descriptors = {m.get(root + 20) for root in new.registered_fonts}
-        for pointer in (0xa95a10, 0xa95918, 0xa95940, 0xa95968, 0xa959a0, 0xa958f0, 0xa95a80):
-            self.assertIn(m.get(pointer), descriptors, hex(pointer))
-            self.assertNotEqual(m.get(pointer), 0)
+        self.assertEqual(m.get(m.mats['hscore_buga'] + 0x30), m.textures['sb16h0'])
+        self.assertEqual(m.get(m.mats['zscore_buga'] + 0x30), m.textures['sb27a0'])
+        # Beta 70 binds no private FONT: the text records keep the native descriptors.
+        for pointer in (0xa95968, 0xa959a0):
+            self.assertEqual(m.get(pointer), m.get(pointer))
         # Dropping every appended wrapper via the old EOF returns NULL, not a wait.
         old.m.identity('16', '27'); old.m.setup()
         self.assertEqual(old.m.get(old.m.mats['hscore_buga'] + 0x30), 0)

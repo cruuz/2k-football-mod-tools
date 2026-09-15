@@ -157,6 +157,8 @@ def atlas(*, revision=3, red_bias=None):
 
 def mesh(retail, *, runtime=False, revision=2):
     from . import nfl2k5_scorebug_ingame as r
+    if runtime:
+        return mesh_mnf(retail)
     m = r.layout.Mesh(retail)
     # Every obsolete tab/mark starts degenerate, inside the actual frame.
     for v in range(r.layout.VCOUNT):
@@ -429,4 +431,214 @@ def panel(span, team, side, *, timeouts=3):
         dx = x if side == "away" else 127 - x - 6
         d.polygon(((dx + 1, 27), (dx + 6, 27), (dx + 5, 29), (dx, 29)),
                   fill=(248, 250, 243, 255) if n < timeouts else (66, 66, 65, 255))
+    return im
+
+
+# ---------------------------------------------------------------------------
+# 2026 Monday Night Football layout for the runtime owner (beta 70).
+# Measured from the ESPN Chiefs at Broncos Week 1 broadcast capture (1920x1080)
+# and mapped to the 640x448 HUD exactly like the static v3 bar above.
+# ---------------------------------------------------------------------------
+MNF_VERSION = "espn-mnf-2026-v1"
+# Broadcast pixel rectangles (x0, y0, x1, y1) on the 1920x1080 frame.
+MNF_SOURCE = {
+    "bar": (437, 942, 1478, 1052),
+    "away_wing": (437, 942, 700, 1052), "home_wing": (1215, 942, 1478, 1052),
+    "plate": (830, 946, 1090, 988), "strip": (838, 998, 1082, 1044),
+}
+MNF_BAR = scene_box(MNF_SOURCE["bar"])
+MNF_PANELS = {"away": scene_box(MNF_SOURCE["away_wing"]), "home": scene_box(MNF_SOURCE["home_wing"])}
+MNF_PLATE = scene_box(MNF_SOURCE["plate"])
+MNF_STRIP = scene_box(MNF_SOURCE["strip"])
+# Text anchors: x is the alignment point (scores/quarter/play clock centred,
+# the game clock right-aligned like retail), y the text bottom in scene units.
+_SX = lambda px: px / 3 - 320
+_SY = lambda py: 424 - (16 + py * 448 / 1080)
+# Text origins measured with the native draw projection (tools/nfl2k5_scorebug_projection):
+# a record's screen origin is 424 - anchor_y - K, with K = 0 for the rotating score
+# records, 15 for the element and clock records and 27 for the two team-name records
+# (their transforms carry a retail offset), and the glyph top sits glyph_y0 rows below
+# the origin (FONT4 4, FONT8 7). Targets are the broadcast text tops on the 640x448 HUD.
+def _ORIGIN(px_top, glyph_y0, k):
+    return 424 - (16 + px_top * 448 / 1080 - glyph_y0) - k
+MNF_ANCHORS = {
+    "away_city": (_SX(755), _ORIGIN(1033, 15, 27), -64), "home_city": (_SX(1165), _ORIGIN(1033, 15, 27), -64),   # timeout dashes (FONT8 hyphen rows 15..20)
+    "away_score": (_SX(755), _ORIGIN(955, 7, 0), -59), "home_score": (_SX(1165), _ORIGIN(955, 7, 0), -59),
+    "quarter": (_SX(875), _ORIGIN(1015, 4, 15), -4), "clock_a": (_SX(1010), _ORIGIN(1008, 4, 15), -4), "clock_b": (_SX(1010), _ORIGIN(1008, 4, 15), -4),
+    "drop_clock": (_SX(1053), _ORIGIN(1008, 4, 15), -4), "drop_down": (0, _ORIGIN(955, 4, 15), -4),
+    "drop_yellow": (0, _ORIGIN(955, 4, 15), -8), "drop_red": (0, _ORIGIN(955, 4, 15), -8),
+    "drop_hangtime": (0, _ORIGIN(955, 4, 15), -8), "drop_ball_on": (0, _ORIGIN(955, 4, 15), -8),
+}
+MNF_REGIONS = {"frame": (0, 0, 24, 24), "plate": (0, 24, 64, 40), "strip": (0, 40, 64, 60), "solid": (1, 62, 2, 63)}
+MNF_COLORS = {"body": (11, 14, 20), "body_hi": (23, 27, 35), "lip": (201, 208, 218),
+              "plate": (240, 240, 244), "capsule": (236, 239, 243), "capsule_ink": (20, 23, 28),
+              "separator": (196, 200, 208)}
+# Possession plate colours per team (ESPN's team colour, lifted so it reads on
+# the charcoal bar). Indexed by the retail two-digit asset code at runtime.
+ESPN_PLATE = {
+    "ARI": "#97233F", "ATL": "#A71930", "BAL": "#241773", "BUF": "#00338D", "CAR": "#0085CA", "CHI": "#0B162A",
+    "CIN": "#FB4F14", "CLE": "#FF3C00", "DAL": "#003594", "DEN": "#0C2340", "DET": "#0076B6", "GB": "#203731",
+    "HOU": "#03202F", "IND": "#002C5F", "JAX": "#006778", "KC": "#E31837", "LAC": "#0080C6", "LAR": "#003594",
+    "LV": "#000000", "MIA": "#008E97", "MIN": "#4F2683", "NE": "#002244", "NO": "#101820", "NYG": "#0B2265",
+    "NYJ": "#125740", "PHI": "#004C54", "PIT": "#101820", "SEA": "#002244", "SF": "#AA0000", "TB": "#D50A0A",
+    "TEN": "#0C2340", "WAS": "#5A1414",
+}
+
+
+def plate_argb(team):
+    """ESPN plate colour lifted toward white when the primary is very dark."""
+    rgb = tuple(int(ESPN_PLATE[team][i:i+2], 16) for i in (1, 3, 5))
+    peak = max(rgb)
+    # Dark primaries are brightened along their own hue (the broadcast plate is a
+    # saturated medium tone), never mixed toward grey.
+    gain = min(2.4, 150 / peak) if 0 < peak < 150 else 1.0
+    rgb = tuple(min(255, round(c * gain)) for c in rgb)
+    if peak == 0:
+        rgb = (58, 63, 72)
+    r_, g_, b_ = (round(c + (255 - c) * 0.06) for c in rgb)
+    return 0xFF000000 | (r_ << 16) | (g_ << 8) | b_
+
+
+def plate_table():
+    """40 ARGB words indexed by asset code (two digits, 00..39); unknown codes stay neutral."""
+    from . import nfl2k5_scorebug_ingame as r
+    table = [0xFF3A3F48] * 40
+    for team, record in r.TEAM_LOGOS.items():
+        table[int(record["asset_code"])] = plate_argb(team)
+    return table
+
+
+def atlas_mnf():
+    """The 64x64 P8 atlas for the 2026 bar: charcoal pill, light plate, white capsule."""
+    from PIL import Image, ImageDraw
+    body, hi, lip = MNF_COLORS["body"], MNF_COLORS["body_hi"], MNF_COLORS["lip"]
+    im = Image.new("RGBA", (64, 64), body + (255,))
+    d = ImageDraw.Draw(im)
+    # Frame nine-slice tile: 4-pixel corners map to 4 HUD units, so the caps read rounded.
+    d.rectangle((0, 0, 23, 23), fill=(0, 0, 0, 0))
+    d.rounded_rectangle((0, 0, 23, 23), 5, fill=body + (255,))
+    for y in range(1, 12):
+        t = (12 - y) / 12
+        c = tuple(round(b + (h - b) * t) for b, h in zip(body, hi))
+        d.line((4, y, 19, y), fill=c + (255,))
+    d.line((3, 0, 20, 0), fill=lip + (255,))
+    d.line((2, 1, 21, 1), fill=tuple(round((a + b) / 2) for a, b in zip(lip, hi)) + (255,))
+    d.line((3, 23, 20, 23), fill=(4, 5, 8, 255))
+    # Down plate tile: near-white so the possession tint multiplies to the team colour.
+    d.rectangle((0, 24, 63, 39), fill=(0, 0, 0, 0))
+    d.rounded_rectangle((0, 24, 63, 39), 4, fill=MNF_COLORS["plate"] + (255,), outline=(214, 216, 222, 255))
+    d.line((3, 25, 60, 25), fill=(255, 255, 255, 255))
+    # Clock capsule tile: white pill with the two cell separators.
+    d.rectangle((0, 40, 63, 59), fill=(0, 0, 0, 0))
+    d.rounded_rectangle((0, 40, 63, 59), 9, fill=MNF_COLORS["capsule"] + (255,), outline=(190, 194, 202, 255))
+    d.line((21, 42, 21, 57), fill=MNF_COLORS["separator"] + (255,))
+    d.line((47, 42, 47, 57), fill=MNF_COLORS["separator"] + (255,))
+    d.rectangle((0, 61, 3, 63), fill=(248, 250, 243, 255))
+    d.rectangle((4, 61, 7, 63), fill=body + (255,))
+    return im
+
+
+def mesh_mnf(retail):
+    """Runtime scene: wings on their own materials, plate, capsule, nine-slice pill."""
+    from . import nfl2k5_scorebug_ingame as r
+    m = r.layout.Mesh(retail)
+    for v in range(r.layout.VCOUNT):
+        m.pos[v] = [0, 0, -3]
+        m.uv_edit[v] = (-1 + 1.5 / 32, -1 + 62.5 / 32)
+        struct.pack_into("<I", m.buf, r.layout.S1 + v * 10, 0xffffffff)
+        struct.pack_into("<h", m.buf, r.layout.S1 + v * 10 + 8, 0)
+    strips = [indices for _, indices in r.layout.strips(retail)]
+
+    def quad(vertices, box, tile, *, z=0):
+        vertices = list(vertices)
+        indices = next(indices for indices in strips if vertices[0] in indices)
+        first = next(i for i in range(len(indices) - 2) if indices[i:i+3] == vertices[:3])
+        reverse = bool(first % 2)
+        a, b, c, d = box
+        s, t, u, w = tile
+        corners = ((0, 1), (1, 1), (0, 0), (1, 0))
+        if reverse:
+            corners = ((0, 0), (1, 0), (0, 1), (1, 1))
+        for i, v in enumerate(vertices):
+            x, y = corners[min(i, 3)]
+            m.pos[v] = [a + (c - a) * x, d - (d - b) * y, z]
+            m.uv_edit[v] = ((s + (u - s) * x) / 32 - 1, (t + (w - t) * y) / 32 - 1)
+
+    groups = [list(range(96, 104)), list(range(104, 112)), list(range(112, 118))]
+    groups += [list(range(n, n + 4)) for n in range(118, 166, 4)]
+    a, b, c, d = MNF_BAR
+    xs, ys = (a, a + 4, c - 4, c), (b, b + 4, d - 4, d)
+    uvx, uvy = (0, 4, 20, 24), (24, 20, 4, 0)
+    for iy in range(3):
+        for ix in range(3):
+            quad(groups[iy * 3 + ix], (xs[ix], ys[iy], xs[ix + 1], ys[iy + 1]),
+                 (uvx[ix], uvy[iy + 1], uvx[ix + 1], uvy[iy]))
+    # The second frame copy (material yscore_buga1) stays collapsed: no rim on the 2026 bar.
+    quad(range(48, 64), MNF_STRIP, MNF_REGIONS["strip"], z=-3)
+    for v in range(52, 60):
+        m.pos[v] = m.pos[49][:]
+        m.uv_edit[v] = m.uv_edit[49]
+    quad(range(64, 80), MNF_PLATE, MNF_REGIONS["plate"], z=-3)
+    # Events (flag, score, hang time, ball on) cover the plate with the same tile.
+    for vertices in (range(0, 16), range(16, 32), range(32, 48)):
+        quad(vertices, MNF_PLATE, MNF_REGIONS["plate"], z=-7)
+    name = "score_buga\0".encode("utf-16le")
+    m.buf[0x3f8c:0x3f8c+len(name)] = name
+    # Wings: the away panel keeps zscore_buga, the home panel takes hscore_buga; both
+    # sample their own 128x32 team texture (texel centres) bound by the runtime owner.
+    quad(range(230, 246), MNF_PANELS["away"], (.25, 1, 63.75, 63), z=-2)
+    quad(range(80, 96), MNF_PANELS["home"], (.25, 1, 63.75, 63), z=-2)
+    for side, parent in (("away", 23), ("home", 26)):
+        m.world[parent][:2] = list(MNF_ANCHORS[side + "_score"][:2])
+    for name, xyz in MNF_ANCHORS.items():
+        i, leaf = r.layout.T[name], r.layout.T[name + "_l"]
+        delta = [bb - aa for aa, bb in zip(m.world[i], m.world[leaf])]
+        m.world[i] = list(xyz)
+        m.world[leaf] = [aa + bb for aa, bb in zip(xyz, delta)]
+    return m
+
+
+def mnf_panel(team, side):
+    """128x32 RGBA wing art: the team colour fading into the bar, the current logo.
+
+    The wing quad is about 88x46 HUD units, so the art is drawn pre-squashed
+    vertically (32 texels for 46 units). Logos come from data/nfl2k5_scorebug_mnf.
+    """
+    from pathlib import Path
+    from PIL import Image
+    from . import nfl2k5_scorebug_ingame as r
+    if side not in ("home", "away"):
+        raise ValueError("invalid scorebug side")
+    body = MNF_COLORS["body"]
+    if team is None:
+        primary = (74, 78, 88)
+    else:
+        argb = plate_argb(team)
+        primary = ((argb >> 16) & 255, (argb >> 8) & 255, argb & 255)
+    im = Image.new("RGBA", (128, 32))
+    for x in range(128):
+        distance = x if side == "away" else 127 - x
+        t = min(1.0, distance / 96.0)
+        t = t * t * (3 - 2 * t)
+        rgb = tuple(round(p * (1 - t) + b * t) for p, b in zip(primary, body))
+        for y in range(32):
+            shade = 1.0 + (0.10 if y < 2 else 0.0)
+            im.putpixel((x, y), tuple(min(255, round(c * shade)) for c in rgb) + (255,))
+    if team is not None:
+        logos = Path(__file__).resolve().parents[2] / "data" / "nfl2k5_scorebug_mnf" / "logos"
+        key = {"WAS": "wsh"}.get(team, team.lower())
+        path = logos / f"{key}.png"
+        if path.exists():
+            logo = Image.open(path).convert("RGBA")
+            bounds = logo.getchannel("A").getbbox()
+            if bounds:
+                logo = logo.crop(bounds)
+            # Logo box: 60 x 24 texels (about 41 x 35 HUD units), aspect-fitted, then pre-squashed.
+            box_w, box_h = 60, 24
+            scale = min(box_w / logo.width, (box_h * 46 / 32) / logo.height)
+            w = max(1, round(logo.width * scale))
+            h = max(1, round(logo.height * scale * 32 / 46))
+            logo = logo.resize((w, h), Image.Resampling.LANCZOS)
+            x = 10 if side == "away" else 128 - 10 - w
+            im.alpha_composite(logo, (x, (32 - h) // 2))
     return im
