@@ -370,3 +370,32 @@ __all__ = ["UniformChoiceError", "MODES", "RULE_BLOCK_VA", "RULE_BLOCK_SIZE", "R
            "HOME_TEAM_PTR_VA", "AWAY_TEAM_PTR_VA", "HOME_ABBR_PTR_VA", "AWAY_ABBR_PTR_VA", "TEAM_YEARS_OFF", "LAST_SLOT",
            "apply", "applied_mode", "away_letter_bytes", "code_report", "handler_bytes", "reset_tail_bytes",
            "rule_block_bytes", "sites", "status"]
+
+
+def main(argv=None) -> int:
+    """Command line: ``status <default.xbe>`` or ``apply <source.xbe> <output.xbe> --mode choice``."""
+    import argparse
+    import json
+    from pathlib import Path
+
+    parser = argparse.ArgumentParser(prog="python3 -m mod_editor.core.nfl2k5_uniform_choice",
+                                     description="Jersey colour choice (executable patch): report or write a form.")
+    sub = parser.add_subparsers(dest="command", required=True)
+    report = sub.add_parser("status", help="print retail, applied or foreign for a default.xbe")
+    report.add_argument("xbe", type=Path)
+    write = sub.add_parser("apply", help="write the form into a copy of default.xbe")
+    write.add_argument("source", type=Path)
+    write.add_argument("output", type=Path)
+    write.add_argument("--mode", default="choice", choices=sorted(MODES))
+    args = parser.parse_args(argv)
+    if args.command == "status":
+        print(status(args.xbe.read_bytes()))
+        return 0
+    patched, receipt = apply(args.source.read_bytes(), mode=args.mode)
+    args.output.write_bytes(patched)
+    print(json.dumps(receipt, indent=2, sort_keys=True, default=str))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

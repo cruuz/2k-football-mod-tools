@@ -11770,7 +11770,7 @@
     },
     {
       "backend": {
-        "command": "Python API: mod_editor.core.nfl2k5_uniform_choice.apply(payload, mode=\"choice\")",
+        "command": "python3 -m mod_editor.core.nfl2k5_uniform_choice apply <source.xbe> <output.xbe> --mode choice",
         "module": "mod_editor/core/nfl2k5_uniform_choice.py",
         "operation": "write"
       },
@@ -11831,7 +11831,7 @@
       "summary": "Choice form: independent home/away colour cycling on Controller Assign and exhibition Team Select. Rule form: fixed home dark / away white, without in-game choice. Practice, Xbox Live and Team Select colour preview are not extended.",
       "surface": "uniforms",
       "title": "Jersey colour: choice or fixed rule (experimental)",
-      "validation_command": "python3 tests/mod_editor/test_nfl2k5_uniform_choice_screens.py"
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_uniform_choice_screens"
     },
     {
       "backend": {
