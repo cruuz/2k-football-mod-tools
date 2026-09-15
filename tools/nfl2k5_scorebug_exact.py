@@ -242,11 +242,10 @@ class Build:
             self.payload = xbe.read_bytes()
             self.fonts = projection.read_fonts(pack)
             self.retail_scene = scene.pinned(self.spans["score_bug"], art.RESOURCES["score_bug"])
-            self.panels = []
-            for team, side in (("LV", "away"), ("HOU", "home")):
-                v = art.TEAM_LOGOS[team]
-                span = self.view[v["pack_offset"]:v["pack_offset"] + v["span_size"]]
-                self.panels.extend(art._compiled_panels(self.spans["score_buga"], span, team, side))
+            # The runtime scene is the 2026 bar: one 64x64 wing texture per side (ESPN mark plus
+            # the team colour ramp), the same spans the compiler appends.
+            self.panels = [art.mnf_panel_span(self.spans["score_buga"], team, side)
+                           for team, side in (("LV", "away"), ("HOU", "home"))]
             self.font_spans = scoped.compile_collection(self.view)
             self.private_fonts = [projection.private_font(span, self.fonts[slot])
                                   for span, (slot, _sx, _sy) in zip(self.font_spans, scoped.SCALES)]

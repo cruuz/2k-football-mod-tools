@@ -444,11 +444,27 @@ MNF_VERSION = "espn-mnf-2026-v1"
 MNF_SOURCE = {
     "bar": (437, 942, 1478, 1052),
     "away_wing": (437, 942, 700, 1052), "home_wing": (1215, 942, 1478, 1052),
-    "plate": (830, 946, 1090, 988), "strip": (838, 998, 1082, 1044),
+    "plate": (837, 947, 1084, 983), "strip": (838, 998, 1082, 1044),
+    # The team logos: aspect-fitted marks about 170x91 source px, mirrored near the outer edges.
+    "away_logo": (455, 946, 625, 1037), "home_logo": (1290, 946, 1460, 1037),
 }
 MNF_BAR = scene_box(MNF_SOURCE["bar"])
 MNF_PANELS = {"away": scene_box(MNF_SOURCE["away_wing"]), "home": scene_box(MNF_SOURCE["home_wing"])}
 MNF_PLATE = scene_box(MNF_SOURCE["plate"])
+MNF_LOGOS = {"away": scene_box(MNF_SOURCE["away_logo"]), "home": scene_box(MNF_SOURCE["home_logo"])}
+# The 64x64 wing texture: the logo in rows 0..33 (64x34, the box aspect), the team colour ramp in rows 44..63.
+MNF_WING_LOGO_ROWS, MNF_WING_RAMP_ROWS = (0, 34), (44, 64)
+# Each retail wing object is one triangle strip over 32 vertices with repeated ids. Two clean
+# quads exist: the first four ids (the fade) and the window below (the logo); every other id
+# collapses onto the listed corner so all remaining strip triangles are degenerate (verified
+# against the retail strips by test_nfl2k5_scorebug_mnf).
+MNF_WING_LAYOUT = {
+    "away": dict(fade=(230, 231, 232, 233), logo=(242, 243, 244, 245),
+                 collapse={234: "A2", 235: "A2", **{i: "A0" for i in (236, 237, 238, 239, 240, 241)},
+                           **{i: "A0" for i in range(246, 262)}}),
+    "home": dict(fade=(80, 81, 82, 83), logo=(85, 87, 90, 91),
+                 collapse={84: "A3", 86: "B0", 88: "A1", 89: "A1", 92: "A0", 93: "A0", 94: "A0", 95: "A0"}),
+}
 MNF_STRIP = scene_box(MNF_SOURCE["strip"])
 # The 2026 layout's regions in the retail comparison's vocabulary (frame, wings, plate, strip).
 MNF_COMPARE_REGIONS = {"frame_rim": MNF_SOURCE["bar"], "left_panel": MNF_SOURCE["away_wing"],
@@ -592,10 +608,39 @@ def mesh_mnf(retail):
         quad(vertices, MNF_PLATE, MNF_REGIONS["body"], z=-7)
     name = "score_buga\0".encode("utf-16le")
     m.buf[0x3f8c:0x3f8c+len(name)] = name
-    # Wings: the away panel keeps zscore_buga, the home panel takes hscore_buga; both
-    # sample their own 128x32 team texture (texel centres) bound by the runtime owner.
-    quad(range(230, 246), MNF_PANELS["away"], (.25, 1, 63.75, 63), z=-2)
-    quad(range(80, 96), MNF_PANELS["home"], (.25, 1, 63.75, 63), z=-2)
+    # Wings: the away wing keeps zscore_buga, the home wing takes hscore_buga; each samples
+    # its own 64x64 team texture bound by the runtime owner. Two quads share the strip: the
+    # fade quad stretches one ramp row (team colour at the outer edge, charcoal inward) over
+    # the whole wing, and the logo quad draws the logo rows at the box aspect near the outer edge.
+    def wing(side, *, z=-2):
+        layout = MNF_WING_LAYOUT[side]
+        fade_ids, logo_ids = layout["fade"], layout["logo"]
+        indices = next(indices for indices in strips if fade_ids[0] in indices)
+        def corners_at(ids):
+            first = next(i for i in range(len(indices) - 3) if tuple(indices[i:i+4]) == tuple(ids))
+            table = ((0, 1), (1, 1), (0, 0), (1, 0))
+            return table if first % 2 == 0 else ((0, 0), (1, 0), (0, 1), (1, 1))
+        ramp_v = (MNF_WING_RAMP_ROWS[0] + MNF_WING_RAMP_ROWS[1]) / 2
+        ramp = (0.5, ramp_v, 63.5, ramp_v) if side == "away" else (63.5, ramp_v, 0.5, ramp_v)
+        logo = (0.25, MNF_WING_LOGO_ROWS[0] + 0.25, 63.75, MNF_WING_LOGO_ROWS[1] - 0.25)
+        def place(v, box, tile, corner, depth):
+            a, b, c, d = box
+            s, t, u, w = tile
+            x, y = corner
+            m.pos[v] = [a + (c - a) * x, d - (d - b) * y, depth]
+            m.uv_edit[v] = ((s + (u - s) * x) / 32 - 1, (t + (w - t) * y) / 32 - 1)
+        placed = {}
+        for name, ids, box, tile, depth in (("A", fade_ids, MNF_PANELS[side], ramp, z),
+                                            ("B", logo_ids, MNF_LOGOS[side], logo, z - .5)):
+            for i, (v, corner) in enumerate(zip(ids, corners_at(ids))):
+                place(v, box, tile, corner, depth)
+                placed[f"{name}{i}"] = v
+        for v, corner in layout["collapse"].items():
+            src = placed[corner]
+            m.pos[v] = m.pos[src][:]
+            m.uv_edit[v] = m.uv_edit[src]
+    wing("away")
+    wing("home")
     for side, parent in (("away", 23), ("home", 26)):
         m.world[parent][:2] = list(MNF_ANCHORS[side + "_score"][:2])
     for name, xyz in MNF_ANCHORS.items():
@@ -607,14 +652,14 @@ def mesh_mnf(retail):
 
 
 def mnf_panel(team, side):
-    """128x32 RGBA wing art: the team colour fading into the bar, the current logo.
+    """64x64 RGBA wing texture: the ESPN mark in rows 0..33, the team-colour ramp in rows 44..63.
 
-    The wing quad is about 88x46 HUD units, so the art is drawn pre-squashed
-    vertically (32 texels for 46 units). Logos come from data/nfl2k5_scorebug_mnf.
+    The mesh draws the ramp row stretched across the wing (team colour at the outer edge
+    fading to charcoal) and the logo rows at their own aspect near the outer edge, so the
+    art is never squashed. Logos are ESPN's marks from data/nfl2k5_scorebug_mnf/logos.
     """
     from pathlib import Path
     from PIL import Image
-    from . import nfl2k5_scorebug_ingame as r
     if side not in ("home", "away"):
         raise ValueError("invalid scorebug side")
     body = MNF_COLORS["body"]
@@ -623,15 +668,14 @@ def mnf_panel(team, side):
     else:
         argb = plate_argb(team)
         primary = ((argb >> 16) & 255, (argb >> 8) & 255, argb & 255)
-    im = Image.new("RGBA", (128, 32))
-    for x in range(128):
-        distance = x if side == "away" else 127 - x
-        t = min(1.0, distance / 96.0)
+    im = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
+    r0, r1 = MNF_WING_RAMP_ROWS
+    for x in range(64):
+        t = min(1.0, x / 44.0)
         t = t * t * (3 - 2 * t)
         rgb = tuple(round(p * (1 - t) + b * t) for p, b in zip(primary, body))
-        for y in range(32):
-            shade = 1.0 + (0.10 if y < 2 else 0.0)
-            im.putpixel((x, y), tuple(min(255, round(c * shade)) for c in rgb) + (255,))
+        for y in range(r0, r1):
+            im.putpixel((x, y), rgb + (255,))
     if team is not None:
         logos = Path(__file__).resolve().parents[2] / "data" / "nfl2k5_scorebug_mnf" / "logos"
         key = {"WAS": "wsh"}.get(team, team.lower())
@@ -641,12 +685,11 @@ def mnf_panel(team, side):
             bounds = logo.getchannel("A").getbbox()
             if bounds:
                 logo = logo.crop(bounds)
-            # Logo box: 60 x 24 texels (about 41 x 35 HUD units), aspect-fitted, then pre-squashed.
-            box_w, box_h = 60, 24
-            scale = min(box_w / logo.width, (box_h * 46 / 32) / logo.height)
+            l0, l1 = MNF_WING_LOGO_ROWS
+            box_w, box_h = 62, l1 - l0 - 2
+            scale = min(box_w / logo.width, box_h / logo.height)
             w = max(1, round(logo.width * scale))
-            h = max(1, round(logo.height * scale * 32 / 46))
+            h = max(1, round(logo.height * scale))
             logo = logo.resize((w, h), Image.Resampling.LANCZOS)
-            x = 10 if side == "away" else 128 - 10 - w
-            im.alpha_composite(logo, (x, (32 - h) // 2))
+            im.alpha_composite(logo, ((64 - w) // 2, l0 + (l1 - l0 - h) // 2))
     return im

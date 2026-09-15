@@ -2,6 +2,7 @@
 
 ## v1.0 RC96, beta 71: lighting and colour, a modern Arrowhead, and the 2026 scorebug closer to the broadcast (in progress, 2026-09-15)
 
+- **2026 scorebug: wings drawn at the broadcast's proportions with ESPN's own marks.** The wing boxes are 1.92 to 1 but the beta 70 wing textures were 4 to 1, so every logo drew at 48 percent of its width (further narrowed by the widescreen option). Each wing is now two quads on one 64x64 team texture: a colour ramp row stretched across the wing (team colour at the outer edge fading into the bar) and the logo rows drawn at their own aspect in a 170x91 source-pixel box near the outer edge, as measured from the broadcast. The 32 logos are ESPN's current marks rendered at 64x64 (sharper than the 128x32 panels they replace), the down plate box follows the row scans (837..1084 by 947..983), and the timeout dashes stay centred under the scores where the broadcast puts them. Appended volume unchanged (66 textures of 5,280 bytes, 0.35 MB). The widescreen option still narrows the whole HUD by 27/32, logos included; the build cannot pre-stretch art it compiles once for both aspects. Proved by the native renderer at 4:3 and widescreen; unwitnessed in game.
 ## v1.0 RC95, beta 70: the ESPN Monday Night Football 2026 scorebug, modern colour and lighting, and the reports after beta 69 (2026-09-15)
 
 Beta 70 rebuilds the ESPN scorebug to the 2026 Monday Night Football broadcast package, adds a modern colour and lighting option, and answers the ESPN NFL 2K5 reports in Discord after beta 69; bullets are added as each change lands.

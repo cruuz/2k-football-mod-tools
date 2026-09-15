@@ -77,12 +77,46 @@ class ArtTests(unittest.TestCase):
         atlas = exact.atlas_mnf()
         self.assertEqual(atlas.size, (64, 64))
         self.assertLessEqual(len(set(atlas.getdata())), 256)
+        ramp_row = sum(exact.MNF_WING_RAMP_ROWS) // 2
         for team, side in (("DEN", "away"), ("KC", "home"), (None, "away")):
             panel = exact.mnf_panel(team, side)
-            self.assertEqual(panel.size, (128, 32))
+            self.assertEqual(panel.size, (64, 64))
+            # The ramp rows carry the team colour at column 0 and the bar charcoal at column 63.
+            self.assertEqual(panel.getpixel((63, ramp_row))[:3], exact.MNF_COLORS["body"])
+            self.assertEqual(panel.getpixel((63, ramp_row))[3], 255)
         away = exact.mnf_panel("KC", "away")
-        # The team colour sits at the outer cap (left for away) and fades toward the middle.
-        self.assertGreater(away.getpixel((0, 16))[0], away.getpixel((120, 16))[0])
+        self.assertGreater(away.getpixel((0, ramp_row))[0], away.getpixel((63, ramp_row))[0])
+        # The ESPN mark sits in the logo rows at its own aspect, over transparency.
+        l0, l1 = exact.MNF_WING_LOGO_ROWS
+        logo_box = away.crop((0, l0, 64, l1)).getchannel("A").getbbox()
+        self.assertIsNotNone(logo_box)
+        self.assertGreater(logo_box[2] - logo_box[0], 40)
+        self.assertEqual(away.crop((0, l1, 64, exact.MNF_WING_RAMP_ROWS[0])).getchannel("A").getbbox(), None)
+
+    def test_wing_strips_draw_exactly_the_fade_and_logo_quads(self):
+        # Beta 71: each retail wing strip (32 vertices, repeated ids) must draw two quads only.
+        from mod_editor.core import nfl2k5_scorebug_ingame as r
+        rec = r.RESOURCES["score_bug"]
+        with INDEX.open("rb") as stream:
+            stream.seek(rec["pack_offset"]); span = stream.read(rec["span_size"])
+        retail = r.pinned(span, rec)
+        m = exact.mesh_mnf(retail)
+        strips = [indices for _, indices in r.layout.strips(retail)]
+        for side in ("away", "home"):
+            layout = exact.MNF_WING_LAYOUT[side]
+            indices = next(indices for indices in strips if layout["fade"][0] in indices)
+            visible = [tuple(indices[i:i + 3]) for i in range(len(indices) - 2)
+                       if len({tuple(m.pos[v][:2]) for v in indices[i:i + 3]}) == 3]
+            fade, logo = layout["fade"], layout["logo"]
+            self.assertEqual(visible, [fade[:3], fade[1:], logo[:3], logo[1:]], side)
+            # The logo quad sits inside the wing box, at the measured 170x91 source-pixel box.
+            xs = [m.pos[v][0] for v in logo]
+            ys = [m.pos[v][1] for v in logo]
+            wing = exact.MNF_PANELS[side]
+            self.assertGreaterEqual(min(xs), wing[0] - 1e-6)
+            self.assertLessEqual(max(xs), wing[2] + 1e-6)
+            self.assertAlmostEqual(max(xs) - min(xs), (625 - 455) / 3, places=3)
+            self.assertAlmostEqual(max(ys) - min(ys), (1037 - 946) * 448 / 1080, places=3)
 
     def test_layout_measurements_are_the_broadcast_ones(self):
         bar = exact.MNF_BAR

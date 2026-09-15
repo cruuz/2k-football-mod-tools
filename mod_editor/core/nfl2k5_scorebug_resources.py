@@ -571,7 +571,7 @@ RUNTIME_TEXTURE_COUNT, RUNTIME_TEXTURE_SPAN = 264, 5280
 RUNTIME_APPEND_SIZE = RUNTIME_TEXTURE_COUNT * RUNTIME_TEXTURE_SPAN + scoped_fonts.APPEND_SIZE
 RUNTIME_GROWTH = ((HUD_SIZE + RUNTIME_APPEND_SIZE + 2047) // 2048 - (HUD_SIZE + 2047) // 2048) * 2048
 # Filled by the reproducible compiler; no game bytes are distributed.
-RUNTIME_PINS = {'index': '1b4c2af593e2b61d42b5afc3ad9c67433eee2af4fc16920f8a1538640c956b10', 'hud_before': '2c23410c05c1ec266c3176b8b201f9a48b4a45ac148110ca569e5df25984e7c8', 'hud_after': '263868280d78a03654086f4f7759bf08cdb6ca337322cf30ad86ecdf10e7a902', 'appendix': '846864649a3b2309c476edb55fc9b14a912e062548d1a2abf474a8e3acf44063'}
+RUNTIME_PINS = {'index': '1b4c2af593e2b61d42b5afc3ad9c67433eee2af4fc16920f8a1538640c956b10', 'hud_before': '2c23410c05c1ec266c3176b8b201f9a48b4a45ac148110ca569e5df25984e7c8', 'hud_after': 'e9c847b0ff3dd8be48be352a69bbef2580a3b48d18c596e359af7c3b2cd85d46', 'appendix': '846864649a3b2309c476edb55fc9b14a912e062548d1a2abf474a8e3acf44063'}
 
 
 def runtime_panel_name(asset_code, side, count):
@@ -582,8 +582,8 @@ def runtime_panel_name(asset_code, side, count):
     return f"sb{asset_code}{side[0]}{count}"
 
 
-def runtime_panel(template, image, name, *, indexed=None):
-    """128x32 swizzled P8, native 128-byte system buffer and 5120-byte video.
+def runtime_panel(template, image, name, *, indexed=None, size=(128, 32)):
+    """128x32 (or 64x64) swizzled P8, native 128-byte system buffer and 5120-byte video.
 
     The existing quantizer/swizzler produce the pixels. Uncompressed wrappers
     avoid adding any VC-LZ overlap/scratch requirement to the grown collection.
@@ -594,24 +594,26 @@ def runtime_panel(template, image, name, *, indexed=None):
     decoded = r.pinned(template, RESOURCES["score_buga"])
     system = bytearray(decoded[:128])
     encoded_name = (name + "\0").encode("utf-16le")
-    if len(encoded_name) > 24 or image.size != (128, 32):
+    width, height = size
+    if len(encoded_name) > 24 or image.size != size or size not in ((128, 32), (64, 64)):
         raise ValueError("invalid runtime texture dimensions/name")
     system[32:56] = encoded_name.ljust(24, b"\0")
-    struct.pack_into("<I", system, 56 + 12, 0x05710B29)  # 2D, P8, 1 mip, 128x32
+    # 2D, P8, 1 mip: the 128x32 word or the template's own 64x64 word.
+    struct.pack_into("<I", system, 56 + 12, 0x05710B29 if size == (128, 32) else 0x06610B29)
     if indexed is None:
-        palette, levels, _ = palettes.quantize_levels([palettes.MipLevel(0, 128, 32, image.tobytes())], 128)
+        palette, levels, _ = palettes.quantize_levels([palettes.MipLevel(0, width, height, image.tobytes())], 128)
         indices = levels[0]
     else:
         palette, indices = indexed
         if len(indices) != 4096 or not 1 <= len(palette) <= 256 or max(indices) >= len(palette):
             raise ValueError("invalid shared runtime panel palette")
-    video = r.tx.swizzle_2d(indices, 128, 32, 1) + palettes.palette_bytes(palette)
+    video = r.tx.swizzle_2d(indices, width, height, 1) + palettes.palette_bytes(palette)
     body = bytes(system) + video
     header = struct.pack("<4s7I", b"TXTR", len(body), 128, len(video), 0, 0, 0, 0)
     result = header + body
     chunk, roundtrip, _ = r.decode(result)
     tex = r.tx.parse_texture(roundtrip, chunk)
-    if len(result) != RUNTIME_TEXTURE_SPAN or roundtrip != body or (tex.width, tex.height, tex.name) != (128, 32, name):
+    if len(result) != RUNTIME_TEXTURE_SPAN or roundtrip != body or (tex.width, tex.height, tex.name) != (width, height, name):
         raise ValueError("runtime native TXTR round trip failed")
     return result
 
@@ -620,7 +622,7 @@ def mnf_panel_span(template, team, side):
     """One 2026 wing panel (team colour fade plus the current logo) as a native TXTR."""
     from . import nfl2k5_scorebug_exact as exact
     code = "--" if team is None else TEAM_LOGOS[team]["asset_code"]
-    return runtime_panel(template, exact.mnf_panel(team, side), runtime_panel_name(code, side, 0))
+    return runtime_panel(template, exact.mnf_panel(team, side), runtime_panel_name(code, side, 0), size=(64, 64))
 
 
 def panel_states(span, team, side):
@@ -647,7 +649,7 @@ def _compiled_panels(template, span, team, side):
 
 READ_BLOCK = 1024 * 1024
 PROBES = ("transport", "hooks", "resources", "neutral", "pair", "full", "mnf")
-MNF_VERSION = "scorebug-mnf-2026-v1"
+MNF_VERSION = "scorebug-mnf-2026-v2"
 # The in-place ESPN digit restyle of FONT4/FONT8 (outer 3, loaded at boot) is held back until it is
 # witnessed: a 2026-09-15 emulator boot with it applied stalled in the intro movie. Set
 # NFL2K5_MNF_FONTS=1 to include it in a build; status() follows the same switch.
@@ -890,11 +892,11 @@ def runtime_pack_status(pack, *, probe="full"):
 
 # Reproducible subsets of the full collection. Pair includes both orientations
 # of TB and NE plus neutral fallbacks, so changing ends does not change assets.
-PROBE_APPEND_PINS = {'transport': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'hooks': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'neutral': 'e38a25fae3acb5fdd3ae5ddcb91798e047e1be27e862f319452ee176b6cb61fa', 'pair': '8c7da0308c4b96d66f124ec5c83939ac0376fac623ca76b777d67be0b1cfd515', 'mnf': '13d1edd95686245cb54856fa4b7e95aac2e23ddff4fe0c190cc54b0cf348768c'}
+PROBE_APPEND_PINS = {'transport': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'hooks': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'neutral': 'e38a25fae3acb5fdd3ae5ddcb91798e047e1be27e862f319452ee176b6cb61fa', 'pair': '8c7da0308c4b96d66f124ec5c83939ac0376fac623ca76b777d67be0b1cfd515', 'mnf': 'db7dcc19c94f7edeb6a0921448ebd23718ed4d0579445a1476dc621e3cb4cab5'}
 
 # Native ABI bodies, normalized only for independently recognized scorebug fields/hooks.
 RUNTIME_ABI_GUARDS = [(1035472, 407, 'fae55450eb58f087e0e31b50636342c39d7b7df70361fae6b2ccda6e2fedfa60'), (1035888, 1466, 'fadbe0384fccb436be4f0fe52514aa9e38c543288a471ffc6b44e9ffde365b2f'), (1034688, 780, 'bdc0d7cda462c37ec5546944605fe12141a83c798965b78ebe5abe8467d379df'), (1031280, 73, '1fea8eb67ed1d7df96e85562ec8d79075736ed4d10e5cfbe18f1b7be05c01e60'), (281056, 104, '710fd5ba9fd2a147042dd4c5f133cc2a8d36dcdc10b47417d17ec65df9b46191'), (279504, 770, '1caaf5b258e1849435c7ed69dbc970f9ce5f265415c4dadecee3bef94dc8d6b3'), (199744, 37, 'dd3d52cc45c43dc86d8db7220d777346237b324dd9a00dce35c9de3362bbfdee'), (277792, 136, '03233a25e1afc3ef91892233872e5b9cf29404be7b250dbf17a62db248949d9f'), (282016, 20, '0ee1f6425e946ec6d8dd4aeae08c6ae211e9de4ba09f9648a75f052d1c6bed6e'), (216560, 108, 'f84f040777759d3417fb8bee34ab8e046cf40255e18c467530417ae504aad29c'), (216080, 267, '69266ee656258cc0c7c3f770b0a650452d18c4c84251088bb204fbecb3afa2fe'), (754112, 58, '13cd2011501c1d9567889a32898a944b6cd7dee7769062e7ad57a0994614c674'), (1032272, 29, '02136e09af5b89365ab949b6cdd50c82e2c705bf3e4a9a585f6561234e33de99'), (1032304, 29, '730201c327a46bc2ee757b942eef6efb387d47a9aa5d9cdde452e5539a296222'), (400464, 6, 'b47138018b9b2ec278b17d759b0d8e54f0c9c5c9181510e9d3716d37aa74d6a4'), (400480, 6, '7d1ab1e0e220598d0dfeec086c9327bcec8699bc836f0ee2d3930a8e3d500e9b'), (1031584, 9, '5e68b2fc2391d42f537a7a352387790a5c46114bbe4f2197a6293a5a9a6f1b63'), (1034192, 446, '61eb66a3851ced7740b600c9b2ec8dc32c1fcfdb6c980ae7995b78407b23390a'), (15124024, 24, '9385e4da55d331aa5b8649841a9206ccd44b267e2a05abb359cb178b7d862f67'), (15124276, 24, 'c9ce8e336a66c1f198ee4f2a11052c232675558077c0f6e328e689d5bd52aee2')]
 
 TEMPLATE_SCENE_SHA256 = '77dcbe4639c8cd35468aee28cd36cfc023b0bcf226572477a367d56d0ff00c24'
 STATIC_SCENE_SHA256 = '2d48ab3d3876a9e533a213c4cd22d181dc64a74f9292e5ed1a3fdd53e913de93'
-RUNTIME_SCENE_SHA256 = '65fd13a7c4cd214d4a2a9077691ef3eb8e2657be9b7ed7df8667e5a3d2f173ef'
+RUNTIME_SCENE_SHA256 = '0856325c592a344d1807671a4c9f986857d4648f43d91fd9c168f72bf00237c3'

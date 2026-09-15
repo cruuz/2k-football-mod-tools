@@ -10463,9 +10463,10 @@
           "FABLE_B70_SCOREBUG_REPORT_2026-09-15.md",
           "docs/scorebug_mnf/witness/run6_play4_live_play.jpg",
           "docs/scorebug_mnf/witness/run6_gdb_registers.txt",
-          "tests/mod_editor/test_nfl2k5_scorebug_mnf.py"
+          "tests/mod_editor/test_nfl2k5_scorebug_mnf.py",
+          "FABLE_B71_WINGS_REPORT_2026-09-15.md"
         ],
-        "scope": "The previous GPU-fence repair passes its historical control. Beta 68 exercises scorebug-enabled composed BuildPlans, native collection loading, setup at FCE56, update at FCFA2, font glyph draws, re-entry and the separate presentation/kickoff fixtures. andrethealchemist's selected/unselected comparison identifies this option as a reported trigger, but the stopped instruction, real asynchronous loader/GPU state and full scene lifetime are unavailable. No Berman fix is claimed. In-game behavior remains UNWITNESSED. Beta 70: the freeze was reproduced with the debugger (bugcheck 0x1E, a write to address 0 at kernel 0x8001DBD4 while the resource loader was busy) and removed; a second stop at the coin toss was removed the same day; one xemu run reached live play with the 2026 bar drawn (docs/scorebug_mnf/witness/). See FABLE_B70_SCOREBUG_REPORT_2026-09-15.md.",
+        "scope": "The previous GPU-fence repair passes its historical control. Beta 68 exercises scorebug-enabled composed BuildPlans, native collection loading, setup at FCE56, update at FCFA2, font glyph draws, re-entry and the separate presentation/kickoff fixtures. andrethealchemist's selected/unselected comparison identifies this option as a reported trigger, but the stopped instruction, real asynchronous loader/GPU state and full scene lifetime are unavailable. No Berman fix is claimed. In-game behavior remains UNWITNESSED. Beta 70: the freeze was reproduced with the debugger (bugcheck 0x1E, a write to address 0 at kernel 0x8001DBD4 while the resource loader was busy) and removed; a second stop at the coin toss was removed the same day; one xemu run reached live play with the 2026 bar drawn (docs/scorebug_mnf/witness/). See FABLE_B70_SCOREBUG_REPORT_2026-09-15.md. Beta 71: wings redrawn at the broadcast's proportions on 64x64 textures (ESPN marks plus a colour ramp), the dash callbacks on the records the retail game binds to each team, event slabs on the charcoal tile; see FABLE_B71_WINGS_REPORT_2026-09-15.md.",
         "status": "not-tested"
       },
       "selectors": {
