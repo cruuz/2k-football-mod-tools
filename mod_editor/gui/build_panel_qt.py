@@ -561,18 +561,20 @@ class BuildPanel(QWidget):
                                                     "On/Off toggle really works (switch it On in Penalty Settings). Rates are ESTIMATED pending a playtest.")
         self.kick_laces_check = self._option(g, "kick_laces", "Laces face the posts on kicks",
                                              "On field goals and PATs the held ball is turned so the laces face the posts.", badge=NOT_TESTED)
-        self.uniform_choice_check = self._option(g, "uniform_choice", "Choose home/away jerseys at any stadium",
-                                                 "Up/down past the last era on Controller Assign or Team Select flips that side's colour "
-                                                 "(era cycling continues after the flip).", badge=NOT_TESTED)
+        self.uniform_choice_check = self._option(
+            g, "uniform_choice", r62_ui.uniform_choice_caption(""),
+            r62_ui.UNIFORM_CHOICE_HELP, badge=NOT_TESTED)
         mode_row = QHBoxLayout()
         mode_row.addSpacing(30)
         mode_row.addWidget(QLabel("Jersey mode"))
         self.uniform_choice_mode = QComboBox()
         self.uniform_choice_mode.setAccessibleName("Jersey choice mode")
-        self.uniform_choice_mode.addItem("Choose either jersey", "choice")
-        self.uniform_choice_mode.addItem("Home dark / away white", "rule")
-        self.uniform_choice_mode.setToolTip("Choose either jersey keeps the original default and adds the flip; Home dark / away white "
-                                            "applies one rule to every game (no Cowboys exception). Leave the box unticked for the original behavior.")
+        self.uniform_choice_mode.addItem(
+            "choice: choose either colour on Controller Assign / exhibition Team Select", "choice")
+        self.uniform_choice_mode.addItem(
+            "rule: fixed home dark / away white (no colour choice)", "rule")
+        self.uniform_choice_mode.setToolTip(r62_ui.UNIFORM_CHOICE_HELP)
+        self.uniform_choice_mode.currentIndexChanged.connect(lambda _i: self._refresh())
         mode_row.addWidget(self.uniform_choice_mode)
         mode_row.addStretch(1)
         g.addLayout(mode_row)
@@ -1287,6 +1289,15 @@ class BuildPanel(QWidget):
         gate(self.probowl_order_check, "probowl_order")
         gate(self.penalties_check, "penalties")
         gate(self.uniform_choice_check, "uniform_choice")
+        if state.get("uniform_choice") == "applied":
+            installed_form = state.get("uniform_choice_mode")
+            self.uniform_choice_mode.setCurrentIndex(
+                self.uniform_choice_mode.findData(installed_form))
+        else:
+            self.uniform_choice_mode.setCurrentIndex(
+                self.uniform_choice_mode.findData("choice"))
+        self.uniform_choice_mode.setEnabled(
+            self.uniform_choice_check.isEnabled() and self.uniform_choice_check.isChecked())
         finish_state = str(state.get("helmet_finish"))
         finish_available = self._available.get("helmet_finish", False)
         finish_enabled = finish_available and finish_state in ("retail", "applied")
@@ -1767,6 +1778,22 @@ class BuildPanel(QWidget):
         self._refresh()
 
     def _refresh(self) -> None:
+        if hasattr(self, "uniform_choice_mode"):
+            uniform_state = (self._state or {}).get("uniform_choice")
+            if uniform_state == "applied":
+                uniform_mode = (self._state or {}).get("uniform_choice_mode")
+                # Saved choices restore after source inspection. Keep the
+                # disabled selector faithful to the installed executable too.
+                blocked = self.uniform_choice_mode.blockSignals(True)
+                self.uniform_choice_mode.setCurrentIndex(
+                    self.uniform_choice_mode.findData(uniform_mode))
+                self.uniform_choice_mode.blockSignals(blocked)
+            else:
+                uniform_mode = (self.uniform_choice_mode.currentData()
+                                if self.uniform_choice_check.isChecked() else "")
+            self.uniform_choice_check.setText(r62_ui.uniform_choice_caption(uniform_mode))
+            self.uniform_choice_mode.setEnabled(
+                self.uniform_choice_check.isEnabled() and self.uniform_choice_check.isChecked())
         if hasattr(self, "momentum_contact_note"):
             enabled = self.momentum_check.isChecked()
             installed = ((self._state or {}).get("momentum_settings") or {}).get("status") == "applied"

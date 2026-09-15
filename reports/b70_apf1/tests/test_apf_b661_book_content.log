@@ -1,0 +1,6 @@
+.This plugin does not support propagateSizeHints()
+....
+----------------------------------------------------------------------
+Ran 5 tests in 28.260s
+
+OK

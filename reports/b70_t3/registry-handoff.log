@@ -1,0 +1,3 @@
+BASELINE file-check failure: capabilities[0].evidence[0]: missing local file docs/research/apf_audio.md
+PROVED: proposed registry structural validation; capabilities=173
+PROVED: every new row backend/evidence path exists locally

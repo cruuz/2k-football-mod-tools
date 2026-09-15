@@ -3523,20 +3523,22 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/mod_editor/apf_wave_2026_09_09.md",
-        "docs/mod_editor/apf_b661_cpu_book_control.md"
+        "docs/mod_editor/apf_b661_cpu_book_control.md",
+        "docs/mod_editor/apf2k8_book_identity_walkthrough.md"
       ],
       "game": "apf2k8_xbox360",
       "gui": {
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "Integrated in the APF Studio with offline validation; gameplay UNWITNESSED."
+        "reason": "Book Identity links the walkthrough and exposes replacement unchecked by default, per book. Offline writer/reparse proved; gameplay UNWITNESSED."
       },
       "id": "apf2k8.playbooks.scheme_presets",
       "input_constraints": [
         "Use a separate new destination; source game files remain read-only.",
         "Reject malformed ownership, hash collisions, shared clone labels, occupied directory slack, IFF overflow, and H7A length greater than distance.",
-        "Only existing plays/formations are used; no CPU situational frequency, WR depth flip, true RPO, or TU compatibility is established."
+        "Only existing plays/formations are used; no CPU situational frequency, WR depth flip, true RPO, or TU compatibility is established.",
+        "Stock replacement must fit the existing allocation, cover ordinary personnel rows and have no conflicting Fine-tune selectors. All users of the shared target receive the change."
       ],
       "portme": [
         "Witness base-XEX loading and per-team cloned-book consumption; reconstruct TU resolver before claiming TU compatibility."
@@ -3560,7 +3562,7 @@
             "required": true
           }
         ],
-        "notes": "Select existing plays and retarget tagged slots through the SPLB writer; preserve formations, personnel fields, fallback records, and all other bytes."
+        "notes": "Existing copy recipes retain their CLI. Book Identity also calls scheme_service.stage_replacement with a stock book name and one of eight beta-69 scheme IDs; it replaces the entire donor content and retains donor special-call tails. Existing target membership is not merged."
       },
       "source_container": {
         "format": "APF AA00B3BF four-volume archive, IFF/H7A, SPLB and ROST",
@@ -3570,9 +3572,9 @@
         "resource": "filename-addressed book resources and root[11] labels; root[4] team pointers",
         "retail_file": "user-owned extracted APF Xbox 360 game folder"
       },
-      "summary": "Fill one independent copy from Wide Zone, Spread-to-Run or Pro Power while keeping team, label and donor editable. Content remains editable in Fine-tune after building; the separate shared-book staging and CLI paths remain available.",
+      "summary": "Book Identity offers three copy recipes and opt-in replacement of any of eight stock offensive books with beta-69 scheme starting content. Whole-content reparse and fixed-allocation refusal precede staging; gameplay UNWITNESSED.",
       "surface": "scripts_config",
-      "title": "Wide Zone, Spread-to-Run, Pro Power",
+      "title": "Starting recipes and stock book replacement",
       "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
     },
     {
@@ -8868,14 +8870,18 @@
         "tests/mod_editor/test_nfl2k5_music_metadata.py",
         "tests/mod_editor/test_nfl2k5_music_acceptance.py",
         "tests/mod_editor/test_nfl2k5_jukebox_list.py",
-        "docs/mod_editor/nfl2k5_beta66_d2_validation.json"
+        "docs/mod_editor/nfl2k5_beta66_d2_validation.json",
+        "ASTRA_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_music_resample.py",
+        "tests/mod_editor/test_nfl2k5_music_conform_integration.py",
+        "tests/mod_editor/test_nfl2k5_music_queue.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "Rebuild a personal menu or jukebox bank with authored WAVs and retained source tracks. Jukebox mono twins and titles are one transaction. Experimental, not yet tested in game. EXPERIMENTAL / UNWITNESSED."
+        "reason": "Mud's beta-69 video confirms that imports appear in My songs and The Crib loads without a crash. He also reports poor audio; its cause is unresolved. Beta 70 warns before import about 22,050 Hz playback, uses stricter SoXR low-pass filtering and final TPDF PCM16 dither. Synthetic sweep and bounded queue checks are PROVED; listening quality and every beta-70 in-game outcome remain UNWITNESSED. Five identical visible queue titles alone do not prove duplicate automatic enqueueing."
       },
       "id": "nfl2k5.music.bank_rebuild",
       "input_constraints": [
@@ -8895,8 +8901,10 @@
         "tooling": "source-and-schemas-only"
       },
       "runtime": {
-        "evidence": [],
-        "scope": "EXPERIMENTAL / UNWITNESSED. Offline compiler and transport checks; no game playback witnessed.",
+        "evidence": [
+          "ASTRA_REPORT.md"
+        ],
+        "scope": "Mud's beta-69 video confirms that imports appear in My songs and The Crib loads without a crash. He also reports poor audio; its cause is unresolved. Beta 70 warns before import about 22,050 Hz playback, uses stricter SoXR low-pass filtering and final TPDF PCM16 dither. Synthetic sweep and bounded queue checks are PROVED; listening quality and every beta-70 in-game outcome remain UNWITNESSED. Five identical visible queue titles alone do not prove duplicate automatic enqueueing.",
         "status": "not-tested"
       },
       "selectors": {
@@ -8927,7 +8935,7 @@
         "resource": "Policy fields and seven fixed-slot music banks; full-library rebuild validates all 17 descriptor owners.",
         "retail_file": "default.xbe and vc_53450030/0..F"
       },
-      "summary": "Rebuild a personal menu or jukebox bank with authored WAVs and retained source tracks. Jukebox mono twins and titles are one transaction. Experimental, not yet tested in game. Beta 66 (Mud): the Crib collection-list builder is bounded by the label block (nfl2k5_jukebox_list) so an added-song collection no longer walks past its four disc rows; entering it in game is UNWITNESSED.",
+      "summary": "Rebuild a personal menu or jukebox bank with authored WAVs and retained source tracks. Jukebox mono twins and titles are one transaction. Experimental, not yet tested in game. Beta 66 (Mud): the Crib collection-list builder is bounded by the label block (nfl2k5_jukebox_list) so an added-song collection no longer walks past its four disc rows; entering it in game is UNWITNESSED. Mud's beta-69 video confirms that imports appear in My songs and The Crib loads without a crash. He also reports poor audio; its cause is unresolved. Beta 70 warns before import about 22,050 Hz playback, uses stricter SoXR low-pass filtering and final TPDF PCM16 dither. Synthetic sweep and bounded queue checks are PROVED; listening quality and every beta-70 in-game outcome remain UNWITNESSED. Five identical visible queue titles alone do not prove duplicate automatic enqueueing.",
       "surface": "audio",
       "title": "Music library (experimental)",
       "validation_command": "python3 tools/validate_beta61_integrated_features.py"
@@ -8943,14 +8951,16 @@
         "ASTRA_MUSIC_BUILD_REPORT.md",
         "tests/mod_editor/test_nfl2k5_music_build.py",
         "tests/mod_editor/test_music_service.py",
-        "tests/mod_editor/test_music_panel_qt.py"
+        "tests/mod_editor/test_music_panel_qt.py",
+        "tests/mod_editor/test_nfl2k5_music_resample.py",
+        "tests/mod_editor/test_nfl2k5_music_conform_integration.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "86 logical music slots; 59 jukebox entries update stereo and mono together. Exact-length fit, restore, Undo, authored projects and copy builds. In-game playback has not been witnessed. EXPERIMENTAL / UNWITNESSED."
+        "reason": "86 logical music slots; linked stereo/mono replacements remain one transaction. Before import, explain the game's 22,050 Hz playback. Converted inputs stay float through resampling, gain and fade, then receive one TPDF PCM16 conversion. Native PCM16 at unity gain without a fade stays exact. EXPERIMENTAL / UNWITNESSED in game."
       },
       "id": "nfl2k5.music.fixed_slot",
       "input_constraints": [
@@ -9012,7 +9022,9 @@
         "ASTRA_MUSIC_ALL_MODES_REPORT.md",
         "tests/mod_editor/test_nfl2k5_music_playlist_library.py",
         "tests/mod_editor/test_music_playlist_project.py",
-        "tests/mod_editor/test_music_all_modes_wiring.py"
+        "tests/mod_editor/test_music_all_modes_wiring.py",
+        "tests/mod_editor/test_nfl2k5_music_queue.py",
+        "ASTRA_REPORT.md"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -9043,7 +9055,7 @@
       },
       "runtime": {
         "evidence": [],
-        "scope": "EXPERIMENTAL / UNWITNESSED. All 24 named routing contracts have bounded native transitions with explicit rendering/resource/streaming stubs. This is not audible all-mode certification.",
+        "scope": "EXPERIMENTAL / UNWITNESSED. All 24 named routing contracts have bounded native transitions with explicit rendering/resource/streaming stubs. This is not audible all-mode certification. Beta 70: the manifest rejects duplicate (bank,index) records; bounded repeated active-enqueue and completion requests do not multiply automatic playback. The separate native NOW PLAYING pool permits explicit repeated adds in retail and My songs, and profile rebuild preserves their count. Mud must confirm whether his five visible repeats followed repeated adds; automatic duplication is unproved.",
         "status": "not-tested"
       },
       "selectors": {
@@ -11755,6 +11767,71 @@
       "surface": "uniforms",
       "title": "Uniform and shoe bump maps (experimental, unwitnessed)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_shoe_relief"
+    },
+    {
+      "backend": {
+        "command": "Python API: mod_editor.core.nfl2k5_uniform_choice.apply(payload, mode=\"choice\")",
+        "module": "mod_editor/core/nfl2k5_uniform_choice.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_uniform_choice.py",
+        "tests/mod_editor/test_nfl2k5_uniform_choice_screens.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Build names choice versus rule; Gameplay Patches selects choice. Off in all presets after the T3 WIRING.md handoff. X_Ray reports failure; bounded checks do not identify his cause."
+      },
+      "id": "nfl2k5.uniforms.colour_choice",
+      "input_constraints": [
+        "Pinned retail-or-complete-applied uniform sites; reject foreign or mixed forms and changing an installed form. Rebuild from the original source to change forms.",
+        "Choice cycles twice the number of available eras per side, at most 30 states. Both sides can choose white. Initial colours preserve the retail Cowboys rule.",
+        "FUN_000e2d80 clears both era slots and colour flips; it does not preserve a previous choice. Bounded setup-reset -> screen callbacks -> kit-selector execution preserves choices made after reset. Full game transition remains UNWITNESSED."
+      ],
+      "portme": [
+        "Follow the X_Ray witness recipe in ASTRA_REPORT.md on both supported screens. Do not claim that Practice, Xbox Live or Team Select colour preview were extended."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and instructions; never distribute generated XBEs or retail resources.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "tests/mod_editor/test_nfl2k5_uniform_choice_screens.py",
+          "reports/b70_t3/uniform-screens.log"
+        ],
+        "scope": "PROVED: bounded execution of both retail screen wrappers, patched era handlers, reset and kit-letter selector. The flip words do not survive an explicit reset after selection. X_Ray's failing call order is HYPOTHESIS; every beta-70 in-game outcome is UNWITNESSED.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "empty string (off), rule, or choice",
+            "name": "uniform_choice",
+            "required": true
+          }
+        ],
+        "notes": "Build selects either form; Gameplay Patches installs choice. EXPERIMENTAL, off in all presets after wiring."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "Rule block 0x6160F, away-letter read 0x6168B, reset tail 0xE2D91 and four era handlers. Writable colour words 0xA69974/0xA69978 and loader scratch 0xA6997C.",
+        "retail_file": "user-owned NFL 2K5 USA default.xbe"
+      },
+      "summary": "Choice form: independent home/away colour cycling on Controller Assign and exhibition Team Select. Rule form: fixed home dark / away white, without in-game choice. Practice, Xbox Live and Team Select colour preview are not extended.",
+      "surface": "uniforms",
+      "title": "Jersey colour: choice or fixed rule (experimental)",
+      "validation_command": "python3 tests/mod_editor/test_nfl2k5_uniform_choice_screens.py"
     },
     {
       "backend": {

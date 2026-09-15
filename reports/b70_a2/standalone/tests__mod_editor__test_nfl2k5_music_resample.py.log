@@ -1,0 +1,7 @@
+....
+----------------------------------------------------------------------
+Ran 4 tests in 1.653s
+
+OK
+{"improvement_db": 23.196107825280734, "passband": {"new_dbfs": -5.509074190284333, "old_dbfs": -5.509075397694653}, "stopband": {"new_dbfs": -228.3234017136243, "old_dbfs": -205.12729388834356}}
+{"tpdf_mean_lsb": 0.24922, "old_mean_lsb": 0, "target_mean_lsb": 0.25, "tpdf_error_variance_lsb2": 0.24871}

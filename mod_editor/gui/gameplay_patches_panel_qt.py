@@ -149,13 +149,8 @@ PATCHES = (
      "10-byte stub so it really silences chop blocks (retail profiles have it Off: switch it On in Penalty "
      "Settings). The rates are ESTIMATED pending a calibration playtest; illegal formation, illegal contact and "
      "12 men do not exist in the engine. Unwitnessed in game."),
-    ("uniform_choice", "Home/away jerseys at any stadium",
-     "Retail: the jersey colour is decided once per game load by one rule (home dark, visitor white, except the "
-     "Cowboys wear white at home and navy in Washington and Tennessee); the player only picks the era. Patch: "
-     "the same up/down that picks the era on Controller Assign or Team Select keeps going past the last era to "
-     "flip that side's colour and restart at the first era (15 eras x 2 colours per side; the retail default "
-     "stays the default; both teams may choose white). Practice and Xbox Live keep the retail rule; the Team "
-     "Select preview shows the era art only. Unwitnessed in game."),
+    ("uniform_choice", "Jersey choice: choice form (Controller Assign / exhibition Team Select)",
+     r62_ui.UNIFORM_CHOICE_HELP),
     ("kick_laces", "Laces to the posts on field goals and PATs",
      "Retail: the holder's animation decides which way the ball faces on a place kick, and the hold clip "
      "leaves the laces toward the kicker (the kickoff tee is a code constant and already faces the posts). "
@@ -320,7 +315,10 @@ LABELS: dict[str, tuple[str, str, str]] = {
     "position_row": ("Change position in Edit Player", "In-game: use Depth Chart → Auto afterward.", NOT_TESTED),
     "probowl_order": ("Pro Bowl Votes: offense, defense, kickers", "The tabs run offence, defence, then K and P.", NOT_TESTED),
     "penalties": ("Adjusted penalty rates (experimental)", "Estimated rates; includes the Chop Block toggle fix.", NOT_TESTED),
-    "uniform_choice": ("Choose home/away jerseys at any stadium", "Up/down past the last era flips that side's colour.", NOT_TESTED),
+    "uniform_choice": (
+        "Jersey choice: choice form (Controller Assign / exhibition Team Select)",
+        "Choice form only here. Build also offers a fixed rule. Preview art shows era only.",
+        "Reported not working; bounded checks pass / UNWITNESSED"),
     "kick_laces": ("Laces face the posts on kicks", "On field goals and PATs the held ball is turned so the laces face the posts.", NOT_TESTED),
     "prospect_names": ("Modern draft-prospect names", "New franchises only; some new surnames are announced by number.", "New franchises only"),
     "franchise_practice": ("Practice below Schedule in Franchise", r62_ui.PRACTICE_HELP, NOT_TESTED),
@@ -846,6 +844,17 @@ class GameplayPatchesPanel(QWidget):
         self._refresh()
 
     def _refresh(self) -> None:
+        uniform = self.checks.get("uniform_choice")
+        if uniform is not None:
+            source_state = (self._state or {}).get("uniform_choice")
+            mode = ((self._state or {}).get("uniform_choice_mode")
+                    if source_state == "applied" else "choice" if uniform.isChecked() else "")
+            uniform.setText(r62_ui.uniform_choice_caption(mode))
+            if source_state != "foreign":
+                uniform.setToolTip(r62_ui.UNIFORM_CHOICE_HELP)
+            if source_state == "applied":
+                self.badges["uniform_choice"].setText(
+                    "Installed " + str(mode or "unknown form") + "; in-game UNWITNESSED")
         if "momentum_contact" in self.checks:
             enabled = self.checks["momentum"].isChecked()
             self.checks["momentum_contact"].setEnabled(enabled and (self._state or {}).get("momentum_contact") == "retail")

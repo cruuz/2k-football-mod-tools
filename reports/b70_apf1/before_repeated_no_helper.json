@@ -1,0 +1,1619 @@
+{
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "cpu_count": 32,
+  "native_disabled": true,
+  "portable_optimal": false,
+  "repeat_inputs": 1,
+  "runs": [
+    {
+      "count": 32,
+      "wall_seconds": 58.21215720499822,
+      "phases": {
+        "read_bundle": 0.24995930799923372,
+        "destination_slots": 0.00464555699727498,
+        "measure": 23.39264657199965,
+        "plan": 0.17155651600114652,
+        "stage": 4.654650970001967,
+        "compile": 4.6071885299970745,
+        "linked_cache": 24.247525129001588,
+        "apply_and_readback": 0.04671188300198992
+      },
+      "stages_exclusive_seconds": {
+        "ps3_decode": 0.24994573300136835,
+        "source_decode": 35.37568437602022,
+        "mips": 98.5277435779717,
+        "region_masks": 50.98482963298011,
+        "greedy_h7a": 525.8422175159976,
+        "verification": 126.07152940002561,
+        "optimal_h7a": 0.0022650649880233686,
+        "ladder_overhead": 0.786606035031582
+      },
+      "calls": {
+        "ps3_decode": 1,
+        "source_decode": 512,
+        "mips": 442,
+        "region_masks": 886,
+        "greedy_h7a": 140,
+        "verification": 456,
+        "optimal_h7a": 62,
+        "ladder_overhead": 64
+      },
+      "gui_dialog_seconds": 0.2302280650001194,
+      "packages": {
+        "28": {
+          "sha256": "bbc908620a16044bb90a15783ebf2d47183cbcb2591d2b6fccecc729c0287319",
+          "fit": {
+            "budget_bytes": 300000,
+            "compressed_art_bytes": 286370,
+            "shades_per_region": 4,
+            "encoder": "greedy H7A",
+            "allow_simplification": true,
+            "changed_layers": [
+              "logo_l0",
+              "logo_l1"
+            ],
+            "alpha_preserved": true,
+            "mips_regenerated": true,
+            "attempts": [
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 4,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 286370,
+                "fits": true
+              }
+            ],
+            "status": "Logo slot 28: 16 shades reduced to 4 per region to fit 300,000 bytes; 286,370 used"
+          }
+        },
+        "0": {
+          "sha256": "bbc908620a16044bb90a15783ebf2d47183cbcb2591d2b6fccecc729c0287319",
+          "fit": {
+            "budget_bytes": 300000,
+            "compressed_art_bytes": 286370,
+            "shades_per_region": 4,
+            "encoder": "greedy H7A",
+            "allow_simplification": true,
+            "changed_layers": [
+              "logo_l0",
+              "logo_l1"
+            ],
+            "alpha_preserved": true,
+            "mips_regenerated": true,
+            "attempts": [
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 4,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 286370,
+                "fits": true
+              }
+            ],
+            "status": "Logo slot 0: 16 shades reduced to 4 per region to fit 300,000 bytes; 286,370 used"
+          }
+        },
+        "29": {
+          "sha256": "bbc908620a16044bb90a15783ebf2d47183cbcb2591d2b6fccecc729c0287319",
+          "fit": {
+            "budget_bytes": 300000,
+            "compressed_art_bytes": 286370,
+            "shades_per_region": 4,
+            "encoder": "greedy H7A",
+            "allow_simplification": true,
+            "changed_layers": [
+              "logo_l0",
+              "logo_l1"
+            ],
+            "alpha_preserved": true,
+            "mips_regenerated": true,
+            "attempts": [
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 4,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 286370,
+                "fits": true
+              }
+            ],
+            "status": "Logo slot 29: 16 shades reduced to 4 per region to fit 300,000 bytes; 286,370 used"
+          }
+        },
+        "1": {
+          "sha256": "bbc908620a16044bb90a15783ebf2d47183cbcb2591d2b6fccecc729c0287319",
+          "fit": {
+            "budget_bytes": 300000,
+            "compressed_art_bytes": 286370,
+            "shades_per_region": 4,
+            "encoder": "greedy H7A",
+            "allow_simplification": true,
+            "changed_layers": [
+              "logo_l0",
+              "logo_l1"
+            ],
+            "alpha_preserved": true,
+            "mips_regenerated": true,
+            "attempts": [
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 4,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 286370,
+                "fits": true
+              }
+            ],
+            "status": "Logo slot 1: 16 shades reduced to 4 per region to fit 300,000 bytes; 286,370 used"
+          }
+        },
+        "30": {
+          "sha256": "bbc908620a16044bb90a15783ebf2d47183cbcb2591d2b6fccecc729c0287319",
+          "fit": {
+            "budget_bytes": 300000,
+            "compressed_art_bytes": 286370,
+            "shades_per_region": 4,
+            "encoder": "greedy H7A",
+            "allow_simplification": true,
+            "changed_layers": [
+              "logo_l0",
+              "logo_l1"
+            ],
+            "alpha_preserved": true,
+            "mips_regenerated": true,
+            "attempts": [
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 4,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 286370,
+                "fits": true
+              }
+            ],
+            "status": "Logo slot 30: 16 shades reduced to 4 per region to fit 300,000 bytes; 286,370 used"
+          }
+        },
+        "2": {
+          "sha256": "bbc908620a16044bb90a15783ebf2d47183cbcb2591d2b6fccecc729c0287319",
+          "fit": {
+            "budget_bytes": 300000,
+            "compressed_art_bytes": 286370,
+            "shades_per_region": 4,
+            "encoder": "greedy H7A",
+            "allow_simplification": true,
+            "changed_layers": [
+              "logo_l0",
+              "logo_l1"
+            ],
+            "alpha_preserved": true,
+            "mips_regenerated": true,
+            "attempts": [
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 4,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 286370,
+                "fits": true
+              }
+            ],
+            "status": "Logo slot 2: 16 shades reduced to 4 per region to fit 300,000 bytes; 286,370 used"
+          }
+        },
+        "31": {
+          "sha256": "bbc908620a16044bb90a15783ebf2d47183cbcb2591d2b6fccecc729c0287319",
+          "fit": {
+            "budget_bytes": 300000,
+            "compressed_art_bytes": 286370,
+            "shades_per_region": 4,
+            "encoder": "greedy H7A",
+            "allow_simplification": true,
+            "changed_layers": [
+              "logo_l0",
+              "logo_l1"
+            ],
+            "alpha_preserved": true,
+            "mips_regenerated": true,
+            "attempts": [
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 4,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 286370,
+                "fits": true
+              }
+            ],
+            "status": "Logo slot 31: 16 shades reduced to 4 per region to fit 300,000 bytes; 286,370 used"
+          }
+        },
+        "3": {
+          "sha256": "bbc908620a16044bb90a15783ebf2d47183cbcb2591d2b6fccecc729c0287319",
+          "fit": {
+            "budget_bytes": 300000,
+            "compressed_art_bytes": 286370,
+            "shades_per_region": 4,
+            "encoder": "greedy H7A",
+            "allow_simplification": true,
+            "changed_layers": [
+              "logo_l0",
+              "logo_l1"
+            ],
+            "alpha_preserved": true,
+            "mips_regenerated": true,
+            "attempts": [
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 4,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 286370,
+                "fits": true
+              }
+            ],
+            "status": "Logo slot 3: 16 shades reduced to 4 per region to fit 300,000 bytes; 286,370 used"
+          }
+        },
+        "4": {
+          "sha256": "bbc908620a16044bb90a15783ebf2d47183cbcb2591d2b6fccecc729c0287319",
+          "fit": {
+            "budget_bytes": 300000,
+            "compressed_art_bytes": 286370,
+            "shades_per_region": 4,
+            "encoder": "greedy H7A",
+            "allow_simplification": true,
+            "changed_layers": [
+              "logo_l0",
+              "logo_l1"
+            ],
+            "alpha_preserved": true,
+            "mips_regenerated": true,
+            "attempts": [
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 4,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 286370,
+                "fits": true
+              }
+            ],
+            "status": "Logo slot 4: 16 shades reduced to 4 per region to fit 300,000 bytes; 286,370 used"
+          }
+        },
+        "5": {
+          "sha256": "bbc908620a16044bb90a15783ebf2d47183cbcb2591d2b6fccecc729c0287319",
+          "fit": {
+            "budget_bytes": 300000,
+            "compressed_art_bytes": 286370,
+            "shades_per_region": 4,
+            "encoder": "greedy H7A",
+            "allow_simplification": true,
+            "changed_layers": [
+              "logo_l0",
+              "logo_l1"
+            ],
+            "alpha_preserved": true,
+            "mips_regenerated": true,
+            "attempts": [
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 4,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 286370,
+                "fits": true
+              }
+            ],
+            "status": "Logo slot 5: 16 shades reduced to 4 per region to fit 300,000 bytes; 286,370 used"
+          }
+        },
+        "6": {
+          "sha256": "bbc908620a16044bb90a15783ebf2d47183cbcb2591d2b6fccecc729c0287319",
+          "fit": {
+            "budget_bytes": 300000,
+            "compressed_art_bytes": 286370,
+            "shades_per_region": 4,
+            "encoder": "greedy H7A",
+            "allow_simplification": true,
+            "changed_layers": [
+              "logo_l0",
+              "logo_l1"
+            ],
+            "alpha_preserved": true,
+            "mips_regenerated": true,
+            "attempts": [
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 4,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 286370,
+                "fits": true
+              }
+            ],
+            "status": "Logo slot 6: 16 shades reduced to 4 per region to fit 300,000 bytes; 286,370 used"
+          }
+        },
+        "7": {
+          "sha256": "bbc908620a16044bb90a15783ebf2d47183cbcb2591d2b6fccecc729c0287319",
+          "fit": {
+            "budget_bytes": 300000,
+            "compressed_art_bytes": 286370,
+            "shades_per_region": 4,
+            "encoder": "greedy H7A",
+            "allow_simplification": true,
+            "changed_layers": [
+              "logo_l0",
+              "logo_l1"
+            ],
+            "alpha_preserved": true,
+            "mips_regenerated": true,
+            "attempts": [
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 4,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 286370,
+                "fits": true
+              }
+            ],
+            "status": "Logo slot 7: 16 shades reduced to 4 per region to fit 300,000 bytes; 286,370 used"
+          }
+        },
+        "8": {
+          "sha256": "bbc908620a16044bb90a15783ebf2d47183cbcb2591d2b6fccecc729c0287319",
+          "fit": {
+            "budget_bytes": 300000,
+            "compressed_art_bytes": 286370,
+            "shades_per_region": 4,
+            "encoder": "greedy H7A",
+            "allow_simplification": true,
+            "changed_layers": [
+              "logo_l0",
+              "logo_l1"
+            ],
+            "alpha_preserved": true,
+            "mips_regenerated": true,
+            "attempts": [
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 4,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 286370,
+                "fits": true
+              }
+            ],
+            "status": "Logo slot 8: 16 shades reduced to 4 per region to fit 300,000 bytes; 286,370 used"
+          }
+        },
+        "9": {
+          "sha256": "bbc908620a16044bb90a15783ebf2d47183cbcb2591d2b6fccecc729c0287319",
+          "fit": {
+            "budget_bytes": 300000,
+            "compressed_art_bytes": 286370,
+            "shades_per_region": 4,
+            "encoder": "greedy H7A",
+            "allow_simplification": true,
+            "changed_layers": [
+              "logo_l0",
+              "logo_l1"
+            ],
+            "alpha_preserved": true,
+            "mips_regenerated": true,
+            "attempts": [
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 4,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 286370,
+                "fits": true
+              }
+            ],
+            "status": "Logo slot 9: 16 shades reduced to 4 per region to fit 300,000 bytes; 286,370 used"
+          }
+        },
+        "10": {
+          "sha256": "bbc908620a16044bb90a15783ebf2d47183cbcb2591d2b6fccecc729c0287319",
+          "fit": {
+            "budget_bytes": 300000,
+            "compressed_art_bytes": 286370,
+            "shades_per_region": 4,
+            "encoder": "greedy H7A",
+            "allow_simplification": true,
+            "changed_layers": [
+              "logo_l0",
+              "logo_l1"
+            ],
+            "alpha_preserved": true,
+            "mips_regenerated": true,
+            "attempts": [
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 4,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 286370,
+                "fits": true
+              }
+            ],
+            "status": "Logo slot 10: 16 shades reduced to 4 per region to fit 300,000 bytes; 286,370 used"
+          }
+        },
+        "11": {
+          "sha256": "bbc908620a16044bb90a15783ebf2d47183cbcb2591d2b6fccecc729c0287319",
+          "fit": {
+            "budget_bytes": 300000,
+            "compressed_art_bytes": 286370,
+            "shades_per_region": 4,
+            "encoder": "greedy H7A",
+            "allow_simplification": true,
+            "changed_layers": [
+              "logo_l0",
+              "logo_l1"
+            ],
+            "alpha_preserved": true,
+            "mips_regenerated": true,
+            "attempts": [
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 4,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 286370,
+                "fits": true
+              }
+            ],
+            "status": "Logo slot 11: 16 shades reduced to 4 per region to fit 300,000 bytes; 286,370 used"
+          }
+        },
+        "12": {
+          "sha256": "bbc908620a16044bb90a15783ebf2d47183cbcb2591d2b6fccecc729c0287319",
+          "fit": {
+            "budget_bytes": 300000,
+            "compressed_art_bytes": 286370,
+            "shades_per_region": 4,
+            "encoder": "greedy H7A",
+            "allow_simplification": true,
+            "changed_layers": [
+              "logo_l0",
+              "logo_l1"
+            ],
+            "alpha_preserved": true,
+            "mips_regenerated": true,
+            "attempts": [
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 4,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 286370,
+                "fits": true
+              }
+            ],
+            "status": "Logo slot 12: 16 shades reduced to 4 per region to fit 300,000 bytes; 286,370 used"
+          }
+        },
+        "13": {
+          "sha256": "bbc908620a16044bb90a15783ebf2d47183cbcb2591d2b6fccecc729c0287319",
+          "fit": {
+            "budget_bytes": 300000,
+            "compressed_art_bytes": 286370,
+            "shades_per_region": 4,
+            "encoder": "greedy H7A",
+            "allow_simplification": true,
+            "changed_layers": [
+              "logo_l0",
+              "logo_l1"
+            ],
+            "alpha_preserved": true,
+            "mips_regenerated": true,
+            "attempts": [
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 4,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 286370,
+                "fits": true
+              }
+            ],
+            "status": "Logo slot 13: 16 shades reduced to 4 per region to fit 300,000 bytes; 286,370 used"
+          }
+        },
+        "14": {
+          "sha256": "bbc908620a16044bb90a15783ebf2d47183cbcb2591d2b6fccecc729c0287319",
+          "fit": {
+            "budget_bytes": 300000,
+            "compressed_art_bytes": 286370,
+            "shades_per_region": 4,
+            "encoder": "greedy H7A",
+            "allow_simplification": true,
+            "changed_layers": [
+              "logo_l0",
+              "logo_l1"
+            ],
+            "alpha_preserved": true,
+            "mips_regenerated": true,
+            "attempts": [
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 4,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 286370,
+                "fits": true
+              }
+            ],
+            "status": "Logo slot 14: 16 shades reduced to 4 per region to fit 300,000 bytes; 286,370 used"
+          }
+        },
+        "15": {
+          "sha256": "bbc908620a16044bb90a15783ebf2d47183cbcb2591d2b6fccecc729c0287319",
+          "fit": {
+            "budget_bytes": 300000,
+            "compressed_art_bytes": 286370,
+            "shades_per_region": 4,
+            "encoder": "greedy H7A",
+            "allow_simplification": true,
+            "changed_layers": [
+              "logo_l0",
+              "logo_l1"
+            ],
+            "alpha_preserved": true,
+            "mips_regenerated": true,
+            "attempts": [
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 4,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 286370,
+                "fits": true
+              }
+            ],
+            "status": "Logo slot 15: 16 shades reduced to 4 per region to fit 300,000 bytes; 286,370 used"
+          }
+        },
+        "16": {
+          "sha256": "bbc908620a16044bb90a15783ebf2d47183cbcb2591d2b6fccecc729c0287319",
+          "fit": {
+            "budget_bytes": 300000,
+            "compressed_art_bytes": 286370,
+            "shades_per_region": 4,
+            "encoder": "greedy H7A",
+            "allow_simplification": true,
+            "changed_layers": [
+              "logo_l0",
+              "logo_l1"
+            ],
+            "alpha_preserved": true,
+            "mips_regenerated": true,
+            "attempts": [
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 4,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 286370,
+                "fits": true
+              }
+            ],
+            "status": "Logo slot 16: 16 shades reduced to 4 per region to fit 300,000 bytes; 286,370 used"
+          }
+        },
+        "17": {
+          "sha256": "bbc908620a16044bb90a15783ebf2d47183cbcb2591d2b6fccecc729c0287319",
+          "fit": {
+            "budget_bytes": 300000,
+            "compressed_art_bytes": 286370,
+            "shades_per_region": 4,
+            "encoder": "greedy H7A",
+            "allow_simplification": true,
+            "changed_layers": [
+              "logo_l0",
+              "logo_l1"
+            ],
+            "alpha_preserved": true,
+            "mips_regenerated": true,
+            "attempts": [
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 4,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 286370,
+                "fits": true
+              }
+            ],
+            "status": "Logo slot 17: 16 shades reduced to 4 per region to fit 300,000 bytes; 286,370 used"
+          }
+        },
+        "18": {
+          "sha256": "bbc908620a16044bb90a15783ebf2d47183cbcb2591d2b6fccecc729c0287319",
+          "fit": {
+            "budget_bytes": 300000,
+            "compressed_art_bytes": 286370,
+            "shades_per_region": 4,
+            "encoder": "greedy H7A",
+            "allow_simplification": true,
+            "changed_layers": [
+              "logo_l0",
+              "logo_l1"
+            ],
+            "alpha_preserved": true,
+            "mips_regenerated": true,
+            "attempts": [
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 4,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 286370,
+                "fits": true
+              }
+            ],
+            "status": "Logo slot 18: 16 shades reduced to 4 per region to fit 300,000 bytes; 286,370 used"
+          }
+        },
+        "19": {
+          "sha256": "bbc908620a16044bb90a15783ebf2d47183cbcb2591d2b6fccecc729c0287319",
+          "fit": {
+            "budget_bytes": 300000,
+            "compressed_art_bytes": 286370,
+            "shades_per_region": 4,
+            "encoder": "greedy H7A",
+            "allow_simplification": true,
+            "changed_layers": [
+              "logo_l0",
+              "logo_l1"
+            ],
+            "alpha_preserved": true,
+            "mips_regenerated": true,
+            "attempts": [
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 4,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 286370,
+                "fits": true
+              }
+            ],
+            "status": "Logo slot 19: 16 shades reduced to 4 per region to fit 300,000 bytes; 286,370 used"
+          }
+        },
+        "20": {
+          "sha256": "bbc908620a16044bb90a15783ebf2d47183cbcb2591d2b6fccecc729c0287319",
+          "fit": {
+            "budget_bytes": 300000,
+            "compressed_art_bytes": 286370,
+            "shades_per_region": 4,
+            "encoder": "greedy H7A",
+            "allow_simplification": true,
+            "changed_layers": [
+              "logo_l0",
+              "logo_l1"
+            ],
+            "alpha_preserved": true,
+            "mips_regenerated": true,
+            "attempts": [
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 4,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 286370,
+                "fits": true
+              }
+            ],
+            "status": "Logo slot 20: 16 shades reduced to 4 per region to fit 300,000 bytes; 286,370 used"
+          }
+        },
+        "21": {
+          "sha256": "bbc908620a16044bb90a15783ebf2d47183cbcb2591d2b6fccecc729c0287319",
+          "fit": {
+            "budget_bytes": 300000,
+            "compressed_art_bytes": 286370,
+            "shades_per_region": 4,
+            "encoder": "greedy H7A",
+            "allow_simplification": true,
+            "changed_layers": [
+              "logo_l0",
+              "logo_l1"
+            ],
+            "alpha_preserved": true,
+            "mips_regenerated": true,
+            "attempts": [
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 4,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 286370,
+                "fits": true
+              }
+            ],
+            "status": "Logo slot 21: 16 shades reduced to 4 per region to fit 300,000 bytes; 286,370 used"
+          }
+        },
+        "22": {
+          "sha256": "bbc908620a16044bb90a15783ebf2d47183cbcb2591d2b6fccecc729c0287319",
+          "fit": {
+            "budget_bytes": 300000,
+            "compressed_art_bytes": 286370,
+            "shades_per_region": 4,
+            "encoder": "greedy H7A",
+            "allow_simplification": true,
+            "changed_layers": [
+              "logo_l0",
+              "logo_l1"
+            ],
+            "alpha_preserved": true,
+            "mips_regenerated": true,
+            "attempts": [
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 4,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 286370,
+                "fits": true
+              }
+            ],
+            "status": "Logo slot 22: 16 shades reduced to 4 per region to fit 300,000 bytes; 286,370 used"
+          }
+        },
+        "23": {
+          "sha256": "bbc908620a16044bb90a15783ebf2d47183cbcb2591d2b6fccecc729c0287319",
+          "fit": {
+            "budget_bytes": 300000,
+            "compressed_art_bytes": 286370,
+            "shades_per_region": 4,
+            "encoder": "greedy H7A",
+            "allow_simplification": true,
+            "changed_layers": [
+              "logo_l0",
+              "logo_l1"
+            ],
+            "alpha_preserved": true,
+            "mips_regenerated": true,
+            "attempts": [
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 4,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 286370,
+                "fits": true
+              }
+            ],
+            "status": "Logo slot 23: 16 shades reduced to 4 per region to fit 300,000 bytes; 286,370 used"
+          }
+        },
+        "24": {
+          "sha256": "bbc908620a16044bb90a15783ebf2d47183cbcb2591d2b6fccecc729c0287319",
+          "fit": {
+            "budget_bytes": 300000,
+            "compressed_art_bytes": 286370,
+            "shades_per_region": 4,
+            "encoder": "greedy H7A",
+            "allow_simplification": true,
+            "changed_layers": [
+              "logo_l0",
+              "logo_l1"
+            ],
+            "alpha_preserved": true,
+            "mips_regenerated": true,
+            "attempts": [
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 4,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 286370,
+                "fits": true
+              }
+            ],
+            "status": "Logo slot 24: 16 shades reduced to 4 per region to fit 300,000 bytes; 286,370 used"
+          }
+        },
+        "25": {
+          "sha256": "bbc908620a16044bb90a15783ebf2d47183cbcb2591d2b6fccecc729c0287319",
+          "fit": {
+            "budget_bytes": 300000,
+            "compressed_art_bytes": 286370,
+            "shades_per_region": 4,
+            "encoder": "greedy H7A",
+            "allow_simplification": true,
+            "changed_layers": [
+              "logo_l0",
+              "logo_l1"
+            ],
+            "alpha_preserved": true,
+            "mips_regenerated": true,
+            "attempts": [
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 4,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 286370,
+                "fits": true
+              }
+            ],
+            "status": "Logo slot 25: 16 shades reduced to 4 per region to fit 300,000 bytes; 286,370 used"
+          }
+        },
+        "26": {
+          "sha256": "bbc908620a16044bb90a15783ebf2d47183cbcb2591d2b6fccecc729c0287319",
+          "fit": {
+            "budget_bytes": 300000,
+            "compressed_art_bytes": 286370,
+            "shades_per_region": 4,
+            "encoder": "greedy H7A",
+            "allow_simplification": true,
+            "changed_layers": [
+              "logo_l0",
+              "logo_l1"
+            ],
+            "alpha_preserved": true,
+            "mips_regenerated": true,
+            "attempts": [
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 4,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 286370,
+                "fits": true
+              }
+            ],
+            "status": "Logo slot 26: 16 shades reduced to 4 per region to fit 300,000 bytes; 286,370 used"
+          }
+        },
+        "27": {
+          "sha256": "bbc908620a16044bb90a15783ebf2d47183cbcb2591d2b6fccecc729c0287319",
+          "fit": {
+            "budget_bytes": 300000,
+            "compressed_art_bytes": 286370,
+            "shades_per_region": 4,
+            "encoder": "greedy H7A",
+            "allow_simplification": true,
+            "changed_layers": [
+              "logo_l0",
+              "logo_l1"
+            ],
+            "alpha_preserved": true,
+            "mips_regenerated": true,
+            "attempts": [
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 16,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 536280,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 8,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 477444,
+                "fits": false
+              },
+              {
+                "shades_per_region": 4,
+                "encoder": "greedy H7A",
+                "compressed_art_bytes": 286370,
+                "fits": true
+              }
+            ],
+            "status": "Logo slot 27: 16 shades reduced to 4 per region to fit 300,000 bytes; 286,370 used"
+          }
+        }
+      },
+      "output_pack_sha256": "ff398cfae0ad018e2fe153642edc791b3d10e4134ffa9f3dcc5cbd909c4a5a08",
+      "linked_cache_sha256": {
+        "directory": "83cec0dbadaf594a9addd9014c169a853c8ca0e5422fd045bcae01f6349cf8b7",
+        "payload": "0240114bfc8fb5c18261c0d914ff819c70d3d4e280e984f52c80d76b07e1b2dd"
+      }
+    }
+  ]
+}

@@ -1,0 +1,320 @@
+[
+  {
+    "item": "T3 audio song forwarder",
+    "path": "mod_editor/core/audio_conform.py",
+    "lines": [
+      301
+    ]
+  },
+  {
+    "item": "T3 audio fixed-slot forwarder",
+    "path": "mod_editor/core/audio_conform.py",
+    "lines": [
+      308
+    ]
+  },
+  {
+    "item": "T3 2K5 audio allowlist",
+    "path": "packaging/release-allowlist.txt",
+    "lines": [
+      672
+    ]
+  },
+  {
+    "item": "T3 installed form, both readers",
+    "path": "mod_editor/core/nfl2k5_throw_tuning.py",
+    "lines": [
+      693,
+      822
+    ]
+  },
+  {
+    "item": "T3 inspect form",
+    "path": "mod_editor/core/mod_build.py",
+    "lines": [
+      589
+    ]
+  },
+  {
+    "item": "T3 preset defaults",
+    "path": "mod_editor/core/mod_build.py",
+    "lines": [
+      342,
+      363,
+      385
+    ]
+  },
+  {
+    "item": "T3 Build caption/help",
+    "path": "mod_editor/gui/build_panel_qt.py",
+    "lines": [
+      565
+    ]
+  },
+  {
+    "item": "T3 Build mode choices",
+    "path": "mod_editor/gui/build_panel_qt.py",
+    "lines": [
+      573
+    ]
+  },
+  {
+    "item": "T3 Build installed form",
+    "path": "mod_editor/gui/build_panel_qt.py",
+    "lines": [
+      1283
+    ]
+  },
+  {
+    "item": "T3 Build refresh and saved-project seam",
+    "path": "mod_editor/gui/build_panel_qt.py",
+    "lines": [
+      1766
+    ]
+  },
+  {
+    "item": "T3 Gameplay PATCHES",
+    "path": "mod_editor/gui/gameplay_patches_panel_qt.py",
+    "lines": [
+      152
+    ]
+  },
+  {
+    "item": "T3 Gameplay LABELS",
+    "path": "mod_editor/gui/gameplay_patches_panel_qt.py",
+    "lines": [
+      318
+    ]
+  },
+  {
+    "item": "T3 Gameplay refresh/badge",
+    "path": "mod_editor/gui/gameplay_patches_panel_qt.py",
+    "lines": [
+      847
+    ]
+  },
+  {
+    "item": "T3 Gameplay choice writer",
+    "path": "mod_editor/gui/gameplay_patches_panel_qt.py",
+    "lines": [
+      340
+    ]
+  },
+  {
+    "item": "T3 uniform registry row",
+    "path": "mod_editor/capabilities/registry.v1.json",
+    "lines": [
+      11722
+    ]
+  },
+  {
+    "item": "T3 bank-rebuild evidence/reason/scope/summary",
+    "path": "mod_editor/capabilities/registry.v1.json",
+    "lines": [
+      8886
+    ]
+  },
+  {
+    "item": "T3 fixed-slot evidence/reason",
+    "path": "mod_editor/capabilities/registry.v1.json",
+    "lines": [
+      8965
+    ]
+  },
+  {
+    "item": "T3 playlist evidence/scope",
+    "path": "mod_editor/capabilities/registry.v1.json",
+    "lines": [
+      9036
+    ]
+  },
+  {
+    "item": "T3 shared 2K5 runtime count assertion",
+    "path": "packaging/check_2k5_mod_studio_runtime.py",
+    "lines": [
+      2175
+    ]
+  },
+  {
+    "item": "T3 shared 2K5 runtime count banner",
+    "path": "packaging/check_2k5_mod_studio_runtime.py",
+    "lines": [
+      2582
+    ]
+  },
+  {
+    "item": "T3 phase1 count pin",
+    "path": "tests/mod_editor/test_phase1_packaging.py",
+    "lines": [
+      571
+    ]
+  },
+  {
+    "item": "T3 APF shared runtime count",
+    "path": "packaging/check_apf2k8_mod_studio_runtime.py",
+    "lines": [
+      1355
+    ]
+  },
+  {
+    "item": "T3 APF installer count pin",
+    "path": "tests/mod_editor/test_apf_studio_installer.py",
+    "lines": [
+      360
+    ]
+  },
+  {
+    "item": "T3 individual capability document packaging",
+    "path": "packaging/release-allowlist.txt",
+    "lines": [
+      907
+    ]
+  },
+  {
+    "item": "APF1 replacement registry row",
+    "path": "mod_editor/capabilities/registry.v1.json",
+    "lines": [
+      3536
+    ]
+  },
+  {
+    "item": "APF1 guide and three image allowlist paths",
+    "path": "packaging/apf2k8-release-allowlist.txt",
+    "lines": [
+      292,
+      293,
+      294,
+      295
+    ]
+  },
+  {
+    "item": "APF1 reviewed image pins and reviewed-path set",
+    "path": "packaging/check_apf2k8_mod_studio_release.py",
+    "lines": [
+      80,
+      88,
+      843,
+      915
+    ]
+  },
+  {
+    "item": "APF1 image validator",
+    "path": "packaging/check_apf2k8_mod_studio_release.py",
+    "lines": [
+      842
+    ]
+  },
+  {
+    "item": "APF1 image audit arm",
+    "path": "packaging/check_apf2k8_mod_studio_release.py",
+    "lines": [
+      915
+    ]
+  },
+  {
+    "item": "APF1 runtime image pins",
+    "path": "packaging/check_apf2k8_mod_studio_runtime.py",
+    "lines": [
+      584
+    ]
+  },
+  {
+    "item": "APF1 runtime guide function",
+    "path": "packaging/check_apf2k8_mod_studio_runtime.py",
+    "lines": [
+      586
+    ]
+  },
+  {
+    "item": "APF1 runtime guide call after book-unlock check",
+    "path": "packaging/check_apf2k8_mod_studio_runtime.py",
+    "lines": [
+      2682
+    ]
+  },
+  {
+    "item": "T1 section 0 shell success",
+    "path": "mod_editor/gui/studio_qt.py",
+    "lines": [
+      8018
+    ]
+  },
+  {
+    "item": "T1 section 0 Build completion",
+    "path": "mod_editor/core/build_feedback.py",
+    "lines": [
+      51
+    ]
+  },
+  {
+    "item": "T1 section 2 delivered summary retained",
+    "path": "tools/nfl2k5_visual_mod_project.py",
+    "lines": [
+      2754
+    ]
+  },
+  {
+    "item": "APF shared audio closure seam",
+    "path": "packaging/apf2k8-release-allowlist.txt",
+    "lines": [
+      102
+    ]
+  },
+  {
+    "item": "Older shared count consumer",
+    "path": "tests/mod_editor/test_b68_a1_audit.py",
+    "lines": [
+      41
+    ]
+  },
+  {
+    "item": "Product catalog row/count consumer",
+    "path": "tests/mod_editor/test_product_catalog.py",
+    "lines": [
+      76
+    ]
+  },
+  {
+    "item": "2K5 changelog section",
+    "path": "docs/mod_editor/2k5_mod_studio_changelog.md",
+    "lines": [
+      3
+    ]
+  },
+  {
+    "item": "APF changelog section",
+    "path": "docs/mod_editor/apf2k8_mod_studio_changelog.md",
+    "lines": [
+      3
+    ]
+  },
+  {
+    "item": "Music converter provider dependency pin",
+    "path": "mod_editor/core/providers.py",
+    "lines": [
+      632
+    ]
+  },
+  {
+    "item": "Existing stack MNF font dependency pin",
+    "path": "mod_editor/core/providers.py",
+    "lines": [
+      696
+    ]
+  },
+  {
+    "item": "Music converter runtime dependency/import",
+    "path": "packaging/check_2k5_mod_studio_runtime.py",
+    "lines": [
+      136,
+      1911
+    ]
+  },
+  {
+    "item": "Exact provider closure count regression",
+    "path": "tests/mod_editor/test_provider_integrity.py",
+    "lines": [
+      204
+    ]
+  }
+]

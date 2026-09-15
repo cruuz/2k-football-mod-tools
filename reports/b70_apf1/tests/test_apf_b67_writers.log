@@ -1,0 +1,11 @@
+test_categories_retirement_and_remove_every_duplicate (__main__.WritersTests.test_categories_retirement_and_remove_every_duplicate) ... ok
+test_curve_installer_uses_p2_primitives_and_preserves_fetch (__main__.WritersTests.test_curve_installer_uses_p2_primitives_and_preserves_fetch) ... ok
+test_curves_are_opt_in_and_canonical (__main__.WritersTests.test_curves_are_opt_in_and_canonical) ... ok
+test_master_masks_preserve_depth_and_shared_rows (__main__.WritersTests.test_master_masks_preserve_depth_and_shared_rows) ... ok
+test_rating_edits_preserve_y_and_unrelated_bits (__main__.WritersTests.test_rating_edits_preserve_y_and_unrelated_bits) ... ok
+test_team_pointer_not_team_ordinal_selects_tendency (__main__.WritersTests.test_team_pointer_not_team_ordinal_selects_tendency) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.241s
+
+OK

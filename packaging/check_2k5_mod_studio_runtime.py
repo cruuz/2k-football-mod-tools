@@ -99,13 +99,13 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "dd3529836c4ebdc5ddf344de19edca38191f918ca341248953cb289b56c5e42e",
     "mod_editor/gui/studio_qt.py":
-        "aa57c10348b6f148b03f21279f15366ab40c4221860f55d99d90a33d428c8862",
+        "45e3e2490e8aab314093d0378025f1b8f5ae689954a57ac49397d3f2e448675f",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
         "68b6887e0778391916a6465a722b062d1c09afe3a376c318026e9db8bd7ed23a",
     "mod_editor/studio/facade.py":
-        "2579f275b464874b93822bd6f04c391252814e8e589c77bba7b33930ab3c6af0",
+        "741bbdc11fafc8f1d30145dfce85c8a1b188d0e19161f9f81e29f5a0fff3ac25",
     "mod_editor/studio/project_archive.py":
         "3556062a7cf178ef416706543e71270783d04439494420810fb7a10ca7f01479",
     "mod_editor/studio/session.py":
@@ -115,11 +115,11 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
 B69_GAME_RUNTIME_PINS = {
     "mod_editor/core/nfl2k5_weather.py": "6540d7ffc8d441898f5a89988752efd6aa0238c87b4a0941c1962b7b3feba380",
     "mod_editor/core/nfl2k5_weather_haze.py": "3d045e099f1585658b899ab6e7d3560e92edb24529ca8d6f224e901dc7712ff9",
-    "mod_editor/gui/build_panel_qt.py": "8e2b968e798ff66150b4832a4d631c60e96b52a9cf9c799d95b025c1573e2683",
-    "mod_editor/gui/gameplay_patches_panel_qt.py": "55cf864cc31256a0dc8f44a58f74865c8d2903bd338beda0ee1b7b0609a31c38",
+    "mod_editor/gui/build_panel_qt.py": "fd6d7934c2ce348e22a999fb90d5637610c0fbfa989ffab63d2ab1f94005e3fa",
+    "mod_editor/gui/gameplay_patches_panel_qt.py": "6377a6089d0c01233b810e0ec82f962dfbc40cdea6d80cb8dbf092b2f83b8839",
     "mod_editor/gui/my_career_panel_qt.py": "8a27ccdc2a649d122d6c21f9a646e47539b55c00653afc789e9b018fb581c823",
     "mod_editor/gui/gameplay_project_ui.py": "7222713aaaa0efbcc8851eb4ad3efa4ef31e8ad5352919e95b1ff9b39634c905",
-    "mod_editor/gui/beta62_options.py": "1fa09c1aed813c62b30c614847d615190e3fcfd14c3e1fe4e1dd10f58a6f79fb",
+    "mod_editor/gui/beta62_options.py": "f952b005161209eef1b2fa090528f4a017a657718c034d122d9bcc6550c68e72",
     "tools/nfl2k5_weather_editor.py": "65b45c3b25d47dc9cc672bd46a4719264ce4033aeca76632aaf44e9023b6cbfd",
     "tools/nfl2k5_weather_time_of_day.py": "37b2bd10f686db9fa99ba9034f9a7f68daa00bff516250ac0f67678880b98b47",
     "tools/nfl2k5_weather_native_probe.py": "cd2776060c41a0831b1a15342a4486e739bbda5c633af5f4427217333885fde2",
@@ -133,6 +133,7 @@ REQUIRED_UNIFIED_PROVIDER_CLOSURE = frozenset(
         "mod_editor/core/nfl2k5_equipment_import_intent.py",
         "mod_editor/core/nfl2k5_equipment_lz.py",
         "mod_editor/core/nfl2k5_compile_cache.py",
+        "mod_editor/core/nfl2k5_music_conform.py",
         "mod_editor/core/nfl2k5_audio_containment_fingerprints.py",
         "mod_editor/core/nfl2k5_audio_origin_authorization.py",
         "mod_editor/core/nfl2k5_audio_source_containment.py",
@@ -1908,6 +1909,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_music_catalog",
         "mod_editor.core.nfl2k5_music_build",
         "mod_editor.core.nfl2k5_music_banks",
+        "mod_editor.core.nfl2k5_music_conform",
         "mod_editor.core.nfl2k5_music_metadata",
         "mod_editor.core.nfl2k5_music_storage",
         "mod_editor.core.nfl2k5_music_archive",

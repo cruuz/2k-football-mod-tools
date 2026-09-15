@@ -1,0 +1,286 @@
+[
+  {
+    "command": "PYTHONPATH=.:tools python3 tests/apf_h7a_no_overlap_test.py",
+    "exit_code": 0,
+    "seconds": null,
+    "unittest_seconds": 17.856,
+    "tests": 4,
+    "skipped": 0,
+    "output_tail": "....\n----------------------------------------------------------------------\nRan 4 tests in 17.856s\n\nOK\n"
+  },
+  {
+    "command": "PYTHONPATH=.:tools python3 tests/apf_h7a_optimal_is_bounded_test.py",
+    "exit_code": 0,
+    "seconds": null,
+    "unittest_seconds": 20.774,
+    "tests": 4,
+    "skipped": 0,
+    "output_tail": "....\n----------------------------------------------------------------------\nRan 4 tests in 20.774s\n\nOK\n"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_all_crest_slots.py",
+    "exit_code": 0,
+    "seconds": 0.674,
+    "tests": 15,
+    "skipped": 0,
+    "output_tail": "...............\n----------------------------------------------------------------------\nRan 15 tests in 0.564s\n\nOK\n"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_b661_book_content.py",
+    "exit_code": 0,
+    "seconds": 28.532,
+    "tests": 5,
+    "skipped": 0,
+    "output_tail": ".This plugin does not support propagateSizeHints()\n....\n----------------------------------------------------------------------\nRan 5 tests in 28.260s\n\nOK\n"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_b67_writers.py",
+    "exit_code": 0,
+    "seconds": 0.444,
+    "tests": 6,
+    "skipped": 0,
+    "output_tail": "test_categories_retirement_and_remove_every_duplicate (__main__.WritersTests.test_categories_retirement_and_remove_every_duplicate) ... ok\ntest_curve_installer_uses_p2_primitives_and_preserves_fetch (__main__.WritersTests.test_curve_installer_uses_p2_primitives_and_preserves_fetch) ... ok\ntest_curves_are_opt_in_and_canonical (__main__.WritersTests.test_curves_are_opt_in_and_canonical) ... ok\ntest_master_masks_preserve_depth_and_shared_rows (__main__.WritersTests.test_master_masks_preserve_depth_and_shared_rows) ... ok\ntest_rating_edits_preserve_y_and_unrelated_bits (__main__.WritersTests.test_rating_edits_preserve_y_and_unrelated_bits) ... ok\ntest_team_pointer_not_team_ordinal_selects_tendency (__main__.WritersTests.test_team_pointer_not_team_ordinal_selects_tendency) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 0.241s\n\nOK\n"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_b69_build.py",
+    "exit_code": 0,
+    "seconds": 32.088,
+    "tests": 1,
+    "skipped": 0,
+    "output_tail": "test_scheme_build_reparses_cloned_book_tendency_rows_and_donor (__main__.BuildTests.test_scheme_build_reparses_cloned_book_tendency_rows_and_donor) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 31.701s\n\nOK\n"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_b69_editor_qt.py",
+    "exit_code": 0,
+    "seconds": 94.898,
+    "tests": 4,
+    "skipped": 0,
+    "output_tail": "test_atomic_clone_scheme_undo_and_saved_recipe_replay (__main__.EditorTests.test_atomic_clone_scheme_undo_and_saved_recipe_replay) ... ok\ntest_never_call_restores_original_membership_and_undo (__main__.EditorTests.test_never_call_restores_original_membership_and_undo) ... ok\ntest_scheme_review_stage_export_undo_and_52_real_name (__main__.EditorTests.test_scheme_review_stage_export_undo_and_52_real_name) ... ok\ntest_shared_book_bypass_and_tampered_review_refused (__main__.EditorTests.test_shared_book_bypass_and_tampered_review_refused) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 94.460s\n\nOK\n"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_b69_formation_calling.py",
+    "exit_code": 0,
+    "seconds": 0.503,
+    "tests": 2,
+    "skipped": 0,
+    "output_tail": "test_changes_only_B_all_duplicates_and_restores_exactly (__main__.CallingTests.test_changes_only_B_all_duplicates_and_restores_exactly) ... ok\ntest_last_personnel_record_special_and_stale_masks_refused (__main__.CallingTests.test_last_personnel_record_special_and_stale_masks_refused) ... ok\n\n----------------------------------------------------------------------\nRan 2 tests in 0.106s\n\nOK\n"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_b69_launch_patches.py",
+    "exit_code": 0,
+    "seconds": 0.494,
+    "tests": 5,
+    "skipped": 0,
+    "output_tail": "test_both_managed_patches_reach_storage_root_and_removal_propagates (__main__.LaunchPatchTests.test_both_managed_patches_reach_storage_root_and_removal_propagates) ... ok\ntest_consent_install_enable_reload_launch_remove (__main__.LaunchPatchTests.test_consent_install_enable_reload_launch_remove) ... ok\ntest_disabled_and_invalid_config_report_and_no_partial_install (__main__.LaunchPatchTests.test_disabled_and_invalid_config_report_and_no_partial_install) ... ok\ntest_foreign_managed_destination_refuses_before_process_start (__main__.LaunchPatchTests.test_foreign_managed_destination_refuses_before_process_start) ... ok\ntest_wrong_patch_refused_and_failed_config_write_rolls_back_patch (__main__.LaunchPatchTests.test_wrong_patch_refused_and_failed_config_write_rolls_back_patch) ... ok\n\n----------------------------------------------------------------------\nRan 5 tests in 0.265s\n\nOK\n"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_b69_retirement_native.py",
+    "exit_code": 0,
+    "seconds": 161.475,
+    "tests": 3,
+    "skipped": 0,
+    "output_tail": "test_added_and_cloned_heavy_sets_return_run_plays_at_goal_line (__main__.RetirementBoundaryTests.test_added_and_cloned_heavy_sets_return_run_plays_at_goal_line) ... PROVED native GL run plays from Jacks/Jokers: O-Shotgun\nPROVED native GL run plays from Jacks/Jokers: O-Singleback3WR\nPROVED native GL run plays from Jacks/Jokers: J9 Heavy Run\nok\ntest_complete_offense_driver_at_run_and_pass_boundaries (__main__.RetirementBoundaryTests.test_complete_offense_driver_at_run_and_pass_boundaries) ... PROVED run/pass boundary complete ordinary drivers: 24\nok\ntest_defense_membership_exclusion_with_remaining_category_coverage (__main__.RetirementBoundaryTests.test_defense_membership_exclusion_with_remaining_category_coverage) ... PROVED defensive formation 141 excluded across 128 native matching requests\nok\n\n----------------------------------------------------------------------\nRan 3 tests in 161.251s\n\nOK\n"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_b69_schemes.py",
+    "exit_code": 0,
+    "seconds": 48.887,
+    "tests": 5,
+    "skipped": 0,
+    "output_tail": "test_atomic_clone_scheme_undo_and_saved_recipe_replay (__main__.SchemeSessionTests.test_atomic_clone_scheme_undo_and_saved_recipe_replay) ... ok\ntest_shared_book_bypass_and_tampered_review_refused (__main__.SchemeSessionTests.test_shared_book_bypass_and_tampered_review_refused) ... ok\ntest_csv_buckets_use_model_and_distinguish_intent_from_result (__main__.SchemeTests.test_csv_buckets_use_model_and_distinguish_intent_from_result) ... ok\ntest_eight_schemes_write_only_owned_ratings_and_team_fields (__main__.SchemeTests.test_eight_schemes_write_only_owned_ratings_and_team_fields) ... ok\ntest_shared_tendency_pointer_refused_and_rows_saturate (__main__.SchemeTests.test_shared_tendency_pointer_refused_and_rows_saturate) ... ok\n\n----------------------------------------------------------------------\nRan 5 tests in 48.508s\n\nOK\n"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_b70_stock_recipes.py",
+    "exit_code": 0,
+    "seconds": null,
+    "tests": 5,
+    "skipped": 0,
+    "output_tail": ".....\n----------------------------------------------------------------------\nRan 5 tests in 219.895s\n\nOK\nPROVED retail replacement matrix: 38 fits, 26 named capacity refusals\n",
+    "unittest_seconds": 219.895
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_book_identity_qt.py",
+    "exit_code": 0,
+    "seconds": 0.371,
+    "tests": 5,
+    "skipped": 0,
+    "output_tail": ".....\n----------------------------------------------------------------------\nRan 5 tests in 0.056s\n\nOK\n"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_book_unlock.py",
+    "exit_code": 0,
+    "seconds": 27.819,
+    "tests": 19,
+    "skipped": 0,
+    "output_tail": "...................\n----------------------------------------------------------------------\nRan 19 tests in 27.622s\n\nOK\n"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_crest_budget_import.py",
+    "exit_code": 0,
+    "seconds": 0.917,
+    "tests": 12,
+    "skipped": 0,
+    "output_tail": "............\n----------------------------------------------------------------------\nRan 12 tests in 0.479s\n\nOK\n"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_crest_fit.py",
+    "exit_code": 0,
+    "seconds": 31.049,
+    "tests": 10,
+    "skipped": 0,
+    "output_tail": "..........\n----------------------------------------------------------------------\nRan 10 tests in 30.875s\n\nOK\n"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_helmet_crest_design_product.py",
+    "exit_code": 0,
+    "seconds": 1.585,
+    "tests": 13,
+    "skipped": 0,
+    "output_tail": ".............\n----------------------------------------------------------------------\nRan 13 tests in 1.231s\n\nOK\n"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_helmet_logo_regions.py",
+    "exit_code": 0,
+    "seconds": 4.53,
+    "tests": 12,
+    "skipped": 0,
+    "output_tail": "............\n----------------------------------------------------------------------\nRan 12 tests in 4.398s\n\nOK\n"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_logo_patch.py",
+    "exit_code": 0,
+    "seconds": 15.434,
+    "tests": 18,
+    "skipped": 0,
+    "output_tail": "..................\n----------------------------------------------------------------------\nRan 18 tests in 15.261s\n\nOK\n"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_logocache_patch.py",
+    "exit_code": 0,
+    "seconds": 48.341,
+    "tests": 14,
+    "skipped": 0,
+    "output_tail": "..............\n----------------------------------------------------------------------\nRan 14 tests in 48.120s\n\nOK\n"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_playcall_research_native.py",
+    "exit_code": 0,
+    "seconds": 125.218,
+    "tests": 22,
+    "skipped": 0,
+    "output_tail": "Tests.test_removed_record_hides_suffix_then_normalizer_compacts_it) ... ok\ntest_resource_names_and_filename_hashes (__main__.NativePlaycallTests.test_resource_names_and_filename_hashes) ... ok\ntest_team_slider_conversion_and_situation_adjustment (__main__.NativePlaycallTests.test_team_slider_conversion_and_situation_adjustment) ... PROVED slider 0.5 adjusted on neutral third downs: [0.44999998807907104, 0.0, 0.0]\nok\ntest_third_down_full_call_tuples_and_te_counts (__main__.NativePlaycallTests.test_third_down_full_call_tuples_and_te_counts) ... PROVED third-down category/formation/play tuples: {130: ((1, 27, 42), (6, 14, 114), (6, 14, 114)), 767: ((2, 91, 78), (8, 92, 78), (8, 92, 78)), 1411: ((3, 119, 114), (7, 133, 216), (7, 133, 216))}\nok\ntest_third_down_requests_and_category_weights (__main__.NativePlaycallTests.test_third_down_requests_and_category_weights) ... PROVED neutral 3rd-down rows: [4, 10, 10] category choices: {130: (1, 6, 6), 767: (2, 8, 8), 1411: (3, 7, 7), 1037: (2, 8, 8), 1439: (1, 7, 7)}\nok\ntest_tu_goal_line_and_third_down_native (__main__.NativePlaycallTests.test_tu_goal_line_and_third_down_native) ... ok\ntest_tu_prefers_valid_primary_category_in_nearby_resolver (__main__.NativePlaycallTests.test_tu_prefers_valid_primary_category_in_nearby_resolver) ... ok\ntest_user_and_global_books_enter_same_native_selector (__main__.NativePlaycallTests.test_user_and_global_books_enter_same_native_selector) ... ok\ntest_user_global_and_cpu_labels_take_common_filename_branch (__main__.NativePlaycallTests.test_user_global_and_cpu_labels_take_common_filename_branch) ... ok\ntest_whole_offensive_call_selects_added_heavy_without_fetch_or_ladder (__main__.NativePlaycallTests.test_whole_offensive_call_selects_added_heavy_without_fetch_or_ladder) ... PROVED complete GL call: 1 5 236\nok\ntest_wrapper_passes_the_staging_output_and_obeys_busy_flag (__main__.NativePlaycallTests.test_wrapper_passes_the_staging_output_and_obeys_busy_flag) ... ok\ntest_x_rating_is_independent_of_y_audible_slot (__main__.NativePlaycallTests.test_x_rating_is_independent_of_y_audible_slot) ... ok\n\n----------------------------------------------------------------------\nRan 22 tests in 125.003s\n\nOK\n"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_playcalling_editor_build.py",
+    "exit_code": 0,
+    "seconds": 82.641,
+    "tests": 3,
+    "skipped": 0,
+    "output_tail": "...\n----------------------------------------------------------------------\nRan 3 tests in 82.253s\n\nOK\n"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_playcalling_editor_facade.py",
+    "exit_code": 0,
+    "seconds": 3.341,
+    "tests": 7,
+    "skipped": 0,
+    "output_tail": ".......\n----------------------------------------------------------------------\nRan 7 tests in 2.935s\n\nOK\n"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_playcalling_editor_patches.py",
+    "exit_code": 0,
+    "seconds": 0.62,
+    "tests": 3,
+    "skipped": 0,
+    "output_tail": "...\n----------------------------------------------------------------------\nRan 3 tests in 0.214s\n\nOK\n"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_playcalling_editor_qt.py",
+    "exit_code": 0,
+    "seconds": 4.763,
+    "tests": 10,
+    "skipped": 0,
+    "output_tail": "..........\n----------------------------------------------------------------------\nRan 10 tests in 4.220s\n\nOK\n"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_ps3_speed.py",
+    "exit_code": 0,
+    "seconds": 4.252,
+    "tests": 15,
+    "skipped": 0,
+    "output_tail": "...............\n----------------------------------------------------------------------\nRan 15 tests in 3.949s\n\nOK\n"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_ps3_speed_packages.py",
+    "exit_code": 0,
+    "seconds": 11.168,
+    "tests": 6,
+    "skipped": 0,
+    "output_tail": "......\n----------------------------------------------------------------------\nRan 6 tests in 10.774s\n\nOK\n"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_ps3_texture_bundle.py",
+    "exit_code": 0,
+    "seconds": 33.563,
+    "tests": 28,
+    "skipped": 0,
+    "output_tail": "............................\n----------------------------------------------------------------------\nRan 28 tests in 33.376s\n\nOK\n"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_ps3_texture_bundle_qt.py",
+    "exit_code": 0,
+    "seconds": 0.454,
+    "tests": 4,
+    "skipped": 0,
+    "output_tail": "....\n----------------------------------------------------------------------\nRan 4 tests in 0.252s\n\nOK\n"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_studio_core.py",
+    "exit_code": 0,
+    "seconds": 0.293,
+    "tests": 9,
+    "skipped": 1,
+    "output_tail": "s........\n----------------------------------------------------------------------\nRan 9 tests in 0.031s\n\nOK (skipped=1)\n"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_studio_safety.py",
+    "exit_code": 0,
+    "seconds": 0.485,
+    "tests": 27,
+    "skipped": 0,
+    "output_tail": "...........................\n----------------------------------------------------------------------\nRan 27 tests in 0.127s\n\nOK\n"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_team_art.py",
+    "exit_code": 0,
+    "seconds": 13.21,
+    "tests": 10,
+    "skipped": 0,
+    "output_tail": "..........\n----------------------------------------------------------------------\nRan 10 tests in 12.626s\n\nOK\n"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_team_art_qt.py",
+    "exit_code": 0,
+    "seconds": 0.61,
+    "tests": 6,
+    "skipped": 0,
+    "output_tail": "This plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\n.This plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\n.This plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\n.This plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\n.This plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\n.This plugin does not support propagateSizeHints()\nThis plugin does not support propagateSizeHints()\n.\n----------------------------------------------------------------------\nRan 6 tests in 0.179s\n\nOK\n"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_team_logo_gui.py",
+    "exit_code": 0,
+    "seconds": 2.281,
+    "tests": 23,
+    "skipped": 0,
+    "output_tail": ".......................\n----------------------------------------------------------------------\nRan 23 tests in 1.659s\n\nOK\n"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_apf_wave_integration.py",
+    "exit_code": 0,
+    "seconds": null,
+    "tests": 8,
+    "skipped": 0,
+    "output_tail": "........\n----------------------------------------------------------------------\nRan 8 tests in 17.155s\n\nOK\n",
+    "unittest_seconds": 17.155
+  }
+]

@@ -77,12 +77,15 @@ REVIEWED_ICON_SIZE = 23_822
 REVIEWED_ICON_SHA256 = (
     "dc00ecd1c67a63509acad6eb45fd6aa593a4add7839ea8bf685b9eca0d4154b2"
 )
+REVIEWED_EDITOR_IMAGES = {'docs/mod_editor/apf2k8_book_identity/book-identity.png': (171333, '49031072810725b3835b2bdf76ae9380add77917f733fc5f5341acb9c3cf31b8'), 'docs/mod_editor/apf2k8_book_identity/stock-replacement.png': (211991, 'df3ba6f510754917d0aa376596daaca5f29888960eb25054ec2a32085f462b98'), 'docs/mod_editor/apf2k8_book_identity/walkthrough.png': (113176, '9062606c54d9198c9bc77dc4e7730a1fb0f66952a9d918fc38e3eef3c3e2a3d5')}
+
 REVIEWED_PATHS = frozenset(
     {
         REVIEWED_BINARY,
         REVIEWED_WINDOWS_BINARY,
         REVIEWED_H7A_BINARY,
         REVIEWED_ICON,
+        *REVIEWED_EDITOR_IMAGES,
         REVIEWED_LICENSE,
     }
 )
@@ -836,6 +839,16 @@ def _validate_product_contract(relative: str, text: str) -> None:
             )
 
 
+def _validate_editor_image(path, info, relative):
+    expected_size, expected_sha = REVIEWED_EDITOR_IMAGES[relative]
+    if info.st_size != expected_size:
+        raise ReleaseCheckError(f"reviewed editor image size changed: {relative}")
+    digest, payload = _hash_regular(path, info.st_size, expected_size)
+    if digest != expected_sha or not payload.startswith(b"\x89PNG\r\n\x1a\n"):
+        raise ReleaseCheckError(f"reviewed editor image bytes changed: {relative}")
+    return digest
+
+
 def audit_release(root: Path, allowlist_path: Path) -> dict[str, object]:
     try:
         root_info = root.lstat()
@@ -899,6 +912,8 @@ def audit_release(root: Path, allowlist_path: Path) -> dict[str, object]:
             digest = _validate_reviewed_windows_binary(path, info)
         elif relative == REVIEWED_H7A_BINARY:
             digest = _validate_reviewed_h7a_binary(path, info)
+        elif relative in REVIEWED_EDITOR_IMAGES:
+            digest = _validate_editor_image(path, info, relative)
         elif relative == REVIEWED_ICON:
             digest = _validate_reviewed_icon(path, info)
         else:

@@ -1,0 +1,51 @@
+{
+  "scope": "Exact integrated APF allowlist staged from the worktree; missing existing extractor artifacts copied from the read-only alpha.69 release and checked by current release/runtime pins. No binaries committed.",
+  "hydrated": [
+    {
+      "path": "tools/vendor/extract-xiso/BUILDING-THE-BUNDLED-BINARIES.md",
+      "source": "/home/noah/Desktop/2K5-8 Editors/builds/apf2k8-mod-studio-0.1.0-alpha.69/tools/vendor/extract-xiso/BUILDING-THE-BUNDLED-BINARIES.md",
+      "size": 3426,
+      "sha256": "bf282b33027de33658edff1da34779cc14704c879dbf3472bdd48676f3b38adc"
+    },
+    {
+      "path": "tools/vendor/extract-xiso/LICENSE.TXT",
+      "source": "/home/noah/Desktop/2K5-8 Editors/builds/apf2k8-mod-studio-0.1.0-alpha.69/tools/vendor/extract-xiso/LICENSE.TXT",
+      "size": 3115,
+      "sha256": "719d9e9a12c470a20d9f1988a03108fd99bb0b07a5340c6bbf3caf524b7adf01"
+    },
+    {
+      "path": "tools/vendor/extract-xiso/build/extract-xiso",
+      "source": "/home/noah/Desktop/2K5-8 Editors/builds/apf2k8-mod-studio-0.1.0-alpha.69/tools/vendor/extract-xiso/build/extract-xiso",
+      "size": 51336,
+      "sha256": "222e7763df8f16d9b252c625fac5ef551cd25cdf031a785b3ec73c6e53c5d7f2"
+    },
+    {
+      "path": "tools/vendor/extract-xiso/build/extract-xiso.exe",
+      "source": "/home/noah/Desktop/2K5-8 Editors/builds/apf2k8-mod-studio-0.1.0-alpha.69/tools/vendor/extract-xiso/build/extract-xiso.exe",
+      "size": 293273,
+      "sha256": "e9567fe31b168b226531ed532714b3e1cc9070cdfac0c102fb881e2825aee68d"
+    }
+  ],
+  "checks": [
+    {
+      "command": [
+        "python3",
+        "/tmp/astra-b70-a2-apf-stage-7vtvnigc/packaging/check_apf2k8_mod_studio_release.py",
+        "/tmp/astra-b70-a2-apf-stage-7vtvnigc"
+      ],
+      "exit_code": 0,
+      "output": "APF2K8_MOD_STUDIO_RELEASE_PASS files=278 bytes=10257687 metadata=8 install_surface=8 retail_hashes=7 extractor=reviewed private=false retail=false symlinks=false undeclared=false\n"
+    },
+    {
+      "command": [
+        "python3",
+        "/tmp/astra-b70-a2-apf-stage-7vtvnigc/packaging/check_apf2k8_mod_studio_runtime.py"
+      ],
+      "exit_code": 1,
+      "output": "APF2K8_MOD_STUDIO_RUNTIME_REFUSED: staged APF local-import closure is incomplete: mod_editor/core/audio_conform.py:303 imports missing local module mod_editor.core.nfl2k5_music_conform; mod_editor/core/audio_conform.py:311 imports missing local module mod_editor.core.nfl2k5_music_conform\n"
+    }
+  ],
+  "file_count": 278,
+  "identical_worktree_files": 274,
+  "temporary_stage_removed": true
+}

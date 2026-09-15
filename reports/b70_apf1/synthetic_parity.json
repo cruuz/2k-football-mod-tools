@@ -1,0 +1,42 @@
+[
+  {
+    "comparison": "portable distinct",
+    "count": 1,
+    "before_seconds": 17.179496406999533,
+    "after_seconds": 14.171068039999227,
+    "package_count": 1,
+    "all_packages_fit_receipts_archive_and_linked_cache_byte_identical": true
+  },
+  {
+    "comparison": "portable distinct",
+    "count": 32,
+    "before_seconds": 102.17403154400017,
+    "after_seconds": 72.91636670099979,
+    "package_count": 32,
+    "all_packages_fit_receipts_archive_and_linked_cache_byte_identical": true
+  },
+  {
+    "comparison": "portable repeated",
+    "count": 32,
+    "before_seconds": 58.21215720499822,
+    "after_seconds": 49.50679817499986,
+    "package_count": 32,
+    "all_packages_fit_receipts_archive_and_linked_cache_byte_identical": true
+  },
+  {
+    "comparison": "J10 canonical native",
+    "count": 1,
+    "before_seconds": 10.17610814596992,
+    "after_seconds": 10.110176525002316,
+    "package_count": 1,
+    "all_packages_fit_receipts_archive_and_linked_cache_byte_identical": true
+  },
+  {
+    "comparison": "J10 canonical native",
+    "count": 32,
+    "before_seconds": 70.07655950996559,
+    "after_seconds": 59.52520107999953,
+    "package_count": 32,
+    "all_packages_fit_receipts_archive_and_linked_cache_byte_identical": true
+  }
+]

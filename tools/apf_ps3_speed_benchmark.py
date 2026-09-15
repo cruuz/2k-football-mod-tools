@@ -47,6 +47,7 @@ STACK = []
 _ORIGINAL_MAP = getattr(writer, 'ordered_crest_map', None)
 _INSTRUMENTED = False
 QT_REFERENCE = None
+REPEAT_INPUTS = None
 
 
 def timed(name, fn):
@@ -126,7 +127,7 @@ def fixture(root, count):
     zipped = root / 'synthetic.zip'
     with zipfile.ZipFile(zipped, 'w', zipfile.ZIP_DEFLATED) as archive:
         for i in range(count):
-            rng = random.Random(661 + i)
+            rng = random.Random(661 + (i % REPEAT_INPUTS if REPEAT_INPUTS else i))
             image = Image.new('RGBA', (128, 128))
             image.putdata([tuple((4 + rng.randrange(8)) * 17 for _ in range(3)) + (255,)
                            for _ in range(128 * 128)])
@@ -228,7 +229,7 @@ def run(count, root, parallel=False, include_cache=False):
     cache_source = cache_fixture() if include_cache else None
     writer._STREAM_CACHE.clear()
     writer._MEASUREMENT_CACHE.clear()
-    for name in ('_PIXEL_CACHE', '_PACKAGE_CACHE'):
+    for name in ('_PIXEL_CACHE', '_PACKAGE_CACHE', '_FITTED_STREAMS'):
         if hasattr(writer, name):
             getattr(writer, name).clear()
     if hasattr(bundle_api, '_BUNDLE_MEASUREMENTS'):
@@ -334,7 +335,7 @@ def run(count, root, parallel=False, include_cache=False):
 
 
 def main():
-    global writer, cache, bundle_api, QT_REFERENCE
+    global writer, cache, bundle_api, QT_REFERENCE, REPEAT_INPUTS
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--report', type=Path, required=True)
     parser.add_argument('--counts', type=int, nargs='+', default=[1, 32])
@@ -342,7 +343,14 @@ def main():
     parser.add_argument('--parallel', action='store_true')
     parser.add_argument('--include-cache', action='store_true')
     parser.add_argument('--reference-dir', type=Path)
+    parser.add_argument('--disable-helper', action='store_true', help='Force portable encoding, including spawned workers')
+    parser.add_argument('--repeat-inputs', type=int, help='Cycle this many distinct six-mask inputs across destinations')
     args = parser.parse_args()
+    if args.repeat_inputs is not None and args.repeat_inputs < 1:
+        parser.error('--repeat-inputs must be positive')
+    REPEAT_INPUTS = args.repeat_inputs
+    if args.disable_helper:
+        os.environ['APF_H7A_DISABLE_NATIVE'] = '1'
     os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
     if args.reference_dir:
         def load(name, filename):
@@ -368,7 +376,10 @@ def main():
         if args.parallel:
             writer.ordered_crest_map = profiled_map
             cache.ordered_crest_map = profiled_map
-        report = {'python': sys.version, 'cpu_count': os.cpu_count(), 'runs': []}
+        report = {'python': sys.version, 'cpu_count': os.cpu_count(),
+                  'native_disabled': os.environ.get('APF_H7A_DISABLE_NATIVE') == '1',
+                  'portable_optimal': os.environ.get('APF_H7A_PYTHON_OPTIMAL') == '1',
+                  'repeat_inputs': REPEAT_INPUTS, 'runs': []}
         for count in args.counts:
             folder = root / str(count)
             folder.mkdir()

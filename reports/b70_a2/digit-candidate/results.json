@@ -1,0 +1,114 @@
+[
+  {
+    "path": "tools/test_nfl_tset_png_import.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tools/test_nfl_tset_png_import.py",
+    "exit_code": 1,
+    "seconds": 1.786,
+    "footer": [],
+    "log": "reports/b70_a2/digit-candidate/tools__test_nfl_tset_png_import.py.log"
+  },
+  {
+    "path": "tools/test_nfl_tset_png_import_dynamic_workflow.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tools/test_nfl_tset_png_import_dynamic_workflow.py",
+    "exit_code": 1,
+    "seconds": 0.367,
+    "footer": [],
+    "log": "reports/b70_a2/digit-candidate/tools__test_nfl_tset_png_import_dynamic_workflow.py.log"
+  },
+  {
+    "path": "tools/test_nfl_tset_png_import_xiso_direct_patch.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tools/test_nfl_tset_png_import_xiso_direct_patch.py",
+    "exit_code": 1,
+    "seconds": 0.251,
+    "footer": [],
+    "log": "reports/b70_a2/digit-candidate/tools__test_nfl_tset_png_import_xiso_direct_patch.py.log"
+  },
+  {
+    "path": "tools/test_nfl2k5_visual_mod_project.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tools/test_nfl2k5_visual_mod_project.py",
+    "exit_code": 0,
+    "seconds": 3.288,
+    "footer": [
+      "Ran 46 tests in 2.350s",
+      "OK (skipped=10)"
+    ],
+    "log": "reports/b70_a2/digit-candidate/tools__test_nfl2k5_visual_mod_project.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_2k5_bounded_vclz_palette.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_2k5_bounded_vclz_palette.py",
+    "exit_code": 0,
+    "seconds": 3.232,
+    "footer": [
+      "Ran 7 tests in 3.110s",
+      "OK (skipped=2)"
+    ],
+    "log": "reports/b70_a2/digit-candidate/tests__mod_editor__test_2k5_bounded_vclz_palette.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_2k5_vclz_bounded_importers.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_2k5_vclz_bounded_importers.py",
+    "exit_code": 0,
+    "seconds": 1.224,
+    "footer": [
+      "Ran 16 tests in 0.462s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/digit-candidate/tests__mod_editor__test_2k5_vclz_bounded_importers.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_digit_sheet.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_digit_sheet.py",
+    "exit_code": 0,
+    "seconds": 0.503,
+    "footer": [
+      "Ran 3 tests in 0.387s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/digit-candidate/tests__mod_editor__test_nfl2k5_digit_sheet.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_digit_sheet_quality.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_nfl2k5_digit_sheet_quality.py",
+    "exit_code": 0,
+    "seconds": 8.077,
+    "footer": [
+      "Ran 13 tests in 7.840s",
+      "OK (skipped=1)"
+    ],
+    "log": "reports/b70_a2/digit-candidate/tests__mod_editor__test_nfl2k5_digit_sheet_quality.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_2k5_digit_dimensions_per_target.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_2k5_digit_dimensions_per_target.py",
+    "exit_code": 0,
+    "seconds": 0.114,
+    "footer": [
+      "Ran 10 tests in 0.005s",
+      "OK (skipped=8)"
+    ],
+    "log": "reports/b70_a2/digit-candidate/tests__mod_editor__test_2k5_digit_dimensions_per_target.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_b66_coach_digits.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_b66_coach_digits.py",
+    "exit_code": 0,
+    "seconds": 7.648,
+    "footer": [
+      "Ran 12 tests in 7.395s",
+      "OK (skipped=1)"
+    ],
+    "log": "reports/b70_a2/digit-candidate/tests__mod_editor__test_b66_coach_digits.py.log"
+  },
+  {
+    "path": "tests/mod_editor/test_hotfix63_digit_budget.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_hotfix63_digit_budget.py",
+    "exit_code": 0,
+    "seconds": 0.833,
+    "footer": [
+      "Ran 5 tests in 0.020s",
+      "OK (skipped=3)"
+    ],
+    "log": "reports/b70_a2/digit-candidate/tests__mod_editor__test_hotfix63_digit_budget.py.log"
+  }
+]

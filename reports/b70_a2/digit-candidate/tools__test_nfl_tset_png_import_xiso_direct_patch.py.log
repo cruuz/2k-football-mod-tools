@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b70-a2/tools/test_nfl_tset_png_import_xiso_direct_patch.py", line 79, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/home/noah/2k-worktrees/astra-b70-a2/tools/test_nfl_tset_png_import_xiso_direct_patch.py", line 35, in main
+    ).read_bytes()
+      ^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1021, in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1015, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/noah/2k-worktrees/astra-b70-a2/reports/assets/nfl2k5_lions_09H0_diagnostic_png_import.tset.bin'

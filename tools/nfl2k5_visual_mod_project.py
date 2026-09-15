@@ -1278,7 +1278,7 @@ def read_project(path: Path, *, equipment_index: Path | None = None) -> ProjectF
     require(payload == canonical_json(normalized), "project normalization changed encoding")
     project = ProjectFile(resolved, payload, normalized, identity)
     if equipment_index is not None:
-        equipment_cache = uniform_equipment_adapter.EquipmentCompileCache()
+        equipment_cache = uniform_equipment_adapter.staged_equipment_cache()
         uniform_equipment_adapter.preflight_project_equipment(equipment_index, [
             (i, edit["asset_id"], project.path.parent / edit["png"])
             for i, edit in enumerate(edits) if edit["kind"] == UNIFORM_EQUIPMENT_KIND
@@ -2746,6 +2746,14 @@ def kept_retail_record(edit: dict[str, Any], failure: BaseException,
         "reason": reason,
         "message": f"{label}: {reason}",
         "replacement": {"span_sha256": target.span_sha256},
+        "asset_label": (f"Uniforms / {edit['family']} digit {edit['digit']} / "
+                        f"{edit['asset_code']}{edit['side']}{edit['variant']} / texture {target.selector}"),
+        # Digit QualityBudgetError currently records overflow, not an exact
+        # encoded length or a checked smaller image. Never invent those values
+        # from an EquipmentFitError belonging to a different encoder.
+        "shortfall_bytes": 1 if getattr(cause, "attempts", ()) else None,
+        "shortfall_is_lower_bound": True,
+        "suggestion": getattr(cause, "suggestion", None),
         "digit_preparation": getattr(cause, "preparation", None),
         "fit_attempts": list(getattr(cause, "attempts", ())),
     }

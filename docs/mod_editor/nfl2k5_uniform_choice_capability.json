@@ -1,0 +1,65 @@
+{
+  "backend": {
+    "command": "Python API: mod_editor.core.nfl2k5_uniform_choice.apply(payload, mode=\"choice\")",
+    "module": "mod_editor/core/nfl2k5_uniform_choice.py",
+    "operation": "write"
+  },
+  "classification": "offline-writer-proved",
+  "evidence": [
+    "ASTRA_REPORT.md",
+    "tests/mod_editor/test_nfl2k5_uniform_choice.py",
+    "tests/mod_editor/test_nfl2k5_uniform_choice_screens.py"
+  ],
+  "game": "nfl2k5_xbox",
+  "gui": {
+    "default_enabled": false,
+    "expose": true,
+    "mode": "edit",
+    "reason": "EXPERIMENTAL / UNWITNESSED. Build names choice versus rule; Gameplay Patches selects choice. Off in all presets after the T3 WIRING.md handoff. X_Ray reports failure; bounded checks do not identify his cause."
+  },
+  "id": "nfl2k5.uniforms.colour_choice",
+  "input_constraints": [
+    "Pinned retail-or-complete-applied uniform sites; reject foreign or mixed forms and changing an installed form. Rebuild from the original source to change forms.",
+    "Choice cycles twice the number of available eras per side, at most 30 states. Both sides can choose white. Initial colours preserve the retail Cowboys rule.",
+    "FUN_000e2d80 clears both era slots and colour flips; it does not preserve a previous choice. Bounded setup-reset -> screen callbacks -> kit-selector execution preserves choices made after reset. Full game transition remains UNWITNESSED."
+  ],
+  "portme": [
+    "Follow the X_Ray witness recipe in ASTRA_REPORT.md on both supported screens. Do not claim that Practice, Xbox Live or Team Select colour preview were extended."
+  ],
+  "public_distribution": {
+    "game_data": "never-bundle-retail-data",
+    "mod_payload": "user-authored-inputs-and-recipes",
+    "rule": "Ship source and instructions; never distribute generated XBEs or retail resources.",
+    "tooling": "source-and-schemas-only"
+  },
+  "runtime": {
+    "evidence": [
+      "tests/mod_editor/test_nfl2k5_uniform_choice_screens.py",
+      "reports/b70_t3/uniform-screens.log"
+    ],
+    "scope": "PROVED: bounded execution of both retail screen wrappers, patched era handlers, reset and kit-letter selector. The flip words do not survive an explicit reset after selection. X_Ray's failing call order is HYPOTHESIS; every beta-70 in-game outcome is UNWITNESSED.",
+    "status": "not-tested"
+  },
+  "selectors": {
+    "fields": [
+      {
+        "allowed": "empty string (off), rule, or choice",
+        "name": "uniform_choice",
+        "required": true
+      }
+    ],
+    "notes": "Build selects either form; Gameplay Patches installs choice. EXPERIMENTAL, off in all presets after wiring."
+  },
+  "source_container": {
+    "format": "XBE in XDVDFS",
+    "hash_pins": [
+      "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+    ],
+    "resource": "Rule block 0x6160F, away-letter read 0x6168B, reset tail 0xE2D91 and four era handlers. Writable colour words 0xA69974/0xA69978 and loader scratch 0xA6997C.",
+    "retail_file": "user-owned NFL 2K5 USA default.xbe"
+  },
+  "summary": "Choice form: independent home/away colour cycling on Controller Assign and exhibition Team Select. Rule form: fixed home dark / away white, without in-game choice. Practice, Xbox Live and Team Select colour preview are not extended.",
+  "surface": "uniforms",
+  "title": "Jersey colour: choice or fixed rule (experimental)",
+  "validation_command": "python3 tests/mod_editor/test_nfl2k5_uniform_choice_screens.py"
+}

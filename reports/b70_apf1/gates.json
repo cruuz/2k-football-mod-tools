@@ -1,0 +1,28 @@
+{
+  "scope": "Temporary release stage, with exact WIRING.md changes. Protected root implementation files are unchanged.",
+  "release": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 QT_QPA_PLATFORM=offscreen python3 /tmp/b70-apf1-gate-source/packaging/check_apf2k8_mod_studio_release.py /tmp/b70-apf1-gate-source",
+    "exit_code": 0,
+    "stdout": "APF2K8_MOD_STUDIO_RELEASE_PASS files=278 bytes=10260794 metadata=8 install_surface=8 retail_hashes=7 extractor=reviewed private=false retail=false symlinks=false undeclared=false\n"
+  },
+  "runtime": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 QT_QPA_PLATFORM=offscreen python3 /tmp/b70-apf1-gate-source/packaging/check_apf2k8_mod_studio_runtime.py",
+    "exit_code": 0,
+    "stdout": "APF2K8_MOD_STUDIO_RUNTIME_PASS modules=156 capabilities=72 universal=private_source_not_provided uniforms=private_source_not_provided uniform_inventory=private_source_not_provided audio_query_lifecycle=applied_token_debounce_guarded audio_shortlist_clear=one_level_ordered_restore audio_preview_lifecycle=request_owned_success_failure audio_preview_cancellation=request_owned_process_group_cancel audio_waveform_cancellation=request_owned_process_group_cancel audio_add_all_matching=applied_query_atomic_256 audio_session_teardown=cancel_drain_before_close_source audio_replacement_confirmation=fully_validated_read_only_preview_then_explicit_apply audio_replacement_token=exact_member_result_source_session_project_revision audio_replacement_noop=cancel_unchanged audio_replacement_lifecycle=worker_drained_before_confirmation audio_direct_drop=selected_exact_slot_xma1_or_conformed_audio audio_mutation_lifecycle=submission_to_worker_idle retail_source_required=false\n"
+  },
+  "identical_staged_product_files": 270,
+  "wiring_differences": [
+    "packaging/apf2k8-release-allowlist.txt",
+    "packaging/check_apf2k8_mod_studio_release.py",
+    "packaging/check_apf2k8_mod_studio_runtime.py",
+    "mod_editor/capabilities/registry.v1.json"
+  ],
+  "stage_only_reviewed_artifacts": [
+    "tools/vendor/extract-xiso/BUILDING-THE-BUNDLED-BINARIES.md",
+    "tools/vendor/extract-xiso/LICENSE.TXT",
+    "tools/vendor/extract-xiso/build/extract-xiso.exe",
+    "tools/vendor/extract-xiso/build/extract-xiso"
+  ],
+  "extractor_source": "/home/noah/Desktop/2K5-8 Editors/builds/apf2k8-mod-studio-0.1.0-alpha.69/tools/vendor/extract-xiso/build",
+  "gameplay": "UNWITNESSED"
+}

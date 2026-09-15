@@ -1,0 +1,6 @@
+{
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "unicorn": "2.1.4",
+  "capstone": "5.0.7",
+  "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers"
+}

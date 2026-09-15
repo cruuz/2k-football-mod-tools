@@ -345,8 +345,11 @@ def _measure_crest_job(job):
     ensure_tools_importable()
     import apf_logo_patch as writer
     images, templates = job
-    return {key: writer.measure_logo_pair(*images, template, minimum_budget=budget)
-            for key, template, budget in templates}
+    profiles = {key: writer.measure_logo_pair(*images, template, minimum_budget=budget)
+                for key, template, budget in templates}
+    # Move bounded compression work back to the parent; package workers would
+    # otherwise repeat the same fit after a spawn or a different pool assignment.
+    return profiles, writer.fitted_streams(images)
 
 
 def measure_bundle_logos(bundle, slots, index_0a, progress=lambda *_: None, *, cancelled=None):
@@ -364,8 +367,8 @@ def measure_bundle_logos(bundle, slots, index_0a, progress=lambda *_: None, *, c
     template_jobs = tuple((key, template, min(slot.compressed_art_budget for slot in destinations
         if identities[slot.outer_index] == key)) for key, template in templates.items())
     # Identities include every preserved byte, layer offset, descriptor and shift.
-    layout_key = tuple((key, budget) for key, _, budget in template_jobs)
-    results, pending, jobs = {}, [], []
+    layout_key = (writer.encoder_policy(), tuple((key, budget) for key, _, budget in template_jobs))
+    results, pending, jobs = {}, {}, []
     for pair in logos:
         if cancelled():
             raise BundleError('PS3 bundle import cancelled. Import the bundle again when ready.')
@@ -383,17 +386,21 @@ def measure_bundle_logos(bundle, slots, index_0a, progress=lambda *_: None, *, c
                 "destinations": {slot.slot_id: profiles[identities[slot.outer_index]] for slot in destinations}}
             progress(f'Measured {pair.team} (reused verified sizes)', len(results), len(logos))
         else:
-            pending.append((pair, hashes, key))
-            jobs.append((images, template_jobs))
-    for (pair, hashes, key), profiles in zip(pending,
+            if key not in pending:
+                pending[key] = []
+                jobs.append((images, template_jobs))
+            pending[key].append((pair, hashes))
+    for (key, pairs), (profiles, streams) in zip(pending.items(),
             writer.ordered_crest_map(_measure_crest_job, jobs, cancelled=cancelled)):
         with _BUNDLE_CACHE_LOCK:
             _BUNDLE_MEASUREMENTS[key] = deepcopy(profiles)
             while len(_BUNDLE_MEASUREMENTS) > 64:
                 _BUNDLE_MEASUREMENTS.popitem(last=False)
-        results[pair.pair_id] = {"pixel_hashes": hashes,
-            "destinations": {slot.slot_id: profiles[identities[slot.outer_index]] for slot in destinations}}
-        progress(f"Measured {pair.team}", len(results), len(logos))
+        writer.remember_fitted_streams(key[0], streams)
+        for pair, hashes in pairs:
+            results[pair.pair_id] = {"pixel_hashes": hashes,
+                "destinations": {slot.slot_id: deepcopy(profiles[identities[slot.outer_index]]) for slot in destinations}}
+            progress(f"Measured {pair.team}", len(results), len(logos))
     return results
 
 

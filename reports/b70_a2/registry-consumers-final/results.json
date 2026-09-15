@@ -1,0 +1,13 @@
+[
+  {
+    "path": "tests/mod_editor/test_product_catalog.py",
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tools python3 tests/mod_editor/test_product_catalog.py",
+    "exit_code": 0,
+    "seconds": 0.175,
+    "footer": [
+      "Ran 9 tests in 0.044s",
+      "OK"
+    ],
+    "log": "reports/b70_a2/registry-consumers-final/tests__mod_editor__test_product_catalog.py.log"
+  }
+]
