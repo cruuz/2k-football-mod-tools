@@ -1,5 +1,9 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC95, beta 70: the ESPN Monday Night Football 2026 scorebug, modern colour and lighting, and the reports after beta 69 (2026-09-15)
+
+Beta 70 rebuilds the ESPN scorebug to the 2026 Monday Night Football broadcast package, adds a modern colour and lighting option, and answers the ESPN NFL 2K5 reports in Discord after beta 69; bullets are added as each change lands.
+
 ## v1.0 RC94, beta 69: new features, the reports after beta 68, and a polish pass (2026-09-13)
 
 - **Build failures identify the edit and the cause (Coach Edwards).** “The era is not descriptive as to what exact texture I should change or remove” exposed a timing marker replacing the actual refusal. Failures now name the active phase and the project's original edit index, page, part, uniform set and texture. The Build list shows every project edit, with changes observed in this session newest first; old files do not record their original edit times. This addresses “there is no way to tell specifically what needs to change” without asking players to keep a separate list.
