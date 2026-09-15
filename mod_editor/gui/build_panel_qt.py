@@ -795,6 +795,10 @@ class BuildPanel(QWidget):
         self.modern_color_check = self._option(
             r, "modern_color", modern_color.BUILD_CAPTION, modern_color.HELP_TEXT,
             badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        from mod_editor.core import nfl2k5_modern_arrowhead as modern_arrowhead
+        self.modern_arrowhead_check = self._option(
+            r, "modern_arrowhead", modern_arrowhead.BUILD_CAPTION, modern_arrowhead.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
         self.player_star_check = self._option(
             r, "player_star", "Show a filled star under selected players",
             "A filled white star with a dark edge under every tagged player on the field; in-game appearance unwitnessed.",
@@ -1259,6 +1263,14 @@ class BuildPanel(QWidget):
         self.modern_color_check.setChecked(modern_ok and modern_state == "applied")
         self._set_badge("modern_color", "EXPERIMENTAL / UNWITNESSED" if modern_ok else
                         "Needs a supported USA disc image; light rigs unavailable")
+        arrowhead_state = state.get("modern_arrowhead")
+        arrowhead_ok = bool(self._available.get("modern_arrowhead", False) and is_image and arrowhead_state == "retail")
+        arrowhead_done = bool(self._available.get("modern_arrowhead", False) and is_image and arrowhead_state == "applied")
+        self.modern_arrowhead_check.setEnabled(arrowhead_ok)
+        self.modern_arrowhead_check.setChecked(arrowhead_done)
+        self._set_badge("modern_arrowhead", "EXPERIMENTAL / UNWITNESSED" if arrowhead_ok else
+                        "Already in this source (Off cannot restore it)" if arrowhead_done else
+                        "Needs a supported USA disc image; Arrowhead packages unavailable")
         espn_state = str(state.get("espn25_plan"))
         espn_available = self._available.get("espn25_plan", True)
         self.espn25_plan_check.setEnabled(espn_available and is_image and espn_state == "available")
@@ -1481,6 +1493,7 @@ class BuildPanel(QWidget):
             "player_star": self.player_star_check, "roster_edits": self.roster_edits_check,
             "weather_plan": self.weather_plan_check, "weather_haze": self.weather_haze_check,
             "modern_color": self.modern_color_check,
+            "modern_arrowhead": self.modern_arrowhead_check,
             "espn25_plan": self.espn25_plan_check, "espn25_rosters": self.espn25_rosters_check,
             "realistic_flight": self.realistic_check, "arc_by_distance": self.arc_by_distance_check,
         }
@@ -1581,6 +1594,7 @@ class BuildPanel(QWidget):
             weather_plan=(self.weather_plan_field.text().strip() if self.weather_plan_check.isChecked() else ""),
             weather_haze=self.weather_haze_check.isChecked(),
             modern_color=self.modern_color_check.isChecked(),
+            modern_arrowhead=self._modern_arrowhead_changed(),
             screen_timing=(self.screen_timing_combo.currentText() if self.screen_timing_check.isChecked() else None),
             scorebug_runtime=self.scorebug_runtime_check.isChecked(),
             music_policy="jukebox_menus" if self.music_policy_check.isChecked() else "retail",
@@ -1626,7 +1640,7 @@ class BuildPanel(QWidget):
                     or any(getattr(p, key) for key in r62_ui.KEYS if key not in r62_ui.LEVELS) or p.cpu_money_downs != "retail" or p.scorebug_runtime or p.momentum > 0 or p.defensive_try or p.zone_drop_cap or p.all_stadiums or p.coverage_slider or p.scramble_tuning or p.flatter_deep_ball or p.chop_block_toggle or p.team_names_2026 or p.music_shuffle or p.practice_squad_screen or p.abilities or p.qb_spy or p.music_policy != "retail" or p.music_unlock or p.music_userlist or p.music_project or p.music_library or p.edge_rename or p.screen_timing is not None or p.hires_pack or p.guardian_cap or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
                     or p.kickoff_alignment or p.dynamic_kickoff or p.xbe_space or p.kickoff_relocated or p.season_cap or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.franchise_practice or p.practice_squad or p.depth_locks or p.prospect_names or p.player_star or p.player_tags or p.roster_edits or p.espn25_plan
                     or p.commentary or p.playbook_packs or self._helmet_finish_changed()
-                    or p.weather_plan or self._weather_haze_changed() or self._modern_color_changed() or p.cpu_scrambles == "modern")
+                    or p.weather_plan or self._weather_haze_changed() or self._modern_color_changed() or self._modern_arrowhead_changed() or p.cpu_scrambles == "modern")
 
     def _helmet_finish_changed(self) -> bool:
         """True when the chosen finish differs from what the source carries (a Glossy restoration counts)."""
@@ -1669,6 +1683,8 @@ class BuildPanel(QWidget):
                 if key == "weather_haze" and not self._weather_haze_changed():
                     continue
                 if key == "modern_color" and not self._modern_color_changed():
+                    continue
+                if key == "modern_arrowhead" and not self._modern_arrowhead_changed():
                     continue
                 if key == "decided_clock":
                     text += f" ({self.decided_clock_margin.currentData()} points, {self.decided_clock_seconds.currentData()} seconds)"
@@ -2117,6 +2133,11 @@ class BuildPanel(QWidget):
         state = (self._state or {}).get("weather_haze")
         return (self.weather_haze_check.isEnabled() and state in ("retail", "applied")
                 and self.weather_haze_check.isChecked() != (state == "applied"))
+
+    def _modern_arrowhead_changed(self):
+        """Only turning the option on counts: Off leaves an already-modern source as it is."""
+        state = (self._state or {}).get("modern_arrowhead")
+        return bool(self.modern_arrowhead_check.isEnabled() and state == "retail" and self.modern_arrowhead_check.isChecked())
 
     def _modern_color_changed(self):
         state = (self._state or {}).get("modern_color")

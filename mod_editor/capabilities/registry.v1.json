@@ -11426,6 +11426,74 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_modern_arrowhead status <source>",
+        "module": "mod_editor/core/nfl2k5_modern_arrowhead.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_modern_arrowhead.py",
+        "data/nfl2k5_modern_arrowhead_pins.json",
+        "docs/modern_arrowhead/README.md"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Build tab checkbox; Off in every preset. Needs a disc image; Off does not restore an already-modern source."
+      },
+      "id": "nfl2k5.stadiums_fields.modern_arrowhead",
+      "input_constraints": [
+        "Nine pinned Arrowhead bundles (s13 day/afternoon/night x dry/rain/snow): the field SCNE (three end zone textures, the centre mark) and the stadium SCNE (seats, wall pads, fascia boards, wall ads, three fan banners, the tarp) refit inside their fixed VC-LZ spans with the retail wrappers; only retail or already-modern bundles are accepted.",
+        "Fourteen authored RGBA8 PNGs in data/nfl2k5_modern_arrowhead compiled at build time into the retail P8 allocations (palette and mips regenerated); the crowd figures, grass colour map, bump map, lights and geometry are untouched.",
+        "Appearance in game is unwitnessed."
+      ],
+      "portme": [
+        "Witness Arrowhead at night and by day against the 2026 broadcast stills; then tune the seat tone, the boards and the end zone lettering."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute authoring tools, values and verified recipes only. Never bundle a retail roster, executable, disc or texture.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "docs/modern_arrowhead/README.md",
+          "tests/mod_editor/test_nfl2k5_modern_arrowhead.py"
+        ],
+        "scope": "Offline byte receipts and decoder read-back only; no played or appearance outcome is witnessed.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false (default) or true",
+            "name": "enabled",
+            "required": false
+          }
+        ],
+        "notes": "On rewrites the nine Arrowhead bundles; Off leaves the source as it is (an already-modern source stays modern)."
+      },
+      "source_container": {
+        "format": "In-place fixed-span SCNE resources in the nine Arrowhead stadium bundles of the vc_53450030 archive packs",
+        "hash_pins": [
+          "b5bcf870b8c855c5006e5fbe6268851bf18001bdf5d910e8b7d2e5ed93e08642",
+          "ab585b3dceefe2c073726e66e3baa725f0d5f5fe4fad36d5823edd93c3f2c661",
+          "10fd1f8746f6b143af77f077b2f48f50e5ce2bcc258fdf8c82a5473d115d73a9",
+          "d3eb28787a5d09f61c9ec6b7f73ff115c3d78e77691ef56ec3256e4274f0658a"
+        ],
+        "resource": "archive entries s13dd/s13ad/s13nd/s13dr/s13ar/s13nr/s13ds/s13as/s13ns: field scene (chunk 0) and stadium scene (chunk 6)",
+        "retail_file": "the vc_53450030 archive packs holding the Arrowhead bundles"
+      },
+      "summary": "The Kansas City home stadium packages toward the 2026 look: red seats, red wall pads with the gold rail, current fascia boards and wall ads, CHIEFS end zones with the mark at both ends, the current mark at midfield and Chiefs fan banners, refit inside the retail spans. Off in every preset; the crowd, grass and lights stay retail; unwitnessed in game.",
+      "surface": "stadiums_fields",
+      "title": "Modern Arrowhead (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_modern_arrowhead"
+    },
+    {
+      "backend": {
         "command": "python3 tools/nfl_all_texture_xiso_workflow.py --source-xiso <retail.xiso.iso> --output-xiso <new.xiso.iso> --manifest <manifest.json> --plan <plan.json> --index <extracted vc_53450030/0>",
         "module": "tools/nfl_all_texture_xiso_workflow.py",
         "operation": "write"
