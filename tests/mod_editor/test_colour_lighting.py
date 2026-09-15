@@ -41,6 +41,9 @@ class SettingsModelTests(unittest.TestCase):
         doc = mc.default_settings()
         self.assertEqual(len(mc.control_specs()), 55)
         self.assertFalse(mc.is_custom(doc))
+        displayed = deepcopy(doc)
+        displayed['values'] = {k: round(v, 3) for k, v in doc['values'].items()}
+        self.assertFalse(mc.is_custom(displayed), 'returning sliders to their displayed defaults restores Broadcast')
         for key, spec in mc.control_specs().items():
             for value in (spec['minimum'], spec['maximum']):
                 changed = deepcopy(doc)

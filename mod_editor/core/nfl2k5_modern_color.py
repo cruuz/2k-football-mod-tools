@@ -185,7 +185,7 @@ def control_specs():
     add("outside", "match", "Match field brightness", 1, 0, 0, 1, .01)
     add("outside", "falloff", "Edge shade strength", OUTSIDE_VERTEX_FALLOFF, 1, 0, 1, .01)
     add("divots", "contrast", "Blotch / wear contrast", DIVOTS_ALPHA, 1, 0, 1, .01)
-    add("normal", "flatten", "Bump flatten amount", 1 - NORMAL_FLATTEN, 0, 0, 1, .01)
+    add("normal", "flatten", "Bump flatten amount", round(1 - NORMAL_FLATTEN, 6), 0, 0, 1, .01)
     for key in ("day", "afternoon", "night"):
         add("tints", key, key.title() + " tint correction", 1, 0, 0, 2, .01)
     for name, rig in MODERN_RIGS.items():
@@ -531,7 +531,7 @@ def flatten_normal_palette(palette, settings=None):
     amount = control_value(doc, "normal.flatten")
     if amount == 0:
         return bytes(palette)
-    residual = NORMAL_FLATTEN if amount == 1 - NORMAL_FLATTEN else 1 - amount
+    residual = NORMAL_FLATTEN if amount == control_specs()["normal.flatten"]["default"] else 1 - amount
     if not looks_like_normal_palette(palette):
         return bytes(palette)
     out = bytearray(palette)
