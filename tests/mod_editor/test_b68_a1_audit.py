@@ -38,7 +38,7 @@ class IntegrationTests(unittest.TestCase):
         from mod_editor.core.product_catalog import build_nfl2k5_product_catalog
         registry = CapabilityRegistryLoader().load(allow_sample_fallback=False, check_files=False)
         catalog = build_nfl2k5_product_catalog(registry)
-        self.assertEqual(len(registry.capabilities), 175)
+        self.assertEqual(len(registry.capabilities), 176)
         self.assertEqual(len(catalog.capabilities), 102)
         path = ROOT / 'packaging/check_2k5_mod_studio_runtime.py'
         source = path.read_text()
@@ -51,8 +51,8 @@ class IntegrationTests(unittest.TestCase):
                                           'require(len(product_catalog.capabilities)')):
                     with self.subTest(expression=expression):
                         exec(expression, dict(require=self.assertTrue, registry=registry, product_catalog=catalog))
-        self.assertTrue('registry=175 sections=12 nfl2k5_capabilities=102' in source)
-        self.assertIn('registry=175 sections=12 nfl2k5_capabilities=102',
+        self.assertTrue('registry=176 sections=12 nfl2k5_capabilities=102' in source)
+        self.assertIn('registry=176 sections=12 nfl2k5_capabilities=102',
                       (ROOT / 'tests/mod_editor/test_phase1_packaging.py').read_text())
 
     def test_new_core_modules_are_in_all_release_closures(self):

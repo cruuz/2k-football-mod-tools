@@ -139,16 +139,13 @@ def scene_targets(rec):
     return out
 
 
-def modern_scene_span(data, chunk):
-    """Refit one field or stadium SCNE with the authored textures inside its retail span."""
+def paint_scene(data, chunk):
+    """Author the decoded textures; the caller owns compression and wrappers."""
     tx, inv, ResourceRecord, HEADER, stw = _tools()
     rec, decoded = _scene(data, chunk)
     span = bytes(data[chunk.offset:chunk.offset + HEADER.size + chunk.stored_size])
     targets = scene_targets(rec)
     require(targets, f"{rec.get('name')}: no target textures in this scene")
-    _back, info = stw.decompress_vc_lz(span[HEADER.size:], len(decoded))
-    consumed = info.consumed_bytes
-    opaque_tail = span[HEADER.size + consumed:]
     edited = bytearray(decoded)
     system = int(rec["system_bytes"])
     receipt = []
@@ -169,6 +166,18 @@ def modern_scene_span(data, chunk):
         edited[palette_start:palette_start + stw.PALETTE_BYTES] = palette_payload
         receipt.append(dict(texture=index, png=png, material=row.get("mapped_material_names"),
                             palette_entries=len(palette), size=[width, height], mips=levels))
+    return bytes(edited), receipt
+
+
+def modern_scene_span(data, chunk):
+    """Refit authored art in its existing scene allocation."""
+    tx, inv, ResourceRecord, HEADER, stw = _tools()
+    rec, decoded = _scene(data, chunk)
+    span = bytes(data[chunk.offset:chunk.offset + HEADER.size + chunk.stored_size])
+    _, info = stw.decompress_vc_lz(span[HEADER.size:], len(decoded))
+    consumed = info.consumed_bytes
+    opaque_tail = span[HEADER.size + consumed:]
+    edited, receipt = paint_scene(data, chunk)
     fixed = stw._rebuild_vc_lz_fixed_span(bytes(edited), span[:HEADER.size], opaque_tail,
                                           consumed_cap=consumed, scratch_cap=stw.SCNE_OBSERVED_SCRATCH_MAX,
                                           template_stream_prefix=span[HEADER.size:HEADER.size + 9])
@@ -252,6 +261,30 @@ def _bundle_state(archive, pin):
 def image_status(source):
     """retail / applied / mixed / foreign across the nine pinned bundles."""
     pins = _pins()
+    from . import nfl2k5_modern_color as colour
+    receipt = colour.read_image_receipt(source)
+    combined = receipt.get("modern_arrowhead") if receipt else None
+    if combined is not None:
+        require(combined.get("art") == art_pins(), "Combined Arrowhead art pins differ")
+        require(set(combined.get("bundles", {})) == {p["name"] for p in pins["bundles"]},
+                "Combined Arrowhead receipt must cover all nine bundles")
+        with _outer_image()(source) as archive:
+            for pin in pins["bundles"]:
+                row = combined["bundles"][pin["name"]]
+                require(row.get("retail_sha256") == pin["retail_sha256"], "Combined Arrowhead source differs")
+                sites = row.get("sites", [])
+                require(len(sites) == len(pin["sites"]), "Combined Arrowhead site count differs")
+                entry = archive.entries[pin["outer"]]
+                require(entry.name_id == pin["name_id"] and entry.size == pin["size"], "Combined Arrowhead entry differs")
+                data = archive.read(entry.virtual_offset, entry.size)
+                if sha(data) != row.get("applied_sha256"):
+                    return "foreign"
+                for site, original in zip(sites, pin["sites"]):
+                    require(all(site.get(k) == original[k] for k in ("kind", "offset", "size", "retail")),
+                            "Combined Arrowhead receipt escaped its pinned span")
+                    if sha(data[site["offset"]:site["offset"] + site["size"]]) != site.get("applied"):
+                        return "foreign"
+        return "applied"
     with _outer_image()(source) as archive:
         states = {_bundle_state(archive, pin) for pin in pins["bundles"]}
     if states == {"retail"}:
@@ -270,12 +303,15 @@ def verify(source, *, enabled=True):
     return dict(state=state, enabled=enabled, label=LABEL, runtime_witnessed=False, bundles=len(_pins()["bundles"]))
 
 
-def apply_to_image(target, *, progress=None):
+def apply_to_image(target, *, progress=None, retail_source=None):
     """Build-only: target must be the caller's disposable output image (or loose folder)."""
+    from . import nfl2k5_modern_color as colour
+    if colour.read_image_receipt(target) is not None:
+        return apply_combined_to_image(target, retail_source=retail_source, progress=progress)
     pins = _pins()
     say = progress or (lambda message, done, total: None)
     receipt = dict(label=LABEL, runtime_witnessed=False, bundles=[], edits=[])
-    with _outer_image()(target) as archive:
+    with _outer_image()(target, writable=True) as archive:
         todo = []
         for pin in pins["bundles"]:
             state = _bundle_state(archive, pin)
@@ -298,6 +334,76 @@ def apply_to_image(target, *, progress=None):
         say("Modern Arrowhead: done", len(todo), len(todo))
     receipt.update(verify(target, enabled=True))
     return receipt
+
+
+def combined_bundle(retail, graded, *, outer_index, settings=None):
+    """Compose art before colour grading and compress the shared field once."""
+    from . import nfl2k5_modern_color as colour
+    tx, inv, ResourceRecord, HEADER, stw = _tools()
+    require(len(retail) == len(graded), "Combined bundle changed allocation")
+    out = bytearray(graded)
+    edits = []
+    for name, chunk in bundle_plan(retail):
+        size = HEADER.size + chunk.stored_size
+        before = retail[chunk.offset:chunk.offset + size]
+        if name == "field":
+            after, detail = colour.modern_field_scene(before, outer_index=outer_index,
+                                                      settings=settings, modern_arrowhead=True)
+        else:
+            after, detail = modern_scene_span(retail, chunk)
+        require(len(after) == size, "Combined scene escaped its allocation")
+        out[chunk.offset:chunk.offset + size] = after
+        edits.append(dict(kind=name, offset=chunk.offset, size=size,
+                          retail=sha(before), applied=sha(after), detail=detail))
+    return bytes(out), edits
+
+
+def apply_combined_to_image(target, *, retail_source, progress=None):
+    """Add Arrowhead to a verified colour build using its original retail source."""
+    from copy import deepcopy
+    from . import nfl2k5_modern_color as colour
+    previous = colour.read_image_receipt(target)
+    require(previous is not None, "Combined Arrowhead requires a colour receipt")
+    require(colour.image_status(target, receipt=previous) == previous["state"],
+            "Colour bytes differ from their receipt; rebuild from the original retail disc")
+    if previous.get("modern_arrowhead") is not None:
+        return dict(verify(target), already_applied=9, rewritten=0)
+    require(retail_source is not None, "Combined Arrowhead needs the original retail source")
+    say = progress or (lambda message, done, total: None)
+    result = deepcopy(previous)
+    combined = dict(art=art_pins(), bundles={})
+    todo = []
+    with _outer_image()(retail_source) as source, _outer_image()(target) as output:
+        for index, pin in enumerate(_pins()["bundles"]):
+            say(f"Modern Arrowhead and colour: {pin['name']}", index, 9)
+            entry = source.entries[pin["outer"]]
+            require(entry.name_id == pin["name_id"] and entry.size == pin["size"], "Arrowhead source entry differs")
+            retail = source.read(entry.virtual_offset, entry.size)
+            require(sha(retail) == pin["retail_sha256"], "Combined Arrowhead needs the original retail source")
+            target_entry = output.entries[pin["outer"]]
+            graded = output.read(target_entry.virtual_offset, target_entry.size)
+            row = result["bundle_pins"][pin["name"]]
+            require(sha(graded) == row["applied_sha256"], "Colour bundle changed after preflight")
+            after, edits = combined_bundle(retail, graded, outer_index=pin["outer"], settings=previous["settings"])
+            updated = dict(row, applied_sha256=sha(after), sites=[dict(site,
+                applied=sha(after[site["offset"]:site["offset"] + site["size"]])) for site in row["sites"]])
+            result["bundle_pins"][pin["name"]] = updated
+            combined["bundles"][pin["name"]] = dict(retail_sha256=pin["retail_sha256"],
+                applied_sha256=sha(after), sites=[{k:e[k] for k in ("kind", "offset", "size", "retail", "applied")} for e in edits])
+            # Each art span and every colour span must retain its pinned scope.
+            require([(e["kind"], e["offset"], e["size"], e["retail"]) for e in edits] ==
+                    [(s["kind"], s["offset"], s["size"], s["retail"]) for s in pin["sites"]], "Combined Arrowhead scope changed")
+            todo.append((target_entry.virtual_offset, sha(graded), after))
+    # Complete every bounded refit before the first output write.
+    with _outer_image()(target, writable=True) as output:
+        for at, before_hash, after in todo:
+            require(sha(output.read(at, len(after))) == before_hash, "Combined bundle changed before write")
+            require(output.write(at, after) == len(after), "Short combined Arrowhead write")
+            require(output.read(at, len(after)) == after, "Combined Arrowhead read-back differs")
+    result["modern_arrowhead"] = combined
+    require(colour.image_status(target, receipt=result) == result["state"], "Combined colour read-back failed")
+    colour._save_image_receipt(target, result)
+    return dict(verify(target), rewritten=len(todo), already_applied=0)
 
 
 def record_pins(source, out_path=PINS_PATH, *, progress=None):

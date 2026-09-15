@@ -745,7 +745,7 @@ def fit_fixed_span(span, decoded):
     raise tx.TxtrError("cannot keep the retail scratch word: " + "; ".join(attempts))
 
 
-def modern_field_scene(span, *, outer_index=0, settings=None):
+def modern_field_scene(span, *, outer_index=0, settings=None, modern_arrowhead=False):
     """Refit one compressed ``field`` SCNE span with the broadcast grass edits.
 
     Returns (new span, receipt). The span keeps its size and wrapper structure.
@@ -757,7 +757,12 @@ def modern_field_scene(span, *, outer_index=0, settings=None):
     rec, output, record = _scene(span, chunk, outer_index)
     require(rec["name"] == FIELD_SCENE, "the first bundle scene is not the field")
     system = rec["system_bytes"]
-    out = bytearray(output)
+    if modern_arrowhead:
+        from . import nfl2k5_modern_arrowhead as arrowhead
+        painted, _ = arrowhead.paint_scene(span, chunk)
+    else:
+        painted = output
+    out = bytearray(painted)
     doc = normalize_settings(settings)
     receipt = dict(palettes=[], materials=[], vertex_tints=0)
     by_material = {}

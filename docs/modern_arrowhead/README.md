@@ -38,3 +38,9 @@ Untouched (and why): the crowd figures live in the separate `crowds13` scenes (h
 ## Witness list
 
 Play Now at Arrowhead (Chiefs home) at night and by day: red seats and tarps, red wall pads with the gold rail and CHIEFS KINGDOM, the fascia boards, the wall ads, the end zones, the midfield mark, the fan banners. Compare with `before_after_night.png`. None of it has been seen in a running game.
+
+## Combined colour builds
+
+When Modern colour and lighting is enabled alongside Arrowhead, the field scene is authored with the modern marks before its colour transforms and compressed once into its retail allocation. The decoded turf, linked outside grass and vertex tints retain the selected colour recipe. Stadium art retains its separate applied pins. A per-bundle sidecar records both options, and read-back checks complete bundle hashes and every owned scene span. A changed or missing receipt requires the original retail source.
+
+The integration report records the nine-variant offline proof. The combined disc builder is prepared; a played appearance remains UNWITNESSED.

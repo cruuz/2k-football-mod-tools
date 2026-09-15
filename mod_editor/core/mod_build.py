@@ -2139,7 +2139,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if plan.modern_arrowhead:
         arrowhead = _core_module("nfl2k5_modern_arrowhead")
         progress("Modern Arrowhead: stadium packages", 0, 0)
-        arrowhead_receipt = arrowhead.apply_to_image(target, progress=progress)
+        arrowhead_receipt = arrowhead.apply_to_image(target, progress=progress, retail_source=source)
         receipt["steps"].append({"step": "modern_arrowhead", **{k: v for k, v in arrowhead_receipt.items() if k != "edits"}})
         receipt["result"]["modern_arrowhead"] = "applied"
     return receipt

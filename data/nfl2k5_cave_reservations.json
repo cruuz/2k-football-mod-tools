@@ -3,7 +3,7 @@
   "retail_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
   "complete": true,
   "stack_image_size": 21999616,
-  "model": "BOUNDED BETA-71 S3 XBE PROJECTION; retained historical retail reservations and freshly observed complete forward XBE stack; no disc build",
+  "model": "BOUNDED BETA-71 A6 XBE PROJECTION; retained historical retail reservations and freshly observed complete forward XBE stack; no disc build",
   "preset": "softdrink_experimental",
   "preset_values": {
     "scorebug_runtime": false,
@@ -164,7 +164,7 @@
   "disc_size": 6300499968,
   "disc_xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
   "preset_xbe_sha256": "050d1193695d249c14ddd0311071c903d7e983d9a8ba5652ad1a0e64233a3039",
-  "stack_xbe_sha256": "36c49fdf6fe344a280efa66d11ec950d92bdb1a8bd3d3ba4d58ee9d580d63448",
+  "stack_xbe_sha256": "015649d4df9a2b97940d7af275f6bdc333a17a96839c89de22afcc916534b6f7",
   "section_digests_verified": true,
   "allocator_layout": {
     "status": "applied",
@@ -2197,7 +2197,7 @@
     "all_stadiums"
   ],
   "source_sha256": {
-    "mod_editor/core/mod_build.py": "1607ab241b172b9cc0474c38c3ec28ee93660e39b56acce9e8779b98911fbbf0",
+    "mod_editor/core/mod_build.py": "29504a798c6966c2eefb8641f608140c9ed33d4ce79f6d3dfaa12a73714248cc",
     "mod_editor/core/nfl2k5_abilities_editor.py": "2d888091a09ae5d5093959d9992e02b41fbd27878de231e9060818bd2e89e648",
     "mod_editor/core/nfl2k5_abilities_runtime.py": "9a4de702d6daf475df990f47f787c7b554451e11648f14d3082ab84aa954f41a",
     "mod_editor/core/nfl2k5_abilities_runtime_code.py": "30da3adf1c622a8a650e090e0380e4cf23e725b8215d0e79dd2acf03270d370f",
@@ -2223,7 +2223,7 @@
     "mod_editor/core/nfl2k5_ausb_fixed_slots.py": "56a39ad842d3552dd26e2089d3c859cba8b59fd61701e63f2f9265db20422d4a",
     "mod_editor/core/nfl2k5_boot_logo.py": "c767db7cdcc7dcf363a3a78547bcc251004980bc696300b3a8a3d283482fbdaa",
     "mod_editor/core/nfl2k5_build_service.py": "3a92a92a018809d4217c0cbe548b45dfa46434d64f16c98565babbcb87b55cd0",
-    "mod_editor/core/nfl2k5_build_settings.py": "bf578257897988e6efcf9942495537a32190f748e9bf89c935c0f971274affb9",
+    "mod_editor/core/nfl2k5_build_settings.py": "c2f14dd6cd0b0a8036824f88760c1688a2367b24423b4e526294e023fda05d94",
     "mod_editor/core/nfl2k5_bump_strength.py": "79f9264fbe0813db9be66f22e35f8944e35b92ae415132d819eda50920e41bb0",
     "mod_editor/core/nfl2k5_bump_texture_writer.py": "0885fce320661a37c342466c33afc71803f6a8c73057775d014c3c6d509eac3a",
     "mod_editor/core/nfl2k5_calendar_engine.py": "796246b2248eddda3a0e57ed791b53cc1446fe3a3128ad39397ababe873ab841",
@@ -2306,7 +2306,8 @@
     "mod_editor/core/nfl2k5_model_project_session.py": "8594950fc66170d1d082538c578d2ee5ac211c3f055322d684f48f431839de23",
     "mod_editor/core/nfl2k5_model_skeleton.py": "feaff8bb682d51d6b62c23cb955ccaf5b9a149f9e2948d7ee4f219200cd7f0ee",
     "mod_editor/core/nfl2k5_models.py": "8b2e86bd0e6f2ba8d192bcdb452bc8e45fc38a4a0af8a95350a0e2f816bc6176",
-    "mod_editor/core/nfl2k5_modern_color.py": "8ad6598a7d1e1aeddf6b430e9b4c9c872af32a198188eca830938c83f137a5cb",
+    "mod_editor/core/nfl2k5_modern_arrowhead.py": "8c05ccc48b1ad155f126e79e9cce03ab9853b0d068937150dfb1f3ba23c3ee3a",
+    "mod_editor/core/nfl2k5_modern_color.py": "4f69c89f99cf78971a4daf1c7d4f34c6d575261e60f61bb74b7f550e30a6686a",
     "mod_editor/core/nfl2k5_modern_naming.py": "517f44b88799817d5c036605cbd3cf1a4baa06cbfa50ed4ee706c0a38b80701f",
     "mod_editor/core/nfl2k5_modern_positions.py": "f2bbb8ca3dcc78c6a16e1f70b3cb4858e95383daf817333dc2d37ac3d624c8e5",
     "mod_editor/core/nfl2k5_momentum.py": "2746d12c7950c96cd0400bb59c33a413294b5ac3d4563874727cc32378981cce",
@@ -2469,6 +2470,7 @@
     "tools/nfl2k5_match_coverage.py": "e780ee75a3995a34048ab7d5f7a4b8e64893c011592040f3a8b8b9df72960d32",
     "tools/nfl2k5_model_skeleton_blender_witness.py": "ccbd0344cd27246730e86e958738ce242de40f79d4bb91ca0301f768d8aa72fa",
     "tools/nfl2k5_model_skeleton_validate.py": "6e2fe86c21f519e11711c20c09fe622ec8b69fcb87927e8ab3bcfa8d8df6d63f",
+    "tools/nfl2k5_modern_arrowhead_art.py": "16a756ff50c6ca1da304b088c28d271d4cc497eb1d2f8afd91ccbc60687cae64",
     "tools/nfl2k5_modern_names_generate.py": "14d70bb9a3358db85790c11d1444cc31fc476a3a5bd1278a0cdcb31b2001eaaf",
     "tools/nfl2k5_modern_rules.py": "59f798d8d7996c206461de914234f1f0b987881366ba2055a18beba3d31178f9",
     "tools/nfl2k5_modpack.py": "73ff35e691719a6b81e1d066410ce28ee81a970d4a863a8f9ad2b9d1f005ee80",
@@ -113627,15 +113629,11 @@
       "owner": "nfl2k5_modern_color",
       "function": "apply",
       "before_sha256": "ff6384385739a5bb9e817b6f62c284e59867383b0c93180eb53a3effd1fc0e1d",
-      "after_sha256": "36c49fdf6fe344a280efa66d11ec950d92bdb1a8bd3d3ba4d58ee9d580d63448",
-      "changed_bytes": 278,
+      "after_sha256": "015649d4df9a2b97940d7af275f6bdc333a17a96839c89de22afcc916534b6f7",
+      "changed_bytes": 289,
       "file_runs": [
         [
           "0x634",
-          "0x645"
-        ],
-        [
-          "0x646",
           "0x648"
         ],
         [
@@ -113648,7 +113646,7 @@
         ],
         [
           "0x4dc8e0",
-          "0x4dc8e4"
+          "0x4dc8e3"
         ],
         [
           "0x4dc8f4",
@@ -113659,20 +113657,20 @@
           "0x4dc8fb"
         ],
         [
+          "0x4dc910",
+          "0x4dc913"
+        ],
+        [
           "0x4dc930",
-          "0x4dc933"
-        ],
-        [
-          "0x4dc934",
-          "0x4dc937"
-        ],
-        [
-          "0x4dc938",
           "0x4dc93b"
         ],
         [
           "0x4dc950",
-          "0x4dc953"
+          "0x4dc954"
+        ],
+        [
+          "0x4dc9d0",
+          "0x4dc9d3"
         ],
         [
           "0x4dc9f0",
@@ -113932,7 +113930,7 @@
         ],
         [
           "0x4dcfa0",
-          "0x4dcfa3"
+          "0x4dcfa4"
         ],
         [
           "0x4dcfb4",
@@ -113948,19 +113946,31 @@
         ],
         [
           "0x4dcff0",
-          "0x4dcff8"
+          "0x4dcff3"
+        ],
+        [
+          "0x4dcff4",
+          "0x4dcff7"
         ],
         [
           "0x4dd010",
-          "0x4dd013"
+          "0x4dd014"
         ],
         [
           "0x4dd030",
-          "0x4dd038"
+          "0x4dd033"
+        ],
+        [
+          "0x4dd034",
+          "0x4dd037"
         ],
         [
           "0x4dd050",
-          "0x4dd053"
+          "0x4dd054"
+        ],
+        [
+          "0x4dd090",
+          "0x4dd093"
         ]
       ]
     },
@@ -115673,13 +115683,6 @@
     },
     {
       "start": "0x10634",
-      "end": "0x10645",
-      "size": 17,
-      "owner": "nfl2k5_modern_color",
-      "basis": "observed byte diff"
-    },
-    {
-      "start": "0x10634",
       "end": "0x10646",
       "size": 18,
       "owner": "nfl2k5_team_column",
@@ -115893,13 +115896,6 @@
       "end": "0x10648",
       "size": 3,
       "owner": "nfl2k5_franchise_practice",
-      "basis": "observed byte diff"
-    },
-    {
-      "start": "0x10646",
-      "end": "0x10648",
-      "size": 2,
-      "owner": "nfl2k5_modern_color",
       "basis": "observed byte diff"
     },
     {
@@ -134124,13 +134120,6 @@
       "basis": "observed byte diff"
     },
     {
-      "start": "0x4e73c0",
-      "end": "0x4e73c4",
-      "size": 4,
-      "owner": "nfl2k5_modern_color",
-      "basis": "observed byte diff"
-    },
-    {
       "start": "0x4e73d4",
       "end": "0x4e73d7",
       "size": 3,
@@ -134159,6 +134148,13 @@
       "basis": "observed byte diff"
     },
     {
+      "start": "0x4e7410",
+      "end": "0x4e741b",
+      "size": 11,
+      "owner": "nfl2k5_modern_color",
+      "basis": "observed byte diff"
+    },
+    {
       "start": "0x4e7414",
       "end": "0x4e7417",
       "size": 3,
@@ -134175,6 +134171,20 @@
     {
       "start": "0x4e7430",
       "end": "0x4e7433",
+      "size": 3,
+      "owner": "nfl2k5_modern_color",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x4e7430",
+      "end": "0x4e7434",
+      "size": 4,
+      "owner": "nfl2k5_modern_color",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x4e74b0",
+      "end": "0x4e74b3",
       "size": 3,
       "owner": "nfl2k5_modern_color",
       "basis": "observed byte diff"
@@ -134733,6 +134743,13 @@
       "basis": "observed byte diff"
     },
     {
+      "start": "0x4e7a80",
+      "end": "0x4e7a84",
+      "size": 4,
+      "owner": "nfl2k5_modern_color",
+      "basis": "observed byte diff"
+    },
+    {
       "start": "0x4e7a94",
       "end": "0x4e7a97",
       "size": 3,
@@ -134755,14 +134772,42 @@
     },
     {
       "start": "0x4e7ad0",
+      "end": "0x4e7ad3",
+      "size": 3,
+      "owner": "nfl2k5_modern_color",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x4e7ad0",
       "end": "0x4e7ad8",
       "size": 8,
       "owner": "nfl2k5_modern_color",
       "basis": "observed byte diff"
     },
     {
+      "start": "0x4e7ad4",
+      "end": "0x4e7ad7",
+      "size": 3,
+      "owner": "nfl2k5_modern_color",
+      "basis": "observed byte diff"
+    },
+    {
       "start": "0x4e7af0",
       "end": "0x4e7af3",
+      "size": 3,
+      "owner": "nfl2k5_modern_color",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x4e7af0",
+      "end": "0x4e7af4",
+      "size": 4,
+      "owner": "nfl2k5_modern_color",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x4e7b10",
+      "end": "0x4e7b13",
       "size": 3,
       "owner": "nfl2k5_modern_color",
       "basis": "observed byte diff"
@@ -134775,8 +134820,29 @@
       "basis": "observed byte diff"
     },
     {
+      "start": "0x4e7b14",
+      "end": "0x4e7b17",
+      "size": 3,
+      "owner": "nfl2k5_modern_color",
+      "basis": "observed byte diff"
+    },
+    {
       "start": "0x4e7b30",
       "end": "0x4e7b33",
+      "size": 3,
+      "owner": "nfl2k5_modern_color",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x4e7b30",
+      "end": "0x4e7b34",
+      "size": 4,
+      "owner": "nfl2k5_modern_color",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x4e7b70",
+      "end": "0x4e7b73",
       "size": 3,
       "owner": "nfl2k5_modern_color",
       "basis": "observed byte diff"
@@ -206259,13 +206325,14 @@
       "basis": "observed byte diff"
     }
   ],
-  "b71_s3_projection": {
+  "b71_a6_projection": {
     "release_manifest": false,
     "disc_built": false,
     "runtime_witnessed": false,
     "parent_manifest_sha256": "0194b6416e3243a17cf536742b60a3f354cc1d530078d3ff50276bdcccefe71a",
     "parent_disc_fields_are_historical": true,
     "changed_sources": [
+      "mod_editor/core/mod_build.py",
       "mod_editor/core/nfl2k5_modern_color.py",
       "mod_editor/core/nfl2k5_scorebug_exact.py",
       "mod_editor/core/nfl2k5_scorebug_resources.py",
@@ -206276,6 +206343,9 @@
       "mod_editor/core/nfl2k5_roster_records.py": "roster reader; no XBE mutation",
       "mod_editor/core/nfl2k5_my_career_save.py": "footer codec; bounded native/host round-trip tests",
       "mod_editor/core/nfl2k5_my_career.py": "binder prerequisite/helper used by observed mode writer",
+      "mod_editor/core/nfl2k5_build_settings.py": "saved colour and Arrowhead options; no XBE write",
+      "mod_editor/core/nfl2k5_modern_arrowhead.py": "pack scene art and combined colour composition; no XBE write",
+      "tools/nfl2k5_modern_arrowhead_art.py": "offline bitmap author; no XBE write",
       "mod_editor/core/nfl2k5_scorebug_exact.py": "scene geometry and atlas author; validated by native rendering and compiler suites",
       "mod_editor/core/nfl2k5_scorebug_mnf_font.py": "pack FONT author; private lookup and relocation covered by native font suites",
       "mod_editor/core/nfl2k5_scorebug_resources.py": "pack compiler; validated by collection loader and resource suites"
@@ -252584,15 +252654,11 @@
         "owner": "nfl2k5_modern_color",
         "function": "apply",
         "before_sha256": "ff6384385739a5bb9e817b6f62c284e59867383b0c93180eb53a3effd1fc0e1d",
-        "after_sha256": "36c49fdf6fe344a280efa66d11ec950d92bdb1a8bd3d3ba4d58ee9d580d63448",
-        "changed_bytes": 278,
+        "after_sha256": "015649d4df9a2b97940d7af275f6bdc333a17a96839c89de22afcc916534b6f7",
+        "changed_bytes": 289,
         "file_runs": [
           [
             "0x634",
-            "0x645"
-          ],
-          [
-            "0x646",
             "0x648"
           ],
           [
@@ -252605,7 +252671,7 @@
           ],
           [
             "0x4dc8e0",
-            "0x4dc8e4"
+            "0x4dc8e3"
           ],
           [
             "0x4dc8f4",
@@ -252616,20 +252682,20 @@
             "0x4dc8fb"
           ],
           [
+            "0x4dc910",
+            "0x4dc913"
+          ],
+          [
             "0x4dc930",
-            "0x4dc933"
-          ],
-          [
-            "0x4dc934",
-            "0x4dc937"
-          ],
-          [
-            "0x4dc938",
             "0x4dc93b"
           ],
           [
             "0x4dc950",
-            "0x4dc953"
+            "0x4dc954"
+          ],
+          [
+            "0x4dc9d0",
+            "0x4dc9d3"
           ],
           [
             "0x4dc9f0",
@@ -252889,7 +252955,7 @@
           ],
           [
             "0x4dcfa0",
-            "0x4dcfa3"
+            "0x4dcfa4"
           ],
           [
             "0x4dcfb4",
@@ -252905,19 +252971,31 @@
           ],
           [
             "0x4dcff0",
-            "0x4dcff8"
+            "0x4dcff3"
+          ],
+          [
+            "0x4dcff4",
+            "0x4dcff7"
           ],
           [
             "0x4dd010",
-            "0x4dd013"
+            "0x4dd014"
           ],
           [
             "0x4dd030",
-            "0x4dd038"
+            "0x4dd033"
+          ],
+          [
+            "0x4dd034",
+            "0x4dd037"
           ],
           [
             "0x4dd050",
-            "0x4dd053"
+            "0x4dd054"
+          ],
+          [
+            "0x4dd090",
+            "0x4dd093"
           ]
         ]
       },
