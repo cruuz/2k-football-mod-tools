@@ -274,6 +274,33 @@ class PlayCallingService:
                 raise ValidationError("An earlier book edit changed; undo or revert CPU Play Calling and review again")
         return state
 
+    def rebase_membership(self, session, modifications):
+        """Replay authored requests after an explicit Fine-tune transaction.
+
+        First validate the old receipts against the old inputs. Recompute them
+        only for the proposed membership changes, before the session mutates.
+        A failed replay leaves both the book edits and CPU recipe untouched.
+        """
+        from types import SimpleNamespace
+        events = self.events(session)
+        if not events:
+            return modifications
+        self.state(session)
+        proposed = SimpleNamespace(source=session.source, modifications=tuple(modifications.values()),
+                                   staged_splb_changes=lambda: session._active_splb_changes(modifications))
+        state = self.backend.load(proposed)
+        refreshed = []
+        for event in events:
+            state, fresh = self.apply(state, event["request"], session.source.index_0a)
+            if fresh["warning"] and self.backend.lineup_callers != "non_cpu":
+                raise ValidationError(fresh["warning"])
+            refreshed.append(fresh)
+        payload = json_bytes({"schema": SCHEMA, "events": refreshed})
+        validate_payload(payload, SELECTOR, {"schema": SCHEMA})
+        sha = digest(payload)
+        path = session._store_payload(sha, payload, ".json")
+        return {**modifications, SELECTOR: Modification(SELECTOR, PROVIDER_KIND, path, sha, {"schema": SCHEMA})}
+
     def plan(self, session, side, team=None, donor=None):
         state = self.state(session)
         rows = [assignment_row(r) for r in self.backend.clone.own_book_plan(session.source.index_0a, state.rost, side)]
@@ -305,7 +332,9 @@ class PlayCallingService:
                          if e["request"]["kind"] == "scheme" and e["request"]["team"] == team), None)
         state = context["state"]
         return spreadsheet(state.books[context["book"]], state.master, context["preview_tendency"],
-                           team_name=context["team"]["team_name"], scheme_id=selected)
+                           team_name="Book preview, independent of team" if book is not None else context["team"]["team_name"],
+                           scheme_id=selected if book is None or context["team"]["offense"] == book else None,
+                           preview_only=book is not None)
 
     def facts(self, state, request):
         b = self.backend

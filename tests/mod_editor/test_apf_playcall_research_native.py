@@ -444,6 +444,19 @@ class NativePlaycallTests(unittest.TestCase):
                 self.assertEqual([c for c, _ in weights], [c for c, _ in expected], bucket.name)
                 for (category, actual), (_, weight) in zip(weights, expected):
                     self.assertAlmostEqual(actual, weight, delta=1e-6, msg=str((bucket.name, category)))
+                    captured = []
+                    def capture(z):
+                        count = z.reg(4)
+                        weights = struct.unpack('>' + str(count) + 'f', z.cpu.mem_read(z.reg(3), count * 4))
+                        captured.extend(((z.get(z.reg(1) + 0xF0 + i * 4) - MASTER - 0x244) // 184, weight)
+                                        for i, weight in enumerate(weights))
+                    m.observers[m.va(0x84863388)] = capture
+                    m.call(m.va(0x848693F8), MANAGER, 14, MASTER + 0x44 + category * 16, 0, 0)
+                    del m.observers[m.va(0x84863388)]
+                    expected_forms = model.formation_weights(self.books[130].body, self.master, category, s)
+                    self.assertEqual([f for f, _ in captured], [f for f, _ in expected_forms])
+                    for (_, actual), (_, weight) in zip(captured, expected_forms):
+                        self.assertAlmostEqual(actual, weight, delta=1e-6, msg=str((bucket.name, category)))
                 observed.append((updated, bucket.name, row, chosen))
         first = {name: (row, chosen) for updated, name, row, chosen in observed if not updated}
         self.assertEqual(first['Openers'], first['1st and 10'])

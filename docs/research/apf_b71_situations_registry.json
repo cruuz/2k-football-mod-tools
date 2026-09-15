@@ -1,0 +1,339 @@
+[
+  {
+    "backend": {
+      "command": "python3 -m mod_editor.apf_studio.playcalling_service --game-folder <folder> --project <project.apf2k8mod> --output <new-folder>",
+      "module": "mod_editor/apf_studio/playcalling_service.py",
+      "operation": "write"
+    },
+    "classification": "offline-writer-proved",
+    "evidence": [
+      "tests/mod_editor/test_apf_playcalling_editor_facade.py",
+      "docs/mod_editor/apf_b67_play_calling_editor.md",
+      "docs/research/apf_b71_situations.md",
+      "tests/mod_editor/test_apf_b71_situations.py",
+      "tests/mod_editor/test_apf_playcall_research_native.py",
+      "tests/mod_editor/test_apf_playcalling_editor_qt.py"
+    ],
+    "game": "apf2k8_xbox360",
+    "gui": {
+      "default_enabled": false,
+      "expose": true,
+      "mode": "edit",
+      "reason": "Book selection drives the preview. Team selection is separate. Shared membership edits and removals are explicit, never staged by a preset. Duplicate Book Identity editing is hidden."
+    },
+    "id": "apf2k8.playbooks.cpu_playcalling",
+    "input_constraints": [
+      "A loaded APF source and the integrated beta-67 P3 model/writers are required. No production substitutes are supplied.",
+      "Book choices resolve by name; project replay checks reviewed before/after facts and refuses conflicts.",
+      "MASTER and curve changes affect every book; personnel retirement with uncovered rows is refused until P3 classifies the lineup callers as non-CPU.",
+      "The 23 buckets are representative queries, not stored formation lists. Membership and removal affect all situations in that book; no independent per-situation runtime exclusion is claimed."
+    ],
+    "portme": [
+      "Implement and prove a separate runtime selector and exclusion gate before claiming independent per-situation whitelists.",
+      "Witness final on-field personnel and built-book consumption with loaded save/USER state recorded."
+    ],
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Ship authored code and logical selectors only. Retail books, executable images and reconstructed title updates remain private.",
+      "tooling": "source-and-schemas-only"
+    },
+    "runtime": {
+      "evidence": [],
+      "scope": "PROVED pinned BASE/TU bounded ordinary call tuples and shared data gates, with 26 native cases. Final lineup building, USER overlay lifecycle and later substitutions remain UNWITNESSED.",
+      "status": "not-tested"
+    },
+    "selectors": {
+      "fields": [
+        {
+          "allowed": "24 retail teams; named offense/defense books, including stock, USER and global donors",
+          "name": "team_and_book",
+          "required": true
+        }
+      ],
+      "notes": "The facade stages one authored recipe containing ordered, undoable edit receipts; the copied-game builder applies it after existing asset edits."
+    },
+    "source_container": {
+      "format": "APF SPLB, MASTER PLAY and ROST; authored Xenia TOML for patches",
+      "hash_pins": [],
+      "resource": "Team book assignments, named books and MASTER personnel",
+      "retail_file": "User-owned All-Pro Football 2K8 (USA) extracted game folder"
+    },
+    "summary": "Select CPU, USER or global books directly; inspect all 23 offensive situation proxies and personnel TE counts; explicitly add, edit or remove ordinary formations from shared book data, preview, save and build. Independent per-situation whitelists are not implemented.",
+    "surface": "scripts_config",
+    "title": "CPU Play Calling editor",
+    "validation_command": "python3 -m tests.mod_editor.test_apf_playcalling_editor_facade"
+  },
+  {
+    "backend": {
+      "command": "python3 tools/apf_book_unlock.py identity --source <0A>",
+      "module": "tools/apf_book_unlock.py",
+      "operation": "inspect"
+    },
+    "classification": "read-only-mapped",
+    "evidence": [
+      "docs/mod_editor/apf_wave_2026_09_09.md",
+      "docs/mod_editor/apf_b661_cpu_book_control.md",
+      "docs/research/apf_b71_situations.md",
+      "tests/mod_editor/test_apf_b71_situations.py",
+      "tests/mod_editor/test_apf_playcall_research_native.py",
+      "tests/mod_editor/test_apf_playcalling_editor_qt.py"
+    ],
+    "game": "apf2k8_xbox360",
+    "gui": {
+      "default_enabled": true,
+      "expose": true,
+      "mode": "view",
+      "reason": "One-line navigation to CPU Play Calling; redundant book and scheme controls are hidden in the integrated studio."
+    },
+    "id": "apf2k8.playbooks.identity",
+    "input_constraints": [
+      "Use a separate new destination; source game files remain read-only.",
+      "Reject malformed ownership, hash collisions, shared clone labels, occupied directory slack, IFF overflow, and H7A length greater than distance.",
+      "Only existing plays/formations are used; no CPU situational frequency, WR depth flip, true RPO, or TU compatibility is established."
+    ],
+    "portme": [
+      "Witness base-XEX loading and per-team cloned-book consumption; reconstruct TU resolver before claiming TU compatibility."
+    ],
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Distribute JSON selectors and tooling; each user builds from their own game. Never bundle copied game outputs.",
+      "tooling": "source-and-schemas-only"
+    },
+    "runtime": {
+      "evidence": [],
+      "scope": "Gameplay UNWITNESSED. BASE bounded personnel picker/record lookup is proved for the documented Queens retirement; expanded archive loading and TU compatibility remain unproved.",
+      "status": "not-tested"
+    },
+    "selectors": {
+      "fields": [
+        {
+          "allowed": "user-owned APF game index",
+          "name": "source",
+          "required": true
+        }
+      ],
+      "notes": "Reparse each team label and resolved resource; report shared real books and unresolved types."
+    },
+    "source_container": {
+      "format": "APF AA00B3BF four-volume archive, IFF/H7A, SPLB and ROST",
+      "hash_pins": [
+        "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf"
+      ],
+      "resource": "filename-addressed book resources and root[11] labels; root[4] team pointers",
+      "retail_file": "user-owned extracted APF Xbox 360 game folder"
+    },
+    "summary": "Inspect serialized book identity through the underlying tools; the integrated Book Identity tab points to CPU Play Calling for book selection, copies and edits.",
+    "surface": "scripts_config",
+    "title": "Book Identity",
+    "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
+  },
+  {
+    "backend": {
+      "command": "python3 -m mod_editor.apf_studio.playcalling_service --game-folder <folder> --project <project.apf2k8mod> --output <new-folder>",
+      "module": "mod_editor/apf_studio/playcalling_service.py",
+      "operation": "write"
+    },
+    "classification": "offline-writer-proved",
+    "evidence": [
+      "docs/mod_editor/apf_b69_schemes.md",
+      "ASTRA_B69_J9_REPORT.md",
+      "tests/mod_editor/test_apf_b69_schemes.py",
+      "tests/mod_editor/test_apf_b69_editor_qt.py",
+      "tests/mod_editor/test_apf_b69_build.py",
+      "tests/mod_editor/test_apf_b69_native.py",
+      "docs/research/apf_b71_situations.md",
+      "tests/mod_editor/test_apf_b71_situations.py",
+      "tests/mod_editor/test_apf_playcall_research_native.py",
+      "tests/mod_editor/test_apf_playcalling_editor_qt.py"
+    ],
+    "game": "apf2k8_xbox360",
+    "gui": {
+      "default_enabled": false,
+      "expose": false,
+      "mode": "edit",
+      "reason": "Legacy recipes remain loadable and scriptable; duplicate scheme controls are hidden from the integrated book workflow. Nothing is staged automatically."
+    },
+    "id": "apf2k8.playbooks.offensive_schemes",
+    "input_constraints": [
+      "User-owned loaded APF archive with named SPLB, MASTER and ROST resources; no retail bytes enter project recipes.",
+      "Preview has the beta-67 cold, empty-history/null-player boundary; saved USER books and global merges need a game witness.",
+      "Eight interpretations authored from general football knowledge without network research; category and formation rating effects are coupled through existing records.",
+      "Twenty-two situation bytes feed an optional tendency cache; only the overall run tendency is a direct team slider in the ordinary preview. No tempo, snap-count, weather-ratio or coin-toss policy is authored.",
+      "Shared book is cloned for the selected team; aliased team tendency pointers are refused. Reapplying adds deltas again."
+    ],
+    "portme": [
+      "Retest the current book workflow in ASTRA_REPORT.md before promoting any runtime claim."
+    ],
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Ship authored code and logical selectors only. Retail books, executable images and reconstructed title updates remain private.",
+      "tooling": "source-and-schemas-only"
+    },
+    "runtime": {
+      "evidence": [],
+      "scope": "All in-game outcomes UNWITNESSED. Offline real-writer and bounded native execution prove only the explicitly reported input states.",
+      "status": "not-tested"
+    },
+    "selectors": {
+      "fields": [
+        {
+          "allowed": "24 retail teams; named offense/defense books, including stock, USER and global donors",
+          "name": "team_and_book",
+          "required": true
+        },
+        {
+          "allowed": "air_coryell, erhardt_perkins, west_coast, west_coast_spread, spread_to_run, wide_zone, power_gap, pro_spread",
+          "name": "scheme",
+          "required": true
+        }
+      ],
+      "notes": "The facade stages one authored recipe containing ordered, undoable edit receipts; the copied-game builder applies it after existing asset edits."
+    },
+    "source_container": {
+      "format": "APF SPLB, MASTER PLAY and ROST; authored Xenia TOML for patches",
+      "hash_pins": [],
+      "resource": "Team book assignments, named books and MASTER personnel",
+      "retail_file": "User-owned All-Pro Football 2K8 (USA) extracted game folder"
+    },
+    "summary": "Apply one of eight authored schemes to a team with a reviewed private-book plan, current-book personnel preferences, ratings and ROST tendencies; preview, Undo and copied Build. Gameplay UNWITNESSED.",
+    "surface": "scripts_config",
+    "title": "Offensive schemes (ADVANCED)",
+    "validation_command": "python3 -m tests.mod_editor.test_apf_b69_schemes"
+  },
+  {
+    "backend": {
+      "command": "python3 tools/apf_book_unlock.py preset --source <0A> --preset <wide-zone|spread-to-run|pro-power> --output <new-game>",
+      "module": "tools/apf_book_unlock.py",
+      "operation": "write"
+    },
+    "classification": "offline-writer-proved",
+    "evidence": [
+      "docs/mod_editor/apf_wave_2026_09_09.md",
+      "docs/mod_editor/apf_b661_cpu_book_control.md",
+      "docs/mod_editor/apf2k8_book_identity_walkthrough.md",
+      "docs/research/apf_b71_situations.md",
+      "tests/mod_editor/test_apf_b71_situations.py",
+      "tests/mod_editor/test_apf_playcall_research_native.py",
+      "tests/mod_editor/test_apf_playcalling_editor_qt.py"
+    ],
+    "game": "apf2k8_xbox360",
+    "gui": {
+      "default_enabled": false,
+      "expose": false,
+      "mode": "edit",
+      "reason": "Legacy recipes remain loadable and scriptable; duplicate scheme controls are hidden from the integrated book workflow. Nothing is staged automatically."
+    },
+    "id": "apf2k8.playbooks.scheme_presets",
+    "input_constraints": [
+      "Use a separate new destination; source game files remain read-only.",
+      "Reject malformed ownership, hash collisions, shared clone labels, occupied directory slack, IFF overflow, and H7A length greater than distance.",
+      "Only existing plays/formations are used; no CPU situational frequency, WR depth flip, true RPO, or TU compatibility is established.",
+      "Stock replacement must fit the existing allocation, cover ordinary personnel rows and have no conflicting Fine-tune selectors. All users of the shared target receive the change."
+    ],
+    "portme": [
+      "Witness base-XEX loading and per-team cloned-book consumption; reconstruct TU resolver before claiming TU compatibility."
+    ],
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Distribute JSON selectors and tooling; each user builds from their own game. Never bundle copied game outputs.",
+      "tooling": "source-and-schemas-only"
+    },
+    "runtime": {
+      "evidence": [],
+      "scope": "Gameplay UNWITNESSED. BASE bounded personnel picker/record lookup is proved for the documented Queens retirement; expanded archive loading and TU compatibility remain unproved.",
+      "status": "not-tested"
+    },
+    "selectors": {
+      "fields": [
+        {
+          "allowed": "wide-zone, spread-to-run, pro-power",
+          "name": "preset",
+          "required": true
+        }
+      ],
+      "notes": "Existing copy recipes retain their CLI. Book Identity also calls scheme_service.stage_replacement with a stock book name and one of eight beta-69 scheme IDs; it replaces the entire donor content and retains donor special-call tails. Existing target membership is not merged."
+    },
+    "source_container": {
+      "format": "APF AA00B3BF four-volume archive, IFF/H7A, SPLB and ROST",
+      "hash_pins": [
+        "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf"
+      ],
+      "resource": "filename-addressed book resources and root[11] labels; root[4] team pointers",
+      "retail_file": "user-owned extracted APF Xbox 360 game folder"
+    },
+    "summary": "Book Identity offers three copy recipes and opt-in replacement of any of eight stock offensive books with beta-69 scheme starting content. Whole-content reparse and fixed-allocation refusal precede staging; gameplay UNWITNESSED.",
+    "surface": "scripts_config",
+    "title": "Starting recipes and stock book replacement",
+    "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
+  },
+  {
+    "backend": {
+      "command": "python3 -m mod_editor.apf_studio.playcalling_service --game-folder <folder> --project <project.apf2k8mod> --spreadsheet-team <0..23> --output <new.csv>",
+      "module": "mod_editor/apf_studio/playcalling_service.py",
+      "operation": "export"
+    },
+    "classification": "extract-only",
+    "evidence": [
+      "docs/mod_editor/apf_b69_schemes.md",
+      "ASTRA_B69_J9_REPORT.md",
+      "tests/mod_editor/test_apf_b69_schemes.py",
+      "tests/mod_editor/test_apf_b69_editor_qt.py",
+      "docs/research/apf_b71_situations.md",
+      "tests/mod_editor/test_apf_b71_situations.py",
+      "tests/mod_editor/test_apf_playcall_research_native.py",
+      "tests/mod_editor/test_apf_playcalling_editor_qt.py"
+    ],
+    "game": "apf2k8_xbox360",
+    "gui": {
+      "default_enabled": false,
+      "expose": true,
+      "mode": "export",
+      "reason": "Export beside the situation candidate editor; the CSV names the selected book and preview run share."
+    },
+    "id": "apf2k8.playbooks.scheme_spreadsheet",
+    "input_constraints": [
+      "User-owned loaded APF archive with named SPLB, MASTER and ROST resources; no retail bytes enter project recipes.",
+      "Preview has the beta-67 cold, empty-history/null-player boundary; saved USER books and global merges need a game witness.",
+      "Openers and sudden change share the ordinary down/distance row; four red-zone bands have no independent rows. 2pt is only a scrimmage proxy; special calls and history are not predicted.",
+      "No scripted sequence is installed; requested pick counts and run-by-row intent remain planning annotations."
+    ],
+    "portme": [
+      "Retest the current book workflow in ASTRA_REPORT.md before promoting any runtime claim."
+    ],
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Ship authored code and logical selectors only. Retail books, executable images and reconstructed title updates remain private.",
+      "tooling": "source-and-schemas-only"
+    },
+    "runtime": {
+      "evidence": [],
+      "scope": "All in-game outcomes UNWITNESSED. Offline real-writer and bounded native execution prove only the explicitly reported input states.",
+      "status": "not-tested"
+    },
+    "selectors": {
+      "fields": [
+        {
+          "allowed": "24 retail teams; named offense/defense books, including stock, USER and global donors",
+          "name": "team_and_book",
+          "required": true
+        }
+      ],
+      "notes": "The facade stages one authored recipe containing ordered, undoable edit receipts; the copied-game builder applies it after existing asset edits."
+    },
+    "source_container": {
+      "format": "APF SPLB, MASTER PLAY and ROST; authored Xenia TOML for patches",
+      "hash_pins": [],
+      "resource": "Team book assignments, named books and MASTER personnel",
+      "retail_file": "User-owned All-Pro Football 2K8 (USA) extracted game folder"
+    },
+    "summary": "Export the selected staged offensive book with a team-independent preview run share and 23 labeled situation proxies; no independent per-situation list or on-field guarantee.",
+    "surface": "scripts_config",
+    "title": "Play call spreadsheet",
+    "validation_command": "python3 -m tests.mod_editor.test_apf_b69_schemes"
+  }
+]

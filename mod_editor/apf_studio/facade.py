@@ -1386,7 +1386,7 @@ class ApfStudioFacade:
         with self._session_lock:
             progress("Checking the stock playbook edits", 0, 1)
             result = self.require_session().apply_splb_membership_batch(
-                changes, replace_outer=replace_outer
+                changes, replace_outer=replace_outer, playcalling_engine=self._playcalling
             )
             progress("Stock playbook edits staged", 1, 1)
             self.last_build = None

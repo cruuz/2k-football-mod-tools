@@ -37,6 +37,56 @@ class RefitTests(unittest.TestCase):
 
 
 class BookWorkflowTests(FacadeFixture):
+    def membership_backend(self):
+        self.backend.splb.formation_ratings = splb.formation_ratings
+        book = splb.parse_book(self.backend.initial.books["O-ManBlock"], 130)
+        def load(session):
+            state = self.backend.initial.copy()
+            changes = session.staged_splb_changes()
+            if changes:
+                state.books["O-ManBlock"] = splb.compile_book(book, changes).replacement
+            return state
+        self.backend.load = load
+        changes = [splb.MembershipChange(130, 2, p, True) for p in (10, 11, 12, 13, 14)]
+        changes.append(splb.TrailerReplace(130, 2, 64, 3))
+        return book, changes
+
+    def test_fine_tune_after_cpu_edit_replays_receipt_and_exports_project(self):
+        book, changes = self.membership_backend()
+        self.stage(dict(kind="audibles", book="O-ManBlock"))
+        old = self.facade._playcalling.events(self.facade.session)[0]
+        with patch("mod_editor.apf_studio.session.read_splb_book", return_value=book):
+            self.facade.stage_splb_membership(changes, replace_outer=130)
+        context = self.facade.playcalling_context()
+        fresh = context["events"][0]
+        self.assertEqual(fresh["request"], old["request"])
+        self.assertNotEqual(fresh["before"], old["before"])
+        self.assertIn(64, [f["id"] for f in context["formations"]])
+        path = self.facade.session.save_project(self.root / "mixed.apf2k8mod")
+        with patch("mod_editor.apf_studio.session.read_splb_book", return_value=book):
+            self.facade.session.load_project(path)
+        self.assertEqual(self.facade.playcalling_context()["events"], context["events"])
+
+    def test_without_receipt_replay_the_old_export_path_rejects_additions(self):
+        book, changes = self.membership_backend()
+        self.stage(dict(kind="audibles", book="O-ManBlock"))
+        with patch("mod_editor.apf_studio.session.read_splb_book", return_value=book), \
+             patch.object(self.facade._playcalling, "rebase_membership", side_effect=lambda session, updated: updated):
+            self.facade.stage_splb_membership(changes, replace_outer=130)
+        with self.assertRaisesRegex(ValidationError, "earlier book edit changed"):
+            self.facade.playcalling_context()
+
+    def test_conflicting_membership_change_is_atomic(self):
+        book, changes = self.membership_backend()
+        with patch("mod_editor.apf_studio.session.read_splb_book", return_value=book):
+            self.facade.stage_splb_membership(changes, replace_outer=130)
+            self.stage(dict(kind="ratings", book="O-ManBlock", formation=64, ratings=[7, 7, 7]))
+            snapshot = self.facade.playcalling_snapshot()
+            with self.assertRaisesRegex(ValueError, "conflict with a CPU Play Calling edit"):
+                self.facade.stage_splb_membership((), replace_outer=130)
+        self.assertEqual(self.facade.playcalling_snapshot(), snapshot)
+        self.assertIn(64, [f["id"] for f in self.facade.playcalling_context()["formations"]])
+
     def test_explicit_addition_roundtrips_recipe_without_preset(self):
         donor = bytearray(self.backend.initial.books["USER-o"])
         # Existing synthetic primary pair 62/63 becomes donor pair 64/65.

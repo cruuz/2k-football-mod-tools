@@ -106,6 +106,17 @@ class PanelTests(unittest.TestCase):
         self.assertTrue(self.panel.review.isEnabled())
         self.assertFalse(self.panel.build.isEnabled())
 
+    def test_integrated_panel_hides_duplicate_workflow_and_links_cpu_editor(self):
+        from PyQt5.QtWidgets import QLabel
+        panel = BookIdentityPanel(lambda *_: None, consolidated=True)
+        self.addCleanup(panel.close)
+        self.assertFalse(panel.content.isVisibleTo(panel))
+        pointer = next(label for label in panel.findChildren(QLabel) if 'href="cpu-playcalling"' in label.text())
+        calls = []
+        panel.cpuPlayCallingRequested.connect(lambda: calls.append(True))
+        pointer.linkActivated.emit("cpu-playcalling")
+        self.assertEqual(calls, [True])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -2,6 +2,10 @@
 
 ## 0.1.0-alpha.92 — beta 71: CPU play calling situations and the play-calling page (in progress, 2026-09-15)
 
+- CPU Play Calling previews the selected book, including USER-O and USER-D, with a separate preview run share. Staging formation ratings no longer leaves the tab locked. Book Identity points to this shared workflow.
+- The 23 spreadsheet situations now show candidate formations, personnel and TE counts beside explicit formation addition, personnel editing and complete book removal. These edit shared book data across situations. Independent per-situation lists remain unavailable: the native selector uses shared memberships and weights, and several spreadsheet buckets have identical inputs. A lone formation at raw rating 7 still wins its one-candidate draw. Bounded BASE/TU tests prove these inputs and selected tuples; final on-field lineups remain UNWITNESSED.
+- Formation additions try a fresh safe compression pass when the old token layout exceeds its allocation. The tested 23, 18 and 19 additions to three offensive books now export inside their original allocations with the portable encoder. Fine-tune changes also replay existing CPU edit receipts as one transaction, so a compatible addition does not invalidate the later export. Conflicting edits refuse before changing the project. Nothing stages through a preset.
+
 ## 0.1.0-alpha.91 — beta 70: the APF 2K8 work after beta 69 — 2026-09-15
 
 Beta 70 carries the APF 2K8 changes made after beta 69; bullets are added as each change lands.

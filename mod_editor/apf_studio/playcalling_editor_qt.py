@@ -86,6 +86,7 @@ class ApfPlayCallingEditor(QWidget):
         super().__init__()
         self.facade, self.run_task = facade, run_task
         self._context = None
+        self._book_source = None
         self._review = None
         self._generation = 0
         self._busy = False
@@ -172,7 +173,7 @@ class ApfPlayCallingEditor(QWidget):
         self.candidate_table = table(("Formation", "Personnel", "Tight ends", "Personnel weight", "Formation weight"), "All ordinary situation candidates before the draw")
         self.candidate_table.setMaximumHeight(260)
         situation_root.addWidget(self.candidate_table)
-        self.situation_remove = button(situation_root, "Review removal from this book", "Remove the selected ordinary formation completely from this book, including every situation; review remaining personnel first.", self.remove_formation)
+        self.situation_remove = button(situation_root, "Review removal from this book", "Remove the selected ordinary formation completely from this book, including every situation; review remaining personnel first.", self.remove_candidate)
         donor_row = QHBoxLayout()
         self.add_donor = explain(QComboBox(), "Choose a book on the same side that already contains the formation to add.")
         self.add_donor.setAccessibleName("Formation donor book")
@@ -426,9 +427,11 @@ class ApfPlayCallingEditor(QWidget):
         self._loading = False
         self._review = None
         self._context = None
-        self._updating = True
-        self.donor_picker.clear()
-        self._updating = False
+        if self._book_source != self._source():
+            self._updating = True
+            self.donor_picker.clear()
+            self._updating = False
+            self._book_source = self._source()
         self._custom_timer.stop()
         self.scheme_details.setVisible(False)
         self.grid.setRowCount(0)
@@ -576,9 +579,10 @@ class ApfPlayCallingEditor(QWidget):
         fill(self.candidate_table, [(names.get(c["formation"], c["formation"]), c["personnel"], c["tight_ends"],
                                      f"{c['category_weight']:.4g}", f"{c['formation_weight']:.4g}") for c in row["candidates"]])
         self._updating = False
-        self.situation_remove.setEnabled(bool(row["candidates"]))
-        if row["candidates"]:
-            self.candidate_table.selectRow(0)
+        selected = next((i for i, c in enumerate(row["candidates"]) if c["formation"] == self.formation_picker.currentData()), None)
+        self.situation_remove.setEnabled(selected is not None)
+        if selected is not None:
+            self.candidate_table.selectRow(selected)
 
     def _candidate_changed(self):
         if self._updating or not self._context:
@@ -587,6 +591,13 @@ class ApfPlayCallingEditor(QWidget):
         if index >= 0:
             candidate = self._situations[self.situation_picker.currentIndex()]["candidates"][index]
             self.formation_picker.setCurrentIndex(self.formation_picker.findData(candidate["formation"]))
+            self.situation_remove.setEnabled(candidate["formation"] < 151)
+
+    def remove_candidate(self):
+        index = self.candidate_table.currentRow()
+        if self._context and index >= 0:
+            candidate = self._situations[self.situation_picker.currentIndex()]["candidates"][index]
+            self.review_request(self._book_request("remove", formation=candidate["formation"]), True)
 
     def _add_donor_changed(self, *_):
         if self._updating or not self._context:
@@ -695,7 +706,7 @@ class ApfPlayCallingEditor(QWidget):
         review = self._review
         def done(_):
             self._review = None
-            if review["event"]["request"]["kind"] == "clones":
+            if review["event"]["request"]["kind"] in {"clones", "scheme"}:
                 rows = review["event"]["request"]["assignments"]
                 own = next((r["clone_name"] for r in rows if r["team_index"] == self.team_picker.currentData()), None)
                 if own:

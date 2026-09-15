@@ -38,6 +38,13 @@ class QtTests(FacadeFixture):
         self.assertIn("Ace: 75.0%", self.panel.grid.item(0, 3).text())
         self.assertIn("Flush carries no tight end", self.panel.grid.item(0, 5).text())
         self.assertEqual(self.panel.grid.item(12, 0).text(), "Custom situation")
+        self.assertEqual(self.panel.situation_picker.count(), 23)
+        self.assertGreater(self.panel.candidate_table.rowCount(), 0)
+        self.panel.situation_picker.setCurrentIndex(8)
+        self.assertIn("Requested personnel row 10", self.panel.situation_note.text())
+        self.assertEqual(self.panel.candidate_table.item(0, 2).text(), "2")
+        self.assertTrue(self.panel.scheme_group.isHidden())
+        self.assertFalse(self.facade.session.modifications)
         self.panel.side_picker.setCurrentIndex(1)
         self.assertEqual(self.panel.grid.rowCount(), 11)
         self.assertEqual(self.panel.grid.item(0, 1).text(), "13")
@@ -162,6 +169,9 @@ class QtTests(FacadeFixture):
         self.assertEqual(self.panel._context["team"]["team_index"], 1)
 
     def test_user_books_drive_preview_and_edit_target_on_both_sides(self):
+        # The integrated shell refreshes the entire page synchronously on an
+        # edit signal. It must preserve the chosen USER book through that reset.
+        self.panel.modifiedChanged.connect(self.panel.set_context)
         for side, name in ((0, "USER-o"), (1, "USER-d")):
             self.panel.side_picker.setCurrentIndex(side)
             self.panel.donor_picker.setCurrentText(name)
