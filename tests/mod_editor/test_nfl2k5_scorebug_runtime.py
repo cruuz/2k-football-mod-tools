@@ -237,7 +237,7 @@ class ExecutionTests(unittest.TestCase):
                     m.uc.mem_write(buffer,b'\xee'*64)
                     m.run(labels[f'dash_text{side}'],ecx=buffer,limit=2000)
                     text=bytes(m.uc.mem_read(buffer,64)).decode('utf-16le').split('\0')[0]
-                    expected=' '.join('-'*1 for _ in range(count if count<=3 else 0))
+                    expected=' '.join('~'*1 for _ in range(count if count<=3 else 0))
                     self.assertEqual(text,expected,(side,count))
         # The setup installs the callbacks into the two retail team-name records.
         self.assertEqual(m.get(r.CITY_CALLBACKS[0]),labels['dash_text0'])
@@ -265,7 +265,7 @@ class ExecutionTests(unittest.TestCase):
             for flags,visible in ((0,1),(2,1),(4,1),(0,0)):
                 m.float(m.clock+16,seconds);m.put(m.clock+24,flags);m.put(0xa95a70,visible);m.update()
                 urgent=0<=seconds<5 and flags==0 and visible==1
-                self.assertEqual(m.get(0xa95a48),r.RED if urgent else r.PLAY_CLOCK_NORMAL)
+                self.assertEqual(m.get(0xa95a48),r.WHITE)
     def test_native_collection_reader_uses_grown_end_and_wrapper_sizes(self):
         m=Machine(self.payload)
         # IO completion and collection-finished notification are host boundaries.

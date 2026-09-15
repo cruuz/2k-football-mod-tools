@@ -1,0 +1,16 @@
+...E....
+======================================================================
+ERROR: test_apply_in_place_grows_pack0_and_switches_the_node (__main__.DiscTransactionTests.test_apply_in_place_grows_pack0_and_switches_the_node)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_assets.py", line 299, in test_apply_in_place_grows_pack0_and_switches_the_node
+    shutil.copyfile(XISO, copy)
+  File "/usr/lib/python3.12/shutil.py", line 262, in copyfile
+    with open(dst, 'wb') as fdst:
+         ^^^^^^^^^^^^^^^
+OSError: [Errno 30] Read-only file system: '/media/noah/Storage/.b70-fable-assets/test_assets_transaction.xiso.iso'
+
+----------------------------------------------------------------------
+Ran 8 tests in 126.092s
+
+FAILED (errors=1)

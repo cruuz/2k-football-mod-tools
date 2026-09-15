@@ -1,0 +1,13 @@
+....F....
+======================================================================
+FAIL: test_play_clock_color_isolated_and_static_composes_in_both_orders (__main__.NativeFixTests.test_play_clock_color_isolated_and_static_composes_in_both_orders)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py", line 200, in test_play_clock_color_isolated_and_static_composes_in_both_orders
+    self.assertEqual(first[off:off+4],struct.pack('<I',0xffc8cace))
+AssertionError: b'\xce\xca\xc8\xff' != b'\xff\xff\xff\xff'
+
+----------------------------------------------------------------------
+Ran 9 tests in 127.566s
+
+FAILED (failures=1)

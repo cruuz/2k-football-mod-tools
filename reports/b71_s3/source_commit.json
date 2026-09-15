@@ -1,0 +1,17 @@
+{
+  "commit": "d18939b250dcf7863c729ac7ad29a30fdbe7dd18",
+  "paths": [
+    "mod_editor/core/nfl2k5_scorebug_exact.py",
+    "mod_editor/core/nfl2k5_scorebug_mnf_font.py",
+    "mod_editor/core/nfl2k5_scorebug_resources.py",
+    "mod_editor/core/nfl2k5_scorebug_runtime.py",
+    "mod_editor/core/providers.py",
+    "tests/mod_editor/test_nfl2k5_scorebug_assets.py",
+    "tests/mod_editor/test_nfl2k5_scorebug_exact.py",
+    "tests/mod_editor/test_nfl2k5_scorebug_fonts.py",
+    "tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py",
+    "tests/mod_editor/test_nfl2k5_scorebug_mnf.py",
+    "tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py",
+    "tests/mod_editor/test_nfl2k5_scorebug_resources.py"
+  ]
+}

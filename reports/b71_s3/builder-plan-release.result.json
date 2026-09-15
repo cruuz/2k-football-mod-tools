@@ -1,0 +1,12 @@
+{
+  "name": "builder-plan-release",
+  "command": [
+    "python3",
+    "reports/b71_s3/build_testdisc71.py",
+    "--plan-only"
+  ],
+  "start": "2026-09-15T21:14:24.793293+00:00",
+  "end": "2026-09-15T21:14:25.156192+00:00",
+  "seconds": 0.363,
+  "exit": 0
+}

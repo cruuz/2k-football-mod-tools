@@ -256,7 +256,7 @@ class Build:
 
     def render(self, path, *, runtime=False, widescreen=False, mode=0, historical=False,
                atlas_image=None, mesh=None, score_values=(0, 0), score_phase=0, timeouts=(3, 3),
-               previous_scores=(0,0), possession='home'):
+               previous_scores=(0,0), possession='home', matchup=('LV','HOU'), **state):
         if historical:
             mesh = scene.mesh_v9(self.retail_scene)
             atlas_image = scene.atlas_v9(self.spans)
@@ -269,13 +269,15 @@ class Build:
         decoded = scene.decode(span)[1]  # Installed bytes, including normshort quantization.
         texture, receipt = scene.encode_atlas(self.spans["score_buga"], atlas_image)
         capture = {}
+        panels = [art.mnf_panel_span(self.spans["score_buga"],team,side)
+                  for team,side in zip(matchup,("away","home"))] if runtime else None
         geometry = projection.native_geometry(self.payload, decoded, widescreen=widescreen, mode=mode,
                     texture_span=texture, fonts=self.fonts, capture=capture, baseline_v9=historical,
-                    runtime_textures=self.panels if runtime else None,
-                    identity=dict(home="HOU", away="LV", home_code="37", away_code="20"),
+                    runtime_textures=panels,
+                    identity=dict(home=matchup[1], away=matchup[0], home_code=art.TEAM_LOGOS[matchup[1]]["asset_code"], away_code=art.TEAM_LOGOS[matchup[0]]["asset_code"]),
                     score_values=score_values, score_phase=score_phase, timeouts=timeouts,
                     previous_scores=previous_scores, possession=possession,
-                    runtime_fonts=self.font_spans if runtime else ())
+                    runtime_fonts=self.font_spans if runtime else (), **state)
         try:
             geometry.update(projection.native_text_draw(capture))
             geometry.update(projection.render_native(decoded, texture, self.fonts + (self.private_fonts if runtime else []), geometry, path,

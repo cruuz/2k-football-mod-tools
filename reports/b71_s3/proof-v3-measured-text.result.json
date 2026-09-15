@@ -1,0 +1,11 @@
+{
+  "name": "proof-v3-measured-text",
+  "command": [
+    "python3",
+    "reports/b71_s3/prove_v3.py"
+  ],
+  "start": "2026-09-15T20:49:25.355800+00:00",
+  "end": "2026-09-15T20:50:11.761102+00:00",
+  "seconds": 46.405,
+  "exit": 0
+}

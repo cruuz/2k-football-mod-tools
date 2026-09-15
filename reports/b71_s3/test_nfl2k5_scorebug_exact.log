@@ -1,0 +1,14 @@
+......F.
+======================================================================
+FAIL: test_live_timeouts_change_only_the_selected_runtime_panel (__main__.NativeTests.test_live_timeouts_change_only_the_selected_runtime_panel)
+Beta 70: timeouts are text through the team-name callbacks; the wing
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_exact.py", line 147, in test_live_timeouts_change_only_the_selected_runtime_panel
+    self.assertTrue(set(rb["text"]) <= set("- ") and set(ra["text"]) <= set("- "))
+AssertionError: False is not true
+
+----------------------------------------------------------------------
+Ran 8 tests in 83.956s
+
+FAILED (failures=1)

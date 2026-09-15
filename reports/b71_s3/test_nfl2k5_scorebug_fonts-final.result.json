@@ -1,0 +1,11 @@
+{
+  "name": "test_nfl2k5_scorebug_fonts-final",
+  "command": [
+    "/usr/bin/python3",
+    "tests/mod_editor/test_nfl2k5_scorebug_fonts.py"
+  ],
+  "start": "2026-09-15T21:02:49.325022+00:00",
+  "end": "2026-09-15T21:02:57.456706+00:00",
+  "seconds": 8.132,
+  "exit": 0
+}

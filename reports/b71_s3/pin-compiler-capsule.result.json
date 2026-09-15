@@ -1,0 +1,11 @@
+{
+  "name": "pin-compiler-capsule",
+  "command": [
+    "python3",
+    "reports/b71_s3/regenerate_pins.py"
+  ],
+  "start": "2026-09-15T20:57:17.412176+00:00",
+  "end": "2026-09-15T20:58:01.448015+00:00",
+  "seconds": 44.036,
+  "exit": 0
+}

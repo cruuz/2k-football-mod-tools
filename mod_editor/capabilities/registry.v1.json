@@ -10441,20 +10441,25 @@
         "tests/mod_editor/test_nfl2k5_b68_game_composition.py",
         "docs/nfl2k5_b68_t3_composition.json",
         "tests/mod_editor/test_nfl2k5_scorebug_mnf.py",
-        "FABLE_B70_SCOREBUG_REPORT_2026-09-15.md"
+        "FABLE_B70_SCOREBUG_REPORT_2026-09-15.md",
+        "tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py",
+        "reports/b71_s3/measurements.json",
+        "reports/b71_s3/states.json",
+        "reports/b71_s3/compare_43.png",
+        "reports/b71_s3/compare_wide.png"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "EXPERIMENTAL / UNWITNESSED. Beta 70: the 2026 Monday Night Football bug (logos, possession plate, timeout dashes, ESPN red play clock, ESPN digits). The beta 69 freeze after Berman's intro was reproduced in the emulator on 2026-09-15: the 1.7 MB of appended HUD art made the resource loader read a chunk into a null buffer; the rebuilt option appends 0.35 MB, the size class that reached the coin toss in the same test. Not yet played by a person."
+        "reason": "EXPERIMENTAL / UNWITNESSED. Native renderer evidence covers both aspect ratios, score/clock callbacks and retail event slabs. The 413,568-byte append stays near the historical 0.4 MB volume that passed the intro; the current build still needs a played-game intro and match check."
       },
       "id": "nfl2k5.scorebug_presentation.runtime",
       "input_constraints": [
         "User-owned pinned NFL 2K5 USA disc with retail HUD resources, or a completely recognized runtime installation.",
         "Use a disposable output copy; reserve the selected allocator owner union before installing hooks.",
-        "An XBE alone cannot install the required 66 native panel textures. Rebuild from a supported base for the new hooks or a changed owner set; old hook code is refused."
+        "An XBE alone cannot install the required 66 textures and two FONT resources. Rebuild from a supported base; foreign or old owner bytes are refused."
       ],
       "portme": [
         "Witness the 2026 bar in Play Now with the Berman intro on (the beta 69 crash path), then in Franchise; report the wing logos, the plate colour on a change of possession, the dashes after a timeout, the red play clock under five seconds.",
@@ -10480,9 +10485,14 @@
           "tests/mod_editor/test_nfl2k5_scorebug_mnf.py",
           "FABLE_B71_WINGS_REPORT_2026-09-15.md",
           "tests/mod_editor/test_nfl2k5_scorebug_fonts.py",
-          "FABLE_B71_FONT_REPORT_2026-09-15.md"
+          "FABLE_B71_FONT_REPORT_2026-09-15.md",
+          "tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py",
+          "reports/b71_s3/measurements.json",
+          "reports/b71_s3/states.json",
+          "reports/b71_s3/compare_43.png",
+          "reports/b71_s3/compare_wide.png"
         ],
-        "scope": "The previous GPU-fence repair passes its historical control. Beta 68 exercises scorebug-enabled composed BuildPlans, native collection loading, setup at FCE56, update at FCFA2, font glyph draws, re-entry and the separate presentation/kickoff fixtures. A selected/unselected comparison identifies this option as a reported trigger, but the stopped instruction, real asynchronous loader/GPU state and full scene lifetime are unavailable. No Berman fix is claimed. In-game behavior remains UNWITNESSED. Beta 70: the freeze was reproduced with the debugger (bugcheck 0x1E, a write to address 0 at kernel 0x8001DBD4 while the resource loader was busy) and removed; a second stop at the coin toss was removed the same day; one xemu run reached live play with the 2026 bar drawn (docs/scorebug_mnf/witness/). See FABLE_B70_SCOREBUG_REPORT_2026-09-15.md. Beta 71: wings redrawn at the broadcast's proportions on 64x64 textures (ESPN marks plus a colour ramp), the dash callbacks on the records the retail game binds to each team, event slabs on the charcoal tile; see FABLE_B71_WINGS_REPORT_2026-09-15.md. Beta 71: two appended clock FONTs (FirstPersonComic, core_bug) bound by the owner to the quarter, game clock and play clock records; proved in the native renderer, unwitnessed in game.",
+        "scope": "V3 uses native HUD collection lookup, two appended FONTs, 66 small wing textures, the retail scene and owned setup/update hooks. Large score digits occupy U+0080..U+0089; timeout ticks use a private glyph; the white play-clock digit sits on an independently tinted red cell. Hang time retains native visibility on its own charcoal slab. Bounded native CPU execution and software raster comparisons measure v3 geometry at 4:3 and widescreen. These do not prove GPU appearance or the intro peak-memory behavior in a played game.",
         "status": "not-tested"
       },
       "selectors": {
@@ -10505,9 +10515,9 @@
         "resource": "owned RX/RW hook allocations plus HUD outer 346 and its archive index",
         "retail_file": "user-owned default.xbe and vc_53450030/0 in an NFL 2K5 USA disc"
       },
-      "summary": "The ESPN Monday Night Football 2026 bar at runtime: team-colour wings with the current logos, white scores, a down plate in the possessing team's colour, the clock capsule and timeout dashes; 66 appended wing textures (0.35 MB) and no private fonts. The freeze after Berman's intro reported on beta 69 (andrethealchemist: 'Unselecting that option fixed the issue for me.') was reproduced in the emulator, a kernel bugcheck from a null loader buffer after an allocation failure under the 1.7 MB appended volume, and removed by the smaller volume. Seen by Claude in one xemu run into live play; not witnessed by a player. Off in every preset.",
+      "summary": "2026 scorebug v3: rounded gradient body, full-height team marks, full-colour possession plate, solid condensed score digits, light-grey timeout ticks, and a light clock capsule with a white digit on a red play-clock cell. Appends 413,568 bytes. Native execution and software renders are proved; v3 remains unwitnessed in game and off in every preset.",
       "surface": "scorebug_presentation",
-      "title": "Scorebug effects (reported Berman freeze)",
+      "title": "ESPN Monday Night Football 2026 scorebug (experimental)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_b68_game_composition"
     },
     {

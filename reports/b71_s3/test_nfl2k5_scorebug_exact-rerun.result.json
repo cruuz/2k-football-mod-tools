@@ -1,0 +1,11 @@
+{
+  "name": "test_nfl2k5_scorebug_exact-rerun",
+  "command": [
+    "python3",
+    "tests/mod_editor/test_nfl2k5_scorebug_exact.py"
+  ],
+  "start": "2026-09-15T20:56:04.665488+00:00",
+  "end": "2026-09-15T20:57:26.183012+00:00",
+  "seconds": 81.518,
+  "exit": 0
+}

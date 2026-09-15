@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s3/reports/b71_s3/regenerate_pins.py", line 8, in <module>
+    build=Build(PACK,XBE)
+          ^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s3/tools/nfl2k5_scorebug_exact.py", line 250, in __init__
+    self.font_spans = art.clock_font_spans(self.view)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s3/mod_editor/core/nfl2k5_scorebug_resources.py", line 753, in clock_font_spans
+    raise ValueError("clock font span sizes changed")
+ValueError: clock font span sizes changed

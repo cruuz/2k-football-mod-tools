@@ -1,0 +1,13 @@
+.F..
+======================================================================
+FAIL: test_clock_white_digit_red_cell_urgency_and_disabled_boundaries (__main__.NativeTests.test_clock_white_digit_red_cell_urgency_and_disabled_boundaries)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py", line 68, in test_clock_white_digit_red_cell_urgency_and_disabled_boundaries
+    self.assertEqual(m.get(cell+0x18),expected,seconds)
+AssertionError: 4293073207 != 4286058023 : 4
+
+----------------------------------------------------------------------
+Ran 4 tests in 16.286s
+
+FAILED (failures=1)

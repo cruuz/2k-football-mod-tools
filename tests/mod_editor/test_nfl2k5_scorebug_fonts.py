@@ -59,7 +59,7 @@ class NativeTests(unittest.TestCase):
         originals = {obj: bytes(m.uc.mem_read(obj, len(font.decoded) - font.object_offset))
                      for obj, font in m.fonts.items()}
         # Beta 71: the runtime collection carries the two clock fonts, not the beta 69 seven.
-        self.assertEqual(tuple(map(len, self.build.font_spans)), (27040, 27040))
+        self.assertEqual(tuple(map(len, self.build.font_spans)), (38048, 27040))
         for span, parsed in zip(self.build.font_spans, self.build.private_fonts):
             receipt = m.load_private_font(span, parsed)
             self.assertFalse(receipt['global_slot_changed'])
@@ -115,10 +115,10 @@ class NativeTests(unittest.TestCase):
             self.addCleanup(capture['machine'].close)
         return geometry, capture
 
-    def test_beta71_runtime_binds_the_clock_fonts_and_keeps_the_native_score_fonts(self):
+    def test_beta71_runtime_binds_clock_score_and_tick_fonts(self):
         # Beta 71 contract: the runtime collection appends the two ESPN clock fonts; the owner
         # binds the game clock and play clock to FirstPersonComic and the quarter label to the
-        # smaller core_bug build, while the score records keep their boot font (font8).
+        # smaller core_bug build; scores and ticks also use FirstPersonComic.
         geometry, capture = self.capture(private=True)
         m = capture['machine']
         self.assertEqual([f['name'] for f in geometry['private_fonts']], ['FirstPersonComic', 'core_bug'])
@@ -127,7 +127,7 @@ class NativeTests(unittest.TestCase):
             self.assertEqual(m.fonts[m.get(pointer)].name, 'FirstPersonComic', hex(pointer))
         self.assertEqual(m.fonts[m.get(0xa958f0)].name, 'core_bug')
         for pointer in (0xa95968, 0xa959a0):
-            self.assertEqual(m.fonts[m.get(pointer)].name, 'font8', hex(pointer))
+            self.assertEqual(m.fonts[m.get(pointer)].name, 'FirstPersonComic', hex(pointer))
         _geometry, fallback = self.capture(private=False)
         m = fallback['machine']
         for pointer in (0xa95918, 0xa95940, 0xa95a80, 0xa958f0):

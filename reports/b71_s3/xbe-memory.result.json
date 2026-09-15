@@ -1,0 +1,11 @@
+{
+  "name": "xbe-memory",
+  "command": [
+    "python3",
+    "tests/mod_editor/test_xbe_patch_memory_writes.py"
+  ],
+  "start": "2026-09-15T20:54:00.187826+00:00",
+  "end": "2026-09-15T21:21:05.233798+00:00",
+  "seconds": 1625.046,
+  "exit": 0
+}

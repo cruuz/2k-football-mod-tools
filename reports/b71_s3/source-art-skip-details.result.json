@@ -1,0 +1,12 @@
+{
+  "name": "source-art-skip-details",
+  "command": [
+    "python3",
+    "tests/mod_editor/test_nfl2k5_scorebug_source_art.py",
+    "-v"
+  ],
+  "start": "2026-09-15T21:24:48.344334+00:00",
+  "end": "2026-09-15T21:24:49.105129+00:00",
+  "seconds": 0.761,
+  "exit": 0
+}
