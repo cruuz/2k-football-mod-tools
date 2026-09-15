@@ -72,7 +72,7 @@ class DiagnosticsTests(unittest.TestCase):
         from mod_editor.gui import studio_qt
         from mod_editor.core import build_feedback
         root = Path(__file__).resolve().parents[2]
-        wiring = (root / 'WIRING.md').read_text()
+        wiring = (root / 'WIRING.md').read_text(encoding='utf-8')
         snippet = wiring.split('<!-- B70_GUI_COMPLETION -->',1)[1].split('```python\n',1)[1].split('```',1)[0]
         source = inspect.getsource(studio_qt.StudioMainWindow._choose_build_output)
         start = source.index('            kept = tuple(getattr(result, "kept_retail"')
