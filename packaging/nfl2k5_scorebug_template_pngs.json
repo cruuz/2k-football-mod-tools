@@ -1,5 +1,89 @@
 {
   "files": {
+    "data/nfl2k5_modern_arrowhead/ad01.png": {
+      "height": 256,
+      "sha256": "50a4de1b1a97a48154f67a133c49542245e73930d822045bd6e5565aa072efd6",
+      "size": 12510,
+      "width": 256
+    },
+    "data/nfl2k5_modern_arrowhead/banner_away_team.png": {
+      "height": 128,
+      "sha256": "0aa944c99712d86a50fed9dc283aaa3f6846e7b2d2b894e9b4e5b060fdfd517f",
+      "size": 3570,
+      "width": 128
+    },
+    "data/nfl2k5_modern_arrowhead/banner_corp.png": {
+      "height": 256,
+      "sha256": "b9e28d859fee6b67fa9b00e515c7b20b863a105c39251cd1521f5d9428cd03c8",
+      "size": 12940,
+      "width": 256
+    },
+    "data/nfl2k5_modern_arrowhead/banner_home_player.png": {
+      "height": 128,
+      "sha256": "e85dbc305a19135dd39b43554e5eb1377d9c356fc19a2283d0795b0d59699304",
+      "size": 7086,
+      "width": 256
+    },
+    "data/nfl2k5_modern_arrowhead/banner_home_team.png": {
+      "height": 128,
+      "sha256": "7f36ec9c5fe5ce52b73e71b6f3f7e3f6d3f04f3e6d81bc2821a0b6b81c7d34f4",
+      "size": 4394,
+      "width": 128
+    },
+    "data/nfl2k5_modern_arrowhead/center_logo.png": {
+      "height": 256,
+      "sha256": "3b93cd128191027e077e4afefa8c4a72bf8d33442900d438c9412ab4b8287de7",
+      "size": 43579,
+      "width": 256
+    },
+    "data/nfl2k5_modern_arrowhead/endzone_L.png": {
+      "height": 128,
+      "sha256": "7c7dd2979d9a9713fc772df306b571a73cd3a7e59830163bfb4e50abb0938ca2",
+      "size": 22193,
+      "width": 256
+    },
+    "data/nfl2k5_modern_arrowhead/endzone_M.png": {
+      "height": 128,
+      "sha256": "e93e1a16ba25aa48e82d906aef2ad649f9f376150635991cf9354444aa153f29",
+      "size": 10269,
+      "width": 256
+    },
+    "data/nfl2k5_modern_arrowhead/endzone_R.png": {
+      "height": 128,
+      "sha256": "0d8ab60cbd379a515505c5c5d33c12aa8917050f0ae71200319415c867a8dac5",
+      "size": 23058,
+      "width": 256
+    },
+    "data/nfl2k5_modern_arrowhead/seat03.png": {
+      "height": 128,
+      "sha256": "c5364f0c12b0f6d5047a226d53f39bdd80b03f32bcf51b4926590717e55233cc",
+      "size": 13114,
+      "width": 128
+    },
+    "data/nfl2k5_modern_arrowhead/seat_rows.png": {
+      "height": 128,
+      "sha256": "85c7f77e2287325e081be5a4d31df3f6272691e52570b40452ed73b57229288a",
+      "size": 10057,
+      "width": 128
+    },
+    "data/nfl2k5_modern_arrowhead/tarp_red.png": {
+      "height": 128,
+      "sha256": "b57b1e0ae792d80396cdfda2f97de95edf265307f72a3aff14b7a4bab6dbd1e7",
+      "size": 18413,
+      "width": 128
+    },
+    "data/nfl2k5_modern_arrowhead/yardfront.png": {
+      "height": 128,
+      "sha256": "27278357d70cfdcbfdac87a65d3223b9d029fe13e5ead211576c1e38d2f4a3ba",
+      "size": 4535,
+      "width": 128
+    },
+    "data/nfl2k5_modern_arrowhead/yardside.png": {
+      "height": 64,
+      "sha256": "6f471280c8ebebf2ad3b1f6116186a5b72768e94d432af85e84162d650ebb27d",
+      "size": 2849,
+      "width": 64
+    },
     "data/nfl2k5_scorebug_mnf/espn_glyphs.png": {
       "height": 52,
       "sha256": "f75f89fc47cf94f828e6d65961dd179101155a06bdaad813f843e4b60e72c44b",

@@ -267,6 +267,7 @@ class BuildPlan:
     weather_haze: bool = False  # Existing dry-weather coefficient; EXPERIMENTAL, OFF
     modern_color: bool = False  # Broadcast light rigs and grass re-grade; EXPERIMENTAL, OFF
     modern_color_settings: dict = field(default_factory=dict)  # Project recipe; {} means v2.1
+    modern_arrowhead: bool = False  # Kansas City home packages toward the 2026 look; EXPERIMENTAL, OFF
     # opt-in data patch: real historic players in the 35 shared historic roster files of the 25 moments
     espn25_rosters: bool = False
     # community playbook packs (.2k5book recipes) installed into the copy's team books.
@@ -343,7 +344,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "kick_rules": False, "kick_power": True, "kickoff_alignment": False, "dynamic_kickoff": False, "xbe_space": False, "kickoff_relocated": False,
         "position_pools": False, "position_pools_keep_olb": False, "season_cap": False, "season_2026": False, "widescreen": False, "overtime": False, "team_column": True, "seven_on_seven": False, "team_history": "", "career_stats": "", "screen_timing": None, "depth_roles": False, "depth_chart_rows": False, "position_row": True, "probowl_order": True, "penalties": "", "uniform_choice": "", "helmet_finish": "glossy", "kick_laces": False, "franchise_practice": False, "practice_squad": False, "depth_locks": False, "prospect_names": "", "player_star": False,
         "espn25_plan": "", "espn25_rosters": False,
-        "weather_plan": "", "weather_haze": False, "modern_color": False,
+        "weather_plan": "", "weather_haze": False, "modern_color": False, "modern_arrowhead": False,
         "coin_defer": False, "decided_clock": False,
         "decided_clock_margin": 17, "decided_clock_seconds": 60,
         "cpu_scrambles": "retail",
@@ -364,7 +365,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "kick_rules": True, "kick_power": False, "kickoff_alignment": False, "dynamic_kickoff": False, "xbe_space": False, "kickoff_relocated": False,
         "position_pools": True, "position_pools_keep_olb": False, "season_cap": False, "season_2026": True, "widescreen": False, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "screen_timing": None, "depth_roles": True, "depth_chart_rows": False, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "", "helmet_finish": "glossy", "kick_laces": False, "franchise_practice": True, "practice_squad": False, "depth_locks": False, "prospect_names": "modern", "player_star": True,
         "espn25_plan": "", "espn25_rosters": False,
-        "weather_plan": "", "weather_haze": False, "modern_color": False,
+        "weather_plan": "", "weather_haze": False, "modern_color": False, "modern_arrowhead": False,
         "coin_defer": False, "decided_clock": False,
         "decided_clock_margin": 17, "decided_clock_seconds": 60,
         "cpu_scrambles": "retail",
@@ -386,7 +387,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "kick_rules": True, "kick_power": False, "kickoff_alignment": True, "dynamic_kickoff": True, "xbe_space": False, "kickoff_relocated": False,
         "position_pools": True, "position_pools_keep_olb": False, "season_cap": True, "season_2026": True, "widescreen": True, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "screen_timing": "D", "depth_roles": True, "depth_chart_rows": True, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "", "helmet_finish": "glossy", "kick_laces": True, "franchise_practice": True, "practice_squad": True, "depth_locks": True, "prospect_names": "modern", "player_star": True,
         "espn25_plan": "", "espn25_rosters": False,
-        "weather_plan": "", "weather_haze": False, "modern_color": False,
+        "weather_plan": "", "weather_haze": False, "modern_color": False, "modern_arrowhead": False,
         "coin_defer": False, "decided_clock": False,
         "decided_clock_margin": 17, "decided_clock_seconds": 60,
         "cpu_scrambles": "retail",
@@ -440,6 +441,7 @@ def availability() -> dict[str, bool]:
         "weather_plan": _core_module("nfl2k5_weather") is not None,
         "weather_haze": _core_module("nfl2k5_weather_haze") is not None,
         "modern_color": _core_module("nfl2k5_modern_color") is not None,
+        "modern_arrowhead": _core_module("nfl2k5_modern_arrowhead") is not None,
         **{key: _core_module(module) is not None and _core_module("nfl2k5_xbe_space") is not None
            for key, module in (("momentum", "nfl2k5_momentum"), ("momentum_contact", "nfl2k5_momentum"),
                                ("momentum_collisions", "nfl2k5_momentum"),
@@ -798,6 +800,16 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
                     out["modern_color_settings"] = colour_settings
         except (OSError, ValueError):
             out["modern_color"] = "unknown"
+    arrowhead = _core_module("nfl2k5_modern_arrowhead")
+    if arrowhead is None:
+        out["modern_arrowhead"] = "unavailable"
+    elif not (source.is_dir() or tt.is_disc_image(source)):
+        out["modern_arrowhead"] = "needs_image"
+    else:
+        try:
+            out["modern_arrowhead"] = arrowhead.image_status(source)
+        except (OSError, ValueError):
+            out["modern_arrowhead"] = "unknown"
     finish = _core_module("nfl2k5_helmet_finish")
     if finish is None:
         out["helmet_finish"] = "unavailable"
@@ -1192,6 +1204,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Modern colour and lighting must be Off or On.")
     from . import nfl2k5_modern_color as colour
     colour.normalize_settings(plan.modern_color_settings)
+    if type(plan.modern_arrowhead) is not bool:
+        raise ValueError("Modern Arrowhead must be Off or On.")
     plan = replace(plan, weather_plan=plan.weather_plan.strip())
     if type(plan.espn25_plan) is not str:
         raise ValueError("espn25_plan must be text: the path of a saved ESPN Anniversary plan, or empty")
@@ -1442,6 +1456,17 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                 source_colour_state = "unknown"
             if previous_colour is not None or source_colour_state == "applied":
                 raise ValueError("This disc already has a colour grade. Choose the original retail disc as the source to turn it off or reset it.")
+    if plan.modern_arrowhead:
+        arrowhead = _core_module("nfl2k5_modern_arrowhead")
+        if arrowhead is None or not is_image:
+            raise ValueError("Modern Arrowhead needs a disc image (the stadium packages live in the archive packs).")
+        progress("Checking the Arrowhead packages", 0, 0)
+        try:
+            arrowhead_state = arrowhead.image_status(source)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"Modern Arrowhead cannot read the stadium packages: {exc}") from exc
+        if arrowhead_state not in ("retail", "applied"):
+            raise ValueError("The Arrowhead packages are not the supported retail or already-modern set. Turn Modern Arrowhead off or rebuild from a supported USA source.")
     if plan.playbook_packs and not is_image:
         raise ValueError("playbook packs need a disc image (the books live in the archive packs)")
     if plan.depth_chart_rows:
@@ -2111,6 +2136,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         receipt["steps"].append({"step": "modern_color_bundles", **{k: v for k, v in bundle_receipt.items() if k != "edits"}})
         receipt["result"]["modern_color"] = bundle_receipt["state"]
         receipt["result"]["modern_color_settings"] = bundle_receipt["settings"]
+    if plan.modern_arrowhead:
+        arrowhead = _core_module("nfl2k5_modern_arrowhead")
+        progress("Modern Arrowhead: stadium packages", 0, 0)
+        arrowhead_receipt = arrowhead.apply_to_image(target, progress=progress)
+        receipt["steps"].append({"step": "modern_arrowhead", **{k: v for k, v in arrowhead_receipt.items() if k != "edits"}})
+        receipt["result"]["modern_arrowhead"] = "applied"
     return receipt
 
 
