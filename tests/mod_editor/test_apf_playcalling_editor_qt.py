@@ -30,7 +30,7 @@ class QtTests(FacadeFixture):
 
     def test_team_first_donors_shared_book_and_distributions(self):
         self.assertEqual(self.panel.team_picker.count(), 24)
-        self.assertIn("shared with Team 1", self.panel.book_label.text())
+        self.assertIn("shared with Team 0, Team 1", self.panel.book_label.text())
         self.assertGreaterEqual(self.panel.donor_picker.findText("USER-o"), 0)
         self.assertGreaterEqual(self.panel.donor_picker.findText("global-o"), 0)
         self.assertEqual(self.panel.grid.rowCount(), 13)
@@ -160,6 +160,58 @@ class QtTests(FacadeFixture):
         new[2](new[1](lambda *_: None))
         old[2](old[1](lambda *_: None))
         self.assertEqual(self.panel._context["team"]["team_index"], 1)
+
+    def test_user_books_drive_preview_and_edit_target_on_both_sides(self):
+        for side, name in ((0, "USER-o"), (1, "USER-d")):
+            self.panel.side_picker.setCurrentIndex(side)
+            self.panel.donor_picker.setCurrentText(name)
+            self.assertEqual(self.panel._context["book"], name)
+            self.assertGreater(self.panel.grid.rowCount(), 0)
+            self.panel.ratings[0].setValue(7)
+            self.panel.ratings_button.click()
+            event = self.facade._playcalling.events(self.facade.session)[-1]
+            self.assertEqual(event["request"]["book"], name)
+            self.assertTrue(self.panel.refresh_button.isEnabled())
+
+    def test_team_change_keeps_book_and_preview_run_share(self):
+        self.panel.donor_picker.setCurrentText("USER-o")
+        self.panel.preview_tendency.setValue(72)
+        self.panel.refresh()
+        before = self.panel._context
+        self.backend.initial.rost = bytes([10, 90]) + self.backend.initial.rost[2:]
+        self.panel.team_picker.setCurrentIndex(1)
+        after = self.panel._context
+        self.assertEqual((before["book"], after["book"]), ("USER-o", "USER-o"))
+        self.assertEqual((before["preview_tendency"], after["preview_tendency"]), (72, 72))
+        self.assertEqual(after["tendency"], 90)
+
+    def test_shell_rejects_nested_blocking_tasks_without_locking_page(self):
+        active = []
+        rejected = []
+        def run(label, operation, done, blocking):
+            # Match the shell: succeeded runs before finished removes worker.
+            if blocking and active:
+                rejected.append(label)
+                return False
+            token = object()
+            active.append(token)
+            try:
+                done(operation(lambda *_: None))
+            finally:
+                active.remove(token)
+            return True
+        self.panel.run_task = run
+        self.panel.ratings[0].setValue(7)
+        self.panel.ratings_button.click()
+        self.assertFalse(rejected)
+        self.assertEqual(self.panel.ratings[0].value(), 7)
+        for group in (self.panel.team_controls, self.panel.levers, self.panel.preview_group):
+            self.assertTrue(group.isEnabled())
+        active.append(object())
+        self.panel.ratings_button.click()
+        self.assertTrue(rejected)
+        self.assertFalse(self.panel._loading)
+        self.assertTrue(self.panel.refresh_button.isEnabled())
 
     def test_worker_replay(self):
         receipt = replay_contract()

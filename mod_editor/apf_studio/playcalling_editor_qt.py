@@ -1,4 +1,4 @@
-"""Team-first CPU Play Calling workspace; all model calls run in shell workers."""
+"""Book selection, candidate editing and CPU previews in shell workers."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -102,13 +102,13 @@ class ApfPlayCallingEditor(QWidget):
         root = QVBoxLayout(body)
         scroll.setWidget(body)
         outer.addWidget(scroll)
-        note(root, "CPU Play Calling predicts the calls this team's book can produce. Stage edits, save your project, "
+        note(root, "Pick a book, edit its formations and personnel, preview, then build. Stage edits, save your project, "
              "then Build a game copy. Percentages are an offline model; gameplay is UNWITNESSED.")
 
-        self.team_controls = QGroupBox("Choose a team and its book")
+        self.team_controls = QGroupBox("Choose a book")
         team_root = QVBoxLayout(self.team_controls)
         picks = QHBoxLayout()
-        self.team_picker = explain(QComboBox(), "The game uses the selected team's assigned book for its CPU calls.")
+        self.team_picker = explain(QComboBox(), "Choose a team for an independent copy or a team tendency edit. Book previews keep the selected book.")
         self.team_picker.setAccessibleName("Team")
         self.side_picker = explain(QComboBox(), "Offense predicts calls for game situations; defense predicts responses to offensive personnel.")
         self.side_picker.addItem("Offense", "offense")
@@ -119,9 +119,9 @@ class ApfPlayCallingEditor(QWidget):
         self.book_label = note(team_root, "Load a game folder to see each team's current book and the teams sharing it.")
         note(team_root, "An edit to a shared book changes calls for every team using it; give the team its own book to edit that team independently.")
         donors = QHBoxLayout()
-        donors.addWidget(QLabel("Starting book for a new copy"))
-        self.donor_picker = explain(QComboBox(), "The game starts the new book with this donor's formations, plays and personnel; USER and global books use the same selector.")
-        self.donor_picker.setAccessibleName("Starting book donor")
+        donors.addWidget(QLabel("Book to edit and preview"))
+        self.donor_picker = explain(QComboBox(), "Edit and preview this book, including USER books. An independent copy also starts with this book's contents.")
+        self.donor_picker.setAccessibleName("Book to edit and preview")
         donors.addWidget(self.donor_picker)
         team_root.addLayout(donors)
         note(team_root, "USER books supply their contents; global books are special-team supplements and may have no ordinary calls to preview.")
@@ -154,12 +154,39 @@ class ApfPlayCallingEditor(QWidget):
              "Row weights feed an optional cache; they do not override the CPU lottery. Per-situation run percentages "
              "are coaching intent. Tempo, snap count, weather ratio and coin toss have no proved control here.")
         self.scheme_button = button(scheme_root, "Review scheme for this team", "Review one team scheme, creating its own offensive book when shared; staging records one Undo step.", self.apply_scheme)
-        self.scheme_export = button(scheme_root, "Export play call spreadsheet…", "Export the current staged offense in 7ET's situational buckets, with proxy rows, probabilities and limits.", self.export_scheme)
+        self.scheme_export = button(scheme_root, "Export play call spreadsheet…", "Export the selected staged book in 23 situational buckets, with proxy rows, probabilities and limits.", self.export_scheme)
         self.scheme_details = table(("Setting", "Before", "After"), "Scheme changes to review")
         self.scheme_details.setVisible(False)
         self.scheme_details.setMaximumHeight(280)
         scheme_root.addWidget(self.scheme_details)
         root.addWidget(self.scheme_group)
+
+        self.situation_group = QGroupBox("Situations and candidate formations")
+        situation_root = QVBoxLayout(self.situation_group)
+        self.situation_picker = explain(QComboBox(), "Inspect this situation's ordinary formation and personnel candidates, including low-weight candidates.")
+        self.situation_picker.setAccessibleName("Situation to inspect and edit")
+        situation_root.addWidget(self.situation_picker)
+        self.situation_note = note(situation_root, "")
+        note(situation_root, "Select a candidate to edit its ratings and personnel below. Adding, removing or changing personnel edits the shared book, "
+             "so it affects every situation using that data. These 23 preview buckets are not independent stored formation lists.")
+        self.candidate_table = table(("Formation", "Personnel", "Tight ends", "Personnel weight", "Formation weight"), "All ordinary situation candidates before the draw")
+        self.candidate_table.setMaximumHeight(260)
+        situation_root.addWidget(self.candidate_table)
+        self.situation_remove = button(situation_root, "Review removal from this book", "Remove the selected ordinary formation completely from this book, including every situation; review remaining personnel first.", self.remove_formation)
+        donor_row = QHBoxLayout()
+        self.add_donor = explain(QComboBox(), "Choose a book on the same side that already contains the formation to add.")
+        self.add_donor.setAccessibleName("Formation donor book")
+        self.add_formation = explain(QComboBox(), "Copy this ordinary formation's existing plays into the selected book. Its primary personnel comes from its proved package.")
+        self.add_formation.setAccessibleName("Formation to add")
+        donor_row.addWidget(QLabel("Add from book")); donor_row.addWidget(self.add_donor)
+        donor_row.addWidget(self.add_formation)
+        situation_root.addLayout(donor_row)
+        self.add_button = button(situation_root, "Review formation addition", "Add the selected donor formation as an explicit book edit, then preview all affected situations.", self.stage_addition)
+        self.bucket_export = button(situation_root, "Export play call spreadsheet…", "Export the selected offensive book in all 23 preview buckets, with their shared-data limits.", self.export_scheme)
+        root.addWidget(self.situation_group)
+        # Existing scheme recipes remain loadable. The main workflow exposes
+        # direct book edits; no scheme or preset is staged by visiting this page.
+        self.scheme_group.hide()
 
         self.preview_group = QGroupBox("Live call preview")
         preview_root = QVBoxLayout(self.preview_group)
@@ -186,8 +213,14 @@ class ApfPlayCallingEditor(QWidget):
             control.valueChanged.connect(self._custom_changed)
             self.custom[key] = control
         preview_root.addLayout(custom)
+        self.preview_tendency = explain(QSpinBox(), "Preview run share is independent of the selected team; this changes the preview only.")
+        self.preview_tendency.setRange(0, 100)
+        self.preview_tendency.setValue(50)
+        self.preview_tendency.setAccessibleName("Preview run share percent")
+        custom.addRow("Preview run share (%)", self.preview_tendency)
+        self.preview_tendency.valueChanged.connect(self._custom_changed)
         note(preview_root, "Change the custom situation to see what the game would weigh there; this changes the preview, not your book.")
-        self.refresh_button = button(preview_root, "Refresh call preview", "The preview recalculates the game's modeled calls using the current staged book, personnel and team tendency.", self.refresh)
+        self.refresh_button = button(preview_root, "Refresh call preview", "Recalculate the selected book's modeled calls with the preview run share and situation.", self.refresh)
         root.addWidget(self.preview_group)
 
         self.levers = QGroupBox("Change how this book calls plays")
@@ -324,10 +357,14 @@ class ApfPlayCallingEditor(QWidget):
         root.addWidget(self.experiments)
         self.notice = note(outer, "Load a game folder to start editing CPU Play Calling.")
         self.team_picker.currentIndexChanged.connect(self._selection_changed)
-        self.side_picker.currentIndexChanged.connect(self._selection_changed)
+        self.side_picker.currentIndexChanged.connect(self._side_changed)
+        self.donor_picker.currentIndexChanged.connect(self._selection_changed)
         self.formation_picker.currentIndexChanged.connect(self._formation_changed)
         self.play_picker.currentIndexChanged.connect(self._play_changed)
         self.master_table.itemSelectionChanged.connect(self._master_changed)
+        self.situation_picker.currentIndexChanged.connect(self._situation_changed)
+        self.candidate_table.itemSelectionChanged.connect(self._candidate_changed)
+        self.add_donor.currentIndexChanged.connect(self._add_donor_changed)
         self.set_context()
 
     def _source(self):
@@ -358,7 +395,11 @@ class ApfPlayCallingEditor(QWidget):
                     self.notice.setText(f"{label} returned something this page could not show: "
                                         + plain_error(exc))
             self._enable()
-        self.run_task(label, work, complete, blocking)
+        accepted = self.run_task(label, work, complete, blocking)
+        if accepted is False:
+            self._loading = False
+            self.notice.setText("Another operation is finishing. Try this action again when it finishes.")
+            self._enable()
 
     def _enable(self):
         ready = bool(getattr(self.facade, "source_ready", False))
@@ -367,6 +408,8 @@ class ApfPlayCallingEditor(QWidget):
         self.scheme_group.setEnabled(enabled and self._context is not None and self.side_picker.currentData() == "offense")
         self.preview_group.setEnabled(enabled)
         self.levers.setEnabled(enabled and self._context is not None)
+        self.situation_group.setEnabled(enabled and self._context is not None)
+        self.bucket_export.setEnabled(enabled and self.side_picker.currentData() == "offense")
         self.master_group.setEnabled(enabled and self._context is not None)
         self.review_group.setEnabled(enabled)
         self.confirm_button.setEnabled(enabled and self._review is not None and not self._review["refused"])
@@ -383,9 +426,14 @@ class ApfPlayCallingEditor(QWidget):
         self._loading = False
         self._review = None
         self._context = None
+        self._updating = True
+        self.donor_picker.clear()
+        self._updating = False
         self._custom_timer.stop()
         self.scheme_details.setVisible(False)
         self.grid.setRowCount(0)
+        self._situations = []
+        self.candidate_table.setRowCount(0)
         self.plan_table.setRowCount(0)
         self.plan_table.setVisible(False)
         self.coverage_table.setRowCount(0)
@@ -399,6 +447,13 @@ class ApfPlayCallingEditor(QWidget):
             self.plan_table.setRowCount(0)
             self.plan_table.setVisible(False)
             self.refresh()
+
+    def _side_changed(self, *_):
+        if not self._updating:
+            self._updating = True
+            self.donor_picker.clear()
+            self._updating = False
+            self._selection_changed()
 
     def _custom_changed(self, *_):
         if not self._updating:
@@ -422,7 +477,9 @@ class ApfPlayCallingEditor(QWidget):
         self._generation += 1
         self._review = None
         team, side = self.team_picker.currentData() or 0, self.side_picker.currentData()
-        self.notice.setText("Recomputing calls from the staged book and team tendency…")
+        book = self.donor_picker.currentText() or None
+        preview_tendency = self.preview_tendency.value()
+        self.notice.setText("Recomputing calls from the selected staged book…")
         # Copy Qt values before entering a worker.
         custom = {key: control.value() for key, control in self.custom.items()}
         custom["phase"] = "scrimmage"
@@ -432,18 +489,18 @@ class ApfPlayCallingEditor(QWidget):
             self.notice.setText(f"CPU Play Calling could not read this project: {plain_error(exc)}")
             return
         def operation(progress):
-            context = self.facade.playcalling_context(team, side, progress)
+            context = self.facade.playcalling_context(team, side, progress, book=book, preview_tendency=preview_tendency)
             if side == "offense":
                 rows = list(SITUATIONS) + [("Custom situation", custom)]
             else:
                 rows = [(f"Offense row {i}: " + ", ".join(c.name for c in context["categories"] if c.row == i),
                          {"offense_category_row": i, "yards_to_goal": custom["yards_to_goal"]}) for i in range(11)]
-            return context, self.facade.playcalling_predict(context, side, rows, progress)
+            return context, self.facade.playcalling_predict(context, side, rows, progress), self.facade.playcalling_situations(context, side)
         def done(result):
             if snapshot != self.facade.playcalling_snapshot():
                 self.refresh()
                 return
-            self._context, predictions = result
+            self._context, predictions, self._situations = result
             self._render_context()
             self.render_grid(predictions)
             self.notice.setText("Preview recomputed from staged edits. Offline prediction; gameplay UNWITNESSED.")
@@ -459,15 +516,23 @@ class ApfPlayCallingEditor(QWidget):
         c = self._context
         self._updating = True
         previous_form = self.formation_picker.currentData()
-        previous_donor = self.donor_picker.currentText()
+        previous_situation = self.situation_picker.currentText()
+        previous_add_donor = self.add_donor.currentText()
         self.team_picker.clear()
         for team in c["state"].teams:
             self.team_picker.addItem(team["team_name"], team["team_index"])
         self.team_picker.setCurrentIndex(self.team_picker.findData(c["team"]["team_index"]))
-        self.book_label.setText(c["book"] + (", shared with " + ", ".join(c["sharing"]) if c["sharing"] else ", used only by this team") + ".")
+        users = c["users"]
+        use = ("shared with " + ", ".join(users) if len(users) > 1 else
+               "used only by " + users[0] if users else "not assigned to a disc team")
+        self.book_label.setText(c["book"] + ", " + use + ". Selected team's assignment: " + c["team"][self.side_picker.currentData()] + ".")
         self.donor_picker.clear(); self.donor_picker.addItems(c["donors"])
-        selected = previous_donor if previous_donor in c["donors"] else c["book"]
-        self.donor_picker.setCurrentIndex(max(0, self.donor_picker.findText(selected)))
+        self.donor_picker.setCurrentIndex(max(0, self.donor_picker.findText(c["book"])))
+        self.situation_picker.clear()
+        self.situation_picker.addItems([row["name"] for row in self._situations])
+        self.situation_picker.setCurrentIndex(max(0, self.situation_picker.findText(previous_situation)))
+        self.add_donor.clear(); self.add_donor.addItems(c["donors"])
+        self.add_donor.setCurrentIndex(max(0, self.add_donor.findText(previous_add_donor)))
         self.formation_picker.clear()
         for form in c["formations"]:
             self.formation_picker.addItem(form["name"], form["id"])
@@ -497,6 +562,53 @@ class ApfPlayCallingEditor(QWidget):
         self._updating = False
         self._formation_changed()
         self._master_changed()
+        self._situation_changed()
+        self._add_donor_changed()
+
+    def _situation_changed(self, *_):
+        if self._updating or not self._context or self.situation_picker.currentIndex() < 0:
+            return
+        row = self._situations[self.situation_picker.currentIndex()]
+        self.situation_note.setText(f"Requested personnel row {row['row']}. " + row["note"] +
+                                   " Weights are not percentages or exclusions. Later on-field substitutions remain unproved.")
+        names = {f["id"]: f["name"] for f in self._context["formations"]}
+        self._updating = True
+        fill(self.candidate_table, [(names.get(c["formation"], c["formation"]), c["personnel"], c["tight_ends"],
+                                     f"{c['category_weight']:.4g}", f"{c['formation_weight']:.4g}") for c in row["candidates"]])
+        self._updating = False
+        self.situation_remove.setEnabled(bool(row["candidates"]))
+        if row["candidates"]:
+            self.candidate_table.selectRow(0)
+
+    def _candidate_changed(self):
+        if self._updating or not self._context:
+            return
+        index = self.candidate_table.currentRow()
+        if index >= 0:
+            candidate = self._situations[self.situation_picker.currentIndex()]["candidates"][index]
+            self.formation_picker.setCurrentIndex(self.formation_picker.findData(candidate["formation"]))
+
+    def _add_donor_changed(self, *_):
+        if self._updating or not self._context:
+            return
+        from mod_editor.core import apf2k8_splb_writer as splb
+        c = self._context
+        body = c["state"].books.get(self.add_donor.currentText())
+        self.add_formation.clear()
+        if body is None:
+            return
+        names = {int(row["index"]): row["name"] for row in c["state"].inventory.get("formations", ())}
+        present = {f["id"] for f in c["formations"]}
+        for record in splb.parse_book(body, 0).records:
+            form = record.formation_index
+            if record.populated and form < 151 and form not in present:
+                self.add_formation.addItem(names.get(form, str(form)), form)
+                present.add(form)
+        self.add_button.setEnabled(self.add_formation.count() > 0)
+
+    def stage_addition(self):
+        if self.add_formation.currentData() is not None:
+            self.review_request(self._book_request("add", donor=self.add_donor.currentText(), formation=self.add_formation.currentData()), True)
 
     def _formation_changed(self, *_):
         if self._updating or not self._context:
@@ -541,6 +653,21 @@ class ApfPlayCallingEditor(QWidget):
         if request is None:
             return
         self._review = None
+        if not confirm:
+            # The shell still owns the review worker during its success signal.
+            # Starting a blocking stage there is refused, leaving _loading set.
+            # Review and stage one ordinary edit in the same worker instead.
+            def operation(progress):
+                review = self.facade.playcalling_review(request, progress)
+                if not review["refused"] and not review["event"]["warning"]:
+                    self.facade.stage_playcalling(review, progress)
+                    return True
+                raise ValidationError(review["event"]["warning"])
+            def staged(_):
+                self.modifiedChanged.emit()
+                self.refresh()
+            self._task("Stage CPU Play Calling edit", operation, staged, True)
+            return
         def done(review):
             self._review = review
             event = review["event"]
@@ -560,8 +687,6 @@ class ApfPlayCallingEditor(QWidget):
                 text = f"Review {receipt['scheme']['name']} for {event['after']['book']}. Missing preferred personnel: {missing}. " + " ".join(receipt["notes"])
             self.review_label.setText(text)
             self.notice.setText(text)
-            if not confirm and not event["warning"]:
-                self.confirm_review()
         self._task("Review CPU Play Calling edit", lambda p: self.facade.playcalling_review(request, p), done)
 
     def confirm_review(self):
@@ -570,6 +695,14 @@ class ApfPlayCallingEditor(QWidget):
         review = self._review
         def done(_):
             self._review = None
+            if review["event"]["request"]["kind"] == "clones":
+                rows = review["event"]["request"]["assignments"]
+                own = next((r["clone_name"] for r in rows if r["team_index"] == self.team_picker.currentData()), None)
+                if own:
+                    self._updating = True
+                    self.donor_picker.addItem(own)
+                    self.donor_picker.setCurrentText(own)
+                    self._updating = False
             self.modifiedChanged.emit()
             self.refresh()
         self._task("Stage CPU Play Calling edit", lambda p: self.facade.stage_playcalling(review, p), done, True)
@@ -598,6 +731,8 @@ class ApfPlayCallingEditor(QWidget):
 
     def export_scheme(self):
         team = self.team_picker.currentData()
+        book = self.donor_picker.currentText()
+        preview_tendency = self.preview_tendency.value()
         snapshot = self.facade.playcalling_snapshot()
         def ready(payload):
             if snapshot != self.facade.playcalling_snapshot():
@@ -612,7 +747,7 @@ class ApfPlayCallingEditor(QWidget):
                     self.notice.setText(f"Could not save the spreadsheet: {exc}. Choose a writable folder and export again.")
                     return
                 self.notice.setText("Exported current staged play calls to " + path + ". Gameplay is UNWITNESSED.")
-        self._task("Make play call spreadsheet", lambda p: self.facade.playcalling_scheme_csv(team, p), ready)
+        self._task("Make play call spreadsheet", lambda p: self.facade.playcalling_scheme_csv(team, p, book=book, preview_tendency=preview_tendency), ready)
 
     def stage_ratings(self):
         self.review_request(self._book_request("ratings", formation=self.formation_picker.currentData(), ratings=[s.value() for s in self.ratings]))
@@ -668,6 +803,9 @@ class ApfPlayCallingEditor(QWidget):
 
     def undo(self):
         def done(_):
+            self._updating = True
+            self.donor_picker.clear()
+            self._updating = False
             self.modifiedChanged.emit()
             self.refresh()
         self._task("Undo session change", lambda p: self.facade.undo(p), done, True)

@@ -2323,6 +2323,37 @@ def remove_formation(book: bytes, formation_id: int) -> RemovalResult:
     return RemovalResult(result, retired, _coverage(result, PERSONNEL_ROWS))
 
 
+def fit_book_h7a(encoded: bytes, body: bytes, shift: int, budget: int) -> tuple[bytes, dict]:
+    """Keep a fitting token-preserving stream; refit additions on a miss.
+
+    A changed book can be larger than the old token layout while fitting its
+    allocation with a fresh parse. Every candidate must decode exactly and
+    satisfy APF's length <= distance rule, including helper output.
+    """
+    strategy = "retail-token-preserving"
+    original_size = len(encoded)
+    if len(encoded) > budget:
+        greedy = apf_texture_patch.compress_h7a(body, shift)
+        if len(greedy) < len(encoded):
+            encoded, strategy = greedy, "greedy-refit"
+        if len(encoded) > budget:
+            candidate = apf_texture_patch.compress_h7a_best(body, shift, greedy=greedy)
+            if len(candidate) < len(encoded):
+                encoded, strategy = candidate, "optimal-refit"
+    tokens, used = apf_inner._parse_h7a_tokens(encoded, len(body), shift)
+    if used != len(encoded) or any(t.distance is not None and t.length > t.distance for t in tokens):
+        raise ValidationError("Stock-playbook H7A failed the non-overlapping token check")
+    if apf_inner.decompress_h7a(encoded, len(body), shift) != body:
+        raise ValidationError("Stock-playbook H7A refit changed the decoded book")
+    if len(encoded) > budget:
+        raise ValidationError(
+            f"The edited book needs {len(encoded)} compressed bytes; {budget} are available "
+            f"({len(encoded) - budget} bytes over). Remove an added formation or start with a larger donor book, then build again."
+        )
+    return encoded, {"strategy": strategy, "token_preserving_bytes": original_size,
+                     "payload_bytes": len(encoded), "payload_budget": budget, "overlapping_matches": 0}
+
+
 def build_book_patch(
     index_path: Path, changes: Iterable[MembershipChange | TagMove | TrailerReplace]
 ) -> CompiledBook:
@@ -2365,6 +2396,10 @@ def build_book_patch(
             original_blocks[target_part.block_index],
             new_block,
             descriptor.wrapper.shift,
+        )
+        compressed, fit = fit_book_h7a(
+            compressed, new_block, descriptor.wrapper.shift,
+            entry.size - record.header_size - apf_inner.H7A_HEADER_SIZE - 8 - record.footer.payload_size,
         )
         tokens, _used = apf_inner._parse_h7a_tokens(compressed, len(new_block), descriptor.wrapper.shift)
         if any(token.distance is not None and token.length > token.distance for token in tokens):
@@ -2431,7 +2466,7 @@ def build_book_patch(
         "output_entry_size": len(rebuilt),
         "output_entry_sha256": _sha256(rebuilt),
         "verification": dict(verification),
-        "h7a_transport": {"strategy": "retail-token-preserving", **preservation, "overlapping_matches": 0},
+        "h7a_transport": {**preservation, **fit},
         "claims": {
             **dict(compiled.report["claims"]),
             "fixed_outer_allocation_preserved": True,

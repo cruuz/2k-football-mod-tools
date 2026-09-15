@@ -257,12 +257,39 @@ def category_weights(book, master, row, situation, *, run_share=.5, urgency=0., 
     return tuple(result)
 
 
-def formation_weights(book, master, category_id, situation, *, run_share=.5, urgency=0.):
+def formation_candidate_records(book, master, category_id):
+    """Membership/primary/flag gates before weighting and the 40-slot draw."""
     records = [r for r in _records(book) if int.from_bytes(r.trailer[4:], 'big') & (1 << category_id)
                and not struct.unpack_from('>I', master, 0x24C + r.formation_index * 184)[0] & 1]
     if any(r.category_index == category_id for r in records):
         records = [r for r in records if r.category_index == category_id]
+    return tuple(records)
+
+
+def formation_weights(book, master, category_id, situation, *, run_share=.5, urgency=0.):
+    records = formation_candidate_records(book, master, category_id)
     return _bounded_candidates((r.formation_index, formation_weight(r, master, situation, urgency=urgency, run_share=run_share)) for r in records)
+
+
+def situation_candidates(book, master, situation, *, requested_row=None):
+    """Structural candidates, including low/zero weights, before RNG truncation.
+
+    These are cold ordinary-selector inputs, not guaranteed full-game calls.
+    Preserve category/formation pairs: a formation can have several personnel
+    memberships, and the selected CATEGORY supplies the eleven lineup roles.
+    """
+    row = requested_offense_row(situation) if requested_row is None else requested_row
+    categories = {c.id: c for c in category_table(master)}
+    result = []
+    for category, category_weight in category_weights(book, master, row, situation):
+        for record in formation_candidate_records(book, master, category):
+            c = categories[category]
+            result.append({"formation": record.formation_index, "category": category,
+                           "personnel": c.name, "tight_ends": c.tight_ends,
+                           "category_weight": category_weight,
+                           "formation_weight": formation_weight(record, master, situation),
+                           "primary": record.category_index == category})
+    return result
 
 
 def _bounded_candidates(candidates, integer=1):

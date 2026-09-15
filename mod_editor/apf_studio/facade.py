@@ -176,15 +176,19 @@ class ApfStudioFacade:
     def source_ready(self) -> bool:
         return self.source is not None and self.catalog is not None and self.session is not None
 
-    def playcalling_context(self, team=0, side="offense", progress: Progress = _noop):
+    def playcalling_context(self, team=0, side="offense", progress: Progress = _noop, *, book=None, preview_tendency=None):
         with self._session_lock:
             progress("Reading team books and staged play-calling edits", 0, 1)
-            return self._playcalling.context(self.require_session(), team, side)
+            return self._playcalling.context(self.require_session(), team, side, book=book, preview_tendency=preview_tendency)
 
     def playcalling_predict(self, context, side, rows, progress: Progress = _noop):
         with self._session_lock:
             progress("Predicting CPU calls", 0, len(rows))
             return self._playcalling.predict(context, side, rows)
+
+    def playcalling_situations(self, context, side):
+        with self._session_lock:
+            return self._playcalling.situations(context, side)
 
     def playcalling_plan(self, side, team=None, donor=None, progress: Progress = _noop):
         with self._session_lock:
@@ -198,9 +202,9 @@ class ApfStudioFacade:
         with self._session_lock:
             return self._playcalling.scheme_plan(self.require_session(), team, scheme_id)
 
-    def playcalling_scheme_csv(self, team, progress: Progress = _noop):
+    def playcalling_scheme_csv(self, team, progress: Progress = _noop, *, book=None, preview_tendency=None):
         with self._session_lock:
-            return self._playcalling.scheme_csv(self.require_session(), team)
+            return self._playcalling.scheme_csv(self.require_session(), team, book=book, preview_tendency=preview_tendency)
 
     def stage_playcalling(self, review, progress: Progress = _noop):
         with self._session_lock:

@@ -116,12 +116,15 @@ def validate_request(request):
         "clones": {"side", "assignments"},
         "scheme": {"team", "book", "scheme", "assignments"},
         "never_call": {"book", "formation", "never", "restore_masks"},
+        "add": {"book", "donor", "formation"},
     }
     kind = request.get("kind")
     if kind not in fields or set(request) != fields[kind] | {"kind"}:
         raise ValidationError("Unknown CPU Play Calling control or fields")
     if "book" in request and (not isinstance(request["book"], str) or not 1 <= len(request["book"]) <= 27):
         raise ValidationError("Choose a named book")
+    if kind == "add" and (not isinstance(request["donor"], str) or not 1 <= len(request["donor"]) <= 27):
+        raise ValidationError("Choose a named donor book")
     # "row" stops at 27 because apf2k8_master_writer.set_category_row refuses more.
     for key, high in (("formation", 255), ("play", 1022), ("category", 27), ("primary", 27), ("team", 39), ("row", 27)):
         if key in request:
@@ -295,13 +298,13 @@ class PlayCallingService:
         return validate_request({"kind": "scheme", "team": team, "book": context["book"],
                                  "scheme": scheme_id, "assignments": assignments})
 
-    def scheme_csv(self, session, team):
+    def scheme_csv(self, session, team, *, book=None, preview_tendency=None):
         from mod_editor.core.apf2k8_offensive_schemes import spreadsheet
-        context = self.context(session, team, "offense")
+        context = self.context(session, team, "offense", book=book, preview_tendency=preview_tendency)
         selected = next((e["request"]["scheme"] for e in reversed(context["events"])
                          if e["request"]["kind"] == "scheme" and e["request"]["team"] == team), None)
         state = context["state"]
-        return spreadsheet(state.books[context["book"]], state.master, context["tendency"],
+        return spreadsheet(state.books[context["book"]], state.master, context["preview_tendency"],
                            team_name=context["team"]["team_name"], scheme_id=selected)
 
     def facts(self, state, request):
@@ -410,6 +413,26 @@ class PlayCallingService:
             elif kind == "never_call":
                 from mod_editor.core.apf2k8_formation_calling import set_never_call
                 book = set_never_call(book, request["formation"], request["never"], tuple(request["restore_masks"]))
+            elif kind == "add":
+                donor = request["donor"]
+                if donor not in state.books or state.sides[donor] != state.sides[name]:
+                    raise ValidationError("Choose a donor on the selected book's side")
+                if request["formation"] >= 151:
+                    raise ValidationError("Choose an ordinary formation; special calls use separate caches")
+                if self._record(book, request["formation"]) is not None:
+                    raise ValidationError("This formation is already in the book; edit it below")
+                donor_record = self._record(state.books[donor], request["formation"])
+                if donor_record is None:
+                    raise ValidationError("The donor no longer contains this formation; select it again")
+                parsed = b.splb.parse_book(book, 0)
+                slot = next((r.record_index for r in parsed.records if not r.populated), None)
+                if slot is None:
+                    raise ValidationError("This book has no empty formation slot; remove an ordinary formation first")
+                changes = [b.splb.MembershipChange(0, slot, e.play_index, True) for e in donor_record.entries]
+                changes.append(b.splb.TrailerReplace(0, slot, request["formation"], donor_record.category_index))
+                compiled = b.splb.compile_book(parsed, changes)
+                b.splb.verify_book(book, compiled.replacement, changes)
+                book = b.splb._compact_normalize(compiled.replacement)
             state.books[name] = book
             if kind in {"remove", "retire", "categories"}:
                 coverage = {str(k): list(v) for k, v in b.splb.row_coverage(book, state.master).items()}
@@ -484,10 +507,16 @@ class PlayCallingService:
                     book = donor
         return None
 
-    def context(self, session, team, side):
+    def context(self, session, team, side, *, book=None, preview_tendency=None):
         state = self.state(session)
         selected = next((t for t in state.teams if t["team_index"] == team), state.teams[0])
-        name = selected[side]
+        name = selected[side] if book is None else book
+        if name not in state.books or state.sides.get(name) != side:
+            raise ValidationError("Choose a book on the selected side, then refresh the preview")
+        tendency = self.backend.tendency.team_tendency(state.rost, selected["team_index"])
+        if preview_tendency is None:
+            preview_tendency = tendency
+        _integer(preview_tendency, 0, 100)
         book = state.books[name]
         parsed = self.backend.splb.parse_book(book, 0)
         categories = self.backend.model.category_table(state.master)
@@ -509,20 +538,22 @@ class PlayCallingService:
         return {"state": state, "snapshot": self.snapshot(session), "team": selected, "book": name,
                 "sharing": [t["team_name"] for t in state.teams if t["team_index"] != selected["team_index"] and t[side] == name],
                 "donors": sorted(n for n in state.books if state.sides.get(n) == side), "formations": formations,
-                "categories": categories, "tendency": self.backend.tendency.team_tendency(state.rost, selected["team_index"]),
+                "categories": categories, "tendency": tendency, "preview_tendency": preview_tendency,
+                "users": [t["team_name"] for t in state.teams if t[side] == name],
                 "events": self.events(session)}
 
     def predict(self, context, side, rows):
         state, model = context["state"], self.backend.model
         book = state.books[context["book"]]
-        key = (digest(book), digest(state.master), context["tendency"], side, json_bytes(rows))
+        tendency = context.get("preview_tendency", context["tendency"])
+        key = (digest(book), digest(state.master), tendency, side, json_bytes(rows))
         if key in self.cache:
             self.cache.move_to_end(key)
             return self.cache[key]
         distributions = []
         for label, values in rows:
             if side == "offense":
-                call = model.predict_offense(book, state.master, context["tendency"] / 100,
+                call = model.predict_offense(book, state.master, tendency / 100,
                                              model.Situation(**values), seeds=256)
             else:
                 call = model.predict_defense(book, state.master, values["offense_category_row"], values["yards_to_goal"], seeds=256)
@@ -531,6 +562,22 @@ class PlayCallingService:
         while len(self.cache) > 32:
             self.cache.popitem(last=False)
         return distributions
+
+    def situations(self, context, side):
+        from mod_editor.core.apf2k8_offensive_schemes import BUCKETS
+        model, state = self.backend.model, context["state"]
+        book = state.books[context["book"]]
+        if side == "offense":
+            return [{"name": bucket.name, "note": bucket.note,
+                     "row": model.requested_offense_row(bucket.situation()),
+                     "candidates": model.situation_candidates(book, state.master, bucket.situation())}
+                    for bucket in BUCKETS]
+        return [{"name": f"Opposing personnel row {row}",
+                 "note": "Defense responds to the opposing personnel; membership edits apply throughout this book.",
+                 "row": model.requested_defense_row(row, 50),
+                 "candidates": model.situation_candidates(book, state.master, model.Situation(1, 10, 50, 1, 900, 0, 3),
+                                                           requested_row=model.requested_defense_row(row, 50))}
+                for row in range(11)]
 
 
 def main(argv=None):
