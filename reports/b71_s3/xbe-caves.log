@@ -1,0 +1,49 @@
+EEEE.
+======================================================================
+ERROR: setUpClass (__main__.CaveReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_xbe_patch_cave_references.py", line 265, in setUpClass
+    cls.manifest = manifest_for_allocated_union(release_manifest, cls.retail, cls.patched)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s3/tests/nfl2k5_allocator_stack.py", line 222, in manifest_for_allocated_union
+    raise AssertionError(f'Rules live edit overlaps another owner: {module.OWNER}/{name}')
+AssertionError: Rules live edit overlaps another owner: nfl2k5_coin_defer/choose
+
+======================================================================
+ERROR: setUpClass (__main__.ReverseOwnerOrderTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_xbe_patch_cave_references.py", line 265, in setUpClass
+    cls.manifest = manifest_for_allocated_union(release_manifest, cls.retail, cls.patched)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s3/tests/nfl2k5_allocator_stack.py", line 222, in manifest_for_allocated_union
+    raise AssertionError(f'Rules live edit overlaps another owner: {module.OWNER}/{name}')
+AssertionError: Rules live edit overlaps another owner: nfl2k5_coin_defer/choose
+
+======================================================================
+ERROR: setUpClass (__main__.ScaleoutOwnerTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_xbe_patch_cave_references.py", line 265, in setUpClass
+    cls.manifest = manifest_for_allocated_union(release_manifest, cls.retail, cls.patched)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s3/tests/nfl2k5_allocator_stack.py", line 222, in manifest_for_allocated_union
+    raise AssertionError(f'Rules live edit overlaps another owner: {module.OWNER}/{name}')
+AssertionError: Rules live edit overlaps another owner: nfl2k5_coin_defer/choose
+
+======================================================================
+ERROR: setUpClass (__main__.ScaleoutReverseOwnerTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_xbe_patch_cave_references.py", line 265, in setUpClass
+    cls.manifest = manifest_for_allocated_union(release_manifest, cls.retail, cls.patched)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s3/tests/nfl2k5_allocator_stack.py", line 222, in manifest_for_allocated_union
+    raise AssertionError(f'Rules live edit overlaps another owner: {module.OWNER}/{name}')
+AssertionError: Rules live edit overlaps another owner: nfl2k5_coin_defer/choose
+
+----------------------------------------------------------------------
+Ran 1 test in 1114.818s
+
+FAILED (errors=4)

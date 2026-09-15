@@ -1,0 +1,11 @@
+{
+  "name": "test_nfl2k5_scorebug_freeze-final",
+  "command": [
+    "/usr/bin/python3",
+    "tests/mod_editor/test_nfl2k5_scorebug_freeze.py"
+  ],
+  "start": "2026-09-15T21:02:57.484726+00:00",
+  "end": "2026-09-15T21:07:00.744513+00:00",
+  "seconds": 243.26,
+  "exit": 0
+}

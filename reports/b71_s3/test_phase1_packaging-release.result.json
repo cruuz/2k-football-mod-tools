@@ -1,0 +1,11 @@
+{
+  "name": "test_phase1_packaging-release",
+  "command": [
+    "/usr/bin/python3",
+    "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_phase1_packaging.py"
+  ],
+  "start": "2026-09-15T21:23:49.245319+00:00",
+  "end": "2026-09-15T21:23:51.323930+00:00",
+  "seconds": 2.079,
+  "exit": 0
+}

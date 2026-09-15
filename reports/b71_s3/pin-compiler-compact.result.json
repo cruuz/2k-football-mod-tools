@@ -1,0 +1,11 @@
+{
+  "name": "pin-compiler-compact",
+  "command": [
+    "python3",
+    "reports/b71_s3/regenerate_pins.py"
+  ],
+  "start": "2026-09-15T21:05:01.429100+00:00",
+  "end": "2026-09-15T21:05:02.572682+00:00",
+  "seconds": 1.144,
+  "exit": 1
+}

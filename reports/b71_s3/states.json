@@ -1,0 +1,1274 @@
+{
+  "all_events_43": {
+    "containment": null,
+    "text": [
+      {
+        "box": [
+          301.6000061035156,
+          413.67999267578125,
+          348.3999938964844,
+          424.7200012207031
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "1st & 10"
+      },
+      {
+        "box": [
+          344.6000061035156,
+          431.67999267578125,
+          356.3999938964844,
+          441.79998779296875
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "12"
+      },
+      {
+        "box": [
+          269.0,
+          412.0,
+          371.0,
+          427.0
+        ],
+        "color": "0xffffffff",
+        "font": "font4",
+        "text": "Hangtime: 0.0"
+      },
+      {
+        "box": [
+          301.0,
+          412.0,
+          340.0,
+          424.0
+        ],
+        "color": "0xffffffff",
+        "font": "font4",
+        "text": "FLAG"
+      },
+      {
+        "box": [
+          265.0,
+          412.0,
+          376.0,
+          424.0
+        ],
+        "color": "0xffffffff",
+        "font": "font4",
+        "text": "Ball at Midfield"
+      },
+      {
+        "box": [
+          292.0,
+          412.0,
+          350.0,
+          424.0
+        ],
+        "color": "0xffffffff",
+        "font": "font4",
+        "text": "FUMBLE"
+      },
+      {
+        "box": [
+          373.0,
+          444.0,
+          399.3999938964844,
+          446.5
+        ],
+        "color": "0xffc8cace",
+        "font": "FirstPersonComic",
+        "text": "~ ~ ~"
+      },
+      {
+        "box": [
+          239.0,
+          444.0,
+          265.3999938964844,
+          446.5
+        ],
+        "color": "0xffc8cace",
+        "font": "FirstPersonComic",
+        "text": "~ ~ ~"
+      },
+      {
+        "box": [
+          285.0,
+          434.8800048828125,
+          298.0,
+          443.5199890136719
+        ],
+        "color": "0xff64666a",
+        "font": "core_bug",
+        "text": "1ST"
+      },
+      {
+        "box": [
+          307.6000061035156,
+          432.67999267578125,
+          336.3999938964844,
+          443.7200012207031
+        ],
+        "color": "0xff000000",
+        "font": "FirstPersonComic",
+        "text": "13:10"
+      },
+      {
+        "box": [
+          379.3330798149109,
+          416.2962951660141,
+          392.6669150988141,
+          434.9636643727395
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "\u0080"
+      },
+      {
+        "box": [
+          244.9997363090515,
+          416.2962951660141,
+          258.33357159295474,
+          434.9636643727395
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "\u0080"
+      }
+    ],
+    "visible_materials": [
+      "bscore_buga1",
+      "bscore_buga2",
+      "cscore_buga",
+      "hscore_buga",
+      "dscore_buga",
+      "bscore_buga",
+      "score_buga",
+      "yscore_buga1",
+      "zz_ESPN_bug1",
+      "yscore_buga",
+      "zscore_buga"
+    ]
+  },
+  "all_events_wide": {
+    "containment": null,
+    "text": [
+      {
+        "box": [
+          304.4750051498413,
+          413.67999267578125,
+          343.9624948501587,
+          424.7200012207031
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "1st & 10"
+      },
+      {
+        "box": [
+          340.7562551498413,
+          431.67999267578125,
+          350.7124948501587,
+          441.79998779296875
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "12"
+      },
+      {
+        "box": [
+          276.96875,
+          412.0,
+          363.03125,
+          427.0
+        ],
+        "color": "0xffffffff",
+        "font": "font4",
+        "text": "Hangtime: 0.0"
+      },
+      {
+        "box": [
+          303.96875,
+          412.0,
+          336.875,
+          424.0
+        ],
+        "color": "0xffffffff",
+        "font": "font4",
+        "text": "FLAG"
+      },
+      {
+        "box": [
+          273.59375,
+          412.0,
+          367.25,
+          424.0
+        ],
+        "color": "0xffffffff",
+        "font": "font4",
+        "text": "Ball at Midfield"
+      },
+      {
+        "box": [
+          296.375,
+          412.0,
+          345.3125,
+          424.0
+        ],
+        "color": "0xffffffff",
+        "font": "font4",
+        "text": "FUMBLE"
+      },
+      {
+        "box": [
+          364.71875,
+          444.0,
+          386.9937448501587,
+          446.5
+        ],
+        "color": "0xffc8cace",
+        "font": "FirstPersonComic",
+        "text": "~ ~ ~"
+      },
+      {
+        "box": [
+          251.65625,
+          444.0,
+          273.9312448501587,
+          446.5
+        ],
+        "color": "0xffc8cace",
+        "font": "FirstPersonComic",
+        "text": "~ ~ ~"
+      },
+      {
+        "box": [
+          290.46875,
+          434.8800048828125,
+          301.4375,
+          443.5199890136719
+        ],
+        "color": "0xff64666a",
+        "font": "core_bug",
+        "text": "1ST"
+      },
+      {
+        "box": [
+          309.5375051498413,
+          432.67999267578125,
+          333.8374948501587,
+          443.7200012207031
+        ],
+        "color": "0xff000000",
+        "font": "FirstPersonComic",
+        "text": "13:10"
+      },
+      {
+        "box": [
+          370.06228609383106,
+          416.2962951660141,
+          381.3127096146244,
+          434.9636643727395
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "\u0080"
+      },
+      {
+        "box": [
+          256.7185275107622,
+          416.2962951660141,
+          267.96895103155555,
+          434.9636643727395
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "\u0080"
+      }
+    ],
+    "visible_materials": [
+      "bscore_buga1",
+      "bscore_buga2",
+      "cscore_buga",
+      "hscore_buga",
+      "dscore_buga",
+      "bscore_buga",
+      "score_buga",
+      "yscore_buga1",
+      "zz_ESPN_bug1",
+      "yscore_buga",
+      "zscore_buga"
+    ]
+  },
+  "ball_on_43": {
+    "containment": null,
+    "text": [
+      {
+        "box": [
+          344.6000061035156,
+          431.67999267578125,
+          356.3999938964844,
+          441.79998779296875
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "12"
+      },
+      {
+        "box": [
+          265.0,
+          412.0,
+          376.0,
+          424.0
+        ],
+        "color": "0xffffffff",
+        "font": "font4",
+        "text": "Ball at Midfield"
+      },
+      {
+        "box": [
+          373.0,
+          444.0,
+          399.3999938964844,
+          446.5
+        ],
+        "color": "0xffc8cace",
+        "font": "FirstPersonComic",
+        "text": "~ ~ ~"
+      },
+      {
+        "box": [
+          239.0,
+          444.0,
+          265.3999938964844,
+          446.5
+        ],
+        "color": "0xffc8cace",
+        "font": "FirstPersonComic",
+        "text": "~ ~ ~"
+      },
+      {
+        "box": [
+          285.0,
+          434.8800048828125,
+          298.0,
+          443.5199890136719
+        ],
+        "color": "0xff64666a",
+        "font": "core_bug",
+        "text": "1ST"
+      },
+      {
+        "box": [
+          307.6000061035156,
+          432.67999267578125,
+          336.3999938964844,
+          443.7200012207031
+        ],
+        "color": "0xff000000",
+        "font": "FirstPersonComic",
+        "text": "13:10"
+      },
+      {
+        "box": [
+          379.3330798149109,
+          416.2962951660141,
+          392.6669150988141,
+          434.9636643727395
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "\u0080"
+      },
+      {
+        "box": [
+          244.9997363090515,
+          416.2962951660141,
+          258.33357159295474,
+          434.9636643727395
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "\u0080"
+      }
+    ],
+    "visible_materials": [
+      "bscore_buga1",
+      "cscore_buga",
+      "hscore_buga",
+      "score_buga",
+      "yscore_buga1",
+      "yscore_buga",
+      "zscore_buga"
+    ]
+  },
+  "ball_on_wide": {
+    "containment": null,
+    "text": [
+      {
+        "box": [
+          340.7562551498413,
+          431.67999267578125,
+          350.7124948501587,
+          441.79998779296875
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "12"
+      },
+      {
+        "box": [
+          273.59375,
+          412.0,
+          367.25,
+          424.0
+        ],
+        "color": "0xffffffff",
+        "font": "font4",
+        "text": "Ball at Midfield"
+      },
+      {
+        "box": [
+          364.71875,
+          444.0,
+          386.9937448501587,
+          446.5
+        ],
+        "color": "0xffc8cace",
+        "font": "FirstPersonComic",
+        "text": "~ ~ ~"
+      },
+      {
+        "box": [
+          251.65625,
+          444.0,
+          273.9312448501587,
+          446.5
+        ],
+        "color": "0xffc8cace",
+        "font": "FirstPersonComic",
+        "text": "~ ~ ~"
+      },
+      {
+        "box": [
+          290.46875,
+          434.8800048828125,
+          301.4375,
+          443.5199890136719
+        ],
+        "color": "0xff64666a",
+        "font": "core_bug",
+        "text": "1ST"
+      },
+      {
+        "box": [
+          309.5375051498413,
+          432.67999267578125,
+          333.8374948501587,
+          443.7200012207031
+        ],
+        "color": "0xff000000",
+        "font": "FirstPersonComic",
+        "text": "13:10"
+      },
+      {
+        "box": [
+          370.06228609383106,
+          416.2962951660141,
+          381.3127096146244,
+          434.9636643727395
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "\u0080"
+      },
+      {
+        "box": [
+          256.7185275107622,
+          416.2962951660141,
+          267.96895103155555,
+          434.9636643727395
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "\u0080"
+      }
+    ],
+    "visible_materials": [
+      "bscore_buga1",
+      "cscore_buga",
+      "hscore_buga",
+      "score_buga",
+      "yscore_buga1",
+      "yscore_buga",
+      "zscore_buga"
+    ]
+  },
+  "flag_43": {
+    "containment": null,
+    "text": [
+      {
+        "box": [
+          344.6000061035156,
+          431.67999267578125,
+          356.3999938964844,
+          441.79998779296875
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "12"
+      },
+      {
+        "box": [
+          301.0,
+          412.0,
+          340.0,
+          424.0
+        ],
+        "color": "0xffffffff",
+        "font": "font4",
+        "text": "FLAG"
+      },
+      {
+        "box": [
+          373.0,
+          444.0,
+          399.3999938964844,
+          446.5
+        ],
+        "color": "0xffc8cace",
+        "font": "FirstPersonComic",
+        "text": "~ ~ ~"
+      },
+      {
+        "box": [
+          239.0,
+          444.0,
+          265.3999938964844,
+          446.5
+        ],
+        "color": "0xffc8cace",
+        "font": "FirstPersonComic",
+        "text": "~ ~ ~"
+      },
+      {
+        "box": [
+          285.0,
+          434.8800048828125,
+          298.0,
+          443.5199890136719
+        ],
+        "color": "0xff64666a",
+        "font": "core_bug",
+        "text": "1ST"
+      },
+      {
+        "box": [
+          307.6000061035156,
+          432.67999267578125,
+          336.3999938964844,
+          443.7200012207031
+        ],
+        "color": "0xff000000",
+        "font": "FirstPersonComic",
+        "text": "13:10"
+      },
+      {
+        "box": [
+          379.3330798149109,
+          416.2962951660141,
+          392.6669150988141,
+          434.9636643727395
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "\u0080"
+      },
+      {
+        "box": [
+          244.9997363090515,
+          416.2962951660141,
+          258.33357159295474,
+          434.9636643727395
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "\u0080"
+      }
+    ],
+    "visible_materials": [
+      "bscore_buga2",
+      "cscore_buga",
+      "hscore_buga",
+      "score_buga",
+      "yscore_buga1",
+      "yscore_buga",
+      "zscore_buga"
+    ]
+  },
+  "flag_wide": {
+    "containment": null,
+    "text": [
+      {
+        "box": [
+          340.7562551498413,
+          431.67999267578125,
+          350.7124948501587,
+          441.79998779296875
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "12"
+      },
+      {
+        "box": [
+          303.96875,
+          412.0,
+          336.875,
+          424.0
+        ],
+        "color": "0xffffffff",
+        "font": "font4",
+        "text": "FLAG"
+      },
+      {
+        "box": [
+          364.71875,
+          444.0,
+          386.9937448501587,
+          446.5
+        ],
+        "color": "0xffc8cace",
+        "font": "FirstPersonComic",
+        "text": "~ ~ ~"
+      },
+      {
+        "box": [
+          251.65625,
+          444.0,
+          273.9312448501587,
+          446.5
+        ],
+        "color": "0xffc8cace",
+        "font": "FirstPersonComic",
+        "text": "~ ~ ~"
+      },
+      {
+        "box": [
+          290.46875,
+          434.8800048828125,
+          301.4375,
+          443.5199890136719
+        ],
+        "color": "0xff64666a",
+        "font": "core_bug",
+        "text": "1ST"
+      },
+      {
+        "box": [
+          309.5375051498413,
+          432.67999267578125,
+          333.8374948501587,
+          443.7200012207031
+        ],
+        "color": "0xff000000",
+        "font": "FirstPersonComic",
+        "text": "13:10"
+      },
+      {
+        "box": [
+          370.06228609383106,
+          416.2962951660141,
+          381.3127096146244,
+          434.9636643727395
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "\u0080"
+      },
+      {
+        "box": [
+          256.7185275107622,
+          416.2962951660141,
+          267.96895103155555,
+          434.9636643727395
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "\u0080"
+      }
+    ],
+    "visible_materials": [
+      "bscore_buga2",
+      "cscore_buga",
+      "hscore_buga",
+      "score_buga",
+      "yscore_buga1",
+      "yscore_buga",
+      "zscore_buga"
+    ]
+  },
+  "hang_time_43": {
+    "containment": null,
+    "text": [
+      {
+        "box": [
+          344.6000061035156,
+          431.67999267578125,
+          356.3999938964844,
+          441.79998779296875
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "12"
+      },
+      {
+        "box": [
+          269.0,
+          412.0,
+          371.0,
+          427.0
+        ],
+        "color": "0xffffffff",
+        "font": "font4",
+        "text": "Hangtime: 0.0"
+      },
+      {
+        "box": [
+          373.0,
+          444.0,
+          399.3999938964844,
+          446.5
+        ],
+        "color": "0xffc8cace",
+        "font": "FirstPersonComic",
+        "text": "~ ~ ~"
+      },
+      {
+        "box": [
+          239.0,
+          444.0,
+          265.3999938964844,
+          446.5
+        ],
+        "color": "0xffc8cace",
+        "font": "FirstPersonComic",
+        "text": "~ ~ ~"
+      },
+      {
+        "box": [
+          285.0,
+          434.8800048828125,
+          298.0,
+          443.5199890136719
+        ],
+        "color": "0xff64666a",
+        "font": "core_bug",
+        "text": "1ST"
+      },
+      {
+        "box": [
+          307.6000061035156,
+          432.67999267578125,
+          336.3999938964844,
+          443.7200012207031
+        ],
+        "color": "0xff000000",
+        "font": "FirstPersonComic",
+        "text": "13:10"
+      },
+      {
+        "box": [
+          379.3330798149109,
+          416.2962951660141,
+          392.6669150988141,
+          434.9636643727395
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "\u0080"
+      },
+      {
+        "box": [
+          244.9997363090515,
+          416.2962951660141,
+          258.33357159295474,
+          434.9636643727395
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "\u0080"
+      }
+    ],
+    "visible_materials": [
+      "cscore_buga",
+      "hscore_buga",
+      "score_buga",
+      "yscore_buga1",
+      "zz_ESPN_bug1",
+      "yscore_buga",
+      "zscore_buga"
+    ]
+  },
+  "hang_time_wide": {
+    "containment": null,
+    "text": [
+      {
+        "box": [
+          340.7562551498413,
+          431.67999267578125,
+          350.7124948501587,
+          441.79998779296875
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "12"
+      },
+      {
+        "box": [
+          276.96875,
+          412.0,
+          363.03125,
+          427.0
+        ],
+        "color": "0xffffffff",
+        "font": "font4",
+        "text": "Hangtime: 0.0"
+      },
+      {
+        "box": [
+          364.71875,
+          444.0,
+          386.9937448501587,
+          446.5
+        ],
+        "color": "0xffc8cace",
+        "font": "FirstPersonComic",
+        "text": "~ ~ ~"
+      },
+      {
+        "box": [
+          251.65625,
+          444.0,
+          273.9312448501587,
+          446.5
+        ],
+        "color": "0xffc8cace",
+        "font": "FirstPersonComic",
+        "text": "~ ~ ~"
+      },
+      {
+        "box": [
+          290.46875,
+          434.8800048828125,
+          301.4375,
+          443.5199890136719
+        ],
+        "color": "0xff64666a",
+        "font": "core_bug",
+        "text": "1ST"
+      },
+      {
+        "box": [
+          309.5375051498413,
+          432.67999267578125,
+          333.8374948501587,
+          443.7200012207031
+        ],
+        "color": "0xff000000",
+        "font": "FirstPersonComic",
+        "text": "13:10"
+      },
+      {
+        "box": [
+          370.06228609383106,
+          416.2962951660141,
+          381.3127096146244,
+          434.9636643727395
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "\u0080"
+      },
+      {
+        "box": [
+          256.7185275107622,
+          416.2962951660141,
+          267.96895103155555,
+          434.9636643727395
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "\u0080"
+      }
+    ],
+    "visible_materials": [
+      "cscore_buga",
+      "hscore_buga",
+      "score_buga",
+      "yscore_buga1",
+      "zz_ESPN_bug1",
+      "yscore_buga",
+      "zscore_buga"
+    ]
+  },
+  "live_clock_hidden_43": {
+    "containment": null,
+    "text": [
+      {
+        "box": [
+          373.0,
+          444.0,
+          399.3999938964844,
+          446.5
+        ],
+        "color": "0xffc8cace",
+        "font": "FirstPersonComic",
+        "text": "~ ~ ~"
+      },
+      {
+        "box": [
+          239.0,
+          444.0,
+          265.3999938964844,
+          446.5
+        ],
+        "color": "0xffc8cace",
+        "font": "FirstPersonComic",
+        "text": "~ ~ ~"
+      },
+      {
+        "box": [
+          285.0,
+          434.8800048828125,
+          298.0,
+          443.5199890136719
+        ],
+        "color": "0xff64666a",
+        "font": "core_bug",
+        "text": "1ST"
+      },
+      {
+        "box": [
+          307.6000061035156,
+          432.67999267578125,
+          336.3999938964844,
+          443.7200012207031
+        ],
+        "color": "0xff000000",
+        "font": "FirstPersonComic",
+        "text": "13:10"
+      },
+      {
+        "box": [
+          379.3330798149109,
+          416.2962951660141,
+          392.6669150988141,
+          434.9636643727395
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "\u0080"
+      },
+      {
+        "box": [
+          244.9997363090515,
+          416.2962951660141,
+          258.33357159295474,
+          434.9636643727395
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "\u0080"
+      }
+    ],
+    "visible_materials": [
+      "hscore_buga",
+      "score_buga",
+      "yscore_buga1",
+      "yscore_buga",
+      "zscore_buga"
+    ]
+  },
+  "live_clock_hidden_wide": {
+    "containment": null,
+    "text": [
+      {
+        "box": [
+          364.71875,
+          444.0,
+          386.9937448501587,
+          446.5
+        ],
+        "color": "0xffc8cace",
+        "font": "FirstPersonComic",
+        "text": "~ ~ ~"
+      },
+      {
+        "box": [
+          251.65625,
+          444.0,
+          273.9312448501587,
+          446.5
+        ],
+        "color": "0xffc8cace",
+        "font": "FirstPersonComic",
+        "text": "~ ~ ~"
+      },
+      {
+        "box": [
+          290.46875,
+          434.8800048828125,
+          301.4375,
+          443.5199890136719
+        ],
+        "color": "0xff64666a",
+        "font": "core_bug",
+        "text": "1ST"
+      },
+      {
+        "box": [
+          309.5375051498413,
+          432.67999267578125,
+          333.8374948501587,
+          443.7200012207031
+        ],
+        "color": "0xff000000",
+        "font": "FirstPersonComic",
+        "text": "13:10"
+      },
+      {
+        "box": [
+          370.06228609383106,
+          416.2962951660141,
+          381.3127096146244,
+          434.9636643727395
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "\u0080"
+      },
+      {
+        "box": [
+          256.7185275107622,
+          416.2962951660141,
+          267.96895103155555,
+          434.9636643727395
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "\u0080"
+      }
+    ],
+    "visible_materials": [
+      "hscore_buga",
+      "score_buga",
+      "yscore_buga1",
+      "yscore_buga",
+      "zscore_buga"
+    ]
+  },
+  "score_43": {
+    "containment": null,
+    "text": [
+      {
+        "box": [
+          344.6000061035156,
+          431.67999267578125,
+          356.3999938964844,
+          441.79998779296875
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "12"
+      },
+      {
+        "box": [
+          292.0,
+          412.0,
+          350.0,
+          424.0
+        ],
+        "color": "0xffffffff",
+        "font": "font4",
+        "text": "FUMBLE"
+      },
+      {
+        "box": [
+          373.0,
+          444.0,
+          399.3999938964844,
+          446.5
+        ],
+        "color": "0xffc8cace",
+        "font": "FirstPersonComic",
+        "text": "~ ~ ~"
+      },
+      {
+        "box": [
+          239.0,
+          444.0,
+          265.3999938964844,
+          446.5
+        ],
+        "color": "0xffc8cace",
+        "font": "FirstPersonComic",
+        "text": "~ ~ ~"
+      },
+      {
+        "box": [
+          285.0,
+          434.8800048828125,
+          298.0,
+          443.5199890136719
+        ],
+        "color": "0xff64666a",
+        "font": "core_bug",
+        "text": "1ST"
+      },
+      {
+        "box": [
+          307.6000061035156,
+          432.67999267578125,
+          336.3999938964844,
+          443.7200012207031
+        ],
+        "color": "0xff000000",
+        "font": "FirstPersonComic",
+        "text": "13:10"
+      },
+      {
+        "box": [
+          379.3330798149109,
+          416.2962951660141,
+          392.6669150988141,
+          434.9636643727395
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "\u0080"
+      },
+      {
+        "box": [
+          244.9997363090515,
+          416.2962951660141,
+          258.33357159295474,
+          434.9636643727395
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "\u0080"
+      }
+    ],
+    "visible_materials": [
+      "cscore_buga",
+      "hscore_buga",
+      "bscore_buga",
+      "score_buga",
+      "yscore_buga1",
+      "yscore_buga",
+      "zscore_buga"
+    ]
+  },
+  "score_wide": {
+    "containment": null,
+    "text": [
+      {
+        "box": [
+          340.7562551498413,
+          431.67999267578125,
+          350.7124948501587,
+          441.79998779296875
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "12"
+      },
+      {
+        "box": [
+          296.375,
+          412.0,
+          345.3125,
+          424.0
+        ],
+        "color": "0xffffffff",
+        "font": "font4",
+        "text": "FUMBLE"
+      },
+      {
+        "box": [
+          364.71875,
+          444.0,
+          386.9937448501587,
+          446.5
+        ],
+        "color": "0xffc8cace",
+        "font": "FirstPersonComic",
+        "text": "~ ~ ~"
+      },
+      {
+        "box": [
+          251.65625,
+          444.0,
+          273.9312448501587,
+          446.5
+        ],
+        "color": "0xffc8cace",
+        "font": "FirstPersonComic",
+        "text": "~ ~ ~"
+      },
+      {
+        "box": [
+          290.46875,
+          434.8800048828125,
+          301.4375,
+          443.5199890136719
+        ],
+        "color": "0xff64666a",
+        "font": "core_bug",
+        "text": "1ST"
+      },
+      {
+        "box": [
+          309.5375051498413,
+          432.67999267578125,
+          333.8374948501587,
+          443.7200012207031
+        ],
+        "color": "0xff000000",
+        "font": "FirstPersonComic",
+        "text": "13:10"
+      },
+      {
+        "box": [
+          370.06228609383106,
+          416.2962951660141,
+          381.3127096146244,
+          434.9636643727395
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "\u0080"
+      },
+      {
+        "box": [
+          256.7185275107622,
+          416.2962951660141,
+          267.96895103155555,
+          434.9636643727395
+        ],
+        "color": "0xffffffff",
+        "font": "FirstPersonComic",
+        "text": "\u0080"
+      }
+    ],
+    "visible_materials": [
+      "cscore_buga",
+      "hscore_buga",
+      "bscore_buga",
+      "score_buga",
+      "yscore_buga1",
+      "yscore_buga",
+      "zscore_buga"
+    ]
+  }
+}

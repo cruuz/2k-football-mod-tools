@@ -1,0 +1,12 @@
+{
+  "name": "repin-capsule",
+  "command": [
+    "python3",
+    "packaging/repin.py",
+    "--apply"
+  ],
+  "start": "2026-09-15T20:57:49.823216+00:00",
+  "end": "2026-09-15T20:58:22.414505+00:00",
+  "seconds": 32.591,
+  "exit": 0
+}

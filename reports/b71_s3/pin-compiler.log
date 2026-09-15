@@ -1,0 +1,23 @@
+{
+  "PATCHED_SHA256": {
+    "score_bug": "0588f2f49a0f3cf40ae179dd34d1a57b25748dbc993df34b020153fcd124d8cf",
+    "score_buga": "01a30410e9147f5669614fbe6fa59e0066e5defa39c7d7fae325098f51dd39f6"
+  },
+  "STATIC_SCENE_SHA256": "2d48ab3d3876a9e533a213c4cd22d181dc64a74f9292e5ed1a3fdd53e913de93",
+  "RUNTIME_SCENE_SHA256": "9cdfbf5c3b62fc677a81269301add652b3b6887774c42dcc2bbb3e2a0effe919",
+  "RUNTIME_PINS": {
+    "index": "1b4c2af593e2b61d42b5afc3ad9c67433eee2af4fc16920f8a1538640c956b10",
+    "hud_before": "2c23410c05c1ec266c3176b8b201f9a48b4a45ac148110ca569e5df25984e7c8",
+    "hud_after": "34c53fc26a18f4a4ea09b34dd9c570fc091830b69e63bb44388f7ce3cc18e5d8",
+    "appendix": "846864649a3b2309c476edb55fc9b14a912e062548d1a2abf474a8e3acf44063"
+  },
+  "PROBE_APPEND_PINS": {
+    "transport": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "hooks": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "neutral": "e38a25fae3acb5fdd3ae5ddcb91798e047e1be27e862f319452ee176b6cb61fa",
+    "pair": "8c7da0308c4b96d66f124ec5c83939ac0376fac623ca76b777d67be0b1cfd515",
+    "mnf": "0e78622749cb2b66f8ba3a53a6ea8a02fea83f19285e820f6c5918d69b676acc"
+  },
+  "CLOCK_FONT_SHA256": "8da61107e5684780a86148429b800ee949b6f8b13eeb3c7c7c3fdcde3e165431",
+  "MNF_VERSION": "scorebug-mnf-2026-v3"
+}

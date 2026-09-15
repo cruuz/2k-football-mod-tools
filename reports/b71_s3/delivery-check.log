@@ -1,0 +1,13 @@
+{
+  "volume_bytes": 412672,
+  "native_heap_bytes": 419200,
+  "code_bytes": 1373,
+  "code_budget": 1408,
+  "manifest_sources_fresh": true,
+  "builder_plan": {
+    "scorebug": true,
+    "scorebug_runtime": true,
+    "modern_color": true,
+    "widescreen": true
+  }
+}

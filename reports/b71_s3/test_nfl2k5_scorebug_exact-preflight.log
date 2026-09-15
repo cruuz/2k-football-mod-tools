@@ -1,0 +1,33 @@
+.....FF.
+======================================================================
+FAIL: test_current_compiler_and_every_probe_identity_are_reproducible (__main__.NativeTests.test_current_compiler_and_every_probe_identity_are_reproducible)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_exact.py", line 178, in test_current_compiler_and_every_probe_identity_are_reproducible
+    for name, value in pins.items(): self.assertEqual(getattr(art, name), value, name)
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: '41865a57f94f991f679ef499523f737cf2ddae47e7f910d40fcd43679a1df0a7' != 'f71fe86a19194688e045625270f939ce4eaf8c2c95e47e0787169243c94ad4ed'
+- 41865a57f94f991f679ef499523f737cf2ddae47e7f910d40fcd43679a1df0a7
++ f71fe86a19194688e045625270f939ce4eaf8c2c95e47e0787169243c94ad4ed
+ : RUNTIME_SCENE_SHA256
+
+======================================================================
+FAIL: test_live_timeouts_change_only_the_selected_runtime_panel (__main__.NativeTests.test_live_timeouts_change_only_the_selected_runtime_panel)
+Beta 70: timeouts are text through the team-name callbacks; the wing
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_exact.py", line 146, in test_live_timeouts_change_only_the_selected_runtime_panel
+    self.assertEqual((rb["text"].count("-"), ra["text"].count("-")), (3, 1))
+AssertionError: Tuples differ: (0, 0) != (3, 1)
+
+First differing element 0:
+0
+3
+
+- (0, 0)
++ (3, 1)
+
+----------------------------------------------------------------------
+Ran 8 tests in 68.055s
+
+FAILED (failures=2)

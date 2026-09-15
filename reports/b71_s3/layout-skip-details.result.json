@@ -1,0 +1,14 @@
+{
+  "name": "layout-skip-details",
+  "command": [
+    "env",
+    "NFL2K5_SCOREBUG_EMULATION_TEST=1",
+    "python3",
+    "tests/nfl2k5_scorebug_layout_test.py",
+    "-v"
+  ],
+  "start": "2026-09-15T21:24:48.357031+00:00",
+  "end": "2026-09-15T21:24:49.835383+00:00",
+  "seconds": 1.478,
+  "exit": 0
+}

@@ -1,0 +1,12 @@
+{
+  "name": "repin-before-source-commit",
+  "command": [
+    "python3",
+    "packaging/repin.py",
+    "--apply"
+  ],
+  "start": "2026-09-15T21:08:56.316751+00:00",
+  "end": "2026-09-15T21:09:07.462090+00:00",
+  "seconds": 11.145,
+  "exit": 0
+}

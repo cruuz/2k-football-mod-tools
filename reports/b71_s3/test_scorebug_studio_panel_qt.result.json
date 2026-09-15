@@ -1,0 +1,11 @@
+{
+  "name": "test_scorebug_studio_panel_qt",
+  "command": [
+    "/usr/bin/python3",
+    "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_scorebug_studio_panel_qt.py"
+  ],
+  "start": "2026-09-15T21:08:20.141962+00:00",
+  "end": "2026-09-15T21:08:27.585074+00:00",
+  "seconds": 7.443,
+  "exit": 0
+}

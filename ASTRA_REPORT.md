@@ -1,1143 +1,312 @@
-# Beta 71 A5 integration report
+# Beta 71 S3: scorebug v3
 
 ## Outcome
 
-All 14 standalone test programs and the final strict registry validation passed. Both XBE gates passed (119 memory-write cases and 131 cave-reference cases). The font suite has five existing legacy-case skips.
-
-Integrated scorebug v2 wings, capsule fonts, and colour v2.1 on `astra/b71-a5-scorebug-integrate` in `.scratch/private.git`. The ordinary worktree `.git` and shared branch refs were left untouched. No push and no emulator launch.
-
-**Disc creation is blocked by the session filesystem permissions.** The exact destination folder is mounted read-only inside the execution sandbox. The build access probe failed with `OSError: [Errno 30] Read-only file system` in `tempfile._mkstemp_inner` when opening a temporary file in the output directory. No image or `.2k5patch` was removed. No completed disc exists and no disc option read-back is claimed.
-
-## Source heads and commits
-
-- `fable/b71-scorebug`: `3415dfc5487b54bf56afbe40f89254394984d343`
-- `fable/b71-scorebug-font`: `fa44203350a9dcc01e56c27c64a2a1487b9866bf`
-- `fable/b71-color2`: `a7ada82e3d55b0f6c207770fc5da838886feff9b`
-- `e2f5c6e6`: `e2f5c6e61a0aa5772b0b7d858cb3fb3d35896174`
-
-e48f69308a86b8fa0ff5c604be54c2984ee55bc1 e5afc22e33715d5c91d2f1dd25c8dc27a75b307a Document merged scorebug and prepare reproducible combined disc build
-e5afc22e33715d5c91d2f1dd25c8dc27a75b307a 5dc29e391463ec1e8289030648d7910ba4e88b58 a7ada82e3d55b0f6c207770fc5da838886feff9b Merge colour v2.1 with combined scorebug wings and clock fonts
-5dc29e391463ec1e8289030648d7910ba4e88b58 3415dfc5487b54bf56afbe40f89254394984d343 fa44203350a9dcc01e56c27c64a2a1487b9866bf Merge scorebug clock fonts with wings and regenerate combined resource pins
-
-The two merges preserve both parents. Each merge used an explicitly enumerated `git add -- <paths>`, verified the staged path set, then `write-tree`, `commit-tree -p <HEAD> -p <branch>`, and `update-ref` in the private Git directory. Git does not support a partial path commit during an in-progress merge. Subsequent handoff commits use `git commit -- <explicit paths>`. The exact staged path lists are in the command output logs in `.scratch/audit/commit-font.log` and `commit-colour.log`.
-
-## Conflict resolutions
-
-- `mod_editor/core/nfl2k5_scorebug_exact.py` merged automatically and was inspected: wings retain `MNF_WING_LAYOUT`, the panel/logo geometry and `MNF_SOURCE["plate"] = (837, 947, 1084, 983)`. The font line retains quarter/clock/play-clock anchors at source x 872/963/1051, `_ORIGIN(1008, 3, 15)`, and capsule separators at 18/64 and 50/64.
-- `tools/nfl2k5_scorebug_exact.py`: resolved `Build.__init__` with the wings line's two `mnf_panel_span` textures plus the font line's `clock_font_spans` and font4 donor decoding. Kept the compiler's appended FONT hash contribution.
-- `mod_editor/core/nfl2k5_scorebug_resources.py`: provisional conflict values were replaced by the actual merged compiler output, using `Build(PACK, XBE)`, `compiler_pins(build)`, and one anchored `^KEY = .*` replacement per key. Both 27,040-byte FONT resources remain appended after the 66 panels. Combined appended bytes: 402,560.
-- `mod_editor/core/nfl2k5_scorebug_runtime.py`: byte-identical to the font branch. The clock lookup uses the tenth boot name, `FirstPersonComic`, at `0xE6B490` (slot 9). Descriptor overrides are `0xA95918`, `0xA95940`, `0xA95A80`; the quarter uses `core_bug` and `0xA958F0`. Native slot-index fields remain untouched. Missing fonts preserve the native descriptors.
-- The owner still reserves 1,408 code bytes and 128 data bytes. Its allocation requests and `data/nfl2k5_cave_reservations.json` are unchanged. The font report's stale final reference to 1,536 bytes was corrected to 1,408, matching its detailed capacity explanation and the code. Owner bytes changed from the wings base, so both XBE gates were required and launched.
-- `mod_editor/capabilities/registry.v1.json`: retained both wings and font evidence and their runtime scope; the colour row merged automatically. No capability rows were added. Removed personal attribution from the changed runtime scope.
-- `docs/mod_editor/2k5_mod_studio_changelog.md`: retained the wings, capsule-font, and colour v2.1 bullets. The colour merge conflicted only here.
-- Colour owner `nfl2k5_modern_color.py` and `data/nfl2k5_modern_color_pins.json` are byte-identical to the colour v2.1 branch head. No colour implementation was rewritten.
-- Removed personal attribution from imported report headings and colour documentation. Historical report claims are not treated as new test results; this report records the runs made on the combined code.
-
-## Regenerated pins
-
-The reproducible scripts are `.scratch/regenerate_pins.py` and its committed copy `reports/b71_a5/regenerate_pins.py`; the committed pin record is `reports/b71_a5/compiler_pins.json`. `MNF_VERSION` remains the merged v2 identity. `CLOCK_FONT_SHA256` was independently derived from the combined font spans.
-
-```json
-{
-  "PATCHED_SHA256": {
-    "score_bug": "0588f2f49a0f3cf40ae179dd34d1a57b25748dbc993df34b020153fcd124d8cf",
-    "score_buga": "01a30410e9147f5669614fbe6fa59e0066e5defa39c7d7fae325098f51dd39f6"
-  },
-  "STATIC_SCENE_SHA256": "2d48ab3d3876a9e533a213c4cd22d181dc64a74f9292e5ed1a3fdd53e913de93",
-  "RUNTIME_SCENE_SHA256": "291f6cb66e6c1ebe6eeb2cfccdfc2c129de3174bb26c9f7c73368fd2a9be952a",
-  "RUNTIME_PINS": {
-    "index": "1b4c2af593e2b61d42b5afc3ad9c67433eee2af4fc16920f8a1538640c956b10",
-    "hud_before": "2c23410c05c1ec266c3176b8b201f9a48b4a45ac148110ca569e5df25984e7c8",
-    "hud_after": "f915763e2090ca9f9933c6318a19f3e126f1361ae36ff4da0bbe54dd823ccc98",
-    "appendix": "846864649a3b2309c476edb55fc9b14a912e062548d1a2abf474a8e3acf44063"
-  },
-  "PROBE_APPEND_PINS": {
-    "transport": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "hooks": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "neutral": "e38a25fae3acb5fdd3ae5ddcb91798e047e1be27e862f319452ee176b6cb61fa",
-    "pair": "8c7da0308c4b96d66f124ec5c83939ac0376fac623ca76b777d67be0b1cfd515",
-    "mnf": "7db3d156b554e37a2cae975391ec4c4be54980e52697a17efd51c96aef622728"
-  },
-  "CLOCK_FONT_SHA256": "d6087a1d69f5874be8dcb37ebc2bce307c71af9309b510f05b279f4f659ced6e",
-  "MNF_VERSION": "scorebug-mnf-2026-v2"
-}
-```
-
-## Standalone validation
-
-Every test below was invoked as its own Python program, with inherited `QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools`. The strict registry command uses default file checking, without `--skip-file-checks`. Durations in the table are process wall time, including startup and cleanup; the full unittest summary is in the linked log.
-
-| Program | Exit | Wall seconds | Verdict |
-| --- | ---: | ---: | --- |
-| [`test_nfl2k5_scorebug_mnf`](reports/b71_a5/test_nfl2k5_scorebug_mnf.log) | 0 | 11.8 | PASS; 10 tests |
-| [`test_nfl2k5_scorebug_exact`](reports/b71_a5/test_nfl2k5_scorebug_exact.log) | 0 | 74.358 | PASS; 8 tests |
-| [`test_nfl2k5_scorebug_runtime`](reports/b71_a5/test_nfl2k5_scorebug_runtime.log) | 0 | 119.203 | PASS; 12 tests |
-| [`test_nfl2k5_scorebug_native`](reports/b71_a5/test_nfl2k5_scorebug_native.log) | 0 | 132.24 | PASS; 4 tests |
-| [`test_nfl2k5_scorebug_ingame_fix`](reports/b71_a5/test_nfl2k5_scorebug_ingame_fix.log) | 0 | 130.154 | PASS; 9 tests |
-| [`test_nfl2k5_scorebug_freeze`](reports/b71_a5/test_nfl2k5_scorebug_freeze.log) | 0 | 246.444 | PASS; 7 tests |
-| [`test_nfl2k5_scorebug_resources`](reports/b71_a5/test_nfl2k5_scorebug_resources.log) | 0 | 226.663 | PASS; 6 tests |
-| [`test_nfl2k5_scorebug_freeze_v2`](reports/b71_a5/test_nfl2k5_scorebug_freeze_v2.log) | 0 | 382.341 | PASS; 7 tests |
-| [`test_nfl2k5_scorebug_fonts`](reports/b71_a5/test_nfl2k5_scorebug_fonts.log) | 0 | 8.545 | PASS; 10 tests; 5 skipped |
-| [`test_nfl2k5_scorebug_template_release`](reports/b71_a5/test_nfl2k5_scorebug_template_release.log) | 0 | 0.596 | PASS; 5 tests |
-| [`test_provider_integrity`](reports/b71_a5/test_provider_integrity.log) | 0 | 9.215 | PASS; 7 tests |
-| [`test_product_catalog`](reports/b71_a5/test_product_catalog.log) | 0 | 0.15 | PASS; 9 tests |
-| [`test_phase1_packaging`](reports/b71_a5/test_phase1_packaging.log) | 0 | 2.249 | PASS; 23 tests |
-| [`test_nfl2k5_modern_color`](reports/b71_a5/test_nfl2k5_modern_color.log) | 0 | 7.272 | PASS; 10 tests |
-| [`registry-strict`](reports/b71_a5/registry-strict.log) | 1 | 0.149 | FAIL |
-| [`registry-strict-rerun`](reports/b71_a5/registry-strict-rerun.log) | 0 | 0.152 | PASS |
-| [`xbe-memory`](reports/b71_a5/xbe-memory.log) | 0 | 1644.911 | PASS; 119 tests |
-| [`xbe-caves`](reports/b71_a5/xbe-caves.log) | 0 | 1833.88 | PASS; 131 tests |
-
-The initial strict registry run failed because 75 ignored local evidence files were absent, beginning with `docs/research/apf_audio.md`. The files were restored as real copies from the read-only local evidence source (2,063,157 bytes total), with per-file SHA-256 records in `reports/b71_a5/evidence_hydration.json`. None was staged or bundled. The strict rerun passed with 174 capabilities. The original suite-driver exit remains 1 because it includes the earlier registry failure; all 14 standalone test programs passed.
-
-The first detached launcher exited before the sandbox children created any test logs. This was not counted as a test run. The corrected launcher uses `setsid nohup ... &` for each job and a waiting supervisor to keep the sandbox execution session alive. Logs were polled throughout; no process-name kill command was used. The supervising script is `.scratch/launch_checks.sh`.
-
-The two merged native renderer previews are `reports/b71_a5/combined_43.png` and `combined_wide.png` (also retained under `.scratch/combined-render/`). Both registered `FirstPersonComic` and `core_bug`. These are bounded native execution/software raster evidence, not played-game captures.
-
-## Combined disc plan and blocker
-
-Requested destination:
-
-`/home/noah/2K5 Mod Studio Builds/NFL 2K5 MOD TEST 2026-09-15f (scorebug v2 + colour v2.1 + widescreen).xiso.iso`
-
-The prepared builder is `reports/b71_a5/build_testdisc71.py`, adapted from the supplied beta 70 pattern. Its `sys.path` resolves this worktree. `--plan-only` succeeded and printed:
-
-```json
-{"preset":"softdrink_advanced","scorebug":true,"scorebug_runtime":true,"modern_color":true,"widescreen":true,"scorebug_version":"scorebug-mnf-2026-v2"}
-```
-
-This is **plan read-back only**. The builder reparses the completed output's runtime HUD, XBE owner, light tables, all 477 colour bundles, and widescreen sites before exporting the patch. It requires every status to be `applied` and records the exact result under `.scratch/testdisc71/readback.json`. That file does not exist because the output directory is read-only.
-
-The actual detached build attempt ran at `2026-09-15T19:33:31.790924+00:00`, exited 1 after 0.278 seconds, and stopped at `reports/b71_a5/build_testdisc71.py:61`, before pruning or copying any image. Its full traceback is in `reports/b71_a5/testdisc71.detached.log`; `testdisc_result.json` records the blocker and the absent disc read-back.
-
-At access-check time the builds folder held three MOD TEST images: 15b, 15c, and 15e. The oldest was:
-
-`/home/noah/2K5 Mod Studio Builds/NFL 2K5 MOD TEST 2026-09-15b (advanced + 2026 scorebug + modern colour + widescreen).xiso.iso`
-
-The builder checks write access first, deletes the oldest eligible image before building when the count is three or greater, preserves every `.2k5patch`, and asserts that at most three MOD TEST images remain. It refuses an already-existing named output. All pruning and result receipts are prepared; no pruning occurred in this session.
-
-Once the output directory is writable, from this worktree run:
-
-```bash
-bash reports/b71_a5/launch_testdisc71.sh
-```
-
-The launcher detaches the build using `setsid nohup`, records `.scratch/testdisc71.pid`, and keeps a waiting supervisor alive for sandbox compatibility. Poll `.scratch/testdisc71.detached.log`; the exit status is saved in `.scratch/testdisc71.exit`. Success requires `TESTDISC71_DONE`, the image, its patch, and the parsed read-back receipt.
-
-## Evidence limits and in-game checks
-
-PROVED: merge ancestry and source identities; compiler-derived pin identities; test and gate results listed above; both combined native previews; the four-option Advanced build plan.
-
-UNWITNESSED: played-game scorebug v2 behavior and the combined image. The image was not built because of the read-only output folder. Play Now intro, Franchise, timeout ownership, change-of-possession plate colour, event-slab readability, clock spacing, logos with widescreen, and the combined colour v2.1 look still need a played-game check.
-
-## Command journal
-
-The complete live journal is `.scratch/commands.jsonl`; detailed outputs are under `.scratch/audit/`. Times are UTC. Commands run through the audit wrapper record start, end, elapsed time and exit code. The early read-only discovery commands preceded that wrapper; their tool-reported elapsed times were sub-second except the initial Git/context read (0.955 s), and their UTC start times were not captured. They read the context, triage, brief, applicable parent instructions, project inventory, the two source reports, branch logs, the beta 70 builder and filesystem capacity. No build or validation verdict is based on an unlogged startup command. Attribution search literals are redacted in this public journal to preserve the no-names requirement; all execution/test/build commands are unchanged.
-
-### initial-path-discovery (startup)
-
-UTC timestamps not captured; tool-reported elapsed `4.889e-06 s`; shell exit `0`. These tool timings may exclude some execution overhead.
-
-```bash
-pwd && rg --files -g 'AGENTS.md' -g 'ASTRA_CONTEXT.md' -g 'BETA71_TRIAGE.md' -g '*B71*REPORT*' -g '*b70*' -g '*scorebug*' -g '*repin*' -g '*registry*' -g '*provider_integrity*' -g '*product_catalog*' -g '*phase1_packaging*' | head -100
-```
-
-### initial-context (startup)
-
-UTC timestamps not captured; tool-reported elapsed `0.954827039 s`; shell exit `0`. These tool timings may exclude some execution overhead.
-
-```bash
-git status --short && git branch --show-current && git rev-parse --git-dir && cat ASTRA_CONTEXT.md && cat BETA71_TRIAGE.md
-```
-
-### initial-parent-instructions (startup)
-
-UTC timestamps not captured; tool-reported elapsed `4.148e-06 s`; shell exit `1`. These tool timings may exclude some execution overhead.
-
-```bash
-for p in /AGENTS.md /home/AGENTS.md /home/noah/AGENTS.md /home/noah/2k-worktrees/AGENTS.md AGENTS.md; do if [ -f "$p" ]; then cat "$p"; fi; done
-cat ASTRA_BRIEF.md BETA71_TRIAGE.md
-rg --files -g 'AGENTS.md' -g '!reports/assets/**' .agents .codex mod_editor tools tests packaging data docs 2>/dev/null
-```
-
-### initial-source-reports (startup)
-
-UTC timestamps not captured; tool-reported elapsed `3.977e-06 s`; shell exit `0`. These tool timings may exclude some execution overhead.
-
-```bash
-cat FABLE_B71_WINGS_REPORT_2026-09-15.md
-git show fable/b71-scorebug-font:FABLE_B71_FONT_REPORT_2026-09-15.md
-git log -5 --oneline fable/b71-color2
-git log -5 --oneline fable/b71-scorebug
-git log -5 --oneline fable/b71-scorebug-font
-```
-
-### initial-builder-and-storage (startup)
-
-UTC timestamps not captured; tool-reported elapsed `3.697e-06 s`; shell exit `0`. These tool timings may exclude some execution overhead.
-
-```bash
-cat '/home/noah/Desktop/2K5-8 Editors/session_scripts_2026-09-15/b70/ship/build_testdisc70.py'
-ls -ld '/home/noah/2K5 Mod Studio Builds' /media/noah/Storage .scratch .git
-readlink -f '/home/noah/2K5 Mod Studio Builds'
-df -h . /tmp /media/noah/Storage
-cat .git
-```
-
-### initial-project-and-code-inspection (startup)
-
-UTC timestamps not captured; tool-reported elapsed `5.17e-06 s`; shell exit `0`. These tool timings may exclude some execution overhead.
-
-```bash
-cat /home/noah/PROJECTS.md /home/noah/projects.json
-sed -n '1,180p' packaging/repin.py
-sed -n '1,200p' mod_editor/capabilities/validate_registry.py
-rg -n 'compiler_pins|PACK =|XBE =|class Build|RUNTIME_SCENE_SHA256|RUNTIME_PINS|PROBE_APPEND_PINS|MNF_VERSION|CLOCK_FONT' tools/nfl2k5_scorebug* mod_editor/core/nfl2k5_scorebug* tests/mod_editor/test_nfl2k5_scorebug*
-```
-
-### private-git
-
-Start `2026-09-15T18:57:24.593166+00:00`; end `2026-09-15T18:57:26.944605+00:00`; elapsed `2.351 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### font-diff
-
-Start `2026-09-15T18:57:44.024754+00:00`; end `2026-09-15T18:57:44.032651+00:00`; elapsed `0.008 s`; exit `0`.
-
-```bash
-.scratch/g diff bcb0fcdf fable/b71-scorebug-font -- mod_editor/core/nfl2k5_scorebug_exact.py mod_editor/core/nfl2k5_scorebug_resources.py mod_editor/core/nfl2k5_scorebug_runtime.py tools/nfl2k5_scorebug_exact.py tests/mod_editor/test_nfl2k5_scorebug_fonts.py
-```
-
-### build-and-test-inspection
-
-Start `2026-09-15T18:57:44.046448+00:00`; end `2026-09-15T18:57:44.072719+00:00`; elapsed `0.026 s`; exit `1`.
-
-```bash
-bash -c 'sed -n "230,330p" tools/nfl2k5_scorebug_exact.py; sed -n "1,75p" tests/mod_editor/test_nfl2k5_scorebug_exact.py; tail -55 mod_editor/capabilities/validate_registry.py; sed -n "175,300p" packaging/repin.py; rg -n "option.*read|read.*option|inspect.*build|def status|modern_color|widescreen" mod_editor/core/nfl2k5_build_service.py | head -55; ls -lh "/home/noah/2K5 Mod Studio Builds"; rg --files -g AGENTS.md mod_editor tools tests packaging data docs'
-```
-
-### merge-font
-
-Start `2026-09-15T18:57:44.193478+00:00`; end `2026-09-15T18:57:44.285055+00:00`; elapsed `0.092 s`; exit `1`.
-
-```bash
-.scratch/g merge --no-commit --no-ff fable/b71-scorebug-font
-```
-
-### conflicts-and-runtime
-
-Start `2026-09-15T18:58:05.378141+00:00`; end `2026-09-15T18:58:05.432506+00:00`; elapsed `0.054 s`; exit `0`.
-
-```bash
-bash -c 'rg -n -C 7 "^(<<<<<<<|=======|>>>>>>>)" docs/mod_editor/2k5_mod_studio_changelog.md mod_editor/capabilities/registry.v1.json mod_editor/core/nfl2k5_scorebug_resources.py tools/nfl2k5_scorebug_exact.py; rg -n "CODE_SIZE|CLOCK_FONT|MNF_BOXES|MNF_ANCHORS" mod_editor/core/nfl2k5_scorebug_runtime.py mod_editor/core/nfl2k5_scorebug_mnf_font.py mod_editor/core/nfl2k5_scorebug_exact.py; .scratch/g diff --stat; .scratch/g diff --cached --stat; rg -n "registry|sha256|read_bytes" packaging/repin.py | tail -20; sed -n "1,170p" tests/mod_editor/test_provider_integrity.py; rg -n "def .*inspect|def .*status|receipt|read_back|readback" mod_editor/core/mod_build.py | tail -55'
-```
-
-### conflict-hunks
-
-Start `2026-09-15T18:58:15.769556+00:00`; end `2026-09-15T18:58:15.782406+00:00`; elapsed `0.013 s`; exit `0`.
-
-```bash
-bash -c 'rg -n -C 4 "^(<<<<<<<|=======|>>>>>>>)" docs/mod_editor/2k5_mod_studio_changelog.md mod_editor/core/nfl2k5_scorebug_resources.py tools/nfl2k5_scorebug_exact.py; sed -n "10420,10480p" mod_editor/capabilities/registry.v1.json; sed -n "465,510p" mod_editor/core/nfl2k5_scorebug_exact.py; sed -n "645,700p" mod_editor/core/nfl2k5_scorebug_resources.py'
-```
-
-### conflict-bodies
-
-Start `2026-09-15T18:58:22.946457+00:00`; end `2026-09-15T18:58:22.971363+00:00`; elapsed `0.025 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### resolve-font
-
-Start `2026-09-15T18:58:58.957560+00:00`; end `2026-09-15T18:58:59.027517+00:00`; elapsed `0.07 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### registry-pin-structure
-
-Start `2026-09-15T18:59:13.664225+00:00`; end `2026-09-15T18:59:13.693157+00:00`; elapsed `0.029 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### color-changes
-
-Start `2026-09-15T18:59:13.724654+00:00`; end `2026-09-15T18:59:13.747998+00:00`; elapsed `0.023 s`; exit `0`.
-
-```bash
-.scratch/g diff e2f5c6e6 fable/b71-color2 --stat
-```
-
-### option-readback-inspection
-
-Start `2026-09-15T18:59:13.778779+00:00`; end `2026-09-15T18:59:13.789267+00:00`; elapsed `0.01 s`; exit `0`.
-
-```bash
-bash -c 'rg -n "^def inspect|scorebug_runtime|modern_color|widescreen" mod_editor/core/mod_build.py | head -65; rg -n "^def |VERSION" mod_editor/core/nfl2k5_modern_color.py; sed -n "1,130p" tests/mod_editor/test_xbe_patch_cave_references.py; sed -n "1,80p" tests/mod_editor/test_xbe_patch_memory_writes.py'
-```
-
-### inspect-colour-report
-
-Start `2026-09-15T18:59:34.546284+00:00`; end `2026-09-15T18:59:34.550358+00:00`; elapsed `0.004 s`; exit `0`.
-
-```bash
-.scratch/g show fable/b71-color2:FABLE_B71_COLOR2_REPORT_2026-09-15.md
-```
-
-### inspect-live-jobs
-
-Start `2026-09-15T18:59:34.579602+00:00`; end `2026-09-15T18:59:34.590378+00:00`; elapsed `0.011 s`; exit `0`.
-
-```bash
-bash -c 'ps -eo pid,ppid,sid,etime,pcpu,rss,args | rg "regenerate_pins.py|audit.py|test_xbe"; tail -8 .scratch/audit/regenerate-pins.log; du -sh .scratch'
-```
-
-### regenerate-pins
-
-Start `2026-09-15T18:58:59.059129+00:00`; end `2026-09-15T18:59:39.765804+00:00`; elapsed `40.707 s`; exit `0`.
-
-```bash
-env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 .scratch/regenerate_pins.py
-```
-
-### commit-font
-
-Start `2026-09-15T19:00:05.627478+00:00`; end `2026-09-15T19:00:05.768979+00:00`; elapsed `0.142 s`; exit `0`.
-
-```bash
-python3 .scratch/commit_merge.py 'Merge scorebug clock fonts with wings and regenerate combined resource pins' fable/b71-scorebug-font
-```
-
-### merge-colour
-
-Start `2026-09-15T19:00:05.799639+00:00`; end `2026-09-15T19:00:05.894400+00:00`; elapsed `0.095 s`; exit `1`.
-
-```bash
-.scratch/g merge --no-commit --no-ff fable/b71-color2
-```
-
-### repin-font
-
-Start `2026-09-15T18:59:50.951626+00:00`; end `2026-09-15T19:00:11.998152+00:00`; elapsed `21.047 s`; exit `0`.
-
-```bash
-python3 packaging/repin.py --apply
-```
-
-### resolve-colour
-
-Start `2026-09-15T19:00:26.005131+00:00`; end `2026-09-15T19:00:26.033328+00:00`; elapsed `0.028 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### manifest-and-ownership
-
-Start `2026-09-15T19:00:26.062686+00:00`; end `2026-09-15T19:00:26.119064+00:00`; elapsed `0.056 s`; exit `0`.
-
-```bash
-bash -c '.scratch/g diff fable/b71-scorebug -- data/nfl2k5_cave_reservations.json; .scratch/g diff fable/b71-scorebug-font -- mod_editor/core/nfl2k5_scorebug_runtime.py; .scratch/g diff fable/b71-color2 -- mod_editor/core/nfl2k5_modern_color.py data/nfl2k5_modern_color_pins.json; rg -n "^<<<<<<<|^=======|^>>>>>>>" mod_editor/core/nfl2k5_scorebug_resources.py tools/nfl2k5_scorebug_exact.py docs/mod_editor/2k5_mod_studio_changelog.md; .scratch/g status --short'
-```
-
-### repin-combined
-
-Start `2026-09-15T19:00:52.661810+00:00`; end `2026-09-15T19:01:03.540514+00:00`; elapsed `10.879 s`; exit `0`.
-
-```bash
-python3 packaging/repin.py --apply
-```
-
-### commit-colour
-
-Start `2026-09-15T19:01:03.570498+00:00`; end `2026-09-15T19:01:03.669683+00:00`; elapsed `0.099 s`; exit `0`.
-
-```bash
-python3 .scratch/commit_merge.py 'Merge colour v2.1 with combined scorebug wings and clock fonts' fable/b71-color2
-```
-
-### launch-checks
-
-Start `2026-09-15T19:01:03.699070+00:00`; end `2026-09-15T19:01:03.702581+00:00`; elapsed `0.004 s`; exit `0`.
-
-```bash
-bash -c 'setsid nohup python3 .scratch/audit.py all-suites python3 .scratch/run_suites.py > .scratch/suites.detached.log 2>&1 < /dev/null & echo $! > .scratch/suites.pid
-setsid nohup python3 .scratch/audit.py xbe-memory env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_xbe_patch_memory_writes.py > .scratch/xbe-memory.detached.log 2>&1 < /dev/null & echo $! > .scratch/xbe-memory.pid
-setsid nohup python3 .scratch/audit.py xbe-caves env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_xbe_patch_cave_references.py > .scratch/xbe-caves.detached.log 2>&1 < /dev/null & echo $! > .scratch/xbe-caves.pid
-cat .scratch/suites.pid .scratch/xbe-memory.pid .scratch/xbe-caves.pid'
-```
-
-### build-readback-code
-
-Start `2026-09-15T19:01:10.874384+00:00`; end `2026-09-15T19:01:10.895093+00:00`; elapsed `0.021 s`; exit `2`.
-
-```bash
-bash -c 'sed -n "655,745p" mod_editor/core/mod_build.py; sed -n "1,80p" mod_editor/core/nfl2k5_modern_color.py; sed -n "645,685p" mod_editor/core/nfl2k5_modern_color.py; rg -n "scorebug_runtime|scorebug" mod_editor/core/nfl2k5_throw_tuning.py | tail -25; rg -n "MODERN|version|v2.1" data/nfl2k5_modern_color_pins.json | head -10; rg -n "def _check_floor|space.*floor|ensure.*space|TMPDIR|TemporaryDirectory|cache_dir" mod_editor/core/mod_build.py mod_editor/core/nfl2k5_build_cache.py'
-```
-
-### build-output-access
-
-Start `2026-09-15T19:01:11.012204+00:00`; end `2026-09-15T19:01:11.117496+00:00`; elapsed `0.105 s`; exit `1`.
-
-```bash
-python3 -
-```
-
-### check-progress
-
-Start `2026-09-15T19:01:24.823219+00:00`; end `2026-09-15T19:01:24.839319+00:00`; elapsed `0.016 s`; exit `0`.
-
-```bash
-bash -c 'tail -12 .scratch/audit/all-suites.log; tail -8 .scratch/audit/xbe-memory.log; tail -8 .scratch/audit/xbe-caves.log; cat .scratch/suites.pid .scratch/xbe-memory.pid .scratch/xbe-caves.pid; rg -n "^def inspect|widescreen|scorebug_runtime|modern_color" mod_editor/core/mod_build.py | head -25; sed -n "685,705p" mod_editor/core/nfl2k5_modern_color.py; rg -n "def .*runtime_image_status|def status" tools/nfl2k5_scorebug_reference.py tools/nfl2k5_scorebug_layout.py'
-```
-
-### test_nfl2k5_scorebug_mnf
-
-Start `2026-09-15T19:01:44.881815+00:00`; end `2026-09-15T19:01:56.682273+00:00`; elapsed `11.8 s`; exit `0`.
-
-```bash
-python3 tests/mod_editor/test_nfl2k5_scorebug_mnf.py
-```
-
-### readback-contracts
-
-Start `2026-09-15T19:02:02.009595+00:00`; end `2026-09-15T19:02:02.025278+00:00`; elapsed `0.016 s`; exit `0`.
-
-```bash
-bash -c 'sed -n "1,100p" tools/nfl2k5_scorebug_reference.py; rg -n "def runtime_image_status|def runtime_status|def status" mod_editor/core/nfl2k5_scorebug_ingame.py mod_editor/core/nfl2k5_scorebug_runtime.py; sed -n "850,885p" tools/nfl2k5_scorebug_layout.py; sed -n "575,635p" mod_editor/core/mod_build.py; sed -n "815,850p" mod_editor/core/nfl2k5_scorebug_resources.py; ls -lh .scratch/audit/test* .scratch/audit/xbe*'
-```
-
-### inventory-layout
-
-Start `2026-09-15T19:02:02.027387+00:00`; end `2026-09-15T19:02:02.064333+00:00`; elapsed `0.037 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### test_nfl2k5_scorebug_exact
-
-Start `2026-09-15T19:01:56.717102+00:00`; end `2026-09-15T19:03:11.074895+00:00`; elapsed `74.358 s`; exit `0`.
-
-```bash
-python3 tests/mod_editor/test_nfl2k5_scorebug_exact.py
-```
-
-### testdisc-plan
-
-Start `2026-09-15T19:03:15.666264+00:00`; end `2026-09-15T19:03:15.929057+00:00`; elapsed `0.263 s`; exit `0`.
-
-```bash
-env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 reports/b71_a5/build_testdisc71.py --plan-only
-```
-
-### check-progress-2
-
-Start `2026-09-15T19:03:15.961336+00:00`; end `2026-09-15T19:03:15.970677+00:00`; elapsed `0.009 s`; exit `0`.
-
-```bash
-bash -c 'tail -12 .scratch/audit/all-suites.log; tail -8 .scratch/audit/xbe-memory.log; tail -8 .scratch/audit/xbe-caves.log; rg -n "^def status" mod_editor/core/nfl2k5_widescreen.py'
-```
-
-### merged-intent-review
-
-Start `2026-09-15T19:03:54.660854+00:00`; end `2026-09-15T19:03:54.930694+00:00`; elapsed `0.27 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### detached-status
-
-Start `2026-09-15T19:03:54.983871+00:00`; end `2026-09-15T19:03:54.991655+00:00`; elapsed `0.008 s`; exit `0`.
-
-```bash
-bash -c 'tail -12 .scratch/audit/all-suites.log; tail -10 .scratch/audit/xbe-memory.log; tail -10 .scratch/audit/xbe-caves.log; du -sh .scratch'
-```
-
-### combined-native-renders
-
-Start `2026-09-15T19:04:22.784646+00:00`; end `2026-09-15T19:04:32.929186+00:00`; elapsed `10.145 s`; exit `0`.
-
-```bash
-env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 .scratch/render_combined.py
-```
-
-### changed-prose-check
-
-Start `2026-09-15T19:04:35.626685+00:00`; end `2026-09-15T19:04:35.657612+00:00`; elapsed `0.031 s`; exit `0`.
-
-```bash
-bash -c '.scratch/g diff e2f5c6e6 HEAD -- docs/mod_editor/2k5_mod_studio_changelog.md docs/modern_color/README.md mod_editor/capabilities/registry.v1.json | rg -n "^\+.*([attribution]|[attribution]|[attribution]|[attribution]|reporter|tester)" || test $? = 1
-rg -n "[attribution]|[attribution]|[attribution]|[attribution]" FABLE_B71_FONT_REPORT_2026-09-15.md FABLE_B71_COLOR2_REPORT_2026-09-15.md FABLE_B71_WINGS_REPORT_2026-09-15.md || test $? = 1'
-```
-
-### check-progress-3
-
-Start `2026-09-15T19:04:35.687484+00:00`; end `2026-09-15T19:04:35.695643+00:00`; elapsed `0.008 s`; exit `0`.
-
-```bash
-bash -c 'tail -10 .scratch/audit/test_nfl2k5_scorebug_runtime.log; tail -10 .scratch/audit/xbe-memory.log; tail -10 .scratch/audit/xbe-caves.log; tail -6 .scratch/audit/combined-native-renders.log'
-```
-
-### anonymous-handoff-docs
-
-Start `2026-09-15T19:05:00.735111+00:00`; end `2026-09-15T19:05:00.758462+00:00`; elapsed `0.023 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### corrected-report-footer
-
-Start `2026-09-15T19:05:00.789154+00:00`; end `2026-09-15T19:05:00.812081+00:00`; elapsed `0.023 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### current-tests
-
-Start `2026-09-15T19:05:00.841591+00:00`; end `2026-09-15T19:05:00.867231+00:00`; elapsed `0.026 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### image-evidence
-
-Start `2026-09-15T19:05:09.451099+00:00`; end `2026-09-15T19:05:09.514516+00:00`; elapsed `0.063 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### test_nfl2k5_scorebug_runtime
-
-Start `2026-09-15T19:03:11.107687+00:00`; end `2026-09-15T19:05:10.310502+00:00`; elapsed `119.203 s`; exit `0`.
-
-```bash
-python3 tests/mod_editor/test_nfl2k5_scorebug_runtime.py
-```
-
-### builder-contract-review
-
-Start `2026-09-15T19:05:18.235718+00:00`; end `2026-09-15T19:05:18.248363+00:00`; elapsed `0.013 s`; exit `0`.
-
-```bash
-bash -c 'sed -n "877,937p" mod_editor/core/nfl2k5_scorebug_ingame.py; sed -n "560,605p" mod_editor/core/nfl2k5_widescreen.py; rg -n "def export|def changed_file_operations" mod_editor/core/modpack.py mod_editor/core/modpack_ops.py; sed -n "1,40p" docs/modern_color/README.md; tail -12 .scratch/audit/all-suites.log'
-```
-
-### finish-doc-sanitizing
-
-Start `2026-09-15T19:05:50.114682+00:00`; end `2026-09-15T19:05:50.137126+00:00`; elapsed `0.022 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### script-syntax
-
-Start `2026-09-15T19:05:50.168695+00:00`; end `2026-09-15T19:05:50.205154+00:00`; elapsed `0.036 s`; exit `0`.
-
-```bash
-bash -c 'python3 -m py_compile reports/b71_a5/build_testdisc71.py; bash -n reports/b71_a5/launch_testdisc71.sh'
-```
-
-### progress-4
-
-Start `2026-09-15T19:05:50.233637+00:00`; end `2026-09-15T19:05:50.239370+00:00`; elapsed `0.006 s`; exit `0`.
-
-```bash
-bash -c 'tail -12 .scratch/audit/all-suites.log; tail -10 .scratch/audit/xbe-memory.log; tail -10 .scratch/audit/xbe-caves.log'
-```
-
-### branch-integrity
-
-Start `2026-09-15T19:06:19.678659+00:00`; end `2026-09-15T19:06:19.687654+00:00`; elapsed `0.009 s`; exit `0`.
-
-```bash
-.scratch/g diff --check
-```
-
-### delivery-snapshot
-
-Start `2026-09-15T19:06:19.718248+00:00`; end `2026-09-15T19:06:19.758989+00:00`; elapsed `0.041 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### progress-5
-
-Start `2026-09-15T19:06:19.791133+00:00`; end `2026-09-15T19:06:19.799837+00:00`; elapsed `0.009 s`; exit `0`.
-
-```bash
-bash -c 'tail -12 .scratch/audit/all-suites.log; tail -10 .scratch/audit/test_nfl2k5_scorebug_native.log; tail -10 .scratch/audit/xbe-memory.log; tail -10 .scratch/audit/xbe-caves.log'
-```
-
-### test_nfl2k5_scorebug_native
-
-Start `2026-09-15T19:05:10.344040+00:00`; end `2026-09-15T19:07:22.583716+00:00`; elapsed `132.24 s`; exit `0`.
-
-```bash
-python3 tests/mod_editor/test_nfl2k5_scorebug_native.py
-```
-
-### draft-report
-
-Start `2026-09-15T19:08:12.590921+00:00`; end `2026-09-15T19:08:12.634638+00:00`; elapsed `0.044 s`; exit `0`.
-
-```bash
-python3 .scratch/make_report.py
-```
-
-### progress-6
-
-Start `2026-09-15T19:08:12.664565+00:00`; end `2026-09-15T19:08:12.669526+00:00`; elapsed `0.005 s`; exit `0`.
-
-```bash
-bash -c 'tail -12 .scratch/audit/all-suites.log; tail -10 .scratch/audit/xbe-memory.log; tail -10 .scratch/audit/xbe-caves.log'
-```
-
-### progress-7
-
-Start `2026-09-15T19:08:26.144276+00:00`; end `2026-09-15T19:08:26.179546+00:00`; elapsed `0.035 s`; exit `0`.
-
-```bash
-bash -c 'tail -10 .scratch/audit/test_nfl2k5_scorebug_ingame_fix.log; tail -10 .scratch/audit/xbe-memory.log; tail -10 .scratch/audit/xbe-caves.log; rg -n "^ASPECTS|16:9|def export\(" mod_editor/core/nfl2k5_widescreen.py mod_editor/core/modpack.py | head -10; sed -n "1420,1445p" mod_editor/core/modpack.py; du -sh .scratch; .scratch/g status --short'
-```
-
-### strengthen-disc-readback
-
-Start `2026-09-15T19:08:57.744732+00:00`; end `2026-09-15T19:08:57.777863+00:00`; elapsed `0.033 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### handoff-script-check
-
-Start `2026-09-15T19:08:57.809608+00:00`; end `2026-09-15T19:08:57.850465+00:00`; elapsed `0.041 s`; exit `0`.
-
-```bash
-bash -c 'python3 -m py_compile reports/b71_a5/build_testdisc71.py && bash -n reports/b71_a5/launch_testdisc71.sh'
-```
-
-### progress-8
-
-Start `2026-09-15T19:08:57.900554+00:00`; end `2026-09-15T19:08:57.907436+00:00`; elapsed `0.007 s`; exit `0`.
-
-```bash
-bash -c 'tail -12 .scratch/audit/all-suites.log; tail -10 .scratch/audit/xbe-memory.log; tail -10 .scratch/audit/xbe-caves.log'
-```
-
-### gate-age
-
-Start `2026-09-15T19:09:13.367591+00:00`; end `2026-09-15T19:09:13.390141+00:00`; elapsed `0.023 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### test_nfl2k5_scorebug_ingame_fix
-
-Start `2026-09-15T19:07:22.618708+00:00`; end `2026-09-15T19:09:32.772570+00:00`; elapsed `130.154 s`; exit `0`.
-
-```bash
-python3 tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py
-```
-
-### preserve-reproduction-files
-
-Start `2026-09-15T19:09:48.051699+00:00`; end `2026-09-15T19:09:48.077289+00:00`; elapsed `0.026 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### public-diff-check
-
-Start `2026-09-15T19:09:48.108962+00:00`; end `2026-09-15T19:09:48.208508+00:00`; elapsed `0.1 s`; exit `1`.
-
-```bash
-python3 -
-```
-
-### remaining-attribution
-
-Start `2026-09-15T19:09:58.202788+00:00`; end `2026-09-15T19:09:58.226279+00:00`; elapsed `0.023 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### remove-final-attribution
+V3 is implemented and committed on `astra/b71-s3-scorebug-v3`, from `a7440f05` (A5 integration). Every final standalone suite, strict registry validation and both detached XBE gates passed.
 
-Start `2026-09-15T19:10:12.681514+00:00`; end `2026-09-15T19:10:12.706098+00:00`; elapsed `0.025 s`; exit `0`.
+The native bar boundaries follow the requested source boxes within 0.007 HUD pixels in both aspects. The native comparison does **not** pass pixel-exact acceptance: text and RGB differences remain, and the supplied numeric plate/score dimensions differ from the photographed frame. The paired crops expose those differences. Appended data is **413,568 bytes / 0.394409 MiB**, only 11,008 bytes above A5.
 
-```bash
-python3 -
-```
-
-### public-diff-check-final
-
-Start `2026-09-15T19:10:12.736398+00:00`; end `2026-09-15T19:10:12.824235+00:00`; elapsed `0.088 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### progress-9
-
-Start `2026-09-15T19:10:59.020089+00:00`; end `2026-09-15T19:10:59.047044+00:00`; elapsed `0.027 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### gate-progress-map
-
-Start `2026-09-15T19:11:22.295414+00:00`; end `2026-09-15T19:11:22.347921+00:00`; elapsed `0.053 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### startup-journal-and-helper
-
-Start `2026-09-15T19:12:13.023127+00:00`; end `2026-09-15T19:12:13.052499+00:00`; elapsed `0.029 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### progress-10
-
-Start `2026-09-15T19:12:13.085707+00:00`; end `2026-09-15T19:12:13.092937+00:00`; elapsed `0.007 s`; exit `0`.
-
-```bash
-bash -c 'tail -12 .scratch/audit/all-suites.log; tail -12 .scratch/audit/xbe-memory.log; tail -12 .scratch/audit/xbe-caves.log'
-```
-
-### progress-11
-
-Start `2026-09-15T19:13:19.657367+00:00`; end `2026-09-15T19:13:19.681444+00:00`; elapsed `0.024 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### test_nfl2k5_scorebug_freeze
-
-Start `2026-09-15T19:09:32.804835+00:00`; end `2026-09-15T19:13:39.249324+00:00`; elapsed `246.444 s`; exit `0`.
-
-```bash
-python3 tests/mod_editor/test_nfl2k5_scorebug_freeze.py
-```
-
-### progress-12
-
-Start `2026-09-15T19:14:27.020231+00:00`; end `2026-09-15T19:14:27.030080+00:00`; elapsed `0.01 s`; exit `0`.
-
-```bash
-bash -c 'tail -18 .scratch/audit/all-suites.log; tail -12 .scratch/audit/xbe-memory.log; tail -12 .scratch/audit/xbe-caves.log; ls -lh .scratch/audit/test_nfl2k5_scorebug_resources.log'
-```
-
-### progress-13
-
-Start `2026-09-15T19:15:40.808139+00:00`; end `2026-09-15T19:15:40.842630+00:00`; elapsed `0.034 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### final-source-identity
-
-Start `2026-09-15T19:16:08.171360+00:00`; end `2026-09-15T19:16:08.285791+00:00`; elapsed `0.114 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### progress-14
-
-Start `2026-09-15T19:17:14.976700+00:00`; end `2026-09-15T19:17:14.985540+00:00`; elapsed `0.009 s`; exit `0`.
-
-```bash
-bash -c 'tail -18 .scratch/audit/all-suites.log; tail -12 .scratch/audit/xbe-memory.log; tail -12 .scratch/audit/xbe-caves.log; tail -12 .scratch/audit/test_nfl2k5_scorebug_resources.log'
-```
-
-### test_nfl2k5_scorebug_resources
-
-Start `2026-09-15T19:13:39.282575+00:00`; end `2026-09-15T19:17:25.945206+00:00`; elapsed `226.663 s`; exit `0`.
-
-```bash
-python3 tests/mod_editor/test_nfl2k5_scorebug_resources.py
-```
-
-### gate-counts
-
-Start `2026-09-15T19:17:33.930142+00:00`; end `2026-09-15T19:17:34.094247+00:00`; elapsed `0.164 s`; exit `0`.
-
-```bash
-env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 -
-```
-
-### progress-15
-
-Start `2026-09-15T19:18:39.520276+00:00`; end `2026-09-15T19:18:39.550227+00:00`; elapsed `0.03 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### progress-16
-
-Start `2026-09-15T19:19:50.708770+00:00`; end `2026-09-15T19:19:50.719743+00:00`; elapsed `0.011 s`; exit `0`.
-
-```bash
-bash -c 'tail -18 .scratch/audit/all-suites.log; tail -8 .scratch/audit/xbe-memory.log; tail -8 .scratch/audit/xbe-caves.log; tail -8 .scratch/audit/test_nfl2k5_scorebug_freeze_v2.log'
-```
-
-### progress-17
-
-Start `2026-09-15T19:21:00.844997+00:00`; end `2026-09-15T19:21:00.877409+00:00`; elapsed `0.032 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### checkpoint-bundle
-
-Start `2026-09-15T19:21:17.813108+00:00`; end `2026-09-15T19:21:17.906578+00:00`; elapsed `0.093 s`; exit `0`.
-
-```bash
-.scratch/g bundle create .scratch/astra-b71-a5.bundle astra/b71-a5-scorebug-integrate '^e2f5c6e6'
-```
-
-### checkpoint-bundle-verify
-
-Start `2026-09-15T19:21:17.942794+00:00`; end `2026-09-15T19:21:17.957252+00:00`; elapsed `0.014 s`; exit `0`.
-
-```bash
-.scratch/g bundle verify .scratch/astra-b71-a5.bundle
-```
-
-### checkpoint-size
-
-Start `2026-09-15T19:21:18.000839+00:00`; end `2026-09-15T19:21:18.004536+00:00`; elapsed `0.004 s`; exit `0`.
-
-```bash
-du -sh .scratch
-```
-
-### reproduction-script-portability
-
-Start `2026-09-15T19:21:39.071550+00:00`; end `2026-09-15T19:21:39.100722+00:00`; elapsed `0.029 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### progress-18
-
-Start `2026-09-15T19:22:31.761684+00:00`; end `2026-09-15T19:22:31.789568+00:00`; elapsed `0.028 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### preserve-merge-evidence
-
-Start `2026-09-15T19:22:54.705649+00:00`; end `2026-09-15T19:22:54.736008+00:00`; elapsed `0.03 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### progress-19
-
-Start `2026-09-15T19:23:44.474758+00:00`; end `2026-09-15T19:23:44.502562+00:00`; elapsed `0.028 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### test_nfl2k5_scorebug_freeze_v2
-
-Start `2026-09-15T19:17:25.983794+00:00`; end `2026-09-15T19:23:48.325207+00:00`; elapsed `382.341 s`; exit `0`.
-
-```bash
-python3 tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py
-```
-
-### test_nfl2k5_scorebug_fonts
-
-Start `2026-09-15T19:23:48.356638+00:00`; end `2026-09-15T19:23:56.901210+00:00`; elapsed `8.545 s`; exit `0`.
-
-```bash
-python3 tests/mod_editor/test_nfl2k5_scorebug_fonts.py
-```
-
-### test_nfl2k5_scorebug_template_release
+**PROVED:** generated resource identities, bounded native collection/font lookup, actual score/timeout/play-clock callbacks, geometry and software raster output, multi-digit score separation, and the completed checks listed below. **UNWITNESSED:** booting or playing this build, GPU filtering, real-match transitions, the final disc and its option read-back. No emulator, disc build or push was run.
 
-Start `2026-09-15T19:23:56.934213+00:00`; end `2026-09-15T19:23:57.530051+00:00`; elapsed `0.596 s`; exit `0`.
+## Inputs and interpretation
 
-```bash
-python3 tests/mod_editor/test_nfl2k5_scorebug_template_release.py
-```
-
-### test_provider_integrity
-
-Start `2026-09-15T19:23:57.563436+00:00`; end `2026-09-15T19:24:06.778170+00:00`; elapsed `9.215 s`; exit `0`.
-
-```bash
-python3 tests/mod_editor/test_provider_integrity.py
-```
-
-### test_product_catalog
-
-Start `2026-09-15T19:24:06.810343+00:00`; end `2026-09-15T19:24:06.960233+00:00`; elapsed `0.15 s`; exit `0`.
-
-```bash
-python3 tests/mod_editor/test_product_catalog.py
-```
-
-### test_phase1_packaging
-
-Start `2026-09-15T19:24:06.993096+00:00`; end `2026-09-15T19:24:09.242169+00:00`; elapsed `2.249 s`; exit `0`.
-
-```bash
-python3 tests/mod_editor/test_phase1_packaging.py
-```
-
-### test_nfl2k5_modern_color
-
-Start `2026-09-15T19:24:09.274853+00:00`; end `2026-09-15T19:24:16.547213+00:00`; elapsed `7.272 s`; exit `0`.
-
-```bash
-python3 tests/mod_editor/test_nfl2k5_modern_color.py
-```
-
-### registry-strict
-
-Start `2026-09-15T19:24:16.580360+00:00`; end `2026-09-15T19:24:16.729349+00:00`; elapsed `0.149 s`; exit `1`.
-
-```bash
-python3 -m mod_editor.capabilities.validate_registry
-```
-
-### all-suites
-
-Start `2026-09-15T19:01:44.833651+00:00`; end `2026-09-15T19:24:16.742534+00:00`; elapsed `1351.909 s`; exit `1`.
-
-```bash
-python3 .scratch/run_suites.py
-```
-
-### progress-20
-
-Start `2026-09-15T19:24:55.082571+00:00`; end `2026-09-15T19:24:55.090744+00:00`; elapsed `0.008 s`; exit `0`.
-
-```bash
-bash -c 'tail -22 .scratch/audit/all-suites.log; tail -10 .scratch/audit/xbe-memory.log; tail -10 .scratch/audit/xbe-caves.log; tail -8 .scratch/audit/test_nfl2k5_scorebug_fonts.log'
-```
-
-### registry-missing-evidence
-
-Start `2026-09-15T19:25:21.372524+00:00`; end `2026-09-15T19:25:21.406636+00:00`; elapsed `0.034 s`; exit `0`.
-
-```bash
-bash -c 'rg -n "_local_path" mod_editor/capabilities/validate_registry.py; .scratch/g ls-files docs/research/apf_audio.md; ls -ld docs/research docs/research/apf_audio.md; .scratch/g status --short'
-```
-
-### missing-registry-files
-
-Start `2026-09-15T19:25:21.437436+00:00`; end `2026-09-15T19:25:21.740055+00:00`; elapsed `0.303 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### evidence-source-locations
-
-Start `2026-09-15T19:25:48.441115+00:00`; end `2026-09-15T19:25:48.466642+00:00`; elapsed `0.026 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### hydrate-registry-evidence
-
-Start `2026-09-15T19:26:19.922656+00:00`; end `2026-09-15T19:26:19.989420+00:00`; elapsed `0.067 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### registry-strict-rerun
-
-Start `2026-09-15T19:26:20.020247+00:00`; end `2026-09-15T19:26:20.171805+00:00`; elapsed `0.152 s`; exit `0`.
-
-```bash
-env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 -m mod_editor.capabilities.validate_registry
-```
-
-### gates-after-hydration
-
-Start `2026-09-15T19:26:20.201388+00:00`; end `2026-09-15T19:26:20.207737+00:00`; elapsed `0.006 s`; exit `0`.
+- Read `ASTRA_CONTEXT.md`, the scorebug-v2 verdict in `BETA71_TRIAGE.md`, all four requested B70/B71 source reports, and the A5 `ASTRA_REPORT.md` at the parent revision. The S3 brief expressly authorizes scorebug writers, registry evidence, RC96 and the cave-manifest update despite the older general context exclusions.
+- Opened `/home/noah/Desktop/2K5-8 Editors/beta71_evidence/bar_compare_espn_vs_disc_f.png`: ESPN above, disc f below. The stated verdict was “it doesn’t look exactly like espn ... not close yet”.
+- Measured source: `/home/noah/Desktop/Broncos-vs-Chiefs-Week1-Highlights/frames/frame_012001.jpg`, 1920×1080, SHA-256 `01622a78b6778f089e4b242c8deda42833b10ae123150ed5bc8989dc483929d7`.
+- The explicit plate is `(828,946,1120,1000)`, larger than the approximately `(837,947,1084,983)` plate in the frame. The frame’s score “7” has 53 pixels of thresholded ink, while this brief requests 45. V3 follows the explicit numeric dimensions and reports the resulting photograph comparison honestly.
+- The HUD transform is `x/3`, `16 + y*448/1080`; authored scene coordinates use `exact.scene_box`. Widescreen applies the existing `27/32` horizontal contraction about HUD x=320. Crops undo that contraction before restoring the 1920×1080 source coordinates.
 
-```bash
-bash -c 'tail -10 .scratch/audit/xbe-memory.log; tail -10 .scratch/audit/xbe-caves.log'
-```
-
-### validation-summary
-
-Start `2026-09-15T19:26:47.196949+00:00`; end `2026-09-15T19:26:47.223303+00:00`; elapsed `0.026 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### update-registry-report
-
-Start `2026-09-15T19:26:47.253458+00:00`; end `2026-09-15T19:26:47.275829+00:00`; elapsed `0.022 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### progress-21
-
-Start `2026-09-15T19:27:51.968131+00:00`; end `2026-09-15T19:27:51.990149+00:00`; elapsed `0.022 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### repin-handoff
-
-Start `2026-09-15T19:28:36.174442+00:00`; end `2026-09-15T19:28:46.411534+00:00`; elapsed `10.237 s`; exit `0`.
-
-```bash
-python3 packaging/repin.py --apply
-```
-
-### commit-handoff
-
-Start `2026-09-15T19:28:46.444731+00:00`; end `2026-09-15T19:28:46.528876+00:00`; elapsed `0.084 s`; exit `0`.
-
-```bash
-python3 .scratch/commit_handoff.py
-```
-
-### xbe-memory
-
-Start `2026-09-15T19:01:44.830809+00:00`; end `2026-09-15T19:29:09.741976+00:00`; elapsed `1644.911 s`; exit `0`.
-
-```bash
-env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_xbe_patch_memory_writes.py
-```
+## Implementation and injection routes
 
-### progress-22
+### Bar, wings and possession plate
 
-Start `2026-09-15T19:30:06.906252+00:00`; end `2026-09-15T19:30:06.929271+00:00`; elapsed `0.023 s`; exit `0`.
+The retail frame mesh uses an authored 64×64 atlas nine-slice with a real rounded corner, a light rim and vertical charcoal shading. The per-team 64×64 wing textures retain the proved small collection route. Each packs a height-filling logo and a two-dimensional colour ramp; the ramp reaches the body at about 65% of the wing width. Logo fitting uses the final source box aspect, preserving the mark’s proportions even when the texture cell itself is stretched. DEN uses the lit wing RGB `(56,89,144)`; KC uses `(180,56,86)`. No 256×512 atlas is added.
 
-```bash
-python3 -
-```
-
-### progress-23
-
-Start `2026-09-15T19:31:06.045158+00:00`; end `2026-09-15T19:31:06.074623+00:00`; elapsed `0.029 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### progress-24
-
-Start `2026-09-15T19:32:13.908161+00:00`; end `2026-09-15T19:32:13.930645+00:00`; elapsed `0.022 s`; exit `0`.
-
-```bash
-python3 -
-```
-
-### xbe-caves
-
-Start `2026-09-15T19:01:44.831693+00:00`; end `2026-09-15T19:32:18.711853+00:00`; elapsed `1833.88 s`; exit `0`.
-
-```bash
-env QT_QPA_PLATFORM=offscreen PYTHONPATH=.:tools python3 tests/mod_editor/test_xbe_patch_cave_references.py
-```
-
-### supervised-detached-checks
+The plate is a white mask multiplied by full team colour, with a small pointer. Every other team uses its complete primary; the explicit near-black secondary choices are:
 
-Start `2026-09-15T19:01:44.801352+00:00`; end `2026-09-15T19:32:18.717905+00:00`; elapsed `1833.917 s`; exit `1`.
-
-```bash
-bash .scratch/launch_checks.sh
-```
+| Team | Plate secondary |
+| --- | --- |
+| CHI | `#C83803` |
+| DEN | `#FB4F14` |
+| HOU | `#C8102E` |
+| LV | `#A5ACAF` |
+| NE | `#C60C30` |
+| NO | `#D3BC8D` |
+| PIT | `#FFB612` |
+| SEA | `#69BE28` |
+| TEN | `#4B92DB` |
 
-### progress-25
+Unknown asset codes retain the neutral table value. The existing 40-entry asset-code table and owner lookup provide the tint; created-team fallbacks remain guarded.
 
-Start `2026-09-15T19:33:13.717050+00:00`; end `2026-09-15T19:33:13.740232+00:00`; elapsed `0.023 s`; exit `0`.
+### Scores, timeout ticks and capsule
 
-```bash
-python3 -
-```
+- The appended `FirstPersonComic` FONT uses the existing tenth boot name (slot 9), copied from the complete retail font4 donor including its loader object tail. Its original ASCII cells remain available. The owner binds only the intended scorebug descriptors; global retail font slots stay unchanged.
+- `U+0080..U+0089` provide 40×45 source-pixel score quads from 13×20 masks packed in previously unused 128×128 atlas space. `U+0090..U+0099` reuse those exact UV cells at narrower metrics for multi-digit scores. Native score formatters at `0xFC050` and `0xFC070` still determine the string, then the owner callbacks at records `0xA9594C` and `0xA95984` select the appropriate range. Scores 28, 100 and 999 remain outside the down plate in both aspects. No additional texture pixels are allocated for compact scores.
+- Timeout callbacks write `~ ~ ~`, trimmed to 0–3 timeouts. The private tilde is a solid small tick with explicit advance and spacing; colour is `0xFFC8CACE`. This is not a FONT8 hyphen.
+- The grey quarter uses the smaller `core_bug` font with capital suffix masks. The game clock uses the broadcast digit fork in black. The play-clock callback wraps native `0xFBE30` and removes the leading zero from `04`; its digit stays white.
+- Spare material `score_buga` supplies the 61×39 geometry box from `(1021,1000)` to `(1082,1039)`, corresponding to the brief’s nominal 61×40 cell. Base tint is `(120,14,39)`, with the existing urgency behavior expressed as a bright-red pulse on the cell under five seconds. The pulse derives from the countdown bits, not a promised fixed-Hz timer. Boundary tests cover 12, 5, 4, 2.5, 0, negative and NaN values, with white text in both red phases.
+- The capsule backing is on the always-visible alternate frame material. Hiding the play-clock element during live play therefore keeps a light backing behind the black game clock and grey quarter.
 
-### confirm-required-verdicts
+### Retail states and owner capacity
+
+Native event formatters and visibility remain in use. A separate charcoal material, `zz_ESPN_bug1`, restores independent hang-time visibility at descriptor `0xA95AEC`; v2 had cleared its availability. Individual FLAG, Hangtime, Ball at Midfield, FUMBLE and hidden-play-clock renders are in [states.json](reports/b71_s3/states.json). `score_*` images refer to the retail FUMBLE event formatter, not a newly authored TOUCHDOWN slab. The `all_events_*` image deliberately forces incompatible simultaneous elements and is a stress diagnostic, not an accepted retail display state.
+
+Owner revision 7 occupies **1,386 / 1,408 code bytes**, plus the existing 128-byte data allocation. Shared wing setup and score-flash helpers recovered room; `CODE_SIZE` did not need to grow. Runtime data remains in its named writable allocation. The slot-9 lookup failure retains native descriptor fallbacks. Tests cover register/FPU preservation, native visibility, write ownership, foreign-byte refusal, idempotence and composition.
+
+## Volume and freeze boundary
+
+| Component | Bytes |
+| --- | ---: |
+| 66 texture spans × 5,280 | 348,480 |
+| FirstPersonComic FONT | 38,048 |
+| core_bug FONT | 27,040 |
+| Appended payload | **413,568** |
+| Sector-rounded resource growth | 413,696 |
+| Native rounded heap estimate for appended spans | 420,096 |
 
-Start `2026-09-15T19:33:31.739088+00:00`; end `2026-09-15T19:33:31.763186+00:00`; elapsed `0.024 s`; exit `0`.
+The new FONT metadata adds 11,008 bytes over the 402,560-byte A5 appendix. Atlas video sizes remain unchanged. This stays near the historically successful 0.4 MB class rather than the roughly 1.7 MB expansion associated with a failed loader allocation and subsequent null read. That historical evidence and the bounded loader tests are not a new boot witness; in-game freeze freedom remains UNWITNESSED.
 
-```bash
-python3 -
-```
+## Native measurements
 
-### testdisc-build
+[4:3 ESPN/native comparison](reports/b71_s3/compare_43.png) · [Widescreen ESPN/native comparison](reports/b71_s3/compare_wide.png) · [Full JSON](reports/b71_s3/measurements.json)
 
-Start `2026-09-15T19:33:31.790924+00:00`; end `2026-09-15T19:33:32.068813+00:00`; elapsed `0.278 s`; exit `1`.
+`prove_v3.py` executes the native HUD/formatters with the compiled collection, then calls `compare()` with `MNF_COMPARE_REGIONS` and text boxes independently thresholded from the broadcast frame. Text components touching ROI edges are discarded to exclude capsule-rim fragments. The v3 role map supplies the right light/dark polarity for relocated callbacks. Native glyph quads include transparent padding; source-restored raster ink is reported separately.
 
-```bash
-bash reports/b71_a5/launch_testdisc71.sh
-```
+### Region errors
 
-### testdisc-log-and-output-state
+Boundary and edge-distance values below are HUD pixels; RGB MAE is on the 0–255 channel scale. Geometry matching is distinct from photo matching.
 
-Start `2026-09-15T19:33:48.702143+00:00`; end `2026-09-15T19:33:48.728633+00:00`; elapsed `0.026 s`; exit `0`.
+| Region | Boundary 4:3 | Boundary wide | RGB MAE 4:3 | RGB MAE wide | Edge p95 4:3 / wide |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| centre_pill | 0.005859 | 0.005254 | 62.641 | 62.537 | 7.071 / 6.356 |
+| clock_strip | 0.005254 | 0.005254 | 53.613 | 52.020 | 3.000 / 2.236 |
+| frame_rim | 0.006285 | 0.006285 | 60.683 | 60.160 | 43.000 / 43.000 |
+| left_panel | 0.006285 | 0.006285 | 47.050 | 46.647 | 9.849 / 8.944 |
+| right_panel | 0.006285 | 0.006285 | 68.272 | 68.203 | 7.000 / 6.083 |
 
-```bash
-python3 -
-```
+| Extra region | Boundary 4:3 | Boundary wide |
+| --- | ---: | ---: |
+| away | 0.004801 | 0.004051 |
+| home | 0.006285 | 0.006285 |
+| play_clock_cell | 0.005254 | 0.005254 |
+| pointer | 0.006285 | 0.006285 |
 
-### finish-report-content
+### Text errors in source pixels
 
-Start `2026-09-15T19:34:30.748879+00:00`; end `2026-09-15T19:34:30.772976+00:00`; elapsed `0.024 s`; exit `0`.
+All boxes are `[left, top, right, bottom]`, with exclusive right/bottom. These are independently measured ink boxes. The quarter’s capitals are now within 3–4 pixels; the widest remaining text difference is the down label (20 pixels at its right edge), which is centered on the larger requested plate.
 
-```bash
-python3 -
-```
+| Text | Broadcast ink | 4:3 rendered ink | Max error 4:3 / wide |
+| --- | --- | --- | ---: |
+| away_score | `[736, 965, 776, 1018]` | `[735, 965, 773, 1010]` | 8 / 8 |
+| away_ticks | `[717, 1032, 796, 1038]` | `[718, 1032, 794, 1037]` | 2 / 2 |
+| clock | `[920, 1006, 1000, 1033]` | `[929, 1008, 1000, 1032]` | 9 / 8 |
+| down | `[898, 955, 1021, 978]` | `[904, 960, 1041, 985]` | 20 / 20 |
+| home_score | `[1139, 965, 1179, 1018]` | `[1138, 965, 1178, 1010]` | 8 / 8 |
+| home_ticks | `[1120, 1032, 1198, 1038]` | `[1120, 1032, 1196, 1037]` | 2 / 1 |
+| play_clock | `[1042, 1009, 1057, 1028]` | `[1044, 1007, 1061, 1026]` | 4 / 6 |
+| quarter | `[850, 1009, 892, 1028]` | `[852, 1010, 895, 1029]` | 3 / 4 |
 
-### repin-final
+`compare().exact_match` is **false in both aspects**. Mean region RGB MAE is 58.452 / 57.914. All measured native frame containment checks are empty and visible triangle winding is consistent. Software raster sampling, low-resolution marks, differing text proportions, the larger plate and the specified shorter score explain why boundary agreement is not visual equality. No claim is made that GPU output will remove those residuals.
 
-Start `2026-09-15T19:34:30.801340+00:00`; end `2026-09-15T19:34:40.945286+00:00`; elapsed `10.144 s`; exit `0`.
+## Regeneration and validation
 
-```bash
-python3 packaging/repin.py --apply
-```
+Compiler pins were regenerated from the actual final `Build` output, including the whole appended FONT hash: [compiler_pins.json](reports/b71_s3/compiler_pins.json). `packaging/repin.py --apply` updated provider seals. The resource identity is `scorebug-mnf-2026-v3`.
 
-## Delivery
+The cave manifest contains 13,081 reservations and 138 observed steps. Its final SHA-256 is `06609653fb463e26f05c90d3db8aaede996201000c6c3f0afbe3941da2af9e2a`. The scorebug owner occupies code `0x14BAA60..0x14BAFE0` and data `0x14BB010..0x14BB090` in this union. This is a **bounded complete forward XBE projection**, freshly observed from the A5 parent. It retains historical retail reservations and records final owner bytes/source hashes. It is not a production disc receipt: `release_manifest=false`, `disc_built=false`, `production_regeneration_required=true`, and inherited disc fields are explicitly historical. The external production build must regenerate its full receipt.
 
-- Branch: `astra/b71-a5-scorebug-integrate` in `.scratch/private.git`.
-- Bundle: `.scratch/astra-b71-a5.bundle`, including both merged source lines and colour v2.1, with prerequisite `e2f5c6e6` (the beta 71 base). Bundle verification and head identity are recorded in the final live audit entries.
-- Source inputs remain read-only; no retail binary was copied into the repository. `.scratch` stays below 200 MB.
-- `ASTRA_LAST_MESSAGE.md` states the code result and disc blocker, and ends with `ASTRA_DONE`.
+The first projection accidentally recorded `nfl2k5_rules_patch.apply` and its named caller as two owners of the same rule bytes. The cave gate rejected `nfl2k5_coin_defer/choose` at `0x25E7B5`. The corrected local projection recipe excludes that shared helper from independent observation, retains the real rule writers, and always starts from the A5 manifest. No gate or oracle assertion was relaxed.
+
+### Final standalone results
+
+The final driver completed 28 standalone programs: 279 reported unittest cases, including 15 skips, with no failures and unchanged source snapshots. Each final command is an independent Python process with `PYTHONPATH=<repo>:<repo>/tools` and `QT_QPA_PLATFORM=offscreen`. Two independent suites run concurrently. Strict registry validation uses default file checking, without `--skip-file-checks`. The final driver snapshots source hashes before and after.
+
+| Command/result | Exit | Tests | Skips | Wall seconds |
+| --- | ---: | ---: | ---: | ---: |
+| [test_apf_scorebug_workspace_qt-release](reports/b71_s3/test_apf_scorebug_workspace_qt-release.log) | 0 | 11 | 0 | 0.658 |
+| [test_nfl2k5_scorebug_assets-release](reports/b71_s3/test_nfl2k5_scorebug_assets-release.log) | 0 | 8 | 1 | 170.202 |
+| [test_nfl2k5_scorebug_author-release](reports/b71_s3/test_nfl2k5_scorebug_author-release.log) | 0 | 12 | 0 | 6.953 |
+| [test_nfl2k5_scorebug_exact-release](reports/b71_s3/test_nfl2k5_scorebug_exact-release.log) | 0 | 8 | 0 | 83.77 |
+| [test_nfl2k5_scorebug_fonts-release](reports/b71_s3/test_nfl2k5_scorebug_fonts-release.log) | 0 | 10 | 5 | 9.0 |
+| [test_nfl2k5_scorebug_freeze-release](reports/b71_s3/test_nfl2k5_scorebug_freeze-release.log) | 0 | 7 | 0 | 332.317 |
+| [test_nfl2k5_scorebug_freeze_v2-release](reports/b71_s3/test_nfl2k5_scorebug_freeze_v2-release.log) | 0 | 7 | 0 | 418.219 |
+| [test_nfl2k5_scorebug_ingame-release](reports/b71_s3/test_nfl2k5_scorebug_ingame-release.log) | 0 | 11 | 0 | 16.002 |
+| [test_nfl2k5_scorebug_ingame_fix-release](reports/b71_s3/test_nfl2k5_scorebug_ingame_fix-release.log) | 0 | 9 | 0 | 135.588 |
+| [test_nfl2k5_scorebug_mnf-release](reports/b71_s3/test_nfl2k5_scorebug_mnf-release.log) | 0 | 10 | 0 | 12.08 |
+| [test_nfl2k5_scorebug_mnf_v3-release](reports/b71_s3/test_nfl2k5_scorebug_mnf_v3-release.log) | 0 | 4 | 0 | 32.929 |
+| [test_nfl2k5_scorebug_native-release](reports/b71_s3/test_nfl2k5_scorebug_native-release.log) | 0 | 4 | 0 | 130.74 |
+| [test_nfl2k5_scorebug_projection-release](reports/b71_s3/test_nfl2k5_scorebug_projection-release.log) | 0 | 14 | 0 | 56.575 |
+| [test_nfl2k5_scorebug_resources-release](reports/b71_s3/test_nfl2k5_scorebug_resources-release.log) | 0 | 6 | 0 | 244.834 |
+| [test_nfl2k5_scorebug_runtime-release](reports/b71_s3/test_nfl2k5_scorebug_runtime-release.log) | 0 | 12 | 0 | 117.87 |
+| [test_nfl2k5_scorebug_source_art-release](reports/b71_s3/test_nfl2k5_scorebug_source_art-release.log) | 0 | 13 | 3 | 0.49 |
+| [test_nfl2k5_scorebug_template-release](reports/b71_s3/test_nfl2k5_scorebug_template-release.log) | 0 | 19 | 0 | 9.906 |
+| [test_nfl2k5_scorebug_template_release-release](reports/b71_s3/test_nfl2k5_scorebug_template_release-release.log) | 0 | 5 | 0 | 0.575 |
+| [test_nfl2k5_scorebug_unified_adapter-release](reports/b71_s3/test_nfl2k5_scorebug_unified_adapter-release.log) | 0 | 5 | 0 | 0.167 |
+| [test_nfl2k5_scorebug_v10_ingame-release](reports/b71_s3/test_nfl2k5_scorebug_v10_ingame-release.log) | 0 | 11 | 0 | 9.182 |
+| [test_nfl2k5_scorebug_v10_projection-release](reports/b71_s3/test_nfl2k5_scorebug_v10_projection-release.log) | 0 | 14 | 0 | 28.071 |
+| [test_nfl2k5_scorebug_versions-release](reports/b71_s3/test_nfl2k5_scorebug_versions-release.log) | 0 | 4 | 0 | 9.357 |
+| [test_scorebug_studio_panel_qt-release](reports/b71_s3/test_scorebug_studio_panel_qt-release.log) | 0 | 11 | 0 | 7.251 |
+| [nfl2k5_scorebug_layout_test-release](reports/b71_s3/nfl2k5_scorebug_layout_test-release.log) | 0 | 15 | 6 | 1.35 |
+| [nfl2k5_scorebug_mod_project_test-release](reports/b71_s3/nfl2k5_scorebug_mod_project_test-release.log) | 0 | 10 | 0 | 1.304 |
+| [test_provider_integrity-release](reports/b71_s3/test_provider_integrity-release.log) | 0 | 7 | 0 | 8.225 |
+| [test_product_catalog-release](reports/b71_s3/test_product_catalog-release.log) | 0 | 9 | 0 | 0.15 |
+| [test_phase1_packaging-release](reports/b71_s3/test_phase1_packaging-release.log) | 0 | 23 | 0 | 2.079 |
+| [registry-strict-release](reports/b71_s3/registry-strict-release.log) | 0 | — | 0 | 0.159 |
+| [xbe-memory-release](reports/b71_s3/xbe-memory-release.log) | 0 | 119 | 0 | 1579.189 |
+| [xbe-caves-release](reports/b71_s3/xbe-caves-release.log) | 0 | 131 | 0 | 1771.283 |
+
+The assets suite precisely skips its disc-copy transaction when the required Storage scratch directory is read-only (EROFS/EACCES/EPERM). Its other checks still execute. The font suite retains five historical private-font-v8 skips; current v3 lookup, relocation, glyphs and callbacks have active native tests. The source-art suite has three skips for missing developer PNG/scene fixtures and the corresponding old disc comparison. The layout suite has five skips for an absent historical Create-a-Play image and one for a missing glTF research export. A verbose rerun with its CPU-emulation flag enabled confirmed the image blocker. These skips are not boot or disc evidence; exact reasons are in `source-art-skip-details.log` and `layout-skip-details.log`.
+
+Preliminary failures are retained in the ledger: read-only Storage, stale hyphen/dark-text/fixed-callback assertions, pin changes while early exploratory suites were already loaded, a mistaken test expectation for the pulse phase, the font-span rounding correction, and the duplicate shared-helper manifest owner. The final `-release` runs supersede those exploratory verdicts. The old sequential driver retains its failure exit; it is not advertised as a passing final run.
+
+Initial strict registry validation lacked 75 ignored evidence files. Real copies were restored from the existing read-only local evidence source, matching the A5 per-file hashes (2,063,157 bytes); [evidence_hydration.json](reports/b71_s3/evidence_hydration.json) records them. They are neither staged nor bundled.
+
+## Registry, RC96 and builder
+
+The existing `nfl2k5.scorebug_presentation.runtime` capability row was updated with v3 scope, volume and proof paths. No capability rows were added. Runtime witness status remains `not-tested`, experimental and off in every preset. The RC96 scorebug bullet is anonymous and states the native proof limits.
+
+The prepared [builder](reports/b71_s3/build_testdisc71.py) follows A5: Advanced preset with scorebug, scorebug runtime, modern colour and widescreen all enabled. Output:
+
+`/home/noah/2K5 Mod Studio Builds/NFL 2K5 MOD TEST 2026-09-15h (scorebug v3 + colour + widescreen).xiso.iso`
+
+Only `--plan-only` ran here. The builds folder is read-only in this session. The external builder first checks destination access, refuses an existing named output, preserves every patch archive, and follows A5’s at-most-three MOD TEST image policy. It removes incomplete discs on failure. After building it reparses the scorebug resources, XBE owner, all 477 colour bundles and widescreen sites, requires every status to be `applied` and aspect `16:9`, then exports the patch.
+
+Import the bundle into the integration checkout (or fast-forward this worktree’s ordinary branch outside the sandbox) before building, so build receipts record the final source head. The private branch does not update the ordinary read-only HEAD. Then run externally from that checkout:
+
+```bash
+bash reports/b71_s3/launch_testdisc71.sh
+```
+
+Expected external receipts are `.scratch/testdisc71h/{plan,pruning,receipt,readback,patch-receipt,result}.json` plus `build.log`, `pid` and `exit`. No disc image, patch or read-back receipt was created here.
+
+### Played-game witness still required
+
+- Intro/coin toss/kickoff load without the historical allocation crash.
+- Steady bar in 4:3 and widescreen; large marks, gradients, rim and score font match the supplied crops.
+- Possession changes including near-black teams; single-, double- and triple-digit score updates; timeout consumption.
+- Clock running/paused/hidden, urgency below five seconds, quarter and overtime labels.
+- Native flag, hang-time, ball-on and score events stay readable through their real transitions.
+
+## Commits and delivery
+
+- Base: `a7440f05`, branch `astra/b71-s3-scorebug-v3`. The ordinary worktree `.git` is read-only, so commits live in `.scratch/private.git` using `.scratch/g`. No shared branch refs or other worktrees were changed.
+- Implementation commits: `374872cd` and `d18939b250dcf7863c729ac7ad29a30fdbe7dd18`. Staging and commits use enumerated paths; the second list is in [source_commit.json](reports/b71_s3/source_commit.json). Evidence/manifest/report commits follow after the checks.
+- Bundle: `.scratch/astra-b71-s3.bundle`, prerequisite `a7440f05`. It is created from the final private branch and verified locally. The final delivery receipt records head, size and SHA-256.
+- Retail inputs remain read-only and no retail pack/XBE/disc bytes are stored in the report or bundle. Scratch remains under 200 MB. No push or emulator launch.
+
+## Command ledger
+
+[command_ledger.json](reports/b71_s3/command_ledger.json) contains exact argv, UTC start/end, elapsed seconds and exit status for all recorded commands; each named log contains the complete output. Early read-only discovery and editing commands are in the session tool transcript rather than this runner. The first aborted manifest observation was overwritten by its retry; it is not counted as a proof. No validation claim relies on an unrecorded run.
+
+| Name | UTC start | Seconds | Exit | Exact command |
+| --- | --- | ---: | ---: | --- |
+| [pin-compiler](reports/b71_s3/pin-compiler.log) | 2026-09-15T20:34:17.093185+00:00 | 43.989 | 0 | `python3 reports/b71_s3/regenerate_pins.py` |
+| [render-check](reports/b71_s3/render-check.log) | 2026-09-15T20:36:54.138861+00:00 | 11.046 | 0 | `python3 -` |
+| [pin-compiler-final](reports/b71_s3/pin-compiler-final.log) | 2026-09-15T20:38:35.172278+00:00 | 44.93 | 0 | `python3 reports/b71_s3/regenerate_pins.py` |
+| [proof-v3](reports/b71_s3/proof-v3.log) | 2026-09-15T20:40:13.957437+00:00 | 38.17 | 0 | `python3 reports/b71_s3/prove_v3.py` |
+| [repin-initial](reports/b71_s3/repin-initial.log) | 2026-09-15T20:41:53.323250+00:00 | 19.745 | 0 | `python3 packaging/repin.py --apply` |
+| [test_nfl2k5_scorebug_mnf_v3-rerun](reports/b71_s3/test_nfl2k5_scorebug_mnf_v3-rerun.log) | 2026-09-15T20:44:01.066266+00:00 | 16.491 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py` |
+| [proof-v3-events](reports/b71_s3/proof-v3-events.log) | 2026-09-15T20:44:20.519889+00:00 | 38.436 | 0 | `python3 reports/b71_s3/prove_v3.py` |
+| [pin-compiler-release](reports/b71_s3/pin-compiler-release.log) | 2026-09-15T20:44:53.806440+00:00 | 44.718 | 0 | `python3 reports/b71_s3/regenerate_pins.py` |
+| [repin-source](reports/b71_s3/repin-source.log) | 2026-09-15T20:46:03.666330+00:00 | 20.849 | 0 | `python3 packaging/repin.py --apply` |
+| [proof-v3-final](reports/b71_s3/proof-v3-final.log) | 2026-09-15T20:47:19.230102+00:00 | 45.166 | 0 | `python3 reports/b71_s3/prove_v3.py` |
+| [pin-compiler-v3](reports/b71_s3/pin-compiler-v3.log) | 2026-09-15T20:47:20.378696+00:00 | 45.094 | 0 | `python3 reports/b71_s3/regenerate_pins.py` |
+| [registry-preflight](reports/b71_s3/registry-preflight.log) | 2026-09-15T20:47:45.757330+00:00 | 0.175 | 1 | `python3 -m mod_editor.capabilities.validate_registry` |
+| [test_nfl2k5_scorebug_exact-preflight](reports/b71_s3/test_nfl2k5_scorebug_exact-preflight.log) | 2026-09-15T20:47:46.037033+00:00 | 68.333 | 1 | `python3 tests/mod_editor/test_nfl2k5_scorebug_exact.py` |
+| [repin-validation](reports/b71_s3/repin-validation.log) | 2026-09-15T20:48:22.376586+00:00 | 21.491 | 0 | `python3 packaging/repin.py --apply` |
+| [manifest](reports/b71_s3/manifest.log) | 2026-09-15T20:48:23.503627+00:00 | 336.65 | 0 | `python3 reports/b71_s3/refresh_manifest.py` |
+| [test_apf_scorebug_workspace_qt](reports/b71_s3/test_apf_scorebug_workspace_qt.log) | 2026-09-15T20:48:34.064803+00:00 | 1.52 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_apf_scorebug_workspace_qt.py` |
+| [builder-plan](reports/b71_s3/builder-plan.log) | 2026-09-15T20:48:35.221648+00:00 | 0.303 | 0 | `python3 reports/b71_s3/build_testdisc71.py --plan-only` |
+| [test_nfl2k5_scorebug_assets](reports/b71_s3/test_nfl2k5_scorebug_assets.log) | 2026-09-15T20:48:35.614943+00:00 | 150.403 | 1 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_assets.py` |
+| [proof-v3-measured-text](reports/b71_s3/proof-v3-measured-text.log) | 2026-09-15T20:49:25.355800+00:00 | 46.405 | 0 | `python3 reports/b71_s3/prove_v3.py` |
+| [test_nfl2k5_scorebug_author](reports/b71_s3/test_nfl2k5_scorebug_author.log) | 2026-09-15T20:51:06.048537+00:00 | 6.552 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_author.py` |
+| [test_nfl2k5_scorebug_exact](reports/b71_s3/test_nfl2k5_scorebug_exact.log) | 2026-09-15T20:51:12.630575+00:00 | 84.262 | 1 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_exact.py` |
+| [proof-v3-ink](reports/b71_s3/proof-v3-ink.log) | 2026-09-15T20:51:31.168503+00:00 | 45.985 | 0 | `python3 reports/b71_s3/prove_v3.py` |
+| [test_nfl2k5_scorebug_assets-rerun](reports/b71_s3/test_nfl2k5_scorebug_assets-rerun.log) | 2026-09-15T20:52:06.844121+00:00 | 154.124 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_assets.py` |
+| [test_nfl2k5_scorebug_fonts](reports/b71_s3/test_nfl2k5_scorebug_fonts.log) | 2026-09-15T20:52:36.921099+00:00 | 8.157 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_fonts.py` |
+| [test_nfl2k5_scorebug_freeze](reports/b71_s3/test_nfl2k5_scorebug_freeze.log) | 2026-09-15T20:52:45.108080+00:00 | 243.839 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_freeze.py` |
+| [xbe-memory](reports/b71_s3/xbe-memory.log) | 2026-09-15T20:54:00.187826+00:00 | 1625.046 | 0 | `python3 tests/mod_editor/test_xbe_patch_memory_writes.py` |
+| [xbe-caves](reports/b71_s3/xbe-caves.log) | 2026-09-15T20:54:00.187953+00:00 | 1114.998 | 1 | `python3 tests/mod_editor/test_xbe_patch_cave_references.py` |
+| [delivery-check](reports/b71_s3/delivery-check.log) | 2026-09-15T20:55:38.947128+00:00 | 0.293 | 0 | `python3 reports/b71_s3/check_delivery.py` |
+| [test_nfl2k5_scorebug_exact-rerun](reports/b71_s3/test_nfl2k5_scorebug_exact-rerun.log) | 2026-09-15T20:56:04.665488+00:00 | 81.518 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_exact.py` |
+| [test_nfl2k5_scorebug_freeze_v2](reports/b71_s3/test_nfl2k5_scorebug_freeze_v2.log) | 2026-09-15T20:56:48.978583+00:00 | 60.46 | 1 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py` |
+| [pin-compiler-capsule](reports/b71_s3/pin-compiler-capsule.log) | 2026-09-15T20:57:17.412176+00:00 | 44.036 | 0 | `python3 reports/b71_s3/regenerate_pins.py` |
+| [proof-v3-capsule](reports/b71_s3/proof-v3-capsule.log) | 2026-09-15T20:57:28.667167+00:00 | 45.49 | 0 | `python3 reports/b71_s3/prove_v3.py` |
+| [test_nfl2k5_scorebug_ingame](reports/b71_s3/test_nfl2k5_scorebug_ingame.log) | 2026-09-15T20:57:49.467693+00:00 | 14.909 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_ingame.py` |
+| [repin-capsule](reports/b71_s3/repin-capsule.log) | 2026-09-15T20:57:49.823216+00:00 | 32.591 | 0 | `python3 packaging/repin.py --apply` |
+| [test_nfl2k5_scorebug_ingame_fix](reports/b71_s3/test_nfl2k5_scorebug_ingame_fix.log) | 2026-09-15T20:58:04.405281+00:00 | 109.093 | 1 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py` |
+| [manifest-capsule](reports/b71_s3/manifest-capsule.log) | 2026-09-15T20:58:51.268795+00:00 | 0.481 | 1 | `python3 reports/b71_s3/refresh_manifest.py` |
+| [test_nfl2k5_scorebug_mnf_v3-final](reports/b71_s3/test_nfl2k5_scorebug_mnf_v3-final.log) | 2026-09-15T20:58:51.842495+00:00 | 17.154 | 1 | `python3 tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py` |
+| [test_nfl2k5_scorebug_assets-final](reports/b71_s3/test_nfl2k5_scorebug_assets-final.log) | 2026-09-15T20:58:53.170838+00:00 | 146.533 | 0 | `/usr/bin/python3 tests/mod_editor/test_nfl2k5_scorebug_assets.py` |
+| [manifest-final](reports/b71_s3/manifest-final.log) | 2026-09-15T20:59:33.766259+00:00 | 313.013 | 1 | `python3 reports/b71_s3/refresh_manifest.py` |
+| [test_nfl2k5_scorebug_mnf](reports/b71_s3/test_nfl2k5_scorebug_mnf.log) | 2026-09-15T20:59:53.526353+00:00 | 11.777 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_mnf.py` |
+| [test_nfl2k5_scorebug_mnf_v3](reports/b71_s3/test_nfl2k5_scorebug_mnf_v3.log) | 2026-09-15T21:00:05.333079+00:00 | 16.539 | 1 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py` |
+| [proof-v3-final-metrics](reports/b71_s3/proof-v3-final-metrics.log) | 2026-09-15T21:00:21.476411+00:00 | 44.77 | 0 | `python3 reports/b71_s3/prove_v3.py` |
+| [test_nfl2k5_scorebug_native](reports/b71_s3/test_nfl2k5_scorebug_native.log) | 2026-09-15T21:00:21.900819+00:00 | 129.678 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_native.py` |
+| [test_nfl2k5_scorebug_mnf_v3-verified](reports/b71_s3/test_nfl2k5_scorebug_mnf_v3-verified.log) | 2026-09-15T21:00:54.540627+00:00 | 16.812 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py` |
+| [test_nfl2k5_scorebug_author-final](reports/b71_s3/test_nfl2k5_scorebug_author-final.log) | 2026-09-15T21:01:19.732684+00:00 | 6.451 | 0 | `/usr/bin/python3 tests/mod_editor/test_nfl2k5_scorebug_author.py` |
+| [test_nfl2k5_scorebug_ingame_fix-final](reports/b71_s3/test_nfl2k5_scorebug_ingame_fix-final.log) | 2026-09-15T21:01:25.691419+00:00 | 127.882 | 1 | `python3 tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py` |
+| [test_nfl2k5_scorebug_exact-final](reports/b71_s3/test_nfl2k5_scorebug_exact-final.log) | 2026-09-15T21:01:26.211286+00:00 | 83.085 | 0 | `/usr/bin/python3 tests/mod_editor/test_nfl2k5_scorebug_exact.py` |
+| [repin-capsule-final](reports/b71_s3/repin-capsule-final.log) | 2026-09-15T21:02:06.361653+00:00 | 11.035 | 0 | `python3 packaging/repin.py --apply` |
+| [test_nfl2k5_scorebug_projection](reports/b71_s3/test_nfl2k5_scorebug_projection.log) | 2026-09-15T21:02:31.610116+00:00 | 57.746 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_projection.py` |
+| [test_nfl2k5_scorebug_fonts-final](reports/b71_s3/test_nfl2k5_scorebug_fonts-final.log) | 2026-09-15T21:02:49.325022+00:00 | 8.132 | 0 | `/usr/bin/python3 tests/mod_editor/test_nfl2k5_scorebug_fonts.py` |
+| [test_nfl2k5_scorebug_freeze-final](reports/b71_s3/test_nfl2k5_scorebug_freeze-final.log) | 2026-09-15T21:02:57.484726+00:00 | 243.26 | 0 | `/usr/bin/python3 tests/mod_editor/test_nfl2k5_scorebug_freeze.py` |
+| [test_nfl2k5_scorebug_resources](reports/b71_s3/test_nfl2k5_scorebug_resources.log) | 2026-09-15T21:03:29.388546+00:00 | 112.248 | 1 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_resources.py` |
+| [pin-compiler-compact](reports/b71_s3/pin-compiler-compact.log) | 2026-09-15T21:05:01.429100+00:00 | 1.144 | 1 | `python3 reports/b71_s3/regenerate_pins.py` |
+| [test_nfl2k5_scorebug_runtime](reports/b71_s3/test_nfl2k5_scorebug_runtime.log) | 2026-09-15T21:05:21.666878+00:00 | 117.973 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_runtime.py` |
+| [test_nfl2k5_scorebug_mnf_v3-compact](reports/b71_s3/test_nfl2k5_scorebug_mnf_v3-compact.log) | 2026-09-15T21:06:00.051937+00:00 | 1.082 | 1 | `python3 tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py` |
+| [pin-compiler-compact-verified](reports/b71_s3/pin-compiler-compact-verified.log) | 2026-09-15T21:06:39.982534+00:00 | 45.645 | 0 | `python3 reports/b71_s3/regenerate_pins.py` |
+| [test_nfl2k5_scorebug_freeze_v2-final](reports/b71_s3/test_nfl2k5_scorebug_freeze_v2-final.log) | 2026-09-15T21:07:00.779612+00:00 | 61.497 | 1 | `/usr/bin/python3 tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py` |
+| [test_nfl2k5_scorebug_source_art](reports/b71_s3/test_nfl2k5_scorebug_source_art.log) | 2026-09-15T21:07:19.668334+00:00 | 0.482 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_source_art.py` |
+| [test_nfl2k5_scorebug_template](reports/b71_s3/test_nfl2k5_scorebug_template.log) | 2026-09-15T21:07:20.180040+00:00 | 9.899 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_template.py` |
+| [test_nfl2k5_scorebug_mnf_v3-compact-final](reports/b71_s3/test_nfl2k5_scorebug_mnf_v3-compact-final.log) | 2026-09-15T21:07:25.723824+00:00 | 33.784 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py` |
+| [test_nfl2k5_scorebug_template_release](reports/b71_s3/test_nfl2k5_scorebug_template_release.log) | 2026-09-15T21:07:30.110175+00:00 | 0.583 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_template_release.py` |
+| [test_nfl2k5_scorebug_unified_adapter](reports/b71_s3/test_nfl2k5_scorebug_unified_adapter.log) | 2026-09-15T21:07:30.723045+00:00 | 0.17 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_unified_adapter.py` |
+| [test_nfl2k5_scorebug_v10_ingame](reports/b71_s3/test_nfl2k5_scorebug_v10_ingame.log) | 2026-09-15T21:07:30.922806+00:00 | 9.155 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_v10_ingame.py` |
+| [test_nfl2k5_scorebug_v10_projection](reports/b71_s3/test_nfl2k5_scorebug_v10_projection.log) | 2026-09-15T21:07:40.107871+00:00 | 29.951 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_v10_projection.py` |
+| [repin-release](reports/b71_s3/repin-release.log) | 2026-09-15T21:07:48.561283+00:00 | 22.366 | 0 | `python3 packaging/repin.py --apply` |
+| [test_nfl2k5_scorebug_versions](reports/b71_s3/test_nfl2k5_scorebug_versions.log) | 2026-09-15T21:08:10.088157+00:00 | 10.023 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_versions.py` |
+| [test_scorebug_studio_panel_qt](reports/b71_s3/test_scorebug_studio_panel_qt.log) | 2026-09-15T21:08:20.141962+00:00 | 7.443 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_scorebug_studio_panel_qt.py` |
+| [proof-v3-release](reports/b71_s3/proof-v3-release.log) | 2026-09-15T21:08:26.353394+00:00 | 63.729 | 0 | `python3 reports/b71_s3/prove_v3.py` |
+| [manifest-release](reports/b71_s3/manifest-release.log) | 2026-09-15T21:08:27.524667+00:00 | 368.874 | 0 | `python3 reports/b71_s3/refresh_manifest.py` |
+| [test_apf_scorebug_workspace_qt-release](reports/b71_s3/test_apf_scorebug_workspace_qt-release.log) | 2026-09-15T21:08:27.565544+00:00 | 0.658 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_apf_scorebug_workspace_qt.py` |
+| [test_nfl2k5_scorebug_assets-release](reports/b71_s3/test_nfl2k5_scorebug_assets-release.log) | 2026-09-15T21:08:27.567180+00:00 | 170.202 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_assets.py` |
+| [nfl2k5_scorebug_layout_test](reports/b71_s3/nfl2k5_scorebug_layout_test.log) | 2026-09-15T21:08:27.615405+00:00 | 1.493 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/nfl2k5_scorebug_layout_test.py` |
+| [test_nfl2k5_scorebug_author-release](reports/b71_s3/test_nfl2k5_scorebug_author-release.log) | 2026-09-15T21:08:28.256884+00:00 | 6.953 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_author.py` |
+| [nfl2k5_scorebug_mod_project_test](reports/b71_s3/nfl2k5_scorebug_mod_project_test.log) | 2026-09-15T21:08:29.137318+00:00 | 1.37 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/nfl2k5_scorebug_mod_project_test.py` |
+| [test_provider_integrity](reports/b71_s3/test_provider_integrity.log) | 2026-09-15T21:08:30.540888+00:00 | 9.223 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_provider_integrity.py` |
+| [test_nfl2k5_scorebug_exact-release](reports/b71_s3/test_nfl2k5_scorebug_exact-release.log) | 2026-09-15T21:08:35.242273+00:00 | 83.77 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_exact.py` |
+| [test_product_catalog](reports/b71_s3/test_product_catalog.log) | 2026-09-15T21:08:39.795806+00:00 | 0.16 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_product_catalog.py` |
+| [test_phase1_packaging](reports/b71_s3/test_phase1_packaging.log) | 2026-09-15T21:08:39.985496+00:00 | 2.353 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_phase1_packaging.py` |
+| [registry-strict](reports/b71_s3/registry-strict.log) | 2026-09-15T21:08:42.371603+00:00 | 0.17 | 0 | `/usr/bin/python3 -m mod_editor.capabilities.validate_registry` |
+| [repin-before-source-commit](reports/b71_s3/repin-before-source-commit.log) | 2026-09-15T21:08:56.316751+00:00 | 11.145 | 0 | `python3 packaging/repin.py --apply` |
+| [test_nfl2k5_scorebug_fonts-release](reports/b71_s3/test_nfl2k5_scorebug_fonts-release.log) | 2026-09-15T21:09:59.041491+00:00 | 9.0 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_fonts.py` |
+| [test_nfl2k5_scorebug_freeze-release](reports/b71_s3/test_nfl2k5_scorebug_freeze-release.log) | 2026-09-15T21:10:08.072000+00:00 | 332.317 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_freeze.py` |
+| [test_nfl2k5_scorebug_freeze_v2-release](reports/b71_s3/test_nfl2k5_scorebug_freeze_v2-release.log) | 2026-09-15T21:11:17.809800+00:00 | 418.219 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py` |
+| [builder-plan-release](reports/b71_s3/builder-plan-release.log) | 2026-09-15T21:14:24.793293+00:00 | 0.363 | 0 | `python3 reports/b71_s3/build_testdisc71.py --plan-only` |
+| [xbe-memory-release](reports/b71_s3/xbe-memory-release.log) | 2026-09-15T21:14:36.436663+00:00 | 1579.189 | 0 | `python3 tests/mod_editor/test_xbe_patch_memory_writes.py` |
+| [xbe-caves-release](reports/b71_s3/xbe-caves-release.log) | 2026-09-15T21:14:36.443914+00:00 | 1771.283 | 0 | `python3 tests/mod_editor/test_xbe_patch_cave_references.py` |
+| [delivery-check-release](reports/b71_s3/delivery-check-release.log) | 2026-09-15T21:15:17.994071+00:00 | 0.45 | 0 | `python3 reports/b71_s3/check_delivery.py` |
+| [test_nfl2k5_scorebug_ingame-release](reports/b71_s3/test_nfl2k5_scorebug_ingame-release.log) | 2026-09-15T21:15:40.431297+00:00 | 16.002 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_ingame.py` |
+| [test_nfl2k5_scorebug_ingame_fix-release](reports/b71_s3/test_nfl2k5_scorebug_ingame_fix-release.log) | 2026-09-15T21:15:56.464240+00:00 | 135.588 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py` |
+| [test_nfl2k5_scorebug_mnf-release](reports/b71_s3/test_nfl2k5_scorebug_mnf-release.log) | 2026-09-15T21:18:12.082605+00:00 | 12.08 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_mnf.py` |
+| [test_nfl2k5_scorebug_mnf_v3-release](reports/b71_s3/test_nfl2k5_scorebug_mnf_v3-release.log) | 2026-09-15T21:18:16.059198+00:00 | 32.929 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py` |
+| [test_nfl2k5_scorebug_native-release](reports/b71_s3/test_nfl2k5_scorebug_native-release.log) | 2026-09-15T21:18:24.193681+00:00 | 130.74 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_native.py` |
+| [test_nfl2k5_scorebug_projection-release](reports/b71_s3/test_nfl2k5_scorebug_projection-release.log) | 2026-09-15T21:18:49.017483+00:00 | 56.575 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_projection.py` |
+| [test_nfl2k5_scorebug_resources-release](reports/b71_s3/test_nfl2k5_scorebug_resources-release.log) | 2026-09-15T21:19:45.621536+00:00 | 244.834 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_resources.py` |
+| [test_nfl2k5_scorebug_runtime-release](reports/b71_s3/test_nfl2k5_scorebug_runtime-release.log) | 2026-09-15T21:20:34.963148+00:00 | 117.87 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_runtime.py` |
+| [test_nfl2k5_scorebug_source_art-release](reports/b71_s3/test_nfl2k5_scorebug_source_art-release.log) | 2026-09-15T21:22:32.864880+00:00 | 0.49 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_source_art.py` |
+| [test_nfl2k5_scorebug_template-release](reports/b71_s3/test_nfl2k5_scorebug_template-release.log) | 2026-09-15T21:22:33.383822+00:00 | 9.906 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_template.py` |
+| [test_nfl2k5_scorebug_template_release-release](reports/b71_s3/test_nfl2k5_scorebug_template_release-release.log) | 2026-09-15T21:22:43.319796+00:00 | 0.575 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_template_release.py` |
+| [test_nfl2k5_scorebug_unified_adapter-release](reports/b71_s3/test_nfl2k5_scorebug_unified_adapter-release.log) | 2026-09-15T21:22:43.924081+00:00 | 0.167 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_unified_adapter.py` |
+| [test_nfl2k5_scorebug_v10_ingame-release](reports/b71_s3/test_nfl2k5_scorebug_v10_ingame-release.log) | 2026-09-15T21:22:44.120010+00:00 | 9.182 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_v10_ingame.py` |
+| [test_nfl2k5_scorebug_v10_projection-release](reports/b71_s3/test_nfl2k5_scorebug_v10_projection-release.log) | 2026-09-15T21:22:53.334695+00:00 | 28.071 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_v10_projection.py` |
+| [test_nfl2k5_scorebug_versions-release](reports/b71_s3/test_nfl2k5_scorebug_versions-release.log) | 2026-09-15T21:23:21.434239+00:00 | 9.357 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_versions.py` |
+| [test_scorebug_studio_panel_qt-release](reports/b71_s3/test_scorebug_studio_panel_qt-release.log) | 2026-09-15T21:23:30.820569+00:00 | 7.251 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_scorebug_studio_panel_qt.py` |
+| [nfl2k5_scorebug_layout_test-release](reports/b71_s3/nfl2k5_scorebug_layout_test-release.log) | 2026-09-15T21:23:38.099322+00:00 | 1.35 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/nfl2k5_scorebug_layout_test.py` |
+| [nfl2k5_scorebug_mod_project_test-release](reports/b71_s3/nfl2k5_scorebug_mod_project_test-release.log) | 2026-09-15T21:23:39.477483+00:00 | 1.304 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/nfl2k5_scorebug_mod_project_test.py` |
+| [test_provider_integrity-release](reports/b71_s3/test_provider_integrity-release.log) | 2026-09-15T21:23:40.809626+00:00 | 8.225 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_provider_integrity.py` |
+| [test_product_catalog-release](reports/b71_s3/test_product_catalog-release.log) | 2026-09-15T21:23:49.065788+00:00 | 0.15 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_product_catalog.py` |
+| [test_phase1_packaging-release](reports/b71_s3/test_phase1_packaging-release.log) | 2026-09-15T21:23:49.245319+00:00 | 2.079 | 0 | `/usr/bin/python3 /home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_phase1_packaging.py` |
+| [registry-strict-release](reports/b71_s3/registry-strict-release.log) | 2026-09-15T21:23:51.355126+00:00 | 0.159 | 0 | `/usr/bin/python3 -m mod_editor.capabilities.validate_registry` |
+| [source-art-skip-details](reports/b71_s3/source-art-skip-details.log) | 2026-09-15T21:24:48.344334+00:00 | 0.761 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_source_art.py -v` |
+| [layout-skip-details](reports/b71_s3/layout-skip-details.log) | 2026-09-15T21:24:48.357031+00:00 | 1.478 | 0 | `env NFL2K5_SCOREBUG_EMULATION_TEST=1 python3 tests/nfl2k5_scorebug_layout_test.py -v` |

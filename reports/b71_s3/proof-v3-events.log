@@ -1,0 +1,913 @@
+{
+  "reference": {
+    "path": "/home/noah/Desktop/Broncos-vs-Chiefs-Week1-Highlights/frames/frame_012001.jpg",
+    "sha256": "01622a78b6778f089e4b242c8deda42833b10ae123150ed5bc8989dc483929d7",
+    "size": [
+      1920,
+      1080
+    ],
+    "text_source_boxes": {
+      "away_score": [
+        736,
+        965,
+        776,
+        1015
+      ],
+      "home_score": [
+        1139,
+        965,
+        1179,
+        1015
+      ],
+      "down": [
+        898,
+        955,
+        1021,
+        977
+      ],
+      "quarter": [
+        850,
+        1009,
+        892,
+        1028
+      ],
+      "clock": [
+        920,
+        1006,
+        1000,
+        1033
+      ],
+      "play_clock": [
+        1042,
+        1009,
+        1056,
+        1028
+      ],
+      "away_ticks": [
+        717,
+        1032,
+        795,
+        1038
+      ],
+      "home_ticks": [
+        1120,
+        1032,
+        1198,
+        1038
+      ]
+    }
+  },
+  "volume": {
+    "appended_bytes": 412672,
+    "font_bytes": 64192,
+    "texture_count": 66
+  },
+  "comparisons": {
+    "43": {
+      "regions": {
+        "frame_rim": {
+          "reference_box": [
+            145.66666666666666,
+            406.75555555555553,
+            492.6666666666667,
+            452.3851851851852
+          ],
+          "native_box": [
+            145.6658935546875,
+            406.7618408203125,
+            492.6639709472656,
+            452.37890625
+          ],
+          "native_boundary_error_px": 0.006285264756968445,
+          "rgb_mae": 60.682560137457045,
+          "histogram_wasserstein_rgb": [
+            26.87628865979382,
+            34.649484536082475,
+            27.65979381443299
+          ],
+          "compared_pixels": 1552,
+          "pixel_edges": {
+            "mean_px": 9.259127509281377,
+            "p95_px": 43.0,
+            "max_px": 43.0,
+            "reference_edges": 601,
+            "rendered_edges": 561
+          },
+          "neutral_subset": false
+        },
+        "left_panel": {
+          "reference_box": [
+            145.66666666666666,
+            406.75555555555553,
+            233.33333333333334,
+            452.3851851851852
+          ],
+          "native_box": [
+            145.6658935546875,
+            406.7618408203125,
+            233.3367919921875,
+            452.37890625
+          ],
+          "native_boundary_error_px": 0.006285264756968445,
+          "rgb_mae": 47.04980842911878,
+          "histogram_wasserstein_rgb": [
+            10.053639846743298,
+            10.76883780332056,
+            13.253639846743292
+          ],
+          "compared_pixels": 3915,
+          "pixel_edges": {
+            "mean_px": 2.4267387786374712,
+            "p95_px": 9.848857801796104,
+            "max_px": 30.463092423455635,
+            "reference_edges": 978,
+            "rendered_edges": 949
+          },
+          "neutral_subset": false
+        },
+        "centre_pill": {
+          "reference_box": [
+            276.0,
+            408.4148148148148,
+            373.3333333333333,
+            430.81481481481484
+          ],
+          "native_box": [
+            276.005859375,
+            408.415283203125,
+            373.3304862976074,
+            430.820068359375
+          ],
+          "native_boundary_error_px": 0.005859375,
+          "rgb_mae": 62.641416405199465,
+          "histogram_wasserstein_rgb": [
+            102.21066786194531,
+            11.245181532944864,
+            14.372030479605566
+          ],
+          "compared_pixels": 2231,
+          "pixel_edges": {
+            "mean_px": 1.9473755390227665,
+            "p95_px": 7.0710678118654755,
+            "max_px": 12.083045973594572,
+            "reference_edges": 931,
+            "rendered_edges": 586
+          },
+          "neutral_subset": false
+        },
+        "clock_strip": {
+          "reference_box": [
+            279.6666666666667,
+            430.81481481481484,
+            360.6666666666667,
+            446.9925925925926
+          ],
+          "native_box": [
+            279.671630859375,
+            430.820068359375,
+            360.6665267944336,
+            446.99560546875
+          ],
+          "native_boundary_error_px": 0.005253544560162027,
+          "rgb_mae": 64.74768518518519,
+          "histogram_wasserstein_rgb": [
+            19.135802469135804,
+            27.90123456790124,
+            25.703703703703702
+          ],
+          "compared_pixels": 1296,
+          "pixel_edges": {
+            "mean_px": 1.0353730615708283,
+            "p95_px": 4.123105625617661,
+            "max_px": 9.219544457292887,
+            "reference_edges": 603,
+            "rendered_edges": 449
+          },
+          "neutral_subset": false
+        },
+        "right_panel": {
+          "reference_box": [
+            405.0,
+            406.75555555555553,
+            492.6666666666667,
+            452.3851851851852
+          ],
+          "native_box": [
+            405.0032043457031,
+            406.7618408203125,
+            492.6639709472656,
+            452.37890625
+          ],
+          "native_boundary_error_px": 0.006285264756968445,
+          "rgb_mae": 68.27222222222223,
+          "histogram_wasserstein_rgb": [
+            27.21616161616161,
+            13.866666666666665,
+            11.745454545454546
+          ],
+          "compared_pixels": 3960,
+          "pixel_edges": {
+            "mean_px": 1.6707545763350005,
+            "p95_px": 7.0,
+            "max_px": 32.57299494980466,
+            "reference_edges": 1480,
+            "rendered_edges": 1373
+          },
+          "neutral_subset": false
+        }
+      },
+      "text": {
+        "0xfc7d0": {
+          "text": "3rd & 10",
+          "font": "FirstPersonComic",
+          "native_quad_box": [
+            300.79998779296875,
+            413.67999267578125,
+            347.3999938964844,
+            424.7200012207031
+          ],
+          "reference_ink_box": [
+            299.3333333333333,
+            412.14814814814815,
+            340.3333333333333,
+            421.27407407407406
+          ],
+          "max_error_px": 7.066660563151061,
+          "rendered_ink_box": null,
+          "rendered_ink_max_error_px": null
+        },
+        "0x14ba756": {
+          "text": "4",
+          "font": "FirstPersonComic",
+          "native_quad_box": [
+            347.79998779296875,
+            435.67999267578125,
+            354.20001220703125,
+            445.79998779296875
+          ],
+          "reference_ink_box": [
+            347.3333333333333,
+            434.54814814814813,
+            352.0,
+            442.42962962962963
+          ],
+          "max_error_px": 3.3703581633391195,
+          "rendered_ink_box": null,
+          "rendered_ink_max_error_px": null
+        },
+        "0x14ba769": {
+          "text": "~ ~ ~",
+          "font": "FirstPersonComic",
+          "native_quad_box": [
+            373.0,
+            444.0,
+            399.3999938964844,
+            446.5
+          ],
+          "reference_ink_box": [
+            373.3333333333333,
+            444.0888888888889,
+            399.3333333333333,
+            446.5777777777778
+          ],
+          "max_error_px": 0.3333333333333144,
+          "rendered_ink_box": null,
+          "rendered_ink_max_error_px": null
+        },
+        "0x14ba770": {
+          "text": "~ ~ ~",
+          "font": "FirstPersonComic",
+          "native_quad_box": [
+            239.0,
+            444.0,
+            265.3999938964844,
+            446.5
+          ],
+          "reference_ink_box": [
+            239.0,
+            444.0888888888889,
+            265.0,
+            446.5777777777778
+          ],
+          "max_error_px": 0.399993896484375,
+          "rendered_ink_box": null,
+          "rendered_ink_max_error_px": null
+        },
+        "0xfc090": {
+          "text": "2ND",
+          "font": "core_bug",
+          "native_quad_box": [
+            280.0,
+            437.8800048828125,
+            298.5799865722656,
+            445.79998779296875
+          ],
+          "reference_ink_box": [
+            283.3333333333333,
+            434.54814814814813,
+            297.3333333333333,
+            442.42962962962963
+          ],
+          "max_error_px": 3.3703581633391195,
+          "rendered_ink_box": null,
+          "rendered_ink_max_error_px": null
+        },
+        "0xfc100": {
+          "text": "4:33",
+          "font": "FirstPersonComic",
+          "native_quad_box": [
+            309.79998779296875,
+            435.67999267578125,
+            333.20001220703125,
+            446.7200012207031
+          ],
+          "reference_ink_box": [
+            306.6666666666667,
+            433.3037037037037,
+            333.3333333333333,
+            444.5037037037037
+          ],
+          "max_error_px": 3.1333211263020644,
+          "rendered_ink_box": null,
+          "rendered_ink_max_error_px": null
+        },
+        "0x14ba687": {
+          "text": "\u0087",
+          "font": "FirstPersonComic",
+          "native_quad_box": [
+            379.3330798149109,
+            416.2962951660141,
+            392.6669150988141,
+            434.9636643727395
+          ],
+          "reference_ink_box": [
+            379.6666666666667,
+            416.2962962962963,
+            393.0,
+            437.037037037037
+          ],
+          "max_error_px": 2.0733726642974943,
+          "rendered_ink_box": null,
+          "rendered_ink_max_error_px": null
+        },
+        "0x14ba68e": {
+          "text": "\u0087",
+          "font": "FirstPersonComic",
+          "native_quad_box": [
+            244.9997363090515,
+            416.2962951660141,
+            258.33357159295474,
+            434.9636643727395
+          ],
+          "reference_ink_box": [
+            245.33333333333334,
+            416.2962962962963,
+            258.6666666666667,
+            437.037037037037
+          ],
+          "max_error_px": 2.0733726642974943,
+          "rendered_ink_box": null,
+          "rendered_ink_max_error_px": null
+        }
+      },
+      "acceptance_limits": {
+        "native_boundary_px": 1,
+        "edge_p95_px": 1,
+        "rgb_mae": 8,
+        "text_box_px": 1
+      },
+      "mean_region_rgb_mae": 60.67873847583654,
+      "containment": {},
+      "exact_match": false,
+      "metric_limits": "Native quad bounds include transparent glyph padding. Rendered-ink boxes are a separate threshold diagnostic at HUD resolution with ROI-edge components excluded. Pixel edges include text/logos; static neutral panels intentionally omit team art.",
+      "extra_regions": {
+        "away": {
+          "reference_source_box": [
+            437,
+            943,
+            644,
+            1050
+          ],
+          "native_box": [
+            145.6658935546875,
+            407.1719970703125,
+            214.661865234375,
+            451.55859375
+          ],
+          "native_boundary_error_px": 0.004801432291657193
+        },
+        "home": {
+          "reference_source_box": [
+            1215,
+            942,
+            1478,
+            1050
+          ],
+          "native_box": [
+            405.0032043457031,
+            406.7618408203125,
+            492.6639709472656,
+            451.55859375
+          ],
+          "native_boundary_error_px": 0.006285264756968445
+        },
+        "play_clock_cell": {
+          "reference_source_box": [
+            1021,
+            1000,
+            1082,
+            1039
+          ],
+          "native_box": [
+            340.33753395080566,
+            430.820068359375,
+            360.6665267944336,
+            446.99560546875
+          ],
+          "native_boundary_error_px": 0.005253544560162027
+        },
+        "pointer": {
+          "reference_source_box": [
+            1099,
+            942,
+            1120,
+            946
+          ],
+          "native_box": [
+            366.3319778442383,
+            406.7618408203125,
+            373.3304862976074,
+            408.415283203125
+          ],
+          "native_boundary_error_px": 0.006285264756968445
+        }
+      },
+      "callback_roles": {
+        "0xfc7d0": "down",
+        "0x14ba756": "play_clock",
+        "0x14ba769": "home_ticks",
+        "0x14ba770": "away_ticks",
+        "0xfc090": "quarter",
+        "0xfc100": "clock",
+        "0x14ba687": "home_score",
+        "0x14ba68e": "away_score"
+      },
+      "winding": {
+        "cscore_buga": {
+          "positive": 0,
+          "negative": 2
+        },
+        "dscore_buga": {
+          "positive": 0,
+          "negative": 3
+        },
+        "hscore_buga": {
+          "positive": 0,
+          "negative": 4
+        },
+        "yscore_buga": {
+          "positive": 0,
+          "negative": 18
+        },
+        "yscore_buga1": {
+          "positive": 0,
+          "negative": 0
+        },
+        "zscore_buga": {
+          "positive": 0,
+          "negative": 4
+        },
+        "score_buga": {
+          "positive": 0,
+          "negative": 2
+        }
+      }
+    },
+    "wide": {
+      "regions": {
+        "frame_rim": {
+          "reference_box": [
+            172.90625,
+            406.75555555555553,
+            465.6875,
+            452.3851851851852
+          ],
+          "native_box": [
+            172.90559768676758,
+            406.7618408203125,
+            465.68522548675537,
+            452.37890625
+          ],
+          "native_boundary_error_px": 0.006285264756968445,
+          "rgb_mae": 60.15993013972056,
+          "histogram_wasserstein_rgb": [
+            26.910179640718564,
+            33.748502994011986,
+            26.922155688622755
+          ],
+          "compared_pixels": 1336,
+          "pixel_edges": {
+            "mean_px": 8.653844705045621,
+            "p95_px": 43.0,
+            "max_px": 43.0,
+            "reference_edges": 494,
+            "rendered_edges": 490
+          },
+          "neutral_subset": false
+        },
+        "left_panel": {
+          "reference_box": [
+            172.90625,
+            406.75555555555553,
+            246.875,
+            452.3851851851852
+          ],
+          "native_box": [
+            172.90559768676758,
+            406.7618408203125,
+            246.8779182434082,
+            452.37890625
+          ],
+          "native_boundary_error_px": 0.006285264756968445,
+          "rgb_mae": 46.64724724724725,
+          "histogram_wasserstein_rgb": [
+            10.013213213213216,
+            11.036636636636633,
+            13.304504504504505
+          ],
+          "compared_pixels": 3330,
+          "pixel_edges": {
+            "mean_px": 2.202961912064263,
+            "p95_px": 8.94427190999916,
+            "max_px": 26.832815729997478,
+            "reference_edges": 826,
+            "rendered_edges": 845
+          },
+          "neutral_subset": false
+        },
+        "centre_pill": {
+          "reference_box": [
+            282.875,
+            408.4148148148148,
+            365.0,
+            430.81481481481484
+          ],
+          "native_box": [
+            282.87994384765625,
+            408.415283203125,
+            364.99759781360626,
+            430.820068359375
+          ],
+          "native_boundary_error_px": 0.005253544560162027,
+          "rgb_mae": 62.53746907034288,
+          "histogram_wasserstein_rgb": [
+            102.20996818663839,
+            10.833510074231175,
+            14.243902439024389
+          ],
+          "compared_pixels": 1886,
+          "pixel_edges": {
+            "mean_px": 1.7644656816335105,
+            "p95_px": 6.355982887175184,
+            "max_px": 10.295630140987,
+            "reference_edges": 808,
+            "rendered_edges": 525
+          },
+          "neutral_subset": false
+        },
+        "clock_strip": {
+          "reference_box": [
+            285.96875,
+            430.81481481481484,
+            354.3125,
+            446.9925925925926
+          ],
+          "native_box": [
+            285.97293853759766,
+            430.820068359375,
+            354.31238198280334,
+            446.99560546875
+          ],
+          "native_boundary_error_px": 0.005253544560162027,
+          "rgb_mae": 63.87591911764706,
+          "histogram_wasserstein_rgb": [
+            17.54411764705882,
+            26.44117647058824,
+            24.176470588235293
+          ],
+          "compared_pixels": 1088,
+          "pixel_edges": {
+            "mean_px": 0.9294497112615275,
+            "p95_px": 4.0,
+            "max_px": 7.810249675906654,
+            "reference_edges": 521,
+            "rendered_edges": 402
+          },
+          "neutral_subset": false
+        },
+        "right_panel": {
+          "reference_box": [
+            391.71875,
+            406.75555555555553,
+            465.6875,
+            452.3851851851852
+          ],
+          "native_box": [
+            391.721453666687,
+            406.7618408203125,
+            465.68522548675537,
+            452.37890625
+          ],
+          "native_boundary_error_px": 0.006285264756968445,
+          "rgb_mae": 68.20270270270271,
+          "histogram_wasserstein_rgb": [
+            27.137537537537547,
+            12.775975975975976,
+            10.916516516516516
+          ],
+          "compared_pixels": 3330,
+          "pixel_edges": {
+            "mean_px": 1.4964866783810156,
+            "p95_px": 6.082762530298219,
+            "max_px": 27.51363298439521,
+            "reference_edges": 1278,
+            "rendered_edges": 1178
+          },
+          "neutral_subset": false
+        }
+      },
+      "text": {
+        "0xfc7d0": {
+          "text": "3rd & 10",
+          "font": "FirstPersonComic",
+          "native_quad_box": [
+            303.7999897003174,
+            413.67999267578125,
+            343.1187448501587,
+            424.7200012207031
+          ],
+          "reference_ink_box": [
+            302.5625,
+            412.14814814814815,
+            337.15625,
+            421.27407407407406
+          ],
+          "max_error_px": 5.962494850158691,
+          "rendered_ink_box": null,
+          "rendered_ink_max_error_px": null
+        },
+        "0x14ba756": {
+          "text": "4",
+          "font": "FirstPersonComic",
+          "native_quad_box": [
+            343.4562397003174,
+            435.67999267578125,
+            348.8562602996826,
+            445.79998779296875
+          ],
+          "reference_ink_box": [
+            343.0625,
+            434.54814814814813,
+            347.0,
+            442.42962962962963
+          ],
+          "max_error_px": 3.3703581633391195,
+          "rendered_ink_box": null,
+          "rendered_ink_max_error_px": null
+        },
+        "0x14ba769": {
+          "text": "~ ~ ~",
+          "font": "FirstPersonComic",
+          "native_quad_box": [
+            364.71875,
+            444.0,
+            386.9937448501587,
+            446.5
+          ],
+          "reference_ink_box": [
+            365.0,
+            444.0888888888889,
+            386.9375,
+            446.5777777777778
+          ],
+          "max_error_px": 0.28125,
+          "rendered_ink_box": null,
+          "rendered_ink_max_error_px": null
+        },
+        "0x14ba770": {
+          "text": "~ ~ ~",
+          "font": "FirstPersonComic",
+          "native_quad_box": [
+            251.65625,
+            444.0,
+            273.9312448501587,
+            446.5
+          ],
+          "reference_ink_box": [
+            251.65625,
+            444.0888888888889,
+            273.59375,
+            446.5777777777778
+          ],
+          "max_error_px": 0.3374948501586914,
+          "rendered_ink_box": null,
+          "rendered_ink_max_error_px": null
+        },
+        "0xfc090": {
+          "text": "2ND",
+          "font": "core_bug",
+          "native_quad_box": [
+            286.25,
+            437.8800048828125,
+            301.9268636703491,
+            445.79998779296875
+          ],
+          "reference_ink_box": [
+            289.0625,
+            434.54814814814813,
+            300.875,
+            442.42962962962963
+          ],
+          "max_error_px": 3.3703581633391195,
+          "rendered_ink_box": null,
+          "rendered_ink_max_error_px": null
+        },
+        "0xfc100": {
+          "text": "4:33",
+          "font": "FirstPersonComic",
+          "native_quad_box": [
+            311.3937397003174,
+            435.67999267578125,
+            331.1375102996826,
+            446.7200012207031
+          ],
+          "reference_ink_box": [
+            308.75,
+            433.3037037037037,
+            331.25,
+            444.5037037037037
+          ],
+          "max_error_px": 2.643739700317383,
+          "rendered_ink_box": [
+            317,
+            440,
+            318,
+            441
+          ],
+          "rendered_ink_max_error_px": 13.25
+        },
+        "0x14ba687": {
+          "text": "\u0087",
+          "font": "FirstPersonComic",
+          "native_quad_box": [
+            370.06228609383106,
+            416.2962951660141,
+            381.3127096146244,
+            434.9636643727395
+          ],
+          "reference_ink_box": [
+            370.34375,
+            416.2962962962963,
+            381.59375,
+            437.037037037037
+          ],
+          "max_error_px": 2.0733726642974943,
+          "rendered_ink_box": null,
+          "rendered_ink_max_error_px": null
+        },
+        "0x14ba68e": {
+          "text": "\u0087",
+          "font": "FirstPersonComic",
+          "native_quad_box": [
+            256.7185275107622,
+            416.2962951660141,
+            267.96895103155555,
+            434.9636643727395
+          ],
+          "reference_ink_box": [
+            257.0,
+            416.2962962962963,
+            268.25,
+            437.037037037037
+          ],
+          "max_error_px": 2.0733726642974943,
+          "rendered_ink_box": null,
+          "rendered_ink_max_error_px": null
+        }
+      },
+      "acceptance_limits": {
+        "native_boundary_px": 1,
+        "edge_p95_px": 1,
+        "rgb_mae": 8,
+        "text_box_px": 1
+      },
+      "mean_region_rgb_mae": 60.28465365553209,
+      "containment": {},
+      "exact_match": false,
+      "metric_limits": "Native quad bounds include transparent glyph padding. Rendered-ink boxes are a separate threshold diagnostic at HUD resolution with ROI-edge components excluded. Pixel edges include text/logos; static neutral panels intentionally omit team art.",
+      "extra_regions": {
+        "away": {
+          "reference_source_box": [
+            437,
+            943,
+            644,
+            1050
+          ],
+          "native_box": [
+            172.90559768676758,
+            407.1719970703125,
+            231.1209487915039,
+            451.55859375
+          ],
+          "native_boundary_error_px": 0.00405120849609375
+        },
+        "home": {
+          "reference_source_box": [
+            1215,
+            942,
+            1478,
+            1050
+          ],
+          "native_box": [
+            391.721453666687,
+            406.7618408203125,
+            465.68522548675537,
+            451.55859375
+          ],
+          "native_boundary_error_px": 0.006285264756968445
+        },
+        "play_clock_cell": {
+          "reference_source_box": [
+            1021,
+            1000,
+            1082,
+            1039
+          ],
+          "native_box": [
+            337.1597942709923,
+            430.820068359375,
+            354.31238198280334,
+            446.99560546875
+          ],
+          "native_boundary_error_px": 0.005253544560162027
+        },
+        "pointer": {
+          "reference_source_box": [
+            1099,
+            942,
+            1120,
+            946
+          ],
+          "native_box": [
+            359.09260630607605,
+            406.7618408203125,
+            364.99759781360626,
+            408.415283203125
+          ],
+          "native_boundary_error_px": 0.006285264756968445
+        }
+      },
+      "callback_roles": {
+        "0xfc7d0": "down",
+        "0x14ba756": "play_clock",
+        "0x14ba769": "home_ticks",
+        "0x14ba770": "away_ticks",
+        "0xfc090": "quarter",
+        "0xfc100": "clock",
+        "0x14ba687": "home_score",
+        "0x14ba68e": "away_score"
+      },
+      "winding": {
+        "cscore_buga": {
+          "positive": 0,
+          "negative": 2
+        },
+        "dscore_buga": {
+          "positive": 0,
+          "negative": 3
+        },
+        "hscore_buga": {
+          "positive": 0,
+          "negative": 4
+        },
+        "yscore_buga": {
+          "positive": 0,
+          "negative": 18
+        },
+        "yscore_buga1": {
+          "positive": 0,
+          "negative": 0
+        },
+        "zscore_buga": {
+          "positive": 0,
+          "negative": 4
+        },
+        "score_buga": {
+          "positive": 0,
+          "negative": 2
+        }
+      }
+    }
+  },
+  "limits": "Native CPU execution with software raster; no GPU or played-game witness. Widescreen comparison includes the existing 27/32 HUD transform."
+}

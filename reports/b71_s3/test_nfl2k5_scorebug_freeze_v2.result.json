@@ -1,0 +1,11 @@
+{
+  "name": "test_nfl2k5_scorebug_freeze_v2",
+  "command": [
+    "/usr/bin/python3",
+    "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py"
+  ],
+  "start": "2026-09-15T20:56:48.978583+00:00",
+  "end": "2026-09-15T20:57:49.438482+00:00",
+  "seconds": 60.46,
+  "exit": 1
+}

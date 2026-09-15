@@ -1,0 +1,12 @@
+{
+  "name": "repin-initial",
+  "command": [
+    "python3",
+    "packaging/repin.py",
+    "--apply"
+  ],
+  "start": "2026-09-15T20:41:53.323250+00:00",
+  "end": "2026-09-15T20:42:13.068347+00:00",
+  "seconds": 19.745,
+  "exit": 0
+}
