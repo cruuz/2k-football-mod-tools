@@ -26,6 +26,8 @@ import stat
 import struct
 import sys
 from typing import Any, Iterable
+from functools import lru_cache
+from mod_editor.core.nfl2k5_equipment_lz import EquipmentSizeOverflow, minimum_equipment_size
 
 from mod_editor.core.errors import ValidationError
 from mod_editor.core.nfl2k5_equipment_import_intent import (
@@ -174,19 +176,22 @@ class UniformEquipmentWriterError(ValueError):
 class EquipmentFitError(UniformEquipmentWriterError):
     """Measured compressed overflow, with a separately checked retry choice."""
 
-    def __init__(self, budget, required, attempts, suggestion=None):
+    def __init__(self, budget, required, attempts, suggestion=None, *, required_is_lower_bound=False):
         self.budget = budget
         self.required = required
         self.attempts = attempts
         self.suggestion = suggestion
-        message = (f"Equipment art cannot fit: it missed the {budget:,}-byte span by {required - budget:,} bytes "
-                   f"({required:,} bytes required at the smallest measured encoding). ")
+        self.required_is_lower_bound = required_is_lower_bound
+        qualifier = "at least " if required_is_lower_bound else ""
+        measurement = "proved lower bound" if required_is_lower_bound else "smallest measured encoding"
+        message = (f"Equipment art cannot fit: it missed the {budget:,}-byte span by {qualifier}{required - budget:,} bytes "
+                   f"({required:,} bytes required at the {measurement}). ")
         if suggestion:
             message += (f"{suggestion['width']} x {suggestion['height']} at "
                         f"{suggestion['colours']} colours would fit for {suggestion['asset_id']}. "
                         "Choose Try that to check and import that size. Fine detail and shades will change.")
         else:
-            message += "No checked smaller size fits. Simplify the artwork and import it again."
+            message += "No fitting smaller size was established in the bounded check. Simplify the artwork and import it again."
         super().__init__(message)
 
 
@@ -581,6 +586,73 @@ def _chain_pins() -> dict[tuple[int, int], str]:
     return {(outer, chunk): digest for outer, chunk, digest in document["rows"]}
 
 
+# Process-local derived results. Keys bind the COMPLETE candidate bytes (all
+# source pixels, palette entries, mips, descriptors and untouched siblings),
+# stream tag and offset bits. Equal payloads at different palette limits share
+# a parse too. A bounded miss may be reused only for an equal/smaller budget.
+# Retain these records until process exit: evicting a failed rung would make a
+# later suggestion/import repeat its parse. Input pixels are never retained here;
+# memory grows with the distinct encoded results requested during this process.
+_PARSE_CACHE: OrderedDict = OrderedDict()
+_STAGED_CACHE = EquipmentCompileCache()
+
+
+def _greedy_ceiling(budget: int) -> int:
+    # Charge each greedy token to the optimal token containing its start.
+    # An optimal literal receives at most one greedy token (<=17 vs 9 bits).
+    # An optimal match receives one greedy match, or at most a literal plus
+    # one token if only two bytes remain (<=26 vs 17). A suffix of >=3 bytes
+    # is a valid non-overlapping match at the same distance. Both charge ratios
+    # are <=17/9, so G <= 17/9 * O in bits.
+    # Exceeding this ceiling PROVES optimal cannot fit; a small arbitrary
+    # margin would instead silently discard valid beta-69 encodings.
+    return max(budget + 1024, 9 + (17 * (budget - 9) + 8) // 9)
+
+
+def _cached_parse(candidate: bytes, stream_tag: int, offset_bits: int, budget: int):
+    from mod_editor.core.nfl2k5_equipment_lz import compress_equipment_optimal
+    key = (_digest(candidate), stream_tag, offset_bits)
+    record = _PARSE_CACHE.setdefault(key, {})
+    _PARSE_CACHE.move_to_end(key)
+    ceiling = _greedy_ceiling(budget)
+    greedy = record.get("greedy")
+    if greedy is None:
+        if record.get("greedy_miss", 0) >= ceiling:
+            raise EquipmentSizeOverflow(max(budget + 1, 9 + (record["greedy_miss"] - 9) * 9 // 17), budget, exact=False)
+        try:
+            greedy, _ = compress_vc_lz(candidate, stream_tag=stream_tag,
+                offset_bits=offset_bits, max_encoded_size=ceiling, verify_roundtrip=True)
+            record["greedy"] = greedy
+        except TxtrError as exc:
+            if not _overflow(exc):
+                raise
+            record["greedy_miss"] = ceiling
+            raise EquipmentSizeOverflow(max(budget + 1, 9 + (record["greedy_miss"] - 9) * 9 // 17), budget, exact=False) from exc
+    if len(greedy) > ceiling:
+        raise EquipmentSizeOverflow(max(budget + 1, 9 + (len(greedy) - 10) * 9 // 17),
+                                    budget, exact=False)
+    if len(greedy) <= budget:
+        return greedy, "retail_greedy"
+    optimal = record.get("optimal")
+    # 512 bytes preserves exact measurements near the boundary, while a
+    # far miss can leave the reverse search before visiting every position.
+    limit = budget + 512
+    if optimal is None:
+        missed = record.get("optimal_miss")
+        if missed is not None and missed[0] > budget:
+            raise EquipmentSizeOverflow(missed[0], budget, exact=missed[1])
+        try:
+            optimal = compress_equipment_optimal(candidate, stream_tag=stream_tag,
+                offset_bits=offset_bits, max_encoded_size=limit)
+            record["optimal"] = optimal
+        except EquipmentSizeOverflow as exc:
+            record["optimal_miss"] = (exc.required, exc.exact)
+            raise
+    if len(optimal) > budget:
+        raise EquipmentSizeOverflow(len(optimal), budget, exact=True)
+    return optimal, "optimal_token_parse"
+
+
 def _rebuild_grown_video(template_span: bytes, candidate: bytes):
     """Use the existing VC-LZ codec and overlap validator with a larger video heap.
 
@@ -600,34 +672,17 @@ def _rebuild_grown_video(template_span: bytes, candidate: bytes):
     # chain need a different distance/length split than detailed shared art.
     # This changes only the lossless transport, never a sibling's decoded data.
     bit_candidates = tuple(dict.fromkeys((original.offset_bits, 10, 11, 12)))
-    smallest_required = None
+    misses = []
     for offset_bits in bit_candidates:
         try:
-            encoded, _info = compress_vc_lz(
-                candidate, stream_tag=original.stream_tag, offset_bits=offset_bits,
-                max_encoded_size=chunk.stored_size, verify_roundtrip=True,
-            )
-            strategy = "retail_greedy"
+            encoded, strategy = _cached_parse(candidate, original.stream_tag, offset_bits, chunk.stored_size)
             break
-        except TxtrError as exc:
-            if not (str(exc).startswith("VC-LZ stream needs more than the ")
-                    or (str(exc).startswith("VC-LZ stream is ") and " exceeds " in str(exc))):
-                raise
-            from mod_editor.core.nfl2k5_equipment_lz import compress_equipment_optimal
-
-            # Give the helper enough room to return the optimal stream even
-            # on a miss. A bounded rejection used to rerun the same search in
-            # Python and discarded the exact required size.
-            encoded = compress_equipment_optimal(
-                candidate, stream_tag=original.stream_tag, offset_bits=offset_bits,
-                max_encoded_size=4 * 1024 * 1024,
-            )
-            smallest_required = min(smallest_required or len(encoded), len(encoded))
-            if len(encoded) <= chunk.stored_size:
-                strategy = "optimal_token_parse"
-                break
+        except EquipmentSizeOverflow as exc:
+            misses.append(exc)
     else:
-        raise TxtrError(f"VC-LZ stream is {smallest_required} bytes, exceeds {chunk.stored_size}-byte bound")
+        smallest = min(misses, key=lambda exc: exc.required)
+        raise EquipmentSizeOverflow(smallest.required, chunk.stored_size,
+                                    exact=any(exc.exact and exc.required == smallest.required for exc in misses))
     padding = chunk.stored_size - len(encoded)
     minimum = minimum_vc_lz_overlap_scratch(encoded, chunk.stored_size, len(candidate))
     scratch = chunk.overlap_scratch_bytes
@@ -840,6 +895,66 @@ class _CompiledGroup:
     previews: dict[int, bytes]
 
 
+@lru_cache(maxsize=1)
+def _stage_compiler_key():
+    paths = ("mod_editor/core/nfl2k5_uniform_equipment_writer.py",
+             "mod_editor/core/nfl2k5_equipment_lz.py", "mod_editor/core/equipment_palette.py",
+             "mod_editor/core/nfl2k5_equipment_import_intent.py",
+             "mod_editor/core/nfl2k5_digit_texture.py", "tools/nfl_txtr.py",
+             "tools/nfl_tset_png_import.py", "tools/nfl_all_texture_xiso_workflow.py",
+             "tools/nfl_vc_lz_fill.py")
+    return tuple((path, _digest((ROOT / path).read_bytes())) for path in paths)
+
+
+def staged_equipment_cache():
+    """The import/open cache; explicit build caches remain independently owned."""
+    return _STAGED_CACHE
+
+
+def _stage_disk_cache(index, key):
+    from mod_editor.core.nfl2k5_compile_cache import CompileCache
+    digest = _digest(json.dumps((_stage_compiler_key(), key), sort_keys=True).encode("utf-8"))
+    return CompileCache(Path(index).resolve().parent / ".nfl2k5-equipment-stage-cache"), digest
+
+
+def _restore_staged(record, template_span):
+    """Reparse derived bytes on a cache hit; no fit search and no pickle."""
+    from nfl_txtr import FixedSpanRebuildInfo
+    if not isinstance(record, dict):
+        return None
+    try:
+        raw = dict(record)
+        span = raw["rebuilt_span"]
+        chunk = parse_chunks(span)[0]
+        original = parse_chunks(template_span)[0]
+        _require(len(span) == len(template_span) and chunk.stored_size == original.stored_size
+                 and chunk.system_bytes == original.system_bytes
+                 and chunk.overlap_scratch_bytes == original.overlap_scratch_bytes,
+                 "Staged equipment cache allocation changed")
+        decoded, transport = decode_chunk(span, chunk)
+        info = dict(raw["rebuild_info"])
+        _require(transport is not None and _digest(decoded) == raw["rebuilt_decoded_sha256"]
+                 and _digest(span) == info["rebuilt_span_sha256"]
+                 and minimum_vc_lz_overlap_scratch(span[HEADER.size:HEADER.size + transport.consumed_bytes],
+                     chunk.stored_size, len(decoded)) <= chunk.overlap_scratch_bytes
+                 and chunk.stored_size - transport.consumed_bytes <= chunk.overlap_scratch_bytes,
+                 "Staged equipment cache bytes changed")
+        if "strategy" in info:
+            @dataclass(frozen=True)
+            class RestoredRebuildInfo(FixedSpanRebuildInfo):
+                strategy: str
+            raw["rebuild_info"] = RestoredRebuildInfo(**info)
+        else:
+            raw["rebuild_info"] = FixedSpanRebuildInfo(**info)
+        raw["independent"] = frozenset(raw["independent"])
+        raw["attempts"] = tuple(raw["attempts"])
+        raw["edit_templates"] = {int(k): v for k, v in raw["edit_templates"].items()}
+        raw["previews"] = {int(k): v for k, v in raw["previews"].items()}
+        return _CompiledGroup(**raw)
+    except (ValueError, TypeError, KeyError, IndexError, TxtrError):
+        return None
+
+
 def _rows_signature(rows: tuple[EquipmentTarget, ...]) -> tuple[tuple[Any, ...], ...]:
     return tuple(
         (item.reference_index, item.name, item.width, item.height, item.pixel_offset,
@@ -905,7 +1020,13 @@ def _compile_group(
     selected_entries: dict[int, int] = {}
     selected_quality: dict[int, Any] = {}
     tried: set[str] = set()
-    for maximum in PALETTE_LIMITS:
+    floor = minimum_equipment_size(chunk.system_bytes + video_end)
+    palette_limits = PALETTE_LIMITS
+    if floor > chunk.stored_size:
+        attempts.append({"result": "vc_lz_overflow", "required_bytes": floor,
+                         "required_is_lower_bound": True, "proof": "palette_invariant_token_bound"})
+        palette_limits = ()
+    for maximum in palette_limits:
         candidate = bytearray(decoded + bytes(video_end - chunk.video_bytes))
         entries: dict[int, int] = {}
         qualities: dict[int, Any] = {}
@@ -963,6 +1084,7 @@ def _compile_group(
                 "palette_entries": entries,
                 "result": "vc_lz_overflow",
                 "required_bytes": int(message.split()[3]) if message.startswith("VC-LZ stream is ") else None,
+                "required_is_lower_bound": not getattr(exc, "exact", True),
             })
             continue
         rebuilt_decoded = bytes(candidate)
@@ -999,6 +1121,12 @@ def _compile_group(
                     levels = [replace(level, level=n) for n, level in enumerate(all_levels[scale.bit_length() - 1:])]
                     if not levels:
                         continue
+                    # Cheap dimension-only screen, never another fit ladder.
+                    # The allocation layout is recomputed by _compile_group.
+                    old_bytes = sum(level.width * level.height for level in authored[reference][3])
+                    new_bytes = sum(level.width * level.height for level in levels)
+                    if minimum_equipment_size(chunk.system_bytes + video_end - old_bytes + new_bytes - 254) > chunk.stored_size:
+                        continue
                     alternative = dict(authored)
                     alternative[reference] = (target, with_import_mode(payload, target.asset_id, rgba,
                         independent=True, scale=scale), rgba, levels)
@@ -1007,18 +1135,22 @@ def _compile_group(
                         checked = _compile_group(template_span, chunk, decoded, decode_info, rows,
                             alternative, requested_independent, donor, suggest_fit=False)
                     except EquipmentFitError:
-                        continue
+                        # One bounded ladder per suggestion request. Failure is
+                        # not proof that a quarter-size import cannot fit.
+                        break
                     suggestion = {"asset_id": target.asset_id, "scale": scale,
                         "width": levels[0].width, "height": levels[0].height,
                         "colours": checked.attempts[-1]["maximum_palette_entries"],
                         "encoded_bytes": checked.rebuild_info.recompressed_bytes}
                     break
-                if suggestion:
-                    break
+                # Do not run another full ladder for another edited sibling.
+                break
         sizes = [attempt["required_bytes"] for attempt in attempts if attempt.get("required_bytes") is not None]
         if not sizes:
             raise UniformEquipmentWriterError("Equipment artwork cannot fit while retaining the complete mip chain and edge coverage. Simplify the artwork or explicitly choose a smaller game image and import it again.")
-        raise EquipmentFitError(chunk.stored_size, min(sizes), tuple(attempts), suggestion)
+        raise EquipmentFitError(chunk.stored_size, min(sizes), tuple(attempts), suggestion,
+            required_is_lower_bound=not any(a.get("required_bytes") == min(sizes)
+                and not a.get("required_is_lower_bound") for a in attempts))
     assert rebuild_info is not None
 
     decoded_roundtrip, roundtrip_info = decode_chunk(
@@ -1192,6 +1324,8 @@ def build_unified_uniform_equipment_imports(
     :class:`EquipmentCompileCache`); package identity is never cached.
     """
 
+    if compile_cache is None:
+        compile_cache = _STAGED_CACHE
     requested = tuple((str(asset_id), Path(path)) for asset_id, path in edits)
     _require(bool(requested), "Choose at least one uniform-equipment texture")
     by_id, groups = load_targets(catalog_path)
@@ -1275,6 +1409,18 @@ def build_unified_uniform_equipment_imports(
     key = (template_sha256, chunk_index, chunk.stored_size, chunk.system_bytes, chunk.video_bytes,
            chunk.overlap_scratch_bytes, _rows_signature(rows), tuple(sorted(signature)))
     compiled = compile_cache.compiled.get(key) if compile_cache is not None else None
+    disk = None
+    if compiled is None and compile_cache is _STAGED_CACHE:
+        try:
+            disk, disk_key = _stage_disk_cache(index, key)
+        except OSError:
+            # Packaged/unreadable source fingerprints disable this optional
+            # disk cache; they must not prevent an independently checked import.
+            disk = None
+        if disk is not None:
+            compiled = _restore_staged(disk.get(disk_key), template_span)
+            if compiled is not None:
+                compile_cache.compiled[key] = compiled
     if compiled is None:
         decoded, decode_info = decode_chunk(package, chunk)
         _require(decode_info is not None, "Uniform-equipment TSET is not compressed")
@@ -1311,6 +1457,10 @@ def build_unified_uniform_equipment_imports(
         preferred = by_id.get(fit_asset_id) if fit_asset_id is not None else None
         compiled = _compile_group(template_span, chunk, decoded, decode_info, rows, authored, independent, retail,
                                   fit_reference=preferred.reference_index if preferred is not None else None)
+        if disk is not None:
+            record = asdict(compiled)
+            record["independent"] = sorted(compiled.independent)
+            disk.put(disk_key, record)
         if compile_cache is not None:
             compile_cache.compiled[key] = compiled
             compile_cache.misses += 1
@@ -1319,6 +1469,8 @@ def build_unified_uniform_equipment_imports(
     else:
         compile_cache.compiled.move_to_end(key)
         compile_cache.hits += 1
+        while len(compile_cache.compiled) > compile_cache.compiled_limit:
+            compile_cache.compiled.popitem(last=False)
     if preflight_only:
         return compiled
     rebuilt_span = compiled.rebuilt_span
@@ -1457,7 +1609,7 @@ def preflight_project_equipment(index_path: Path, edits: Iterable[tuple[int | No
         prefix = f"Project edit index {number}: " if number is not None else ""
         _require(len(parts) == 5, f"{prefix}Invalid equipment target {asset_id}. Import it again.")
         groups.setdefault((parts[1], parts[2]), []).append((number, asset_id, path))
-    cache = compile_cache or EquipmentCompileCache()
+    cache = compile_cache or _STAGED_CACHE
     hashes: dict[str, str] = {}
     by_id, _ = load_targets() if groups else ({}, {})
     for group in groups.values():
