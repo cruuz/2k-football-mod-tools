@@ -2,6 +2,8 @@
 
 ## v1.0 RC96, beta 71: lighting and colour, a modern Arrowhead, and the 2026 scorebug closer to the broadcast (in progress, 2026-09-15)
 
+- **Modern colour and lighting, calibrated (Build tab, "Modern colour and lighting (experimental)", `modern_color`, off in every preset).** Beta 70's option barely moved the field: measured in game at Arrowhead at night the turf drew at (51, 61, 32) against the broadcast's (107, 121, 53). The drawn field is about a fifth of the colour map times the light rig, so the option now lifts every grass colour map through a brightness curve (Arrowhead's median (100, 125, 66) becomes (181, 216, 102)), keeps it slightly more saturated and pulled toward the Arrowhead hue, raises the night and day rigs (neutral white at night), makes the night tint neutral and flattens the grass bump map further. The calibrated model predicts (102, 122, 52) at Arrowhead at night and (83, 99, 47) in a day game. Appearance in game remains UNWITNESSED; the far-field shimmer seen at high internal resolution is not yet attributed (retail draws the same detail layer).
+
 ## v1.0 RC95, beta 70: the ESPN Monday Night Football 2026 scorebug, modern colour and lighting, and the reports after beta 69 (2026-09-15)
 
 Beta 70 rebuilds the ESPN scorebug to the 2026 Monday Night Football broadcast package, adds a modern colour and lighting option, and answers the ESPN NFL 2K5 reports in Discord after beta 69; bullets are added as each change lands.

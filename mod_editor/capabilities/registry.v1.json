@@ -9606,9 +9606,10 @@
       "runtime": {
         "evidence": [
           "docs/modern_color/README.md",
-          "tests/mod_editor/test_nfl2k5_modern_color.py"
+          "tests/mod_editor/test_nfl2k5_modern_color.py",
+          "FABLE_B71_COLOR2_REPORT_2026-09-15.md"
         ],
-        "scope": "Offline byte receipts and decoder read-back only; no played, appearance or performance outcome is witnessed.",
+        "scope": "Offline byte receipts and decoder read-back only; no played, appearance or performance outcome is witnessed. Beta 71 recalibrates the option from the first in-game measurement (Arrowhead at night drew (51, 61, 32) with the beta 70 values): the colour maps are lifted about 1.7x, the rigs raised and the night tint neutralised; predicted drawn turf (102, 122, 52) against the broadcast (107, 121, 53); still unwitnessed.",
         "status": "not-tested"
       },
       "selectors": {

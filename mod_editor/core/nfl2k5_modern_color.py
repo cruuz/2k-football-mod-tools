@@ -46,10 +46,11 @@ BUILD_CAPTION = "Modern colour and lighting (experimental)"
 HELP_TEXT = (
     "EXPERIMENTAL / UNWITNESSED. Rewrites the seven light rigs the game installs by time "
     "of day and weather to neutral, white-balanced broadcast values with more fill, and "
-    "re-grades every stadium's grass colour map, outside grass, grass bump map and afternoon "
-    "tint toward the turf measured in 2026 Week 1 broadcasts. Light directions, counts and "
-    "shadows keep retail values. Refits 362 field scenes: about eight minutes on an eight-core "
-    "Linux machine, longer on a laptop. Off in every preset."
+    "re-grades every stadium's grass colour map and outside grass about 1.7x brighter and "
+    "slightly more saturated (calibrated to the turf measured in 2026 Week 1 broadcasts), "
+    "flattens the grass bump map and neutralises the night and afternoon tints. Light "
+    "directions, counts and shadows keep retail values. Refits 362 field scenes: about eight "
+    "minutes on an eight-core Linux machine, longer on a laptop. Off in every preset."
 )
 ROOT = Path(__file__).resolve().parents[2]
 PINS_PATH = ROOT / "data" / "nfl2k5_modern_color_pins.json"
@@ -75,28 +76,42 @@ GUARDS = (
 # light in table order. Measured 2026 Week 1 whites sit at (215..245, 218..243,
 # 223..241): neutral to slightly cool, never yellow. Night is LED white.
 MODERN_RIGS = {
-    "day": dict(ambient=(0.92, 0.95, 1.00), ambient_intensity=0.45,
-                lights=(((1.00, 0.98, 0.94), 1.15), ((0.88, 0.93, 1.00), 0.30))),
-    "night_indoor": dict(ambient=(0.94, 0.96, 1.00), ambient_intensity=0.42,
-                         lights=(((1.00, 1.00, 1.00), 0.72),) * 3),
+    "day": dict(ambient=(0.94, 0.96, 1.00), ambient_intensity=0.58,
+                lights=(((1.00, 0.98, 0.94), 1.20), ((0.90, 0.94, 1.00), 0.48))),
+    "night_indoor": dict(ambient=(1.00, 1.00, 1.00), ambient_intensity=0.50,
+                         lights=(((1.00, 1.00, 1.00), 0.86),) * 3),
     "alt_day": dict(ambient=(0.92, 0.95, 1.00), ambient_intensity=0.45,
                     lights=(((1.00, 0.98, 0.94), 1.10), ((0.90, 0.94, 1.00), 0.40), ((0.90, 0.94, 1.00), 0.40))),
     "alt_dynamic": dict(ambient=(0.95, 0.97, 1.00), ambient_intensity=0.42,
                         lights=(((1.00, 0.97, 0.92), 1.10), ((0.90, 0.94, 1.00), 0.40), ((0.90, 0.94, 1.00), 0.40))),
-    "rain": dict(ambient=(0.92, 0.93, 0.98), ambient_intensity=0.42,
-                 lights=(((0.92, 0.94, 1.00), 0.62),) * 3),
-    "snow": dict(ambient=(0.96, 0.97, 1.00), ambient_intensity=0.45,
-                 lights=(((0.95, 0.96, 1.00), 0.55),) * 3),
-    "afternoon": dict(ambient=(1.00, 0.95, 0.86), ambient_intensity=0.40,
-                      lights=(((1.00, 0.94, 0.84), 1.10), ((0.70, 0.78, 1.00), 0.22), ((0.70, 0.78, 1.00), 0.22))),
+    "rain": dict(ambient=(0.92, 0.93, 0.98), ambient_intensity=0.46,
+                 lights=(((0.92, 0.94, 1.00), 0.70),) * 3),
+    "snow": dict(ambient=(0.96, 0.97, 1.00), ambient_intensity=0.50,
+                 lights=(((0.95, 0.96, 1.00), 0.62),) * 3),
+    "afternoon": dict(ambient=(1.00, 0.95, 0.86), ambient_intensity=0.45,
+                      lights=(((1.00, 0.94, 0.84), 1.20), ((0.70, 0.78, 1.00), 0.26), ((0.70, 0.78, 1.00), 0.26))),
 }
-# Bundle edits. Hue pull toward the broadcast turf median (82 degrees), saturation
-# and value scales, bump flattening, and the softened afternoon / night tints.
-HUE_TARGET, HUE_PULL, SAT_SCALE, VAL_SCALE = 82.0, 0.35, 0.90, 1.04
-NORMAL_FLATTEN = 0.55
-TINTS = {0xFFFFEECD: 0xFFFFF5E6, 0xFFF2FFFF: 0xFFF8FCFF}
-VERTEX_TINTS = {(255, 238, 205, 255): (255, 245, 230, 255), (242, 255, 255, 255): (248, 252, 255, 255),
+# Bundle edits (beta 71 calibration). The drawn field is far darker than the
+# colour map times the rig: the beta 70 build measured (51, 61, 32) at Arrowhead
+# at night where the flat estimate was (232, 255, 160), so on screen the field
+# is about 0.47 x colour map (0.43 on blue) under the night rig. The broadcast
+# turf there is (107, 121, 53). Hitting it needs the map about 1.7x brighter and
+# the rig about 1.2x stronger, kept slightly more saturated and pulled toward
+# the Arrowhead hue (73 degrees). Value is lifted through a curve, 1 - (1 - v)^G,
+# so the darkest blades gain the most and the brightest never clip.
+HUE_TARGET, HUE_PULL, SAT_SCALE, VAL_GAMMA = 72.0, 0.50, 1.12, 2.8
+NORMAL_FLATTEN = 0.40
+TINTS = {0xFFFFEECD: 0xFFFFF5E6, 0xFFF2FFFF: 0xFFFFFFFF}
+VERTEX_TINTS = {(255, 238, 205, 255): (255, 245, 230, 255), (242, 255, 255, 255): (255, 255, 255, 255),
                 (255, 255, 229, 255): (255, 255, 240, 255)}
+# On-screen calibration per rig family: measured drawn turf divided by the flat
+# estimate, flat = map x (ambient x intensity + sum of light colour x intensity).
+# Night: the beta 70 build at Arrowhead (map (109, 130, 75) under the beta 70 rig,
+# gain (2.56, 2.56, 2.58), flat (278, 333, 194)) drew (51, 61, 32) on 2026-09-15.
+# Day: the retail build (map (100, 125, 66), retail day rig gain (1.61, 1.67, 1.34),
+# flat (161, 208, 88)) drew (34, 43, 2) on 2026-09-07; blue collapsed under the
+# yellow retail key, so the day blue factor is taken from green.
+SCREEN_FACTOR = {"night_indoor": (0.183, 0.183, 0.165), "day": (0.21, 0.21, 0.21)}
 FIELD_SCENE = "field"
 COLOR_MAP_MATERIAL = "color_premipped"
 OUTSIDE_MATERIAL = "grass_outside_premipped"
@@ -247,10 +262,31 @@ def regrade_palette(palette):
             continue
         h = (h + (HUE_TARGET - h) * HUE_PULL) / 360
         s = min(1.0, s * SAT_SCALE)
-        v = min(1.0, v * VAL_SCALE)
+        v = lift_value(v)
         r2, g2, b2 = (min(255, max(0, round(c * 255))) for c in colorsys.hsv_to_rgb(h, s, v))
         out[i * 4:i * 4 + 4] = bytes((b2, g2, r2, a))
     return bytes(out)
+
+
+def lift_value(v):
+    """The beta 71 brightness curve: 1 - (1 - v)^VAL_GAMMA, monotone, never clips."""
+    return 1.0 - (1.0 - v) ** VAL_GAMMA
+
+
+def predicted_on_screen(colour_map_rgb, rig="night_indoor"):
+    """Calibrated estimate of the drawn turf for a colour-map mean under a rig.
+
+    flat = map x (ambient x intensity + sum of light colour x intensity) per channel;
+    on screen = flat x SCREEN_FACTOR (the measured ratio, see the constants above).
+    Returns (retail-map estimate is the caller's business) an (r, g, b) tuple.
+    """
+    table = MODERN_RIGS[rig]
+    factor = SCREEN_FACTOR.get(rig, SCREEN_FACTOR["night_indoor"])
+    out = []
+    for c in range(3):
+        gain = table["ambient"][c] * table["ambient_intensity"] + sum(col[c] * i for col, i in table["lights"])
+        out.append(min(255, round(colour_map_rgb[c] * gain * factor[c])))
+    return tuple(out)
 
 
 def looks_like_normal_palette(palette):
@@ -713,7 +749,7 @@ def build_pins(source, *, progress=None, workers=None):
             require(sha(retail) == digest, f"retail light table {name} differs")
             tables.append(dict(name=name, va=hex(va), retail_hex=retail.hex(), applied_sha256=sha(modern_table(retail))))
     return dict(schema=PINS_SCHEMA, label=LABEL, hue_target=HUE_TARGET, hue_pull=HUE_PULL, sat_scale=SAT_SCALE,
-                val_scale=VAL_SCALE, normal_flatten=NORMAL_FLATTEN, tints={hex(k): hex(v) for k, v in TINTS.items()},
+                val_gamma=VAL_GAMMA, normal_flatten=NORMAL_FLATTEN, tints={hex(k): hex(v) for k, v in TINTS.items()},
                 light_tables=tables, bundles=rows)
 
 
