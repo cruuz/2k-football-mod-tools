@@ -184,9 +184,21 @@ already-pinned writer. `providers.py` and the facade digest in
 In `mod_editor/capabilities/registry.v1.json`, update existing rows
 `nfl2k5.textures.all_p8` and `nfl2k5.uniforms.all_visual`:
 
-- Append the following exact paragraph to `input_constraints`, replacing the old
-  paragraph that says the Style 6 Bears failure remains unresolved without the
-  new double-assignment witness:
+- In the existing equipment entry of the `input_constraints` array, replace only
+  this stale sentence (preserve the rest of that entry, including the retail
+  no-op, mip, wrapper and restored-project constraints):
+
+```text
+maumau78 reported a Style 6 Edit Player success and Bears in-game failure on beta 68; that report remains unresolved.
+```
+
+  with:
+
+```text
+maumau78 subsequently reported visibility after assigning both the normal and mud slots, while the artwork still looked buggy; this corrects the earlier single-slot guidance without establishing this change's in-game appearance.
+```
+
+- Append the following exact string as a new `input_constraints` array entry:
 
 ```text
 Normal shoe, glove and pad imports stage the mud sibling where the catalog contains one, with combined fit checking and grouped revert. Explicit mud-only imports stay separate. maumau78 reported visibility only after assigning both slots and still reported buggy artwork. Bounded native cache fill and field binding distinguish normal/mud rows; the caller transports runtime player record +0x18 bit 28 even under dry weather inputs. The flag's gameplay lifecycle and this change's appearance remain UNWITNESSED. Equipment reports actual fitted dimensions and referenced colours across all mips. High-contrast bands retain a palette limit of at least 16; a smaller checked image can still lose detail. Larger archive allocation remains UNPROVED and is unavailable.
@@ -205,7 +217,15 @@ reports/b70_t2/grown-loader.json
 reports/b70_t2/growth-audit.json
 ```
 
-For the existing Stadium texture claim inside `nfl2k5.uniforms.all_visual` and
+In `nfl2k5.uniforms.all_visual`, replace the entire stale `input_constraints`
+entry beginning `The Stadium texture route accepts an exact 64x64 RGBA8 PNG only`
+with:
+
+```text
+The Stadium texture route accepts an exact-dimension RGBA8 PNG for a reviewed P8 embedded texture exposed as editable by the Stadiums delegate. Every material linked to that occurrence changes together. Fixed-allocation compression overflow is refused; geometry, UVs, shaders and collision are unchanged.
+```
+
+For `nfl2k5.uniforms.all_visual` and
 `nfl2k5.stadiums_fields.blender_textures`, append this constraint and add
 `tests/mod_editor/test_b70_t2_stadium.py` plus `reports/b70_t2/stadium-banners.json`
 to the evidence lists:
