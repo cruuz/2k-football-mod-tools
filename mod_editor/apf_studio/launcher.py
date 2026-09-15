@@ -386,6 +386,11 @@ class XeniaLauncher:
         )
 
     def _patch_contract(self, kind):
+        if kind == "situations":
+            from .situation_masks import FILENAME
+            from mod_editor.core.apf2k8_situation_mask import canonical_payload
+            return (FILENAME, canonical_payload, "Situation exclusion patch",
+                    " Per-book ordinary offense exclusions; empty-draw fallback; EXPERIMENTAL. Gameplay UNWITNESSED.")
         if kind == "curves":
             from . import playcalling_patches
             return (playcalling_patches.FILENAME, lambda data: playcalling_patches.validate(data, curves=self._curve_module),
@@ -476,13 +481,13 @@ class XeniaLauncher:
         """Xenia constructs PatchDB from storage_root, not its executable cwd.
 
         Keep the reviewed installation as the source of truth. Synchronize only
-        our two canonical files; removing an installation removes its old launch
+        our canonical files; removing an installation removes its old launch
         copy before the next start. Foreign files are never overwritten.
         """
         folder = storage / "patches"
         if folder.is_symlink() or (folder.exists() and not folder.is_dir()):
             raise LaunchError("The launch patches folder is not a regular directory; move it aside and launch again")
-        for kind in ("pass_fetch", "curves"):
+        for kind in ("pass_fetch", "curves", "situations"):
             filename, validator, _, _ = self._patch_contract(kind)
             source = self.settings.patches_folder / filename
             target = folder / filename

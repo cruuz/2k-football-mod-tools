@@ -1,0 +1,418 @@
+[
+  {
+    "profile": "base",
+    "patched_flat_sha256": "de19823f326573ffd8a6279e79afc981a9003f304ad572d5aee1ed463df504a5",
+    "receipt": {
+      "schema": "apf2k8_situation_mask/v1",
+      "classification": "EXPERIMENTAL",
+      "runtime_status": "UNWITNESSED",
+      "profile": "base",
+      "image_sha256": "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf",
+      "key": "actual down 1..4 x absolute f32 longitudinal distance <=182.88 / <=640.08 / >640.08",
+      "policies": {
+        "O-ManBlock": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            14
+          ],
+          [],
+          [],
+          []
+        ]
+      },
+      "data_sha256": "ba2f34bcd2a76502f51a2e0e5103675a7b00e7601208c6c8b3e23270ffce0cca",
+      "hooks": [
+        [
+          2223419800,
+          2228282112
+        ],
+        [
+          2223412928,
+          2228283500
+        ]
+      ],
+      "code": {
+        "instructions": 620,
+        "branches": 100,
+        "sha256": "bb39ee9f752ced58504e8fddb0c2dfed8a7577e1ee799daadb847467a77aec4d"
+      },
+      "fallback": "An empty filtered draw uses the original complete draw; last-draw receipts at 0x852D6500 and 0x852D6518",
+      "limits": "Ordinary automatic offense calls in scrimmage phase 4 only; cached specials, explicit play/formation paths and kick/try phases bypass the filter."
+    },
+    "audit": {
+      "profile": "base",
+      "sections": {
+        ".rdata": [
+          2181039104,
+          38648148,
+          38648320,
+          1073741888
+        ],
+        ".pdata": [
+          2219687424,
+          147776,
+          147968,
+          1073741888
+        ],
+        ".string_": [
+          2219835392,
+          1230811,
+          1230848,
+          1073741888
+        ],
+        ".text": [
+          2221080576,
+          7180364,
+          7180800,
+          1610612768
+        ],
+        ".data": [
+          2228289536,
+          6055148,
+          2065408,
+          3221225536
+        ],
+        ".XBMOVIE": [
+          2234344960,
+          12,
+          512,
+          3221225536
+        ],
+        ".idata": [
+          2234384384,
+          1506,
+          1536,
+          3221225536
+        ],
+        ".XBLD": [
+          2234449920,
+          176,
+          512,
+          1107296320
+        ],
+        ".reloc": [
+          2234450432,
+          955408,
+          955904,
+          1107296320
+        ]
+      },
+      "ranges": [
+        [
+          2221066752,
+          2221080576,
+          ".string_"
+        ],
+        [
+          2228282112,
+          2228285440,
+          ".text"
+        ],
+        [
+          2234344704,
+          2234344768,
+          ".data"
+        ]
+      ],
+      "direct_branch_references": 0,
+      "executable_literal_references": 0,
+      "lis_displacement_references": 0,
+      "untyped_word_collisions": [
+        [
+          2184339788,
+          2234344751
+        ],
+        [
+          2185178756,
+          2228283435
+        ],
+        [
+          2186514340,
+          2221072175
+        ],
+        [
+          2186774260,
+          2228284696
+        ],
+        [
+          2191336924,
+          2228285270
+        ],
+        [
+          2192162388,
+          2228283990
+        ],
+        [
+          2193777428,
+          2221077260
+        ],
+        [
+          2197304804,
+          2228283697
+        ],
+        [
+          2197336604,
+          2228284313
+        ],
+        [
+          2197919868,
+          2221070792
+        ],
+        [
+          2204067108,
+          2221077211
+        ],
+        [
+          2204525524,
+          2228282795
+        ],
+        [
+          2204988380,
+          2228285185
+        ],
+        [
+          2206627004,
+          2228282883
+        ],
+        [
+          2207452340,
+          2228284587
+        ],
+        [
+          2208253284,
+          2221073511
+        ],
+        [
+          2209837868,
+          2228284666
+        ],
+        [
+          2211911180,
+          2221074404
+        ],
+        [
+          2213077724,
+          2228285181
+        ]
+      ],
+      "relocation_status": "Opaque XEX section; not claimed as decoded PE relocation blocks",
+      "relocation_sha256": "bddad5b3594e7fb1d08c269f63e7f7fa519a89694bdd3787cd260d02c950c6f9",
+      "computed_address_limit": "No claim about arbitrary computed addresses; owned ranges are mapped section padding beyond declared content."
+    }
+  },
+  {
+    "profile": "tu_1_1",
+    "patched_flat_sha256": "fb9edef7ddb700b95c6fa0f07dce530bf416e664d4dcdb4046d14fe831aa23aa",
+    "receipt": {
+      "schema": "apf2k8_situation_mask/v1",
+      "classification": "EXPERIMENTAL",
+      "runtime_status": "UNWITNESSED",
+      "profile": "tu_1_1",
+      "image_sha256": "65f522ce1cdda42cf19c112e9ec07302e89c81e4148c9f22e6db5e03952f9457",
+      "key": "actual down 1..4 x absolute f32 longitudinal distance <=182.88 / <=640.08 / >640.08",
+      "policies": {
+        "O-ManBlock": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            14
+          ],
+          [],
+          [],
+          []
+        ]
+      },
+      "data_sha256": "ba2f34bcd2a76502f51a2e0e5103675a7b00e7601208c6c8b3e23270ffce0cca",
+      "hooks": [
+        [
+          2223423128,
+          2228282112
+        ],
+        [
+          2223416256,
+          2228283500
+        ]
+      ],
+      "code": {
+        "instructions": 620,
+        "branches": 100,
+        "sha256": "edcc2796d01c5f27b82ffe469267e864c1d088d74f2636c255efbb653d6c7cce"
+      },
+      "fallback": "An empty filtered draw uses the original complete draw; last-draw receipts at 0x852D6500 and 0x852D6518",
+      "limits": "Ordinary automatic offense calls in scrimmage phase 4 only; cached specials, explicit play/formation paths and kick/try phases bypass the filter."
+    },
+    "audit": {
+      "profile": "tu_1_1",
+      "sections": {
+        ".rdata": [
+          2181039104,
+          38648180,
+          38648320,
+          1073741888
+        ],
+        ".pdata": [
+          2219687424,
+          147840,
+          147968,
+          1073741888
+        ],
+        ".string_": [
+          2219835392,
+          1230851,
+          1231360,
+          1073741888
+        ],
+        ".text": [
+          2221080576,
+          7184412,
+          7184896,
+          1610612768
+        ],
+        ".data": [
+          2228289536,
+          6055148,
+          2065408,
+          3221225536
+        ],
+        ".XBMOVIE": [
+          2234344960,
+          12,
+          512,
+          3221225536
+        ],
+        ".idata": [
+          2234384384,
+          1506,
+          1536,
+          3221225536
+        ],
+        ".XBLD": [
+          2234449920,
+          176,
+          512,
+          1107296320
+        ],
+        ".reloc": [
+          2234450432,
+          955464,
+          955904,
+          1107296320
+        ]
+      },
+      "ranges": [
+        [
+          2221066752,
+          2221080576,
+          ".string_"
+        ],
+        [
+          2228282112,
+          2228285440,
+          ".text"
+        ],
+        [
+          2234344704,
+          2234344768,
+          ".data"
+        ]
+      ],
+      "direct_branch_references": 0,
+      "executable_literal_references": 0,
+      "lis_displacement_references": 0,
+      "untyped_word_collisions": [
+        [
+          2184339820,
+          2234344751
+        ],
+        [
+          2185178788,
+          2228283435
+        ],
+        [
+          2186514372,
+          2221072175
+        ],
+        [
+          2186774292,
+          2228284696
+        ],
+        [
+          2191336956,
+          2228285270
+        ],
+        [
+          2192162420,
+          2228283990
+        ],
+        [
+          2193777460,
+          2221077260
+        ],
+        [
+          2197304836,
+          2228283697
+        ],
+        [
+          2197336636,
+          2228284313
+        ],
+        [
+          2197919900,
+          2221070792
+        ],
+        [
+          2204067140,
+          2221077211
+        ],
+        [
+          2204525556,
+          2228282795
+        ],
+        [
+          2204988412,
+          2228285185
+        ],
+        [
+          2206627036,
+          2228282883
+        ],
+        [
+          2207452372,
+          2228284587
+        ],
+        [
+          2208253316,
+          2221073511
+        ],
+        [
+          2209837900,
+          2228284666
+        ],
+        [
+          2211911212,
+          2221074404
+        ],
+        [
+          2213077756,
+          2228285181
+        ]
+      ],
+      "relocation_status": "Opaque XEX section; not claimed as decoded PE relocation blocks",
+      "relocation_sha256": "af7afe2a3f637a29aabc4e9143aa7875933e49b767f8fae051c3eb25384578e6",
+      "computed_address_limit": "No claim about arbitrary computed addresses; owned ranges are mapped section padding beyond declared content."
+    }
+  }
+]

@@ -2777,6 +2777,7 @@ class ApfSession:
         changes: Iterable[SplbMembershipChange | SplbTagMove],
         *,
         replace_outer: int | None = None,
+        playcalling_engine=None,
     ) -> int:
         """Merge Fine-tune Plays edits for one book, keeping every other book.
 
@@ -2860,6 +2861,12 @@ class ApfSession:
                 raise SessionError(str(exc)) from exc
         if updated == self._modifications:
             return 0
+        if any(m.kind == playcalling_service.PROVIDER_KIND for m in updated.values()):
+            try:
+                engine = playcalling_engine or playcalling_service.PlayCallingService()
+                updated = engine.rebase_membership(self, updated)
+            except (ValidationError, ValueError) as exc:
+                raise SessionError(f"These Fine-tune edits conflict with a CPU Play Calling edit: {exc}. Undo that CPU edit, then try again.") from exc
         changed = {
             key
             for key in set(updated).union(self._modifications)

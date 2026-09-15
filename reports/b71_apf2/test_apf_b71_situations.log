@@ -1,0 +1,14 @@
+test_conflicting_membership_change_is_atomic (__main__.BookWorkflowTests.test_conflicting_membership_change_is_atomic) ... ok
+test_explicit_addition_roundtrips_recipe_without_preset (__main__.BookWorkflowTests.test_explicit_addition_roundtrips_recipe_without_preset) ... ok
+test_fine_tune_after_cpu_edit_replays_receipt_and_exports_project (__main__.BookWorkflowTests.test_fine_tune_after_cpu_edit_replays_receipt_and_exports_project) ... ok
+test_preview_uses_selected_book_and_explicit_run_share (__main__.BookWorkflowTests.test_preview_uses_selected_book_and_explicit_run_share) ... ok
+test_without_receipt_replay_the_old_export_path_rejects_additions (__main__.BookWorkflowTests.test_without_receipt_replay_the_old_export_path_rejects_additions) ... ok
+test_portable_refit_decodes_exactly_and_keeps_a_fitting_stream (__main__.RefitTests.test_portable_refit_decodes_exactly_and_keeps_a_fitting_stream) ... ok
+test_true_overflow_reports_measured_shortfall_and_next_step (__main__.RefitTests.test_true_overflow_reports_measured_shortfall_and_next_step) ... ok
+test_candidates_include_minimum_weight_and_exclude_removed_membership (__main__.RetailAdditionsTests.test_candidates_include_minimum_weight_and_exclude_removed_membership) ... ok
+test_fine_tune_additions_export_inside_original_allocations_without_helper (__main__.RetailAdditionsTests.test_fine_tune_additions_export_inside_original_allocations_without_helper) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 5.423s
+
+OK

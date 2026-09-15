@@ -27,8 +27,9 @@ class BookIdentityPanel(QWidget):
     """Review serialized sharing, then build one clone or a scheme selection."""
 
     modifiedChanged = pyqtSignal()
+    cpuPlayCallingRequested = pyqtSignal()
 
-    def __init__(self, run_task, *, facade=None):
+    def __init__(self, run_task, *, facade=None, consolidated=False):
         super().__init__()
         self.run_task = run_task
         self.facade = facade
@@ -159,6 +160,13 @@ class BookIdentityPanel(QWidget):
         for box in (self.action, self.team, self.label, self.donor):
             box.currentIndexChanged.connect(self._invalidate)
         self._invalidate()
+        if consolidated:
+            scroll.hide()
+            pointer = QLabel('Use <a href="cpu-playcalling">CPU Play Calling</a> to pick books, edit formations and personnel, preview, and build.')
+            pointer.setWordWrap(True)
+            pointer.linkActivated.connect(lambda _: self.cpuPlayCallingRequested.emit())
+            outer_layout.addWidget(pointer)
+            outer_layout.addStretch()
 
     def open_walkthrough(self):
         path = Path(__file__).resolve().parents[2] / "docs/mod_editor/apf2k8_book_identity_walkthrough.md"

@@ -2,9 +2,36 @@
   "schema": "apf2k8_patch_reservations/v1",
   "runtime_status": "UNWITNESSED",
   "ranges": [
-    {"owner": "legacy_franchise_example", "start": "0x84D09100", "end_inclusive": "0x84D0DFFF"},
-    {"owner": "apf2k8_playcall_patch", "start": "0x84D0E000", "end_inclusive": "0x84D0EFFF"},
-    {"owner": "legacy_franchise_example", "start": "0x84D0F000", "end_inclusive": "0x84D0FFFF"}
+    {
+      "owner": "legacy_franchise_example",
+      "start": "0x84D09100",
+      "end_inclusive": "0x84D0DFFF"
+    },
+    {
+      "owner": "apf2k8_playcall_patch",
+      "start": "0x84D0E000",
+      "end_inclusive": "0x84D0E2FF"
+    },
+    {
+      "owner": "legacy_franchise_example",
+      "start": "0x84D0F000",
+      "end_inclusive": "0x84D0FFFF"
+    },
+    {
+      "owner": "apf2k8_situation_mask_data",
+      "start": "0x8462CA00",
+      "end_inclusive": "0x8462FFFF"
+    },
+    {
+      "owner": "apf2k8_situation_mask_code",
+      "start": "0x84D0E300",
+      "end_inclusive": "0x84D0EFFF"
+    },
+    {
+      "owner": "apf2k8_situation_mask_receipts",
+      "start": "0x852D6500",
+      "end_inclusive": "0x852D653F"
+    }
   ],
-  "note": "Exclusive integration ownership, not automatic patch composition. The pass-fetch generator checks the entire 4096-byte page. External franchise recipes must honor this split before co-enabling patches."
+  "note": "Exclusive ranges on pinned BASE and TU 1.1. Pass-fetch emits 716 bytes within E000..E2FF; its pristine-image preflight still checks the full page. Canonical pass-fetch and situation patches have disjoint write sets. Situation data is immutable string-section padding, code is executable padding, and last-draw receipts occupy writable data-section padding. External franchise recipes must honor all reservations."
 }

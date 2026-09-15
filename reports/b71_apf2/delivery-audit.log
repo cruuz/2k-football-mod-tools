@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-apf2/reports/b71_apf2/audit_delivery.py", line 26, in <module>
+    assert not any(re.search(r'\b' + re.escape(name) + r'\b', text, re.IGNORECASE)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: A new artifact repeats an old tester attribution

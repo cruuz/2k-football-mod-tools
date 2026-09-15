@@ -1,0 +1,86 @@
+test_conflicting_membership_change_is_atomic (__main__.BookWorkflowTests.test_conflicting_membership_change_is_atomic) ... ERROR
+test_explicit_addition_roundtrips_recipe_without_preset (__main__.BookWorkflowTests.test_explicit_addition_roundtrips_recipe_without_preset) ... ok
+test_fine_tune_after_cpu_edit_replays_receipt_and_exports_project (__main__.BookWorkflowTests.test_fine_tune_after_cpu_edit_replays_receipt_and_exports_project) ... ERROR
+test_preview_uses_selected_book_and_explicit_run_share (__main__.BookWorkflowTests.test_preview_uses_selected_book_and_explicit_run_share) ... ok
+test_without_receipt_replay_the_old_export_path_rejects_additions (__main__.BookWorkflowTests.test_without_receipt_replay_the_old_export_path_rejects_additions) ... ok
+test_portable_refit_decodes_exactly_and_keeps_a_fitting_stream (__main__.RefitTests.test_portable_refit_decodes_exactly_and_keeps_a_fitting_stream) ... ok
+test_true_overflow_reports_measured_shortfall_and_next_step (__main__.RefitTests.test_true_overflow_reports_measured_shortfall_and_next_step) ... ok
+test_candidates_include_minimum_weight_and_exclude_removed_membership (__main__.RetailAdditionsTests.test_candidates_include_minimum_weight_and_exclude_removed_membership) ... ok
+test_fine_tune_additions_export_inside_original_allocations_without_helper (__main__.RetailAdditionsTests.test_fine_tune_additions_export_inside_original_allocations_without_helper) ... ok
+
+======================================================================
+ERROR: test_conflicting_membership_change_is_atomic (__main__.BookWorkflowTests.test_conflicting_membership_change_is_atomic)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-apf2/tests/mod_editor/test_apf_b71_situations.py", line 84, in test_conflicting_membership_change_is_atomic
+    self.facade.stage_splb_membership((), replace_outer=130)
+  File "/home/noah/2k-worktrees/astra-b71-apf2/mod_editor/apf_studio/facade.py", line 1388, in stage_splb_membership
+    result = self.require_session().apply_splb_membership_batch(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-apf2/mod_editor/apf_studio/session.py", line 2867, in apply_splb_membership_batch
+    updated = engine.rebase_membership(self, updated)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-apf2/mod_editor/apf_studio/playcalling_service.py", line 294, in rebase_membership
+    state, fresh = self.apply(state, event["request"], session.source.index_0a)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-apf2/mod_editor/apf_studio/playcalling_service.py", line 375, in apply
+    before = self.facts(state, request)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-apf2/mod_editor/apf_studio/playcalling_service.py", line 359, in facts
+    return list(b.splb.formation_ratings(book, request["formation"]))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-apf2/tests/mod_editor/test_apf_playcalling_editor_facade.py", line 98, in ratings
+    word = struct.unpack_from(">I", self.record(book, formation).trailer)[0]
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-apf2/tests/mod_editor/test_apf_playcalling_editor_facade.py", line 95, in record
+    return next(r for r in splb.parse_book(book, 0).records if r.populated and r.formation_index == formation)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+StopIteration
+
+======================================================================
+ERROR: test_fine_tune_after_cpu_edit_replays_receipt_and_exports_project (__main__.BookWorkflowTests.test_fine_tune_after_cpu_edit_replays_receipt_and_exports_project)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-apf2/tools/apf_outer.py", line 176, in parse_archive
+    index_size = index_path.stat().st_size
+                 ^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 842, in stat
+    return os.stat(self, follow_symlinks=follow_symlinks)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/apf-playcalling-test-4btf7yt9/0A'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-apf2/mod_editor/core/apf2k8_splb_writer.py", line 1393, in read_book
+    archive = apf_outer.parse_archive(Path(index_path))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-apf2/tools/apf_outer.py", line 178, in parse_archive
+    raise FormatError(f"cannot stat index {index_path}: {exc}") from exc
+apf_outer.FormatError: cannot stat index /tmp/apf-playcalling-test-4btf7yt9/0A: [Errno 2] No such file or directory: '/tmp/apf-playcalling-test-4btf7yt9/0A'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-apf2/mod_editor/apf_studio/session.py", line 3889, in load_project
+    self._compile_splb_groups(active)
+  File "/home/noah/2k-worktrees/astra-b71-apf2/mod_editor/apf_studio/session.py", line 2772, in _compile_splb_groups
+    read_splb_book(self.source.index_0a, outer_index), tuple(group)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-apf2/mod_editor/core/apf2k8_splb_writer.py", line 1408, in read_book
+    raise ValidationError(f"Could not open the APF stock playbook: {exc}") from exc
+mod_editor.core.errors.ValidationError: Could not open the APF stock playbook: cannot stat index /tmp/apf-playcalling-test-4btf7yt9/0A: [Errno 2] No such file or directory: '/tmp/apf-playcalling-test-4btf7yt9/0A'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-apf2/tests/mod_editor/test_apf_b71_situations.py", line 65, in test_fine_tune_after_cpu_edit_replays_receipt_and_exports_project
+    self.facade.session.load_project(path)
+  File "/home/noah/2k-worktrees/astra-b71-apf2/mod_editor/apf_studio/session.py", line 3891, in load_project
+    raise SessionError(
+mod_editor.apf_studio.session.SessionError: Project stock-playbook edit set is unsafe: Could not open the APF stock playbook: cannot stat index /tmp/apf-playcalling-test-4btf7yt9/0A: [Errno 2] No such file or directory: '/tmp/apf-playcalling-test-4btf7yt9/0A'
+
+----------------------------------------------------------------------
+Ran 9 tests in 2.772s
+
+FAILED (errors=2)

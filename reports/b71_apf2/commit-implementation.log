@@ -1,0 +1,3 @@
+[astra/b71-apf2-situations 290e51c2] APF: select CPU books directly, inspect situation candidates and refit formation additions
+ 12 files changed, 578 insertions(+), 42 deletions(-)
+ create mode 100644 tests/mod_editor/test_apf_b71_situations.py

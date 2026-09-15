@@ -1,0 +1,8 @@
+PROVED MASTER native relocation/validation: result=1; instructions=7189487
+test_apf4_draws_are_local_and_never_empty (__main__.MaskNativeTests.test_apf4_draws_are_local_and_never_empty) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 148.482s
+
+OK
+PROVED APF4 local masks / two empty-draw fallbacks: 90

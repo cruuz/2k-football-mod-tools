@@ -1,0 +1,8 @@
+PROVED MASTER native relocation/validation: result=1; instructions=7189487
+test_apf4_exact_image_data_and_owned_ranges (__main__.MaskNativeTests.test_apf4_exact_image_data_and_owned_ranges) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 107.103s
+
+OK
+PROVED owned ranges and exact patched flat image hashes: [('base', 'd571589df189fddef4967e6553a9a9cce6a6f8434d7ece3f6eb6db2fafe813f2'), ('tu_1_1', '3e7b70f51e766ff037bb1240f92b4151d3c67f7d5c072574809c655096836baa')]

@@ -1,0 +1,13 @@
+..F..........
+======================================================================
+FAIL: test_experiments_keep_p2_actions_and_every_control_has_explanation (__main__.QtTests.test_experiments_keep_p2_actions_and_every_control_has_explanation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-apf4/tests/mod_editor/test_apf_playcalling_editor_qt.py", line 124, in test_experiments_keep_p2_actions_and_every_control_has_explanation
+    self.assertTrue(control.accessibleDescription(), control.objectName() or control.accessibleName() or str(control))
+AssertionError: '' is not true : <PyQt5.QtWidgets.QPushButton object at 0x7a787bae5ac0>
+
+----------------------------------------------------------------------
+Ran 13 tests in 7.938s
+
+FAILED (failures=1)

@@ -1,0 +1,7 @@
+test_inserted_memberships_cache_and_run_pass_gates (__main__.ModelEdgeTests.test_inserted_memberships_cache_and_run_pass_gates) ... PROVED added Jacks: 8 cached candidates before normalization, 28 after; run/pass endpoints and 384 uniform draws agree
+ok
+
+----------------------------------------------------------------------
+Ran 1 test in 95.235s
+
+OK

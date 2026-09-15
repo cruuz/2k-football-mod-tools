@@ -256,7 +256,7 @@ CATEGORY_BLURBS: dict[ApfCategory, str] = {
     ApfCategory.MENUS: "Search menu, layout, font, and localized text structures across the complete archive.",
     ApfCategory.AUDIO: "Browse soundtrack, commentary, stadium, presentation, and standalone XMA1 audio; play verified WAV previews, export original XMA, import ordinary audio through exact-slot conversion with your own XMA1 encoder, or batch-stage a retail-free XMA1 or PCM16 WAV folder or ZIP.",
     ApfCategory.GAMEPLAY: "Inspect mapped sliders and follow gameplay research; nothing is offered as an edit until it is proven safe.",
-    ApfCategory.PLAYBOOKS: "Edit CPU book formations, plays and same-formation audibles. Book Identity gives one team an independent offensive copy and opens it in Fine-tune. Build the original Studio project before cloning, then use the named book-edit recipe to continue. Content recipes remain editable. Expanded-book gameplay is UNWITNESSED.",
+    ApfCategory.PLAYBOOKS: "CPU Play Calling: pick a book, edit formations and personnel, preview, then build. Give a team its own book there when needed. Fine-tune Plays edits individual memberships and audibles. Gameplay is UNWITNESSED.",
     ApfCategory.FRANCHISE: "Browse season, schedule, save, and franchise structures while deeper franchise editing is researched.",
     ApfCategory.ALL_ASSETS: "Every record the live indexer sees appears here, including opaque and export-only resources.",
 }
@@ -19397,7 +19397,7 @@ class InspectorCategoryPage(QWidget):
             else None
         )
         self.play_designer = PlayDesignerPanel(facade, run_task) if category is ApfCategory.PLAYBOOKS else None
-        self.book_identity = BookIdentityPanel(run_task, facade=facade) if category is ApfCategory.PLAYBOOKS else None
+        self.book_identity = BookIdentityPanel(run_task, facade=facade, consolidated=True) if category is ApfCategory.PLAYBOOKS else None
         self.playbook_playcall = ApfPlaycallPanel(facade, run_task) if category is ApfCategory.PLAYBOOKS else None
         self.coverage_geometry = CoverageGeometryPanel(facade, run_task) if category is ApfCategory.PLAYBOOKS else None
         for panel in (self.play_designer, self.book_identity, self.playbook_playcall, self.coverage_geometry):
@@ -19442,6 +19442,7 @@ class InspectorCategoryPage(QWidget):
                 tabs.addTab(self.roster_planner, "53-player Planner")  # type: ignore[arg-type]
                 tabs.addTab(self.assets, "&Raw Roster Assets")  # type: ignore[arg-type]
             elif category is ApfCategory.PLAYBOOKS:
+                tabs.addTab(self.playbook_playcall, "CPU Play Calling")
                 tabs.addTab(self.inspector, "PLAY / DRCT Inspector")
                 tabs.addTab(self.playbook_membership, "Fine-tune Plays")  # type: ignore[arg-type]
                 tabs.addTab(self.playbook_package_maps, "Who lines up")  # type: ignore[arg-type]
@@ -19450,7 +19451,7 @@ class InspectorCategoryPage(QWidget):
                 tabs.addTab(self.play_designer, "Design Plays / Formations")
                 tabs.addTab(self.coverage_geometry, "Coverage Geometry (experimental)")
                 tabs.addTab(self.book_identity, "Book Identity")
-                tabs.addTab(self.playbook_playcall, "CPU Play Calling")
+                self.book_identity.cpuPlayCallingRequested.connect(lambda: tabs.setCurrentWidget(self.playbook_playcall))
                 tabs.addTab(self.assets, "Raw Playbook Assets")  # type: ignore[arg-type]
             else:
                 tabs.addTab(self.inspector, "Audio Browser")

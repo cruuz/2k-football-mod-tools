@@ -1,0 +1,12 @@
+test_cold_special_request_rows (__main__.DefenseModelTests.test_cold_special_request_rows) ... ok
+test_conditional_defensive_full_tuple_matrix (__main__.DefenseModelTests.test_conditional_defensive_full_tuple_matrix) ... PROVED 10240 defensive category/formation/component tuples conditional on supplied feature 4; live evaluator remains outside this proof
+ok
+test_defensive_category_matrix (__main__.DefenseModelTests.test_defensive_category_matrix) ... PROVED defensive categories: 40 situations x 4 books x 64 uniform draws
+ok
+test_native_pair_supply_and_conditional_x_products (__main__.DefenseModelTests.test_native_pair_supply_and_conditional_x_products) ... PROVED 192 native defensive component pairs and X products conditional on supplied lineup feature 4; feature default remains HYPOTHESIS
+ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 155.748s
+
+OK

@@ -1,0 +1,37 @@
+O-Singleback3WR 1 118 2048 retail-token-preserving
+O-Singleback3WR 2 119 2048 retail-token-preserving
+O-Singleback3WR 3 120 2048 retail-token-preserving
+O-Singleback3WR 4 121 2048 retail-token-preserving
+O-Singleback3WR 5 122 2048 retail-token-preserving
+O-Singleback3WR 6 123 2048 retail-token-preserving
+O-Singleback3WR 7 124 2048 retail-token-preserving
+O-Singleback3WR 8 125 2048 retail-token-preserving
+O-Singleback3WR 9 126 2048 retail-token-preserving
+O-Singleback3WR 10 127 2048 retail-token-preserving
+O-Singleback3WR 11 128 2048 retail-token-preserving
+O-Singleback3WR 12 129 2048 retail-token-preserving
+O-Singleback3WR 13 130 2048 retail-token-preserving
+O-Singleback3WR 14 131 ValidationError The edited stock playbook does not fit the game's fixed allocation
+O-ManBlock 1 121 2048 retail-token-preserving
+O-ManBlock 2 122 2048 retail-token-preserving
+O-ManBlock 3 123 2048 retail-token-preserving
+O-ManBlock 4 124 2048 retail-token-preserving
+O-ManBlock 5 125 2048 retail-token-preserving
+O-ManBlock 6 126 2048 retail-token-preserving
+O-ManBlock 7 127 2048 retail-token-preserving
+O-ManBlock 8 128 2048 retail-token-preserving
+O-ManBlock 9 129 2048 retail-token-preserving
+O-ManBlock 10 130 2048 retail-token-preserving
+O-ManBlock 11 131 ValidationError The edited stock playbook does not fit the game's fixed allocation
+O-SinglebackAce 1 118 2048 retail-token-preserving
+O-SinglebackAce 2 119 2048 retail-token-preserving
+O-SinglebackAce 3 120 2048 retail-token-preserving
+O-SinglebackAce 4 121 2048 retail-token-preserving
+O-SinglebackAce 5 124 2048 retail-token-preserving
+O-SinglebackAce 6 125 2048 retail-token-preserving
+O-SinglebackAce 7 126 2048 retail-token-preserving
+O-SinglebackAce 8 127 2048 retail-token-preserving
+O-SinglebackAce 9 128 2048 retail-token-preserving
+O-SinglebackAce 10 129 2048 retail-token-preserving
+O-SinglebackAce 11 130 2048 retail-token-preserving
+O-SinglebackAce 12 132 ValidationError The edited stock playbook does not fit the game's fixed allocation

@@ -176,15 +176,19 @@ class ApfStudioFacade:
     def source_ready(self) -> bool:
         return self.source is not None and self.catalog is not None and self.session is not None
 
-    def playcalling_context(self, team=0, side="offense", progress: Progress = _noop):
+    def playcalling_context(self, team=0, side="offense", progress: Progress = _noop, *, book=None, preview_tendency=None):
         with self._session_lock:
             progress("Reading team books and staged play-calling edits", 0, 1)
-            return self._playcalling.context(self.require_session(), team, side)
+            return self._playcalling.context(self.require_session(), team, side, book=book, preview_tendency=preview_tendency)
 
     def playcalling_predict(self, context, side, rows, progress: Progress = _noop):
         with self._session_lock:
             progress("Predicting CPU calls", 0, len(rows))
             return self._playcalling.predict(context, side, rows)
+
+    def playcalling_situations(self, context, side):
+        with self._session_lock:
+            return self._playcalling.situations(context, side)
 
     def playcalling_plan(self, side, team=None, donor=None, progress: Progress = _noop):
         with self._session_lock:
@@ -198,9 +202,9 @@ class ApfStudioFacade:
         with self._session_lock:
             return self._playcalling.scheme_plan(self.require_session(), team, scheme_id)
 
-    def playcalling_scheme_csv(self, team, progress: Progress = _noop):
+    def playcalling_scheme_csv(self, team, progress: Progress = _noop, *, book=None, preview_tendency=None):
         with self._session_lock:
-            return self._playcalling.scheme_csv(self.require_session(), team)
+            return self._playcalling.scheme_csv(self.require_session(), team, book=book, preview_tendency=preview_tendency)
 
     def stage_playcalling(self, review, progress: Progress = _noop):
         with self._session_lock:
@@ -211,6 +215,25 @@ class ApfStudioFacade:
     def playcalling_snapshot(self):
         with self._session_lock:
             return (id(self.session), self._playcalling.snapshot(self.require_session()))
+
+    def prepare_situation_patch(self, profile):
+        from .situation_masks import prepare
+        with self._session_lock:
+            session = self.require_session()
+            state = self._playcalling.state(session)
+            return {**prepare(state, profile), "snapshot": self._playcalling.snapshot(session),
+                    **self.launcher.pass_fetch_status(kind="situations")}
+
+    def install_situation_patch(self, prepared, *, consent=False):
+        if not consent:
+            raise FacadeError("Installing the situation patch requires consent")
+        current = self.prepare_situation_patch(prepared["profile"])
+        if any(prepared.get(key) != current.get(key) for key in ("payload", "snapshot", "patch_path", "config_path")):
+            raise FacadeError("The book masks or installation target changed; review the situation patch again")
+        with tempfile.TemporaryDirectory(prefix="apf-situation-mask-") as directory:
+            path = Path(directory) / "situations.patch.toml"
+            path.write_bytes(prepared["payload"])
+            return self.install_xenia_patch(path, consent=True, kind="situations")
 
     def prepare_playcalling_curve(self, profile, side):
         from . import playcalling_patches
@@ -1382,7 +1405,7 @@ class ApfStudioFacade:
         with self._session_lock:
             progress("Checking the stock playbook edits", 0, 1)
             result = self.require_session().apply_splb_membership_batch(
-                changes, replace_outer=replace_outer
+                changes, replace_outer=replace_outer, playcalling_engine=self._playcalling
             )
             progress("Stock playbook edits staged", 1, 1)
             self.last_build = None

@@ -1,0 +1,13 @@
+test_added_and_cloned_heavy_sets_return_run_plays_at_goal_line (__main__.RetirementBoundaryTests.test_added_and_cloned_heavy_sets_return_run_plays_at_goal_line) ... PROVED native GL run plays from Jacks/Jokers: O-Shotgun
+PROVED native GL run plays from Jacks/Jokers: O-Singleback3WR
+PROVED native GL run plays from Jacks/Jokers: J9 Heavy Run
+ok
+test_complete_offense_driver_at_run_and_pass_boundaries (__main__.RetirementBoundaryTests.test_complete_offense_driver_at_run_and_pass_boundaries) ... PROVED run/pass boundary complete ordinary drivers: 24
+ok
+test_defense_membership_exclusion_with_remaining_category_coverage (__main__.RetirementBoundaryTests.test_defense_membership_exclusion_with_remaining_category_coverage) ... PROVED defensive formation 141 excluded across 128 native matching requests
+ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 146.117s
+
+OK

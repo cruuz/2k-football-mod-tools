@@ -1,0 +1,386 @@
+[
+  {
+    "tu": false,
+    "down": 1,
+    "yards": 0,
+    "key": 0,
+    "ball": 0.0,
+    "target": 0.0
+  },
+  {
+    "tu": false,
+    "down": 1,
+    "yards": 1.999,
+    "key": 0,
+    "ball": 0.0,
+    "target": 182.78855895996094
+  },
+  {
+    "tu": false,
+    "down": 1,
+    "yards": 2.001,
+    "key": 1,
+    "ball": 0.0,
+    "target": 182.971435546875
+  },
+  {
+    "tu": false,
+    "down": 1,
+    "yards": 6.999,
+    "key": 1,
+    "ball": 0.0,
+    "target": 639.9885864257812
+  },
+  {
+    "tu": false,
+    "down": 1,
+    "yards": 7.001,
+    "key": 2,
+    "ball": 0.0,
+    "target": 640.1714477539062
+  },
+  {
+    "tu": false,
+    "down": 1,
+    "yards": 100,
+    "key": 2,
+    "ball": 0.0,
+    "target": 9144.0
+  },
+  {
+    "tu": false,
+    "down": 2,
+    "yards": 0,
+    "key": 3,
+    "ball": 0.0,
+    "target": 0.0
+  },
+  {
+    "tu": false,
+    "down": 2,
+    "yards": 1.999,
+    "key": 3,
+    "ball": 0.0,
+    "target": 182.78855895996094
+  },
+  {
+    "tu": false,
+    "down": 2,
+    "yards": 2.001,
+    "key": 4,
+    "ball": 0.0,
+    "target": 182.971435546875
+  },
+  {
+    "tu": false,
+    "down": 2,
+    "yards": 6.999,
+    "key": 4,
+    "ball": 0.0,
+    "target": 639.9885864257812
+  },
+  {
+    "tu": false,
+    "down": 2,
+    "yards": 7.001,
+    "key": 5,
+    "ball": 0.0,
+    "target": 640.1714477539062
+  },
+  {
+    "tu": false,
+    "down": 2,
+    "yards": 100,
+    "key": 5,
+    "ball": 0.0,
+    "target": 9144.0
+  },
+  {
+    "tu": false,
+    "down": 3,
+    "yards": 0,
+    "key": 6,
+    "ball": 0.0,
+    "target": 0.0
+  },
+  {
+    "tu": false,
+    "down": 3,
+    "yards": 1.999,
+    "key": 6,
+    "ball": 0.0,
+    "target": 182.78855895996094
+  },
+  {
+    "tu": false,
+    "down": 3,
+    "yards": 2.001,
+    "key": 7,
+    "ball": 0.0,
+    "target": 182.971435546875
+  },
+  {
+    "tu": false,
+    "down": 3,
+    "yards": 6.999,
+    "key": 7,
+    "ball": 0.0,
+    "target": 639.9885864257812
+  },
+  {
+    "tu": false,
+    "down": 3,
+    "yards": 7.001,
+    "key": 8,
+    "ball": 0.0,
+    "target": 640.1714477539062
+  },
+  {
+    "tu": false,
+    "down": 3,
+    "yards": 100,
+    "key": 8,
+    "ball": 0.0,
+    "target": 9144.0
+  },
+  {
+    "tu": false,
+    "down": 4,
+    "yards": 0,
+    "key": 9,
+    "ball": 0.0,
+    "target": 0.0
+  },
+  {
+    "tu": false,
+    "down": 4,
+    "yards": 1.999,
+    "key": 9,
+    "ball": 0.0,
+    "target": 182.78855895996094
+  },
+  {
+    "tu": false,
+    "down": 4,
+    "yards": 2.001,
+    "key": 10,
+    "ball": 0.0,
+    "target": 182.971435546875
+  },
+  {
+    "tu": false,
+    "down": 4,
+    "yards": 6.999,
+    "key": 10,
+    "ball": 0.0,
+    "target": 639.9885864257812
+  },
+  {
+    "tu": false,
+    "down": 4,
+    "yards": 7.001,
+    "key": 11,
+    "ball": 0.0,
+    "target": 640.1714477539062
+  },
+  {
+    "tu": false,
+    "down": 4,
+    "yards": 100,
+    "key": 11,
+    "ball": 0.0,
+    "target": 9144.0
+  },
+  {
+    "tu": true,
+    "down": 1,
+    "yards": 0,
+    "key": 0,
+    "ball": 0.0,
+    "target": 0.0
+  },
+  {
+    "tu": true,
+    "down": 1,
+    "yards": 1.999,
+    "key": 0,
+    "ball": 0.0,
+    "target": 182.78855895996094
+  },
+  {
+    "tu": true,
+    "down": 1,
+    "yards": 2.001,
+    "key": 1,
+    "ball": 0.0,
+    "target": 182.971435546875
+  },
+  {
+    "tu": true,
+    "down": 1,
+    "yards": 6.999,
+    "key": 1,
+    "ball": 0.0,
+    "target": 639.9885864257812
+  },
+  {
+    "tu": true,
+    "down": 1,
+    "yards": 7.001,
+    "key": 2,
+    "ball": 0.0,
+    "target": 640.1714477539062
+  },
+  {
+    "tu": true,
+    "down": 1,
+    "yards": 100,
+    "key": 2,
+    "ball": 0.0,
+    "target": 9144.0
+  },
+  {
+    "tu": true,
+    "down": 2,
+    "yards": 0,
+    "key": 3,
+    "ball": 0.0,
+    "target": 0.0
+  },
+  {
+    "tu": true,
+    "down": 2,
+    "yards": 1.999,
+    "key": 3,
+    "ball": 0.0,
+    "target": 182.78855895996094
+  },
+  {
+    "tu": true,
+    "down": 2,
+    "yards": 2.001,
+    "key": 4,
+    "ball": 0.0,
+    "target": 182.971435546875
+  },
+  {
+    "tu": true,
+    "down": 2,
+    "yards": 6.999,
+    "key": 4,
+    "ball": 0.0,
+    "target": 639.9885864257812
+  },
+  {
+    "tu": true,
+    "down": 2,
+    "yards": 7.001,
+    "key": 5,
+    "ball": 0.0,
+    "target": 640.1714477539062
+  },
+  {
+    "tu": true,
+    "down": 2,
+    "yards": 100,
+    "key": 5,
+    "ball": 0.0,
+    "target": 9144.0
+  },
+  {
+    "tu": true,
+    "down": 3,
+    "yards": 0,
+    "key": 6,
+    "ball": 0.0,
+    "target": 0.0
+  },
+  {
+    "tu": true,
+    "down": 3,
+    "yards": 1.999,
+    "key": 6,
+    "ball": 0.0,
+    "target": 182.78855895996094
+  },
+  {
+    "tu": true,
+    "down": 3,
+    "yards": 2.001,
+    "key": 7,
+    "ball": 0.0,
+    "target": 182.971435546875
+  },
+  {
+    "tu": true,
+    "down": 3,
+    "yards": 6.999,
+    "key": 7,
+    "ball": 0.0,
+    "target": 639.9885864257812
+  },
+  {
+    "tu": true,
+    "down": 3,
+    "yards": 7.001,
+    "key": 8,
+    "ball": 0.0,
+    "target": 640.1714477539062
+  },
+  {
+    "tu": true,
+    "down": 3,
+    "yards": 100,
+    "key": 8,
+    "ball": 0.0,
+    "target": 9144.0
+  },
+  {
+    "tu": true,
+    "down": 4,
+    "yards": 0,
+    "key": 9,
+    "ball": 0.0,
+    "target": 0.0
+  },
+  {
+    "tu": true,
+    "down": 4,
+    "yards": 1.999,
+    "key": 9,
+    "ball": 0.0,
+    "target": 182.78855895996094
+  },
+  {
+    "tu": true,
+    "down": 4,
+    "yards": 2.001,
+    "key": 10,
+    "ball": 0.0,
+    "target": 182.971435546875
+  },
+  {
+    "tu": true,
+    "down": 4,
+    "yards": 6.999,
+    "key": 10,
+    "ball": 0.0,
+    "target": 639.9885864257812
+  },
+  {
+    "tu": true,
+    "down": 4,
+    "yards": 7.001,
+    "key": 11,
+    "ball": 0.0,
+    "target": 640.1714477539062
+  },
+  {
+    "tu": true,
+    "down": 4,
+    "yards": 100,
+    "key": 11,
+    "ball": 0.0,
+    "target": 9144.0
+  }
+]

@@ -101,6 +101,9 @@ PRODUCT_MODULES = (
     'mod_editor.apf_studio.playbook_playcall_qt',
     'mod_editor.core.apf2k8_audibles',
     'mod_editor.core.apf2k8_playcall_patch',
+    'mod_editor.core.apf2k8_situation_mask',
+    'mod_editor.apf_studio.situation_masks',
+    'mod_editor.apf_studio.situation_mask_qt',
     'mod_editor.apf_studio.playcalling_service',
     'mod_editor.apf_studio.playcalling_editor_qt',
     'mod_editor.apf_studio.playcalling_build',
@@ -574,11 +577,40 @@ def _check_apf_wave_contract(modules: dict[str, object]) -> None:
         raise RuntimeError("APF executable cave reservations overlap")
     own = [r for r in ranges if r["owner"] == "apf2k8_playcall_patch"]
     if (len(own) != 1 or own[0]["start"] != "0x84D0E000"
-            or own[0]["end_inclusive"] != "0x84D0EFFF"
+            or own[0]["end_inclusive"] != "0x84D0E2FF"
             or patch.CAVE_START != 0x84D0E000
             or "unwitnessed" not in patch.status()
             or modules["capstone"].__version__ != "5.0.7"):
         raise RuntimeError("APF pass-fetch export ownership/status/verifier changed")
+
+    mask = modules["mod_editor.core.apf2k8_situation_mask"]
+    expected = {"apf2k8_situation_mask_data": (mask.DATA_START, mask.DATA_LIMIT),
+                "apf2k8_situation_mask_code": (mask.CODE_START, mask.CODE_LIMIT),
+                "apf2k8_situation_mask_receipts": (mask.RECEIPT_START, mask.RECEIPT_LIMIT)}
+    for owner, (start, end) in expected.items():
+        selected = [r for r in ranges if r["owner"] == owner]
+        if len(selected) != 1 or (int(selected[0]["start"],16),int(selected[0]["end_inclusive"],16)+1) != (start,end):
+            raise RuntimeError("APF situation mask reservation changed: " + owner)
+    policies = {"O-ManBlock": [[] for _ in range(12)]}
+    policies["O-ManBlock"][8] = [14]
+    data = mask.encode_data(policies)
+    require(mask.decode_data(data) == policies, "Situation data readback changed")
+    require(hashlib.sha256(data).hexdigest() == "ba2f34bcd2a76502f51a2e0e5103675a7b00e7601208c6c8b3e23270ffce0cca",
+            "Situation data exact byte regression changed")
+    code_hashes = ("bb39ee9f752ced58504e8fddb0c2dfed8a7577e1ee799daadb847467a77aec4d",
+                   "edcc2796d01c5f27b82ffe469267e864c1d088d74f2636c255efbb653d6c7cce")
+    for profile, digest in zip(mask.PROFILES, code_hashes):
+        code, hooks = mask.assemble(profile)
+        require(mask.verify_code(profile,code)["sha256"] == digest, "Situation code exact byte regression changed")
+        require(patch.CAVE_START + len(patch.assemble_cave(profile.hook)) <= mask.CODE_START,
+                "Pass-fetch code overlaps situation code")
+        document = mask.SituationPatch(profile,data)
+        require(mask.canonical_payload(document.as_toml().encode()) == (profile,True), "Situation canonical export changed")
+        require(not set(dict(document.words)) & set(dict(patch.PlaycallPatch(profile,patch.assemble_cave(profile.hook),{}).words)),
+                "Pass-fetch and situation patch writes overlap")
+    service = modules["mod_editor.apf_studio.playcalling_service"]
+    require(service.State({},b"",b"",(),{},{}).situation_masks_enabled is False,
+            "Situation masks must start off")
 
 
 REVIEWED_EDITOR_IMAGES = {'docs/mod_editor/apf2k8_book_identity/book-identity.png': (171333, '49031072810725b3835b2bdf76ae9380add77917f733fc5f5341acb9c3cf31b8'), 'docs/mod_editor/apf2k8_book_identity/stock-replacement.png': (211991, 'df3ba6f510754917d0aa376596daaca5f29888960eb25054ec2a32085f462b98'), 'docs/mod_editor/apf2k8_book_identity/walkthrough.png': (113176, '9062606c54d9198c9bc77dc4e7730a1fb0f66952a9d918fc38e3eef3c3e2a3d5')}
@@ -1363,7 +1395,6 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
             "APF complete sidebar category count changed")
     editable = {item.capability_id for item in cards if item.status is models.ApfStatus.EDITABLE}
     expected_editable = {
-        "apf2k8.playbooks.offensive_schemes",
         "apf2k8.playbooks.never_call",
         'apf2k8.cpu_ai_draft.play_design.concept_recipes',
         'apf2k8.cpu_ai_draft.play_design.cpu_calls',
@@ -1380,7 +1411,6 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
         'apf2k8.playbooks.own_team_books',
         'apf2k8.playbooks.pass_fetch_te_bias',
         'apf2k8.playbooks.personnel_curve_patch',
-        'apf2k8.playbooks.scheme_presets',
 
         "apf2k8.audio.ausb_xma_export",
         "apf2k8.audio.xma_export",
@@ -1415,6 +1445,14 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
             for capability_id in editable
         ),
         "public editable capability/action boundary changed",
+    )
+    # The integrated book workflow hides the legacy scheme editors. Keep their
+    # recipes readable without advertising those cards as editable controls.
+    legacy_schemes = {"apf2k8.playbooks.offensive_schemes", "apf2k8.playbooks.scheme_presets"}
+    require(
+        {item.capability_id for item in cards
+         if item.capability_id in legacy_schemes and item.status is models.ApfStatus.EVIDENCE} == legacy_schemes,
+        "legacy scheme cards must retain their explicit proof boundary",
     )
     textlogo_patch = importlib.import_module("apf_textlogo_patch")
     textlogo_verify = importlib.import_module("apf_textlogo_verify")

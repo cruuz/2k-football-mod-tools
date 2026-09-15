@@ -2,6 +2,16 @@
 
 ## 0.1.0-alpha.92 — beta 71: CPU play calling situations and the play-calling page (in progress, 2026-09-15)
 
+- CPU Play Calling adds optional per-book exclusions in twelve live down and distance buckets. Both native draws use the independent mask; an empty filtered draw falls back to its original candidates and records the fallback. Enable it explicitly and install the matching BASE or TU 1.1 patch. No preset stages it; gameplay remains unwitnessed.
+- Live situations show the computed personnel request and the editable stored comparison row with its scope of all books. An empty TE depth list substitutes an FB. Masks and row edits support preview, undo, project save/reload and build receipts. See the [APF-4 proof and retest guide](../research/apf_b71_apf4.md).
+
+- CPU Play Calling previews the selected book, including USER-O and USER-D, with a separate preview run share. Staging formation ratings no longer leaves the tab locked. Book Identity points to this shared workflow.
+- The 23 spreadsheet situations now show candidate formations, personnel and TE counts beside explicit formation addition, personnel editing and complete book removal. These edit shared book data across situations. Independent per-situation lists remain unavailable: the native selector uses shared memberships and weights, and several spreadsheet buckets have identical inputs. A lone formation at raw rating 7 still wins its one-candidate draw. Bounded BASE/TU tests prove these inputs and selected tuples; final on-field lineups remain UNWITNESSED.
+- Formation additions try a fresh safe compression pass when the old token layout exceeds its allocation. The tested 23, 18 and 19 additions to three offensive books now export inside their original allocations with the portable encoder. Fine-tune changes also replay existing CPU edit receipts as one transaction, so a compatible addition does not invalidate the later export. Conflicting edits refuse before changing the project. Nothing stages through a preset.
+- O-ManBlock now has an exact readback regression for adding Gun: Straight with its 25 donor plays and removing all three Queens formations. It fits in 2,019 of 2,048 bytes. An 84-play variant refits from 2,275 to 1,634 bytes with the portable encoder. The screenshot's precise 2,417-byte payload cannot be reconstructed without its selected play list.
+- The situation table labels its TE count as requested personnel. Bounded BASE/TU traces now execute the native depth selector and all eleven assignments: with a TE available, the one-TE call uses it; with an empty TE depth list, the native fallback supplies a fullback while the role byte still says TE. The tested roster inputs are synthetic; the cause of any particular in-game lineup remains UNWITNESSED.
+- Independent per-situation removal remains unavailable. Exhaustive native rating checks find no zero-weight rating code; clearing membership excludes a formation across all shared queries. A new native situation filter and persistent data format are still required before this can be offered as an independent edit.
+
 ## 0.1.0-alpha.91 — beta 70: the APF 2K8 work after beta 69 — 2026-09-15
 
 Beta 70 carries the APF 2K8 changes made after beta 69; bullets are added as each change lands.
