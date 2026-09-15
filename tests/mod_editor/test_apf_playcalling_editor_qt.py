@@ -136,7 +136,8 @@ class QtTests(FacadeFixture):
         self.assertIn("0.1", service.RATING_MAPPING)
         for slider in self.panel.ratings:
             self.assertIn("lower", slider.accessibleDescription().casefold())
-        self.assertIn("0 is called most", self.panel.play_rating.accessibleDescription())
+        self.assertIn("initial play weight", self.panel.play_rating.accessibleDescription())
+        self.assertIn("weighs less", self.panel.ratings[0].accessibleDescription())
         self.assertEqual(self.panel.master_row.maximum(), 27)
 
     def test_a_failing_contract_call_shows_a_message_instead_of_crashing(self):

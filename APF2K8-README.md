@@ -4,6 +4,10 @@ This folder is a retail-free application. It contains no *All-Pro Football
 2K8* ISO, extracted game files, textures, audio, screenshots, or rollback
 bytes. You select your own legally dumped USA copy after the app opens.
 
+For starting play recipes, the eight scheme presets and independent CPU books,
+read the [Book Identity walkthrough](docs/mod_editor/apf2k8_book_identity_walkthrough.md).
+It is also available from **Playbooks → Book Identity → How this works**.
+
 ## Install
 
 APF 2K8 Mod Studio needs **Python 3, PyQt5, and Pillow**.

@@ -21,6 +21,8 @@ def main(argv=None):
     parser.add_argument("--source", type=Path, default=Path(
         "/media/noah/Storage/for codex 1.0/extracted/All-Pro Football 2K8 (USA)"))
     parser.add_argument("--receipt", type=Path)
+    parser.add_argument("--book-identity-screenshots", type=Path,
+                        help="Replay Book Identity and save editor-only offscreen walkthrough screenshots")
     parser.add_argument("--playcalling-contract-only", action="store_true",
                         help="Replay the beta-67 tab using the test-only contract modules through its facade")
     args = parser.parse_args(argv)
@@ -90,6 +92,45 @@ def main(argv=None):
             assert facade.source_ready
             page = navigate(ApfCategory.PLAYBOOKS)
             tabs = page.workspace_tabs
+            if args.book_identity_screenshots:
+                from mod_editor.apf_studio import scheme_service
+                folder = args.book_identity_screenshots
+                folder.mkdir(parents=True, exist_ok=True)
+                window.resize(1440, 1100)
+                page.open_workspace("book-identity")
+                panel = page.book_identity
+                panel.load_path(args.source / "0A")
+                pump("Book Identity assignments reparsed")
+                panel.source_label.setText("Your built APF game folder")
+                panel.action.setCurrentIndex(panel.action.findData("wide-zone"))
+                pump("Wide Zone starting recipe selected")
+                assert panel.table.rowCount() == 80
+                assert not panel.replace_group.isChecked()
+                assert panel.content.grab().save(str(folder / "book-identity.png"))
+                panel.replace_group.setChecked(True)
+                panel.replace_target.setCurrentIndex(panel.replace_target.findData("O-Singleback3WR"))
+                panel.replace_scheme.setCurrentIndex(panel.replace_scheme.findData("wide_zone"))
+                panel.replace_stage.click()
+                pump("Wide Zone stock replacement staged through real worker")
+                assert not panel.replace_group.isChecked()
+                profile = facade.session._modifications[scheme_service.SELECTOR]
+                assert scheme_service.read_profile(profile)[0]["book_type"] == "O-Singleback3WR"
+                panel.replace_group.setChecked(True)
+                pump("Replacement choices expanded for guide")
+                assert panel.content.grab().save(str(folder / "stock-replacement.png"))
+                project = root / "replacement.apf2k8mod"
+                facade.save_project(project)
+                facade.load_project(project)
+                assert scheme_service.read_profile(facade.session._modifications[scheme_service.SELECTOR])[0]["scheme_id"] == "wide_zone"
+                pump("Replacement Save Project and reopen")
+                dialog = panel.open_walkthrough()
+                pump("How this works walkthrough rendered")
+                assert dialog.grab().save(str(folder / "walkthrough.png"))
+                dialog.close()
+                captured.update(status="APF_GUI_REPLAY_PASS", screenshots=sorted(p.name for p in folder.glob('*.png')),
+                                runtime_status="UNWITNESSED")
+                # The focused replay finishes here; finally still drains all workers.
+                return finish_receipt(captured, args.receipt)
             assert tabs.count() == 10, tabs.count()
             for route, widget in (
                 ("play-designer", page.play_designer),
@@ -165,9 +206,13 @@ def main(argv=None):
             # deferred dialogs while QApplication still exists.
             window.deleteLater()
             QCoreApplication.sendPostedEvents(None, QEvent.DeferredDelete)
+    return finish_receipt(captured, args.receipt)
+
+
+def finish_receipt(captured, path):
     text = json.dumps(captured, indent=2)+"\n"
-    if args.receipt:
-        args.receipt.write_text(text)
+    if path:
+        path.write_bytes(text.encode())
     print(text)
     return int(bool(captured["dialogs"] or captured["crashes"]))
 

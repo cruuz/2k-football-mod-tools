@@ -202,12 +202,13 @@ class ApfPlayCallingEditor(QWidget):
         for label in ("Short yardage", "Medium yardage", "Long yardage"):
             slider = QSlider(Qt.Horizontal); slider.setRange(0, 7)
             slider.setAccessibleName(label + " formation rating")
-            explain(slider, f"A lower {label.lower()} rating makes this formation more likely in that kind of "
-                            "situation; 0 is the strongest setting and 4 through 7 all share the weakest.")
+            explain(slider, f"The {label.lower()} raw rating contributes to both lotteries. "
+                            "Zero favors the category more than one, but weighs less in the later formation draw. "
+                            "Use the call preview to compare; neither value disables a formation.")
             value = QLabel("0")
             slider.valueChanged.connect(lambda v, target=value: target.setText(str(v)))
             row = QHBoxLayout(); row.addWidget(slider); row.addWidget(value)
-            rating_form.addRow(label + " (0 strongest to 7 weakest)", row)
+            rating_form.addRow(label + " (raw 0–7)", row)
             self.ratings.append(slider)
         lever_root.addLayout(rating_form)
         self.ratings_button = button(lever_root, "Stage formation ratings", "The game will use these three ratings for this formation in the built book.", self.stage_ratings)
@@ -216,7 +217,7 @@ class ApfPlayCallingEditor(QWidget):
         lever_root.addWidget(self.play_picker)
         self.play_rating = QSpinBox(); self.play_rating.setRange(0, 7)
         self.play_rating.setAccessibleName("Play X rating")
-        explain(self.play_rating, "The game weighs lower X ratings more heavily; 0 is called most, and 7 has the least weight.")
+        explain(self.play_rating, "Lower X increases initial play weight. Actual calls also depend on the situation, personnel, available plays and history.")
         lever_root.addWidget(self.play_rating)
         note(lever_root, "Play X rating: 0 = called most; larger numbers give the play less weight, alongside suitability and run/pass choice.")
         self.play_rating_button = button(lever_root, "Stage play rating", "The game will use this X rating when choosing this play in the selected formation.", self.stage_play_rating)

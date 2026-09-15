@@ -268,6 +268,14 @@ class ApfStudioFacade:
             self.last_build = None
             return result
 
+    def replace_book_starting_content(self, book_type, scheme_id, progress: Progress = _noop):
+        from . import scheme_service
+        with self._session_lock:
+            progress(f"Checking {book_type} replacement and its fixed allocation", 0, 1)
+            result = scheme_service.stage_replacement(self.require_session(), book_type, scheme_id)
+            self.last_build = None
+            return result
+
     @property
     def book_choices(self):
         from mod_editor.core.apf2k8_splb_writer import STOCK_BOOKS

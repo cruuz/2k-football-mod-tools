@@ -10,9 +10,9 @@ from pathlib import Path
 
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QComboBox, QDialog, QFileDialog, QFormLayout, QHBoxLayout,
+    QAbstractItemView, QComboBox, QDialog, QFileDialog, QFormLayout, QHBoxLayout, QGroupBox,
     QLabel, QPlainTextEdit, QPushButton, QTableWidget, QTableWidgetItem,
-    QTabWidget, QVBoxLayout, QWidget,
+    QTabWidget, QVBoxLayout, QWidget, QTextBrowser, QScrollArea, QLayout,
 )
 
 from mod_editor.core import apf2k8_book_clone as clone
@@ -20,6 +20,7 @@ from mod_editor.core import apf2k8_book_identity as identity
 from mod_editor.core import apf2k8_scheme_presets as presets
 from mod_editor.core import apf2k8_splb_writer as splb
 from mod_editor.core.errors import ValidationError
+from . import scheme_service
 
 
 class BookIdentityPanel(QWidget):
@@ -36,21 +37,26 @@ class BookIdentityPanel(QWidget):
         self._identity = None
         self.reviewed = None
         self._generation = 0
-        layout = QVBoxLayout(self)
+        outer_layout = QVBoxLayout(self)
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        self.content = QWidget()
+        scroll.setWidget(self.content)
+        outer_layout.addWidget(scroll)
+        layout = QVBoxLayout(self.content)
+        layout.setSizeConstraint(QLayout.SetMinimumSize)
         title = QLabel("Book Identity and independent CPU books")
         title.setObjectName("panelTitle")
         layout.addWidget(title)
+        self.help_button = QPushButton("How this works")
+        self.help_button.setToolTip("Read the Book Identity walkthrough, recipes, stock replacement and Xenia steps.")
+        self.help_button.clicked.connect(self.open_walkthrough)
+        layout.addWidget(self.help_button)
         note = QLabel(
             "Give one team its own book, then edit its formations, plays and audibles in Fine-tune. "
-            "Team chooses who uses the copy. Unused label names that copy; the game resolves the label's "
-            "book name to its contents. Copy this book chooses the starting formations and plays. "
-            "Other teams keep their shared book. A loaded roster save can override these disc assignments.\n\n"
-            "1. Build your current Studio project and choose that game folder here. "
-            "2. Choose a team, unused label and starting book, then Review and Build new game folder. "
-            "Cloning inserts an archive entry and shifts entry numbers, so the old Studio project must be "
-            "finished first. 3. Open the new folder with Edit books in Fine-tune below; save its book-edit "
-            "recipe and build another new folder. This editor resolves the shifted entries by name. "
-            "Expanded books and CPU behavior remain UNWITNESSED in game."
+            "First build your current project, choose that folder here, then review and build the copy. "
+            "The walkthrough explains labels, starting recipes and subsequent edits. "
+            "A loaded roster save can override disc assignments. CPU behavior remains UNWITNESSED in game."
         )
         note.setWordWrap(True)
         layout.addWidget(note)
@@ -92,6 +98,35 @@ class BookIdentityPanel(QWidget):
         self.stage.clicked.connect(self._stage_presets)
         self.revert_presets.clicked.connect(lambda: self._stage_presets(clear=True))
         layout.addLayout(row)
+        self.replace_group = QGroupBox("Replace starting content of a stock book (ADVANCED, opt in per book)")
+        self.replace_group.setCheckable(True)
+        self.replace_group.setChecked(False)
+        replacement_layout = QVBoxLayout(self.replace_group)
+        self.replace_body = QWidget()
+        self.replace_body.setMinimumHeight(190)
+        replacement_form = QFormLayout(self.replace_body)
+        replacement_layout.addWidget(self.replace_body)
+        self.replace_body.setVisible(False)
+        self.replace_group.toggled.connect(self.replace_body.setVisible)
+        self.replace_target = QComboBox()
+        for name in scheme_service.STOCK_TARGETS:
+            self.replace_target.addItem(name, name)
+        self.replace_scheme = QComboBox()
+        for scheme in scheme_service.schemes.SCHEMES:
+            self.replace_scheme.addItem(scheme.name, scheme.id)
+        self.replace_note = QLabel()
+        self.replace_note.setWordWrap(True)
+        self.replace_stage = QPushButton("Check fit and stage replacement for this book")
+        replacement_form.addRow("Stock book to replace", self.replace_target)
+        replacement_form.addRow("Scheme starting content", self.replace_scheme)
+        replacement_form.addRow(self.replace_note)
+        replacement_form.addRow(self.replace_stage)
+        self.replace_stage.clicked.connect(self._stage_replacement)
+        self.replace_scheme.currentIndexChanged.connect(self._replacement_note)
+        self.replace_target.currentIndexChanged.connect(self._replacement_note)
+        self._replacement_note()
+        self.replace_group.setVisible(facade is not None)
+        layout.addWidget(self.replace_group)
         self.edit = QPushButton("Edit books in Fine-tune…")
         self.edit.setToolTip("Open the chosen or newly built folder's stock and independent books. Save a book-edit recipe, then build a new folder.")
         self.edit.clicked.connect(self.open_fine_tune)
@@ -104,6 +139,7 @@ class BookIdentityPanel(QWidget):
         layout.addWidget(self.status)
         tabs = QTabWidget()
         self.table = QTableWidget(0, 6)
+        self.table.setMinimumHeight(180)
         self.table.setHorizontalHeaderLabels(["Team", "Side", "Label", "Real book", "Other teams", "Proof"])
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
@@ -123,6 +159,51 @@ class BookIdentityPanel(QWidget):
         for box in (self.action, self.team, self.label, self.donor):
             box.currentIndexChanged.connect(self._invalidate)
         self._invalidate()
+
+    def open_walkthrough(self):
+        path = Path(__file__).resolve().parents[2] / "docs/mod_editor/apf2k8_book_identity_walkthrough.md"
+        dialog = QDialog(self)
+        dialog.setWindowTitle("How Book Identity works")
+        dialog.resize(1000, 800)
+        browser = QTextBrowser(dialog)
+        from PyQt5.QtCore import QUrl
+        browser.document().setBaseUrl(QUrl.fromLocalFile(str(path.parent) + "/"))
+        browser.setOpenExternalLinks(False)
+        browser.setMarkdown(path.read_text(encoding="utf-8") if path.is_file() else
+                            "The walkthrough is missing from this installation. Reinstall the complete Studio release.")
+        layout = QVBoxLayout(dialog)
+        layout.addWidget(browser)
+        self._content_dialogs.append(dialog)
+        dialog.finished.connect(lambda _result: self._content_dialogs.remove(dialog))
+        dialog.show()
+        return dialog
+
+    def _replacement_note(self, *_args):
+        donor, recipe = scheme_service.SCHEME_CONTENT[self.replace_scheme.currentData()]
+        self.replace_note.setText(
+            f"Replaces all content in {self.replace_target.currentData()} using {donor}"
+            + (f" and its {recipe} recipe" if recipe else "")
+            + ". Applies beta-69 formation preferences. Every team using this stock book gets the change. "
+              "Build and reopen before Fine-tune edits. No new routes or blocking; gameplay UNWITNESSED.")
+
+    def _stage_replacement(self):
+        if not self.replace_group.isChecked() or self.facade is None:
+            return
+        session = self.facade.session
+        snapshot = tuple(session.modifications)
+        target, scheme = self.replace_target.currentData(), self.replace_scheme.currentData()
+        def work(progress):
+            with self.facade._session_lock:
+                if self.facade.session is not session or tuple(session.modifications) != snapshot:
+                    raise ValidationError("The source/project changed; choose the book and stage again")
+                return self.facade.replace_book_starting_content(target, scheme, progress)
+        def complete(reports):
+            self.receipt.setPlainText(json.dumps(reports, indent=2, sort_keys=True))
+            self.status.setText(f"{target} replacement staged and reparsed. Save Project, then Build Game Folder. "
+                                "The build receipt lists its complete before/after content. Gameplay UNWITNESSED.")
+            self.replace_group.setChecked(False)
+            self.modifiedChanged.emit()
+        self.run_task("Checking stock book replacement", work, complete, True)
 
     def _invalidate(self, *_args):
         self._generation += 1
@@ -177,6 +258,7 @@ class BookIdentityPanel(QWidget):
         ready = self.facade is not None and self.facade.source_ready and not self._busy
         self.stage.setEnabled(ready and self.action.currentData() != "clone")
         self.revert_presets.setEnabled(ready)
+        self.replace_group.setEnabled(ready)
 
     refresh = set_context
 

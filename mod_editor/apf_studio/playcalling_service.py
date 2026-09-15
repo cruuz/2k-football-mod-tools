@@ -28,9 +28,10 @@ SELECTOR = "apf:playbooks:cpu-playcalling"
 LINEUP_CALLERS = "unclassified"
 # P3's corrected semantics, from docs/mod_editor/apf_b67_play_calling.md.
 RATING_EXPLANATION = (
-    "The raw formation numbers are not a conventional higher is better scale: a lower "
-    "number makes the game weigh this formation more. The three fields are the short, "
-    "medium and long yardage settings, and the situation interpolates between them."
+    "Lower raw ratings generally favor the personnel category. The later formation draw "
+    "has an exception: equal ratings of 0 weigh less than 1. The three fields are short, "
+    "medium and long yardage settings; the situation interpolates between them. Preview "
+    "the resulting calls instead of treating the sliders as guaranteed frequencies."
 )
 RATING_MAPPING = (
     "For equal ratings the game weighs 0/0/0 as category 3 and formation 0.5; 1/1/1 as 2 "

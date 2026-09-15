@@ -113,6 +113,13 @@ def _crest_child_init():
     _CREST_CHILD = True
 
 
+def _crest_optimal_binary():
+    import apf_field_art_patch
+    if os.environ.get('APF_H7A_DISABLE_NATIVE') == '1':
+        return None
+    return apf_field_art_patch._optimal_binary()
+
+
 _SHARED_POOL = {'executor': None, 'workers': 0}
 
 
@@ -396,7 +403,7 @@ def compress_h7a(
     if candidate_limit <= 0:
         raise PatchError("H7A candidate limit must be positive")
     import apf_field_art_patch
-    binary = apf_field_art_patch._optimal_binary()
+    binary = _crest_optimal_binary()
     if binary is not None and len(data) >= 4096:
         try:
             result = subprocess.run([str(binary), str(shift), '--greedy', str(candidate_limit)],
@@ -1063,7 +1070,7 @@ def compress_h7a_best(data: bytes, shift: int, *, greedy: bytes | None = None) -
     import apf_field_art_patch
     greedy = compress_h7a(data, shift) if greedy is None else greedy
     verify_h7a_stream(greedy, data, shift)
-    binary = apf_field_art_patch._optimal_binary()
+    binary = _crest_optimal_binary()
     candidate = None
     if binary is not None:
         try:
@@ -1142,7 +1149,7 @@ def _compress_h7a_optimal_python(data: bytes, shift: int) -> bytes:
 
 
 def _compressed(data: bytes, shift: int, optimal: bool = False) -> bytes:
-    key = (sha256_bytes(data), shift, MAX_H7A_CANDIDATES, optimal)
+    key = (sha256_bytes(data), shift, MAX_H7A_CANDIDATES, optimal, encoder_policy())
     with _CACHE_LOCK:
         cached = _STREAM_CACHE.get(key)
         if cached is not None:
@@ -1255,10 +1262,38 @@ def logo_measurement_templates(index_path: Path, entry_indices, progress=lambda 
 
 _MEASUREMENT_CACHE: OrderedDict = OrderedDict()
 _PACKAGE_CACHE: OrderedDict = OrderedDict()
+_FITTED_STREAMS: OrderedDict = OrderedDict()
+
+
+def encoder_policy():
+    import apf_field_art_patch
+    return (_crest_optimal_binary() is not None,
+            os.environ.get('APF_H7A_PYTHON_OPTIMAL') == '1')
+
+
+def remember_fitted_streams(hashes, streams):
+    """Bounded in-memory transfer; every reuse still needs an exact block hash."""
+    key = (tuple(hashes), encoder_policy())
+    with _CACHE_LOCK:
+        combined = dict(_FITTED_STREAMS.get(key, {}))
+        combined.update(streams)
+        _FITTED_STREAMS[key] = combined
+        _FITTED_STREAMS.move_to_end(key)
+        while sum(len(s) for group in _FITTED_STREAMS.values() for s in group.values()) > 64 << 20:
+            _FITTED_STREAMS.popitem(last=False)
+
+
+def fitted_streams(images):
+    with _CACHE_LOCK:
+        return dict(_FITTED_STREAMS.get((tuple(sha256_bytes(i) for i in images), encoder_policy()), {}))
 
 
 def _build_crest_job(job):
-    index_path, entry_index, l0, l1, allow, source_sha = job
+    index_path, entry_index, l0, l1, allow, source_sha, streams = job
+    with _CACHE_LOCK:
+        _STREAM_CACHE.update(streams)
+        while len(_STREAM_CACHE) > 128:
+            _STREAM_CACHE.popitem(last=False)
     opened = _open_entry(index_path, entry_index)
     _, entry, record, raw, blocks, stored = opened
     if sha256_bytes(raw) != source_sha:
@@ -1296,14 +1331,15 @@ def build_crest_packages(index_path, requests, progress=lambda *_: None, *, canc
             digest = sha256_bytes(raw)
             key = (str(index_path.resolve()), entry, digest, sha256_bytes(l0),
                    sha256_bytes(l1) if l1 is not None else None, allow,
-                   tuple(sorted(PINNED_ENTRIES.get(entry_index, {}).items())))
+                   tuple(sorted(PINNED_ENTRIES.get(entry_index, {}).items())), encoder_policy())
             with _CACHE_LOCK:
                 cached = _PACKAGE_CACHE.get(key)
                 if cached is not None:
                     _PACKAGE_CACHE.move_to_end(key)
                     results[entry_index] = deepcopy(cached)
             if cached is None:
-                jobs.append((index_path, entry_index, bytes(l0), bytes(l1) if l1 is not None else None, allow, digest))
+                streams = fitted_streams((l0, l1)) if l1 is not None else {}
+                jobs.append((index_path, entry_index, bytes(l0), bytes(l1) if l1 is not None else None, allow, digest, streams))
                 pending.append((entry_index, key))
             else:
                 progress(f'Reused verified crest package {entry_index}', len(results), len(requests))
@@ -1325,7 +1361,7 @@ def measure_logo_pair(rgba_l0: bytes, rgba_l1: bytes, template: LogoMeasurementT
                       *, minimum_budget: int, progress=lambda *_: None) -> tuple[dict, ...]:
     """Writer-owned sizes; call in a worker, then compare cheap rows on the UI."""
     import apf_field_art_patch
-    availability = apf_field_art_patch.optimal_encoder_diagnostic()["available"]
+    availability = encoder_policy()
     key = (sha256_bytes(rgba_l0 + rgba_l1), template.shift, sha256_bytes(template.seed),
            tuple((layer.vram_offset, json.dumps(layer.metadata, sort_keys=True)) for layer in template.layers),
            minimum_budget, availability)
@@ -1333,22 +1369,25 @@ def measure_logo_pair(rgba_l0: bytes, rgba_l1: bytes, template: LogoMeasurementT
         if key in _MEASUREMENT_CACHE:
             _MEASUREMENT_CACHE.move_to_end(key)
             return tuple(dict(row) for row in _MEASUREMENT_CACHE[key])
-    rows = []
+    rows, streams = [], {}
     edits = tuple(zip(template.layers, (rgba_l0, rgba_l1)))
     for step, shades in enumerate((16, 8, 4, 2)):
         progress(f"Measuring logo at {shades} shades per region", step, 4)
         block = _layer_blocks([b"", template.seed], edits, shades, True)[1]
         greedy = _compressed(block, template.shift)
+        streams[(sha256_bytes(block), template.shift, MAX_H7A_CANDIDATES, False, availability)] = greedy
         rows.append({"shades_per_region": shades, "encoder": "greedy H7A",
                      "compressed_art_bytes": len(greedy)})
         if len(greedy) <= minimum_budget:
             break
         optimal = _compressed(block, template.shift, True)
+        streams[(sha256_bytes(block), template.shift, MAX_H7A_CANDIDATES, True, availability)] = optimal
         rows.append({"shades_per_region": shades,
                      "encoder": "safe optimal H7A" if len(optimal) < len(greedy) else "greedy H7A",
                      "compressed_art_bytes": len(optimal)})
         if len(optimal) <= minimum_budget:
             break
+    remember_fitted_streams((sha256_bytes(rgba_l0), sha256_bytes(rgba_l1)), streams)
     with _CACHE_LOCK:
         _MEASUREMENT_CACHE[key] = tuple(dict(row) for row in rows)
         while len(_MEASUREMENT_CACHE) > 64:
