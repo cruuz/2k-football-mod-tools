@@ -123,6 +123,23 @@ class LaunchReceipt:
     patch_status: str = "Pass-fetch patch not installed."
 
 
+RUNTIME_CONFIGS = {
+    "edge": "xenia-edge.config.toml",
+    "canary": "xenia-canary.config.toml",
+    "default": "xenia.config.toml",
+}
+
+
+def detect_runtime(executable: Path) -> str:
+    """Recognize distributed Edge/Canary names without executing the binary."""
+    name = executable.name.casefold()
+    if "edge" in name:
+        return "edge"
+    if "canary" in name:
+        return "canary"
+    return "default"
+
+
 class XeniaSettings:
     SCHEMA = "apf2k8_mod_studio_xenia_settings/v1"
 
@@ -134,6 +151,7 @@ class XeniaSettings:
         self.wine_path: Path | None = None
         self.xenia_config_path: Path | None = None
         self.title_update_path: Path | None = None
+        self.runtime = "default"
         self._load()
 
     @property
@@ -155,8 +173,11 @@ class XeniaSettings:
         return os.access(self.xenia_path, os.X_OK)
 
     def configure(self, xenia_path: Path, wine_path: Path | None = None, *,
-                  xenia_config: Path | None = None) -> None:
-        xenia = self._regular(xenia_path, "Xenia Canary")
+                  xenia_config: Path | None = None, runtime: str | None = None) -> None:
+        xenia = self._regular(xenia_path, "Xenia")
+        selected_runtime = runtime or detect_runtime(xenia)
+        if selected_runtime not in RUNTIME_CONFIGS:
+            raise LaunchError("Choose Xenia Edge or Canary, then configure again")
         wine: Path | None = None
         if xenia.suffix.casefold() == ".exe" and not platform_compat.IS_WINDOWS:
             candidate = wine_path
@@ -165,7 +186,7 @@ class XeniaSettings:
                 candidate = Path(found) if found else None
             if candidate is None:
                 raise LaunchError(
-                    "Xenia Canary is a Windows program. Install Wine or choose the Wine executable."
+                    "This Xenia executable is a Windows program. Install Wine or choose the Wine executable."
                 )
             wine = self._regular(candidate, "Wine")
             if not os.access(wine, os.X_OK):
@@ -175,10 +196,15 @@ class XeniaSettings:
             # reports an unloadable image at launch time instead.
             raise LaunchError("The selected Xenia file is not executable")
         selected_config = self._regular(xenia_config, "Xenia config") if xenia_config else None
-        self.xenia_path = xenia
-        self.xenia_config_path = selected_config
-        self.wine_path = wine
-        self._save()
+        previous = (self.xenia_path, self.xenia_config_path, self.wine_path, self.runtime)
+        self.xenia_path, self.xenia_config_path = xenia, selected_config
+        self.wine_path, self.runtime = wine, selected_runtime
+        try:
+            self.write_controller_config()
+            self._save()
+        except (OSError, LaunchError):
+            self.xenia_path, self.xenia_config_path, self.wine_path, self.runtime = previous
+            raise
 
     @property
     def patches_folder(self) -> Path:
@@ -193,8 +219,25 @@ class XeniaSettings:
         if self.xenia_path is None:
             raise LaunchError("Configure Xenia first")
         # Launch passes this path explicitly, including for non-portable installs.
-        name = "xenia-canary.config.toml" if "canary" in self.xenia_path.stem.casefold() else "xenia.config.toml"
+        name = RUNTIME_CONFIGS[self.runtime]
         return self.xenia_path.parent / name
+
+    @property
+    def runtime_label(self) -> str:
+        return {"edge": "Xenia Edge", "canary": "Xenia Canary", "default": "Xenia"}[self.runtime]
+
+    def write_controller_config(self) -> Path:
+        """Match the saved HID backend to the SDL launch override, with readback."""
+        path = self.emulator_config
+        if path.exists() or path.is_symlink():
+            self._regular(path, "Xenia config")
+        before = path.read_bytes() if path.exists() else b""
+        after = _sdl_config(before)
+        if before != after:
+            _atomic_bytes(path, after)
+        if path.read_bytes() != after:
+            raise LaunchError("Xenia controller config readback failed; configure Xenia again")
+        return path
 
     def configure_patch_config(self, path: Path) -> None:
         candidate = self._regular(path, "Xenia config")
@@ -219,7 +262,7 @@ class XeniaSettings:
             wine = value.get("wine_path")
             if not isinstance(xenia, str):
                 return
-            xenia_candidate = self._regular(Path(xenia), "Xenia Canary")
+            xenia_candidate = self._regular(Path(xenia), "Xenia")
             if xenia_candidate.suffix.casefold() == ".exe":
                 # On Windows a ``.exe`` loads natively and no Wine loader is
                 # persisted; elsewhere the saved Wine path is mandatory.
@@ -232,6 +275,10 @@ class XeniaSettings:
                     self.wine_path = wine_candidate
             elif not os.access(xenia_candidate, os.X_OK):
                 return
+            runtime = value.get("runtime", detect_runtime(xenia_candidate))
+            if runtime not in RUNTIME_CONFIGS:
+                return
+            self.runtime = runtime
             self.xenia_path = xenia_candidate
             config = value.get("xenia_config_path")
             if isinstance(config, str) and config:
@@ -264,6 +311,7 @@ class XeniaSettings:
                         json.dumps(
                             {
                                 "schema": self.SCHEMA,
+                                "runtime": self.runtime,
                                 "xenia_config_path": str(self.xenia_config_path) if self.xenia_config_path else None,
                                 "xenia_path": str(self.xenia_path)
                                 if self.xenia_path
@@ -318,6 +366,44 @@ def _atomic_bytes(path: Path, payload: bytes) -> None:
         os.replace(temporary, path)
     finally:
         temporary.unlink(missing_ok=True)
+
+
+def _sdl_config(payload: bytes) -> bytes:
+    """Edit only HID.hid; reject syntax we cannot preserve and verify."""
+    try:
+        text = payload.decode("utf-8-sig")
+        before = tomllib.loads(text)
+        hid = before.get("HID", {})
+        if not isinstance(hid, dict):
+            raise ValueError("HID must be a TOML section")
+        if hid.get("hid") == "sdl":
+            return payload
+        lines = text.splitlines(keepends=True)
+        section, insertion, replaced = None, None, False
+        for i, line in enumerate(lines):
+            match = re.match(r"^\s*\[([^]\n]+)\]\s*(?:#.*)?$", line.strip())
+            if match:
+                section = match.group(1)
+                if section == "HID":
+                    insertion = i + 1
+            if section == "HID" and re.match(r"^\s*hid\s*=", line):
+                comment = (" #" + line.split("#", 1)[1].rstrip()) if "#" in line else ""
+                lines[i] = 'hid = "sdl"' + comment + "\n"
+                replaced = True
+        if not replaced:
+            if insertion is None:
+                lines.append('\n[HID]\nhid = "sdl"\n')
+            else:
+                if not lines[insertion - 1].endswith("\n"):
+                    lines[insertion - 1] += "\n"
+                lines.insert(insertion, 'hid = "sdl"\n')
+        result = "".join(lines).encode("utf-8")
+        expected = {**before, "HID": {**hid, "hid": "sdl"}}
+        if tomllib.loads(result.decode()) != expected:
+            raise ValueError("Could not preserve the other settings")
+        return result
+    except (UnicodeError, ValueError) as exc:
+        raise LaunchError(f"Cannot set SDL in this Xenia config: {exc}. Choose a valid TOML config and retry.") from exc
 
 
 def _enabled_config(payload: bytes) -> bytes:
@@ -386,6 +472,10 @@ class XeniaLauncher:
         )
 
     def _patch_contract(self, kind):
+        if kind == "fourth_down":
+            from mod_editor.core import apf2k8_fourth_down
+            return (apf2k8_fourth_down.FILENAME, apf2k8_fourth_down.canonical_payload,
+                    "Fourth-down patch", " Global CPU thresholds; EXPERIMENTAL. Gameplay UNWITNESSED.")
         if kind == "curves":
             from . import playcalling_patches
             return (playcalling_patches.FILENAME, lambda data: playcalling_patches.validate(data, curves=self._curve_module),
@@ -424,11 +514,11 @@ class XeniaLauncher:
         filename, validator, _title, _note = self._patch_contract(kind)
         if not consent:
             raise LaunchError("Installing a patch and enabling Xenia patches needs consent in the dialog")
-        source = self.settings._regular(source, "Pass-fetch patch")
+        source = self.settings._regular(source, _title)
         payload = source.read_bytes()
         _profile, enabled = validator(payload)
         if not enabled:
-            raise LaunchError("The chosen patch is disabled; export an enabled Studio pass-fetch patch")
+            raise LaunchError("The chosen patch is disabled; export an enabled Studio patch")
         destination = self.settings.patches_folder / filename
         config = self.settings.emulator_config
         old_patch = None
@@ -476,13 +566,13 @@ class XeniaLauncher:
         """Xenia constructs PatchDB from storage_root, not its executable cwd.
 
         Keep the reviewed installation as the source of truth. Synchronize only
-        our two canonical files; removing an installation removes its old launch
+        our canonical files; removing an installation removes its old launch
         copy before the next start. Foreign files are never overwritten.
         """
         folder = storage / "patches"
         if folder.is_symlink() or (folder.exists() and not folder.is_dir()):
             raise LaunchError("The launch patches folder is not a regular directory; move it aside and launch again")
-        for kind in ("pass_fetch", "curves"):
+        for kind in ("pass_fetch", "curves", "fourth_down"):
             filename, validator, _, _ = self._patch_contract(kind)
             source = self.settings.patches_folder / filename
             target = folder / filename
@@ -505,7 +595,7 @@ class XeniaLauncher:
 
     def launch(self, game_root: Path, *, extra_env: Mapping[str, str] | None = None) -> LaunchReceipt:
         if not self.settings.configured or self.settings.xenia_path is None:
-            raise LaunchError("Configure Xenia Canary first, then click Launch again")
+            raise LaunchError("Configure Xenia Edge or Canary first, then click Launch again")
         game_root = game_root.expanduser().resolve(strict=True)
         game = game_root / "default.xex"
         try:
@@ -514,9 +604,10 @@ class XeniaLauncher:
             raise LaunchError("The selected modded game folder is missing default.xex")
         if not stat.S_ISREG(game_stat.st_mode) or stat.S_ISLNK(game_stat.st_mode):
             raise LaunchError("The modded game's default.xex must be a regular file")
-        xenia = self.settings._regular(self.settings.xenia_path, "Xenia Canary")
+        xenia = self.settings._regular(self.settings.xenia_path, "Xenia")
         if not os.access(xenia, os.X_OK) and xenia.suffix.casefold() != ".exe":
             raise LaunchError("The configured Xenia file is no longer executable")
+        config = self.settings.write_controller_config()
         run_root = self.data_root / hashlib_sha256_path(game_root)
         storage = run_root / "storage"
         content = run_root / "content"

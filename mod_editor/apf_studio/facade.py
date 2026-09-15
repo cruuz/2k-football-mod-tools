@@ -379,7 +379,7 @@ class ApfStudioFacade:
             )
         if not self.launcher.settings.configured:
             return (
-                "Xenia Canary is not configured yet. Use Configure Xenia to "
+                "Xenia is not configured yet. Use Configure Xenia to "
                 "choose it (and its Wine loader, when this is not Windows)."
             )
         output = self.last_build.output_game
@@ -2332,8 +2332,8 @@ class ApfStudioFacade:
             return receipt
 
     def configure_xenia(self, executable: Path, wine: Path | None = None, *,
-                        xenia_config: Path | None = None) -> None:
-        self.launcher.settings.configure(executable, wine, xenia_config=xenia_config)
+                        xenia_config: Path | None = None, runtime: str | None = None) -> None:
+        self.launcher.settings.configure(executable, wine, xenia_config=xenia_config, runtime=runtime)
 
     def configure_xenia_patch_config(self, path: Path) -> None:
         self.launcher.settings.configure_patch_config(path)

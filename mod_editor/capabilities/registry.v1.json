@@ -2791,6 +2791,77 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.apf2k8_fourth_down --profile <base|tu_1_1> --output <authored.patch.toml> [--thresholds <authored.json>] [--enable]",
+        "module": "mod_editor/core/apf2k8_fourth_down.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/research/apf_b71_fourth_down.md",
+        "tests/mod_editor/test_apf_fourth_down.py",
+        "tests/mod_editor/test_apf_fourth_down_native.py",
+        "tests/mod_editor/test_apf_fourth_down_qt.py",
+        "tests/mod_editor/test_apf_xenia_edge.py"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Tools menu opens the independent global-threshold editor. No preset enables this patch. Installation requires explicit opt-in."
+      },
+      "id": "apf2k8.playbooks.fourth_down",
+      "input_constraints": [
+        "Pinned Xbox 360 BASE or TU 1.1 executable profile; global settings affect every CPU book.",
+        "Eight finite bounded numeric thresholds. Canonical patch parser refuses changed addresses, instructions or unrelated writes.",
+        "Patch reserves read-only image padding 0x844DBD80..0x844DBDC0 and code padding 0x84D0D000..0x84D0D040. Other patches must not overlap."
+      ],
+      "portme": [
+        "Witness the full offside/timeout/next-call sequence and edited choices in a running match.",
+        "Check native Windows and Edge controller input; this job only tests configuration and mocked launch."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship authored code and patch recipes only. No retail images, books or reconstructed title updates.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "UNWITNESSED in-game. Pinned bounded native decision and snap-controller frontiers; explicit readiness, RNG and kicker-range adapters. No emulator launched.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "base or tu_1_1",
+            "name": "profile",
+            "required": true
+          },
+          {
+            "allowed": "Eight finite fields; omitted means retail defaults.",
+            "name": "thresholds",
+            "required": false
+          }
+        ],
+        "notes": "Separate authored Xenia patch; no SPLB/MASTER situation edits."
+      },
+      "source_container": {
+        "format": "Hash-keyed Xenia patch TOML",
+        "hash_pins": [
+          "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf",
+          "65f522ce1cdda42cf19c112e9ec07302e89c81e4148c9f22e6db5e03952f9457"
+        ],
+        "resource": "Executable decision literals and own-half comparison",
+        "retail_file": "User-owned APF Xbox 360 BASE or Title Update 1.1"
+      },
+      "summary": "Global go/punt/field-goal and draw-offside thresholds with retail defaults, neutral preview and opt-in Xenia patch. Gameplay UNWITNESSED.",
+      "surface": "scripts_config",
+      "title": "CPU fourth-down triggers (EXPERIMENTAL)",
+      "validation_command": "python3 -m tests.mod_editor.test_apf_fourth_down"
+    },
+    {
+      "backend": {
         "command": "python3 tools/apf_book_unlock.py identity --source <0A>",
         "module": "tools/apf_book_unlock.py",
         "operation": "inspect"

@@ -70,6 +70,8 @@ EXPECTED_RETAIL_HASHES = frozenset(
 )
 
 PRODUCT_MODULES = (
+    "mod_editor.core.apf2k8_fourth_down",
+    "mod_editor.apf_studio.fourth_down_qt",
     'mod_editor.core.apf_field_material_writer',
     'mod_editor.apf_studio.field_material_service',
     'mod_editor.apf_studio.field_material_qt',
@@ -1352,13 +1354,13 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
         check_files=False,
     )
     require(
-        len(registry.capabilities) == 174
-        and len(registry.for_game(core_model.GameId.APF2K8)) == 72,
+        len(registry.capabilities) == 175
+        and len(registry.for_game(core_model.GameId.APF2K8)) == 73,
         "shared/APF capability registry counts changed",
     )
     cards = catalog.build_capability_cards()
-    require(len(cards) == 72 and len({item.capability_id for item in cards}) == 72,
-            "APF capability surface is not exactly 72 unique rows")
+    require(len(cards) == 73 and len({item.capability_id for item in cards}) == 73,
+            "APF capability surface is not exactly 73 unique rows")
     require(len(models.APF_CATEGORY_ORDER) == 14,
             "APF complete sidebar category count changed")
     editable = {item.capability_id for item in cards if item.status is models.ApfStatus.EDITABLE}
@@ -1379,6 +1381,7 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
         'apf2k8.playbooks.own_team_books',
         'apf2k8.playbooks.pass_fetch_te_bias',
         'apf2k8.playbooks.personnel_curve_patch',
+        'apf2k8.playbooks.fourth_down',
 
         "apf2k8.audio.ausb_xma_export",
         "apf2k8.audio.xma_export",
