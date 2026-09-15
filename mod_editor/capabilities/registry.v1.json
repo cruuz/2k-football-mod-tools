@@ -9559,6 +9559,74 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_modern_color status <source>",
+        "module": "mod_editor/core/nfl2k5_modern_color.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_modern_color.py",
+        "data/nfl2k5_modern_color_pins.json",
+        "docs/modern_color/README.md"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Build tab checkbox; Off in every preset. Needs a disc image."
+      },
+      "id": "nfl2k5.presentation.modern_color_lighting",
+      "input_constraints": [
+        "Seven pinned .rdata light tables (0x120 bytes each) behind the retail selector FUN_000641c0 and installer FUN_000f2360; ambient colour/intensity and light colours/intensities rewritten, directions, counts and the shadow value unchanged.",
+        "477 pinned stadium bundles: Fldd tint word, detail_normal palette (uncompressed) and the field SCNE refit into its fixed VC-LZ span with the retail wrapper; only retail or already-modern bundles are accepted.",
+        "Targets measured from 2026 Week 1 broadcast stills per game; appearance in game is unwitnessed."
+      ],
+      "portme": [
+        "Witness one day, one late-afternoon, one night and one dome game against the broadcast stills; then tune per-bucket rigs."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute authoring tools, values and verified recipes only. Never bundle a retail roster, executable, disc or texture.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "docs/modern_color/README.md",
+          "tests/mod_editor/test_nfl2k5_modern_color.py"
+        ],
+        "scope": "Offline byte receipts and decoder read-back only; no played, appearance or performance outcome is witnessed.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false (default) or true",
+            "name": "enabled",
+            "required": false
+          }
+        ],
+        "notes": "Off restores the retail light rigs only; grass bundles stay as the source carries them."
+      },
+      "source_container": {
+        "format": "Xbox XBE .rdata tables with section-digest repair, plus in-place fixed-span archive resources in the stadium bundles",
+        "hash_pins": [
+          "8591344f69f7a0013c4e9cf9b5ae4e8dbc4f894488b97dd2a97be8885f9073e1",
+          "d27737d3020b5ae17ed9854c1a1f372f004b68ed7aca92d263b267414098d782",
+          "6ebd76243822a62010a280cf54d9b72974a6236501f68d45aad19421d3377e28",
+          "c9f0e5c7bd79926056f91cd21d8ae05b929eb5d635e22da5ea89d941bfdc7f9b"
+        ],
+        "resource": "VA 0x4E73B0..0x4E7B90 light tables; archive outers 3136..3625 field scenes, detail_normal and Fldd chunks",
+        "retail_file": "default.xbe (light tables) and the vc_53450030 archive packs holding the 477 stadium bundles"
+      },
+      "summary": "Change one existing dry outdoor haze endpoint from 0.8 to 1.0, with recognized Off restoration. Does not force fog or add sky art; camera parameter proof only.",
+      "surface": "stadiums_fields",
+      "title": "Modern colour and lighting (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_modern_color"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_abilities_editor --roster source.iso --top-n 10 --output abilities.json",
         "module": "mod_editor/core/nfl2k5_abilities_editor.py",
         "operation": "write"

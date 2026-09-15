@@ -27,7 +27,7 @@ FEATURE_KEYS += (
     "music_project", "music_library", "commentary", "name", "author", "notes",
 )
 FEATURE_KEYS += ("weather_plan", "weather_haze", "coin_defer", "decided_clock",
-                 "decided_clock_margin", "decided_clock_seconds", "cpu_scrambles")
+                 "decided_clock_margin", "decided_clock_seconds", "cpu_scrambles", "modern_color")
 MUSIC_KEYS = ("music_shuffle", "music_shuffle_selection")
 
 
