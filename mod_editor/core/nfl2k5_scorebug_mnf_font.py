@@ -243,7 +243,7 @@ def preview(slot: int, out: Path) -> Path:
 CLOCK_FONT_NAME = "FirstPersonComic"      # the free tenth boot name, so the owner needs no new data for the lookup
 QUARTER_FONT_NAME = "core_bug"            # an existing UTF-16 literal (a FONT and a TXTR may share a name); the quarter label's smaller build
 QUARTER_FONT_SCALE = (0.50, 0.72)         # compact grey capitals beside the clock
-CLOCK_FONT_CHARS = "0123456789:stndrhOSTNDRH"   # repainted cells; every other cell keeps the retail shape
+CLOCK_FONT_CHARS = "0123456789:stndrhOSTNDRH&GoalANDIcew"   # repainted cells; every other cell keeps the retail shape
 CLOCK_FONT_SUFFIX = {"S": "s", "T": "t", "N": "n", "D": "d", "R": "r", "H": "h"}  # the game uppercases "1st" before drawing: the capitals carry the small broadcast suffix
 CLOCK_FONT_SCALE = (0.80, 0.92)           # (advance/x, y): retail font4 digits are 8 x 12, the clock wants about 6.4 x 11
 CLOCK_FONT_DONOR = 3
@@ -295,7 +295,17 @@ def clock_font(donor_span: bytes, *, name: str = CLOCK_FONT_NAME, scale: tuple =
     sx, sy = scale
     video = bytearray(source[system_size:])
     plane = np.frombuffer(bytes(r.tx.unswizzle_2d(video[:width * width], width, width, 1)), dtype=np.uint8).reshape(width, width).copy()
+    if name == CLOCK_FONT_NAME:
+        # Twice the donor's mask density, with the complete donor object retained.
+        plane=np.repeat(np.repeat(plane,2,axis=0),2,axis=1)
+        video=bytearray(plane.tobytes()+video[width*width:]);width*=2
+        struct.pack_into("<I",body,obj+40,width*width)
+        struct.pack_into("<I",body,obj+44,0x08810b29)
     sources = _glyph_sources()
+    from PIL import Image
+    import json
+    label_sheet=Image.open(DATA/"painted_label_2x.png").convert("L")
+    label_sources={ch:label_sheet.crop(box) for ch,box in json.loads((DATA/"painted_label_2x.json").read_text())["boxes"].items()}
     cells = {chr(cp): _cell(source, rec, width) for cp, rec in _records(source) if chr(cp) in CLOCK_FONT_CHARS}
     painted, narrow = [], {}
     digit_h = sources["0"].height
@@ -303,9 +313,11 @@ def clock_font(donor_span: bytes, *, name: str = CLOCK_FONT_NAME, scale: tuple =
         cw, ch = x1 - x0, y1 - y0
         if cw <= 0 or ch <= 0:
             continue
-        if name == QUARTER_FONT_NAME and char in CLOCK_FONT_SUFFIX:
-            # The quarter is small caps. Retain the donor's capital masks;
-            # the clock/down font keeps the sampled lowercase suffix shapes.
+        if char in label_sources:
+            glyph=label_sources[char].resize((cw,ch),Image.Resampling.LANCZOS)
+            levels=(np.asarray(glyph,dtype=float)*15/255+.5).astype(np.uint8)
+            plane[y0:y1,x0:x1]=np.clip(levels,0,15)
+            painted.append(char)
             continue
         if char in CLOCK_FONT_SUFFIX:
             # Small suffix letters at the digits' scale, on the baseline, centred in the capital's cell.
@@ -354,6 +366,30 @@ def clock_font(donor_span: bytes, *, name: str = CLOCK_FONT_NAME, scale: tuple =
                 pos[4 * j + 1] *= sy
             struct.pack_into("<I", body, off, round(advance * sx))
             struct.pack_into("<16f", body, off + 16, *pos)
+    # Native quads tightly bound the authored ink, at measured source-frame sizes.
+    for i in range(count):
+        rec=ranges+8*i;first,last,relative=struct.unpack_from("<HHI",body,rec)
+        glyphs=rec+4+relative-1
+        for cp in range(first,last+1):
+            ch=chr(cp)
+            if ch not in label_sources: continue
+            off=glyphs+96*(cp-first);src=label_sources[ch]
+            if name==QUARTER_FONT_NAME:
+                height=19 if ch.isdigit() else 13
+                ink_width=16 if ch.isdigit() else 13
+                advance=6 if ch.isdigit() else 4
+                top=0
+            else:
+                height=23*src.height/46
+                ink_width=1.12*23*src.width/46
+                advance=7 if ch.isdigit() else 4 if ch in 'rst' else 7 if ch=='&' else 5
+                top=23-height
+                if ch==':': height=19;ink_width=4;top=4;advance=2
+            pp=list(struct.unpack_from("<16f",body,off+16))
+            for j,(xx,yy) in enumerate(((0,0),(1,0),(0,1),(1,1))):
+                pp[j*4]=xx*ink_width/3;pp[j*4+1]=(top+yy*height)*448/1080
+            struct.pack_into("<16f",body,off+16,*pp)
+            struct.pack_into("<I",body,off,advance)
     for off, scale in ((12, sx), (16, sy), (20, sy), (24, sy), (28, sy)):
         value = struct.unpack_from("<i", body, obj + off)[0]
         struct.pack_into("<i", body, obj + off, round(value * scale))
@@ -372,21 +408,23 @@ def clock_font(donor_span: bytes, *, name: str = CLOCK_FONT_NAME, scale: tuple =
                        ranges+8*i+4+struct.unpack_from("<I",body,ranges+8*i+4)[0]-1)
                       for i in range(count)]
         new_ranges = len(body)
-        body.extend(bytes(8*(count+2)))
-        struct.pack_into("<II",body,obj+4,count+2,new_ranges-(obj+8)+1)
+        body.extend(bytes(8*(count+4)))
+        struct.pack_into("<II",body,obj+4,count+4,new_ranges-(obj+8)+1)
         for i,((first,last),glyphs) in enumerate(old_ranges):
             at=new_ranges+8*i
-            new_glyphs = len(body)
-            body.extend(body[glyphs:glyphs+96*(last-first+1)])
-            struct.pack_into("<HHI",body,at,first,last,new_glyphs-(at+4)+1)
+            new_glyphs = glyphs
+            struct.pack_into("<HHI",body,at,first,last,(new_glyphs-(at+4)+1)&0xffffffff)
             records.update((cp,new_glyphs+96*(cp-first)) for cp in range(first,last+1))
         digits_at=len(body)
         at=new_ranges+8*count
         struct.pack_into("<HHI",body,at,0x80,0x89,digits_at-(at+4)+1)
-        body.extend(bytes(1920))
+        body.extend(bytes(3840))
         at=new_ranges+8*(count+1)
         struct.pack_into("<HHI",body,at,0x90,0x99,digits_at+960-(at+4)+1)
-        struct.pack_into("<H",body,obj+2,0x99)
+        for extra,base in enumerate((0xb0,0xc0),2):
+            at=new_ranges+8*(count+extra)
+            struct.pack_into("<HHI",body,at,base,base+9,digits_at+960*extra-(at+4)+1)
+        struct.pack_into("<H",body,obj+2,0xc9)
         occupied = np.zeros((width,width),dtype=bool)
         for cp,off in records.items():
             x0,y0,x1,y1 = _cell(body,off,width)
@@ -396,18 +434,21 @@ def clock_font(donor_span: bytes, *, name: str = CLOCK_FONT_NAME, scale: tuple =
             body[dst:dst+96] = body[src:src+96]
             # Pack sharper score masks into unused atlas cells. Existing ASCII
             # masks remain disjoint, and the 128x128 video allocation is unchanged.
-            cw,ch = 13,20
+            cw,ch = 26,48
             cell = next(((x,y) for y in range(width-ch+1) for x in range(width-cw+1)
                          if not occupied[y:y+ch,x:x+cw].any()),None)
             if cell is None: raise FontError("score glyph cells exceed the spare atlas area")
             x,y=cell; occupied[y:y+ch,x:x+cw]=True
-            mask=sources[str(digit)].resize((cw,ch),Image.Resampling.LANCZOS)
-            plane[y:y+ch,x:x+cw]=np.clip((np.asarray(mask,dtype=float)*15/255+.5).astype(np.uint8),0,15)
+            mask=sources[str(digit)].point(lambda p: max(0,min(255,(p-140)*255//80))).resize((cw,ch),Image.Resampling.LANCZOS)
+            mask=np.asarray(mask,dtype=float)
+            # Close the sampled score face's weak interior; preserve antialiased edges.
+            mask=np.maximum.reduce((mask,np.pad(mask[:,1:],((0,0),(0,1)),mode='edge'),np.pad(mask[:,:-1],((0,0),(1,0)),mode='edge')))
+            plane[y:y+ch,x:x+cw]=np.clip((mask*15/255+.5).astype(np.uint8),0,15)
             pos = list(struct.unpack_from("<16f", body, dst+16))
             x0,y0=pos[0],pos[1];w0,h0=pos[4]-x0,pos[9]-y0
             for j in range(4):
                 pos[j*4]=(pos[j*4]-x0)*(40/3)/w0
-                pos[j*4+1]=(pos[j*4+1]-y0)*(45*448/1080)/h0
+                pos[j*4+1]=(pos[j*4+1]-y0)*(53*448/1080)/h0
             struct.pack_into("<16f",body,dst+16,*pos)
             struct.pack_into("<4f",body,dst+80,x/width,y/width,(x+cw)/width,(y+ch)/width)
             struct.pack_into("<I",body,dst,14)
@@ -418,13 +459,20 @@ def clock_font(donor_span: bytes, *, name: str = CLOCK_FONT_NAME, scale: tuple =
             for j in range(4):pos[j*4]*=25/40
             struct.pack_into("<16f",body,compact+16,*pos)
             struct.pack_into("<I",body,compact,8)
+            for extra,w,h,advance in ((2,25/3,27*448/1080,8),(3,15/3,19*448/1080,5)):
+                target=dst+extra*960;body[target:target+96]=body[dst:dst+96]
+                pp=list(struct.unpack_from("<16f",body,target+16))
+                for j,(xx,yy) in enumerate(((0,0),(1,0),(0,1),(1,1))):
+                    pp[j*4]=xx*w;pp[j*4+1]=yy*h
+                struct.pack_into("<16f",body,target+16,*pp)
+                struct.pack_into("<I",body,target,advance)
         off = records[ord("~")]
         x0,y0,x1,y1 = _cell(body, off, width)
         plane[y0:y1,x0:x1] = 15
         pos = list(struct.unpack_from("<16f", body, off+16))
         for j,(x,y) in enumerate(((0,0),(1,0),(0,1),(1,1))):
-            pos[j*4] = x*6.4
-            pos[j*4+1] = y*2.5
+            pos[j*4] = x*(20/3)
+            pos[j*4+1] = y*(7*448/1080)
         struct.pack_into("<16f",body,off+16,*pos)
         struct.pack_into("<I",body,off,7)
         # A 3-unit space gives three 6.4-unit ticks a 26.4-unit overall width.

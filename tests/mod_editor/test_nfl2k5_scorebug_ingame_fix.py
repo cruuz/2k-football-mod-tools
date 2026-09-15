@@ -197,7 +197,7 @@ class NativeFixTests(unittest.TestCase):
         self.assertEqual(scene.apply_xbe(first)[0],first)
         for va in (0xa95894,0xa958bc):
             off=scene.layout.sbpos.va_to_off(first,va)
-            self.assertEqual(first[off:off+4],struct.pack('<I',0xffc8cace))
+            self.assertEqual(first[off:off+4],struct.pack('<I',0xfff6f6f6))
             bad=bytearray(first);bad[off:off+4]=bytes.fromhex('78563412')
             self.assertEqual(runtime.status(bytes(bad)),'foreign')
             with self.assertRaises(ValueError): runtime.apply(bytes(bad))

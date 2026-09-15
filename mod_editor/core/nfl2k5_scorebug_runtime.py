@@ -25,11 +25,11 @@ from .nfl2k5_draft_ai import _Asm
 from .nfl2k5_bump_strength import _sections, section_digest
 
 OWNER = "nfl2k5_scorebug_runtime"
-CODE_SIZE, DATA_SIZE = 1408, 128
+CODE_SIZE, DATA_SIZE = 1792, 128
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
 HOOKS = {"setup": (0xFCE56, bytes.fromhex("e845f3ffff")),
          "update": (0xFCFA2, bytes.fromhex("e819faffff"))}
-REVISION = 7
+REVISION = 8
 # State (128 bytes): scene, populated, two wing materials, the plate material,
 # two wing textures, two scores, two flash timers, down, possession, ball/line,
 # phase. All state stays inside the owned RW page.
@@ -47,8 +47,8 @@ CLOCK_FONT_RECORDS = (0xA95918, 0xA95940, 0xA95A80, 0xA95968, 0xA959A0, 0xA958A0
 QUARTER_FONT_RECORDS = (0xA958F0,)                   # the quarter record's resolved descriptor (+0x1C); the +4/+8 slot indices stay retail for the native init
 FONT_TAG = 0x544E4F46           # 'FONT' as the lookup tag word (TXTR is 0x52545854)        # UTF-16 "dscore_buga"
 WHITE, ACCENT = 0xFFFFFFFF, 0xFFFFD166
-ESPN_RED, CAPSULE_INK = 0xFFE31937, 0xFF000000
-PLAY_CLOCK_CELL = 0xFF780E27
+ESPN_RED, CAPSULE_INK = 0xFFD70033, 0xFF000000
+PLAY_CLOCK_CELL = 0xFFD70033
 SCORE_CALLBACKS = (0xA9594C, 0xA95984)
 SCORE_DIGIT_BASE = 0x80
 SCORE_COMPACT_BASE = 0x90
@@ -75,9 +75,9 @@ LOOKUP_GUARDS = (
 STATIC_OVERRIDES = {
     0xA95888: 7, 0xA958B0: 7,            # native fallback slot; setup binds the private tick font
     0xA9588C: 3, 0xA958B4: 3,            # centred under the scores
-    0xA95894: 0xFFC8CACE, 0xA958BC: 0xFFC8CACE,    # light-grey timeout ticks
-    0xA95898: 0xFFC8CACE, 0xA958C0: 0xFFC8CACE,    # no possession yellow on the dashes
-    0xA958E4: 0xFF64666A, 0xA958E8: 0xFF64666A,   # quarter
+    0xA95894: 0xFFF6F6F6, 0xA958BC: 0xFFF6F6F6,    # light-grey timeout ticks
+    0xA95898: 0xFFF6F6F6, 0xA958C0: 0xFFF6F6F6,    # no possession yellow on the dashes
+    0xA958E4: 0xFF1E1E1E, 0xA958E8: 0xFF1E1E1E,   # quarter
     0xA9590C: CAPSULE_INK, 0xA95910: CAPSULE_INK,   # game clock
     0xA95934: CAPSULE_INK, 0xA95938: CAPSULE_INK,   # game clock (second record)
     0xA95A48: CAPSULE_INK,                          # play clock (rewritten per frame)
@@ -116,13 +116,17 @@ def code_for(code_va, data_va):
     # Shared binder keeps v3 within the existing legacy RX reservation.
     for side, context, name in ((0, HOME_CONTEXT, 0xE6C638), (1, AWAY_CONTEXT, 0xE6C734)):
         b("be" + _u(context) + " bf" + _u(data_va + TEXTURES + side * 4))
-        b("ba" + _u(ord("h" if side == 0 else "a")) + " b8" + _u(name))
+        b("ba" + _u(ord("h")) + " b8" + _u(name))
         call("setup_side")
     # The down plate material takes the possessing team's colour every frame.
     absop("8b35", 0xA95528); b("68" + _u(PLATE_MATERIAL_NAME)); a.call(0xFBC70)
     absop("a3", data_va + PLATE)
     absop("8b35", 0xA95528); b("68" + _u(CLOCK_CELL_NAME)); a.call(0xFBC70)
     absop("a3", data_va + CLOCK_CELL_MATERIAL)
+    absop("a3", 0xA95A7C)  # native play-clock visibility now owns the red cell
+    absop("8b35",0xA95528);b("68"+_u(0xe6c604));a.call(0xfbc70)
+    b("85c0");a.j8("74","static_body_done");b("836008fe")
+    a.label("static_body_done")
     # The ESPN clock font: after the native init resolved every record's slot index into a
     # descriptor, look the appended FONT up in the HUD collection and overwrite the quarter,
     # game clock and play clock descriptors (the beta 69 owner bound its fonts the same way; a
@@ -145,6 +149,8 @@ def code_for(code_va, data_va):
     for side in (0, 1):
         a.label(f"dash_callback{side}"); store(CITY_CALLBACKS[side], 0)
     a.label("play_callback"); store(0xA95A3C, 0)
+    for side,va in enumerate((0xA958FC,0xA95924)):
+        a.label(f"clock_callback{side}");store(va,0)
     a.label("setup_done"); _restore(a); b("c3")
 
     # A real stdcall call site: forward its float argument, native RET 4 consumes
@@ -213,7 +219,7 @@ def code_for(code_va, data_va):
     b("8b4010 3d0000a040"); jump("0f83", "populated")
     # unsigned < 5.0 accepts +0 and positive finite seconds; -0 is harmless.
     # A red pulse lives on the cell, preserving the white digit's contrast.
-    b("a900002000"); jump("0f85","populated")
+    b("c74118"+_u(0xfff00c3e)+" a900002000"); jump("0f85","populated")
     b("c74118"+_u(ESPN_RED))
     a.label("populated"); store(data_va + POPULATED, 1)
     a.label("update_done"); _restore(a); b("c20400")
@@ -228,20 +234,28 @@ def code_for(code_va, data_va):
     absop("833d",data_va+POPULATED); b("00"); a.j8("74", "seed")
     b("3b5720"); a.j8("74", "seed")
     b("c74728"+_u(0x3E3851EC))  # 0.18 seconds
-    a.label("seed"); b("895720 c706"+_u(WHITE))
+    a.label("seed"); b("895720 c706"+_u(0xffe1e1e1))
     b("8b4728 85c0"); a.j8("7e", "side_done")
     b("c706"+_u(ACCENT)+" d94728 d8a42414020000 d95f28")
     a.label("side_done"); b("c3")
 
     a.label("setup_side")
-    b("56 52 50")  # context and side letter survive the native material lookup
+    b("56 52 50")
     absop("8b35", 0xA95528); a.call(0xFBC70)
     b("5a 5e 8947f4")
     call("load_side")
     b("8b4ff4 85c9"); a.j8("74", "setup_side_end")
     b("8b07 894130 85c0"); a.j8("74", "setup_hide")
-    b("836108fe c3")
+    b("836108fe"); a.j8("eb", "setup_mask")
     a.label("setup_hide"); b("83490801")
+    a.label("setup_mask")
+    # The second frame and old clock material are now the independent wing masks.
+    b("b8"+_u(0xe6c700)+" 81ff"+_u(data_va+TEXTURES))
+    a.j8("74","mask_name"); b("b8"+_u(0xe6c71c))
+    a.label("mask_name"); b("50")
+    absop("8b35",0xa95528);a.call(0xfbc70)
+    b("85c0");a.j8("74","setup_side_end")
+    b("8b5734 895018 836008fe")
     a.label("setup_side_end"); b("c3")
 
     # Preserve the native score formatter (including its score-state rules), then
@@ -259,6 +273,7 @@ def code_for(code_va, data_va):
     # One HUD-scoped TXTR lookup for this side at setup. The UTF-16 name is built
     # on the stack. Validate two numeric asset-code chars and reject created-team kinds.
     a.label("load_side")
+    b("c74734"+_u(0xff4a4e58))
     b("83ec10 c7042473006200 c74424042d002d00 6689542408 c744240a30000000")
     b("83be2801000002"); jump("0f84", "neutral")
     b("83be2801000004"); jump("0f84", "neutral")
@@ -268,7 +283,7 @@ def code_for(code_va, data_va):
     b("0fb75002 83ea30 83fa09"); jump("0f87", "neutral")
     b("6bc90a 03ca 83f91e"); jump("0f86", "identity_ok")
     b("83f925"); jump("0f85", "neutral")
-    a.label("identity_ok"); b("8b00 89442404")
+    a.label("identity_ok"); b("8b00 89442404 8d0c49 8b91"); a.label("wing_table_ref"); b("00000000 81ca000000ff 895734")
     a.label("neutral")
     b("8d0424 50 ba54585452 b9" + _u(HUD_COLLECTION_NAME))
     a.call(0x449E0)
@@ -282,7 +297,16 @@ def code_for(code_va, data_va):
     b("51"); a.call(0xFBE30); b("59 66833930")
     a.j8("75", "play_text_done")
     b("8b4102 8901")  # leading 0 in 04 becomes a single 4, including its NUL
-    a.label("play_text_done"); b("c3")
+    a.label("play_text_done"); b("ba90000000");a.j8("eb","clock_digit_loop")
+    for side,callback in enumerate((0xFC100,0xFC150)):
+        a.label(f"clock_text{side}");b("b8"+_u(callback))
+        if side==0:a.j8("eb","clock_common")
+    a.label("clock_common");b("51 ffd0 59 ba80000000")
+    a.label("clock_digit_loop");b("66833900");a.j8("74","clock_digit_end")
+    b("0fb701 83e830 83f809");a.j8("77","clock_digit_next")
+    b("660111")
+    a.label("clock_digit_next");b("4141");a.j8("eb","clock_digit_loop")
+    a.label("clock_digit_end");b("c3")
 
     # Timeout marks: the team-name callbacks receive ECX = the caller's UTF-16
     # buffer. Write "~ ~ ~" trimmed to the remaining timeouts (0..3), then NUL.
@@ -305,6 +329,9 @@ def code_for(code_va, data_va):
     for word in exact.plate_table():
         b(_u(word)[:6])
     b("00")  # the final entry's dword read stays inside the owner's bytes
+    a.label("wing_table")
+    for word in exact.wing_table(): b(_u(word)[:6])
+    b("00")
     # Shorten only local branches whose whole displacement already fits.
     # Every target and external call is reassembled after each shrinking pass.
     while True:
@@ -329,6 +356,9 @@ def code_for(code_va, data_va):
         struct.pack_into("<I", content, a.labels[f"score_callback{side}"] + 6, code_va + a.labels[f"score_text{side}"])
     struct.pack_into("<I", content, a.labels["play_callback"] + 6, code_va + a.labels["play_text"])
     struct.pack_into("<I", content, a.labels["plate_table_ref"], code_va + a.labels["plate_table"])
+    struct.pack_into("<I", content, a.labels["wing_table_ref"], code_va + a.labels["wing_table"])
+    for side in (0,1):
+        struct.pack_into("<I",content,a.labels[f"clock_callback{side}"]+6,code_va+a.labels[f"clock_text{side}"])
     if len(content) > CODE_SIZE:
         raise ValueError(f"scorebug code exceeds its named allocation: {len(content)}")
     return bytes(content).ljust(CODE_SIZE, b"\xcc"), {k: code_va + v for k, v in a.labels.items()}
@@ -445,4 +475,4 @@ def apply(payload):
                         binding_collection="GAMEDATA", binding_revision=REVISION,
                         allocation=ar, installation=ir, scorebug=sr,
                         reservations=space.reservations(result),
-                        requires_resources="scorebug-mnf-2026-v3; XBE alone does not install art or fonts")
+                        requires_resources="scorebug-mnf-2026-v4; XBE alone does not install art or fonts")

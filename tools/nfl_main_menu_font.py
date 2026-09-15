@@ -114,7 +114,9 @@ def field_pointer(data: bytes, field_offset: int, limit: int) -> tuple[int, int]
     if field_offset < 0 or field_offset + 4 > limit:
         raise FontError(f"pointer field 0x{field_offset:x} is out of bounds")
     stored, = struct.unpack_from("<I", data, field_offset)
-    target = field_offset + stored - 1
+    # The native x86 relocator adds a 32-bit field-relative displacement.
+    # Appended range tables can point backward to retained donor glyphs.
+    target = (field_offset + stored - 1) & 0xffffffff
     if not 0 <= target < limit:
         raise FontError(
             f"pointer field 0x{field_offset:x}: target 0x{target:x} is out of bounds")

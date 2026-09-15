@@ -204,9 +204,9 @@ class ExecutionTests(unittest.TestCase):
         for team in art.TEAM_LOGOS.values():
             code=team['asset_code'];m.identity(code,code);m.setup()
             self.assertEqual(m.get(m.mats['hscore_buga']+0x30),m.textures[f'sb{code}h0'])
-            self.assertEqual(m.get(m.mats['zscore_buga']+0x30),m.textures[f'sb{code}a0'])
+            self.assertEqual(m.get(m.mats['zscore_buga']+0x30),m.textures[f'sb{code}h0'])
         m.identity();m.setup();m.update()
-        for mat,name in [('hscore_buga','sb37h0'),('zscore_buga','sb20a0')]:
+        for mat,name in [('hscore_buga','sb37h0'),('zscore_buga','sb20h0')]:
             self.assertEqual(m.get(m.mats[mat]+0x30),m.textures[name]);self.assertFalse(m.get(m.mats[mat]+8)&1)
         self.assertEqual(m.get(0xa95b00),0)
         for home,away,kind in [('18','14',0),('02','22',0),('99',None,0),('20','37',2),('20','37',4),('20X','0/',0)]:
@@ -215,7 +215,7 @@ class ExecutionTests(unittest.TestCase):
                 valid=code in ('18','14','02','22') and kind==0
                 name=art.runtime_panel_name(code if valid else '--',side,0)
                 self.assertEqual(m.get(m.mats[mat]+0x30),m.textures[name])
-            self.assertEqual(m.get(r.SCORE_COLORS[0]),r.WHITE)
+            self.assertEqual(m.get(r.SCORE_COLORS[0]),0xffe1e1e1)
         # A recognized but missing logo retries the neutral texture.
         m.identity('00','01')
         # Remove the named home texture object from lookup by renaming its name.
@@ -232,7 +232,7 @@ class ExecutionTests(unittest.TestCase):
             for away in (3,2,1,0):
                 m.put(m.home+4,home);m.put(m.away+4,away);m.update()
                 self.assertEqual(m.get(m.mats['hscore_buga']+0x30),m.textures['sb37h0'])
-                self.assertEqual(m.get(m.mats['zscore_buga']+0x30),m.textures['sb20a0'])
+                self.assertEqual(m.get(m.mats['zscore_buga']+0x30),m.textures['sb20h0'])
                 for side,count in ((0,home),(1,away)):
                     m.uc.mem_write(buffer,b'\xee'*64)
                     m.run(labels[f'dash_text{side}'],ecx=buffer,limit=2000)
@@ -245,13 +245,13 @@ class ExecutionTests(unittest.TestCase):
 
     def test_score_flash_first_population_change_expiry_and_scene_reset(self):
         m=self.machine();m.put(m.home,7);m.update()
-        self.assertEqual(m.get(r.SCORE_COLORS[0]),r.WHITE)
+        self.assertEqual(m.get(r.SCORE_COLORS[0]),0xffe1e1e1)
         m.put(m.home,10);m.update()
-        self.assertEqual(m.get(r.SCORE_COLORS[0]),r.ACCENT);self.assertEqual(m.get(r.SCORE_COLORS[1]),r.WHITE)
+        self.assertEqual(m.get(r.SCORE_COLORS[0]),r.ACCENT);self.assertEqual(m.get(r.SCORE_COLORS[1]),0xffe1e1e1)
         for _ in range(12):m.update()
-        self.assertEqual(m.get(r.SCORE_COLORS[0]),r.WHITE)
+        self.assertEqual(m.get(r.SCORE_COLORS[0]),0xffe1e1e1)
         m.put(m.away,2);m.update();self.assertEqual(m.get(r.SCORE_COLORS[1]),r.ACCENT)
-        m.setup();m.update();self.assertEqual(m.get(r.SCORE_COLORS[1]),r.WHITE)
+        m.setup();m.update();self.assertEqual(m.get(r.SCORE_COLORS[1]),0xffe1e1e1)
     def test_down_distance_possession_refresh_only_on_changes(self):
         m=self.machine();m.float(0xa95a04,30);m.update()
         self.assertEqual(m.getf(0xa95a04),30)

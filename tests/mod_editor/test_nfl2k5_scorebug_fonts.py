@@ -59,7 +59,7 @@ class NativeTests(unittest.TestCase):
         originals = {obj: bytes(m.uc.mem_read(obj, len(font.decoded) - font.object_offset))
                      for obj, font in m.fonts.items()}
         # Beta 71: the runtime collection carries the two clock fonts, not the beta 69 seven.
-        self.assertEqual(tuple(map(len, self.build.font_spans)), (38048, 27040))
+        self.assertEqual(tuple(map(len, self.build.font_spans)), (80160, 27040))
         for span, parsed in zip(self.build.font_spans, self.build.private_fonts):
             receipt = m.load_private_font(span, parsed)
             self.assertFalse(receipt['global_slot_changed'])

@@ -104,8 +104,8 @@ class InstallationTests(unittest.TestCase):
         cls.retail = XBE.read_bytes()
         cls.patched, cls.receipt = r.apply(cls.retail)
 
-    def test_unchanged_budget_and_static_v3_both_orders(self):
-        self.assertEqual((r.CODE_SIZE, r.DATA_SIZE), (1408, 128))
+    def test_named_budget_and_static_v3_both_orders(self):
+        self.assertEqual((r.CODE_SIZE, r.DATA_SIZE), (1792, 128))
         code, data = r.sites(self.patched)
         self.assertLess(len(r.code_for(code['va'], data['va'])[0].rstrip(b'\xcc')), r.CODE_SIZE)
         left = r.apply(r.scene.apply_xbe(self.retail)[0])[0]
