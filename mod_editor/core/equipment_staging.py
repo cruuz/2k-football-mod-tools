@@ -66,7 +66,37 @@ def equipment_fit_rows(session):
         if edit.asset_id in by_id:
             _validate_staged(edit)
             paths[edit.asset_id] = edit.replacement_path
-    return _checked_rows(session, paths, by_id)
+    rows = _checked_rows(session, paths, by_id)
+    _remember_fit(session, rows)
+    return rows
+
+
+def _fit_identity(session):
+    return tuple(sorted((e.asset_id, e.replacement_sha256) for e in session.iter_edits()
+                        if e.asset_id.startswith("tset:")))
+
+
+def _remember_fit(session, rows):
+    from collections import OrderedDict
+    cache = getattr(session, "_equipment_fit_receipts", None)
+    if cache is None:
+        cache = session._equipment_fit_receipts = OrderedDict()
+    key = _fit_identity(session)
+    cache[key] = tuple(dict(row) for row in rows)
+    cache.move_to_end(key)
+    while len(cache) > 8:
+        cache.popitem(last=False)
+
+
+def cached_equipment_fit_rows(session):
+    """Cheap GUI captions for this exact staged group; stale results disappear.
+
+    Import and worker-side restored-project checks populate this cache. An
+    unmeasured project returns no rows and must say that its fit is pending.
+    Build always compiles/checks the bytes independently.
+    """
+    rows = getattr(session, "_equipment_fit_receipts", {}).get(_fit_identity(session), ())
+    return tuple(dict(row) for row in rows)
 
 
 def _validate_staged(edit):
@@ -115,6 +145,7 @@ def stage_equipment_import(session, asset, path, *, independent=None, scale=1, s
         # Both clean and mud share one span and one fit, before any mutation.
         checked = _checked_rows(session, current, by_id, selected=asset.asset_id)
         result = session.replace_batch(tuple(replacements), label="Import equipment texture")
+        _remember_fit(session, checked)
     staged = tuple(t.asset_id for t, _ in replacements)
     receipt = {"schema": "nfl2k5_equipment_staging/v1", "edits": checked,
                "consumers": _consumer_receipt(target, consumers, () if restoring else staged),
@@ -126,11 +157,15 @@ def stage_equipment_import(session, asset, path, *, independent=None, scale=1, s
         row = next(r for r in checked if r["asset_id"] == asset.asset_id)
         fits = sorted({r["fit_summary"] for r in checked if r["asset_id"] in consumer_ids})
         message = f"Equipment artwork {row['fit_summary']}."
+        if row.get("palette_method") == "preserved_retail":
+            message += " Retail palette and distance images preserved exactly."
         if len(fits) > 1:
             message += " Other package fits: " + "; ".join(fits) + "."
         if receipt["normal_and_mud_staged_together"]:
             message += " Normal and mud artwork staged together."
-        message += f" {len(consumers)} slots checked. {rule} In-game outcome UNWITNESSED."
+        packages = len({t.outer_index for t in consumers})
+        message += (f" {len(consumers)} slots checked across {packages} uniform packages. "
+                    f"{rule} In-game outcome UNWITNESSED.")
     return EquipmentImportResult(message, receipt, result.changed_asset_ids,
                                  asset.asset_id in result.modified_asset_ids, consumer_ids)
 

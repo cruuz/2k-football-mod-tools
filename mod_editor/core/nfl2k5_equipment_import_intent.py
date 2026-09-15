@@ -50,13 +50,14 @@ SHOE_ROUTE_HELP = (
     "The bounded native checks do not establish the state in his game. This change is UNWITNESSED in game."
 )
 ARM_DIGIT_HELP = (
-    "Arm digits are placed on the outer sleeve by the jersey mesh's UV coordinates, "
+    "Arm digits on the outer sleeve are positioned by the jersey mesh and its UV coordinates, "
     "which map the image onto the model. Importing a digit changes its artwork, not its position. "
     "Moving it to the shoulder pad needs model UV research; the texture importer cannot do that."
 )
 LARGER_ART_HELP = (
     "Larger equipment art is unavailable: moving the equipment to more space has not "
-    "passed the disc and loader checks. Choose a checked smaller size or simplify the artwork."
+    "passed a full archive and disc round trip. The isolated chunk-loader check passes, "
+    "but does not prove package relocation. Choose a checked smaller size or simplify the artwork."
 )
 
 

@@ -383,6 +383,11 @@ class DynamicStadiumP8Contract:
             "outer_id": self.outer_id,
             "chunk_index": self.chunk_index,
             "scene_index": self.scene_index,
+            "stadium_package": stadium_package_identity(self.outer_id),
+            "write_scope": "Selected SCNE occurrence only; other venue/time/weather packages are separate",
+            "in_game_outcome": "UNWITNESSED",
+            "descriptor_offset": self.descriptor_offset,
+            "pixel_offset": self.pixel_offset,
             "texture_index": self.texture_index,
             "dimensions": [self.width, self.height],
             "mip_dimensions": [list(value) for value in self.mip_dimensions],
@@ -432,6 +437,7 @@ class CompiledStadiumTextureEdit:
         value = asdict(self)
         value.pop("quantized_preview_png")
         value.pop("rebuilt_span")
+        value["compiled_occurrences"] = [dict(self.target_metadata)]
         return value
 
 
@@ -773,6 +779,29 @@ def _difference_ledger(before: bytes, after: bytes) -> dict[str, object]:
             b"".join(struct.pack("<II", start, end) for start, end in runs)
         ),
     }
+
+
+# Retail STRG venue labels, joined to archive records by the engine's filename CRC.
+# Names describe source packages; they make no claim about an edited game's venue.
+_STADIUM_VENUES = {'s00': 'Arizona Stadium', 's01': 'Georgia Dome', 's02': 'M&T Bank Stadium', 's03': 'Ralph Wilson Stadium', 's04': 'B of A Stadium', 's05': 'Chicago Field', 's06': 'Paul Brown Stadium', 's07': 'Texas Stadium', 's08': 'INVESCO Field', 's09': 'Ford Field', 's10': 'Lambeau Field', 's11': 'RCA Dome', 's12': 'ALLTEL Stadium', 's13': 'Arrowhead Stadium', 's14': 'Pro Player Stadium', 's15': 'H. H. H. Metrodome', 's16': 'Gillette Stadium', 's17': 'Louisiana Super Dome', 's18': 'Giants Stadium', 's19': 'Jets Stadium', 's20': 'Network Associates', 's21': 'Lincoln Financial Field', 's22': 'Heinz Field', 's23': 'Edward Jones Dome', 's24': 'QUALCOMM Stadium', 's25': 'San Francisco Park', 's26': 'Qwest Field', 's27': 'Tampa Bay Stadium', 's28': 'Titans Coliseum', 's29': 'Washington Field', 's30': 'Cleveland Stadium', 's31': 'Aloha Stadium', 's32': 'Practice Facility', 's36': 'Visual Concepts Dome', 's37': 'Reliant Stadium', 's39': 'Future Aloha Stadium', 's40': 'Super Bowl 2005', 's41': 'Super Bowl 2008', 's42': 'Super Bowl 2006', 's43': 'Super Bowl 2007', 's44': 'Super Bowl Future', 's45': 'Ulterior Super Bowl', 's48': 'ESPN Stadium', 's50': 'Royal Arena', 's51': 'Alien Arena', 's52': 'Atomic Dome', 's53': 'Metro Field', 's54': 'Cheesesteak Dome', 's55': 'Loco Arena', 's56': 'Electra Coliseum', 's57': 'Funk Field', 's58': 'Dream Superdome', 's59': 'Cobra Field'}
+
+
+def stadium_package_identity(outer_id: str) -> dict[str, str]:
+    """Resolve an archive name ID, never an assumed outer-index ordering."""
+    import zlib
+    try:
+        identity = int(outer_id, 16)
+    except (TypeError, ValueError):
+        return {}
+    for prefix, venue in _STADIUM_VENUES.items():
+        for tod, time_label in (("d", "Day"), ("a", "Afternoon"), ("n", "Night")):
+            for weather, weather_label in (("d", "Dry"), ("r", "Rain"), ("s", "Snow")):
+                filename = f"{prefix}{tod}{weather}.iff"
+                if zlib.crc32(filename.upper().encode("utf-16le")) == identity:
+                    return {"filename": filename, "venue": venue, "asset_code": prefix,
+                            "time": time_label, "weather": weather_label,
+                            "label": f"{venue} / {time_label} / {weather_label} ({filename})"}
+    return {}
 
 
 def _selector_parts(selector: str) -> tuple[int, int, int, int]:
@@ -2144,6 +2173,7 @@ def build_unified_stadium_texture_imports(
             "selector": bundle_selector,
             "texture_ids": scene_selectors,
             "texture_count": len(scene_selectors),
+            "compiled_occurrences": [r.contract.target_metadata() for r in resolved],
         })
         previews = [
             (

@@ -89,6 +89,24 @@ class EquipmentTextureImportDialog(QDialog):
         return str(self.import_scope.currentData())
 
 
+class ArmDigitImportDialog(QDialog):
+    """Placement help at the explicit arm-digit import action."""
+    def __init__(self, asset, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Import arm digit artwork")
+        self.setMinimumWidth(460)
+        layout = QVBoxLayout(self)
+        label = QLabel(f"{asset.label}\n\n{ARM_DIGIT_HELP}")
+        label.setObjectName("armDigitPlacementHelp")
+        label.setWordWrap(True)
+        layout.addWidget(label)
+        buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        buttons.button(QDialogButtonBox.Ok).setText("Import artwork")
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+        layout.addWidget(buttons)
+
+
 class EquipmentFitRetryDialog(QDialog):
     """Offer only the writer's checked retry; the Studio re-runs the import."""
 

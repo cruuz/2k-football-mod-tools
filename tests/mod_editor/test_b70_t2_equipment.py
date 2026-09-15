@@ -41,6 +41,10 @@ class SiblingTests(unittest.TestCase):
         self.assertTrue(result.receipt['normal_and_mud_staged_together'])
         self.assertIn('fitted at 32 x 32,', result.message)
         self.assertIn('Normal and mud', result.message)
+        from mod_editor.core.equipment_reporting import project_fit_labels
+        labels = project_fit_labels(self.f.session)
+        self.assertEqual(set(labels), set(result.changed_asset_ids))
+        self.assertTrue(all('fitted at 32 x 32,' in label for label in labels.values()))
         for asset_id in result.changed_asset_ids:
             a = self.f.assets[asset_id]
             p, rgba = self.f.session.asset_io.validate_replacement(a, self.f.session.current_path(a))
@@ -51,8 +55,10 @@ class SiblingTests(unittest.TestCase):
                              {r['asset_id']: r['fit_summary'] for r in result.receipt['edits']})
             self.assertEqual(len(staging.revert_equipment_import(self.f.session, self.asset)), 6)
         self.assertEqual(self.f.staged(), ())
+        self.assertEqual(project_fit_labels(self.f.session), {})
         self.f.session.undo()
         self.assertEqual(len(self.f.staged()), 6)
+        self.assertEqual(project_fit_labels(self.f.session), labels)
         self.f.session.undo()
         self.assertEqual(self.f.staged(), ())
 

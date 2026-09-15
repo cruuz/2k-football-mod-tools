@@ -1507,7 +1507,7 @@ __all__ = [
 
 
 def preflight_project_equipment(index_path: Path, edits: Iterable[tuple[int | None, str, Path]],
-                                *, compile_cache: EquipmentCompileCache | None = None) -> None:
+                                *, compile_cache: EquipmentCompileCache | None = None) -> list[dict[str, Any]]:
     """Validate ALL restored equipment groups before publishing a loaded session.
 
     Old PNG-only recolours and npTC/v1 private chains keep their original intent.
@@ -1522,15 +1522,22 @@ def preflight_project_equipment(index_path: Path, edits: Iterable[tuple[int | No
     cache = compile_cache or EquipmentCompileCache()
     hashes: dict[str, str] = {}
     by_id, _ = load_targets() if groups else ({}, {})
+    fit_rows = []
     for group in groups.values():
         labels = [(f"Project edit index {number}: " if number is not None else "")
                   + f"Equipment / {asset_id.rsplit(':', 1)[-1]} / "
                   f"uniform set {by_id[asset_id].set_selector if asset_id in by_id else 'unknown'} / {asset_id}"
                   for number, asset_id, _ in group]
         try:
-            build_unified_uniform_equipment_imports(index_path,
+            compiled = build_unified_uniform_equipment_imports(index_path,
                 [(asset_id, path) for _, asset_id, path in group],
                 pack_hashes=hashes, compile_cache=cache, preflight_only=True)
+            for _, asset_id, _ in group:
+                target = by_id[asset_id]
+                fit_rows.append(dict(compiled.edit_templates[target.reference_index],
+                                     asset_id=asset_id, set_selector=target.set_selector,
+                                     encoded_bytes=compiled.rebuild_info.recompressed_bytes))
         except (OSError, ValueError, ValidationError) as exc:
             raise UniformEquipmentWriterError("Cannot load equipment edits: " + "; ".join(labels)
                 + f": {exc} Reimport the named part using the checked size, or remove that edit in the older studio and save the project again.") from exc
+    return fit_rows

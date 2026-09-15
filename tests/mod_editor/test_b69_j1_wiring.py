@@ -124,7 +124,7 @@ class WiringTests(unittest.TestCase):
             sentinel={};owner=SimpleNamespace(modified_count=0,_audio_annotations={},_build_settings={},
                 _project_catalog_router=None,_project_io_router=None,root=root,
                 cache=SimpleNamespace(pack0=root/'0'),_edits=sentinel)
-            with fixture.context(), self.assertRaisesRegex(ValueError,'Cannot load equipment edits:.*shoes01.*202 bytes'):
+            with fixture.context(), self.assertRaisesRegex(ValueError,'Cannot load equipment edits:.*shoes01.*200 bytes'):
                 namespace['load_shareable_project'](owner,root/'old.2k5mod')
             cleanup.assert_called_once_with()
             self.assertIs(owner._edits,sentinel)
@@ -157,8 +157,15 @@ class AppliedWiringTests(WiringTests):
         from mod_editor.core.nfl2k5_equipment_import_intent import SHOE_ROUTE_HELP
         self.assertEqual(imports.PACKAGE_LOCAL_SHOE_HELP,SHOE_ROUTE_HELP)
         source=inspect.getsource(imports.stage_equipment_import)
-        self.assertIn('fit_asset_id=asset.asset_id',source)
-        self.assertLess(source.index('preflight_project_equipment(session.cache.pack0'),source.index('session.replace_batch'))
+        if 'from .equipment_staging' in source:
+            self.assertIn('return stage(session, asset, path,',source)
+            from mod_editor.core import equipment_staging
+            source=inspect.getsource(equipment_staging.stage_equipment_import)
+            self.assertIn('selected=asset.asset_id',source)
+            self.assertLess(source.index('_checked_rows('),source.index('session.replace_batch'))
+        else:
+            self.assertIn('fit_asset_id=asset.asset_id',source)
+            self.assertLess(source.index('preflight_project_equipment(session.cache.pack0'),source.index('session.replace_batch'))
         self.assertIn('UNWITNESSED',imports.CONTEXT_FIRST_RULE)
 
 

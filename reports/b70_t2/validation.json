@@ -1,0 +1,225 @@
+{
+  "schema": "b70_t2_validation/v1",
+  "standalone_command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/<suite>.py",
+  "suites": [
+    {
+      "suite": "test_2k5_uniform_equipment_export",
+      "tests": 13,
+      "seconds": 1.063,
+      "result": "FAILED (errors=6, skipped=2)",
+      "log": "reports/b70_t2/tests/test_2k5_uniform_equipment_export.log"
+    },
+    {
+      "suite": "test_b69_j1_build",
+      "tests": 5,
+      "seconds": 2.613,
+      "result": "OK",
+      "log": "reports/b70_t2/tests/test_b69_j1_build.log"
+    },
+    {
+      "suite": "test_b69_j1_fit",
+      "tests": 5,
+      "seconds": 5.797,
+      "result": "OK",
+      "log": "reports/b70_t2/tests/test_b69_j1_fit.log"
+    },
+    {
+      "suite": "test_b69_j1_native",
+      "tests": 1,
+      "seconds": 1.573,
+      "result": "OK",
+      "log": "reports/b70_t2/tests/test_b69_j1_native.log"
+    },
+    {
+      "suite": "test_b69_j1_wiring",
+      "tests": 7,
+      "seconds": 5.96,
+      "result": "OK",
+      "log": "reports/b70_t2/tests/test_b69_j1_wiring.log"
+    },
+    {
+      "suite": "test_b70_t2_equipment",
+      "tests": 8,
+      "seconds": 1.017,
+      "result": "OK",
+      "log": "reports/b70_t2/tests/test_b70_t2_equipment.log"
+    },
+    {
+      "suite": "test_b70_t2_native",
+      "tests": 1,
+      "seconds": 0.039,
+      "result": "OK",
+      "log": "reports/b70_t2/tests/test_b70_t2_native.log"
+    },
+    {
+      "suite": "test_b70_t2_reporting",
+      "tests": 5,
+      "seconds": 0.108,
+      "result": "OK",
+      "log": "reports/b70_t2/tests/test_b70_t2_reporting.log"
+    },
+    {
+      "suite": "test_b70_t2_stadium",
+      "tests": 3,
+      "seconds": 31.418,
+      "result": "OK",
+      "log": "reports/b70_t2/tests/test_b70_t2_stadium.log"
+    },
+    {
+      "suite": "test_b70_t2_wiring",
+      "tests": 2,
+      "seconds": 0.581,
+      "result": "OK",
+      "log": "reports/b70_t2/tests/test_b70_t2_wiring.log"
+    },
+    {
+      "suite": "test_nfl2k5_equipment_consumers-forwarded",
+      "tests": 19,
+      "seconds": 29.458,
+      "result": "OK",
+      "log": "reports/b70_t2/tests/test_nfl2k5_equipment_consumers-forwarded.log"
+    },
+    {
+      "suite": "test_nfl2k5_equipment_consumers",
+      "tests": 19,
+      "seconds": 34.0,
+      "result": "OK",
+      "log": "reports/b70_t2/tests/test_nfl2k5_equipment_consumers.log"
+    },
+    {
+      "suite": "test_nfl2k5_equipment_import-forwarded",
+      "tests": 13,
+      "seconds": 2.103,
+      "result": "OK",
+      "log": "reports/b70_t2/tests/test_nfl2k5_equipment_import-forwarded.log"
+    },
+    {
+      "suite": "test_nfl2k5_equipment_import",
+      "tests": 13,
+      "seconds": 2.928,
+      "result": "OK",
+      "log": "reports/b70_t2/tests/test_nfl2k5_equipment_import.log"
+    },
+    {
+      "suite": "test_nfl2k5_equipment_import_wiring",
+      "tests": 6,
+      "seconds": 0.748,
+      "result": "OK",
+      "log": "reports/b70_t2/tests/test_nfl2k5_equipment_import_wiring.log"
+    },
+    {
+      "suite": "test_nfl2k5_equipment_retail_roundtrip",
+      "tests": 2,
+      "seconds": 17.528,
+      "result": "OK",
+      "log": "reports/b70_t2/tests/test_nfl2k5_equipment_retail_roundtrip.log"
+    },
+    {
+      "suite": "test_nfl2k5_equipment_scope_wiring",
+      "tests": 3,
+      "seconds": 2.281,
+      "result": "OK",
+      "log": "reports/b70_t2/tests/test_nfl2k5_equipment_scope_wiring.log"
+    },
+    {
+      "suite": "test_nfl2k5_equipment_texture_chain",
+      "tests": 19,
+      "seconds": 3.525,
+      "result": "OK",
+      "log": "reports/b70_t2/tests/test_nfl2k5_equipment_texture_chain.log"
+    },
+    {
+      "suite": "test_nfl2k5_equipment_texture_native",
+      "tests": 7,
+      "seconds": 0.294,
+      "result": "OK",
+      "log": "reports/b70_t2/tests/test_nfl2k5_equipment_texture_native.log"
+    },
+    {
+      "suite": "test_nfl2k5_stadium_cache",
+      "tests": 15,
+      "seconds": 0.079,
+      "result": "OK",
+      "log": "reports/b70_t2/tests/test_nfl2k5_stadium_cache.log"
+    },
+    {
+      "suite": "test_nfl2k5_stadium_editor_roundtrip",
+      "tests": 12,
+      "seconds": 0.268,
+      "result": "OK",
+      "log": "reports/b70_t2/tests/test_nfl2k5_stadium_editor_roundtrip.log"
+    },
+    {
+      "suite": "test_nfl2k5_stadium_gltf_export",
+      "tests": 36,
+      "seconds": 0.206,
+      "result": "OK",
+      "log": "reports/b70_t2/tests/test_nfl2k5_stadium_gltf_export.log"
+    },
+    {
+      "suite": "test_nfl2k5_stadium_people_categories",
+      "tests": 15,
+      "seconds": 0.001,
+      "result": "OK",
+      "log": "reports/b70_t2/tests/test_nfl2k5_stadium_people_categories.log"
+    },
+    {
+      "suite": "test_nfl2k5_stadium_studio",
+      "tests": 6,
+      "seconds": 0.05,
+      "result": "OK",
+      "log": "reports/b70_t2/tests/test_nfl2k5_stadium_studio.log"
+    },
+    {
+      "suite": "test_nfl2k5_stadium_texture_writer",
+      "tests": 9,
+      "seconds": 1.976,
+      "result": "OK",
+      "log": "reports/b70_t2/tests/test_nfl2k5_stadium_texture_writer.log"
+    },
+    {
+      "suite": "test_provider_integrity",
+      "tests": 7,
+      "seconds": 9.436,
+      "result": "OK",
+      "log": "reports/b70_t2/tests/test_provider_integrity.log"
+    },
+    {
+      "suite": "test_providers",
+      "tests": 33,
+      "seconds": 4.023,
+      "result": "OK",
+      "log": "reports/b70_t2/tests/test_providers.log"
+    },
+    {
+      "suite": "test_stadium_editable_discovery",
+      "tests": 2,
+      "seconds": 1.509,
+      "result": "OK (skipped=1)",
+      "log": "reports/b70_t2/tests/test_stadium_editable_discovery.log"
+    },
+    {
+      "suite": "test_studio_facade",
+      "tests": 11,
+      "seconds": 0.022,
+      "result": "OK",
+      "log": "reports/b70_t2/tests/test_studio_facade.log"
+    },
+    {
+      "suite": "test_studio_session",
+      "tests": 18,
+      "seconds": 0.667,
+      "result": "OK",
+      "log": "reports/b70_t2/tests/test_studio_session.log"
+    },
+    {
+      "suite": "test_unified_stadium_texture_composition",
+      "tests": 5,
+      "seconds": 0.013,
+      "result": "OK",
+      "log": "reports/b70_t2/tests/test_unified_stadium_texture_composition.log"
+    }
+  ],
+  "passing_direct_suites": 28,
+  "tests_in_passing_direct_suites": 275
+}
