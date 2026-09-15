@@ -26,7 +26,7 @@ class SettingsModelTests(unittest.TestCase):
                       lights=(((1, 1, 1), .72),) * 3)
         self.assertEqual(mc.predicted_on_screen((109, 130, 75), table=beta70), (51, 61, 32))
         self.assertEqual(mc.predicted_on_screen((181, 216, 102)), (102, 122, 52))
-        self.assertEqual(mc.predicted_on_screen((181, 216, 102), 'day'), (83, 99, 47))
+        self.assertEqual(mc.predicted_on_screen((181, 216, 102), 'day'), (89, 105, 61))
         doc = mc.default_settings()
         estimate = mc.preview(doc)
         doc['values']['rig_night_indoor.gain'] = .5
@@ -36,6 +36,36 @@ class SettingsModelTests(unittest.TestCase):
         doc['preview_class'] = 'dome'
         self.assertEqual(mc.preview(doc)['target'], (102, 125, 78))
         self.assertIn('extrapolated', mc.preview(doc)['scope'])
+
+    def test_day_afternoon_defaults_and_shadow_reset_keep_night_pinned(self):
+        import colorsys
+        doc = mc.default_settings()
+        pins = {r['name']: r for r in mc._pins()['light_tables']}
+        self.assertEqual(pins['night_indoor']['applied_sha256'],
+                         '18c6d914b12edc22d092cea97b7839d4f4611e23b5a898cbceeb4d74222b9fb9')
+        self.assertEqual(mc.sha(json.dumps(mc._pins()['bundles'], sort_keys=True, separators=(',', ':')).encode()),
+                         'f4ef2c5a179ad39a07f4670ed924e3c4a605a6a2775518a78aa790306c706295')
+        for name, expected, strengths, shadow, target in (
+                ('day', (89, 105, 61), (.44, 1.60, .99), .32, (88, 105, 61)),
+                ('afternoon', (87, 103, 61), (.60, 1.20, 1.04), .22, (98, 119, 72))):
+            with self.subTest(name=name):
+                doc['preview_rig'] = name
+                self.assertEqual(mc.preview(doc)['predicted'], expected)
+                self.assertEqual(mc.preview(doc)['target'], target)
+                _, saturation, value = colorsys.rgb_to_hsv(*(c/255 for c in expected))
+                self.assertLess(saturation, .43)
+                self.assertTrue(.40 <= value <= .42)
+                for lever, strength in zip(('ambient', 'key', 'fill'), strengths):
+                    self.assertEqual(doc['values'][f'rig_{name}.{lever}'], strength)
+                retail = mc._retail_table(name)
+                self.assertAlmostEqual(mc.read_rig(mc.modern_table(retail))['shadow'], shadow)
+                doc['disabled'] = [f'rig_{name}.balance']
+                self.assertEqual(mc.modern_table(retail, doc)[0x100:0x104], retail[0x100:0x104])
+                doc['disabled'] = []
+                doc['values'][f'rig_{name}.balance'] = .5
+                mixed = mc.read_rig(mc.modern_table(retail, doc))['shadow']
+                self.assertAlmostEqual(mixed, (mc.read_rig(retail)['shadow'] + shadow)/2)
+                doc = mc.default_settings()
 
     def test_all_controls_validate_and_roundtrip_without_changing_presets(self):
         doc = mc.default_settings()
@@ -120,6 +150,8 @@ class RigParameterTests(unittest.TestCase):
             self.assertEqual(mc.sha(baseline), pins[name]['applied_sha256'])
             count = struct.unpack_from('<I', retail, 20)[0]
             allowed = set(range(0, 12)) | set(range(16, 20))
+            if name in ("day", "afternoon"):
+                allowed.update(range(0x100, 0x104))
             for i in range(count):
                 base = 32 + 64*i
                 allowed.update(range(base, base+12))
@@ -194,7 +226,7 @@ class BundleParameterTests(unittest.TestCase):
         restored, retail_edits = mc.modern_bundle(self.data, settings=mc.default_settings(retail=True))
         self.assertEqual(restored, self.data)
         self.assertEqual(retail_edits[0]['vertex_tints'], 0)
-        Path(ROOT / 'reports/b71_c3/bundle-parameter-proof.json').write_text(json.dumps(dict(
+        Path(ROOT / 'reports/b71_c4/bundle-parameter-proof.json').write_text(json.dumps(dict(
             name=self.pin['name'], custom_settings_sha256=mc.settings_id(custom), custom_sha256=mc.sha(after),
             broadcast_sha256=mc.sha(original), edits=edits), indent=1)+'\n')
 

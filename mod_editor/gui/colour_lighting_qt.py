@@ -58,7 +58,7 @@ class ColourLightingControls(QWidget):
         lights = QWidget()
         light_layout = QVBoxLayout(lights)
         light_layout.addWidget(QLabel("Uses the selected condition above. Night and dome share the retail table.\n"
-                                      "Directions, light counts and shadows remain retail."))
+                                      "Directions and light counts remain retail. Day/afternoon colour recipe also sets shadow strength."))
         self.light_stack = QStackedWidget()
         for name in colour.RIG_LABELS:
             self.light_stack.addWidget(self._group("rig_" + name))

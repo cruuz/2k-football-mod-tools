@@ -96,11 +96,11 @@ class LightRigTests(unittest.TestCase):
                 self.assertTrue(0.5 <= channel <= 1.0)
             self.assertTrue(0.3 <= rig["ambient_intensity"] <= 0.6)
             for colour, intensity in rig["lights"]:
-                self.assertTrue(all(0.5 <= c <= 1.0 for c in colour))
-                self.assertTrue(0.15 <= intensity <= 1.2, name)
-            # A neutral rig: no channel darker than 0.84 of the brightest on the key light.
+                self.assertTrue(all(0.0 <= c <= 1.0 for c in colour))
+                self.assertTrue(0.15 <= intensity <= 2.0, name)
+            # Warm daylight keys stay within the bounded broadcast recipe.
             key = rig["lights"][0][0]
-            self.assertGreaterEqual(min(key) / max(key), 0.84, name)
+            self.assertGreaterEqual(min(key) / max(key), 0.78, name)
 
     @unittest.skipUnless(XBE and XBE.is_file(), "retail executable not available")
     def test_retail_tables_apply_replay_restore_and_foreign(self):
@@ -119,7 +119,9 @@ class LightRigTests(unittest.TestCase):
         for name, va, _digest in mc.LIGHT_TABLES:
             before = image.read(va, mc.TABLE_SIZE); after = mc.XbeImage(patched).read(va, mc.TABLE_SIZE)
             self.assertEqual(before[0x14:0x18], after[0x14:0x18], "light count")
-            self.assertEqual(before[0x100:0x120], after[0x100:0x120], "shadow value and tail")
+            self.assertEqual(before[0x104:0x120], after[0x104:0x120], "tail")
+            if name not in ("day", "afternoon"):
+                self.assertEqual(before[0x100:0x104], after[0x100:0x104], "unchanged shadow")
             count = struct.unpack_from("<I", before, 0x14)[0]
             for i in range(count):
                 base = 0x20 + i * 0x40

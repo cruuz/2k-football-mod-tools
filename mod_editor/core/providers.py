@@ -560,7 +560,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_boot_logo.py": "c767db7cdcc7dcf363a3a78547bcc251004980bc696300b3a8a3d283482fbdaa",
         "mod_editor/core/nfl2k5_build_service.py": "3a92a92a018809d4217c0cbe548b45dfa46434d64f16c98565babbcb87b55cd0",
         "mod_editor/core/nfl2k5_build_settings.py": "cb615ee4856c60d371e1e4a4eba1b26f28fd855e02853626695d8644979ae237",
-        "mod_editor/core/nfl2k5_modern_color.py": "ac7e0af04736b0f4a046e6ce2b51476f59f83ee6ea012c12be0b7cf2267df2e8",
+        "mod_editor/core/nfl2k5_modern_color.py": "510fa19c502668ab653ad54374c42dff32764eca848a15182c81558c51c6afa7",
         "mod_editor/core/nfl2k5_bump_strength.py": "79f9264fbe0813db9be66f22e35f8944e35b92ae415132d819eda50920e41bb0",
         "mod_editor/core/nfl2k5_calendar_engine.py": "796246b2248eddda3a0e57ed791b53cc1446fe3a3128ad39397ababe873ab841",
         "mod_editor/core/nfl2k5_calendar_engine_code.py": "9b43e835f1df76f85ecb13e7ef593d2eee884a1fa82fe41ea3d813186445ca22",
@@ -801,7 +801,7 @@ class Nfl2k5UnifiedVisualProvider:
         "tools/xbox_ima_encoder.py": "2f6c7209674d93c542f4c67fdab2ebfa4aaa8a6a21d6b4a08d07a9996bf79d76"
     }
     data_pins: Mapping[str, str] = {
-        "data/nfl2k5_modern_color_pins.json": "56d7dc81e9b21eeed00ca456a9d8f486966d860912986517871b713b770a8c89",
+        "data/nfl2k5_modern_color_pins.json": "394b1926eb4603d54d5ca7effbadaf4364c74b3ae1d72ddac24654349e2ec75d",
         "mod_editor/data/nfl2k5_crib_catalog.v1.json":
             "c78801144df2f070e003ba458c5affa15a52cc00221cc1a3d9983f1fbf172cd8",
         "mod_editor/data/nfl2k5_equipment_chain_pins.v1.json": "1057ef17a6680edf64d83ce563f168e5c6850c63c7b212423d70486838591295",

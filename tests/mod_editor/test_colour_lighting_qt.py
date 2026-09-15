@@ -116,6 +116,28 @@ class ColourControlsQtTests(unittest.TestCase):
         self.assertTrue(panel._modern_color_changed())
         self.assertTrue(any('colour' in text for text in panel.selected_labels()))
 
+    def test_daylight_broadcast_reset_updates_values_swatches_and_keeps_master_on(self):
+        panel = self.panel()
+        panel.modern_color_check.setChecked(True)
+        w = panel.colour_lighting
+        for name, values, prediction, target in (
+                ('day', (.44, 1.60, .99), '89, 105, 61', '88, 105, 61'),
+                ('afternoon', (.60, 1.20, 1.04), '87, 103, 61', '98, 119, 72')):
+            w.rows[f'rig_{name}.ambient']['spin'].setValue(.9)
+            w.retail_button.click()
+            self.assertTrue(panel.plan().modern_color)
+            self.assertEqual(mc.modern_table(mc._retail_table(name), w.settings()), mc._retail_table(name))
+            w.broadcast_button.click()
+            self.assertTrue(panel.plan().modern_color)
+            w.rig_combo.setCurrentIndex(w.rig_combo.findData(name))
+            for lever, value in zip(('ambient', 'key', 'fill'), values):
+                self.assertEqual(w.rows[f'rig_{name}.{lever}']['spin'].value(), value)
+            self.assertEqual(w.rows['turf.saturation']['prediction'].text(), prediction)
+            self.assertEqual(w.rows['turf.saturation']['target'].text(), target)
+            self.assertFalse(mc.is_custom(w.settings()))
+        w.rig_combo.setCurrentIndex(w.rig_combo.findData('night_indoor'))
+        self.assertEqual(w.rows['turf.saturation']['prediction'].text(), '102, 122, 52')
+
     def test_reset_buttons_and_slider_notify_project_observer(self):
         panel = self.panel()
         notifications = []

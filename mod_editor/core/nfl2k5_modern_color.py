@@ -1,6 +1,6 @@
-"""Configurable v2.1 colour and lighting for ESPN NFL 2K5.
+"""Configurable broadcast colour and lighting for ESPN NFL 2K5.
 
-The approved Broadcast baseline is preserved. Custom looks are EXPERIMENTAL /
+The approved night/dome baseline is preserved; day and afternoon are tuned separately. Custom looks are EXPERIMENTAL /
 UNWITNESSED; the swatch model is a calibrated estimate, not an in-game render.
 
 Two families of data edits, no executable code, no cave, no hook, no runtime
@@ -12,8 +12,9 @@ allocation:
    or three directional lights (colour, direction, intensity). Retail day light
    is yellow (1.0, 1.0, 0.722), the afternoon rig is orange and every ambient is
    dim; blue collapses on grass and white uniforms go warm. The broadcast rigs
-   are neutral white with more fill. Directions, light counts and the shadow
-   value at +0x100 are untouched.
+   use warm daylight keys with cool sky fill and neutral white at night.
+   Directions and light counts stay retail. Day/afternoon shadow strength at
+   +0x100 follows their colour recipe; the other five tables keep retail shadows.
 
 2. Stadium bundles (``sNN{d,a,n}{d,r,s}.iff``, 477 archive outers). Per bundle:
    the Fldd time-of-day tint word (uncompressed), the ``detail_normal`` grass
@@ -49,10 +50,10 @@ REQUESTS = CAVES = RUNTIME_GLOBALS = ()
 DEFAULT_ENABLED = False
 BUILD_CAPTION = "Modern colour and lighting (experimental)"
 HELP_TEXT = (
-    "Enable the saved Colour & lighting controls below. Broadcast (default) keeps the v2.1 look. "
+    "Enable the saved Colour & lighting controls below. Broadcast (default) tunes daylight and keeps the approved night/dome look. "
     "Tune turf, linked end zones and outside grass, wear, bump detail, tints and seven existing light rigs. "
-    "Each slider has an Off switch; values stay with the project. Directions, counts, shadows and "
-    "retail wrappers stay unchanged. Refits add build time; any span that cannot fit stays retail "
+    "Each slider has an Off switch; values stay with the project. Directions, counts and retail wrappers stay unchanged. "
+    "Day and afternoon colour balance also blends their shadow strength. Refits add build time; any span that cannot fit stays retail "
     "and is named in the receipt. Swatches are predicted means, and custom appearance is unwitnessed. "
     "Off in every preset. Use the original retail source to change or reset an already-built grade."
 )
@@ -80,8 +81,8 @@ GUARDS = (
 # light in table order. Measured 2026 Week 1 whites sit at (215..245, 218..243,
 # 223..241): neutral to slightly cool, never yellow. Night is LED white.
 MODERN_RIGS = {
-    "day": dict(ambient=(0.94, 0.96, 1.00), ambient_intensity=0.58,
-                lights=(((1.00, 0.98, 0.94), 1.20), ((0.90, 0.94, 1.00), 0.48))),
+    "day": dict(ambient=(0.94, 0.96, 1.00), ambient_intensity=0.44, shadow=0.32,
+                lights=(((1.00, 0.94, 0.88), 1.60), ((0.32, 0.40, 1.00), 0.99))),
     "night_indoor": dict(ambient=(1.00, 1.00, 1.00), ambient_intensity=0.50,
                          lights=(((1.00, 1.00, 1.00), 0.86),) * 3),
     "alt_day": dict(ambient=(0.92, 0.95, 1.00), ambient_intensity=0.45,
@@ -92,9 +93,15 @@ MODERN_RIGS = {
                  lights=(((0.92, 0.94, 1.00), 0.70),) * 3),
     "snow": dict(ambient=(0.96, 0.97, 1.00), ambient_intensity=0.50,
                  lights=(((0.95, 0.96, 1.00), 0.62),) * 3),
-    "afternoon": dict(ambient=(1.00, 0.95, 0.86), ambient_intensity=0.45,
-                      lights=(((1.00, 0.94, 0.84), 1.20), ((0.70, 0.78, 1.00), 0.26), ((0.70, 0.78, 1.00), 0.26))),
+    "afternoon": dict(ambient=(1.00, 0.96, 1.00), ambient_intensity=0.60, shadow=0.22,
+                      lights=(((1.00, 0.91, 0.78), 1.20), ((0.40, 0.445, 1.00), 1.04), ((0.40, 0.445, 1.00), 1.04))),
 }
+# Day/afternoon desaturation is in the channel gains, not the shared grass map.
+# Cool sky fill restores blue while the direct sun stays warm. All 477 bundle
+# pins, the five other rigs and the calibrated SCREEN_FACTOR stay v2.1 exact.
+# Day key/ambient = 3.64, afternoon = 2.0; +0x100 controls the negative
+# shadow-light term read by 0x64000 -> 0x12fb8d -> 0x2af50. It is not a blur
+# radius or a sun-angle control. Actual shadow shape remains game-dependent.
 # Bundle edits (beta 71 calibration). The drawn field is far darker than the
 # colour map times the rig: the beta 70 build measured (51, 61, 32) at Arrowhead
 # at night where the flat estimate was (232, 255, 160), so on screen the field
@@ -163,7 +170,8 @@ GROUPS = {"turf": "Turf", "endzones": "End zones / centre logo", "outside": "Out
 def read_rig(table):
     count = struct.unpack_from("<I", table, 0x14)[0]
     require(count in (2, 3), "Unsupported light count")
-    return dict(ambient=struct.unpack_from("<3f", table),
+    return dict(shadow=struct.unpack_from("<f", table, 0x100)[0],
+                ambient=struct.unpack_from("<3f", table),
                 ambient_intensity=struct.unpack_from("<f", table, 0x10)[0],
                 lights=tuple((struct.unpack_from("<3f", table, 0x20 + i * 0x40),
                               struct.unpack_from("<f", table, 0x40 + i * 0x40)[0]) for i in range(count)))
@@ -192,7 +200,7 @@ def control_specs():
         retail = read_rig(_retail_table(name))
         group = "rig_" + name
         add(group, "gain", "Overall gain", 1, 1, 0, 2, .01)
-        add(group, "balance", "White balance (retail to broadcast)", 1, 0, 0, 1, .01)
+        add(group, "balance", "Light colour / shadow recipe" if "shadow" in rig else "White balance (retail to broadcast)", 1, 0, 0, 1, .01)
         add(group, "ambient", "Ambient strength", rig["ambient_intensity"], retail["ambient_intensity"], 0, 2, .01)
         add(group, "key", "Key light strength", rig["lights"][0][1], retail["lights"][0][1], 0, 2, .01)
         add(group, "fill", "Fill light strength", rig["lights"][1][1], retail["lights"][1][1], 0, 2, .01)
@@ -264,7 +272,8 @@ def configured_rig(name, settings=None):
     modern = MODERN_RIGS[name]
     val = lambda key: control_value(doc, group + "." + key)
     blend = lambda a, b: tuple(x + (y - x) * val("balance") for x, y in zip(a, b))
-    return dict(ambient=blend(retail["ambient"], modern["ambient"]),
+    return dict(shadow=retail["shadow"] + (modern.get("shadow", retail["shadow"]) - retail["shadow"]) * val("balance"),
+                ambient=blend(retail["ambient"], modern["ambient"]),
                 ambient_intensity=val("ambient") * val("gain"),
                 lights=tuple((blend(old[0], new[0]), val("key" if i == 0 else "fill") * val("gain"))
                              for i, (old, new) in enumerate(zip(retail["lights"], modern["lights"]))))
@@ -304,6 +313,7 @@ def modern_table(retail, settings=None):
     out = bytearray(retail)
     struct.pack_into("<3f", out, 0, *rig["ambient"])
     struct.pack_into("<f", out, 0x10, rig["ambient_intensity"])
+    struct.pack_into("<f", out, 0x100, rig["shadow"])
     for index, (colour, intensity) in enumerate(rig["lights"]):
         base = 0x20 + index * 0x40
         struct.pack_into("<3f", out, base, *colour)
@@ -511,7 +521,8 @@ def preview(settings=None):
     r, g, b = reference["rgb"]
     entry = regrade_palette(bytes((b, g, r, 255)) * 256, settings=doc)[:4]
     rgb = (entry[2], entry[1], entry[0])
-    target = (88, 105, 61) if doc["preview_class"] == "outdoor" and doc["preview_rig"] == "day" else reference["target"]
+    targets = {"day": (88, 105, 61), "afternoon": (98, 119, 72)}
+    target = targets.get(doc["preview_rig"], reference["target"]) if doc["preview_class"] == "outdoor" else reference["target"]
     return dict(predicted=predicted_on_screen(rgb, doc["preview_rig"], settings=doc), target=target,
                 colour_map=rgb, source=reference["source"], map=reference["map"],
                 scope="PREDICTED mean only: map × light rig × calibrated screen factor. "

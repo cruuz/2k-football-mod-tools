@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only exhaustive v2.1 reproduction; no retail bytes or rebuilt pins are saved."""
+"""Read-only exhaustive Broadcast reproduction; no retail bytes or rebuilt pins are saved."""
 import argparse
 from pathlib import Path
 import sys
@@ -18,8 +18,8 @@ def main():
     actual = colour.build_pins(args.source, workers=args.workers,
                                progress=lambda message, done, total: print(message, flush=True) if done % 50 == 0 else None)
     for family in ('bundles', 'light_tables'):
-        assert actual[family] == expected[family], f'{family}: v2.1 byte pins changed'
-    print(f"PASS: {len(actual['bundles'])} complete bundle pins and {len(actual['light_tables'])} light tables reproduce v2.1")
+        assert actual[family] == expected[family], f'{family}: Broadcast byte pins changed'
+    print(f"PASS: {len(actual['bundles'])} complete bundle pins and {len(actual['light_tables'])} light tables reproduce Broadcast")
     return 0
 
 
