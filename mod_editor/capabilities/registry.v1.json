@@ -9596,8 +9596,8 @@
         "Seven pinned .rdata light tables (0x120 bytes each) behind the retail selector and installer. Ambient, key, fill and white balance use the existing owner; directions and counts stay retail. Day/afternoon colour recipe also blends their shadow strength; the five other shadow values remain retail. Night and dome share one table.",
         "477 pinned stadium bundles: field SCNE, detail_normal, divots and Fldd tint. Fixed spans and retail wrappers remain unchanged. Unfit spans retain retail bytes and their receipts name the limitation.",
         "Custom settings are validated finite values with bounded ranges. Each slider and group has an Off switch. End-zone and outside colour follow turf unless unlinked. Map contrast only adjusts variation already encoded in a colour map.",
-        "Regrading needs the original retail source. Same-recipe builds can replay only recognized bytes; custom status requires its own per-bundle receipt. All 477 bundle pins and five rig pins remain v2.1; day/afternoon have revised applied rig pins.",
-        "PREDICTED turf uses the calibrated map-times-rig model. Wear, bump detail, tints, stripes and edge shade are outside the mean model. Dome, material turf, afternoon, rain, snow and alternate rigs are extrapolations."
+        "Regrading needs the original retail source. Same-recipe builds can replay only recognized bytes; custom status requires its own per-bundle receipt and transform revision. C5 updates outside data in 477 bundle pins; all seven C4 rig pins and all field maps remain exact.",
+        "PREDICTED turf uses the calibrated map-times-rig model. Outside uses a separate response calibrated from one day strip; other conditions and classes extrapolate it. Linked outside means, including neutral vertex shade, stay within 8 percent below FIELD and no more saturated under the model. Wear, bump detail and stripes remain outside the mean model."
       ],
       "portme": [
         "Witness custom settings in day, afternoon, night, dome, rain and snow games; check whites and skin, painted end zones, outside grass, mowing contrast and far-field shimmer at matching resolution."
@@ -9617,7 +9617,7 @@
           "tests/mod_editor/test_colour_lighting_qt.py",
           "docs/modern_color/CONTROLS.md"
         ],
-        "scope": "Offline custom parameter writes, decode read-back, byte-preserving wrappers, swatch calibration and offscreen project save/reload. The approved v2.1 night/dome baseline and all 477 bundle pins are retained. Day/afternoon Broadcast rigs reduce predicted turf saturation near 0.42 and keep value near 0.40; their appearance is UNWITNESSED. New custom settings, other stadium/condition predictions and shimmer behaviour remain UNWITNESSED.",
+        "scope": "Offline custom parameter writes, decode read-back, byte-preserving wrappers, swatch calibration and offscreen project save/reload. All C4 field maps and seven rigs remain exact. Linked outside palettes and separate vertex tints follow FIELD predictions under every rig, including material-only fields. Outside colour across stadiums and conditions, custom settings and shimmer behaviour remain UNWITNESSED in game.",
         "status": "not-tested"
       },
       "selectors": {
@@ -9633,7 +9633,7 @@
             "required": false
           }
         ],
-        "notes": "Option remains Off in all presets. Broadcast resets daylight rigs to C4 and other controls to v2.1; Retail resets every lever to its retail value. To change or reset an already-graded disc, choose its original retail source. Custom status is applied (custom) with a matching .colour-lighting.json receipt."
+        "notes": "Option remains Off in all presets. Broadcast resets daylight rigs to C4, outside surfaces to the C5 FIELD link, and other controls to v2.1. Retail resets every lever to its retail value. Unlink outside surfaces to use stored custom colour. Regrading needs original retail. Custom status is applied (custom) with a matching .colour-lighting.json receipt and transform revision."
       },
       "source_container": {
         "format": "Xbox XBE .rdata tables with section-digest repair, plus in-place fixed-span archive resources in the stadium bundles",
