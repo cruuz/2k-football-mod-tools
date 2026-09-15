@@ -28,6 +28,8 @@ from nfl_txtr import encode_rgba_png, texture_to_rgba
 
 class EquipmentSessionTests(unittest.TestCase):
     def setUp(self):
+        # Imports now share checked results across sessions. Isolate fault injection.
+        writer.staged_equipment_cache().clear()
         temporary = tempfile.TemporaryDirectory(prefix="equipment-session-")
         self.addCleanup(temporary.cleanup)
         self.root = Path(temporary.name).resolve()

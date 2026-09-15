@@ -10,7 +10,6 @@ every match is at most its distance. No decoded byte or sibling changes.
 from __future__ import annotations
 
 from array import array
-from collections import defaultdict, deque
 from pathlib import Path
 import struct
 import os
@@ -50,6 +49,27 @@ def _optimal_helper() -> Path | None:
     return None
 
 
+class EquipmentSizeOverflow(TxtrError):
+    """A measured size or proved lower bound; never a partial encoded stream."""
+
+    def __init__(self, required: int, budget: int, *, exact: bool):
+        self.required = required
+        self.exact = exact
+        super().__init__(f"VC-LZ stream is {required} bytes, exceeds {budget}-byte bound"
+                         + (" (lower bound)" if not exact else ""))
+
+
+def minimum_equipment_size(count: int, offset_bits: int = 10) -> int:
+    """Optimistic format-only bound valid for every possible palette/index byte.
+
+    Literals cost 9 bits for one byte; matches cost 17 for at most L bytes.
+    Even granting matches at byte zero, each decoded byte costs at least 17/L.
+    Changing palette values cannot change this bound; reducing dimensions can.
+    """
+    length = (1 << (16 - offset_bits)) + 2
+    return 9 + (17 * count + 8 * length - 1) // (8 * length)
+
+
 def compress_equipment_optimal(source: bytes, *, stream_tag: int, offset_bits: int,
                                max_encoded_size: int,
                                max_candidate_comparisons: int = 50_000_000) -> bytes:
@@ -81,52 +101,93 @@ def compress_equipment_optimal(source: bytes, *, stream_tag: int, offset_bits: i
     count = len(source)
     maximum_distance = (1 << offset_bits) - 1
     maximum_length = (1 << (16 - offset_bits)) + 2
-    lengths = array("B", [0]) * count
-    distances = array("H", [0]) * count
-    chains: dict[bytes, deque[int]] = defaultdict(deque)
-    comparisons = 0
+    # Exact three-byte hash chains, bounded by the distance window. Ranks let
+    # a C-level full-match search skip a run of candidates while charging the
+    # SAME number of comparisons as beta 69's nearest-first traversal.
+    previous = array("i", [-1]) * count
+    ranks = array("I", [0]) * count
+    heads: dict[bytes, int] = {}
     for position in range(count - 2):
         key = source[position:position + 3]
-        queue = chains[key]
-        # Evict globally, so stale keys cannot retain the whole input window.
-        expired = position - maximum_distance - 1
+        prior = heads.get(key, -1)
+        previous[position] = prior
+        ranks[position] = ranks[prior] + 1 if prior >= 0 else 0
+        heads[key] = position
+        expired = position - maximum_distance
         if expired >= 0:
             old_key = source[expired:expired + 3]
-            old = chains[old_key]
-            old.popleft()
-            if not old and old_key != key:
-                del chains[old_key]
+            if heads.get(old_key) == expired:
+                del heads[old_key]
+
+    distances = array("H", [0]) * count
+    costs = array("I", [0]) * (count + 1)
+    choices = array("B", [1]) * count
+    comparisons = 0
+    for position in range(count - 1, -1, -1):
         best, distance = 2, 0
         upper = min(maximum_length, count - position)
-        for previous in reversed(queue):
+        prior = previous[position]
+        cutoff = position - maximum_distance
+        prefix = source[position:position + 3]
+        full_match = (source.rfind(source[position:position + upper], max(0, cutoff), position)
+                      if upper >= 3 else -1)
+        if full_match >= 0:
+            comparisons += ranks[position] - ranks[full_match]
+            best, distance = upper, position - full_match
+            prior = -1
+        while prior >= 0 and prior >= cutoff:
+            match_at = prior
+            prior = previous[prior]
             comparisons += 1
             if comparisons > max_candidate_comparisons:
                 raise TxtrError("Equipment compression search limit exceeded; simplify the image")
-            limit = min(upper, position - previous)
-            if limit <= best or source[position:position + best + 1] != source[previous:previous + best + 1]:
+            gap = position - match_at
+            limit = min(upper, gap)
+            if limit <= best or not source.startswith(prefix, match_at):
                 continue
-            length = best + 1
-            while length < limit and source[position + length] == source[previous + length]:
-                length += 1
-            best, distance = length, position - previous
+            # Most equipment runs match the whole limit. Compare in C, then
+            # bisect a partial match rather than walking its bytes in Python.
+            fragment = source[position:position + limit]
+            if source.startswith(fragment, match_at):
+                length = limit
+            else:
+                low, high = best + 1, limit
+                while low + 1 < high:
+                    middle = (low + high) // 2
+                    if source.startswith(fragment[:middle], match_at):
+                        low = middle
+                    else:
+                        high = middle
+                length = low
+            best, distance = length, gap
             if best == upper:
                 break
-        if best >= 3:
-            lengths[position], distances[position] = best, distance
-        queue.append(position)
-
-    costs = array("I", [0]) * (count + 1)
-    choices = array("B", [1]) * count
-    for position in range(count - 1, -1, -1):
+            prefix = source[position:position + best + 1]
+        if comparisons > max_candidate_comparisons:
+            raise TxtrError("Equipment compression search limit exceeded; simplify the image")
         cost, choice = 9 + costs[position + 1], 1
-        for length in range(3, lengths[position] + 1):
-            candidate = 17 + costs[position + length]
-            if candidate < cost:
-                cost, choice = candidate, length
+        if best >= 3:
+            distances[position] = distance
+            # array slicing/min/index execute the short range search in C.
+            # index retains the first length, and literals retain equal costs.
+            following = costs[position + 3:position + best + 1]
+            cheapest = min(following)
+            if 17 + cheapest < cost:
+                cost, choice = 17 + cheapest, 3 + following.index(cheapest)
         costs[position], choices[position] = cost, choice
+        if position and position % 256 == 0:
+            # A token crossing this boundary ends before position + max_length.
+            # Relax the preceding bytes to unlimited maximum-length matches;
+            # allow ANY such crossing end. This is a lower bound, not a guess
+            # based on entropy or on a previous palette's compressed size.
+            lower_bits = (17 * position // maximum_length
+                          + min(costs[position:min(count + 1, position + maximum_length)]))
+            lower_bytes = 9 + (lower_bits + 7) // 8
+            if lower_bytes > max_encoded_size:
+                raise EquipmentSizeOverflow(lower_bytes, max_encoded_size, exact=False)
     required = 9 + (costs[0] + 7) // 8
     if required > max_encoded_size:
-        raise TxtrError(f"VC-LZ stream is {required} bytes, exceeds {max_encoded_size}-byte bound")
+        raise EquipmentSizeOverflow(required, max_encoded_size, exact=True)
     encoded = bytearray(struct.pack("<IIB", count, stream_tag, offset_bits))
     position = 0
     while position < count:
