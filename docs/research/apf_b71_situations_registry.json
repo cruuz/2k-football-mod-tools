@@ -23,9 +23,9 @@
     },
     "id": "apf2k8.playbooks.cpu_playcalling",
     "input_constraints": [
-      "A loaded APF source and the integrated beta-67 P3 model/writers are required. No production substitutes are supplied.",
+      "A loaded APF source is required; book edits use the production SPLB and MASTER writers.",
       "Book choices resolve by name; project replay checks reviewed before/after facts and refuses conflicts.",
-      "MASTER and curve changes affect every book; personnel retirement with uncovered rows is refused until P3 classifies the lineup callers as non-CPU.",
+      "MASTER and curve changes affect every book; personnel retirement with uncovered rows is refused while lineup caller reachability remains unclassified.",
       "The 23 buckets are representative queries, not stored formation lists. Membership and removal affect all situations in that book; no independent per-situation runtime exclusion is claimed."
     ],
     "portme": [

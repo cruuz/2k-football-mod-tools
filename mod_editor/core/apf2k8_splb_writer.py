@@ -2330,6 +2330,18 @@ def fit_book_h7a(encoded: bytes, body: bytes, shift: int, budget: int) -> tuple[
     allocation with a fresh parse. Every candidate must decode exactly and
     satisfy APF's length <= distance rule, including helper output.
     """
+    def verify(candidate):
+        tokens, used = apf_inner._parse_h7a_tokens(candidate, len(body), shift)
+        if any(t.distance is not None and t.length > t.distance for t in tokens):
+            raise ValidationError("H7A output contains a match longer than its distance")
+        if used != len(candidate):
+            raise ValidationError("Stock-playbook H7A has bytes beyond its decoded extent")
+        if apf_inner.decompress_h7a(candidate, len(body), shift) != body:
+            raise ValidationError("Stock-playbook H7A refit changed the decoded book")
+
+    # A fit miss is the only reason to retry. Refitting must not conceal a
+    # malformed encoder result or silently repair an unsafe token stream.
+    verify(encoded)
     strategy = "retail-token-preserving"
     original_size = len(encoded)
     if len(encoded) > budget:
@@ -2340,14 +2352,11 @@ def fit_book_h7a(encoded: bytes, body: bytes, shift: int, budget: int) -> tuple[
             candidate = apf_texture_patch.compress_h7a_best(body, shift, greedy=greedy)
             if len(candidate) < len(encoded):
                 encoded, strategy = candidate, "optimal-refit"
-    tokens, used = apf_inner._parse_h7a_tokens(encoded, len(body), shift)
-    if used != len(encoded) or any(t.distance is not None and t.length > t.distance for t in tokens):
-        raise ValidationError("Stock-playbook H7A failed the non-overlapping token check")
-    if apf_inner.decompress_h7a(encoded, len(body), shift) != body:
-        raise ValidationError("Stock-playbook H7A refit changed the decoded book")
+    if strategy != "retail-token-preserving":
+        verify(encoded)
     if len(encoded) > budget:
         raise ValidationError(
-            f"The edited book needs {len(encoded)} compressed bytes; {budget} are available "
+            f"The edited book needs {len(encoded)} compressed bytes; its allocation allows {budget} "
             f"({len(encoded) - budget} bytes over). Remove an added formation or start with a larger donor book, then build again."
         )
     return encoded, {"strategy": strategy, "token_preserving_bytes": original_size,

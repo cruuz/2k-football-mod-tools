@@ -172,6 +172,7 @@ class PanelTests(unittest.TestCase):
                     for index in range(page.workspace_tabs.count())  # type: ignore[union-attr]
                 ],
                 [
+                    "CPU Play Calling",
                     "PLAY / DRCT Inspector",
                     # Fine-tune Plays edits which plays a formation offers --
                     # the level below reassigning whole books, which the book
@@ -183,7 +184,6 @@ class PanelTests(unittest.TestCase):
                     "Design Plays / Formations",
                     "Coverage Geometry (experimental)",
                     "Book Identity",
-                    "CPU Play Calling",
                     "Raw Playbook Assets",
                 ],
             )

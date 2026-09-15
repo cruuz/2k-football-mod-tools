@@ -6,7 +6,7 @@ from mod_editor.gui.ux_text import plain_error
 
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal
 from PyQt5.QtWidgets import (QAbstractItemView, QCheckBox, QComboBox, QDoubleSpinBox, QFileDialog, QFormLayout,
-                             QGroupBox, QHBoxLayout, QLabel, QListWidget, QListWidgetItem,
+                             QGroupBox, QHBoxLayout, QLabel, QLineEdit, QListWidget, QListWidgetItem,
                              QMessageBox, QPushButton, QScrollArea, QSlider, QSpinBox,
                              QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget)
 
@@ -105,6 +105,12 @@ class ApfPlayCallingEditor(QWidget):
         outer.addWidget(scroll)
         note(root, "Pick a book, edit its formations and personnel, preview, then build. Stage edits, save your project, "
              "then Build a game copy. Percentages are an offline model; gameplay is UNWITNESSED.")
+        self.candidate_search = explain(QLineEdit(), "Filter the selected situation's candidate formations and personnel. Clear the search to see every candidate again.")
+        self.candidate_search.setAccessibleName("Search situation candidates")
+        self.candidate_search.setPlaceholderText("Search formations or personnel… (Ctrl+F)")
+        self.candidate_search.setProperty("studioSearch", True)
+        self.candidate_search.setClearButtonEnabled(True)
+        root.addWidget(self.candidate_search)
 
         self.team_controls = QGroupBox("Choose a book")
         team_root = QVBoxLayout(self.team_controls)
@@ -365,6 +371,7 @@ class ApfPlayCallingEditor(QWidget):
         self.master_table.itemSelectionChanged.connect(self._master_changed)
         self.situation_picker.currentIndexChanged.connect(self._situation_changed)
         self.candidate_table.itemSelectionChanged.connect(self._candidate_changed)
+        self.candidate_search.textChanged.connect(self._filter_candidates)
         self.add_donor.currentIndexChanged.connect(self._add_donor_changed)
         self.set_context()
 
@@ -583,6 +590,17 @@ class ApfPlayCallingEditor(QWidget):
         self.situation_remove.setEnabled(selected is not None)
         if selected is not None:
             self.candidate_table.selectRow(selected)
+        self._filter_candidates()
+
+    def _filter_candidates(self):
+        query = self.candidate_search.text().strip().casefold()
+        for row in range(self.candidate_table.rowCount()):
+            text = " ".join(self.candidate_table.item(row, column).text() for column in range(3)).casefold()
+            hidden = bool(query and query not in text)
+            self.candidate_table.setRowHidden(row, hidden)
+            if hidden and self.candidate_table.currentRow() == row:
+                self.candidate_table.setCurrentCell(-1, -1)
+                self.situation_remove.setEnabled(False)
 
     def _candidate_changed(self):
         if self._updating or not self._context:

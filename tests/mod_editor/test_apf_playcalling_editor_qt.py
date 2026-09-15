@@ -177,6 +177,15 @@ class QtTests(FacadeFixture):
             self.panel.donor_picker.setCurrentText(name)
             self.assertEqual(self.panel._context["book"], name)
             self.assertGreater(self.panel.grid.rowCount(), 0)
+            candidates = self.panel.candidate_table
+            self.assertGreater(candidates.rowCount(), 0)
+            snapshot = self.facade.playcalling_snapshot()
+            self.panel.candidate_search.setText("no such formation or personnel")
+            self.assertTrue(all(candidates.isRowHidden(row) for row in range(candidates.rowCount())))
+            self.assertFalse(self.panel.situation_remove.isEnabled())
+            self.panel.candidate_search.clear()
+            self.assertFalse(any(candidates.isRowHidden(row) for row in range(candidates.rowCount())))
+            self.assertEqual(self.facade.playcalling_snapshot(), snapshot)
             self.panel.ratings[0].setValue(7)
             self.panel.ratings_button.click()
             event = self.facade._playcalling.events(self.facade.session)[-1]
