@@ -252,8 +252,12 @@ class RetailTests(unittest.TestCase):
                 self.assertIs(a.compile_runtime_collection(compiled,probe=probe)[0],compiled)
                 names={item['name'] for item in receipt['resources'] if item.get('kind') != 'FONT'}
                 states = 1 if probe == 'mnf' else 4
-                self.assertEqual(names,{a.runtime_panel_name(code,side,n) for code in a.probe_codes(probe)
-                                        for side in ('home','away') for n in range(states)})
+                sides = ('home',) if probe == 'mnf' else ('home','away')
+                expected_names = {a.runtime_panel_name(code,side,n) for code in a.probe_codes(probe)
+                                  for side in sides for n in range(states)}
+                if probe == 'mnf':
+                    expected_names.add('score_buga')
+                self.assertEqual(names, expected_names)
                 for other in a.PROBES:
                     same=a.probe_codes(probe)==a.probe_codes(other) and (probe=='mnf')==(other=='mnf')
                     self.assertEqual(a.runtime_pack_status(compiled,probe=other),'applied' if same else 'foreign')

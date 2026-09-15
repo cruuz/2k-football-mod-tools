@@ -279,7 +279,10 @@ class NativeBindingTests(unittest.TestCase):
             self.assertEqual(m.get(material + 0x30), 0)
             self.assertTrue(m.get(material + 8) & 1)
             self.assertIn(m.get(r.SCORE_FONTS[side]), m.fonts)
-        self.assertEqual(m.get(m.state + r.FONT_SCORE), 0)
+        # Missing named HUD keeps retail callbacks and fonts. State +84 now
+        # caches the away plate colour; it is no longer a private FONT pointer.
+        self.assertEqual(m.get(0xA9594C), 0xFC050)
+        self.assertEqual(m.get(0xA95984), 0xFC070)
         self.evidence['cases']['missing_hud'] = entry
 
     def test_retail_game_loader_constructs_an_ordinary_named_hud_context(self):
