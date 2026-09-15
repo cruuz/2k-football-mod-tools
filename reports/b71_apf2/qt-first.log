@@ -1,0 +1,13 @@
+.......F..
+======================================================================
+FAIL: test_team_first_donors_shared_book_and_distributions (__main__.QtTests.test_team_first_donors_shared_book_and_distributions)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-apf2/tests/mod_editor/test_apf_playcalling_editor_qt.py", line 33, in test_team_first_donors_shared_book_and_distributions
+    self.assertIn("shared with Team 1", self.panel.book_label.text())
+AssertionError: 'shared with Team 1' not found in "O-ManBlock, shared with Team 0, Team 1, Team 2, Team 3, Team 4, Team 5, Team 6, Team 7, Team 8, Team 9, Team 10, Team 11, Team 12, Team 13, Team 14, Team 15, Team 16, Team 17, Team 18, Team 19, Team 20, Team 21, Team 22, Team 23. Selected team's assignment: O-ManBlock."
+
+----------------------------------------------------------------------
+Ran 10 tests in 3.755s
+
+FAILED (failures=1)
