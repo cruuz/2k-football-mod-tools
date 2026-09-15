@@ -1,3 +1,7 @@
+# A6 archive note
+
+This is inherited T1 wiring present at `464423f0`, not a new scorebug handoff. S3 directly implements its scorebug registry and code changes. The combined manifest requirement is tracked in the A6 report.
+
 # Beta 70 T1 integration and protected follow-ups
 
 Branch: `astra/b70-t1-build-speed`. No push. Every in-game outcome is **UNWITNESSED**.

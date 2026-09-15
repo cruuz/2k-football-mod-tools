@@ -1,0 +1,38 @@
+{
+  "registry_total": 176,
+  "registry_inputs": {
+    "a142739b": 174,
+    "464423f0": 174,
+    "4819ab5b": 175,
+    "c6b0ce23": 174,
+    "0edcb323": 175
+  },
+  "all_input_capability_ids_preserved": true,
+  "c5_prose_exact": true,
+  "s3_registry_exact": true,
+  "apf4_registry_exact": true,
+  "apf5_registry_exact": true,
+  "builder_prepared_not_executed": true,
+  "options": {
+    "scorebug": true,
+    "scorebug_runtime": true,
+    "modern_color": true,
+    "modern_arrowhead": true,
+    "widescreen": true
+  },
+  "builder_sha256": "d3ffef44e225fbde3eb9a6ea47a784c2863c35aaaa87524b1b388c887d9f9c2b",
+  "owner_requests": [
+    [
+      "nfl2k5_scorebug_runtime",
+      "code",
+      1408,
+      16
+    ],
+    [
+      "nfl2k5_scorebug_runtime",
+      "data",
+      128,
+      16
+    ]
+  ]
+}

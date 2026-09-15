@@ -1,0 +1,20 @@
+Auto-merging ASTRA_LAST_MESSAGE.md
+CONFLICT (content): Merge conflict in ASTRA_LAST_MESSAGE.md
+Auto-merging ASTRA_REPORT.md
+CONFLICT (content): Merge conflict in ASTRA_REPORT.md
+Auto-merging WIRING.md
+CONFLICT (content): Merge conflict in WIRING.md
+Auto-merging docs/mod_editor/apf2k8_mod_studio_changelog.md
+CONFLICT (content): Merge conflict in docs/mod_editor/apf2k8_mod_studio_changelog.md
+Auto-merging mod_editor/apf_studio/facade.py
+Auto-merging mod_editor/apf_studio/launcher.py
+CONFLICT (content): Merge conflict in mod_editor/apf_studio/launcher.py
+Auto-merging mod_editor/capabilities/registry.v1.json
+Auto-merging packaging/apf2k8-release-allowlist.txt
+CONFLICT (content): Merge conflict in packaging/apf2k8-release-allowlist.txt
+Auto-merging packaging/check_2k5_mod_studio_runtime.py
+Auto-merging packaging/check_apf2k8_mod_studio_runtime.py
+CONFLICT (content): Merge conflict in packaging/check_apf2k8_mod_studio_runtime.py
+Auto-merging tests/mod_editor/test_phase1_packaging.py
+CONFLICT (content): Merge conflict in tests/mod_editor/test_phase1_packaging.py
+Automatic merge failed; fix conflicts and then commit the result.

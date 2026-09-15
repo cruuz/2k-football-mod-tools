@@ -1,3 +1,7 @@
+# A6 archive note
+
+This is inherited T1 wiring present at `4819ab5b`, not a new Arrowhead handoff. Arrowhead GUI/build/registry/allowlist wiring is implemented in that commit and merged here. Historical platform and digit research follow-ups are outside this integration.
+
 # Beta 70 T1 integration and protected follow-ups
 
 Branch: `astra/b70-t1-build-speed`. No push. Every in-game outcome is **UNWITNESSED**.

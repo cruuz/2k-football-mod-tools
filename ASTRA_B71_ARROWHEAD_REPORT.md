@@ -1,3 +1,13 @@
+# A6 archive note
+
+Commit `4819ab5b` retains an inherited beta-70 A3 root report and T1 wiring; it does not contain an Arrowhead-specific `ASTRA_REPORT.md` or a disc placeholder. The inherited root report is copied below with reporter names anonymized. The actual Arrowhead implementation report is [docs/modern_arrowhead/README.md](docs/modern_arrowhead/README.md).
+
+**Disc receipt:** PREPARED_NOT_RUN; no build receipt available.
+
+The preparation receipt is [reports/b71_a6/build-preparation.json](reports/b71_a6/build-preparation.json). The prepared builder updates this line from the actual build result after an external successful build.
+
+---
+
 # Beta 70 A3: T2 wiring handoff
 
 ## Delivery and gate status

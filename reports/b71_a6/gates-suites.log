@@ -1,0 +1,10 @@
+{"label": "final-test_nfl2k5_cave_oracle", "exit_code": 0, "seconds": 496.426, "started": "2026-09-15T22:42:05.905941+00:00", "log": "reports/b71_a6/final-test_nfl2k5_cave_oracle.log"}
+PASS test_nfl2k5_cave_oracle.py
+{"label": "final-test_nfl2k5_allocator_scaleout", "exit_code": 0, "seconds": 1013.21, "started": "2026-09-15T22:42:05.906408+00:00", "log": "reports/b71_a6/final-test_nfl2k5_allocator_scaleout.log"}
+PASS test_nfl2k5_allocator_scaleout.py
+{"label": "final-test_xbe_patch_memory_writes", "exit_code": 0, "seconds": 1733.118, "started": "2026-09-15T22:42:05.907377+00:00", "log": "reports/b71_a6/final-test_xbe_patch_memory_writes.log"}
+PASS test_xbe_patch_memory_writes.py
+{"label": "final-test_xbe_patch_cave_references", "exit_code": 0, "seconds": 1800.354, "started": "2026-09-15T22:50:22.331901+00:00", "log": "reports/b71_a6/final-test_xbe_patch_cave_references.log"}
+PASS test_xbe_patch_cave_references.py
+{"label": "final-test_nfl2k5_owner_pairwise_composition", "exit_code": 0, "seconds": 2926.286, "started": "2026-09-15T22:58:59.116346+00:00", "log": "reports/b71_a6/final-test_nfl2k5_owner_pairwise_composition.log"}
+PASS test_nfl2k5_owner_pairwise_composition.py

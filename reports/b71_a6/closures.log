@@ -1,0 +1,7 @@
+{"label": "stage-2k5-final", "exit_code": 0, "seconds": 0.51, "started": "2026-09-15T22:42:27.952423+00:00", "log": "reports/b71_a6/stage-2k5-final.log"}
+{"label": "release-2k5-final", "exit_code": 0, "seconds": 10.26, "started": "2026-09-15T22:42:28.463362+00:00", "log": "reports/b71_a6/release-2k5-final.log"}
+{"label": "runtime-2k5-final", "exit_code": 0, "seconds": 12.709, "started": "2026-09-15T22:42:38.723834+00:00", "log": "reports/b71_a6/runtime-2k5-final.log"}
+{"label": "stage-apf-final", "exit_code": 0, "seconds": 0.135, "started": "2026-09-15T22:42:51.449203+00:00", "log": "reports/b71_a6/stage-apf-final.log"}
+{"label": "release-apf-final", "exit_code": 0, "seconds": 0.615, "started": "2026-09-15T22:42:51.585042+00:00", "log": "reports/b71_a6/release-apf-final.log"}
+{"label": "runtime-apf-final", "exit_code": 0, "seconds": 18.614, "started": "2026-09-15T22:42:52.200226+00:00", "log": "reports/b71_a6/runtime-apf-final.log"}
+CLOSURES []

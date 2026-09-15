@@ -1,18 +1,11 @@
-# APF-5 complete
+# Beta 71 A6 handoff
 
-Implemented the opt-in global fourth-down patch and independent Tools editor,
-plus Xenia Edge/Canary configuration with SDL input. Retail defaults, neutral
-preview, exact patch-byte tests and bounded BASE/TU witnesses are included.
+Integrated C5 metadata, scorebug v3, modern Arrowhead, APF situation masks and fourth-down/Xenia changes on the private branch `astra/b71-a6-integrate`. Fixed the shared colour/Arrowhead field composition and verified all nine variants. All requested suites and both studios' release/runtime closures have passing final results; precise skips, failures before correction, commands and timings are in `ASTRA_REPORT.md`.
 
-Validation: 187/187 requested standalone suites passed;
-1775 tests reported, 11 explicit skips. Strict registry, repin,
-provider integrity, product catalog, phase1 packaging, APF release and runtime
-checks passed. No APF-4 situation code/table edits, tester names, push or Xenia
-launch. Full match behavior and real controller input remain UNWITNESSED.
+Production manifest generation remains BLOCKED by read-only Storage. The committed manifest is an explicitly non-release XBE projection. The exact regeneration script is `reports/b71_a6/manifest_regen.sh`.
 
-Private git: `.scratch/git`, branch `astra/b71-apf5-fourth-down-xenia`, base
-`dc87cd0f456cf4ad4f8a384bb698d005d3255fa0`. Bundle: `.scratch/astra-b71-apf5.bundle`.
-Final commits, bundle verification and SHA-256: `.scratch/astra-b71-apf5-delivery.json`.
-Addresses, proof limits, command ledger and retest steps: `ASTRA_REPORT.md`.
+The requested Advanced disc builder is `reports/b71_a6/build_testdisc71.py`, PREPARED_NOT_RUN. No disc receipt or gameplay witness is claimed. No push or emulator launch.
+
+Private Git: `.scratch/git-a6`. Bundle: `.scratch/astra-b71-a6.bundle`. Final head/tree, bundle SHA-256, verification and fresh-fetch receipt: `.scratch/astra-b71-a6-delivery.json`.
 
 ASTRA_DONE

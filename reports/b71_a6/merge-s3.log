@@ -1,0 +1,9 @@
+Auto-merging ASTRA_LAST_MESSAGE.md
+CONFLICT (content): Merge conflict in ASTRA_LAST_MESSAGE.md
+Auto-merging ASTRA_REPORT.md
+CONFLICT (content): Merge conflict in ASTRA_REPORT.md
+Auto-merging docs/mod_editor/2k5_mod_studio_changelog.md
+CONFLICT (content): Merge conflict in docs/mod_editor/2k5_mod_studio_changelog.md
+Auto-merging mod_editor/capabilities/registry.v1.json
+Auto-merging mod_editor/core/providers.py
+Automatic merge failed; fix conflicts and then commit the result.

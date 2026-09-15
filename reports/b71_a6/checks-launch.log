@@ -1,0 +1,4 @@
+{"label": "registry-final", "exit_code": 0, "seconds": 0.159, "started": "2026-09-15T22:35:46.532523+00:00", "log": "reports/b71_a6/registry-final.log"}
+{"label": "repin-final", "exit_code": 0, "seconds": 21.392, "started": "2026-09-15T22:35:46.721147+00:00", "log": "reports/b71_a6/repin-final.log"}
+{"label": "manifest-production", "exit_code": 1, "seconds": 0.005, "started": "2026-09-15T22:36:08.143183+00:00", "log": "reports/b71_a6/manifest-production.log"}
+{"label": "manifest-projection", "exit_code": 0, "seconds": 357.683, "started": "2026-09-15T22:36:08.175924+00:00", "log": "reports/b71_a6/manifest-projection.log"}

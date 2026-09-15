@@ -1,0 +1,11 @@
+../home/noah/2k-worktrees/astra-b71-a6/tests/mod_editor/test_apf_cubemap_face0_preview.py:101: ResourceWarning: unclosed file <_io.BufferedReader name='/tmp/apf-preview-test-p4g8wk6f/originals/dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e/v3/textures/outer-0108-inner-0020.png'>
+  image = Image.open(path)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/usr/lib/python3.12/unittest/case.py:589: ResourceWarning: unclosed file <_io.BufferedReader name='/tmp/apf-preview-test-p4g8wk6f/originals/dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e/v3/textures/outer-0108-inner-0039.png'>
+  if method() is not None:
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+..
+----------------------------------------------------------------------
+Ran 4 tests in 20.341s
+
+OK

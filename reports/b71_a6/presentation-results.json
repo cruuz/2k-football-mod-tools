@@ -1,0 +1,142 @@
+[
+  {
+    "path": "tests/mod_editor/test_apf_uniform_equipment_colors_gui.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_scorebug_workspace_qt.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_colour_lighting_qt.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_uniform_equipment_colors.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_modern_color.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_author.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_colour_lighting.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_fonts.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_exact.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_assets.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_ingame.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_freeze.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_mnf.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_projection.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_native.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_source_art.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_template.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_template_release.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_unified_adapter.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_v10_ingame.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_v10_projection.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_versions.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_scorebug_studio_panel_qt.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_unif_color_argb_parse.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_unif_color_control.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_modern_arrowhead.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_b71_a6_composition.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_build_panel_qt.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_mod_build.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_discord_bugs_1.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_runtime.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_resources.py",
+    "exit_code": 0
+  }
+]

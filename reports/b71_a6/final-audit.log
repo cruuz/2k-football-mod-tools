@@ -1,0 +1,27 @@
+{
+  "required_completed": 265,
+  "all_requested_suites_and_closures_exit_zero": true,
+  "unit_cases_reported": 3027,
+  "skipped_cases": {
+    "final-scorebug-layout": 6,
+    "final-test_apf_b661_ladder": 1,
+    "final-test_apf_b67_static_audit": 1,
+    "final-test_apf_b67_writers_native": 1,
+    "final-test_apf_b69_control_audit": 1,
+    "final-test_apf_book_unlock_retail": 1,
+    "final-test_apf_defense_research_native": 1,
+    "final-test_apf_endzone_dxt5a": 1,
+    "final-test_apf_field_art_patch": 2,
+    "final-test_apf_splb_tag_reassignment": 1,
+    "final-test_apf_stfs_roster_rehash": 1,
+    "final-test_nfl2k5_read_option_diagnostic_manifest": 1,
+    "final-test_nfl2k5_scorebug_assets": 1,
+    "final-test_nfl2k5_scorebug_fonts": 5,
+    "final-test_nfl2k5_scorebug_source_art": 3,
+    "final-test_unif_color_control": 2
+  },
+  "manifest_source_seals_match": true,
+  "production_manifest_blocked": true,
+  "builder_executed": false,
+  "scratch_bytes": 48087421
+}

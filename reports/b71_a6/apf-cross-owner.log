@@ -1,0 +1,18 @@
+[
+  {
+    "profile": "base",
+    "situation_words": 4094,
+    "fourth_down_words": 37,
+    "byte_writes_disjoint": true,
+    "forward_reverse_authored_writes_equal": true,
+    "runtime_witnessed": false
+  },
+  {
+    "profile": "tu_1_1",
+    "situation_words": 4094,
+    "fourth_down_words": 37,
+    "byte_writes_disjoint": true,
+    "forward_reverse_authored_writes_equal": true,
+    "runtime_witnessed": false
+  }
+]
