@@ -7,7 +7,7 @@ Recipes contain choices and receipts, never decoded game resources.
 from __future__ import annotations
 
 from collections import OrderedDict
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, replace, field
 import hashlib
 import importlib
 import json
@@ -107,6 +107,8 @@ def validate_request(request):
     if not isinstance(request, dict):
         raise ValidationError("Choose a CPU Play Calling edit")
     fields = {
+        "situation_mask": {"book", "key", "formation", "exclude"},
+        "situation_masks_enabled": {"enabled"},
         "ratings": {"book", "formation", "ratings"},
         "play_rating": {"book", "formation", "play", "value"},
         "categories": {"book", "formation", "primary", "secondary"},
@@ -123,6 +125,13 @@ def validate_request(request):
         raise ValidationError("Unknown CPU Play Calling control or fields")
     if "book" in request and (not isinstance(request["book"], str) or not 1 <= len(request["book"]) <= 27):
         raise ValidationError("Choose a named book")
+    if kind == "situation_masks_enabled" and type(request["enabled"]) is not bool:
+        raise ValidationError("Choose whether situation exclusions are enabled")
+    if kind == "situation_mask":
+        _integer(request["key"], 0, 11)
+        _integer(request["formation"], 0, 150)
+        if type(request["exclude"]) is not bool:
+            raise ValidationError("Choose whether to exclude this formation here")
     if kind == "add" and (not isinstance(request["donor"], str) or not 1 <= len(request["donor"]) <= 27):
         raise ValidationError("Choose a named donor book")
     # "row" stops at 27 because apf2k8_master_writer.set_category_row refuses more.
@@ -189,9 +198,12 @@ class State:
     teams: tuple
     sides: dict
     inventory: dict
+    situation_masks: dict = field(default_factory=dict)
+    situation_masks_enabled: bool = False
 
     def copy(self):
-        return replace(self, books=dict(self.books), sides=dict(self.sides))
+        return replace(self, books=dict(self.books), sides=dict(self.sides),
+                       situation_masks={name: [list(row) for row in rows] for name, rows in self.situation_masks.items()})
 
 
 class Backend:
@@ -339,6 +351,10 @@ class PlayCallingService:
     def facts(self, state, request):
         b = self.backend
         kind = request["kind"]
+        if kind == "situation_masks_enabled":
+            return state.situation_masks_enabled
+        if kind == "situation_mask":
+            return request["formation"] in state.situation_masks.get(request["book"], [[] for _ in range(12)])[request["key"]]
         if kind == "scheme":
             team = next(t for t in state.teams if t["team_index"] == request["team"])
             return {"book": team["offense"], "book_sha256": digest(state.books[team["offense"]]),
@@ -377,7 +393,22 @@ class PlayCallingService:
         before = self.facts(state, request)
         coverage, retired, warning = {}, [], ""
         scheme_receipt = None
-        if kind == "scheme":
+        if kind == "situation_masks_enabled":
+            state.situation_masks_enabled = request["enabled"]
+        elif kind == "situation_mask":
+            from mod_editor.core.apf2k8_situation_mask import canonical_policies
+            name = request["book"]
+            if name not in state.books or state.sides.get(name) != "offense":
+                raise ValidationError("Choose an offensive book for situation exclusions")
+            if self._record(state.books[name], request["formation"]) is None:
+                raise ValidationError("This formation is no longer in the book; refresh its candidates")
+            rows = state.situation_masks.setdefault(name, [[] for _ in range(12)])
+            values = set(rows[request["key"]])
+            if request["exclude"]: values.add(request["formation"])
+            else: values.discard(request["formation"])
+            rows[request["key"]] = sorted(values)
+            state.situation_masks = canonical_policies(state.situation_masks)
+        elif kind == "scheme":
             from mod_editor.core.apf2k8_offensive_schemes import apply_scheme
             team = next(t for t in state.teams if t["team_index"] == request["team"])
             if team["offense"] != request["book"]:
@@ -575,15 +606,19 @@ class PlayCallingService:
         state, model = context["state"], self.backend.model
         book = state.books[context["book"]]
         tendency = context.get("preview_tendency", context["tendency"])
-        key = (digest(book), digest(state.master), tendency, side, json_bytes(rows))
+        masks = state.situation_masks.get(context["book"], [[] for _ in range(12)]) if state.situation_masks_enabled else [[] for _ in range(12)]
+        key = (digest(book), digest(state.master), tendency, side, json_bytes(rows), json_bytes(masks))
         if key in self.cache:
             self.cache.move_to_end(key)
             return self.cache[key]
         distributions = []
         for label, values in rows:
             if side == "offense":
-                call = model.predict_offense(book, state.master, tendency / 100,
-                                             model.Situation(**values), seeds=256)
+                from mod_editor.core.apf2k8_situation_mask import situation_key
+                situation = model.Situation(**values)
+                excluded = masks[situation_key(situation)]
+                kwargs = {"exclusions": excluded} if excluded else {}
+                call = model.predict_offense(book, state.master, tendency / 100, situation, seeds=256, **kwargs)
             else:
                 call = model.predict_defense(book, state.master, values["offense_category_row"], values["yards_to_goal"], seeds=256)
             distributions.append((label, call))

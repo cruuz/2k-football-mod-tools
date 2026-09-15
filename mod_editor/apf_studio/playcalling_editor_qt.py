@@ -191,6 +191,9 @@ class ApfPlayCallingEditor(QWidget):
         self.add_button = button(situation_root, "Review formation addition", "Add the selected donor formation as an explicit book edit, then preview all affected situations.", self.stage_addition)
         self.bucket_export = button(situation_root, "Export play call spreadsheet…", "Export the selected offensive book in all 23 preview buckets, with their shared-data limits.", self.export_scheme)
         root.addWidget(self.situation_group)
+        from .situation_mask_qt import SituationMaskPanel
+        self.situation_masks = SituationMaskPanel(self)
+        root.addWidget(self.situation_masks)
         # Existing scheme recipes remain loadable. The main workflow exposes
         # direct book edits; no scheme or preset is staged by visiting this page.
         self.scheme_group.hide()
@@ -417,6 +420,7 @@ class ApfPlayCallingEditor(QWidget):
         self.preview_group.setEnabled(enabled)
         self.levers.setEnabled(enabled and self._context is not None)
         self.situation_group.setEnabled(enabled and self._context is not None)
+        self.situation_masks.setEnabled(enabled and self._context is not None and self.side_picker.currentData() == "offense")
         self.bucket_export.setEnabled(enabled and self.side_picker.currentData() == "offense")
         self.master_group.setEnabled(enabled and self._context is not None)
         self.review_group.setEnabled(enabled)
@@ -524,6 +528,7 @@ class ApfPlayCallingEditor(QWidget):
 
     def _render_context(self):
         c = self._context
+        self.situation_masks.set_context(c, self.side_picker.currentData())
         self._updating = True
         previous_form = self.formation_picker.currentData()
         previous_situation = self.situation_picker.currentText()
@@ -581,7 +586,7 @@ class ApfPlayCallingEditor(QWidget):
         row = self._situations[self.situation_picker.currentIndex()]
         self.situation_note.setText(f"Requested personnel row {row['row']}. " + row["note"] +
                                    " Weights are not percentages or exclusions. TE counts are requested roles; "
-                                   "the game can use another position when the TE depth list is empty.")
+                                   "an empty TE depth list substitutes an FB.")
         names = {f["id"]: f["name"] for f in self._context["formations"]}
         self._updating = True
         fill(self.candidate_table, [(names.get(c["formation"], c["formation"]), c["personnel"], c["tight_ends"],

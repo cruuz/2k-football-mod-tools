@@ -216,6 +216,25 @@ class ApfStudioFacade:
         with self._session_lock:
             return (id(self.session), self._playcalling.snapshot(self.require_session()))
 
+    def prepare_situation_patch(self, profile):
+        from .situation_masks import prepare
+        with self._session_lock:
+            session = self.require_session()
+            state = self._playcalling.state(session)
+            return {**prepare(state, profile), "snapshot": self._playcalling.snapshot(session),
+                    **self.launcher.pass_fetch_status(kind="situations")}
+
+    def install_situation_patch(self, prepared, *, consent=False):
+        if not consent:
+            raise FacadeError("Installing the situation patch requires consent")
+        current = self.prepare_situation_patch(prepared["profile"])
+        if any(prepared.get(key) != current.get(key) for key in ("payload", "snapshot", "patch_path", "config_path")):
+            raise FacadeError("The book masks or installation target changed; review the situation patch again")
+        with tempfile.TemporaryDirectory(prefix="apf-situation-mask-") as directory:
+            path = Path(directory) / "situations.patch.toml"
+            path.write_bytes(prepared["payload"])
+            return self.install_xenia_patch(path, consent=True, kind="situations")
+
     def prepare_playcalling_curve(self, profile, side):
         from . import playcalling_patches
         payload = playcalling_patches.prepare(profile, side, curves=self._playcalling.backend.curves)

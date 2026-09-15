@@ -99,7 +99,9 @@ def finalize(index, modification, progress=lambda *_: None, *, backend=None):
             raise ValidationError("CPU Play Calling changed bytes outside its resource allocations")
     category_names = {row.id: row.name for row in engine.backend.model.category_table(state.master)}
     formation_names = {row["index"]: row["name"] for row in state.inventory.get("formations", ())}
-    receipt = {"schema": "apf_playcalling_build/v1", "events": events, "clones": assignments,
+    from .situation_masks import export_build
+    mask_receipt = export_build(index.parent, state)
+    receipt = {"schema": "apf_playcalling_build/v1", "situation_masks": mask_receipt, "events": events, "clones": assignments,
                "removed_formations": [{"book": e["request"]["book"], "formation_id": e["request"]["formation"],
                                        "formation_name": formation_names.get(e["request"]["formation"], str(e["request"]["formation"]))}
                                       for e in events if e["request"]["kind"] == "remove"],

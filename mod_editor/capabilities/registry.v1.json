@@ -2628,26 +2628,30 @@
         "tests/mod_editor/test_apf_playcall_research_native.py",
         "tests/mod_editor/test_apf_playcalling_editor_qt.py",
         "docs/research/apf_b71_apf3.md",
-        "tools/apf_b71_situation_probe.py"
+        "tools/apf_b71_situation_probe.py",
+        "docs/research/apf_b71_apf4.md",
+        "tests/mod_editor/test_apf_b71_situation_mask.py",
+        "tests/mod_editor/test_apf_b71_situation_mask_native.py",
+        "tests/mod_editor/test_apf_b71_situation_mask_qt.py"
       ],
       "game": "apf2k8_xbox360",
       "gui": {
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "Book selection drives the preview. Team selection is separate. Shared membership edits and removals are explicit, never staged by a preset. Duplicate Book Identity editing is hidden."
+        "reason": "Named-book preview, per-situation exclusions and stored personnel-row editing use explicit undoable project edits. No preset enables or stages masks. Install the matching authored XEX patch separately."
       },
       "id": "apf2k8.playbooks.cpu_playcalling",
       "input_constraints": [
         "A loaded APF source is required; book edits use the production SPLB and MASTER writers.",
         "Book choices resolve by name; project replay checks reviewed before/after facts and refuses conflicts.",
         "MASTER and curve changes affect every book; personnel retirement with uncovered rows is refused while lineup caller reachability remains unclassified.",
-        "The 23 buckets are representative queries, not stored formation lists. Membership and removal affect all situations in that book; no independent per-situation runtime exclusion is claimed.",
-        "TE counts describe requested roles. Native depth fallback can supply another position when the TE depth list is empty; no on-field TE guarantee is made."
+        "Twelve independent live buckets use actual down 1..4 and absolute longitudinal distance up to 2, over 2 through 7, or over 7 yards. The older 23 labels remain representative queries. The patch filters ordinary CPU offense draws only; special phases and explicit calls bypass it.",
+        "Computed personnel requests are read-only; stored MASTER comparison rows remain editable with an explicit all-books scope. An empty TE depth list substitutes an FB.",
+        "At most 48 named mask profiles; only ordinary formations 0..150. Empty filtered draws fall back to their complete original candidates and record native counters. Exported builds contain separate BASE/TU patches and the canonical data block."
       ],
       "portme": [
-        "Implement and prove a separate runtime selector and exclusion gate before claiming independent per-situation whitelists.",
-        "Witness final on-field personnel and built-book consumption with loaded save/USER state recorded."
+        "Witness installed BASE/TU patches, actual book identity through save/USER lifecycle and final on-field personnel in game."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -2657,7 +2661,7 @@
       },
       "runtime": {
         "evidence": [],
-        "scope": "PROVED bounded BASE/TU weights, current-call stores, native depth/provider selection and all eleven lineup assignments with synthetic player pools. Empty TE depth lists select an FB-depth player while the requested TE role remains. Only equipment refresh leaves are bounded out of the lineup path. Saved USER lifecycle and actual gameplay remain UNWITNESSED.",
+        "scope": "PROVED bounded BASE/TU weights, current-call stores, native depth/provider selection and all eleven lineup assignments with synthetic player pools. Empty TE depth lists select an FB-depth player while the requested TE role remains. Only equipment refresh leaves are bounded out of the lineup path. Saved USER lifecycle and actual gameplay remain UNWITNESSED. APF-4 adds bounded execution of independent down/distance mask leaves on both images, including draw fallback receipts. It does not supply a gameplay witness.",
         "status": "not-tested"
       },
       "selectors": {
@@ -2672,11 +2676,14 @@
       },
       "source_container": {
         "format": "APF SPLB, MASTER PLAY and ROST; authored Xenia TOML for patches",
-        "hash_pins": [],
+        "hash_pins": [
+          "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf",
+          "65f522ce1cdda42cf19c112e9ec07302e89c81e4148c9f22e6db5e03952f9457"
+        ],
         "resource": "Team book assignments, named books and MASTER personnel",
         "retail_file": "User-owned All-Pro Football 2K8 (USA) extracted game folder"
       },
-      "summary": "Select named CPU, USER or global books, inspect 23 situation queries and requested TE counts, and explicitly edit shared formations. Independent per-situation exclusions remain unimplemented: ratings are positive and membership is shared. Straight-for-Queens export and later native depth fallback have bounded regression proofs.",
+      "summary": "CPU Play Calling edits named books and independent exclusions in twelve live down/distance buckets. Both native draws filter against a persistent per-book mask and retain their original candidates if emptied. Requested rows show computed values and editable shared MASTER rows. Explicit patch installation is required; gameplay UNWITNESSED.",
       "surface": "scripts_config",
       "title": "CPU Play Calling editor",
       "validation_command": "python3 -m tests.mod_editor.test_apf_playcalling_editor_facade"

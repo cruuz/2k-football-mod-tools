@@ -508,14 +508,16 @@ def defense_play_weights(book, master, formation_id, first=None, *, lineup_featu
                                 for p in candidates), integer)
 
 
-def predict_offense(book: bytes, master: bytes, tendency_run_share: float, situation: Situation, *, seeds: int = 256) -> CallDistribution:
+def predict_offense(book: bytes, master: bytes, tendency_run_share: float, situation: Situation, *, seeds: int = 256, exclusions=()) -> CallDistribution:
     _int(seeds, 1, 65536, 'Seeds')
     if not isinstance(book, bytes):
         raise PlaycallError('Book must be immutable decoded SPLB bytes')
     if not isinstance(situation, Situation):
         raise PlaycallError('Supply a Situation for the offense preview')
     _master(master)
+    from .apf2k8_situation_mask import filter_categories, filter_formations
     share = adjusted_run_share(tendency_run_share, situation)
+    fallbacks = Counter()
     counters = [Counter(), Counter(), Counter()]
     cache = {}
     for seed in range(seeds):
@@ -527,14 +529,18 @@ def predict_offense(book: bytes, master: bytes, tendency_run_share: float, situa
         key = row, run
         if key not in cache:
             cache[key] = category_weights(book, master, row, situation, run_share=run)
-        cat = draw(cache[key], rng.random(), power=3)
+        candidates, fallback = filter_categories(book, master, cache[key], exclusions) if exclusions else (cache[key], False)
+        fallbacks["category"] += fallback
+        cat = draw(candidates, rng.random(), power=3)
         if cat is None:
             continue
         counters[0][cat] += 1
         key = 'f', cat, run
         if key not in cache:
             cache[key] = formation_weights(book, master, cat, situation, run_share=run)
-        form = draw(cache[key], rng.random())
+        candidates, fallback = filter_formations(cache[key], exclusions) if exclusions else (cache[key], False)
+        fallbacks["formation"] += fallback
+        form = draw(candidates, rng.random())
         if form is None:
             continue
         counters[1][form] += 1
@@ -547,6 +553,8 @@ def predict_offense(book: bytes, master: bytes, tendency_run_share: float, situa
     def rows(counter, base, stride):
         return [(i, _name(master, base + i * stride), n / seeds) for i, n in sorted(counter.items(), key=lambda x: (-x[1], x[0]))]
     notes = DEFAULT_NOTES + tuple(f'{c.name} carries no tight end' for c in category_table(master) if c.id in counters[0] and c.tight_ends == 0)
+    if exclusions:
+        notes += (f"Situation mask preview: {fallbacks['category']} category and {fallbacks['formation']} formation empty-draw fallbacks in {seeds} calls; each fallback retains the complete original draw.",)
     stored = {e.play_index for r in _records(book) for e in r.entries}
     if any(not struct.unpack_from('>I', book, 0x7DB0 + 4 * (p // 32))[0] & (1 << (p % 32)) for p in stored):
         notes += ('This book has memberships missing from its stored play cache; normalize after insertion to make those plays reachable.',)
