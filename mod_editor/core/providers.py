@@ -560,7 +560,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_boot_logo.py": "c767db7cdcc7dcf363a3a78547bcc251004980bc696300b3a8a3d283482fbdaa",
         "mod_editor/core/nfl2k5_build_service.py": "3a92a92a018809d4217c0cbe548b45dfa46434d64f16c98565babbcb87b55cd0",
         "mod_editor/core/nfl2k5_build_settings.py": "c2f14dd6cd0b0a8036824f88760c1688a2367b24423b4e526294e023fda05d94",
-        "mod_editor/core/nfl2k5_modern_arrowhead.py": "e80d3c9d5ce2cb3ca2dcce33788d868c0585f35c1a878069854e65e5cf22024b",
+        "mod_editor/core/nfl2k5_modern_arrowhead.py": "afbe211c6996e401b7625a006e01cff4b2f9e38b65339cd7d727ebbb5cff5177",
         "mod_editor/core/nfl2k5_modern_color.py": "4f69c89f99cf78971a4daf1c7d4f34c6d575261e60f61bb74b7f550e30a6686a",
         "mod_editor/core/nfl2k5_bump_strength.py": "79f9264fbe0813db9be66f22e35f8944e35b92ae415132d819eda50920e41bb0",
         "mod_editor/core/nfl2k5_calendar_engine.py": "796246b2248eddda3a0e57ed791b53cc1446fe3a3128ad39397ababe873ab841",

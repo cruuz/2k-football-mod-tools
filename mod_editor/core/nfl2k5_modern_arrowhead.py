@@ -244,8 +244,13 @@ def arrowhead_entries(archive):
 
 
 def _bundle_state(archive, pin):
+    # An image without the pinned entry (another game, a synthetic test disc, a rebuilt archive) is foreign to
+    # this option; inspect must report that rather than fail.
+    if pin["outer"] >= len(archive.entries):
+        return "foreign"
     entry = archive.entries[pin["outer"]]
-    require(entry.name_id == pin["name_id"] and entry.size == pin["size"], f"{pin['name']}: archive entry differs from the pin")
+    if entry.name_id != pin["name_id"] or entry.size != pin["size"]:
+        return "foreign"
     states = set()
     for site in pin["sites"]:
         have = sha(archive.read(entry.virtual_offset + site["offset"], site["size"]))
