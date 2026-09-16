@@ -1,0 +1,8 @@
+test_text_apply_and_sheet_buttons_never_silent_gray_at_construction (__main__.ApfTextSheetGuiTests.test_text_apply_and_sheet_buttons_never_silent_gray_at_construction) ... ok
+test_text_sheet_buttons_enable_only_with_a_loaded_text_model (__main__.ApfTextSheetGuiTests.test_text_sheet_buttons_enable_only_with_a_loaded_text_model) ... ok
+test_text_sheet_gui_dispatches_export_and_one_batch_import_signal (__main__.ApfTextSheetGuiTests.test_text_sheet_gui_dispatches_export_and_one_batch_import_signal) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.061s
+
+OK

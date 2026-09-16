@@ -1,0 +1,8 @@
+test_invalid_packet_header_is_refused (__main__.ApfAudoProjectTests.test_invalid_packet_header_is_refused) ... ok
+test_protected_source_audio_hash_is_refused (__main__.ApfAudoProjectTests.test_protected_source_audio_hash_is_refused) ... ok
+test_round_trip_stores_only_raw_user_packet_payload (__main__.ApfAudoProjectTests.test_round_trip_stores_only_raw_user_packet_payload) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.004s
+
+OK

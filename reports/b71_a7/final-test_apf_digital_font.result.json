@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_digital_font",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_digital_font.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:47:51.485863+00:00",
+  "ended": "2026-09-16T00:47:51.838575+00:00",
+  "seconds": 0.353,
+  "exit_code": 0
+}

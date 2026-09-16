@@ -1,0 +1,12 @@
+{
+  "name": "final-test_nfl_uniform_colour_records",
+  "argv": [
+    "python3",
+    "tests/test_nfl_uniform_colour_records.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:41:11.531494+00:00",
+  "ended": "2026-09-16T00:41:14.609360+00:00",
+  "seconds": 3.078,
+  "exit_code": 0
+}

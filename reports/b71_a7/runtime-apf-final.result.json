@@ -1,0 +1,15 @@
+{
+  "name": "runtime-apf-final",
+  "argv": [
+    "env",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "PYTHONNOUSERSITE=1",
+    "PYTHONPATH=/home/noah/2k-worktrees/astra-b71-a7/.scratch/a7-release-apf",
+    "/home/noah/2k-worktrees/astra-b71-a7/.scratch/test-python/bin/python3",
+    "/home/noah/2k-worktrees/astra-b71-a7/.scratch/a7-release-apf/packaging/check_apf2k8_mod_studio_runtime.py"
+  ],
+  "started": "2026-09-16T01:24:53.619407+00:00",
+  "ended": "2026-09-16T01:25:03.744613+00:00",
+  "seconds": 10.125,
+  "exit_code": 0
+}

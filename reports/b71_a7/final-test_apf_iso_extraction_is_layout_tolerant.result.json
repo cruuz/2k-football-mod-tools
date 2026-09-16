@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_iso_extraction_is_layout_tolerant",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_iso_extraction_is_layout_tolerant.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:52:39.904035+00:00",
+  "ended": "2026-09-16T00:52:40.117296+00:00",
+  "seconds": 0.213,
+  "exit_code": 0
+}

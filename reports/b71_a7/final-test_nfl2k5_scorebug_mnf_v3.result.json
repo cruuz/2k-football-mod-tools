@@ -1,0 +1,12 @@
+{
+  "name": "final-test_nfl2k5_scorebug_mnf_v3",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:36:10.279054+00:00",
+  "ended": "2026-09-16T00:37:07.603210+00:00",
+  "seconds": 57.324,
+  "exit_code": 0
+}

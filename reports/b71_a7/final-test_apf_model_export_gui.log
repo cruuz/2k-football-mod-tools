@@ -1,0 +1,10 @@
+test_exact_stock_targets_are_named_with_bounded_position_import (__main__.ContractTests.test_exact_stock_targets_are_named_with_bounded_position_import) ... ok
+test_private_helmet_and_player_exports_match_the_pinned_inventory (__main__.ContractTests.test_private_helmet_and_player_exports_match_the_pinned_inventory) ... ok
+test_release_allowlist_ships_both_model_export_modules (__main__.ContractTests.test_release_allowlist_ships_both_model_export_modules) ... ok
+test_panel_is_discoverable_and_explicitly_position_only (__main__.PanelTests.test_panel_is_discoverable_and_explicitly_position_only) ... ok
+test_uniform_workspace_carries_the_model_export_tab (__main__.PanelTests.test_uniform_workspace_carries_the_model_export_tab) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 2.522s
+
+OK

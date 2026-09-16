@@ -1,0 +1,12 @@
+test_audio_overlay_composes_with_disjoint_whole_entry_writer (__main__.RawSpanOverlayBuildTests.test_audio_overlay_composes_with_disjoint_whole_entry_writer) ... ok
+test_failed_overlay_verification_never_publishes_partial_output (__main__.RawSpanOverlayBuildTests.test_failed_overlay_verification_never_publishes_partial_output) ... ok
+test_future_0b_span_applies_and_verifies_without_owner_reparse (__main__.RawSpanOverlayBuildTests.test_future_0b_span_applies_and_verifies_without_owner_reparse) ... ok
+test_future_1a_and_1b_spans_apply_and_verify_in_their_own_packs (__main__.RawSpanOverlayBuildTests.test_future_1a_and_1b_spans_apply_and_verify_in_their_own_packs) ... ok
+test_overlapping_audio_slots_are_rejected_before_any_output_exists (__main__.RawSpanOverlayBuildTests.test_overlapping_audio_slots_are_rejected_before_any_output_exists) ... ok
+test_span_overlap_is_scoped_to_each_physical_pack (__main__.RawSpanOverlayBuildTests.test_span_overlap_is_scoped_to_each_physical_pack) ... ok
+test_two_disjoint_audio_overlays_publish_one_exact_atomic_build (__main__.RawSpanOverlayBuildTests.test_two_disjoint_audio_overlays_publish_one_exact_atomic_build) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.045s
+
+OK

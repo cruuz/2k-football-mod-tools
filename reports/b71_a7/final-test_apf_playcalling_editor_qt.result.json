@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_playcalling_editor_qt",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_playcalling_editor_qt.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:55:38.307179+00:00",
+  "ended": "2026-09-16T00:55:47.018326+00:00",
+  "seconds": 8.711,
+  "exit_code": 0
+}

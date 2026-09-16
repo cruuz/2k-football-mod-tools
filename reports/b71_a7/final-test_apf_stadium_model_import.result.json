@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_stadium_model_import",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_stadium_model_import.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:57:46.073093+00:00",
+  "ended": "2026-09-16T00:57:46.367333+00:00",
+  "seconds": 0.294,
+  "exit_code": 0
+}

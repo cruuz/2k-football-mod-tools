@@ -1,0 +1,6 @@
+{"name": "delivery-test_product_catalog", "started": "2026-09-16T00:42:19.391516+00:00", "ended": "2026-09-16T00:42:19.566664+00:00", "seconds": 0.175, "exit_code": 0}
+{"name": "delivery-test_phase1_packaging", "started": "2026-09-16T00:42:19.567456+00:00", "ended": "2026-09-16T00:42:22.050351+00:00", "seconds": 2.483, "exit_code": 0}
+{"name": "delivery-test_providers", "started": "2026-09-16T00:42:19.390638+00:00", "ended": "2026-09-16T00:42:24.076772+00:00", "seconds": 4.686, "exit_code": 0}
+{"name": "delivery-test_capability_registry_module_commands", "started": "2026-09-16T00:42:24.077459+00:00", "ended": "2026-09-16T00:42:24.257045+00:00", "seconds": 0.18, "exit_code": 0}
+{"name": "delivery-test_b68_a1_audit", "started": "2026-09-16T00:42:22.050888+00:00", "ended": "2026-09-16T00:42:29.180796+00:00", "seconds": 7.13, "exit_code": 0}
+{"name": "delivery-test_provider_integrity", "started": "2026-09-16T00:42:19.390048+00:00", "ended": "2026-09-16T00:42:34.211989+00:00", "seconds": 14.822, "exit_code": 0}

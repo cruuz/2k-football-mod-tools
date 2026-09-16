@@ -1,0 +1,18 @@
+test_composed_cache_pair_uses_raw_structure_verifier_not_vc_iff (__main__.BuildCompilerTests.test_composed_cache_pair_uses_raw_structure_verifier_not_vc_iff) ... ok
+test_digital_font_collision_names_outer_and_composite_fix (__main__.BuildCompilerTests.test_digital_font_collision_names_outer_and_composite_fix) ... ok
+test_full_profile_compiles_package_cache_pair_and_outer_1310 (__main__.BuildCompilerTests.test_full_profile_compiles_package_cache_pair_and_outer_1310) ... ok
+test_full_shell_verifier_refusal_aborts_the_compile (__main__.BuildCompilerTests.test_full_shell_verifier_refusal_aborts_the_compile) ... ok
+test_retail_profile_does_not_touch_outer_1310 (__main__.BuildCompilerTests.test_retail_profile_does_not_touch_outer_1310) ... ok
+test_runtime_closure_prunes_superseded_guard_band_tools (__main__.BuildCompilerTests.test_runtime_closure_prunes_superseded_guard_band_tools) ... ok
+test_fit_is_not_accepted_for_the_retail_profile (__main__.MetadataTests.test_fit_is_not_accepted_for_the_retail_profile) ... ok
+test_only_two_fixed_profiles_and_global_full_shell_scope (__main__.MetadataTests.test_only_two_fixed_profiles_and_global_full_shell_scope) ... ok
+test_detail_layer_stages_saves_and_roundtrips_project (__main__.SessionAndProjectTests.test_detail_layer_stages_saves_and_roundtrips_project) ... ok
+test_fit_stages_48_2_to_100_percent_and_roundtrips_project (__main__.SessionAndProjectTests.test_fit_stages_48_2_to_100_percent_and_roundtrips_project) ... ok
+test_full_shell_profile_refuses_a_staged_detail_layer (__main__.SessionAndProjectTests.test_full_shell_profile_refuses_a_staged_detail_layer) ... ok
+test_headless_full_shell_api_rejects_literal_rgb_bypass (__main__.SessionAndProjectTests.test_headless_full_shell_api_rejects_literal_rgb_bypass) ... ok
+test_transparent_and_symlink_inputs_fail_before_staging (__main__.SessionAndProjectTests.test_transparent_and_symlink_inputs_fail_before_staging) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 1.174s
+
+OK

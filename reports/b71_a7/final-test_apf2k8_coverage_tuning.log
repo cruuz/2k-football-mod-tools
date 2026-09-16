@@ -1,0 +1,14 @@
+test_bad_requests (__main__.GeometryTests.test_bad_requests) ... ok
+test_boundaries_and_independent_partial_update (__main__.GeometryTests.test_boundaries_and_independent_partial_update) ... ok
+test_composition_recomputes_shared_uses_and_preserves_zone_pool (__main__.GeometryTests.test_composition_recomputes_shared_uses_and_preserves_zone_pool) ... ok
+test_exact_bit_contract_shared_uses_and_idempotence (__main__.GeometryTests.test_exact_bit_contract_shared_uses_and_idempotence) ... ok
+test_parser_rejects_chain_overrun_before_pins (__main__.GeometryTests.test_parser_rejects_chain_overrun_before_pins) ... ok
+test_pin_rejects_other_data_even_on_noop (__main__.GeometryTests.test_pin_rejects_other_data_even_on_noop) ... ok
+test_preserved_mode_bit_and_unrequested_geometry_fail_verification (__main__.GeometryTests.test_preserved_mode_bit_and_unrequested_geometry_fail_verification) ... ok
+test_shareable_profile_roundtrip_and_reject_ambiguous_json (__main__.GeometryTests.test_shareable_profile_roundtrip_and_reject_ambiguous_json) ... ok
+test_retail_full_pack_rebuild (__main__.RetailGeometryTests.test_retail_full_pack_rebuild) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 2.769s
+
+OK

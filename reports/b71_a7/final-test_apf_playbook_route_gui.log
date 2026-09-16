@@ -1,0 +1,12 @@
+test_orphan_copy_cancel_stages_nothing (__main__.PlayAssignmentRoutePanelRelayTests.test_orphan_copy_cancel_stages_nothing) ... ok
+test_orphan_copy_offers_relay_and_invokes_relayed_copy (__main__.PlayAssignmentRoutePanelRelayTests.test_orphan_copy_offers_relay_and_invokes_relayed_copy) ... ok
+test_orphan_copy_pick_relay_uses_input_dialog (__main__.PlayAssignmentRoutePanelRelayTests.test_orphan_copy_pick_relay_uses_input_dialog) ... ok
+test_orphan_copy_without_candidates_warns (__main__.PlayAssignmentRoutePanelRelayTests.test_orphan_copy_without_candidates_warns) ... ok
+test_no_game_disables_mutation (__main__.PlayAssignmentRoutePanelTests.test_no_game_disables_mutation) ... ok
+test_play_and_slot_pickers_call_exact_copy_and_swap_routes (__main__.PlayAssignmentRoutePanelTests.test_play_and_slot_pickers_call_exact_copy_and_swap_routes) ... ok
+test_staged_table_cells_use_readable_colors (__main__.PlayAssignmentRoutePanelTests.test_staged_table_cells_use_readable_colors) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.150s
+
+OK

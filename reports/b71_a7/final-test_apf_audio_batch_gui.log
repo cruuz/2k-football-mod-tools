@@ -1,0 +1,46 @@
+test_all_original_bank_bundle_uses_only_physical_identities_and_reports_bytes (__main__.ApfAudioBatchGuiTests.test_all_original_bank_bundle_uses_only_physical_identities_and_reports_bytes) ... This plugin does not support propagateSizeHints()
+ok
+test_bulk_audio_cancel_control_is_cooperative_and_recovers (__main__.ApfAudioBatchGuiTests.test_bulk_audio_cancel_control_is_cooperative_and_recovers) ... This plugin does not support propagateSizeHints()
+ok
+test_complete_catalog_action_is_audio_only_and_explains_boundaries (__main__.ApfAudioBatchGuiTests.test_complete_catalog_action_is_audio_only_and_explains_boundaries) ... This plugin does not support propagateSizeHints()
+ok
+test_existing_destination_is_refused_before_the_batch_task_starts (__main__.ApfAudioBatchGuiTests.test_existing_destination_is_refused_before_the_batch_task_starts) ... This plugin does not support propagateSizeHints()
+ok
+test_original_xma_export_uses_every_model_row_and_blocking_progress (__main__.ApfAudioBatchGuiTests.test_original_xma_export_uses_every_model_row_and_blocking_progress) ... This plugin does not support propagateSizeHints()
+ok
+test_product_theme_keeps_native_information_dialogs_high_contrast (__main__.ApfAudioBatchGuiTests.test_product_theme_keeps_native_information_dialogs_high_contrast) ... ok
+test_verified_wav_filter_is_forwarded_without_changing_shortlist_limits (__main__.ApfAudioBatchGuiTests.test_verified_wav_filter_is_forwarded_without_changing_shortlist_limits) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+/usr/lib/python3.12/tempfile.py:1075: ResourceWarning: Implicitly cleaning up <TemporaryDirectory '/tmp/apf-theme-ln129jv7'>
+  _warnings.warn(warn_message, ResourceWarning)
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.266s
+
+OK

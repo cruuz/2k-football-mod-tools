@@ -1,0 +1,9 @@
+test_all_resource_xbe_combinations_and_preview_select_the_same_scene (__main__.VersionsTests.test_all_resource_xbe_combinations_and_preview_select_the_same_scene) ... ok
+test_each_foreign_version_field_refuses_including_other_versions_extra_fields (__main__.VersionsTests.test_each_foreign_version_field_refuses_including_other_versions_extra_fields) ... ok
+test_template_has_the_independent_landed_xbe_and_resource_hashes (__main__.VersionsTests.test_template_has_the_independent_landed_xbe_and_resource_hashes) ... ok
+test_xbe_readers_recognize_both_but_writers_refuse_cross_version_replay (__main__.VersionsTests.test_xbe_readers_recognize_both_but_writers_refuse_cross_version_replay) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 10.819s
+
+OK

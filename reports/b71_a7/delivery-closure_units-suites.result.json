@@ -1,0 +1,13 @@
+{
+  "name": "delivery-closure_units-suites",
+  "argv": [
+    "python3",
+    "reports/b71_a7/suites.py",
+    "closure_units",
+    "delivery-"
+  ],
+  "started": "2026-09-16T00:42:19.348869+00:00",
+  "ended": "2026-09-16T00:42:34.222887+00:00",
+  "seconds": 14.874,
+  "exit_code": 0
+}

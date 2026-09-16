@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_stadium_studio",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_stadium_studio.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:57:46.367923+00:00",
+  "ended": "2026-09-16T00:57:46.616822+00:00",
+  "seconds": 0.249,
+  "exit_code": 0
+}

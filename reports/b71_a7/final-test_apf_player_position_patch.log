@@ -1,0 +1,9 @@
+test_bounds_duplicate_and_noncanonical_inputs_fail_closed (__main__.PlayerPositionTargetContractTests.test_bounds_duplicate_and_noncanonical_inputs_fail_closed) ... ok
+test_target_payload_and_metadata_are_exact_and_retail_free (__main__.PlayerPositionTargetContractTests.test_target_payload_and_metadata_are_exact_and_retail_free) ... ok
+test_no_op_returns_exact_source_entry_without_recompression (__main__.RetailPlayerPositionWriterTests.test_no_op_returns_exact_source_entry_without_recompression) ... ok
+test_writer_changes_exact_pair_preserves_source_and_manifest_is_retail_free (__main__.RetailPlayerPositionWriterTests.test_writer_changes_exact_pair_preserves_source_and_manifest_is_retail_free) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 7.056s
+
+OK

@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_b67_books_qt",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_b67_books_qt.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:33:29.111225+00:00",
+  "ended": "2026-09-16T00:34:40.594036+00:00",
+  "seconds": 71.483,
+  "exit_code": 0
+}

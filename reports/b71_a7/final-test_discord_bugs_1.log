@@ -1,0 +1,22 @@
+test_B10_PROVED_16_bit_transparency_compares_full_samples (__main__.DiscordCoreTests.test_B10_PROVED_16_bit_transparency_compares_full_samples) ... ok
+test_B10_PROVED_actual_Adam7_RGB_with_profile_and_DDS_refusal (__main__.DiscordCoreTests.test_B10_PROVED_actual_Adam7_RGB_with_profile_and_DDS_refusal) ... ok
+test_B11_PROVED_disc_digest_namespaces_cached_artwork (__main__.DiscordCoreTests.test_B11_PROVED_disc_digest_namespaces_cached_artwork) ... ok
+test_B11_PROVED_other_disc_cannot_reuse_retail_cache_without_check (__main__.DiscordCoreTests.test_B11_PROVED_other_disc_cannot_reuse_retail_cache_without_check) ... ok
+test_B11_PROVED_same_packs_in_different_layout_pass_changed_late_pack_refuses (__main__.DiscordCoreTests.test_B11_PROVED_same_packs_in_different_layout_pass_changed_late_pack_refuses) ... ok
+test_B12_PROVED_confirmation_distinguishes_present_missing_and_unavailable (__main__.DiscordCoreTests.test_B12_PROVED_confirmation_distinguishes_present_missing_and_unavailable) ... ok
+test_B12_PROVED_explicit_photo_selector_wins_over_old_owner_name (__main__.DiscordCoreTests.test_B12_PROVED_explicit_photo_selector_wins_over_old_owner_name) ... ok
+test_B12_PROVED_portrait_id_survives_roster_recipe_and_name_change (__main__.DiscordCoreTests.test_B12_PROVED_portrait_id_survives_roster_recipe_and_name_change) ... ok
+test_B14_PROVED_full_pool_explains_capacity_and_keeps_roster_unchanged (__main__.DiscordCoreTests.test_B14_PROVED_full_pool_explains_capacity_and_keeps_roster_unchanged) ... ok
+test_B14_PROVED_short_first_name_can_be_replaced_through_pool (__main__.DiscordCoreTests.test_B14_PROVED_short_first_name_can_be_replaced_through_pool) ... ok
+test_B16_PROVED_windows_PE_validation_checks_file_kind_and_OS_architecture (__main__.DiscordCoreTests.test_B16_PROVED_windows_PE_validation_checks_file_kind_and_OS_architecture) ... ok
+test_B16_PROVED_winerror_193_has_actionable_message (__main__.DiscordCoreTests.test_B16_PROVED_winerror_193_has_actionable_message) ... ok
+test_B22_PROVED_gameplay_settings_survive_project_archive (__main__.DiscordCoreTests.test_B22_PROVED_gameplay_settings_survive_project_archive) ... ok
+test_B22_PROVED_invalid_choices_refuse_without_mutating_input (__main__.DiscordCoreTests.test_B22_PROVED_invalid_choices_refuse_without_mutating_input) ... ok
+test_B3_PROVED_missing_sidecar_is_refused_before_download (__main__.DiscordCoreTests.test_B3_PROVED_missing_sidecar_is_refused_before_download) ... ok
+test_B3_PROVED_worker_compares_release_identity_and_missing_sidecar_hides_update_now (__main__.DiscordCoreTests.test_B3_PROVED_worker_compares_release_identity_and_missing_sidecar_hides_update_now) ... ok
+test_B7_PROVED_retail_catch_patch_replay_is_byte_identical (__main__.DiscordCoreTests.test_B7_PROVED_retail_catch_patch_replay_is_byte_identical) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 1.124s
+
+OK

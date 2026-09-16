@@ -1,0 +1,9 @@
+test_failed_refit_does_not_stage_or_record_undo (__main__.FieldProjectTests.test_failed_refit_does_not_stage_or_record_undo) ... ok
+test_normal_build_composes_opacity_after_another_entry_writer (__main__.FieldProjectTests.test_normal_build_composes_opacity_after_another_entry_writer) ... ok
+test_panel_stages_only_checked_materials_and_shows_receipt (__main__.FieldProjectTests.test_panel_stages_only_checked_materials_and_shows_receipt) ... ok
+test_stage_undo_save_load_and_reparse_recipe (__main__.FieldProjectTests.test_stage_undo_save_load_and_reparse_recipe) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.249s
+
+OK

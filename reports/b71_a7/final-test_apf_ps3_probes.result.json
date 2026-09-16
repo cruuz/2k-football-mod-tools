@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_ps3_probes",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_ps3_probes.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:56:36.249841+00:00",
+  "ended": "2026-09-16T00:56:37.457587+00:00",
+  "seconds": 1.208,
+  "exit_code": 0
+}

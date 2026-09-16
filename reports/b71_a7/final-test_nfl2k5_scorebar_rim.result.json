@@ -1,0 +1,12 @@
+{
+  "name": "final-test_nfl2k5_scorebar_rim",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_nfl2k5_scorebar_rim.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:33:14.425366+00:00",
+  "ended": "2026-09-16T00:33:32.167967+00:00",
+  "seconds": 17.743,
+  "exit_code": 0
+}

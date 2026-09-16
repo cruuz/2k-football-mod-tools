@@ -1,0 +1,8 @@
+test_page_button_transfers_controls_and_other_staged_slots (__main__.TransferGuiTests.test_page_button_transfers_controls_and_other_staged_slots) ... ok
+test_ps3_conversion_then_editor_appearance (__main__.TransferGuiTests.test_ps3_conversion_then_editor_appearance) ... ok
+test_xenia_output_is_explicit_off_by_default_and_reparsed (__main__.TransferGuiTests.test_xenia_output_is_explicit_off_by_default_and_reparsed) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 4.918s
+
+OK

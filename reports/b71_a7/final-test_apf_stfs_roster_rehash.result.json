@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_stfs_roster_rehash",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_stfs_roster_rehash.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:57:47.259120+00:00",
+  "ended": "2026-09-16T00:57:47.928472+00:00",
+  "seconds": 0.669,
+  "exit_code": 0
+}

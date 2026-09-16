@@ -1,0 +1,14 @@
+test_bundled_binaries_are_the_pinned_reviewed_builds (__main__.BundledExtractorTests.test_bundled_binaries_are_the_pinned_reviewed_builds) ... ok
+test_the_bundled_extractor_follows_the_running_platform (__main__.BundledExtractorTests.test_the_bundled_extractor_follows_the_running_platform) ... ok
+test_clean_iso_extraction_keeps_system_update (__main__.IsoExtractionTests.test_clean_iso_extraction_keeps_system_update) ... ok
+test_project_loader_rejects_undeclared_member (__main__.RetailFreeProjectTests.test_project_loader_rejects_undeclared_member) ... ok
+test_project_roundtrip_contains_only_declared_user_png (__main__.RetailFreeProjectTests.test_project_roundtrip_contains_only_declared_user_png) ... ok
+test_catalog_is_small_metadata_only_and_complete (__main__.UniformTargetCatalogTests.test_catalog_is_small_metadata_only_and_complete) ... ok
+test_crowd_visuals_are_stadium_assets_not_audio (__main__.UniformTargetCatalogTests.test_crowd_visuals_are_stadium_assets_not_audio) ... ok
+test_external_audio_policy_names_and_routes_all_physical_banks (__main__.UniformTargetCatalogTests.test_external_audio_policy_names_and_routes_all_physical_banks) ... ok
+test_target_bounds_are_human_readable (__main__.UniformTargetCatalogTests.test_target_bounds_are_human_readable) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.021s
+
+OK

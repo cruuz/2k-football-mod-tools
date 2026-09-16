@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_helmet_crest_design_product",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_helmet_crest_design_product.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:52:24.842753+00:00",
+  "ended": "2026-09-16T00:52:26.342540+00:00",
+  "seconds": 1.5,
+  "exit_code": 0
+}

@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_stadium_texture",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_stadium_texture.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:57:47.211220+00:00",
+  "ended": "2026-09-16T00:59:05.528264+00:00",
+  "seconds": 78.317,
+  "exit_code": 0
+}

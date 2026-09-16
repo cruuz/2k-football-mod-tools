@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_logo_surface_ownership",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_logo_surface_ownership.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:52:54.161694+00:00",
+  "ended": "2026-09-16T00:52:54.252383+00:00",
+  "seconds": 0.091,
+  "exit_code": 0
+}

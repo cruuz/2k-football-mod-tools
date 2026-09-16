@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_team_art_qt",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_team_art_qt.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:58:04.314616+00:00",
+  "ended": "2026-09-16T00:58:04.924275+00:00",
+  "seconds": 0.61,
+  "exit_code": 0
+}

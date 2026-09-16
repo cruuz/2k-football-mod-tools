@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_custom_team_appearance_patch",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_custom_team_appearance_patch.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:45:41.821375+00:00",
+  "ended": "2026-09-16T00:45:48.876307+00:00",
+  "seconds": 7.055,
+  "exit_code": 0
+}

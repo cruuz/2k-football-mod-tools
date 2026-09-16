@@ -25,7 +25,7 @@ pins = {
     'tests/mod_editor/test_phase1_packaging.py': ['registry=176 sections=12 nfl2k5_capabilities=102'],
     'tests/mod_editor/test_apf_studio_installer.py': ['len(registry.capabilities) == 176'],
     'tests/mod_editor/test_product_catalog.py': ['(102, 80, 8, 1, 0, 10, 3)', 'nfl2k5.stadiums_fields.modern_arrowhead', 'self.assertEqual(set(first_ids), expected)'],
-    'tests/mod_editor/test_provider_integrity.py': ['[287, 10, 8, 9, 8, 9]'],
+    'tests/mod_editor/test_provider_integrity.py': ['[288, 10, 8, 9, 8, 9]'],
     'tools/validate_all_mod_editor_capabilities.py': ['EXPECTED_CAPABILITIES = 176', 'EXPECTED_COVERED_CAPABILITIES = 171', 'EXPECTED_DEFERRED_CAPABILITIES = 5', 'EXPECTED_UNIQUE_VALIDATORS = 129'],
 }
 locations = []

@@ -1,0 +1,12 @@
+{
+  "name": "final-test_colour_lighting_qt",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_colour_lighting_qt.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:33:14.423989+00:00",
+  "ended": "2026-09-16T00:33:17.474638+00:00",
+  "seconds": 3.051,
+  "exit_code": 0
+}

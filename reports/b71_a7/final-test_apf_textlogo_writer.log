@@ -1,0 +1,15 @@
+test_authoring_contains_or_covers_and_always_flattens_alpha (__main__.ApfTextLogoCatalogTests.test_authoring_contains_or_covers_and_always_flattens_alpha) ... ok
+test_catalog_is_exact_retail_free_and_distinct_from_crests (__main__.ApfTextLogoCatalogTests.test_catalog_is_exact_retail_free_and_distinct_from_crests) ... ok
+test_gui_wordmark_fit_combo_data_matches_wordmark_fit_modes (__main__.ApfTextLogoCatalogTests.test_gui_wordmark_fit_combo_data_matches_wordmark_fit_modes)
+Combo items must not offer a mode prepare_wordmark_png rejects. ... ok
+test_project_and_build_accept_typed_index_205 (__main__.ApfTextLogoCatalogTests.test_project_and_build_accept_typed_index_205) ... ok
+test_stretch_mode_is_accepted_by_prepare_wordmark_png (__main__.ApfTextLogoCatalogTests.test_stretch_mode_is_accepted_by_prepare_wordmark_png)
+GUI combo data=stretch must reach the shipped authoring path. ... ok
+test_all_206_source_derived_noops_are_package_bit_exact (__main__.ApfTextLogoRealSourceTests.test_all_206_source_derived_noops_are_package_bit_exact) ... ok
+test_changed_minimum_headroom_slot_reopens_with_exact_write_mask (__main__.ApfTextLogoRealSourceTests.test_changed_minimum_headroom_slot_reopens_with_exact_write_mask) ... ok
+test_independent_whole_volume_verifier_accepts_only_target_range (__main__.ApfTextLogoRealSourceTests.test_independent_whole_volume_verifier_accepts_only_target_range) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 60.716s
+
+OK

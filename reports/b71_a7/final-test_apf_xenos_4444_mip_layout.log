@@ -1,0 +1,19 @@
+test_chain_has_every_level (__main__.CrestMipLayoutTests.test_chain_has_every_level) ... ok
+test_every_write_stays_inside_its_own_allocation (__main__.CrestMipLayoutTests.test_every_write_stays_inside_its_own_allocation) ... ok
+test_no_level_writes_into_another (__main__.CrestMipLayoutTests.test_no_level_writes_into_another) ... ok
+test_overlapping_layout_is_rejected (__main__.CrestMipLayoutTests.test_overlapping_layout_is_rejected) ... ok
+test_packed_levels_occupy_their_documented_corners (__main__.CrestMipLayoutTests.test_packed_levels_occupy_their_documented_corners) ... ok
+test_packed_tail_starts_after_the_32x32_level (__main__.CrestMipLayoutTests.test_packed_tail_starts_after_the_32x32_level) ... ok
+test_stored_levels_account_for_the_declared_tail_exactly (__main__.CrestMipLayoutTests.test_stored_levels_account_for_the_declared_tail_exactly) ... ok
+test_tail_padding_is_never_negative (__main__.CrestMipLayoutTests.test_tail_padding_is_never_negative) ... ok
+test_every_regenerated_level_reads_back_exactly (__main__.RegeneratedTailRoundTripTests.test_every_regenerated_level_reads_back_exactly) ... ok
+test_regeneration_writes_the_packed_tail (__main__.RegeneratedTailRoundTripTests.test_regeneration_writes_the_packed_tail) ... ok
+test_block_compressed_levels_need_no_padding_or_extra_extent (__main__.SiblingFormatsUnaffectedTests.test_block_compressed_levels_need_no_padding_or_extra_extent) ... ok
+test_a_32x32_tile_of_two_byte_texels_reaches_0xc00 (__main__.TiledExtentTests.test_a_32x32_tile_of_two_byte_texels_reaches_0xc00) ... ok
+test_large_levels_are_a_contiguous_bijection (__main__.TiledExtentTests.test_large_levels_are_a_contiguous_bijection) ... ok
+test_subresource_stride_pads_small_levels_to_a_page (__main__.TiledExtentTests.test_subresource_stride_pads_small_levels_to_a_page) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 1.811s
+
+OK

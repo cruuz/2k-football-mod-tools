@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_g12_surfaces",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_g12_surfaces.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:52:24.312917+00:00",
+  "ended": "2026-09-16T00:52:24.842318+00:00",
+  "seconds": 0.529,
+  "exit_code": 0
+}

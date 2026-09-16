@@ -1,0 +1,23 @@
+test_both_layers_change_only_their_two_base_subspans (__main__.LogoWriterDualLayerTests.test_both_layers_change_only_their_two_base_subspans) ... ok
+test_dual_call_with_retail_l1_touches_only_l0 (__main__.LogoWriterDualLayerTests.test_dual_call_with_retail_l1_touches_only_l0) ... ok
+test_dual_no_op_returns_source_entry (__main__.LogoWriterDualLayerTests.test_dual_no_op_returns_source_entry) ... ok
+test_dual_wrong_l1_dimensions_are_refused (__main__.LogoWriterDualLayerTests.test_dual_wrong_l1_dimensions_are_refused) ... ok
+test_drifted_base_hash_is_refused (__main__.LogoWriterFailClosedTests.test_drifted_base_hash_is_refused) ... ok
+test_drifted_entry_hash_is_refused (__main__.LogoWriterFailClosedTests.test_drifted_entry_hash_is_refused) ... ok
+test_existing_output_is_refused_and_untouched (__main__.LogoWriterFailClosedTests.test_existing_output_is_refused_and_untouched) ... ok
+test_source_as_output_is_refused (__main__.LogoWriterFailClosedTests.test_source_as_output_is_refused) ... ok
+test_source_volume_is_never_modified_by_a_copy (__main__.LogoWriterFailClosedTests.test_source_volume_is_never_modified_by_a_copy) ... ok
+test_wrong_dimensions_are_refused (__main__.LogoWriterFailClosedTests.test_wrong_dimensions_are_refused) ... ok
+test_spawn_workers_match_sequential_and_preserve_input_order (__main__.LogoWriterParallelBatchTests.test_spawn_workers_match_sequential_and_preserve_input_order) ... ok
+test_worker_count_is_strictly_bounded (__main__.LogoWriterParallelBatchTests.test_worker_count_is_strictly_bounded) ... ok
+test_worker_refusal_propagates_without_any_output_write (__main__.LogoWriterParallelBatchTests.test_worker_refusal_propagates_without_any_output_write) ... ok
+test_pinned_constants (__main__.LogoWriterPinTests.test_pinned_constants) ... ok
+test_retail_hashes_and_descriptor_hold (__main__.LogoWriterPinTests.test_retail_hashes_and_descriptor_hold) ... ok
+test_transport_is_bit_exact (__main__.LogoWriterPinTests.test_transport_is_bit_exact) ... ok
+test_controlled_edit_changes_only_logo_l0_base (__main__.LogoWriterRoundTripTests.test_controlled_edit_changes_only_logo_l0_base) ... ok
+test_decode_png_encode_is_bit_exact_no_op (__main__.LogoWriterRoundTripTests.test_decode_png_encode_is_bit_exact_no_op) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 13.832s
+
+OK

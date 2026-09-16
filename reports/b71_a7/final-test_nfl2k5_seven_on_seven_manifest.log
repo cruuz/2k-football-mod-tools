@@ -1,0 +1,8 @@
+test_every_complete_site_and_rw_flag_are_exclusively_reserved (__main__.OwnershipTests.test_every_complete_site_and_rw_flag_are_exclusively_reserved) ... ok
+test_real_owner_writer_accounts_for_every_changed_byte (__main__.OwnershipTests.test_real_owner_writer_accounts_for_every_changed_byte) ... ok
+test_retired_rush_hooks_and_live_neighbor_are_not_owned (__main__.OwnershipTests.test_retired_rush_hooks_and_live_neighbor_are_not_owned) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.523s
+
+OK

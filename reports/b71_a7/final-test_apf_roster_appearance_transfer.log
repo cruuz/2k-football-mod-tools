@@ -1,0 +1,10 @@
+test_extractable_xenia_incompatible_package_keeps_raw_route (__main__.TransferTests.test_extractable_xenia_incompatible_package_keeps_raw_route) ... ok
+test_multiple_slots_raw_and_stfs_output_reparse (__main__.TransferTests.test_multiple_slots_raw_and_stfs_output_reparse) ... ok
+test_ps3_zip_carries_other_uniform_selectors_and_receipts_override (__main__.TransferTests.test_ps3_zip_carries_other_uniform_selectors_and_receipts_override) ... ok
+test_receipt_slots_cannot_lie_and_raw_cannot_be_packaged (__main__.TransferTests.test_receipt_slots_cannot_lie_and_raw_cannot_be_packaged) ... ok
+test_refuses_source_overwrite_existing_output_receipt_and_stale_source (__main__.TransferTests.test_refuses_source_overwrite_existing_output_receipt_and_stale_source) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 8.701s
+
+OK

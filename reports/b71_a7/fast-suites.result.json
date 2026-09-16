@@ -1,0 +1,12 @@
+{
+  "name": "fast-suites",
+  "argv": [
+    "python3",
+    "reports/b71_a7/suites.py",
+    "fast"
+  ],
+  "started": "2026-09-16T00:27:00.233131+00:00",
+  "ended": "2026-09-16T00:32:50.500030+00:00",
+  "seconds": 350.267,
+  "exit_code": 0
+}

@@ -1,0 +1,8 @@
+test_project_load_rejects_one_bit_near_source_packet_reuse (__main__.ApfAudoProductBackendTests.test_project_load_rejects_one_bit_near_source_packet_reuse) ... ok
+test_replace_revert_undo_and_project_round_trip_store_packets_only (__main__.ApfAudoProductBackendTests.test_replace_revert_undo_and_project_round_trip_store_packets_only) ... ok
+test_source_audo_payload_is_rejected_before_edit_state_changes (__main__.ApfAudoProductBackendTests.test_source_audo_payload_is_rejected_before_edit_state_changes) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.015s
+
+OK

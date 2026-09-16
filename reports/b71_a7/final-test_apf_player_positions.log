@@ -1,0 +1,10 @@
+test_bool_float_and_out_of_range_codes_fail_closed (__main__.PlayerPositionSchemaTests.test_bool_float_and_out_of_range_codes_fail_closed) ... ok
+test_exact_17_code_semantic_and_source_mirror_contract (__main__.PlayerPositionSchemaTests.test_exact_17_code_semantic_and_source_mirror_contract) ... ok
+test_loader_rejects_relabeling_or_offset_widening (__main__.PlayerPositionSchemaTests.test_loader_rejects_relabeling_or_offset_widening) ... ok
+test_packaged_dictionary_contains_only_retail_free_metadata (__main__.PlayerPositionSchemaTests.test_packaged_dictionary_contains_only_retail_free_metadata) ... ok
+test_record_decode_requires_exact_code_and_equal_mirror (__main__.PlayerPositionSchemaTests.test_record_decode_requires_exact_code_and_equal_mirror) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.002s
+
+OK

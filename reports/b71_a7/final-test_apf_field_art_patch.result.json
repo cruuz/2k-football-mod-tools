@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_field_art_patch",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_field_art_patch.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:48:31.550062+00:00",
+  "ended": "2026-09-16T00:53:33.002264+00:00",
+  "seconds": 301.452,
+  "exit_code": 0
+}

@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf2k8_coverage_tuning",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf2k8_coverage_tuning.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:33:14.426317+00:00",
+  "ended": "2026-09-16T00:33:17.451953+00:00",
+  "seconds": 3.026,
+  "exit_code": 0
+}

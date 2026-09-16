@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_b67_clone",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_b67_clone.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:33:31.578179+00:00",
+  "ended": "2026-09-16T00:34:34.133389+00:00",
+  "seconds": 62.555,
+  "exit_code": 0
+}

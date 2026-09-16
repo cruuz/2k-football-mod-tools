@@ -1,0 +1,11 @@
+test_every_target_has_exact_size_art_and_the_pins_name_it (__main__.ArtTests.test_every_target_has_exact_size_art_and_the_pins_name_it) ... ok
+test_reviewed_catalog_carries_the_art (__main__.ArtTests.test_reviewed_catalog_carries_the_art) ... ok
+test_variants_and_name_ids (__main__.ArtTests.test_variants_and_name_ids) ... ok
+test_states_from_site_hashes (__main__.BundleStateTests.test_states_from_site_hashes) ... ok
+test_night_bundle_refit_matches_the_pins_and_keeps_the_wrappers (__main__.RetailTests.test_night_bundle_refit_matches_the_pins_and_keeps_the_wrappers) ... ok
+test_pins_cover_every_bundle_and_the_packs_read_as_retail (__main__.RetailTests.test_pins_cover_every_bundle_and_the_packs_read_as_retail) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 33.848s
+
+OK

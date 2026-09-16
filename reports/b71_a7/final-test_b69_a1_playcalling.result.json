@@ -1,0 +1,12 @@
+{
+  "name": "final-test_b69_a1_playcalling",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_b69_a1_playcalling.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:59:07.458755+00:00",
+  "ended": "2026-09-16T00:59:54.410306+00:00",
+  "seconds": 46.952,
+  "exit_code": 0
+}

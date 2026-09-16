@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_theme_layout_qt",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_theme_layout_qt.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:58:07.128527+00:00",
+  "ended": "2026-09-16T00:58:26.514143+00:00",
+  "seconds": 19.386,
+  "exit_code": 0
+}

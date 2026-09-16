@@ -1,0 +1,7 @@
+test_explicit_clone_uses_donor_state_at_copy_time (__main__.CloneRetirementTests.test_explicit_clone_uses_donor_state_at_copy_time) ... ok
+test_scheme_clone_retains_restore_masks_across_save_reopen (__main__.CloneRetirementTests.test_scheme_clone_retains_restore_masks_across_save_reopen) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 46.560s
+
+OK

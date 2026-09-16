@@ -1,0 +1,22 @@
+test_a_duplicated_output_placeholder_is_refused_plainly (__main__.ArgumentTemplateTests.test_a_duplicated_output_placeholder_is_refused_plainly) ... ok
+test_a_missing_input_placeholder_is_refused_plainly (__main__.ArgumentTemplateTests.test_a_missing_input_placeholder_is_refused_plainly) ... ok
+test_empty_arguments_are_refused_plainly (__main__.ArgumentTemplateTests.test_empty_arguments_are_refused_plainly) ... ok
+test_the_recommended_template_is_accepted (__main__.ArgumentTemplateTests.test_the_recommended_template_is_accepted) ... ok
+test_a_clean_exit_without_output_is_reported_with_a_fix (__main__.SmokeTestTests.test_a_clean_exit_without_output_is_reported_with_a_fix) ... ok
+test_a_failing_exit_code_is_reported_with_a_fix (__main__.SmokeTestTests.test_a_failing_exit_code_is_reported_with_a_fix) ... ok
+test_a_hung_encoder_times_out_with_a_fix (__main__.SmokeTestTests.test_a_hung_encoder_times_out_with_a_fix) ... ok
+test_a_missing_executable_is_reported_with_a_fix (__main__.SmokeTestTests.test_a_missing_executable_is_reported_with_a_fix) ... ok
+test_a_working_encoder_passes_and_reports_its_output (__main__.SmokeTestTests.test_a_working_encoder_passes_and_reports_its_output) ... ok
+test_an_encoded_size_template_cannot_be_tested_but_can_be_saved (__main__.SmokeTestTests.test_an_encoded_size_template_cannot_be_tested_but_can_be_saved) ... ok
+test_optional_placeholders_are_substituted (__main__.SmokeTestTests.test_optional_placeholders_are_substituted) ... ok
+test_the_tone_is_one_second_of_pcm16_mono (__main__.TestToneTests.test_the_tone_is_one_second_of_pcm16_mono) ... ok
+test_accepting_builds_a_validated_encoder (__main__.WizardDialogTests.test_accepting_builds_a_validated_encoder) ... ok
+test_an_untestable_template_unlocks_saving_with_an_explanation (__main__.WizardDialogTests.test_an_untestable_template_unlocks_saving_with_an_explanation) ... ok
+test_ffmpeg_status_reports_conversion_availability (__main__.WizardDialogTests.test_ffmpeg_status_reports_conversion_availability) ... ok
+test_recommended_template_button_fills_the_placeholders (__main__.WizardDialogTests.test_recommended_template_button_fills_the_placeholders) ... ok
+test_save_is_locked_until_the_tone_test_passes (__main__.WizardDialogTests.test_save_is_locked_until_the_tone_test_passes) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 1.352s
+
+OK

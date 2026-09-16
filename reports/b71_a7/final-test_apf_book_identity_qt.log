@@ -1,0 +1,11 @@
+test_busy_does_not_allow_another_clone_review_or_build (__main__.PanelTests.test_busy_does_not_allow_another_clone_review_or_build) ... ok
+test_identity_and_unused_label_picker_require_a_source (__main__.PanelTests.test_identity_and_unused_label_picker_require_a_source) ... ok
+test_integrated_panel_hides_duplicate_workflow_and_links_cpu_editor (__main__.PanelTests.test_integrated_panel_hides_duplicate_workflow_and_links_cpu_editor) ... ok
+test_preset_build_clones_selected_team_and_opens_that_output_for_editing (__main__.PanelTests.test_preset_build_clones_selected_team_and_opens_that_output_for_editing) ... ok
+test_preset_fills_donor_and_keeps_team_label_and_donor_editable (__main__.PanelTests.test_preset_fills_donor_and_keeps_team_label_and_donor_editable) ... ok
+test_review_is_invalidated_by_selection_change (__main__.PanelTests.test_review_is_invalidated_by_selection_change) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.049s
+
+OK

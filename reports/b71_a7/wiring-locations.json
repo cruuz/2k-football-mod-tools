@@ -72,7 +72,7 @@
   {
     "path": "tests/mod_editor/test_provider_integrity.py",
     "line": 218,
-    "anchor": "[287, 10, 8, 9, 8, 9]"
+    "anchor": "[288, 10, 8, 9, 8, 9]"
   },
   {
     "path": "tools/validate_all_mod_editor_capabilities.py",
@@ -208,5 +208,30 @@
     "path": "tools/nfl_main_menu_font.py",
     "line": 119,
     "anchor": "target = (field_offset + stored - 1) & 0xffffffff"
+  },
+  {
+    "path": "data/nfl2k5_cave_reservations.json",
+    "line": 301299,
+    "anchor": "\"b71_a7_projection\": {"
+  },
+  {
+    "path": "reports/b71_a7/build_testdisc71.py",
+    "line": 28,
+    "anchor": "NAME = "
+  },
+  {
+    "path": "reports/b71_a7/build_testdisc71.py",
+    "line": 30,
+    "anchor": "OPTIONS = "
+  },
+  {
+    "path": "WIRING_B71_S4.md",
+    "line": 58,
+    "anchor": "## 1. Windows helper build:"
+  },
+  {
+    "path": "WIRING_B71_S4.md",
+    "line": 101,
+    "anchor": "## 2. Digit shortfalls"
   }
 ]

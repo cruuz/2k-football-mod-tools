@@ -1,0 +1,19 @@
+test_create_and_load_canonical_alpha_only_recipe (__main__.ApfDigitalFontTests.test_create_and_load_canonical_alpha_only_recipe) ... ok
+test_headless_cli_creates_fixed_global_alpha_recipe (__main__.ApfDigitalFontTests.test_headless_cli_creates_fixed_global_alpha_recipe) ... ok
+test_independent_validator_and_exclusive_metadata_artifact (__main__.ApfDigitalFontTests.test_independent_validator_and_exclusive_metadata_artifact) ... ok
+test_provider_pins_all_owning_modules_source_and_registry_contract (__main__.ApfDigitalFontTests.test_provider_pins_all_owning_modules_source_and_registry_contract) ... ok
+test_provider_rejects_escaping_symlink_parent_and_oversized_pins (__main__.ApfDigitalFontTests.test_provider_rejects_escaping_symlink_parent_and_oversized_pins) ... ok
+test_provider_rejects_hardlinked_pins (__main__.ApfDigitalFontTests.test_provider_rejects_hardlinked_pins) ... ok
+test_provider_uses_fixed_argv_and_emits_global_runtime_warnings (__main__.ApfDigitalFontTests.test_provider_uses_fixed_argv_and_emits_global_runtime_warnings) ... ok
+test_recipe_loader_rejects_scope_fields_pins_duplicates_and_png_tamper (__main__.ApfDigitalFontTests.test_recipe_loader_rejects_scope_fields_pins_duplicates_and_png_tamper) ... ok
+test_recipe_output_is_exclusive_and_owned_partial_is_cleaned (__main__.ApfDigitalFontTests.test_recipe_output_is_exclusive_and_owned_partial_is_cleaned) ... ok
+test_recipe_rejects_dimensions_mode_nonwhite_rgb_suffix_and_symlink (__main__.ApfDigitalFontTests.test_recipe_rejects_dimensions_mode_nonwhite_rgb_suffix_and_symlink) ... ok
+test_schema_freezes_fixed_global_alpha_contract (__main__.ApfDigitalFontTests.test_schema_freezes_fixed_global_alpha_contract) ... ok
+test_shared_texture_compressor_default_contract_remains_byte_exact (__main__.ApfDigitalFontTests.test_shared_texture_compressor_default_contract_remains_byte_exact) ... ok
+test_staged_execution_does_not_import_mutated_repo_helper (__main__.ApfDigitalFontTests.test_staged_execution_does_not_import_mutated_repo_helper) ... ok
+test_verifier_remains_independent_of_writer_and_recipe_modules (__main__.ApfDigitalFontTests.test_verifier_remains_independent_of_writer_and_recipe_modules) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.194s
+
+OK

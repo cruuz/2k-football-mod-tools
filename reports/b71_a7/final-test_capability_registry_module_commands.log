@@ -1,0 +1,8 @@
+test_direct_script_commands_keep_their_existing_identity (__main__.CapabilityRegistryModuleCommandTest.test_direct_script_commands_keep_their_existing_identity) ... ok
+test_python_dash_m_resolves_to_exact_repository_module (__main__.CapabilityRegistryModuleCommandTest.test_python_dash_m_resolves_to_exact_repository_module) ... ok
+test_unknown_or_malformed_dash_m_target_is_not_accepted (__main__.CapabilityRegistryModuleCommandTest.test_unknown_or_malformed_dash_m_target_is_not_accepted) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.001s
+
+OK

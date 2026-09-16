@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_uniform_inventory_gui",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_uniform_inventory_gui.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:58:25.386062+00:00",
+  "ended": "2026-09-16T00:58:28.016050+00:00",
+  "seconds": 2.63,
+  "exit_code": 0
+}

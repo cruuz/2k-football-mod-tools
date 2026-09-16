@@ -1,0 +1,8 @@
+test_decode_does_not_raise_portme_for_format_15 (__main__.Format15PngDecodeTests.test_decode_does_not_raise_portme_for_format_15) ... ok
+test_decode_txtr_base_rgba_expands_nibbles (__main__.Format15PngDecodeTests.test_decode_txtr_base_rgba_expands_nibbles) ... ok
+test_format_15_is_registered_as_4_4_4_4 (__main__.Format15PngDecodeTests.test_format_15_is_registered_as_4_4_4_4) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.009s
+
+OK

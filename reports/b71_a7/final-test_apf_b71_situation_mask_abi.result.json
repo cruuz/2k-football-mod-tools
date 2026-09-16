@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_b71_situation_mask_abi",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_b71_situation_mask_abi.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:41:41.172011+00:00",
+  "ended": "2026-09-16T00:41:45.603798+00:00",
+  "seconds": 4.432,
+  "exit_code": 0
+}

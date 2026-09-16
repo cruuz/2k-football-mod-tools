@@ -1,0 +1,11 @@
+test_every_queens_swap_retires_its_advertisement_and_receipts_it (__main__.LadderTests.test_every_queens_swap_retires_its_advertisement_and_receipts_it) ... ok
+test_hidden_duplicate_cannot_reintroduce_retired_category (__main__.LadderTests.test_hidden_duplicate_cannot_reintroduce_retired_category) ... ok
+test_remove_last_record_of_category_carries_mask_too (__main__.LadderTests.test_remove_last_record_of_category_carries_mask_too) ... ok
+test_removing_middle_record_remains_refused_because_lookup_stops (__main__.LadderTests.test_removing_middle_record_remains_refused_because_lookup_stops) ... ok
+test_retail_bulk_swap_h7a_and_native_picker (__main__.LadderTests.test_retail_bulk_swap_h7a_and_native_picker) ... skipped 'Pinned BASE flat PE absent: /home/noah/.codex-tmp/franchise-2026-08-28/apf.pe'
+test_retiring_category_cannot_expose_an_existing_empty_same_row (__main__.LadderTests.test_retiring_category_cannot_expose_an_existing_empty_same_row) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.252s
+
+OK (skipped=1)

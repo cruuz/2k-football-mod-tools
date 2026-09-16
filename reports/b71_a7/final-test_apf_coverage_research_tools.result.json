@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_coverage_research_tools",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_coverage_research_tools.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:44:47.342641+00:00",
+  "ended": "2026-09-16T00:44:47.420500+00:00",
+  "seconds": 0.078,
+  "exit_code": 0
+}

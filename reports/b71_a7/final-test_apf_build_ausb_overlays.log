@@ -1,0 +1,10 @@
+test_cross_volume_ausb_build_writes_both_packs_without_reparse_or_leaks (__main__.AusbOverlayBuildTests.test_cross_volume_ausb_build_writes_both_packs_without_reparse_or_leaks) ... ok
+test_divergent_semantic_aliases_are_rejected_before_output_exists (__main__.AusbOverlayBuildTests.test_divergent_semantic_aliases_are_rejected_before_output_exists) ... ok
+test_identical_semantic_aliases_emit_two_rows_but_two_physical_spans (__main__.AusbOverlayBuildTests.test_identical_semantic_aliases_emit_two_rows_but_two_physical_spans) ... ok
+test_owner_fingerprint_mismatch_is_rejected_before_output_exists (__main__.AusbOverlayBuildTests.test_owner_fingerprint_mismatch_is_rejected_before_output_exists) ... ok
+test_source_payload_hash_mismatch_is_rejected_before_output_exists (__main__.AusbOverlayBuildTests.test_source_payload_hash_mismatch_is_rejected_before_output_exists) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.037s
+
+OK

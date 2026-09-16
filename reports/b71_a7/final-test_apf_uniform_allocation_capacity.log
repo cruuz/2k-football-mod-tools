@@ -1,0 +1,27 @@
+test_a_budget_is_the_allocation_minus_everything_that_cannot_move (__main__.CapacityModelTests.test_a_budget_is_the_allocation_minus_everything_that_cannot_move) ... ok
+test_a_family_without_a_capacity_model_says_so (__main__.CapacityModelTests.test_a_family_without_a_capacity_model_says_so) ... ok
+test_capacity_bands_split_the_24_slots_into_measured_thirds (__main__.CapacityModelTests.test_capacity_bands_split_the_24_slots_into_measured_thirds) ... ok
+test_compile_leaves_non_overflow_jersey_errors_alone (__main__.CapacityModelTests.test_compile_leaves_non_overflow_jersey_errors_alone) ... ok
+test_compile_rewrites_the_generic_jersey_writer_overflow (__main__.CapacityModelTests.test_compile_rewrites_the_generic_jersey_writer_overflow) ... ok
+test_jersey_inspection_relabels_the_shared_two_block_model (__main__.CapacityModelTests.test_jersey_inspection_relabels_the_shared_two_block_model) ... ok
+test_jersey_is_a_capacity_family (__main__.CapacityModelTests.test_jersey_is_a_capacity_family) ... ok
+test_a_malformed_row_still_produces_a_usable_label (__main__.OverflowMessageTests.test_a_malformed_row_still_produces_a_usable_label) ... ok
+test_every_mask_transport_labels_its_own_family (__main__.OverflowMessageTests.test_every_mask_transport_labels_its_own_family) ... ok
+test_it_is_a_patch_error_that_carries_its_numbers (__main__.OverflowMessageTests.test_it_is_a_patch_error_that_carries_its_numbers) ... ok
+test_jersey_overflow_names_the_slot_not_a_generic_package (__main__.OverflowMessageTests.test_jersey_overflow_names_the_slot_not_a_generic_package) ... ok
+test_the_generic_jersey_writer_overflow_is_rewritten (__main__.OverflowMessageTests.test_the_generic_jersey_writer_overflow_is_rewritten) ... ok
+test_the_message_names_the_target_and_its_budget (__main__.OverflowMessageTests.test_the_message_names_the_target_and_its_budget) ... ok
+test_combined_team_line_names_both_family_ranks (__main__.RealJerseyCapacityTests.test_combined_team_line_names_both_family_ranks) ... ok
+test_every_jersey_slot_is_ranked_exactly_once (__main__.RealJerseyCapacityTests.test_every_jersey_slot_is_ranked_exactly_once) ... ok
+test_ranks_follow_the_measured_budget_not_a_hardcoded_order (__main__.RealJerseyCapacityTests.test_ranks_follow_the_measured_budget_not_a_hardcoded_order) ... ok
+test_the_summary_is_an_aid_not_a_runtime_claim (__main__.RealJerseyCapacityTests.test_the_summary_is_an_aid_not_a_runtime_claim) ... ok
+test_every_shoulder_slot_is_ranked_exactly_once (__main__.RealShoulderCapacityTests.test_every_shoulder_slot_is_ranked_exactly_once) ... ok
+test_sector_slack_alone_would_have_ranked_them_backwards (__main__.RealShoulderCapacityTests.test_sector_slack_alone_would_have_ranked_them_backwards)
+The metric the report called misleading must not be the one shown. ... ok
+test_the_slot_that_refused_the_mask_ranks_below_the_two_that_took_it (__main__.RealShoulderCapacityTests.test_the_slot_that_refused_the_mask_ranks_below_the_two_that_took_it) ... ok
+test_the_summary_tells_a_user_which_way_to_go (__main__.RealShoulderCapacityTests.test_the_summary_tells_a_user_which_way_to_go) ... ok
+
+----------------------------------------------------------------------
+Ran 21 tests in 1.261s
+
+OK

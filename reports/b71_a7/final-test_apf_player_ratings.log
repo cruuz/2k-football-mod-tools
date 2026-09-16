@@ -1,0 +1,19 @@
+test_every_relabelled_slot_records_its_evidence (__main__.PlayerRatingSchemaTests.test_every_relabelled_slot_records_its_evidence)
+A corrected label must carry its basis, not just a new string. ... ok
+test_exact_31_field_contract_and_excluded_neighbor (__main__.PlayerRatingSchemaTests.test_exact_31_field_contract_and_excluded_neighbor) ... ok
+test_loader_rejects_relabeling_and_expansion (__main__.PlayerRatingSchemaTests.test_loader_rejects_relabeling_and_expansion) ... ok
+test_only_the_engine_exposed_bytes_carry_a_formula_slot (__main__.PlayerRatingSchemaTests.test_only_the_engine_exposed_bytes_carry_a_formula_slot)
+The engine's accessor family skips 0xBD, 0xC5 and 0xD2. ... ok
+test_player_tsv_exports_every_exact_rating_column (__main__.PlayerRatingSchemaTests.test_player_tsv_exports_every_exact_rating_column) ... ok
+test_private_complete_rating_sheet_is_wide_atomic_and_exact (__main__.PlayerRatingSchemaTests.test_private_complete_rating_sheet_is_wide_atomic_and_exact) ... ok
+test_private_rating_sheet_refuses_incomplete_inventory_without_output (__main__.PlayerRatingSchemaTests.test_private_rating_sheet_refuses_incomplete_inventory_without_output) ... ok
+test_public_dictionary_is_metadata_only_and_module_has_no_writer (__main__.PlayerRatingSchemaTests.test_public_dictionary_is_metadata_only_and_module_has_no_writer) ... ok
+test_record_decode_preserves_zero_99_and_native_100 (__main__.PlayerRatingSchemaTests.test_record_decode_preserves_zero_99_and_native_100) ... ok
+test_record_decode_rejects_101_and_wrong_length (__main__.PlayerRatingSchemaTests.test_record_decode_rejects_101_and_wrong_length) ... ok
+test_the_four_unnamed_bytes_stay_neutrally_named (__main__.PlayerRatingSchemaTests.test_the_four_unnamed_bytes_stay_neutrally_named)
+0xBD, 0xC5, 0xD2 and 0xD4 are editable but the executable never names them. ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.673s
+
+OK

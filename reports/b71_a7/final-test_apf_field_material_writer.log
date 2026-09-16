@@ -1,0 +1,10 @@
+test_all_named_materials_roundtrip_and_idempotence (__main__.FieldMaterialTests.test_all_named_materials_roundtrip_and_idempotence) ... ok
+test_h7a_fixed_allocation_roundtrip_and_no_overlap (__main__.FieldMaterialTests.test_h7a_fixed_allocation_roundtrip_and_no_overlap) ... ok
+test_invalid_alpha_material_and_corrupt_layout_refused (__main__.FieldMaterialTests.test_invalid_alpha_material_and_corrupt_layout_refused) ... ok
+test_nonzero_allocation_tail_refused (__main__.FieldMaterialTests.test_nonzero_allocation_tail_refused) ... ok
+test_reparse_rejects_other_alpha_rgb_pointer_and_unowned_byte_changes (__main__.FieldMaterialTests.test_reparse_rejects_other_alpha_rgb_pointer_and_unowned_byte_changes) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.159s
+
+OK

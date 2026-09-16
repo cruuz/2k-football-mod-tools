@@ -1,0 +1,19 @@
+test_a_non_image_source_is_not_a_disc_image (__main__.AvailabilityTests.test_a_non_image_source_is_not_a_disc_image) ... ok
+test_available_with_reference_pins_without_the_legacy_audit (__main__.AvailabilityTests.test_available_with_reference_pins_without_the_legacy_audit) ... ok
+test_available_without_the_developer_asset_folder (__main__.AvailabilityTests.test_available_without_the_developer_asset_folder) ... ok
+test_resolve_art_without_a_source_or_cache_refuses_the_two_the_bar_needs (__main__.AvailabilityTests.test_resolve_art_without_a_source_or_cache_refuses_the_two_the_bar_needs) ... ok
+test_texture_targets_carry_the_four_atlases (__main__.AvailabilityTests.test_texture_targets_carry_the_four_atlases) ... ok
+test_every_texture_span_is_identical_either_way (__main__.ByteIdentityTests.test_every_texture_span_is_identical_either_way) ... skipped 'score_buga_modern.png is not in this tree'
+test_the_scene_span_is_identical_either_way (__main__.ByteIdentityTests.test_the_scene_span_is_identical_either_way) ... skipped 'the developer copy of the retail scene is not in this tree'
+test_a_changed_generator_restales_the_cached_art (__main__.DiscSourcedArtTests.test_a_changed_generator_restales_the_cached_art)
+Derived art has no version but the code that made it, so the cache records that. ... ok
+test_a_pinned_span_read_from_a_foreign_image_is_refused (__main__.DiscSourcedArtTests.test_a_pinned_span_read_from_a_foreign_image_is_refused) ... ok
+test_a_second_resolve_comes_from_the_private_cache (__main__.DiscSourcedArtTests.test_a_second_resolve_comes_from_the_private_cache) ... ok
+test_the_modern_art_regenerates_byte_for_byte (__main__.DiscSourcedArtTests.test_the_modern_art_regenerates_byte_for_byte) ... ok
+test_the_retail_scene_decodes_out_of_the_image_and_caches (__main__.DiscSourcedArtTests.test_the_retail_scene_decodes_out_of_the_image_and_caches) ... ok
+test_the_step_writes_the_expected_resource_bytes (__main__.FullDiscWriteTests.test_the_step_writes_the_expected_resource_bytes) ... skipped 'the developer copies this is compared against are not in this tree'
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.482s
+
+OK (skipped=3)

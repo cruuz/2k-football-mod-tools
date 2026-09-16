@@ -1,0 +1,26 @@
+test_argument_template_is_explicit_and_bounded (__main__.ApfAudioEncodingTests.test_argument_template_is_explicit_and_bounded) ... ok
+test_cancel_before_launch_does_not_start_encoder (__main__.ApfAudioEncodingTests.test_cancel_before_launch_does_not_start_encoder) ... ok
+test_cancel_during_process_stops_it (__main__.ApfAudioEncodingTests.test_cancel_during_process_stops_it) ... ok
+test_direct_encoder_must_be_executable_and_exe_requires_wine (__main__.ApfAudioEncodingTests.test_direct_encoder_must_be_executable_and_exe_requires_wine) ... ok
+test_direct_encoder_receives_argv_not_a_shell_and_returns_private_bytes (__main__.ApfAudioEncodingTests.test_direct_encoder_receives_argv_not_a_shell_and_returns_private_bytes) ... ok
+test_encoder_and_wine_links_are_rejected (__main__.ApfAudioEncodingTests.test_encoder_and_wine_links_are_rejected) ... ok
+test_missing_or_oversized_output_is_actionable (__main__.ApfAudioEncodingTests.test_missing_or_oversized_output_is_actionable) ... ok
+test_nonzero_exit_reports_bounded_diagnostic (__main__.ApfAudioEncodingTests.test_nonzero_exit_reports_bounded_diagnostic) ... ok
+test_pcm_with_ancillary_chunk_is_canonicalized_before_encoding (__main__.ApfAudioEncodingTests.test_pcm_with_ancillary_chunk_is_canonicalized_before_encoding) ... ok
+test_successful_encoder_parent_cannot_leave_background_child (__main__.ApfAudioEncodingTests.test_successful_encoder_parent_cannot_leave_background_child) ... ok
+test_template_is_exact_deterministic_silence_and_retail_free (__main__.ApfAudioEncodingTests.test_template_is_exact_deterministic_silence_and_retail_free) ... ok
+test_template_refuses_overwrite_and_cancel_leaves_no_file (__main__.ApfAudioEncodingTests.test_template_refuses_overwrite_and_cancel_leaves_no_file) ... ok
+test_timeout_stops_encoder_and_discards_output (__main__.ApfAudioEncodingTests.test_timeout_stops_encoder_and_discards_output) ... ok
+test_wine_mode_hands_the_private_paths_over_drive_mapped (__main__.ApfAudioEncodingTests.test_wine_mode_hands_the_private_paths_over_drive_mapped) ... ok
+test_wine_mode_uses_user_exe_as_a_plain_argument (__main__.ApfAudioEncodingTests.test_wine_mode_uses_user_exe_as_a_plain_argument) ... ok
+test_wrong_pcm_shape_and_linked_input_fail_before_encoder_runs (__main__.ApfAudioEncodingTests.test_wrong_pcm_shape_and_linked_input_fail_before_encoder_runs) ... ok
+test_alignment_aware_lossy_signal_passes (__main__.ApfAudioSignalQualityTests.test_alignment_aware_lossy_signal_passes) ... ok
+test_clipping_dc_and_bad_tail_are_rejected (__main__.ApfAudioSignalQualityTests.test_clipping_dc_and_bad_tail_are_rejected) ... ok
+test_external_xma_route_decodes_then_compares_before_acceptance (__main__.ApfAudioSignalQualityTests.test_external_xma_route_decodes_then_compares_before_acceptance) ... ok
+test_silence_and_wrong_pitch_are_rejected (__main__.ApfAudioSignalQualityTests.test_silence_and_wrong_pitch_are_rejected) ... ok
+test_swapped_or_interleaved_stereo_is_rejected (__main__.ApfAudioSignalQualityTests.test_swapped_or_interleaved_stereo_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 21 tests in 11.778s
+
+OK

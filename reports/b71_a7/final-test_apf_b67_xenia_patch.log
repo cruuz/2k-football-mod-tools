@@ -1,0 +1,8 @@
+test_consent_install_enable_reload_launch_remove (__main__.PatchTests.test_consent_install_enable_reload_launch_remove) ... ok
+test_disabled_and_invalid_config_report_and_no_partial_install (__main__.PatchTests.test_disabled_and_invalid_config_report_and_no_partial_install) ... ok
+test_wrong_patch_refused_and_failed_config_write_rolls_back_patch (__main__.PatchTests.test_wrong_patch_refused_and_failed_config_write_rolls_back_patch) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.205s
+
+OK

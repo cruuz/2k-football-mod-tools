@@ -2,3 +2,10 @@
 {"name": "final-test_nfl2k5_defensive_try_manifest", "started": "2026-09-16T00:27:04.820514+00:00", "ended": "2026-09-16T00:27:09.435345+00:00", "seconds": 4.615, "exit_code": 0}
 {"name": "final-test_nfl2k5_accelerated_clock_manifest", "started": "2026-09-16T00:27:00.265591+00:00", "ended": "2026-09-16T00:27:10.553995+00:00", "seconds": 10.288, "exit_code": 0}
 {"name": "final-test_nfl2k5_music_playlist_manifest", "started": "2026-09-16T00:27:10.554379+00:00", "ended": "2026-09-16T00:27:14.348295+00:00", "seconds": 3.794, "exit_code": 0}
+{"name": "final-test_nfl2k5_my_career_manifest", "started": "2026-09-16T00:27:14.348914+00:00", "ended": "2026-09-16T00:27:22.510741+00:00", "seconds": 8.162, "exit_code": 0}
+{"name": "final-test_nfl2k5_abilities_v2_manifest", "started": "2026-09-16T00:27:00.265137+00:00", "ended": "2026-09-16T00:32:11.207241+00:00", "seconds": 310.942, "exit_code": 0}
+{"name": "final-test_nfl2k5_read_option_diagnostic_manifest", "started": "2026-09-16T00:32:11.207848+00:00", "ended": "2026-09-16T00:32:11.635317+00:00", "seconds": 0.427, "exit_code": 0}
+{"name": "final-test_nfl2k5_screen_hooks_manifest", "started": "2026-09-16T00:32:11.635784+00:00", "ended": "2026-09-16T00:32:15.995148+00:00", "seconds": 4.359, "exit_code": 0}
+{"name": "final-test_nfl2k5_seven_on_seven_manifest", "started": "2026-09-16T00:32:15.995535+00:00", "ended": "2026-09-16T00:32:16.795120+00:00", "seconds": 0.8, "exit_code": 0}
+{"name": "final-test_nfl2k5_guardian_manifest", "started": "2026-09-16T00:27:09.435980+00:00", "ended": "2026-09-16T00:32:22.581987+00:00", "seconds": 313.146, "exit_code": 0}
+{"name": "final-test_nfl2k5_playbook_pair_manifest", "started": "2026-09-16T00:27:22.511133+00:00", "ended": "2026-09-16T00:32:50.489564+00:00", "seconds": 327.978, "exit_code": 0}

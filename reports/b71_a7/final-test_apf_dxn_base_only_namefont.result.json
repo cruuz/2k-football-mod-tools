@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_dxn_base_only_namefont",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_dxn_base_only_namefont.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:47:51.839186+00:00",
+  "ended": "2026-09-16T00:48:13.863490+00:00",
+  "seconds": 22.024,
+  "exit_code": 0
+}

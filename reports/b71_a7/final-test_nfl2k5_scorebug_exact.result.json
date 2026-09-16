@@ -1,0 +1,12 @@
+{
+  "name": "final-test_nfl2k5_scorebug_exact",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_nfl2k5_scorebug_exact.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:33:39.084040+00:00",
+  "ended": "2026-09-16T00:35:09.323178+00:00",
+  "seconds": 90.239,
+  "exit_code": 0
+}

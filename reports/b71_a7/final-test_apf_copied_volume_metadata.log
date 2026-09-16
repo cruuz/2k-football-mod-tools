@@ -1,0 +1,22 @@
+test_every_call_site_passes_an_output_path (__main__.CallSiteTests.test_every_call_site_passes_an_output_path) ... ok
+test_the_cross_module_reaches_share_the_fixed_definition (__main__.CallSiteTests.test_the_cross_module_reaches_share_the_fixed_definition) ... ok
+test_the_shared_definitions_take_an_output_path (__main__.CallSiteTests.test_the_shared_definitions_take_an_output_path) ... ok
+test_copied_volume_builds_under_simulated_windows (__main__.CopiedVolumeTransactionTests.test_copied_volume_builds_under_simulated_windows) ... ok
+test_copied_volume_builds_when_utime_always_fails (__main__.CopiedVolumeTransactionTests.test_copied_volume_builds_when_utime_always_fails) ... ok
+test_logocache_extent_volume_builds_under_simulated_windows (__main__.CopiedVolumeTransactionTests.test_logocache_extent_volume_builds_under_simulated_windows) ... ok
+test_a_raising_utime_never_escapes_the_copy (__main__.CopyFdMetadataTests.test_a_raising_utime_never_escapes_the_copy) ... ok
+test_completes_under_simulated_windows (__main__.CopyFdMetadataTests.test_completes_under_simulated_windows) ... ok
+test_copies_mode_and_times_on_this_host (__main__.CopyFdMetadataTests.test_copies_mode_and_times_on_this_host) ... ok
+test_a_hasattr_probe_would_have_passed_where_the_call_fails (__main__.DescriptorTimeCapabilityTests.test_a_hasattr_probe_would_have_passed_where_the_call_fails) ... ok
+test_probe_answers_the_os_capability_table (__main__.DescriptorTimeCapabilityTests.test_probe_answers_the_os_capability_table) ... ok
+test_the_pre_fix_call_still_raises_under_the_simulation (__main__.DescriptorTimeCapabilityTests.test_the_pre_fix_call_still_raises_under_the_simulation) ... ok
+test_a_failing_utime_is_reported_rather_than_raised (__main__.UtimeNsTests.test_a_failing_utime_is_reported_rather_than_raised) ... ok
+test_reports_a_skip_when_no_path_can_be_consulted (__main__.UtimeNsTests.test_reports_a_skip_when_no_path_can_be_consulted) ... ok
+test_stamps_through_the_descriptor_where_supported (__main__.UtimeNsTests.test_stamps_through_the_descriptor_where_supported) ... ok
+test_stamps_through_the_path_when_the_descriptor_form_is_absent (__main__.UtimeNsTests.test_stamps_through_the_path_when_the_descriptor_form_is_absent) ... ok
+test_the_path_fallback_refuses_a_name_that_is_no_longer_the_file (__main__.UtimeNsTests.test_the_path_fallback_refuses_a_name_that_is_no_longer_the_file) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.154s
+
+OK

@@ -1,0 +1,12 @@
+{
+  "name": "cleanup-test-support",
+  "argv": [
+    "/usr/bin/python3",
+    "-c",
+    "from pathlib import Path;import shutil;root=Path.cwd();paths=[root/\".scratch/test-python\",root/\"reports/b71_a7/__pycache__\",root/\".scratch/b71-a7-manifest.json\",root/\".scratch/b71-a7-parent-manifest.json\",root/\".scratch/a7-product-frozen.json\"];[(shutil.rmtree(p) if p.is_dir() else p.unlink()) for p in paths if p.exists()];print(\"Removed temporary interpreter, duplicate projection files and report bytecode; retained private Git and delivery evidence.\")"
+  ],
+  "started": "2026-09-16T01:28:04.390259+00:00",
+  "ended": "2026-09-16T01:28:04.423242+00:00",
+  "seconds": 0.033,
+  "exit_code": 0
+}

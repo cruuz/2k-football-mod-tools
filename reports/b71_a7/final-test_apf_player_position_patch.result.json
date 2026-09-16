@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_player_position_patch",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_player_position_patch.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:55:47.019100+00:00",
+  "ended": "2026-09-16T00:55:54.281030+00:00",
+  "seconds": 7.262,
+  "exit_code": 0
+}

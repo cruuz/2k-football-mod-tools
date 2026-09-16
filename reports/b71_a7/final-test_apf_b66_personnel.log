@@ -1,0 +1,8 @@
+test_retail_census_and_moves_across_all_fifteen_books (__main__.FormationMoveTests.test_retail_census_and_moves_across_all_fifteen_books) ... ok
+test_stale_primary_and_secondary_are_normalized_in_recipe_and_receipt (__main__.FormationMoveTests.test_stale_primary_and_secondary_are_normalized_in_recipe_and_receipt) ... ok
+test_unsafe_retirement_explains_the_bounded_fallback (__main__.FormationMoveTests.test_unsafe_retirement_explains_the_bounded_fallback) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 5.728s
+
+OK

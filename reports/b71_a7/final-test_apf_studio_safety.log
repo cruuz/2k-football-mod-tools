@@ -1,0 +1,32 @@
+test_audio_export_preserves_a_destination_created_during_decode (__main__.AssetExportSafetyTests.test_audio_export_preserves_a_destination_created_during_decode) ... ok
+test_bounded_audio_bank_zip_is_transactional (__main__.AssetExportSafetyTests.test_bounded_audio_bank_zip_is_transactional) ... ok
+test_cancelled_audio_preview_publishes_no_wav_or_receipt (__main__.AssetExportSafetyTests.test_cancelled_audio_preview_publishes_no_wav_or_receipt) ... ok
+test_cancelled_cached_audio_preview_is_preserved (__main__.AssetExportSafetyTests.test_cancelled_cached_audio_preview_is_preserved) ... ok
+test_external_audio_bank_export_is_typed_streamed_and_source_safe (__main__.AssetExportSafetyTests.test_external_audio_bank_export_is_typed_streamed_and_source_safe) ... ok
+test_filtered_audio_bundle_is_mixed_bounded_and_transactional (__main__.AssetExportSafetyTests.test_filtered_audio_bundle_is_mixed_bounded_and_transactional) ... ok
+test_large_outer_export_is_streamed_in_bounded_chunks (__main__.AssetExportSafetyTests.test_large_outer_export_is_streamed_in_bounded_chunks) ... ok
+test_private_audio_preview_rejects_tamper_and_symlinks (__main__.AssetExportSafetyTests.test_private_audio_preview_rejects_tamper_and_symlinks) ... ok
+test_wav_export_never_uses_or_deletes_a_user_sidecar (__main__.AssetExportSafetyTests.test_wav_export_never_uses_or_deletes_a_user_sidecar) ... ok
+test_build_rejects_output_inside_untouched_source_tree (__main__.BuildBoundaryTests.test_build_rejects_output_inside_untouched_source_tree) ... ok
+test_build_rejects_replacement_whose_hash_changed (__main__.BuildBoundaryTests.test_build_rejects_replacement_whose_hash_changed) ... ok
+test_clean_build_publishes_one_complete_atomic_game_directory (__main__.BuildBoundaryTests.test_clean_build_publishes_one_complete_atomic_game_directory) ... ok
+test_failed_build_removes_staging_and_publishes_nothing (__main__.BuildBoundaryTests.test_failed_build_removes_staging_and_publishes_nothing) ... ok
+test_low_space_is_refused_before_hashing_or_staging (__main__.BuildBoundaryTests.test_low_space_is_refused_before_hashing_or_staging) ... ok
+test_cached_catalog_rejects_corrupt_inner_selection (__main__.CatalogAndLauncherSafetyTests.test_cached_catalog_rejects_corrupt_inner_selection) ... ok
+test_launch_copies_title_update_into_isolated_content_root (__main__.CatalogAndLauncherSafetyTests.test_launch_copies_title_update_into_isolated_content_root) ... ok
+test_title_update_1_1_is_hash_pinned (__main__.CatalogAndLauncherSafetyTests.test_title_update_1_1_is_hash_pinned) ... ok
+test_xenia_launch_does_not_follow_log_symlink (__main__.CatalogAndLauncherSafetyTests.test_xenia_launch_does_not_follow_log_symlink) ... ok
+test_xenia_settings_ignore_stale_temporary_file (__main__.CatalogAndLauncherSafetyTests.test_xenia_settings_ignore_stale_temporary_file) ... ok
+test_xenia_settings_reject_executable_symlink (__main__.CatalogAndLauncherSafetyTests.test_xenia_settings_reject_executable_symlink) ... ok
+test_failed_session_import_removes_unpack_staging (__main__.ProjectTransactionTests.test_failed_session_import_removes_unpack_staging) ... ok
+test_loader_does_not_trust_conflicting_content_addressed_cache (__main__.ProjectTransactionTests.test_loader_does_not_trust_conflicting_content_addressed_cache) ... ok
+test_loader_rejects_duplicate_zip_member_names (__main__.ProjectTransactionTests.test_loader_rejects_duplicate_zip_member_names) ... ok
+test_loader_rejects_project_symlink (__main__.ProjectTransactionTests.test_loader_rejects_project_symlink) ... ok
+test_project_rejects_opaque_payloads_hidden_in_metadata (__main__.ProjectTransactionTests.test_project_rejects_opaque_payloads_hidden_in_metadata) ... ok
+test_save_preserves_destination_created_at_publish_time (__main__.ProjectTransactionTests.test_save_preserves_destination_created_at_publish_time) ... ok
+test_save_rejects_duplicate_asset_ids (__main__.ProjectTransactionTests.test_save_rejects_duplicate_asset_ids) ... ok
+
+----------------------------------------------------------------------
+Ran 27 tests in 0.127s
+
+OK

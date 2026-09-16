@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_splb_formation_personnel",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_splb_formation_personnel.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:57:43.775188+00:00",
+  "ended": "2026-09-16T00:57:44.990196+00:00",
+  "seconds": 1.215,
+  "exit_code": 0
+}

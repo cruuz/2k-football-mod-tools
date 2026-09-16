@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_xma1_wizard_gui",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_xma1_wizard_gui.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:59:05.528918+00:00",
+  "ended": "2026-09-16T00:59:07.458135+00:00",
+  "seconds": 1.929,
+  "exit_code": 0
+}

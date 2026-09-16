@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_studio_core",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_studio_core.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:57:49.155128+00:00",
+  "ended": "2026-09-16T00:57:49.422298+00:00",
+  "seconds": 0.267,
+  "exit_code": 0
+}

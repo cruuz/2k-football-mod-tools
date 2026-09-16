@@ -1,0 +1,25 @@
+test_add_resolves_initial_133_and_stages_its_natural_package (__main__.DialogPersonnelTests.test_add_resolves_initial_133_and_stages_its_natural_package) ... This plugin does not support propagateSizeHints()
+ok
+test_alternatives_show_counts_accept_override_and_break_ties (__main__.DialogPersonnelTests.test_alternatives_show_counts_accept_override_and_break_ties) ... This plugin does not support propagateSizeHints()
+ok
+test_cancel_does_not_stage_the_automatic_change (__main__.DialogPersonnelTests.test_cancel_does_not_stage_the_automatic_change) ... ok
+test_facade_without_optional_readers_keeps_safe_defaults (__main__.DialogPersonnelTests.test_facade_without_optional_readers_keeps_safe_defaults) ... This plugin does not support propagateSizeHints()
+ok
+test_formation_absent_from_cpu_census_uses_master_category (__main__.DialogPersonnelTests.test_formation_absent_from_cpu_census_uses_master_category) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_formation_move_normalizes_unpaired_override_before_staging (__main__.DialogPersonnelTests.test_formation_move_normalizes_unpaired_override_before_staging) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_formation_only_change_stages_flush_and_compiles_honest_receipt (__main__.DialogPersonnelTests.test_formation_only_change_stages_flush_and_compiles_honest_receipt) ... This plugin does not support propagateSizeHints()
+ok
+test_all_fifteen_books_rederive_127_formations_and_209_records (__main__.RetailGroundTruthTests.test_all_fifteen_books_rederive_127_formations_and_209_records) ... ok
+test_master_roles_confirm_jacks_and_flush_personnel (__main__.RetailGroundTruthTests.test_master_roles_confirm_jacks_and_flush_personnel) ... ok
+test_retail_jacks_to_quads_compiles_and_reparses_with_flush (__main__.RetailGroundTruthTests.test_retail_jacks_to_quads_compiles_and_reparses_with_flush) ... ok
+test_two_books_count_records_order_ties_and_ignore_empty_slots (__main__.RetailTableFixtureTests.test_two_books_count_records_order_ties_and_ignore_empty_slots) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.957s
+
+OK

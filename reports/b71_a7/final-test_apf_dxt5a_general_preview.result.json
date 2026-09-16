@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_dxt5a_general_preview",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_dxt5a_general_preview.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:48:09.301824+00:00",
+  "ended": "2026-09-16T00:48:30.055237+00:00",
+  "seconds": 20.753,
+  "exit_code": 0
+}

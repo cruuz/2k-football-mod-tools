@@ -1,0 +1,12 @@
+{
+  "name": "final-test_unif_color_control",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_unif_color_control.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:40:56.996036+00:00",
+  "ended": "2026-09-16T00:41:07.274508+00:00",
+  "seconds": 10.278,
+  "exit_code": 0
+}

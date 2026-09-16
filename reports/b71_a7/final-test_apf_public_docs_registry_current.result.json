@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_public_docs_registry_current",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_public_docs_registry_current.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:57:11.829711+00:00",
+  "ended": "2026-09-16T00:57:12.014130+00:00",
+  "seconds": 0.184,
+  "exit_code": 0
+}

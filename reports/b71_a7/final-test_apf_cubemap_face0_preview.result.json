@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_cubemap_face0_preview",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_cubemap_face0_preview.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:45:20.126587+00:00",
+  "ended": "2026-09-16T00:45:41.510602+00:00",
+  "seconds": 21.384,
+  "exit_code": 0
+}

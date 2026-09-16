@@ -1,0 +1,15 @@
+{
+  "name": "provider-count-commit",
+  "argv": [
+    "git",
+    "commit",
+    "-m",
+    "Pin the combined provider closure including the painted atlas dependency",
+    "--",
+    "tests/mod_editor/test_provider_integrity.py"
+  ],
+  "started": "2026-09-16T00:42:34.349000+00:00",
+  "ended": "2026-09-16T00:42:34.430057+00:00",
+  "seconds": 0.081,
+  "exit_code": 0
+}

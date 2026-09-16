@@ -1,0 +1,9 @@
+test_base_only_layout_matches_font_albedo_pins (__main__.DxnBaseOnlyLayoutTests.test_base_only_layout_matches_font_albedo_pins) ... ok
+test_helmet_class_still_requires_packed_mips (__main__.DxnBaseOnlyLayoutTests.test_helmet_class_still_requires_packed_mips) ... ok
+test_all_namefont_textures_preview (__main__.RealApfNameFontPreviewTests.test_all_namefont_textures_preview) ... ok
+test_namefont_outer_ids_documented (__main__.RealApfNameFontPreviewTests.test_namefont_outer_ids_documented) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 21.911s
+
+OK

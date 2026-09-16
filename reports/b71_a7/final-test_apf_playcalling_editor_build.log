@@ -1,0 +1,9 @@
+test_changed_review_inputs_refuse_before_archive_writes (__main__.BuildTests.test_changed_review_inputs_refuse_before_archive_writes) ... ok
+test_one_team_can_own_both_an_offensive_and_a_defensive_book (__main__.BuildTests.test_one_team_can_own_both_an_offensive_and_a_defensive_book) ... ok
+test_situation_only_build_preserves_archives_and_reparses_both_patches (__main__.BuildTests.test_situation_only_build_preserves_archives_and_reparses_both_patches) ... ok
+test_twenty_four_clones_insert_once_then_name_bound_rating_readback (__main__.BuildTests.test_twenty_four_clones_insert_once_then_name_bound_rating_readback) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 97.247s
+
+OK

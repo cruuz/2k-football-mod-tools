@@ -1,0 +1,29 @@
+test_a_play_outside_master_is_refused (__main__.CompileTests.test_a_play_outside_master_is_refused) ... ok
+test_a_redundant_change_is_a_no_op (__main__.CompileTests.test_a_redundant_change_is_a_no_op) ... ok
+test_adding_a_play_appends_an_untagged_entry (__main__.CompileTests.test_adding_a_play_appends_an_untagged_entry) ... ok
+test_an_added_play_reuses_its_x_from_elsewhere_in_the_book (__main__.CompileTests.test_an_added_play_reuses_its_x_from_elsewhere_in_the_book) ... ok
+test_contradicting_changes_are_refused (__main__.CompileTests.test_contradicting_changes_are_refused) ... ok
+test_overflowing_the_84_slot_capacity_is_refused (__main__.CompileTests.test_overflowing_the_84_slot_capacity_is_refused) ... ok
+test_removing_a_tagged_slot_is_refused (__main__.CompileTests.test_removing_a_tagged_slot_is_refused) ... ok
+test_removing_an_untagged_play_compacts_the_prefix (__main__.CompileTests.test_removing_an_untagged_play_compacts_the_prefix) ... ok
+test_two_books_in_one_request_are_refused (__main__.CompileTests.test_two_books_in_one_request_are_refused) ... ok
+test_flip_partner_name_is_an_exact_suffix_pair (__main__.LayoutPinTests.test_flip_partner_name_is_an_exact_suffix_pair) ... ok
+test_flip_partner_record_uses_the_exact_suffix (__main__.LayoutPinTests.test_flip_partner_record_uses_the_exact_suffix) ... ok
+test_the_filler_is_just_an_out_of_range_play_index (__main__.LayoutPinTests.test_the_filler_is_just_an_out_of_range_play_index) ... ok
+test_the_proved_layout_constants_are_pinned (__main__.LayoutPinTests.test_the_proved_layout_constants_are_pinned) ... ok
+test_the_panel_states_the_unproved_boundary (__main__.PanelContractTests.test_the_panel_states_the_unproved_boundary) ... ok
+test_a_book_decodes_to_records_entries_and_formations (__main__.ParseTests.test_a_book_decodes_to_records_entries_and_formations) ... ok
+test_a_wrong_size_or_missing_magic_is_refused (__main__.ParseTests.test_a_wrong_size_or_missing_magic_is_refused) ... ok
+test_an_entry_after_the_terminator_is_refused (__main__.ParseTests.test_an_entry_after_the_terminator_is_refused)
+Entries are a contiguous prefix in every retail record; enforce it. ... ok
+test_a_result_that_does_not_say_what_was_asked_is_refused (__main__.VerifierTests.test_a_result_that_does_not_say_what_was_asked_is_refused) ... ok
+test_a_touched_tail_region_is_refused (__main__.VerifierTests.test_a_touched_tail_region_is_refused)
+0x7998 and 0x7D98 are unmapped; nothing may write them. ... ok
+test_a_touched_trailer_is_refused (__main__.VerifierTests.test_a_touched_trailer_is_refused) ... ok
+test_a_touched_untouched_record_is_refused (__main__.VerifierTests.test_a_touched_untouched_record_is_refused) ... ok
+test_the_honest_edit_verifies (__main__.VerifierTests.test_the_honest_edit_verifies) ... ok
+
+----------------------------------------------------------------------
+Ran 22 tests in 0.234s
+
+OK

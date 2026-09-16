@@ -1,0 +1,12 @@
+{
+  "name": "final-test_nfl2k5_modern_arrowhead",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_nfl2k5_modern_arrowhead.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:41:14.609891+00:00",
+  "ended": "2026-09-16T00:41:48.642851+00:00",
+  "seconds": 34.033,
+  "exit_code": 0
+}

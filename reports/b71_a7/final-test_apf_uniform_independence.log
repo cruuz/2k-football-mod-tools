@@ -1,0 +1,35 @@
+test_a_missing_game_volume_is_refused_by_name (__main__.ApplyGuardTests.test_a_missing_game_volume_is_refused_by_name) ... ok
+test_it_refuses_to_overwrite_an_existing_manifest (__main__.ApplyGuardTests.test_it_refuses_to_overwrite_an_existing_manifest) ... ok
+test_it_refuses_to_overwrite_an_existing_output (__main__.ApplyGuardTests.test_it_refuses_to_overwrite_an_existing_output) ... ok
+test_it_lists_only_the_families_that_change (__main__.PanelTests.test_it_lists_only_the_families_that_change) ... ok
+test_it_opens_without_a_game_and_disables_the_action (__main__.PanelTests.test_it_opens_without_a_game_and_disables_the_action) ... ok
+test_source_ready_toggles_the_action (__main__.PanelTests.test_source_ready_toggles_the_action) ... ok
+test_the_caveat_states_what_is_not_proved (__main__.PanelTests.test_the_caveat_states_what_is_not_proved)
+A modder should not spend an hour on this believing more than is known. ... ok
+test_the_helmet_row_carries_the_real_numbers (__main__.PanelTests.test_the_helmet_row_carries_the_real_numbers) ... ok
+test_every_family_ends_with_no_more_sharing_than_it_started (__main__.PlanDescriptionTests.test_every_family_ends_with_no_more_sharing_than_it_started) ... ok
+test_families_that_already_differ_are_reported_as_unchanged (__main__.PlanDescriptionTests.test_families_that_already_differ_are_reported_as_unchanged)
+Not everything is shared; claiming otherwise would be a lie. ... ok
+test_helmets_are_the_headline_and_come_first (__main__.PlanDescriptionTests.test_helmets_are_the_headline_and_come_first)
+The reported wall is helmets, so they lead. ... ok
+test_it_describes_all_eleven_families (__main__.PlanDescriptionTests.test_it_describes_all_eleven_families) ... ok
+test_the_helmet_numbers_match_the_shipped_game (__main__.PlanDescriptionTests.test_the_helmet_numbers_match_the_shipped_game)
+Six shared textures become twenty-four, one per built-in team. ... ok
+test_the_summaries_are_plain_language (__main__.PlanDescriptionTests.test_the_summaries_are_plain_language) ... ok
+test_the_total_matches_the_sum_of_the_families (__main__.PlanDescriptionTests.test_the_total_matches_the_sum_of_the_families) ... ok
+test_the_described_plan_is_the_one_the_writer_admits (__main__.PlanMatchesTheWriterTests.test_the_described_plan_is_the_one_the_writer_admits) ... ok
+test_the_writer_still_refuses_anything_but_that_plan (__main__.PlanMatchesTheWriterTests.test_the_writer_still_refuses_anything_but_that_plan)
+The seam adds no write authority; the frozen gate must stay shut. ... ok
+test_a_single_owner_is_reported_as_safe (__main__.SharingLookupTests.test_a_single_owner_is_reported_as_safe) ... ok
+test_an_unknown_family_is_refused_by_name (__main__.SharingLookupTests.test_an_unknown_family_is_refused_by_name) ... ok
+test_an_unused_helmet_is_reported_as_free (__main__.SharingLookupTests.test_an_unused_helmet_is_reported_as_free)
+Eighteen helmets belong to nobody; that is the room to move. ... ok
+test_every_helmet_resolves_and_the_totals_add_up (__main__.SharingLookupTests.test_every_helmet_resolves_and_the_totals_add_up)
+Twenty-four teams, each accounted for exactly once. ... ok
+test_the_helmet_the_americans_wear_is_shared_by_many_teams (__main__.SharingLookupTests.test_the_helmet_the_americans_wear_is_shared_by_many_teams)
+This is the reported bug, stated as data. ... ok
+
+----------------------------------------------------------------------
+Ran 22 tests in 1.313s
+
+OK

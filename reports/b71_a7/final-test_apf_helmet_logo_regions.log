@@ -1,0 +1,17 @@
+test_exact_xenos_simplex_mask_is_accepted (__main__.AdvancedRegionMaskTests.test_exact_xenos_simplex_mask_is_accepted) ... ok
+test_non_lattice_overweight_hidden_and_empty_masks_are_rejected (__main__.AdvancedRegionMaskTests.test_non_lattice_overweight_hidden_and_empty_masks_are_rejected) ... ok
+test_full_shell_validator_keeps_lattice_aa_alpha_fidelity (__main__.FullShellOpaqueBodyContractTests.test_full_shell_validator_keeps_lattice_aa_alpha_fidelity) ... ok
+test_full_shell_validator_rejects_translucent_shell_body (__main__.FullShellOpaqueBodyContractTests.test_full_shell_validator_rejects_translucent_shell_body) ... ok
+test_opaque_normalization_preserves_rgb_weights_and_lattice (__main__.FullShellOpaqueBodyContractTests.test_opaque_normalization_preserves_rgb_weights_and_lattice) ... ok
+test_transparent_and_sentinel_backgrounds_are_normalized_then_accepted (__main__.FullShellOpaqueBodyContractTests.test_transparent_and_sentinel_backgrounds_are_normalized_then_accepted) ... ok
+test_cleanup_clears_only_rgb_below_exact_zero_alpha (__main__.HiddenRgbCleanupTests.test_cleanup_clears_only_rgb_below_exact_zero_alpha) ... ok
+test_normalized_import_ignores_hidden_png_background_rgb (__main__.HiddenRgbCleanupTests.test_normalized_import_ignores_hidden_png_background_rgb) ... ok
+test_converter_is_deterministic_and_refuses_unusable_palette_or_art (__main__.NormalLogoConversionTests.test_converter_is_deterministic_and_refuses_unusable_palette_or_art) ... ok
+test_exact_eagles_material_anchors_map_to_proved_channel_order (__main__.NormalLogoConversionTests.test_exact_eagles_material_anchors_map_to_proved_channel_order) ... ok
+test_rams_blue_shell_yellow_horn_mapping_is_explicit_not_guessed (__main__.NormalLogoConversionTests.test_rams_blue_shell_yellow_horn_mapping_is_explicit_not_guessed) ... ok
+test_source_suggestion_is_bounded_and_never_invents_missing_colours (__main__.NormalLogoConversionTests.test_source_suggestion_is_bounded_and_never_invents_missing_colours) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 4.051s
+
+OK

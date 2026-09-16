@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_player_rating_sheet_import",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_player_rating_sheet_import.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:56:20.424769+00:00",
+  "ended": "2026-09-16T00:56:36.012844+00:00",
+  "seconds": 15.588,
+  "exit_code": 0
+}

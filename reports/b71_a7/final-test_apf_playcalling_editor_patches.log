@@ -1,0 +1,8 @@
+test_both_presets_install_status_and_remove_with_consent (__main__.PatchTests.test_both_presets_install_status_and_remove_with_consent) ... ok
+test_presets_match_the_real_core_curve_shapes (__main__.PatchTests.test_presets_match_the_real_core_curve_shapes) ... ok
+test_tampered_curve_and_target_change_refuse_without_writing (__main__.PatchTests.test_tampered_curve_and_target_change_refuse_without_writing) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.201s
+
+OK

@@ -1,0 +1,14 @@
+{
+  "name": "delivery-scorebug-layout-emulation",
+  "argv": [
+    "env",
+    "NFL2K5_SCOREBUG_EMULATION_TEST=1",
+    "python3",
+    "tests/nfl2k5_scorebug_layout_test.py",
+    "-v"
+  ],
+  "started": "2026-09-16T01:25:34.323547+00:00",
+  "ended": "2026-09-16T01:25:35.758637+00:00",
+  "seconds": 1.435,
+  "exit_code": 0
+}

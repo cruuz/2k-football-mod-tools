@@ -1,0 +1,12 @@
+{
+  "name": "final-test_nfl2k5_read_option_diagnostic_manifest",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_nfl2k5_read_option_diagnostic_manifest.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:32:11.207848+00:00",
+  "ended": "2026-09-16T00:32:11.635317+00:00",
+  "seconds": 0.427,
+  "exit_code": 0
+}

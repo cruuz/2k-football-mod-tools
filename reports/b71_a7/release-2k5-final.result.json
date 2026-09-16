@@ -1,0 +1,14 @@
+{
+  "name": "release-2k5-final",
+  "argv": [
+    "env",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "python3",
+    "packaging/check_2k5_mod_studio_release.py",
+    "/home/noah/2k-worktrees/astra-b71-a7/.scratch/a7-release-2k5"
+  ],
+  "started": "2026-09-16T01:24:37.771513+00:00",
+  "ended": "2026-09-16T01:24:44.686201+00:00",
+  "seconds": 6.915,
+  "exit_code": 0
+}

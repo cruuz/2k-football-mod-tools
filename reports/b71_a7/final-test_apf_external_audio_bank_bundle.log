@@ -1,0 +1,13 @@
+test_cancellation_is_checked_between_whole_banks_and_manifested (__main__.ApfExternalAudioBankBundleBackendTests.test_cancellation_is_checked_between_whole_banks_and_manifested) ... ok
+test_deterministic_stored_bundle_has_safe_paths_hashes_and_all_owners (__main__.ApfExternalAudioBankBundleBackendTests.test_deterministic_stored_bundle_has_safe_paths_hashes_and_all_owners) ... ok
+test_existing_destination_duplicate_identity_and_bad_hash_fail_before_export (__main__.ApfExternalAudioBankBundleBackendTests.test_existing_destination_duplicate_identity_and_bad_hash_fail_before_export) ... ok
+test_export_failure_and_wrong_size_are_recorded_then_later_bank_continues (__main__.ApfExternalAudioBankBundleBackendTests.test_export_failure_and_wrong_size_are_recorded_then_later_bank_continues) ... ok
+test_integrity_or_progress_failure_publishes_nothing_and_cleans_staging (__main__.ApfExternalAudioBankBundleBackendTests.test_integrity_or_progress_failure_publishes_nothing_and_cleans_staging) ... ok
+test_convenience_facade_exports_the_complete_inspector_bank_set (__main__.ApfExternalAudioBankBundleFacadeTests.test_convenience_facade_exports_the_complete_inspector_bank_set) ... ok
+test_direct_facade_route_preserves_project_and_build_state (__main__.ApfExternalAudioBankBundleFacadeTests.test_direct_facade_route_preserves_project_and_build_state) ... ok
+test_facade_requires_a_loaded_source (__main__.ApfExternalAudioBankBundleFacadeTests.test_facade_requires_a_loaded_source) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.014s
+
+OK

@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_copied_volume_metadata",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_copied_volume_metadata.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:44:47.026482+00:00",
+  "ended": "2026-09-16T00:44:47.341741+00:00",
+  "seconds": 0.315,
+  "exit_code": 0
+}

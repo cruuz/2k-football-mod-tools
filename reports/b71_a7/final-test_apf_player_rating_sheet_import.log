@@ -1,0 +1,12 @@
+test_active_project_conflict_needs_confirmation_and_undo_restores_it (__main__.PlayerRatingSheetImportTests.test_active_project_conflict_needs_confirmation_and_undo_restores_it) ... ok
+test_batch_prepares_every_cell_before_atomic_state_swap (__main__.PlayerRatingSheetImportTests.test_batch_prepares_every_cell_before_atomic_state_swap) ... ok
+test_duplicate_missing_malformed_and_source_mismatch_are_reported (__main__.PlayerRatingSheetImportTests.test_duplicate_missing_malformed_and_source_mismatch_are_reported) ... ok
+test_file_or_project_change_after_preview_is_rejected_without_mutation (__main__.PlayerRatingSheetImportTests.test_file_or_project_change_after_preview_is_rejected_without_mutation) ... ok
+test_native_100_is_only_unchanged_or_revert_to_source (__main__.PlayerRatingSheetImportTests.test_native_100_is_only_unchanged_or_revert_to_source) ... ok
+test_one_change_previews_and_applies_as_one_undo_and_private_project (__main__.PlayerRatingSheetImportTests.test_one_change_previews_and_applies_as_one_undo_and_private_project) ... ok
+test_zero_change_is_a_true_no_op (__main__.PlayerRatingSheetImportTests.test_zero_change_is_a_true_no_op) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 14.989s
+
+OK

@@ -1,0 +1,10 @@
+test_changed_bc1_fits_and_reopens_with_only_selected_vram_part_changed (__main__.StadiumEmbeddedTextureRetailTests.test_changed_bc1_fits_and_reopens_with_only_selected_vram_part_changed) ... ok
+test_draw_material_embedded_texture_join_is_total (__main__.StadiumEmbeddedTextureRetailTests.test_draw_material_embedded_texture_join_is_total) ... ok
+test_every_reusable_codec_has_bit_exact_full_mip_transport (__main__.StadiumEmbeddedTextureRetailTests.test_every_reusable_codec_has_bit_exact_full_mip_transport) ... ok
+test_exported_png_is_an_exact_outer_no_op (__main__.StadiumEmbeddedTextureRetailTests.test_exported_png_is_an_exact_outer_no_op) ... ok
+test_stage_replacement_snapshots_a_native_size_private_png (__main__.StadiumEmbeddedTextureRetailTests.test_stage_replacement_snapshots_a_native_size_private_png) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 78.166s
+
+OK

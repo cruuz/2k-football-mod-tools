@@ -1,0 +1,6 @@
+{"name": "final-test_product_catalog", "started": "2026-09-16T00:33:14.418595+00:00", "ended": "2026-09-16T00:33:14.672340+00:00", "seconds": 0.254, "exit_code": 0}
+{"name": "final-test_phase1_packaging", "started": "2026-09-16T00:33:14.672915+00:00", "ended": "2026-09-16T00:33:17.130388+00:00", "seconds": 2.457, "exit_code": 0}
+{"name": "final-test_provider_integrity", "started": "2026-09-16T00:33:14.417547+00:00", "ended": "2026-09-16T00:33:18.712528+00:00", "seconds": 4.295, "exit_code": 1}
+{"name": "final-test_providers", "started": "2026-09-16T00:33:14.417893+00:00", "ended": "2026-09-16T00:33:18.799371+00:00", "seconds": 4.381, "exit_code": 0}
+{"name": "final-test_capability_registry_module_commands", "started": "2026-09-16T00:33:18.713073+00:00", "ended": "2026-09-16T00:33:18.834076+00:00", "seconds": 0.121, "exit_code": 0}
+{"name": "final-test_b68_a1_audit", "started": "2026-09-16T00:33:17.130917+00:00", "ended": "2026-09-16T00:33:24.097120+00:00", "seconds": 6.966, "exit_code": 0}

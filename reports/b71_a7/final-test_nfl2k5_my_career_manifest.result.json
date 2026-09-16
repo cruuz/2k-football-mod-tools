@@ -1,0 +1,12 @@
+{
+  "name": "final-test_nfl2k5_my_career_manifest",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_nfl2k5_my_career_manifest.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:27:14.348914+00:00",
+  "ended": "2026-09-16T00:27:22.510741+00:00",
+  "seconds": 8.162,
+  "exit_code": 0
+}

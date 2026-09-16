@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_pass_fetch_export_qt",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_pass_fetch_export_qt.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:53:40.300912+00:00",
+  "ended": "2026-09-16T00:53:40.832951+00:00",
+  "seconds": 0.532,
+  "exit_code": 0
+}

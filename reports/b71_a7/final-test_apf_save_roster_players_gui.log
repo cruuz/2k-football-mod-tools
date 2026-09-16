@@ -1,0 +1,9 @@
+test_release_allowlist_ships_save_player_service_and_panel (__main__.PackagingTests.test_release_allowlist_ships_save_player_service_and_panel) ... ok
+test_hash_verified_stfs_is_editable_as_explicit_raw_handoff (__main__.PanelTests.test_hash_verified_stfs_is_editable_as_explicit_raw_handoff) ... ok
+test_panel_exposes_all_fields_text_and_safe_membership_swaps (__main__.PanelTests.test_panel_exposes_all_fields_text_and_safe_membership_swaps) ... ok
+test_roster_workspace_exposes_save_players_tab (__main__.PanelTests.test_roster_workspace_exposes_save_players_tab) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.549s
+
+OK

@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_studio_text_edit",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_studio_text_edit.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:57:52.941173+00:00",
+  "ended": "2026-09-16T00:57:53.487834+00:00",
+  "seconds": 0.547,
+  "exit_code": 0
+}

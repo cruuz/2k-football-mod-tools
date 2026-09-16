@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_play_designer_project",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_play_designer_project.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:53:53.518019+00:00",
+  "ended": "2026-09-16T00:53:54.050737+00:00",
+  "seconds": 0.533,
+  "exit_code": 0
+}

@@ -1,0 +1,11 @@
+test_each_mask_and_policy_invalidates_the_package (__main__.PackageParityTests.test_each_mask_and_policy_invalidates_the_package) ... ok
+test_full_size_package_with_forced_python_matches_original_bytes (__main__.PackageParityTests.test_full_size_package_with_forced_python_matches_original_bytes) ... ok
+test_matches_pre_change_package_and_ladder (__main__.PackageParityTests.test_matches_pre_change_package_and_ladder) ... ok
+test_real_session_staging_and_studio_compile_keep_package_and_cache_coupled (__main__.PackageParityTests.test_real_session_staging_and_studio_compile_keep_package_and_cache_coupled) ... ok
+test_source_bytes_are_reread_even_when_mtime_and_length_match (__main__.PackageParityTests.test_source_bytes_are_reread_even_when_mtime_and_length_match) ... ok
+test_unchanged_package_skips_compilation_and_receipt_mutation_is_isolated (__main__.PackageParityTests.test_unchanged_package_skips_compilation_and_receipt_mutation_is_isolated) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 10.138s
+
+OK

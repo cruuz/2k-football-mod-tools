@@ -1,0 +1,19 @@
+test_advanced_dialog_is_literal_argv_and_unchecked_restores_defaults (__main__.ApfAudioEncoderGuiTests.test_advanced_dialog_is_literal_argv_and_unchecked_restores_defaults) ... ok
+test_audio_detail_exposes_complete_no_terminal_authoring_flow (__main__.ApfAudioEncoderGuiTests.test_audio_detail_exposes_complete_no_terminal_authoring_flow) ... This plugin does not support propagateSizeHints()
+ok
+test_cancel_control_reaches_backend_callback_and_stages_no_edit (__main__.ApfAudioEncoderGuiTests.test_cancel_control_reaches_backend_callback_and_stages_no_edit) ... This plugin does not support propagateSizeHints()
+ok
+test_pack_import_auto_detects_legacy_and_pcm_encoder_requirement (__main__.ApfAudioEncoderGuiTests.test_pack_import_auto_detects_legacy_and_pcm_encoder_requirement) ... This plugin does not support propagateSizeHints()
+ok
+test_pack_preview_cancel_and_unchanged_result_never_stage_an_edit (__main__.ApfAudioEncoderGuiTests.test_pack_preview_cancel_and_unchanged_result_never_stage_an_edit) ... This plugin does not support propagateSizeHints()
+ok
+test_settings_round_trip_custom_argv_timeout_and_detect_stale_state (__main__.ApfAudioEncoderGuiTests.test_settings_round_trip_custom_argv_timeout_and_detect_stale_state) ... This plugin does not support propagateSizeHints()
+ok
+test_template_and_pcm_replace_dispatch_through_exact_slot_facade (__main__.ApfAudioEncoderGuiTests.test_template_and_pcm_replace_dispatch_through_exact_slot_facade) ... This plugin does not support propagateSizeHints()
+ok
+test_windows_encoder_picker_resolves_detected_wine_symlink (__main__.ApfAudioEncoderGuiTests.test_windows_encoder_picker_resolves_detected_wine_symlink) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.161s
+
+OK

@@ -1,0 +1,104 @@
+test_the_copy_does_not_cite_the_disproved_glyph_mapper (__main__.CopyTests.test_the_copy_does_not_cite_the_disproved_glyph_mapper)
+A disassembly showed 0x84a17298 never touches the glyph strings. ... ok
+test_the_copy_does_not_claim_runtime_cpu_play_calling (__main__.CopyTests.test_the_copy_does_not_claim_runtime_cpu_play_calling) ... ok
+test_the_copy_no_longer_calls_the_slot_meaning_the_reason_to_refuse (__main__.CopyTests.test_the_copy_no_longer_calls_the_slot_meaning_the_reason_to_refuse) ... ok
+test_the_copy_states_empty_records_return_no_plays (__main__.CopyTests.test_the_copy_states_empty_records_return_no_plays) ... ok
+test_the_copy_states_role_8_is_te_and_role_9_is_wr (__main__.CopyTests.test_the_copy_states_role_8_is_te_and_role_9_is_wr) ... ok
+test_the_copy_states_the_audible_proof_and_credits_the_reporter (__main__.CopyTests.test_the_copy_states_the_audible_proof_and_credits_the_reporter)
+The reading was unconfirmed until the executable settled it. ... ok
+test_the_copy_states_the_fourth_slot_is_collected_not_3rd_and_long (__main__.CopyTests.test_the_copy_states_the_fourth_slot_is_collected_not_3rd_and_long)
+Y==3 is a first-class tagged slot in 0x84a850f0; 3rd-and-long is not pinned. ... ok
+test_the_copy_states_what_was_proved_about_the_slots (__main__.CopyTests.test_the_copy_states_what_was_proved_about_the_slots) ... ok
+test_emptying_every_populated_record_is_refused (__main__.EmptyBookRefusalTests.test_emptying_every_populated_record_is_refused) ... ok
+test_leaving_one_record_does_not_bypass_the_flip_guard (__main__.EmptyBookRefusalTests.test_leaving_one_record_does_not_bypass_the_flip_guard) ... ok
+test_the_report_never_claims_an_emptied_record_is_runtime_safe (__main__.EmptyBookRefusalTests.test_the_report_never_claims_an_emptied_record_is_runtime_safe) ... ok
+test_a_diff_outside_the_named_record_is_refused (__main__.ForgedOutputTests.test_a_diff_outside_the_named_record_is_refused) ... ok
+test_a_move_the_output_does_not_show_is_refused (__main__.ForgedOutputTests.test_a_move_the_output_does_not_show_is_refused) ... ok
+test_an_heir_the_output_does_not_show_is_refused (__main__.ForgedOutputTests.test_an_heir_the_output_does_not_show_is_refused) ... ok
+test_the_honest_move_verifies (__main__.ForgedOutputTests.test_the_honest_move_verifies) ... ok
+test_a_duplicated_slot_is_refused (__main__.InvariantTests.test_a_duplicated_slot_is_refused) ... ok
+test_a_slot_value_the_retail_books_never_use_is_refused (__main__.InvariantTests.test_a_slot_value_the_retail_books_never_use_is_refused) ... ok
+test_dropping_below_min_four_is_refused (__main__.InvariantTests.test_dropping_below_min_four_is_refused) ... ok
+test_the_report_never_claims_the_slots_are_understood (__main__.InvariantTests.test_the_report_never_claims_the_slots_are_understood) ... ok
+test_the_rule_is_min_four_and_the_retail_books_obey_it (__main__.InvariantTests.test_the_rule_is_min_four_and_the_retail_books_obey_it) ... ok
+test_the_writer_flags_a_legal_tag_set_retail_never_uses (__main__.InvariantTests.test_the_writer_flags_a_legal_tag_set_retail_never_uses)
+{1, 2, 3} keeps the counted rule but is off the retail distribution. ... ok
+test_a_playbooks_page_refresh_reaches_this_panel (__main__.PanelProjectHandoffTests.test_a_playbooks_page_refresh_reaches_this_panel)
+The panel used to load a book only when the dropdown changed. ... ok
+test_a_reopened_project_restores_the_staged_ticks (__main__.PanelProjectHandoffTests.test_a_reopened_project_restores_the_staged_ticks) ... ok
+test_edits_for_another_book_are_not_restored_here (__main__.PanelProjectHandoffTests.test_edits_for_another_book_are_not_restored_here) ... ok
+test_record_addition_refuses_a_populated_slot (__main__.PanelProjectHandoffTests.test_record_addition_refuses_a_populated_slot) ... ok
+test_refreshing_the_same_game_and_book_does_not_reread_the_catalog (__main__.PanelProjectHandoffTests.test_refreshing_the_same_game_and_book_does_not_reread_the_catalog)
+A refresh must not spend seconds re-reading MASTER for nothing. ... ok
+test_reverting_clears_the_project_too (__main__.PanelProjectHandoffTests.test_reverting_clears_the_project_too) ... ok
+test_staging_a_record_addition_bundles_trailer_and_plays (__main__.PanelProjectHandoffTests.test_staging_a_record_addition_bundles_trailer_and_plays) ... ok
+test_staging_a_trailer_replace_reaches_and_restores (__main__.PanelProjectHandoffTests.test_staging_a_trailer_replace_reaches_and_restores) ... ok
+test_staging_hands_every_change_to_the_project (__main__.PanelProjectHandoffTests.test_staging_hands_every_change_to_the_project) ... ok
+test_switching_books_does_not_ask_to_discard (__main__.PanelReadabilityTests.test_switching_books_does_not_ask_to_discard) ... ok
+test_the_copy_does_not_treat_play_names_as_personnel (__main__.PanelReadabilityTests.test_the_copy_does_not_treat_play_names_as_personnel)
+Adding a TE-named play or moving a Y tag is not a personnel edit. ... ok
+test_the_full_static_record_still_ships (__main__.PanelReadabilityTests.test_the_full_static_record_still_ships) ... ok
+test_the_inline_copy_is_short_enough_to_read (__main__.PanelReadabilityTests.test_the_inline_copy_is_short_enough_to_read) ... ok
+test_the_inline_copy_points_at_the_pins (__main__.PanelReadabilityTests.test_the_inline_copy_points_at_the_pins) ... ok
+test_a_rejected_removal_leaves_nothing_staged (__main__.PanelTests.test_a_rejected_removal_leaves_nothing_staged) ... ok
+test_an_illegal_move_is_not_staged (__main__.PanelTests.test_an_illegal_move_is_not_staged) ... ok
+test_declining_the_carry_stages_nothing_and_restores_the_tick (__main__.PanelTests.test_declining_the_carry_stages_nothing_and_restores_the_tick) ... ok
+test_emptying_an_interior_formation_is_refused_at_compile (__main__.PanelTests.test_emptying_an_interior_formation_is_refused_at_compile) ... ok
+test_live_play_controls_use_the_stored_membership_boundary (__main__.PanelTests.test_live_play_controls_use_the_stored_membership_boundary) ... ok
+test_staging_a_carry_compiles_and_verifies (__main__.PanelTests.test_staging_a_carry_compiles_and_verifies) ... ok
+test_staging_a_move_compiles_and_verifies (__main__.PanelTests.test_staging_a_move_compiles_and_verifies) ... ok
+test_the_last_populated_formation_cannot_be_emptied (__main__.PanelTests.test_the_last_populated_formation_cannot_be_emptied) ... ok
+test_the_panel_counts_what_would_still_be_populated (__main__.PanelTests.test_the_panel_counts_what_would_still_be_populated) ... ok
+test_the_panel_knows_when_a_removal_needs_an_heir (__main__.PanelTests.test_the_panel_knows_when_a_removal_needs_an_heir) ... ok
+test_the_panel_only_offers_heirs_that_actually_work (__main__.PanelTests.test_the_panel_only_offers_heirs_that_actually_work) ... ok
+test_unticking_a_tagged_play_offers_the_carry_instead_of_a_wall (__main__.PanelTests.test_unticking_a_tagged_play_offers_the_carry_instead_of_a_wall) ... ok
+test_a_membership_change_round_trips_through_its_payload (__main__.ProjectPayloadTests.test_a_membership_change_round_trips_through_its_payload) ... ok
+test_a_non_canonical_or_malformed_payload_is_refused (__main__.ProjectPayloadTests.test_a_non_canonical_or_malformed_payload_is_refused) ... ok
+test_a_payload_carries_no_resource_bytes (__main__.ProjectPayloadTests.test_a_payload_carries_no_resource_bytes) ... ok
+test_a_payload_that_names_another_target_is_refused (__main__.ProjectPayloadTests.test_a_payload_that_names_another_target_is_refused) ... ok
+test_the_project_archive_round_trips_one_staged_change (__main__.ProjectPayloadTests.test_the_project_archive_round_trips_one_staged_change) ... ok
+test_a_real_reassignment_changes_only_that_records_entry_region (__main__.RealBookTests.test_a_real_reassignment_changes_only_that_records_entry_region) ... ok
+test_every_populated_retail_record_obeys_the_counted_rule (__main__.RealBookTests.test_every_populated_retail_record_obeys_the_counted_rule) ... ok
+test_the_two_ace_records_prove_the_slots_are_authored (__main__.RealBookTests.test_the_two_ace_records_prove_the_slots_are_authored) ... ok
+test_a_play_added_in_the_same_request_can_be_the_heir (__main__.RemovalCarriesTheSlotTests.test_a_play_added_in_the_same_request_can_be_the_heir) ... ok
+test_a_short_formation_sheds_a_slot_with_its_play (__main__.RemovalCarriesTheSlotTests.test_a_short_formation_sheds_a_slot_with_its_play)
+Four plays carry four slots; three plays carry three, so no heir. ... ok
+test_an_heir_carries_the_slot_and_the_play_goes (__main__.RemovalCarriesTheSlotTests.test_an_heir_carries_the_slot_and_the_play_goes) ... ok
+test_an_heir_outside_the_record_is_refused (__main__.RemovalCarriesTheSlotTests.test_an_heir_outside_the_record_is_refused) ... ok
+test_emptying_a_trailing_formation_sheds_every_tagged_slot (__main__.RemovalCarriesTheSlotTests.test_emptying_a_trailing_formation_sheds_every_tagged_slot) ... ok
+test_growing_a_short_formation_hands_the_new_play_the_next_slot (__main__.RemovalCarriesTheSlotTests.test_growing_a_short_formation_hands_the_new_play_the_next_slot)
+min(4, plays) has no exceptions, so a fourth play needs a fourth slot. ... ok
+test_removing_a_tagged_play_with_no_heir_names_the_way_through (__main__.RemovalCarriesTheSlotTests.test_removing_a_tagged_play_with_no_heir_names_the_way_through) ... ok
+test_the_next_slot_after_slot_one_is_slot_zero (__main__.RemovalCarriesTheSlotTests.test_the_next_slot_after_slot_one_is_slot_zero)
+Retail's two-play formations carry 0 and 1, so slot 0 comes second. ... ok
+test_the_slot_one_play_still_needs_an_heir_in_a_short_formation (__main__.RemovalCarriesTheSlotTests.test_the_slot_one_play_still_needs_an_heir_in_a_short_formation) ... ok
+test_static_consumer_words_match_the_decompressed_pe (__main__.StaticConsumerPinTests.test_static_consumer_words_match_the_decompressed_pe) ... skipped 'decompressed APF PE is not on this machine'
+test_a_move_between_two_tagged_plays_swaps_them (__main__.TagMoveTests.test_a_move_between_two_tagged_plays_swaps_them) ... ok
+test_a_move_from_an_untagged_play_is_refused (__main__.TagMoveTests.test_a_move_from_an_untagged_play_is_refused) ... ok
+test_a_move_leaves_the_play_list_itself_alone (__main__.TagMoveTests.test_a_move_leaves_the_play_list_itself_alone) ... ok
+test_a_move_onto_the_same_play_is_refused (__main__.TagMoveTests.test_a_move_onto_the_same_play_is_refused) ... ok
+test_a_move_then_remove_of_the_destination_sheds_a_slot_when_legal (__main__.TagMoveTests.test_a_move_then_remove_of_the_destination_sheds_a_slot_when_legal) ... ok
+test_a_move_then_remove_of_the_destination_with_heir_composes (__main__.TagMoveTests.test_a_move_then_remove_of_the_destination_with_heir_composes) ... ok
+test_a_move_then_remove_of_the_source_composes (__main__.TagMoveTests.test_a_move_then_remove_of_the_source_composes)
+Urianus's Save-Project loss: staged move + staged removal of the ... ok
+test_a_move_then_remove_that_would_drop_a_slot_is_still_refused (__main__.TagMoveTests.test_a_move_then_remove_that_would_drop_a_slot_is_still_refused) ... ok
+test_a_move_to_a_play_outside_the_record_is_refused (__main__.TagMoveTests.test_a_move_to_a_play_outside_the_record_is_refused) ... ok
+test_a_slot_can_move_onto_a_play_added_in_the_same_request (__main__.TagMoveTests.test_a_slot_can_move_onto_a_play_added_in_the_same_request)
+The verifier used to demand a Y-swap against the original book. ... ok
+test_a_slot_moves_onto_an_untagged_play (__main__.TagMoveTests.test_a_slot_moves_onto_an_untagged_play) ... ok
+test_one_slot_cannot_be_sent_to_two_plays_at_once (__main__.TagMoveTests.test_one_slot_cannot_be_sent_to_two_plays_at_once) ... ok
+test_a_forged_cde_drift_is_refused (__main__.TrailerReplaceTests.test_a_forged_cde_drift_is_refused) ... ok
+test_a_forged_stale_personnel_bit_is_refused (__main__.TrailerReplaceTests.test_a_forged_stale_personnel_bit_is_refused) ... ok
+test_a_no_op_retarget_is_refused (__main__.TrailerReplaceTests.test_a_no_op_retarget_is_refused) ... ok
+test_bounds_are_enforced (__main__.TrailerReplaceTests.test_bounds_are_enforced) ... ok
+test_honesty_claims_name_the_runtime_gap (__main__.TrailerReplaceTests.test_honesty_claims_name_the_runtime_gap) ... ok
+test_payload_round_trip (__main__.TrailerReplaceTests.test_payload_round_trip) ... ok
+test_record_addition_fills_the_first_empty_slot (__main__.TrailerReplaceTests.test_record_addition_fills_the_first_empty_slot) ... ok
+test_retarget_retail_oace_into_the_01_package (__main__.TrailerReplaceTests.test_retarget_retail_oace_into_the_01_package)
+The Urianus fix against pristine retail: O-Ace's Ace record gains ... ok
+test_retarget_rewrites_formation_category_and_word_b_only (__main__.TrailerReplaceTests.test_retarget_rewrites_formation_category_and_word_b_only) ... ok
+
+----------------------------------------------------------------------
+Ran 86 tests in 2.058s
+
+OK (skipped=1)

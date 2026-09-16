@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_studio_installer",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_studio_installer.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:57:51.487132+00:00",
+  "ended": "2026-09-16T00:58:04.540392+00:00",
+  "seconds": 13.053,
+  "exit_code": 1
+}

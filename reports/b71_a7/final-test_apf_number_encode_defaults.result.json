@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_number_encode_defaults",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_number_encode_defaults.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:53:33.002919+00:00",
+  "ended": "2026-09-16T00:53:35.208934+00:00",
+  "seconds": 2.206,
+  "exit_code": 0
+}

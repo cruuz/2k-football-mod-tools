@@ -1,0 +1,13 @@
+test_bounds_and_cardinality_fail_closed (__main__.CustomTeamAppearanceContractTests.test_bounds_and_cardinality_fail_closed) ... ok
+test_eagles_preset_preserves_helmet_tail_and_applies_proved_logo_route (__main__.CustomTeamAppearanceContractTests.test_eagles_preset_preserves_helmet_tail_and_applies_proved_logo_route) ... ok
+test_payload_target_metadata_and_project_validation_are_canonical (__main__.CustomTeamAppearanceContractTests.test_payload_target_metadata_and_project_validation_are_canonical) ... ok
+test_project_round_trip_preserves_replacement_only_payload (__main__.CustomTeamAppearanceContractTests.test_project_round_trip_preserves_replacement_only_payload) ... ok
+test_all_eight_user_slots_are_uniquely_pointer_proved (__main__.RetailCustomTeamAppearanceTests.test_all_eight_user_slots_are_uniquely_pointer_proved) ... ok
+test_composes_with_other_roster_owned_edits (__main__.RetailCustomTeamAppearanceTests.test_composes_with_other_roster_owned_edits) ... ok
+test_pointer_alias_tamper_is_rejected (__main__.RetailCustomTeamAppearanceTests.test_pointer_alias_tamper_is_rejected) ... ok
+test_real_writer_changes_only_selected_records_and_preserves_metadata (__main__.RetailCustomTeamAppearanceTests.test_real_writer_changes_only_selected_records_and_preserves_metadata) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 6.859s
+
+OK

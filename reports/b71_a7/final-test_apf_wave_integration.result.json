@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_wave_integration",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_wave_integration.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:58:26.514754+00:00",
+  "ended": "2026-09-16T00:58:41.170463+00:00",
+  "seconds": 14.656,
+  "exit_code": 0
+}

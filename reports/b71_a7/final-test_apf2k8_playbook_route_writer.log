@@ -1,0 +1,17 @@
+test_clone_copies_descriptor_and_reencodes_only_target_pointer (__main__.RouteWriterTests.test_clone_copies_descriptor_and_reencodes_only_target_pointer) ... ok
+test_membership_parser_is_msb_first_and_rejects_unused_play_bits (__main__.RouteWriterTests.test_membership_parser_is_msb_first_and_rejects_unused_play_bits) ... ok
+test_rejects_identity_and_duplicate_targets (__main__.RouteWriterTests.test_rejects_identity_and_duplicate_targets) ... ok
+test_relay_candidates_exclude_target_donor_and_unique (__main__.RouteWriterTests.test_relay_candidates_exclude_target_donor_and_unique) ... ok
+test_relayed_copy_batch_preserves_start_set_and_donor_bytes (__main__.RouteWriterTests.test_relayed_copy_batch_preserves_start_set_and_donor_bytes) ... ok
+test_shareable_mapping_has_only_logical_coordinates (__main__.RouteWriterTests.test_shareable_mapping_has_only_logical_coordinates) ... ok
+test_verifier_rejects_even_parseable_unowned_change (__main__.RouteWriterTests.test_verifier_rejects_even_parseable_unowned_change) ... ok
+test_session_rejects_orphaning_a_unique_chain (__main__.SessionRouteWriterTests.test_session_rejects_orphaning_a_unique_chain) ... ok
+test_session_relayed_copy_candidates_exclude_target_donor_unique (__main__.SessionRouteWriterTests.test_session_relayed_copy_candidates_exclude_target_donor_unique) ... ok
+test_session_relayed_copy_refuses_target_donor_and_unique_relay (__main__.SessionRouteWriterTests.test_session_relayed_copy_refuses_target_donor_and_unique_relay) ... ok
+test_session_relayed_copy_stages_pair_and_preserves_set (__main__.SessionRouteWriterTests.test_session_relayed_copy_stages_pair_and_preserves_set) ... ok
+test_session_route_clone_is_undoable_revertible_and_project_safe (__main__.SessionRouteWriterTests.test_session_route_clone_is_undoable_revertible_and_project_safe) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.195s
+
+OK

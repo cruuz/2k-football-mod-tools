@@ -1,0 +1,12 @@
+{
+  "name": "final-test_nfl2k5_playbook_pair_manifest",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_nfl2k5_playbook_pair_manifest.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:27:22.511133+00:00",
+  "ended": "2026-09-16T00:32:50.489564+00:00",
+  "seconds": 327.978,
+  "exit_code": 0
+}

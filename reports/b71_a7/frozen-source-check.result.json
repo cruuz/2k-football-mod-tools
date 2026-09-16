@@ -1,0 +1,12 @@
+{
+  "name": "frozen-source-check",
+  "argv": [
+    "python3",
+    "-c",
+    "import hashlib,json;from pathlib import Path;d=json.loads(Path(\".scratch/a7-product-frozen.json\").read_text());assert all(hashlib.sha256(Path(p).read_bytes()).hexdigest()==h for p,h in d.items());print(len(d),\"unchanged product/test/docs paths\")"
+  ],
+  "started": "2026-09-16T00:29:24.269831+00:00",
+  "ended": "2026-09-16T00:29:24.705234+00:00",
+  "seconds": 0.435,
+  "exit_code": 0
+}

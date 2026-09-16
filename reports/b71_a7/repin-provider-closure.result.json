@@ -1,0 +1,12 @@
+{
+  "name": "repin-provider-closure",
+  "argv": [
+    "python3",
+    "packaging/repin.py",
+    "--apply"
+  ],
+  "started": "2026-09-16T00:35:14.231064+00:00",
+  "ended": "2026-09-16T00:35:30.452151+00:00",
+  "seconds": 16.221,
+  "exit_code": 0
+}

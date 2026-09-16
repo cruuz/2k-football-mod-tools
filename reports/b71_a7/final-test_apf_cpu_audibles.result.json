@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_cpu_audibles",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_cpu_audibles.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:44:47.421163+00:00",
+  "ended": "2026-09-16T00:44:50.428533+00:00",
+  "seconds": 3.007,
+  "exit_code": 0
+}

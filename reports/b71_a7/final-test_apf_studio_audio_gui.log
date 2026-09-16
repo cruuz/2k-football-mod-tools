@@ -1,0 +1,68 @@
+test_audio_browser_exposes_product_controls_without_a_display (__main__.ApfAudioGuiTests.test_audio_browser_exposes_product_controls_without_a_display) ... This plugin does not support propagateSizeHints()
+ok
+test_audio_query_type_erase_restores_page_two_and_next_reaches_page_three (__main__.ApfAudioGuiTests.test_audio_query_type_erase_restores_page_two_and_next_reaches_page_three) ... This plugin does not support propagateSizeHints()
+ok
+test_audio_shortlist_add_all_matching_is_atomic_at_256_cap (__main__.ApfAudioGuiTests.test_audio_shortlist_add_all_matching_is_atomic_at_256_cap) ... This plugin does not support propagateSizeHints()
+ok
+test_audio_shortlist_adds_all_new_matches_once_in_stable_order (__main__.ApfAudioGuiTests.test_audio_shortlist_adds_all_new_matches_once_in_stable_order) ... This plugin does not support propagateSizeHints()
+ok
+test_audio_shortlist_clear_from_review_restores_without_reopening (__main__.ApfAudioGuiTests.test_audio_shortlist_clear_from_review_restores_without_reopening) ... This plugin does not support propagateSizeHints()
+ok
+test_audio_shortlist_clear_has_one_level_exact_ordered_undo (__main__.ApfAudioGuiTests.test_audio_shortlist_clear_has_one_level_exact_ordered_undo) ... This plugin does not support propagateSizeHints()
+ok
+test_audio_shortlist_clear_undo_expires_on_mutation_and_set_model (__main__.ApfAudioGuiTests.test_audio_shortlist_clear_undo_expires_on_mutation_and_set_model) ... This plugin does not support propagateSizeHints()
+ok
+test_audio_shortlist_crosses_filters_deduplicates_and_resets_with_model (__main__.ApfAudioGuiTests.test_audio_shortlist_crosses_filters_deduplicates_and_resets_with_model) ... This plugin does not support propagateSizeHints()
+ok
+test_audio_shortlist_export_preserves_order_and_defaults_xma (__main__.ApfAudioGuiTests.test_audio_shortlist_export_preserves_order_and_defaults_xma) ... This plugin does not support propagateSizeHints()
+ok
+test_audio_shortlist_page_add_is_all_or_nothing_at_256_cap (__main__.ApfAudioGuiTests.test_audio_shortlist_page_add_is_all_or_nothing_at_256_cap) ... This plugin does not support propagateSizeHints()
+ok
+test_audio_shortlist_review_pages_crosses_boundaries_and_resets_cleanly (__main__.ApfAudioGuiTests.test_audio_shortlist_review_pages_crosses_boundaries_and_resets_cleanly) ... This plugin does not support propagateSizeHints()
+ok
+test_audio_shortlist_review_restores_browser_and_reorders_exact_export (__main__.ApfAudioGuiTests.test_audio_shortlist_review_restores_browser_and_reorders_exact_export) ... This plugin does not support propagateSizeHints()
+ok
+test_audio_workspace_uses_full_height_tabs_not_a_squeezed_splitter (__main__.ApfAudioGuiTests.test_audio_workspace_uses_full_height_tabs_not_a_squeezed_splitter) ... This plugin does not support propagateSizeHints()
+ok
+test_ausb_substream_replace_discloses_shared_effect_and_routes_writer (__main__.ApfAudioGuiTests.test_ausb_substream_replace_discloses_shared_effect_and_routes_writer) ... This plugin does not support propagateSizeHints()
+ok
+test_current_audio_preview_cancel_is_cooperative_silent_and_reusable (__main__.ApfAudioGuiTests.test_current_audio_preview_cancel_is_cooperative_silent_and_reusable) ... This plugin does not support propagateSizeHints()
+ok
+test_current_audio_preview_prepare_failure_resets_and_warns_once (__main__.ApfAudioGuiTests.test_current_audio_preview_prepare_failure_resets_and_warns_once) ... This plugin does not support propagateSizeHints()
+ok
+test_decoded_export_forwards_the_coordinate_backed_source_filter (__main__.ApfAudioGuiTests.test_decoded_export_forwards_the_coordinate_backed_source_filter) ... This plugin does not support propagateSizeHints()
+ok
+test_external_bank_is_named_raw_export_only_and_never_playable (__main__.ApfAudioGuiTests.test_external_bank_is_named_raw_export_only_and_never_playable) ... This plugin does not support propagateSizeHints()
+ok
+test_matching_audio_action_forwards_filtered_rows_and_defaults_xma (__main__.ApfAudioGuiTests.test_matching_audio_action_forwards_filtered_rows_and_defaults_xma) ... This plugin does not support propagateSizeHints()
+ok
+test_matching_audio_cache_avoids_full_rescan_on_selection_updates (__main__.ApfAudioGuiTests.test_matching_audio_cache_avoids_full_rescan_on_selection_updates) ... This plugin does not support propagateSizeHints()
+ok
+test_pending_audio_query_guards_page_and_aggregate_actions (__main__.ApfAudioGuiTests.test_pending_audio_query_guards_page_and_aggregate_actions) ... This plugin does not support propagateSizeHints()
+ok
+test_player_command_never_uses_a_shell (__main__.ApfAudioGuiTests.test_player_command_never_uses_a_shell) ... ok
+test_rejected_audio_preview_admission_immediately_restores_play (__main__.ApfAudioGuiTests.test_rejected_audio_preview_admission_immediately_restores_play) ... This plugin does not support propagateSizeHints()
+ok
+test_replacement_import_cancel_is_atomic_and_keeps_selection (__main__.ApfAudioGuiTests.test_replacement_import_cancel_is_atomic_and_keeps_selection) ... This plugin does not support propagateSizeHints()
+ok
+test_replacement_import_preserves_selection_emits_signals_and_receipt (__main__.ApfAudioGuiTests.test_replacement_import_preserves_selection_emits_signals_and_receipt) ... This plugin does not support propagateSizeHints()
+ok
+test_replacement_pack_zip_selector_routes_export_and_import (__main__.ApfAudioGuiTests.test_replacement_pack_zip_selector_routes_export_and_import) ... This plugin does not support propagateSizeHints()
+ok
+test_replacement_template_uses_filters_album_and_shortlist_order (__main__.ApfAudioGuiTests.test_replacement_template_uses_filters_album_and_shortlist_order) ... This plugin does not support propagateSizeHints()
+ok
+test_soundtrack_album_pairs_exact_banks_with_stereo_default_and_mono_selector (__main__.ApfAudioGuiTests.test_soundtrack_album_pairs_exact_banks_with_stereo_default_and_mono_selector) ... This plugin does not support propagateSizeHints()
+ok
+test_source_transition_cancels_preview_and_late_failure_is_silent (__main__.ApfAudioGuiTests.test_source_transition_cancels_preview_and_late_failure_is_silent) ... This plugin does not support propagateSizeHints()
+ok
+test_stale_audio_preview_prepare_failure_after_selection_change_is_silent (__main__.ApfAudioGuiTests.test_stale_audio_preview_prepare_failure_after_selection_change_is_silent) ... This plugin does not support propagateSizeHints()
+ok
+test_stale_audio_preview_success_after_selection_change_never_starts (__main__.ApfAudioGuiTests.test_stale_audio_preview_success_after_selection_change_never_starts) ... This plugin does not support propagateSizeHints()
+ok
+test_standalone_audo_replace_and_revert_are_exactly_scoped (__main__.ApfAudioGuiTests.test_standalone_audo_replace_and_revert_are_exactly_scoped) ... This plugin does not support propagateSizeHints()
+ok
+
+----------------------------------------------------------------------
+Ran 32 tests in 0.683s
+
+OK

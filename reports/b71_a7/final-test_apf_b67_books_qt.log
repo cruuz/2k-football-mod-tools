@@ -1,0 +1,8 @@
+test_all_fifteen_lists_and_user_fine_tune_reparse_after_archive_shift (__main__.BookTests.test_all_fifteen_lists_and_user_fine_tune_reparse_after_archive_shift) ... ok
+test_donor_side_filters_unused_labels (__main__.BookTests.test_donor_side_filters_unused_labels) ... ok
+test_each_user_and_global_donor_clone_preserves_content_and_assigns_correct_side (__main__.BookTests.test_each_user_and_global_donor_clone_preserves_content_and_assigns_correct_side) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 71.154s
+
+OK

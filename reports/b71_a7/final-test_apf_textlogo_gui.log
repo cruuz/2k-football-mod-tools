@@ -1,0 +1,11 @@
+test_all_206_typed_slots_are_exposed_and_crest_is_explicitly_separate (__main__.ApfTextLogoGuiTests.test_all_206_typed_slots_are_exposed_and_crest_is_explicitly_separate) ... ok
+test_declining_the_preview_stages_nothing (__main__.ApfTextLogoGuiTests.test_declining_the_preview_stages_nothing) ... ok
+test_import_prepares_opaque_native_png_and_stages_normal_project_edit (__main__.ApfTextLogoGuiTests.test_import_prepares_opaque_native_png_and_stages_normal_project_edit) ... ok
+test_logos_workspace_has_distinct_team_logo_wordmark_and_inventory_tabs (__main__.ApfTextLogoGuiTests.test_logos_workspace_has_distinct_team_logo_wordmark_and_inventory_tabs) ... ok
+test_preview_thumbnail_matches_the_selected_fit_mode (__main__.ApfTextLogoGuiTests.test_preview_thumbnail_matches_the_selected_fit_mode)
+The previewed pixels must be exactly what the fit mode promises. ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.253s
+
+OK

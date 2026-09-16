@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_capability_action_parity",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_capability_action_parity.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:44:46.570201+00:00",
+  "ended": "2026-09-16T00:44:47.025853+00:00",
+  "seconds": 0.456,
+  "exit_code": 0
+}

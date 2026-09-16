@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_b69_build",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_b69_build.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:35:32.263294+00:00",
+  "ended": "2026-09-16T00:36:15.353962+00:00",
+  "seconds": 43.091,
+  "exit_code": 0
+}

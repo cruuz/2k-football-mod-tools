@@ -1,0 +1,12 @@
+{
+  "name": "final-test_b71_a6_composition",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_b71_a6_composition.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:41:42.467620+00:00",
+  "ended": "2026-09-16T00:41:42.783762+00:00",
+  "seconds": 0.316,
+  "exit_code": 0
+}

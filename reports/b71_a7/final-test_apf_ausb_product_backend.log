@@ -1,0 +1,12 @@
+test_cancelled_replacement_preview_removes_partial_wav_and_receipt (__main__.ApfAusbProductBackendTests.test_cancelled_replacement_preview_removes_partial_wav_and_receipt) ... ok
+test_project_load_rejects_one_bit_near_source_packet_reuse (__main__.ApfAusbProductBackendTests.test_project_load_rejects_one_bit_near_source_packet_reuse) ... ok
+test_project_load_rejects_retail_payload_even_if_validator_is_spoofed (__main__.ApfAusbProductBackendTests.test_project_load_rejects_retail_payload_even_if_validator_is_spoofed) ... ok
+test_project_payload_and_semantic_metadata_tampering_fail_closed (__main__.ApfAusbProductBackendTests.test_project_payload_and_semantic_metadata_tampering_fail_closed) ... ok
+test_replace_revert_streamed_project_round_trip_is_semantic_only (__main__.ApfAusbProductBackendTests.test_replace_revert_streamed_project_round_trip_is_semantic_only) ... ok
+test_replacement_preview_receipt_cache_and_tamper_detection (__main__.ApfAusbProductBackendTests.test_replacement_preview_receipt_cache_and_tamper_detection) ... ok
+test_retail_payload_is_rejected_even_if_validator_receipt_is_spoofed (__main__.ApfAusbProductBackendTests.test_retail_payload_is_rejected_even_if_validator_receipt_is_spoofed) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.040s
+
+OK

@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_stadium_material_findings",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_stadium_material_findings.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:57:45.943463+00:00",
+  "ended": "2026-09-16T00:57:46.072396+00:00",
+  "seconds": 0.129,
+  "exit_code": 0
+}

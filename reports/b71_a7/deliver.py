@@ -9,7 +9,8 @@ import time
 
 ROOT = Path(__file__).resolve().parents[2]
 G = ['git', '--git-dir=' + str(ROOT / '.scratch/git-a7'), '--work-tree=' + str(ROOT)]
-commands = []
+commit_receipt = ROOT / '.scratch/a7-final-commit.json'
+commands = json.loads(commit_receipt.read_text()) if commit_receipt.exists() else []
 
 def run(argv):
     start = time.monotonic()
@@ -26,6 +27,15 @@ tree = run(G + ['rev-parse', 'HEAD^{tree}'])
 bundle = ROOT / '.scratch/astra-b71-a7.bundle'
 run(G + ['bundle', 'create', str(bundle), 'astra/b71-a7-integrate', '^07c544a2'])
 run(G + ['bundle', 'verify', str(bundle)])
+prerequisites = []
+with bundle.open('rb') as stream:
+    for line in stream:
+        if line == b'\n':
+            break
+        if line.startswith(b'-'):
+            prerequisites.append(line[1:].split()[0].decode('ascii'))
+for prerequisite in prerequisites:
+    run(G + ['merge-base', '--is-ancestor', prerequisite, '07c544a2'])
 with tempfile.TemporaryDirectory(prefix='b71-a7-bundle-check-') as folder:
     private = Path(folder) / 'verify.git'
     run(['git', 'init', '--bare', str(private)])
@@ -33,16 +43,21 @@ with tempfile.TemporaryDirectory(prefix='b71-a7-bundle-check-') as folder:
     alternate = (ROOT / '.scratch/git-a7/objects/info/alternates').read_text()
     (private / 'objects/info/alternates').write_text(alternate)
     vg = ['git', '--git-dir=' + str(private)]
-    run(vg + ['fetch', str(bundle), 'astra/b71-a7-integrate:refs/heads/verified'])
+    run(vg + ['-c', 'fetch.unpackLimit=0', 'fetch', str(bundle), 'astra/b71-a7-integrate:refs/heads/verified'])
     assert run(vg + ['rev-parse', 'verified']) == head
     assert run(vg + ['rev-parse', 'verified^{tree}']) == tree
     run(vg + ['fsck', '--connectivity-only', '--no-dangling', 'verified'])
+    expected = {line.split()[0] for line in run(G + ['rev-list', '--objects', head, '^07c544a2']).splitlines()}
+    packed = set()
+    for idx in (private / 'objects/pack').glob('*.idx'):
+        packed.update(line.split()[0] for line in run(vg + ['verify-pack', '-v', str(idx)]).splitlines() if line.strip() and len(line.split()[0]) == 40)
+    assert expected <= packed, ('bundle omits required objects', sorted(expected - packed))
 scratch = sum(p.stat().st_size for p in (ROOT / '.scratch').rglob('*') if p.is_file())
 assert scratch < 200 * 1024 * 1024
 receipt = dict(branch='astra/b71-a7-integrate', head=head, tree=tree,
                prerequisite='07c544a2c9a5c20c27a8e6557874b15a552d9d82',
                bundle=str(bundle.relative_to(ROOT)), bytes=bundle.stat().st_size,
                sha256=hashlib.sha256(bundle.read_bytes()).hexdigest(),
-               verified_fresh_fetch_and_tree=True, scratch_bytes=scratch, commands=commands)
+               bundle_prerequisites=prerequisites, all_prerequisites_contained_in_a6=True, verified_fresh_fetch_and_tree=True, all_objects_since_a6_in_bundle=True, required_objects=len(expected), scratch_bytes=scratch, commands=commands)
 (ROOT / '.scratch/astra-b71-a7-delivery.json').write_text(json.dumps(receipt, indent=2) + '\n')
 print(json.dumps({k: v for k, v in receipt.items() if k != 'commands'}, indent=2))

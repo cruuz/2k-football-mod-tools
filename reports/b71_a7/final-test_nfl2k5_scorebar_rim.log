@@ -1,0 +1,13 @@
+test_both_sides_keep_their_panel_and_choose_retail_rims_across_live_team_changes (__main__.NativeRimTests.test_both_sides_keep_their_panel_and_choose_retail_rims_across_live_team_changes) ... ok
+test_compacted_visibility_writes_only_the_existing_state_and_restores_ebp (__main__.NativeRimTests.test_compacted_visibility_writes_only_the_existing_state_and_restores_ebp) ... ok
+test_missing_codes_null_records_and_indistinguishable_secondary_fall_back_to_silver (__main__.NativeRimTests.test_missing_codes_null_records_and_indistinguishable_secondary_fall_back_to_silver) ... ok
+test_no_cached_material_table_and_guarded_missing_or_wrong_scene (__main__.NativeRimTests.test_no_cached_material_table_and_guarded_missing_or_wrong_scene) ... ok
+test_pinned_v3_is_a_real_negative_control_and_refuses_cross_version_install (__main__.NativeRimTests.test_pinned_v3_is_a_real_negative_control_and_refuses_cross_version_install) ... ok
+test_rim_material_reaches_native_shader_command (__main__.NativeRimTests.test_rim_material_reaches_native_shader_command) ... ok
+test_assembly_exactly_fills_the_existing_span (__main__.RimContractTests.test_assembly_exactly_fills_the_existing_span) ... ok
+test_selection_and_silver_fallback (__main__.RimContractTests.test_selection_and_silver_fallback) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 17.261s
+
+OK

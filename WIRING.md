@@ -7,7 +7,7 @@ All protected files are granted for this job. S4 has no newly authored deferred 
 - S4's runtime registry metadata is merged by capability ID; all 176 unique rows remain.
 - The release allowlist retains the colour controls and documentation and adds the scorebug assets module and both label assets.
 - The authored label PNG has an exact path/size/dimensions/SHA-256 catalog entry and a refreshed catalog hash in the release checker. The binary-asset validator is unchanged.
-- Provider/runtime seals are regenerated with `packaging/repin.py --apply`; counts remain 287 providers and 176 registry capabilities.
+- Provider/runtime seals are regenerated with `packaging/repin.py --apply`; the combined closure is 288 modules (A6 287 plus S4's painted-atlas assets dependency), with 176 registry capabilities.
 - The cave reservation manifest is regenerated last as the complete forward bounded XBE projection. Production regeneration remains required. External command: `bash reports/b71_a7/manifest_regen.sh`.
 
 Exact file:line locations, measurements and final command receipts are in `ASTRA_REPORT.md` and `reports/b71_a7/`.

@@ -1,0 +1,15 @@
+test_alias_merge_deduplicates_identical_and_rejects_divergent_writes (__main__.ContractTests.test_alias_merge_deduplicates_identical_and_rejects_divergent_writes) ... ok
+test_complete_hash_gate_and_any_retail_payload_are_rejected (__main__.ContractTests.test_complete_hash_gate_and_any_retail_payload_are_rejected) ... ok
+test_cross_volume_compiler_slices_payload_exactly (__main__.ContractTests.test_cross_volume_compiler_slices_payload_exactly) ... ok
+test_import_wraps_strict_validator_and_receipt_contains_no_source_bytes (__main__.ContractTests.test_import_wraps_strict_validator_and_receipt_contains_no_source_bytes) ... ok
+test_packet_gate_rejects_exact_near_and_cross_source_reuse (__main__.ContractTests.test_packet_gate_rejects_exact_near_and_cross_source_reuse) ... ok
+test_paired_jukebox_validation_requires_both_correct_sides (__main__.ContractTests.test_paired_jukebox_validation_requires_both_correct_sides) ... ok
+test_preview_wraps_existing_atomic_decoder_contract (__main__.ContractTests.test_preview_wraps_existing_atomic_decoder_contract) ... ok
+test_product_facing_constants_are_exact (__main__.ContractTests.test_product_facing_constants_are_exact) ... ok
+test_complete_retail_gate_scans_every_payload_and_packet (__main__.RecognizedSourceTests.test_complete_retail_gate_scans_every_payload_and_packet) ... ok
+test_jukebox_cross_volume_target_and_cwdloop_alias_are_exact (__main__.RecognizedSourceTests.test_jukebox_cross_volume_target_and_cwdloop_alias_are_exact) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 13.513s
+
+OK

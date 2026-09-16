@@ -1,0 +1,102 @@
+{
+  "required_completed": 267,
+  "all_requested_suites_and_closures_exit_zero": true,
+  "unittest_cases": 3089,
+  "skips": {
+    "final-nfl2k5_scorebug_layout_test": [
+      "test_ball_live_hide_gate_retail_vs_persistent (__main__.ScorebugEmulationTests.test_ball_live_hide_gate_retail_vs_persistent) ... skipped 'bounded CPU tests require unicorn and NFL2K5_SCOREBUG_EMULATION_TEST=1'",
+      "test_placement_mode_shows_one_mark_copy_and_one_frame (__main__.ScorebugEmulationTests.test_placement_mode_shows_one_mark_copy_and_one_frame) ... skipped 'bounded CPU tests require unicorn and NFL2K5_SCOREBUG_EMULATION_TEST=1'",
+      "test_possession_change_timed_show_retail_vs_persistent (__main__.ScorebugEmulationTests.test_possession_change_timed_show_retail_vs_persistent) ... skipped 'bounded CPU tests require unicorn and NFL2K5_SCOREBUG_EMULATION_TEST=1'",
+      "The mockup used to read an intermediate glTF that is not in a release (and gated the ... skipped 'the intermediate glTF research export is not in this tree'",
+      "test_patch_xbe_recolours_black_fields_and_nops_the_hide_calls (__main__.ScorebugXbePatchTests.test_patch_xbe_recolours_black_fields_and_nops_the_hide_calls) ... skipped 'base disc image not present'",
+      "test_patch_xbe_refuses_foreign_bytes_at_a_site (__main__.ScorebugXbePatchTests.test_patch_xbe_refuses_foreign_bytes_at_a_site) ... skipped 'base disc image not present'"
+    ],
+    "final-test_apf_b661_ladder": [
+      "test_retail_bulk_swap_h7a_and_native_picker (__main__.LadderTests.test_retail_bulk_swap_h7a_and_native_picker) ... skipped 'Pinned BASE flat PE absent: /home/noah/.codex-tmp/franchise-2026-08-28/apf.pe'"
+    ],
+    "final-test_apf_b67_static_audit": [
+      "test_both_pinned_images_and_caller_boundary (__main__.StaticAuditTests.test_both_pinned_images_and_caller_boundary) ... skipped 'Owned pinned image absent: /tmp/astra-coverage-17votk5s/base_reextracted.pe; set APF_RETAIL_PE and APF_RETAIL_TU_PE'"
+    ],
+    "final-test_apf_b67_writers_native": [
+      "test_curve_patch_native_both_images (__main__.WriterNativeTests.test_curve_patch_native_both_images) ... skipped 'Owned TU flat image absent; set APF_RETAIL_TU_PE'"
+    ],
+    "final-test_apf_b69_control_audit": [
+      "test_sparse_receipt_matches_pinned_private_image (__main__.AuditTests.test_sparse_receipt_matches_pinned_private_image) ... skipped 'Owned pinned BASE PE absent; set APF_RETAIL_PE'"
+    ],
+    "final-test_apf_book_unlock_retail": [
+      "setUpClass (__main__.RetailProof) ... skipped 'Set APF_BOOK_RETAIL_INDEX to an existing user-owned input; no retail bytes are bundled'"
+    ],
+    "final-test_apf_defense_research_native": [
+      "test_tu_function_shapes_and_loader_offset_delta (__main__.DefenseResearchTests.test_tu_function_shapes_and_loader_offset_delta) ... skipped 'Set APF_RETAIL_TU_PE to the pinned reconstructed TU 1.1 flat image'"
+    ],
+    "final-test_apf_endzone_dxt5a": [
+      "test_supplied_chicago_and_washington_build_and_reparse (__main__.SuppliedPS3Tests.test_supplied_chicago_and_washington_build_and_reparse) ... skipped 'set APF_ENDZONE_SLOW=1 for supplied-pair allocation builds (about 4 minutes)'"
+    ],
+    "final-test_apf_field_art_patch": [
+      "test_field_pass_text_bc3_edit_and_verify (__main__.FieldArtSlowPracticeTests.test_field_pass_text_bc3_edit_and_verify) ... skipped 'practice-overlay recompress is slow; set APF_FIELD_ART_SLOW=1'",
+      "test_pc_field_goal_dxt1_edit_and_verify (__main__.FieldArtSlowPracticeTests.test_pc_field_goal_dxt1_edit_and_verify) ... skipped 'practice-overlay recompress is slow; set APF_FIELD_ART_SLOW=1'"
+    ],
+    "final-test_apf_splb_tag_reassignment": [
+      "test_static_consumer_words_match_the_decompressed_pe (__main__.StaticConsumerPinTests.test_static_consumer_words_match_the_decompressed_pe) ... skipped 'decompressed APF PE is not on this machine'"
+    ],
+    "final-test_apf_stfs_roster_rehash": [
+      "test_pinned_source_has_no_signature_verification (__main__.LocalXeniaAuditTests.test_pinned_source_has_no_signature_verification) ... skipped 'optional local Xenia source revision d09cae8d is unavailable'"
+    ],
+    "final-test_nfl2k5_read_option_diagnostic_manifest": [
+      "setUpClass (__main__.OwnershipRevalidationTests) ... skipped 'selected manifest uses a different Build fingerprint; historical diagnostic projection not applicable'"
+    ],
+    "final-test_nfl2k5_scorebug_assets": [
+      "test_apply_in_place_grows_pack0_and_switches_the_node (__main__.DiscTransactionTests.test_apply_in_place_grows_pack0_and_switches_the_node) ... skipped \"disposable disc scratch is not writable: /media/noah/Storage/.b70-fable-assets: [Errno 30] Read-only file system: '/media/noah/Storage/.b70-fable-assets/scorebug-access-f8fab5zx'\""
+    ],
+    "final-test_nfl2k5_scorebug_fonts": [
+      "test_compact_fonts_follow_each_current_and_cached_score_and_restore_with_null_fallback (__main__.NativeTests.test_compact_fonts_follow_each_current_and_cached_score_and_restore_with_null_fallback) ... skipped 'beta 69 private-font runtime (scoped FONT binding, possession glyph, compact score fonts): beta 70 binds no private FONT and draws the 2026 bar with the native fonts; see test_nfl2k5_scorebug_mnf.py, test_nfl2k5_scorebug_exact.py and test_nfl2k5_scorebug_freeze_v2.py'",
+      "test_native_glyph_caps_positions_and_uvs_match_measured_sizes (__main__.NativeTests.test_native_glyph_caps_positions_and_uvs_match_measured_sizes) ... skipped 'beta 69 private-font runtime (scoped FONT binding, possession glyph, compact score fonts): beta 70 binds no private FONT and draws the 2026 bar with the native fonts; see test_nfl2k5_scorebug_mnf.py, test_nfl2k5_scorebug_exact.py and test_nfl2k5_scorebug_freeze_v2.py'",
+      "test_native_setup_binds_only_scoped_roles_and_null_lookup_retains_fallback (__main__.NativeTests.test_native_setup_binds_only_scoped_roles_and_null_lookup_retains_fallback) ... skipped 'beta 69 private-font runtime (scoped FONT binding, possession glyph, compact score fonts): beta 70 binds no private FONT and draws the 2026 bar with the native fonts; see test_nfl2k5_scorebug_mnf.py, test_nfl2k5_scorebug_exact.py and test_nfl2k5_scorebug_freeze_v2.py'",
+      "test_possession_is_one_scoped_glyph_on_the_correct_side_and_reload_hides_missing_font (__main__.NativeTests.test_possession_is_one_scoped_glyph_on_the_correct_side_and_reload_hides_missing_font) ... skipped 'beta 69 private-font runtime (scoped FONT binding, possession glyph, compact score fonts): beta 70 binds no private FONT and draws the 2026 bar with the native fonts; see test_nfl2k5_scorebug_mnf.py, test_nfl2k5_scorebug_exact.py and test_nfl2k5_scorebug_freeze_v2.py'",
+      "test_widest_three_digit_scores_clear_the_pill_through_native_flip_phases (__main__.NativeTests.test_widest_three_digit_scores_clear_the_pill_through_native_flip_phases) ... skipped 'beta 69 private-font runtime (scoped FONT binding, possession glyph, compact score fonts): beta 70 binds no private FONT and draws the 2026 bar with the native fonts; see test_nfl2k5_scorebug_mnf.py, test_nfl2k5_scorebug_exact.py and test_nfl2k5_scorebug_freeze_v2.py'"
+    ],
+    "final-test_nfl2k5_scorebug_source_art": [
+      "test_every_texture_span_is_identical_either_way (__main__.ByteIdentityTests.test_every_texture_span_is_identical_either_way) ... skipped 'score_buga_modern.png is not in this tree'",
+      "test_the_scene_span_is_identical_either_way (__main__.ByteIdentityTests.test_the_scene_span_is_identical_either_way) ... skipped 'the developer copy of the retail scene is not in this tree'",
+      "test_the_step_writes_the_expected_resource_bytes (__main__.FullDiscWriteTests.test_the_step_writes_the_expected_resource_bytes) ... skipped 'the developer copies this is compared against are not in this tree'"
+    ],
+    "final-test_unif_color_control": [
+      "test_no_op_and_wrong_full_pack_fingerprint_are_refused (__main__.RealComposedWriterTests.test_no_op_and_wrong_full_pack_fingerprint_are_refused) ... skipped 'retail 2K5 source XISO not present'",
+      "test_one_set_emits_exactly_one_eight_byte_provenance_bound_span (__main__.RealComposedWriterTests.test_one_set_emits_exactly_one_eight_byte_provenance_bound_span) ... skipped 'retail 2K5 source XISO not present'"
+    ]
+  },
+  "manifest_source_seals_match": true,
+  "manifest_last_product_change": true,
+  "product_paths_frozen": 4645,
+  "builder_executed": false,
+  "manifest": {
+    "sha256": "4b323245ae654c559172b369f00ffe77f6b7399281ec58da24178768141fd579",
+    "bytes": 6544271,
+    "reservations": 13113,
+    "source_count": 337,
+    "observed_steps": 138,
+    "stack_xbe_sha256": "ef5ca3d7f44c623aec91b01512f65ad497f4ebf148d8e25e3b4041d5584ca36a",
+    "release_manifest": false,
+    "disc_built": false,
+    "runtime_witnessed": false,
+    "production_regeneration_required": true,
+    "scorebug_allocations": [
+      {
+        "owner": "nfl2k5_scorebug_runtime",
+        "kind": "code",
+        "size": 1408,
+        "align": 16,
+        "va": 21736032,
+        "raw": 12024416
+      },
+      {
+        "owner": "nfl2k5_scorebug_runtime",
+        "kind": "data",
+        "size": 128,
+        "align": 16,
+        "va": 21737488,
+        "raw": 12025872
+      }
+    ]
+  }
+}

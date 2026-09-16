@@ -1,0 +1,15 @@
+test_half_float_to_u8_range (__main__.CubemapFace0UnitTests.test_half_float_to_u8_range) ... ok
+test_synthetic_face0_decode (__main__.CubemapFace0UnitTests.test_synthetic_face0_decode) ... ok
+test_small_cubemap_variants (__main__.RealCubemapFace0PreviewTests.test_small_cubemap_variants) ... /home/noah/2k-worktrees/astra-b71-a7/tests/mod_editor/test_apf_cubemap_face0_preview.py:101: ResourceWarning: unclosed file <_io.BufferedReader name='/tmp/apf-preview-test-xc_71obt/originals/dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e/v3/textures/outer-0108-inner-0020.png'>
+  image = Image.open(path)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/usr/lib/python3.12/unittest/case.py:589: ResourceWarning: unclosed file <_io.BufferedReader name='/tmp/apf-preview-test-xc_71obt/originals/dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e/v3/textures/outer-0108-inner-0039.png'>
+  if method() is not None:
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_specular_lightbox_face0_preview (__main__.RealCubemapFace0PreviewTests.test_specular_lightbox_face0_preview) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 21.230s
+
+OK

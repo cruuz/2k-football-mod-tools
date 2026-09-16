@@ -1,0 +1,16 @@
+test_84th_entry_and_last_record_bounds (__main__.CaveTests.test_84th_entry_and_last_record_bounds) ... ok
+test_compacts_stably_and_preserves_registers_and_memory (__main__.CaveTests.test_compacts_stably_and_preserves_registers_and_memory) ... ok
+test_decoder_rejects_modified_and_escaping_branches (__main__.CaveTests.test_decoder_rejects_modified_and_escaping_branches) ... ok
+test_every_pass_subtype_and_full_forty_candidate_buffer (__main__.CaveTests.test_every_pass_subtype_and_full_forty_candidate_buffer) ... ok
+test_mask_word_b_first_empty_and_formation_filter (__main__.CaveTests.test_mask_word_b_first_empty_and_formation_filter) ... ok
+test_null_and_malformed_inputs_keep_original (__main__.CaveTests.test_null_and_malformed_inputs_keep_original) ... ok
+test_wrong_family_subtype_and_mixed_buffer_are_untouched (__main__.CaveTests.test_wrong_family_subtype_and_mixed_buffer_are_untouched) ... ok
+test_zero_matches_is_exact_fallback (__main__.CaveTests.test_zero_matches_is_exact_fallback) ... ok
+test_compile_export_reparse_and_idempotence (__main__.SyntheticImageTests.test_compile_export_reparse_and_idempotence) ... ok
+test_occupied_cave_refused_even_with_test_image_hash (__main__.SyntheticImageTests.test_occupied_cave_refused_even_with_test_image_hash) ... ok
+test_production_refuses_synthetic_and_wrong_images (__main__.SyntheticImageTests.test_production_refuses_synthetic_and_wrong_images) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 1.933s
+
+OK

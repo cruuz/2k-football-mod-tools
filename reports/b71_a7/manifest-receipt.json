@@ -1,0 +1,30 @@
+{
+  "sha256": "4b323245ae654c559172b369f00ffe77f6b7399281ec58da24178768141fd579",
+  "bytes": 6544271,
+  "reservations": 13113,
+  "source_count": 337,
+  "observed_steps": 138,
+  "stack_xbe_sha256": "ef5ca3d7f44c623aec91b01512f65ad497f4ebf148d8e25e3b4041d5584ca36a",
+  "release_manifest": false,
+  "disc_built": false,
+  "runtime_witnessed": false,
+  "production_regeneration_required": true,
+  "scorebug_allocations": [
+    {
+      "owner": "nfl2k5_scorebug_runtime",
+      "kind": "code",
+      "size": 1408,
+      "align": 16,
+      "va": 21736032,
+      "raw": 12024416
+    },
+    {
+      "owner": "nfl2k5_scorebug_runtime",
+      "kind": "data",
+      "size": 128,
+      "align": 16,
+      "va": 21737488,
+      "raw": 12025872
+    }
+  ]
+}

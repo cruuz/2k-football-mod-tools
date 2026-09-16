@@ -1,0 +1,23 @@
+test_already_balanced_is_exact_noop (__main__.AudibleTests.test_already_balanced_is_exact_noop) ... ok
+test_balance_is_minimal_same_record_and_idempotent (__main__.AudibleTests.test_balance_is_minimal_same_record_and_idempotent) ... ok
+test_impossible_pass_only_record_is_explicit (__main__.AudibleTests.test_impossible_pass_only_record_is_explicit) ... ok
+test_metadata_uses_flags_and_family_not_names_or_type_nibble (__main__.AudibleTests.test_metadata_uses_flags_and_family_not_names_or_type_nibble) ... ok
+test_tag_three_is_available_when_only_run_donor (__main__.AudibleTests.test_tag_three_is_available_when_only_run_donor) ... ok
+test_wrong_book_and_unknown_catalog_fail (__main__.AudibleTests.test_wrong_book_and_unknown_catalog_fail) ... ok
+test_duplicate_formation_uses_first_record_for_membership (__main__.GuardTests.test_duplicate_formation_uses_first_record_for_membership) ... ok
+test_empty_twins_refused_even_with_another_record (__main__.GuardTests.test_empty_twins_refused_even_with_another_record) ... ok
+test_hole_refused_and_safe_trailing_clear_allowed (__main__.GuardTests.test_hole_refused_and_safe_trailing_clear_allowed) ... ok
+test_independent_verifier_also_refuses_dangerous_record_transition (__main__.GuardTests.test_independent_verifier_also_refuses_dangerous_record_transition) ... ok
+test_last_ordinary_play_cannot_be_removed (__main__.GuardTests.test_last_ordinary_play_cannot_be_removed) ... ok
+test_preexisting_short_record_is_not_retroactively_rejected (__main__.GuardTests.test_preexisting_short_record_is_not_retroactively_rejected) ... ok
+test_receipt_separates_category_row_and_mask_reconstruction (__main__.GuardTests.test_receipt_separates_category_row_and_mask_reconstruction) ... ok
+test_retiring_last_package_without_safe_fallback_is_refused (__main__.GuardTests.test_retiring_last_package_without_safe_fallback_is_refused) ... ok
+test_preview_stage_uses_existing_facade_and_preserves_other_books (__main__.PanelTests.test_preview_stage_uses_existing_facade_and_preserves_other_books) ... ok
+test_source_change_drops_pending_preview (__main__.PanelTests.test_source_change_drops_pending_preview) ... ok
+test_stale_project_changes_are_refused (__main__.PanelTests.test_stale_project_changes_are_refused) ... ok
+test_seven_books_balance_every_possible_record_with_verified_transport (__main__.RetailProofTests.test_seven_books_balance_every_possible_record_with_verified_transport) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 2.830s
+
+OK

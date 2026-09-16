@@ -1,0 +1,12 @@
+test_build_group_rejects_duplicate_player (__main__.PlayerPositionSessionProjectTests.test_build_group_rejects_duplicate_player) ... ok
+test_facade_delegates_and_invalidates_last_build (__main__.PlayerPositionSessionProjectTests.test_facade_delegates_and_invalidates_last_build) ... ok
+test_project_rejects_retargeted_metadata_and_noncanonical_code (__main__.PlayerPositionSessionProjectTests.test_project_rejects_retargeted_metadata_and_noncanonical_code) ... ok
+test_replace_value_revert_and_retail_free_project_roundtrip (__main__.PlayerPositionSessionProjectTests.test_replace_value_revert_and_retail_free_project_roundtrip) ... ok
+test_session_rejects_bad_code_and_broken_source_mirror (__main__.PlayerPositionSessionProjectTests.test_session_rejects_bad_code_and_broken_source_mirror) ... ok
+test_position_composes_with_rating_identity_and_all_three (__main__.RealPositionInspectorAndCompositionTests.test_position_composes_with_rating_identity_and_all_three) ... ok
+test_roster_inspector_exposes_stable_editor_and_all_choices (__main__.RealPositionInspectorAndCompositionTests.test_roster_inspector_exposes_stable_editor_and_all_choices) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 21.277s
+
+OK

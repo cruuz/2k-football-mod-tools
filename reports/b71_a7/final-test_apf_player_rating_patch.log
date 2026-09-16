@@ -1,0 +1,17 @@
+test_batch_accepts_zero_and_99_and_has_schema_order (__main__.PlayerRatingTargetContractTests.test_batch_accepts_zero_and_99_and_has_schema_order) ... ok
+test_bounds_unknown_fields_bool_and_native_100_fail_closed (__main__.PlayerRatingTargetContractTests.test_bounds_unknown_fields_bool_and_native_100_fail_closed) ... ok
+test_exact_asset_target_and_metadata_are_retail_free (__main__.PlayerRatingTargetContractTests.test_exact_asset_target_and_metadata_are_retail_free) ... ok
+test_failed_private_entry_verification_removes_new_output (__main__.PlayerRatingTargetContractTests.test_failed_private_entry_verification_removes_new_output) ... ok
+test_private_entry_publish_is_atomic_nonoverwriting_and_private (__main__.PlayerRatingTargetContractTests.test_private_entry_publish_is_atomic_nonoverwriting_and_private) ... ok
+test_replacement_payload_is_canonical_and_replacement_only (__main__.PlayerRatingTargetContractTests.test_replacement_payload_is_canonical_and_replacement_only) ... ok
+test_group_compiler_rejects_changed_target_metadata (__main__.PrivateBuildPipelineTests.test_group_compiler_rejects_changed_target_metadata) ... ok
+test_group_compiler_validates_payload_metadata_and_emits_private_receipt (__main__.PrivateBuildPipelineTests.test_group_compiler_validates_payload_metadata_and_emits_private_receipt) ... ok
+test_private_complete_game_helper_uses_only_canonical_temp_payloads (__main__.PrivateBuildPipelineTests.test_private_complete_game_helper_uses_only_canonical_temp_payloads) ... ok
+test_public_facade_surface_is_available_after_runtime_proof (__main__.PrivateBuildPipelineTests.test_public_facade_surface_is_available_after_runtime_proof) ... ok
+test_no_op_returns_exact_source_entry_without_recompression (__main__.RetailPlayerRatingWriterTests.test_no_op_returns_exact_source_entry_without_recompression) ... ok
+test_one_byte_writer_is_token_preserving_reparsed_and_source_safe (__main__.RetailPlayerRatingWriterTests.test_one_byte_writer_is_token_preserving_reparsed_and_source_safe) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 4.040s
+
+OK

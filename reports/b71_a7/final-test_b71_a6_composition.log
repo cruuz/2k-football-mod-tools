@@ -1,0 +1,7 @@
+test_build_options_persist_together_and_stay_off_by_default (__main__.IntegrationTests.test_build_options_persist_together_and_stay_off_by_default) ... ok
+test_combined_receipt_requires_complete_scope_and_bytes (__main__.IntegrationTests.test_combined_receipt_requires_complete_scope_and_bytes) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.035s
+
+OK

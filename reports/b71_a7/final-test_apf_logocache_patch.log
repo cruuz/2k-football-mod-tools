@@ -1,0 +1,19 @@
+test_drifted_directory_hash_refused (__main__.CacheWriterFailClosedTests.test_drifted_directory_hash_refused) ... ok
+test_drifted_payload_hash_refused (__main__.CacheWriterFailClosedTests.test_drifted_payload_hash_refused) ... ok
+test_out_of_range_catalog_index_refused (__main__.CacheWriterFailClosedTests.test_out_of_range_catalog_index_refused) ... ok
+test_oversize_repack_fails_closed (__main__.CacheWriterFailClosedTests.test_oversize_repack_fails_closed) ... ok
+test_wrong_png_dimensions_refused (__main__.CacheWriterFailClosedTests.test_wrong_png_dimensions_refused) ... ok
+test_pinned_layout (__main__.CacheWriterPinTests.test_pinned_layout) ... ok
+test_public_raw_pair_structure_verifier (__main__.CacheWriterPinTests.test_public_raw_pair_structure_verifier) ... ok
+test_public_raw_pair_structure_verifier_rejects_corruption (__main__.CacheWriterPinTests.test_public_raw_pair_structure_verifier_rejects_corruption) ... ok
+test_retail_hashes_and_directory_parse (__main__.CacheWriterPinTests.test_retail_hashes_and_directory_parse) ... ok
+test_both_layers_edit (__main__.CacheWriterRoundTripTests.test_both_layers_edit) ... ok
+test_duplicate_catalog_spec_refused (__main__.CacheWriterRoundTripTests.test_duplicate_catalog_spec_refused) ... ok
+test_no_op_returns_source_pair (__main__.CacheWriterRoundTripTests.test_no_op_returns_source_pair) ... ok
+test_single_layer_edit (__main__.CacheWriterRoundTripTests.test_single_layer_edit) ... ok
+test_two_crests_one_pass (__main__.CacheWriterRoundTripTests.test_two_crests_one_pass) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 44.482s
+
+OK

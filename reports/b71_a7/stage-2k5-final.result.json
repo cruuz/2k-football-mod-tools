@@ -1,0 +1,13 @@
+{
+  "name": "stage-2k5-final",
+  "argv": [
+    "python3",
+    "packaging/stage_release.py",
+    "packaging/release-allowlist.txt",
+    "/home/noah/2k-worktrees/astra-b71-a7/.scratch/a7-release-2k5"
+  ],
+  "started": "2026-09-16T01:24:37.416419+00:00",
+  "ended": "2026-09-16T01:24:37.770951+00:00",
+  "seconds": 0.355,
+  "exit_code": 0
+}

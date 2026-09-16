@@ -1,0 +1,9 @@
+test_all_three_logo_domains_remain_distinct (__main__.ApfLogoSurfaceOwnershipTests.test_all_three_logo_domains_remain_distinct) ... ok
+test_americans_crest_cache_and_wordmark_slots_are_exact (__main__.ApfLogoSurfaceOwnershipTests.test_americans_crest_cache_and_wordmark_slots_are_exact) ... ok
+test_product_contract_routes_crests_wordmarks_and_menu_cards_separately (__main__.ApfLogoSurfaceOwnershipTests.test_product_contract_routes_crests_wordmarks_and_menu_cards_separately) ... ok
+test_registry_names_static_team_select_mapping_without_runtime_overclaim (__main__.ApfLogoSurfaceOwnershipTests.test_registry_names_static_team_select_mapping_without_runtime_overclaim) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.036s
+
+OK

@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_ps3_texture_bundle",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_ps3_texture_bundle.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:57:03.624284+00:00",
+  "ended": "2026-09-16T00:57:34.363648+00:00",
+  "seconds": 30.739,
+  "exit_code": 0
+}

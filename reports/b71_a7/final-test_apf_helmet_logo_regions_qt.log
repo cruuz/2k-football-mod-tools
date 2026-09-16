@@ -1,0 +1,7 @@
+test_one_colour_art_gets_no_invented_palette_and_manual_rams_mapping_works (__main__.NormalLogoRegionDialogTests.test_one_colour_art_gets_no_invented_palette_and_manual_rams_mapping_works) ... ok
+test_source_suggestion_requires_confirmation_and_shows_material_preview (__main__.NormalLogoRegionDialogTests.test_source_suggestion_requires_confirmation_and_shows_material_preview) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 1.107s
+
+OK

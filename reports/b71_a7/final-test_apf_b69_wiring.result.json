@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_b69_wiring",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_b69_wiring.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:40:39.567159+00:00",
+  "ended": "2026-09-16T00:40:40.182522+00:00",
+  "seconds": 0.615,
+  "exit_code": 0
+}

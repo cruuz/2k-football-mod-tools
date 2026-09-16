@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_audio_batch_export",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_audio_batch_export.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:33:15.227937+00:00",
+  "ended": "2026-09-16T00:33:15.460645+00:00",
+  "seconds": 0.233,
+  "exit_code": 0
+}

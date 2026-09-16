@@ -1,0 +1,10 @@
+test_exact_patch_words_and_disabled_default (__main__.FourthDownTests.test_exact_patch_words_and_disabled_default) ... ok
+test_export_install_launch_copy_reload_and_remove (__main__.FourthDownTests.test_export_install_launch_copy_reload_and_remove) ... ok
+test_invalid_parameters_and_foreign_payloads_refused (__main__.FourthDownTests.test_invalid_parameters_and_foreign_payloads_refused) ... ok
+test_leaf_preserves_full_width_registers_and_memory (__main__.FourthDownTests.test_leaf_preserves_full_width_registers_and_memory) ... ok
+test_preview_states_expose_the_relevant_choices (__main__.FourthDownTests.test_preview_states_expose_the_relevant_choices) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.072s
+
+OK

@@ -1,0 +1,11 @@
+test_additional_export_is_nonmutating_and_never_unlocks_replace (__main__.ApfUniformInventoryGuiTests.test_additional_export_is_nonmutating_and_never_unlocks_replace) ... ok
+test_additional_inventory_has_scoped_types_and_exact_paging (__main__.ApfUniformInventoryGuiTests.test_additional_inventory_has_scoped_types_and_exact_paging) ... ok
+test_duplicate_names_restore_the_selected_asset_by_exact_id (__main__.ApfUniformInventoryGuiTests.test_duplicate_names_restore_the_selected_asset_by_exact_id) ... ok
+test_page_partitions_all_408_records_without_duplicate_coordinates (__main__.ApfUniformInventoryGuiTests.test_page_partitions_all_408_records_without_duplicate_coordinates) ... ok
+test_specialist_filters_and_additional_browser_state_are_independent (__main__.ApfUniformInventoryGuiTests.test_specialist_filters_and_additional_browser_state_are_independent) ... ok
+test_unloaded_page_keeps_both_workspaces_safe_and_empty (__main__.ApfUniformInventoryGuiTests.test_unloaded_page_keeps_both_workspaces_safe_and_empty) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 2.082s
+
+OK

@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_text_sheet_gui",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_text_sheet_gui.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:58:05.247795+00:00",
+  "ended": "2026-09-16T00:58:05.835216+00:00",
+  "seconds": 0.587,
+  "exit_code": 0
+}

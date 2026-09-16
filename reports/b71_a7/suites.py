@@ -6,6 +6,8 @@ import sys
 from run import ROOT, OUT, run
 
 kind = sys.argv[1]
+prefix = sys.argv[2] if len(sys.argv) > 2 else 'final-'
+batch = kind if prefix == 'final-' else prefix + kind
 tests = ROOT / 'tests/mod_editor'
 if kind == 'fast':
     files = sorted(tests.glob('test_*manifest.py'))
@@ -25,12 +27,12 @@ elif kind == 'closure_units':
     workers = 3
 else:
     raise ValueError(kind)
-(OUT / (kind + '-suite-paths.json')).write_text(json.dumps([str(p.relative_to(ROOT)) for p in files], indent=2) + '\n')
+(OUT / (batch + '-suite-paths.json')).write_text(json.dumps([str(p.relative_to(ROOT)) for p in files], indent=2) + '\n')
 results = []
 with ThreadPoolExecutor(max_workers=workers) as pool:
-    futures = {pool.submit(run, 'final-' + p.stem, ['python3', str(p.relative_to(ROOT)), '-v']): p for p in files}
+    futures = {pool.submit(run, prefix + p.stem, (['env', '-u', 'PYTHONPATH', 'python3'] if p.name == 'test_apf_studio_installer.py' else ['python3']) + [str(p.relative_to(ROOT))] + ([] if p.name == 'nfl_uniform_color_patch_test.py' else ['-v'])): p for p in files}
     for future in as_completed(futures):
         p = futures[future]
         results.append(dict(path=str(p.relative_to(ROOT)), exit_code=future.result()))
-(OUT / (kind + '-results.json')).write_text(json.dumps(results, indent=2) + '\n')
+(OUT / (batch + '-results.json')).write_text(json.dumps(results, indent=2) + '\n')
 raise SystemExit(any(r['exit_code'] for r in results))

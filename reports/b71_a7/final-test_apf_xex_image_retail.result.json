@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_xex_image_retail",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_xex_image_retail.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:58:44.616444+00:00",
+  "ended": "2026-09-16T01:00:00.973655+00:00",
+  "seconds": 76.357,
+  "exit_code": 0
+}

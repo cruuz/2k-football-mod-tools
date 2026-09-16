@@ -1,0 +1,17 @@
+test_completed_build_displays_exact_fit_status (__main__.DialogTests.test_completed_build_displays_exact_fit_status) ... ok
+test_import_action_measures_inside_worker_before_review (__main__.DialogTests.test_import_action_measures_inside_worker_before_review) ... ok
+test_known_budgets_cannot_accept_without_worker_measurement (__main__.DialogTests.test_known_budgets_cannot_accept_without_worker_measurement) ... ok
+test_rows_tooltips_opt_out_and_explicit_room_action (__main__.DialogTests.test_rows_tooltips_opt_out_and_explicit_room_action) ... ok
+test_team_art_replace_restores_and_forwards_saved_opt_out (__main__.DialogTests.test_team_art_replace_restores_and_forwards_saved_opt_out) ... ok
+test_team_art_setting_defaults_on_and_explains_saved_policy (__main__.DialogTests.test_team_art_setting_defaults_on_and_explains_saved_policy) ... ok
+test_linked_cache_uses_reduced_masks_and_preserves_alpha (__main__.PlanTests.test_linked_cache_uses_reduced_masks_and_preserves_alpha) ... ok
+test_mutated_pixels_invalidate_measured_rows (__main__.PlanTests.test_mutated_pixels_invalidate_measured_rows) ... ok
+test_overflow_is_refused_before_any_staging (__main__.PlanTests.test_overflow_is_refused_before_any_staging) ... ok
+test_policy_defaults_and_project_roundtrip (__main__.PlanTests.test_policy_defaults_and_project_roundtrip) ... ok
+test_rows_show_first_fit_and_explicit_alternatives (__main__.PlanTests.test_rows_show_first_fit_and_explicit_alternatives) ... ok
+test_staging_carries_opt_out_and_source_images_are_preserved (__main__.PlanTests.test_staging_carries_opt_out_and_source_images_are_preserved) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.458s
+
+OK

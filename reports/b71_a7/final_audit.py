@@ -9,16 +9,24 @@ OUT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 expected = set()
 for group in ('fast', 'presentation', 'apf', 'closure_units'):
-    expected.update('final-' + Path(p).stem for p in json.loads((OUT / (group + '-suite-paths.json')).read_text()))
-    expected.add(group + '-suites')
+    prefix = 'delivery-' if group == 'closure_units' else 'final-'
+    batch = prefix + group if group == 'closure_units' else group
+    expected.update(prefix + Path(p).stem for p in json.loads((OUT / (batch + '-suite-paths.json')).read_text()))
+    expected.add(group + '-reconciled' if group in ('presentation', 'apf') else batch + '-suites')
+expected.discard('final-nfl2k5_scorebug_layout_test')
+expected.add('delivery-scorebug-layout-emulation')
+expected.discard('final-test_apf_studio_installer')
+expected.add('delivery-test_apf_studio_installer')
+expected.discard('final-nfl_uniform_color_patch_test')
+expected.add('delivery-nfl_uniform_color_patch_test')
 expected.update('final-' + name for name in ('test_nfl2k5_cave_oracle', 'test_nfl2k5_allocator_scaleout', 'test_xbe_patch_memory_writes', 'test_xbe_patch_cave_references', 'test_nfl2k5_owner_pairwise_composition', 'colour-all-pins'))
-expected.update(('registry-strict', 'validation-plan', 'pin-audit-final', 'volume', 'manifest-projection-delivery', 'repin-release-label', 'closures'))
+expected.update(('registry-strict', 'validation-plan', 'pin-audit-delivery', 'volume', 'manifest-projection-provider-closure', 'repin-provider-closure', 'closures'))
 expected.update(step + '-' + product + '-final' for product in ('2k5', 'apf') for step in ('stage', 'release', 'runtime'))
 results = {p.name.removesuffix('.result.json'): json.loads(p.read_text()) for p in OUT.glob('*.result.json')}
 assert not (expected - results.keys()), ('missing', sorted(expected - results.keys()))
 failed = {k: results[k]['exit_code'] for k in expected if results[k]['exit_code']}
 assert not failed, failed
-frozen = json.loads((ROOT / '.scratch/a7-product-frozen.json').read_text())
+frozen = json.loads((OUT / 'product-frozen.json').read_text())
 changed = [p for p, h in frozen.items() if hashlib.sha256((ROOT / p).read_bytes()).hexdigest() != h]
 assert not changed, changed
 from mod_editor.core.nfl2k5_cave_manifest import source_fingerprints

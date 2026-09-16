@@ -1,0 +1,19 @@
+test_pcm16_reader_is_bounded_and_retains_channel_envelopes (__main__.WaveformReaderTests.test_pcm16_reader_is_bounded_and_retains_channel_envelopes) ... ok
+test_reader_honors_cooperative_cancellation (__main__.WaveformReaderTests.test_reader_honors_cooperative_cancellation) ... ok
+test_reader_rejects_links_and_non_pcm16 (__main__.WaveformReaderTests.test_reader_rejects_links_and_non_pcm16) ... ok
+test_browser_loads_only_on_click_and_never_autoplays_or_writes (__main__.WaveformWidgetTests.test_browser_loads_only_on_click_and_never_autoplays_or_writes) ... This plugin does not support propagateSizeHints()
+ok
+test_decode_failure_is_shown_inline_and_can_retry (__main__.WaveformWidgetTests.test_decode_failure_is_shown_inline_and_can_retry) ... This plugin does not support propagateSizeHints()
+ok
+test_physical_external_bank_never_offers_waveform (__main__.WaveformWidgetTests.test_physical_external_bank_never_offers_waveform) ... This plugin does not support propagateSizeHints()
+ok
+test_stale_result_is_discarded_after_fast_selection_change (__main__.WaveformWidgetTests.test_stale_result_is_discarded_after_fast_selection_change) ... This plugin does not support propagateSizeHints()
+ok
+test_waveform_button_cancels_pending_decode_and_is_retryable (__main__.WaveformWidgetTests.test_waveform_button_cancels_pending_decode_and_is_retryable) ... This plugin does not support propagateSizeHints()
+ok
+test_widget_states_contain_no_path_or_audio_bytes (__main__.WaveformWidgetTests.test_widget_states_contain_no_path_or_audio_bytes) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.158s
+
+OK

@@ -1,0 +1,11 @@
+test_all_eight_schemes_on_all_eight_targets_fit_or_name_capacity (__main__.RetailRecipeTests.test_all_eight_schemes_on_all_eight_targets_fit_or_name_capacity) ... PROVED retail replacement matrix: 64 fits, 0 named capacity refusals
+ok
+test_capacity_refusal_is_atomic_and_names_next_step (__main__.StockRecipeTests.test_capacity_refusal_is_atomic_and_names_next_step) ... ok
+test_foreign_duplicate_and_conflicting_fine_tune_requests_refuse (__main__.StockRecipeTests.test_foreign_duplicate_and_conflicting_fine_tune_requests_refuse) ... ok
+test_off_by_default_explicit_book_persistence_undo_and_tamper (__main__.StockRecipeTests.test_off_by_default_explicit_book_persistence_undo_and_tamper) ... ok
+test_real_copied_build_receipt_reparses_whole_replacement_and_other_books (__main__.StockRecipeTests.test_real_copied_build_receipt_reparses_whole_replacement_and_other_books) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 211.803s
+
+OK

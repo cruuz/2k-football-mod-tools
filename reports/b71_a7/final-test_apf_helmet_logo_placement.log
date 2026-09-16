@@ -1,0 +1,24 @@
+test_auto_fit_spans_the_proved_front_crown_rear_envelope (__main__.HelmetLogoPlacementCoreTests.test_auto_fit_spans_the_proved_front_crown_rear_envelope) ... ok
+test_empty_and_off_canvas_masks_fail_closed (__main__.HelmetLogoPlacementCoreTests.test_empty_and_off_canvas_masks_fail_closed) ... ok
+test_nearest_import_preserves_region_mask_palette (__main__.HelmetLogoPlacementCoreTests.test_nearest_import_preserves_region_mask_palette) ... ok
+test_nonsquare_master_composes_contain_active_center_and_final_affine (__main__.HelmetLogoPlacementCoreTests.test_nonsquare_master_composes_contain_active_center_and_final_affine)
+Raw dimensions must not receive the semantic-canvas Placement directly. ... ok
+test_width_height_rotation_and_xy_are_independent (__main__.HelmetLogoPlacementCoreTests.test_width_height_rotation_and_xy_are_independent) ... ok
+test_advanced_mode_rejects_literal_rgb_before_placement (__main__.HelmetLogoPlacementPanelTests.test_advanced_mode_rejects_literal_rgb_before_placement) ... ok
+test_full_shell_import_auto_fits_then_stages_exact_pre_guard_png (__main__.HelmetLogoPlacementPanelTests.test_full_shell_import_auto_fits_then_stages_exact_pre_guard_png) ... ok
+test_normal_import_uses_an_immutable_snapshot_across_dialogs (__main__.HelmetLogoPlacementPanelTests.test_normal_import_uses_an_immutable_snapshot_across_dialogs)
+A source changed while dialogs are open cannot alter staged metadata. ... ok
+test_normal_mode_converts_before_the_placement_canvas (__main__.HelmetLogoPlacementPanelTests.test_normal_mode_converts_before_the_placement_canvas) ... ok
+test_reopen_uses_original_basis_and_last_transform_without_double_resampling (__main__.HelmetLogoPlacementPanelTests.test_reopen_uses_original_basis_and_last_transform_without_double_resampling) ... ok
+test_retail_import_keeps_existing_path_and_never_opens_placement (__main__.HelmetLogoPlacementPanelTests.test_retail_import_keeps_existing_path_and_never_opens_placement) ... ok
+test_canvas_drag_never_leaves_the_canvas (__main__.HelmetLogoPlacementQtTests.test_canvas_drag_never_leaves_the_canvas)
+Drags clamp to the canvas so preview and spinboxes always agree. ... ok
+test_canvas_drag_updates_xy_without_changing_scale_or_rotation (__main__.HelmetLogoPlacementQtTests.test_canvas_drag_updates_xy_without_changing_scale_or_rotation) ... ok
+test_dialog_exposes_direct_and_exact_controls (__main__.HelmetLogoPlacementQtTests.test_dialog_exposes_direct_and_exact_controls) ... ok
+test_repeated_renders_always_start_from_the_original_source (__main__.HelmetLogoPlacementQtTests.test_repeated_renders_always_start_from_the_original_source)
+No resample compounding: every preview re-renders the import basis. ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 6.959s
+
+OK

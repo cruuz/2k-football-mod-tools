@@ -1,0 +1,26 @@
+test_a_crest_row_offers_the_handoff_instead_of_refusing (__main__.BrowserActionTests.test_a_crest_row_offers_the_handoff_instead_of_refusing) ... ok
+test_a_dropped_image_is_emitted_with_the_route (__main__.BrowserActionTests.test_a_dropped_image_is_emitted_with_the_route) ... ok
+test_an_unowned_row_still_states_the_honest_boundary (__main__.BrowserActionTests.test_an_unowned_row_still_states_the_honest_boundary) ... ok
+test_refresh_never_leaves_a_stale_asset_in_the_detail_panel (__main__.BrowserActionTests.test_refresh_never_leaves_a_stale_asset_in_the_detail_panel)
+A search that keeps row 0 selected must still update the detail. ... ok
+test_uniform_and_wordmark_rows_name_their_own_workspaces (__main__.BrowserActionTests.test_uniform_and_wordmark_rows_name_their_own_workspaces) ... ok
+test_a_workspace_owned_row_stops_claiming_nothing_owns_it (__main__.CatalogNoteTests.test_a_workspace_owned_row_stops_claiming_nothing_owns_it) ... ok
+test_a_crest_route_preselects_the_package_at_that_outer_entry (__main__.DestinationPageTests.test_a_crest_route_preselects_the_package_at_that_outer_entry) ... ok
+test_a_material_route_clears_filters_and_selects_the_slot (__main__.DestinationPageTests.test_a_material_route_clears_filters_and_selects_the_slot) ... ok
+test_a_wordmark_route_preselects_its_slot (__main__.DestinationPageTests.test_a_wordmark_route_preselects_its_slot) ... ok
+test_writable_locations_match_the_editor_panel_pins (__main__.FieldArtWriterTableTests.test_writable_locations_match_the_editor_panel_pins) ... ok
+test_a_handoff_carries_the_users_chosen_image (__main__.HandoffPayloadTests.test_a_handoff_carries_the_users_chosen_image) ... ok
+test_a_handoff_without_an_image_is_navigation_only (__main__.HandoffPayloadTests.test_a_handoff_without_an_image_is_navigation_only) ... ok
+test_a_crest_named_row_of_another_type_is_not_routed (__main__.WorkspaceRouteTests.test_a_crest_named_row_of_another_type_is_not_routed) ... ok
+test_a_row_with_no_proved_writer_anywhere_is_not_routed (__main__.WorkspaceRouteTests.test_a_row_with_no_proved_writer_anywhere_is_not_routed) ... ok
+test_an_outer_only_record_is_never_matched_by_location (__main__.WorkspaceRouteTests.test_an_outer_only_record_is_never_matched_by_location) ... ok
+test_both_crest_layers_route_to_team_logo_by_outer_entry (__main__.WorkspaceRouteTests.test_both_crest_layers_route_to_team_logo_by_outer_entry) ... ok
+test_field_art_location_does_not_route_a_different_name (__main__.WorkspaceRouteTests.test_field_art_location_does_not_route_a_different_name) ... ok
+test_field_art_rows_route_by_pinned_archive_location (__main__.WorkspaceRouteTests.test_field_art_rows_route_by_pinned_archive_location) ... ok
+test_uniform_material_rows_route_to_the_uniforms_workspace (__main__.WorkspaceRouteTests.test_uniform_material_rows_route_to_the_uniforms_workspace) ... ok
+test_wordmarks_route_to_logos_rather_than_uniforms (__main__.WorkspaceRouteTests.test_wordmarks_route_to_logos_rather_than_uniforms) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 0.711s
+
+OK

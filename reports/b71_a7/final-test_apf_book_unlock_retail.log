@@ -1,0 +1,6 @@
+setUpClass (__main__.RetailProof) ... skipped 'Set APF_BOOK_RETAIL_INDEX to an existing user-owned input; no retail bytes are bundled'
+
+----------------------------------------------------------------------
+Ran 0 tests in 0.000s
+
+OK (skipped=1)

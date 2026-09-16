@@ -1,0 +1,16 @@
+test_audio_catalog_addresses_every_audo_and_ausb_substream (__main__.ApfStudioInspectorTests.test_audio_catalog_addresses_every_audo_and_ausb_substream) ... ok
+test_audio_role_filter_and_conservative_taxonomy (__main__.ApfStudioInspectorTests.test_audio_role_filter_and_conservative_taxonomy) ... ok
+test_audio_source_filter_keeps_duplicate_bank_names_coordinate_distinct (__main__.ApfStudioInspectorTests.test_audio_source_filter_keeps_duplicate_bank_names_coordinate_distinct) ... ok
+test_cached_selection_discovers_exact_external_bank_ownership (__main__.ApfStudioInspectorTests.test_cached_selection_discovers_exact_external_bank_ownership) ... ok
+test_filtered_semantic_rows_export_as_json_and_csv (__main__.ApfStudioInspectorTests.test_filtered_semantic_rows_export_as_json_and_csv) ... ok
+test_localization_has_1572_records_and_1279_distinct_pool_strings (__main__.ApfStudioInspectorTests.test_localization_has_1572_records_and_1279_distinct_pool_strings) ... ok
+test_paging_search_and_kind_filters_are_headless (__main__.ApfStudioInspectorTests.test_paging_search_and_kind_filters_are_headless) ... ok
+test_playbook_and_director_structures_are_fully_pageable (__main__.ApfStudioInspectorTests.test_playbook_and_director_structures_are_fully_pageable) ... ok
+test_roster_snapshot_has_complete_live_shape_and_search (__main__.ApfStudioInspectorTests.test_roster_snapshot_has_complete_live_shape_and_search) ... ok
+test_selector_banks_use_current_home_away_proof_labels (__main__.ApfStudioInspectorTests.test_selector_banks_use_current_home_away_proof_labels) ... ok
+test_service_caches_each_expensive_snapshot (__main__.ApfStudioInspectorTests.test_service_caches_each_expensive_snapshot) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 2.286s
+
+OK

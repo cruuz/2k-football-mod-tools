@@ -1,0 +1,8 @@
+test_load_ps3_file_enables_import_and_converts_with_receipt (__main__.PanelTests.test_load_ps3_file_enables_import_and_converts_with_receipt) ... ok
+test_new_source_clears_previous_appearance_retention_choice (__main__.PanelTests.test_new_source_clears_previous_appearance_retention_choice) ... ok
+test_xbox_layout_file_is_refused_without_writing (__main__.PanelTests.test_xbox_layout_file_is_refused_without_writing) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 1.563s
+
+OK

@@ -1,0 +1,15 @@
+test_compile_cache_discards_structurally_corrupt_envelopes (__main__.CacheKeyTests.test_compile_cache_discards_structurally_corrupt_envelopes) ... ok
+test_equipment_cache_misses_for_mode_scale_pixels_target_and_origin (__main__.CacheKeyTests.test_equipment_cache_misses_for_mode_scale_pixels_target_and_origin) ... ok
+test_every_cached_selector_option_and_input_changes_the_production_key (__main__.CacheKeyTests.test_every_cached_selector_option_and_input_changes_the_production_key) ... ok
+test_new_core_modules_are_in_all_release_closures (__main__.IntegrationTests.test_new_core_modules_are_in_all_release_closures) ... ok
+test_runtime_counts_match_the_canonical_registry (__main__.IntegrationTests.test_runtime_counts_match_the_canonical_registry) ... ok
+test_palette_only_equality_ignores_origin_but_own_texture_keeps_it (__main__.PaletteIntentTests.test_palette_only_equality_ignores_origin_but_own_texture_keeps_it) ... ok
+test_palette_only_sock_and_shoe_ignore_retail_chain_hint (__main__.PaletteIntentTests.test_palette_only_sock_and_shoe_ignore_retail_chain_hint) ... ok
+test_unchanged_span_keeps_its_original_stream_and_reports_actual_transport (__main__.PaletteIntentTests.test_unchanged_span_keeps_its_original_stream_and_reports_actual_transport) ... ok
+test_windows_platform_uses_the_byte_identical_python_path (__main__.WindowsFallbackTests.test_windows_platform_uses_the_byte_identical_python_path) ... ok
+test_receipt_verification_rejects_a_corrupt_written_span_without_recompiling (__main__.WrittenSpanTests.test_receipt_verification_rejects_a_corrupt_written_span_without_recompiling) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 6.705s
+
+OK

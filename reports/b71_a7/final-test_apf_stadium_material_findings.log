@@ -1,0 +1,11 @@
+test_loads_immutable_product_boundary_and_author_summary (__main__.ApfStadiumMaterialFindingsLoaderTests.test_loads_immutable_product_boundary_and_author_summary) ... ok
+test_rejects_changed_counts_proofs_and_incomplete_next_experiment (__main__.ApfStadiumMaterialFindingsLoaderTests.test_rejects_changed_counts_proofs_and_incomplete_next_experiment) ... ok
+test_rejects_schema_addresses_and_research_provenance (__main__.ApfStadiumMaterialFindingsLoaderTests.test_rejects_schema_addresses_and_research_provenance) ... ok
+test_exposes_bounded_texture_actions_and_keeps_runtime_honest (__main__.ApfStadiumMaterialFindingsTests.test_exposes_bounded_texture_actions_and_keeps_runtime_honest) ... ok
+test_payload_contains_no_retail_bytes_or_research_provenance (__main__.ApfStadiumMaterialFindingsTests.test_payload_contains_no_retail_bytes_or_research_provenance) ... ok
+test_records_the_completed_static_ownership_join (__main__.ApfStadiumMaterialFindingsTests.test_records_the_completed_static_ownership_join) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.003s
+
+OK
