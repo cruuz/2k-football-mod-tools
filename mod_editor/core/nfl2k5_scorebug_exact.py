@@ -707,8 +707,14 @@ def mesh_mnf(retail):
     return m
 
 
-def mnf_panel(team, side):
-    """Shared transparent logo cell, fitted at the final quad's source aspect."""
+def mnf_panel(team, side, fit=None):
+    """Shared transparent logo cell, fitted at the final quad's source aspect.
+
+    ``fit`` widens the mark horizontally (``fill_x``) and scales its height (``height``,
+    a fraction of the wing height) the way the broadcast draws each mark: ESPN stretches
+    the Chiefs arrowhead from 1.53 to 1.89 wide-to-tall and draws the Broncos horse at
+    79 percent of the wing height, 1.19 wider than the official mark.
+    """
     from pathlib import Path
     from PIL import Image
     if side not in ("home", "away"):
@@ -725,8 +731,13 @@ def mnf_panel(team, side):
                 logo = logo.crop(bounds)
             l0, l1 = MNF_WING_LOGO_ROWS
             a,b,c,d = MNF_SOURCE["home_logo"]
-            scale = min((c-a)/logo.width,(d-b)/logo.height)
-            w = max(1,round(logo.width*scale*64/(c-a)))
+            fill_x = float((fit or {}).get("fill_x", 1.0))
+            height = float((fit or {}).get("height", 1.0))
+            if not (0.5 <= fill_x <= 2.0 and 0.25 <= height <= 1.0):
+                raise ValueError("invalid logo fit")
+            scale = min((c-a)/logo.width,(d-b)*height/logo.height)
+            src_w = min(c-a, logo.width*scale*fill_x)
+            w = max(1,round(src_w*64/(c-a)))
             h = max(1,round(logo.height*scale*(l1-l0)/(d-b)))
             from .nfl2k5_scorebug_assets import resample_logo, alpha_bleed
             logo = resample_logo(logo, (w, h))

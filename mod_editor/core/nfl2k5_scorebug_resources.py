@@ -618,12 +618,20 @@ def runtime_panel(template, image, name, *, indexed=None, size=(128, 32)):
     return result
 
 
-def mnf_panel_span(template, team, side, *, plate_tints=None):
+def logo_fit_for(team, logo_fit=None):
+    """The layout's logo fit for one team: the measured per-team value where a broadcast still exists, else the default."""
+    spec = logo_fit or {}
+    fit = dict(spec.get("default", {}))
+    fit.update(spec.get("by_team", {}).get(team, {}))
+    return fit
+
+
+def mnf_panel_span(template, team, side, *, plate_tints=None, logo_fit=None):
     """Shared native logo TXTR with plate/wing ARGB in unused name padding."""
     from . import nfl2k5_scorebug_exact as exact
     code = "--" if team is None else TEAM_LOGOS[team]["asset_code"]
     from . import nfl2k5_scorebug_assets as assets
-    span=bytearray(assets.texture_chunk(runtime_panel_name(code, "home", 0), exact.mnf_panel(team, "home"), template, colours=256, alpha_aware=True)[0])
+    span=bytearray(assets.texture_chunk(runtime_panel_name(code, "home", 0), exact.mnf_panel(team, "home", fit=logo_fit_for(team, logo_fit)), template, colours=256, alpha_aware=True)[0])
     # The six-character name ends at body+46. These two aligned padding words
     # precede the descriptor at +56; neither changes the name or a loader field.
     plate=0xff3a3f48 if team is None else exact.plate_argb(team)

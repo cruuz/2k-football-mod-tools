@@ -104,6 +104,13 @@ def load_layout(folder=None):
         from .nfl2k5_scorebug_resources import TEAM_LOGOS
         require(team in TEAM_LOGOS and isinstance(colour, str) and len(colour)==7 and colour[0]=='#', 'Invalid possession plate tint.')
         int(colour[1:],16)
+    fit=spec.get('logo_fit', {})
+    require(isinstance(fit, dict) and set(fit)<= {'default','by_team'} and isinstance(fit.get('by_team', {}), dict), 'The logo fit must hold a default and per-team values.')
+    for team, row in [('default', fit.get('default', {}))]+list(fit.get('by_team', {}).items()):
+        from .nfl2k5_scorebug_resources import TEAM_LOGOS
+        require(team=='default' or team in TEAM_LOGOS, 'Unknown logo fit team.')
+        require(isinstance(row, dict) and set(row)<= {'fill_x','height'} and all(isinstance(v,(int,float)) for v in row.values())
+                and 0.5<=row.get('fill_x',1.0)<=2.0 and 0.25<=row.get('height',1.0)<=1.0, 'Invalid logo fit for '+team)
     require(len(spec.get('brand',[]))<=8, 'Too many brand layers.')
     names=set()
     for row in spec['static']+spec['fields']+spec.get('events',[])+spec.get('brand',[]):
@@ -292,7 +299,7 @@ def appendix(pack,folder=None,widescreen=False):
     sources={n:pack[r['pack_offset']:r['pack_offset']+r['span_size']] for n,r in art.RESOURCES.items()}
     template=sources['score_buga'];scene.pinned(template,art.RESOURCES['score_buga'])
     chunks=[('TXTR','sb--h0',art.mnf_panel_span(template,None,'home'))]
-    for team,rec in sorted(art.TEAM_LOGOS.items()):chunks.append(('TXTR','sb'+rec['asset_code']+'h0',art.mnf_panel_span(template,team,'home',plate_tints=c.spec.get('plate_tints'))))
+    for team,rec in sorted(art.TEAM_LOGOS.items()):chunks.append(('TXTR','sb'+rec['asset_code']+'h0',art.mnf_panel_span(template,team,'home',plate_tints=c.spec.get('plate_tints'),logo_fit=c.spec.get('logo_fit'))))
     chunks.append(('TXTR','score_buga',texture_chunk('score_buga',c.atlas,template,alpha_aware=True)[0]))
     chunks.append(('SCNE','score_bug',scene_span(scene.pinned(sources['score_bug'],art.RESOURCES['score_bug']),c)))
     receipts=[dict(kind=k,name=n,size=len(b),sha256=hashlib.sha256(b).hexdigest()) for k,n,b in chunks]

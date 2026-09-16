@@ -77,6 +77,29 @@ class ContractTests(unittest.TestCase):
    except ValueError:continue
    self.assertFalse(plan.scorebug_runtime)
 
+class LogoFitTests(unittest.TestCase):
+ def test_marks_are_drawn_as_the_broadcast_draws_them(self):
+  from mod_editor.core import nfl2k5_scorebug_exact as exact, nfl2k5_scorebug_resources as art
+  spec=sprite.load_layout()[0];fit=spec['logo_fit']
+  self.assertEqual(set(fit['by_team']),{'KC','DEN'})
+  for team,expect in (('KC',1.89),('DEN',2.01),('BUF',None)):
+   im=exact.mnf_panel(team,'home',fit=art.logo_fit_for(team,fit));x0,y0,x1,y1=im.getchannel('A').getbbox()
+   aspect=(x1-x0)/(y1-y0)*(200/107)/(64/64)   # cell aspect back to source pixels: 64 cell px = 200 source columns, 64 rows = 107
+   plain=exact.mnf_panel(team,'home');px0,py0,px1,py1=plain.getchannel('A').getbbox()
+   self.assertGreater(aspect,(px1-px0)/(py1-py0)*(200/107),team)   # wider-to-tall than the unfitted mark
+   if expect is not None:self.assertAlmostEqual(aspect,expect,delta=0.12,msg=team)
+   self.assertEqual(im.size,(64,64))
+  with self.assertRaises(ValueError):exact.mnf_panel('KC','home',fit={'fill_x':3.0})
+ def test_layout_rejects_a_bad_fit(self):
+  import copy,json,tempfile
+  spec,image=sprite.load_layout()
+  for bad in ({'default':{'fill_x':0.1}},{'by_team':{'XXX':{'fill_x':1.2}}},{'default':{'width':1.2}}):
+   with tempfile.TemporaryDirectory() as directory:
+    p=Path(directory);rewritten=copy.deepcopy(spec);rewritten['logo_fit']=bad
+    (p/'layout.json').write_text(json.dumps(rewritten));image.save(p/'template.png')
+    with self.assertRaises(ValueError):sprite.load_layout(p)
+
+
 class DisplayModelTests(unittest.TestCase):
  def test_display_scale_gives_broadcast_proportions_on_both_displays(self):
   spec=sprite.load_layout()[0]
