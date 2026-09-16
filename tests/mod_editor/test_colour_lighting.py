@@ -20,13 +20,20 @@ GAME = mc._game_folder(RETAIL)
 XBE = GAME / 'default.xbe'
 
 
+def full():
+    """Broadcast settings at full strength: the beta 71 endpoint every calibration claim is made at."""
+    doc = mc.default_settings()
+    doc['values']['master.strength'] = 1.0
+    return doc
+
+
 class SettingsModelTests(unittest.TestCase):
     def test_calibration_reproduces_captured_night_and_v21_prediction(self):
         beta70 = dict(ambient=(.94, .96, 1), ambient_intensity=.42,
                       lights=(((1, 1, 1), .72),) * 3)
         self.assertEqual(mc.predicted_on_screen((109, 130, 75), table=beta70), (51, 61, 32))
-        self.assertEqual(mc.predicted_on_screen((181, 216, 102)), (102, 122, 52))
-        self.assertEqual(mc.predicted_on_screen((181, 216, 102), 'day'), (89, 105, 61))
+        self.assertEqual(mc.predicted_on_screen((181, 216, 102), settings=full()), (102, 122, 52))
+        self.assertEqual(mc.predicted_on_screen((181, 216, 102), 'day', settings=full()), (89, 105, 61))
         doc = mc.default_settings()
         estimate = mc.preview(doc)
         doc['values']['rig_night_indoor.gain'] = .5
@@ -37,12 +44,42 @@ class SettingsModelTests(unittest.TestCase):
         self.assertEqual(mc.preview(doc)['target'], (102, 125, 78))
         self.assertIn('extrapolated', mc.preview(doc)['scope'])
 
+    def test_overall_strength_blends_every_writer_between_retail_and_broadcast(self):
+        half, one, zero = mc.default_settings(), full(), mc.default_settings()
+        zero['values']['master.strength'] = 0
+        self.assertEqual(mc.control_specs()['master.strength']['default'], 0.5)
+        self.assertEqual(mc.strength(mc.default_settings(retail=True)), 1, 'Off leaves the recipe at full strength')
+        for name, _, _ in mc.LIGHT_TABLES:
+            retail = mc._retail_table(name)
+            self.assertEqual(mc.modern_table(retail, zero), retail)
+            r, h, o = (mc.read_rig(mc.modern_table(retail, d)) for d in (zero, half, one))
+            self.assertNotEqual(mc.modern_table(retail, half), mc.modern_table(retail, one), name)
+            self.assertAlmostEqual(h['ambient_intensity'], (r['ambient_intensity'] + o['ambient_intensity']) / 2, places=5, msg=name)
+            for (rc, ri), (hc, hi), (oc, oi) in zip(r['lights'], h['lights'], o['lights']):
+                self.assertAlmostEqual(hi, (ri + oi) / 2, places=5)
+                for a, b, c in zip(rc, hc, oc):
+                    self.assertAlmostEqual(b, (a + c) / 2, places=5)
+        palette = bytes((66, 125, 100, 255)) * 256
+        r, h, o = (mc.regrade_palette(palette, settings=d)[:4] for d in (zero, half, one))
+        self.assertEqual(r, palette[:4])
+        for a, b, c in zip(r[:3], h[:3], o[:3]):
+            self.assertLessEqual(abs(b - round((a + c) / 2)), 1)
+        self.assertEqual(mc.corrected_tint((255, 255, 229, 255), zero), (255, 255, 229, 255))
+        self.assertEqual(mc.corrected_tint((255, 255, 229, 255), half), (255, 255, 234, 255))
+        self.assertEqual(mc.flatten_normal_palette(bytes((245, 145, 160, 200)) * 256, zero), bytes((245, 145, 160, 200)) * 256)
+        for d, expected in ((zero, (72, 88, 39)), (half, (87, 104, 45)), (one, (102, 122, 52))):
+            self.assertEqual(mc.predicted_on_screen((181, 216, 102), settings=d), expected)
+        self.assertEqual(mc.preview()['predicted'], (67, 82, 37))
+        self.assertEqual(mc.preview(one)['predicted'], (102, 122, 52))
+
     def test_day_afternoon_defaults_and_shadow_reset_keep_night_pinned(self):
         import colorsys
-        doc = mc.default_settings()
+        doc = full()
         pins = {r['name']: r for r in mc._pins()['light_tables']}
-        self.assertEqual(pins['night_indoor']['applied_sha256'],
-                         '18c6d914b12edc22d092cea97b7839d4f4611e23b5a898cbceeb4d74222b9fb9')
+        night = mc._retail_table('night_indoor')
+        self.assertEqual(mc.sha(mc.modern_table(night, full())),
+                         '18c6d914b12edc22d092cea97b7839d4f4611e23b5a898cbceeb4d74222b9fb9', 'the full-strength night rig is the approved v2.1 table')
+        self.assertEqual(pins['night_indoor']['applied_sha256'], mc.sha(mc.modern_table(night)), 'default pins are built at the default strength')
         self.assertEqual(len(mc._pins()['bundles']), 477)
         for name, expected, strengths, shadow, target in (
                 ('day', (89, 105, 61), (.44, 1.60, .99), .32, (88, 105, 61)),
@@ -57,28 +94,28 @@ class SettingsModelTests(unittest.TestCase):
                 for lever, strength in zip(('ambient', 'key', 'fill'), strengths):
                     self.assertEqual(doc['values'][f'rig_{name}.{lever}'], strength)
                 retail = mc._retail_table(name)
-                self.assertAlmostEqual(mc.read_rig(mc.modern_table(retail))['shadow'], shadow)
+                self.assertAlmostEqual(mc.read_rig(mc.modern_table(retail, doc))['shadow'], shadow)
                 doc['disabled'] = [f'rig_{name}.balance']
                 self.assertEqual(mc.modern_table(retail, doc)[0x100:0x104], retail[0x100:0x104])
                 doc['disabled'] = []
                 doc['values'][f'rig_{name}.balance'] = .5
                 mixed = mc.read_rig(mc.modern_table(retail, doc))['shadow']
                 self.assertAlmostEqual(mixed, (mc.read_rig(retail)['shadow'] + shadow)/2)
-                doc = mc.default_settings()
+                doc = full()
 
     def test_outside_calibration_link_custom_and_every_condition(self):
         import colorsys
-        self.assertEqual(mc.predicted_on_screen(mc.OUTSIDE_REFERENCE_MAP, 'day', surface='outside'), (101, 151, 76))
+        self.assertEqual(mc.predicted_on_screen(mc.OUTSIDE_REFERENCE_MAP, 'day', surface='outside', settings=full()), (101, 151, 76))
         for stadium in mc.PREVIEW_CLASSES:
             for rig in mc.MODERN_RIGS:
-                doc = mc.default_settings()
+                doc = full()
                 doc.update(preview_class=stadium, preview_rig=rig)
                 field, outside = mc.preview(doc), mc.preview(doc, surface='outside')
                 f, o = field['predicted'], outside['predicted']
                 self.assertEqual(outside['target'], f)
                 self.assertTrue(.92 <= max(o)/max(f) <= 1, (stadium, rig, f, o))
                 self.assertLessEqual(colorsys.rgb_to_hsv(*o)[1], colorsys.rgb_to_hsv(*f)[1], (stadium, rig, f, o))
-        doc = mc.default_settings()
+        doc = full()
         teal = bytes((59, 72, 40, 255)) * 256  # s48 outside hue exceeds the old 150-degree mask
         self.assertNotEqual(mc.regrade_palette(teal, surface='outside'), teal)
         self.assertEqual(mc.regrade_palette(teal), teal, 'FIELD hue mask stays unchanged')
@@ -107,7 +144,7 @@ class SettingsModelTests(unittest.TestCase):
 
     def test_all_controls_validate_and_roundtrip_without_changing_presets(self):
         doc = mc.default_settings()
-        self.assertEqual(len(mc.control_specs()), 55)
+        self.assertEqual(len(mc.control_specs()), 56)
         self.assertFalse(mc.is_custom(doc))
         legacy = {k: v for k, v in mc.normalize_settings().items() if not k.startswith('preview_')}
         old_id = mc.sha(json.dumps(legacy, sort_keys=True, separators=(',', ':')).encode())
@@ -166,9 +203,10 @@ class SettingsModelTests(unittest.TestCase):
         doc['disabled'] = ['turf.saturation']
         self.assertEqual(mc.control_value(doc, 'turf.saturation'), 1)
         self.assertEqual(doc['values']['turf.saturation'], 1.12)
-        # A synthetic map with two green bands: contrast zero removes value differences.
+        # A synthetic map with two green bands: contrast zero removes value differences (at full strength).
         palette = bytes((30, 60, 48, 255)) * 128 + bytes((60, 120, 96, 255)) * 128
         doc['values']['turf.map_contrast'] = 0
+        doc['values']['master.strength'] = 1
         out = mc.regrade_palette(palette, settings=doc, mean_value=90/255)
         self.assertEqual(out[:4], out[512:516])
 
@@ -176,13 +214,13 @@ class SettingsModelTests(unittest.TestCase):
         palette = bytes((245, 145, 160, 200)) * 256
         retail = mc.default_settings(retail=True)
         self.assertEqual(mc.flatten_normal_palette(palette, retail), palette)
-        doc = mc.default_settings()
+        doc = full()
         doc['values']['normal.flatten'] = 1
         self.assertEqual(mc.flatten_normal_palette(palette, doc)[:4], bytes((255, 128, 128, 200)))
         for word in mc.TINTS:
-            self.assertEqual(mc.corrected_tint_word(word), mc.TINTS[word])
+            self.assertEqual(mc.corrected_tint_word(word, full()), mc.TINTS[word])
             self.assertEqual(mc.corrected_tint_word(word, retail), word)
-        self.assertEqual(mc.corrected_tint((255, 255, 229, 255)), (255, 255, 240, 255))
+        self.assertEqual(mc.corrected_tint((255, 255, 229, 255), full()), (255, 255, 240, 255))
         for name, _, _ in mc.LIGHT_TABLES:
             self.assertEqual(mc.modern_table(mc._retail_table(name), retail), mc._retail_table(name))
 

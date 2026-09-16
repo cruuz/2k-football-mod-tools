@@ -1,0 +1,9 @@
+test_nfl2k5_scorebug_sprite exit=0 79s Ran 13 tests in 79.371s OK 
+test_scorebug_sprite_preview_qt exit=0 10s Ran 2 tests in 10.030s OK 
+test_nfl2k5_scorebug_mnf exit=0 12s Ran 10 tests in 12.190s OK 
+test_nfl2k5_scorebug_runtime exit=0 123s Ran 12 tests in 110.692s OK 
+test_nfl2k5_scorebug_exact exit=0 86s Ran 8 tests in 85.560s OK 
+test_nfl2k5_scorebug_resources exit=0 293s Ran 6 tests in 293.044s OK 
+test_nfl2k5_scorebug_assets exit=0 183s Ran 8 tests in 157.798s OK 
+test_nfl2k5_scorebug_mnf_v3 exit=1 51s Ran 7 tests in 50.851s FAILED (failures=1) 
+ALL DONE

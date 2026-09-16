@@ -25,19 +25,27 @@ def _hsv(b, g, r):
     return h * 360, s, v
 
 
+def full():
+    doc = mc.default_settings()
+    doc["values"]["master.strength"] = 1.0
+    return doc
+
+
 class PaletteTransformTests(unittest.TestCase):
     def test_green_entries_move_toward_target_brighter_and_more_saturated(self):
         pal = bytearray(1024)
         pal[0:4] = bytes((66, 125, 100, 255))   # retail Arrowhead colour-map median, B,G,R,A
         pal[4:8] = bytes((10, 10, 200, 255))    # red: untouched
         pal[8:12] = bytes((240, 240, 240, 255))  # white line: untouched
-        out = mc.regrade_palette(bytes(pal))
+        out = mc.regrade_palette(bytes(pal), settings=full())
         h0, s0, v0 = _hsv(*pal[0:3]); h1, s1, v1 = _hsv(*out[0:3])
         self.assertLess(abs(h1 - mc.HUE_TARGET), abs(h0 - mc.HUE_TARGET), "hue pulled toward the target")
         self.assertGreater(s1, s0); self.assertGreater(v1, v0 * 1.5, "lifted well above retail"); self.assertLessEqual(v1, 1.0)
+        half = mc.regrade_palette(bytes(pal))
+        self.assertTrue(all(abs(half[i] - round((pal[i] + out[i]) / 2)) <= 1 for i in range(3)), "the default strength sits halfway to the full grade")
         self.assertAlmostEqual(mc.lift_value(0.49), 1 - 0.51 ** mc.VAL_GAMMA); self.assertEqual(mc.lift_value(1.0), 1.0)
         far = bytes((30, 120, 120, 255)) * 256  # a yellow-green at 60 degrees moves up toward the target
-        fh0 = _hsv(*far[0:3])[0]; fh1 = _hsv(*mc.regrade_palette(far)[0:3])[0]
+        fh0 = _hsv(*far[0:3])[0]; fh1 = _hsv(*mc.regrade_palette(far, settings=full())[0:3])[0]
         self.assertGreater(fh1, fh0); self.assertLess(fh1, mc.HUE_TARGET)
         self.assertEqual(out[4:12], bytes(pal[4:12]))
         self.assertEqual(out[3], 255)
@@ -69,11 +77,13 @@ class PaletteTransformTests(unittest.TestCase):
         pal = bytearray(1024)
         pal[0:4] = bytes((48, 88, 70, 200))     # divot green, B,G,R,A
         pal[4:8] = bytes((30, 40, 80, 120))     # brown dirt: alpha scaled, colour kept
-        out = mc.regrade_palette(bytes(pal), alpha_scale=mc.DIVOTS_ALPHA)
+        out = mc.regrade_palette(bytes(pal), alpha_scale=mc.DIVOTS_ALPHA, settings=full())
         self.assertEqual(out[3], round(200 * mc.DIVOTS_ALPHA)); self.assertEqual(out[7], round(120 * mc.DIVOTS_ALPHA))
         self.assertEqual(out[4:7], bytes(pal[4:7]))
         self.assertGreater(_hsv(*out[0:3])[2], _hsv(*pal[0:3])[2], "divot green lifted")
-        lifted = mc.regrade_palette(bytes(pal), gain=1.3)
+        half = mc.regrade_palette(bytes(pal), alpha_scale=mc.DIVOTS_ALPHA)
+        self.assertEqual(half[3], round((200 + round(200 * mc.DIVOTS_ALPHA)) / 2), "the default strength fades the wear layer halfway")
+        lifted = mc.regrade_palette(bytes(pal), gain=1.3, settings=full())
         self.assertGreater(_hsv(*lifted[0:3])[2], _hsv(*out[0:3])[2], "gain raises the value")
 
     def test_tints(self):
@@ -171,6 +181,8 @@ class BundleTests(unittest.TestCase):
         after, edits = mc.modern_bundle(data, outer_index=row["outer"])
         self.assertEqual(len(after), len(data))
         self.assertEqual(hashlib.sha256(after).hexdigest(), row["applied_sha256"])
+        after_full, _ = mc.modern_bundle(data, outer_index=row["outer"], settings=full())
+        self.assertNotEqual(after_full, after, "the default strength is half of the full grade")
         kinds = [e["kind"] for e in edits]
         self.assertEqual(kinds[0], "field"); self.assertEqual(sorted(kinds), ["divots", "field", "normal", "tint"])
         field = edits[0]
@@ -178,14 +190,15 @@ class BundleTests(unittest.TestCase):
         regraded = {row["material"]: row for row in field["palettes"]}
         for name in (mc.COLOR_MAP_MATERIAL, mc.OUTSIDE_MATERIAL, "endzone_N_M"):
             self.assertIn(name, regraded); self.assertGreater(regraded[name]["changed"], 0, name)
-        self.assertEqual(field["outside"]["link_amount"], 1.0, "outside grass linked to the field prediction")
+        self.assertEqual(field["outside"]["link_amount"], mc.STRENGTH_DEFAULT, "outside grass linked to the field prediction at the default strength")
         divots = edits[kinds.index("divots")]
         self.assertNotEqual(divots["before_sha256"], divots["after_sha256"], "divots layer faded")
         tint = edits[kinds.index("tint")]
         self.assertNotEqual(tint["before_sha256"], tint["after_sha256"], "night tint softened")
         # Decoded colour map moved toward the broadcast turf: about 1.7x brighter, a little more saturated, hue toward the target.
         tx, inv, ResourceRecord, HEADER = mc._tools()
-        for payload in (data, after):
+        means = {}
+        for payload in (data, after, after_full):
             chunk = tx.parse_chunks(payload, allow_trailing=True)[0]
             rec, out, record = mc._scene(payload, chunk, row["outer"])
             texture = next(t for t in rec["embedded_textures"] if t.get("mapped_material_names") == ["color_premipped"])
@@ -193,12 +206,15 @@ class BundleTests(unittest.TestCase):
             rgba = tx.texture_to_rgba(out, record.as_chunk(), info)
             pixels = [rgba[i:i + 3] for i in range(0, len(rgba), 4)]
             mean = [sum(p[c] for p in pixels) / len(pixels) for c in range(3)]
+            means[id(payload)] = mean
             h, s, v = colorsys.rgb_to_hsv(*(c / 255 for c in mean))
             if payload is data:
                 retail_hsv = (h * 360, s, v)
-            else:
+            elif payload is after_full:
                 self.assertGreater(s, retail_hsv[1], "more saturated"); self.assertGreater(v, retail_hsv[2] * 1.5, "lifted well above retail")
                 self.assertLessEqual(abs(h * 360 - mc.HUE_TARGET), abs(retail_hsv[0] - mc.HUE_TARGET) + 0.5, "hue at or toward the target")
+        for c in range(3):
+            self.assertLess(abs(means[id(after)][c] - (means[id(data)][c] + means[id(after_full)][c]) / 2), 1.5, "default map mean sits halfway between retail and the full grade")
 
     @unittest.skipUnless(GAME and (GAME / "vc_53450030").is_dir(), "retail extraction not available")
     def test_pins_cover_every_bundle_and_statuses(self):

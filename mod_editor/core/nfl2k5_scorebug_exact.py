@@ -506,11 +506,88 @@ ESPN_PLATE_SECONDARY = {"CHI": "#C83803", "DEN": "#FB4F14", "HOU": "#C8102E",
                         "LV": "#A5ACAF", "NE": "#C60C30", "NO": "#D3BC8D",
                         "PIT": "#FFB612", "SEA": "#69BE28", "TEN": "#4B92DB"}
 ESPN_WING_LIT = {"DEN": (55,93,163), "KC": (208,10,67)}
+# The bar shows team colours "as lit": on air a dark primary such as the Cowboys'
+# #003594 is lifted, not drawn raw (raw under the plate mask it read as black in
+# game). The floors are the measured lit values: the KC plate top (178,12,60)
+# under the 0.83 mask top is a tint of HSL lightness 0.37; the DEN and KC lit
+# wings (55,93,163) and (208,10,67) are lightness 0.43. Hue and saturation are
+# kept. The plate cell's mean luminance under the label rows is 0.788, and the
+# white label must keep 4.5:1 contrast on the lit plate, so bright secondaries
+# (gold, silver, action green) are lowered until they do.
+PLATE_LIGHTNESS_FLOOR = 0.36
+WING_LIGHTNESS_FLOOR = 0.43
+PLATE_MASK_LABEL = 0.788
+PLATE_LABEL_CONTRAST = 4.5
+PLATE_LABEL_MARGIN = 0.3  # palette quantisation and the raster cost up to about 0.15 on the rendered plate
+PLATE_LABEL_RGB = (255, 255, 255)
+
+
+def hex_rgb(colour):
+    return tuple(int(colour[i:i + 2], 16) for i in (1, 3, 5))
+
+
+def relative_luminance(rgb):
+    """WCAG relative luminance of an sRGB colour (0..255 channels)."""
+    def channel(c):
+        c /= 255
+        return c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4
+    r, g, b = (channel(c) for c in rgb)
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+
+
+def contrast_ratio(a, b):
+    la, lb = relative_luminance(a), relative_luminance(b)
+    hi, lo = max(la, lb), min(la, lb)
+    return (hi + 0.05) / (lo + 0.05)
+
+
+def with_lightness(rgb, lightness):
+    import colorsys
+    h, _, s = colorsys.rgb_to_hls(*(c / 255 for c in rgb))
+    return tuple(min(255, max(0, round(c * 255))) for c in colorsys.hls_to_rgb(h, lightness, s))
+
+
+NEUTRAL_BELOW = 40  # black primaries (LV, NO, PIT) light to grey, not to their faint blue cast
+
+
+def lit_rgb(rgb, floor):
+    """Raise HSL lightness to ``floor`` keeping hue and saturation; brighter colours are unchanged."""
+    import colorsys
+    _, lightness, _ = colorsys.rgb_to_hls(*(c / 255 for c in rgb))
+    if lightness >= floor:
+        return tuple(rgb)
+    if max(rgb) < NEUTRAL_BELOW:
+        grey = round(floor * 255)
+        return (grey, grey, grey)
+    return with_lightness(rgb, floor)
+
+
+def lit_plate_rgb(rgb):
+    """The plate colour drawn under the label: the tint through the cell mask."""
+    return tuple(min(255, round(c * PLATE_MASK_LABEL)) for c in rgb)
+
+
+def plate_rgb(team):
+    """Lit team colour for the possession plate: the explicit secondary for near-black
+    teams, otherwise the primary lifted to the plate floor; then lowered in lightness
+    until the white label keeps PLATE_LABEL_CONTRAST on the masked plate."""
+    import colorsys
+    colour = lit_rgb(hex_rgb(ESPN_PLATE_SECONDARY.get(team, ESPN_PLATE[team])), PLATE_LIGHTNESS_FLOOR)
+    _, lightness, _ = colorsys.rgb_to_hls(*(c / 255 for c in colour))
+    while contrast_ratio(PLATE_LABEL_RGB, lit_plate_rgb(colour)) < PLATE_LABEL_CONTRAST + PLATE_LABEL_MARGIN and lightness > 0.05:
+        lightness = round(lightness - 0.01, 4)
+        colour = with_lightness(colour, lightness)
+    return colour
 
 
 def plate_argb(team):
-    """Full team primary, with explicit secondary choices for near-black teams."""
-    return 0xFF000000 | int(ESPN_PLATE_SECONDARY.get(team, ESPN_PLATE[team])[1:],16)
+    r, g, b = plate_rgb(team)
+    return 0xFF000000 | (r << 16) | (g << 8) | b
+
+
+def wing_rgb(team):
+    """Lit team primary for the wing ramp (the measured DEN and KC values stay explicit)."""
+    return tuple(ESPN_WING_LIT[team]) if team in ESPN_WING_LIT else lit_rgb(hex_rgb(ESPN_PLATE[team]), WING_LIGHTNESS_FLOOR)
 
 
 def plate_table():
@@ -526,7 +603,7 @@ def wing_table():
     from . import nfl2k5_scorebug_ingame as r
     table = [0xff4a4e58] * 40
     for team, record in r.TEAM_LOGOS.items():
-        rgb = ESPN_WING_LIT.get(team, tuple(bytes.fromhex(ESPN_PLATE[team][1:])))
+        rgb = wing_rgb(team)
         table[int(record["asset_code"])] = 0xff000000 | rgb[0]<<16 | rgb[1]<<8 | rgb[2]
     return table
 

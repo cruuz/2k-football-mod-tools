@@ -46,6 +46,9 @@ class ColourLightingControls(QWidget):
         self.model_note = QLabel(colour.preview()["scope"])
         self.model_note.setWordWrap(True)
         root.addWidget(self.model_note)
+        strength = self._group("master")
+        strength.setToolTip("Every value the option writes is retail + (broadcast - retail) x strength. 0 is retail, 1 the full Broadcast recipe; the default is 0.5.")
+        root.addWidget(strength)
         self.tabs = QTabWidget()
         root.addWidget(self.tabs)
         for group in ("turf", "endzones", "outside"):

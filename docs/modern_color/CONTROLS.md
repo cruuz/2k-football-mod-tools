@@ -1,6 +1,6 @@
 # Colour & lighting project controls
 
-Build contains 55 sliders, each with a switch that retains its authored value while Off. Each group has an independent switch. The master option stays Off in every preset; presets do not alter custom values. Broadcast (default) resets day/afternoon to the C4 daylight recipe and retains v2.1 for night/dome and other conditions. Retail resets every group and lever to retail. Neither button changes the master option.
+Build contains 56 sliders, each with a switch that retains its authored value while Off. The first, Overall strength, blends every value the option writes between retail (0) and the Broadcast recipe (1): written = retail + (broadcast - retail) x strength, applied to palette entries, material colour words, vertex tints, the bump flatten amount, the divot alpha, the time-of-day tint words, the outside link amount and every light-rig float. Its default is 0.5 after the full recipe was judged too vibrant in game; 1 reproduces the beta 71 Broadcast values exactly and its Off value is 1. Each group has an independent switch. The master option stays Off in every preset; presets do not alter custom values. Broadcast (default) resets day/afternoon to the C4 daylight recipe and retains v2.1 for night/dome and other conditions. Retail resets every group and lever to retail. Neither button changes the master option.
 
 End zones / centre-logo greens and outside-grass colour follow turf by default. Unlink them to use their own stored hue, saturation and brightness. Painted non-green artwork is preserved. Linked outside grass matches the actual field colour target through its separate calibrated surface response, at about 97% brightness and slightly lower saturation. The match slider blends this correction; Off keeps the independent regrade. Unlinking bypasses matching entirely and restores the stored custom colour. Linked vertex tints become neutral and edge shade is bounded to keep the mean within 8% of the field; unlinked edge shade retains its original range. Divot contrast is the alpha of the low-frequency wear layer. Map contrast scales green value departures from the used-green mean; it changes mowing bands only when they already exist in that map, and cannot add stripes. Material turf has no map-contrast control.
 
@@ -24,6 +24,7 @@ All numeric controls below write through `mod_editor/core/nfl2k5_modern_color.py
 
 | Key / lever | Broadcast default | Range | Off value | Writer function |
 |---|---:|---|---:|---|
+| `master.strength`: Modern colour strength (retail 0 to broadcast 1) | 0.5 | 0–1, step 0.01 | 1 | `strength / blend / blend_bytes` in every writer above |
 | `turf.hue_target`: Broadcast hue (degrees) | 72 | 45–150, step 1 | 72 | `regrade_palette / regrade_colour_word → modern_field_scene` |
 | `turf.hue_pull`: Hue pull | 0.5 | 0–1, step 0.01 | 0 | `regrade_palette / regrade_colour_word → modern_field_scene` |
 | `turf.saturation`: Saturation | 1.12 | 0–2, step 0.01 | 1 | `regrade_palette / regrade_colour_word → modern_field_scene` |
