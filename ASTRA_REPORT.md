@@ -1,499 +1,507 @@
-# Beta 71 A7: combined painted-bar integration
+# Beta 71 APF-6: CPU Play Calling workflow
 
-Private branch `astra/b71-a7-integrate` starts from A6 `07c544a2c9a5c20c27a8e6557874b15a552d9d82` and merges S4 `7b54e354ab8187c59b12cf66671982c822bf9d03`. Private Git directory: `.scratch/git-a7`. The shared Git directory is untouched. No push, emulator or displayed GUI.
+Branch **astra/b71-apf6-editor-workflow**, based on integrated A7 **cea8a3c85db408dafeea15b361faee9d05be33a7**.
+Implementation is committed in `.scratch/git`; the shared worktree git directory
+is unchanged. Delivery bundle: `.scratch/astra-b71-apf6.bundle`. No push,
+emulator, desktop display, audio or disc build. Qt uses `offscreen`.
 
-All requested final suites and both studios' release/runtime closures pass: **267 required command receipts**, **3089 reported unittest cases**, **29 documented skips**. Full logs and exact arguments are linked below. Skips retain their stated boundaries and are not runtime evidence.
+## Result
 
-Registry: **176 unique capabilities = 102 2K5 + 73 APF + 1 third game**. Provider closure: **288**. Product catalog tuple: **`(102, 80, 8, 1, 0, 10, 3)`**, with its exact ID set. Validation-plan pins: **176 total / 171 covered / 5 deferred / 129 distinct validators**. The id-indexed union retains every exact A6 row except the exact updated S4 scorebug runtime row. Colour v2.1, day/afternoon tuning, linked sidelines, modern Arrowhead and APF4/APF5 remain integrated.
+**196/196 requested standalone suite files pass** on their latest complete run,
+reporting **1869 tests and 11 explicit skips**.
+The full matrix is [suite_results.json](reports/b71_apf6/suite_results.json).
+All required final checks pass.
 
-## Merge and conflict receipt
+The editor retains parsed source books and validated receipts, confirms edits
+without a separate Review click, and collects mixed changes in **Pending edits**.
+**Confirm all** runs existing reviews plus cross-edit checks and writes the
+independent clean set as one atomic recipe and one Undo step. Blocked dependencies
+remain pending, with the edit, location, reason and fix displayed together.
+Each pending row has **Undo / clear**. MASTER retains its experimental all-books warning.
 
-Before any workspace mutation other than those copies, S4's root report and wiring were archived as `ASTRA_B71_S4_REPORT.md` and `WIRING_B71_S4.md`, with human attributions anonymized. The A6 report is retained anonymously at `reports/b71_a7/INHERITED_A6_REPORT.md`.
+## Profile and timings: PROVED on this Linux host
 
-The explicit-commit merge had six conflicts:
+[profile.py](reports/b71_apf6/profile.py) uses the owned export at
+`/media/noah/Storage/for codex 1.0/extracted/All-Pro Football 2K8 (USA)/0A`. The source index SHA-256 is
+`dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e` in every run. Nothing writes or copies the retail
+source. The baseline loads the three original Python modules directly from the
+recorded A7 commit; the same process driver then performs 21 play-rating edits,
+21 formation-rating edits and 21 balanced-audible edits in O-ManBlock. Each timed
+edit includes review, stage and the complete offscreen CPU-page refresh.
+No disk-cache flush is claimed. First load is a separate fresh-process measurement.
 
-1. `ASTRA_REPORT.md`: A6 was retained as the working checkpoint, with both input reports archived; this A7 report replaces it.
-2. `ASTRA_LAST_MESSAGE.md`: A6 was retained until the A7 handoff was written.
-3. `data/nfl2k5_cave_reservations.json`: A6 supplied the seed; the complete merged forward stack was observed and the manifest regenerated last.
-4. `docs/mod_editor/2k5_mod_studio_changelog.md`: both sides' distinct bullets were retained, including the older scorebug iteration history and S4 painted-bar entry.
-5. `packaging/release-allowlist.txt`: both colour-control paths and all three S4 module/label paths were retained.
-6. `tests/mod_editor/test_provider_integrity.py`: The initial A6 287-module pin was retained, then the exact closure test measured 288 because S4 adds `nfl2k5_scorebug_assets.py`. The pin was corrected to 288; the exact-set/hash assertions remain unchanged and pass.
+| Run | First load, s | 63 edits, s | Mean/edit, s | Slowest/edit, s |
+| --- | ---: | ---: | ---: | ---: |
+| A7 baseline, same repeated-formation sequence | 6.250 | 447.141 | 7.097 | 9.976 |
+| Final incremental code, identical sequence | 2.696 | 8.863 | 0.141 | 0.363 |
+| New Confirm buttons, cycling formations and shell CPU refresh callback | 2.750 | 14.041 | 0.223 | 0.361 |
 
-The registry, provider pin map and remaining implementation merged cleanly. S4 supersedes the inherited S3 atlas/wing/plate/capsule/label/score-cell implementation through normal ancestry. Generated pin files were passed through `packaging/repin.py --apply`, which needed zero updates. All commits enumerate explicit paths; `git commit --include -- <paths>` preserves the real merge parents while concluding the conflicted merge.
+The identical sequence is **50.4× faster** here.
+The varied run invokes the page's Confirm path and connects `modifiedChanged` to
+`set_context`, exercising the synchronous CPU reset used by the shell plus the
+panel refresh. It is a real-export page measurement, not a complete timed session
+of every other studio workspace, file picker, autosave and operating-system UI.
+The exact historic 63 requests were not supplied; this is a reproducible mixed
+pattern matching the reported edit types and count, not a claim to reconstruct
+that private session. Native Windows/macOS performance remains UNWITNESSED.
+Some baseline intervals overlapped short development checks and later optimized
+runs overlapped detached regression processes; all wall times are retained, and
+the counters independently establish elimination of the repeated catalog/replay work.
 
-## Wiring and release integration
+Bulk on the same export, cycling formations: all 63 additions to Pending edits
+used **0.395s** total (slowest addition **0.031s**).
+One **Confirm all** checked/staged those 63 requests and refreshed the page in
+**1.735s**, with exactly one Undo entry. Source reads
+occurred once. This total includes every writer check; no check is deferred to
+an optional Review click.
 
-S4's `WIRING.md` is byte-identical to its S3 parent's file; it contains inherited beta-70 T1 follow-ups, not new S4 instructions. Its completion-dialog hooks are already present in A6. Historical Windows-helper and digit-fit proposals are not new painted-bar work. The root `WIRING.md` records this disposition.
+### Timed phases
 
-One S4 packaging omission was corrected: the new authored `painted_label_2x.png` was allowlisted but absent from the exact reviewed PNG catalog. Its catalog entry now pins 11,138 bytes, 512×256 dimensions and SHA-256 `b8632704a110087b939a2e1de98c54eebc2354f40bb89d3eb2f0b16bdfa45b2d`; the catalog hash is refreshed. No binary-validation rule was relaxed. See `label-release-pin.json`.
+These times are inclusive and overlap; do not add them. Counts include cold load
+and selection refreshes. Ledger access counts include cached lookups, not just
+physical reads. MASTER's cached wrapper calls the original reader once, so the
+after counter includes both wrapper and cold inner call.
 
-The 75 inherited ignored evidence files were initially absent. `reports/b71_apf4/hydrate.py` restored independent copies from the recorded read-only sources, checking the prior inventory; `audit_pins.py` also checked S4's SHA-256 inventory: **2,063,157 bytes**, all single-link files. These private inputs are not staged or bundled. The strict registry validator keeps its default file checks. Reviewed APF release tooling and the pinned local Capstone test environment were restored using the existing A6 recipes without network or system changes.
+| Phase | Before calls | Before seconds | After calls | After seconds |
+| --- | ---: | ---: | ---: | ---: |
+| source books | 191 | 137.258 | 1 | 0.689 |
+| MASTER inventory | 191 | 15.762 | 2 | 0.164 |
+| base state | 191 | 200.880 | 1 | 0.772 |
+| ledger read | 1816 | 0.592 | 319 | 0.119 |
+| state including replay | 191 | 342.632 | 191 | 2.321 |
+| context and rows | 65 | 217.021 | 65 | 2.374 |
+| predictions | 65 | 4.207 | 65 | 3.892 |
+| situation candidates | 65 | 0.903 | 65 | 0.900 |
+| apply and validate | 6048 | 144.651 | 126 | 2.966 |
 
-| Wiring/count anchor | File:line |
-| --- | --- |
-| `len(registry.capabilities) == 176` | `packaging/check_2k5_mod_studio_runtime.py:2178` |
-| `len(product_catalog.capabilities) == 102` | `packaging/check_2k5_mod_studio_runtime.py:2182` |
-| `registry=176 sections=12 nfl2k5_capabilities=102` | `packaging/check_2k5_mod_studio_runtime.py:2585` |
-| `len(registry.capabilities) == 176` | `packaging/check_apf2k8_mod_studio_runtime.py:1389` |
-| `== 73` | `packaging/check_apf2k8_mod_studio_runtime.py:1390` |
-| `len(cards) == 73` | `packaging/check_apf2k8_mod_studio_runtime.py:1394` |
-| `len(registry.capabilities), 176` | `tests/mod_editor/test_b68_a1_audit.py:41` |
-| `len(catalog.capabilities), 102` | `tests/mod_editor/test_b68_a1_audit.py:42` |
-| `registry=176 sections=12 nfl2k5_capabilities=102` | `tests/mod_editor/test_b68_a1_audit.py:54` |
-| `registry=176 sections=12 nfl2k5_capabilities=102` | `tests/mod_editor/test_phase1_packaging.py:571` |
-| `len(registry.capabilities) == 176` | `tests/mod_editor/test_apf_studio_installer.py:360` |
-| `(102, 80, 8, 1, 0, 10, 3)` | `tests/mod_editor/test_product_catalog.py:242` |
-| `nfl2k5.stadiums_fields.modern_arrowhead` | `tests/mod_editor/test_product_catalog.py:78` |
-| `self.assertEqual(set(first_ids), expected)` | `tests/mod_editor/test_product_catalog.py:172` |
-| `[288, 10, 8, 9, 8, 9]` | `tests/mod_editor/test_provider_integrity.py:218` |
-| `EXPECTED_CAPABILITIES = 176` | `tools/validate_all_mod_editor_capabilities.py:62` |
-| `EXPECTED_COVERED_CAPABILITIES = 171` | `tools/validate_all_mod_editor_capabilities.py:63` |
-| `EXPECTED_DEFERRED_CAPABILITIES = 5` | `tools/validate_all_mod_editor_capabilities.py:64` |
-| `EXPECTED_UNIQUE_VALIDATORS = 129` | `tools/validate_all_mod_editor_capabilities.py:65` |
-| `"id": "nfl2k5.scorebug_presentation.runtime"` | `mod_editor/capabilities/registry.v1.json:10565` |
-| `"id": "nfl2k5.presentation.modern_color_lighting"` | `mod_editor/capabilities/registry.v1.json:9698` |
-| `"id": "nfl2k5.stadiums_fields.modern_arrowhead"` | `mod_editor/capabilities/registry.v1.json:11583` |
-| `"id": "apf2k8.playbooks.cpu_playcalling"` | `mod_editor/capabilities/registry.v1.json:2646` |
-| `"id": "apf2k8.playbooks.fourth_down"` | `mod_editor/capabilities/registry.v1.json:2822` |
-| `mod_editor/gui/colour_lighting_qt.py` | `packaging/release-allowlist.txt:929` |
-| `docs/modern_color/CONTROLS.md` | `packaging/release-allowlist.txt:930` |
-| `mod_editor/core/nfl2k5_scorebug_assets.py` | `packaging/release-allowlist.txt:931` |
-| `data/nfl2k5_scorebug_mnf/painted_label_2x.png` | `packaging/release-allowlist.txt:932` |
-| `data/nfl2k5_scorebug_mnf/painted_label_2x.json` | `packaging/release-allowlist.txt:933` |
-| `"data/nfl2k5_scorebug_mnf/painted_label_2x.png"` | `packaging/nfl2k5_scorebug_template_pngs.json:291` |
-| `SCOREBUG_TEMPLATE_PNG_CATALOG_SHA256 =` | `packaging/check_2k5_mod_studio_release.py:304` |
-| `"mod_editor/core/nfl2k5_scorebug_assets.py":` | `mod_editor/core/providers.py:698` |
-| `"mod_editor/core/nfl2k5_modern_arrowhead.py":` | `mod_editor/core/providers.py:563` |
-| `from mod_editor.core.nfl2k5_build_service import summarize_kept_retail` | `mod_editor/gui/studio_qt.py:8023` |
-| `from mod_editor.core.nfl2k5_build_service import summarize_kept_retail` | `mod_editor/core/build_feedback.py:53` |
-| `if plan.modern_arrowhead:` | `mod_editor/core/mod_build.py:1459` |
-| `if plan.modern_arrowhead:` | `mod_editor/core/mod_build.py:2139` |
-| `retail_source=source` | `mod_editor/core/mod_build.py:2142` |
-| `CODE_SIZE, DATA_SIZE =` | `mod_editor/core/nfl2k5_scorebug_runtime.py:25` |
-| `REQUESTS =` | `mod_editor/core/nfl2k5_scorebug_runtime.py:26` |
-| `MNF_VERSION =` | `mod_editor/core/nfl2k5_scorebug_resources.py:671` |
-| `target = (field_offset + stored - 1) & 0xffffffff` | `tools/nfl_main_menu_font.py:119` |
-| `"b71_a7_projection": {` | `data/nfl2k5_cave_reservations.json:301299` |
-| `NAME = ` | `reports/b71_a7/build_testdisc71.py:28` |
-| `OPTIONS = ` | `reports/b71_a7/build_testdisc71.py:30` |
-| `## 1. Windows helper build:` | `WIRING_B71_S4.md:58` |
-| `## 2. Digit shortfalls` | `WIRING_B71_S4.md:101` |
+Raw per-edit results: [before](reports/b71_apf6/before.json),
+[identical after](reports/b71_apf6/after-final.json),
+[varied Confirm plus shell reset](reports/b71_apf6/confirm-varied-shell-final.json),
+[bulk](reports/b71_apf6/bulk-varied.json). Earlier measurements are retained too.
 
-## Appended payload and accepted visual limits
+## Design and check preservation
 
-Fresh bounded compilation measured each component; `volume.json` contains individual resource sizes and hashes. No retail resources were saved in reports.
+- `book_content.BookSourceCache` scopes source data to the resolved index path.
+  File identities include path, size, nanosecond mtime, ctime and inode; the index
+  and compressed resource spans have SHA-256 identities. Unchanged file identities
+  need only stat calls. When a pack changes, only its named resource spans are
+  hashed, and unchanged spans keep their parsed values. No multi-GB pack is hashed
+  on every edit. Missing/replaced files invalidate reuse; a source changing during
+  a resource read is refused. Reads still bind book names to filename IDs.
+- `Backend` retains parsed source books, MASTER inventory and ROST, and reuses
+  unchanged compiled Fine-tune books. `PlayCallingService` caches the source and
+  non-CPU dependencies, digest-checked recipe files, immutable parsed staged books,
+  and up to 64 validated ledger prefixes. A warm single CPU edit neither reloads
+  the catalog nor replays earlier receipts. Undo reuses an existing valid prefix.
+- Changed source/Fine-tune dependencies invalidate the base. Up to 128 cached
+  writer transitions retain the exact consumed book/master/roster/mask inputs,
+  authored request and returned facts. Replay revalidates only affected rows;
+  ownership and scheme plans always replay their archive-dependent checks. Tests
+  change one source book while retaining another book's validated receipt.
+  Public state returns copy mutable book/mask dictionaries. Recipe schema/size,
+  digest and before/after checks still run at their existing boundaries.
+- `context` reads ratings, personnel and plays from one parsed book instead of
+  reparsing that book for every play. Predictions retain the existing book,
+  MASTER, tendency, side, situations and mask cache keys and unchanged arithmetic.
+- `confirm_playcalling` holds the existing session lock. `confirm` calls the
+  original `review(session, request, state=...)` with exactly the captured request
+  and the current proposed state. `review` still calls `apply`, all original
+  writers, MASTER verification, category/row coverage and the original refusal
+  logic. The optional state argument is the earlier accepted pending changes;
+  it has no separate replacement validation implementation. Tests compare direct
+  review inputs and receipts to Confirm for every ordinary control, masks,
+  MASTER rows/roles and ownership. Real scheme/retirement and build tests remain.
+- Bulk reviews every row, including detected conflicts, collecting all errors.
+  Removed-formation references conflict in either order, including donor references.
+  Two individually valid removals cannot jointly empty required personnel rows.
+  Final coverage is checked again after later MASTER changes. Blockers propagate
+  to the same book and dependent donor additions; shared MASTER/ownership plans
+  retain their whole batch. Retirement retains its paired team run share when
+  refused, including a USER/donor book independent of the team assignment. Independent clean edits are replayed against the retained clean set
+  before one payload store, one Undo snapshot and one modification-map assignment.
+  Failed writes leave the project and Undo unchanged; save/reopen reparses receipts.
+- The page uses **Confirm …** for direct actions and **Add … to pending** in queue
+  mode. Live masks can be queued with their enable switch. Requests keep their
+  selected book/team/row when browsing another book. **Show review details** is
+  collapsible and optional; combined blockers stay inline outside it. Own-book
+  planning and confirmation share one worker, avoiding a nested blocking worker.
+  The existing theme, tooltips and accessibility descriptions are retained.
+  The queue holds drafts for the open session; confirm before saving the project.
+  The existing recipe bounds (4096 receipts and 2 MiB) are retained.
 
-| Component | Count | Appended bytes |
-| --- | ---: | ---: |
-| shared 64x64 team TXTR | 32 | 168,960 |
-| neutral 32x32 TXTR | 1 | 2,208 |
-| painted 256x512 P8 atlas | 1 | 132,256 |
-| slot-9 FirstPersonComic FONT 256x256 | 1 | 80,160 |
-| core_bug quarter FONT 128x128 | 1 | 27,040 |
-| **Total** | **34 TXTR + 2 FONT** | **410,624** |
+The [synthetic themed screenshot](reports/b71_apf6/pending-edits.png) shows two
+formation blockers and the independently staged tendency. Blocker text wraps
+inside the table, and clearing targets the logical row even under theme sorting.
+The final Qt test covers the table width, row wrapping, automatic review,
+synchronous shell refresh, mixed queue, source-session reset and write failure.
 
-The append is **0.391602 MiB**, **2,944 bytes below v3's 413,568**, within the required ~0.4 MB class. Sector-aligned pack growth is **411,648 bytes**. S4's loader allocation accounting is 414,080 native heap bytes; this is not a measured game peak-memory guarantee.
+## Registry, packaging and boundaries
 
-The owner emits **1,380 bytes** inside `CODE_SIZE=1408`, with `DATA_SIZE=128`. Cave requests remain `(nfl2k5_scorebug_runtime, code, 1408, 16)` and `(nfl2k5_scorebug_runtime, data, 128, 16)`. Current allocations are recorded in `manifest-receipt.json`.
+**Zero capability rows added: 176 total / 73 APF.** Existing CPU Play Calling
+registry evidence names the two new suites, and existing CPU action bindings
+include `confirm_playcalling`. The capability ID set is unchanged; its SHA-256
+is `a5e791c1047da40e2d13827d93b97b9510de5676742e9777b0a049d2b274fa46`.
+No count-pin, tuple, installer count or validation-plan count change is needed.
+The registry edit is the user-requested evidence update to the existing row;
+no protected 2K5 GUI, build, game-code, colour or scorebug file was changed.
+The APF modules were already in the release allowlist; no new runtime module
+or allowlist entry is needed.
 
-The supplied v4 verdict accepts all six v3 residuals. The remaining KC transparent-cell fringe, top rim measured at (42,40,44) against the (37,37,37) body rather than about (60,64,70), and 256-pixel frame tile stretched across 1,041 source pixels were deliberately left unchanged. S4's exact-pixel comparison remains false (RGB MAE 36.479 / 35.514). Its software-render verdict does not witness gameplay or GPU filtering.
+Strict validation, provider integrity, product catalog, phase1 packaging, repin,
+and a clean staged APF release/runtime check pass. Repin changes zero hashes.
+The clean stage has **289 files**, imports **161 modules**, and reports **73 APF
+capabilities**. Release checking finds no private/retail payload, symlink or
+undeclared file. The installer test uses the prepared local interpreter with
+source PYTHONPATH cleared; no network dependency install occurred.
 
-## Manifest receipt
+The 75 inherited evidence paths and reviewed extractor files were restored or
+verified through the prior hash-pinned hydration scripts, read-only from their
+sources. Inventory files are independent copies. H7A remains mode 0755.
+The private git directory, stage, test interpreter and bundle stay below the
+200 MiB scratch limit; the temporary stage/interpreter are removed at delivery.
 
-The final manifest is the **bounded complete forward XBE projection**, using the A6 parent manifest SHA-256 `bbc7b1afd93bd4e0c7cabb02452d54e7ac05e6fe6e0d26d4ffdaf381a5368315`. The A6 recipe retains historical retail reservations, observes every forward owner, applies the colour owner and excludes delegated shared helpers from duplicate ownership. S4's changed ingame writer is explicitly observed; its two offline compiler/render tools are recorded as non-XBE source snapshots.
+**PROVED:** measured source/ledger work reduction on the owned export; existing
+reviews on the Confirm path; conflict/refusal checks; atomic clean-set staging;
+Undo/save/reopen; offscreen page behavior; and the passing offline gates listed
+above, subject to each test's stated native/synthetic boundary.
 
-- Manifest SHA-256: `4b323245ae654c559172b369f00ffe77f6b7399281ec58da24178768141fd579`; 6,544,271 bytes.
-- Reservations: 13,113; source seals: 337; observed writer steps: 138.
-- Composed XBE SHA-256: `ef5ca3d7f44c623aec91b01512f65ad497f4ebf148d8e25e3b4041d5584ca36a`.
-- `release_manifest=false`, `disc_built=false`, `runtime_witnessed=false`, `production_regeneration_required=true`; inherited disc fields are historical.
-- Final projection: exit 0, 400.047 seconds. It ran after the final repin and was the last product code/data change. All 4645 other product/test/docs paths retain their frozen hashes.
-- Production launcher: exit 1, 0.005 seconds. Directory creation failed with `Errno 30` / read-only Storage. External command: `bash reports/b71_a7/manifest_regen.sh`.
+**UNWITNESSED:** actual gameplay, Xenia consumption of any staged data/patch,
+Windows/macOS timing and rendering, the historic exact 63-edit session, and a
+human editing session in the released installer. This job changes no gameplay
+patch bytes and does not replace the APF-2/4/5 witness boundaries. No emulator
+was opened. Re-test ordinary personnel, masks, requested rows and fourth-down
+behavior in a real match using the integrated stack's existing witness procedure.
 
-The projection is the requested sandbox deliverable. No production build receipt has been invented. `manifest-receipt.json` and both logs record the actual results.
+### Explicit skips
 
-## Prepared disc, not executed
+- `tests/mod_editor/test_apf_b661_ladder.py`: 1 explicit skips; [full output](reports/b71_apf6/test_apf_b661_ladder.log).
+- `tests/mod_editor/test_apf_b67_static_audit.py`: 1 explicit skips; [full output](reports/b71_apf6/test_apf_b67_static_audit.log).
+- `tests/mod_editor/test_apf_b67_writers_native.py`: 1 explicit skips; [full output](reports/b71_apf6/test_apf_b67_writers_native.log).
+- `tests/mod_editor/test_apf_b69_control_audit.py`: 1 explicit skips; [full output](reports/b71_apf6/test_apf_b69_control_audit.log).
+- `tests/mod_editor/test_apf_book_unlock_retail.py`: 1 explicit skips; [full output](reports/b71_apf6/test_apf_book_unlock_retail.log).
+- `tests/mod_editor/test_apf_defense_research_native.py`: 1 explicit skips; [full output](reports/b71_apf6/test_apf_defense_research_native.log).
+- `tests/mod_editor/test_apf_endzone_dxt5a.py`: 1 explicit skips; [full output](reports/b71_apf6/test_apf_endzone_dxt5a.log).
+- `tests/mod_editor/test_apf_field_art_patch.py`: 2 explicit skips; [full output](reports/b71_apf6/test_apf_field_art_patch.log).
+- `tests/mod_editor/test_apf_splb_tag_reassignment.py`: 1 explicit skips; [full output](reports/b71_apf6/test_apf_splb_tag_reassignment.log).
+- `tests/mod_editor/test_apf_stfs_roster_rehash.py`: 1 explicit skips; [full output](reports/b71_apf6/test_apf_stfs_roster_rehash.log).
 
-`reports/b71_a7/build_testdisc71.py` is prepared and statically parsed/compiled, never imported or run, including `--plan-only`. Exact name:
+## Failures and retained history
 
-`NFL 2K5 MOD TEST 2026-09-15k (everything + painted bar)`
+The first development Qt expectations assumed a separate Review click and a
+retirement receipt without its captured tendency. Those expectations now test
+automatic confirmation or explicit queue mode. The first new fixture used a
+nonexistent synthetic play ID and assumed the fake remover supplied MASTER;
+both fixture assumptions were corrected. The inherited scheme Qt file first
+failed its old Review expectation; its complete corrected run passes and still
+checks the full scheme detail table, CSV, Undo and 5-2 control. Earlier failed
+logs remain in the ledger. A baseline launcher whose short parent exited produced
+no acceptance result; the supervised detached run supplies the reported baseline.
+The batch coordinator may retain exit 1 from an earlier failed suite; acceptance
+uses the latest complete standalone file run, never selected passing test cases.
 
-Preset: Advanced (`softdrink_advanced`). Exactly the disc-i overrides: `scorebug=True`, `scorebug_runtime=True`, `modern_color=True`, `modern_arrowhead=True`, `widescreen=True`. It refuses an existing named disc or patch, checks output-directory access before pruning, removes the oldest MOD TEST images until fewer than three remain, and retains patch archives. It reparses scorebug resources/runtime, colour XBE/all 477 bundles, Arrowhead and 16:9 widescreen from the built disc before exporting the patch. An incomplete disc is removed on failure; a verified disc survives a later patch-export failure. Import the bundle before running externally so the build source is the delivered head.
+## Retest and delivery
 
-No disc, patch export or disc read-back was produced here. Output storage is read-only. The prepared name retains the requested 2026-09-15 date even though UTC gate timestamps may fall on the next day.
+1. Open CPU Play Calling on the same export; choose O-ManBlock, USER-O and USER-D.
+   Confirm play/formation ratings and audibles without a Review click. Check that
+   controls stay available after completion and confirm the timings on the target OS.
+2. Enable **Add edits to Pending edits**. Queue personnel, retirement with run/pass
+   share, Never call, tendencies, audibles, requested rows and masks across books.
+   Confirm all; verify clean edits appear together and one Undo restores them.
+3. Queue removal plus a reference to that formation in either order, and two edits
+   that jointly empty a personnel category. Every blocker should remain visible.
+   Clear the conflicting row and confirm again. Retain the MASTER warning.
+4. Save, reopen, build a copied game and inspect the existing writer receipts.
+   Install masks separately when intended; pending drafts must first be confirmed.
+   Gameplay and native Windows/macOS performance need their own witness.
+5. Import the private bundle onto A7 `cea8a3c85db408dafeea15b361faee9d05be33a7`. Read the explicit paths and the
+   final delivery receipt before integration; no push was performed.
 
-## Every recorded command result
+Implementation commits before this report:
 
-Order: strict registry/count audit; repin; final manifest projection; fast manifest suites; four detached XBE gates; then pairwise, presentation/colour/APF/provider/catalog/packaging checks and both studios' closures. Each of the four XBE gates used `setsid nohup`, its own log and stdin `/dev/null`; the launching shell waited on child PIDs and logs were polled. No `pkill -f` was used. Every suite ran standalone with Qt offscreen. Independent suites ran concurrently within their phase.
+```
+b752f5eb APF: retain dependent drafts and render complete automatic review details
+9619e2ed APF: cache play-calling edits and confirm pending changes atomically
+```
 
-The exact argv arrays and UTC start/end timestamps are in [command-ledger.json](reports/b71_a7/command-ledger.json). Large explicit commit path lists are linked through their receipt instead of duplicated in this table. Read-only discovery and file assembly are also retained in the session tool transcript. Preliminary failures are preserved, never substituted for final receipts.
+The final report commit, bundle SHA-256, bundle verification and cleanup commands
+are recorded in `.scratch/astra-b71-apf6-delivery.json`, outside the report commit
+to avoid a self-referential commit hash/timing. `ASTRA_LAST_MESSAGE.md` ends in
+`ASTRA_DONE`.
 
-| Command/log | Exit | Seconds | Exact invocation or argv receipt |
-| --- | ---: | ---: | --- |
-| [archive-commit](reports/b71_a7/archive-commit.log) | 1 | 0.011 | `git commit -m 'Archive anonymized S4 handoff before integration' -- ASTRA_B71_S4_REPORT.md WIRING_B71_S4.md reports/b71_a7/INHERITED_A6_REPORT.md` |
-| [archive-stage](reports/b71_a7/archive-stage.log) | 0 | 0.015 | `git add -- ASTRA_B71_S4_REPORT.md WIRING_B71_S4.md reports/b71_a7/INHERITED_A6_REPORT.md` |
-| [archive-commit-final](reports/b71_a7/archive-commit-final.log) | 0 | 2.429 | `git commit -m 'Archive anonymized S4 handoff before integration' -- ASTRA_B71_S4_REPORT.md WIRING_B71_S4.md reports/b71_a7/INHERITED_A6_REPORT.md` |
-| [merge-s4](reports/b71_a7/merge-s4.log) | 1 | 0.314 | `git merge --no-commit --no-ff 7b54e354` |
-| [hydrate-evidence](reports/b71_a7/hydrate-evidence.log) | 0 | 0.055 | `python3 reports/b71_apf4/hydrate.py` |
-| [registry-strict](reports/b71_a7/registry-strict.log) | 0 | 0.207 | `python3 -m mod_editor.capabilities.validate_registry` |
-| [validation-plan](reports/b71_a7/validation-plan.log) | 0 | 0.283 | `python3 tools/validate_all_mod_editor_capabilities.py --list` |
-| [prepare-test-python](reports/b71_a7/prepare-test-python.log) | 0 | 0.273 | `python3 reports/b71_apf5/prepare_test_python.py` |
-| [hydrate-release-tools](reports/b71_a7/hydrate-release-tools.log) | 0 | 0.048 | `python3 reports/b71_apf2/hydrate_tools.py` |
-| [pin-audit](reports/b71_a7/pin-audit.log) | 1 | 0.145 | `python3 reports/b71_a7/audit_pins.py` |
-| [catalog-preflight](reports/b71_a7/catalog-preflight.log) | 0 | 0.154 | `python3 tests/mod_editor/test_product_catalog.py` |
-| [pin-audit-final](reports/b71_a7/pin-audit-final.log) | 0 | 0.685 | `python3 reports/b71_a7/audit_pins.py` |
-| [repin](reports/b71_a7/repin.log) | 0 | 10.591 | `python3 packaging/repin.py --apply` |
-| [manifest-production](reports/b71_a7/manifest-production.log) | 1 | 0.005 | `bash reports/b71_a7/manifest_regen.sh` |
-| [manifest-projection](reports/b71_a7/manifest-projection.log) | 1 | 0.511 | `python3 reports/b71_a7/refresh_manifest_projection.py` |
-| [manifest-projection-final](reports/b71_a7/manifest-projection-final.log) | 0 | 327.063 | `python3 reports/b71_a7/refresh_manifest_projection.py` |
-| [volume](reports/b71_a7/volume.log) | 0 | 7.316 | `python3 reports/b71_a7/measure_volume.py` |
-| [repin-release-label](reports/b71_a7/repin-release-label.log) | 0 | 10.275 | `python3 packaging/repin.py --apply` |
-| [manifest-projection-delivery](reports/b71_a7/manifest-projection-delivery.log) | 0 | 324.065 | `python3 reports/b71_a7/refresh_manifest_projection.py` |
-| [fast-suites](reports/b71_a7/fast-suites.log) | 0 | 350.267 | `python3 reports/b71_a7/suites.py fast` |
-| [final-test_nfl2k5_abilities_v2_manifest](reports/b71_a7/final-test_nfl2k5_abilities_v2_manifest.log) | 0 | 310.942 | `python3 tests/mod_editor/test_nfl2k5_abilities_v2_manifest.py -v` |
-| [final-test_nfl2k5_accelerated_clock_manifest](reports/b71_a7/final-test_nfl2k5_accelerated_clock_manifest.log) | 0 | 10.288 | `python3 tests/mod_editor/test_nfl2k5_accelerated_clock_manifest.py -v` |
-| [final-test_nfl2k5_cpu_money_downs_manifest](reports/b71_a7/final-test_nfl2k5_cpu_money_downs_manifest.log) | 0 | 4.554 | `python3 tests/mod_editor/test_nfl2k5_cpu_money_downs_manifest.py -v` |
-| [merge-checkpoint](reports/b71_a7/merge-checkpoint.log) | 1 | 0.302 | `python3 reports/b71_a7/commit_checkpoint.py merge-s4-commit 'Merge S4 painted bar into A6 with bounded manifest and release wiring'` |
-| [merge-s4-commit-stage](reports/b71_a7/merge-s4-commit-stage.log) | 0 | 0.16 | [exact argv](reports/b71_a7/merge-s4-commit-stage.result.json) |
-| [final-test_nfl2k5_defensive_try_manifest](reports/b71_a7/final-test_nfl2k5_defensive_try_manifest.log) | 0 | 4.615 | `python3 tests/mod_editor/test_nfl2k5_defensive_try_manifest.py -v` |
-| [final-test_nfl2k5_guardian_manifest](reports/b71_a7/final-test_nfl2k5_guardian_manifest.log) | 0 | 313.146 | `python3 tests/mod_editor/test_nfl2k5_guardian_manifest.py -v` |
-| [final-test_nfl2k5_music_playlist_manifest](reports/b71_a7/final-test_nfl2k5_music_playlist_manifest.log) | 0 | 3.794 | `python3 tests/mod_editor/test_nfl2k5_music_playlist_manifest.py -v` |
-| [final-test_nfl2k5_my_career_manifest](reports/b71_a7/final-test_nfl2k5_my_career_manifest.log) | 0 | 8.162 | `python3 tests/mod_editor/test_nfl2k5_my_career_manifest.py -v` |
-| [merge-checkpoint-final](reports/b71_a7/merge-checkpoint-final.log) | 0 | 0.215 | `python3 reports/b71_a7/commit_checkpoint.py merge-s4-commit-final 'Merge S4 painted bar into A6 with bounded manifest and release wiring'` |
-| [merge-s4-commit-final-stage](reports/b71_a7/merge-s4-commit-final-stage.log) | 0 | 0.083 | [exact argv](reports/b71_a7/merge-s4-commit-final-stage.result.json) |
-| [merge-s4-commit-final](reports/b71_a7/merge-s4-commit-final.log) | 0 | 0.06 | [exact argv](reports/b71_a7/merge-s4-commit-final.result.json) |
-| [final-test_nfl2k5_playbook_pair_manifest](reports/b71_a7/final-test_nfl2k5_playbook_pair_manifest.log) | 0 | 327.978 | `python3 tests/mod_editor/test_nfl2k5_playbook_pair_manifest.py -v` |
-| [frozen-source-check](reports/b71_a7/frozen-source-check.log) | 0 | 0.435 | `python3 -c 'import hashlib,json;from pathlib import Path;d=json.loads(Path(".scratch/a7-product-frozen.json").read_text());assert all(hashlib.sha256(Path(p).read_bytes()).hexdigest()==h for p,h in d.items());print(len(d),"unchanged product/test/docs paths")'` |
-| [final-test_nfl2k5_read_option_diagnostic_manifest](reports/b71_a7/final-test_nfl2k5_read_option_diagnostic_manifest.log) | 0 | 0.427 | `python3 tests/mod_editor/test_nfl2k5_read_option_diagnostic_manifest.py -v` |
-| [final-test_nfl2k5_screen_hooks_manifest](reports/b71_a7/final-test_nfl2k5_screen_hooks_manifest.log) | 0 | 4.359 | `python3 tests/mod_editor/test_nfl2k5_screen_hooks_manifest.py -v` |
-| [final-test_nfl2k5_seven_on_seven_manifest](reports/b71_a7/final-test_nfl2k5_seven_on_seven_manifest.log) | 0 | 0.8 | `python3 tests/mod_editor/test_nfl2k5_seven_on_seven_manifest.py -v` |
-| [detached-gates](reports/b71_a7/detached-gates.log) | 0 | 1862.006 | `bash reports/b71_a7/gates.sh` |
-| [final-test_xbe_patch_memory_writes](reports/b71_a7/final-test_xbe_patch_memory_writes.log) | 0 | 1628.902 | `python3 tests/mod_editor/test_xbe_patch_memory_writes.py -v` |
-| [final-test_nfl2k5_allocator_scaleout](reports/b71_a7/final-test_nfl2k5_allocator_scaleout.log) | 0 | 897.769 | `python3 tests/mod_editor/test_nfl2k5_allocator_scaleout.py -v` |
-| [final-test_xbe_patch_cave_references](reports/b71_a7/final-test_xbe_patch_cave_references.log) | 0 | 1861.965 | `python3 tests/mod_editor/test_xbe_patch_cave_references.py -v` |
-| [final-test_nfl2k5_cave_oracle](reports/b71_a7/final-test_nfl2k5_cave_oracle.log) | 0 | 413.169 | `python3 tests/mod_editor/test_nfl2k5_cave_oracle.py -v` |
-| [remaining-suites](reports/b71_a7/remaining-suites.log) | 1 | 3109.412 | `bash reports/b71_a7/remaining.sh` |
-| [final-test_nfl2k5_owner_pairwise_composition](reports/b71_a7/final-test_nfl2k5_owner_pairwise_composition.log) | 0 | 3082.969 | `python3 tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py -v` |
-| [closure_units-suites](reports/b71_a7/closure_units-suites.log) | 1 | 9.721 | `python3 reports/b71_a7/suites.py closure_units` |
-| [presentation-suites](reports/b71_a7/presentation-suites.log) | 1 | 586.993 | `python3 reports/b71_a7/suites.py presentation` |
-| [apf-suites](reports/b71_a7/apf-suites.log) | 1 | 1606.597 | `python3 reports/b71_a7/suites.py apf` |
-| [final-colour-all-pins](reports/b71_a7/final-colour-all-pins.log) | 0 | 605.551 | `python3 tools/verify_colour_lighting_pins.py 'extracted/ESPN NFL 2K5 (USA)/vc_53450030/0' --workers 4` |
-| [final-test_provider_integrity](reports/b71_a7/final-test_provider_integrity.log) | 1 | 4.295 | `python3 tests/mod_editor/test_provider_integrity.py -v` |
-| [final-test_providers](reports/b71_a7/final-test_providers.log) | 0 | 4.381 | `python3 tests/mod_editor/test_providers.py -v` |
-| [final-test_product_catalog](reports/b71_a7/final-test_product_catalog.log) | 0 | 0.254 | `python3 tests/mod_editor/test_product_catalog.py -v` |
-| [final-test_colour_lighting](reports/b71_a7/final-test_colour_lighting.log) | 0 | 33.405 | `python3 tests/mod_editor/test_colour_lighting.py -v` |
-| [final-test_colour_lighting_qt](reports/b71_a7/final-test_colour_lighting_qt.log) | 0 | 3.051 | `python3 tests/mod_editor/test_colour_lighting_qt.py -v` |
-| [final-test_nfl2k5_modern_color](reports/b71_a7/final-test_nfl2k5_modern_color.log) | 0 | 7.277 | `python3 tests/mod_editor/test_nfl2k5_modern_color.py -v` |
-| [final-test_nfl2k5_scorebar_rim](reports/b71_a7/final-test_nfl2k5_scorebar_rim.log) | 0 | 17.743 | `python3 tests/mod_editor/test_nfl2k5_scorebar_rim.py -v` |
-| [final-test_apf2k8_coverage_tuning](reports/b71_a7/final-test_apf2k8_coverage_tuning.log) | 0 | 3.026 | `python3 tests/mod_editor/test_apf2k8_coverage_tuning.py -v` |
-| [final-test_apf2k8_playbook_route_writer](reports/b71_a7/final-test_apf2k8_playbook_route_writer.log) | 0 | 0.801 | `python3 tests/mod_editor/test_apf2k8_playbook_route_writer.py -v` |
-| [final-test_apf_all_crest_slots](reports/b71_a7/final-test_apf_all_crest_slots.log) | 0 | 2.221 | `python3 tests/mod_editor/test_apf_all_crest_slots.py -v` |
-| [final-test_apf_audio_annotation_facade](reports/b71_a7/final-test_apf_audio_annotation_facade.log) | 0 | 0.768 | `python3 tests/mod_editor/test_apf_audio_annotation_facade.py -v` |
-| [final-test_phase1_packaging](reports/b71_a7/final-test_phase1_packaging.log) | 0 | 2.457 | `python3 tests/mod_editor/test_phase1_packaging.py -v` |
-| [final-test_apf_audio_annotations](reports/b71_a7/final-test_apf_audio_annotations.log) | 0 | 0.341 | `python3 tests/mod_editor/test_apf_audio_annotations.py -v` |
-| [final-test_apf_audio_batch_export](reports/b71_a7/final-test_apf_audio_batch_export.log) | 0 | 0.233 | `python3 tests/mod_editor/test_apf_audio_batch_export.py -v` |
-| [final-test_apf_audio_batch_facade](reports/b71_a7/final-test_apf_audio_batch_facade.log) | 0 | 0.426 | `python3 tests/mod_editor/test_apf_audio_batch_facade.py -v` |
-| [final-test_apf_audio_batch_gui](reports/b71_a7/final-test_apf_audio_batch_gui.log) | 0 | 0.888 | `python3 tests/mod_editor/test_apf_audio_batch_gui.py -v` |
-| [final-test_apf_audio_decode_cancellation](reports/b71_a7/final-test_apf_audio_decode_cancellation.log) | 0 | 2.044 | `python3 tests/mod_editor/test_apf_audio_decode_cancellation.py -v` |
-| [final-test_apf_audio_drop_zone_gui](reports/b71_a7/final-test_apf_audio_drop_zone_gui.log) | 0 | 0.734 | `python3 tests/mod_editor/test_apf_audio_drop_zone_gui.py -v` |
-| [final-test_apf_audio_encoder_gui](reports/b71_a7/final-test_apf_audio_encoder_gui.log) | 0 | 0.798 | `python3 tests/mod_editor/test_apf_audio_encoder_gui.py -v` |
-| [final-test_b68_a1_audit](reports/b71_a7/final-test_b68_a1_audit.log) | 0 | 6.966 | `python3 tests/mod_editor/test_b68_a1_audit.py -v` |
-| [final-test_apf_audio_encoding](reports/b71_a7/final-test_apf_audio_encoding.log) | 0 | 11.948 | `python3 tests/mod_editor/test_apf_audio_encoding.py -v` |
-| [final-test_apf_audio_import_idle_barrier](reports/b71_a7/final-test_apf_audio_import_idle_barrier.log) | 0 | 4.781 | `python3 tests/mod_editor/test_apf_audio_import_idle_barrier.py -v` |
-| [final-test_apf_audio_pcm_product_backend](reports/b71_a7/final-test_apf_audio_pcm_product_backend.log) | 0 | 1.238 | `python3 tests/mod_editor/test_apf_audio_pcm_product_backend.py -v` |
-| [final-test_nfl2k5_scorebar_v3](reports/b71_a7/final-test_nfl2k5_scorebar_v3.log) | 0 | 106.41 | `python3 tests/mod_editor/test_nfl2k5_scorebar_v3.py -v` |
-| [final-test_apf_audio_replacement_pack](reports/b71_a7/final-test_apf_audio_replacement_pack.log) | 0 | 0.959 | `python3 tests/mod_editor/test_apf_audio_replacement_pack.py -v` |
-| [final-test_apf_audio_waveform_qt](reports/b71_a7/final-test_apf_audio_waveform_qt.log) | 0 | 0.66 | `python3 tests/mod_editor/test_apf_audio_waveform_qt.py -v` |
-| [final-test_capability_registry_module_commands](reports/b71_a7/final-test_capability_registry_module_commands.log) | 0 | 0.121 | `python3 tests/mod_editor/test_capability_registry_module_commands.py -v` |
-| [final-test_apf_audo_exact_slot](reports/b71_a7/final-test_apf_audo_exact_slot.log) | 0 | 0.253 | `python3 tests/mod_editor/test_apf_audo_exact_slot.py -v` |
-| [final-test_apf_audo_product_backend](reports/b71_a7/final-test_apf_audo_product_backend.log) | 0 | 0.314 | `python3 tests/mod_editor/test_apf_audo_product_backend.py -v` |
-| [final-test_apf_audo_project](reports/b71_a7/final-test_apf_audo_project.log) | 0 | 0.197 | `python3 tests/mod_editor/test_apf_audo_project.py -v` |
-| [final-test_apf_ausb_exact_slot](reports/b71_a7/final-test_apf_ausb_exact_slot.log) | 0 | 13.68 | `python3 tests/mod_editor/test_apf_ausb_exact_slot.py -v` |
-| [final-test_apf_ausb_product_backend](reports/b71_a7/final-test_apf_ausb_product_backend.log) | 0 | 0.365 | `python3 tests/mod_editor/test_apf_ausb_product_backend.py -v` |
-| [final-test_apf_b661_book_content](reports/b71_a7/final-test_apf_b661_book_content.log) | 0 | 28.881 | `python3 tests/mod_editor/test_apf_b661_book_content.py -v` |
-| [final-test_nfl2k5_scorebug_assets](reports/b71_a7/final-test_nfl2k5_scorebug_assets.log) | 0 | 155.939 | `python3 tests/mod_editor/test_nfl2k5_scorebug_assets.py -v` |
-| [final-test_apf_b661_ladder](reports/b71_a7/final-test_apf_b661_ladder.log) | 0 | 0.486 | `python3 tests/mod_editor/test_apf_b661_ladder.py -v` |
-| [final-test_apf_b66_appearance](reports/b71_a7/final-test_apf_b66_appearance.log) | 0 | 2.904 | `python3 tests/mod_editor/test_apf_b66_appearance.py -v` |
-| [final-test_apf_b66_personnel](reports/b71_a7/final-test_apf_b66_personnel.log) | 0 | 5.956 | `python3 tests/mod_editor/test_apf_b66_personnel.py -v` |
-| [final-test_apf_b67_books_qt](reports/b71_a7/final-test_apf_b67_books_qt.log) | 0 | 71.483 | `python3 tests/mod_editor/test_apf_b67_books_qt.py -v` |
-| [final-test_apf_b67_clone](reports/b71_a7/final-test_apf_b67_clone.log) | 0 | 62.555 | `python3 tests/mod_editor/test_apf_b67_clone.py -v` |
-| [final-test_nfl2k5_scorebug_author](reports/b71_a7/final-test_nfl2k5_scorebug_author.log) | 0 | 6.915 | `python3 tests/mod_editor/test_nfl2k5_scorebug_author.py -v` |
-| [final-test_apf_b67_defense_model_native](reports/b71_a7/final-test_apf_b67_defense_model_native.log) | 0 | 169.254 | `python3 tests/mod_editor/test_apf_b67_defense_model_native.py -v` |
-| [final-test_nfl2k5_scorebug_exact](reports/b71_a7/final-test_nfl2k5_scorebug_exact.log) | 0 | 90.239 | `python3 tests/mod_editor/test_nfl2k5_scorebug_exact.py -v` |
-| [final-test_nfl2k5_scorebug_fonts](reports/b71_a7/final-test_nfl2k5_scorebug_fonts.log) | 0 | 12.045 | `python3 tests/mod_editor/test_nfl2k5_scorebug_fonts.py -v` |
-| [final-test_apf_b67_model_edges_native](reports/b71_a7/final-test_apf_b67_model_edges_native.log) | 0 | 103.055 | `python3 tests/mod_editor/test_apf_b67_model_edges_native.py -v` |
-| [final-test_nfl2k5_scorebug_freeze](reports/b71_a7/final-test_nfl2k5_scorebug_freeze.log) | 0 | 341.684 | `python3 tests/mod_editor/test_nfl2k5_scorebug_freeze.py -v` |
-| [final-test_apf_b67_model_native](reports/b71_a7/final-test_apf_b67_model_native.log) | 0 | 1304.42 | `python3 tests/mod_editor/test_apf_b67_model_native.py -v` |
-| [final-test_apf_b67_static_audit](reports/b71_a7/final-test_apf_b67_static_audit.log) | 0 | 0.157 | `python3 tests/mod_editor/test_apf_b67_static_audit.py -v` |
-| [final-test_apf_b67_writers](reports/b71_a7/final-test_apf_b67_writers.log) | 0 | 0.503 | `python3 tests/mod_editor/test_apf_b67_writers.py -v` |
-| [final-test_apf_b67_writers_native](reports/b71_a7/final-test_apf_b67_writers_native.log) | 0 | 356.164 | `python3 tests/mod_editor/test_apf_b67_writers_native.py -v` |
-| [final-test_nfl2k5_scorebug_freeze_v2](reports/b71_a7/final-test_nfl2k5_scorebug_freeze_v2.log) | 0 | 403.715 | `python3 tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py -v` |
-| [final-test_nfl2k5_scorebug_ingame](reports/b71_a7/final-test_nfl2k5_scorebug_ingame.log) | 0 | 17.956 | `python3 tests/mod_editor/test_nfl2k5_scorebug_ingame.py -v` |
-| [pin-audit-delivery](reports/b71_a7/pin-audit-delivery.log) | 0 | 0.442 | `python3 reports/b71_a7/audit_pins.py` |
-| [repin-provider-closure](reports/b71_a7/repin-provider-closure.log) | 0 | 16.221 | `python3 packaging/repin.py --apply` |
-| [final-test_nfl2k5_scorebug_ingame_fix](reports/b71_a7/final-test_nfl2k5_scorebug_ingame_fix.log) | 0 | 158.184 | `python3 tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py -v` |
-| [manifest-projection-provider-closure](reports/b71_a7/manifest-projection-provider-closure.log) | 0 | 400.047 | `python3 reports/b71_a7/refresh_manifest_projection.py` |
-| [final-test_apf_b67_xenia_patch](reports/b71_a7/final-test_apf_b67_xenia_patch.log) | 0 | 0.411 | `python3 tests/mod_editor/test_apf_b67_xenia_patch.py -v` |
-| [final-test_apf_b69_build](reports/b71_a7/final-test_apf_b69_build.log) | 0 | 43.091 | `python3 tests/mod_editor/test_apf_b69_build.py -v` |
-| [final-test_nfl2k5_scorebug_mnf](reports/b71_a7/final-test_nfl2k5_scorebug_mnf.log) | 0 | 12.636 | `python3 tests/mod_editor/test_nfl2k5_scorebug_mnf.py -v` |
-| [final-test_nfl2k5_scorebug_mnf_v3](reports/b71_a7/final-test_nfl2k5_scorebug_mnf_v3.log) | 0 | 57.324 | `python3 tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py -v` |
-| [final-test_apf_b69_control_audit](reports/b71_a7/final-test_apf_b69_control_audit.log) | 0 | 0.117 | `python3 tests/mod_editor/test_apf_b69_control_audit.py -v` |
-| [final-test_apf_b69_editor_qt](reports/b71_a7/final-test_apf_b69_editor_qt.log) | 0 | 107.42 | `python3 tests/mod_editor/test_apf_b69_editor_qt.py -v` |
-| [final-test_apf_b69_formation_calling](reports/b71_a7/final-test_apf_b69_formation_calling.log) | 0 | 0.94 | `python3 tests/mod_editor/test_apf_b69_formation_calling.py -v` |
-| [final-test_apf_b69_launch_patches](reports/b71_a7/final-test_apf_b69_launch_patches.log) | 0 | 0.646 | `python3 tests/mod_editor/test_apf_b69_launch_patches.py -v` |
-| [final-test_apf_b69_native](reports/b71_a7/final-test_apf_b69_native.log) | 0 | 886.393 | `python3 tests/mod_editor/test_apf_b69_native.py -v` |
-| [final-test_nfl2k5_scorebug_native](reports/b71_a7/final-test_nfl2k5_scorebug_native.log) | 0 | 136.249 | `python3 tests/mod_editor/test_nfl2k5_scorebug_native.py -v` |
-| [final-test_apf_b69_retirement_native](reports/b71_a7/final-test_apf_b69_retirement_native.log) | 0 | 156.673 | `python3 tests/mod_editor/test_apf_b69_retirement_native.py -v` |
-| [final-test_nfl2k5_scorebug_projection](reports/b71_a7/final-test_nfl2k5_scorebug_projection.log) | 0 | 68.688 | `python3 tests/mod_editor/test_nfl2k5_scorebug_projection.py -v` |
-| [final-test_nfl2k5_scorebug_resources](reports/b71_a7/final-test_nfl2k5_scorebug_resources.log) | 0 | 227.215 | `python3 tests/mod_editor/test_nfl2k5_scorebug_resources.py -v` |
-| [final-test_nfl2k5_scorebug_runtime](reports/b71_a7/final-test_nfl2k5_scorebug_runtime.log) | 0 | 138.613 | `python3 tests/mod_editor/test_nfl2k5_scorebug_runtime.py -v` |
-| [final-test_nfl2k5_scorebug_source_art](reports/b71_a7/final-test_nfl2k5_scorebug_source_art.log) | 0 | 0.684 | `python3 tests/mod_editor/test_nfl2k5_scorebug_source_art.py -v` |
-| [final-test_nfl2k5_scorebug_template](reports/b71_a7/final-test_nfl2k5_scorebug_template.log) | 0 | 13.663 | `python3 tests/mod_editor/test_nfl2k5_scorebug_template.py -v` |
-| [final-test_nfl2k5_scorebug_template_release](reports/b71_a7/final-test_nfl2k5_scorebug_template_release.log) | 0 | 0.606 | `python3 tests/mod_editor/test_nfl2k5_scorebug_template_release.py -v` |
-| [final-test_nfl2k5_scorebug_unified_adapter](reports/b71_a7/final-test_nfl2k5_scorebug_unified_adapter.log) | 0 | 0.195 | `python3 tests/mod_editor/test_nfl2k5_scorebug_unified_adapter.py -v` |
-| [final-test_nfl2k5_scorebug_v10_ingame](reports/b71_a7/final-test_nfl2k5_scorebug_v10_ingame.log) | 0 | 9.693 | `python3 tests/mod_editor/test_nfl2k5_scorebug_v10_ingame.py -v` |
-| [final-test_nfl2k5_scorebug_v10_projection](reports/b71_a7/final-test_nfl2k5_scorebug_v10_projection.log) | 0 | 30.351 | `python3 tests/mod_editor/test_nfl2k5_scorebug_v10_projection.py -v` |
-| [final-test_nfl2k5_scorebug_versions](reports/b71_a7/final-test_nfl2k5_scorebug_versions.log) | 0 | 11.235 | `python3 tests/mod_editor/test_nfl2k5_scorebug_versions.py -v` |
-| [final-test_apf_b69_schemes](reports/b71_a7/final-test_apf_b69_schemes.log) | 0 | 59.326 | `python3 tests/mod_editor/test_apf_b69_schemes.py -v` |
-| [final-test_apf_b69_wiring](reports/b71_a7/final-test_apf_b69_wiring.log) | 0 | 0.615 | `python3 tests/mod_editor/test_apf_b69_wiring.py -v` |
-| [final-test_apf_b70_stock_recipes](reports/b71_a7/final-test_apf_b70_stock_recipes.log) | 0 | 212.165 | `python3 tests/mod_editor/test_apf_b70_stock_recipes.py -v` |
-| [final-test_scorebug_studio_panel_qt](reports/b71_a7/final-test_scorebug_studio_panel_qt.log) | 0 | 7.892 | `python3 tests/mod_editor/test_scorebug_studio_panel_qt.py -v` |
-| [final-test_unif_color_argb_parse](reports/b71_a7/final-test_unif_color_argb_parse.log) | 0 | 1.111 | `python3 tests/mod_editor/test_unif_color_argb_parse.py -v` |
-| [final-test_unif_color_control](reports/b71_a7/final-test_unif_color_control.log) | 0 | 10.278 | `python3 tests/mod_editor/test_unif_color_control.py -v` |
-| [final-nfl2k5_scorebug_layout_test](reports/b71_a7/final-nfl2k5_scorebug_layout_test.log) | 0 | 2.278 | `python3 tests/nfl2k5_scorebug_layout_test.py -v` |
-| [final-nfl2k5_scorebug_mod_project_test](reports/b71_a7/final-nfl2k5_scorebug_mod_project_test.log) | 0 | 1.883 | `python3 tests/nfl2k5_scorebug_mod_project_test.py -v` |
-| [final-nfl_uniform_color_patch_test](reports/b71_a7/final-nfl_uniform_color_patch_test.log) | 2 | 0.093 | `python3 tests/nfl_uniform_color_patch_test.py -v` |
-| [final-test_nfl_uniform_colour_records](reports/b71_a7/final-test_nfl_uniform_colour_records.log) | 0 | 3.078 | `python3 tests/test_nfl_uniform_colour_records.py -v` |
-| [final-test_nfl2k5_modern_arrowhead](reports/b71_a7/final-test_nfl2k5_modern_arrowhead.log) | 0 | 34.033 | `python3 tests/mod_editor/test_nfl2k5_modern_arrowhead.py -v` |
-| [final-test_apf_b71_situation_mask](reports/b71_a7/final-test_apf_b71_situation_mask.log) | 0 | 4.424 | `python3 tests/mod_editor/test_apf_b71_situation_mask.py -v` |
-| [final-test_apf_b71_situation_mask_abi](reports/b71_a7/final-test_apf_b71_situation_mask_abi.log) | 0 | 4.432 | `python3 tests/mod_editor/test_apf_b71_situation_mask_abi.py -v` |
-| [final-test_b71_a6_composition](reports/b71_a7/final-test_b71_a6_composition.log) | 0 | 0.316 | `python3 tests/mod_editor/test_b71_a6_composition.py -v` |
-| [final-test_build_panel_qt](reports/b71_a7/final-test_build_panel_qt.log) | 0 | 3.136 | `python3 tests/mod_editor/test_build_panel_qt.py -v` |
-| [final-test_apf_b71_situation_mask_install](reports/b71_a7/final-test_apf_b71_situation_mask_install.log) | 0 | 1.324 | `python3 tests/mod_editor/test_apf_b71_situation_mask_install.py -v` |
-| [final-test_mod_build](reports/b71_a7/final-test_mod_build.log) | 0 | 1.963 | `python3 tests/mod_editor/test_mod_build.py -v` |
-| [final-test_apf_b71_situation_mask_native](reports/b71_a7/final-test_apf_b71_situation_mask_native.log) | 0 | 364.556 | `python3 tests/mod_editor/test_apf_b71_situation_mask_native.py -v` |
-| [final-test_discord_bugs_1](reports/b71_a7/final-test_discord_bugs_1.log) | 0 | 1.583 | `python3 tests/mod_editor/test_discord_bugs_1.py -v` |
-| [final-test_nfl2k5_depth_chart_rows](reports/b71_a7/final-test_nfl2k5_depth_chart_rows.log) | 0 | 48.486 | `python3 tests/mod_editor/test_nfl2k5_depth_chart_rows.py -v` |
-| [delivery-closure_units-suites](reports/b71_a7/delivery-closure_units-suites.log) | 0 | 14.874 | `python3 reports/b71_a7/suites.py closure_units delivery-` |
-| [delivery-test_provider_integrity](reports/b71_a7/delivery-test_provider_integrity.log) | 0 | 14.822 | `python3 tests/mod_editor/test_provider_integrity.py -v` |
-| [delivery-test_providers](reports/b71_a7/delivery-test_providers.log) | 0 | 4.686 | `python3 tests/mod_editor/test_providers.py -v` |
-| [delivery-test_product_catalog](reports/b71_a7/delivery-test_product_catalog.log) | 0 | 0.175 | `python3 tests/mod_editor/test_product_catalog.py -v` |
-| [delivery-test_phase1_packaging](reports/b71_a7/delivery-test_phase1_packaging.log) | 0 | 2.483 | `python3 tests/mod_editor/test_phase1_packaging.py -v` |
-| [delivery-test_b68_a1_audit](reports/b71_a7/delivery-test_b68_a1_audit.log) | 0 | 7.13 | `python3 tests/mod_editor/test_b68_a1_audit.py -v` |
-| [delivery-test_capability_registry_module_commands](reports/b71_a7/delivery-test_capability_registry_module_commands.log) | 0 | 0.18 | `python3 tests/mod_editor/test_capability_registry_module_commands.py -v` |
-| [provider-count-stage](reports/b71_a7/provider-count-stage.log) | 0 | 0.013 | `git add -- tests/mod_editor/test_provider_integrity.py` |
-| [provider-count-commit](reports/b71_a7/provider-count-commit.log) | 0 | 0.081 | `git commit -m 'Pin the combined provider closure including the painted atlas dependency' -- tests/mod_editor/test_provider_integrity.py` |
-| [delivery-nfl_uniform_color_patch_test](reports/b71_a7/delivery-nfl_uniform_color_patch_test.log) | 0 | 0.066 | `python3 tests/nfl_uniform_color_patch_test.py` |
-| [presentation-reconciled](reports/b71_a7/presentation-reconciled.log) | 0 | 0.031 | `python3 reports/b71_a7/reconcile_presentation.py` |
-| [final-test_apf_b71_situation_mask_qt](reports/b71_a7/final-test_apf_b71_situation_mask_qt.log) | 0 | 1.886 | `python3 tests/mod_editor/test_apf_b71_situation_mask_qt.py -v` |
-| [final-test_apf_b71_situations](reports/b71_a7/final-test_apf_b71_situations.log) | 0 | 4.749 | `python3 tests/mod_editor/test_apf_b71_situations.py -v` |
-| [final-test_apf_book_identity_qt](reports/b71_a7/final-test_apf_book_identity_qt.log) | 0 | 0.282 | `python3 tests/mod_editor/test_apf_book_identity_qt.py -v` |
-| [final-test_apf_book_unlock](reports/b71_a7/final-test_apf_book_unlock.log) | 0 | 25.609 | `python3 tests/mod_editor/test_apf_book_unlock.py -v` |
-| [final-test_apf_book_unlock_retail](reports/b71_a7/final-test_apf_book_unlock_retail.log) | 0 | 0.155 | `python3 tests/mod_editor/test_apf_book_unlock_retail.py -v` |
-| [final-test_apf_browser_workspace_handoff](reports/b71_a7/final-test_apf_browser_workspace_handoff.log) | 0 | 0.888 | `python3 tests/mod_editor/test_apf_browser_workspace_handoff.py -v` |
-| [final-test_apf_build_ausb_overlays](reports/b71_a7/final-test_apf_build_ausb_overlays.log) | 0 | 0.318 | `python3 tests/mod_editor/test_apf_build_ausb_overlays.py -v` |
-| [final-test_apf_build_raw_span_overlays](reports/b71_a7/final-test_apf_build_raw_span_overlays.log) | 0 | 0.33 | `python3 tests/mod_editor/test_apf_build_raw_span_overlays.py -v` |
-| [final-test_apf_capability_action_parity](reports/b71_a7/final-test_apf_capability_action_parity.log) | 0 | 0.456 | `python3 tests/mod_editor/test_apf_capability_action_parity.py -v` |
-| [final-test_apf_copied_volume_metadata](reports/b71_a7/final-test_apf_copied_volume_metadata.log) | 0 | 0.315 | `python3 tests/mod_editor/test_apf_copied_volume_metadata.py -v` |
-| [final-test_apf_coverage_research_tools](reports/b71_a7/final-test_apf_coverage_research_tools.log) | 0 | 0.078 | `python3 tests/mod_editor/test_apf_coverage_research_tools.py -v` |
-| [final-test_apf_cpu_audibles](reports/b71_a7/final-test_apf_cpu_audibles.log) | 0 | 3.007 | `python3 tests/mod_editor/test_apf_cpu_audibles.py -v` |
-| [final-test_apf_crest_budget_import](reports/b71_a7/final-test_apf_crest_budget_import.log) | 0 | 0.859 | `python3 tests/mod_editor/test_apf_crest_budget_import.py -v` |
-| [final-test_apf_crest_fit](reports/b71_a7/final-test_apf_crest_fit.log) | 0 | 28.471 | `python3 tests/mod_editor/test_apf_crest_fit.py -v` |
-| [final-test_apf_cross_domain_audio_safety](reports/b71_a7/final-test_apf_cross_domain_audio_safety.log) | 0 | 0.366 | `python3 tests/mod_editor/test_apf_cross_domain_audio_safety.py -v` |
-| [final-test_apf_cubemap_face0_preview](reports/b71_a7/final-test_apf_cubemap_face0_preview.log) | 0 | 21.384 | `python3 tests/mod_editor/test_apf_cubemap_face0_preview.py -v` |
-| [final-test_apf_custom_team_appearance_gui](reports/b71_a7/final-test_apf_custom_team_appearance_gui.log) | 0 | 0.31 | `python3 tests/mod_editor/test_apf_custom_team_appearance_gui.py -v` |
-| [final-test_apf_custom_team_appearance_patch](reports/b71_a7/final-test_apf_custom_team_appearance_patch.log) | 0 | 7.055 | `python3 tests/mod_editor/test_apf_custom_team_appearance_patch.py -v` |
-| [final-test_apf_defense_research_identity](reports/b71_a7/final-test_apf_defense_research_identity.log) | 0 | 0.507 | `python3 tests/mod_editor/test_apf_defense_research_identity.py -v` |
-| [final-test_apf_defense_research_native](reports/b71_a7/final-test_apf_defense_research_native.log) | 0 | 139.917 | `python3 tests/mod_editor/test_apf_defense_research_native.py -v` |
-| [final-test_apf_digital_font](reports/b71_a7/final-test_apf_digital_font.log) | 0 | 0.353 | `python3 tests/mod_editor/test_apf_digital_font.py -v` |
-| [final-test_apf_dxn_base_only_namefont](reports/b71_a7/final-test_apf_dxn_base_only_namefont.log) | 0 | 22.024 | `python3 tests/mod_editor/test_apf_dxn_base_only_namefont.py -v` |
-| [final-test_apf_dxt5a_general_preview](reports/b71_a7/final-test_apf_dxt5a_general_preview.log) | 0 | 20.753 | `python3 tests/mod_editor/test_apf_dxt5a_general_preview.py -v` |
-| [final-test_apf_endzone_dxt5a](reports/b71_a7/final-test_apf_endzone_dxt5a.log) | 0 | 37.91 | `python3 tests/mod_editor/test_apf_endzone_dxt5a.py -v` |
-| [final-test_apf_export](reports/b71_a7/final-test_apf_export.log) | 0 | 0.119 | `python3 tests/mod_editor/test_apf_export.py -v` |
-| [final-test_apf_external_audio_bank_bundle](reports/b71_a7/final-test_apf_external_audio_bank_bundle.log) | 0 | 0.335 | `python3 tests/mod_editor/test_apf_external_audio_bank_bundle.py -v` |
-| [final-test_apf_field_art](reports/b71_a7/final-test_apf_field_art.log) | 0 | 0.178 | `python3 tests/mod_editor/test_apf_field_art.py -v` |
-| [final-test_apf_field_art_gui](reports/b71_a7/final-test_apf_field_art_gui.log) | 0 | 0.86 | `python3 tests/mod_editor/test_apf_field_art_gui.py -v` |
-| [final-test_apf_field_art_patch](reports/b71_a7/final-test_apf_field_art_patch.log) | 0 | 301.452 | `python3 tests/mod_editor/test_apf_field_art_patch.py -v` |
-| [final-test_apf_field_art_stock_label](reports/b71_a7/final-test_apf_field_art_stock_label.log) | 0 | 0.479 | `python3 tests/mod_editor/test_apf_field_art_stock_label.py -v` |
-| [final-test_apf_field_extra_roundtrip](reports/b71_a7/final-test_apf_field_extra_roundtrip.log) | 0 | 211.808 | `python3 tests/mod_editor/test_apf_field_extra_roundtrip.py -v` |
-| [final-test_apf_field_material_project](reports/b71_a7/final-test_apf_field_material_project.log) | 0 | 0.576 | `python3 tests/mod_editor/test_apf_field_material_project.py -v` |
-| [final-test_apf_field_material_writer](reports/b71_a7/final-test_apf_field_material_writer.log) | 0 | 0.335 | `python3 tests/mod_editor/test_apf_field_material_writer.py -v` |
-| [final-test_apf_formation_alignment_writer](reports/b71_a7/final-test_apf_formation_alignment_writer.log) | 0 | 0.354 | `python3 tests/mod_editor/test_apf_formation_alignment_writer.py -v` |
-| [final-test_apf_fourth_down](reports/b71_a7/final-test_apf_fourth_down.log) | 0 | 0.203 | `python3 tests/mod_editor/test_apf_fourth_down.py -v` |
-| [final-test_apf_fourth_down_native](reports/b71_a7/final-test_apf_fourth_down_native.log) | 0 | 104.524 | `python3 tests/mod_editor/test_apf_fourth_down_native.py -v` |
-| [final-test_apf_fourth_down_qt](reports/b71_a7/final-test_apf_fourth_down_qt.log) | 0 | 0.201 | `python3 tests/mod_editor/test_apf_fourth_down_qt.py -v` |
-| [final-test_apf_full_shell_visual_gate](reports/b71_a7/final-test_apf_full_shell_visual_gate.log) | 0 | 0.047 | `python3 tests/mod_editor/test_apf_full_shell_visual_gate.py -v` |
-| [final-test_apf_g12_surfaces](reports/b71_a7/final-test_apf_g12_surfaces.log) | 0 | 0.529 | `python3 tests/mod_editor/test_apf_g12_surfaces.py -v` |
-| [final-test_apf_helmet_crest_design_product](reports/b71_a7/final-test_apf_helmet_crest_design_product.log) | 0 | 1.5 | `python3 tests/mod_editor/test_apf_helmet_crest_design_product.py -v` |
-| [final-test_apf_helmet_logo_placement](reports/b71_a7/final-test_apf_helmet_logo_placement.log) | 0 | 7.481 | `python3 tests/mod_editor/test_apf_helmet_logo_placement.py -v` |
-| [final-test_apf_helmet_logo_regions](reports/b71_a7/final-test_apf_helmet_logo_regions.log) | 0 | 4.169 | `python3 tests/mod_editor/test_apf_helmet_logo_regions.py -v` |
-| [final-test_apf_helmet_logo_regions_qt](reports/b71_a7/final-test_apf_helmet_logo_regions_qt.log) | 0 | 1.256 | `python3 tests/mod_editor/test_apf_helmet_logo_regions_qt.py -v` |
-| [final-test_apf_import_offers_resize](reports/b71_a7/final-test_apf_import_offers_resize.log) | 0 | 0.653 | `python3 tests/mod_editor/test_apf_import_offers_resize.py -v` |
-| [final-test_apf_iso_extraction_is_layout_tolerant](reports/b71_a7/final-test_apf_iso_extraction_is_layout_tolerant.log) | 0 | 0.213 | `python3 tests/mod_editor/test_apf_iso_extraction_is_layout_tolerant.py -v` |
-| [final-test_apf_linear_txtr_png](reports/b71_a7/final-test_apf_linear_txtr_png.log) | 0 | 0.062 | `python3 tests/mod_editor/test_apf_linear_txtr_png.py -v` |
-| [final-test_apf_logo_patch](reports/b71_a7/final-test_apf_logo_patch.log) | 0 | 13.981 | `python3 tests/mod_editor/test_apf_logo_patch.py -v` |
-| [final-test_apf_logo_surface_ownership](reports/b71_a7/final-test_apf_logo_surface_ownership.log) | 0 | 0.091 | `python3 tests/mod_editor/test_apf_logo_surface_ownership.py -v` |
-| [final-test_apf_logocache_patch](reports/b71_a7/final-test_apf_logocache_patch.log) | 0 | 44.667 | `python3 tests/mod_editor/test_apf_logocache_patch.py -v` |
-| [final-test_apf_mask_preview_alpha](reports/b71_a7/final-test_apf_mask_preview_alpha.log) | 0 | 0.177 | `python3 tests/mod_editor/test_apf_mask_preview_alpha.py -v` |
-| [final-test_apf_model_export_gui](reports/b71_a7/final-test_apf_model_export_gui.log) | 0 | 2.727 | `python3 tests/mod_editor/test_apf_model_export_gui.py -v` |
-| [final-test_apf_model_import](reports/b71_a7/final-test_apf_model_import.log) | 0 | 54.242 | `python3 tests/mod_editor/test_apf_model_import.py -v` |
-| [final-test_apf_number_encode_defaults](reports/b71_a7/final-test_apf_number_encode_defaults.log) | 0 | 2.206 | `python3 tests/mod_editor/test_apf_number_encode_defaults.py -v` |
-| [final-test_apf_number_texture_writer](reports/b71_a7/final-test_apf_number_texture_writer.log) | 0 | 279.16 | `python3 tests/mod_editor/test_apf_number_texture_writer.py -v` |
-| [final-test_apf_package_map_writer](reports/b71_a7/final-test_apf_package_map_writer.log) | 0 | 1.38 | `python3 tests/mod_editor/test_apf_package_map_writer.py -v` |
-| [final-test_apf_pass_fetch_export_qt](reports/b71_a7/final-test_apf_pass_fetch_export_qt.log) | 0 | 0.532 | `python3 tests/mod_editor/test_apf_pass_fetch_export_qt.py -v` |
-| [final-test_apf_play_designer](reports/b71_a7/final-test_apf_play_designer.log) | 0 | 14.165 | `python3 tests/mod_editor/test_apf_play_designer.py -v` |
-| [final-test_apf_play_designer_project](reports/b71_a7/final-test_apf_play_designer_project.log) | 0 | 0.533 | `python3 tests/mod_editor/test_apf_play_designer_project.py -v` |
-| [final-test_apf_play_designer_qt](reports/b71_a7/final-test_apf_play_designer_qt.log) | 0 | 0.375 | `python3 tests/mod_editor/test_apf_play_designer_qt.py -v` |
-| [final-test_apf_playbook_route_gui](reports/b71_a7/final-test_apf_playbook_route_gui.log) | 0 | 0.389 | `python3 tests/mod_editor/test_apf_playbook_route_gui.py -v` |
-| [final-test_apf_playcall_patch](reports/b71_a7/final-test_apf_playcall_patch.log) | 0 | 2.082 | `python3 tests/mod_editor/test_apf_playcall_patch.py -v` |
-| [final-test_apf_playcall_research_native](reports/b71_a7/final-test_apf_playcall_research_native.log) | 0 | 230.559 | `python3 tests/mod_editor/test_apf_playcall_research_native.py -v` |
-| [final-test_apf_playcalling_editor_build](reports/b71_a7/final-test_apf_playcalling_editor_build.log) | 0 | 97.637 | `python3 tests/mod_editor/test_apf_playcalling_editor_build.py -v` |
-| [final-test_apf_playcalling_editor_facade](reports/b71_a7/final-test_apf_playcalling_editor_facade.log) | 0 | 3.212 | `python3 tests/mod_editor/test_apf_playcalling_editor_facade.py -v` |
-| [final-test_apf_playcalling_editor_patches](reports/b71_a7/final-test_apf_playcalling_editor_patches.log) | 0 | 0.556 | `python3 tests/mod_editor/test_apf_playcalling_editor_patches.py -v` |
-| [final-test_apf_playcalling_editor_qt](reports/b71_a7/final-test_apf_playcalling_editor_qt.log) | 0 | 8.711 | `python3 tests/mod_editor/test_apf_playcalling_editor_qt.py -v` |
-| [final-test_apf_player_position_patch](reports/b71_a7/final-test_apf_player_position_patch.log) | 0 | 7.262 | `python3 tests/mod_editor/test_apf_player_position_patch.py -v` |
-| [final-test_apf_player_position_product_backend](reports/b71_a7/final-test_apf_player_position_product_backend.log) | 0 | 21.674 | `python3 tests/mod_editor/test_apf_player_position_product_backend.py -v` |
-| [final-test_apf_player_positions](reports/b71_a7/final-test_apf_player_positions.log) | 0 | 0.116 | `python3 tests/mod_editor/test_apf_player_positions.py -v` |
-| [final-test_apf_player_rating_patch](reports/b71_a7/final-test_apf_player_rating_patch.log) | 0 | 4.351 | `python3 tests/mod_editor/test_apf_player_rating_patch.py -v` |
-| [final-test_apf_player_rating_product_backend](reports/b71_a7/final-test_apf_player_rating_product_backend.log) | 0 | 9.533 | `python3 tests/mod_editor/test_apf_player_rating_product_backend.py -v` |
-| [final-test_apf_player_rating_sheet_import](reports/b71_a7/final-test_apf_player_rating_sheet_import.log) | 0 | 15.588 | `python3 tests/mod_editor/test_apf_player_rating_sheet_import.py -v` |
-| [final-test_apf_player_ratings](reports/b71_a7/final-test_apf_player_ratings.log) | 0 | 0.852 | `python3 tests/mod_editor/test_apf_player_ratings.py -v` |
-| [final-test_apf_product_findings](reports/b71_a7/final-test_apf_product_findings.log) | 0 | 0.177 | `python3 tests/mod_editor/test_apf_product_findings.py -v` |
-| [final-test_apf_product_findings_gui](reports/b71_a7/final-test_apf_product_findings_gui.log) | 0 | 0.661 | `python3 tests/mod_editor/test_apf_product_findings_gui.py -v` |
-| [final-test_apf_product_validation_wrappers](reports/b71_a7/final-test_apf_product_validation_wrappers.log) | 0 | 0.268 | `python3 tests/mod_editor/test_apf_product_validation_wrappers.py -v` |
-| [final-test_apf_project_document_workflow](reports/b71_a7/final-test_apf_project_document_workflow.log) | 0 | 33.574 | `python3 tests/mod_editor/test_apf_project_document_workflow.py -v` |
-| [final-test_apf_project_streaming](reports/b71_a7/final-test_apf_project_streaming.log) | 0 | 0.236 | `python3 tests/mod_editor/test_apf_project_streaming.py -v` |
-| [final-test_apf_ps3_probes](reports/b71_a7/final-test_apf_ps3_probes.log) | 0 | 1.208 | `python3 tests/mod_editor/test_apf_ps3_probes.py -v` |
-| [final-test_apf_ps3_roster_convert](reports/b71_a7/final-test_apf_ps3_roster_convert.log) | 0 | 17.434 | `python3 tests/mod_editor/test_apf_ps3_roster_convert.py -v` |
-| [final-test_apf_ps3_roster_import_qt](reports/b71_a7/final-test_apf_ps3_roster_import_qt.log) | 0 | 1.805 | `python3 tests/mod_editor/test_apf_ps3_roster_import_qt.py -v` |
-| [final-test_apf_ps3_speed](reports/b71_a7/final-test_apf_ps3_speed.log) | 0 | 4.131 | `python3 tests/mod_editor/test_apf_ps3_speed.py -v` |
-| [final-test_apf_ps3_speed_packages](reports/b71_a7/final-test_apf_ps3_speed_packages.log) | 0 | 10.533 | `python3 tests/mod_editor/test_apf_ps3_speed_packages.py -v` |
-| [final-test_apf_ps3_texture_bundle](reports/b71_a7/final-test_apf_ps3_texture_bundle.log) | 0 | 30.739 | `python3 tests/mod_editor/test_apf_ps3_texture_bundle.py -v` |
-| [final-test_apf_ps3_texture_bundle_qt](reports/b71_a7/final-test_apf_ps3_texture_bundle_qt.log) | 0 | 0.465 | `python3 tests/mod_editor/test_apf_ps3_texture_bundle_qt.py -v` |
-| [final-test_apf_public_docs_registry_current](reports/b71_a7/final-test_apf_public_docs_registry_current.log) | 0 | 0.184 | `python3 tests/mod_editor/test_apf_public_docs_registry_current.py -v` |
-| [final-test_apf_rating_value_domains](reports/b71_a7/final-test_apf_rating_value_domains.log) | 0 | 0.202 | `python3 tests/mod_editor/test_apf_rating_value_domains.py -v` |
-| [final-test_apf_retail_crest_channel_audit](reports/b71_a7/final-test_apf_retail_crest_channel_audit.log) | 0 | 0.053 | `python3 tests/mod_editor/test_apf_retail_crest_channel_audit.py -v` |
-| [final-test_apf_roster_appearance_transfer](reports/b71_a7/final-test_apf_roster_appearance_transfer.log) | 0 | 8.873 | `python3 tests/mod_editor/test_apf_roster_appearance_transfer.py -v` |
-| [final-test_apf_roster_appearance_transfer_qt](reports/b71_a7/final-test_apf_roster_appearance_transfer_qt.log) | 0 | 5.145 | `python3 tests/mod_editor/test_apf_roster_appearance_transfer_qt.py -v` |
-| [final-test_apf_roster_identity](reports/b71_a7/final-test_apf_roster_identity.log) | 0 | 12.148 | `python3 tests/mod_editor/test_apf_roster_identity.py -v` |
-| [final-test_apf_roster_identity_gui](reports/b71_a7/final-test_apf_roster_identity_gui.log) | 0 | 1.956 | `python3 tests/mod_editor/test_apf_roster_identity_gui.py -v` |
-| [final-test_apf_roster_workspace](reports/b71_a7/final-test_apf_roster_workspace.log) | 0 | 0.157 | `python3 tests/mod_editor/test_apf_roster_workspace.py -v` |
-| [final-test_apf_roster_workspace_gui](reports/b71_a7/final-test_apf_roster_workspace_gui.log) | 0 | 0.425 | `python3 tests/mod_editor/test_apf_roster_workspace_gui.py -v` |
-| [final-test_apf_save_playbook_assignments_gui](reports/b71_a7/final-test_apf_save_playbook_assignments_gui.log) | 0 | 1.442 | `python3 tests/mod_editor/test_apf_save_playbook_assignments_gui.py -v` |
-| [final-test_apf_save_roster_players](reports/b71_a7/final-test_apf_save_roster_players.log) | 0 | 4.801 | `python3 tests/mod_editor/test_apf_save_roster_players.py -v` |
-| [final-test_apf_save_roster_players_gui](reports/b71_a7/final-test_apf_save_roster_players_gui.log) | 0 | 0.826 | `python3 tests/mod_editor/test_apf_save_roster_players_gui.py -v` |
-| [final-test_apf_scorebug_workspace_qt](reports/b71_a7/final-test_apf_scorebug_workspace_qt.log) | 0 | 0.653 | `python3 tests/mod_editor/test_apf_scorebug_workspace_qt.py -v` |
-| [final-test_apf_shell_search_accessibility_qt](reports/b71_a7/final-test_apf_shell_search_accessibility_qt.log) | 0 | 11.569 | `python3 tests/mod_editor/test_apf_shell_search_accessibility_qt.py -v` |
-| [final-test_apf_splb_add_multiple_formations](reports/b71_a7/final-test_apf_splb_add_multiple_formations.log) | 0 | 0.626 | `python3 tests/mod_editor/test_apf_splb_add_multiple_formations.py -v` |
-| [final-test_apf_splb_formation_personnel](reports/b71_a7/final-test_apf_splb_formation_personnel.log) | 0 | 1.215 | `python3 tests/mod_editor/test_apf_splb_formation_personnel.py -v` |
-| [final-test_apf_splb_tag_reassignment](reports/b71_a7/final-test_apf_splb_tag_reassignment.log) | 0 | 2.268 | `python3 tests/mod_editor/test_apf_splb_tag_reassignment.py -v` |
-| [final-test_apf_splb_writer](reports/b71_a7/final-test_apf_splb_writer.log) | 0 | 0.384 | `python3 tests/mod_editor/test_apf_splb_writer.py -v` |
-| [final-test_apf_stadium_material_findings](reports/b71_a7/final-test_apf_stadium_material_findings.log) | 0 | 0.129 | `python3 tests/mod_editor/test_apf_stadium_material_findings.py -v` |
-| [final-test_apf_stadium_model_import](reports/b71_a7/final-test_apf_stadium_model_import.log) | 0 | 0.294 | `python3 tests/mod_editor/test_apf_stadium_model_import.py -v` |
-| [final-test_apf_stadium_studio](reports/b71_a7/final-test_apf_stadium_studio.log) | 0 | 0.249 | `python3 tests/mod_editor/test_apf_stadium_studio.py -v` |
-| [final-test_apf_stadium_studio_gui](reports/b71_a7/final-test_apf_stadium_studio_gui.log) | 0 | 0.593 | `python3 tests/mod_editor/test_apf_stadium_studio_gui.py -v` |
-| [final-test_apf_stadium_texture](reports/b71_a7/final-test_apf_stadium_texture.log) | 0 | 78.317 | `python3 tests/mod_editor/test_apf_stadium_texture.py -v` |
-| [final-test_apf_stfs_roster_rehash](reports/b71_a7/final-test_apf_stfs_roster_rehash.log) | 0 | 0.669 | `python3 tests/mod_editor/test_apf_stfs_roster_rehash.py -v` |
-| [final-test_apf_studio_audio_gui](reports/b71_a7/final-test_apf_studio_audio_gui.log) | 0 | 1.225 | `python3 tests/mod_editor/test_apf_studio_audio_gui.py -v` |
-| [final-test_apf_studio_core](reports/b71_a7/final-test_apf_studio_core.log) | 0 | 0.267 | `python3 tests/mod_editor/test_apf_studio_core.py -v` |
-| [final-test_apf_studio_draft_logo](reports/b71_a7/final-test_apf_studio_draft_logo.log) | 0 | 0.553 | `python3 tests/mod_editor/test_apf_studio_draft_logo.py -v` |
-| [final-test_apf_studio_inspectors](reports/b71_a7/final-test_apf_studio_inspectors.log) | 0 | 2.494 | `python3 tests/mod_editor/test_apf_studio_inspectors.py -v` |
-| [final-test_apf_studio_installer](reports/b71_a7/final-test_apf_studio_installer.log) | 1 | 13.053 | `python3 tests/mod_editor/test_apf_studio_installer.py -v` |
-| [final-test_apf_studio_safety](reports/b71_a7/final-test_apf_studio_safety.log) | 0 | 0.468 | `python3 tests/mod_editor/test_apf_studio_safety.py -v` |
-| [final-test_apf_studio_text_edit](reports/b71_a7/final-test_apf_studio_text_edit.log) | 0 | 0.547 | `python3 tests/mod_editor/test_apf_studio_text_edit.py -v` |
-| [final-test_apf_team_art](reports/b71_a7/final-test_apf_team_art.log) | 0 | 10.826 | `python3 tests/mod_editor/test_apf_team_art.py -v` |
-| [final-test_apf_team_art_qt](reports/b71_a7/final-test_apf_team_art_qt.log) | 0 | 0.61 | `python3 tests/mod_editor/test_apf_team_art_qt.py -v` |
-| [final-test_apf_team_crest_selection](reports/b71_a7/final-test_apf_team_crest_selection.log) | 0 | 0.706 | `python3 tests/mod_editor/test_apf_team_crest_selection.py -v` |
-| [final-test_apf_team_logo_gui](reports/b71_a7/final-test_apf_team_logo_gui.log) | 0 | 2.203 | `python3 tests/mod_editor/test_apf_team_logo_gui.py -v` |
-| [final-test_apf_text_sheet_gui](reports/b71_a7/final-test_apf_text_sheet_gui.log) | 0 | 0.587 | `python3 tests/mod_editor/test_apf_text_sheet_gui.py -v` |
-| [final-test_apf_textlogo_gui](reports/b71_a7/final-test_apf_textlogo_gui.log) | 0 | 0.871 | `python3 tests/mod_editor/test_apf_textlogo_gui.py -v` |
-| [final-test_apf_textlogo_writer](reports/b71_a7/final-test_apf_textlogo_writer.log) | 0 | 61.005 | `python3 tests/mod_editor/test_apf_textlogo_writer.py -v` |
-| [final-test_apf_theme_layout_qt](reports/b71_a7/final-test_apf_theme_layout_qt.log) | 0 | 19.386 | `python3 tests/mod_editor/test_apf_theme_layout_qt.py -v` |
-| [final-test_apf_uniform_allocation_capacity](reports/b71_a7/final-test_apf_uniform_allocation_capacity.log) | 0 | 1.425 | `python3 tests/mod_editor/test_apf_uniform_allocation_capacity.py -v` |
-| [final-test_apf_uniform_equipment_colors](reports/b71_a7/final-test_apf_uniform_equipment_colors.log) | 0 | 7.888 | `python3 tests/mod_editor/test_apf_uniform_equipment_colors.py -v` |
-| [final-test_apf_uniform_equipment_colors_gui](reports/b71_a7/final-test_apf_uniform_equipment_colors_gui.log) | 0 | 0.215 | `python3 tests/mod_editor/test_apf_uniform_equipment_colors_gui.py -v` |
-| [final-test_apf_uniform_independence](reports/b71_a7/final-test_apf_uniform_independence.log) | 0 | 1.485 | `python3 tests/mod_editor/test_apf_uniform_independence.py -v` |
-| [final-test_apf_uniform_inventory_gui](reports/b71_a7/final-test_apf_uniform_inventory_gui.log) | 0 | 2.63 | `python3 tests/mod_editor/test_apf_uniform_inventory_gui.py -v` |
-| [final-test_apf_wave_integration](reports/b71_a7/final-test_apf_wave_integration.log) | 0 | 14.656 | `python3 tests/mod_editor/test_apf_wave_integration.py -v` |
-| [final-test_apf_wordmark_regions](reports/b71_a7/final-test_apf_wordmark_regions.log) | 0 | 0.182 | `python3 tests/mod_editor/test_apf_wordmark_regions.py -v` |
-| [final-test_apf_workspace_recovery](reports/b71_a7/final-test_apf_workspace_recovery.log) | 0 | 70.921 | `python3 tests/mod_editor/test_apf_workspace_recovery.py -v` |
-| [final-test_apf_xenia_edge](reports/b71_a7/final-test_apf_xenia_edge.log) | 0 | 0.189 | `python3 tests/mod_editor/test_apf_xenia_edge.py -v` |
-| [final-test_apf_xenos_4444_mip_layout](reports/b71_a7/final-test_apf_xenos_4444_mip_layout.log) | 0 | 1.945 | `python3 tests/mod_editor/test_apf_xenos_4444_mip_layout.py -v` |
-| [final-test_apf_xenos_4444_png](reports/b71_a7/final-test_apf_xenos_4444_png.log) | 0 | 0.095 | `python3 tests/mod_editor/test_apf_xenos_4444_png.py -v` |
-| [final-test_apf_xenos_extra_formats_png](reports/b71_a7/final-test_apf_xenos_extra_formats_png.log) | 0 | 0.094 | `python3 tests/mod_editor/test_apf_xenos_extra_formats_png.py -v` |
-| [final-test_apf_xex_image](reports/b71_a7/final-test_apf_xex_image.log) | 0 | 1.118 | `python3 tests/mod_editor/test_apf_xex_image.py -v` |
-| [final-test_apf_xex_image_retail](reports/b71_a7/final-test_apf_xex_image_retail.log) | 0 | 76.357 | `python3 tests/mod_editor/test_apf_xex_image_retail.py -v` |
-| [final-test_apf_xma1_wizard_gui](reports/b71_a7/final-test_apf_xma1_wizard_gui.log) | 0 | 1.929 | `python3 tests/mod_editor/test_apf_xma1_wizard_gui.py -v` |
-| [final-test_b69_a1_playcalling](reports/b71_a7/final-test_b69_a1_playcalling.log) | 0 | 46.952 | `python3 tests/mod_editor/test_b69_a1_playcalling.py -v` |
-| [delivery-test_apf_studio_installer](reports/b71_a7/delivery-test_apf_studio_installer.log) | 0 | 14.523 | `env -u PYTHONPATH python3 tests/mod_editor/test_apf_studio_installer.py -v` |
-| [apf-reconciled](reports/b71_a7/apf-reconciled.log) | 0 | 0.037 | `python3 reports/b71_a7/reconcile_apf.py` |
-| [closures](reports/b71_a7/closures.log) | 0 | 26.373 | `python3 reports/b71_a7/closures.py` |
-| [stage-2k5-final](reports/b71_a7/stage-2k5-final.log) | 0 | 0.355 | `python3 packaging/stage_release.py packaging/release-allowlist.txt /home/noah/2k-worktrees/astra-b71-a7/.scratch/a7-release-2k5` |
-| [release-2k5-final](reports/b71_a7/release-2k5-final.log) | 0 | 6.915 | `env PYTHONDONTWRITEBYTECODE=1 python3 packaging/check_2k5_mod_studio_release.py /home/noah/2k-worktrees/astra-b71-a7/.scratch/a7-release-2k5` |
-| [runtime-2k5-final](reports/b71_a7/runtime-2k5-final.log) | 0 | 8.381 | `env PYTHONDONTWRITEBYTECODE=1 PYTHONNOUSERSITE=1 PYTHONPATH=/home/noah/2k-worktrees/astra-b71-a7/.scratch/a7-release-2k5 /home/noah/2k-worktrees/astra-b71-a7/.scratch/test-python/bin/python3 /home/noah/2k-worktrees/astra-b71-a7/.scratch/a7-release-2k5/packaging/check_2k5_mod_studio_runtime.py` |
-| [stage-apf-final](reports/b71_a7/stage-apf-final.log) | 0 | 0.088 | `python3 packaging/stage_release.py packaging/apf2k8-release-allowlist.txt /home/noah/2k-worktrees/astra-b71-a7/.scratch/a7-release-apf` |
-| [release-apf-final](reports/b71_a7/release-apf-final.log) | 0 | 0.385 | `env PYTHONDONTWRITEBYTECODE=1 python3 packaging/check_apf2k8_mod_studio_release.py /home/noah/2k-worktrees/astra-b71-a7/.scratch/a7-release-apf` |
-| [runtime-apf-final](reports/b71_a7/runtime-apf-final.log) | 0 | 10.125 | `env PYTHONDONTWRITEBYTECODE=1 PYTHONNOUSERSITE=1 PYTHONPATH=/home/noah/2k-worktrees/astra-b71-a7/.scratch/a7-release-apf /home/noah/2k-worktrees/astra-b71-a7/.scratch/test-python/bin/python3 /home/noah/2k-worktrees/astra-b71-a7/.scratch/a7-release-apf/packaging/check_apf2k8_mod_studio_runtime.py` |
-| [final-audit](reports/b71_a7/final-audit.log) | 0 | 0.688 | `python3 reports/b71_a7/final_audit.py` |
-| [write-report](reports/b71_a7/write-report.log) | 0 | 0.042 | `python3 reports/b71_a7/write_report.py` |
-| [archive-audit](reports/b71_a7/archive-audit.log) | 0 | 0.213 | `python3 /tmp/b71_a7_archive_audit.py` |
-| [delivery-scorebug-layout-emulation](reports/b71_a7/delivery-scorebug-layout-emulation.log) | 0 | 1.435 | `env NFL2K5_SCOREBUG_EMULATION_TEST=1 python3 tests/nfl2k5_scorebug_layout_test.py -v` |
-| [final-audit-delivery](reports/b71_a7/final-audit-delivery.log) | 0 | 0.683 | `python3 reports/b71_a7/final_audit.py` |
-| [cleanup-test-support](reports/b71_a7/cleanup-test-support.log) | 0 | 0.033 | `/usr/bin/python3 -c 'from pathlib import Path;import shutil;root=Path.cwd();paths=[root/".scratch/test-python",root/"reports/b71_a7/__pycache__",root/".scratch/b71-a7-manifest.json",root/".scratch/b71-a7-parent-manifest.json",root/".scratch/a7-product-frozen.json"];[(shutil.rmtree(p) if p.is_dir() else p.unlink()) for p in paths if p.exists()];print("Removed temporary interpreter, duplicate projection files and report bytecode; retained private Git and delivery evidence.")'` |
+## Command ledger
 
-The initial archive commit needed explicit staging and was retried successfully. The first merge checkpoint stopped because the path audit omitted a conflict resolved back to its exact A6 content; adding the cached conflict paths to the explicit staging list completed the real merge without changing that file. The merge's exit 1 reports the six resolved conflicts. The first pin-audit script matched an unrelated string `.replace` call; restricting that audit to `dataclasses.replace` fixed the audit without changing the builder. The first projection refused three unaccounted S4 source changes; explicit writer observation and documented non-XBE tool classifications corrected the recipe. A successful preliminary projection was repeated after the PNG-catalog correction and final repin to preserve the required delivery order. The initial provider suite measured 288 modules against A6's 287-module pin: S4 adds the painted-atlas assets module. The count was corrected, repinning and the byte-identical manifest projection repeated, and the six closure-unit suites rerun. No product writer or XBE bytes changed in this correction; the running XBE/presentation/APF suites validate the same final product hashes. The extra root uniform-colour safety runner rejected the unittest-only `-v` argument before running; its plain-Python retry passed all six safety cases. The initial presentation and remaining coordinator exits retain these superseded invocation/provider failures; reconciliation requires every successful final individual receipt. The APF installer inherited the workspace `PYTHONPATH`, causing its isolated staged-runtime namespace check to refuse the root package. The A6 documented `env -u PYTHONPATH` command passed all 16 installer cases using the already-prepared private dependency environment; no installer source or assertion changed. The initial APF coordinator result is retained and reconciled against that corrected standalone receipt. The production-launcher failure remains an external read-only-storage limitation.
+[commands.jsonl](reports/b71_apf6/commands.jsonl) records exact argv, UTC start,
+wall seconds, exit and complete output for every formal profile, suite, gate,
+hydration and implementation-commit command. The table includes failed attempts.
+Read-only discovery, source inspection and editor tool calls are exploratory;
+the session transcript retains those calls and tool-return timing, not test claims.
+Detached work uses a separate process session with a waiting supervisor; no
+name-based process killing was used. Final delivery commands use the separate
+receipt described above.
 
-## Skip boundaries
-
-- `delivery-scorebug-layout-emulation`:
-  - test_ball_live_hide_gate_retail_vs_persistent (__main__.ScorebugEmulationTests.test_ball_live_hide_gate_retail_vs_persistent) ... skipped 'base disc image not present'
-  - test_placement_mode_shows_one_mark_copy_and_one_frame (__main__.ScorebugEmulationTests.test_placement_mode_shows_one_mark_copy_and_one_frame) ... skipped 'base disc image not present'
-  - test_possession_change_timed_show_retail_vs_persistent (__main__.ScorebugEmulationTests.test_possession_change_timed_show_retail_vs_persistent) ... skipped 'base disc image not present'
-  - The mockup used to read an intermediate glTF that is not in a release (and gated the ... skipped 'the intermediate glTF research export is not in this tree'
-  - test_patch_xbe_recolours_black_fields_and_nops_the_hide_calls (__main__.ScorebugXbePatchTests.test_patch_xbe_recolours_black_fields_and_nops_the_hide_calls) ... skipped 'base disc image not present'
-  - test_patch_xbe_refuses_foreign_bytes_at_a_site (__main__.ScorebugXbePatchTests.test_patch_xbe_refuses_foreign_bytes_at_a_site) ... skipped 'base disc image not present'
-- `final-test_apf_b661_ladder`:
-  - test_retail_bulk_swap_h7a_and_native_picker (__main__.LadderTests.test_retail_bulk_swap_h7a_and_native_picker) ... skipped 'Pinned BASE flat PE absent: /home/noah/.codex-tmp/franchise-2026-08-28/apf.pe'
-- `final-test_apf_b67_static_audit`:
-  - test_both_pinned_images_and_caller_boundary (__main__.StaticAuditTests.test_both_pinned_images_and_caller_boundary) ... skipped 'Owned pinned image absent: /tmp/astra-coverage-17votk5s/base_reextracted.pe; set APF_RETAIL_PE and APF_RETAIL_TU_PE'
-- `final-test_apf_b67_writers_native`:
-  - test_curve_patch_native_both_images (__main__.WriterNativeTests.test_curve_patch_native_both_images) ... skipped 'Owned TU flat image absent; set APF_RETAIL_TU_PE'
-- `final-test_apf_b69_control_audit`:
-  - test_sparse_receipt_matches_pinned_private_image (__main__.AuditTests.test_sparse_receipt_matches_pinned_private_image) ... skipped 'Owned pinned BASE PE absent; set APF_RETAIL_PE'
-- `final-test_apf_book_unlock_retail`:
-  - setUpClass (__main__.RetailProof) ... skipped 'Set APF_BOOK_RETAIL_INDEX to an existing user-owned input; no retail bytes are bundled'
-- `final-test_apf_defense_research_native`:
-  - test_tu_function_shapes_and_loader_offset_delta (__main__.DefenseResearchTests.test_tu_function_shapes_and_loader_offset_delta) ... skipped 'Set APF_RETAIL_TU_PE to the pinned reconstructed TU 1.1 flat image'
-- `final-test_apf_endzone_dxt5a`:
-  - test_supplied_chicago_and_washington_build_and_reparse (__main__.SuppliedPS3Tests.test_supplied_chicago_and_washington_build_and_reparse) ... skipped 'set APF_ENDZONE_SLOW=1 for supplied-pair allocation builds (about 4 minutes)'
-- `final-test_apf_field_art_patch`:
-  - test_field_pass_text_bc3_edit_and_verify (__main__.FieldArtSlowPracticeTests.test_field_pass_text_bc3_edit_and_verify) ... skipped 'practice-overlay recompress is slow; set APF_FIELD_ART_SLOW=1'
-  - test_pc_field_goal_dxt1_edit_and_verify (__main__.FieldArtSlowPracticeTests.test_pc_field_goal_dxt1_edit_and_verify) ... skipped 'practice-overlay recompress is slow; set APF_FIELD_ART_SLOW=1'
-- `final-test_apf_splb_tag_reassignment`:
-  - test_static_consumer_words_match_the_decompressed_pe (__main__.StaticConsumerPinTests.test_static_consumer_words_match_the_decompressed_pe) ... skipped 'decompressed APF PE is not on this machine'
-- `final-test_apf_stfs_roster_rehash`:
-  - test_pinned_source_has_no_signature_verification (__main__.LocalXeniaAuditTests.test_pinned_source_has_no_signature_verification) ... skipped 'optional local Xenia source revision d09cae8d is unavailable'
-- `final-test_nfl2k5_read_option_diagnostic_manifest`:
-  - setUpClass (__main__.OwnershipRevalidationTests) ... skipped 'selected manifest uses a different Build fingerprint; historical diagnostic projection not applicable'
-- `final-test_nfl2k5_scorebug_assets`:
-  - test_apply_in_place_grows_pack0_and_switches_the_node (__main__.DiscTransactionTests.test_apply_in_place_grows_pack0_and_switches_the_node) ... skipped "disposable disc scratch is not writable: /media/noah/Storage/.b70-fable-assets: [Errno 30] Read-only file system: '/media/noah/Storage/.b70-fable-assets/scorebug-access-f8fab5zx'"
-- `final-test_nfl2k5_scorebug_fonts`:
-  - test_compact_fonts_follow_each_current_and_cached_score_and_restore_with_null_fallback (__main__.NativeTests.test_compact_fonts_follow_each_current_and_cached_score_and_restore_with_null_fallback) ... skipped 'beta 69 private-font runtime (scoped FONT binding, possession glyph, compact score fonts): beta 70 binds no private FONT and draws the 2026 bar with the native fonts; see test_nfl2k5_scorebug_mnf.py, test_nfl2k5_scorebug_exact.py and test_nfl2k5_scorebug_freeze_v2.py'
-  - test_native_glyph_caps_positions_and_uvs_match_measured_sizes (__main__.NativeTests.test_native_glyph_caps_positions_and_uvs_match_measured_sizes) ... skipped 'beta 69 private-font runtime (scoped FONT binding, possession glyph, compact score fonts): beta 70 binds no private FONT and draws the 2026 bar with the native fonts; see test_nfl2k5_scorebug_mnf.py, test_nfl2k5_scorebug_exact.py and test_nfl2k5_scorebug_freeze_v2.py'
-  - test_native_setup_binds_only_scoped_roles_and_null_lookup_retains_fallback (__main__.NativeTests.test_native_setup_binds_only_scoped_roles_and_null_lookup_retains_fallback) ... skipped 'beta 69 private-font runtime (scoped FONT binding, possession glyph, compact score fonts): beta 70 binds no private FONT and draws the 2026 bar with the native fonts; see test_nfl2k5_scorebug_mnf.py, test_nfl2k5_scorebug_exact.py and test_nfl2k5_scorebug_freeze_v2.py'
-  - test_possession_is_one_scoped_glyph_on_the_correct_side_and_reload_hides_missing_font (__main__.NativeTests.test_possession_is_one_scoped_glyph_on_the_correct_side_and_reload_hides_missing_font) ... skipped 'beta 69 private-font runtime (scoped FONT binding, possession glyph, compact score fonts): beta 70 binds no private FONT and draws the 2026 bar with the native fonts; see test_nfl2k5_scorebug_mnf.py, test_nfl2k5_scorebug_exact.py and test_nfl2k5_scorebug_freeze_v2.py'
-  - test_widest_three_digit_scores_clear_the_pill_through_native_flip_phases (__main__.NativeTests.test_widest_three_digit_scores_clear_the_pill_through_native_flip_phases) ... skipped 'beta 69 private-font runtime (scoped FONT binding, possession glyph, compact score fonts): beta 70 binds no private FONT and draws the 2026 bar with the native fonts; see test_nfl2k5_scorebug_mnf.py, test_nfl2k5_scorebug_exact.py and test_nfl2k5_scorebug_freeze_v2.py'
-- `final-test_nfl2k5_scorebug_source_art`:
-  - test_every_texture_span_is_identical_either_way (__main__.ByteIdentityTests.test_every_texture_span_is_identical_either_way) ... skipped 'score_buga_modern.png is not in this tree'
-  - test_the_scene_span_is_identical_either_way (__main__.ByteIdentityTests.test_the_scene_span_is_identical_either_way) ... skipped 'the developer copy of the retail scene is not in this tree'
-  - test_the_step_writes_the_expected_resource_bytes (__main__.FullDiscWriteTests.test_the_step_writes_the_expected_resource_bytes) ... skipped 'the developer copies this is compared against are not in this tree'
-- `final-test_unif_color_control`:
-  - test_no_op_and_wrong_full_pack_fingerprint_are_refused (__main__.RealComposedWriterTests.test_no_op_and_wrong_full_pack_fingerprint_are_refused) ... skipped 'retail 2K5 source XISO not present'
-  - test_one_set_emits_exactly_one_eight_byte_provenance_bound_span (__main__.RealComposedWriterTests.test_one_set_emits_exactly_one_eight_byte_provenance_bound_span) ... skipped 'retail 2K5 source XISO not present'
-
-## PROVED / UNWITNESSED and delivery
-
-**PROVED:** exact registry union and count pins; actual appended component bytes; unchanged owner allocation; current manifest source seals and complete forward observation; passing requested offline/native/ABI/composition tests; both product packaging closures; the builder's static name/options/order contract; explicit-path private commits and verified bundle fetch/tree read-back.
-
-**UNWITNESSED:** disc construction/read-back, boot and intro peak memory, coin toss/kickoff, real score/timeout/possession/event transitions, GPU filtering, final combined stadium/lighting appearance, APF played behavior and installations on unexecuted platforms. Historical witnesses do not convert this combined build into a played-game result.
-
-Bundle: `.scratch/astra-b71-a7.bundle`, based on prerequisite `07c544a2`. `.scratch/astra-b71-a7-delivery.json` records the final head/tree, bundle size/hash and independent fetch/connectivity verification, including final delivery command exit codes and times. No retail bytes, hydrated private evidence, disc images or patch archives are bundled. Scratch remains below 200 MB. No push. No xemu.
+| UTC start | Seconds | Exit | Command | Output |
+| --- | ---: | ---: | --- | --- |
+| 2026-09-16T06:20:41.415264+00:00 | 0.285 | 0 | `python3 reports/b71_apf3/prepare_test_python.py` | [log](reports/b71_apf6/prepare-python.log) |
+| 2026-09-16T06:20:41.731136+00:00 | 0.044 | 0 | `python3 reports/b71_apf4/hydrate.py` | [log](reports/b71_apf6/hydrate.log) |
+| 2026-09-16T06:20:41.826247+00:00 | 0.047 | 0 | `python3 reports/b71_apf2/hydrate_tools.py` | [log](reports/b71_apf6/hydrate-tools.log) |
+| 2026-09-16T06:23:50.925524+00:00 | 459.503 | 0 | `python3 reports/b71_apf6/profile.py before` | [log](reports/b71_apf6/profile-before.log) |
+| 2026-09-16T06:25:03.953370+00:00 | 1.464 | 0 | `python3 tests/mod_editor/test_apf_playcalling_editor_facade.py` | [log](reports/b71_apf6/facade-first.log) |
+| 2026-09-16T06:26:59.380619+00:00 | 4.782 | 1 | `python3 tests/mod_editor/test_apf_playcalling_editor_qt.py` | [log](reports/b71_apf6/qt-first.log) |
+| 2026-09-16T06:27:25.278202+00:00 | 14.854 | 0 | `python3 reports/b71_apf6/profile.py after-first` | [log](reports/b71_apf6/profile-after-first.log) |
+| 2026-09-16T06:29:45.737504+00:00 | 1.517 | 1 | `python3 tests/mod_editor/test_apf_b71_editor_workflow.py` | [log](reports/b71_apf6/workflow-first.log) |
+| 2026-09-16T06:31:44.891101+00:00 | 2.320 | 0 | `python3 tests/mod_editor/test_apf_b71_editor_workflow.py` | [log](reports/b71_apf6/workflow-second.log) |
+| 2026-09-16T06:32:55.959616+00:00 | 1.994 | 0 | `python3 tests/mod_editor/test_apf_b71_editor_workflow_qt.py` | [log](reports/b71_apf6/workflow-qt-first.log) |
+| 2026-09-16T06:32:57.986126+00:00 | 5.294 | 0 | `python3 tests/mod_editor/test_apf_playcalling_editor_qt.py` | [log](reports/b71_apf6/qt-second.log) |
+| 2026-09-16T06:33:43.059801+00:00 | 14.826 | 0 | `python3 reports/b71_apf6/profile.py after` | [log](reports/b71_apf6/profile-after.log) |
+| 2026-09-16T06:33:57.917391+00:00 | 17.791 | 0 | `python3 reports/b71_apf6/profile.py confirm-varied` | [log](reports/b71_apf6/profile-confirm-varied.log) |
+| 2026-09-16T06:34:25.004695+00:00 | 10.480 | 0 | `python3 packaging/repin.py --apply` | [log](reports/b71_apf6/repin-first.log) |
+| 2026-09-16T06:35:05.551827+00:00 | 1520.274 | 1 | `.scratch/test-python/bin/python3 reports/b71_apf6/suites.py` | [log](reports/b71_apf6/suites.log) |
+| 2026-09-16T06:35:05.615825+00:00 | 1.211 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf2k8_coverage_tuning.py` | [log](reports/b71_apf6/test_apf2k8_coverage_tuning.log) |
+| 2026-09-16T06:35:05.617508+00:00 | 0.958 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_all_crest_slots.py` | [log](reports/b71_apf6/test_apf_all_crest_slots.log) |
+| 2026-09-16T06:35:05.618112+00:00 | 0.352 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_audio_annotation_facade.py` | [log](reports/b71_apf6/test_apf_audio_annotation_facade.log) |
+| 2026-09-16T06:35:05.619608+00:00 | 0.460 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf2k8_playbook_route_writer.py` | [log](reports/b71_apf6/test_apf2k8_playbook_route_writer.log) |
+| 2026-09-16T06:35:06.003767+00:00 | 0.304 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_audio_annotations.py` | [log](reports/b71_apf6/test_apf_audio_annotations.log) |
+| 2026-09-16T06:35:06.110053+00:00 | 0.184 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_audio_batch_export.py` | [log](reports/b71_apf6/test_apf_audio_batch_export.log) |
+| 2026-09-16T06:35:06.329748+00:00 | 0.319 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_audio_batch_facade.py` | [log](reports/b71_apf6/test_apf_audio_batch_facade.log) |
+| 2026-09-16T06:35:06.342094+00:00 | 0.770 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_audio_batch_gui.py` | [log](reports/b71_apf6/test_apf_audio_batch_gui.log) |
+| 2026-09-16T06:35:06.608404+00:00 | 2.001 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_audio_decode_cancellation.py` | [log](reports/b71_apf6/test_apf_audio_decode_cancellation.log) |
+| 2026-09-16T06:35:06.682582+00:00 | 0.665 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_audio_drop_zone_gui.py` | [log](reports/b71_apf6/test_apf_audio_drop_zone_gui.log) |
+| 2026-09-16T06:35:06.859764+00:00 | 0.643 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_audio_encoder_gui.py` | [log](reports/b71_apf6/test_apf_audio_encoder_gui.log) |
+| 2026-09-16T06:35:07.145647+00:00 | 11.455 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_audio_encoding.py` | [log](reports/b71_apf6/test_apf_audio_encoding.log) |
+| 2026-09-16T06:35:07.380407+00:00 | 3.942 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_audio_import_idle_barrier.py` | [log](reports/b71_apf6/test_apf_audio_import_idle_barrier.log) |
+| 2026-09-16T06:35:07.536123+00:00 | 1.051 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_audio_pcm_product_backend.py` | [log](reports/b71_apf6/test_apf_audio_pcm_product_backend.log) |
+| 2026-09-16T06:35:08.621428+00:00 | 0.668 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_audio_replacement_pack.py` | [log](reports/b71_apf6/test_apf_audio_replacement_pack.log) |
+| 2026-09-16T06:35:08.641137+00:00 | 0.613 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_audio_waveform_qt.py` | [log](reports/b71_apf6/test_apf_audio_waveform_qt.log) |
+| 2026-09-16T06:35:09.289716+00:00 | 0.251 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_audo_exact_slot.py` | [log](reports/b71_apf6/test_apf_audo_exact_slot.log) |
+| 2026-09-16T06:35:09.325427+00:00 | 0.320 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_audo_product_backend.py` | [log](reports/b71_apf6/test_apf_audo_product_backend.log) |
+| 2026-09-16T06:35:09.570464+00:00 | 0.180 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_audo_project.py` | [log](reports/b71_apf6/test_apf_audo_project.log) |
+| 2026-09-16T06:35:09.680262+00:00 | 12.466 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_ausb_exact_slot.py` | [log](reports/b71_apf6/test_apf_ausb_exact_slot.log) |
+| 2026-09-16T06:35:09.779242+00:00 | 0.320 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_ausb_product_backend.py` | [log](reports/b71_apf6/test_apf_ausb_product_backend.log) |
+| 2026-09-16T06:35:10.132725+00:00 | 28.914 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_b661_book_content.py` | [log](reports/b71_apf6/test_apf_b661_book_content.log) |
+| 2026-09-16T06:35:11.355421+00:00 | 0.421 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_b661_ladder.py` | [log](reports/b71_apf6/test_apf_b661_ladder.log) |
+| 2026-09-16T06:35:11.810287+00:00 | 2.647 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_b66_appearance.py` | [log](reports/b71_apf6/test_apf_b66_appearance.log) |
+| 2026-09-16T06:35:14.492359+00:00 | 5.267 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_b66_personnel.py` | [log](reports/b71_apf6/test_apf_b66_personnel.log) |
+| 2026-09-16T06:35:18.630835+00:00 | 70.093 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_b67_books_qt.py` | [log](reports/b71_apf6/test_apf_b67_books_qt.log) |
+| 2026-09-16T06:35:19.792980+00:00 | 41.071 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_b67_clone.py` | [log](reports/b71_apf6/test_apf_b67_clone.log) |
+| 2026-09-16T06:35:22.183510+00:00 | 154.604 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_b67_defense_model_native.py` | [log](reports/b71_apf6/test_apf_b67_defense_model_native.log) |
+| 2026-09-16T06:35:39.080252+00:00 | 92.826 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_b67_model_edges_native.py` | [log](reports/b71_apf6/test_apf_b67_model_edges_native.log) |
+| 2026-09-16T06:36:00.896151+00:00 | 1246.566 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_b67_model_native.py` | [log](reports/b71_apf6/test_apf_b67_model_native.log) |
+| 2026-09-16T06:36:28.755314+00:00 | 0.130 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_b67_static_audit.py` | [log](reports/b71_apf6/test_apf_b67_static_audit.log) |
+| 2026-09-16T06:36:28.884477+00:00 | 2.330 | 0 | `python3 tests/mod_editor/test_apf_b71_editor_workflow.py` | [log](reports/b71_apf6/workflow-transitions.log) |
+| 2026-09-16T06:36:28.915023+00:00 | 0.404 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_b67_writers.py` | [log](reports/b71_apf6/test_apf_b67_writers.log) |
+| 2026-09-16T06:36:29.353698+00:00 | 325.488 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_b67_writers_native.py` | [log](reports/b71_apf6/test_apf_b67_writers_native.log) |
+| 2026-09-16T06:36:31.247692+00:00 | 4.117 | 0 | `python3 tests/mod_editor/test_apf_b71_situations.py` | [log](reports/b71_apf6/rebase-transitions.log) |
+| 2026-09-16T06:36:58.102368+00:00 | 11.039 | 0 | `python3 packaging/repin.py --apply` | [log](reports/b71_apf6/repin-implementation.log) |
+| 2026-09-16T06:37:09.169989+00:00 | 0.154 | 0 | `python3 -m mod_editor.capabilities.validate_registry` | [log](reports/b71_apf6/strict-registry-first.log) |
+| 2026-09-16T06:37:11.936909+00:00 | 0.267 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_b67_xenia_patch.py` | [log](reports/b71_apf6/test_apf_b67_xenia_patch.log) |
+| 2026-09-16T06:37:12.237856+00:00 | 29.858 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_b69_build.py` | [log](reports/b71_apf6/test_apf_b69_build.log) |
+| 2026-09-16T06:37:28.847364+00:00 | 0.037 | 0 | `git --git-dir=.scratch/git --work-tree=. add -f -- mod_editor/apf_studio/book_content.py mod_editor/apf_studio/facade.py mod_editor/apf_studio/playcalling_service.py mod_editor/apf_studio/playcalling_editor_qt.py mod_editor/apf_studio/situation_mask_qt.py mod_editor/capabilities/registry.v1.json docs/mod_editor/apf_b67_play_calling_editor.md docs/mod_editor/apf2k8_mod_studio_changelog.md tests/mod_editor/test_apf_playcalling_editor_qt.py tests/mod_editor/test_apf_b71_editor_workflow.py tests/mod_editor/test_apf_b71_editor_workflow_qt.py` | [log](reports/b71_apf6/add-implementation.log) |
+| 2026-09-16T06:37:28.913731+00:00 | 0.020 | 0 | `git --git-dir=.scratch/git --work-tree=. diff --cached --check` | [log](reports/b71_apf6/diff-implementation.log) |
+| 2026-09-16T06:37:28.964613+00:00 | 0.060 | 0 | `git --git-dir=.scratch/git --work-tree=. commit -m 'APF: cache play-calling edits and confirm pending changes atomically' -- mod_editor/apf_studio/book_content.py mod_editor/apf_studio/facade.py mod_editor/apf_studio/playcalling_service.py mod_editor/apf_studio/playcalling_editor_qt.py mod_editor/apf_studio/situation_mask_qt.py mod_editor/capabilities/registry.v1.json docs/mod_editor/apf_b67_play_calling_editor.md docs/mod_editor/apf2k8_mod_studio_changelog.md tests/mod_editor/test_apf_playcalling_editor_qt.py tests/mod_editor/test_apf_b71_editor_workflow.py tests/mod_editor/test_apf_b71_editor_workflow_qt.py` | [log](reports/b71_apf6/commit-implementation.log) |
+| 2026-09-16T06:37:42.127754+00:00 | 0.101 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_b69_control_audit.py` | [log](reports/b71_apf6/test_apf_b69_control_audit.log) |
+| 2026-09-16T06:37:42.258928+00:00 | 79.219 | 1 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_b69_editor_qt.py` | [log](reports/b71_apf6/test_apf_b69_editor_qt.log) |
+| 2026-09-16T06:37:56.821823+00:00 | 0.454 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_b69_formation_calling.py` | [log](reports/b71_apf6/test_apf_b69_formation_calling.log) |
+| 2026-09-16T06:37:57.308555+00:00 | 0.392 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_b69_launch_patches.py` | [log](reports/b71_apf6/test_apf_b69_launch_patches.log) |
+| 2026-09-16T06:37:57.733664+00:00 | 827.638 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_b69_native.py` | [log](reports/b71_apf6/test_apf_b69_native.log) |
+| 2026-09-16T06:38:33.061484+00:00 | 2.507 | 0 | `python3 tests/mod_editor/test_apf_b71_editor_workflow.py` | [log](reports/b71_apf6/workflow-dependencies.log) |
+| 2026-09-16T06:39:01.513089+00:00 | 148.550 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_b69_retirement_native.py` | [log](reports/b71_apf6/test_apf_b69_retirement_native.log) |
+| 2026-09-16T06:39:21.713012+00:00 | 0.086 | 0 | `python3 packaging/stage_release.py packaging/apf2k8-release-allowlist.txt .scratch/apf-release` | [log](reports/b71_apf6/release-stage.log) |
+| 2026-09-16T06:39:21.829316+00:00 | 0.390 | 0 | `env PYTHONDONTWRITEBYTECODE=1 python3 packaging/check_apf2k8_mod_studio_release.py .scratch/apf-release` | [log](reports/b71_apf6/release-check.log) |
+| 2026-09-16T06:39:22.249607+00:00 | 10.442 | 0 | `env PYTHONDONTWRITEBYTECODE=1 PYTHONNOUSERSITE=1 PYTHONPATH=/home/noah/2k-worktrees/astra-b71-apf6/.scratch/apf-release .scratch/test-python/bin/python3 .scratch/apf-release/packaging/check_apf2k8_mod_studio_runtime.py` | [log](reports/b71_apf6/release-runtime.log) |
+| 2026-09-16T06:41:11.379239+00:00 | 2.036 | 0 | `python3 tests/mod_editor/test_apf_b71_editor_workflow_qt.py` | [log](reports/b71_apf6/final-workflow-qt.log) |
+| 2026-09-16T06:41:13.449399+00:00 | 81.861 | 0 | `python3 tests/mod_editor/test_apf_b69_editor_qt.py` | [log](reports/b71_apf6/final-b69-editor.log) |
+| 2026-09-16T06:41:30.095275+00:00 | 39.689 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_b69_schemes.py` | [log](reports/b71_apf6/test_apf_b69_schemes.log) |
+| 2026-09-16T06:41:39.278512+00:00 | 14.760 | 0 | `python3 reports/b71_apf6/profile.py after-final` | [log](reports/b71_apf6/profile-after-final.log) |
+| 2026-09-16T06:41:54.067780+00:00 | 20.118 | 0 | `python3 reports/b71_apf6/profile.py confirm-varied-shell-final` | [log](reports/b71_apf6/profile-confirm-varied-shell-final.log) |
+| 2026-09-16T06:41:54.875366+00:00 | 0.394 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_b69_wiring.py` | [log](reports/b71_apf6/test_apf_b69_wiring.log) |
+| 2026-09-16T06:41:55.302550+00:00 | 200.961 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_b70_stock_recipes.py` | [log](reports/b71_apf6/test_apf_b70_stock_recipes.log) |
+| 2026-09-16T06:42:09.818182+00:00 | 2.595 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_b71_editor_workflow.py` | [log](reports/b71_apf6/test_apf_b71_editor_workflow.log) |
+| 2026-09-16T06:42:12.446551+00:00 | 2.043 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_b71_editor_workflow_qt.py` | [log](reports/b71_apf6/test_apf_b71_editor_workflow_qt.log) |
+| 2026-09-16T06:42:14.522837+00:00 | 2.846 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_b71_situation_mask.py` | [log](reports/b71_apf6/test_apf_b71_situation_mask.log) |
+| 2026-09-16T06:42:17.401725+00:00 | 4.307 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_b71_situation_mask_abi.py` | [log](reports/b71_apf6/test_apf_b71_situation_mask_abi.log) |
+| 2026-09-16T06:42:21.738819+00:00 | 1.260 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_b71_situation_mask_install.py` | [log](reports/b71_apf6/test_apf_b71_situation_mask_install.log) |
+| 2026-09-16T06:42:23.028873+00:00 | 359.486 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_b71_situation_mask_native.py` | [log](reports/b71_apf6/test_apf_b71_situation_mask_native.log) |
+| 2026-09-16T06:42:35.343230+00:00 | 5.361 | 0 | `python3 tests/mod_editor/test_apf_playcalling_editor_qt.py` | [log](reports/b71_apf6/final-playcalling-qt.log) |
+| 2026-09-16T06:42:45.594431+00:00 | 0.872 | 0 | `python3 reports/b71_apf6/queue_snapshot.py` | [log](reports/b71_apf6/queue-snapshot.log) |
+| 2026-09-16T06:43:56.269022+00:00 | 2.067 | 0 | `python3 tests/mod_editor/test_apf_b71_editor_workflow_qt.py` | [log](reports/b71_apf6/queue-layout.log) |
+| 2026-09-16T06:43:58.368254+00:00 | 0.864 | 0 | `python3 reports/b71_apf6/queue_snapshot.py` | [log](reports/b71_apf6/queue-snapshot-final.log) |
+| 2026-09-16T06:45:16.294641+00:00 | 1.400 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_b71_situation_mask_qt.py` | [log](reports/b71_apf6/test_apf_b71_situation_mask_qt.log) |
+| 2026-09-16T06:45:17.727373+00:00 | 4.156 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_b71_situations.py` | [log](reports/b71_apf6/test_apf_b71_situations.log) |
+| 2026-09-16T06:45:21.917100+00:00 | 0.251 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_book_identity_qt.py` | [log](reports/b71_apf6/test_apf_book_identity_qt.log) |
+| 2026-09-16T06:45:22.200683+00:00 | 25.552 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_book_unlock.py` | [log](reports/b71_apf6/test_apf_book_unlock.log) |
+| 2026-09-16T06:45:22.635159+00:00 | 3.036 | 0 | `python3 tests/mod_editor/test_apf_b71_editor_workflow_qt.py` | [log](reports/b71_apf6/queue-layout-wrap.log) |
+| 2026-09-16T06:45:25.702616+00:00 | 0.853 | 0 | `python3 reports/b71_apf6/queue_snapshot.py` | [log](reports/b71_apf6/queue-snapshot-wrap.log) |
+| 2026-09-16T06:45:47.787111+00:00 | 0.146 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_book_unlock_retail.py` | [log](reports/b71_apf6/test_apf_book_unlock_retail.log) |
+| 2026-09-16T06:45:47.962984+00:00 | 0.837 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_browser_workspace_handoff.py` | [log](reports/b71_apf6/test_apf_browser_workspace_handoff.log) |
+| 2026-09-16T06:45:48.829754+00:00 | 0.303 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_build_ausb_overlays.py` | [log](reports/b71_apf6/test_apf_build_ausb_overlays.log) |
+| 2026-09-16T06:45:49.165596+00:00 | 0.306 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_build_raw_span_overlays.py` | [log](reports/b71_apf6/test_apf_build_raw_span_overlays.log) |
+| 2026-09-16T06:45:49.505009+00:00 | 0.441 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_capability_action_parity.py` | [log](reports/b71_apf6/test_apf_capability_action_parity.log) |
+| 2026-09-16T06:45:49.981470+00:00 | 0.293 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_copied_volume_metadata.py` | [log](reports/b71_apf6/test_apf_copied_volume_metadata.log) |
+| 2026-09-16T06:45:50.308297+00:00 | 0.072 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_coverage_research_tools.py` | [log](reports/b71_apf6/test_apf_coverage_research_tools.log) |
+| 2026-09-16T06:45:50.416578+00:00 | 2.873 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_cpu_audibles.py` | [log](reports/b71_apf6/test_apf_cpu_audibles.log) |
+| 2026-09-16T06:45:52.571213+00:00 | 8.351 | 0 | `python3 reports/b71_apf6/profile.py bulk-varied` | [log](reports/b71_apf6/profile-bulk.log) |
+| 2026-09-16T06:45:53.324171+00:00 | 0.824 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_crest_budget_import.py` | [log](reports/b71_apf6/test_apf_crest_budget_import.log) |
+| 2026-09-16T06:45:54.182643+00:00 | 28.116 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_crest_fit.py` | [log](reports/b71_apf6/test_apf_crest_fit.log) |
+| 2026-09-16T06:46:22.331003+00:00 | 0.319 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_cross_domain_audio_safety.py` | [log](reports/b71_apf6/test_apf_cross_domain_audio_safety.log) |
+| 2026-09-16T06:46:22.679564+00:00 | 21.383 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_cubemap_face0_preview.py` | [log](reports/b71_apf6/test_apf_cubemap_face0_preview.log) |
+| 2026-09-16T06:46:44.095931+00:00 | 0.324 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_custom_team_appearance_gui.py` | [log](reports/b71_apf6/test_apf_custom_team_appearance_gui.log) |
+| 2026-09-16T06:46:44.453421+00:00 | 6.996 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_custom_team_appearance_patch.py` | [log](reports/b71_apf6/test_apf_custom_team_appearance_patch.log) |
+| 2026-09-16T06:46:45.178846+00:00 | 2.591 | 0 | `python3 tests/mod_editor/test_apf_b71_editor_workflow.py` | [log](reports/b71_apf6/final-workflow.log) |
+| 2026-09-16T06:46:47.800554+00:00 | 1.435 | 0 | `python3 tests/mod_editor/test_apf_playcalling_editor_facade.py` | [log](reports/b71_apf6/final-facade.log) |
+| 2026-09-16T06:46:49.268967+00:00 | 5.357 | 0 | `python3 tests/mod_editor/test_apf_playcalling_editor_qt.py` | [log](reports/b71_apf6/final-qt-after-layout.log) |
+| 2026-09-16T06:46:51.485505+00:00 | 0.514 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_defense_research_identity.py` | [log](reports/b71_apf6/test_apf_defense_research_identity.log) |
+| 2026-09-16T06:46:52.030379+00:00 | 139.973 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_defense_research_native.py` | [log](reports/b71_apf6/test_apf_defense_research_native.log) |
+| 2026-09-16T06:46:54.658959+00:00 | 0.155 | 0 | `python3 tests/mod_editor/test_product_catalog.py` | [log](reports/b71_apf6/product-catalog-final.log) |
+| 2026-09-16T06:46:54.844167+00:00 | 2.131 | 0 | `python3 tests/mod_editor/test_phase1_packaging.py` | [log](reports/b71_apf6/phase1-final.log) |
+| 2026-09-16T06:46:57.008129+00:00 | 9.923 | 0 | `python3 tests/mod_editor/test_provider_integrity.py` | [log](reports/b71_apf6/provider-integrity-final.log) |
+| 2026-09-16T06:47:44.433375+00:00 | 22.710 | 0 | `python3 reports/b71_apf6/final_gates.py` | [log](reports/b71_apf6/final-gates.log) |
+| 2026-09-16T06:47:44.495365+00:00 | 11.321 | 0 | `python3 packaging/repin.py --apply` | [log](reports/b71_apf6/repin-final.log) |
+| 2026-09-16T06:47:55.847571+00:00 | 0.156 | 0 | `python3 -m mod_editor.capabilities.validate_registry` | [log](reports/b71_apf6/strict-registry-final.log) |
+| 2026-09-16T06:47:56.032803+00:00 | 0.063 | 0 | `python3 reports/b71_apf6/audit_delivery.py` | [log](reports/b71_apf6/delivery-audit.log) |
+| 2026-09-16T06:47:56.125458+00:00 | 0.089 | 0 | `python3 packaging/stage_release.py packaging/apf2k8-release-allowlist.txt .scratch/apf-release` | [log](reports/b71_apf6/release-stage-final.log) |
+| 2026-09-16T06:47:56.246562+00:00 | 0.385 | 0 | `env PYTHONDONTWRITEBYTECODE=1 python3 packaging/check_apf2k8_mod_studio_release.py .scratch/apf-release` | [log](reports/b71_apf6/release-check-final.log) |
+| 2026-09-16T06:47:56.660845+00:00 | 10.469 | 0 | `env PYTHONDONTWRITEBYTECODE=1 PYTHONNOUSERSITE=1 PYTHONPATH=/home/noah/2k-worktrees/astra-b71-apf6/.scratch/apf-release .scratch/test-python/bin/python3 .scratch/apf-release/packaging/check_apf2k8_mod_studio_runtime.py` | [log](reports/b71_apf6/release-runtime-final.log) |
+| 2026-09-16T06:48:22.547947+00:00 | 0.334 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_digital_font.py` | [log](reports/b71_apf6/test_apf_digital_font.log) |
+| 2026-09-16T06:48:22.916345+00:00 | 13.010 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_dxn_base_only_namefont.py` | [log](reports/b71_apf6/test_apf_dxn_base_only_namefont.log) |
+| 2026-09-16T06:48:35.965048+00:00 | 21.069 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_dxt5a_general_preview.py` | [log](reports/b71_apf6/test_apf_dxt5a_general_preview.log) |
+| 2026-09-16T06:48:36.388822+00:00 | 0.019 | 0 | `git --git-dir=.scratch/git --work-tree=. add -f -- docs/mod_editor/apf2k8_mod_studio_changelog.md docs/mod_editor/apf_b67_play_calling_editor.md mod_editor/apf_studio/book_content.py mod_editor/apf_studio/facade.py mod_editor/apf_studio/models.py mod_editor/apf_studio/playcalling_editor_qt.py mod_editor/apf_studio/playcalling_service.py mod_editor/apf_studio/situation_mask_qt.py mod_editor/capabilities/registry.v1.json tests/mod_editor/test_apf_b69_editor_qt.py tests/mod_editor/test_apf_b71_editor_workflow.py tests/mod_editor/test_apf_b71_editor_workflow_qt.py tests/mod_editor/test_apf_playcalling_editor_qt.py` | [log](reports/b71_apf6/add-refinements.log) |
+| 2026-09-16T06:48:36.438506+00:00 | 0.009 | 0 | `git --git-dir=.scratch/git --work-tree=. diff --cached --check` | [log](reports/b71_apf6/diff-refinements.log) |
+| 2026-09-16T06:48:36.475820+00:00 | 10.544 | 0 | `python3 packaging/repin.py --apply` | [log](reports/b71_apf6/repin-before-refinements.log) |
+| 2026-09-16T06:48:47.048908+00:00 | 0.045 | 0 | `git --git-dir=.scratch/git --work-tree=. commit -m 'APF: retain dependent drafts and render complete automatic review details' -- docs/mod_editor/apf2k8_mod_studio_changelog.md docs/mod_editor/apf_b67_play_calling_editor.md mod_editor/apf_studio/book_content.py mod_editor/apf_studio/facade.py mod_editor/apf_studio/models.py mod_editor/apf_studio/playcalling_editor_qt.py mod_editor/apf_studio/playcalling_service.py mod_editor/apf_studio/situation_mask_qt.py mod_editor/capabilities/registry.v1.json tests/mod_editor/test_apf_b69_editor_qt.py tests/mod_editor/test_apf_b71_editor_workflow.py tests/mod_editor/test_apf_b71_editor_workflow_qt.py tests/mod_editor/test_apf_playcalling_editor_qt.py` | [log](reports/b71_apf6/commit-refinements.log) |
+| 2026-09-16T06:48:57.068212+00:00 | 38.684 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_endzone_dxt5a.py` | [log](reports/b71_apf6/test_apf_endzone_dxt5a.log) |
+| 2026-09-16T06:49:12.035571+00:00 | 0.126 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_export.py` | [log](reports/b71_apf6/test_apf_export.log) |
+| 2026-09-16T06:49:12.195436+00:00 | 0.343 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_external_audio_bank_bundle.py` | [log](reports/b71_apf6/test_apf_external_audio_bank_bundle.log) |
+| 2026-09-16T06:49:12.572611+00:00 | 0.186 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_field_art.py` | [log](reports/b71_apf6/test_apf_field_art.log) |
+| 2026-09-16T06:49:12.791987+00:00 | 0.866 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_field_art_gui.py` | [log](reports/b71_apf6/test_apf_field_art_gui.log) |
+| 2026-09-16T06:49:13.691352+00:00 | 298.499 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_field_art_patch.py` | [log](reports/b71_apf6/test_apf_field_art_patch.log) |
+| 2026-09-16T06:49:35.784881+00:00 | 0.473 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_field_art_stock_label.py` | [log](reports/b71_apf6/test_apf_field_art_stock_label.log) |
+| 2026-09-16T06:49:36.289550+00:00 | 204.882 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_field_extra_roundtrip.py` | [log](reports/b71_apf6/test_apf_field_extra_roundtrip.log) |
+| 2026-09-16T06:51:26.621379+00:00 | 2.963 | 0 | `python3 tests/mod_editor/test_apf_b71_editor_workflow_qt.py` | [log](reports/b71_apf6/final-queue-sorting.log) |
+| 2026-09-16T06:51:45.407097+00:00 | 0.577 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_field_material_project.py` | [log](reports/b71_apf6/test_apf_field_material_project.log) |
+| 2026-09-16T06:51:46.018304+00:00 | 0.334 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_field_material_writer.py` | [log](reports/b71_apf6/test_apf_field_material_writer.log) |
+| 2026-09-16T06:51:46.389391+00:00 | 0.345 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_formation_alignment_writer.py` | [log](reports/b71_apf6/test_apf_formation_alignment_writer.log) |
+| 2026-09-16T06:51:46.770034+00:00 | 0.211 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_fourth_down.py` | [log](reports/b71_apf6/test_apf_fourth_down.log) |
+| 2026-09-16T06:51:47.011970+00:00 | 102.205 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_fourth_down_native.py` | [log](reports/b71_apf6/test_apf_fourth_down_native.log) |
+| 2026-09-16T06:52:26.762880+00:00 | 0.053 | 0 | `python3 reports/b71_apf6/make_report.py` | [log](reports/b71_apf6/report-draft.log) |
+| 2026-09-16T06:53:01.203182+00:00 | 0.185 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_fourth_down_qt.py` | [log](reports/b71_apf6/test_apf_fourth_down_qt.log) |
+| 2026-09-16T06:53:01.420792+00:00 | 0.046 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_full_shell_visual_gate.py` | [log](reports/b71_apf6/test_apf_full_shell_visual_gate.log) |
+| 2026-09-16T06:53:01.497072+00:00 | 0.518 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_g12_surfaces.py` | [log](reports/b71_apf6/test_apf_g12_surfaces.log) |
+| 2026-09-16T06:53:02.045904+00:00 | 1.454 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_helmet_crest_design_product.py` | [log](reports/b71_apf6/test_apf_helmet_crest_design_product.log) |
+| 2026-09-16T06:53:03.529638+00:00 | 7.397 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_helmet_logo_placement.py` | [log](reports/b71_apf6/test_apf_helmet_logo_placement.log) |
+| 2026-09-16T06:53:10.960888+00:00 | 4.078 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_helmet_logo_regions.py` | [log](reports/b71_apf6/test_apf_helmet_logo_regions.log) |
+| 2026-09-16T06:53:15.071860+00:00 | 1.217 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_helmet_logo_regions_qt.py` | [log](reports/b71_apf6/test_apf_helmet_logo_regions_qt.log) |
+| 2026-09-16T06:53:16.321769+00:00 | 0.611 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_import_offers_resize.py` | [log](reports/b71_apf6/test_apf_import_offers_resize.log) |
+| 2026-09-16T06:53:16.966766+00:00 | 0.207 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_iso_extraction_is_layout_tolerant.py` | [log](reports/b71_apf6/test_apf_iso_extraction_is_layout_tolerant.log) |
+| 2026-09-16T06:53:17.206151+00:00 | 0.060 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_linear_txtr_png.py` | [log](reports/b71_apf6/test_apf_linear_txtr_png.log) |
+| 2026-09-16T06:53:17.296634+00:00 | 13.697 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_logo_patch.py` | [log](reports/b71_apf6/test_apf_logo_patch.log) |
+| 2026-09-16T06:53:29.252872+00:00 | 0.096 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_logo_surface_ownership.py` | [log](reports/b71_apf6/test_apf_logo_surface_ownership.log) |
+| 2026-09-16T06:53:29.378849+00:00 | 43.635 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_logocache_patch.py` | [log](reports/b71_apf6/test_apf_logocache_patch.log) |
+| 2026-09-16T06:53:31.026093+00:00 | 0.177 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_mask_preview_alpha.py` | [log](reports/b71_apf6/test_apf_mask_preview_alpha.log) |
+| 2026-09-16T06:53:31.233485+00:00 | 2.677 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_model_export_gui.py` | [log](reports/b71_apf6/test_apf_model_export_gui.log) |
+| 2026-09-16T06:53:33.943900+00:00 | 52.285 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_model_import.py` | [log](reports/b71_apf6/test_apf_model_import.log) |
+| 2026-09-16T06:54:12.224442+00:00 | 2.172 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_number_encode_defaults.py` | [log](reports/b71_apf6/test_apf_number_encode_defaults.log) |
+| 2026-09-16T06:54:13.044952+00:00 | 267.822 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_number_texture_writer.py` | [log](reports/b71_apf6/test_apf_number_texture_writer.log) |
+| 2026-09-16T06:54:14.427198+00:00 | 1.320 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_package_map_writer.py` | [log](reports/b71_apf6/test_apf_package_map_writer.log) |
+| 2026-09-16T06:54:15.780114+00:00 | 0.505 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_pass_fetch_export_qt.py` | [log](reports/b71_apf6/test_apf_pass_fetch_export_qt.log) |
+| 2026-09-16T06:54:16.319159+00:00 | 13.160 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_play_designer.py` | [log](reports/b71_apf6/test_apf_play_designer.log) |
+| 2026-09-16T06:54:26.264529+00:00 | 0.521 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_play_designer_project.py` | [log](reports/b71_apf6/test_apf_play_designer_project.log) |
+| 2026-09-16T06:54:26.816595+00:00 | 0.335 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_play_designer_qt.py` | [log](reports/b71_apf6/test_apf_play_designer_qt.log) |
+| 2026-09-16T06:54:27.187302+00:00 | 0.338 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_playbook_route_gui.py` | [log](reports/b71_apf6/test_apf_playbook_route_gui.log) |
+| 2026-09-16T06:54:27.560607+00:00 | 1.981 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_playcall_patch.py` | [log](reports/b71_apf6/test_apf_playcall_patch.log) |
+| 2026-09-16T06:54:29.512338+00:00 | 220.934 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_playcall_research_native.py` | [log](reports/b71_apf6/test_apf_playcall_research_native.log) |
+| 2026-09-16T06:54:29.577119+00:00 | 94.606 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_playcalling_editor_build.py` | [log](reports/b71_apf6/test_apf_playcalling_editor_build.log) |
+| 2026-09-16T06:56:04.214869+00:00 | 1.383 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_playcalling_editor_facade.py` | [log](reports/b71_apf6/test_apf_playcalling_editor_facade.log) |
+| 2026-09-16T06:56:05.631348+00:00 | 0.539 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_playcalling_editor_patches.py` | [log](reports/b71_apf6/test_apf_playcalling_editor_patches.log) |
+| 2026-09-16T06:56:06.201523+00:00 | 5.452 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_playcalling_editor_qt.py` | [log](reports/b71_apf6/test_apf_playcalling_editor_qt.log) |
+| 2026-09-16T06:56:11.688322+00:00 | 6.747 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_player_position_patch.py` | [log](reports/b71_apf6/test_apf_player_position_patch.log) |
+| 2026-09-16T06:56:18.466580+00:00 | 20.365 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_player_position_product_backend.py` | [log](reports/b71_apf6/test_apf_player_position_product_backend.log) |
+| 2026-09-16T06:56:38.865837+00:00 | 0.114 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_player_positions.py` | [log](reports/b71_apf6/test_apf_player_positions.log) |
+| 2026-09-16T06:56:39.011548+00:00 | 4.161 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_player_rating_patch.py` | [log](reports/b71_apf6/test_apf_player_rating_patch.log) |
+| 2026-09-16T06:56:43.206477+00:00 | 9.066 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_player_rating_product_backend.py` | [log](reports/b71_apf6/test_apf_player_rating_product_backend.log) |
+| 2026-09-16T06:56:47.497304+00:00 | 15.015 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_player_rating_sheet_import.py` | [log](reports/b71_apf6/test_apf_player_rating_sheet_import.log) |
+| 2026-09-16T06:56:52.308970+00:00 | 0.819 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_player_ratings.py` | [log](reports/b71_apf6/test_apf_player_ratings.log) |
+| 2026-09-16T06:56:53.161221+00:00 | 0.158 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_product_findings.py` | [log](reports/b71_apf6/test_apf_product_findings.log) |
+| 2026-09-16T06:56:53.353182+00:00 | 0.529 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_product_findings_gui.py` | [log](reports/b71_apf6/test_apf_product_findings_gui.log) |
+| 2026-09-16T06:56:53.911284+00:00 | 0.232 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_product_validation_wrappers.py` | [log](reports/b71_apf6/test_apf_product_validation_wrappers.log) |
+| 2026-09-16T06:56:54.177157+00:00 | 31.185 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_project_document_workflow.py` | [log](reports/b71_apf6/test_apf_project_document_workflow.log) |
+| 2026-09-16T06:57:02.547153+00:00 | 0.199 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_project_streaming.py` | [log](reports/b71_apf6/test_apf_project_streaming.log) |
+| 2026-09-16T06:57:02.778136+00:00 | 1.122 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_ps3_probes.py` | [log](reports/b71_apf6/test_apf_ps3_probes.log) |
+| 2026-09-16T06:57:03.932851+00:00 | 16.632 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_ps3_roster_convert.py` | [log](reports/b71_apf6/test_apf_ps3_roster_convert.log) |
+| 2026-09-16T06:57:20.600072+00:00 | 1.623 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_ps3_roster_import_qt.py` | [log](reports/b71_apf6/test_apf_ps3_roster_import_qt.log) |
+| 2026-09-16T06:57:22.254033+00:00 | 3.836 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_ps3_speed.py` | [log](reports/b71_apf6/test_apf_ps3_speed.log) |
+| 2026-09-16T06:57:25.396490+00:00 | 10.221 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_ps3_speed_packages.py` | [log](reports/b71_apf6/test_apf_ps3_speed_packages.log) |
+| 2026-09-16T06:57:26.124897+00:00 | 29.823 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_ps3_texture_bundle.py` | [log](reports/b71_apf6/test_apf_ps3_texture_bundle.log) |
+| 2026-09-16T06:57:35.653634+00:00 | 0.392 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_ps3_texture_bundle_qt.py` | [log](reports/b71_apf6/test_apf_ps3_texture_bundle_qt.log) |
+| 2026-09-16T06:57:36.082854+00:00 | 0.155 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_public_docs_registry_current.py` | [log](reports/b71_apf6/test_apf_public_docs_registry_current.log) |
+| 2026-09-16T06:57:36.268948+00:00 | 0.175 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_rating_value_domains.py` | [log](reports/b71_apf6/test_apf_rating_value_domains.log) |
+| 2026-09-16T06:57:36.475525+00:00 | 0.043 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_retail_crest_channel_audit.py` | [log](reports/b71_apf6/test_apf_retail_crest_channel_audit.log) |
+| 2026-09-16T06:57:36.549816+00:00 | 8.403 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_roster_appearance_transfer.py` | [log](reports/b71_apf6/test_apf_roster_appearance_transfer.log) |
+| 2026-09-16T06:57:44.987930+00:00 | 4.912 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_roster_appearance_transfer_qt.py` | [log](reports/b71_apf6/test_apf_roster_appearance_transfer_qt.log) |
+| 2026-09-16T06:57:49.933965+00:00 | 11.578 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_roster_identity.py` | [log](reports/b71_apf6/test_apf_roster_identity.log) |
+| 2026-09-16T06:57:55.982218+00:00 | 1.732 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_roster_identity_gui.py` | [log](reports/b71_apf6/test_apf_roster_identity_gui.log) |
+| 2026-09-16T06:57:57.748382+00:00 | 0.144 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_roster_workspace.py` | [log](reports/b71_apf6/test_apf_roster_workspace.log) |
+| 2026-09-16T06:57:57.926171+00:00 | 0.367 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_roster_workspace_gui.py` | [log](reports/b71_apf6/test_apf_roster_workspace_gui.log) |
+| 2026-09-16T06:57:58.325062+00:00 | 1.280 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_save_playbook_assignments_gui.py` | [log](reports/b71_apf6/test_apf_save_playbook_assignments_gui.log) |
+| 2026-09-16T06:57:59.641189+00:00 | 4.471 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_save_roster_players.py` | [log](reports/b71_apf6/test_apf_save_roster_players.log) |
+| 2026-09-16T06:58:01.546642+00:00 | 0.734 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_save_roster_players_gui.py` | [log](reports/b71_apf6/test_apf_save_roster_players_gui.log) |
+| 2026-09-16T06:58:02.315600+00:00 | 0.571 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_scorebug_workspace_qt.py` | [log](reports/b71_apf6/test_apf_scorebug_workspace_qt.log) |
+| 2026-09-16T06:58:02.921991+00:00 | 11.103 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_shell_search_accessibility_qt.py` | [log](reports/b71_apf6/test_apf_shell_search_accessibility_qt.log) |
+| 2026-09-16T06:58:04.146527+00:00 | 0.585 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_splb_add_multiple_formations.py` | [log](reports/b71_apf6/test_apf_splb_add_multiple_formations.log) |
+| 2026-09-16T06:58:04.765257+00:00 | 1.104 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_splb_formation_personnel.py` | [log](reports/b71_apf6/test_apf_splb_formation_personnel.log) |
+| 2026-09-16T06:58:05.906784+00:00 | 2.139 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_splb_tag_reassignment.py` | [log](reports/b71_apf6/test_apf_splb_tag_reassignment.log) |
+| 2026-09-16T06:58:08.081125+00:00 | 0.361 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_splb_writer.py` | [log](reports/b71_apf6/test_apf_splb_writer.log) |
+| 2026-09-16T06:58:08.476172+00:00 | 0.106 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_stadium_material_findings.py` | [log](reports/b71_apf6/test_apf_stadium_material_findings.log) |
+| 2026-09-16T06:58:08.614970+00:00 | 0.276 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_stadium_model_import.py` | [log](reports/b71_apf6/test_apf_stadium_model_import.log) |
+| 2026-09-16T06:58:08.922541+00:00 | 0.230 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_stadium_studio.py` | [log](reports/b71_apf6/test_apf_stadium_studio.log) |
+| 2026-09-16T06:58:09.185802+00:00 | 0.541 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_stadium_studio_gui.py` | [log](reports/b71_apf6/test_apf_stadium_studio_gui.log) |
+| 2026-09-16T06:58:09.761372+00:00 | 73.581 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_stadium_texture.py` | [log](reports/b71_apf6/test_apf_stadium_texture.log) |
+| 2026-09-16T06:58:10.482785+00:00 | 0.650 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_stfs_roster_rehash.py` | [log](reports/b71_apf6/test_apf_stfs_roster_rehash.log) |
+| 2026-09-16T06:58:11.168372+00:00 | 1.141 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_studio_audio_gui.py` | [log](reports/b71_apf6/test_apf_studio_audio_gui.log) |
+| 2026-09-16T06:58:12.345425+00:00 | 0.250 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_studio_core.py` | [log](reports/b71_apf6/test_apf_studio_core.log) |
+| 2026-09-16T06:58:12.632064+00:00 | 0.540 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_studio_draft_logo.py` | [log](reports/b71_apf6/test_apf_studio_draft_logo.log) |
+| 2026-09-16T06:58:13.207848+00:00 | 2.344 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_studio_inspectors.py` | [log](reports/b71_apf6/test_apf_studio_inspectors.log) |
+| 2026-09-16T06:58:14.060759+00:00 | 14.607 | 0 | `env -u PYTHONPATH /home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_studio_installer.py` | [log](reports/b71_apf6/test_apf_studio_installer.log) |
+| 2026-09-16T06:58:15.587975+00:00 | 0.453 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_studio_safety.py` | [log](reports/b71_apf6/test_apf_studio_safety.log) |
+| 2026-09-16T06:58:16.076264+00:00 | 0.493 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_studio_text_edit.py` | [log](reports/b71_apf6/test_apf_studio_text_edit.log) |
+| 2026-09-16T06:58:16.600597+00:00 | 9.862 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_team_art.py` | [log](reports/b71_apf6/test_apf_team_art.log) |
+| 2026-09-16T06:58:26.495733+00:00 | 0.559 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_team_art_qt.py` | [log](reports/b71_apf6/test_apf_team_art_qt.log) |
+| 2026-09-16T06:58:27.090386+00:00 | 0.622 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_team_crest_selection.py` | [log](reports/b71_apf6/test_apf_team_crest_selection.log) |
+| 2026-09-16T06:58:27.746712+00:00 | 2.026 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_team_logo_gui.py` | [log](reports/b71_apf6/test_apf_team_logo_gui.log) |
+| 2026-09-16T06:58:28.701142+00:00 | 0.528 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_text_sheet_gui.py` | [log](reports/b71_apf6/test_apf_text_sheet_gui.log) |
+| 2026-09-16T06:58:29.262300+00:00 | 0.699 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_textlogo_gui.py` | [log](reports/b71_apf6/test_apf_textlogo_gui.log) |
+| 2026-09-16T06:58:29.807080+00:00 | 60.224 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_textlogo_writer.py` | [log](reports/b71_apf6/test_apf_textlogo_writer.log) |
+| 2026-09-16T06:58:29.991966+00:00 | 17.891 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_theme_layout_qt.py` | [log](reports/b71_apf6/test_apf_theme_layout_qt.log) |
+| 2026-09-16T06:58:40.901496+00:00 | 1.386 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_uniform_allocation_capacity.py` | [log](reports/b71_apf6/test_apf_uniform_allocation_capacity.log) |
+| 2026-09-16T06:58:42.321390+00:00 | 7.680 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_uniform_equipment_colors.py` | [log](reports/b71_apf6/test_apf_uniform_equipment_colors.log) |
+| 2026-09-16T06:58:47.916788+00:00 | 0.197 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_uniform_equipment_colors_gui.py` | [log](reports/b71_apf6/test_apf_uniform_equipment_colors_gui.log) |
+| 2026-09-16T06:58:48.147146+00:00 | 1.479 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_uniform_independence.py` | [log](reports/b71_apf6/test_apf_uniform_independence.log) |
+| 2026-09-16T06:58:49.660752+00:00 | 2.477 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_uniform_inventory_gui.py` | [log](reports/b71_apf6/test_apf_uniform_inventory_gui.log) |
+| 2026-09-16T06:58:50.036275+00:00 | 13.763 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_wave_integration.py` | [log](reports/b71_apf6/test_apf_wave_integration.log) |
+| 2026-09-16T06:58:52.169181+00:00 | 0.154 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_wordmark_regions.py` | [log](reports/b71_apf6/test_apf_wordmark_regions.log) |
+| 2026-09-16T06:58:52.354713+00:00 | 66.356 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_workspace_recovery.py` | [log](reports/b71_apf6/test_apf_workspace_recovery.log) |
+| 2026-09-16T06:59:03.833395+00:00 | 0.169 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_xenia_edge.py` | [log](reports/b71_apf6/test_apf_xenia_edge.log) |
+| 2026-09-16T06:59:04.037404+00:00 | 1.769 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_xenos_4444_mip_layout.py` | [log](reports/b71_apf6/test_apf_xenos_4444_mip_layout.log) |
+| 2026-09-16T06:59:05.840367+00:00 | 0.084 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_xenos_4444_png.py` | [log](reports/b71_apf6/test_apf_xenos_4444_png.log) |
+| 2026-09-16T06:59:05.955964+00:00 | 0.084 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_xenos_extra_formats_png.py` | [log](reports/b71_apf6/test_apf_xenos_extra_formats_png.log) |
+| 2026-09-16T06:59:06.070528+00:00 | 1.041 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_xex_image.py` | [log](reports/b71_apf6/test_apf_xex_image.log) |
+| 2026-09-16T06:59:07.146177+00:00 | 72.482 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_xex_image_retail.py` | [log](reports/b71_apf6/test_apf_xex_image_retail.log) |
+| 2026-09-16T06:59:23.376203+00:00 | 1.827 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_apf_xma1_wizard_gui.py` | [log](reports/b71_apf6/test_apf_xma1_wizard_gui.log) |
+| 2026-09-16T06:59:25.238122+00:00 | 39.435 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_b69_a1_playcalling.py` | [log](reports/b71_apf6/test_b69_a1_playcalling.log) |
+| 2026-09-16T06:59:30.065745+00:00 | 9.866 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_provider_integrity.py` | [log](reports/b71_apf6/test_provider_integrity.log) |
+| 2026-09-16T06:59:39.964437+00:00 | 0.154 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_product_catalog.py` | [log](reports/b71_apf6/test_product_catalog.log) |
+| 2026-09-16T06:59:40.153418+00:00 | 2.067 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_phase1_packaging.py` | [log](reports/b71_apf6/test_phase1_packaging.log) |
+| 2026-09-16T06:59:42.254297+00:00 | 0.100 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_capability_registry_module_commands.py` | [log](reports/b71_apf6/test_capability_registry_module_commands.log) |
+| 2026-09-16T06:59:42.387371+00:00 | 2.008 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_studio_qt_models.py` | [log](reports/b71_apf6/test_studio_qt_models.log) |
+| 2026-09-16T06:59:44.426915+00:00 | 41.388 | 0 | `/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3 tests/mod_editor/test_studio_shell_layout_qt.py` | [log](reports/b71_apf6/test_studio_shell_layout_qt.log) |
+| 2026-09-16T07:00:23.527465+00:00 | 2.475 | 0 | `python3 tests/mod_editor/test_apf_b71_editor_workflow.py` | [log](reports/b71_apf6/retire-donor-regression.log) |
+| 2026-09-16T07:00:26.034104+00:00 | 3.015 | 0 | `python3 tests/mod_editor/test_apf_b71_editor_workflow_qt.py` | [log](reports/b71_apf6/retire-donor-qt.log) |
+| 2026-09-16T07:00:29.083323+00:00 | 1.382 | 0 | `python3 tests/mod_editor/test_apf_playcalling_editor_facade.py` | [log](reports/b71_apf6/retire-donor-facade.log) |
+| 2026-09-16T07:00:30.497101+00:00 | 9.500 | 0 | `python3 tests/mod_editor/test_provider_integrity.py` | [log](reports/b71_apf6/retire-donor-provider.log) |
+| 2026-09-16T07:00:40.029478+00:00 | 21.221 | 0 | `python3 reports/b71_apf6/final_gates.py` | [log](reports/b71_apf6/gates-after-retire-donor.log) |
+| 2026-09-16T07:00:40.088542+00:00 | 10.481 | 0 | `python3 packaging/repin.py --apply` | [log](reports/b71_apf6/repin-final.log) |
+| 2026-09-16T07:00:50.599179+00:00 | 0.151 | 0 | `python3 -m mod_editor.capabilities.validate_registry` | [log](reports/b71_apf6/strict-registry-final-2.log) |
+| 2026-09-16T07:00:50.780575+00:00 | 0.060 | 0 | `python3 reports/b71_apf6/audit_delivery.py` | [log](reports/b71_apf6/delivery-audit-2.log) |
+| 2026-09-16T07:00:50.872027+00:00 | 0.085 | 0 | `python3 packaging/stage_release.py packaging/apf2k8-release-allowlist.txt .scratch/apf-release` | [log](reports/b71_apf6/release-stage-final-2.log) |
+| 2026-09-16T07:00:50.985463+00:00 | 0.379 | 0 | `env PYTHONDONTWRITEBYTECODE=1 python3 packaging/check_apf2k8_mod_studio_release.py .scratch/apf-release` | [log](reports/b71_apf6/release-check-final-2.log) |
+| 2026-09-16T07:00:51.395827+00:00 | 9.845 | 0 | `env PYTHONDONTWRITEBYTECODE=1 PYTHONNOUSERSITE=1 PYTHONPATH=/home/noah/2k-worktrees/astra-b71-apf6/.scratch/apf-release .scratch/test-python/bin/python3 .scratch/apf-release/packaging/check_apf2k8_mod_studio_runtime.py` | [log](reports/b71_apf6/release-runtime-final-2.log) |
+| 2026-09-16T07:01:31.474146+00:00 | 0.069 | 0 | `python3 reports/b71_apf6/make_report.py --require-pass` | [log](reports/b71_apf6/aggregate-final.log) |

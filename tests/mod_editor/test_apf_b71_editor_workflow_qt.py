@@ -7,6 +7,7 @@ from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 os.environ['QT_QPA_PLATFORM'] = 'offscreen'
 from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import Qt
 from mod_editor.apf_studio.playcalling_editor_qt import ApfPlayCallingEditor
 from tests.mod_editor.test_apf_playcalling_editor_facade import FacadeFixture
 
@@ -87,8 +88,11 @@ class QueueQtTests(FacadeFixture):
             self.assertIn('removes', text); self.assertIn('Fix:', text)
         p.donor_picker.setCurrentText('USER-o')
         self.assertEqual(len(p._pending), 2)
+        from mod_editor.apf_studio.apf_theme import sort_visual_rows
+        sort_visual_rows(p.pending_table, 0, Qt.DescendingOrder)
         p.pending_table.cellWidget(1, 3).click()
         self.assertEqual(len(p._pending), 1)
+        self.assertEqual(p._pending[0]['kind'], 'remove')
         p.confirm_button.click()
         self.assertEqual(p._pending, [])
         self.assertEqual(self.facade._playcalling.events(self.facade.session)[-1]['request']['book'], 'O-ManBlock')

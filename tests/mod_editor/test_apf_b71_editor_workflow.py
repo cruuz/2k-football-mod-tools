@@ -161,12 +161,14 @@ class WorkflowTests(FacadeFixture):
 
     def test_refused_retirement_keeps_its_run_share_pending(self):
         self.backend.holes = True; self.backend.lineup_callers = 'unclassified'
-        result = self.facade.confirm_playcalling([
-            dict(kind='retire', book='O-ManBlock', category=3),
-            dict(kind='tendency', team=0, value=42)])
-        self.assertEqual(result['staged'], [])
-        self.assertEqual(len(result['blockers']), 2)
-        self.assertFalse(self.facade.session.modifications)
+        for book in ('O-ManBlock', 'USER-o'):
+            with self.subTest(book=book):
+                result = self.facade.confirm_playcalling([
+                    dict(kind='retire', book=book, category=3),
+                    dict(kind='tendency', team=0, value=42)])
+                self.assertEqual(result['staged'], [])
+                self.assertEqual(len(result['blockers']), 2)
+                self.assertFalse(self.facade.session.modifications)
 
     def test_two_individually_valid_removals_cannot_empty_personnel_together(self):
         self.backend.lineup_callers = 'unclassified'

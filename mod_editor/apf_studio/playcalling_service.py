@@ -758,6 +758,11 @@ class PlayCallingService:
             for i, request in enumerate(requests):
                 paired_tendency = request.get('kind') == 'tendency' and any(
                     t['team_index'] == request['team'] and t['offense'] in retired_books for t in initial.teams)
+                # The editor also allows a USER/donor book independent of the
+                # team picker. Retire submits its captured share as the next
+                # request even when that team does not own the selected book.
+                if request.get('kind') == 'tendency' and i and requests[i - 1].get('kind') == 'retire':
+                    paired_tendency |= requests[i - 1].get('book') in retired_books
                 if global_dependency or request.get('book') in blocked_books or paired_tendency:
                     block(i, 'Another pending edit affects the same book or shared MASTER/ownership data. Resolve its blockers together.')
 

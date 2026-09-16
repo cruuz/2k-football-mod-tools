@@ -1,0 +1,13 @@
+test_curve_patch_native_both_images (__main__.WriterNativeTests.test_curve_patch_native_both_images) ... skipped 'Owned TU flat image absent; set APF_RETAIL_TU_PE'
+test_master_roles_native_builder_and_defense_row (__main__.WriterNativeTests.test_master_roles_native_builder_and_defense_row) ... PROVED full 84860020 builder requests/writes Flush TE with supplied eligible players; 5-2 moved to row 13 has weight 1
+ok
+test_ratings_categories_and_compaction_native (__main__.WriterNativeTests.test_ratings_categories_and_compaction_native) ... PROVED raw 7/7/7 gives heavy category weight 0.1; raw 0/0/0 gives 3.0
+ok
+test_removed_formation_never_reached_64_by_20_both_sides (__main__.WriterNativeTests.test_removed_formation_never_reached_64_by_20_both_sides) ... PROVED removal: 64 seeds x 20 situations on each native offensive and defensive category/formation path
+ok
+test_roster_tendency_conversion_and_optional_row_reads (__main__.WriterNativeTests.test_roster_tendency_conversion_and_optional_row_reads) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 325.298s
+
+OK (skipped=1)
