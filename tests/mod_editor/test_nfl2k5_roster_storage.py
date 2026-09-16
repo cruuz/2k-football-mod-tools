@@ -246,7 +246,11 @@ class PatchTests(unittest.TestCase):
         previous = LEGACY_REQUESTS
         old = space._allocations(previous)
         new = space.plan(REQUESTS)["allocations"]
-        self.assertEqual([a for a in new if a['owner'] in space.LEGACY_OWNERS], old)
+        # The runtime scorebug owner outgrew its beta-61 slot in beta 71 and is allocated after the union
+        # (the legacy fixture keeps its 1,408-byte v1 footprint for old-disc decoding); skip it here.
+        from mod_editor.core import nfl2k5_scorebug_runtime as runtime
+        self.assertEqual([a for a in new if a['owner'] in space.LEGACY_OWNERS and a['owner'] != runtime.OWNER],
+                         [a for a in old if a['owner'] != runtime.OWNER])
         self.assertIn(storage.OWNER, space.R62_OWNERS)
         forward, _ = compose(self.retail)
         backward, _ = compose(self.retail, reverse=True)

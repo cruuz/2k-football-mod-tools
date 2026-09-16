@@ -44,8 +44,14 @@ class PublicTests(unittest.TestCase):
         # MyCareer M3 (beta 63) deliberately places its promoted 16 KiB code AFTER every other code allocation, so
         # that one row moves with the union by design; every other owner must keep its exact address.
         promoted = ('nfl2k5_my_career', 'code')
-        self.assertEqual([a for a in before if (a['owner'], a['kind']) != promoted],
-                         [a for a in after if a['owner'] != growth.OWNER and (a['owner'], a['kind']) != promoted])
+        # Beta 71's sprite scorebug owner (4 KiB of code) likewise sits after the scale union by design, so its
+        # row moves with the union too; the allocator gates and the manifest pin its shipped address.
+        from mod_editor.core import nfl2k5_scorebug_runtime as runtime
+        movers = lambda a: (a['owner'], a['kind']) == promoted or a['owner'] == runtime.OWNER
+        self.assertEqual([a for a in before if not movers(a)],
+                         [a for a in after if a['owner'] != growth.OWNER and not movers(a)])
+        self.assertEqual([(a['owner'], a['kind'], a['size']) for a in before if a['owner'] == runtime.OWNER],
+                         [(a['owner'], a['kind'], a['size']) for a in after if a['owner'] == runtime.OWNER])
         self.assertEqual([(a['owner'], a['size']) for a in before if (a['owner'], a['kind']) == promoted],
                          [(a['owner'], a['size']) for a in after if (a['owner'], a['kind']) == promoted])
         for kwargs in (dict(created_teams_extra=1), dict(created_teams_extra=True), dict(reserves_16=1),
