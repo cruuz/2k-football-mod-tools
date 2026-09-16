@@ -148,6 +148,26 @@ class WorkflowTests(FacadeFixture):
             self.facade.undo()
             self.assertFalse(self.facade.session.modifications)
 
+    def test_blocked_donor_keeps_dependent_addition_pending(self):
+        book = self.backend.initial.books['USER-o']
+        self.backend.initial.books['USER-o'] = self.backend.remove(book, 62).book
+        requests = [dict(kind='ratings', book='O-ManBlock', formation=62, ratings=[9]*3),
+                    dict(kind='add', book='USER-o', donor='O-ManBlock', formation=62)]
+        self.assertFalse(self.facade.playcalling_review(requests[1])['refused'])
+        result = self.facade.confirm_playcalling(requests)
+        self.assertEqual(result['staged'], [])
+        self.assertEqual(len(result['blockers']), 2)
+        self.assertFalse(self.facade.session.modifications)
+
+    def test_refused_retirement_keeps_its_run_share_pending(self):
+        self.backend.holes = True; self.backend.lineup_callers = 'unclassified'
+        result = self.facade.confirm_playcalling([
+            dict(kind='retire', book='O-ManBlock', category=3),
+            dict(kind='tendency', team=0, value=42)])
+        self.assertEqual(result['staged'], [])
+        self.assertEqual(len(result['blockers']), 2)
+        self.assertFalse(self.facade.session.modifications)
+
     def test_two_individually_valid_removals_cannot_empty_personnel_together(self):
         self.backend.lineup_callers = 'unclassified'
         self.backend.splb.row_coverage = lambda body, master: {i: tuple(

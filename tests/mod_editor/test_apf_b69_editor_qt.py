@@ -26,13 +26,13 @@ class EditorTests(previous.SchemeSessionTests):
         self.panel=ApfPlayCallingEditor(self.facade,run)
         self.addCleanup(self.panel.close)
 
-    def test_scheme_review_stage_export_undo_and_52_real_name(self):
+    def test_scheme_confirm_export_undo_and_52_real_name(self):
         self.assertEqual(self.panel.scheme_picker.count(),8)
         self.panel.scheme_button.click()
-        self.assertFalse(self.facade.session.modifications)
+        self.assertTrue(self.facade.session.modifications)
         self.assertGreater(self.panel.scheme_details.rowCount(),11)
         self.assertIn('Missing preferred personnel',self.panel.review_label.text())
-        self.panel.confirm_button.click()
+        self.assertFalse(self.panel.details_toggle.isChecked())
         self.assertTrue(self.facade.session.modifications)
         target=self.root/'calls.csv'
         with patch('mod_editor.apf_studio.playcalling_editor_qt.QFileDialog.getSaveFileName',return_value=(str(target),'CSV')):

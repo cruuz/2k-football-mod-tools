@@ -6,7 +6,7 @@ from mod_editor.gui.ux_text import plain_error
 
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal
 from PyQt5.QtWidgets import (QAbstractItemView, QCheckBox, QComboBox, QDoubleSpinBox, QFileDialog, QFormLayout,
-                             QGroupBox, QHBoxLayout, QLabel, QLineEdit, QListWidget, QListWidgetItem,
+                             QGroupBox, QHBoxLayout, QHeaderView, QLabel, QLineEdit, QListWidget, QListWidgetItem,
                              QMessageBox, QPushButton, QScrollArea, QSlider, QSpinBox,
                              QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget)
 
@@ -160,10 +160,10 @@ class ApfPlayCallingEditor(QWidget):
                                      f". Team run tendency: {scheme.run_percentage}%. Reapplying adds the deltas again; Undo restores the prior edit.")
         self.scheme_picker.currentIndexChanged.connect(describe_scheme)
         describe_scheme()
-        note(scheme_root, "ADVANCED, opt-in. Review the team copy and rating changes, then stage and inspect the call preview. "
+        note(scheme_root, "ADVANCED, opt-in. Confirm checks the team copy and rating changes; then inspect the call preview. "
              "Row weights feed an optional cache; they do not override the CPU lottery. Per-situation run percentages "
              "are coaching intent. Tempo, snap count, weather ratio and coin toss have no proved control here.")
-        self.scheme_button = button(scheme_root, "Review scheme for this team", "Review one team scheme, creating its own offensive book when shared; staging records one Undo step.", self.apply_scheme)
+        self.scheme_button = button(scheme_root, "Confirm scheme for this team", "Check one team scheme, creating its own offensive book when shared; staging records one Undo step.", self.apply_scheme)
         self.scheme_export = button(scheme_root, "Export play call spreadsheet…", "Export the selected staged book in 23 situational buckets, with proxy rows, probabilities and limits.", self.export_scheme)
         self.scheme_details = table(("Setting", "Before", "After"), "Scheme changes to review")
         self.scheme_details.setVisible(False)
@@ -316,6 +316,7 @@ class ApfPlayCallingEditor(QWidget):
         self.coverage_table = table(("Requested row", "Remaining personnel categories", "Coverage"), "Lineup resolver row coverage")
         self.coverage_table.setMaximumHeight(220)
         detail_root.addWidget(self.coverage_table)
+        detail_root.addWidget(self.scheme_details)
         self.details_toggle.toggled.connect(self.review_details.setVisible)
         self.review_details.setVisible(False)
         review_root.addWidget(self.review_details)
@@ -717,6 +718,7 @@ class ApfPlayCallingEditor(QWidget):
         self.situation_masks.render()
 
     def _render_pending(self):
+        self.pending_table.clearContents()
         fill(self.pending_table, [(*service.PlayCallingService.describe_request(request),
                                   self._pending_blockers.get(i, "Checks run on Confirm all"), "")
                                  for i, request in enumerate(self._pending)])
@@ -724,6 +726,15 @@ class ApfPlayCallingEditor(QWidget):
             clear = explain(QPushButton("Undo / clear"), "Remove only this pending edit; staged edits stay in the project.")
             clear.clicked.connect(lambda checked=False, row=i: self.clear_pending(row))
             self.pending_table.setCellWidget(i, 3, clear)
+        header = self.pending_table.horizontalHeader()
+        header.setStretchLastSection(False)
+        header.setSectionResizeMode(QHeaderView.Fixed)
+        for column, width in ((0, 150), (1, 210), (3, 120)):
+            self.pending_table.setColumnWidth(column, width)
+        header.setSectionResizeMode(2, QHeaderView.Stretch)
+        self.pending_table.setWordWrap(True)
+        self.pending_table.setTextElideMode(Qt.ElideNone)
+        self.pending_table.resizeRowsToContents()
         self._enable()
         if self._context:
             self.situation_masks.render()
@@ -754,23 +765,35 @@ class ApfPlayCallingEditor(QWidget):
             return
         self._confirm_requests(requests, queued=False)
 
-    def _show_reviews(self, reviews):
+    def _show_reviews(self, reviews, blockers=None):
+        self.scheme_details.setVisible(False)
         rows, messages = [], []
         for review in reviews:
             self._review = review
             event, names = review['event'], review['category_names']
             what, where = service.PlayCallingService.describe_request(event['request'])
-            messages.append(f"{what}, {where}: " + (event['warning'] or "The writer accepted this edit.") +
+            outcome = event['warning'] or "Writer checks passed."
+            if review.get('index') in (blockers or {}):
+                outcome += " Combined queue checks blocked staging: " + blockers[review['index']]
+            messages.append(f"{what}, {where}: " + outcome +
                             " Retired categories: " + (", ".join(review['retired_names']) or "none") + ".")
+            if event['request']['kind'] == 'scheme' and event['after'] is not None:
+                receipt = event['after']['scheme_receipt']
+                settings = [("Team run %", receipt['run_percentage_before'], receipt['run_percentage_after'])]
+                settings += [(f"Formation {r['formation']} ({r['personnel']})", r['before'], r['after']) for r in receipt['formations']]
+                settings += [(f"Optional row {i} run/pass", [v[i] for v in receipt['row_weights_before']],
+                              [v[i] for v in receipt['row_weights_after']]) for i in range(11)]
+                fill(self.scheme_details, settings)
+                self.scheme_details.setVisible(True)
+                messages.append("Missing preferred personnel: " + (", ".join(receipt['missing_preferred_personnel']) or "none") + ". " + " ".join(receipt['notes']))
             rows.extend((f"{where}: {row}", ", ".join(names[i] for i in ids) or "None",
                          "Covered" if ids else "No candidate") for row, ids in event['coverage'].items())
         fill(self.coverage_table, rows)
         self.review_label.setText("\n".join(messages))
 
     def _confirmed(self, requests, result, *, queued):
-        self._show_reviews(result['reviews'])
         staged = set(result['staged'])
-        blocked = {b['index']: f"{b['what']}, {b['where']}: {b['why']} Fix: {b['fix']}" for b in result['blockers']}
+        blocked = {b['index']: f"{b['why']} Fix: {b['fix']}" for b in result['blockers']}
         remaining = [r for i, r in enumerate(requests) if i not in staged]
         offset = 0 if queued else len(self._pending)
         if queued:
@@ -793,6 +816,7 @@ class ApfPlayCallingEditor(QWidget):
                         self._updating = False
             self.modifiedChanged.emit()
             self.refresh()
+        self._show_reviews(result['reviews'], blocked)
         self.notice.setText(f"Staged {len(staged)} edits in one Undo step. " +
                             ("\n".join(blocked.values()) if blocked else "All checks passed."))
 

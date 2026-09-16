@@ -704,7 +704,7 @@ class PlayCallingService:
         def block(i, why):
             what, where = self.describe_request(requests[i])
             blockers.setdefault(i, {'index': i, 'what': what, 'where': where, 'why': why,
-                                   'fix': 'Change the referenced controls and replace this pending row, or clear it and confirm again.'})
+                                   'fix': 'Clear this row, adjust its controls, and add it again.'})
 
         # Explicit formation references conflict regardless of queue order.
         for i, request in enumerate(requests):
@@ -746,8 +746,16 @@ class PlayCallingService:
         blocked_books = {requests[i].get('book') for i in blockers} - {None}
         global_dependency = any(r.get('kind') in global_kinds for r in requests)
         if blockers:
+            # A pending addition consumes its donor too. Propagate blockers
+            # through donor chains before publishing any independent edits.
+            while True:
+                dependent = {r['book'] for r in requests if r.get('kind') == 'add'
+                             and r.get('donor') in blocked_books}
+                if dependent <= blocked_books:
+                    break
+                blocked_books.update(dependent)
+            retired_books = {r.get('book') for r in requests if r.get('kind') == 'retire'} & blocked_books
             for i, request in enumerate(requests):
-                retired_books = {r.get('book') for r in requests if r.get('kind') == 'retire'} & blocked_books
                 paired_tendency = request.get('kind') == 'tendency' and any(
                     t['team_index'] == request['team'] and t['offense'] in retired_books for t in initial.teams)
                 if global_dependency or request.get('book') in blocked_books or paired_tendency:

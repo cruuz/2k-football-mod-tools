@@ -27,6 +27,7 @@ class QueueQtTests(FacadeFixture):
     def test_confirm_personnel_runs_review_without_an_extra_click_or_details(self):
         panel = self.panel
         engine = self.facade._playcalling
+        panel.modifiedChanged.connect(panel.set_context)
         self.assertFalse(panel.details_toggle.isChecked())
         self.assertTrue(panel.review_details.isHidden())
         self.assertIn('Confirm personnel', panel.categories_button.text())
@@ -81,7 +82,8 @@ class QueueQtTests(FacadeFixture):
         self.assertEqual(len(self.facade._playcalling.events(self.facade.session)), 1)
         for row in range(2):
             text = p.pending_table.item(row, 2).text()
-            self.assertIn('O-ManBlock', text); self.assertIn('formation 62', text)
+            location = p.pending_table.item(row, 1).text()
+            self.assertIn('O-ManBlock', location); self.assertIn('formation 62', location)
             self.assertIn('removes', text); self.assertIn('Fix:', text)
         p.donor_picker.setCurrentText('USER-o')
         self.assertEqual(len(p._pending), 2)
@@ -90,6 +92,17 @@ class QueueQtTests(FacadeFixture):
         p.confirm_button.click()
         self.assertEqual(p._pending, [])
         self.assertEqual(self.facade._playcalling.events(self.facade.session)[-1]['request']['book'], 'O-ManBlock')
+
+    def test_pending_blockers_wrap_within_studio_table_and_keep_clear_visible(self):
+        from mod_editor.apf_studio.apf_theme import install_theme
+        install_theme(self.app)
+        p = self.panel; p.resize(1200, 900); p.show(); self.app.processEvents()
+        p.queue_edits.click(); p.remove_button.click(); p.ratings_button.click(); p.confirm_button.click()
+        self.app.processEvents()
+        self.assertTrue(p.pending_table.wordWrap())
+        self.assertEqual(p.pending_table.horizontalScrollBar().maximum(), 0)
+        self.assertGreater(p.pending_table.rowHeight(0), 34)
+        self.assertLess(p.pending_table.columnViewportPosition(3), p.pending_table.viewport().width())
 
     def test_clear_is_draft_only_and_failed_write_keeps_pending(self):
         p = self.panel; p.queue_edits.click(); p.ratings_button.click()
