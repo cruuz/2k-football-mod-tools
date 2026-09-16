@@ -6,7 +6,7 @@ OUT=Path(__file__).resolve().parent
 BASE='02bbadd184e85498a441d3be71e70f8de94b9b0a'
 BRANCH='refs/heads/astra/b71-s9-down-label'
 GIT=['git','--git-dir=.scratch/astra-b71-s9.git','--work-tree=.']
-rows=[]
+rows=json.loads((ROOT/'.scratch/delivery_commands.json').read_text()) if (ROOT/'.scratch/delivery_commands.json').exists() else []
 def run(argv):
  started=datetime.datetime.now(datetime.timezone.utc).isoformat();tick=time.monotonic()
  p=subprocess.run(argv,cwd=ROOT,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)

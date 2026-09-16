@@ -77,14 +77,14 @@ ROUTINE 0x285e0 0x28710
 000286fc  mov       dword ptr [0xa6aa64], ecx
 00028702  add       esp, 0x30
 00028705  ret       0x10
-00028708  nop       
-00028709  nop       
-0002870a  nop       
-0002870b  nop       
-0002870c  nop       
-0002870d  nop       
-0002870e  nop       
-0002870f  nop       
+00028708  nop
+00028709  nop
+0002870a  nop
+0002870b  nop
+0002870c  nop
+0002870d  nop
+0002870e  nop
+0002870f  nop
 
 ROUTINE 0x29040 0x29140
 00029040  je        0x2907d
@@ -195,18 +195,18 @@ ROUTINE 0x22520 0x225c0
 00022598  pop       esi
 00022599  mov       dword ptr [edx + 0xc], eax
 0002259c  pop       ebx
-0002259d  ret       
-0002259e  nop       
-0002259f  nop       
+0002259d  ret
+0002259e  nop
+0002259f  nop
 000225a0  test      eax, eax
 000225a2  jne       0x225a7
 000225a4  ret       4
 000225a7  mov       eax, dword ptr [eax]
 000225a9  ret       4
-000225ac  nop       
-000225ad  nop       
-000225ae  nop       
-000225af  nop       
+000225ac  nop
+000225ad  nop
+000225ae  nop
+000225af  nop
 000225b0  test      eax, eax
 000225b2  je        0x225cb
 000225b4  mov       eax, dword ptr [eax]

@@ -22,19 +22,19 @@ ROUTINE 0x2fe60 0x30100
 0002fe9c  mov       dword ptr [esi + 0xc], eax
 0002fe9f  pop       esi
 0002fea0  ret       4
-0002fea3  nop       
-0002fea4  nop       
-0002fea5  nop       
-0002fea6  nop       
-0002fea7  nop       
-0002fea8  nop       
-0002fea9  nop       
-0002feaa  nop       
-0002feab  nop       
-0002feac  nop       
-0002fead  nop       
-0002feae  nop       
-0002feaf  nop       
+0002fea3  nop
+0002fea4  nop
+0002fea5  nop
+0002fea6  nop
+0002fea7  nop
+0002fea8  nop
+0002fea9  nop
+0002feaa  nop
+0002feab  nop
+0002feac  nop
+0002fead  nop
+0002feae  nop
+0002feaf  nop
 0002feb0  push      ebx
 0002feb1  push      esi
 0002feb2  mov       esi, ecx
@@ -83,23 +83,23 @@ ROUTINE 0x2fe60 0x30100
 0002ff44  mov       dword ptr [esi + 0x318], eax
 0002ff4a  pop       esi
 0002ff4b  pop       ebx
-0002ff4c  ret       
-0002ff4d  nop       
-0002ff4e  nop       
-0002ff4f  nop       
+0002ff4c  ret
+0002ff4d  nop
+0002ff4e  nop
+0002ff4f  nop
 0002ff50  xor       eax, eax
 0002ff52  ret       8
-0002ff55  nop       
-0002ff56  nop       
-0002ff57  nop       
-0002ff58  nop       
-0002ff59  nop       
-0002ff5a  nop       
-0002ff5b  nop       
-0002ff5c  nop       
-0002ff5d  nop       
-0002ff5e  nop       
-0002ff5f  nop       
+0002ff55  nop
+0002ff56  nop
+0002ff57  nop
+0002ff58  nop
+0002ff59  nop
+0002ff5a  nop
+0002ff5b  nop
+0002ff5c  nop
+0002ff5d  nop
+0002ff5e  nop
+0002ff5f  nop
 0002ff60  push      esi
 0002ff61  lea       esi, [edx + 0x80]
 0002ff67  cmp       edx, esi
@@ -132,9 +132,9 @@ ROUTINE 0x2fe60 0x30100
 0002ffa8  pop       edi
 0002ffa9  pop       esi
 0002ffaa  ret       0x10
-0002ffad  nop       
-0002ffae  nop       
-0002ffaf  nop       
+0002ffad  nop
+0002ffae  nop
+0002ffaf  nop
 0002ffb0  push      ecx
 0002ffb1  mov       edx, dword ptr [ecx + eax*4 + 0x40]
 0002ffb5  and       edx, 0x1fff
@@ -144,21 +144,21 @@ ROUTINE 0x2fe60 0x30100
 0002ffc9  call      0x2fc20
 0002ffce  fsubp     st(1)
 0002ffd0  pop       ecx
-0002ffd1  ret       
-0002ffd2  nop       
-0002ffd3  nop       
-0002ffd4  nop       
-0002ffd5  nop       
-0002ffd6  nop       
-0002ffd7  nop       
-0002ffd8  nop       
-0002ffd9  nop       
-0002ffda  nop       
-0002ffdb  nop       
-0002ffdc  nop       
-0002ffdd  nop       
-0002ffde  nop       
-0002ffdf  nop       
+0002ffd1  ret
+0002ffd2  nop
+0002ffd3  nop
+0002ffd4  nop
+0002ffd5  nop
+0002ffd6  nop
+0002ffd7  nop
+0002ffd8  nop
+0002ffd9  nop
+0002ffda  nop
+0002ffdb  nop
+0002ffdc  nop
+0002ffdd  nop
+0002ffde  nop
+0002ffdf  nop
 0002ffe0  sub       esp, 8
 0002ffe3  push      ebx
 0002ffe4  mov       ebx, dword ptr [esp + 0x14]

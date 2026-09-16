@@ -33,11 +33,11 @@ ROUTINE 0xfbc70 0xfbcbe
 000fbcb3  add       eax, ecx
 000fbcb5  pop       ebx
 000fbcb6  ret       4
-000fbcb9  nop       
-000fbcba  nop       
-000fbcbb  nop       
-000fbcbc  nop       
-000fbcbd  nop       
+000fbcb9  nop
+000fbcba  nop
+000fbcbb  nop
+000fbcbc  nop
+000fbcbd  nop
 
 ROUTINE 0xfc360 0xfc760
 000fc360  push      ebp
@@ -255,20 +255,20 @@ ROUTINE 0xfc360 0xfc760
 000fc6a5  pop       ebx
 000fc6a6  mov       esp, ebp
 000fc6a8  pop       ebp
-000fc6a9  ret       
-000fc6aa  nop       
-000fc6ab  nop       
-000fc6ac  nop       
-000fc6ad  nop       
-000fc6ae  nop       
-000fc6af  nop       
+000fc6a9  ret
+000fc6aa  nop
+000fc6ab  nop
+000fc6ac  nop
+000fc6ad  nop
+000fc6ae  nop
+000fc6af  nop
 000fc6b0  xor       eax, eax
 000fc6b2  mov       dword ptr [0xa957e0], eax
 000fc6b7  mov       dword ptr [0xa95524], eax
-000fc6bc  ret       
-000fc6bd  nop       
-000fc6be  nop       
-000fc6bf  nop       
+000fc6bc  ret
+000fc6bd  nop
+000fc6be  nop
+000fc6bf  nop
 000fc6c0  push      ebp
 000fc6c1  mov       ebp, esp
 000fc6c3  mov       eax, dword ptr [ebp + 8]
@@ -277,53 +277,53 @@ ROUTINE 0xfc360 0xfc760
 000fc6d5  call      0xfc6b0
 000fc6da  pop       ebp
 000fc6db  ret       4
-000fc6de  nop       
-000fc6df  nop       
+000fc6de  nop
+000fc6df  nop
 000fc6e0  mov       dword ptr [0xa957e0], 0
 000fc6ea  mov       dword ptr [0xa95524], 1
-000fc6f4  ret       
-000fc6f5  nop       
-000fc6f6  nop       
-000fc6f7  nop       
-000fc6f8  nop       
-000fc6f9  nop       
-000fc6fa  nop       
-000fc6fb  nop       
-000fc6fc  nop       
-000fc6fd  nop       
-000fc6fe  nop       
-000fc6ff  nop       
+000fc6f4  ret
+000fc6f5  nop
+000fc6f6  nop
+000fc6f7  nop
+000fc6f8  nop
+000fc6f9  nop
+000fc6fa  nop
+000fc6fb  nop
+000fc6fc  nop
+000fc6fd  nop
+000fc6fe  nop
+000fc6ff  nop
 000fc700  mov       dword ptr [0xa95870], ecx
 000fc706  jmp       0xfc200
-000fc70b  nop       
-000fc70c  nop       
-000fc70d  nop       
-000fc70e  nop       
-000fc70f  nop       
+000fc70b  nop
+000fc70c  nop
+000fc70d  nop
+000fc70e  nop
+000fc70f  nop
 000fc710  mov       eax, dword ptr [0xa95524]
-000fc715  ret       
-000fc716  nop       
-000fc717  nop       
-000fc718  nop       
-000fc719  nop       
-000fc71a  nop       
-000fc71b  nop       
-000fc71c  nop       
-000fc71d  nop       
-000fc71e  nop       
-000fc71f  nop       
+000fc715  ret
+000fc716  nop
+000fc717  nop
+000fc718  nop
+000fc719  nop
+000fc71a  nop
+000fc71b  nop
+000fc71c  nop
+000fc71d  nop
+000fc71e  nop
+000fc71f  nop
 000fc720  mov       eax, dword ptr [0xa95870]
-000fc725  ret       
-000fc726  nop       
-000fc727  nop       
-000fc728  nop       
-000fc729  nop       
-000fc72a  nop       
-000fc72b  nop       
-000fc72c  nop       
-000fc72d  nop       
-000fc72e  nop       
-000fc72f  nop       
+000fc725  ret
+000fc726  nop
+000fc727  nop
+000fc728  nop
+000fc729  nop
+000fc72a  nop
+000fc72b  nop
+000fc72c  nop
+000fc72d  nop
+000fc72e  nop
+000fc72f  nop
 000fc730  push      ebp
 000fc731  mov       ebp, esp
 000fc733  mov       eax, dword ptr [ebp + 8]
@@ -333,12 +333,12 @@ ROUTINE 0xfc360 0xfc760
 000fc74d  mov       dword ptr [ecx + 0xa95a1c], eax
 000fc753  pop       ebp
 000fc754  ret       4
-000fc757  nop       
-000fc758  nop       
-000fc759  nop       
-000fc75a  nop       
-000fc75b  nop       
-000fc75c  nop       
-000fc75d  nop       
-000fc75e  nop       
-000fc75f  nop       
+000fc757  nop
+000fc758  nop
+000fc759  nop
+000fc75a  nop
+000fc75b  nop
+000fc75c  nop
+000fc75d  nop
+000fc75e  nop
+000fc75f  nop

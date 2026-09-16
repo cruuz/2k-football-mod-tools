@@ -222,7 +222,7 @@ ROUTINE 0x245b9 0x249b0
 000248e8  lea       ecx, [eax + ecx*4]
 000248eb  cmp       eax, ecx
 000248ed  jae       0x248fe
-000248ef  nop       
+000248ef  nop
 000248f0  mov       edx, dword ptr [eax]
 000248f2  mov       dword ptr [esi], edx
 000248f4  add       eax, 4
@@ -263,14 +263,14 @@ ROUTINE 0x245b9 0x249b0
 00024972  mov       esp, ebp
 00024974  pop       ebp
 00024975  ret       0xc
-00024978  nop       
-00024979  nop       
-0002497a  nop       
-0002497b  nop       
-0002497c  nop       
-0002497d  nop       
-0002497e  nop       
-0002497f  nop       
+00024978  nop
+00024979  nop
+0002497a  nop
+0002497b  nop
+0002497c  nop
+0002497d  nop
+0002497e  nop
+0002497f  nop
 00024980  mov       eax, dword ptr [esp + 0xc]
 00024984  push      eax
 00024985  mov       eax, dword ptr [esp + 8]
@@ -280,19 +280,19 @@ ROUTINE 0x245b9 0x249b0
 00024990  push      eax
 00024991  call      0x243d0
 00024996  ret       0xc
-00024999  nop       
-0002499a  nop       
-0002499b  nop       
-0002499c  nop       
-0002499d  nop       
-0002499e  nop       
-0002499f  nop       
+00024999  nop
+0002499a  nop
+0002499b  nop
+0002499c  nop
+0002499d  nop
+0002499e  nop
+0002499f  nop
 000249a0  cvttss2si eax, dword ptr [esp + 4]
 000249a6  ret       4
-000249a9  nop       
-000249aa  nop       
-000249ab  nop       
-000249ac  nop       
-000249ad  nop       
-000249ae  nop       
-000249af  nop       
+000249a9  nop
+000249aa  nop
+000249ab  nop
+000249ac  nop
+000249ad  nop
+000249ae  nop
+000249af  nop

@@ -155,23 +155,23 @@ ROUTINE 0x2b5b0 0x2b890
 0002b84e  pop       ebx
 0002b84f  mov       esp, ebp
 0002b851  pop       ebp
-0002b852  ret       
-0002b853  nop       
-0002b854  nop       
-0002b855  nop       
-0002b856  nop       
-0002b857  nop       
-0002b858  nop       
-0002b859  nop       
-0002b85a  nop       
-0002b85b  nop       
-0002b85c  nop       
-0002b85d  nop       
-0002b85e  nop       
-0002b85f  nop       
+0002b852  ret
+0002b853  nop
+0002b854  nop
+0002b855  nop
+0002b856  nop
+0002b857  nop
+0002b858  nop
+0002b859  nop
+0002b85a  nop
+0002b85b  nop
+0002b85c  nop
+0002b85d  nop
+0002b85e  nop
+0002b85f  nop
 0002b860  sub       esp, 8
 0002b863  mov       eax, edx
-0002b865  cdq       
+0002b865  cdq
 0002b866  sub       eax, edx
 0002b868  sar       eax, 1
 0002b86a  lea       edx, [eax + 0x4000]

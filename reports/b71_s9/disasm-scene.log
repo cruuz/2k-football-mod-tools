@@ -7,7 +7,7 @@ ROUTINE 0x21860 0x218ff
 00021868  jne       0x2186e
 0002186a  xor       eax, eax
 0002186c  pop       esi
-0002186d  ret       
+0002186d  ret
 0002186e  push      ebx
 0002186f  mov       ebx, dword ptr [esi + 0xc]
 00021872  test      bl, 0x10
@@ -15,7 +15,7 @@ ROUTINE 0x21860 0x218ff
 00021877  pop       ebx
 00021878  xor       eax, eax
 0002187a  pop       esi
-0002187b  ret       
+0002187b  ret
 0002187c  test      bl, 4
 0002187f  jne       0x21893
 00021881  call      0x2adb0
@@ -42,62 +42,62 @@ ROUTINE 0x21860 0x218ff
 000218bb  pop       ebx
 000218bc  mov       eax, 1
 000218c1  pop       esi
-000218c2  ret       
-000218c3  nop       
-000218c4  nop       
-000218c5  nop       
-000218c6  nop       
-000218c7  nop       
-000218c8  nop       
-000218c9  nop       
-000218ca  nop       
-000218cb  nop       
-000218cc  nop       
-000218cd  nop       
-000218ce  nop       
-000218cf  nop       
+000218c2  ret
+000218c3  nop
+000218c4  nop
+000218c5  nop
+000218c6  nop
+000218c7  nop
+000218c8  nop
+000218c9  nop
+000218ca  nop
+000218cb  nop
+000218cc  nop
+000218cd  nop
+000218ce  nop
+000218cf  nop
 000218d0  mov       dword ptr [ecx + 8], edx
-000218d3  ret       
-000218d4  nop       
-000218d5  nop       
-000218d6  nop       
-000218d7  nop       
-000218d8  nop       
-000218d9  nop       
-000218da  nop       
-000218db  nop       
-000218dc  nop       
-000218dd  nop       
-000218de  nop       
-000218df  nop       
+000218d3  ret
+000218d4  nop
+000218d5  nop
+000218d6  nop
+000218d7  nop
+000218d8  nop
+000218d9  nop
+000218da  nop
+000218db  nop
+000218dc  nop
+000218dd  nop
+000218de  nop
+000218df  nop
 000218e0  mov       dword ptr [ecx + 0xc], edx
-000218e3  ret       
-000218e4  nop       
-000218e5  nop       
-000218e6  nop       
-000218e7  nop       
-000218e8  nop       
-000218e9  nop       
-000218ea  nop       
-000218eb  nop       
-000218ec  nop       
-000218ed  nop       
-000218ee  nop       
-000218ef  nop       
+000218e3  ret
+000218e4  nop
+000218e5  nop
+000218e6  nop
+000218e7  nop
+000218e8  nop
+000218e9  nop
+000218ea  nop
+000218eb  nop
+000218ec  nop
+000218ed  nop
+000218ee  nop
+000218ef  nop
 000218f0  mov       dword ptr [ecx], edx
-000218f2  ret       
-000218f3  nop       
-000218f4  nop       
-000218f5  nop       
-000218f6  nop       
-000218f7  nop       
-000218f8  nop       
-000218f9  nop       
-000218fa  nop       
-000218fb  nop       
-000218fc  nop       
-000218fd  nop       
-000218fe  nop       
+000218f2  ret
+000218f3  nop
+000218f4  nop
+000218f5  nop
+000218f6  nop
+000218f7  nop
+000218f8  nop
+000218f9  nop
+000218fa  nop
+000218fb  nop
+000218fc  nop
+000218fd  nop
+000218fe  nop
 
 ROUTINE 0x2ac80 0x2ae80
 0002ac80  mov       eax, 0xa6afc0
@@ -120,20 +120,20 @@ ROUTINE 0x2ac80 0x2ae80
 0002acbc  mov       eax, dword ptr [eax]
 0002acbe  test      eax, eax
 0002acc0  jne       0x2acb0
-0002acc2  ret       
-0002acc3  nop       
-0002acc4  nop       
-0002acc5  nop       
-0002acc6  nop       
-0002acc7  nop       
-0002acc8  nop       
-0002acc9  nop       
-0002acca  nop       
-0002accb  nop       
-0002accc  nop       
-0002accd  nop       
-0002acce  nop       
-0002accf  nop       
+0002acc2  ret
+0002acc3  nop
+0002acc4  nop
+0002acc5  nop
+0002acc6  nop
+0002acc7  nop
+0002acc8  nop
+0002acc9  nop
+0002acca  nop
+0002accb  nop
+0002accc  nop
+0002accd  nop
+0002acce  nop
+0002accf  nop
 0002acd0  movaps    xmm0, xmmword ptr [0x4e6040]
 0002acd7  mov       eax, dword ptr [ecx + 0xc]
 0002acda  movaps    xmmword ptr [ecx + 0x40], xmm0
@@ -160,20 +160,20 @@ ROUTINE 0x2ac80 0x2ae80
 0002ad49  mov       dword ptr [eax + 0x44], edx
 0002ad4c  add       eax, 0x48
 0002ad4f  mov       dword ptr [ecx + 0xc], eax
-0002ad52  ret       
-0002ad53  nop       
-0002ad54  nop       
-0002ad55  nop       
-0002ad56  nop       
-0002ad57  nop       
-0002ad58  nop       
-0002ad59  nop       
-0002ad5a  nop       
-0002ad5b  nop       
-0002ad5c  nop       
-0002ad5d  nop       
-0002ad5e  nop       
-0002ad5f  nop       
+0002ad52  ret
+0002ad53  nop
+0002ad54  nop
+0002ad55  nop
+0002ad56  nop
+0002ad57  nop
+0002ad58  nop
+0002ad59  nop
+0002ad5a  nop
+0002ad5b  nop
+0002ad5c  nop
+0002ad5d  nop
+0002ad5e  nop
+0002ad5f  nop
 0002ad60  mov       eax, dword ptr [esp + 8]
 0002ad64  push      esi
 0002ad65  push      eax
@@ -184,13 +184,13 @@ ROUTINE 0x2ac80 0x2ae80
 0002ad73  pop       esi
 0002ad74  fmulp     st(1)
 0002ad76  ret       8
-0002ad79  nop       
-0002ad7a  nop       
-0002ad7b  nop       
-0002ad7c  nop       
-0002ad7d  nop       
-0002ad7e  nop       
-0002ad7f  nop       
+0002ad79  nop
+0002ad7a  nop
+0002ad7b  nop
+0002ad7c  nop
+0002ad7d  nop
+0002ad7e  nop
+0002ad7f  nop
 0002ad80  mov       edx, dword ptr [0xa6afb4]
 0002ad86  mov       eax, ecx
 0002ad88  lea       ecx, [eax + 0x2b0]
@@ -202,32 +202,32 @@ ROUTINE 0x2ac80 0x2ae80
 0002ad9b  add       edx, 0x10
 0002ad9e  cmp       eax, ecx
 0002ada0  jb        0x2ad92
-0002ada2  ret       
-0002ada3  nop       
-0002ada4  nop       
-0002ada5  nop       
-0002ada6  nop       
-0002ada7  nop       
-0002ada8  nop       
-0002ada9  nop       
-0002adaa  nop       
-0002adab  nop       
-0002adac  nop       
-0002adad  nop       
-0002adae  nop       
-0002adaf  nop       
+0002ada2  ret
+0002ada3  nop
+0002ada4  nop
+0002ada5  nop
+0002ada6  nop
+0002ada7  nop
+0002ada8  nop
+0002ada9  nop
+0002adaa  nop
+0002adab  nop
+0002adac  nop
+0002adad  nop
+0002adae  nop
+0002adaf  nop
 0002adb0  mov       eax, dword ptr [0xa6afb4]
-0002adb5  ret       
-0002adb6  nop       
-0002adb7  nop       
-0002adb8  nop       
-0002adb9  nop       
-0002adba  nop       
-0002adbb  nop       
-0002adbc  nop       
-0002adbd  nop       
-0002adbe  nop       
-0002adbf  nop       
+0002adb5  ret
+0002adb6  nop
+0002adb7  nop
+0002adb8  nop
+0002adb9  nop
+0002adba  nop
+0002adbb  nop
+0002adbc  nop
+0002adbd  nop
+0002adbe  nop
+0002adbf  nop
 0002adc0  push      ebp
 0002adc1  mov       ebp, esp
 0002adc3  and       esp, 0xfffffff0
@@ -240,14 +240,14 @@ ROUTINE 0x2ac80 0x2ae80
 0002add8  fld       dword ptr [esp + 0x18]
 0002addc  fsub      dword ptr [ebp + 8]
 0002addf  fld       dword ptr [esi + 0x238]
-0002ade5  fcompp    
+0002ade5  fcompp
 0002ade7  fnstsw    ax
 0002ade9  test      ah, 5
 0002adec  jnp       0x2ae76
 0002adf2  fld       dword ptr [esp + 0x18]
 0002adf6  fadd      dword ptr [ebp + 8]
 0002adf9  fld       dword ptr [esi + 0x248]
-0002adff  fcompp    
+0002adff  fcompp
 0002ae01  fnstsw    ax
 0002ae03  test      ah, 0x41
 0002ae06  je        0x2ae76
@@ -259,14 +259,14 @@ ROUTINE 0x2ac80 0x2ae80
 0002ae1e  fsub      st(2)
 0002ae20  fld       dword ptr [esi + 0x284]
 0002ae26  fsubr     dword ptr [ebp + 8]
-0002ae29  fcompp    
+0002ae29  fcompp
 0002ae2b  fnstsw    ax
 0002ae2d  test      ah, 0x41
 0002ae30  jnp       0x2ae72
 0002ae32  fadd      st(1)
 0002ae34  fld       dword ptr [esi + 0x288]
 0002ae3a  fadd      dword ptr [ebp + 8]
-0002ae3d  fcompp    
+0002ae3d  fcompp
 0002ae3f  fnstsw    ax
 0002ae41  fstp      st(0)
 0002ae43  test      ah, 0x41
@@ -279,7 +279,7 @@ ROUTINE 0x2ac80 0x2ae80
 0002ae5e  fsub      st(2)
 0002ae60  fld       dword ptr [esi + 0x28c]
 0002ae66  fsubr     dword ptr [ebp + 8]
-0002ae69  fcompp    
+0002ae69  fcompp
 0002ae6b  fnstsw    ax
 0002ae6d  test      ah, 0x41
 0002ae70  jp        0x2ae7f
@@ -298,34 +298,34 @@ ROUTINE 0x21000 0x21860
 0002100b  fstp      dword ptr [esp]
 0002100e  call      0x20e60
 00021013  ret       4
-00021016  nop       
-00021017  nop       
-00021018  nop       
-00021019  nop       
-0002101a  nop       
-0002101b  nop       
-0002101c  nop       
-0002101d  nop       
-0002101e  nop       
-0002101f  nop       
+00021016  nop
+00021017  nop
+00021018  nop
+00021019  nop
+0002101a  nop
+0002101b  nop
+0002101c  nop
+0002101d  nop
+0002101e  nop
+0002101f  nop
 00021020  mov       eax, dword ptr [esp + 4]
 00021024  push      eax
 00021025  call      0x20f20
 0002102a  fmul      dword ptr [0x4e5c48]
 00021030  ret       4
-00021033  nop       
-00021034  nop       
-00021035  nop       
-00021036  nop       
-00021037  nop       
-00021038  nop       
-00021039  nop       
-0002103a  nop       
-0002103b  nop       
-0002103c  nop       
-0002103d  nop       
-0002103e  nop       
-0002103f  nop       
+00021033  nop
+00021034  nop
+00021035  nop
+00021036  nop
+00021037  nop
+00021038  nop
+00021039  nop
+0002103a  nop
+0002103b  nop
+0002103c  nop
+0002103d  nop
+0002103e  nop
+0002103f  nop
 00021040  fld       dword ptr [esp + 4]
 00021044  fcomp     dword ptr [0x4e4180]
 0002104a  fnstsw    ax
@@ -356,8 +356,8 @@ ROUTINE 0x21000 0x21860
 000210a3  fstp      dword ptr [esp]
 000210a6  call      0x20e60
 000210ab  ret       8
-000210ae  nop       
-000210af  nop       
+000210ae  nop
+000210af  nop
 000210b0  fld       dword ptr [esp + 8]
 000210b4  or        ecx, 0xffffffff
 000210b7  fcomp     dword ptr [0x4e4180]
@@ -367,7 +367,7 @@ ROUTINE 0x21000 0x21860
 000210c7  jp        0x210d5
 000210c9  fld       dword ptr [esp + 8]
 000210cd  xor       ecx, ecx
-000210cf  fchs      
+000210cf  fchs
 000210d1  fstp      dword ptr [esp + 8]
 000210d5  fld       dword ptr [esp + 4]
 000210d9  fcomp     dword ptr [0x4e4180]
@@ -376,7 +376,7 @@ ROUTINE 0x21000 0x21860
 000210e4  jp        0x210f7
 000210e6  fld       dword ptr [esp + 4]
 000210ea  not       ecx
-000210ec  fchs      
+000210ec  fchs
 000210ee  mov       edx, 0xffffc000
 000210f3  fstp      dword ptr [esp + 4]
 000210f7  fld       dword ptr [esp + 8]
@@ -422,15 +422,15 @@ ROUTINE 0x21000 0x21860
 00021180  sub       eax, ecx
 00021182  add       eax, edx
 00021184  ret       8
-00021187  nop       
-00021188  nop       
-00021189  nop       
-0002118a  nop       
-0002118b  nop       
-0002118c  nop       
-0002118d  nop       
-0002118e  nop       
-0002118f  nop       
+00021187  nop
+00021188  nop
+00021189  nop
+0002118a  nop
+0002118b  nop
+0002118c  nop
+0002118d  nop
+0002118e  nop
+0002118f  nop
 00021190  fld       dword ptr [0x4e5c74]
 00021196  mov       ecx, 1
 0002119b  fld       dword ptr [esp + 8]
@@ -440,7 +440,7 @@ ROUTINE 0x21000 0x21860
 000211aa  jp        0x211b8
 000211ac  fld       dword ptr [esp + 8]
 000211b0  xor       ecx, ecx
-000211b2  fchs      
+000211b2  fchs
 000211b4  fstp      dword ptr [esp + 8]
 000211b8  fld       dword ptr [esp + 4]
 000211bc  fcomp     dword ptr [0x4e4180]
@@ -452,7 +452,7 @@ ROUTINE 0x21000 0x21860
 000211cd  fld       dword ptr [esp + 4]
 000211d1  test      ecx, ecx
 000211d3  sete      al
-000211d6  fchs      
+000211d6  fchs
 000211d8  fstp      dword ptr [esp + 4]
 000211dc  fld       dword ptr [0x4e5c70]
 000211e2  mov       ecx, eax
@@ -508,10 +508,10 @@ ROUTINE 0x21000 0x21860
 00021285  fxch      st(1)
 00021287  fstp      st(0)
 00021289  ret       8
-0002128c  nop       
-0002128d  nop       
-0002128e  nop       
-0002128f  nop       
+0002128c  nop
+0002128d  nop
+0002128e  nop
+0002128f  nop
 00021290  push      ecx
 00021291  fld       dword ptr [esp + 8]
 00021295  fcomp     dword ptr [0x4e5c7c]
@@ -546,26 +546,26 @@ ROUTINE 0x21000 0x21860
 000212f5  fstp      dword ptr [esp + 8]
 000212f9  je        0x21305
 000212fb  fld       dword ptr [esp + 8]
-000212ff  fchs      
+000212ff  fchs
 00021301  fstp      dword ptr [esp + 8]
 00021305  mov       ecx, dword ptr [esp + 8]
 00021309  push      ecx
 0002130a  call      0x20b20
 0002130f  pop       ecx
 00021310  ret       4
-00021313  nop       
-00021314  nop       
-00021315  nop       
-00021316  nop       
-00021317  nop       
-00021318  nop       
-00021319  nop       
-0002131a  nop       
-0002131b  nop       
-0002131c  nop       
-0002131d  nop       
-0002131e  nop       
-0002131f  nop       
+00021313  nop
+00021314  nop
+00021315  nop
+00021316  nop
+00021317  nop
+00021318  nop
+00021319  nop
+0002131a  nop
+0002131b  nop
+0002131c  nop
+0002131d  nop
+0002131e  nop
+0002131f  nop
 00021320  push      ecx
 00021321  fld       dword ptr [esp + 8]
 00021325  fcomp     dword ptr [0x4e5c7c]
@@ -597,16 +597,16 @@ ROUTINE 0x21000 0x21860
 0002137b  mov       eax, dword ptr [esp]
 0002137f  test      eax, eax
 00021381  je        0x21385
-00021383  fchs      
+00021383  fchs
 00021385  pop       ecx
 00021386  ret       4
-00021389  nop       
-0002138a  nop       
-0002138b  nop       
-0002138c  nop       
-0002138d  nop       
-0002138e  nop       
-0002138f  nop       
+00021389  nop
+0002138a  nop
+0002138b  nop
+0002138c  nop
+0002138d  nop
+0002138e  nop
+0002138f  nop
 00021390  push      ecx
 00021391  fld       dword ptr [esp + 8]
 00021395  fcomp     dword ptr [0x4e5c7c]
@@ -645,15 +645,15 @@ ROUTINE 0x21000 0x21860
 000213fe  call      0x20b20
 00021403  pop       ecx
 00021404  ret       4
-00021407  nop       
-00021408  nop       
-00021409  nop       
-0002140a  nop       
-0002140b  nop       
-0002140c  nop       
-0002140d  nop       
-0002140e  nop       
-0002140f  nop       
+00021407  nop
+00021408  nop
+00021409  nop
+0002140a  nop
+0002140b  nop
+0002140c  nop
+0002140d  nop
+0002140e  nop
+0002140f  nop
 00021410  push      ecx
 00021411  fld       dword ptr [esp + 8]
 00021415  fcomp     dword ptr [0x4e5c7c]
@@ -688,67 +688,67 @@ ROUTINE 0x21000 0x21860
 00021473  fsubr     dword ptr [0x4e5c84]
 00021479  pop       ecx
 0002147a  ret       4
-0002147d  nop       
-0002147e  nop       
-0002147f  nop       
+0002147d  nop
+0002147e  nop
+0002147f  nop
 00021480  mov       eax, dword ptr [esp + 4]
 00021484  push      0x3f800000
 00021489  push      eax
 0002148a  call      0x210b0
 0002148f  ret       4
-00021492  nop       
-00021493  nop       
-00021494  nop       
-00021495  nop       
-00021496  nop       
-00021497  nop       
-00021498  nop       
-00021499  nop       
-0002149a  nop       
-0002149b  nop       
-0002149c  nop       
-0002149d  nop       
-0002149e  nop       
-0002149f  nop       
+00021492  nop
+00021493  nop
+00021494  nop
+00021495  nop
+00021496  nop
+00021497  nop
+00021498  nop
+00021499  nop
+0002149a  nop
+0002149b  nop
+0002149c  nop
+0002149d  nop
+0002149e  nop
+0002149f  nop
 000214a0  mov       eax, dword ptr [esp + 4]
 000214a4  push      0x3f800000
 000214a9  push      eax
 000214aa  call      0x21190
 000214af  ret       4
-000214b2  nop       
-000214b3  nop       
-000214b4  nop       
-000214b5  nop       
-000214b6  nop       
-000214b7  nop       
-000214b8  nop       
-000214b9  nop       
-000214ba  nop       
-000214bb  nop       
-000214bc  nop       
-000214bd  nop       
-000214be  nop       
-000214bf  nop       
+000214b2  nop
+000214b3  nop
+000214b4  nop
+000214b5  nop
+000214b6  nop
+000214b7  nop
+000214b8  nop
+000214b9  nop
+000214ba  nop
+000214bb  nop
+000214bc  nop
+000214bd  nop
+000214be  nop
+000214bf  nop
 000214c0  mov       ecx, dword ptr [eax]
 000214c2  test      ecx, ecx
 000214c4  je        0x214cc
 000214c6  lea       ecx, [ecx + eax - 1]
 000214ca  mov       dword ptr [eax], ecx
-000214cc  ret       
-000214cd  nop       
-000214ce  nop       
-000214cf  nop       
+000214cc  ret
+000214cd  nop
+000214ce  nop
+000214cf  nop
 000214d0  mov       eax, dword ptr [ecx]
 000214d2  test      eax, eax
 000214d4  je        0x214db
 000214d6  sub       eax, ecx
 000214d8  inc       eax
 000214d9  mov       dword ptr [ecx], eax
-000214db  ret       
-000214dc  nop       
-000214dd  nop       
-000214de  nop       
-000214df  nop       
+000214db  ret
+000214dc  nop
+000214dd  nop
+000214de  nop
+000214df  nop
 000214e0  mov       ecx, 0x3f800000
 000214e5  mov       dword ptr [eax + 0x3c], ecx
 000214e8  mov       dword ptr [eax], ecx
@@ -767,16 +767,16 @@ ROUTINE 0x21000 0x21860
 0002150d  mov       dword ptr [eax + 0x30], ecx
 00021510  mov       dword ptr [eax + 0x34], ecx
 00021513  mov       dword ptr [eax + 0x38], ecx
-00021516  ret       
-00021517  nop       
-00021518  nop       
-00021519  nop       
-0002151a  nop       
-0002151b  nop       
-0002151c  nop       
-0002151d  nop       
-0002151e  nop       
-0002151f  nop       
+00021516  ret
+00021517  nop
+00021518  nop
+00021519  nop
+0002151a  nop
+0002151b  nop
+0002151c  nop
+0002151d  nop
+0002151e  nop
+0002151f  nop
 00021520  fld       dword ptr [edx]
 00021522  fld       dword ptr [edx + 4]
 00021525  fld       dword ptr [edx + 8]
@@ -823,22 +823,22 @@ ROUTINE 0x21000 0x21860
 0002158a  fstp      st(0)
 0002158c  fstp      st(0)
 0002158e  fstp      st(0)
-00021590  ret       
-00021591  nop       
-00021592  nop       
-00021593  nop       
-00021594  nop       
-00021595  nop       
-00021596  nop       
-00021597  nop       
-00021598  nop       
-00021599  nop       
-0002159a  nop       
-0002159b  nop       
-0002159c  nop       
-0002159d  nop       
-0002159e  nop       
-0002159f  nop       
+00021590  ret
+00021591  nop
+00021592  nop
+00021593  nop
+00021594  nop
+00021595  nop
+00021596  nop
+00021597  nop
+00021598  nop
+00021599  nop
+0002159a  nop
+0002159b  nop
+0002159c  nop
+0002159d  nop
+0002159e  nop
+0002159f  nop
 000215a0  push      ebp
 000215a1  mov       ebp, esp
 000215a3  and       esp, 0xfffffff0
@@ -883,16 +883,16 @@ ROUTINE 0x21000 0x21860
 00021622  pop       esi
 00021623  mov       esp, ebp
 00021625  pop       ebp
-00021626  ret       
-00021627  nop       
-00021628  nop       
-00021629  nop       
-0002162a  nop       
-0002162b  nop       
-0002162c  nop       
-0002162d  nop       
-0002162e  nop       
-0002162f  nop       
+00021626  ret
+00021627  nop
+00021628  nop
+00021629  nop
+0002162a  nop
+0002162b  nop
+0002162c  nop
+0002162d  nop
+0002162e  nop
+0002162f  nop
 00021630  push      ecx
 00021631  push      ebx
 00021632  push      ebp
@@ -975,16 +975,16 @@ ROUTINE 0x21000 0x21860
 000216f1  pop       ebx
 000216f2  pop       ecx
 000216f3  ret       4
-000216f6  nop       
-000216f7  nop       
-000216f8  nop       
-000216f9  nop       
-000216fa  nop       
-000216fb  nop       
-000216fc  nop       
-000216fd  nop       
-000216fe  nop       
-000216ff  nop       
+000216f6  nop
+000216f7  nop
+000216f8  nop
+000216f9  nop
+000216fa  nop
+000216fb  nop
+000216fc  nop
+000216fd  nop
+000216fe  nop
+000216ff  nop
 00021700  mov       eax, dword ptr [ecx]
 00021702  test      eax, eax
 00021704  je        0x2170b
@@ -1027,11 +1027,11 @@ ROUTINE 0x21000 0x21860
 00021753  inc       eax
 00021754  mov       dword ptr [ecx], eax
 00021756  mov       eax, 1
-0002175b  ret       
-0002175c  nop       
-0002175d  nop       
-0002175e  nop       
-0002175f  nop       
+0002175b  ret
+0002175c  nop
+0002175d  nop
+0002175e  nop
+0002175f  nop
 00021760  push      esi
 00021761  mov       esi, ecx
 00021763  mov       edx, dword ptr [esi + 0x1c]
@@ -1045,37 +1045,37 @@ ROUTINE 0x21000 0x21860
 0002177d  xor       dl, dl
 0002177f  call      0x31070
 00021784  pop       esi
-00021785  ret       
-00021786  nop       
-00021787  nop       
-00021788  nop       
-00021789  nop       
-0002178a  nop       
-0002178b  nop       
-0002178c  nop       
-0002178d  nop       
-0002178e  nop       
-0002178f  nop       
+00021785  ret
+00021786  nop
+00021787  nop
+00021788  nop
+00021789  nop
+0002178a  nop
+0002178b  nop
+0002178c  nop
+0002178d  nop
+0002178e  nop
+0002178f  nop
 00021790  mov       eax, dword ptr [esp + 4]
 00021794  mov       dword ptr [ecx + 0x10], eax
 00021797  or        dword ptr [ecx + 0xc], 1
 0002179b  ret       4
-0002179e  nop       
-0002179f  nop       
+0002179e  nop
+0002179f  nop
 000217a0  fld       dword ptr [ecx + 0x10]
-000217a3  ret       
-000217a4  nop       
-000217a5  nop       
-000217a6  nop       
-000217a7  nop       
-000217a8  nop       
-000217a9  nop       
-000217aa  nop       
-000217ab  nop       
-000217ac  nop       
-000217ad  nop       
-000217ae  nop       
-000217af  nop       
+000217a3  ret
+000217a4  nop
+000217a5  nop
+000217a6  nop
+000217a7  nop
+000217a8  nop
+000217a9  nop
+000217aa  nop
+000217ab  nop
+000217ac  nop
+000217ad  nop
+000217ae  nop
+000217af  nop
 000217b0  xor       eax, eax
 000217b2  mov       edx, 0x3f800000
 000217b7  mov       dword ptr [ecx + 0x5c], edx
@@ -1096,9 +1096,9 @@ ROUTINE 0x21000 0x21860
 000217e4  mov       dword ptr [ecx + 0x58], eax
 000217e7  mov       dword ptr [ecx + 0xc], eax
 000217ea  mov       dword ptr [ecx + 0x10], edx
-000217ed  ret       
-000217ee  nop       
-000217ef  nop       
+000217ed  ret
+000217ee  nop
+000217ef  nop
 000217f0  push      ebp
 000217f1  mov       ebp, esp
 000217f3  and       esp, 0xfffffff0
@@ -1125,7 +1125,7 @@ ROUTINE 0x21000 0x21860
 00021837  pop       esi
 00021838  mov       esp, ebp
 0002183a  pop       ebp
-0002183b  ret       
+0002183b  ret
 0002183c  mov       edx, dword ptr [esi + 0x14]
 0002183f  mov       ecx, dword ptr [esi + 8]
 00021842  lea       eax, [esi + 0x20]
@@ -1135,19 +1135,19 @@ ROUTINE 0x21000 0x21860
 0002184c  pop       esi
 0002184d  mov       esp, ebp
 0002184f  pop       ebp
-00021850  ret       
-00021851  nop       
-00021852  nop       
-00021853  nop       
-00021854  nop       
-00021855  nop       
-00021856  nop       
-00021857  nop       
-00021858  nop       
-00021859  nop       
-0002185a  nop       
-0002185b  nop       
-0002185c  nop       
-0002185d  nop       
-0002185e  nop       
-0002185f  nop       
+00021850  ret
+00021851  nop
+00021852  nop
+00021853  nop
+00021854  nop
+00021855  nop
+00021856  nop
+00021857  nop
+00021858  nop
+00021859  nop
+0002185a  nop
+0002185b  nop
+0002185c  nop
+0002185d  nop
+0002185e  nop
+0002185f  nop

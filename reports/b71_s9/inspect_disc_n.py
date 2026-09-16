@@ -29,4 +29,4 @@ a=scene.layout.sbpos.va_to_off(p,start);r=scene.layout.sbpos.va_to_off(retail,st
 changed=[start+i for i,(x,y) in enumerate(zip(p[a:a+end-start],retail[r:r+end-start])) if x!=y]
 print('changed visibility bytes',[hex(v) for v in changed])
 for ins in cs.disasm(p[a:a+end-start],start):
- if any(ins.address<=v<ins.address+ins.size for v in changed):print(hex(ins.address),ins.mnemonic,ins.op_str)
+ if any(ins.address<=v<ins.address+ins.size for v in changed):print(f'{hex(ins.address)} {ins.mnemonic} {ins.op_str}'.rstrip())

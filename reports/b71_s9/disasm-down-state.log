@@ -22,7 +22,7 @@ ROUTINE 0xfc7d0 0xfc9c0
 000fc80a  pop       ebx
 000fc80b  mov       esp, ebp
 000fc80d  pop       ebp
-000fc80e  ret       
+000fc80e  ret
 000fc80f  mov       edx, 0xe6c390
 000fc814  call      0x30ab0
 000fc819  pop       edi
@@ -30,7 +30,7 @@ ROUTINE 0xfc7d0 0xfc9c0
 000fc81b  pop       ebx
 000fc81c  mov       esp, ebp
 000fc81e  pop       ebp
-000fc81f  ret       
+000fc81f  ret
 000fc820  mov       edx, 0xe6c3a4
 000fc825  mov       ecx, ebx
 000fc827  call      0x30ab0
@@ -39,7 +39,7 @@ ROUTINE 0xfc7d0 0xfc9c0
 000fc82e  pop       ebx
 000fc82f  mov       esp, ebp
 000fc831  pop       ebp
-000fc832  ret       
+000fc832  ret
 000fc833  mov       edx, 0xe6c3bc
 000fc838  mov       ecx, ebx
 000fc83a  call      0x30ab0
@@ -48,7 +48,7 @@ ROUTINE 0xfc7d0 0xfc9c0
 000fc841  pop       ebx
 000fc842  mov       esp, ebp
 000fc844  pop       ebp
-000fc845  ret       
+000fc845  ret
 000fc846  mov       edx, 0xe6c3cc
 000fc84b  mov       ecx, ebx
 000fc84d  call      0x30ab0
@@ -57,7 +57,7 @@ ROUTINE 0xfc7d0 0xfc9c0
 000fc854  pop       ebx
 000fc855  mov       esp, ebp
 000fc857  pop       ebp
-000fc858  ret       
+000fc858  ret
 000fc859  mov       eax, dword ptr [0xe602ec]
 000fc85e  mov       eax, dword ptr [eax + 4]
 000fc861  dec       eax
@@ -150,7 +150,7 @@ ROUTINE 0xfc7d0 0xfc9c0
 000fc989  pop       ebx
 000fc98a  mov       esp, ebp
 000fc98c  pop       ebp
-000fc98d  ret       
+000fc98d  ret
 000fc98e  mov       edi, edi
 
 ROUTINE 0xfc9c0 0xfccd0
@@ -371,7 +371,7 @@ ROUTINE 0xfc9c0 0xfccd0
 000fccc5  pop       esi
 000fccc6  add       esp, 8
 000fccc9  ret       4
-000fcccc  nop       
-000fcccd  nop       
-000fccce  nop       
-000fcccf  nop       
+000fcccc  nop
+000fcccd  nop
+000fccce  nop
+000fcccf  nop

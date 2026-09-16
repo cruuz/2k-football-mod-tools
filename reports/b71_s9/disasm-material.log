@@ -182,28 +182,28 @@ ROUTINE 0x24160 0x243d0
 
 ROUTINE 0x28110 0x28160
 00028110  mov       eax, dword ptr [0xa6aa6c]
-00028115  ret       
-00028116  nop       
-00028117  nop       
-00028118  nop       
-00028119  nop       
-0002811a  nop       
-0002811b  nop       
-0002811c  nop       
-0002811d  nop       
-0002811e  nop       
-0002811f  nop       
+00028115  ret
+00028116  nop
+00028117  nop
+00028118  nop
+00028119  nop
+0002811a  nop
+0002811b  nop
+0002811c  nop
+0002811d  nop
+0002811e  nop
+0002811f  nop
 00028120  mov       dword ptr [0xa6aa3c], ecx
-00028126  ret       
-00028127  nop       
-00028128  nop       
-00028129  nop       
-0002812a  nop       
-0002812b  nop       
-0002812c  nop       
-0002812d  nop       
-0002812e  nop       
-0002812f  nop       
+00028126  ret
+00028127  nop
+00028128  nop
+00028129  nop
+0002812a  nop
+0002812b  nop
+0002812c  nop
+0002812d  nop
+0002812e  nop
+0002812f  nop
 00028130  sub       esp, 0x30
 00028133  push      ebx
 00028134  push      ebp

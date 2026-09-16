@@ -11,4 +11,4 @@ for arg in sys.argv[1:]:
  start,end=(int(v,16) for v in arg.split(':'))
  print('\nROUTINE',hex(start),hex(end))
  off=va_to_off(p,start)
- for i in cs.disasm(p[off:off+end-start],start):print(f'{i.address:08x}  {i.mnemonic:9} {i.op_str}')
+ for i in cs.disasm(p[off:off+end-start],start):print(f'{i.address:08x}  {i.mnemonic:9} {i.op_str}'.rstrip())

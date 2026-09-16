@@ -91,6 +91,8 @@ The final runner completed **37 standalone suites, 387 reported tests, 16 explic
 
 Each verification/forensic run below has its exact argv, UTC timestamps, elapsed seconds and exit status in the adjacent `.result.json`; stdout/stderr is in the linked log. Environment: `PYTHONPATH` is the worktree and `QT_QPA_PLATFORM=offscreen`. The table records failed investigative attempts as well as final successes. Routine read/edit tool calls and initial private-Git setup were not stopwatch-wrapped; no timing is invented for them.
 
+The first delivery whitespace check also rejected trailing padding on disassembled no-operand instructions. Log trailing whitespace was normalized without changing addresses, instruction text, hashes, line numbers or test results; that failed check is retained in `.scratch/delivery_commands.json`.
+
 Two corrected harness failures are retained: `submission-shipped` initially hit an unmapped read because the preview's stubbed `28110` was not restored; `submission-shipped-restored` fixes that boundary. `prove-states` passed its 400 numeric states at 4:3 then expected mixed-case “Goal” instead of the owner's existing uppercase “GOAL”; `prove-states-final` corrects that expectation and completes both aspects. Neither failure required a game-code change. Initial orphan-style shell launches did not survive the sandbox PID namespace; subsequent heavy runs use the detached-child supervisor.
 
 | UTC start | Seconds | Exit | Exact command | Output |
@@ -174,14 +176,17 @@ Two corrected harness failures are retained: `submission-shipped` initially hit 
 | 2026-09-16T23:56:36.751365+00:00 | 0.027 | 0 | `python3 reports/b71_s9/summarize_validation.py` | [validation-summary](reports/b71_s9/validation-summary.log) |
 | 2026-09-16T23:56:36.900735+00:00 | 10.644 | 0 | `python3 packaging/repin.py --apply` | [repin-before-evidence-commit](reports/b71_s9/repin-before-evidence-commit.log) |
 | 2026-09-16T23:57:03.664978+00:00 | 0.028 | 0 | `python3 reports/b71_s9/summarize_validation.py` | [validation-summary-final](reports/b71_s9/validation-summary-final.log) |
+| 2026-09-16T23:57:03.810001+00:00 | 0.044 | 0 | `python3 reports/b71_s9/write_report.py` | [write-report](reports/b71_s9/write-report.log) |
+| 2026-09-16T23:58:28.181027+00:00 | 10.638 | 0 | `python3 packaging/repin.py --apply` | [repin-before-evidence-cleanup](reports/b71_s9/repin-before-evidence-cleanup.log) |
 
 The final suite runner includes every standalone scorebug/scorebar suite, both root layout/project suites, provider integrity, product catalog, phase1 packaging, build/Qt, allocator/space, and strict registry validation. Individual logs record test counts and any precise skips. The new anchor regression is rerun separately against final sources; the byte audit confirms the default payload exercised by the sweep and earlier suites is unchanged.
 
-Code commits before evidence handoff:
+Commits present when this report was generated:
 
 ```text
 aa55a8b70f556b727b4bdb55d40c7714f949d46a Order sprite scorebug submissions by overlapping layout layers
 d99fe965a5936810bf8d4084cf52e18078899a80 Check sprite field overlaps at native anchors
+7cb8aed592efad73593a0cf27e8b5ca1172f1653 Record S9 native draw-order proof and hotfix candidate validation
 ```
 
 The evidence/report commit and final bundle verification are recorded after this report is committed in `.scratch/delivery_commands.json` (exact argv, time and exit status) and `.scratch/delivery.json` (head and bundle SHA-256). This avoids embedding a commit hash or bundle checksum inside itself. The normal Git worktree may still display changes because commits intentionally live only in the private Git directory.
