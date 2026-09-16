@@ -8197,7 +8197,7 @@ class FieldArtStudioPage(QWidget):
 
         if not self.editor.focus_target(route.key):
             return False
-        self.workspace_tabs.setCurrentWidget(self.editor)
+        self.workspace_tabs.setCurrentWidget(self.field_scroll)
         if image is not None:
             self.editor.stage_image(image)
         return True

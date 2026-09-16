@@ -68,6 +68,10 @@ class FieldLayoutTests(unittest.TestCase):
                         page.workspace_tabs.setCurrentWidget(page.browser)
                         pump(self.app, window)
                         self.assertGreaterEqual(page.browser.table.viewport().height(), 100)
+                        from types import SimpleNamespace
+                        with patch.object(page.editor, 'focus_target', return_value=True):
+                            self.assertTrue(page.focus_workspace_route(SimpleNamespace(key=(6, 0)), None))
+                        self.assertIs(page.workspace_tabs.currentWidget(), page.field_scroll)
                         self.assertFalse(facade.source_ready)
                 self.assertGreater(heights[1], heights[0] + 200)
             finally:
@@ -110,6 +114,8 @@ class FineTuneQtTests(FacadeFixture):
         self.assertTrue(p.rating_preview_table.isHidden())
         p.undo_button.click()
         self.assertFalse(self.facade.session.modifications)
+        p.formation_picker.setCurrentIndex(0)
+        self.assertEqual(p.candidate_table.currentRow(), 0)
 
     def test_bulk_keeps_book_formation_and_ratings_and_checks_once(self):
         p = self.panel; p.queue_edits.setChecked(True)

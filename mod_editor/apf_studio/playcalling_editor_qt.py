@@ -178,14 +178,15 @@ class ApfPlayCallingEditor(QWidget):
         self.situation_picker.setAccessibleName("Situation to inspect and edit")
         situation_root.addWidget(self.situation_picker)
         self.situation_note = note(situation_root, "")
-        note(situation_root, "Select a candidate to edit its ratings and personnel below. Adding, removing or changing personnel edits the shared book, "
+        note(situation_root, "Select a candidate to fine-tune its weights beside this table; personnel controls are below. Adding, removing or changing personnel edits the shared book, "
              "so it affects every situation using that data. These 23 preview buckets are not independent stored formation lists.")
-        self.candidate_table = table(("Formation", "Personnel", "Requested TEs", "Personnel weight", "Formation weight"), "All ordinary situation candidates before the draw")
+        self.candidate_table = table(("Formation", "Personnel", "Requested\nTEs", "Personnel\nweight", "Formation\nweight"), "All ordinary situation candidates before the draw")
         self.candidate_table.setMaximumHeight(260)
         self.candidate_table.setMinimumHeight(180)
         candidate_row = QHBoxLayout()
         candidate_row.addWidget(self.candidate_table, 3)
         self.rating_editor = QGroupBox("Fine-tune formation weights")
+        self.rating_editor.setToolTip(service.RATING_MAPPING)
         rating_root = QVBoxLayout(self.rating_editor)
         candidate_row.addWidget(self.rating_editor, 2)
         situation_root.addLayout(candidate_row)
@@ -643,6 +644,9 @@ class ApfPlayCallingEditor(QWidget):
         fill(self.candidate_table, [(names.get(c["formation"], c["formation"]), c["personnel"], c["tight_ends"],
                                      f"{c['category_weight']:.4g}", f"{c['formation_weight']:.4g}") for c in row["candidates"]])
         self._updating = False
+        header = self.candidate_table.horizontalHeader()
+        header.setMinimumSectionSize(60)
+        header.setSectionResizeMode(QHeaderView.Stretch)
         selected = next((i for i, c in enumerate(row["candidates"]) if c["formation"] == self.formation_picker.currentData()), None)
         self.situation_remove.setEnabled(selected is not None)
         if selected is not None:
@@ -703,6 +707,14 @@ class ApfPlayCallingEditor(QWidget):
         form = next((f for f in self._context["formations"] if f["id"] == self.formation_picker.currentData()), None)
         if form is None:
             return
+        if self.situation_picker.currentIndex() >= 0:
+            candidates = self._situations[self.situation_picker.currentIndex()]["candidates"]
+            current = self.candidate_table.currentRow()
+            if not 0 <= current < len(candidates) or candidates[current]["formation"] != form["id"]:
+                selected = next((i for i, c in enumerate(candidates) if c["formation"] == form["id"]), -1)
+                self.candidate_table.blockSignals(True)
+                self.candidate_table.setCurrentCell(selected, 0 if selected >= 0 else -1)
+                self.candidate_table.blockSignals(False)
         self.never_call.setChecked(form.get("never_call", False))
         self.never_call.setEnabled(form["id"] < 151)
         self.never_button.setEnabled(form["id"] < 151)
