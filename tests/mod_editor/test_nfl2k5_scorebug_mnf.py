@@ -82,6 +82,7 @@ class ArtTests(unittest.TestCase):
             self.assertIsNotNone(left.getchannel('A').getbbox())
         self.assertIsNone(exact.mnf_panel(None,'home').getchannel('A').getbbox())
 
+    @unittest.skipUnless(INDEX.is_file(), 'private retail pack absent')
     def test_painted_strips_use_only_the_intended_quads(self):
         from mod_editor.core import nfl2k5_scorebug_ingame as r
         rec=r.RESOURCES['score_bug']

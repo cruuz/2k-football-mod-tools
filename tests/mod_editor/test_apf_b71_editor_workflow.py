@@ -48,7 +48,7 @@ class SourceIdentityTests(unittest.TestCase):
                     os.replace(replacement, pack)
                     self.assertEqual(cache.resource(index, 123, parser), 'EDIT')
                     self.assertEqual(parser.call_count, 2)
-                    self.assertEqual(cache.resources[123][0][0][:3], (str(pack), 9, stamp.st_mtime_ns))
+                    self.assertEqual(cache.resources[123][0][0][:3], (str(pack.resolve()), 9, stamp.st_mtime_ns))  # the cache records the resolved path (macOS temp dirs live under /private/var)
                     self.assertEqual(cache.resources[123][1], service.digest(b'EDIT'))
                     index.write_bytes(b'another index')
                     cache.resource(index, 123, parser)
