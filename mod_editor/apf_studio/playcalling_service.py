@@ -292,7 +292,14 @@ class PlayCallingService:
         return BookSourceCache.stat_key(path)
 
     def _mod_key(self, modification):
-        return (modification.asset_id, modification.kind, modification.replacement_sha256,
+        # The staged recipe is small, so key on its live digest as well as its stat: a tamper that keeps the size
+        # and mtime is invisible to stat on Windows (ctime is the creation time there and the inode survives an
+        # in-place write), and it must still miss the memo so read_profile can refuse it.
+        try:
+            live = digest(modification.replacement_path.read_bytes())
+        except OSError:
+            live = None
+        return (modification.asset_id, modification.kind, modification.replacement_sha256, live,
                 json_bytes(dict(modification.metadata)), self._file_key(modification.replacement_path))
 
     def _input_key(self, session):
