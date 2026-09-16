@@ -58,10 +58,12 @@ class AppliedIntegrationTests(unittest.TestCase):
 
     def test_applied_scheme_cards_reach_the_real_facade_and_export_stays_export_only(self):
         cards = {card.capability_id: card for card in catalog.build_capability_cards()}
-        for feature in ('offensive_schemes', 'never_call'):
+        # Beta 71 hides the duplicate scheme controls from the integrated book workflow (Book Identity points
+        # at CPU Play Calling), so the offensive schemes card is a proof boundary while never_call stays editable.
+        for feature, expected in (('offensive_schemes', models.ApfStatus.EVIDENCE), ('never_call', models.ApfStatus.EDITABLE)):
             key = 'apf2k8.playbooks.' + feature
             with self.subTest(capability=key):
-                self.assertEqual(cards[key].status, models.ApfStatus.EDITABLE)
+                self.assertEqual(cards[key].status, expected)
                 binding = models.CAPABILITY_ACTION_BINDINGS[key]
                 self.assertEqual(binding.handler_id, 'playbooks.cpu_playcalling')
                 self.assertTrue(callable(getattr(ApfStudioFacade, binding.replace_method)))

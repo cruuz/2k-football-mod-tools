@@ -153,7 +153,9 @@ class GameplayBuildLink:
 
 def observe_build_choices(panel, changed):
     """Persist controls which are not shared with the Gameplay page too."""
-    panel.colour_lighting.changed.connect(changed)
+    colour_lighting = getattr(panel, "colour_lighting", None)
+    if colour_lighting is not None:
+        colour_lighting.changed.connect(changed)
     for widget in panel.findChildren(QObject):
         if isinstance(widget, QCheckBox):
             widget.toggled.connect(changed)
