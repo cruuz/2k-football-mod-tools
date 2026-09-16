@@ -7845,14 +7845,20 @@ class FieldArtStudioPage(QWidget):
         self.editor.modifiedChanged.connect(self.modifiedChanged)
         self.workspace_tabs = QTabWidget()
         self.workspace_tabs.setObjectName("workspaceTabs")
-        self.workspace_tabs.addTab(self.editor, "Field Art Editor")
+        # The artwork editor and opacity controls each need a full-height surface.
+        # Scroll the artwork's natural height instead of crushing its controls.
+        self.field_scroll = QScrollArea()
+        self.field_scroll.setWidgetResizable(True)
+        self.field_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.field_scroll.setWidget(self.editor)
+        self.workspace_tabs.addTab(self.field_scroll, "Field Art Editor")
         layout.addWidget(self.workspace_tabs, 1)
 
         # Beta 66 (davidhbui): the eleven named field material alphas (entries 53, 252, 578, 1333).
         from .field_material_qt import FieldMaterialOpacityPanel
         self.field_opacity = FieldMaterialOpacityPanel(facade, run_task)
         self.field_opacity.modifiedChanged.connect(self.modifiedChanged)
-        layout.addWidget(self.field_opacity)
+        self.workspace_tabs.addTab(self.field_opacity, "Field overlay opacity")
 
         semantic_panel = QFrame()
         semantic_panel.setObjectName("panel")
@@ -7929,8 +7935,8 @@ class FieldArtStudioPage(QWidget):
         self.group_table.horizontalHeader().setSectionResizeMode(
             3, self.group_table.horizontalHeader().Stretch
         )
-        self.group_table.setFixedHeight(236)
-        semantic_layout.addWidget(self.group_table)
+        self.group_table.setMinimumHeight(160)
+        semantic_layout.addWidget(self.group_table, 1)
 
         self.group_note = QLabel(
             "Choose a family to see its exact package-local evidence boundary."
@@ -7955,6 +7961,7 @@ class FieldArtStudioPage(QWidget):
         )
         self.browser.modifiedChanged.connect(self.modifiedChanged)
         self.workspace_tabs.addTab(self.browser, "All Field Art")
+        self.browser.table.setMinimumHeight(160)
 
         self.group_filter.currentIndexChanged.connect(self._group_changed)
         self.group_table.cellClicked.connect(self._group_row_clicked)

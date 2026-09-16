@@ -139,6 +139,7 @@ class ApfPlayCallingEditor(QWidget):
         self.own_team_button = button(row, "Give this team its own book", "The game will use a separate copy of the selected starting book for this team after you review and stage the plan.", lambda: self.own_book(False))
         self.own_all_button = button(row, "Give every team its own book", "The game will use one independent copy of each team's current book on this side after you review and stage all 24 assignments.", lambda: self.own_book(True))
         team_root.addLayout(row)
+        self.capacity_note = note(team_root, service.BOOK_CAPACITY_EXPLANATION)
         self.plan_table = table(("Team", "Label", "Donor", "Clone name"), "Own-book plan to review before staging")
         self.plan_table.setMaximumHeight(260)
         self.plan_table.setVisible(False)
@@ -181,7 +182,13 @@ class ApfPlayCallingEditor(QWidget):
              "so it affects every situation using that data. These 23 preview buckets are not independent stored formation lists.")
         self.candidate_table = table(("Formation", "Personnel", "Requested TEs", "Personnel weight", "Formation weight"), "All ordinary situation candidates before the draw")
         self.candidate_table.setMaximumHeight(260)
-        situation_root.addWidget(self.candidate_table)
+        self.candidate_table.setMinimumHeight(180)
+        candidate_row = QHBoxLayout()
+        candidate_row.addWidget(self.candidate_table, 3)
+        self.rating_editor = QGroupBox("Fine-tune formation weights")
+        rating_root = QVBoxLayout(self.rating_editor)
+        candidate_row.addWidget(self.rating_editor, 2)
+        situation_root.addLayout(candidate_row)
         self.situation_remove = button(situation_root, "Confirm removal from this book", "Remove the selected ordinary formation completely from this book, including every situation; review remaining personnel first.", self.remove_candidate)
         donor_row = QHBoxLayout()
         self.add_donor = explain(QComboBox(), "Choose a book on the same side that already contains the formation to add.")
@@ -240,9 +247,8 @@ class ApfPlayCallingEditor(QWidget):
         lever_root = QVBoxLayout(self.levers)
         self.formation_picker = explain(QComboBox(), "The game uses this formation's ratings and personnel when it enters the call lottery.")
         self.formation_picker.setAccessibleName("Formation")
-        lever_root.addWidget(QLabel("Formation")); lever_root.addWidget(self.formation_picker)
-        note(lever_root, service.RATING_EXPLANATION)
-        note(lever_root, service.RATING_MAPPING)
+        rating_root.addWidget(QLabel("Formation")); rating_root.addWidget(self.formation_picker)
+        note(rating_root, service.RATING_EXPLANATION)
         self.ratings = []
         rating_form = QFormLayout()
         for label in ("Short yardage", "Medium yardage", "Long yardage"):
@@ -256,8 +262,24 @@ class ApfPlayCallingEditor(QWidget):
             row = QHBoxLayout(); row.addWidget(slider); row.addWidget(value)
             rating_form.addRow(label + " (raw 0–7)", row)
             self.ratings.append(slider)
-        lever_root.addLayout(rating_form)
-        self.ratings_button = button(lever_root, "Confirm formation ratings", "The game will use these three ratings for this formation in the built book.", self.stage_ratings)
+        rating_root.addLayout(rating_form)
+        self.ratings_button = button(rating_root, "Confirm formation ratings", "The game will use these three ratings for this formation in the built book.", self.stage_ratings)
+        self.rating_preview_button = button(rating_root, "Preview formation weights",
+            "Compare personnel and formation weights in every situation before confirming. Includes pending edits; nothing is staged.",
+            self.preview_ratings)
+        self.rating_preview_note = note(situation_root,
+            "Select a formation here, change its short / medium / long raw ratings, then preview or Confirm. "
+            "These shared ratings affect every situation that interpolates them; personnel and formation weights "
+            "are calculated together, not independent percentages.")
+        self.rating_preview_table = table(("Situation / personnel", "Personnel before", "Personnel after",
+            "Formation before", "Formation after"), "Draft formation weights across situations")
+        self.rating_preview_table.setMinimumHeight(180)
+        self.rating_preview_table.setMaximumHeight(280)
+        self.rating_preview_table.hide()
+        situation_root.insertWidget(4, self.rating_preview_note)
+        situation_root.insertWidget(5, self.rating_preview_table)
+        for slider in self.ratings:
+            slider.valueChanged.connect(self._clear_rating_preview)
         self.play_picker = explain(QComboBox(), "The game draws among the plays present in this formation.")
         self.play_picker.setAccessibleName("Play")
         lever_root.addWidget(self.play_picker)
@@ -609,6 +631,7 @@ class ApfPlayCallingEditor(QWidget):
         self._add_donor_changed()
 
     def _situation_changed(self, *_):
+        self._clear_rating_preview()
         if self._updating or not self._context or self.situation_picker.currentIndex() < 0:
             return
         row = self._situations[self.situation_picker.currentIndex()]
@@ -674,6 +697,7 @@ class ApfPlayCallingEditor(QWidget):
             self.review_request(self._book_request("add", donor=self.add_donor.currentText(), formation=self.add_formation.currentData()), True)
 
     def _formation_changed(self, *_):
+        self._clear_rating_preview()
         if self._updating or not self._context:
             return
         form = next((f for f in self._context["formations"] if f["id"] == self.formation_picker.currentData()), None)
@@ -718,6 +742,7 @@ class ApfPlayCallingEditor(QWidget):
         self.situation_masks.render()
 
     def _render_pending(self):
+        self._clear_rating_preview()
         self.pending_table.clearContents()
         fill(self.pending_table, [(*service.PlayCallingService.describe_request(request),
                                   self._pending_blockers.get(i, "Checks run on Confirm all"), "")
@@ -877,6 +902,47 @@ class ApfPlayCallingEditor(QWidget):
                     return
                 self.notice.setText("Exported current staged play calls to " + path + ". Gameplay is UNWITNESSED.")
         self._task("Make play call spreadsheet", lambda p: self.facade.playcalling_scheme_csv(team, p, book=book, preview_tendency=preview_tendency), ready)
+
+    def _clear_rating_preview(self, *_):
+        self.rating_preview_table.hide()
+        self.rating_preview_note.setText(
+            "Select a formation here, change its short / medium / long raw ratings, then preview or Confirm. "
+            "These shared ratings affect every situation that interpolates them; personnel and formation weights "
+            "are calculated together, not independent percentages.")
+
+    def preview_ratings(self):
+        if not self._context or self.formation_picker.currentData() is None:
+            return
+        from copy import deepcopy
+        context, side = self._context, self.side_picker.currentData()
+        formation = self.formation_picker.currentData()
+        ratings = [s.value() for s in self.ratings]
+        pending = deepcopy(self._pending)
+        def done(result):
+            rows = []
+            selected = self.situation_picker.currentText()
+            selected_row = 0
+            for before, after in zip(result["before"], result["after"]):
+                old = {c["category"]: c for c in before["candidates"] if c["formation"] == formation}
+                for candidate in after["candidates"]:
+                    if candidate["formation"] != formation:
+                        continue
+                    prior = old.get(candidate["category"], {})
+                    if after["name"] == selected:
+                        selected_row = len(rows)
+                    rows.append((after["name"] + " / " + candidate["personnel"],
+                        f"{prior.get('category_weight', 0):.4g}", f"{candidate['category_weight']:.4g}",
+                        f"{prior.get('formation_weight', 0):.4g}", f"{candidate['formation_weight']:.4g}"))
+            fill(self.rating_preview_table, rows)
+            self.rating_preview_table.show()
+            self.rating_preview_table.selectRow(selected_row)
+            self.rating_preview_table.scrollToItem(self.rating_preview_table.item(selected_row, 0))
+            self.rating_preview_note.setText(
+                f"Draft preview for {context['book']}, {self.formation_picker.currentText()}, raw ratings {ratings}. "
+                f"Includes {len(pending)} pending edits. All affected situations are shown; nothing staged. "
+                "Confirm runs the checks again. Weights are neutral model inputs, not call percentages; gameplay UNWITNESSED.")
+        self._task("Preview formation weights", lambda p: self.facade.preview_playcalling_ratings(
+            context, side, formation, ratings, pending), done)
 
     def stage_ratings(self):
         self.review_request(self._book_request("ratings", formation=self.formation_picker.currentData(), ratings=[s.value() for s in self.ratings]))

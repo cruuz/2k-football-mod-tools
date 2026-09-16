@@ -42,6 +42,13 @@ RATING_MAPPING = (
     "averages its formations' weights before the category lottery, so edit every record "
     "of that personnel when changing its category weight."
 )
+BOOK_CAPACITY_EXPLANATION = (
+    "Give every team its own book covers the 24 disc teams: 24 offense and 24 defense "
+    "copies, 48 independent books across both sides. The retail 36 offensive and 33 "
+    "defensive labels are names sharing book content, not 36 independent teams. "
+    "The 16 saved-team slots keep their shared USER-o / USER-d assignments; edit saved "
+    "assignments through Save Assignments. This is the same disc-team scope as beta 67."
+)
 # Authored experiment values, not a native witness. P3's core accepts exactly five
 # offensive weights and three defensive ones, starting at one and never increasing.
 # Retail is (1, 1, 0.85, 0.5, 0.05) on offense and (1, 0.01, 0) on defense, so each
@@ -886,6 +893,22 @@ class PlayCallingService:
                  "candidates": model.situation_candidates(book, state.master, model.Situation(1, 10, 50, 1, 900, 0, 3),
                                                            requested_row=model.requested_defense_row(row, 50))}
                 for row in range(11)]
+
+    def preview_ratings(self, session, context, side, formation, ratings, pending=()):
+        """Preview a draft through the existing writers without storing a recipe.
+
+        Ratings are three shared yardage anchors, not 23 independent numbers.
+        Return every situation so that their shared effects are visible.
+        """
+        state = self.state(session)
+        for request in pending:
+            state, _ = self.apply(state, request, session.source.index_0a)
+        before = self.situations({**context, "state": state}, side)
+        request = {"kind": "ratings", "book": context["book"],
+                   "formation": formation, "ratings": list(ratings)}
+        state, _ = self.apply(state, request, session.source.index_0a)
+        after = self.situations({**context, "state": state}, side)
+        return {"before": before, "after": after}
 
 
 def main(argv=None):

@@ -2,7 +2,9 @@
 
 ## 0.1.0-alpha.93 — beta 71.1: the reports after beta 71 — 2026-09-16
 
-- Identity bump for the beta 71.1 hotfix. The APF fixes in this hotfix are listed below as they land.
+- Field Art gives Field overlay opacity its own full-height tab. Material names and percentage values stay readable, the list grows with the window and scrolls to every row. The art editor scrolls instead of squeezing its controls; the other Field lists retain a minimum readable height.
+- CPU Play Calling explains the existing own-book scope: 24 disc teams can each have an offensive and defensive copy, for 48 independent books. The 36 offensive and 33 defensive labels share book content; the 16 saved-team slots keep their USER assignments.
+- Formation fine-tuning sits beside the situation candidates. Change the short, medium and long ratings, preview personnel and formation weights across situations, then Confirm or add the edit to Pending edits. Confirm runs the existing checks and supports Undo and saved projects. Ratings are shared yardage anchors, so their effects can span several situations; preview weights are not guaranteed call percentages. Gameplay remains UNWITNESSED.
 
 ## 0.1.0-alpha.92 — beta 71: CPU play calling situations and the play-calling page (in progress, 2026-09-15)
 

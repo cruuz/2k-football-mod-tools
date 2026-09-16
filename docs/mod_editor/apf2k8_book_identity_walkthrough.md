@@ -8,13 +8,24 @@ points here. Every in-game outcome remains **UNWITNESSED**.
    ordinary candidates. The selected team is used for team tendency edits and
    independent copies; it does not select the book being previewed.
 2. To give a team its own copy, choose the team and starting book, click
-   **Give this team its own book**, review the assignments, and confirm. The new
-   named book becomes the edit target. This stages an explicit project edit.
+   **Give this team its own book**. The assignments are checked automatically. The new
+   named book becomes the edit target. **Give every team its own book** covers the
+   24 disc teams on the selected side, or 48 independent books across offense and
+   defense. The retail 36 offensive / 33 defensive labels share resources; they
+   are not 36 independent teams. The 16 saved-team slots retain their USER-o /
+   USER-d assignments. Use **Save Assignments** for supported roster saves.
 3. Choose a **Situation**. Its candidate table lists formations, personnel and
-   the number of tight-end roles. Select a candidate to edit its ratings or
-   personnel below. To add a formation, choose its donor book and formation,
-   then **Review formation addition** and confirm.
-4. **Review removal from this book** removes that formation completely. Review
+   the number of tight-end roles. Select a candidate and use **Fine-tune formation
+   weights** beside the table. Its three raw ratings control short, medium and
+   long yardage; the game interpolates them for each situation. **Preview formation
+   weights** compares personnel and formation weights across all situations,
+   including Pending edits, without staging. These weights are calculated together,
+   not independently stored percentages for each situation. **Confirm formation
+   ratings** runs the existing checks and stages the edit. With **Add edits to
+   Pending edits** enabled, it queues the captured book, formation and ratings;
+   **Confirm all** checks the batch and stages it in one Undo step. To add a
+   formation, choose its donor book and formation, then **Confirm formation addition**.
+4. **Confirm removal from this book** removes that formation completely. Review
    the surviving personnel first. Membership and removal are shared across all
    situations in the book; these are not independent per-situation lists.
    A low weight does not exclude a formation. Raw rating 7 remains selectable,
@@ -38,7 +49,7 @@ before removing its target. To fine-tune a newly cloned resource in the legacy
 record editor, build it and open that copy as a new source first; the main CPU
 editor can edit its staged formations by name before building.
 
-**Stage team run/pass tendency** edits the selected team's stored value. It is
+**Confirm team run/pass tendency** edits the selected team's stored value. It is
 separate from the preview percentage. MASTER personnel controls remain explicit
 experimental edits shared by all books. No preset stages any new control.
 
@@ -53,6 +64,8 @@ fullback for a requested TE role, so the table shows **Requested TEs**. Actual
 saved rosters, the saved-book lifecycle and in-game lineups remain UNWITNESSED.
 See [the extended situation and lineup research](../research/apf_b71_apf3.md).
 
-Independent per-situation formation whitelists still need a new runtime selector
-and exclusion gate. The ordinary editor does not write a guessed mask or present
-the unrelated lineup ladder as that control.
+For a local exclusion, **Live situations** offers the separate opt-in mask in
+twelve down/distance buckets. It needs the matching BASE/TU patch installed;
+an emptied draw falls back to its original candidates. The 23 representative
+preview queries remain distinct from these twelve live buckets. See the
+[situation-mask guide](../research/apf_b71_apf4.md).
