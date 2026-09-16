@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_helmet_logo_placement",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_helmet_logo_placement.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:52:26.342944+00:00",
+  "ended": "2026-09-16T00:52:33.824058+00:00",
+  "seconds": 7.481,
+  "exit_code": 0
+}

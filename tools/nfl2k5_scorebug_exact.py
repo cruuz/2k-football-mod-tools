@@ -177,8 +177,9 @@ def compare(reference_image, rendered, geometry, text_boxes, *, runtime=False, r
     meshes = {"frame_rim": geometry["frame"], "centre_pill": geometry["down"],
               "clock_strip": geometry["clock"]}
     if runtime:
-        meshes.update(left_panel=geometry["objects"].get("zscore_buga"),
-                      right_panel=geometry["objects"].get("hscore_buga"))
+        meshes.update(left_panel=geometry["objects"].get("yscore_buga"),
+                      right_panel=geometry["objects"].get("yscore_buga1"))
+    meshes.update(geometry.get("comparison_regions", {}))
     for name, box in regions_source.items():
         target = list(exact.hud_box(box))
         if geometry["widescreen"]:
@@ -242,14 +243,13 @@ class Build:
             self.payload = xbe.read_bytes()
             self.fonts = projection.read_fonts(pack)
             self.retail_scene = scene.pinned(self.spans["score_bug"], art.RESOURCES["score_bug"])
-            self.panels = []
-            for team, side in (("LV", "away"), ("HOU", "home")):
-                v = art.TEAM_LOGOS[team]
-                span = self.view[v["pack_offset"]:v["pack_offset"] + v["span_size"]]
-                self.panels.extend(art._compiled_panels(self.spans["score_buga"], span, team, side))
-            self.font_spans = scoped.compile_collection(self.view)
-            self.private_fonts = [projection.private_font(span, self.fonts[slot])
-                                  for span, (slot, _sx, _sy) in zip(self.font_spans, scoped.SCALES)]
+            # The runtime scene is the 2026 bar: one 64x64 wing texture per side (ESPN mark plus
+            # the team colour ramp), the same spans the compiler appends.
+            self.panels = [art.mnf_panel_span(self.spans["score_buga"], team, side)
+                           for team, side in (("LV", "away"), ("HOU", "home"))]
+            # The mnf runtime collection appends two FONTs (the ESPN clock and quarter fonts, font4-sized masks).
+            self.font_spans = art.clock_font_spans(self.view)
+            self.private_fonts = [projection.private_font(span, self.fonts[3]) for span in self.font_spans]
             self._files = stack.pop_all()
 
     def close(self):
@@ -257,7 +257,7 @@ class Build:
 
     def render(self, path, *, runtime=False, widescreen=False, mode=0, historical=False,
                atlas_image=None, mesh=None, score_values=(0, 0), score_phase=0, timeouts=(3, 3),
-               previous_scores=(0,0), possession='home'):
+               previous_scores=(0,0), possession='home', matchup=('LV','HOU'), **state):
         if historical:
             mesh = scene.mesh_v9(self.retail_scene)
             atlas_image = scene.atlas_v9(self.spans)
@@ -270,13 +270,15 @@ class Build:
         decoded = scene.decode(span)[1]  # Installed bytes, including normshort quantization.
         texture, receipt = scene.encode_atlas(self.spans["score_buga"], atlas_image)
         capture = {}
+        panels = [art.mnf_panel_span(self.spans["score_buga"],team,side)
+                  for team,side in zip(matchup,("away","home"))] if runtime else None
         geometry = projection.native_geometry(self.payload, decoded, widescreen=widescreen, mode=mode,
                     texture_span=texture, fonts=self.fonts, capture=capture, baseline_v9=historical,
-                    runtime_textures=self.panels if runtime else None,
-                    identity=dict(home="HOU", away="LV", home_code="37", away_code="20"),
+                    runtime_textures=panels,
+                    identity=dict(home=matchup[1], away=matchup[0], home_code=art.TEAM_LOGOS[matchup[1]]["asset_code"], away_code=art.TEAM_LOGOS[matchup[0]]["asset_code"]),
                     score_values=score_values, score_phase=score_phase, timeouts=timeouts,
                     previous_scores=previous_scores, possession=possession,
-                    runtime_fonts=self.font_spans if runtime else ())
+                    runtime_fonts=self.font_spans if runtime else (), **state)
         try:
             geometry.update(projection.native_text_draw(capture))
             geometry.update(projection.render_native(decoded, texture, self.fonts + (self.private_fonts if runtime else []), geometry, path,
@@ -294,7 +296,7 @@ def compiler_pins(build):
     runtime = scene.stage_binding_scene(build.spans["score_bug"], runtime=True)[0]
     texture = scene.encode_atlas(build.spans["score_buga"], exact.atlas())[0]
     # The runtime collection carries the 2026 atlas; the static pin keeps the v3 atlas.
-    runtime_texture = scene.encode_atlas(build.spans["score_buga"], exact.atlas_mnf())[0]
+    runtime_texture = scene.encode_atlas(build.spans["score_buga"], exact.atlas())[0]
     hud = bytearray(build.view[art.HUD_START:art.HUD_START + art.HUD_SIZE])
     for name, data in (("score_bug", runtime), ("score_buga", runtime_texture)):
         off = art.RESOURCES[name]["pack_offset"] - art.HUD_START
@@ -315,7 +317,7 @@ def compiler_pins(build):
                                       for probe in ("transport", "hooks", "neutral", "pair")},
                                    "mnf": scene.digest(b"".join(art.mnf_panel_span(build.spans["score_buga"], team, side)
                                                                 for team, _record in [(None, None)] + sorted(art.TEAM_LOGOS.items())
-                                                                for side in ("home", "away")))})
+                                                                for side in ("home",)) + art.clock_font_span(build.view) + art.mnf_atlas_span(build.spans["score_buga"]))})
 
 
 def supplemental_evidence(build, output):
@@ -493,14 +495,14 @@ def main(argv=None):
         pins = compiler_pins(build)
         if args.accept_palette:
             path = Path(exact.__file__)
-            path.write_text(re.sub(r"^RED_BIAS = .*", "RED_BIAS = " + str(best_bias), path.read_text(), flags=re.M), encoding="utf-8")
+            path.write_text(re.sub(r"^RED_BIAS = .*", "RED_BIAS = " + str(best_bias), path.read_text(), flags=re.M), encoding="utf-8", newline="\n")
             path = Path(art.__file__)
             contents = path.read_text()
             for key, value in pins.items():
                 contents, count = re.subn(r"^" + key + r" = .*", key + " = " + repr(value), contents, flags=re.M)
                 if count != 1:
                     raise ValueError("missing unique compiler identity " + key)
-            path.write_text(contents, encoding="utf-8")
+            path.write_text(contents, encoding="utf-8", newline="\n")
             # Pin objects imported by the unchanged public writer as well.
             for key, value in pins.items():
                 setattr(art, key, value)

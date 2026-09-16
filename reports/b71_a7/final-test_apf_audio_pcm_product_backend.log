@@ -1,0 +1,16 @@
+test_audo_pcm_is_encoded_then_exact_slot_validated_before_one_set (__main__.ApfAudioPcmProductBackendTests.test_audo_pcm_is_encoded_then_exact_slot_validated_before_one_set) ... ok
+test_ausb_pcm_dispatches_to_ausb_validator_and_preserves_alias_metadata (__main__.ApfAudioPcmProductBackendTests.test_ausb_pcm_dispatches_to_ausb_validator_and_preserves_alias_metadata) ... ok
+test_background_only_encoder_output_cannot_become_a_project_edit (__main__.ApfAudioPcmProductBackendTests.test_background_only_encoder_output_cannot_become_a_project_edit) ... ok
+test_cancel_after_encoder_returns_skips_validator_and_stages_nothing (__main__.ApfAudioPcmProductBackendTests.test_cancel_after_encoder_returns_skips_validator_and_stages_nothing) ... ok
+test_container_identity_is_rejected_without_running_encoder (__main__.ApfAudioPcmProductBackendTests.test_container_identity_is_rejected_without_running_encoder) ... ok
+test_facade_routes_target_template_and_replace_and_invalidates_build (__main__.ApfAudioPcmProductBackendTests.test_facade_routes_target_template_and_replace_and_invalidates_build) ... ok
+test_ordinary_audio_is_conformed_before_encode_and_signal_compare (__main__.ApfAudioPcmProductBackendTests.test_ordinary_audio_is_conformed_before_encode_and_signal_compare) ... ok
+test_signal_quality_failure_never_reaches_slot_validator_or_edit_map (__main__.ApfAudioPcmProductBackendTests.test_signal_quality_failure_never_reaches_slot_validator_or_edit_map) ... ok
+test_target_and_template_are_derived_from_exact_identity (__main__.ApfAudioPcmProductBackendTests.test_target_and_template_are_derived_from_exact_identity) ... ok
+test_validator_failure_or_cancel_never_changes_edit_map_or_undo (__main__.ApfAudioPcmProductBackendTests.test_validator_failure_or_cancel_never_changes_edit_map_or_undo) ... ok
+test_validator_side_effect_cancel_removes_only_new_uncommitted_payload (__main__.ApfAudioPcmProductBackendTests.test_validator_side_effect_cancel_removes_only_new_uncommitted_payload) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.850s
+
+OK

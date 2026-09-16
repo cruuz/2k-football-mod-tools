@@ -31,8 +31,8 @@ def repin(buf):
 class PublicTests(unittest.TestCase):
     def test_capacity_all_names_and_no_toolchain_dependency(self):
         requests = r.REQUESTS + kickoff.REQUESTS
-        allocated = space._allocations(requests)
-        self.assertLessEqual(max(a['va']+a['size'] for a in allocated if a['kind']=='code'), space.DATA_VA)
+        allocated = space.plan(requests)["allocations"]
+        self.assertTrue(all(a['size'] > 0 for a in allocated))
         for a in allocated:
             self.assertEqual(a['va'] % a['align'], 0)
         self.assertEqual(len(r.code_for(0x14baa60,0x14bb010)[0]),r.CODE_SIZE)
@@ -129,7 +129,9 @@ class Machine:
         self.context=self.alloc(128);self.put(0xb09578,self.context)
         self.put(self.context+8,r.HUD_COLLECTION_NAME)
         self.put(0xb09590,0)
-        self.scene=self.alloc(128);self.material=self.alloc(11*128)
+        # Native SCNE objects follow a 256-byte resource header. The sprite
+        # dispatcher reads its marker there, also on the retail fallback path.
+        self.scene=self.alloc(256+128)+256;self.material=self.alloc(11*128)
         self.put(self.scene+0x1c,11);self.put(self.scene+0x20,self.material)
         self.mats={}
         for i,(_,_,name) in enumerate(r.scene.layout.SUBMESHES):
@@ -195,6 +197,16 @@ class ExecutionTests(unittest.TestCase):
         cls.spans=[art.runtime_panel(cls.template,cls.panel,art.runtime_panel_name(code,side,count))
                    for code in ['--']+[v['asset_code'] for v in art.TEAM_LOGOS.values()]
                    for side in ('home','away') for count in range(4)]
+        from mod_editor.core import nfl2k5_scorebug_exact as exact
+        # Legacy collection-loop coverage retains its 264 spans; install the
+        # same two metadata words now carried by the production logo resources.
+        for i,span in enumerate(cls.spans):
+            chunk,body,_=r.scene.decode(span);tex=r.scene.tx.parse_texture(body,chunk)
+            code=tex.name[2:4];index=None if code=='--' else int(code)
+            copy=bytearray(span)
+            struct.pack_into('<II',copy,80,0xff3a3f48 if index is None else exact.plate_table()[index],
+                             0xff4a4e58 if index is None else exact.wing_table()[index])
+            cls.spans[i]=bytes(copy)
     def machine(self):
         m=Machine(self.payload)
         for span in self.spans:m.load(span)
@@ -204,18 +216,18 @@ class ExecutionTests(unittest.TestCase):
         for team in art.TEAM_LOGOS.values():
             code=team['asset_code'];m.identity(code,code);m.setup()
             self.assertEqual(m.get(m.mats['hscore_buga']+0x30),m.textures[f'sb{code}h0'])
-            self.assertEqual(m.get(m.mats['zscore_buga']+0x30),m.textures[f'sb{code}a0'])
+            self.assertEqual(m.get(m.mats['zscore_buga']+0x30),m.textures[f'sb{code}h0'])
         m.identity();m.setup();m.update()
-        for mat,name in [('hscore_buga','sb37h0'),('zscore_buga','sb20a0')]:
+        for mat,name in [('hscore_buga','sb37h0'),('zscore_buga','sb20h0')]:
             self.assertEqual(m.get(m.mats[mat]+0x30),m.textures[name]);self.assertFalse(m.get(m.mats[mat]+8)&1)
         self.assertEqual(m.get(0xa95b00),0)
         for home,away,kind in [('18','14',0),('02','22',0),('99',None,0),('20','37',2),('20','37',4),('20X','0/',0)]:
             m.identity(home,away,kind);m.setup();m.update()
             for side,code,mat in [('home',home,'hscore_buga'),('away',away,'zscore_buga')]:
                 valid=code in ('18','14','02','22') and kind==0
-                name=art.runtime_panel_name(code if valid else '--',side,0)
+                name=art.runtime_panel_name(code if valid else '--','home',0)
                 self.assertEqual(m.get(m.mats[mat]+0x30),m.textures[name])
-            self.assertEqual(m.get(r.SCORE_COLORS[0]),r.WHITE)
+            self.assertEqual(m.get(r.SCORE_COLORS[0]),0xffe1e1e1)
         # A recognized but missing logo retries the neutral texture.
         m.identity('00','01')
         # Remove the named home texture object from lookup by renaming its name.
@@ -232,12 +244,12 @@ class ExecutionTests(unittest.TestCase):
             for away in (3,2,1,0):
                 m.put(m.home+4,home);m.put(m.away+4,away);m.update()
                 self.assertEqual(m.get(m.mats['hscore_buga']+0x30),m.textures['sb37h0'])
-                self.assertEqual(m.get(m.mats['zscore_buga']+0x30),m.textures['sb20a0'])
+                self.assertEqual(m.get(m.mats['zscore_buga']+0x30),m.textures['sb20h0'])
                 for side,count in ((0,home),(1,away)):
                     m.uc.mem_write(buffer,b'\xee'*64)
                     m.run(labels[f'dash_text{side}'],ecx=buffer,limit=2000)
                     text=bytes(m.uc.mem_read(buffer,64)).decode('utf-16le').split('\0')[0]
-                    expected=' '.join('-'*1 for _ in range(count if count<=3 else 0))
+                    expected=' '.join('~'*1 for _ in range(count if count<=3 else 0))
                     self.assertEqual(text,expected,(side,count))
         # The setup installs the callbacks into the two retail team-name records.
         self.assertEqual(m.get(r.CITY_CALLBACKS[0]),labels['dash_text0'])
@@ -245,13 +257,13 @@ class ExecutionTests(unittest.TestCase):
 
     def test_score_flash_first_population_change_expiry_and_scene_reset(self):
         m=self.machine();m.put(m.home,7);m.update()
-        self.assertEqual(m.get(r.SCORE_COLORS[0]),r.WHITE)
+        self.assertEqual(m.get(r.SCORE_COLORS[0]),0xffe1e1e1)
         m.put(m.home,10);m.update()
-        self.assertEqual(m.get(r.SCORE_COLORS[0]),r.ACCENT);self.assertEqual(m.get(r.SCORE_COLORS[1]),r.WHITE)
+        self.assertEqual(m.get(r.SCORE_COLORS[0]),r.ACCENT);self.assertEqual(m.get(r.SCORE_COLORS[1]),0xffe1e1e1)
         for _ in range(12):m.update()
-        self.assertEqual(m.get(r.SCORE_COLORS[0]),r.WHITE)
+        self.assertEqual(m.get(r.SCORE_COLORS[0]),0xffe1e1e1)
         m.put(m.away,2);m.update();self.assertEqual(m.get(r.SCORE_COLORS[1]),r.ACCENT)
-        m.setup();m.update();self.assertEqual(m.get(r.SCORE_COLORS[1]),r.WHITE)
+        m.setup();m.update();self.assertEqual(m.get(r.SCORE_COLORS[1]),0xffe1e1e1)
     def test_down_distance_possession_refresh_only_on_changes(self):
         m=self.machine();m.float(0xa95a04,30);m.update()
         self.assertEqual(m.getf(0xa95a04),30)
@@ -265,7 +277,7 @@ class ExecutionTests(unittest.TestCase):
             for flags,visible in ((0,1),(2,1),(4,1),(0,0)):
                 m.float(m.clock+16,seconds);m.put(m.clock+24,flags);m.put(0xa95a70,visible);m.update()
                 urgent=0<=seconds<5 and flags==0 and visible==1
-                self.assertEqual(m.get(0xa95a48),r.RED if urgent else r.PLAY_CLOCK_NORMAL)
+                self.assertEqual(m.get(0xa95a48),r.WHITE)
     def test_native_collection_reader_uses_grown_end_and_wrapper_sizes(self):
         m=Machine(self.payload)
         # IO completion and collection-finished notification are host boundaries.

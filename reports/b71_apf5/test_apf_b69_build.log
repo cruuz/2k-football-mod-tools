@@ -1,0 +1,6 @@
+test_scheme_build_reparses_cloned_book_tendency_rows_and_donor (__main__.BuildTests.test_scheme_build_reparses_cloned_book_tendency_rows_and_donor) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 30.341s
+
+OK

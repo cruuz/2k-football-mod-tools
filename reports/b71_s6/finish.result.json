@@ -1,0 +1,11 @@
+{
+  "name": "finish",
+  "argv": [
+    "python3",
+    "reports/b71_s6/prove_finish.py"
+  ],
+  "start_utc": "2026-09-16T06:16:10.578888+00:00",
+  "end_utc": "2026-09-16T06:16:15.271610+00:00",
+  "seconds": 4.693,
+  "exit_code": 1
+}

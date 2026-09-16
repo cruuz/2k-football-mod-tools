@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_defense_research_native",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_defense_research_native.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:45:49.384494+00:00",
+  "ended": "2026-09-16T00:48:09.301400+00:00",
+  "seconds": 139.917,
+  "exit_code": 0
+}

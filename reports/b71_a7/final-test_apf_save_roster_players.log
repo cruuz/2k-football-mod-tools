@@ -1,0 +1,12 @@
+test_signed_stfs_extracts_and_writes_verified_raw_handoff (__main__.FileAndContainerTests.test_signed_stfs_extracts_and_writes_verified_raw_handoff) ... ok
+test_source_change_and_existing_destination_are_refused (__main__.FileAndContainerTests.test_source_change_and_existing_destination_are_refused) ... ok
+test_complete_typed_inventory_and_text_ownership (__main__.InventoryAndPatchTests.test_complete_typed_inventory_and_text_ownership) ... ok
+test_fixed_allocation_player_text_edit_and_overflow (__main__.InventoryAndPatchTests.test_fixed_allocation_player_text_edit_and_overflow) ... ok
+test_membership_swap_preserves_counts_uniqueness_and_multiset (__main__.InventoryAndPatchTests.test_membership_swap_preserves_counts_uniqueness_and_multiset) ... ok
+test_packed_edits_preserve_shared_bits_and_both_position_mirrors (__main__.InventoryAndPatchTests.test_packed_edits_preserve_shared_bits_and_both_position_mirrors) ... ok
+test_unknown_noop_overlap_and_unowned_tamper_fail_closed (__main__.InventoryAndPatchTests.test_unknown_noop_overlap_and_unowned_tamper_fail_closed) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 4.621s
+
+OK

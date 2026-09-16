@@ -1,0 +1,11 @@
+{
+  "name": "preview-opacity",
+  "argv": [
+    "python3",
+    "reports/b71_s5/prove_previews.py"
+  ],
+  "start_utc": "2026-09-16T03:12:53.273035+00:00",
+  "end_utc": "2026-09-16T03:15:42.856508+00:00",
+  "seconds": 169.583,
+  "exit_code": 0
+}

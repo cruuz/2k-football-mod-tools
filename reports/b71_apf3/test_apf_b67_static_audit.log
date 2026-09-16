@@ -1,0 +1,6 @@
+test_both_pinned_images_and_caller_boundary (__main__.StaticAuditTests.test_both_pinned_images_and_caller_boundary) ... skipped 'Owned pinned image absent: /tmp/astra-coverage-17votk5s/base_reextracted.pe; set APF_RETAIL_PE and APF_RETAIL_TU_PE'
+
+----------------------------------------------------------------------
+Ran 1 test in 0.017s
+
+OK (skipped=1)

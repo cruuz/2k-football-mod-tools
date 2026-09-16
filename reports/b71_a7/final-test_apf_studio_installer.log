@@ -1,0 +1,30 @@
+test_install_update_and_authenticated_uninstall (__main__.PerUserLifecycleTests.test_install_update_and_authenticated_uninstall) ... ok
+test_unowned_command_collision_is_preserved (__main__.PerUserLifecycleTests.test_unowned_command_collision_is_preserved) ... ok
+test_desktop_exec_quotes_spaces_and_special_characters (__main__.PerUserPathTests.test_desktop_exec_quotes_spaces_and_special_characters) ... ok
+test_launcher_hands_its_exact_private_state_root_to_the_app (__main__.PerUserPathTests.test_launcher_hands_its_exact_private_state_root_to_the_app) ... ok
+test_paths_are_scoped_to_the_user (__main__.PerUserPathTests.test_paths_are_scoped_to_the_user) ... ok
+test_system_xdg_destination_is_refused (__main__.PerUserPathTests.test_system_xdg_destination_is_refused) ... ok
+test_alpha23_roster_planner_and_ausb_writer_closure_is_declared (__main__.ReleaseClosureTests.test_alpha23_roster_planner_and_ausb_writer_closure_is_declared) ... ok
+test_apf_stage_has_no_dependency_on_the_mixed_2k5_research_module (__main__.ReleaseClosureTests.test_apf_stage_has_no_dependency_on_the_mixed_2k5_research_module) ... ok
+test_audio_gui_lifecycle_fences_are_in_the_runtime_closure (__main__.ReleaseClosureTests.test_audio_gui_lifecycle_fences_are_in_the_runtime_closure) ... ok
+test_audio_replacement_pack_is_in_the_retail_free_runtime_closure (__main__.ReleaseClosureTests.test_audio_replacement_pack_is_in_the_retail_free_runtime_closure) ... ok
+test_clean_allowlist_stage_passes_the_alpha32_runtime_gate (__main__.ReleaseClosureTests.test_clean_allowlist_stage_passes_the_alpha32_runtime_gate) ... FAIL
+test_external_xma1_bridge_is_in_the_retail_free_runtime_closure (__main__.ReleaseClosureTests.test_external_xma1_bridge_is_in_the_retail_free_runtime_closure) ... ok
+test_literal_local_import_gate_catches_a_lazy_missing_module (__main__.ReleaseClosureTests.test_literal_local_import_gate_catches_a_lazy_missing_module) ... ok
+test_stadium_material_findings_are_fail_closed_in_packaged_runtime (__main__.ReleaseClosureTests.test_stadium_material_findings_are_fail_closed_in_packaged_runtime) ... ok
+test_stadium_studio_source_closure_is_declared_without_derived_media (__main__.ReleaseClosureTests.test_stadium_studio_source_closure_is_declared_without_derived_media) ... ok
+test_token_preserving_roster_and_rating_editor_slice_is_declared (__main__.ReleaseClosureTests.test_token_preserving_roster_and_rating_editor_slice_is_declared) ... ok
+
+======================================================================
+FAIL: test_clean_allowlist_stage_passes_the_alpha32_runtime_gate (__main__.ReleaseClosureTests.test_clean_allowlist_stage_passes_the_alpha32_runtime_gate)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-a7/tests/mod_editor/test_apf_studio_installer.py", line 320, in test_clean_allowlist_stage_passes_the_alpha32_runtime_gate
+    self.assertEqual(result.returncode, 0, result.stderr)
+AssertionError: 1 != 0 : APF2K8_MOD_STUDIO_RUNTIME_REFUSED: mod_editor is not the tested APF namespace package
+
+
+----------------------------------------------------------------------
+Ran 16 tests in 12.942s
+
+FAILED (failures=1)

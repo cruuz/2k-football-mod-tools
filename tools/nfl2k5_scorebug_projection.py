@@ -259,6 +259,8 @@ def private_font(span, source):
                                 struct.unpack_from('<16f',decoded,off+16),
                                 struct.unpack_from('<4f',decoded,off+80)))
     video = decoded[chunk.system_bytes:]
+    size=256 if chunk.video_bytes==256*256+1024 else source.width
+    source=replace(source,width=size,height=size)
     pixels = source.width * source.height
     return replace(source, name=text, decoded=decoded, decoded_sha256=r.digest(decoded),
                    object_offset=obj, range_offset=range_at, minimum=minimum, maximum=maximum,
@@ -341,13 +343,14 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
                     score_values=(0, 0), previous_scores=(0, 0), baseline_v9=False,
                     runtime_textures=None, identity=None, timeouts=(3, 3), scorebug_folder=None, runtime_fonts=(),
                     possession='home', game_seconds=790, play_seconds=12, quarter=1,
-                    ball_yards=50, visibility_state=None, down=1, distance_yards=10):
+                    ball_yards=50, visibility_state=None, down=1, distance_yards=10, goal_to_go=False):
     """Run the actual scene relocator, setup, frame driver and camera activation.
 
     Startup animation selection, optional font IDs, per-frame game predicates
     and the GPU render-list boundary are replaced. Settled score transforms run
     by default. score_transforms=False reproduces the old harness omission.
     """
+    sprite = len(decoded) > r.layout.SCNE_SIZE and struct.unpack_from('<I', decoded, 0x60)[0] == 0x35525053
     if r.digest(decoded) == art.TEMPLATE_SCENE_SHA256 and scorebug_folder is None:
         from mod_editor.core.nfl2k5_scorebug_template import DEFAULT_FOLDER
         scorebug_folder = DEFAULT_FOLDER
@@ -377,6 +380,8 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
         from mod_editor.core import nfl2k5_scorebug_runtime as runtime
         payload = _runtime_payload(payload, runtime.code_for(0, 0)[0])
     m = StaticMachine(payload)
+    if sprite:
+        m.uc.mem_write(0xfc760, (b'\xe9'+struct.pack('<i',0xfbd50-0xfc765)) if goal_to_go else bytes.fromhex('d9eec3'))  # explicit field-boundary query
     if possession not in ('home','away'):
         m.close()
         raise ValueError('unknown possession fixture side')
@@ -416,7 +421,10 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
             raise ValueError('private fonts require the exact runtime and retail font sources')
         from mod_editor.core import nfl2k5_scorebug_fonts as scoped
         for span, (slot, _sx, _sy) in zip(runtime_fonts, scoped.SCALES):
-            private_receipts.append(m.load_private_font(span, private_font(span, fonts[slot])))
+            # Runtime fonts with a 128-square mask (the ESPN clock font) parse against font4;
+            # the v8 collection's slots come from SCALES.
+            source = fonts[3] if r.decode(span)[0].video_bytes in (128 * 128 + 1024,256 * 256 + 1024) else fonts[slot]
+            private_receipts.append(m.load_private_font(span, private_font(span, source)))
     m.put(0xa6a9d0, 720); m.put(0xa6a9d4, 480)
     m.run(0xfccd0, limit=500000)
     instance = m.get(0xa9552c)
@@ -434,7 +442,7 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
         record = 0xa9594c + i * 0x38
         m.put(record + 0x30, int(score_transforms))
         m.float(record + 0x2c, score_phase)
-        cached = (str(previous_scores[i]) + '\0').encode('utf-16le')
+        cached = (('' if sprite else str(previous_scores[i])) + '\0').encode('utf-16le')
         if len(cached) > 12:
             raise ValueError('score fixture exceeds native cache capacity')
         m.uc.mem_write(record + 0x20, cached)
@@ -458,6 +466,10 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
     m.run(0x22c00, (body + r.layout.SHAPE, matrices), limit=10000)
     m.uc.mem_write(wide.RENDER_LIST_VA, bytes.fromhex('31c0c3'))
     m.run(0x2ac80, ecx=0xa95530, limit=10000)
+    if sprite:
+        # Read back the streams the owner actually wrote, after the native
+        # frame path. Never substitute host-generated dynamic preview quads.
+        decoded = bytes(m.uc.mem_read(body, len(decoded)))
     def floats(va, count):
         return struct.unpack('<' + 'f' * count, m.uc.mem_read(va, count * 4))
     camera = floats(wide.ACTIVE_CAMERA_VA + 0xf0, 16)
@@ -520,7 +532,8 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
     viewport = list(floats(wide.ACTIVE_CAMERA_VA + 0x250, 8))
     if capture is not None:
         capture.update(machine=m, matrices=matrices, body=body, project=project,
-                       texture_spans=loaded_textures, private_fonts=private_receipts)
+                       texture_spans=loaded_textures, private_fonts=private_receipts,
+                       live_decoded=decoded)
     else:
         m.close()
     return dict(schema='nfl2k5_scorebug_native_projection/v2', experimental=True, runtime_witnessed=False,
@@ -531,13 +544,14 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
                 materials=materials, material_aliases=aliases, objects=objects, score_transforms=score_transforms,
                 scorebug_runtime_installed=runtime_textures is not None, private_fonts=private_receipts,
                 possession=possession,
-                static_version='espn-reference-v8' if baseline_v8 else 'espn-reference-v9' if baseline_v9 else r.scene_version(scorebug_folder=scorebug_folder),
+                static_version='scorebug-sprite-v1' if sprite else 'espn-reference-v8' if baseline_v8 else 'espn-reference-v9' if baseline_v9 else r.scene_version(scorebug_folder=scorebug_folder),
                 score_phase=score_phase, score_values=list(score_values), previous_scores=list(previous_scores),
                 visible_elements=list(visible_elements),
                 native_visibility=visibility_state, visibility_trace=visibility_trace,
                 frame=frame_bounds, frame_material=frame_name,
-                clock=bounds(range(48, 52 if all(name in visible for name in ('yscore_buga', 'yscore_buga1')) else 64)),
-                down=bounds(range(64, 80)),
+                clock=bounds(range(56,60)) if runtime_textures is not None else bounds(range(48, 52 if all(name in visible for name in ('yscore_buga', 'yscore_buga1')) else 64)),
+                down=bounds(range(64, 68 if runtime_textures is not None else 80)),
+                down_pointer=bounds(range(76,80)) if runtime_textures is not None else None,
                 frame_instructions=frame_instructions, widescreen=widescreen, mode=mode,
                 text_scale_x=27 / 32 if widescreen else 1,
                 scene_sha256=r.digest(decoded),

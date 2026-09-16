@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_audio_drop_zone_gui",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_audio_drop_zone_gui.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:33:16.427458+00:00",
+  "ended": "2026-09-16T00:33:17.161872+00:00",
+  "seconds": 0.734,
+  "exit_code": 0
+}

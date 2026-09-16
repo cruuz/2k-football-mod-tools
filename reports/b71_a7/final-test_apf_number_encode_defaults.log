@@ -1,0 +1,6 @@
+test_three_argument_encoders_preserve_the_synthetic_tail (__main__.NumberEncodeDefaultsTests.test_three_argument_encoders_preserve_the_synthetic_tail) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 2.081s
+
+OK

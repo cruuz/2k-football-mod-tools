@@ -1,0 +1,14 @@
+test_custom_refit_wrappers_mips_cache_and_retail_identity (__main__.BundleParameterTests.test_custom_refit_wrappers_mips_cache_and_retail_identity) ... ok
+test_image_writer_receipt_replay_tamper_scope_and_regrade_refusal (__main__.BundleParameterTests.test_image_writer_receipt_replay_tamper_scope_and_regrade_refusal) ... ok
+test_custom_xbe_receipt_replay_restore_and_tamper (__main__.RigParameterTests.test_custom_xbe_receipt_replay_restore_and_tamper) ... ok
+test_every_rig_lever_writes_only_owned_floats_and_default_pins_hold (__main__.RigParameterTests.test_every_rig_lever_writes_only_owned_floats_and_default_pins_hold) ... ok
+test_all_controls_validate_and_roundtrip_without_changing_presets (__main__.SettingsModelTests.test_all_controls_validate_and_roundtrip_without_changing_presets) ... ok
+test_bump_tints_and_retail_reset_are_exact (__main__.SettingsModelTests.test_bump_tints_and_retail_reset_are_exact) ... ok
+test_calibration_reproduces_captured_night_and_v21_prediction (__main__.SettingsModelTests.test_calibration_reproduces_captured_night_and_v21_prediction) ... ok
+test_day_afternoon_defaults_and_shadow_reset_keep_night_pinned (__main__.SettingsModelTests.test_day_afternoon_defaults_and_shadow_reset_keep_night_pinned) ... ok
+test_palette_controls_linking_switches_and_paint_preservation (__main__.SettingsModelTests.test_palette_controls_linking_switches_and_paint_preservation) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 14.038s
+
+OK

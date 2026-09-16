@@ -1,0 +1,88 @@
+test_named_budget_and_static_v3_both_orders (__main__.InstallationTests.test_named_budget_and_static_v3_both_orders) ... FAIL
+test_new_dependencies_and_old_sealed_owner_refuse_before_mutation (__main__.InstallationTests.test_new_dependencies_and_old_sealed_owner_refuse_before_mutation) ... FAIL
+test_absent_named_hud_does_not_borrow_other_collections_resources (__main__.NativeBindingTests.test_absent_named_hud_does_not_borrow_other_collections_resources) ... ok
+test_all_six_profiles_enter_complete_frames_draw_and_reenter (__main__.NativeBindingTests.test_all_six_profiles_enter_complete_frames_draw_and_reenter) ... 
+  test_all_six_profiles_enter_complete_frames_draw_and_reenter (__main__.NativeBindingTests.test_all_six_profiles_enter_complete_frames_draw_and_reenter) (probe='sprite') ... ERROR
+test_indexed_texture_cannot_be_bound_as_a_private_score_font (__main__.NativeBindingTests.test_indexed_texture_cannot_be_bound_as_a_private_score_font) ... FAIL
+test_old_binding_enters_eviction_wait_fixed_and_native_controls_return (__main__.NativeBindingTests.test_old_binding_enters_eviction_wait_fixed_and_native_controls_return) ... FAIL
+test_retail_game_loader_constructs_an_ordinary_named_hud_context (__main__.NativeBindingTests.test_retail_game_loader_constructs_an_ordinary_named_hud_context) ... ok
+
+======================================================================
+ERROR: test_all_six_profiles_enter_complete_frames_draw_and_reenter (__main__.NativeBindingTests.test_all_six_profiles_enter_complete_frames_draw_and_reenter) (probe='sprite')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py", line 244, in test_all_six_profiles_enter_complete_frames_draw_and_reenter
+    # Sprite SCNE replacement and zero-FONT frames are in the sprite suite.
+                ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py", line 178, in collection
+    pack, receipt = self.probes[probe]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/nfl2k5_scorebug_entry_fixture.py", line 113, in __init__
+    super().__init__(payload, pack, end=art.HUD_START + receipt['outer_size_after'])
+                                                        ~~~~~~~^^^^^^^^^^^^^^^^^^^^
+KeyError: 'outer_size_after'
+
+======================================================================
+FAIL: test_named_budget_and_static_v3_both_orders (__main__.InstallationTests.test_named_budget_and_static_v3_both_orders)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py", line 108, in test_named_budget_and_static_v3_both_orders
+    self.assertEqual((r.CODE_SIZE, r.DATA_SIZE), (1408, 128))
+AssertionError: Tuples differ: (4096, 128) != (1408, 128)
+
+First differing element 0:
+4096
+1408
+
+- (4096, 128)
+?    ^^
+
++ (1408, 128)
+?  +  ^
+
+
+======================================================================
+FAIL: test_new_dependencies_and_old_sealed_owner_refuse_before_mutation (__main__.InstallationTests.test_new_dependencies_and_old_sealed_owner_refuse_before_mutation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py", line 135, in test_new_dependencies_and_old_sealed_owner_refuse_before_mutation
+    self.assertEqual(tuple(s['va'] for s in r.sites(base)), (old.CODE_VA, old.DATA_VA))
+AssertionError: Tuples differ: (21860352, 21737472) != (21734080, 21737472)
+
+First differing element 0:
+21860352
+21734080
+
+- (21860352, 21737472)
+?     - ---
+
++ (21734080, 21737472)
+?    ++++
+
+
+======================================================================
+FAIL: test_indexed_texture_cannot_be_bound_as_a_private_score_font (__main__.NativeBindingTests.test_indexed_texture_cannot_be_bound_as_a_private_score_font)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py", line 217, in test_indexed_texture_cannot_be_bound_as_a_private_score_font
+    for version in ('old', 'fixed'):
+        ^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py", line 38, in control
+    raise AssertionError('historical control allocation moved')
+AssertionError: historical control allocation moved
+
+======================================================================
+FAIL: test_old_binding_enters_eviction_wait_fixed_and_native_controls_return (__main__.NativeBindingTests.test_old_binding_enters_eviction_wait_fixed_and_native_controls_return)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py", line 190, in test_old_binding_enters_eviction_wait_fixed_and_native_controls_return
+    for version in ('old', 'fixed', 'native'):
+        ^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py", line 38, in control
+    raise AssertionError('historical control allocation moved')
+AssertionError: historical control allocation moved
+
+----------------------------------------------------------------------
+Ran 7 tests in 276.242s
+
+FAILED (failures=4, errors=1)

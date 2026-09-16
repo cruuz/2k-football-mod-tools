@@ -1,0 +1,33 @@
+PROVED MASTER native relocation/validation: result=1; instructions=7189487
+test_audible_y_lookup_is_separate_from_initial_x_weight (__main__.NativePlaycallTests.test_audible_y_lookup_is_separate_from_initial_x_weight) ... ok
+test_complete_static_difference_receipt (__main__.NativePlaycallTests.test_complete_static_difference_receipt) ... ok
+test_dispatch_executes_family_and_phase_rows (__main__.NativePlaycallTests.test_dispatch_executes_family_and_phase_rows) ... ok
+test_dispatch_tables_are_family_and_match_phase_switches (__main__.NativePlaycallTests.test_dispatch_tables_are_family_and_match_phase_switches) ... ok
+test_four_retries_keep_the_formation_and_do_not_advance_a_row (__main__.NativePlaycallTests.test_four_retries_keep_the_formation_and_do_not_advance_a_row) ... ok
+test_goal_line_compiled_heavy_categories_survive_normalizer (__main__.NativePlaycallTests.test_goal_line_compiled_heavy_categories_survive_normalizer) ... PROVED compiled/normalized heavy GL candidates: [(0, 1.0), (1, 1.0), (2, 1.162857174873352), (5, 0.5642856955528259), (8, 0.048269230872392654)]
+ok
+test_ladder_is_a_separate_bounded_lineup_resolver (__main__.NativePlaycallTests.test_ladder_is_a_separate_bounded_lineup_resolver) ... ok
+test_mask_only_retirement_is_rebuilt (__main__.NativePlaycallTests.test_mask_only_retirement_is_rebuilt) ... ok
+test_master_category_rows_and_te_roles_are_distinct_namespaces (__main__.NativePlaycallTests.test_master_category_rows_and_te_roles_are_distinct_namespaces) ... ok
+test_master_initialization_enables_all_retail_plays (__main__.NativePlaycallTests.test_master_initialization_enables_all_retail_plays) ... ok
+test_removed_record_hides_suffix_then_normalizer_compacts_it (__main__.NativePlaycallTests.test_removed_record_hides_suffix_then_normalizer_compacts_it) ... ok
+test_resource_names_and_filename_hashes (__main__.NativePlaycallTests.test_resource_names_and_filename_hashes) ... ok
+test_team_slider_conversion_and_situation_adjustment (__main__.NativePlaycallTests.test_team_slider_conversion_and_situation_adjustment) ... PROVED slider 0.5 adjusted on neutral third downs: [0.44999998807907104, 0.0, 0.0]
+ok
+test_third_down_full_call_tuples_and_te_counts (__main__.NativePlaycallTests.test_third_down_full_call_tuples_and_te_counts) ... PROVED third-down category/formation/play tuples: {130: ((1, 27, 42), (6, 14, 114), (6, 14, 114)), 767: ((2, 91, 78), (8, 92, 78), (8, 92, 78)), 1411: ((3, 119, 114), (7, 133, 216), (7, 133, 216))}
+ok
+test_third_down_requests_and_category_weights (__main__.NativePlaycallTests.test_third_down_requests_and_category_weights) ... PROVED neutral 3rd-down rows: [4, 10, 10] category choices: {130: (1, 6, 6), 767: (2, 8, 8), 1411: (3, 7, 7), 1037: (2, 8, 8), 1439: (1, 7, 7)}
+ok
+test_tu_goal_line_and_third_down_native (__main__.NativePlaycallTests.test_tu_goal_line_and_third_down_native) ... ok
+test_tu_prefers_valid_primary_category_in_nearby_resolver (__main__.NativePlaycallTests.test_tu_prefers_valid_primary_category_in_nearby_resolver) ... ok
+test_user_and_global_books_enter_same_native_selector (__main__.NativePlaycallTests.test_user_and_global_books_enter_same_native_selector) ... ok
+test_user_global_and_cpu_labels_take_common_filename_branch (__main__.NativePlaycallTests.test_user_global_and_cpu_labels_take_common_filename_branch) ... ok
+test_whole_offensive_call_selects_added_heavy_without_fetch_or_ladder (__main__.NativePlaycallTests.test_whole_offensive_call_selects_added_heavy_without_fetch_or_ladder) ... PROVED complete GL call: 1 5 236
+ok
+test_wrapper_passes_the_staging_output_and_obeys_busy_flag (__main__.NativePlaycallTests.test_wrapper_passes_the_staging_output_and_obeys_busy_flag) ... ok
+test_x_rating_is_independent_of_y_audible_slot (__main__.NativePlaycallTests.test_x_rating_is_independent_of_y_audible_slot) ... ok
+
+----------------------------------------------------------------------
+Ran 22 tests in 112.950s
+
+OK

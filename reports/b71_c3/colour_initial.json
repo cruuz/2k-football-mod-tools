@@ -1,0 +1,10 @@
+{
+  "command": [
+    "python3",
+    "tests/mod_editor/test_nfl2k5_modern_color.py"
+  ],
+  "exit_code": 0,
+  "seconds": 8.093,
+  "started_utc": "2026-09-15T19:01:08.726999+00:00",
+  "log": "colour_initial.log"
+}

@@ -1,0 +1,16 @@
+.scratch/g add -- FABLE_B71_COLOR2_REPORT_2026-09-15.md FABLE_B71_FONT_REPORT_2026-09-15.md FABLE_B71_WINGS_REPORT_2026-09-15.md docs/modern_color/README.md reports/b71_a5/build_testdisc71.py reports/b71_a5/launch_testdisc71.sh reports/b71_a5/regenerate_pins.py reports/b71_a5/render_combined.py reports/b71_a5/audit.py reports/b71_a5/commit_merge.py reports/b71_a5/branch_heads.json reports/b71_a5/compiler_pins.json reports/b71_a5/evidence_hydration.json reports/b71_a5/startup_commands.json reports/b71_a5/combined_43.png reports/b71_a5/combined_wide.png
+.scratch/g commit -m 'Document merged scorebug and prepare reproducible combined disc build' -- FABLE_B71_COLOR2_REPORT_2026-09-15.md FABLE_B71_FONT_REPORT_2026-09-15.md FABLE_B71_WINGS_REPORT_2026-09-15.md docs/modern_color/README.md reports/b71_a5/build_testdisc71.py reports/b71_a5/launch_testdisc71.sh reports/b71_a5/regenerate_pins.py reports/b71_a5/render_combined.py reports/b71_a5/audit.py reports/b71_a5/commit_merge.py reports/b71_a5/branch_heads.json reports/b71_a5/compiler_pins.json reports/b71_a5/evidence_hydration.json reports/b71_a5/startup_commands.json reports/b71_a5/combined_43.png reports/b71_a5/combined_wide.png
+[astra/b71-a5-scorebug-integrate e48f6930] Document merged scorebug and prepare reproducible combined disc build
+ 16 files changed, 620 insertions(+), 10 deletions(-)
+ create mode 100644 reports/b71_a5/audit.py
+ create mode 100644 reports/b71_a5/branch_heads.json
+ create mode 100644 reports/b71_a5/build_testdisc71.py
+ create mode 100644 reports/b71_a5/combined_43.png
+ create mode 100644 reports/b71_a5/combined_wide.png
+ create mode 100644 reports/b71_a5/commit_merge.py
+ create mode 100644 reports/b71_a5/compiler_pins.json
+ create mode 100644 reports/b71_a5/evidence_hydration.json
+ create mode 100755 reports/b71_a5/launch_testdisc71.sh
+ create mode 100644 reports/b71_a5/regenerate_pins.py
+ create mode 100644 reports/b71_a5/render_combined.py
+ create mode 100644 reports/b71_a5/startup_commands.json

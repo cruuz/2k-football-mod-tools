@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_external_audio_bank_bundle",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_external_audio_bank_bundle.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:48:30.175401+00:00",
+  "ended": "2026-09-16T00:48:30.510722+00:00",
+  "seconds": 0.335,
+  "exit_code": 0
+}

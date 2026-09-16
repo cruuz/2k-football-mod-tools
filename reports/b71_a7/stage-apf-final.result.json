@@ -1,0 +1,13 @@
+{
+  "name": "stage-apf-final",
+  "argv": [
+    "python3",
+    "packaging/stage_release.py",
+    "packaging/apf2k8-release-allowlist.txt",
+    "/home/noah/2k-worktrees/astra-b71-a7/.scratch/a7-release-apf"
+  ],
+  "started": "2026-09-16T01:24:53.145370+00:00",
+  "ended": "2026-09-16T01:24:53.233861+00:00",
+  "seconds": 0.088,
+  "exit_code": 0
+}

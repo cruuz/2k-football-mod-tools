@@ -22,6 +22,16 @@ import struct
 from collections import Counter
 from pathlib import Path
 
+# The shipped Windows runtime is an embeddable CPython whose ._pth file
+# defines sys.path outright and, unlike a normal interpreter, does NOT add
+# this script's own directory -- so the sibling imports below fail there
+# with ModuleNotFoundError unless the directory is put back explicitly.
+import sys as _sys
+from pathlib import Path as _Path
+_here = str(_Path(__file__).resolve().parent)
+if _here not in _sys.path:
+    _sys.path.insert(0, _here)
+
 from nfl_outer import parse_archive, read_entry_range
 from nfl_scene_probe import decode_resource, parse_inventory
 from nfl_scne_inventory import ScneError, parse_scene
@@ -408,7 +418,7 @@ def main() -> int:
         ],
     }
     args.json.parent.mkdir(parents=True, exist_ok=True)
-    args.json.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    args.json.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
     print(
         "NFL_NORMSHORT3_POSITIONS_COMPLETE "
         f"shaders={SHADER_OBJECT_COUNT} shapes={report['corpus']['register_zero_format_counts']['NORMSHORT3']} "

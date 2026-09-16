@@ -1,0 +1,11 @@
+{
+  "name": "presentation-reconciled",
+  "argv": [
+    "python3",
+    "reports/b71_a7/reconcile_presentation.py"
+  ],
+  "started": "2026-09-16T00:43:51.638041+00:00",
+  "ended": "2026-09-16T00:43:51.669449+00:00",
+  "seconds": 0.031,
+  "exit_code": 0
+}

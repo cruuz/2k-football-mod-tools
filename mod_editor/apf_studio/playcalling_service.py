@@ -7,7 +7,8 @@ Recipes contain choices and receipts, never decoded game resources.
 from __future__ import annotations
 
 from collections import OrderedDict
-from dataclasses import dataclass, replace
+from copy import deepcopy
+from dataclasses import dataclass, replace, field
 import hashlib
 import importlib
 import json
@@ -107,6 +108,8 @@ def validate_request(request):
     if not isinstance(request, dict):
         raise ValidationError("Choose a CPU Play Calling edit")
     fields = {
+        "situation_mask": {"book", "key", "formation", "exclude"},
+        "situation_masks_enabled": {"enabled"},
         "ratings": {"book", "formation", "ratings"},
         "play_rating": {"book", "formation", "play", "value"},
         "categories": {"book", "formation", "primary", "secondary"},
@@ -116,12 +119,22 @@ def validate_request(request):
         "clones": {"side", "assignments"},
         "scheme": {"team", "book", "scheme", "assignments"},
         "never_call": {"book", "formation", "never", "restore_masks"},
+        "add": {"book", "donor", "formation"},
     }
     kind = request.get("kind")
     if kind not in fields or set(request) != fields[kind] | {"kind"}:
         raise ValidationError("Unknown CPU Play Calling control or fields")
     if "book" in request and (not isinstance(request["book"], str) or not 1 <= len(request["book"]) <= 27):
         raise ValidationError("Choose a named book")
+    if kind == "situation_masks_enabled" and type(request["enabled"]) is not bool:
+        raise ValidationError("Choose whether situation exclusions are enabled")
+    if kind == "situation_mask":
+        _integer(request["key"], 0, 11)
+        _integer(request["formation"], 0, 150)
+        if type(request["exclude"]) is not bool:
+            raise ValidationError("Choose whether to exclude this formation here")
+    if kind == "add" and (not isinstance(request["donor"], str) or not 1 <= len(request["donor"]) <= 27):
+        raise ValidationError("Choose a named donor book")
     # "row" stops at 27 because apf2k8_master_writer.set_category_row refuses more.
     for key, high in (("formation", 255), ("play", 1022), ("category", 27), ("primary", 27), ("team", 39), ("row", 27)):
         if key in request:
@@ -186,19 +199,28 @@ class State:
     teams: tuple
     sides: dict
     inventory: dict
+    situation_masks: dict = field(default_factory=dict)
+    situation_masks_enabled: bool = False
 
     def copy(self):
-        return replace(self, books=dict(self.books), sides=dict(self.sides))
+        return replace(self, books=dict(self.books), sides=dict(self.sides),
+                       situation_masks={name: [list(row) for row in rows] for name, rows in self.situation_masks.items()})
 
 
 class Backend:
     """The facade's injection seam; production always uses the real core modules."""
     def __init__(self):
+        from .book_content import BookSourceCache
+        self.source_cache = BookSourceCache()
         for attr, suffix in (("model", "playcall_model"), ("splb", "splb_writer"),
                              ("master", "master_writer"), ("tendency", "team_tendency"),
                              ("clone", "book_clone"), ("audibles", "audibles")):
             setattr(self, attr, importlib.import_module("mod_editor.core.apf2k8_" + suffix))
         self.lineup_callers = LINEUP_CALLERS
+        self._compiled = OrderedDict()
+
+    def cache_token(self, session):
+        return self.source_cache.token(session.source.index_0a)
 
     @property
     def curves(self):
@@ -208,9 +230,9 @@ class Backend:
         from .book_content import book_catalog, master_inventory
         from mod_editor.core import apf2k8_book_identity as identity
         index = session.source.index_0a
-        books = book_catalog(index)
-        inventory, master = master_inventory(index)
-        rost = identity.read_disc_roster(index)
+        books = book_catalog(index, cache=self.source_cache)
+        inventory, master = master_inventory(index, cache=self.source_cache)
+        rost = self.source_cache.roster(index)
         parsed = identity.parse_roster_identity(rost)
         labels = {r.index: r for r in parsed.labels}
         teams = tuple({"team_index": t.index, "team_name": t.name,
@@ -220,7 +242,10 @@ class Backend:
         changes = session.staged_splb_changes()
         for outer, book in books.items():
             selected = tuple(c for c in changes if c.outer_index == outer)
-            bodies[book.name] = self.splb.compile_book(book, selected).replacement if selected else book.body
+            key = (book.name, digest(book.body), selected)
+            if selected and key not in self._compiled:
+                PlayCallingService._remember(self._compiled, key, self.splb.compile_book(book, selected).replacement)
+            bodies[book.name] = self._compiled[key] if selected else book.body
         from . import scheme_service
         source_books = {book.name: book for book in books.values()}
         for modification in session.modifications:
@@ -246,6 +271,83 @@ class PlayCallingService:
     def __init__(self, backend=None):
         self._backend = backend
         self.cache = OrderedDict()
+        self._profiles = OrderedDict()
+        self._states = OrderedDict()
+        self._base_key = None
+        self._base = None
+        self._parsed = OrderedDict()
+        self._transitions = OrderedDict()
+
+    @staticmethod
+    def _remember(cache, key, value, limit=64):
+        cache[key] = value
+        cache.move_to_end(key)
+        while len(cache) > limit:
+            cache.popitem(last=False)
+        return value
+
+    @staticmethod
+    def _file_key(path):
+        from .book_content import BookSourceCache
+        return BookSourceCache.stat_key(path)
+
+    def _mod_key(self, modification):
+        # The staged recipe is small, so key on its live digest as well as its stat: a tamper that keeps the size
+        # and mtime is invisible to stat on Windows (ctime is the creation time there and the inode survives an
+        # in-place write), and it must still miss the memo so read_profile can refuse it.
+        try:
+            live = digest(modification.replacement_path.read_bytes())
+        except OSError:
+            live = None
+        return (modification.asset_id, modification.kind, modification.replacement_sha256, live,
+                json_bytes(dict(modification.metadata)), self._file_key(modification.replacement_path))
+
+    def _input_key(self, session):
+        token = self.backend.cache_token(session) if hasattr(self.backend, 'cache_token') else None
+        return (session.session_id, token, tuple(self._mod_key(m) for m in session.modifications
+                                                if m.kind != PROVIDER_KIND))
+
+    def _parse(self, body):
+        key = digest(body)
+        if key not in self._parsed:
+            self._remember(self._parsed, key, self.backend.splb.parse_book(body, 0))
+        return self._parsed[key]
+
+    def _transition_key(self, state, request):
+        """Only inputs consumed by this existing writer/coverage check.
+
+        Ownership/scheme plans consult the archive too, so they always replay.
+        Confirm still calls review and apply even when a replay result exists.
+        """
+        kind = request['kind']
+        if kind in {'clones', 'scheme'}:
+            return None
+        inputs = []
+        for field in ('book', 'donor'):
+            if field in request:
+                name = request[field]
+                inputs.append((name, digest(state.books[name]), state.sides.get(name)))
+        if kind in {'categories', 'remove', 'retire', 'audibles', 'master_row', 'master_roles'}:
+            inputs.append(digest(state.master))
+        if kind == 'tendency':
+            inputs.append(digest(state.rost))
+        if kind == 'situation_mask':
+            inputs.append(state.situation_masks)
+        if kind == 'situation_masks_enabled':
+            inputs.append(state.situation_masks_enabled)
+        return json_bytes([request, inputs, self.backend.lineup_callers])
+
+    def _replay(self, state, request, index):
+        key = self._transition_key(state, request)
+        cached = self._transitions.get(key) if key is not None else None
+        if cached is None:
+            return self.apply(state, request, index)
+        books, fields, event = cached
+        result = state.copy()
+        result.books.update(books)
+        for field, value in fields.items():
+            setattr(result, field, deepcopy(value))
+        return result, deepcopy(event)
 
     @property
     def backend(self):
@@ -261,15 +363,73 @@ class PlayCallingService:
         return tuple((m.asset_id, m.replacement_sha256) for m in session.modifications)
 
     def events(self, session):
-        return next((read_profile(m) for m in session.modifications if m.kind == PROVIDER_KIND), [])
+        modification = next((m for m in session.modifications if m.kind == PROVIDER_KIND), None)
+        if modification is None:
+            return []
+        key = self._mod_key(modification)
+        if key not in self._profiles:
+            self._remember(self._profiles, key, read_profile(modification), 8)
+        return deepcopy(self._profiles[key])
+
+    @staticmethod
+    def _event_key(events):
+        return tuple(digest(json_bytes(e)) for e in events)
 
     def state(self, session):
-        state = self.backend.load(session)
-        for event in self.events(session):
-            state, fresh = self.apply(state, event["request"], session.source.index_0a)
+        key = self._input_key(session)
+        # Injected test backends can change their in-memory source without a
+        # filesystem identity. Production watches only the source dependencies.
+        if not hasattr(self.backend, 'cache_token'):
+            base = self.backend.load(session)
+            key = (*key, digest(json_bytes([sorted((n, digest(b)) for n, b in base.books.items()),
+                                          digest(base.master), digest(base.rost), base.teams, base.sides])))
+        else:
+            base = None
+        if self._base_key != key:
+            self._base = base or self.backend.load(session)
+            # The first load discovers which pack files contain the resources.
+            self._base_key = self._input_key(session) if base is None else key
+            self._states.clear()
+            self._states[()] = self._base
+        events = self.events(session)
+        keys = self._event_key(events)
+        count = len(keys)
+        while count and keys[:count] not in self._states:
+            count -= 1
+        state = self._states.get(keys[:count], self._base)
+        for position, event in enumerate(events[count:], count + 1):
+            state, fresh = self._replay(state, event["request"], session.source.index_0a)
             if fresh != event:
                 raise ValidationError("An earlier book edit changed; undo or revert CPU Play Calling and review again")
-        return state
+            self._remember(self._states, keys[:position], state)
+        return state.copy()
+
+    def rebase_membership(self, session, modifications):
+        """Replay authored requests after an explicit Fine-tune transaction.
+
+        First validate the old receipts against the old inputs. Recompute them
+        only for the proposed membership changes, before the session mutates.
+        A failed replay leaves both the book edits and CPU recipe untouched.
+        """
+        from types import SimpleNamespace
+        events = self.events(session)
+        if not events:
+            return modifications
+        self.state(session)
+        proposed = SimpleNamespace(source=session.source, modifications=tuple(modifications.values()),
+                                   staged_splb_changes=lambda: session._active_splb_changes(modifications))
+        state = self.backend.load(proposed)
+        refreshed = []
+        for event in events:
+            state, fresh = self._replay(state, event["request"], session.source.index_0a)
+            if fresh["warning"] and self.backend.lineup_callers != "non_cpu":
+                raise ValidationError(fresh["warning"])
+            refreshed.append(fresh)
+        payload = json_bytes({"schema": SCHEMA, "events": refreshed})
+        validate_payload(payload, SELECTOR, {"schema": SCHEMA})
+        sha = digest(payload)
+        path = session._store_payload(sha, payload, ".json")
+        return {**modifications, SELECTOR: Modification(SELECTOR, PROVIDER_KIND, path, sha, {"schema": SCHEMA})}
 
     def plan(self, session, side, team=None, donor=None):
         state = self.state(session)
@@ -285,7 +445,7 @@ class PlayCallingService:
         return {"kind": "clones", "side": side, "assignments": rows}
 
     def _record(self, book, formation):
-        return next((r for r in self.backend.splb.parse_book(book, 0).records
+        return next((r for r in self._parse(book).records
                      if r.populated and r.formation_index == formation), None)
 
     def scheme_plan(self, session, team, scheme_id):
@@ -295,18 +455,24 @@ class PlayCallingService:
         return validate_request({"kind": "scheme", "team": team, "book": context["book"],
                                  "scheme": scheme_id, "assignments": assignments})
 
-    def scheme_csv(self, session, team):
+    def scheme_csv(self, session, team, *, book=None, preview_tendency=None):
         from mod_editor.core.apf2k8_offensive_schemes import spreadsheet
-        context = self.context(session, team, "offense")
+        context = self.context(session, team, "offense", book=book, preview_tendency=preview_tendency)
         selected = next((e["request"]["scheme"] for e in reversed(context["events"])
                          if e["request"]["kind"] == "scheme" and e["request"]["team"] == team), None)
         state = context["state"]
-        return spreadsheet(state.books[context["book"]], state.master, context["tendency"],
-                           team_name=context["team"]["team_name"], scheme_id=selected)
+        return spreadsheet(state.books[context["book"]], state.master, context["preview_tendency"],
+                           team_name="Book preview, independent of team" if book is not None else context["team"]["team_name"],
+                           scheme_id=selected if book is None or context["team"]["offense"] == book else None,
+                           preview_only=book is not None)
 
     def facts(self, state, request):
         b = self.backend
         kind = request["kind"]
+        if kind == "situation_masks_enabled":
+            return state.situation_masks_enabled
+        if kind == "situation_mask":
+            return request["formation"] in state.situation_masks.get(request["book"], [[] for _ in range(12)])[request["key"]]
         if kind == "scheme":
             team = next(t for t in state.teams if t["team_index"] == request["team"])
             return {"book": team["offense"], "book_sha256": digest(state.books[team["offense"]]),
@@ -340,12 +506,28 @@ class PlayCallingService:
 
     def apply(self, state, request, index):
         validate_request(request)
+        original = state
         state = state.copy()
         b, kind = self.backend, request["kind"]
         before = self.facts(state, request)
         coverage, retired, warning = {}, [], ""
         scheme_receipt = None
-        if kind == "scheme":
+        if kind == "situation_masks_enabled":
+            state.situation_masks_enabled = request["enabled"]
+        elif kind == "situation_mask":
+            from mod_editor.core.apf2k8_situation_mask import canonical_policies
+            name = request["book"]
+            if name not in state.books or state.sides.get(name) != "offense":
+                raise ValidationError("Choose an offensive book for situation exclusions")
+            if self._record(state.books[name], request["formation"]) is None:
+                raise ValidationError("This formation is no longer in the book; refresh its candidates")
+            rows = state.situation_masks.setdefault(name, [[] for _ in range(12)])
+            values = set(rows[request["key"]])
+            if request["exclude"]: values.add(request["formation"])
+            else: values.discard(request["formation"])
+            rows[request["key"]] = sorted(values)
+            state.situation_masks = canonical_policies(state.situation_masks)
+        elif kind == "scheme":
             from mod_editor.core.apf2k8_offensive_schemes import apply_scheme
             team = next(t for t in state.teams if t["team_index"] == request["team"])
             if team["offense"] != request["book"]:
@@ -410,6 +592,26 @@ class PlayCallingService:
             elif kind == "never_call":
                 from mod_editor.core.apf2k8_formation_calling import set_never_call
                 book = set_never_call(book, request["formation"], request["never"], tuple(request["restore_masks"]))
+            elif kind == "add":
+                donor = request["donor"]
+                if donor not in state.books or state.sides[donor] != state.sides[name]:
+                    raise ValidationError("Choose a donor on the selected book's side")
+                if request["formation"] >= 151:
+                    raise ValidationError("Choose an ordinary formation; special calls use separate caches")
+                if self._record(book, request["formation"]) is not None:
+                    raise ValidationError("This formation is already in the book; edit it below")
+                donor_record = self._record(state.books[donor], request["formation"])
+                if donor_record is None:
+                    raise ValidationError("The donor no longer contains this formation; select it again")
+                parsed = b.splb.parse_book(book, 0)
+                slot = next((r.record_index for r in parsed.records if not r.populated), None)
+                if slot is None:
+                    raise ValidationError("This book has no empty formation slot; remove an ordinary formation first")
+                changes = [b.splb.MembershipChange(0, slot, e.play_index, True) for e in donor_record.entries]
+                changes.append(b.splb.TrailerReplace(0, slot, request["formation"], donor_record.category_index))
+                compiled = b.splb.compile_book(parsed, changes)
+                b.splb.verify_book(book, compiled.replacement, changes)
+                book = b.splb._compact_normalize(compiled.replacement)
             state.books[name] = book
             if kind in {"remove", "retire", "categories"}:
                 coverage = {str(k): list(v) for k, v in b.splb.row_coverage(book, state.master).items()}
@@ -422,12 +624,19 @@ class PlayCallingService:
         after = self.facts(state, request)
         if scheme_receipt is not None:
             after["scheme_receipt"] = scheme_receipt
-        return state, {"request": json.loads(json_bytes(request)), "before": before,
-                       "after": after, "coverage": coverage,
-                       "retired": retired, "warning": warning}
+        event = {"request": json.loads(json_bytes(request)), "before": before,
+                 "after": after, "coverage": coverage, "retired": retired, "warning": warning}
+        key = self._transition_key(original, request)
+        if key is not None:
+            books = {name: body for name, body in state.books.items() if original.books.get(name) != body}
+            fields = {name: deepcopy(getattr(state, name)) for name in
+                      ('master', 'rost', 'teams', 'sides', 'situation_masks', 'situation_masks_enabled')
+                      if getattr(original, name) != getattr(state, name)}
+            self._remember(self._transitions, key, (books, fields, deepcopy(event)), 128)
+        return state, event
 
-    def review(self, session, request):
-        state = self.state(session)
+    def review(self, session, request, *, state=None):
+        state = self.state(session) if state is None else state
         try:
             after, event = self.apply(state, request, session.source.index_0a)
         except (ValidationError, ValueError) as exc:
@@ -443,6 +652,7 @@ class PlayCallingService:
                     "snapshot": self.snapshot(session), "refused": True, "session_id": session.session_id,
                     "retired_names": [], "category_names": names}
         refused = bool(event["warning"] and self.backend.lineup_callers != "non_cpu")
+        self._review_state = after
         names = {r.id: r.name for r in self.backend.model.category_table(after.master)}
         return {"event": event, "snapshot": self.snapshot(session), "refused": refused,
                 "session_id": session.session_id,
@@ -457,6 +667,11 @@ class PlayCallingService:
         if fresh["refused"]:
             raise ValidationError(fresh["event"]["warning"])
         events = self.events(session) + [fresh["event"]]
+        self._commit(session, events, self._review_state)
+        return fresh["event"]
+
+    def _commit(self, session, events, state):
+        """One validated payload and one Undo entry; nothing mutates on refusal."""
         payload = json_bytes({"schema": SCHEMA, "events": events})
         validate_payload(payload, SELECTOR, {"schema": SCHEMA})
         sha = digest(payload)
@@ -464,7 +679,117 @@ class PlayCallingService:
         modification = Modification(SELECTOR, PROVIDER_KIND, path, sha, {"schema": SCHEMA})
         session._record_undo()
         session._modifications = {**session._modifications, SELECTOR: modification}
-        return fresh["event"]
+        self._remember(self._states, self._event_key(events), state)
+
+    @staticmethod
+    def describe_request(request):
+        where = request.get('book', f"Team {request['team']}" if 'team' in request else 'MASTER / every book')
+        for key in ('formation', 'play', 'category', 'key'):
+            if key in request:
+                where += f", {key} {request[key]}"
+        return request.get('kind', 'edit').replace('_', ' '), where
+
+    def confirm(self, session, requests):
+        """Review the queue against one evolving state, then commit its clean set.
+
+        Each request goes through review(), with exactly its captured arguments.
+        A refused book keeps all its pending changes so order cannot silently
+        decide which half of an incompatible pair gets staged. Independent books
+        and tendencies can still commit in one transaction. MASTER and ownership
+        changes are global dependencies: a blocker keeps that entire batch.
+        """
+        requests = deepcopy(list(requests))
+        if not requests:
+            return {'staged': [], 'blockers': [], 'reviews': []}
+        initial = self.state(session)
+        snapshot = self.snapshot(session)
+        source_key = self._input_key(session)
+        events = self.events(session)
+        blockers = {}
+        reviews = {}
+
+        def block(i, why):
+            what, where = self.describe_request(requests[i])
+            blockers.setdefault(i, {'index': i, 'what': what, 'where': where, 'why': why,
+                                   'fix': 'Clear this row, adjust its controls, and add it again.'})
+
+        # Explicit formation references conflict regardless of queue order.
+        for i, request in enumerate(requests):
+            if request.get('kind') != 'remove':
+                continue
+            for j, other in enumerate(requests):
+                references_book = (other.get('book') == request.get('book') or
+                                   other.get('kind') == 'add' and other.get('donor') == request.get('book'))
+                if i != j and references_book and other.get('formation') == request.get('formation'):
+                    why = f"Pending edit {i + 1} removes a formation referenced by pending edit {j + 1}. Keep the formation or clear its other edit."
+                    block(i, why); block(j, why)
+
+        # Review every row, including pre-identified conflicts, to expose all
+        # writer/coverage failures in one pass. Failed rows never supply state.
+        state = initial
+        for i, request in enumerate(requests):
+            try:
+                review = self.review(session, request, state=state)
+                reviews[i] = review
+                if review['refused']:
+                    block(i, review['event']['warning'])
+                elif i not in blockers:
+                    state = self._review_state
+            except (ValidationError, ValueError, KeyError, StopIteration) as exc:
+                block(i, str(exc) or 'The referenced book or personnel is no longer available.')
+
+        # Later MASTER edits must not invalidate coverage checked by an earlier
+        # membership edit. The same writer coverage check runs on final state.
+        for i, request in enumerate(requests):
+            if i in blockers or request.get('kind') not in {'remove', 'retire', 'categories'}:
+                continue
+            coverage = self.backend.splb.row_coverage(state.books[request['book']], state.master)
+            holes = [str(k) for k, v in coverage.items() if not v]
+            if holes and self.backend.lineup_callers != 'non_cpu':
+                block(i, 'Combined edits leave no lineup candidate for requested rows ' + ', '.join(holes) +
+                      '. Keep a nearby personnel category or restore the MASTER row.')
+
+        global_kinds = {'master_row', 'master_roles', 'clones', 'scheme'}
+        blocked_books = {requests[i].get('book') for i in blockers} - {None}
+        global_dependency = any(r.get('kind') in global_kinds for r in requests)
+        if blockers:
+            # A pending addition consumes its donor too. Propagate blockers
+            # through donor chains before publishing any independent edits.
+            while True:
+                dependent = {r['book'] for r in requests if r.get('kind') == 'add'
+                             and r.get('donor') in blocked_books}
+                if dependent <= blocked_books:
+                    break
+                blocked_books.update(dependent)
+            retired_books = {r.get('book') for r in requests if r.get('kind') == 'retire'} & blocked_books
+            for i, request in enumerate(requests):
+                paired_tendency = request.get('kind') == 'tendency' and any(
+                    t['team_index'] == request['team'] and t['offense'] in retired_books for t in initial.teams)
+                # The editor also allows a USER/donor book independent of the
+                # team picker. Retire submits its captured share as the next
+                # request even when that team does not own the selected book.
+                if request.get('kind') == 'tendency' and i and requests[i - 1].get('kind') == 'retire':
+                    paired_tendency |= requests[i - 1].get('book') in retired_books
+                if global_dependency or request.get('book') in blocked_books or paired_tendency:
+                    block(i, 'Another pending edit affects the same book or shared MASTER/ownership data. Resolve its blockers together.')
+
+        # Replay the accepted set through review once more only if exclusions
+        # changed its inputs. This makes every stored receipt match build replay.
+        accepted = [i for i in range(len(requests)) if i not in blockers]
+        if blockers:
+            state = initial
+            for i in accepted:
+                review = self.review(session, requests[i], state=state)
+                if review['refused']:
+                    raise ValidationError('Pending dependencies changed; refresh and confirm again')
+                reviews[i] = review
+                state = self._review_state
+        if snapshot != self.snapshot(session) or source_key != self._input_key(session):
+            raise ValidationError('The project or source changed during confirmation; refresh and confirm again')
+        if accepted:
+            self._commit(session, events + [reviews[i]['event'] for i in accepted], state)
+        return {'staged': accepted, 'blockers': [blockers[i] for i in sorted(blockers)],
+                'reviews': [dict(index=i, **reviews[i]) for i in sorted(reviews)]}
 
     @staticmethod
     def _restore_masks(events, book, formation):
@@ -484,46 +809,60 @@ class PlayCallingService:
                     book = donor
         return None
 
-    def context(self, session, team, side):
+    def context(self, session, team, side, *, book=None, preview_tendency=None):
         state = self.state(session)
         selected = next((t for t in state.teams if t["team_index"] == team), state.teams[0])
-        name = selected[side]
+        name = selected[side] if book is None else book
+        if name not in state.books or state.sides.get(name) != side:
+            raise ValidationError("Choose a book on the selected side, then refresh the preview")
+        tendency = self.backend.tendency.team_tendency(state.rost, selected["team_index"])
+        if preview_tendency is None:
+            preview_tendency = tendency
+        _integer(preview_tendency, 0, 100)
         book = state.books[name]
-        parsed = self.backend.splb.parse_book(book, 0)
+        parsed = self._parse(book)
         categories = self.backend.model.category_table(state.master)
         formations = []
         form_names = {int(r["index"]): r["name"] for r in state.inventory.get("formations", ())}
         play_names = {int(r["index"]): r["name"] for r in state.inventory.get("plays", ())}
+        events = self.events(session)
         for r in parsed.records:
             if not r.populated or any(f["id"] == r.formation_index for f in formations):
                 continue
             formations.append({"id": r.formation_index, "name": form_names.get(r.formation_index, f"Formation {r.formation_index}"),
-                               "ratings": self.backend.splb.formation_ratings(book, r.formation_index),
-                               **self.facts(state, {"kind": "categories", "book": name, "formation": r.formation_index}),
+                               "ratings": tuple((int.from_bytes(r.trailer[:4], 'big') >> shift) & 7 for shift in (14, 11, 8)),
+                               "primary": r.category_index,
+                               "secondary": [i for i in range(28) if int.from_bytes(r.trailer[4:], 'big') & (1 << i)],
                                "plays": [(e.play_index, play_names.get(e.play_index, f"Play {e.play_index}"),
-                                          self.backend.splb.play_rating(book, r.formation_index, e.play_index)) for e in r.entries]})
+                                          e.x) for e in r.entries]})
             masks = [int.from_bytes(other.trailer[4:], 'big') for other in parsed.records
                      if other.populated and other.formation_index == r.formation_index]
-            saved = self._restore_masks(self.events(session), name, r.formation_index)
+            saved = self._restore_masks(events, name, r.formation_index)
             formations[-1].update(never_call=not any(masks), restore_masks=masks if all(masks) else saved)
         return {"state": state, "snapshot": self.snapshot(session), "team": selected, "book": name,
                 "sharing": [t["team_name"] for t in state.teams if t["team_index"] != selected["team_index"] and t[side] == name],
                 "donors": sorted(n for n in state.books if state.sides.get(n) == side), "formations": formations,
-                "categories": categories, "tendency": self.backend.tendency.team_tendency(state.rost, selected["team_index"]),
-                "events": self.events(session)}
+                "categories": categories, "tendency": tendency, "preview_tendency": preview_tendency,
+                "users": [t["team_name"] for t in state.teams if t[side] == name],
+                "events": events}
 
     def predict(self, context, side, rows):
         state, model = context["state"], self.backend.model
         book = state.books[context["book"]]
-        key = (digest(book), digest(state.master), context["tendency"], side, json_bytes(rows))
+        tendency = context.get("preview_tendency", context["tendency"])
+        masks = state.situation_masks.get(context["book"], [[] for _ in range(12)]) if state.situation_masks_enabled else [[] for _ in range(12)]
+        key = (digest(book), digest(state.master), tendency, side, json_bytes(rows), json_bytes(masks))
         if key in self.cache:
             self.cache.move_to_end(key)
             return self.cache[key]
         distributions = []
         for label, values in rows:
             if side == "offense":
-                call = model.predict_offense(book, state.master, context["tendency"] / 100,
-                                             model.Situation(**values), seeds=256)
+                from mod_editor.core.apf2k8_situation_mask import situation_key
+                situation = model.Situation(**values)
+                excluded = masks[situation_key(situation)]
+                kwargs = {"exclusions": excluded} if excluded else {}
+                call = model.predict_offense(book, state.master, tendency / 100, situation, seeds=256, **kwargs)
             else:
                 call = model.predict_defense(book, state.master, values["offense_category_row"], values["yards_to_goal"], seeds=256)
             distributions.append((label, call))
@@ -531,6 +870,22 @@ class PlayCallingService:
         while len(self.cache) > 32:
             self.cache.popitem(last=False)
         return distributions
+
+    def situations(self, context, side):
+        from mod_editor.core.apf2k8_offensive_schemes import BUCKETS
+        model, state = self.backend.model, context["state"]
+        book = state.books[context["book"]]
+        if side == "offense":
+            return [{"name": bucket.name, "note": bucket.note,
+                     "row": model.requested_offense_row(bucket.situation()),
+                     "candidates": model.situation_candidates(book, state.master, bucket.situation())}
+                    for bucket in BUCKETS]
+        return [{"name": f"Opposing personnel row {row}",
+                 "note": "Defense responds to the opposing personnel; membership edits apply throughout this book.",
+                 "row": model.requested_defense_row(row, 50),
+                 "candidates": model.situation_candidates(book, state.master, model.Situation(1, 10, 50, 1, 900, 0, 3),
+                                                           requested_row=model.requested_defense_row(row, 50))}
+                for row in range(11)]
 
 
 def main(argv=None):

@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_splb_tag_reassignment",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_splb_tag_reassignment.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:57:44.990947+00:00",
+  "ended": "2026-09-16T00:57:47.258539+00:00",
+  "seconds": 2.268,
+  "exit_code": 0
+}

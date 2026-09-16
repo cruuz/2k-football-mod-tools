@@ -1,0 +1,18 @@
+test_zip_member_detection_write_receipt_and_no_overwrite (__main__.FileTests.test_zip_member_detection_write_receipt_and_no_overwrite) ... ok
+test_member_selection_and_pointer_rule_counts (__main__.RetailMemberTests.test_member_selection_and_pointer_rule_counts) ... ok
+test_runtime_words_match_the_xbox_fixture (__main__.RetailMemberTests.test_runtime_words_match_the_xbox_fixture) ... ok
+test_strict_readers_names_and_idempotence (__main__.RetailMemberTests.test_strict_readers_names_and_idempotence) ... ok
+test_idempotence_and_refusals (__main__.SyntheticConversionTests.test_idempotence_and_refusals) ... ok
+test_output_is_the_exact_xbox_layout (__main__.SyntheticConversionTests.test_output_is_the_exact_xbox_layout) ... ok
+test_platform_detection (__main__.SyntheticConversionTests.test_platform_detection) ... ok
+test_receipt_counts_and_claims (__main__.SyntheticConversionTests.test_receipt_counts_and_claims) ... ok
+test_relocation_when_the_guard_byte_is_owned (__main__.SyntheticConversionTests.test_relocation_when_the_guard_byte_is_owned) ... ok
+test_retaining_xbox_uniforms_is_explicitly_receipted (__main__.SyntheticConversionTests.test_retaining_xbox_uniforms_is_explicitly_receipted) ... ok
+test_round_trip_edit_through_the_roster_writer (__main__.SyntheticConversionTests.test_round_trip_edit_through_the_roster_writer) ... ok
+test_strict_readers_accept_output_and_refuse_input (__main__.SyntheticConversionTests.test_strict_readers_accept_output_and_refuse_input) ... ok
+test_uniform_codes_colour_order_and_metadata_are_verified (__main__.SyntheticConversionTests.test_uniform_codes_colour_order_and_metadata_are_verified) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 17.263s
+
+OK

@@ -1,0 +1,18 @@
+test_a_failing_contract_call_shows_a_message_instead_of_crashing (__main__.QtTests.test_a_failing_contract_call_shows_a_message_instead_of_crashing) ... ok
+test_every_book_lever_stages_and_refreshes (__main__.QtTests.test_every_book_lever_stages_and_refreshes) ... ok
+test_experiments_keep_p2_actions_and_every_control_has_explanation (__main__.QtTests.test_experiments_keep_p2_actions_and_every_control_has_explanation) ... ok
+test_master_off_main_path_all_roles_and_one_click_52 (__main__.QtTests.test_master_off_main_path_all_roles_and_one_click_52) ... ok
+test_rating_wording_matches_the_measured_direction (__main__.QtTests.test_rating_wording_matches_the_measured_direction) ... ok
+test_review_own_book_table_then_stage_and_undo (__main__.QtTests.test_review_own_book_table_then_stage_and_undo) ... ok
+test_shell_rejects_nested_blocking_tasks_without_locking_page (__main__.QtTests.test_shell_rejects_nested_blocking_tasks_without_locking_page) ... ok
+test_stale_worker_result_cannot_replace_new_selection (__main__.QtTests.test_stale_worker_result_cannot_replace_new_selection) ... ok
+test_team_change_keeps_book_and_preview_run_share (__main__.QtTests.test_team_change_keeps_book_and_preview_run_share) ... ok
+test_team_first_donors_shared_book_and_distributions (__main__.QtTests.test_team_first_donors_shared_book_and_distributions) ... ok
+test_user_books_drive_preview_and_edit_target_on_both_sides (__main__.QtTests.test_user_books_drive_preview_and_edit_target_on_both_sides) ... ok
+test_warning_and_refusal_show_coverage_and_retired_names (__main__.QtTests.test_warning_and_refusal_show_coverage_and_retired_names) ... ok
+test_worker_replay (__main__.QtTests.test_worker_replay) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 8.206s
+
+OK

@@ -1,0 +1,272 @@
+{
+  "reference_sha256": "01622a78b6778f089e4b242c8deda42833b10ae123150ed5bc8989dc483929d7",
+  "comparisons": {
+    "43": {
+      "render_sha256": "b314fdd5ef3de088fc4e58e1228e29885528a4f1fb8fede48bf6825061771d42",
+      "text": {
+        "home_score": {
+          "reference_source_box": [
+            1138,
+            965,
+            1180,
+            1018
+          ],
+          "measured_hud_box": [
+            379,
+            416,
+            393,
+            438
+          ],
+          "compared_pixels": 308,
+          "rgb_mae": 31.717532467532468
+        },
+        "away_score": {
+          "reference_source_box": [
+            736,
+            965,
+            776,
+            1018
+          ],
+          "measured_hud_box": [
+            245,
+            416,
+            259,
+            438
+          ],
+          "compared_pixels": 308,
+          "rgb_mae": 34.47186147186147
+        },
+        "play_clock": {
+          "reference_source_box": [
+            1042,
+            1009,
+            1057,
+            1028
+          ],
+          "measured_hud_box": [
+            347,
+            435,
+            352,
+            442
+          ],
+          "compared_pixels": 35,
+          "rgb_mae": 63.333333333333336
+        },
+        "clock": {
+          "reference_source_box": [
+            920,
+            1006,
+            1000,
+            1033
+          ],
+          "measured_hud_box": [
+            307,
+            433,
+            333,
+            445
+          ],
+          "compared_pixels": 312,
+          "rgb_mae": 90.5042735042735
+        },
+        "home_ticks": {
+          "reference_source_box": [
+            1120,
+            1032,
+            1198,
+            1038
+          ],
+          "measured_hud_box": [
+            373,
+            444,
+            399,
+            447
+          ],
+          "compared_pixels": 78,
+          "rgb_mae": 50.29059829059829
+        },
+        "away_ticks": {
+          "reference_source_box": [
+            717,
+            1032,
+            796,
+            1038
+          ],
+          "measured_hud_box": [
+            239,
+            444,
+            265,
+            447
+          ],
+          "compared_pixels": 78,
+          "rgb_mae": 48.55555555555556
+        },
+        "quarter": {
+          "reference_source_box": [
+            850,
+            1009,
+            892,
+            1028
+          ],
+          "measured_hud_box": [
+            283,
+            435,
+            297,
+            442
+          ],
+          "compared_pixels": 98,
+          "rgb_mae": 46.214285714285715
+        },
+        "down": {
+          "reference_source_box": [
+            898,
+            955,
+            1021,
+            978
+          ],
+          "measured_hud_box": [
+            299,
+            412,
+            340,
+            422
+          ],
+          "compared_pixels": 410,
+          "rgb_mae": 67.26016260162602
+        }
+      }
+    },
+    "wide": {
+      "render_sha256": "ee7c786e5ffd16eb7bf75e85516e1edea0f0f920bd3a37c767b10a84f27e5a26",
+      "text": {
+        "home_score": {
+          "reference_source_box": [
+            1138,
+            965,
+            1180,
+            1018
+          ],
+          "measured_hud_box": [
+            370,
+            416,
+            382,
+            438
+          ],
+          "compared_pixels": 264,
+          "rgb_mae": 32.06565656565657
+        },
+        "away_score": {
+          "reference_source_box": [
+            736,
+            965,
+            776,
+            1018
+          ],
+          "measured_hud_box": [
+            257,
+            416,
+            268,
+            438
+          ],
+          "compared_pixels": 242,
+          "rgb_mae": 32.80027548209367
+        },
+        "play_clock": {
+          "reference_source_box": [
+            1042,
+            1009,
+            1057,
+            1028
+          ],
+          "measured_hud_box": [
+            343,
+            435,
+            347,
+            442
+          ],
+          "compared_pixels": 28,
+          "rgb_mae": 60.5
+        },
+        "clock": {
+          "reference_source_box": [
+            920,
+            1006,
+            1000,
+            1033
+          ],
+          "measured_hud_box": [
+            309,
+            433,
+            331,
+            445
+          ],
+          "compared_pixels": 264,
+          "rgb_mae": 89.80555555555556
+        },
+        "home_ticks": {
+          "reference_source_box": [
+            1120,
+            1032,
+            1198,
+            1038
+          ],
+          "measured_hud_box": [
+            365,
+            444,
+            387,
+            447
+          ],
+          "compared_pixels": 66,
+          "rgb_mae": 43.323232323232325
+        },
+        "away_ticks": {
+          "reference_source_box": [
+            717,
+            1032,
+            796,
+            1038
+          ],
+          "measured_hud_box": [
+            252,
+            444,
+            274,
+            447
+          ],
+          "compared_pixels": 66,
+          "rgb_mae": 46.34848484848485
+        },
+        "quarter": {
+          "reference_source_box": [
+            850,
+            1009,
+            892,
+            1028
+          ],
+          "measured_hud_box": [
+            289,
+            435,
+            301,
+            442
+          ],
+          "compared_pixels": 84,
+          "rgb_mae": 43.964285714285715
+        },
+        "down": {
+          "reference_source_box": [
+            898,
+            955,
+            1021,
+            978
+          ],
+          "measured_hud_box": [
+            303,
+            412,
+            337,
+            422
+          ],
+          "compared_pixels": 340,
+          "rgb_mae": 67.48235294117647
+        }
+      }
+    }
+  },
+  "method": "Same rounded HUD reference rectangles and RGB absolute-error mean as compare(); includes the background within each ink bounding box, no glyph segmentation."
+}

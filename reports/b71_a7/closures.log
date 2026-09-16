@@ -1,0 +1,7 @@
+{"name": "stage-2k5-final", "started": "2026-09-16T01:24:37.416419+00:00", "ended": "2026-09-16T01:24:37.770951+00:00", "seconds": 0.355, "exit_code": 0}
+{"name": "release-2k5-final", "started": "2026-09-16T01:24:37.771513+00:00", "ended": "2026-09-16T01:24:44.686201+00:00", "seconds": 6.915, "exit_code": 0}
+{"name": "runtime-2k5-final", "started": "2026-09-16T01:24:44.686818+00:00", "ended": "2026-09-16T01:24:53.068070+00:00", "seconds": 8.381, "exit_code": 0}
+{"name": "stage-apf-final", "started": "2026-09-16T01:24:53.145370+00:00", "ended": "2026-09-16T01:24:53.233861+00:00", "seconds": 0.088, "exit_code": 0}
+{"name": "release-apf-final", "started": "2026-09-16T01:24:53.234278+00:00", "ended": "2026-09-16T01:24:53.618879+00:00", "seconds": 0.385, "exit_code": 0}
+{"name": "runtime-apf-final", "started": "2026-09-16T01:24:53.619407+00:00", "ended": "2026-09-16T01:25:03.744613+00:00", "seconds": 10.125, "exit_code": 0}
+CLOSURES []

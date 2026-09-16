@@ -1,0 +1,15 @@
+test_crest_semantics_and_retail_labels_are_proved_selector_mappings (__main__.RetailInventoryTests.test_crest_semantics_and_retail_labels_are_proved_selector_mappings) ... ok
+test_endzone_confirmed_and_tentative_labels (__main__.RetailInventoryTests.test_endzone_confirmed_and_tentative_labels) ... ok
+test_every_family_is_reachable_and_has_complete_dimensions_and_writer (__main__.RetailInventoryTests.test_every_family_is_reachable_and_has_complete_dimensions_and_writer) ... ok
+test_nonretail_crest_project_build_routes_both_masks_and_linked_cache (__main__.RetailInventoryTests.test_nonretail_crest_project_build_routes_both_masks_and_linked_cache) ... ok
+test_crest_requires_both_masks_and_resolves_catalog_and_outer (__main__.StagingTests.test_crest_requires_both_masks_and_resolves_catalog_and_outer) ... ok
+test_digits_preflight_existing_and_new_layers_before_staging (__main__.StagingTests.test_digits_preflight_existing_and_new_layers_before_staging) ... ok
+test_second_layer_failure_rolls_back_and_success_is_one_undo (__main__.StagingTests.test_second_layer_failure_rolls_back_and_success_is_one_undo) ... ok
+test_source_change_wrong_size_and_unknown_layers_never_stage (__main__.StagingTests.test_source_change_wrong_size_and_unknown_layers_never_stage) ... ok
+test_thumbnail_versions_corruption_and_detail_edit_invalidation (__main__.StagingTests.test_thumbnail_versions_corruption_and_detail_edit_invalidation) ... ok
+test_uniform_families_route_to_writer_ids_and_staged_filter (__main__.StagingTests.test_uniform_families_route_to_writer_ids_and_staged_filter) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 10.287s
+
+OK

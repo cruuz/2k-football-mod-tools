@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_b661_ladder",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_b661_ladder.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:33:22.229538+00:00",
+  "ended": "2026-09-16T00:33:22.715881+00:00",
+  "seconds": 0.486,
+  "exit_code": 0
+}

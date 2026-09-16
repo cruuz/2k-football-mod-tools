@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_linear_txtr_png",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_linear_txtr_png.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:52:40.117870+00:00",
+  "ended": "2026-09-16T00:52:40.179528+00:00",
+  "seconds": 0.062,
+  "exit_code": 0
+}

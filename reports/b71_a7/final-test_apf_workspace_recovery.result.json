@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_workspace_recovery",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_workspace_recovery.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:58:28.198936+00:00",
+  "ended": "2026-09-16T00:59:39.119515+00:00",
+  "seconds": 70.921,
+  "exit_code": 0
+}

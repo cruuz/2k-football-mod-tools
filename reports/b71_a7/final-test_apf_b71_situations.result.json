@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_b71_situations",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_b71_situations.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:44:14.236000+00:00",
+  "ended": "2026-09-16T00:44:18.985333+00:00",
+  "seconds": 4.749,
+  "exit_code": 0
+}

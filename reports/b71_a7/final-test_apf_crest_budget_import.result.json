@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_crest_budget_import",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_crest_budget_import.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:44:50.429171+00:00",
+  "ended": "2026-09-16T00:44:51.288599+00:00",
+  "seconds": 0.859,
+  "exit_code": 0
+}

@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_b661_book_content",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_b661_book_content.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:33:19.914202+00:00",
+  "ended": "2026-09-16T00:33:48.794772+00:00",
+  "seconds": 28.881,
+  "exit_code": 0
+}

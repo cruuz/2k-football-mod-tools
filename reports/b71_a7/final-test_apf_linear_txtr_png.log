@@ -1,0 +1,10 @@
+test_linear_8888_solid_magenta (__main__.LinearTxtrUnitTests.test_linear_8888_solid_magenta) ... ok
+test_linear_dxt1_pitch_padding (__main__.LinearTxtrUnitTests.test_linear_dxt1_pitch_padding)
+Linear DXT1 with pitch wider than width packs only used blocks. ... ok
+test_linear_dxt1_solid_white_block (__main__.LinearTxtrUnitTests.test_linear_dxt1_solid_white_block)
+Linear (untiled) DXT1: one 4×4 block, all indices → color0 white. ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+OK

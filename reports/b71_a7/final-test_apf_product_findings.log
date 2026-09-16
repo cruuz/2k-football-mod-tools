@@ -1,0 +1,12 @@
+test_existing_json_and_csv_export_path_preserves_product_boundaries (__main__.ProductFindingsModelTests.test_existing_json_and_csv_export_path_preserves_product_boundaries) ... ok
+test_gameplay_model_is_38_read_only_searchable_rows (__main__.ProductFindingsModelTests.test_gameplay_model_is_38_read_only_searchable_rows) ... ok
+test_presentation_model_is_seven_scenes_plus_font_boundary (__main__.ProductFindingsModelTests.test_presentation_model_is_seven_scenes_plus_font_boundary) ... ok
+test_loader_rejects_wrong_schema_raw_addresses_and_changed_counts (__main__.ProductFindingsParityTests.test_loader_rejects_wrong_schema_raw_addresses_and_changed_counts) ... ok
+test_packaged_presentation_matches_optional_pinned_research (__main__.ProductFindingsParityTests.test_packaged_presentation_matches_optional_pinned_research) ... ok
+test_packaged_projection_matches_the_sanitized_core_contract (__main__.ProductFindingsParityTests.test_packaged_projection_matches_the_sanitized_core_contract) ... ok
+test_projection_is_small_retail_free_and_has_no_research_provenance (__main__.ProductFindingsParityTests.test_projection_is_small_retail_free_and_has_no_research_provenance) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.010s
+
+OK

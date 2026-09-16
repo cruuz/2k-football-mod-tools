@@ -1,0 +1,18 @@
+PLAN {"preset": "softdrink_advanced", "options": {"scorebug": true, "scorebug_runtime": true, "modern_color": true, "widescreen": true}, "source": "/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso", "target": "/home/noah/2K5 Mod Studio Builds/NFL 2K5 MOD TEST 2026-09-15f (scorebug v2 + colour v2.1 + widescreen).xiso.iso", "scorebug_version": "scorebug-mnf-2026-v2", "color_owner": "/home/noah/2k-worktrees/astra-b71-a5/mod_editor/core/nfl2k5_modern_color.py", "runtime_owner": "/home/noah/2k-worktrees/astra-b71-a5/mod_editor/core/nfl2k5_scorebug_runtime.py"}
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-a5/reports/b71_a5/build_testdisc71.py", line 119, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-a5/reports/b71_a5/build_testdisc71.py", line 61, in main
+    with tempfile.NamedTemporaryFile(prefix='.astra-b71-a5-access-', dir=OUT):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/tempfile.py", line 721, in NamedTemporaryFile
+    file = _io.open(dir, mode, buffering=buffering,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/tempfile.py", line 718, in opener
+    fd, name = _mkstemp_inner(dir, prefix, suffix, flags, output_type)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/tempfile.py", line 395, in _mkstemp_inner
+    fd = _os.open(file, flags, 0o600)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+OSError: [Errno 30] Read-only file system: '/home/noah/2K5 Mod Studio Builds/.astra-b71-a5-access-zctuu6_n'

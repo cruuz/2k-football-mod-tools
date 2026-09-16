@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_team_crest_selection",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_team_crest_selection.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:58:04.541466+00:00",
+  "ended": "2026-09-16T00:58:05.247337+00:00",
+  "seconds": 0.706,
+  "exit_code": 0
+}

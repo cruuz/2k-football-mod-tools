@@ -189,7 +189,10 @@ def template_uv(region, x, y):
 
 
 def encode_atlas(template: bytes, image) -> tuple[bytes, dict]:
-    """Reuse the existing bounded P8 quantizer and exact VC-LZ filler."""
+    """Encode the retail fixed span, or the explicit appended painted atlas."""
+    if image.size == (256,512):
+        from . import nfl2k5_scorebug_assets as assets
+        return assets.texture_chunk("score_buga", image, template)
     import nfl_tset_png_import as palettes
     chunk, decoded, info = decode(template)
     def candidate(palette, levels):
@@ -839,7 +842,7 @@ def preview_data(source: Path, *, scorebug_folder=None):
     return m,image
 
 
-def runtime_image_plan(fd: int, *, with_kickoff: bool = False, extra_requests=(), probe="mnf"):
+def runtime_image_plan(fd: int, *, with_kickoff: bool = False, extra_requests=(), probe="sprite", scorebug_folder=None, widescreen=False):
     """Preflight both files before any write; use the generalized extent reader."""
     from . import nfl2k5_scorebug_runtime as runtime, nfl2k5_scorebug_resources as resources
     from . import nfl2k5_xbe_space as space, nfl2k5_dynamic_kickoff_relocated as kickoff
@@ -848,7 +851,7 @@ def runtime_image_plan(fd: int, *, with_kickoff: bool = False, extra_requests=()
     pack_entry, xbe_entry = entries.get("vc_53450030/0"), entries.get("default.xbe")
     if pack_entry is None or xbe_entry is None:
         raise ScorebugError("missing scorebug disc files")
-    _, _, growth = resources.probe_sizes(probe)
+    _, _, growth = resources.probe_sizes(probe,sprite_folder=scorebug_folder)
     hooks = resources.probe_has_hooks(probe)
     if pack_entry.size not in (PACK_SIZE, PACK_SIZE + growth) or xbe_entry.size not in (
             space.special.RETAIL_FILE_SIZE, space.special.FILE_SIZE, *space.accepted_file_sizes()):
@@ -858,7 +861,7 @@ def runtime_image_plan(fd: int, *, with_kickoff: bool = False, extra_requests=()
     xs = runtime.status(xbe) if hooks else xbe_status(xbe)
     if not hooks and runtime.status(xbe) != "retail":
         xs = "foreign"
-    states = (resources.runtime_pack_status(pack, probe=probe), xs)
+    states = (resources.runtime_pack_status(pack, probe=probe, sprite_folder=scorebug_folder), xs)
     if "foreign" in states or len(set(states)) != 1:
         raise ScorebugError("runtime scorebug files are mixed or foreign; rebuild from base")
     requests = (runtime.REQUESTS if hooks else ()) + (kickoff.REQUESTS if with_kickoff else ()) + tuple(extra_requests)
@@ -866,15 +869,15 @@ def runtime_image_plan(fd: int, *, with_kickoff: bool = False, extra_requests=()
     if with_kickoff:
         prepared, _ = kickoff.apply(prepared)
     new_xbe, xr = runtime.apply(prepared) if hooks else apply_xbe(prepared)
-    new_pack, pr = resources.compile_runtime_collection(pack, probe=probe)
+    new_pack, pr = resources.compile_runtime_collection(pack, probe=probe, sprite_folder=scorebug_folder, widescreen=widescreen)
     return ((pack_entry, pack, new_pack), (xbe_entry, xbe, new_xbe)), dict(
-        version=resources.RUNTIME_VERSION, status=states[0], experimental=True,
+        version=resources.RUNTIME_VERSION, status=states[0], experimental=True, display_aspect="16:9" if widescreen else "4:3",
         probe=probe, hooks_installed=hooks, runtime_witnessed=False,
         runtime_team_logos=hooks and probe in ("full", "pair"), timeout_dimming=hooks and probe != "hooks",
         score_flash=hooks, down_refresh=hooks, under_5_color=hooks, resources=pr, xbe=xr)
 
 
-def runtime_image_status(path, *, probe="mnf"):
+def runtime_image_status(path, *, probe="sprite", scorebug_folder=None):
     """Recognize the complete owned HUD and XBE, resolving current archive offsets."""
     from . import nfl2k5_scorebug_runtime as runtime, nfl2k5_scorebug_resources as resources
     from . import nfl2k5_xbe_space as space, platform_compat as io
@@ -892,8 +895,8 @@ def runtime_image_status(path, *, probe="mnf"):
             if not hooks and runtime.status(xbe) != "retail":
                 return "foreign"
             resource_state = "foreign"
-            if p.size in (PACK_SIZE, PACK_SIZE + resources.probe_sizes(probe)[2]):
-                resource_state = resources.runtime_pack_status(resources.PackView.from_fd(fd, p.byte_offset, p.size), probe=probe)
+            if p.size in (PACK_SIZE, PACK_SIZE + resources.probe_sizes(probe,sprite_folder=scorebug_folder)[2]):
+                resource_state = resources.runtime_pack_status(resources.PackView.from_fd(fd, p.byte_offset, p.size), probe=probe, sprite_folder=scorebug_folder)
         if resource_state == "foreign" and xbe_state == "applied" and probe == "full":
             # A later music transaction may move this entire owner. Resolve its
             # current outer range through the validated archive, then retain the
@@ -912,7 +915,7 @@ def runtime_image_status(path, *, probe="mnf"):
         return "foreign"
 
 
-def runtime_apply_in_place(path, *, with_kickoff=False, extra_requests=(), probe="mnf"):
+def runtime_apply_in_place(path, *, with_kickoff=False, extra_requests=(), probe="sprite", scorebug_folder=None, widescreen=False):
     """Transactional resource growth and allocator XBE transport on an output copy.
 
     Pack 0 is appended intact, then its existing XDVDFS node is switched. The
@@ -924,7 +927,7 @@ def runtime_apply_in_place(path, *, with_kickoff=False, extra_requests=(), probe
     from . import nfl2k5_scorebug_resources as resources
     with Path(path).open("r+b") as stream:
         fd = stream.fileno()
-        jobs, receipt = runtime_image_plan(fd, with_kickoff=with_kickoff, extra_requests=extra_requests, probe=probe)
+        jobs, receipt = runtime_image_plan(fd, with_kickoff=with_kickoff, extra_requests=extra_requests, probe=probe, scorebug_folder=scorebug_folder, widescreen=widescreen)
         original_size = os.fstat(fd).st_size
         nodes = []
         for entry, before, _after in jobs:

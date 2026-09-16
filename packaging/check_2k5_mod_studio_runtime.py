@@ -99,13 +99,13 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "dd3529836c4ebdc5ddf344de19edca38191f918ca341248953cb289b56c5e42e",
     "mod_editor/gui/studio_qt.py":
-        "6233a90611431c29ec899c91f52f0169c7b6defc832ec40a6ffc172beb6d46dd",
+        "7ce27b130eb1bf4e3f459fccab1de4017e9e1d45803cc06cc217fcee06ebc1a1",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
         "68b6887e0778391916a6465a722b062d1c09afe3a376c318026e9db8bd7ed23a",
     "mod_editor/studio/facade.py":
-        "d10b2abaf157bfb4e3235f7674c21ea8fd4e1bc08f90cdb40b1e4ca4803e8e0d",
+        "5be36e941e043aff1a4add1c7b556ab854e9620175d80e29051c3e8e20916c50",
     "mod_editor/studio/project_archive.py":
         "3556062a7cf178ef416706543e71270783d04439494420810fb7a10ca7f01479",
     "mod_editor/studio/session.py":
@@ -115,11 +115,11 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
 B69_GAME_RUNTIME_PINS = {
     "mod_editor/core/nfl2k5_weather.py": "6540d7ffc8d441898f5a89988752efd6aa0238c87b4a0941c1962b7b3feba380",
     "mod_editor/core/nfl2k5_weather_haze.py": "3d045e099f1585658b899ab6e7d3560e92edb24529ca8d6f224e901dc7712ff9",
-    "mod_editor/gui/build_panel_qt.py": "bedcea420e93793ccffe216a1a72b80751e895caaed7f7865cf3751eec62e680",
+    "mod_editor/gui/build_panel_qt.py": "ae5e28fe4f55e3df5b62038183c32608ea70e232eb2c3f9a5f885e840d00e0c4",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "6377a6089d0c01233b810e0ec82f962dfbc40cdea6d80cb8dbf092b2f83b8839",
     "mod_editor/gui/my_career_panel_qt.py": "8a27ccdc2a649d122d6c21f9a646e47539b55c00653afc789e9b018fb581c823",
-    "mod_editor/gui/gameplay_project_ui.py": "7222713aaaa0efbcc8851eb4ad3efa4ef31e8ad5352919e95b1ff9b39634c905",
-    "mod_editor/gui/beta62_options.py": "f952b005161209eef1b2fa090528f4a017a657718c034d122d9bcc6550c68e72",
+    "mod_editor/gui/gameplay_project_ui.py": "d91d604b99606c9fe701163b1f559b12df66cc8d1c8fce427f6b9695c1a2d08c",
+    "mod_editor/gui/beta62_options.py": "9c7a883a43026f8fbfd7e97a9a5557decb632315a98f7deda4ba58d01ba501d3",
     "tools/nfl2k5_weather_editor.py": "65b45c3b25d47dc9cc672bd46a4719264ce4033aeca76632aaf44e9023b6cbfd",
     "tools/nfl2k5_weather_time_of_day.py": "37b2bd10f686db9fa99ba9034f9a7f68daa00bff516250ac0f67678880b98b47",
     "tools/nfl2k5_weather_native_probe.py": "cd2776060c41a0831b1a15342a4486e739bbda5c633af5f4427217333885fde2",
@@ -128,6 +128,7 @@ B69_GAME_RUNTIME_PINS = {
 
 REQUIRED_UNIFIED_PROVIDER_CLOSURE = frozenset(
     {
+        "mod_editor/core/nfl2k5_modern_color.py",
         "mod_editor/core/responsive_json.py",
         "mod_editor/core/nfl2k5_digit_texture.py",
         "mod_editor/core/nfl2k5_equipment_import_intent.py",
@@ -1917,6 +1918,7 @@ def main() -> int:
         "mod_editor.gui.music_panel_qt",
         "mod_editor.gui.scorebug_studio_panel_qt",
         "mod_editor.gui.gameplay_project_ui",
+        "mod_editor.gui.colour_lighting_qt",
         "mod_editor.core.nfl2k5_animation_bones",
         "mod_editor.core.nfl2k5_animation_import",
         "mod_editor.core.nfl2k5_animation_xbe",
@@ -2173,11 +2175,11 @@ def main() -> int:
         check_files=False,
     )
     product_catalog = product_catalog_module.build_nfl2k5_product_catalog(registry)
-    require(len(registry.capabilities) == 174,
+    require(len(registry.capabilities) == 176,
             "canonical capability registry row count changed")
     require(len(product_catalog.sections) == 12,
             "product sidebar category count changed")
-    require(len(product_catalog.capabilities) == 101,
+    require(len(product_catalog.capabilities) == 102,
             "NFL 2K5 product capability count changed")
     _exercise_default_provider_controller(
         modules["mod_editor.core.controller"],
@@ -2580,7 +2582,7 @@ def main() -> int:
     print(
         "2K5_MOD_STUDIO_RUNTIME_CLOSURE_PASS "
         f"product_modules={len(product_modules)} tool_modules={len(tool_modules)} "
-        "registry=174 sections=12 nfl2k5_capabilities=101 "
+        "registry=176 sections=12 nfl2k5_capabilities=102 "
         "reports=16 reviewed_metadata=24 sets=634 visuals=71963 "
         "team_kit_sets=634 team_kit_assets_per_set=39 "
         "text_banks=716 text_strings=23346 text_editable=20074 "

@@ -245,9 +245,11 @@ class InputTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             (root / "xenia-canary.config.toml").write_text('[Storage]\nstorage_root = "data"\ncontent_root = "updates"\n')
+            (root / "xenia-edge.config.toml").write_text('[Storage]\nstorage_root = "edge-data"\ncontent_root = "edge-updates"\n')
             with patch.object(x.Path, "home", return_value=root), \
                     patch.dict("os.environ", {"XDG_DATA_HOME": str(root / "xdg")}):
                 self.assertIn(root / "data" / "updates", x.xenia_content_roots(root / "xenia.exe"))
+                self.assertIn(root / "edge-data" / "edge-updates", x.xenia_content_roots(root / "xenia_edge"))
 
     def test_xenia_redirected_documents_and_portable_mode(self):
         with tempfile.TemporaryDirectory() as tmp:

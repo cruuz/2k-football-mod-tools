@@ -1,0 +1,4 @@
+usage: validate_all_mod_editor_capabilities.py [-h] [--registry REGISTRY]
+                                               [--timeout-seconds TIMEOUT_SECONDS]
+                                               [--report REPORT] [--list]
+validate_all_mod_editor_capabilities.py: error: unrecognized arguments: --plan-only

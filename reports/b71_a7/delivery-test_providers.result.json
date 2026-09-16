@@ -1,0 +1,12 @@
+{
+  "name": "delivery-test_providers",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_providers.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:42:19.390638+00:00",
+  "ended": "2026-09-16T00:42:24.076772+00:00",
+  "seconds": 4.686,
+  "exit_code": 0
+}

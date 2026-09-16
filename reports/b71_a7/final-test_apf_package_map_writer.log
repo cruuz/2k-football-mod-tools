@@ -1,0 +1,50 @@
+test_compile_package_maps_rejects_a_batch_that_changes_nothing (__main__.NoOpCompileGuardTests.test_compile_package_maps_rejects_a_batch_that_changes_nothing) ... ok
+test_detailed_compile_reports_only_effective_maps_and_ranges (__main__.NoOpCompileGuardTests.test_detailed_compile_reports_only_effective_maps_and_ranges) ... ok
+test_duplicate_formation_caught_even_when_one_entry_is_a_noop (__main__.NoOpCompileGuardTests.test_duplicate_formation_caught_even_when_one_entry_is_a_noop) ... ok
+test_empty_master_play_selection_is_rejected (__main__.NoOpCompileGuardTests.test_empty_master_play_selection_is_rejected) ... ok
+test_broken_staged_reads_lock_commit_paths_without_wiping_draft (__main__.PackageMapPanelActionTests.test_broken_staged_reads_lock_commit_paths_without_wiping_draft) ... ok
+test_put_swap_and_copy_actions_edit_the_draft (__main__.PackageMapPanelActionTests.test_put_swap_and_copy_actions_edit_the_draft) ... ok
+test_revert_all_asks_first_and_clears_every_map (__main__.PackageMapPanelActionTests.test_revert_all_asks_first_and_clears_every_map) ... ok
+test_stage_with_an_empty_draft_stages_nothing (__main__.PackageMapPanelActionTests.test_stage_with_an_empty_draft_stages_nothing) ... ok
+test_table_cells_use_readable_colors (__main__.PackageMapPanelActionTests.test_table_cells_use_readable_colors) ... ok
+test_panel_explains_the_boundary_without_hex_essays (__main__.PackageMapUiTests.test_panel_explains_the_boundary_without_hex_essays) ... ok
+test_compile_touches_only_named_maps (__main__.PackageMapWriterTests.test_compile_touches_only_named_maps) ... ok
+test_honesty_does_not_claim_third_and_long (__main__.PackageMapWriterTests.test_honesty_does_not_claim_third_and_long) ... ok
+test_list_formations_reads_names (__main__.PackageMapWriterTests.test_list_formations_reads_names) ... ok
+test_payload_round_trip (__main__.PackageMapWriterTests.test_payload_round_trip) ... ok
+test_put_te_in_wr_slot_is_a_slot_swap (__main__.PackageMapWriterTests.test_put_te_in_wr_slot_is_a_slot_swap) ... ok
+test_rejects_non_permutation (__main__.PackageMapWriterTests.test_rejects_non_permutation) ... ok
+test_summary_does_not_call_a_map_position_a_field_slot (__main__.PackageMapWriterTests.test_summary_does_not_call_a_map_position_a_field_slot)
+A football reader took "map slot 2 = TE" as "the TE lines up ... ok
+test_swap_te_and_wr_exchanges_roles_only (__main__.PackageMapWriterTests.test_swap_te_and_wr_exchanges_roles_only) ... ok
+test_allowlist_ships_the_writer_and_panel (__main__.PackagingTests.test_allowlist_ships_the_writer_and_panel) ... ok
+test_one_edit_changes_only_that_formations_region (__main__.RetailBuildRegionTests.test_one_edit_changes_only_that_formations_region) ... ok
+test_defences_and_special_teams_carry_the_same_eleven_numbers (__main__.RetailVocabularyTests.test_defences_and_special_teams_carry_the_same_eleven_numbers)
+A legend that reads 8 as TE and 9 as WR puts both in a 4-3. ... ok
+test_every_retail_formation_map_is_a_permutation_of_0_to_10 (__main__.RetailVocabularyTests.test_every_retail_formation_map_is_a_permutation_of_0_to_10)
+So a byte cannot be a headcount: no set can hold two receivers. ... ok
+test_pinned_maps_still_match_the_disc (__main__.RetailVocabularyTests.test_pinned_maps_still_match_the_disc) ... ok
+test_the_line_block_never_sits_at_map_positions_two_to_six (__main__.RetailVocabularyTests.test_the_line_block_never_sits_at_map_positions_two_to_six)
+The play's slots 2..6 are the offensive line on every play. The ... ok
+test_batch_replaces_the_entire_staged_set (__main__.SessionBatchSemanticsTests.test_batch_replaces_the_entire_staged_set) ... ok
+test_empty_batch_clears_staged_maps_and_is_undoable (__main__.SessionBatchSemanticsTests.test_empty_batch_clears_staged_maps_and_is_undoable) ... ok
+test_project_round_trip_keeps_only_logical_bytes (__main__.SessionBatchSemanticsTests.test_project_round_trip_keeps_only_logical_bytes) ... ok
+test_session_stages_and_reverts_a_map (__main__.SessionPackageMapTests.test_session_stages_and_reverts_a_map) ... ok
+test_change_from_mapping_rejects_malformed_formation_index (__main__.StrictPayloadTests.test_change_from_mapping_rejects_malformed_formation_index) ... ok
+test_change_from_mapping_rejects_missing_or_wrong_map (__main__.StrictPayloadTests.test_change_from_mapping_rejects_missing_or_wrong_map) ... ok
+test_change_rejects_boolean_and_float_roles (__main__.StrictPayloadTests.test_change_rejects_boolean_and_float_roles) ... ok
+test_decode_payload_rejects_corruption_with_validation_errors (__main__.StrictPayloadTests.test_decode_payload_rejects_corruption_with_validation_errors) ... ok
+test_decode_payload_rejects_deeply_nested_json (__main__.StrictPayloadTests.test_decode_payload_rejects_deeply_nested_json) ... ok
+test_a_plain_refresh_does_not_discard_an_unstaged_map (__main__.UnstagedDraftRegressionTests.test_a_plain_refresh_does_not_discard_an_unstaged_map) ... ok
+test_a_refused_stage_keeps_the_draft_and_says_it_is_not_staged (__main__.UnstagedDraftRegressionTests.test_a_refused_stage_keeps_the_draft_and_says_it_is_not_staged)
+The window refuses a second blocking task and returns False. The ... ok
+test_build_message_reports_the_changed_regions (__main__.UnstagedDraftRegressionTests.test_build_message_reports_the_changed_regions) ... ok
+test_build_refuses_while_a_who_lines_up_map_is_unstaged (__main__.UnstagedDraftRegressionTests.test_build_refuses_while_a_who_lines_up_map_is_unstaged) ... ok
+test_editing_a_map_reaches_the_session_without_a_stage_click (__main__.UnstagedDraftRegressionTests.test_editing_a_map_reaches_the_session_without_a_stage_click) ... ok
+test_status_never_conflates_staged_with_merely_drafted (__main__.UnstagedDraftRegressionTests.test_status_never_conflates_staged_with_merely_drafted) ... ok
+test_zero_edit_build_message_explains_itself (__main__.UnstagedDraftRegressionTests.test_zero_edit_build_message_explains_itself) ... ok
+
+----------------------------------------------------------------------
+Ran 40 tests in 1.167s
+
+OK

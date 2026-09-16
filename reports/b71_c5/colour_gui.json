@@ -1,0 +1,10 @@
+{
+  "command": [
+    "python3",
+    "tests/mod_editor/test_colour_lighting_qt.py"
+  ],
+  "start_utc": "2026-09-15T21:09:25.019900+00:00",
+  "end_utc": "2026-09-15T21:09:28.130375+00:00",
+  "seconds": 3.11,
+  "exit_code": 0
+}

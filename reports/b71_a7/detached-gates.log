@@ -1,0 +1,4 @@
+test_nfl2k5_cave_oracle pid=5
+test_nfl2k5_allocator_scaleout pid=6
+test_xbe_patch_memory_writes pid=7
+test_xbe_patch_cave_references pid=8

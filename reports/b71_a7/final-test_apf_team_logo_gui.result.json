@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_team_logo_gui",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_team_logo_gui.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:58:04.925118+00:00",
+  "ended": "2026-09-16T00:58:07.128057+00:00",
+  "seconds": 2.203,
+  "exit_code": 0
+}

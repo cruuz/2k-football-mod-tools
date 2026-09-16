@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_save_roster_players",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_save_roster_players.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:57:38.346729+00:00",
+  "ended": "2026-09-16T00:57:43.148184+00:00",
+  "seconds": 4.801,
+  "exit_code": 0
+}

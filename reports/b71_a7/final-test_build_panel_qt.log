@@ -1,0 +1,19 @@
+test_a_real_disc_inspection_does_not_recurse_and_keeps_the_users_lock_choice (__main__.BuildPanelTests.test_a_real_disc_inspection_does_not_recurse_and_keeps_the_users_lock_choice)
+Every real disc reports abilities rules v2 (model_version 2) even at retail, and the beta-63 refresh ... ok
+test_final_archive_state_is_read_by_build_operation_and_consumed_without_gui_io (__main__.BuildPanelTests.test_final_archive_state_is_read_by_build_operation_and_consumed_without_gui_io) ... ok
+test_state_gates_toggles_and_plan_reflects_them (__main__.BuildPanelTests.test_state_gates_toggles_and_plan_reflects_them) ... ok
+test_beta62_optins_flight_exclusion_hires_summary_and_preset_reset (__main__.IntegrationBuildTests.test_beta62_optins_flight_exclusion_hires_summary_and_preset_reset) ... ok
+test_each_checkbox_reaches_plan_and_work_predicate (__main__.IntegrationBuildTests.test_each_checkbox_reaches_plan_and_work_predicate) ... ok
+test_experimental_flags_roundtrip_and_clear_on_preset_switch (__main__.IntegrationBuildTests.test_experimental_flags_roundtrip_and_clear_on_preset_switch) ... ok
+test_image_only_features_are_gated_but_season_cap_accepts_xbe (__main__.IntegrationBuildTests.test_image_only_features_are_gated_but_season_cap_accepts_xbe) ... ok
+test_modern_defense_shortcut_deduplicates_explicit_choice (__main__.IntegrationBuildTests.test_modern_defense_shortcut_deduplicates_explicit_choice) ... ok
+test_music_size_preview_includes_staging_and_rejects_stale_selection (__main__.IntegrationBuildTests.test_music_size_preview_includes_staging_and_rejects_stale_selection) ... ok
+test_screen_invalid_levels_refuse_before_copy (__main__.IntegrationBuildTests.test_screen_invalid_levels_refuse_before_copy) ... ok
+test_screen_level_change_preserves_other_choices_and_detects_foreign_level (__main__.IntegrationBuildTests.test_screen_level_change_preserves_other_choices_and_detects_foreign_level) ... ok
+test_team_identity_facade_uses_short_forms_and_rechecks_staged_values (__main__.IntegrationBuildTests.test_team_identity_facade_uses_short_forms_and_rechecks_staged_values) ... ok
+test_presets_tick_only_what_the_source_can_take (__main__.PresetButtonTests.test_presets_tick_only_what_the_source_can_take) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 2.701s
+
+OK

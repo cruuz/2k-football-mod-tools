@@ -1,0 +1,24 @@
+test_append_sorted_directory_full_byte_verifier_and_repeat (__main__.ArchiveTests.test_append_sorted_directory_full_byte_verifier_and_repeat) ... ok
+test_changed_source_roster_refused_even_if_rebinding_would_match (__main__.ArchiveTests.test_changed_source_roster_refused_even_if_rebinding_would_match) ... ok
+test_filename_hash_collision_is_refused (__main__.ArchiveTests.test_filename_hash_collision_is_refused) ... ok
+test_nonzero_directory_slack_is_not_free_space (__main__.ArchiveTests.test_nonzero_directory_slack_is_not_free_space) ... ok
+test_preexisting_destination_and_changed_source_directory_refused (__main__.ArchiveTests.test_preexisting_destination_and_changed_source_directory_refused) ... ok
+test_preset_review_mismatch_is_refused_before_creating_output (__main__.ArchiveTests.test_preset_review_mismatch_is_refused_before_creating_output) ... ok
+test_round_tripping_overlapping_h7a_is_still_refused (__main__.ArchiveTests.test_round_tripping_overlapping_h7a_is_still_refused) ... ok
+test_verification_failure_removes_only_owned_output (__main__.ArchiveTests.test_verification_failure_removes_only_owned_output) ... ok
+test_binding_reuses_strings_and_changes_only_two_pointers (__main__.IdentityAndBindingTests.test_binding_reuses_strings_and_changes_only_two_pointers) ... ok
+test_cli_validation_errors_are_refusals_without_outputs (__main__.IdentityAndBindingTests.test_cli_validation_errors_are_refusals_without_outputs) ... ok
+test_clone_verifier_rejects_trailer_tampering_and_long_names (__main__.IdentityAndBindingTests.test_clone_verifier_rejects_trailer_tampering_and_long_names) ... ok
+test_duplicate_targets_and_boolean_indices_refused (__main__.IdentityAndBindingTests.test_duplicate_targets_and_boolean_indices_refused) ... ok
+test_identity_lists_every_team_and_other_resource_sharers (__main__.IdentityAndBindingTests.test_identity_lists_every_team_and_other_resource_sharers) ... ok
+test_raw_save_binding_and_missing_resource_are_honest (__main__.IdentityAndBindingTests.test_raw_save_binding_and_missing_resource_are_honest) ... ok
+test_shared_label_and_wrong_side_refused (__main__.IdentityAndBindingTests.test_shared_label_and_wrong_side_refused) ... ok
+test_changed_catalog_missing_plays_duplicate_and_empty_recipes_refused (__main__.PresetTests.test_changed_catalog_missing_plays_duplicate_and_empty_recipes_refused) ... ok
+test_dependent_tag_swaps_membership_and_idempotence (__main__.PresetTests.test_dependent_tag_swaps_membership_and_idempotence) ... ok
+test_shipped_recipe_census_and_no_formation_emptying (__main__.PresetTests.test_shipped_recipe_census_and_no_formation_emptying) ... ok
+test_verifier_rejects_wrong_tags_opaque_bits_or_other_records (__main__.PresetTests.test_verifier_rejects_wrong_tags_opaque_bits_or_other_records) ... ok
+
+----------------------------------------------------------------------
+Ran 19 tests in 25.437s
+
+OK

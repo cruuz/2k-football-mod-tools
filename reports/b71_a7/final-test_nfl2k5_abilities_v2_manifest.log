@@ -1,0 +1,7 @@
+test_every_hook_and_complete_owned_code_observed_with_no_other_hook_owner (__main__.ManifestTests.test_every_hook_and_complete_owned_code_observed_with_no_other_hook_owner) ... ok
+test_fresh_source_validation_refuses_changed_abilities_and_momentum (__main__.ManifestTests.test_fresh_source_validation_refuses_changed_abilities_and_momentum) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 310.759s
+
+OK

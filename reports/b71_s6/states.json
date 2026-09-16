@@ -1,0 +1,5036 @@
+{
+  "standard_43": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        245.3338623046875,
+        416.2979736328125,
+        258.6639404296875,
+        438.27978515625
+      ],
+      "home_score": [
+        379.9957275390625,
+        416.2979736328125,
+        393.32621002197266,
+        438.27978515625
+      ],
+      "clock": [
+        306.6652421951294,
+        433.306640625,
+        333.3262119293213,
+        444.509033203125
+      ],
+      "play_clock": [
+        347.3360404968262,
+        434.5499267578125,
+        352.33496856689453,
+        442.4326171875
+      ],
+      "quarter": [
+        283.33740234375,
+        434.5499267578125,
+        297.333984375,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        239.0020751953125,
+        444.0860595703125,
+        265.6622314453125,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        373.3304862976074,
+        444.0860595703125,
+        399.991455078125,
+        446.5726318359375
+      ],
+      "down": [
+        299.5001220703125,
+        412.1451416015625,
+        340.49134826660156,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 36,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "no_at_den_43": {
+    "state": {
+      "away": "NO",
+      "home": "DEN",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "away",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        245.3338623046875,
+        416.2979736328125,
+        258.6639404296875,
+        438.27978515625
+      ],
+      "home_score": [
+        379.9957275390625,
+        416.2979736328125,
+        393.32621002197266,
+        438.27978515625
+      ],
+      "clock": [
+        306.6652421951294,
+        433.306640625,
+        333.3262119293213,
+        444.509033203125
+      ],
+      "play_clock": [
+        347.3360404968262,
+        434.5499267578125,
+        352.33496856689453,
+        442.4326171875
+      ],
+      "quarter": [
+        283.33740234375,
+        434.5499267578125,
+        297.333984375,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        239.0020751953125,
+        444.0860595703125,
+        265.6622314453125,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        373.3304862976074,
+        444.0860595703125,
+        399.991455078125,
+        446.5726318359375
+      ],
+      "down": [
+        299.5001220703125,
+        412.1451416015625,
+        340.49134826660156,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 36,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "score_0_43": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 0,
+      "home_score": 0,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        245.3338623046875,
+        416.2979736328125,
+        258.6639404296875,
+        438.27978515625
+      ],
+      "home_score": [
+        379.9957275390625,
+        416.2979736328125,
+        393.32621002197266,
+        438.27978515625
+      ],
+      "clock": [
+        306.6652421951294,
+        433.306640625,
+        333.3262119293213,
+        444.509033203125
+      ],
+      "play_clock": [
+        347.3360404968262,
+        434.5499267578125,
+        352.33496856689453,
+        442.4326171875
+      ],
+      "quarter": [
+        283.33740234375,
+        434.5499267578125,
+        297.333984375,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        239.0020751953125,
+        444.0860595703125,
+        265.6622314453125,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        373.3304862976074,
+        444.0860595703125,
+        399.991455078125,
+        446.5726318359375
+      ],
+      "down": [
+        299.5001220703125,
+        412.1451416015625,
+        340.49134826660156,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 36,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "score_28_43": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 28,
+      "home_score": 28,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        238.3355712890625,
+        416.2979736328125,
+        265.6622314453125,
+        438.27978515625
+      ],
+      "home_score": [
+        372.9972229003906,
+        416.2979736328125,
+        400.32471466064453,
+        438.27978515625
+      ],
+      "clock": [
+        306.6652421951294,
+        433.306640625,
+        333.3262119293213,
+        444.509033203125
+      ],
+      "play_clock": [
+        347.3360404968262,
+        434.5499267578125,
+        352.33496856689453,
+        442.4326171875
+      ],
+      "quarter": [
+        283.33740234375,
+        434.5499267578125,
+        297.333984375,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        239.0020751953125,
+        444.0860595703125,
+        265.6622314453125,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        373.3304862976074,
+        444.0860595703125,
+        399.991455078125,
+        446.5726318359375
+      ],
+      "down": [
+        299.5001220703125,
+        412.1451416015625,
+        340.49134826660156,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 38,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 22
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "score_100_43": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 100,
+      "home_score": 100,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        232.0037841796875,
+        416.2979736328125,
+        272.0068359375,
+        438.27978515625
+      ],
+      "home_score": [
+        366.6652412414551,
+        416.2979736328125,
+        406.66951751708984,
+        438.27978515625
+      ],
+      "clock": [
+        306.6652421951294,
+        433.306640625,
+        333.3262119293213,
+        444.509033203125
+      ],
+      "play_clock": [
+        347.3360404968262,
+        434.5499267578125,
+        352.33496856689453,
+        442.4326171875
+      ],
+      "quarter": [
+        283.33740234375,
+        434.5499267578125,
+        297.333984375,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        239.0020751953125,
+        444.0860595703125,
+        265.6622314453125,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        373.3304862976074,
+        444.0860595703125,
+        399.991455078125,
+        446.5726318359375
+      ],
+      "down": [
+        299.5001220703125,
+        412.1451416015625,
+        340.49134826660156,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 40,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 26
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "clock_007_43": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 7,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        245.3338623046875,
+        416.2979736328125,
+        258.6639404296875,
+        438.27978515625
+      ],
+      "home_score": [
+        379.9957275390625,
+        416.2979736328125,
+        393.32621002197266,
+        438.27978515625
+      ],
+      "clock": [
+        306.6652421951294,
+        433.306640625,
+        333.3262119293213,
+        444.509033203125
+      ],
+      "play_clock": [
+        347.3360404968262,
+        434.5499267578125,
+        352.33496856689453,
+        442.4326171875
+      ],
+      "quarter": [
+        283.33740234375,
+        434.5499267578125,
+        297.333984375,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        239.0020751953125,
+        444.0860595703125,
+        265.6622314453125,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        373.3304862976074,
+        444.0860595703125,
+        399.991455078125,
+        446.5726318359375
+      ],
+      "down": [
+        299.5001220703125,
+        412.1451416015625,
+        340.49134826660156,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 36,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "play_12_43": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 12,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        245.3338623046875,
+        416.2979736328125,
+        258.6639404296875,
+        438.27978515625
+      ],
+      "home_score": [
+        379.9957275390625,
+        416.2979736328125,
+        393.32621002197266,
+        438.27978515625
+      ],
+      "clock": [
+        306.6652421951294,
+        433.306640625,
+        333.3262119293213,
+        444.509033203125
+      ],
+      "play_clock": [
+        344.50331115722656,
+        434.5499267578125,
+        355.16769790649414,
+        442.4326171875
+      ],
+      "quarter": [
+        283.33740234375,
+        434.5499267578125,
+        297.333984375,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        239.0020751953125,
+        444.0860595703125,
+        265.6622314453125,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        373.3304862976074,
+        444.0860595703125,
+        399.991455078125,
+        446.5726318359375
+      ],
+      "down": [
+        299.5001220703125,
+        412.1451416015625,
+        340.49134826660156,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 37,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 20
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "play_3_43": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 3,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        245.3338623046875,
+        416.2979736328125,
+        258.6639404296875,
+        438.27978515625
+      ],
+      "home_score": [
+        379.9957275390625,
+        416.2979736328125,
+        393.32621002197266,
+        438.27978515625
+      ],
+      "clock": [
+        306.6652421951294,
+        433.306640625,
+        333.3262119293213,
+        444.509033203125
+      ],
+      "play_clock": [
+        347.3360404968262,
+        434.5499267578125,
+        352.33496856689453,
+        442.4326171875
+      ],
+      "quarter": [
+        283.33740234375,
+        434.5499267578125,
+        297.333984375,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        239.0020751953125,
+        444.0860595703125,
+        265.6622314453125,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        373.3304862976074,
+        444.0860595703125,
+        399.991455078125,
+        446.5726318359375
+      ],
+      "down": [
+        299.5001220703125,
+        412.1451416015625,
+        340.49134826660156,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 36,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "down_1_43": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 1,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        245.3338623046875,
+        416.2979736328125,
+        258.6639404296875,
+        438.27978515625
+      ],
+      "home_score": [
+        379.9957275390625,
+        416.2979736328125,
+        393.32621002197266,
+        438.27978515625
+      ],
+      "clock": [
+        306.6652421951294,
+        433.306640625,
+        333.3262119293213,
+        444.509033203125
+      ],
+      "play_clock": [
+        347.3360404968262,
+        434.5499267578125,
+        352.33496856689453,
+        442.4326171875
+      ],
+      "quarter": [
+        283.33740234375,
+        434.5499267578125,
+        297.333984375,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        239.0020751953125,
+        444.0860595703125,
+        265.6622314453125,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        373.3304862976074,
+        444.0860595703125,
+        399.991455078125,
+        446.5726318359375
+      ],
+      "down": [
+        299.5001220703125,
+        412.1451416015625,
+        340.49134826660156,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 36,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "down_2_43": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 2,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        245.3338623046875,
+        416.2979736328125,
+        258.6639404296875,
+        438.27978515625
+      ],
+      "home_score": [
+        379.9957275390625,
+        416.2979736328125,
+        393.32621002197266,
+        438.27978515625
+      ],
+      "clock": [
+        306.6652421951294,
+        433.306640625,
+        333.3262119293213,
+        444.509033203125
+      ],
+      "play_clock": [
+        347.3360404968262,
+        434.5499267578125,
+        352.33496856689453,
+        442.4326171875
+      ],
+      "quarter": [
+        283.33740234375,
+        434.5499267578125,
+        297.333984375,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        239.0020751953125,
+        444.0860595703125,
+        265.6622314453125,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        373.3304862976074,
+        444.0860595703125,
+        399.991455078125,
+        446.5726318359375
+      ],
+      "down": [
+        299.5001220703125,
+        412.1451416015625,
+        340.49134826660156,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 36,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "down_3_43": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        245.3338623046875,
+        416.2979736328125,
+        258.6639404296875,
+        438.27978515625
+      ],
+      "home_score": [
+        379.9957275390625,
+        416.2979736328125,
+        393.32621002197266,
+        438.27978515625
+      ],
+      "clock": [
+        306.6652421951294,
+        433.306640625,
+        333.3262119293213,
+        444.509033203125
+      ],
+      "play_clock": [
+        347.3360404968262,
+        434.5499267578125,
+        352.33496856689453,
+        442.4326171875
+      ],
+      "quarter": [
+        283.33740234375,
+        434.5499267578125,
+        297.333984375,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        239.0020751953125,
+        444.0860595703125,
+        265.6622314453125,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        373.3304862976074,
+        444.0860595703125,
+        399.991455078125,
+        446.5726318359375
+      ],
+      "down": [
+        299.5001220703125,
+        412.1451416015625,
+        340.49134826660156,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 36,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "down_4_43": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 4,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        245.3338623046875,
+        416.2979736328125,
+        258.6639404296875,
+        438.27978515625
+      ],
+      "home_score": [
+        379.9957275390625,
+        416.2979736328125,
+        393.32621002197266,
+        438.27978515625
+      ],
+      "clock": [
+        306.6652421951294,
+        433.306640625,
+        333.3262119293213,
+        444.509033203125
+      ],
+      "play_clock": [
+        347.3360404968262,
+        434.5499267578125,
+        352.33496856689453,
+        442.4326171875
+      ],
+      "quarter": [
+        283.33740234375,
+        434.5499267578125,
+        297.333984375,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        239.0020751953125,
+        444.0860595703125,
+        265.6622314453125,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        373.3304862976074,
+        444.0860595703125,
+        399.991455078125,
+        446.5726318359375
+      ],
+      "down": [
+        299.5001220703125,
+        412.1451416015625,
+        340.49134826660156,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 36,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "overtime_43": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 5,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        245.3338623046875,
+        416.2979736328125,
+        258.6639404296875,
+        438.27978515625
+      ],
+      "home_score": [
+        379.9957275390625,
+        416.2979736328125,
+        393.32621002197266,
+        438.27978515625
+      ],
+      "clock": [
+        306.6652421951294,
+        433.306640625,
+        333.3262119293213,
+        444.509033203125
+      ],
+      "play_clock": [
+        347.3360404968262,
+        434.5499267578125,
+        352.33496856689453,
+        442.4326171875
+      ],
+      "quarter": [
+        283.8372802734375,
+        434.5499267578125,
+        296.8341064453125,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        239.0020751953125,
+        444.0860595703125,
+        265.6622314453125,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        373.3304862976074,
+        444.0860595703125,
+        399.991455078125,
+        446.5726318359375
+      ],
+      "down": [
+        299.5001220703125,
+        412.1451416015625,
+        340.49134826660156,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 36,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "inches_43": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 0,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        245.3338623046875,
+        416.2979736328125,
+        258.6639404296875,
+        438.27978515625
+      ],
+      "home_score": [
+        379.9957275390625,
+        416.2979736328125,
+        393.32621002197266,
+        438.27978515625
+      ],
+      "clock": [
+        306.6652421951294,
+        433.306640625,
+        333.3262119293213,
+        444.509033203125
+      ],
+      "play_clock": [
+        347.3360404968262,
+        434.5499267578125,
+        352.33496856689453,
+        442.4326171875
+      ],
+      "quarter": [
+        283.33740234375,
+        434.5499267578125,
+        297.333984375,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        239.0020751953125,
+        444.0860595703125,
+        265.6622314453125,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        373.3304862976074,
+        444.0860595703125,
+        399.991455078125,
+        446.5726318359375
+      ],
+      "down": [
+        291.8353271484375,
+        412.1451416015625,
+        348.1563777923584,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 36,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "goal_43": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": true
+    },
+    "glyph_boxes": {
+      "away_score": [
+        245.3338623046875,
+        416.2979736328125,
+        258.6639404296875,
+        438.27978515625
+      ],
+      "home_score": [
+        379.9957275390625,
+        416.2979736328125,
+        393.32621002197266,
+        438.27978515625
+      ],
+      "clock": [
+        306.6652421951294,
+        433.306640625,
+        333.3262119293213,
+        444.509033203125
+      ],
+      "play_clock": [
+        347.3360404968262,
+        434.5499267578125,
+        352.33496856689453,
+        442.4326171875
+      ],
+      "quarter": [
+        283.33740234375,
+        434.5499267578125,
+        297.333984375,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        239.0020751953125,
+        444.0860595703125,
+        265.6622314453125,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        373.3304862976074,
+        444.0860595703125,
+        399.991455078125,
+        446.5726318359375
+      ],
+      "down": [
+        296.5008544921875,
+        412.1451416015625,
+        343.49070739746094,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 35,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 20
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "timeouts_0_43": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 0,
+      "home_timeouts": 0,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        245.3338623046875,
+        416.2979736328125,
+        258.6639404296875,
+        438.27978515625
+      ],
+      "home_score": [
+        379.9957275390625,
+        416.2979736328125,
+        393.32621002197266,
+        438.27978515625
+      ],
+      "clock": [
+        306.6652421951294,
+        433.306640625,
+        333.3262119293213,
+        444.509033203125
+      ],
+      "play_clock": [
+        347.3360404968262,
+        434.5499267578125,
+        352.33496856689453,
+        442.4326171875
+      ],
+      "quarter": [
+        283.33740234375,
+        434.5499267578125,
+        297.333984375,
+        442.4326171875
+      ],
+      "down": [
+        299.5001220703125,
+        412.1451416015625,
+        340.49134826660156,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 30,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 10
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "timeouts_1_43": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 1,
+      "home_timeouts": 1,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        245.3338623046875,
+        416.2979736328125,
+        258.6639404296875,
+        438.27978515625
+      ],
+      "home_score": [
+        379.9957275390625,
+        416.2979736328125,
+        393.32621002197266,
+        438.27978515625
+      ],
+      "clock": [
+        306.6652421951294,
+        433.306640625,
+        333.3262119293213,
+        444.509033203125
+      ],
+      "play_clock": [
+        347.3360404968262,
+        434.5499267578125,
+        352.33496856689453,
+        442.4326171875
+      ],
+      "quarter": [
+        283.33740234375,
+        434.5499267578125,
+        297.333984375,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        239.0020751953125,
+        444.0860595703125,
+        245.6671142578125,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        373.3304862976074,
+        444.0860595703125,
+        379.9957275390625,
+        446.5726318359375
+      ],
+      "down": [
+        299.5001220703125,
+        412.1451416015625,
+        340.49134826660156,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 32,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 14
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "timeouts_2_43": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 2,
+      "home_timeouts": 2,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        245.3338623046875,
+        416.2979736328125,
+        258.6639404296875,
+        438.27978515625
+      ],
+      "home_score": [
+        379.9957275390625,
+        416.2979736328125,
+        393.32621002197266,
+        438.27978515625
+      ],
+      "clock": [
+        306.6652421951294,
+        433.306640625,
+        333.3262119293213,
+        444.509033203125
+      ],
+      "play_clock": [
+        347.3360404968262,
+        434.5499267578125,
+        352.33496856689453,
+        442.4326171875
+      ],
+      "quarter": [
+        283.33740234375,
+        434.5499267578125,
+        297.333984375,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        239.0020751953125,
+        444.0860595703125,
+        255.6646728515625,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        373.3304862976074,
+        444.0860595703125,
+        389.99359130859375,
+        446.5726318359375
+      ],
+      "down": [
+        299.5001220703125,
+        412.1451416015625,
+        340.49134826660156,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 34,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 18
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "timeouts_3_43": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        245.3338623046875,
+        416.2979736328125,
+        258.6639404296875,
+        438.27978515625
+      ],
+      "home_score": [
+        379.9957275390625,
+        416.2979736328125,
+        393.32621002197266,
+        438.27978515625
+      ],
+      "clock": [
+        306.6652421951294,
+        433.306640625,
+        333.3262119293213,
+        444.509033203125
+      ],
+      "play_clock": [
+        347.3360404968262,
+        434.5499267578125,
+        352.33496856689453,
+        442.4326171875
+      ],
+      "quarter": [
+        283.33740234375,
+        434.5499267578125,
+        297.333984375,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        239.0020751953125,
+        444.0860595703125,
+        265.6622314453125,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        373.3304862976074,
+        444.0860595703125,
+        399.991455078125,
+        446.5726318359375
+      ],
+      "down": [
+        299.5001220703125,
+        412.1451416015625,
+        340.49134826660156,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 36,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "flag_43": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "FLAG",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        245.3338623046875,
+        416.2979736328125,
+        258.6639404296875,
+        438.27978515625
+      ],
+      "home_score": [
+        379.9957275390625,
+        416.2979736328125,
+        393.32621002197266,
+        438.27978515625
+      ],
+      "clock": [
+        306.6652421951294,
+        433.306640625,
+        333.3262119293213,
+        444.509033203125
+      ],
+      "play_clock": [
+        347.3360404968262,
+        434.5499267578125,
+        352.33496856689453,
+        442.4326171875
+      ],
+      "quarter": [
+        283.33740234375,
+        434.5499267578125,
+        297.333984375,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        239.0020751953125,
+        444.0860595703125,
+        265.6622314453125,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        373.3304862976074,
+        444.0860595703125,
+        399.991455078125,
+        446.5726318359375
+      ]
+    },
+    "retail_draws": [
+      {
+        "text": "FLAG",
+        "font": "font4",
+        "quads": 4
+      }
+    ],
+    "sprite_quads": 31,
+    "winding": {
+      "bscore_buga2": {
+        "positive": 0,
+        "negative": 2
+      },
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 12
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "fumble_43": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "FUMBLE",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        245.3338623046875,
+        416.2979736328125,
+        258.6639404296875,
+        438.27978515625
+      ],
+      "home_score": [
+        379.9957275390625,
+        416.2979736328125,
+        393.32621002197266,
+        438.27978515625
+      ],
+      "clock": [
+        306.6652421951294,
+        433.306640625,
+        333.3262119293213,
+        444.509033203125
+      ],
+      "quarter": [
+        283.33740234375,
+        434.5499267578125,
+        297.333984375,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        239.0020751953125,
+        444.0860595703125,
+        265.6622314453125,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        373.3304862976074,
+        444.0860595703125,
+        399.991455078125,
+        446.5726318359375
+      ]
+    },
+    "retail_draws": [
+      {
+        "text": "FUMBLE",
+        "font": "font4",
+        "quads": 6
+      }
+    ],
+    "sprite_quads": 30,
+    "winding": {
+      "bscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 16
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 12
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "hang_time_43": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "hang time",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        245.3338623046875,
+        416.2979736328125,
+        258.6639404296875,
+        438.27978515625
+      ],
+      "home_score": [
+        379.9957275390625,
+        416.2979736328125,
+        393.32621002197266,
+        438.27978515625
+      ],
+      "clock": [
+        306.6652421951294,
+        433.306640625,
+        333.3262119293213,
+        444.509033203125
+      ],
+      "play_clock": [
+        347.3360404968262,
+        434.5499267578125,
+        352.33496856689453,
+        442.4326171875
+      ],
+      "quarter": [
+        283.33740234375,
+        434.5499267578125,
+        297.333984375,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        239.0020751953125,
+        444.0860595703125,
+        265.6622314453125,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        373.3304862976074,
+        444.0860595703125,
+        399.991455078125,
+        446.5726318359375
+      ]
+    },
+    "retail_draws": [
+      {
+        "text": "Hangtime: 0.0",
+        "font": "font4",
+        "quads": 12
+      }
+    ],
+    "sprite_quads": 31,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 12
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      },
+      "zz_ESPN_bug1": {
+        "positive": 0,
+        "negative": 2
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "ball_on_43": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "ball on",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        245.3338623046875,
+        416.2979736328125,
+        258.6639404296875,
+        438.27978515625
+      ],
+      "home_score": [
+        379.9957275390625,
+        416.2979736328125,
+        393.32621002197266,
+        438.27978515625
+      ],
+      "clock": [
+        306.6652421951294,
+        433.306640625,
+        333.3262119293213,
+        444.509033203125
+      ],
+      "play_clock": [
+        347.3360404968262,
+        434.5499267578125,
+        352.33496856689453,
+        442.4326171875
+      ],
+      "quarter": [
+        283.33740234375,
+        434.5499267578125,
+        297.333984375,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        239.0020751953125,
+        444.0860595703125,
+        265.6622314453125,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        373.3304862976074,
+        444.0860595703125,
+        399.991455078125,
+        446.5726318359375
+      ]
+    },
+    "retail_draws": [
+      {
+        "text": "Ball at Midfield",
+        "font": "font4",
+        "quads": 14
+      }
+    ],
+    "sprite_quads": 31,
+    "winding": {
+      "bscore_buga1": {
+        "positive": 0,
+        "negative": 2
+      },
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 12
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "score_slabs_43": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "score slabs",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        245.3338623046875,
+        416.2979736328125,
+        258.6639404296875,
+        438.27978515625
+      ],
+      "home_score": [
+        379.9957275390625,
+        416.2979736328125,
+        393.32621002197266,
+        438.27978515625
+      ],
+      "clock": [
+        306.6652421951294,
+        433.306640625,
+        333.3262119293213,
+        444.509033203125
+      ],
+      "play_clock": [
+        347.3360404968262,
+        434.5499267578125,
+        352.33496856689453,
+        442.4326171875
+      ],
+      "quarter": [
+        283.33740234375,
+        434.5499267578125,
+        297.333984375,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        239.0020751953125,
+        444.0860595703125,
+        265.6622314453125,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        373.3304862976074,
+        444.0860595703125,
+        399.991455078125,
+        446.5726318359375
+      ],
+      "down": [
+        299.5001220703125,
+        412.1451416015625,
+        340.49134826660156,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 36,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "hidden_play_clock_43": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "hidden play clock",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        245.3338623046875,
+        416.2979736328125,
+        258.6639404296875,
+        438.27978515625
+      ],
+      "home_score": [
+        379.9957275390625,
+        416.2979736328125,
+        393.32621002197266,
+        438.27978515625
+      ],
+      "clock": [
+        306.6652421951294,
+        433.306640625,
+        333.3262119293213,
+        444.509033203125
+      ],
+      "quarter": [
+        283.33740234375,
+        434.5499267578125,
+        297.333984375,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        239.0020751953125,
+        444.0860595703125,
+        265.6622314453125,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        373.3304862976074,
+        444.0860595703125,
+        399.991455078125,
+        446.5726318359375
+      ],
+      "down": [
+        299.5001220703125,
+        412.1451416015625,
+        340.49134826660156,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 35,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 16
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "standard_169": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        257.0004463195801,
+        416.2979736328125,
+        268.2476997375488,
+        438.27978515625
+      ],
+      "home_score": [
+        370.621395111084,
+        416.2979736328125,
+        381.86898970603943,
+        438.27978515625
+      ],
+      "clock": [
+        308.7487981021404,
+        433.306640625,
+        331.24399131536484,
+        444.509033203125
+      ],
+      "play_clock": [
+        343.0647841691971,
+        434.5499267578125,
+        347.28262972831726,
+        442.4326171875
+      ],
+      "quarter": [
+        289.06593322753906,
+        434.5499267578125,
+        300.87554931640625,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        251.65800094604492,
+        444.0860595703125,
+        274.1525077819824,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        364.99759781360626,
+        444.0860595703125,
+        387.49279022216797,
+        446.5726318359375
+      ],
+      "down": [
+        302.7032279968262,
+        412.1451416015625,
+        337.28957509994507,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 36,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "no_at_den_169": {
+    "state": {
+      "away": "NO",
+      "home": "DEN",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "away",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        257.0004463195801,
+        416.2979736328125,
+        268.2476997375488,
+        438.27978515625
+      ],
+      "home_score": [
+        370.621395111084,
+        416.2979736328125,
+        381.86898970603943,
+        438.27978515625
+      ],
+      "clock": [
+        308.7487981021404,
+        433.306640625,
+        331.24399131536484,
+        444.509033203125
+      ],
+      "play_clock": [
+        343.0647841691971,
+        434.5499267578125,
+        347.28262972831726,
+        442.4326171875
+      ],
+      "quarter": [
+        289.06593322753906,
+        434.5499267578125,
+        300.87554931640625,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        251.65800094604492,
+        444.0860595703125,
+        274.1525077819824,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        364.99759781360626,
+        444.0860595703125,
+        387.49279022216797,
+        446.5726318359375
+      ],
+      "down": [
+        302.7032279968262,
+        412.1451416015625,
+        337.28957509994507,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 36,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "score_0_169": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 0,
+      "home_score": 0,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        257.0004463195801,
+        416.2979736328125,
+        268.2476997375488,
+        438.27978515625
+      ],
+      "home_score": [
+        370.621395111084,
+        416.2979736328125,
+        381.86898970603943,
+        438.27978515625
+      ],
+      "clock": [
+        308.7487981021404,
+        433.306640625,
+        331.24399131536484,
+        444.509033203125
+      ],
+      "play_clock": [
+        343.0647841691971,
+        434.5499267578125,
+        347.28262972831726,
+        442.4326171875
+      ],
+      "quarter": [
+        289.06593322753906,
+        434.5499267578125,
+        300.87554931640625,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        251.65800094604492,
+        444.0860595703125,
+        274.1525077819824,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        364.99759781360626,
+        444.0860595703125,
+        387.49279022216797,
+        446.5726318359375
+      ],
+      "down": [
+        302.7032279968262,
+        412.1451416015625,
+        337.28957509994507,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 36,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "score_28_169": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 28,
+      "home_score": 28,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        251.09563827514648,
+        416.2979736328125,
+        274.1525077819824,
+        438.27978515625
+      ],
+      "home_score": [
+        364.7164068222046,
+        416.2979736328125,
+        387.7739779949188,
+        438.27978515625
+      ],
+      "clock": [
+        308.7487981021404,
+        433.306640625,
+        331.24399131536484,
+        444.509033203125
+      ],
+      "play_clock": [
+        343.0647841691971,
+        434.5499267578125,
+        347.28262972831726,
+        442.4326171875
+      ],
+      "quarter": [
+        289.06593322753906,
+        434.5499267578125,
+        300.87554931640625,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        251.65800094604492,
+        444.0860595703125,
+        274.1525077819824,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        364.99759781360626,
+        444.0860595703125,
+        387.49279022216797,
+        446.5726318359375
+      ],
+      "down": [
+        302.7032279968262,
+        412.1451416015625,
+        337.28957509994507,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 38,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 22
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "score_100_169": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 100,
+      "home_score": 100,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        245.75319290161133,
+        416.2979736328125,
+        279.5057678222656,
+        438.27978515625
+      ],
+      "home_score": [
+        359.3737972974777,
+        416.2979736328125,
+        393.12740540504456,
+        438.27978515625
+      ],
+      "clock": [
+        308.7487981021404,
+        433.306640625,
+        331.24399131536484,
+        444.509033203125
+      ],
+      "play_clock": [
+        343.0647841691971,
+        434.5499267578125,
+        347.28262972831726,
+        442.4326171875
+      ],
+      "quarter": [
+        289.06593322753906,
+        434.5499267578125,
+        300.87554931640625,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        251.65800094604492,
+        444.0860595703125,
+        274.1525077819824,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        364.99759781360626,
+        444.0860595703125,
+        387.49279022216797,
+        446.5726318359375
+      ],
+      "down": [
+        302.7032279968262,
+        412.1451416015625,
+        337.28957509994507,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 40,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 26
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "clock_007_169": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 7,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        257.0004463195801,
+        416.2979736328125,
+        268.2476997375488,
+        438.27978515625
+      ],
+      "home_score": [
+        370.621395111084,
+        416.2979736328125,
+        381.86898970603943,
+        438.27978515625
+      ],
+      "clock": [
+        308.7487981021404,
+        433.306640625,
+        331.24399131536484,
+        444.509033203125
+      ],
+      "play_clock": [
+        343.0647841691971,
+        434.5499267578125,
+        347.28262972831726,
+        442.4326171875
+      ],
+      "quarter": [
+        289.06593322753906,
+        434.5499267578125,
+        300.87554931640625,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        251.65800094604492,
+        444.0860595703125,
+        274.1525077819824,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        364.99759781360626,
+        444.0860595703125,
+        387.49279022216797,
+        446.5726318359375
+      ],
+      "down": [
+        302.7032279968262,
+        412.1451416015625,
+        337.28957509994507,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 36,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "play_12_169": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 12,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        257.0004463195801,
+        416.2979736328125,
+        268.2476997375488,
+        438.27978515625
+      ],
+      "home_score": [
+        370.621395111084,
+        416.2979736328125,
+        381.86898970603943,
+        438.27978515625
+      ],
+      "clock": [
+        308.7487981021404,
+        433.306640625,
+        331.24399131536484,
+        444.509033203125
+      ],
+      "play_clock": [
+        340.6746687889099,
+        434.5499267578125,
+        349.67274510860443,
+        442.4326171875
+      ],
+      "quarter": [
+        289.06593322753906,
+        434.5499267578125,
+        300.87554931640625,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        251.65800094604492,
+        444.0860595703125,
+        274.1525077819824,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        364.99759781360626,
+        444.0860595703125,
+        387.49279022216797,
+        446.5726318359375
+      ],
+      "down": [
+        302.7032279968262,
+        412.1451416015625,
+        337.28957509994507,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 37,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 20
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "play_3_169": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 3,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        257.0004463195801,
+        416.2979736328125,
+        268.2476997375488,
+        438.27978515625
+      ],
+      "home_score": [
+        370.621395111084,
+        416.2979736328125,
+        381.86898970603943,
+        438.27978515625
+      ],
+      "clock": [
+        308.7487981021404,
+        433.306640625,
+        331.24399131536484,
+        444.509033203125
+      ],
+      "play_clock": [
+        343.0647841691971,
+        434.5499267578125,
+        347.28262972831726,
+        442.4326171875
+      ],
+      "quarter": [
+        289.06593322753906,
+        434.5499267578125,
+        300.87554931640625,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        251.65800094604492,
+        444.0860595703125,
+        274.1525077819824,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        364.99759781360626,
+        444.0860595703125,
+        387.49279022216797,
+        446.5726318359375
+      ],
+      "down": [
+        302.7032279968262,
+        412.1451416015625,
+        337.28957509994507,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 36,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "down_1_169": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 1,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        257.0004463195801,
+        416.2979736328125,
+        268.2476997375488,
+        438.27978515625
+      ],
+      "home_score": [
+        370.621395111084,
+        416.2979736328125,
+        381.86898970603943,
+        438.27978515625
+      ],
+      "clock": [
+        308.7487981021404,
+        433.306640625,
+        331.24399131536484,
+        444.509033203125
+      ],
+      "play_clock": [
+        343.0647841691971,
+        434.5499267578125,
+        347.28262972831726,
+        442.4326171875
+      ],
+      "quarter": [
+        289.06593322753906,
+        434.5499267578125,
+        300.87554931640625,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        251.65800094604492,
+        444.0860595703125,
+        274.1525077819824,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        364.99759781360626,
+        444.0860595703125,
+        387.49279022216797,
+        446.5726318359375
+      ],
+      "down": [
+        302.7032279968262,
+        412.1451416015625,
+        337.28957509994507,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 36,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "down_2_169": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 2,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        257.0004463195801,
+        416.2979736328125,
+        268.2476997375488,
+        438.27978515625
+      ],
+      "home_score": [
+        370.621395111084,
+        416.2979736328125,
+        381.86898970603943,
+        438.27978515625
+      ],
+      "clock": [
+        308.7487981021404,
+        433.306640625,
+        331.24399131536484,
+        444.509033203125
+      ],
+      "play_clock": [
+        343.0647841691971,
+        434.5499267578125,
+        347.28262972831726,
+        442.4326171875
+      ],
+      "quarter": [
+        289.06593322753906,
+        434.5499267578125,
+        300.87554931640625,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        251.65800094604492,
+        444.0860595703125,
+        274.1525077819824,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        364.99759781360626,
+        444.0860595703125,
+        387.49279022216797,
+        446.5726318359375
+      ],
+      "down": [
+        302.7032279968262,
+        412.1451416015625,
+        337.28957509994507,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 36,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "down_3_169": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        257.0004463195801,
+        416.2979736328125,
+        268.2476997375488,
+        438.27978515625
+      ],
+      "home_score": [
+        370.621395111084,
+        416.2979736328125,
+        381.86898970603943,
+        438.27978515625
+      ],
+      "clock": [
+        308.7487981021404,
+        433.306640625,
+        331.24399131536484,
+        444.509033203125
+      ],
+      "play_clock": [
+        343.0647841691971,
+        434.5499267578125,
+        347.28262972831726,
+        442.4326171875
+      ],
+      "quarter": [
+        289.06593322753906,
+        434.5499267578125,
+        300.87554931640625,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        251.65800094604492,
+        444.0860595703125,
+        274.1525077819824,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        364.99759781360626,
+        444.0860595703125,
+        387.49279022216797,
+        446.5726318359375
+      ],
+      "down": [
+        302.7032279968262,
+        412.1451416015625,
+        337.28957509994507,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 36,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "down_4_169": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 4,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        257.0004463195801,
+        416.2979736328125,
+        268.2476997375488,
+        438.27978515625
+      ],
+      "home_score": [
+        370.621395111084,
+        416.2979736328125,
+        381.86898970603943,
+        438.27978515625
+      ],
+      "clock": [
+        308.7487981021404,
+        433.306640625,
+        331.24399131536484,
+        444.509033203125
+      ],
+      "play_clock": [
+        343.0647841691971,
+        434.5499267578125,
+        347.28262972831726,
+        442.4326171875
+      ],
+      "quarter": [
+        289.06593322753906,
+        434.5499267578125,
+        300.87554931640625,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        251.65800094604492,
+        444.0860595703125,
+        274.1525077819824,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        364.99759781360626,
+        444.0860595703125,
+        387.49279022216797,
+        446.5726318359375
+      ],
+      "down": [
+        302.7032279968262,
+        412.1451416015625,
+        337.28957509994507,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 36,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "overtime_169": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 5,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        257.0004463195801,
+        416.2979736328125,
+        268.2476997375488,
+        438.27978515625
+      ],
+      "home_score": [
+        370.621395111084,
+        416.2979736328125,
+        381.86898970603943,
+        438.27978515625
+      ],
+      "clock": [
+        308.7487981021404,
+        433.306640625,
+        331.24399131536484,
+        444.509033203125
+      ],
+      "play_clock": [
+        343.0647841691971,
+        434.5499267578125,
+        347.28262972831726,
+        442.4326171875
+      ],
+      "quarter": [
+        289.4877052307129,
+        434.5499267578125,
+        300.4537773132324,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        251.65800094604492,
+        444.0860595703125,
+        274.1525077819824,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        364.99759781360626,
+        444.0860595703125,
+        387.49279022216797,
+        446.5726318359375
+      ],
+      "down": [
+        302.7032279968262,
+        412.1451416015625,
+        337.28957509994507,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 36,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "inches_169": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 0,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        257.0004463195801,
+        416.2979736328125,
+        268.2476997375488,
+        438.27978515625
+      ],
+      "home_score": [
+        370.621395111084,
+        416.2979736328125,
+        381.86898970603943,
+        438.27978515625
+      ],
+      "clock": [
+        308.7487981021404,
+        433.306640625,
+        331.24399131536484,
+        444.509033203125
+      ],
+      "play_clock": [
+        343.0647841691971,
+        434.5499267578125,
+        347.28262972831726,
+        442.4326171875
+      ],
+      "quarter": [
+        289.06593322753906,
+        434.5499267578125,
+        300.87554931640625,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        251.65800094604492,
+        444.0860595703125,
+        274.1525077819824,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        364.99759781360626,
+        444.0860595703125,
+        387.49279022216797,
+        446.5726318359375
+      ],
+      "down": [
+        296.23605728149414,
+        412.1451416015625,
+        343.7569437623024,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 36,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "goal_169": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": true
+    },
+    "glyph_boxes": {
+      "away_score": [
+        257.0004463195801,
+        416.2979736328125,
+        268.2476997375488,
+        438.27978515625
+      ],
+      "home_score": [
+        370.621395111084,
+        416.2979736328125,
+        381.86898970603943,
+        438.27978515625
+      ],
+      "clock": [
+        308.7487981021404,
+        433.306640625,
+        331.24399131536484,
+        444.509033203125
+      ],
+      "play_clock": [
+        343.0647841691971,
+        434.5499267578125,
+        347.28262972831726,
+        442.4326171875
+      ],
+      "quarter": [
+        289.06593322753906,
+        434.5499267578125,
+        300.87554931640625,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        251.65800094604492,
+        444.0860595703125,
+        274.1525077819824,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        364.99759781360626,
+        444.0860595703125,
+        387.49279022216797,
+        446.5726318359375
+      ],
+      "down": [
+        300.1725959777832,
+        412.1451416015625,
+        339.82028436660767,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 35,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 20
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "timeouts_0_169": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 0,
+      "home_timeouts": 0,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        257.0004463195801,
+        416.2979736328125,
+        268.2476997375488,
+        438.27978515625
+      ],
+      "home_score": [
+        370.621395111084,
+        416.2979736328125,
+        381.86898970603943,
+        438.27978515625
+      ],
+      "clock": [
+        308.7487981021404,
+        433.306640625,
+        331.24399131536484,
+        444.509033203125
+      ],
+      "play_clock": [
+        343.0647841691971,
+        434.5499267578125,
+        347.28262972831726,
+        442.4326171875
+      ],
+      "quarter": [
+        289.06593322753906,
+        434.5499267578125,
+        300.87554931640625,
+        442.4326171875
+      ],
+      "down": [
+        302.7032279968262,
+        412.1451416015625,
+        337.28957509994507,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 30,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 10
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "timeouts_1_169": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 1,
+      "home_timeouts": 1,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        257.0004463195801,
+        416.2979736328125,
+        268.2476997375488,
+        438.27978515625
+      ],
+      "home_score": [
+        370.621395111084,
+        416.2979736328125,
+        381.86898970603943,
+        438.27978515625
+      ],
+      "clock": [
+        308.7487981021404,
+        433.306640625,
+        331.24399131536484,
+        444.509033203125
+      ],
+      "play_clock": [
+        343.0647841691971,
+        434.5499267578125,
+        347.28262972831726,
+        442.4326171875
+      ],
+      "quarter": [
+        289.06593322753906,
+        434.5499267578125,
+        300.87554931640625,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        251.65800094604492,
+        444.0860595703125,
+        257.2816276550293,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        364.99759781360626,
+        444.0860595703125,
+        370.621395111084,
+        446.5726318359375
+      ],
+      "down": [
+        302.7032279968262,
+        412.1451416015625,
+        337.28957509994507,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 32,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 14
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "timeouts_2_169": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 2,
+      "home_timeouts": 2,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        257.0004463195801,
+        416.2979736328125,
+        268.2476997375488,
+        438.27978515625
+      ],
+      "home_score": [
+        370.621395111084,
+        416.2979736328125,
+        381.86898970603943,
+        438.27978515625
+      ],
+      "clock": [
+        308.7487981021404,
+        433.306640625,
+        331.24399131536484,
+        444.509033203125
+      ],
+      "play_clock": [
+        343.0647841691971,
+        434.5499267578125,
+        347.28262972831726,
+        442.4326171875
+      ],
+      "quarter": [
+        289.06593322753906,
+        434.5499267578125,
+        300.87554931640625,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        251.65800094604492,
+        444.0860595703125,
+        265.71706771850586,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        364.99759781360626,
+        444.0860595703125,
+        379.057092666626,
+        446.5726318359375
+      ],
+      "down": [
+        302.7032279968262,
+        412.1451416015625,
+        337.28957509994507,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 34,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 18
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "timeouts_3_169": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        257.0004463195801,
+        416.2979736328125,
+        268.2476997375488,
+        438.27978515625
+      ],
+      "home_score": [
+        370.621395111084,
+        416.2979736328125,
+        381.86898970603943,
+        438.27978515625
+      ],
+      "clock": [
+        308.7487981021404,
+        433.306640625,
+        331.24399131536484,
+        444.509033203125
+      ],
+      "play_clock": [
+        343.0647841691971,
+        434.5499267578125,
+        347.28262972831726,
+        442.4326171875
+      ],
+      "quarter": [
+        289.06593322753906,
+        434.5499267578125,
+        300.87554931640625,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        251.65800094604492,
+        444.0860595703125,
+        274.1525077819824,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        364.99759781360626,
+        444.0860595703125,
+        387.49279022216797,
+        446.5726318359375
+      ],
+      "down": [
+        302.7032279968262,
+        412.1451416015625,
+        337.28957509994507,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 36,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "flag_169": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "FLAG",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        257.0004463195801,
+        416.2979736328125,
+        268.2476997375488,
+        438.27978515625
+      ],
+      "home_score": [
+        370.621395111084,
+        416.2979736328125,
+        381.86898970603943,
+        438.27978515625
+      ],
+      "clock": [
+        308.7487981021404,
+        433.306640625,
+        331.24399131536484,
+        444.509033203125
+      ],
+      "play_clock": [
+        343.0647841691971,
+        434.5499267578125,
+        347.28262972831726,
+        442.4326171875
+      ],
+      "quarter": [
+        289.06593322753906,
+        434.5499267578125,
+        300.87554931640625,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        251.65800094604492,
+        444.0860595703125,
+        274.1525077819824,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        364.99759781360626,
+        444.0860595703125,
+        387.49279022216797,
+        446.5726318359375
+      ]
+    },
+    "retail_draws": [
+      {
+        "text": "FLAG",
+        "font": "font4",
+        "quads": 4
+      }
+    ],
+    "sprite_quads": 31,
+    "winding": {
+      "bscore_buga2": {
+        "positive": 0,
+        "negative": 2
+      },
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 12
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "fumble_169": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "FUMBLE",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        257.0004463195801,
+        416.2979736328125,
+        268.2476997375488,
+        438.27978515625
+      ],
+      "home_score": [
+        370.621395111084,
+        416.2979736328125,
+        381.86898970603943,
+        438.27978515625
+      ],
+      "clock": [
+        308.7487981021404,
+        433.306640625,
+        331.24399131536484,
+        444.509033203125
+      ],
+      "quarter": [
+        289.06593322753906,
+        434.5499267578125,
+        300.87554931640625,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        251.65800094604492,
+        444.0860595703125,
+        274.1525077819824,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        364.99759781360626,
+        444.0860595703125,
+        387.49279022216797,
+        446.5726318359375
+      ]
+    },
+    "retail_draws": [
+      {
+        "text": "FUMBLE",
+        "font": "font4",
+        "quads": 6
+      }
+    ],
+    "sprite_quads": 30,
+    "winding": {
+      "bscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 16
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 12
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "hang_time_169": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "hang time",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        257.0004463195801,
+        416.2979736328125,
+        268.2476997375488,
+        438.27978515625
+      ],
+      "home_score": [
+        370.621395111084,
+        416.2979736328125,
+        381.86898970603943,
+        438.27978515625
+      ],
+      "clock": [
+        308.7487981021404,
+        433.306640625,
+        331.24399131536484,
+        444.509033203125
+      ],
+      "play_clock": [
+        343.0647841691971,
+        434.5499267578125,
+        347.28262972831726,
+        442.4326171875
+      ],
+      "quarter": [
+        289.06593322753906,
+        434.5499267578125,
+        300.87554931640625,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        251.65800094604492,
+        444.0860595703125,
+        274.1525077819824,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        364.99759781360626,
+        444.0860595703125,
+        387.49279022216797,
+        446.5726318359375
+      ]
+    },
+    "retail_draws": [
+      {
+        "text": "Hangtime: 0.0",
+        "font": "font4",
+        "quads": 12
+      }
+    ],
+    "sprite_quads": 31,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 12
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      },
+      "zz_ESPN_bug1": {
+        "positive": 0,
+        "negative": 2
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "ball_on_169": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "ball on",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        257.0004463195801,
+        416.2979736328125,
+        268.2476997375488,
+        438.27978515625
+      ],
+      "home_score": [
+        370.621395111084,
+        416.2979736328125,
+        381.86898970603943,
+        438.27978515625
+      ],
+      "clock": [
+        308.7487981021404,
+        433.306640625,
+        331.24399131536484,
+        444.509033203125
+      ],
+      "play_clock": [
+        343.0647841691971,
+        434.5499267578125,
+        347.28262972831726,
+        442.4326171875
+      ],
+      "quarter": [
+        289.06593322753906,
+        434.5499267578125,
+        300.87554931640625,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        251.65800094604492,
+        444.0860595703125,
+        274.1525077819824,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        364.99759781360626,
+        444.0860595703125,
+        387.49279022216797,
+        446.5726318359375
+      ]
+    },
+    "retail_draws": [
+      {
+        "text": "Ball at Midfield",
+        "font": "font4",
+        "quads": 14
+      }
+    ],
+    "sprite_quads": 31,
+    "winding": {
+      "bscore_buga1": {
+        "positive": 0,
+        "negative": 2
+      },
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 12
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "score_slabs_169": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "score slabs",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        257.0004463195801,
+        416.2979736328125,
+        268.2476997375488,
+        438.27978515625
+      ],
+      "home_score": [
+        370.621395111084,
+        416.2979736328125,
+        381.86898970603943,
+        438.27978515625
+      ],
+      "clock": [
+        308.7487981021404,
+        433.306640625,
+        331.24399131536484,
+        444.509033203125
+      ],
+      "play_clock": [
+        343.0647841691971,
+        434.5499267578125,
+        347.28262972831726,
+        442.4326171875
+      ],
+      "quarter": [
+        289.06593322753906,
+        434.5499267578125,
+        300.87554931640625,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        251.65800094604492,
+        444.0860595703125,
+        274.1525077819824,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        364.99759781360626,
+        444.0860595703125,
+        387.49279022216797,
+        446.5726318359375
+      ],
+      "down": [
+        302.7032279968262,
+        412.1451416015625,
+        337.28957509994507,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 36,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  },
+  "hidden_play_clock_169": {
+    "state": {
+      "away": "DEN",
+      "home": "KC",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 4,
+      "down": 3,
+      "distance": 10,
+      "possession": "home",
+      "event": "hidden play clock",
+      "goal_to_go": false
+    },
+    "glyph_boxes": {
+      "away_score": [
+        257.0004463195801,
+        416.2979736328125,
+        268.2476997375488,
+        438.27978515625
+      ],
+      "home_score": [
+        370.621395111084,
+        416.2979736328125,
+        381.86898970603943,
+        438.27978515625
+      ],
+      "clock": [
+        308.7487981021404,
+        433.306640625,
+        331.24399131536484,
+        444.509033203125
+      ],
+      "quarter": [
+        289.06593322753906,
+        434.5499267578125,
+        300.87554931640625,
+        442.4326171875
+      ],
+      "away_timeouts": [
+        251.65800094604492,
+        444.0860595703125,
+        274.1525077819824,
+        446.5726318359375
+      ],
+      "home_timeouts": [
+        364.99759781360626,
+        444.0860595703125,
+        387.49279022216797,
+        446.5726318359375
+      ],
+      "down": [
+        302.7032279968262,
+        412.1451416015625,
+        337.28957509994507,
+        421.6812744140625
+      ]
+    },
+    "retail_draws": [],
+    "sprite_quads": 35,
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 16
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      }
+    },
+    "runtime_witnessed": false
+  }
+}

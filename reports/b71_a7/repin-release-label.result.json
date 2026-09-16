@@ -1,0 +1,12 @@
+{
+  "name": "repin-release-label",
+  "argv": [
+    "python3",
+    "packaging/repin.py",
+    "--apply"
+  ],
+  "started": "2026-09-16T00:19:01.441217+00:00",
+  "ended": "2026-09-16T00:19:11.716561+00:00",
+  "seconds": 10.275,
+  "exit_code": 0
+}

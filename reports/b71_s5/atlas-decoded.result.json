@@ -1,0 +1,11 @@
+{
+  "name": "atlas-decoded",
+  "argv": [
+    "python3",
+    "reports/b71_s5/prove_atlas.py"
+  ],
+  "start_utc": "2026-09-16T03:05:45.175987+00:00",
+  "end_utc": "2026-09-16T03:05:52.677740+00:00",
+  "seconds": 7.502,
+  "exit_code": 0
+}

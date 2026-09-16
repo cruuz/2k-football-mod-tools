@@ -1,0 +1,942 @@
+[
+  {
+    "path": "tests/mod_editor/test_apf_audio_annotation_facade.py",
+    "receipt": "final-test_apf_audio_annotation_facade.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf2k8_playbook_route_writer.py",
+    "receipt": "final-test_apf2k8_playbook_route_writer.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_batch_export.py",
+    "receipt": "final-test_apf_audio_batch_export.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_annotations.py",
+    "receipt": "final-test_apf_audio_annotations.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_batch_facade.py",
+    "receipt": "final-test_apf_audio_batch_facade.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_batch_gui.py",
+    "receipt": "final-test_apf_audio_batch_gui.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_all_crest_slots.py",
+    "receipt": "final-test_apf_all_crest_slots.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_drop_zone_gui.py",
+    "receipt": "final-test_apf_audio_drop_zone_gui.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_encoder_gui.py",
+    "receipt": "final-test_apf_audio_encoder_gui.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf2k8_coverage_tuning.py",
+    "receipt": "final-test_apf2k8_coverage_tuning.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_decode_cancellation.py",
+    "receipt": "final-test_apf_audio_decode_cancellation.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_pcm_product_backend.py",
+    "receipt": "final-test_apf_audio_pcm_product_backend.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_replacement_pack.py",
+    "receipt": "final-test_apf_audio_replacement_pack.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audo_exact_slot.py",
+    "receipt": "final-test_apf_audo_exact_slot.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_waveform_qt.py",
+    "receipt": "final-test_apf_audio_waveform_qt.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audo_product_backend.py",
+    "receipt": "final-test_apf_audo_product_backend.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audo_project.py",
+    "receipt": "final-test_apf_audo_project.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_ausb_product_backend.py",
+    "receipt": "final-test_apf_ausb_product_backend.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_import_idle_barrier.py",
+    "receipt": "final-test_apf_audio_import_idle_barrier.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b661_ladder.py",
+    "receipt": "final-test_apf_b661_ladder.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b66_appearance.py",
+    "receipt": "final-test_apf_b66_appearance.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_audio_encoding.py",
+    "receipt": "final-test_apf_audio_encoding.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b66_personnel.py",
+    "receipt": "final-test_apf_b66_personnel.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_ausb_exact_slot.py",
+    "receipt": "final-test_apf_ausb_exact_slot.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b661_book_content.py",
+    "receipt": "final-test_apf_b661_book_content.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b67_clone.py",
+    "receipt": "final-test_apf_b67_clone.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b67_books_qt.py",
+    "receipt": "final-test_apf_b67_books_qt.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b67_static_audit.py",
+    "receipt": "final-test_apf_b67_static_audit.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b67_writers.py",
+    "receipt": "final-test_apf_b67_writers.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b67_model_edges_native.py",
+    "receipt": "final-test_apf_b67_model_edges_native.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b67_xenia_patch.py",
+    "receipt": "final-test_apf_b67_xenia_patch.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_build.py",
+    "receipt": "final-test_apf_b69_build.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_control_audit.py",
+    "receipt": "final-test_apf_b69_control_audit.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b67_defense_model_native.py",
+    "receipt": "final-test_apf_b67_defense_model_native.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_formation_calling.py",
+    "receipt": "final-test_apf_b69_formation_calling.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_launch_patches.py",
+    "receipt": "final-test_apf_b69_launch_patches.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_editor_qt.py",
+    "receipt": "final-test_apf_b69_editor_qt.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b67_writers_native.py",
+    "receipt": "final-test_apf_b67_writers_native.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_retirement_native.py",
+    "receipt": "final-test_apf_b69_retirement_native.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_wiring.py",
+    "receipt": "final-test_apf_b69_wiring.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_schemes.py",
+    "receipt": "final-test_apf_b69_schemes.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b71_situation_mask.py",
+    "receipt": "final-test_apf_b71_situation_mask.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b71_situation_mask_abi.py",
+    "receipt": "final-test_apf_b71_situation_mask_abi.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b71_situation_mask_install.py",
+    "receipt": "final-test_apf_b71_situation_mask_install.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b70_stock_recipes.py",
+    "receipt": "final-test_apf_b70_stock_recipes.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b71_situation_mask_qt.py",
+    "receipt": "final-test_apf_b71_situation_mask_qt.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b71_situations.py",
+    "receipt": "final-test_apf_b71_situations.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_book_identity_qt.py",
+    "receipt": "final-test_apf_book_identity_qt.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_book_unlock.py",
+    "receipt": "final-test_apf_book_unlock.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_book_unlock_retail.py",
+    "receipt": "final-test_apf_book_unlock_retail.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_browser_workspace_handoff.py",
+    "receipt": "final-test_apf_browser_workspace_handoff.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_build_ausb_overlays.py",
+    "receipt": "final-test_apf_build_ausb_overlays.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_build_raw_span_overlays.py",
+    "receipt": "final-test_apf_build_raw_span_overlays.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_capability_action_parity.py",
+    "receipt": "final-test_apf_capability_action_parity.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_copied_volume_metadata.py",
+    "receipt": "final-test_apf_copied_volume_metadata.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_coverage_research_tools.py",
+    "receipt": "final-test_apf_coverage_research_tools.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_cpu_audibles.py",
+    "receipt": "final-test_apf_cpu_audibles.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_crest_budget_import.py",
+    "receipt": "final-test_apf_crest_budget_import.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_crest_fit.py",
+    "receipt": "final-test_apf_crest_fit.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_cross_domain_audio_safety.py",
+    "receipt": "final-test_apf_cross_domain_audio_safety.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_cubemap_face0_preview.py",
+    "receipt": "final-test_apf_cubemap_face0_preview.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_custom_team_appearance_gui.py",
+    "receipt": "final-test_apf_custom_team_appearance_gui.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_custom_team_appearance_patch.py",
+    "receipt": "final-test_apf_custom_team_appearance_patch.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_defense_research_identity.py",
+    "receipt": "final-test_apf_defense_research_identity.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b71_situation_mask_native.py",
+    "receipt": "final-test_apf_b71_situation_mask_native.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_digital_font.py",
+    "receipt": "final-test_apf_digital_font.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_defense_research_native.py",
+    "receipt": "final-test_apf_defense_research_native.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_dxn_base_only_namefont.py",
+    "receipt": "final-test_apf_dxn_base_only_namefont.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_dxt5a_general_preview.py",
+    "receipt": "final-test_apf_dxt5a_general_preview.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_export.py",
+    "receipt": "final-test_apf_export.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_external_audio_bank_bundle.py",
+    "receipt": "final-test_apf_external_audio_bank_bundle.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_field_art.py",
+    "receipt": "final-test_apf_field_art.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_field_art_gui.py",
+    "receipt": "final-test_apf_field_art_gui.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_endzone_dxt5a.py",
+    "receipt": "final-test_apf_endzone_dxt5a.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_field_art_stock_label.py",
+    "receipt": "final-test_apf_field_art_stock_label.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b69_native.py",
+    "receipt": "final-test_apf_b69_native.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_field_material_project.py",
+    "receipt": "final-test_apf_field_material_project.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_field_material_writer.py",
+    "receipt": "final-test_apf_field_material_writer.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_formation_alignment_writer.py",
+    "receipt": "final-test_apf_formation_alignment_writer.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_fourth_down.py",
+    "receipt": "final-test_apf_fourth_down.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_field_extra_roundtrip.py",
+    "receipt": "final-test_apf_field_extra_roundtrip.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_fourth_down_qt.py",
+    "receipt": "final-test_apf_fourth_down_qt.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_full_shell_visual_gate.py",
+    "receipt": "final-test_apf_full_shell_visual_gate.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_g12_surfaces.py",
+    "receipt": "final-test_apf_g12_surfaces.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_helmet_crest_design_product.py",
+    "receipt": "final-test_apf_helmet_crest_design_product.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_helmet_logo_placement.py",
+    "receipt": "final-test_apf_helmet_logo_placement.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_helmet_logo_regions.py",
+    "receipt": "final-test_apf_helmet_logo_regions.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_helmet_logo_regions_qt.py",
+    "receipt": "final-test_apf_helmet_logo_regions_qt.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_import_offers_resize.py",
+    "receipt": "final-test_apf_import_offers_resize.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_iso_extraction_is_layout_tolerant.py",
+    "receipt": "final-test_apf_iso_extraction_is_layout_tolerant.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_linear_txtr_png.py",
+    "receipt": "final-test_apf_linear_txtr_png.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_logo_patch.py",
+    "receipt": "final-test_apf_logo_patch.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_logo_surface_ownership.py",
+    "receipt": "final-test_apf_logo_surface_ownership.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_fourth_down_native.py",
+    "receipt": "final-test_apf_fourth_down_native.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_mask_preview_alpha.py",
+    "receipt": "final-test_apf_mask_preview_alpha.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_model_export_gui.py",
+    "receipt": "final-test_apf_model_export_gui.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_field_art_patch.py",
+    "receipt": "final-test_apf_field_art_patch.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_number_encode_defaults.py",
+    "receipt": "final-test_apf_number_encode_defaults.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_logocache_patch.py",
+    "receipt": "final-test_apf_logocache_patch.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_package_map_writer.py",
+    "receipt": "final-test_apf_package_map_writer.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_pass_fetch_export_qt.py",
+    "receipt": "final-test_apf_pass_fetch_export_qt.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_model_import.py",
+    "receipt": "final-test_apf_model_import.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_play_designer_project.py",
+    "receipt": "final-test_apf_play_designer_project.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_play_designer_qt.py",
+    "receipt": "final-test_apf_play_designer_qt.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_playbook_route_gui.py",
+    "receipt": "final-test_apf_playbook_route_gui.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_play_designer.py",
+    "receipt": "final-test_apf_play_designer.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_playcall_patch.py",
+    "receipt": "final-test_apf_playcall_patch.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_playcalling_editor_build.py",
+    "receipt": "final-test_apf_playcalling_editor_build.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_playcalling_editor_facade.py",
+    "receipt": "final-test_apf_playcalling_editor_facade.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_playcalling_editor_patches.py",
+    "receipt": "final-test_apf_playcalling_editor_patches.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_playcalling_editor_qt.py",
+    "receipt": "final-test_apf_playcalling_editor_qt.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_player_position_patch.py",
+    "receipt": "final-test_apf_player_position_patch.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_player_position_product_backend.py",
+    "receipt": "final-test_apf_player_position_product_backend.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_player_positions.py",
+    "receipt": "final-test_apf_player_positions.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_b67_model_native.py",
+    "receipt": "final-test_apf_b67_model_native.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_player_rating_patch.py",
+    "receipt": "final-test_apf_player_rating_patch.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_player_rating_product_backend.py",
+    "receipt": "final-test_apf_player_rating_product_backend.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_player_ratings.py",
+    "receipt": "final-test_apf_player_ratings.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_product_findings.py",
+    "receipt": "final-test_apf_product_findings.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_product_findings_gui.py",
+    "receipt": "final-test_apf_product_findings_gui.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_product_validation_wrappers.py",
+    "receipt": "final-test_apf_product_validation_wrappers.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_player_rating_sheet_import.py",
+    "receipt": "final-test_apf_player_rating_sheet_import.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_project_streaming.py",
+    "receipt": "final-test_apf_project_streaming.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_ps3_probes.py",
+    "receipt": "final-test_apf_ps3_probes.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_ps3_roster_convert.py",
+    "receipt": "final-test_apf_ps3_roster_convert.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_ps3_roster_import_qt.py",
+    "receipt": "final-test_apf_ps3_roster_import_qt.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_ps3_speed.py",
+    "receipt": "final-test_apf_ps3_speed.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_project_document_workflow.py",
+    "receipt": "final-test_apf_project_document_workflow.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_ps3_speed_packages.py",
+    "receipt": "final-test_apf_ps3_speed_packages.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_ps3_texture_bundle_qt.py",
+    "receipt": "final-test_apf_ps3_texture_bundle_qt.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_public_docs_registry_current.py",
+    "receipt": "final-test_apf_public_docs_registry_current.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_rating_value_domains.py",
+    "receipt": "final-test_apf_rating_value_domains.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_retail_crest_channel_audit.py",
+    "receipt": "final-test_apf_retail_crest_channel_audit.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_roster_appearance_transfer.py",
+    "receipt": "final-test_apf_roster_appearance_transfer.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_roster_appearance_transfer_qt.py",
+    "receipt": "final-test_apf_roster_appearance_transfer_qt.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_ps3_texture_bundle.py",
+    "receipt": "final-test_apf_ps3_texture_bundle.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_roster_identity_gui.py",
+    "receipt": "final-test_apf_roster_identity_gui.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_roster_workspace.py",
+    "receipt": "final-test_apf_roster_workspace.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_roster_workspace_gui.py",
+    "receipt": "final-test_apf_roster_workspace_gui.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_save_playbook_assignments_gui.py",
+    "receipt": "final-test_apf_save_playbook_assignments_gui.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_roster_identity.py",
+    "receipt": "final-test_apf_roster_identity.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_save_roster_players_gui.py",
+    "receipt": "final-test_apf_save_roster_players_gui.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_scorebug_workspace_qt.py",
+    "receipt": "final-test_apf_scorebug_workspace_qt.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_save_roster_players.py",
+    "receipt": "final-test_apf_save_roster_players.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_splb_add_multiple_formations.py",
+    "receipt": "final-test_apf_splb_add_multiple_formations.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_splb_formation_personnel.py",
+    "receipt": "final-test_apf_splb_formation_personnel.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_playcall_research_native.py",
+    "receipt": "final-test_apf_playcall_research_native.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_splb_writer.py",
+    "receipt": "final-test_apf_splb_writer.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_stadium_material_findings.py",
+    "receipt": "final-test_apf_stadium_material_findings.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_stadium_model_import.py",
+    "receipt": "final-test_apf_stadium_model_import.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_stadium_studio.py",
+    "receipt": "final-test_apf_stadium_studio.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_stadium_studio_gui.py",
+    "receipt": "final-test_apf_stadium_studio_gui.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_splb_tag_reassignment.py",
+    "receipt": "final-test_apf_splb_tag_reassignment.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_stfs_roster_rehash.py",
+    "receipt": "final-test_apf_stfs_roster_rehash.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_studio_audio_gui.py",
+    "receipt": "final-test_apf_studio_audio_gui.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_studio_core.py",
+    "receipt": "final-test_apf_studio_core.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_studio_draft_logo.py",
+    "receipt": "final-test_apf_studio_draft_logo.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_shell_search_accessibility_qt.py",
+    "receipt": "final-test_apf_shell_search_accessibility_qt.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_studio_inspectors.py",
+    "receipt": "final-test_apf_studio_inspectors.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_studio_safety.py",
+    "receipt": "final-test_apf_studio_safety.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_studio_text_edit.py",
+    "receipt": "final-test_apf_studio_text_edit.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_team_art.py",
+    "receipt": "final-test_apf_team_art.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_studio_installer.py",
+    "receipt": "delivery-test_apf_studio_installer.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_team_art_qt.py",
+    "receipt": "final-test_apf_team_art_qt.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_team_crest_selection.py",
+    "receipt": "final-test_apf_team_crest_selection.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_text_sheet_gui.py",
+    "receipt": "final-test_apf_text_sheet_gui.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_textlogo_gui.py",
+    "receipt": "final-test_apf_textlogo_gui.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_team_logo_gui.py",
+    "receipt": "final-test_apf_team_logo_gui.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_number_texture_writer.py",
+    "receipt": "final-test_apf_number_texture_writer.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_uniform_allocation_capacity.py",
+    "receipt": "final-test_apf_uniform_allocation_capacity.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_uniform_equipment_colors.py",
+    "receipt": "final-test_apf_uniform_equipment_colors.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_uniform_equipment_colors_gui.py",
+    "receipt": "final-test_apf_uniform_equipment_colors_gui.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_uniform_independence.py",
+    "receipt": "final-test_apf_uniform_independence.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_theme_layout_qt.py",
+    "receipt": "final-test_apf_theme_layout_qt.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_uniform_inventory_gui.py",
+    "receipt": "final-test_apf_uniform_inventory_gui.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_wordmark_regions.py",
+    "receipt": "final-test_apf_wordmark_regions.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_wave_integration.py",
+    "receipt": "final-test_apf_wave_integration.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_xenia_edge.py",
+    "receipt": "final-test_apf_xenia_edge.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_xenos_4444_mip_layout.py",
+    "receipt": "final-test_apf_xenos_4444_mip_layout.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_xenos_4444_png.py",
+    "receipt": "final-test_apf_xenos_4444_png.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_xenos_extra_formats_png.py",
+    "receipt": "final-test_apf_xenos_extra_formats_png.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_xex_image.py",
+    "receipt": "final-test_apf_xex_image.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_stadium_texture.py",
+    "receipt": "final-test_apf_stadium_texture.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_xma1_wizard_gui.py",
+    "receipt": "final-test_apf_xma1_wizard_gui.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_textlogo_writer.py",
+    "receipt": "final-test_apf_textlogo_writer.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_workspace_recovery.py",
+    "receipt": "final-test_apf_workspace_recovery.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_b69_a1_playcalling.py",
+    "receipt": "final-test_b69_a1_playcalling.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_apf_xex_image_retail.py",
+    "receipt": "final-test_apf_xex_image_retail.result.json",
+    "exit_code": 0
+  }
+]

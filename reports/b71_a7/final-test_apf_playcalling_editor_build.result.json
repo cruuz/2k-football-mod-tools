@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_playcalling_editor_build",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_playcalling_editor_build.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:53:56.899049+00:00",
+  "ended": "2026-09-16T00:55:34.536505+00:00",
+  "seconds": 97.637,
+  "exit_code": 0
+}

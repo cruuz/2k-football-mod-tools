@@ -169,14 +169,14 @@ def _cell(value):
     return "'" + value if value.startswith(("=", "+", "-", "@", "\t", "\r")) else value
 
 
-def spreadsheet(book, master, run_percentage, *, team_name, scheme_id=None):
+def spreadsheet(book, master, run_percentage, *, team_name, scheme_id=None, preview_only=False):
     """CSV of actual staged book predictions, with separate coaching intent."""
     scheme = get_scheme(scheme_id) if scheme_id is not None else None
     stream = io.StringIO(newline="")
     writer = csv.writer(stream, lineterminator="\n")
     writer.writerow(("Team", "Book", "Last applied scheme", "Bucket", "Requested picks (planning only)",
                      "Down", "Distance", "Yards to goal", "Quarter", "Seconds", "Score margin", "Engine row (proxy)",
-                     "Neutral jitter rows", "Scheme intent run % (not a row override)", "Stored team run %",
+                     "Neutral jitter rows", "Scheme intent run % (not a row override)", "Preview run %" if preview_only else "Stored team run %",
                      "Modeled adjusted run %", "Preferred personnel", "Personnel probabilities", "Formation probabilities",
                      "Play probabilities", "Limits"))
     name = splb.parse_book(book, 0).name

@@ -1,0 +1,10 @@
+plate source: (837, 947, 1084, 983)
+wing layout: {'away': {'fade': (230, 231, 232, 233), 'logo': (242, 243, 244, 245), 'collapse': {234: 'A2', 235: 'A2', 236: 'A0', 237: 'A0', 238: 'A0', 239: 'A0', 240: 'A0', 241: 'A0', 246: 'A0', 247: 'A0', 248: 'A0', 249: 'A0', 250: 'A0', 251: 'A0', 252: 'A0', 253: 'A0', 254: 'A0', 255: 'A0', 256: 'A0', 257: 'A0', 258: 'A0', 259: 'A0', 260: 'A0', 261: 'A0'}}, 'home': {'fade': (80, 81, 82, 83), 'logo': (85, 87, 90, 91), 'collapse': {84: 'A3', 86: 'B0', 88: 'A1', 89: 'A1', 92: 'A0', 93: 'A0', 94: 'A0', 95: 'A0'}}}
+capsule anchors: {'quarter': (-29.333333333333314, -22.133333333333326, -4), 'clock_a': (1.0, -22.133333333333326, -4), 'clock_b': (1.0, -22.133333333333326, -4), 'drop_clock': (30.333333333333314, -22.133333333333326, -4)}
+font lookup VA: 0xe6b490 clock resolved words: ['0xa95918', '0xa95940', '0xa95a80'] quarter resolved words: ['0xa958f0']
+font spans: 54080 owner reservation: 1408 128
+UNCHANGED_FROM fable/b71-scorebug-font mod_editor/core/nfl2k5_scorebug_runtime.py 4992a174fe9e47d30dfbe840aa4265a1f878fe20746195d3cbb7859bee6fca6b
+UNCHANGED_FROM fable/b71-color2 mod_editor/core/nfl2k5_modern_color.py 8ad6598a7d1e1aeddf6b430e9b4c9c872af32a198188eca830938c83f137a5cb
+UNCHANGED_FROM fable/b71-color2 data/nfl2k5_modern_color_pins.json 56d7dc81e9b21eeed00ca456a9d8f486966d860912986517871b713b770a8c89
+UNCHANGED_FROM fable/b71-scorebug data/nfl2k5_cave_reservations.json 0194b6416e3243a17cf536742b60a3f354cc1d530078d3ff50276bdcccefe71a
+Changed production code has no conflict markers: True

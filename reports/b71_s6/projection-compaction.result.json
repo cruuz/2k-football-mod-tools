@@ -1,0 +1,11 @@
+{
+  "name": "projection-compaction",
+  "argv": [
+    "python3",
+    "reports/b71_s6/compact_projection.py"
+  ],
+  "start_utc": "2026-09-16T06:37:34.167526+00:00",
+  "end_utc": "2026-09-16T06:37:34.709551+00:00",
+  "seconds": 0.542,
+  "exit_code": 0
+}

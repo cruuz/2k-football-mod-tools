@@ -1,0 +1,16 @@
+test_a_batch_edit_goes_through_the_domain_check (__main__.ValueDomainTests.test_a_batch_edit_goes_through_the_domain_check)
+``normalize_replacements`` is the CSV and GUI batch route. ... ok
+test_an_index_byte_refuses_an_unobserved_value (__main__.ValueDomainTests.test_an_index_byte_refuses_an_unobserved_value) ... ok
+test_an_ordinary_rating_still_takes_any_exact_0_to_99 (__main__.ValueDomainTests.test_an_ordinary_rating_still_takes_any_exact_0_to_99) ... ok
+test_an_unknown_field_id_is_refused (__main__.ValueDomainTests.test_an_unknown_field_id_is_refused) ... ok
+test_every_recorded_stock_value_set_is_ascending_and_in_range (__main__.ValueDomainTests.test_every_recorded_stock_value_set_is_ascending_and_in_range) ... ok
+test_only_the_style_enum_is_restricted (__main__.ValueDomainTests.test_only_the_style_enum_is_restricted)
+Exactly one byte is a fixed set.  Restricting more would cost capability. ... ok
+test_the_constants_are_recorded_but_not_blocked (__main__.ValueDomainTests.test_the_constants_are_recorded_but_not_blocked)
+Pointless is not the same as dangerous. ... ok
+test_the_range_check_still_applies_to_every_field (__main__.ValueDomainTests.test_the_range_check_still_applies_to_every_field) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.001s
+
+OK

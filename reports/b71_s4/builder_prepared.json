@@ -1,0 +1,12 @@
+{
+  "builder_sha256": "4f9e909164b1620456bb99257b579e5737bb084ad3fc803386827ee3ae2a1402",
+  "static_syntax_valid": true,
+  "executed": false,
+  "NAME": "NFL 2K5 MOD TEST 2026-09-15j (painted bar + colour + widescreen)",
+  "OPTIONS": [
+    "scorebug",
+    "scorebug_runtime",
+    "modern_color",
+    "widescreen"
+  ]
+}

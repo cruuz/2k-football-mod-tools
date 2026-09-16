@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_splb_add_multiple_formations",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_splb_add_multiple_formations.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:57:43.148734+00:00",
+  "ended": "2026-09-16T00:57:43.774686+00:00",
+  "seconds": 0.626,
+  "exit_code": 0
+}

@@ -1,0 +1,20 @@
+test_both_accepted_spellings_agree (__main__.ColourParsingTests.test_both_accepted_spellings_agree) ... ok
+test_junk_is_refused (__main__.ColourParsingTests.test_junk_is_refused) ... ok
+test_gui_is_searchable_and_truthful_about_shared_word_zero (__main__.ControlSurfaceTests.test_gui_is_searchable_and_truthful_about_shared_word_zero) ... ok
+test_session_facade_gui_and_build_use_the_same_per_set_contract (__main__.ControlSurfaceTests.test_session_facade_gui_and_build_use_the_same_per_set_contract) ... ok
+test_the_colours_tab_mounts_the_control (__main__.ControlSurfaceTests.test_the_colours_tab_mounts_the_control) ... ok
+test_selected_home_and_away_sets_keep_independent_colours (__main__.GuiInteractionTests.test_selected_home_and_away_sets_keep_independent_colours) ... ok
+test_build_project_accepts_multiple_sets_but_refuses_a_duplicate (__main__.ProjectSchemaTests.test_build_project_accepts_multiple_sets_but_refuses_a_duplicate) ... ok
+test_shareable_archive_roundtrips_logical_rows_and_rejects_tampering (__main__.ProjectSchemaTests.test_shareable_archive_roundtrips_logical_rows_and_rejects_tampering) ... ok
+test_no_op_and_wrong_full_pack_fingerprint_are_refused (__main__.RealComposedWriterTests.test_no_op_and_wrong_full_pack_fingerprint_are_refused) ... skipped 'retail 2K5 source XISO not present'
+test_one_set_emits_exactly_one_eight_byte_provenance_bound_span (__main__.RealComposedWriterTests.test_one_set_emits_exactly_one_eight_byte_provenance_bound_span) ... skipped 'retail 2K5 source XISO not present'
+test_every_catalog_set_resolves_to_one_unique_physical_record (__main__.RealRecordResolutionTests.test_every_catalog_set_resolves_to_one_unique_physical_record) ... ok
+test_missing_selector_and_bad_pack_provenance_fail_closed (__main__.RealRecordResolutionTests.test_missing_selector_and_bad_pack_provenance_fail_closed) ... ok
+test_patching_one_record_preserves_both_neighbours_byte_exact (__main__.RealRecordResolutionTests.test_patching_one_record_preserves_both_neighbours_byte_exact) ... ok
+test_the_old_global_offsets_are_detroit_home_and_away (__main__.RealRecordResolutionTests.test_the_old_global_offsets_are_detroit_home_and_away) ... ok
+test_session_save_load_and_undo_preserve_the_selected_set (__main__.RealSessionRoundTripTests.test_session_save_load_and_undo_preserve_the_selected_set) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 8.558s
+
+OK (skipped=2)

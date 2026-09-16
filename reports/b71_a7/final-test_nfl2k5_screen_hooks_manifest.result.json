@@ -1,0 +1,12 @@
+{
+  "name": "final-test_nfl2k5_screen_hooks_manifest",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_nfl2k5_screen_hooks_manifest.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:32:11.635784+00:00",
+  "ended": "2026-09-16T00:32:15.995148+00:00",
+  "seconds": 4.359,
+  "exit_code": 0
+}

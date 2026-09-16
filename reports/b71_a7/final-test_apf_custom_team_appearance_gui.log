@@ -1,0 +1,10 @@
+test_eagles_preset_preserves_helmet_assets_and_stages_project (__main__.CustomTeamAppearanceGuiTests.test_eagles_preset_preserves_helmet_assets_and_stages_project) ... ok
+test_panel_has_only_safe_slots_and_exact_banks (__main__.CustomTeamAppearanceGuiTests.test_panel_has_only_safe_slots_and_exact_banks) ... ok
+test_raw_save_mode_loads_runtime_slots_without_staging_project (__main__.CustomTeamAppearanceGuiTests.test_raw_save_mode_loads_runtime_slots_without_staging_project) ... ok
+test_stfs_mode_exposes_verified_slots_and_raw_handoff_only (__main__.CustomTeamAppearanceGuiTests.test_stfs_mode_exposes_verified_slots_and_raw_handoff_only) ... ok
+test_unloaded_panel_never_enables_mutation (__main__.CustomTeamAppearanceGuiTests.test_unloaded_panel_never_enables_mutation) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.126s
+
+OK

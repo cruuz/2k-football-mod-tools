@@ -1,0 +1,69 @@
+{
+  "asset_id": "tset:3800:4:0:socks00",
+  "set_selector": "22H2",
+  "seed": 71,
+  "speckles": 34,
+  "authored_rgba_sha256": "177bef6023ec297ef5e8feeeb930c15ab8a5432a8a2497ac0d677b63f038de4a",
+  "budget": 6784,
+  "greedy_bytes": 6785,
+  "optimal_bytes": 6764,
+  "strategy": "optimal_token_parse",
+  "helper": "/home/noah/2k-worktrees/astra-b71-t4/tools/nfl2k5_equipment_optimal",
+  "native_calls": 1,
+  "beta69_filled_bytes": 6768,
+  "beta69_palette_limit": 2,
+  "span_bytes": 6816,
+  "wrapper_14_preserved": true,
+  "beta70": {
+    "error": "Equipment art cannot fit: it missed the 6,784-byte span by 220 bytes (7,004 bytes required at the smallest measured encoding). No fitting smaller size was established in the bounded check. Simplify the artwork and import it again.",
+    "attempts": [
+      {
+        "maximum_palette_entries": 256,
+        "palette_entries": {
+          "0": 32
+        },
+        "result": "vc_lz_overflow",
+        "required_bytes": 7106,
+        "required_is_lower_bound": false
+      },
+      {
+        "maximum_palette_entries": 16,
+        "palette_entries": {
+          "0": 16
+        },
+        "result": "vc_lz_overflow",
+        "required_bytes": 7004,
+        "required_is_lower_bound": false
+      }
+    ]
+  },
+  "beta70_without_stripe_floor": {
+    "filled_bytes": 6768,
+    "palette_limit": 2
+  },
+  "beta70_old_quantizer_only": {
+    "error": "Equipment art cannot fit: it missed the 6,784-byte span by 223 bytes (7,007 bytes required at the smallest measured encoding). No fitting smaller size was established in the bounded check. Simplify the artwork and import it again.",
+    "attempts": [
+      {
+        "maximum_palette_entries": 256,
+        "palette_entries": {
+          "0": 32
+        },
+        "result": "vc_lz_overflow",
+        "required_bytes": 7106,
+        "required_is_lower_bound": false
+      },
+      {
+        "maximum_palette_entries": 16,
+        "palette_entries": {
+          "0": 16
+        },
+        "result": "vc_lz_overflow",
+        "required_bytes": 7007,
+        "required_is_lower_bound": false
+      }
+    ]
+  },
+  "project": "one-byte.2k5mod",
+  "in_game_outcome": "UNWITNESSED"
+}

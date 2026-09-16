@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_xenos_4444_mip_layout",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_xenos_4444_mip_layout.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:58:41.360872+00:00",
+  "ended": "2026-09-16T00:58:43.306302+00:00",
+  "seconds": 1.945,
+  "exit_code": 0
+}

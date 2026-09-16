@@ -25,7 +25,7 @@ def write_json(path,value):
 def apply_copy(source: Path,target: Path, *, overwrite: bool=False, runtime: bool=False, with_kickoff: bool=False,
                runtime_probe: str | None = None):
     runtime = runtime or runtime_probe is not None
-    probe = runtime_probe or "full"
+    probe = runtime_probe or "sprite"
     if with_kickoff and not runtime:
         raise r.ScorebugError("relocated kickoff requires --runtime")
     source=source.resolve(strict=True)
@@ -193,7 +193,7 @@ def main(argv=None):
             receipts=stage(args.source,args.output)
             print(f"Staged {len(receipts)} panels. Runtime binding is not installed.")
         elif args.command=="status":
-            print(r.runtime_image_status(args.source,probe=args.runtime_probe or "full")
+            print(r.runtime_image_status(args.source,probe=args.runtime_probe or "sprite")
                   if args.runtime or args.runtime_probe else r.image_status(args.source))
         else:
             span=args.span.read_bytes()

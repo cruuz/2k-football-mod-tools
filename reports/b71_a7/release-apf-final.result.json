@@ -1,0 +1,14 @@
+{
+  "name": "release-apf-final",
+  "argv": [
+    "env",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "python3",
+    "packaging/check_apf2k8_mod_studio_release.py",
+    "/home/noah/2k-worktrees/astra-b71-a7/.scratch/a7-release-apf"
+  ],
+  "started": "2026-09-16T01:24:53.234278+00:00",
+  "ended": "2026-09-16T01:24:53.618879+00:00",
+  "seconds": 0.385,
+  "exit_code": 0
+}

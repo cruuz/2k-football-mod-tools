@@ -1,0 +1,11 @@
+{
+  "name": "test_nfl2k5_scorebug_assets-rerun",
+  "command": [
+    "python3",
+    "tests/mod_editor/test_nfl2k5_scorebug_assets.py"
+  ],
+  "start": "2026-09-15T20:52:06.844121+00:00",
+  "end": "2026-09-15T20:54:40.967949+00:00",
+  "seconds": 154.124,
+  "exit": 0
+}

@@ -1,0 +1,11 @@
+test_accessor_cannot_read_past_its_declared_buffer_view (__main__.ImportBoundaryTests.test_accessor_cannot_read_past_its_declared_buffer_view) ... ok
+test_boundary_names_every_preserved_unsupported_lane (__main__.ImportBoundaryTests.test_boundary_names_every_preserved_unsupported_lane) ... ok
+test_publisher_copies_then_patches_a_tiny_new_volume (__main__.ImportBoundaryTests.test_publisher_copies_then_patches_a_tiny_new_volume) ... ok
+test_changed_topology_and_material_are_rejected (__main__.PrivateRoundTripTests.test_changed_topology_and_material_are_rejected) ... ok
+test_one_position_change_rebuilds_only_position_xyz (__main__.PrivateRoundTripTests.test_one_position_change_rebuilds_only_position_xyz) ... ok
+test_unmodified_export_is_whole_entry_no_op (__main__.PrivateRoundTripTests.test_unmodified_export_is_whole_entry_no_op) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 54.090s
+
+OK

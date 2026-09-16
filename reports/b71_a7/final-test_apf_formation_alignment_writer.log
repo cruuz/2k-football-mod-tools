@@ -1,0 +1,49 @@
+test_bad_category_or_slot_is_refused (__main__.CategoryTests.test_bad_category_or_slot_is_refused) ... ok
+test_depth_order_lists_slots_by_stored_ordinal (__main__.CategoryTests.test_depth_order_lists_slots_by_stored_ordinal) ... ok
+test_role_and_depth_split_at_bit_five (__main__.CategoryTests.test_role_and_depth_split_at_bit_five) ... ok
+test_compile_applies_every_change_and_reports_ranges (__main__.CompileTests.test_compile_applies_every_change_and_reports_ranges) ... ok
+test_duplicate_formations_are_refused (__main__.CompileTests.test_duplicate_formations_are_refused) ... ok
+test_empty_batch_is_refused (__main__.CompileTests.test_empty_batch_is_refused) ... ok
+test_untouched_formations_stay_byte_identical (__main__.CompileTests.test_untouched_formations_stay_byte_identical) ... ok
+test_copy_makes_no_runtime_or_depth_chart_claim (__main__.HonestyTests.test_copy_makes_no_runtime_or_depth_chart_claim) ... ok
+test_bad_indices_are_refused (__main__.OffsetTests.test_bad_indices_are_refused) ... ok
+test_record_offsets_use_the_declared_table (__main__.OffsetTests.test_record_offsets_use_the_declared_table) ... ok
+test_slot_entry_offsets_match_the_proved_instruction_offsets (__main__.OffsetTests.test_slot_entry_offsets_match_the_proved_instruction_offsets) ... ok
+test_slot_table_fills_the_record_tail_exactly (__main__.OffsetTests.test_slot_table_fills_the_record_tail_exactly) ... ok
+test_patch_keeps_the_body_size (__main__.PatchTests.test_patch_keeps_the_body_size) ... ok
+test_patch_touches_only_the_named_formation (__main__.PatchTests.test_patch_touches_only_the_named_formation) ... ok
+test_verifier_catches_a_wrong_entry_inside_the_region (__main__.PatchTests.test_verifier_catches_a_wrong_entry_inside_the_region) ... ok
+test_verifier_catches_a_wrong_order_byte (__main__.PatchTests.test_verifier_catches_a_wrong_order_byte) ... ok
+test_verifier_catches_drift_outside_the_region (__main__.PatchTests.test_verifier_catches_drift_outside_the_region) ... ok
+test_bad_payloads_fail_closed (__main__.PayloadTests.test_bad_payloads_fail_closed) ... ok
+test_change_rejects_short_lists (__main__.PayloadTests.test_change_rejects_short_lists) ... ok
+test_round_trip (__main__.PayloadTests.test_round_trip) ... ok
+test_selector_shape (__main__.PayloadTests.test_selector_shape) ... ok
+test_identity_permutation_is_a_no_op_change (__main__.PermutationTests.test_identity_permutation_is_a_no_op_change) ... ok
+test_no_slot_sentinel_passes_through_the_order_lists (__main__.PermutationTests.test_no_slot_sentinel_passes_through_the_order_lists) ... ok
+test_non_permutations_are_refused (__main__.PermutationTests.test_non_permutations_are_refused) ... ok
+test_permutation_moves_entries_and_remaps_both_lists (__main__.PermutationTests.test_permutation_moves_entries_and_remaps_both_lists) ... ok
+test_ranking_permutation_lines_ordinals_up_with_fill_order (__main__.PermutationTests.test_ranking_permutation_lines_ordinals_up_with_fill_order) ... ok
+test_ranking_permutation_needs_two_slots_of_the_role (__main__.PermutationTests.test_ranking_permutation_needs_two_slots_of_the_role) ... ok
+test_swap_helper_builds_the_same_change (__main__.PermutationTests.test_swap_helper_builds_the_same_change) ... ok
+test_swap_refuses_reused_or_degenerate_pairs (__main__.PermutationTests.test_swap_refuses_reused_or_degenerate_pairs) ... ok
+test_default_category_is_the_stored_byte_over_four (__main__.ReadTests.test_default_category_is_the_stored_byte_over_four) ... ok
+test_out_of_range_formation_is_refused (__main__.ReadTests.test_out_of_range_formation_is_refused) ... ok
+test_reads_both_order_lists (__main__.ReadTests.test_reads_both_order_lists) ... ok
+test_reads_eleven_entries (__main__.ReadTests.test_reads_eleven_entries) ... ok
+test_short_body_is_refused (__main__.ReadTests.test_short_body_is_refused) ... ok
+test_compile_on_retail_touches_only_the_named_records (__main__.RealApfFormationAlignmentTests.test_compile_on_retail_touches_only_the_named_records) ... ok
+test_every_retail_slot_order_is_a_permutation_of_slots (__main__.RealApfFormationAlignmentTests.test_every_retail_slot_order_is_a_permutation_of_slots) ... ok
+test_gun_empty_open_ranking_permutation (__main__.RealApfFormationAlignmentTests.test_gun_empty_open_ranking_permutation) ... ok
+test_gun_split_spread_ranking_permutation_swaps_wr1_and_wr3 (__main__.RealApfFormationAlignmentTests.test_gun_split_spread_ranking_permutation_swaps_wr1_and_wr3) ... ok
+test_i_load_and_heavy_share_one_personnel_category (__main__.RealApfFormationAlignmentTests.test_i_load_and_heavy_share_one_personnel_category) ... ok
+test_i_load_permutation_reproduces_retail_heavy_order_lists (__main__.RealApfFormationAlignmentTests.test_i_load_permutation_reproduces_retail_heavy_order_lists) ... ok
+test_retail_i_load_and_heavy_order_lists (__main__.RealApfFormationAlignmentTests.test_retail_i_load_and_heavy_order_lists) ... ok
+test_position_id_is_the_tag_high_nibble (__main__.SlotAlignmentTests.test_position_id_is_the_tag_high_nibble) ... ok
+test_round_trip_is_byte_exact (__main__.SlotAlignmentTests.test_round_trip_is_byte_exact) ... ok
+test_strict_types (__main__.SlotAlignmentTests.test_strict_types) ... ok
+
+----------------------------------------------------------------------
+Ran 44 tests in 0.215s
+
+OK

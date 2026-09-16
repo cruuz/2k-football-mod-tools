@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s6/reports/b71_s6/regenerate_pins.py", line 3, in <module>
+    from nfl2k5_scorebug_exact import Build,compiler_pins
+ModuleNotFoundError: No module named 'nfl2k5_scorebug_exact'

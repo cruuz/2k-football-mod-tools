@@ -1,0 +1,10 @@
+{
+  "command": [
+    "python3",
+    "tests/mod_editor/test_discord_bugs_1.py"
+  ],
+  "start_utc": "2026-09-15T21:12:44.394122+00:00",
+  "end_utc": "2026-09-15T21:12:46.635173+00:00",
+  "seconds": 2.241,
+  "exit_code": 0
+}

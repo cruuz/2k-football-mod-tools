@@ -18,6 +18,7 @@ from mod_editor.apf_studio.models import ApfSource
 from mod_editor.apf_studio.session import ApfSession
 from mod_editor.apf_studio import playcalling_service as service
 from mod_editor.core import apf2k8_splb_writer as splb, apf2k8_book_clone as clone, apf2k8_audibles as audibles
+from mod_editor.core import apf2k8_playcall_model as model
 from tests.mod_editor.test_apf_cpu_audibles import book_bytes, metadata
 
 
@@ -68,7 +69,12 @@ class FakeBackend:
         self.splb.row_coverage = lambda book, master: {i: (() if self.holes and i in (8, 9, 10) else (3,)) for i in range(11)}
         self.tendency = NS(team_tendency=lambda rost, team: rost[team], set_team_tendency=lambda rost, team, value: rost[:team] + bytes([value]) + rost[team+1:])
         self.master = NS(set_category_row=self.set_row, set_category_roles=self.set_roles, verify_master=lambda data: None)
-        self.model = NS(Situation=lambda **kwargs: NS(**kwargs), predict_offense=self.offense, predict_defense=self.defense,
+        self.model = NS(Situation=model.Situation, predict_offense=self.offense, predict_defense=self.defense,
+                        requested_offense_row=model.requested_offense_row, requested_defense_row=model.requested_defense_row,
+                        situation_candidates=lambda book, master, situation, **kwargs: [
+                            dict(formation=r.formation_index, category=r.category_index, personnel="Synthetic personnel",
+                                 tight_ends=2, category_weight=1., formation_weight=1., primary=True)
+                            for r in splb.parse_book(book, 0).records if r.populated],
                         category_table=self.categories, personnel_roles=lambda master, category: self.categories(master)[category].roles)
         self.clone = NS(own_book_plan=self.plan, CloneRequest=clone.CloneRequest, clone_body=clone.clone_body, bind_roster=self.bind)
         self.audibles = NS(plan_audibles=audibles.plan_audibles, play_catalog=lambda master: metadata())

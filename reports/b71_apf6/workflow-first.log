@@ -1,0 +1,70 @@
+..E..E...F
+======================================================================
+ERROR: test_confirm_calls_existing_review_with_identical_inputs_for_every_control (__main__.WorkflowTests.test_confirm_calls_existing_review_with_identical_inputs_for_every_control) (kind='play_rating')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-apf6/tests/mod_editor/test_apf_b71_editor_workflow.py", line 80, in test_confirm_calls_existing_review_with_identical_inputs_for_every_control
+    expected = engine.review(self.facade.session, request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-apf6/mod_editor/apf_studio/playcalling_service.py", line 585, in review
+    after, event = self.apply(state, request, session.source.index_0a)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-apf6/mod_editor/apf_studio/playcalling_service.py", line 463, in apply
+    before = self.facts(state, request)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-apf6/mod_editor/apf_studio/playcalling_service.py", line 449, in facts
+    return b.splb.play_rating(book, request["formation"], request["play"])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-apf6/tests/mod_editor/test_apf_playcalling_editor_facade.py", line 64, in <lambda>
+    self.splb.play_rating = lambda book, form, play: next(e.x for e in self.record(book, form).entries if e.play_index == play)
+                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+StopIteration
+
+======================================================================
+ERROR: test_master_interaction_rechecks_final_coverage (__main__.WorkflowTests.test_master_interaction_rechecks_final_coverage)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-apf6/tests/mod_editor/test_apf_b71_editor_workflow.py", line 151, in test_master_interaction_rechecks_final_coverage
+    result = self.facade.confirm_playcalling([
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-apf6/mod_editor/apf_studio/facade.py", line 218, in confirm_playcalling
+    result = self._playcalling.confirm(self.require_session(), requests)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-apf6/mod_editor/apf_studio/playcalling_service.py", line 674, in confirm
+    review = self.review(session, request, state=state)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-apf6/mod_editor/apf_studio/playcalling_service.py", line 585, in review
+    after, event = self.apply(state, request, session.source.index_0a)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-apf6/mod_editor/apf_studio/playcalling_service.py", line 533, in apply
+    result = b.splb.remove_formation(book, request["formation"])
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-apf6/tests/mod_editor/test_apf_playcalling_editor_facade.py", line 134, in remove
+    return NS(book=bytes(data), retired_categories=(3,), row_coverage=self.splb.row_coverage(data, b""))
+                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-apf6/tests/mod_editor/test_apf_b71_editor_workflow.py", line 150, in <lambda>
+    self.backend.splb.row_coverage = lambda body, master: {0: (3,) if master[0x48 + 3*16] == 3 else ()}
+                                                                      ~~~~~~^^^^^^^^^^^^^
+IndexError: index out of range
+
+======================================================================
+FAIL: test_warm_63_edits_never_reload_or_replay_prior_rows (__main__.WorkflowTests.test_warm_63_edits_never_reload_or_replay_prior_rows)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-apf6/tests/mod_editor/test_apf_b71_editor_workflow.py", line 100, in test_warm_63_edits_never_reload_or_replay_prior_rows
+    self.assertEqual(self.facade.confirm_playcalling([request])['staged'], [0])
+AssertionError: Lists differ: [] != [0]
+
+Second list contains 1 additional elements.
+First extra element 0:
+0
+
+- []
++ [0]
+?  +
+
+
+----------------------------------------------------------------------
+Ran 10 tests in 1.187s
+
+FAILED (failures=1, errors=2)

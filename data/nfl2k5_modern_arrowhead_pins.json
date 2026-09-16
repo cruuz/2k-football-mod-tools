@@ -1,0 +1,454 @@
+{
+ "schema": "nfl2k5_modern_arrowhead_pins/v1",
+ "venue": "Arrowhead Stadium",
+ "art": {
+  "ad01.png": "50a4de1b1a97a48154f67a133c49542245e73930d822045bd6e5565aa072efd6",
+  "banner_away_team.png": "0aa944c99712d86a50fed9dc283aaa3f6846e7b2d2b894e9b4e5b060fdfd517f",
+  "banner_corp.png": "b9e28d859fee6b67fa9b00e515c7b20b863a105c39251cd1521f5d9428cd03c8",
+  "banner_home_player.png": "e85dbc305a19135dd39b43554e5eb1377d9c356fc19a2283d0795b0d59699304",
+  "banner_home_team.png": "7f36ec9c5fe5ce52b73e71b6f3f7e3f6d3f04f3e6d81bc2821a0b6b81c7d34f4",
+  "center_logo.png": "3b93cd128191027e077e4afefa8c4a72bf8d33442900d438c9412ab4b8287de7",
+  "endzone_L.png": "7c7dd2979d9a9713fc772df306b571a73cd3a7e59830163bfb4e50abb0938ca2",
+  "endzone_M.png": "e93e1a16ba25aa48e82d906aef2ad649f9f376150635991cf9354444aa153f29",
+  "endzone_R.png": "0d8ab60cbd379a515505c5c5d33c12aa8917050f0ae71200319415c867a8dac5",
+  "seat03.png": "c5364f0c12b0f6d5047a226d53f39bdd80b03f32bcf51b4926590717e55233cc",
+  "seat_rows.png": "85c7f77e2287325e081be5a4d31df3f6272691e52570b40452ed73b57229288a",
+  "tarp_red.png": "b57b1e0ae792d80396cdfda2f97de95edf265307f72a3aff14b7a4bab6dbd1e7",
+  "yardfront.png": "27278357d70cfdcbfdac87a65d3223b9d029fe13e5ead211576c1e38d2f4a3ba",
+  "yardside.png": "6f471280c8ebebf2ad3b1f6116186a5b72768e94d432af85e84162d650ebb27d"
+ },
+ "bundles": [
+  {
+   "name": "s13dd.iff",
+   "outer": 3149,
+   "name_id": 3921110205,
+   "size": 1483040,
+   "retail_sha256": "b5bcf870b8c855c5006e5fbe6268851bf18001bdf5d910e8b7d2e5ed93e08642",
+   "applied_sha256": "ed4e634c220cd9516016d327bf483a8b72497ccf76b4db8759a53cbed3c50ba0",
+   "sites": [
+    {
+     "kind": "field",
+     "offset": 0,
+     "size": 200528,
+     "retail": "44b327633a9a4a168f6d4c3857c0daf06eec327ba8921ca406ce2c0424eaae6d",
+     "applied": "e79a8be307f57c80596e72e6b92694af6055fd5aea43c67dcf21b0c5e118020e",
+     "encoded_bytes": 200486,
+     "consumed_cap": 200488,
+     "scratch_after": 16,
+     "textures": [
+      "endzone_L.png",
+      "endzone_M.png",
+      "endzone_R.png",
+      "center_logo.png"
+     ]
+    },
+    {
+     "kind": "stadium",
+     "offset": 438080,
+     "size": 913184,
+     "retail": "c73fe2dd46c809df49033de6c33c062a834eea0d1cbfdcc260d99a1dfa84944c",
+     "applied": "b4ab05b050230697e8ea8c12375b3aa3612245f2b53d248ff8d8ef53238b2f96",
+     "encoded_bytes": 913131,
+     "consumed_cap": 913146,
+     "scratch_after": 96,
+     "textures": [
+      "yardside.png",
+      "yardfront.png",
+      "ad01.png",
+      "seat03.png",
+      "seat_rows.png",
+      "banner_corp.png",
+      "banner_home_team.png",
+      "banner_home_player.png",
+      "banner_away_team.png",
+      "tarp_red.png"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "s13dr.iff",
+   "outer": 3308,
+   "name_id": 3272054034,
+   "size": 1489744,
+   "retail_sha256": "ab585b3dceefe2c073726e66e3baa725f0d5f5fe4fad36d5823edd93c3f2c661",
+   "applied_sha256": "23c77f13a26120655a0d129120d1c29cb047bc263dba5dddb9bc6cc5fcf82da8",
+   "sites": [
+    {
+     "kind": "field",
+     "offset": 0,
+     "size": 215200,
+     "retail": "6b32b12d3b74a177c297bd11c16b606d245cce4313e8827b372fc89061912349",
+     "applied": "e5870dd874925c17212c11da7a876fa8bf41f53bad41fd0e9f7e25c40087af7f",
+     "encoded_bytes": 215150,
+     "consumed_cap": 215166,
+     "scratch_after": 32,
+     "textures": [
+      "endzone_L.png",
+      "endzone_M.png",
+      "endzone_R.png",
+      "center_logo.png"
+     ]
+    },
+    {
+     "kind": "stadium",
+     "offset": 452800,
+     "size": 924240,
+     "retail": "6e80ba69d61b980da17e7abe57c30674b753db2fe77b74b4192e9fa3d7c41da1",
+     "applied": "7e6caae5eb01907e496acee9343ee1b57b86c19e78e802138da9fe8aaafdc0f5",
+     "encoded_bytes": 924181,
+     "consumed_cap": 924195,
+     "scratch_after": 80,
+     "textures": [
+      "yardside.png",
+      "yardfront.png",
+      "ad01.png",
+      "seat03.png",
+      "seat_rows.png",
+      "banner_corp.png",
+      "banner_home_team.png",
+      "banner_home_player.png",
+      "banner_away_team.png",
+      "tarp_red.png"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "s13ds.iff",
+   "outer": 3467,
+   "name_id": 751173164,
+   "size": 1492368,
+   "retail_sha256": "10fd1f8746f6b143af77f077b2f48f50e5ce2bcc258fdf8c82a5473d115d73a9",
+   "applied_sha256": "fc016f01957de4f3c2abe07202163535586b491d90d3752e6b096899297279e6",
+   "sites": [
+    {
+     "kind": "field",
+     "offset": 0,
+     "size": 170720,
+     "retail": "ef15e21a987f6a5b6e695a55044ce421830c9b32100f7219bc21d1d654efc775",
+     "applied": "7b397bb6b32b45b64492c78cb3a32e7b61fb625e65c1db469ed935f365fac19b",
+     "encoded_bytes": 170673,
+     "consumed_cap": 170674,
+     "scratch_after": 16,
+     "textures": [
+      "endzone_L.png",
+      "endzone_M.png",
+      "endzone_R.png",
+      "center_logo.png"
+     ]
+    },
+    {
+     "kind": "stadium",
+     "offset": 402784,
+     "size": 973120,
+     "retail": "7737a3265fb5b34355e6125bc15524da3cd59fedc60e62ccfabc172e85ff210d",
+     "applied": "369193b4956798d11c24f3f1f8114f6b23be0de6023bc8cab2b3df287b3a8c7f",
+     "encoded_bytes": 973065,
+     "consumed_cap": 973073,
+     "scratch_after": 112,
+     "textures": [
+      "yardside.png",
+      "yardfront.png",
+      "ad01.png",
+      "seat03.png",
+      "seat_rows.png",
+      "banner_corp.png",
+      "banner_home_team.png",
+      "banner_home_player.png",
+      "banner_away_team.png",
+      "tarp_red.png"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "s13ad.iff",
+   "outer": 3202,
+   "name_id": 1897141165,
+   "size": 1458688,
+   "retail_sha256": "d3eb28787a5d09f61c9ec6b7f73ff115c3d78e77691ef56ec3256e4274f0658a",
+   "applied_sha256": "dcd9ed5d80a28ab4908ca4f05326858ff9b76c4ac9beb4b7f5101eb11bb9fc05",
+   "sites": [
+    {
+     "kind": "field",
+     "offset": 0,
+     "size": 200608,
+     "retail": "b16d2ed6d009187ca5fed35e3dc7b4ecbfe47f0eeefbdaf1e46b39568d484f8e",
+     "applied": "97ac8a972bf082346c1012dca29fcd44725886b37348077bb7e8b85324128c45",
+     "encoded_bytes": 200562,
+     "consumed_cap": 200565,
+     "scratch_after": 16,
+     "textures": [
+      "endzone_L.png",
+      "endzone_M.png",
+      "endzone_R.png",
+      "center_logo.png"
+     ]
+    },
+    {
+     "kind": "stadium",
+     "offset": 438160,
+     "size": 915536,
+     "retail": "94b704738591633b581e46e2a333d7af6c1f26c1d8d6fb57b8c47cb76e243376",
+     "applied": "f8df10b2118e83120ee14079e21fdfe50d1bc9c3a9b7cb159b3d69c219ed6407",
+     "encoded_bytes": 915489,
+     "consumed_cap": 915503,
+     "scratch_after": 80,
+     "textures": [
+      "yardside.png",
+      "yardfront.png",
+      "ad01.png",
+      "seat03.png",
+      "seat_rows.png",
+      "banner_corp.png",
+      "banner_home_team.png",
+      "banner_home_player.png",
+      "banner_away_team.png",
+      "tarp_red.png"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "s13ar.iff",
+   "outer": 3361,
+   "name_id": 1537532418,
+   "size": 1477344,
+   "retail_sha256": "1932160b5a4550f96574808bc40775466b9a60f71c4fdfc72953b4880aba5f2a",
+   "applied_sha256": "232b1b64486d536d5055aa92d162b58b6ea7e83cfbf36b9fbe2cc439facf727a",
+   "sites": [
+    {
+     "kind": "field",
+     "offset": 0,
+     "size": 215280,
+     "retail": "4adbeb3fd15229c763bf6e5e3eee635eabc0c35958a769e5c9fcb84396305654",
+     "applied": "035c4dd91b952e759675c50509ccef51b77560d6703d24223b12776ec5cb344c",
+     "encoded_bytes": 215228,
+     "consumed_cap": 215242,
+     "scratch_after": 32,
+     "textures": [
+      "endzone_L.png",
+      "endzone_M.png",
+      "endzone_R.png",
+      "center_logo.png"
+     ]
+    },
+    {
+     "kind": "stadium",
+     "offset": 452880,
+     "size": 926368,
+     "retail": "e68f464d65bb8329394b170bea54a87e834347a47906410946d0f7ac4fe6b57e",
+     "applied": "c255afd4f031f880c104f87f8011a0ef9d76d482ff0440622f75603dbd0888d3",
+     "encoded_bytes": 926322,
+     "consumed_cap": 926331,
+     "scratch_after": 80,
+     "textures": [
+      "yardside.png",
+      "yardfront.png",
+      "ad01.png",
+      "seat03.png",
+      "seat_rows.png",
+      "banner_corp.png",
+      "banner_home_team.png",
+      "banner_home_player.png",
+      "banner_away_team.png",
+      "tarp_red.png"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "s13as.iff",
+   "outer": 3520,
+   "name_id": 3026618684,
+   "size": 1486736,
+   "retail_sha256": "ce2be4196c46b1ab76a048670ac3537d5ae20ea08a11b7ba11e9de8e7e8615cd",
+   "applied_sha256": "89ed2f71b81ac86711eda9ea13cd26c965eb47ed541476f2aff45c58c8d00b4b",
+   "sites": [
+    {
+     "kind": "field",
+     "offset": 0,
+     "size": 170768,
+     "retail": "6e42f5a424bb4f4f634c00a7e7e4c6b2024a7e40bb86f3503a3d78b1266ed73d",
+     "applied": "d3e605cbc501892e2992218ce62474456d0c67c6ec891fcaa11b60479991d539",
+     "encoded_bytes": 170724,
+     "consumed_cap": 170725,
+     "scratch_after": 16,
+     "textures": [
+      "endzone_L.png",
+      "endzone_M.png",
+      "endzone_R.png",
+      "center_logo.png"
+     ]
+    },
+    {
+     "kind": "stadium",
+     "offset": 402816,
+     "size": 975472,
+     "retail": "cb0edb550018cbc1692da15a42862965f40aad8fe0b0718eaa7dd17c1ba30c4b",
+     "applied": "a6b02a464a88a3f91ea75bc240f17f672d787162300793be3f27ac69cc4297b2",
+     "encoded_bytes": 975418,
+     "consumed_cap": 975427,
+     "scratch_after": 128,
+     "textures": [
+      "yardside.png",
+      "yardfront.png",
+      "ad01.png",
+      "seat03.png",
+      "seat_rows.png",
+      "banner_corp.png",
+      "banner_home_team.png",
+      "banner_home_player.png",
+      "banner_away_team.png",
+      "tarp_red.png"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "s13nd.iff",
+   "outer": 3255,
+   "name_id": 58756316,
+   "size": 1435760,
+   "retail_sha256": "5592ea6a02995b9f4df8c67fc7043dbe60a0c701c1c05f2364f8e27d2d762f26",
+   "applied_sha256": "f1b351a45a986f415f46d364d86e4bae9d8f2629623cdc510f6c89b33d67631e",
+   "sites": [
+    {
+     "kind": "field",
+     "offset": 0,
+     "size": 200528,
+     "retail": "aff16dcfbbddf63da45481552996c49b72cfc132bcc59748710c138ad8a53a3b",
+     "applied": "978cb3a4e513b89d5075e44b6a26d654aae1bb1d9d5aa8bef778805f8a93bf06",
+     "encoded_bytes": 200488,
+     "consumed_cap": 200490,
+     "scratch_after": 16,
+     "textures": [
+      "endzone_L.png",
+      "endzone_M.png",
+      "endzone_R.png",
+      "center_logo.png"
+     ]
+    },
+    {
+     "kind": "stadium",
+     "offset": 435536,
+     "size": 915808,
+     "retail": "f8293f49ad8a0bd115bb9e1f4a464c428c3495410512de04228268eecba0e54f",
+     "applied": "b025a5539ba677199d5893e172ef8ac135a250eba4f874ef1f6fe486f1965499",
+     "encoded_bytes": 915753,
+     "consumed_cap": 915765,
+     "scratch_after": 80,
+     "textures": [
+      "yardside.png",
+      "yardfront.png",
+      "ad01.png",
+      "seat03.png",
+      "seat_rows.png",
+      "banner_corp.png",
+      "banner_home_team.png",
+      "banner_home_player.png",
+      "banner_away_team.png",
+      "tarp_red.png"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "s13nr.iff",
+   "outer": 3414,
+   "name_id": 691043699,
+   "size": 1470512,
+   "retail_sha256": "eccea64e6f8931659bcd3912805e607409b81d86396d7f09c74e9918bd7967e3",
+   "applied_sha256": "86a513e8c205d1969e6b1b310f3cd7a386007ba236e551cff428f0ee87aab35e",
+   "sites": [
+    {
+     "kind": "field",
+     "offset": 0,
+     "size": 215200,
+     "retail": "bea37550ee1968f9ebaf1fc911da51956b73a5d4fbcb87919cc5694ea86b56ab",
+     "applied": "aa52617163ca08860fdb358324af596ca20b365a86ce56f40c17a8e8e0958851",
+     "encoded_bytes": 215151,
+     "consumed_cap": 215166,
+     "scratch_after": 32,
+     "textures": [
+      "endzone_L.png",
+      "endzone_M.png",
+      "endzone_R.png",
+      "center_logo.png"
+     ]
+    },
+    {
+     "kind": "stadium",
+     "offset": 449616,
+     "size": 934976,
+     "retail": "46d59558ecd2f3e211bc1f52c1c5a079cf35be91b1dd6b80abb22f9a895329a0",
+     "applied": "58094d3e970a410b68975e1d1e2044c3a5c1be07b21ed8b643e7b88d152cf69d",
+     "encoded_bytes": 934929,
+     "consumed_cap": 934944,
+     "scratch_after": 80,
+     "textures": [
+      "yardside.png",
+      "yardfront.png",
+      "ad01.png",
+      "seat03.png",
+      "seat_rows.png",
+      "banner_corp.png",
+      "banner_home_team.png",
+      "banner_home_player.png",
+      "banner_away_team.png",
+      "tarp_red.png"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "s13ns.iff",
+   "outer": 3573,
+   "name_id": 3337754189,
+   "size": 1475968,
+   "retail_sha256": "c4a9215197daa96ccfcfc36e3ca6dc19deb3a8a0ca551186dfa1053ac8fee490",
+   "applied_sha256": "8c436c5606cea135e912d32c95cdcbf33a52f8ecf975accacee043d27672e31d",
+   "sites": [
+    {
+     "kind": "field",
+     "offset": 0,
+     "size": 170704,
+     "retail": "708d393ac5124673d4246c5e7de918a84d03a7c4afa7b902f2469b220eb962ab",
+     "applied": "52f721dc4e01d469cbc9bcc0e9e5a583516563cc299f381e25f73cdc2c67cf82",
+     "encoded_bytes": 170661,
+     "consumed_cap": 170663,
+     "scratch_after": 16,
+     "textures": [
+      "endzone_L.png",
+      "endzone_M.png",
+      "endzone_R.png",
+      "center_logo.png"
+     ]
+    },
+    {
+     "kind": "stadium",
+     "offset": 406112,
+     "size": 969104,
+     "retail": "b12191ccc86f414f8b87969bc75e5efc65d1a210327e909194c09c65e7e169af",
+     "applied": "6238f7f892088e07f571d81534327a0b28cf60136f7cf3da3236d3ac2c132778",
+     "encoded_bytes": 969046,
+     "consumed_cap": 969057,
+     "scratch_after": 112,
+     "textures": [
+      "yardside.png",
+      "yardfront.png",
+      "ad01.png",
+      "seat03.png",
+      "seat_rows.png",
+      "banner_corp.png",
+      "banner_home_team.png",
+      "banner_home_player.png",
+      "banner_away_team.png",
+      "tarp_red.png"
+     ]
+    }
+   ]
+  }
+ ]
+}

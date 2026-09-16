@@ -1,0 +1,12 @@
+{
+  "name": "final-test_nfl2k5_scorebug_fonts",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_nfl2k5_scorebug_fonts.py",
+    "-v"
+  ],
+  "start_utc": "2026-09-16T02:36:50.160640+00:00",
+  "end_utc": "2026-09-16T02:36:59.627614+00:00",
+  "seconds": 9.467,
+  "exit_code": 0
+}

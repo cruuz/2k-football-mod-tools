@@ -1,0 +1,25 @@
++ /home/noah/2k-worktrees/astra-b71-a5/.scratch/g rev-parse HEAD
++ /home/noah/2k-worktrees/astra-b71-a5/.scratch/g rev-parse fable/b71-scorebug-font
++ /home/noah/2k-worktrees/astra-b71-a5/.scratch/g diff --name-only HEAD
++ /home/noah/2k-worktrees/astra-b71-a5/.scratch/g diff --cached --name-only
++ /home/noah/2k-worktrees/astra-b71-a5/.scratch/g add -- FABLE_B71_FONT_REPORT_2026-09-15.md docs/mod_editor/2k5_mod_studio_changelog.md mod_editor/capabilities/registry.v1.json mod_editor/core/nfl2k5_scorebug_exact.py mod_editor/core/nfl2k5_scorebug_mnf_font.py mod_editor/core/nfl2k5_scorebug_resources.py mod_editor/core/nfl2k5_scorebug_runtime.py mod_editor/core/providers.py tests/mod_editor/test_nfl2k5_scorebug_fonts.py tests/mod_editor/test_nfl2k5_scorebug_mnf.py tests/mod_editor/test_nfl2k5_scorebug_resources.py tools/nfl2k5_scorebug_exact.py tools/nfl2k5_scorebug_projection.py
++ /home/noah/2k-worktrees/astra-b71-a5/.scratch/g ls-files --unmerged
++ /home/noah/2k-worktrees/astra-b71-a5/.scratch/g diff --cached --name-only
++ /home/noah/2k-worktrees/astra-b71-a5/.scratch/g write-tree
++ /home/noah/2k-worktrees/astra-b71-a5/.scratch/g commit-tree e2d88a5a0f3c8464579a63cab81a9153e7f7b13e -p 3415dfc5487b54bf56afbe40f89254394984d343 -p fa44203350a9dcc01e56c27c64a2a1487b9866bf
++ /home/noah/2k-worktrees/astra-b71-a5/.scratch/g update-ref refs/heads/astra/b71-a5-scorebug-integrate 5dc29e391463ec1e8289030648d7910ba4e88b58 3415dfc5487b54bf56afbe40f89254394984d343
+MERGE_COMMIT 5dc29e391463ec1e8289030648d7910ba4e88b58
+EXPLICIT_PATHS
+FABLE_B71_FONT_REPORT_2026-09-15.md
+docs/mod_editor/2k5_mod_studio_changelog.md
+mod_editor/capabilities/registry.v1.json
+mod_editor/core/nfl2k5_scorebug_exact.py
+mod_editor/core/nfl2k5_scorebug_mnf_font.py
+mod_editor/core/nfl2k5_scorebug_resources.py
+mod_editor/core/nfl2k5_scorebug_runtime.py
+mod_editor/core/providers.py
+tests/mod_editor/test_nfl2k5_scorebug_fonts.py
+tests/mod_editor/test_nfl2k5_scorebug_mnf.py
+tests/mod_editor/test_nfl2k5_scorebug_resources.py
+tools/nfl2k5_scorebug_exact.py
+tools/nfl2k5_scorebug_projection.py

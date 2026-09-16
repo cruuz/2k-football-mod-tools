@@ -1,0 +1,11 @@
+{
+  "name": "test_nfl2k5_scorebug_native",
+  "command": [
+    "/usr/bin/python3",
+    "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_native.py"
+  ],
+  "start": "2026-09-15T21:00:21.900819+00:00",
+  "end": "2026-09-15T21:02:31.579261+00:00",
+  "seconds": 129.678,
+  "exit": 0
+}

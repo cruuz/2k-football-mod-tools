@@ -283,6 +283,11 @@ def rebuild_resource(source, replacement: bytes) -> tuple[bytes, dict]:
     wanted = decoded[:part.offset] + replacement + decoded[part.offset + part.length:]
     stored = original[block.start_offset:block.start_offset + block.stored_length]
     encoded, transport = apf_inner.encode_h7a_preserving_tokens(stored[20:], decoded, wanted, block.wrapper.shift)
+    encoded, fit = splb.fit_book_h7a(
+        encoded, wanted, block.wrapper.shift,
+        entry.size - record.header_size - 20 - 8 - record.footer.payload_size,
+    )
+    transport = {**transport, **fit}
     tokens, _used = apf_inner._parse_h7a_tokens(encoded, len(wanted), block.wrapper.shift)
     if any(x.distance is not None and x.length > x.distance for x in tokens):
         raise ValidationError("H7A output contains a match longer than its distance")

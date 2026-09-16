@@ -662,6 +662,11 @@ def _scale_allocations(requests):
     _require(not extra or extra == [(MYCAREER_M3_STATE_OWNER, "data", PAGE, 16)],
              "MyCareer M3 state has a fixed 4096-byte reservation")
     requests = [r for r in requests if r[0] != MYCAREER_M3_STATE_OWNER]
+    sprite = next((r for r in requests if r[:2] == ("nfl2k5_scorebug_runtime", "code") and r[2] > 1408), None)
+    if sprite:
+        # Keep the old footprint in legacy packing. The larger sprite owner
+        # moves after the established RX owners, preserving their addresses.
+        requests = [(o, k, 1408 if (o, k) == sprite[:2] else s, a) for o, k, s, a in requests]
     promoted = next((r for r in requests if r[0:2] == ("nfl2k5_my_career", "code") and r[2] > 8192), None)
     if promoted:
         requests = [(o, k, 8192 if (o, k) == promoted[:2] else s, a) for o, k, s, a in requests]
@@ -697,6 +702,15 @@ def _scale_allocations(requests):
         owner, kind, size, align = promoted
         at = (cursors[r["va"]] + align - 1) & -align
         _require(at + size <= r["size"], "MyCareer M3 exceeds remaining RX capacity")
+        out.append(dict(owner=owner, kind=kind, size=size, align=align,
+                        va=r["va"] + at, raw=r["raw"] + at, owner_offset=0))
+        cursors[r["va"]] = at + size
+    if sprite:
+        out = [a for a in out if (a["owner"], a["kind"]) != sprite[:2]]
+        r = next(r for r in regions if r["kind"] == "code")
+        owner, kind, size, align = sprite
+        at = (cursors[r["va"]] + align - 1) & -align
+        _require(at + size <= r["size"], "Sprite scorebug exceeds remaining RX capacity")
         out.append(dict(owner=owner, kind=kind, size=size, align=align,
                         va=r["va"] + at, raw=r["raw"] + at, owner_offset=0))
     if extra:

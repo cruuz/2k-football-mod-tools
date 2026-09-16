@@ -1,0 +1,11 @@
+[astra/b71-apf5-fourth-down-xenia 7c77229b] APF: add opt-in fourth-down thresholds and Xenia Edge SDL configuration
+ 22 files changed, 1463 insertions(+), 35 deletions(-)
+ create mode 100644 docs/mod_editor/apf2k8_fourth_down_and_xenia.md
+ create mode 100644 docs/research/apf_b71_fourth_down.md
+ create mode 100644 mod_editor/apf_studio/fourth_down_qt.py
+ create mode 100644 mod_editor/core/apf2k8_fourth_down.py
+ create mode 100644 tests/mod_editor/test_apf_fourth_down.py
+ create mode 100644 tests/mod_editor/test_apf_fourth_down_native.py
+ create mode 100644 tests/mod_editor/test_apf_fourth_down_qt.py
+ create mode 100644 tests/mod_editor/test_apf_xenia_edge.py
+ create mode 100644 tools/apf_fourth_down_probe.py

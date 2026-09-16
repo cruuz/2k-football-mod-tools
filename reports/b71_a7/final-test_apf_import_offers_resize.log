@@ -1,0 +1,10 @@
+test_browser_replace_from_drop_reaches_fit_slot_image (__main__.ApfImportOffersResizeTests.test_browser_replace_from_drop_reaches_fit_slot_image) ... ok
+test_fit_slot_image_source_names_contain_cover_stretch (__main__.ApfImportOffersResizeTests.test_fit_slot_image_source_names_contain_cover_stretch) ... ok
+test_fit_slot_image_uses_image_fit (__main__.ApfImportOffersResizeTests.test_fit_slot_image_uses_image_fit) ... ok
+test_stretch_drives_shipped_fit_image (__main__.ApfImportOffersResizeTests.test_stretch_drives_shipped_fit_image) ... ok
+test_stretch_mode_is_shipped (__main__.ApfImportOffersResizeTests.test_stretch_mode_is_shipped) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.547s
+
+OK

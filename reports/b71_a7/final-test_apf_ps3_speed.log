@@ -1,0 +1,20 @@
+test_cancel_before_and_between_crests_has_no_later_result (__main__.CacheAndWorkerTests.test_cancel_before_and_between_crests_has_no_later_result) ... ok
+test_cancelled_staging_rolls_back_its_completed_crest (__main__.CacheAndWorkerTests.test_cancelled_staging_rolls_back_its_completed_crest) ... ok
+test_compression_cache_is_separate_for_portable_optimal_policy (__main__.CacheAndWorkerTests.test_compression_cache_is_separate_for_portable_optimal_policy) ... ok
+test_decoded_sources_are_content_keyed_and_never_share_mutable_images (__main__.CacheAndWorkerTests.test_decoded_sources_are_content_keyed_and_never_share_mutable_images) ... ok
+test_pixel_transport_matches_independent_untile_with_all_endian_modes (__main__.CacheAndWorkerTests.test_pixel_transport_matches_independent_untile_with_all_endian_modes) ... ok
+test_processes_return_in_input_order_and_do_not_nest (__main__.CacheAndWorkerTests.test_processes_return_in_input_order_and_do_not_nest) ... ok
+test_repeated_six_mask_inputs_share_one_pending_fit_and_independent_receipts (__main__.CacheAndWorkerTests.test_repeated_six_mask_inputs_share_one_pending_fit_and_independent_receipts) ... ok
+test_single_crest_mips_can_use_the_shared_pool_without_changing_bytes (__main__.CacheAndWorkerTests.test_single_crest_mips_can_use_the_shared_pool_without_changing_bytes) ... ok
+test_worker_timeout_is_propagated_without_polling_forever (__main__.CacheAndWorkerTests.test_worker_timeout_is_propagated_without_polling_forever) ... ok
+test_helper_drift_is_never_executed (__main__.EncoderTests.test_helper_drift_is_never_executed) ... ok
+test_missing_failed_and_unsafe_helpers_use_identical_python_greedy (__main__.EncoderTests.test_missing_failed_and_unsafe_helpers_use_identical_python_greedy) ... ok
+test_native_greedy_preserves_candidate_limits_ties_and_all_shifts (__main__.EncoderTests.test_native_greedy_preserves_candidate_limits_ties_and_all_shifts) ... ok
+test_optimal_timeout_and_bad_output_keep_portable_bytes (__main__.EncoderTests.test_optimal_timeout_and_bad_output_keep_portable_bytes) ... ok
+test_portable_optimal_has_identical_trials_and_hash_collision_rules (__main__.EncoderTests.test_portable_optimal_has_identical_trials_and_hash_collision_rules) ... ok
+test_qt_timer_runs_during_worker_and_cancel_reaches_safe_boundary (__main__.GuiWorkerTests.test_qt_timer_runs_during_worker_and_cancel_reaches_safe_boundary) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 3.841s
+
+OK

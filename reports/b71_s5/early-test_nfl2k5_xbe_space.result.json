@@ -1,0 +1,12 @@
+{
+  "name": "early-test_nfl2k5_xbe_space",
+  "argv": [
+    "/usr/bin/python3",
+    "tests/mod_editor/test_nfl2k5_xbe_space.py",
+    "-v"
+  ],
+  "start_utc": "2026-09-16T02:21:00.554586+00:00",
+  "end_utc": "2026-09-16T02:21:29.459847+00:00",
+  "seconds": 28.905,
+  "exit_code": 1
+}

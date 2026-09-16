@@ -1,0 +1,1 @@
+{"name": "cave-oracle-final", "command": ["python3", "tests/mod_editor/test_nfl2k5_cave_oracle.py"], "start": "2026-09-15T22:39:06.899647+00:00", "end": "2026-09-15T22:46:42.658893+00:00", "seconds": 455.759, "exit": 0}

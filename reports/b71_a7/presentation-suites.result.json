@@ -1,0 +1,12 @@
+{
+  "name": "presentation-suites",
+  "argv": [
+    "python3",
+    "reports/b71_a7/suites.py",
+    "presentation"
+  ],
+  "started": "2026-09-16T00:33:14.386284+00:00",
+  "ended": "2026-09-16T00:43:01.378778+00:00",
+  "seconds": 586.993,
+  "exit_code": 1
+}

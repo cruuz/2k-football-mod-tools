@@ -1,0 +1,11 @@
+{
+  "name": "owner-compact",
+  "command": [
+    "python3",
+    "tests/mod_editor/test_nfl2k5_scorebug_runtime.py"
+  ],
+  "start": "2026-09-15T22:13:58.164892+00:00",
+  "end": "2026-09-15T22:15:52.720312+00:00",
+  "seconds": 114.555,
+  "exit": 1
+}

@@ -1,0 +1,10 @@
+{
+  "command": [
+    "python3",
+    "tests/mod_editor/test_provider_integrity.py"
+  ],
+  "start_utc": "2026-09-15T21:35:48.890408+00:00",
+  "end_utc": "2026-09-15T21:35:58.938725+00:00",
+  "seconds": 10.048,
+  "exit_code": 0
+}

@@ -1,0 +1,16 @@
+test_audio_cards_match_the_common_file_conformer (__main__.CapabilityActionParityTests.test_audio_cards_match_the_common_file_conformer) ... ok
+test_draft_logo_registry_and_exact_asset_route_are_complete (__main__.CapabilityActionParityTests.test_draft_logo_registry_and_exact_asset_route_are_complete) ... ok
+test_every_editable_card_has_real_replace_and_revert_methods (__main__.CapabilityActionParityTests.test_every_editable_card_has_real_replace_and_revert_methods) ... ok
+test_every_exact_asset_editor_resolves_to_its_capability_handler (__main__.CapabilityActionParityTests.test_every_exact_asset_editor_resolves_to_its_capability_handler) ... ok
+test_in_place_text_editor_is_editable_without_fake_file_input (__main__.CapabilityActionParityTests.test_in_place_text_editor_is_editable_without_fake_file_input) ... ok
+test_inspectors_exports_and_internal_evidence_are_not_fake_promises (__main__.CapabilityActionParityTests.test_inspectors_exports_and_internal_evidence_are_not_fake_promises) ... ok
+test_logo_cards_disclose_linked_cache_and_independent_wordmark_ownership (__main__.CapabilityActionParityTests.test_logo_cards_disclose_linked_cache_and_independent_wordmark_ownership) ... ok
+test_only_exact_product_assets_receive_editable_catalog_status (__main__.CapabilityActionParityTests.test_only_exact_product_assets_receive_editable_catalog_status) ... ok
+test_registry_cards_and_action_bindings_are_one_to_one (__main__.CapabilityActionParityTests.test_registry_cards_and_action_bindings_are_one_to_one) ... ok
+test_roster_capability_names_all_bounded_editors_and_keeps_boundaries (__main__.CapabilityActionParityTests.test_roster_capability_names_all_bounded_editors_and_keeps_boundaries) ... ok
+test_stadium_gltf_is_specialized_while_universal_scne_is_raw (__main__.CapabilityActionParityTests.test_stadium_gltf_is_specialized_while_universal_scne_is_raw) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.122s
+
+OK

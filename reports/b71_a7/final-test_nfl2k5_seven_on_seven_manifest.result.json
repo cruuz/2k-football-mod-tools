@@ -1,0 +1,12 @@
+{
+  "name": "final-test_nfl2k5_seven_on_seven_manifest",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_nfl2k5_seven_on_seven_manifest.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:32:15.995535+00:00",
+  "ended": "2026-09-16T00:32:16.795120+00:00",
+  "seconds": 0.8,
+  "exit_code": 0
+}

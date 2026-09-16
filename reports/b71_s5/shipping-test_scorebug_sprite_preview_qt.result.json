@@ -1,0 +1,12 @@
+{
+  "name": "shipping-test_scorebug_sprite_preview_qt",
+  "argv": [
+    "/usr/bin/python3",
+    "tests/mod_editor/test_scorebug_sprite_preview_qt.py",
+    "-v"
+  ],
+  "start_utc": "2026-09-16T02:51:48.986468+00:00",
+  "end_utc": "2026-09-16T02:52:01.687803+00:00",
+  "seconds": 12.701,
+  "exit_code": 0
+}

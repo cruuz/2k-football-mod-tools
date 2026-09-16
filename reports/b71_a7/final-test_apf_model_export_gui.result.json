@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_model_export_gui",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_model_export_gui.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:52:56.547313+00:00",
+  "ended": "2026-09-16T00:52:59.274446+00:00",
+  "seconds": 2.727,
+  "exit_code": 0
+}

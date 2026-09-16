@@ -175,7 +175,7 @@ class XeniaBlockerTests(unittest.TestCase):
                 output_game = Path(directory)
 
             facade.last_build = _Build()  # type: ignore[assignment]
-            self.assertIn("Xenia Canary is not configured", facade.xenia_blocker)
+            self.assertIn("Xenia is not configured yet", facade.xenia_blocker)
             _Settings.configured = True
             try:
                 self.assertEqual(facade.xenia_blocker, "")

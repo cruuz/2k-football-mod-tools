@@ -1,0 +1,9 @@
+test_all_teams_palette_context_and_visor_boundary_are_visible (__main__.UniformEquipmentColorsPanelTests.test_all_teams_palette_context_and_visor_boundary_are_visible) ... ok
+test_stage_and_revert_use_one_team_scoped_asset (__main__.UniformEquipmentColorsPanelTests.test_stage_and_revert_use_one_team_scoped_asset) ... ok
+test_stage_stays_clickable_without_source_and_explains (__main__.UniformEquipmentColorsPanelTests.test_stage_stays_clickable_without_source_and_explains)
+Never silent-gray: Stage enabled + disableReason when game not loaded. ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.039s
+
+OK

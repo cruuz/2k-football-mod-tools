@@ -439,21 +439,30 @@ def panel(span, team, side, *, timeouts=3):
 # Measured from the ESPN Chiefs at Broncos Week 1 broadcast capture (1920x1080)
 # and mapped to the 640x448 HUD exactly like the static v3 bar above.
 # ---------------------------------------------------------------------------
-MNF_VERSION = "espn-mnf-2026-v1"
+MNF_VERSION = "espn-mnf-2026-v4"
 # Broadcast pixel rectangles (x0, y0, x1, y1) on the 1920x1080 frame.
 MNF_SOURCE = {
     "bar": (437, 942, 1478, 1052),
-    "away_wing": (437, 942, 700, 1052), "home_wing": (1215, 942, 1478, 1052),
-    "plate": (830, 946, 1090, 988), "strip": (838, 998, 1082, 1044),
+    "away_wing": (437, 942, 650, 1052), "home_wing": (1265, 942, 1478, 1052),
+    "plate": (837, 947, 1083, 983), "strip": (839, 999, 1082, 1040),
+    # Team marks fill the measured wing height at their original source aspect.
+    "away_logo": (453, 943, 653, 1050), "home_logo": (1268, 943, 1468, 1050),
 }
 MNF_BAR = scene_box(MNF_SOURCE["bar"])
 MNF_PANELS = {"away": scene_box(MNF_SOURCE["away_wing"]), "home": scene_box(MNF_SOURCE["home_wing"])}
 MNF_PLATE = scene_box(MNF_SOURCE["plate"])
+MNF_LOGOS = {"away": scene_box(MNF_SOURCE["away_logo"]), "home": scene_box(MNF_SOURCE["home_logo"])}
+# One orientation-independent 64x64 logo per team, fitted to a 200x107 source box.
+MNF_WING_LOGO_ROWS, MNF_WING_RAMP_ROWS = (0, 64), (0, 0)
+MNF_WING_LAYOUT = {"away": {"logo": (242,243,244,245)}, "home": {"logo": (85,87,90,91)}}
 MNF_STRIP = scene_box(MNF_SOURCE["strip"])
 # The 2026 layout's regions in the retail comparison's vocabulary (frame, wings, plate, strip).
 MNF_COMPARE_REGIONS = {"frame_rim": MNF_SOURCE["bar"], "left_panel": MNF_SOURCE["away_wing"],
                        "centre_pill": MNF_SOURCE["plate"], "clock_strip": MNF_SOURCE["strip"],
                        "right_panel": MNF_SOURCE["home_wing"]}
+MNF_V4_COMPARE_REGIONS = {**MNF_COMPARE_REGIONS,
+    "housing": (837,983,1083,1045), "white_capsule": (839,999,1019,1039),
+    "play_clock_cell": (1019,999,1082,1040), "pointer": (951,942,965,947)}
 # Text anchors: x is the alignment point (scores/quarter/play clock centred,
 # the game clock right-aligned like retail), y the text bottom in scene units.
 _SX = lambda px: px / 3 - 320
@@ -466,17 +475,20 @@ _SY = lambda py: 424 - (16 + py * 448 / 1080)
 def _ORIGIN(px_top, glyph_y0, k):
     return 424 - (16 + px_top * 448 / 1080 - glyph_y0) - k
 MNF_ANCHORS = {
-    "away_city": (_SX(755), _ORIGIN(1033, 15, 27), -64), "home_city": (_SX(1165), _ORIGIN(1033, 15, 27), -64),   # timeout dashes (FONT8 hyphen rows 15..20)
-    "away_score": (_SX(755), _ORIGIN(955, 7, 0), -59), "home_score": (_SX(1165), _ORIGIN(955, 7, 0), -59),
-    "quarter": (_SX(883), _ORIGIN(1015, 4, 15), -4), "clock_a": (_SX(978), _ORIGIN(1008, 4, 15), -4), "clock_b": (_SX(978), _ORIGIN(1008, 4, 15), -4),
-    "drop_clock": (_SX(1055), _ORIGIN(1008, 4, 15), -4), "drop_down": (0, _ORIGIN(955, 4, 15), -4),
+    "away_city": (_SX(756), _ORIGIN(1032, 13, 27), -64), "home_city": (_SX(1160), _ORIGIN(1032, 13, 27), -64),   # private light-grey tick glyphs
+    "away_score": (_SX(756), _ORIGIN(965, 0, 0), -59), "home_score": (_SX(1160), _ORIGIN(965, 0, 0), -59),
+    "quarter": (_SX(871), _ORIGIN(1001, 0, 15), -4), "clock_a": (_SX(960), _ORIGIN(1006, 0, 15), -4), "clock_b": (_SX(960), _ORIGIN(1006, 0, 15), -4),
+    "drop_clock": (_SX(1050.5), _ORIGIN(1007, 0, 15), -4), "drop_down": (_SX(960), _ORIGIN(955, 0, 15), -4),
     "drop_yellow": (0, _ORIGIN(955, 4, 15), -8), "drop_red": (0, _ORIGIN(955, 4, 15), -8),
     "drop_hangtime": (0, _ORIGIN(955, 4, 15), -8), "drop_ball_on": (0, _ORIGIN(955, 4, 15), -8),
 }
-MNF_REGIONS = {"frame": (0, 0, 24, 24), "plate": (0, 24, 64, 40), "strip": (0, 40, 64, 60), "solid": (1, 62, 2, 63)}
-MNF_COLORS = {"body": (11, 14, 20), "body_hi": (23, 27, 35), "lip": (201, 208, 218),
-              "plate": (240, 240, 244), "capsule": (236, 239, 243), "capsule_ink": (20, 23, 28),
-              "separator": (196, 200, 208)}
+MNF_REGIONS = {"frame": (0, 0, 256, 110), "ramp": (0, 112, 213, 222),
+               "plate": (0, 224, 246, 260), "housing": (0, 262, 246, 324),
+               "strip": (0, 326, 243, 367), "cell": (0, 370, 63, 411),
+               "solid": (2, 414, 3, 415), "body": (6, 414, 7, 415)}
+MNF_COLORS = {"body": (37,37,37), "body_hi": (37,37,37), "lip": (60,64,70),
+              "plate": (255,255,255), "capsule": (248,248,250), "capsule_ink": (30,30,30),
+              "separator": (196,200,208)}
 # Possession plate colours per team (ESPN's team colour, lifted so it reads on
 # the charcoal bar). Indexed by the retail two-digit asset code at runtime.
 ESPN_PLATE = {
@@ -489,18 +501,93 @@ ESPN_PLATE = {
 }
 
 
+# Explicit secondary choices for near-black primaries. Others retain full primary.
+ESPN_PLATE_SECONDARY = {"CHI": "#C83803", "DEN": "#FB4F14", "HOU": "#C8102E",
+                        "LV": "#A5ACAF", "NE": "#C60C30", "NO": "#D3BC8D",
+                        "PIT": "#FFB612", "SEA": "#69BE28", "TEN": "#4B92DB"}
+ESPN_WING_LIT = {"DEN": (55,93,163), "KC": (208,10,67)}
+# The bar shows team colours "as lit": on air a dark primary such as the Cowboys'
+# #003594 is lifted, not drawn raw (raw under the plate mask it read as black in
+# game). The floors are the measured lit values: the KC plate top (178,12,60)
+# under the 0.83 mask top is a tint of HSL lightness 0.37; the DEN and KC lit
+# wings (55,93,163) and (208,10,67) are lightness 0.43. Hue and saturation are
+# kept. The plate cell's mean luminance under the label rows is 0.788, and the
+# white label must keep 4.5:1 contrast on the lit plate, so bright secondaries
+# (gold, silver, action green) are lowered until they do.
+PLATE_LIGHTNESS_FLOOR = 0.36
+WING_LIGHTNESS_FLOOR = 0.43
+PLATE_MASK_LABEL = 0.788
+PLATE_LABEL_CONTRAST = 4.5
+PLATE_LABEL_MARGIN = 0.3  # palette quantisation and the raster cost up to about 0.15 on the rendered plate
+PLATE_LABEL_RGB = (255, 255, 255)
+
+
+def hex_rgb(colour):
+    return tuple(int(colour[i:i + 2], 16) for i in (1, 3, 5))
+
+
+def relative_luminance(rgb):
+    """WCAG relative luminance of an sRGB colour (0..255 channels)."""
+    def channel(c):
+        c /= 255
+        return c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4
+    r, g, b = (channel(c) for c in rgb)
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+
+
+def contrast_ratio(a, b):
+    la, lb = relative_luminance(a), relative_luminance(b)
+    hi, lo = max(la, lb), min(la, lb)
+    return (hi + 0.05) / (lo + 0.05)
+
+
+def with_lightness(rgb, lightness):
+    import colorsys
+    h, _, s = colorsys.rgb_to_hls(*(c / 255 for c in rgb))
+    return tuple(min(255, max(0, round(c * 255))) for c in colorsys.hls_to_rgb(h, lightness, s))
+
+
+NEUTRAL_BELOW = 40  # black primaries (LV, NO, PIT) light to grey, not to their faint blue cast
+
+
+def lit_rgb(rgb, floor):
+    """Raise HSL lightness to ``floor`` keeping hue and saturation; brighter colours are unchanged."""
+    import colorsys
+    _, lightness, _ = colorsys.rgb_to_hls(*(c / 255 for c in rgb))
+    if lightness >= floor:
+        return tuple(rgb)
+    if max(rgb) < NEUTRAL_BELOW:
+        grey = round(floor * 255)
+        return (grey, grey, grey)
+    return with_lightness(rgb, floor)
+
+
+def lit_plate_rgb(rgb):
+    """The plate colour drawn under the label: the tint through the cell mask."""
+    return tuple(min(255, round(c * PLATE_MASK_LABEL)) for c in rgb)
+
+
+def plate_rgb(team):
+    """Lit team colour for the possession plate: the explicit secondary for near-black
+    teams, otherwise the primary lifted to the plate floor; then lowered in lightness
+    until the white label keeps PLATE_LABEL_CONTRAST on the masked plate."""
+    import colorsys
+    colour = lit_rgb(hex_rgb(ESPN_PLATE_SECONDARY.get(team, ESPN_PLATE[team])), PLATE_LIGHTNESS_FLOOR)
+    _, lightness, _ = colorsys.rgb_to_hls(*(c / 255 for c in colour))
+    while contrast_ratio(PLATE_LABEL_RGB, lit_plate_rgb(colour)) < PLATE_LABEL_CONTRAST + PLATE_LABEL_MARGIN and lightness > 0.05:
+        lightness = round(lightness - 0.01, 4)
+        colour = with_lightness(colour, lightness)
+    return colour
+
+
 def plate_argb(team):
-    """ESPN plate colour lifted toward white when the primary is very dark."""
-    rgb = tuple(int(ESPN_PLATE[team][i:i+2], 16) for i in (1, 3, 5))
-    peak = max(rgb)
-    # Dark primaries are brightened along their own hue (the broadcast plate is a
-    # saturated medium tone), never mixed toward grey.
-    gain = min(2.4, 150 / peak) if 0 < peak < 150 else 1.0
-    rgb = tuple(min(255, round(c * gain)) for c in rgb)
-    if peak == 0:
-        rgb = (58, 63, 72)
-    r_, g_, b_ = (round(c + (255 - c) * 0.06) for c in rgb)
-    return 0xFF000000 | (r_ << 16) | (g_ << 8) | b_
+    r, g, b = plate_rgb(team)
+    return 0xFF000000 | (r << 16) | (g << 8) | b
+
+
+def wing_rgb(team):
+    """Lit team primary for the wing ramp (the measured DEN and KC values stay explicit)."""
+    return tuple(ESPN_WING_LIT[team]) if team in ESPN_WING_LIT else lit_rgb(hex_rgb(ESPN_PLATE[team]), WING_LIGHTNESS_FLOOR)
 
 
 def plate_table():
@@ -512,88 +599,104 @@ def plate_table():
     return table
 
 
+def wing_table():
+    from . import nfl2k5_scorebug_ingame as r
+    table = [0xff4a4e58] * 40
+    for team, record in r.TEAM_LOGOS.items():
+        rgb = wing_rgb(team)
+        table[int(record["asset_code"])] = 0xff000000 | rgb[0]<<16 | rgb[1]<<8 | rgb[2]
+    return table
+
+
 def atlas_mnf():
-    """The 64x64 P8 atlas for the 2026 bar: charcoal pill, light plate, white capsule."""
+    """Paint at twice source resolution; downsample into the appended 256x512 P8 atlas.
+
+    A single frame quad has no internal band. A white alpha ramp overlays its
+    charcoal with the owner tint. All rounded silhouettes are painted masks.
+    """
     from PIL import Image, ImageDraw
-    body, hi, lip = MNF_COLORS["body"], MNF_COLORS["body_hi"], MNF_COLORS["lip"]
-    im = Image.new("RGBA", (64, 64), body + (255,))
-    d = ImageDraw.Draw(im)
-    # Frame nine-slice tile: 4-pixel corners map to 4 HUD units, so the caps read rounded.
-    d.rectangle((0, 0, 23, 23), fill=(0, 0, 0, 0))
-    d.rounded_rectangle((0, 0, 23, 23), 5, fill=body + (255,))
-    for y in range(1, 12):
-        t = (12 - y) / 12
-        c = tuple(round(b + (h - b) * t) for b, h in zip(body, hi))
-        d.line((4, y, 19, y), fill=c + (255,))
-    d.line((3, 0, 20, 0), fill=lip + (255,))
-    d.line((2, 1, 21, 1), fill=tuple(round((a + b) / 2) for a, b in zip(lip, hi)) + (255,))
-    d.line((3, 23, 20, 23), fill=(4, 5, 8, 255))
-    # Down plate tile: near-white so the possession tint multiplies to the team colour.
-    d.rectangle((0, 24, 63, 39), fill=(0, 0, 0, 0))
-    d.rounded_rectangle((0, 24, 63, 39), 4, fill=MNF_COLORS["plate"] + (255,), outline=(214, 216, 222, 255))
-    d.line((3, 25, 60, 25), fill=(255, 255, 255, 255))
-    # Clock capsule tile: white pill with the two cell separators.
-    d.rectangle((0, 40, 63, 59), fill=(0, 0, 0, 0))
-    d.rounded_rectangle((0, 40, 63, 59), 9, fill=MNF_COLORS["capsule"] + (255,), outline=(190, 194, 202, 255))
-    # Cells sized for the retail HUD glyphs: "1ST" (27 px), "13:10" (34 px) and the
-    # two-digit play clock each sit centred with clearance; 64 tile px span 81.3 HUD px.
-    d.line((24, 42, 24, 57), fill=MNF_COLORS["separator"] + (255,))
-    d.line((50, 42, 50, 57), fill=MNF_COLORS["separator"] + (255,))
-    d.rectangle((0, 61, 3, 63), fill=(248, 250, 243, 255))
-    d.rectangle((4, 61, 7, 63), fill=body + (255,))
+    import numpy as np
+    im = Image.new("RGBA", (256,512))
+    def tile(name, size, radius, color, *, end=None):
+        w,h=size; out=Image.new("RGBA",(w*2,h*2)); d=ImageDraw.Draw(out)
+        d.rounded_rectangle((0,0,w*2-1,h*2-1),radius*2,fill=color)
+        if end=="left": d.rectangle((w,h*0,w*2-1,h*2-1),fill=color)
+        if end=="right": d.rectangle((0,0,w-1,h*2-1),fill=color)
+        return out
+    def put(name,out):
+        a,b,c,d=MNF_REGIONS[name]
+        im.paste(out.resize((c-a,d-b),Image.Resampling.LANCZOS),(a,b))
+    body=tile("frame",(1041,110),8,(37,37,37,255))
+    d=ImageDraw.Draw(body)
+    d.line((16,1,2065,1),fill=(60,64,70,255),width=4)
+    d.line((16,217,2065,217),fill=(13,20,28,255),width=4)
+    put("frame",body)
+    # Alpha, rather than black luminance, mixes the team tint into the flat body.
+    ramp=tile("ramp",(213,110),8,(255,255,255,255),end="left")
+    pix=np.asarray(ramp).copy();x=np.arange(426)/425;fade=1-x*x*(3-2*x)
+    pix[:,:,3]=(pix[:,:,3]*fade[None,:]).round().astype('uint8')
+    put("ramp",Image.fromarray(pix))
+    put("plate",tile("plate",(246,36),6,(255,255,255,255)))
+    put("housing",tile("housing",(246,62),20,(24,24,26,255)))
+    pill=tile("strip",(243,41),20,(248,248,250,255))
+    d=ImageDraw.Draw(pill);mask=tile("cell",(63,41),20,(215,0,51,255),end="right")
+    pill.paste(mask,(360,0),mask);put("strip",pill)
+    put("cell",tile("cell",(63,41),20,(255,255,255,255),end="right"))
+    d=ImageDraw.Draw(im);d.rectangle((0,413,4,417),fill=(255,255,255,255));d.rectangle((5,413,9,417),fill=(37,37,37,255))
     return im
 
 
 def mesh_mnf(retail):
-    """Runtime scene: wings on their own materials, plate, capsule, nine-slice pill."""
+    """Painted masks and plain quads inside the unchanged 4,800-byte scene span."""
     from . import nfl2k5_scorebug_ingame as r
     m = r.layout.Mesh(retail)
+    # Retail's UV affine includes a small scale/bias correction for its 64px
+    # atlas. The painted atlas and logo cells use exact normalized coordinates.
+    struct.pack_into("<4f",m.buf,r.layout.SHAPE+0x30,.5,.5,.5,.5)
     for v in range(r.layout.VCOUNT):
         m.pos[v] = [0, 0, -3]
         m.uv_edit[v] = (-1 + 1.5 / 32, -1 + 62.5 / 32)
         struct.pack_into("<I", m.buf, r.layout.S1 + v * 10, 0xffffffff)
         struct.pack_into("<h", m.buf, r.layout.S1 + v * 10 + 8, 0)
-    strips = [indices for _, indices in r.layout.strips(retail)]
+    def draw(k, quads):
+        """Replace only inline indices inside the fixed retail push-buffer span."""
+        indices=[]
+        for ids,source,tile,z,logo in quads:
+            a,b,c,d=scene_box(source);ss,t,u,w=tile
+            for v,(x,y) in zip(ids,((0,1),(1,1),(0,0),(1,0))):
+                m.pos[v]=[a+(c-a)*x,d-(d-b)*y,z]
+                tw,th=(64,64) if logo else (256,512)
+                m.uv_edit[v]=((ss+(u-ss)*x)*2/tw-1,(t+(w-t)*y)*2/th-1)
+            if indices: indices.extend((indices[-1],ids[0]))
+            indices.extend(ids)
+        if len(indices)%2: indices.append(indices[-1])
+        words=[0x417fc,6,0x40001800|((len(indices)//2)<<18)]
+        words += [indices[i]|indices[i+1]<<16 for i in range(0,len(indices),2)]
+        words += [0x417fc,0]
+        off,capacity=r.layout.SUBMESH_COMMANDS[k]
+        if len(words)>capacity: raise ValueError("painted quads exceed retail command span")
+        words += [0]*(capacity-len(words))
+        struct.pack_into("<"+str(capacity)+"I",m.buf,off,*words)
+    def q(ids,source,tile,z=0,logo=False):return (tuple(ids),source,tile,z,logo)
+    # The static body draws before translucent masks in the retail material order.
+    draw(3,[q(range(48,52),MNF_SOURCE["bar"],MNF_REGIONS["frame"]),
+            q(range(52,56),(837,983,1083,1045),MNF_REGIONS["housing"],-2.8),
+            q(range(56,60),MNF_SOURCE["strip"],MNF_REGIONS["strip"],-3)])
+    for k,ids in ((0,range(0,4)),(1,range(16,20)),(2,range(32,36)),(10,range(274,278))):
+        draw(k,[q(ids,MNF_SOURCE["plate"],MNF_REGIONS["body"],-7)])
+    draw(4,[q(range(64,68),MNF_SOURCE["plate"],MNF_REGIONS["plate"],-3),
+            q(range(76,80),(951,942,965,947),MNF_REGIONS["solid"],-3.1)])
+    # A triangle pointer shares the plate tint; collapse its upper edge to centre.
+    m.pos[78][0]=m.pos[79][0]=_SX(958)
+    for k,side,ids in ((8,"away",(242,243,244,245)),(5,"home",(85,87,90,91))):
+        draw(k,[q(ids,MNF_SOURCE[side+"_logo"],(0,0,64,64),-2,True)])
+    draw(6,[q(range(96,100),MNF_SOURCE["away_wing"],MNF_REGIONS["ramp"],-1)])
+    a,b,c,d=MNF_REGIONS["ramp"]
+    draw(7,[q(range(166,170),MNF_SOURCE["home_wing"],(c,b,a,d),-1)])
+    draw(9,[q(range(262,266),(1019,999,1082,1040),MNF_REGIONS["cell"],-3.25)])
+    name="score_buga\0".encode("utf-16le");m.buf[0x3f8c:0x3f8c+len(name)]=name
+    struct.pack_into("<I",m.buf,0x4c0+0x18,0xffd70033)
 
-    def quad(vertices, box, tile, *, z=0):
-        vertices = list(vertices)
-        indices = next(indices for indices in strips if vertices[0] in indices)
-        first = next(i for i in range(len(indices) - 2) if indices[i:i+3] == vertices[:3])
-        reverse = bool(first % 2)
-        a, b, c, d = box
-        s, t, u, w = tile
-        corners = ((0, 1), (1, 1), (0, 0), (1, 0))
-        if reverse:
-            corners = ((0, 0), (1, 0), (0, 1), (1, 1))
-        for i, v in enumerate(vertices):
-            x, y = corners[min(i, 3)]
-            m.pos[v] = [a + (c - a) * x, d - (d - b) * y, z]
-            m.uv_edit[v] = ((s + (u - s) * x) / 32 - 1, (t + (w - t) * y) / 32 - 1)
-
-    groups = [list(range(96, 104)), list(range(104, 112)), list(range(112, 118))]
-    groups += [list(range(n, n + 4)) for n in range(118, 166, 4)]
-    a, b, c, d = MNF_BAR
-    xs, ys = (a, a + 4, c - 4, c), (b, b + 4, d - 4, d)
-    uvx, uvy = (0, 4, 20, 24), (24, 20, 4, 0)
-    for iy in range(3):
-        for ix in range(3):
-            quad(groups[iy * 3 + ix], (xs[ix], ys[iy], xs[ix + 1], ys[iy + 1]),
-                 (uvx[ix], uvy[iy + 1], uvx[ix + 1], uvy[iy]))
-    # The second frame copy (material yscore_buga1) stays collapsed: no rim on the 2026 bar.
-    quad(range(48, 64), MNF_STRIP, MNF_REGIONS["strip"], z=-3)
-    for v in range(52, 60):
-        m.pos[v] = m.pos[49][:]
-        m.uv_edit[v] = m.uv_edit[49]
-    quad(range(64, 80), MNF_PLATE, MNF_REGIONS["plate"], z=-3)
-    # Events (flag, score, hang time, ball on) cover the plate with the same tile.
-    for vertices in (range(0, 16), range(16, 32), range(32, 48)):
-        quad(vertices, MNF_PLATE, MNF_REGIONS["plate"], z=-7)
-    name = "score_buga\0".encode("utf-16le")
-    m.buf[0x3f8c:0x3f8c+len(name)] = name
-    # Wings: the away panel keeps zscore_buga, the home panel takes hscore_buga; both
-    # sample their own 128x32 team texture (texel centres) bound by the runtime owner.
-    quad(range(230, 246), MNF_PANELS["away"], (.25, 1, 63.75, 63), z=-2)
-    quad(range(80, 96), MNF_PANELS["home"], (.25, 1, 63.75, 63), z=-2)
     for side, parent in (("away", 23), ("home", 26)):
         m.world[parent][:2] = list(MNF_ANCHORS[side + "_score"][:2])
     for name, xyz in MNF_ANCHORS.items():
@@ -604,32 +707,19 @@ def mesh_mnf(retail):
     return m
 
 
-def mnf_panel(team, side):
-    """128x32 RGBA wing art: the team colour fading into the bar, the current logo.
+def mnf_panel(team, side, fit=None):
+    """Shared transparent logo cell, fitted at the final quad's source aspect.
 
-    The wing quad is about 88x46 HUD units, so the art is drawn pre-squashed
-    vertically (32 texels for 46 units). Logos come from data/nfl2k5_scorebug_mnf.
+    ``fit`` widens the mark horizontally (``fill_x``) and scales its height (``height``,
+    a fraction of the wing height) the way the broadcast draws each mark: ESPN stretches
+    the Chiefs arrowhead from 1.53 to 1.89 wide-to-tall and draws the Broncos horse at
+    79 percent of the wing height, 1.19 wider than the official mark.
     """
     from pathlib import Path
     from PIL import Image
-    from . import nfl2k5_scorebug_ingame as r
     if side not in ("home", "away"):
         raise ValueError("invalid scorebug side")
-    body = MNF_COLORS["body"]
-    if team is None:
-        primary = (74, 78, 88)
-    else:
-        argb = plate_argb(team)
-        primary = ((argb >> 16) & 255, (argb >> 8) & 255, argb & 255)
-    im = Image.new("RGBA", (128, 32))
-    for x in range(128):
-        distance = x if side == "away" else 127 - x
-        t = min(1.0, distance / 96.0)
-        t = t * t * (3 - 2 * t)
-        rgb = tuple(round(p * (1 - t) + b * t) for p, b in zip(primary, body))
-        for y in range(32):
-            shade = 1.0 + (0.10 if y < 2 else 0.0)
-            im.putpixel((x, y), tuple(min(255, round(c * shade)) for c in rgb) + (255,))
+    im = Image.new("RGBA", (64, 64) if team else (32,32), (0, 0, 0, 0))
     if team is not None:
         logos = Path(__file__).resolve().parents[2] / "data" / "nfl2k5_scorebug_mnf" / "logos"
         key = {"WAS": "wsh"}.get(team, team.lower())
@@ -639,12 +729,18 @@ def mnf_panel(team, side):
             bounds = logo.getchannel("A").getbbox()
             if bounds:
                 logo = logo.crop(bounds)
-            # Logo box: 60 x 24 texels (about 41 x 35 HUD units), aspect-fitted, then pre-squashed.
-            box_w, box_h = 60, 24
-            scale = min(box_w / logo.width, (box_h * 46 / 32) / logo.height)
-            w = max(1, round(logo.width * scale))
-            h = max(1, round(logo.height * scale * 32 / 46))
-            logo = logo.resize((w, h), Image.Resampling.LANCZOS)
-            x = 10 if side == "away" else 128 - 10 - w
-            im.alpha_composite(logo, (x, (32 - h) // 2))
+            l0, l1 = MNF_WING_LOGO_ROWS
+            a,b,c,d = MNF_SOURCE["home_logo"]
+            fill_x = float((fit or {}).get("fill_x", 1.0))
+            height = float((fit or {}).get("height", 1.0))
+            if not (0.5 <= fill_x <= 2.0 and 0.25 <= height <= 1.0):
+                raise ValueError("invalid logo fit")
+            scale = min((c-a)/logo.width,(d-b)*height/logo.height)
+            src_w = min(c-a, logo.width*scale*fill_x)
+            w = max(1,round(src_w*64/(c-a)))
+            h = max(1,round(logo.height*scale*(l1-l0)/(d-b)))
+            from .nfl2k5_scorebug_assets import resample_logo, alpha_bleed
+            logo = resample_logo(logo, (w, h))
+            im.paste(logo, (((64-w)//2), l0 + (l1 - l0 - h) // 2))
+            im = alpha_bleed(im)
     return im

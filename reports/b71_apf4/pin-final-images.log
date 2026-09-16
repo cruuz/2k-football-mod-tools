@@ -1,0 +1,20 @@
+[
+  {
+    "profile": "base",
+    "flat_sha256": "de19823f326573ffd8a6279e79afc981a9003f304ad572d5aee1ed463df504a5",
+    "code": {
+      "instructions": 620,
+      "branches": 100,
+      "sha256": "bb39ee9f752ced58504e8fddb0c2dfed8a7577e1ee799daadb847467a77aec4d"
+    }
+  },
+  {
+    "profile": "tu_1_1",
+    "flat_sha256": "fb9edef7ddb700b95c6fa0f07dce530bf416e664d4dcdb4046d14fe831aa23aa",
+    "code": {
+      "instructions": 620,
+      "branches": 100,
+      "sha256": "edcc2796d01c5f27b82ffe469267e864c1d088d74f2636c255efbb653d6c7cce"
+    }
+  }
+]

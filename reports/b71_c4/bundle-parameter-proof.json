@@ -1,0 +1,90 @@
+{
+ "name": "s13nd.iff",
+ "custom_settings_sha256": "01426c54f57a72de431efe122f0bff0c2dea24ba78ecd74428a789b8c6414f50",
+ "custom_sha256": "b52f34c8f2ec7f6ccc2f0892f72165a4cb3d8e20f954b0e8396f183bf769da22",
+ "broadcast_sha256": "6b1f6d98600efeccd84bcb2122798b233fd820930e61b0d4a757859358520d94",
+ "edits": [
+  {
+   "kind": "field",
+   "offset": 0,
+   "size": 200528,
+   "before_sha256": "aff16dcfbbddf63da45481552996c49b72cfc132bcc59748710c138ad8a53a3b",
+   "after_sha256": "3f3c1ac58292aebabf8fd84c4ece651cc09ffc10f206167ded804acb6d280250",
+   "palettes": [
+    {
+     "material": "color_premipped",
+     "offset": 73856,
+     "gain": 1.0,
+     "changed": 120
+    },
+    {
+     "material": "grass_outside_premipped",
+     "offset": 476352,
+     "gain": 1.282,
+     "changed": 150
+    },
+    {
+     "material": "endzone_N_L",
+     "offset": 118528,
+     "gain": 1.0,
+     "changed": 246
+    },
+    {
+     "material": "endzone_N_M",
+     "offset": 163200,
+     "gain": 1.0,
+     "changed": 252
+    },
+    {
+     "material": "endzone_N_R",
+     "offset": 207872,
+     "gain": 1.0,
+     "changed": 276
+    },
+    {
+     "material": "center_logo",
+     "offset": 296256,
+     "gain": 1.0,
+     "changed": 225
+    }
+   ],
+   "materials": [],
+   "vertex_tints": 328,
+   "refit": true,
+   "encoder": "greedy",
+   "fill": "trailing",
+   "padding_bytes": 16,
+   "alias_scratch": 10,
+   "scratch_bytes": 16
+  },
+  {
+   "kind": "normal",
+   "offset": 226528,
+   "size": 175904,
+   "before_sha256": "88b0adbc194359bcd1689e041e172e216f5db2c0aa5f7b3b1f72c2634dc42132",
+   "after_sha256": "f5bfed6b987f54a41c2a78a2b8515d7ae476e806a40b7f08d6ceffa604781627",
+   "refit": false,
+   "raw": true
+  },
+  {
+   "kind": "tint",
+   "offset": 402516,
+   "size": 4,
+   "before_sha256": "6be24cd381faad50f1b72a79181c46e561e5d4f90fae7a838c4ecbdb2f8df7e0",
+   "after_sha256": "382db0dc67ec7c7824493b2f7e6ff63896343b2c2d9bb8347c92e08c8ad75a02"
+  },
+  {
+   "kind": "divots",
+   "offset": 402528,
+   "size": 4928,
+   "before_sha256": "be5e690d8826598792d460f76b7f1a3a29f5b4a2656f931178ee1f485525ba65",
+   "after_sha256": "0c3f5f4a5ed83ea7dfb3a744db68124c417a21ec6a263a5d33eb5329d33fd6c2",
+   "refit": true,
+   "encoder": "greedy",
+   "fill": "trailing",
+   "padding_bytes": 2,
+   "alias_scratch": 119,
+   "scratch_bytes": 128
+  }
+ ]
+}

@@ -1,0 +1,9 @@
+test_audo_source_packet_cannot_enter_an_ausb_replacement (__main__.ApfCrossDomainAudioSafetyTests.test_audo_source_packet_cannot_enter_an_ausb_replacement) ... ok
+test_ausb_source_packet_cannot_enter_an_audo_replacement (__main__.ApfCrossDomainAudioSafetyTests.test_ausb_source_packet_cannot_enter_an_audo_replacement) ... ok
+test_build_gate_also_rejects_cross_domain_source_packets (__main__.ApfCrossDomainAudioSafetyTests.test_build_gate_also_rejects_cross_domain_source_packets) ... ok
+test_independently_authored_packets_clear_both_source_domains (__main__.ApfCrossDomainAudioSafetyTests.test_independently_authored_packets_clear_both_source_domains) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.001s
+
+OK

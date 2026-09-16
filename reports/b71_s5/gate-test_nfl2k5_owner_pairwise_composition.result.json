@@ -1,0 +1,12 @@
+{
+  "name": "gate-test_nfl2k5_owner_pairwise_composition",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py",
+    "-v"
+  ],
+  "start_utc": "2026-09-16T03:15:55.935283+00:00",
+  "end_utc": "2026-09-16T04:05:22.898068+00:00",
+  "seconds": 2966.963,
+  "exit_code": 0
+}

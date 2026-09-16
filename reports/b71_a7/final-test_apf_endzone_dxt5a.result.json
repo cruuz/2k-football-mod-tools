@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_endzone_dxt5a",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_endzone_dxt5a.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:48:13.863894+00:00",
+  "ended": "2026-09-16T00:48:51.774377+00:00",
+  "seconds": 37.91,
+  "exit_code": 0
+}

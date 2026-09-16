@@ -1,0 +1,11 @@
+test_save_accepts_exact_member_limit_and_rejects_one_more (__main__.ProjectStreamingSaveTests.test_save_accepts_exact_member_limit_and_rejects_one_more) ... ok
+test_save_streams_payload_members_without_path_read_bytes_or_writestr (__main__.ProjectStreamingSaveTests.test_save_streams_payload_members_without_path_read_bytes_or_writestr) ... ok
+test_second_hash_rejects_same_size_change_and_preserves_destination (__main__.ProjectStreamingSaveTests.test_second_hash_rejects_same_size_change_and_preserves_destination) ... ok
+test_loader_accepts_exact_limits_and_rejects_each_overrun (__main__.ProjectStructuralLimitTests.test_loader_accepts_exact_limits_and_rejects_each_overrun) ... ok
+test_product_limits_cover_ratings_plus_future_audio_scale (__main__.ProjectStructuralLimitTests.test_product_limits_cover_ratings_plus_future_audio_scale) ... ok
+test_save_rejects_expanded_or_archive_limit_without_publishing (__main__.ProjectStructuralLimitTests.test_save_rejects_expanded_or_archive_limit_without_publishing) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.009s
+
+OK

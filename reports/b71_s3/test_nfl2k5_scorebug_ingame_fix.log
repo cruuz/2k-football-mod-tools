@@ -1,0 +1,23 @@
+....E.E..
+======================================================================
+ERROR: test_play_clock_color_isolated_and_static_composes_in_both_orders (__main__.NativeFixTests.test_play_clock_color_isolated_and_static_composes_in_both_orders)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py", line 189, in test_play_clock_color_isolated_and_static_composes_in_both_orders
+    at = code.index(bytes.fromhex('c705485aa900')+struct.pack('<I',runtime.DARK))+6
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: subsection not found
+
+======================================================================
+ERROR: test_runtime_event_row_composes_with_private_fonts_in_all_placements (__main__.NativeFixTests.test_runtime_event_row_composes_with_private_fonts_in_all_placements)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py", line 223, in test_runtime_event_row_composes_with_private_fonts_in_all_placements
+    self.assertFalse(overlap(event,box(rows[callback])))
+                                       ~~~~^^^^^^^^^^
+KeyError: '0xfc050'
+
+----------------------------------------------------------------------
+Ran 9 tests in 108.794s
+
+FAILED (errors=2)

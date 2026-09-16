@@ -1,0 +1,376 @@
+{"label": "final-test_apf_audio_annotation_facade", "exit_code": 0, "seconds": 0.908, "started": "2026-09-15T22:42:05.917761+00:00", "log": "reports/b71_a6/final-test_apf_audio_annotation_facade.log"}
+PASS test_apf_audio_annotation_facade.py
+{"label": "final-test_apf2k8_playbook_route_writer", "exit_code": 0, "seconds": 1.038, "started": "2026-09-15T22:42:05.916325+00:00", "log": "reports/b71_a6/final-test_apf2k8_playbook_route_writer.log"}
+PASS test_apf2k8_playbook_route_writer.py
+{"label": "final-test_apf_audio_batch_export", "exit_code": 0, "seconds": 0.403, "started": "2026-09-15T22:42:06.954133+00:00", "log": "reports/b71_a6/final-test_apf_audio_batch_export.log"}
+PASS test_apf_audio_batch_export.py
+{"label": "final-test_apf_audio_annotations", "exit_code": 0, "seconds": 0.595, "started": "2026-09-15T22:42:06.826531+00:00", "log": "reports/b71_a6/final-test_apf_audio_annotations.log"}
+PASS test_apf_audio_annotations.py
+{"label": "final-test_apf_all_crest_slots", "exit_code": 0, "seconds": 1.516, "started": "2026-09-15T22:42:05.917137+00:00", "log": "reports/b71_a6/final-test_apf_all_crest_slots.log"}
+PASS test_apf_all_crest_slots.py
+{"label": "final-test_apf_audio_batch_facade", "exit_code": 0, "seconds": 0.544, "started": "2026-09-15T22:42:07.357158+00:00", "log": "reports/b71_a6/final-test_apf_audio_batch_facade.log"}
+PASS test_apf_audio_batch_facade.py
+{"label": "final-test_apf2k8_coverage_tuning", "exit_code": 0, "seconds": 2.504, "started": "2026-09-15T22:42:05.915823+00:00", "log": "reports/b71_a6/final-test_apf2k8_coverage_tuning.log"}
+PASS test_apf2k8_coverage_tuning.py
+{"label": "final-test_apf_audio_batch_gui", "exit_code": 0, "seconds": 1.314, "started": "2026-09-15T22:42:07.422037+00:00", "log": "reports/b71_a6/final-test_apf_audio_batch_gui.log"}
+PASS test_apf_audio_batch_gui.py
+{"label": "final-test_apf_audio_decode_cancellation", "exit_code": 0, "seconds": 1.561, "started": "2026-09-15T22:42:07.433408+00:00", "log": "reports/b71_a6/final-test_apf_audio_decode_cancellation.log"}
+PASS test_apf_audio_decode_cancellation.py
+{"label": "final-test_apf_audio_drop_zone_gui", "exit_code": 0, "seconds": 1.21, "started": "2026-09-15T22:42:07.901232+00:00", "log": "reports/b71_a6/final-test_apf_audio_drop_zone_gui.log"}
+PASS test_apf_audio_drop_zone_gui.py
+{"label": "final-test_apf_audio_encoder_gui", "exit_code": 0, "seconds": 1.245, "started": "2026-09-15T22:42:08.419964+00:00", "log": "reports/b71_a6/final-test_apf_audio_encoder_gui.log"}
+PASS test_apf_audio_encoder_gui.py
+{"label": "final-test_apf_audio_replacement_pack", "exit_code": 0, "seconds": 1.035, "started": "2026-09-15T22:42:09.665474+00:00", "log": "reports/b71_a6/final-test_apf_audio_replacement_pack.log"}
+PASS test_apf_audio_replacement_pack.py
+{"label": "final-test_apf_audio_pcm_product_backend", "exit_code": 0, "seconds": 1.611, "started": "2026-09-15T22:42:09.112151+00:00", "log": "reports/b71_a6/final-test_apf_audio_pcm_product_backend.log"}
+PASS test_apf_audio_pcm_product_backend.py
+{"label": "final-test_apf_audo_exact_slot", "exit_code": 0, "seconds": 0.43, "started": "2026-09-15T22:42:10.723631+00:00", "log": "reports/b71_a6/final-test_apf_audo_exact_slot.log"}
+PASS test_apf_audo_exact_slot.py
+{"label": "final-test_apf_audo_product_backend", "exit_code": 0, "seconds": 0.579, "started": "2026-09-15T22:42:11.154041+00:00", "log": "reports/b71_a6/final-test_apf_audo_product_backend.log"}
+PASS test_apf_audo_product_backend.py
+{"label": "final-test_apf_audio_waveform_qt", "exit_code": 0, "seconds": 1.198, "started": "2026-09-15T22:42:10.700537+00:00", "log": "reports/b71_a6/final-test_apf_audio_waveform_qt.log"}
+PASS test_apf_audio_waveform_qt.py
+{"label": "final-test_apf_audo_project", "exit_code": 0, "seconds": 0.328, "started": "2026-09-15T22:42:11.733254+00:00", "log": "reports/b71_a6/final-test_apf_audo_project.log"}
+PASS test_apf_audo_project.py
+{"label": "final-test_apf_ausb_product_backend", "exit_code": 0, "seconds": 0.633, "started": "2026-09-15T22:42:12.061743+00:00", "log": "reports/b71_a6/final-test_apf_ausb_product_backend.log"}
+PASS test_apf_ausb_product_backend.py
+{"label": "final-test_apf_audio_import_idle_barrier", "exit_code": 0, "seconds": 6.165, "started": "2026-09-15T22:42:08.995147+00:00", "log": "reports/b71_a6/final-test_apf_audio_import_idle_barrier.log"}
+PASS test_apf_audio_import_idle_barrier.py
+{"label": "final-test_apf_b661_ladder", "exit_code": 0, "seconds": 0.786, "started": "2026-09-15T22:42:15.160394+00:00", "log": "reports/b71_a6/final-test_apf_b661_ladder.log"}
+PASS test_apf_b661_ladder.py
+{"label": "final-test_apf_b66_appearance", "exit_code": 0, "seconds": 4.706, "started": "2026-09-15T22:42:15.946349+00:00", "log": "reports/b71_a6/final-test_apf_b66_appearance.log"}
+PASS test_apf_b66_appearance.py
+{"label": "final-test_apf_audio_encoding", "exit_code": 0, "seconds": 16.097, "started": "2026-09-15T22:42:08.736275+00:00", "log": "reports/b71_a6/final-test_apf_audio_encoding.log"}
+PASS test_apf_audio_encoding.py
+{"label": "final-test_apf_b66_personnel", "exit_code": 0, "seconds": 6.408, "started": "2026-09-15T22:42:20.653187+00:00", "log": "reports/b71_a6/final-test_apf_b66_personnel.log"}
+PASS test_apf_b66_personnel.py
+{"label": "final-test_apf_ausb_exact_slot", "exit_code": 0, "seconds": 19.912, "started": "2026-09-15T22:42:11.898842+00:00", "log": "reports/b71_a6/final-test_apf_ausb_exact_slot.log"}
+PASS test_apf_ausb_exact_slot.py
+{"label": "final-test_apf_b661_book_content", "exit_code": 0, "seconds": 42.224, "started": "2026-09-15T22:42:12.694779+00:00", "log": "reports/b71_a6/final-test_apf_b661_book_content.log"}
+PASS test_apf_b661_book_content.py
+{"label": "final-test_apf_b67_clone", "exit_code": 0, "seconds": 56.338, "started": "2026-09-15T22:42:27.061559+00:00", "log": "reports/b71_a6/final-test_apf_b67_clone.log"}
+PASS test_apf_b67_clone.py
+{"label": "final-test_apf_b67_books_qt", "exit_code": 0, "seconds": 90.687, "started": "2026-09-15T22:42:24.833381+00:00", "log": "reports/b71_a6/final-test_apf_b67_books_qt.log"}
+PASS test_apf_b67_books_qt.py
+{"label": "final-test_apf_b67_static_audit", "exit_code": 0, "seconds": 0.233, "started": "2026-09-15T22:43:55.520433+00:00", "log": "reports/b71_a6/final-test_apf_b67_static_audit.log"}
+PASS test_apf_b67_static_audit.py
+{"label": "final-test_apf_b67_writers", "exit_code": 0, "seconds": 0.812, "started": "2026-09-15T22:43:55.753640+00:00", "log": "reports/b71_a6/final-test_apf_b67_writers.log"}
+PASS test_apf_b67_writers.py
+{"label": "final-test_apf_b67_model_edges_native", "exit_code": 0, "seconds": 134.131, "started": "2026-09-15T22:42:54.918854+00:00", "log": "reports/b71_a6/final-test_apf_b67_model_edges_native.log"}
+PASS test_apf_b67_model_edges_native.py
+{"label": "final-test_apf_b67_xenia_patch", "exit_code": 0, "seconds": 0.503, "started": "2026-09-15T22:45:09.050590+00:00", "log": "reports/b71_a6/final-test_apf_b67_xenia_patch.log"}
+PASS test_apf_b67_xenia_patch.py
+{"label": "final-test_apf_b69_build", "exit_code": 0, "seconds": 51.879, "started": "2026-09-15T22:45:09.554316+00:00", "log": "reports/b71_a6/final-test_apf_b69_build.log"}
+PASS test_apf_b69_build.py
+{"label": "final-test_apf_b69_control_audit", "exit_code": 0, "seconds": 0.194, "started": "2026-09-15T22:46:01.433636+00:00", "log": "reports/b71_a6/final-test_apf_b69_control_audit.log"}
+PASS test_apf_b69_control_audit.py
+{"label": "final-test_apf_b67_defense_model_native", "exit_code": 0, "seconds": 240.53, "started": "2026-09-15T22:42:31.811767+00:00", "log": "reports/b71_a6/final-test_apf_b67_defense_model_native.log"}
+PASS test_apf_b67_defense_model_native.py
+{"label": "final-test_apf_b69_formation_calling", "exit_code": 0, "seconds": 1.074, "started": "2026-09-15T22:46:32.342372+00:00", "log": "reports/b71_a6/final-test_apf_b69_formation_calling.log"}
+PASS test_apf_b69_formation_calling.py
+{"label": "final-test_apf_b69_launch_patches", "exit_code": 0, "seconds": 0.863, "started": "2026-09-15T22:46:33.417595+00:00", "log": "reports/b71_a6/final-test_apf_b69_launch_patches.log"}
+PASS test_apf_b69_launch_patches.py
+{"label": "final-test_apf_b69_editor_qt", "exit_code": 0, "seconds": 126.104, "started": "2026-09-15T22:46:01.627992+00:00", "log": "reports/b71_a6/final-test_apf_b69_editor_qt.log"}
+PASS test_apf_b69_editor_qt.py
+{"label": "final-test_apf_b67_writers_native", "exit_code": 0, "seconds": 441.446, "started": "2026-09-15T22:43:56.565865+00:00", "log": "reports/b71_a6/final-test_apf_b67_writers_native.log"}
+PASS test_apf_b67_writers_native.py
+{"label": "final-test_apf_b69_retirement_native", "exit_code": 0, "seconds": 193.429, "started": "2026-09-15T22:48:07.732717+00:00", "log": "reports/b71_a6/final-test_apf_b69_retirement_native.log"}
+PASS test_apf_b69_retirement_native.py
+{"label": "final-test_apf_b69_wiring", "exit_code": 0, "seconds": 0.679, "started": "2026-09-15T22:51:21.162421+00:00", "log": "reports/b71_a6/final-test_apf_b69_wiring.log"}
+PASS test_apf_b69_wiring.py
+{"label": "final-test_apf_b69_schemes", "exit_code": 0, "seconds": 48.071, "started": "2026-09-15T22:51:18.012596+00:00", "log": "reports/b71_a6/final-test_apf_b69_schemes.log"}
+PASS test_apf_b69_schemes.py
+{"label": "final-test_apf_b71_situation_mask", "exit_code": 0, "seconds": 4.709, "started": "2026-09-15T22:52:06.084088+00:00", "log": "reports/b71_a6/final-test_apf_b71_situation_mask.log"}
+PASS test_apf_b71_situation_mask.py
+{"label": "final-test_apf_b71_situation_mask_abi", "exit_code": 0, "seconds": 7.615, "started": "2026-09-15T22:52:10.793927+00:00", "log": "reports/b71_a6/final-test_apf_b71_situation_mask_abi.log"}
+PASS test_apf_b71_situation_mask_abi.py
+{"label": "final-test_apf_b71_situation_mask_install", "exit_code": 0, "seconds": 2.094, "started": "2026-09-15T22:52:18.409333+00:00", "log": "reports/b71_a6/final-test_apf_b71_situation_mask_install.log"}
+PASS test_apf_b71_situation_mask_install.py
+{"label": "final-test_apf_b70_stock_recipes", "exit_code": 0, "seconds": 243.436, "started": "2026-09-15T22:51:21.842446+00:00", "log": "reports/b71_a6/final-test_apf_b70_stock_recipes.log"}
+PASS test_apf_b70_stock_recipes.py
+{"label": "final-test_apf_b71_situation_mask_qt", "exit_code": 0, "seconds": 1.928, "started": "2026-09-15T22:55:25.279076+00:00", "log": "reports/b71_a6/final-test_apf_b71_situation_mask_qt.log"}
+PASS test_apf_b71_situation_mask_qt.py
+{"label": "final-test_apf_b71_situations", "exit_code": 0, "seconds": 4.681, "started": "2026-09-15T22:55:27.207296+00:00", "log": "reports/b71_a6/final-test_apf_b71_situations.log"}
+PASS test_apf_b71_situations.py
+{"label": "final-test_apf_book_identity_qt", "exit_code": 0, "seconds": 0.28, "started": "2026-09-15T22:55:31.888205+00:00", "log": "reports/b71_a6/final-test_apf_book_identity_qt.log"}
+PASS test_apf_book_identity_qt.py
+{"label": "final-test_apf_book_unlock", "exit_code": 0, "seconds": 25.08, "started": "2026-09-15T22:55:32.168428+00:00", "log": "reports/b71_a6/final-test_apf_book_unlock.log"}
+PASS test_apf_book_unlock.py
+{"label": "final-test_apf_book_unlock_retail", "exit_code": 0, "seconds": 0.166, "started": "2026-09-15T22:55:57.248565+00:00", "log": "reports/b71_a6/final-test_apf_book_unlock_retail.log"}
+PASS test_apf_book_unlock_retail.py
+{"label": "final-test_apf_browser_workspace_handoff", "exit_code": 0, "seconds": 0.902, "started": "2026-09-15T22:55:57.414810+00:00", "log": "reports/b71_a6/final-test_apf_browser_workspace_handoff.log"}
+PASS test_apf_browser_workspace_handoff.py
+{"label": "final-test_apf_build_ausb_overlays", "exit_code": 0, "seconds": 0.351, "started": "2026-09-15T22:55:58.316917+00:00", "log": "reports/b71_a6/final-test_apf_build_ausb_overlays.log"}
+PASS test_apf_build_ausb_overlays.py
+{"label": "final-test_apf_build_raw_span_overlays", "exit_code": 0, "seconds": 0.359, "started": "2026-09-15T22:55:58.668239+00:00", "log": "reports/b71_a6/final-test_apf_build_raw_span_overlays.log"}
+PASS test_apf_build_raw_span_overlays.py
+{"label": "final-test_apf_capability_action_parity", "exit_code": 0, "seconds": 0.477, "started": "2026-09-15T22:55:59.028031+00:00", "log": "reports/b71_a6/final-test_apf_capability_action_parity.log"}
+PASS test_apf_capability_action_parity.py
+{"label": "final-test_apf_copied_volume_metadata", "exit_code": 0, "seconds": 0.327, "started": "2026-09-15T22:55:59.505592+00:00", "log": "reports/b71_a6/final-test_apf_copied_volume_metadata.log"}
+PASS test_apf_copied_volume_metadata.py
+{"label": "final-test_apf_coverage_research_tools", "exit_code": 0, "seconds": 0.075, "started": "2026-09-15T22:55:59.833396+00:00", "log": "reports/b71_a6/final-test_apf_coverage_research_tools.log"}
+PASS test_apf_coverage_research_tools.py
+{"label": "final-test_apf_cpu_audibles", "exit_code": 0, "seconds": 3.028, "started": "2026-09-15T22:55:59.908900+00:00", "log": "reports/b71_a6/final-test_apf_cpu_audibles.log"}
+PASS test_apf_cpu_audibles.py
+{"label": "final-test_apf_crest_budget_import", "exit_code": 0, "seconds": 0.904, "started": "2026-09-15T22:56:02.936921+00:00", "log": "reports/b71_a6/final-test_apf_crest_budget_import.log"}
+PASS test_apf_crest_budget_import.py
+{"label": "final-test_apf_crest_fit", "exit_code": 0, "seconds": 28.766, "started": "2026-09-15T22:56:03.841160+00:00", "log": "reports/b71_a6/final-test_apf_crest_fit.log"}
+PASS test_apf_crest_fit.py
+{"label": "final-test_apf_cross_domain_audio_safety", "exit_code": 0, "seconds": 0.343, "started": "2026-09-15T22:56:32.607228+00:00", "log": "reports/b71_a6/final-test_apf_cross_domain_audio_safety.log"}
+PASS test_apf_cross_domain_audio_safety.py
+{"label": "final-test_apf_cubemap_face0_preview", "exit_code": 0, "seconds": 20.471, "started": "2026-09-15T22:56:32.951187+00:00", "log": "reports/b71_a6/final-test_apf_cubemap_face0_preview.log"}
+PASS test_apf_cubemap_face0_preview.py
+{"label": "final-test_apf_custom_team_appearance_gui", "exit_code": 0, "seconds": 0.296, "started": "2026-09-15T22:56:53.422717+00:00", "log": "reports/b71_a6/final-test_apf_custom_team_appearance_gui.log"}
+PASS test_apf_custom_team_appearance_gui.py
+{"label": "final-test_apf_custom_team_appearance_patch", "exit_code": 0, "seconds": 6.971, "started": "2026-09-15T22:56:53.719240+00:00", "log": "reports/b71_a6/final-test_apf_custom_team_appearance_patch.log"}
+PASS test_apf_custom_team_appearance_patch.py
+{"label": "final-test_apf_defense_research_identity", "exit_code": 0, "seconds": 0.526, "started": "2026-09-15T22:57:00.691149+00:00", "log": "reports/b71_a6/final-test_apf_defense_research_identity.log"}
+PASS test_apf_defense_research_identity.py
+{"label": "final-test_apf_b71_situation_mask_native", "exit_code": 0, "seconds": 375.569, "started": "2026-09-15T22:52:20.504021+00:00", "log": "reports/b71_a6/final-test_apf_b71_situation_mask_native.log"}
+PASS test_apf_b71_situation_mask_native.py
+{"label": "final-test_apf_digital_font", "exit_code": 0, "seconds": 0.378, "started": "2026-09-15T22:58:36.073781+00:00", "log": "reports/b71_a6/final-test_apf_digital_font.log"}
+PASS test_apf_digital_font.py
+{"label": "final-test_apf_dxn_base_only_namefont", "exit_code": 0, "seconds": 15.199, "started": "2026-09-15T22:58:36.452291+00:00", "log": "reports/b71_a6/final-test_apf_dxn_base_only_namefont.log"}
+PASS test_apf_dxn_base_only_namefont.py
+{"label": "final-test_apf_dxt5a_general_preview", "exit_code": 0, "seconds": 21.298, "started": "2026-09-15T22:58:51.651235+00:00", "log": "reports/b71_a6/final-test_apf_dxt5a_general_preview.log"}
+PASS test_apf_dxt5a_general_preview.py
+{"label": "final-test_apf_defense_research_native", "exit_code": 0, "seconds": 136.811, "started": "2026-09-15T22:57:01.217749+00:00", "log": "reports/b71_a6/final-test_apf_defense_research_native.log"}
+PASS test_apf_defense_research_native.py
+{"label": "final-test_apf_export", "exit_code": 0, "seconds": 0.149, "started": "2026-09-15T22:59:18.029414+00:00", "log": "reports/b71_a6/final-test_apf_export.log"}
+PASS test_apf_export.py
+{"label": "final-test_apf_external_audio_bank_bundle", "exit_code": 0, "seconds": 0.392, "started": "2026-09-15T22:59:18.178751+00:00", "log": "reports/b71_a6/final-test_apf_external_audio_bank_bundle.log"}
+PASS test_apf_external_audio_bank_bundle.py
+{"label": "final-test_apf_field_art", "exit_code": 0, "seconds": 0.199, "started": "2026-09-15T22:59:18.570889+00:00", "log": "reports/b71_a6/final-test_apf_field_art.log"}
+PASS test_apf_field_art.py
+{"label": "final-test_apf_field_art_gui", "exit_code": 0, "seconds": 0.983, "started": "2026-09-15T22:59:18.770514+00:00", "log": "reports/b71_a6/final-test_apf_field_art_gui.log"}
+PASS test_apf_field_art_gui.py
+{"label": "final-test_apf_endzone_dxt5a", "exit_code": 0, "seconds": 38.293, "started": "2026-09-15T22:59:12.949218+00:00", "log": "reports/b71_a6/final-test_apf_endzone_dxt5a.log"}
+PASS test_apf_endzone_dxt5a.py
+{"label": "final-test_apf_field_art_stock_label", "exit_code": 0, "seconds": 0.537, "started": "2026-09-15T22:59:51.242216+00:00", "log": "reports/b71_a6/final-test_apf_field_art_stock_label.log"}
+PASS test_apf_field_art_stock_label.py
+{"label": "final-test_apf_b69_native", "exit_code": 0, "seconds": 910.235, "started": "2026-09-15T22:46:34.280720+00:00", "log": "reports/b71_a6/final-test_apf_b69_native.log"}
+PASS test_apf_b69_native.py
+{"label": "final-test_apf_field_material_project", "exit_code": 0, "seconds": 0.559, "started": "2026-09-15T23:01:44.515952+00:00", "log": "reports/b71_a6/final-test_apf_field_material_project.log"}
+PASS test_apf_field_material_project.py
+{"label": "final-test_apf_field_material_writer", "exit_code": 0, "seconds": 0.349, "started": "2026-09-15T23:01:45.074864+00:00", "log": "reports/b71_a6/final-test_apf_field_material_writer.log"}
+PASS test_apf_field_material_writer.py
+{"label": "final-test_apf_formation_alignment_writer", "exit_code": 0, "seconds": 0.342, "started": "2026-09-15T23:01:45.423873+00:00", "log": "reports/b71_a6/final-test_apf_formation_alignment_writer.log"}
+PASS test_apf_formation_alignment_writer.py
+{"label": "final-test_apf_fourth_down", "exit_code": 0, "seconds": 0.21, "started": "2026-09-15T23:01:45.766132+00:00", "log": "reports/b71_a6/final-test_apf_fourth_down.log"}
+PASS test_apf_fourth_down.py
+{"label": "final-test_apf_field_extra_roundtrip", "exit_code": 0, "seconds": 211.733, "started": "2026-09-15T22:59:51.779436+00:00", "log": "reports/b71_a6/final-test_apf_field_extra_roundtrip.log"}
+PASS test_apf_field_extra_roundtrip.py
+{"label": "final-test_apf_fourth_down_qt", "exit_code": 0, "seconds": 0.185, "started": "2026-09-15T23:03:23.512921+00:00", "log": "reports/b71_a6/final-test_apf_fourth_down_qt.log"}
+PASS test_apf_fourth_down_qt.py
+{"label": "final-test_apf_full_shell_visual_gate", "exit_code": 0, "seconds": 0.052, "started": "2026-09-15T23:03:23.697950+00:00", "log": "reports/b71_a6/final-test_apf_full_shell_visual_gate.log"}
+PASS test_apf_full_shell_visual_gate.py
+{"label": "final-test_apf_g12_surfaces", "exit_code": 0, "seconds": 0.509, "started": "2026-09-15T23:03:23.750250+00:00", "log": "reports/b71_a6/final-test_apf_g12_surfaces.log"}
+PASS test_apf_g12_surfaces.py
+{"label": "final-test_apf_helmet_crest_design_product", "exit_code": 0, "seconds": 1.453, "started": "2026-09-15T23:03:24.259516+00:00", "log": "reports/b71_a6/final-test_apf_helmet_crest_design_product.log"}
+PASS test_apf_helmet_crest_design_product.py
+{"label": "final-test_apf_fourth_down_native", "exit_code": 0, "seconds": 104.082, "started": "2026-09-15T23:01:45.976815+00:00", "log": "reports/b71_a6/final-test_apf_fourth_down_native.log"}
+PASS test_apf_fourth_down_native.py
+{"label": "final-test_apf_helmet_logo_placement", "exit_code": 0, "seconds": 7.353, "started": "2026-09-15T23:03:25.713251+00:00", "log": "reports/b71_a6/final-test_apf_helmet_logo_placement.log"}
+PASS test_apf_helmet_logo_placement.py
+{"label": "final-test_apf_helmet_logo_regions", "exit_code": 0, "seconds": 4.014, "started": "2026-09-15T23:03:30.059518+00:00", "log": "reports/b71_a6/final-test_apf_helmet_logo_regions.log"}
+PASS test_apf_helmet_logo_regions.py
+{"label": "final-test_apf_helmet_logo_regions_qt", "exit_code": 0, "seconds": 1.229, "started": "2026-09-15T23:03:33.067017+00:00", "log": "reports/b71_a6/final-test_apf_helmet_logo_regions_qt.log"}
+PASS test_apf_helmet_logo_regions_qt.py
+{"label": "final-test_apf_iso_extraction_is_layout_tolerant", "exit_code": 0, "seconds": 0.21, "started": "2026-09-15T23:03:34.296651+00:00", "log": "reports/b71_a6/final-test_apf_iso_extraction_is_layout_tolerant.log"}
+PASS test_apf_iso_extraction_is_layout_tolerant.py
+{"label": "final-test_apf_linear_txtr_png", "exit_code": 0, "seconds": 0.06, "started": "2026-09-15T23:03:34.507237+00:00", "log": "reports/b71_a6/final-test_apf_linear_txtr_png.log"}
+PASS test_apf_linear_txtr_png.py
+{"label": "final-test_apf_import_offers_resize", "exit_code": 0, "seconds": 0.635, "started": "2026-09-15T23:03:34.074314+00:00", "log": "reports/b71_a6/final-test_apf_import_offers_resize.log"}
+PASS test_apf_import_offers_resize.py
+{"label": "final-test_apf_logo_surface_ownership", "exit_code": 0, "seconds": 0.096, "started": "2026-09-15T23:03:34.709519+00:00", "log": "reports/b71_a6/final-test_apf_logo_surface_ownership.log"}
+PASS test_apf_logo_surface_ownership.py
+{"label": "final-test_apf_logo_patch", "exit_code": 0, "seconds": 13.905, "started": "2026-09-15T23:03:34.567359+00:00", "log": "reports/b71_a6/final-test_apf_logo_patch.log"}
+PASS test_apf_logo_patch.py
+{"label": "final-test_apf_mask_preview_alpha", "exit_code": 0, "seconds": 0.176, "started": "2026-09-15T23:03:48.472368+00:00", "log": "reports/b71_a6/final-test_apf_mask_preview_alpha.log"}
+PASS test_apf_mask_preview_alpha.py
+{"label": "final-test_apf_model_export_gui", "exit_code": 0, "seconds": 2.696, "started": "2026-09-15T23:03:48.648636+00:00", "log": "reports/b71_a6/final-test_apf_model_export_gui.log"}
+PASS test_apf_model_export_gui.py
+{"label": "final-test_apf_field_art_patch", "exit_code": 0, "seconds": 296.761, "started": "2026-09-15T22:59:19.753856+00:00", "log": "reports/b71_a6/final-test_apf_field_art_patch.log"}
+PASS test_apf_field_art_patch.py
+{"label": "final-test_apf_logocache_patch", "exit_code": 0, "seconds": 43.045, "started": "2026-09-15T23:03:34.805537+00:00", "log": "reports/b71_a6/final-test_apf_logocache_patch.log"}
+PASS test_apf_logocache_patch.py
+{"label": "final-test_apf_number_encode_defaults", "exit_code": 0, "seconds": 2.135, "started": "2026-09-15T23:04:16.514721+00:00", "log": "reports/b71_a6/final-test_apf_number_encode_defaults.log"}
+PASS test_apf_number_encode_defaults.py
+{"label": "final-test_apf_package_map_writer", "exit_code": 0, "seconds": 1.369, "started": "2026-09-15T23:04:18.650537+00:00", "log": "reports/b71_a6/final-test_apf_package_map_writer.log"}
+PASS test_apf_package_map_writer.py
+{"label": "final-test_apf_pass_fetch_export_qt", "exit_code": 0, "seconds": 0.518, "started": "2026-09-15T23:04:20.020274+00:00", "log": "reports/b71_a6/final-test_apf_pass_fetch_export_qt.log"}
+PASS test_apf_pass_fetch_export_qt.py
+{"label": "final-test_apf_play_designer", "exit_code": 0, "seconds": 13.611, "started": "2026-09-15T23:04:20.539103+00:00", "log": "reports/b71_a6/final-test_apf_play_designer.log"}
+PASS test_apf_play_designer.py
+{"label": "final-test_apf_play_designer_project", "exit_code": 0, "seconds": 0.509, "started": "2026-09-15T23:04:34.150422+00:00", "log": "reports/b71_a6/final-test_apf_play_designer_project.log"}
+PASS test_apf_play_designer_project.py
+{"label": "final-test_apf_play_designer_qt", "exit_code": 0, "seconds": 0.351, "started": "2026-09-15T23:04:34.659905+00:00", "log": "reports/b71_a6/final-test_apf_play_designer_qt.log"}
+PASS test_apf_play_designer_qt.py
+{"label": "final-test_apf_playbook_route_gui", "exit_code": 0, "seconds": 0.35, "started": "2026-09-15T23:04:35.011209+00:00", "log": "reports/b71_a6/final-test_apf_playbook_route_gui.log"}
+PASS test_apf_playbook_route_gui.py
+{"label": "final-test_apf_playcall_patch", "exit_code": 0, "seconds": 2.049, "started": "2026-09-15T23:04:35.361227+00:00", "log": "reports/b71_a6/final-test_apf_playcall_patch.log"}
+PASS test_apf_playcall_patch.py
+{"label": "final-test_apf_model_import", "exit_code": 0, "seconds": 51.901, "started": "2026-09-15T23:03:51.345156+00:00", "log": "reports/b71_a6/final-test_apf_model_import.log"}
+PASS test_apf_model_import.py
+{"label": "final-test_apf_b67_model_native", "exit_code": 0, "seconds": 1344.506, "started": "2026-09-15T22:43:23.400343+00:00", "log": "reports/b71_a6/final-test_apf_b67_model_native.log"}
+PASS test_apf_b67_model_native.py
+{"label": "final-test_apf_playcalling_editor_facade", "exit_code": 0, "seconds": 3.038, "started": "2026-09-15T23:05:47.906955+00:00", "log": "reports/b71_a6/final-test_apf_playcalling_editor_facade.log"}
+PASS test_apf_playcalling_editor_facade.py
+{"label": "final-test_apf_playcalling_editor_patches", "exit_code": 0, "seconds": 0.555, "started": "2026-09-15T23:05:50.945214+00:00", "log": "reports/b71_a6/final-test_apf_playcalling_editor_patches.log"}
+PASS test_apf_playcalling_editor_patches.py
+{"label": "final-test_apf_playcalling_editor_qt", "exit_code": 0, "seconds": 8.249, "started": "2026-09-15T23:05:51.500745+00:00", "log": "reports/b71_a6/final-test_apf_playcalling_editor_qt.log"}
+PASS test_apf_playcalling_editor_qt.py
+{"label": "final-test_apf_player_position_patch", "exit_code": 0, "seconds": 6.795, "started": "2026-09-15T23:05:59.749825+00:00", "log": "reports/b71_a6/final-test_apf_player_position_patch.log"}
+PASS test_apf_player_position_patch.py
+{"label": "final-test_apf_playcalling_editor_build", "exit_code": 0, "seconds": 92.912, "started": "2026-09-15T23:04:43.246247+00:00", "log": "reports/b71_a6/final-test_apf_playcalling_editor_build.log"}
+PASS test_apf_playcalling_editor_build.py
+{"label": "final-test_apf_player_positions", "exit_code": 0, "seconds": 0.111, "started": "2026-09-15T23:06:16.158940+00:00", "log": "reports/b71_a6/final-test_apf_player_positions.log"}
+PASS test_apf_player_positions.py
+{"label": "final-test_apf_player_rating_patch", "exit_code": 0, "seconds": 4.147, "started": "2026-09-15T23:06:16.270443+00:00", "log": "reports/b71_a6/final-test_apf_player_rating_patch.log"}
+PASS test_apf_player_rating_patch.py
+{"label": "final-test_apf_player_position_product_backend", "exit_code": 0, "seconds": 20.336, "started": "2026-09-15T23:06:06.545535+00:00", "log": "reports/b71_a6/final-test_apf_player_position_product_backend.log"}
+PASS test_apf_player_position_product_backend.py
+{"label": "final-test_apf_player_rating_product_backend", "exit_code": 0, "seconds": 9.032, "started": "2026-09-15T23:06:20.418147+00:00", "log": "reports/b71_a6/final-test_apf_player_rating_product_backend.log"}
+PASS test_apf_player_rating_product_backend.py
+{"label": "final-test_apf_player_ratings", "exit_code": 0, "seconds": 0.792, "started": "2026-09-15T23:06:29.450666+00:00", "log": "reports/b71_a6/final-test_apf_player_ratings.log"}
+PASS test_apf_player_ratings.py
+{"label": "final-test_apf_product_findings", "exit_code": 0, "seconds": 0.176, "started": "2026-09-15T23:06:30.243409+00:00", "log": "reports/b71_a6/final-test_apf_product_findings.log"}
+PASS test_apf_product_findings.py
+{"label": "final-test_apf_product_findings_gui", "exit_code": 0, "seconds": 0.576, "started": "2026-09-15T23:06:30.419588+00:00", "log": "reports/b71_a6/final-test_apf_product_findings_gui.log"}
+PASS test_apf_product_findings_gui.py
+{"label": "final-test_apf_product_validation_wrappers", "exit_code": 0, "seconds": 0.258, "started": "2026-09-15T23:06:30.996277+00:00", "log": "reports/b71_a6/final-test_apf_product_validation_wrappers.log"}
+PASS test_apf_product_validation_wrappers.py
+{"label": "final-test_apf_player_rating_sheet_import", "exit_code": 0, "seconds": 14.742, "started": "2026-09-15T23:06:26.881707+00:00", "log": "reports/b71_a6/final-test_apf_player_rating_sheet_import.log"}
+PASS test_apf_player_rating_sheet_import.py
+{"label": "final-test_apf_project_streaming", "exit_code": 0, "seconds": 0.207, "started": "2026-09-15T23:06:41.623887+00:00", "log": "reports/b71_a6/final-test_apf_project_streaming.log"}
+PASS test_apf_project_streaming.py
+{"label": "final-test_apf_ps3_probes", "exit_code": 0, "seconds": 1.115, "started": "2026-09-15T23:06:41.831121+00:00", "log": "reports/b71_a6/final-test_apf_ps3_probes.log"}
+PASS test_apf_ps3_probes.py
+{"label": "final-test_apf_ps3_roster_convert", "exit_code": 0, "seconds": 16.359, "started": "2026-09-15T23:06:42.946431+00:00", "log": "reports/b71_a6/final-test_apf_ps3_roster_convert.log"}
+PASS test_apf_ps3_roster_convert.py
+{"label": "final-test_apf_ps3_roster_import_qt", "exit_code": 0, "seconds": 1.597, "started": "2026-09-15T23:06:59.306341+00:00", "log": "reports/b71_a6/final-test_apf_ps3_roster_import_qt.log"}
+PASS test_apf_ps3_roster_import_qt.py
+{"label": "final-test_apf_project_document_workflow", "exit_code": 0, "seconds": 32.254, "started": "2026-09-15T23:06:31.254260+00:00", "log": "reports/b71_a6/final-test_apf_project_document_workflow.log"}
+PASS test_apf_project_document_workflow.py
+{"label": "final-test_apf_ps3_speed", "exit_code": 0, "seconds": 3.913, "started": "2026-09-15T23:07:00.903486+00:00", "log": "reports/b71_a6/final-test_apf_ps3_speed.log"}
+PASS test_apf_ps3_speed.py
+{"label": "final-test_apf_ps3_speed_packages", "exit_code": 0, "seconds": 10.192, "started": "2026-09-15T23:07:03.508937+00:00", "log": "reports/b71_a6/final-test_apf_ps3_speed_packages.log"}
+PASS test_apf_ps3_speed_packages.py
+{"label": "final-test_apf_ps3_texture_bundle_qt", "exit_code": 0, "seconds": 0.422, "started": "2026-09-15T23:07:13.701641+00:00", "log": "reports/b71_a6/final-test_apf_ps3_texture_bundle_qt.log"}
+PASS test_apf_ps3_texture_bundle_qt.py
+{"label": "final-test_apf_public_docs_registry_current", "exit_code": 0, "seconds": 0.16, "started": "2026-09-15T23:07:14.123951+00:00", "log": "reports/b71_a6/final-test_apf_public_docs_registry_current.log"}
+PASS test_apf_public_docs_registry_current.py
+{"label": "final-test_apf_rating_value_domains", "exit_code": 0, "seconds": 0.197, "started": "2026-09-15T23:07:14.284736+00:00", "log": "reports/b71_a6/final-test_apf_rating_value_domains.log"}
+PASS test_apf_rating_value_domains.py
+{"label": "final-test_apf_retail_crest_channel_audit", "exit_code": 0, "seconds": 0.055, "started": "2026-09-15T23:07:14.482166+00:00", "log": "reports/b71_a6/final-test_apf_retail_crest_channel_audit.log"}
+PASS test_apf_retail_crest_channel_audit.py
+{"label": "final-test_apf_roster_appearance_transfer", "exit_code": 0, "seconds": 8.601, "started": "2026-09-15T23:07:14.537233+00:00", "log": "reports/b71_a6/final-test_apf_roster_appearance_transfer.log"}
+PASS test_apf_roster_appearance_transfer.py
+{"label": "final-test_apf_roster_appearance_transfer_qt", "exit_code": 0, "seconds": 5.039, "started": "2026-09-15T23:07:23.138734+00:00", "log": "reports/b71_a6/final-test_apf_roster_appearance_transfer_qt.log"}
+PASS test_apf_roster_appearance_transfer_qt.py
+{"label": "final-test_apf_ps3_texture_bundle", "exit_code": 0, "seconds": 29.671, "started": "2026-09-15T23:07:04.816639+00:00", "log": "reports/b71_a6/final-test_apf_ps3_texture_bundle.log"}
+PASS test_apf_ps3_texture_bundle.py
+{"label": "final-test_apf_roster_identity_gui", "exit_code": 0, "seconds": 1.869, "started": "2026-09-15T23:07:34.488333+00:00", "log": "reports/b71_a6/final-test_apf_roster_identity_gui.log"}
+PASS test_apf_roster_identity_gui.py
+{"label": "final-test_apf_roster_workspace", "exit_code": 0, "seconds": 0.156, "started": "2026-09-15T23:07:36.358038+00:00", "log": "reports/b71_a6/final-test_apf_roster_workspace.log"}
+PASS test_apf_roster_workspace.py
+{"label": "final-test_apf_roster_workspace_gui", "exit_code": 0, "seconds": 0.395, "started": "2026-09-15T23:07:36.514474+00:00", "log": "reports/b71_a6/final-test_apf_roster_workspace_gui.log"}
+PASS test_apf_roster_workspace_gui.py
+{"label": "final-test_apf_save_playbook_assignments_gui", "exit_code": 0, "seconds": 1.322, "started": "2026-09-15T23:07:36.909650+00:00", "log": "reports/b71_a6/final-test_apf_save_playbook_assignments_gui.log"}
+PASS test_apf_save_playbook_assignments_gui.py
+{"label": "final-test_apf_roster_identity", "exit_code": 0, "seconds": 11.522, "started": "2026-09-15T23:07:28.177647+00:00", "log": "reports/b71_a6/final-test_apf_roster_identity.log"}
+PASS test_apf_roster_identity.py
+{"label": "final-test_apf_save_roster_players_gui", "exit_code": 0, "seconds": 0.785, "started": "2026-09-15T23:07:39.699618+00:00", "log": "reports/b71_a6/final-test_apf_save_roster_players_gui.log"}
+PASS test_apf_save_roster_players_gui.py
+{"label": "final-test_apf_scorebug_workspace_qt", "exit_code": 0, "seconds": 0.621, "started": "2026-09-15T23:07:40.485456+00:00", "log": "reports/b71_a6/final-test_apf_scorebug_workspace_qt.log"}
+PASS test_apf_scorebug_workspace_qt.py
+{"label": "final-test_apf_save_roster_players", "exit_code": 0, "seconds": 4.543, "started": "2026-09-15T23:07:38.232530+00:00", "log": "reports/b71_a6/final-test_apf_save_roster_players.log"}
+PASS test_apf_save_roster_players.py
+{"label": "final-test_apf_splb_add_multiple_formations", "exit_code": 0, "seconds": 0.594, "started": "2026-09-15T23:07:42.776037+00:00", "log": "reports/b71_a6/final-test_apf_splb_add_multiple_formations.log"}
+PASS test_apf_splb_add_multiple_formations.py
+{"label": "final-test_apf_splb_formation_personnel", "exit_code": 0, "seconds": 1.141, "started": "2026-09-15T23:07:43.370827+00:00", "log": "reports/b71_a6/final-test_apf_splb_formation_personnel.log"}
+PASS test_apf_splb_formation_personnel.py
+{"label": "final-test_apf_splb_tag_reassignment", "exit_code": 0, "seconds": 2.218, "started": "2026-09-15T23:07:44.511888+00:00", "log": "reports/b71_a6/final-test_apf_splb_tag_reassignment.log"}
+PASS test_apf_splb_tag_reassignment.py
+{"label": "final-test_apf_splb_writer", "exit_code": 0, "seconds": 0.382, "started": "2026-09-15T23:07:46.730734+00:00", "log": "reports/b71_a6/final-test_apf_splb_writer.log"}
+PASS test_apf_splb_writer.py
+{"label": "final-test_apf_stadium_material_findings", "exit_code": 0, "seconds": 0.115, "started": "2026-09-15T23:07:47.113117+00:00", "log": "reports/b71_a6/final-test_apf_stadium_material_findings.log"}
+PASS test_apf_stadium_material_findings.py
+{"label": "final-test_apf_stadium_model_import", "exit_code": 0, "seconds": 0.293, "started": "2026-09-15T23:07:47.228086+00:00", "log": "reports/b71_a6/final-test_apf_stadium_model_import.log"}
+PASS test_apf_stadium_model_import.py
+{"label": "final-test_apf_stadium_studio", "exit_code": 0, "seconds": 0.246, "started": "2026-09-15T23:07:47.521228+00:00", "log": "reports/b71_a6/final-test_apf_stadium_studio.log"}
+PASS test_apf_stadium_studio.py
+{"label": "final-test_apf_stadium_studio_gui", "exit_code": 0, "seconds": 0.602, "started": "2026-09-15T23:07:47.767648+00:00", "log": "reports/b71_a6/final-test_apf_stadium_studio_gui.log"}
+PASS test_apf_stadium_studio_gui.py
+{"label": "final-test_apf_shell_search_accessibility_qt", "exit_code": 0, "seconds": 11.391, "started": "2026-09-15T23:07:41.107189+00:00", "log": "reports/b71_a6/final-test_apf_shell_search_accessibility_qt.log"}
+PASS test_apf_shell_search_accessibility_qt.py
+{"label": "final-test_apf_stfs_roster_rehash", "exit_code": 0, "seconds": 0.685, "started": "2026-09-15T23:07:52.498759+00:00", "log": "reports/b71_a6/final-test_apf_stfs_roster_rehash.log"}
+PASS test_apf_stfs_roster_rehash.py
+{"label": "final-test_apf_studio_audio_gui", "exit_code": 0, "seconds": 1.177, "started": "2026-09-15T23:07:53.184165+00:00", "log": "reports/b71_a6/final-test_apf_studio_audio_gui.log"}
+PASS test_apf_studio_audio_gui.py
+{"label": "final-test_apf_studio_core", "exit_code": 0, "seconds": 0.256, "started": "2026-09-15T23:07:54.361461+00:00", "log": "reports/b71_a6/final-test_apf_studio_core.log"}
+PASS test_apf_studio_core.py
+{"label": "final-test_apf_studio_draft_logo", "exit_code": 0, "seconds": 0.599, "started": "2026-09-15T23:07:54.617333+00:00", "log": "reports/b71_a6/final-test_apf_studio_draft_logo.log"}
+PASS test_apf_studio_draft_logo.py
+{"label": "final-test_apf_studio_inspectors", "exit_code": 0, "seconds": 2.379, "started": "2026-09-15T23:07:55.217149+00:00", "log": "reports/b71_a6/final-test_apf_studio_inspectors.log"}
+PASS test_apf_studio_inspectors.py
+{"label": "final-test_apf_studio_installer", "exit_code": 1, "seconds": 10.004, "started": "2026-09-15T23:07:57.596608+00:00", "log": "reports/b71_a6/final-test_apf_studio_installer.log"}
+FAIL test_apf_studio_installer.py
+{"label": "final-test_apf_studio_safety", "exit_code": 0, "seconds": 0.514, "started": "2026-09-15T23:08:07.600757+00:00", "log": "reports/b71_a6/final-test_apf_studio_safety.log"}
+PASS test_apf_studio_safety.py
+{"label": "final-test_apf_studio_text_edit", "exit_code": 0, "seconds": 0.54, "started": "2026-09-15T23:08:08.115447+00:00", "log": "reports/b71_a6/final-test_apf_studio_text_edit.log"}
+PASS test_apf_studio_text_edit.py
+{"label": "final-test_apf_playcall_research_native", "exit_code": 0, "seconds": 219.801, "started": "2026-09-15T23:04:37.410310+00:00", "log": "reports/b71_a6/final-test_apf_playcall_research_native.log"}
+PASS test_apf_playcall_research_native.py
+{"label": "final-test_apf_team_art_qt", "exit_code": 0, "seconds": 0.608, "started": "2026-09-15T23:08:17.211290+00:00", "log": "reports/b71_a6/final-test_apf_team_art_qt.log"}
+PASS test_apf_team_art_qt.py
+{"label": "final-test_apf_team_crest_selection", "exit_code": 0, "seconds": 0.638, "started": "2026-09-15T23:08:17.819318+00:00", "log": "reports/b71_a6/final-test_apf_team_crest_selection.log"}
+PASS test_apf_team_crest_selection.py
+{"label": "final-test_apf_team_art", "exit_code": 0, "seconds": 10.24, "started": "2026-09-15T23:08:08.655583+00:00", "log": "reports/b71_a6/final-test_apf_team_art.log"}
+PASS test_apf_team_art.py
+{"label": "final-test_apf_text_sheet_gui", "exit_code": 0, "seconds": 0.582, "started": "2026-09-15T23:08:18.896372+00:00", "log": "reports/b71_a6/final-test_apf_text_sheet_gui.log"}
+PASS test_apf_text_sheet_gui.py
+{"label": "final-test_apf_textlogo_gui", "exit_code": 0, "seconds": 0.75, "started": "2026-09-15T23:08:19.478847+00:00", "log": "reports/b71_a6/final-test_apf_textlogo_gui.log"}
+PASS test_apf_textlogo_gui.py
+{"label": "final-test_apf_team_logo_gui", "exit_code": 0, "seconds": 2.074, "started": "2026-09-15T23:08:18.457470+00:00", "log": "reports/b71_a6/final-test_apf_team_logo_gui.log"}
+PASS test_apf_team_logo_gui.py
+{"label": "final-test_apf_number_texture_writer", "exit_code": 0, "seconds": 260.633, "started": "2026-09-15T23:04:17.851145+00:00", "log": "reports/b71_a6/final-test_apf_number_texture_writer.log"}
+PASS test_apf_number_texture_writer.py
+{"label": "final-test_apf_theme_layout_qt", "exit_code": 0, "seconds": 18.443, "started": "2026-09-15T23:08:20.531505+00:00", "log": "reports/b71_a6/final-test_apf_theme_layout_qt.log"}
+PASS test_apf_theme_layout_qt.py
+{"label": "final-test_apf_uniform_allocation_capacity", "exit_code": 0, "seconds": 1.42, "started": "2026-09-15T23:08:38.484256+00:00", "log": "reports/b71_a6/final-test_apf_uniform_allocation_capacity.log"}
+PASS test_apf_uniform_allocation_capacity.py
+{"label": "final-test_apf_uniform_equipment_colors_gui", "exit_code": 0, "seconds": 0.208, "started": "2026-09-15T23:08:39.904961+00:00", "log": "reports/b71_a6/final-test_apf_uniform_equipment_colors_gui.log"}
+PASS test_apf_uniform_equipment_colors_gui.py
+{"label": "final-test_apf_uniform_independence", "exit_code": 0, "seconds": 1.481, "started": "2026-09-15T23:08:40.113086+00:00", "log": "reports/b71_a6/final-test_apf_uniform_independence.log"}
+PASS test_apf_uniform_independence.py
+{"label": "final-test_apf_uniform_inventory_gui", "exit_code": 0, "seconds": 2.473, "started": "2026-09-15T23:08:41.595048+00:00", "log": "reports/b71_a6/final-test_apf_uniform_inventory_gui.log"}
+PASS test_apf_uniform_inventory_gui.py
+{"label": "final-test_apf_uniform_equipment_colors", "exit_code": 0, "seconds": 7.981, "started": "2026-09-15T23:08:38.974746+00:00", "log": "reports/b71_a6/final-test_apf_uniform_equipment_colors.log"}
+PASS test_apf_uniform_equipment_colors.py
+{"label": "final-test_apf_wordmark_regions", "exit_code": 0, "seconds": 0.163, "started": "2026-09-15T23:08:46.956401+00:00", "log": "reports/b71_a6/final-test_apf_wordmark_regions.log"}
+PASS test_apf_wordmark_regions.py
+{"label": "final-test_apf_wave_integration", "exit_code": 0, "seconds": 14.039, "started": "2026-09-15T23:08:44.068332+00:00", "log": "reports/b71_a6/final-test_apf_wave_integration.log"}
+PASS test_apf_wave_integration.py
+{"label": "final-test_apf_xenia_edge", "exit_code": 0, "seconds": 0.166, "started": "2026-09-15T23:08:58.108056+00:00", "log": "reports/b71_a6/final-test_apf_xenia_edge.log"}
+PASS test_apf_xenia_edge.py
+{"label": "final-test_apf_xenos_4444_mip_layout", "exit_code": 0, "seconds": 1.755, "started": "2026-09-15T23:08:58.274544+00:00", "log": "reports/b71_a6/final-test_apf_xenos_4444_mip_layout.log"}
+PASS test_apf_xenos_4444_mip_layout.py
+{"label": "final-test_apf_xenos_4444_png", "exit_code": 0, "seconds": 0.086, "started": "2026-09-15T23:09:00.029595+00:00", "log": "reports/b71_a6/final-test_apf_xenos_4444_png.log"}
+PASS test_apf_xenos_4444_png.py
+{"label": "final-test_apf_xenos_extra_formats_png", "exit_code": 0, "seconds": 0.083, "started": "2026-09-15T23:09:00.115608+00:00", "log": "reports/b71_a6/final-test_apf_xenos_extra_formats_png.log"}
+PASS test_apf_xenos_extra_formats_png.py
+{"label": "final-test_apf_xex_image", "exit_code": 0, "seconds": 1.06, "started": "2026-09-15T23:09:00.199087+00:00", "log": "reports/b71_a6/final-test_apf_xex_image.log"}
+PASS test_apf_xex_image.py
+{"label": "final-test_apf_stadium_texture", "exit_code": 0, "seconds": 75.011, "started": "2026-09-15T23:07:48.369748+00:00", "log": "reports/b71_a6/final-test_apf_stadium_texture.log"}
+PASS test_apf_stadium_texture.py
+{"label": "final-test_apf_xma1_wizard_gui", "exit_code": 0, "seconds": 1.813, "started": "2026-09-15T23:09:03.380964+00:00", "log": "reports/b71_a6/final-test_apf_xma1_wizard_gui.log"}
+PASS test_apf_xma1_wizard_gui.py
+{"label": "final-test_apf_textlogo_writer", "exit_code": 0, "seconds": 59.086, "started": "2026-09-15T23:08:20.229475+00:00", "log": "reports/b71_a6/final-test_apf_textlogo_writer.log"}
+PASS test_apf_textlogo_writer.py
+{"label": "final-test_b69_a1_playcalling", "exit_code": 0, "seconds": 45.503, "started": "2026-09-15T23:09:05.194052+00:00", "log": "reports/b71_a6/final-test_b69_a1_playcalling.log"}
+PASS test_b69_a1_playcalling.py
+{"label": "final-test_apf_workspace_recovery", "exit_code": 0, "seconds": 66.127, "started": "2026-09-15T23:08:47.120214+00:00", "log": "reports/b71_a6/final-test_apf_workspace_recovery.log"}
+PASS test_apf_workspace_recovery.py
+{"label": "final-test_apf_xex_image_retail", "exit_code": 0, "seconds": 72.091, "started": "2026-09-15T23:09:01.259203+00:00", "log": "reports/b71_a6/final-test_apf_xex_image_retail.log"}
+PASS test_apf_xex_image_retail.py

@@ -1,0 +1,22 @@
+test_aes_standard_vector_and_cbc_chaining (__main__.CodecTests.test_aes_standard_vector_and_cbc_chaining) ... ok
+test_aligned_match_with_reference_window (__main__.CodecTests.test_aligned_match_with_reference_window) ... ok
+test_delta_copy_zero_and_lzx (__main__.CodecTests.test_delta_copy_zero_and_lzx) ... ok
+test_malformed_huffman_and_truncated_stream (__main__.CodecTests.test_malformed_huffman_and_truncated_stream) ... ok
+test_malformed_xex_and_compressed_blocks_refused (__main__.CodecTests.test_malformed_xex_and_compressed_blocks_refused) ... ok
+test_raw_lzx_spans_frames (__main__.CodecTests.test_raw_lzx_spans_frames) ... ok
+test_synthetic_retail_encrypted_container (__main__.CodecTests.test_synthetic_retail_encrypted_container) ... ok
+test_unencrypted_normal_block_odd_length (__main__.CodecTests.test_unencrypted_normal_block_odd_length) ... ok
+test_verbatim_huffman_and_overlapping_match (__main__.CodecTests.test_verbatim_huffman_and_overlapping_match) ... ok
+test_folder_derivation_export_receipt_and_source_preservation (__main__.ExportTests.test_folder_derivation_export_receipt_and_source_preservation) ... ok
+test_discovers_xenia_and_xbox_content_layouts (__main__.InputTests.test_discovers_xenia_and_xbox_content_layouts) ... ok
+test_folder_and_flat_share_identity_gate (__main__.InputTests.test_folder_and_flat_share_identity_gate) ... ok
+test_missing_configured_update_and_wrong_package_never_fall_back (__main__.InputTests.test_missing_configured_update_and_wrong_package_never_fall_back) ... ok
+test_no_codec_subprocess_native_or_research_dependency (__main__.InputTests.test_no_codec_subprocess_native_or_research_dependency) ... ok
+test_refusal_names_observed_and_both_accepted_shas (__main__.InputTests.test_refusal_names_observed_and_both_accepted_shas) ... ok
+test_xenia_config_custom_content_root (__main__.InputTests.test_xenia_config_custom_content_root) ... ok
+test_xenia_redirected_documents_and_portable_mode (__main__.InputTests.test_xenia_redirected_documents_and_portable_mode) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.969s
+
+OK

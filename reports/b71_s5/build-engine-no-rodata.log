@@ -1,0 +1,17 @@
+/home/noah/2k-worktrees/astra-b71-s5b/tools/scorebug_sprite/runtime.c: In function ‘logo’:
+/home/noah/2k-worktrees/astra-b71-s5b/tools/scorebug_sprite/runtime.c:8:16: error: dereferencing type-punned pointer will break strict-aliasing rules [-Werror=strict-aliasing]
+    8 | #define V(a) (*(volatile u32 *)(a))
+      |                ^~~~~~~~~~~~~~~~~~~
+/home/noah/2k-worktrees/astra-b71-s5b/tools/scorebug_sprite/runtime.c:33:2: note: in expansion of macro ‘V’
+   33 |  V(name)=0x00620073;V(name+2)=0x002d002d;V(name+4)=0x00300068;V(name+6)=0;
+      |  ^
+cc1: all warnings being treated as errors
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tools/scorebug_sprite/build_runtime.py", line 80, in <module>
+    result = generate()
+             ^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tools/scorebug_sprite/build_runtime.py", line 19, in generate
+    subprocess.run(["gcc", "-m32", optimize, "-ffreestanding", "-fno-builtin", "-fno-pic", "-fno-pie",
+  File "/usr/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['gcc', '-m32', '-Oz', '-ffreestanding', '-fno-builtin', '-fno-pic', '-fno-pie', '-fno-stack-protector', '-fno-asynchronous-unwind-tables', '-fno-unwind-tables', '-fomit-frame-pointer', '-fno-jump-tables', '-mpreferred-stack-boundary=2', '-mno-sse', '-mno-mmx', '-Wall', '-Wextra', '-Werror', '-c', '/home/noah/2k-worktrees/astra-b71-s5b/tools/scorebug_sprite/runtime.c', '-o', '/tmp/scorebug-sprite-code-g48k467l/c.o']' returned non-zero exit status 1.

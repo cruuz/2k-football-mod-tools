@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_studio_draft_logo",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_studio_draft_logo.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:57:49.422889+00:00",
+  "ended": "2026-09-16T00:57:49.976257+00:00",
+  "seconds": 0.553,
+  "exit_code": 0
+}

@@ -147,10 +147,11 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
         _actions(ApfProductAction.PREVIEW, ApfProductAction.REPLACE,
                  ApfProductAction.REVERT, ApfProductAction.BUILD_COPY),
         replace_method="stage_playcalling",
+        additional_replace_methods=("confirm_playcalling",),
         revert_method="revert",
         product_note=(
-            "CPU Play Calling reviews named team books and stages an authored "
-            "recipe with Undo, Save Project and copied-game Build. The tab "
+            "CPU Play Calling confirms individual or pending edits with automatic "
+            "checks and stages one authored recipe with Undo, Save Project and copied-game Build. The tab "
             "predicts calls in a worker. Gameplay UNWITNESSED."
         ),
     )
@@ -168,6 +169,19 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
             "separate. Gameplay UNWITNESSED."
         ),
     ),
+"apf2k8.playbooks.fourth_down": CapabilityActionBinding(
+    "apf2k8.playbooks.fourth_down",
+    "playbooks.fourth_down",
+    _actions(ApfProductAction.PREVIEW, ApfProductAction.EXPORT,
+             ApfProductAction.BUILD_COPY),
+    one_shot_target="mod_editor.core.apf2k8_fourth_down:write_patch",
+    output_kind="authored-xenia-patch-toml",
+    product_note=(
+        "Tools → CPU fourth-down triggers edits global thresholds, previews a "
+        "neutral scenario, exports a disabled patch by default and offers "
+        "explicit installation, status and removal. Gameplay UNWITNESSED."
+    ),
+),
 "apf2k8.playbooks.personnel_curve_patch": CapabilityActionBinding(
     "apf2k8.playbooks.personnel_curve_patch",
     "playbooks.personnel_curves",

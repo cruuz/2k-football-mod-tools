@@ -1,0 +1,8 @@
+test_all_eleven_known_selectors_both_banks_survive_conversion (__main__.AppearanceTests.test_all_eleven_known_selectors_both_banks_survive_conversion) ... ok
+test_keep_xbox_appearance_does_not_revert_ps3_players (__main__.AppearanceTests.test_keep_xbox_appearance_does_not_revert_ps3_players) ... ok
+test_missing_baseline_and_broken_selector_pointer_refused (__main__.AppearanceTests.test_missing_baseline_and_broken_selector_pointer_refused) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 2.700s
+
+OK

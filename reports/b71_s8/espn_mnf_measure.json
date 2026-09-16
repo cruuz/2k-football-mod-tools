@@ -1,0 +1,17 @@
+{
+ "source_frames": "Broncos-vs-Chiefs-Week1-Highlights/frames, every 30th frame from frame_000101 (999 candidates, 944 with the mark present)",
+ "method": "per-pixel temporal minimum of luminance over frames that carry the mark lifts the static semi-transparent overlay off its darkest background; alpha=(min-black)/(255-black); coverage=alpha/p95(alpha)",
+ "black_level": 0.0,
+ "opacity": 0.714,
+ "frame_box": [
+  1655,
+  35,
+  1869,
+  64
+ ],
+ "colour": [
+  255,
+  251,
+  241
+ ]
+}

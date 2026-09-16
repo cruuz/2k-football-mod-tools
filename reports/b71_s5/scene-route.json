@@ -1,0 +1,13 @@
+{
+  "events": 4,
+  "textures": 0,
+  "fonts": 0,
+  "retail_decoded_bytes": 16512,
+  "appended_decoded_bytes": 24704,
+  "lookup_object": "0x4005300",
+  "newest_scene_wins": true,
+  "native_reader": "0x43A20",
+  "native_handler": "0x45A90",
+  "lookup": "0x449E0",
+  "boundary": "OS I/O completions and startup animation; no emulator or GPU"
+}

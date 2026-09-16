@@ -1,0 +1,9 @@
+test_atomic_clone_scheme_undo_and_saved_recipe_replay (__main__.EditorTests.test_atomic_clone_scheme_undo_and_saved_recipe_replay) ... ok
+test_never_call_restores_original_membership_and_undo (__main__.EditorTests.test_never_call_restores_original_membership_and_undo) ... ok
+test_scheme_review_stage_export_undo_and_52_real_name (__main__.EditorTests.test_scheme_review_stage_export_undo_and_52_real_name) ... ok
+test_shared_book_bypass_and_tampered_review_refused (__main__.EditorTests.test_shared_book_bypass_and_tampered_review_refused) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 80.626s
+
+OK

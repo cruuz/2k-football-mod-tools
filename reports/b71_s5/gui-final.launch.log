@@ -1,0 +1,1 @@
+{"name": "gui-final", "argv": ["python3", "tests/mod_editor/test_scorebug_sprite_preview_qt.py", "-v"], "start_utc": "2026-09-16T02:57:08.561530+00:00", "end_utc": "2026-09-16T02:57:20.982750+00:00", "seconds": 12.421, "exit_code": 0}

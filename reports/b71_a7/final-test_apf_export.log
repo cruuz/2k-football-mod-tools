@@ -1,0 +1,7 @@
+test_adapter_passes_only_source_asset_and_absent_directory (__main__.ApfEditorExportTests.test_adapter_passes_only_source_asset_and_absent_directory) ... ok
+test_headless_cli_uses_fixed_contract_and_rejects_raw_or_invalid_selector (__main__.ApfEditorExportTests.test_headless_cli_uses_fixed_contract_and_rejects_raw_or_invalid_selector) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.005s
+
+OK

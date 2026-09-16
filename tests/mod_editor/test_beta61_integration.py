@@ -47,7 +47,7 @@ class BuildIntegrationTests(unittest.TestCase):
                 def plan(path, recipe):
                     snapshot = Path(path).read_bytes(); planned.append(snapshot)
                     return {'source_bytes':snapshot, 'layout':{'image_size':32}, 'scratch_bytes':64}
-                def runtime(path, *, with_kickoff, extra_requests=()):
+                def runtime(path, *, with_kickoff, extra_requests=(), scorebug_folder=None, widescreen=False, **_kwargs):
                     self.assertEqual(extra_requests, ())
                     self.assertFalse(with_kickoff)
                     Path(path).write_bytes(Path(path).read_bytes() + b' runtime')

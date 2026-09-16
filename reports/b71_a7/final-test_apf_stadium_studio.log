@@ -1,0 +1,9 @@
+test_cache_tamper_and_non_stadium_selection_fail_closed (__main__.ApfStadiumStudioTests.test_cache_tamper_and_non_stadium_selection_fail_closed) ... ok
+test_lists_only_exact_stadium_scnes_and_all_same_outer_records (__main__.ApfStadiumStudioTests.test_lists_only_exact_stadium_scnes_and_all_same_outer_records) ... ok
+test_prepares_validated_private_gltf_and_reuses_exact_cache (__main__.ApfStadiumStudioTests.test_prepares_validated_private_gltf_and_reuses_exact_cache) ... ok
+test_scene_bundle_contains_only_the_three_private_derivatives (__main__.ApfStadiumStudioTests.test_scene_bundle_contains_only_the_three_private_derivatives) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.010s
+
+OK

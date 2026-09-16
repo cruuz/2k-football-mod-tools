@@ -1,0 +1,11 @@
+{
+  "name": "studio-visible",
+  "argv": [
+    "python3",
+    "reports/b71_s5/prove_studio.py"
+  ],
+  "start_utc": "2026-09-16T03:04:45.727526+00:00",
+  "end_utc": "2026-09-16T03:04:58.474196+00:00",
+  "seconds": 12.747,
+  "exit_code": 0
+}

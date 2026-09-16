@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_b67_writers",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_b67_writers.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:34:40.752906+00:00",
+  "ended": "2026-09-16T00:34:41.256119+00:00",
+  "seconds": 0.503,
+  "exit_code": 0
+}

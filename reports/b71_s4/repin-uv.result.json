@@ -1,0 +1,12 @@
+{
+  "name": "repin-uv",
+  "command": [
+    "python3",
+    "packaging/repin.py",
+    "--apply"
+  ],
+  "start": "2026-09-15T22:20:58.450618+00:00",
+  "end": "2026-09-15T22:21:19.997891+00:00",
+  "seconds": 21.547,
+  "exit": 0
+}

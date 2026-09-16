@@ -1,0 +1,7 @@
+test_fresh_observed_xbe_union_without_a_disc_copy (__main__.XbeManifestTests.test_fresh_observed_xbe_union_without_a_disc_copy) ... Observed 137 XBE transactions and 12587 reservations; no disc built
+ok
+
+----------------------------------------------------------------------
+Ran 1 test in 327.831s
+
+OK

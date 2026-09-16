@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_b69_formation_calling",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_b69_formation_calling.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:36:22.394658+00:00",
+  "ended": "2026-09-16T00:36:23.335099+00:00",
+  "seconds": 0.94,
+  "exit_code": 0
+}

@@ -1,0 +1,290 @@
+PASS test_apf_book_unlock_retail.py exit=0
+PASS test_apf_book_identity_qt.py exit=0
+PASS test_apf_build_ausb_overlays.py exit=0
+PASS test_apf_build_raw_span_overlays.py exit=0
+PASS test_apf_coverage_research_tools.py exit=0
+PASS test_apf_capability_action_parity.py exit=0
+PASS test_apf_copied_volume_metadata.py exit=0
+PASS test_apf_browser_workspace_handoff.py exit=0
+PASS test_apf_cross_domain_audio_safety.py exit=0
+PASS test_apf_crest_budget_import.py exit=0
+PASS test_apf_custom_team_appearance_gui.py exit=0
+PASS test_apf_cpu_audibles.py exit=0
+PASS test_apf_defense_research_identity.py exit=0
+PASS test_apf_b71_situations.py exit=0
+PASS test_apf_digital_font.py exit=0
+PASS test_apf_custom_team_appearance_patch.py exit=0
+PASS test_apf_dxn_base_only_namefont.py exit=0
+PASS test_apf_cubemap_face0_preview.py exit=0
+PASS test_apf_export.py exit=0
+PASS test_apf_external_audio_bank_bundle.py exit=0
+PASS test_apf_field_art.py exit=0
+PASS test_apf_field_art_gui.py exit=0
+FAIL test_apf_book_unlock.py exit=1
+{"command": ["/usr/bin/python3", "tests/mod_editor/test_apf_book_unlock.py"], "started_utc": "2026-09-15T18:34:16.446908+00:00", "elapsed_seconds": 37.54, "exit_code": 1, "log": "reports/b71_apf2/test_apf_book_unlock.log"}
+......F............
+======================================================================
+FAIL: test_round_tripping_overlapping_h7a_is_still_refused (__main__.ArchiveTests.test_round_tripping_overlapping_h7a_is_still_refused)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-apf2/tests/mod_editor/test_apf_book_unlock.py", line 310, in test_round_tripping_overlapping_h7a_is_still_refused
+    with self.assertRaisesRegex(ValidationError, "longer than its distance"):
+AssertionError: ValidationError not raised
+
+----------------------------------------------------------------------
+Ran 19 tests in 37.315s
+
+FAILED (failures=1)
+
+
+PASS test_apf_field_art_stock_label.py exit=0
+PASS test_apf_crest_fit.py exit=0
+PASS test_apf_dxt5a_general_preview.py exit=0
+PASS test_apf_field_material_project.py exit=0
+PASS test_apf_field_material_writer.py exit=0
+PASS test_apf_full_shell_visual_gate.py exit=0
+PASS test_apf_formation_alignment_writer.py exit=0
+PASS test_apf_g12_surfaces.py exit=0
+PASS test_apf_helmet_crest_design_product.py exit=0
+PASS test_apf_helmet_logo_regions.py exit=0
+PASS test_apf_helmet_logo_regions_qt.py exit=0
+PASS test_apf_import_offers_resize.py exit=0
+PASS test_apf_iso_extraction_is_layout_tolerant.py exit=0
+PASS test_apf_linear_txtr_png.py exit=0
+PASS test_apf_helmet_logo_placement.py exit=0
+PASS test_apf_logo_surface_ownership.py exit=0
+PASS test_apf_logo_patch.py exit=0
+PASS test_apf_mask_preview_alpha.py exit=0
+PASS test_apf_model_export_gui.py exit=0
+PASS test_apf_endzone_dxt5a.py exit=0
+PASS test_apf_number_encode_defaults.py exit=0
+PASS test_apf_logocache_patch.py exit=0
+PASS test_apf_package_map_writer.py exit=0
+PASS test_apf_pass_fetch_export_qt.py exit=0
+PASS test_apf_play_designer.py exit=0
+PASS test_apf_play_designer_project.py exit=0
+PASS test_apf_play_designer_qt.py exit=0
+PASS test_apf_playbook_route_gui.py exit=0
+PASS test_apf_playcall_patch.py exit=0
+PASS test_apf_model_import.py exit=0
+PASS test_apf_defense_research_native.py exit=0
+PASS test_apf_playcalling_editor_facade.py exit=0
+PASS test_apf_playcalling_editor_patches.py exit=0
+PASS test_apf_playcalling_editor_qt.py exit=0
+PASS test_apf_player_position_patch.py exit=0
+PASS test_apf_playcalling_editor_build.py exit=0
+PASS test_apf_player_positions.py exit=0
+PASS test_apf_player_position_product_backend.py exit=0
+PASS test_apf_player_rating_patch.py exit=0
+PASS test_apf_player_rating_product_backend.py exit=0
+PASS test_apf_player_ratings.py exit=0
+PASS test_apf_product_findings.py exit=0
+PASS test_apf_product_findings_gui.py exit=0
+PASS test_apf_product_validation_wrappers.py exit=0
+PASS test_apf_player_rating_sheet_import.py exit=0
+PASS test_apf_project_streaming.py exit=0
+PASS test_apf_ps3_probes.py exit=0
+PASS test_apf_ps3_roster_convert.py exit=0
+PASS test_apf_ps3_roster_import_qt.py exit=0
+PASS test_apf_ps3_speed.py exit=0
+PASS test_apf_project_document_workflow.py exit=0
+PASS test_apf_ps3_speed_packages.py exit=0
+PASS test_apf_ps3_texture_bundle_qt.py exit=0
+PASS test_apf_public_docs_registry_current.py exit=0
+PASS test_apf_rating_value_domains.py exit=0
+PASS test_apf_retail_crest_channel_audit.py exit=0
+PASS test_apf_playcall_research_native.py exit=0
+PASS test_apf_field_extra_roundtrip.py exit=0
+PASS test_apf_roster_appearance_transfer.py exit=0
+PASS test_apf_roster_appearance_transfer_qt.py exit=0
+PASS test_apf_roster_workspace.py exit=0
+PASS test_apf_roster_workspace_gui.py exit=0
+PASS test_apf_roster_identity_gui.py exit=0
+FAIL test_apf_save_playbook_assignments_gui.py exit=1
+{"command": ["/usr/bin/python3", "tests/mod_editor/test_apf_save_playbook_assignments_gui.py"], "started_utc": "2026-09-15T18:38:48.476447+00:00", "elapsed_seconds": 2.076, "exit_code": 1, "log": "reports/b71_apf2/test_apf_save_playbook_assignments_gui.log"}
+.This plugin does not support propagateSizeHints()
+F......
+======================================================================
+FAIL: test_playbooks_workspace_exposes_the_save_assignment_tab (__main__.PanelTests.test_playbooks_workspace_exposes_the_save_assignment_tab)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-apf2/tests/mod_editor/test_apf_save_playbook_assignments_gui.py", line 169, in test_playbooks_workspace_exposes_the_save_assignment_tab
+    self.assertEqual(
+AssertionError: Lists differ: ['CPU Play Calling', 'PLAY / DRCT Inspector[178 chars]ets'] != ['PLAY / DRCT Inspector', 'Fine-tune Plays'[178 chars]ets']
+
+First differing element 0:
+'CPU Play Calling'
+'PLAY / DRCT Inspector'
+
+- ['CPU Play Calling',
+-  'PLAY / DRCT Inspector',
+? ^
+
++ ['PLAY / DRCT Inspector',
+? ^
+
+   'Fine-tune Plays',
+   'Who lines up',
+   'Assignment Routes',
+   'Save Assignments',
+   'Design Plays / Formations',
+   'Coverage Geometry (experimental)',
+   'Book Identity',
++  'CPU Play Calling',
+   'Raw Playbook Assets']
+
+----------------------------------------------------------------------
+Ran 8 tests in 1.728s
+
+FAILED (failures=1)
+
+
+PASS test_apf_save_roster_players_gui.py exit=0
+PASS test_apf_scorebug_workspace_qt.py exit=0
+PASS test_apf_roster_identity.py exit=0
+PASS test_apf_save_roster_players.py exit=0
+PASS test_apf_splb_add_multiple_formations.py exit=0
+PASS test_apf_splb_formation_personnel.py exit=0
+PASS test_apf_splb_writer.py exit=0
+PASS test_apf_stadium_material_findings.py exit=0
+PASS test_apf_stadium_model_import.py exit=0
+PASS test_apf_stadium_studio.py exit=0
+PASS test_apf_ps3_texture_bundle.py exit=0
+PASS test_apf_splb_tag_reassignment.py exit=0
+PASS test_apf_stadium_studio_gui.py exit=0
+PASS test_apf_stfs_roster_rehash.py exit=0
+PASS test_apf_studio_core.py exit=0
+PASS test_apf_studio_audio_gui.py exit=0
+PASS test_apf_studio_draft_logo.py exit=0
+PASS test_apf_shell_search_accessibility_qt.py exit=0
+PASS test_apf_studio_safety.py exit=0
+PASS test_apf_studio_text_edit.py exit=0
+PASS test_apf_studio_inspectors.py exit=0
+PASS test_apf_team_art_qt.py exit=0
+PASS test_apf_team_crest_selection.py exit=0
+PASS test_apf_team_logo_gui.py exit=0
+PASS test_apf_text_sheet_gui.py exit=0
+PASS test_apf_textlogo_gui.py exit=0
+FAIL test_apf_studio_installer.py exit=1
+{"command": ["/usr/bin/python3", "tests/mod_editor/test_apf_studio_installer.py"], "started_utc": "2026-09-15T18:39:03.437602+00:00", "elapsed_seconds": 13.406, "exit_code": 1, "log": "reports/b71_apf2/test_apf_studio_installer.log"}
+F.........F.....
+======================================================================
+FAIL: test_install_update_and_authenticated_uninstall (__main__.PerUserLifecycleTests.test_install_update_and_authenticated_uninstall)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-apf2/tests/mod_editor/test_apf_studio_installer.py", line 491, in test_install_update_and_authenticated_uninstall
+    self.assertEqual(runtime_result.returncode, 0, runtime_result.stderr)
+AssertionError: 1 != 0 : Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/usr/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1324, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'capstone'
+
+
+======================================================================
+FAIL: test_clean_allowlist_stage_passes_the_alpha32_runtime_gate (__main__.ReleaseClosureTests.test_clean_allowlist_stage_passes_the_alpha32_runtime_gate)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-apf2/tests/mod_editor/test_apf_studio_installer.py", line 320, in test_clean_allowlist_stage_passes_the_alpha32_runtime_gate
+    self.assertEqual(result.returncode, 0, result.stderr)
+AssertionError: 1 != 0 : APF2K8_MOD_STUDIO_RUNTIME_REFUSED: No module named 'capstone'
+
+
+----------------------------------------------------------------------
+Ran 16 tests in 13.224s
+
+FAILED (failures=2)
+
+
+PASS test_apf_team_art.py exit=0
+PASS test_apf_uniform_allocation_capacity.py exit=0
+PASS test_apf_uniform_equipment_colors.py exit=0
+PASS test_apf_uniform_equipment_colors_gui.py exit=0
+PASS test_apf_uniform_independence.py exit=0
+PASS test_apf_uniform_inventory_gui.py exit=0
+FAIL test_apf_theme_layout_qt.py exit=1
+not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+....This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+.
+======================================================================
+FAIL: test_ctrl_f_escape_and_tab_chain_on_every_page (__main__.ThemeLayoutTests.test_ctrl_f_escape_and_tab_chain_on_every_page) (page='playbooks')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-apf2/tests/mod_editor/test_apf_theme_layout_qt.py", line 117, in test_ctrl_f_escape_and_tab_chain_on_every_page
+    self.assertIsNotNone(field)
+AssertionError: unexpectedly None
+
+----------------------------------------------------------------------
+Ran 8 tests in 21.308s
+
+FAILED (failures=1)
+
+
+PASS test_apf_wordmark_regions.py exit=0
+PASS test_apf_wave_integration.py exit=0
+PASS test_apf_xenos_4444_mip_layout.py exit=0
+PASS test_apf_xenos_4444_png.py exit=0
+PASS test_apf_xenos_extra_formats_png.py exit=0
+PASS test_apf_xex_image.py exit=0
+PASS test_apf_field_art_patch.py exit=0
+PASS test_apf_xma1_wizard_gui.py exit=0
+PASS test_apf_stadium_texture.py exit=0
+PASS test_apf_textlogo_writer.py exit=0
+PASS test_product_catalog.py exit=0
+PASS test_apf_number_texture_writer.py exit=0
+PASS test_capability_registry_module_commands.py exit=0
+PASS test_phase1_packaging.py exit=0
+PASS test_provider_integrity.py exit=0
+PASS test_apf_workspace_recovery.py exit=0
+PASS test_b69_a1_playcalling.py exit=0
+PASS test_apf_xex_image_retail.py exit=0
+Completed 139 standalone suites; failures: ['test_apf_book_unlock.py', 'test_apf_save_playbook_assignments_gui.py', 'test_apf_studio_installer.py', 'test_apf_theme_layout_qt.py']

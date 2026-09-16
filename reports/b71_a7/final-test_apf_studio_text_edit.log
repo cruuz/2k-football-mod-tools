@@ -1,0 +1,12 @@
+test_individual_replace_revert_and_retail_free_project_roundtrip (__main__.ApfTextSessionProjectTests.test_individual_replace_revert_and_retail_free_project_roundtrip) ... ok
+test_limit_nul_and_live_allocation_metadata_fail_closed (__main__.ApfTextSessionProjectTests.test_limit_nul_and_live_allocation_metadata_fail_closed) ... ok
+test_private_text_sheet_import_is_atomic_and_one_undo_action (__main__.ApfTextSessionProjectTests.test_private_text_sheet_import_is_atomic_and_one_undo_action) ... ok
+test_strg_pool_zero_is_a_retail_free_project_target (__main__.ApfTextSessionProjectTests.test_strg_pool_zero_is_a_retail_free_project_target) ... ok
+test_text_inspector_merges_every_txt_and_strg_allocation_once (__main__.ApfTextSessionProjectTests.test_text_inspector_merges_every_txt_and_strg_allocation_once) ... ok
+test_text_sheet_can_replace_and_revert_together_then_undo_once (__main__.ApfTextSessionProjectTests.test_text_sheet_can_replace_and_revert_together_then_undo_once) ... ok
+test_text_sheet_rejects_late_invalid_row_without_staging_early_rows (__main__.ApfTextSessionProjectTests.test_text_sheet_rejects_late_invalid_row_without_staging_early_rows) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.026s
+
+OK

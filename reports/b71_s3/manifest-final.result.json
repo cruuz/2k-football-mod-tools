@@ -1,0 +1,11 @@
+{
+  "name": "manifest-final",
+  "command": [
+    "python3",
+    "reports/b71_s3/refresh_manifest.py"
+  ],
+  "start": "2026-09-15T20:59:33.766259+00:00",
+  "end": "2026-09-15T21:04:46.779000+00:00",
+  "seconds": 313.013,
+  "exit": 1
+}

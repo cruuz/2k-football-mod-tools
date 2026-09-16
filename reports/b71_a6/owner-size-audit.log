@@ -1,0 +1,23 @@
+{
+  "revision": 7,
+  "used_code_bytes": 1386,
+  "reserved_code_bytes": 1408,
+  "allocations": {
+    "code": {
+      "owner": "nfl2k5_scorebug_runtime",
+      "kind": "code",
+      "size": 1408,
+      "align": 16,
+      "va": 21736032,
+      "raw": 12024416
+    },
+    "data": {
+      "owner": "nfl2k5_scorebug_runtime",
+      "kind": "data",
+      "size": 128,
+      "align": 16,
+      "va": 21737488,
+      "raw": 12025872
+    }
+  }
+}

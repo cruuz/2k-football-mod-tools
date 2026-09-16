@@ -1,0 +1,7 @@
+{
+  "status": "PREPARED_NOT_RUN",
+  "disc_built": false,
+  "receipt_available": false,
+  "reason": "Explicit instruction: prepare the builder without running it; output folder is read-only.",
+  "script": "reports/b71_a6/build_testdisc71.py"
+}

@@ -1,0 +1,14 @@
+test_complete_32_by_53_view_keeps_only_42_runtime_visible (__main__.BoundWorkspaceTests.test_complete_32_by_53_view_keeps_only_42_runtime_visible) ... ok
+test_incomplete_duplicate_and_out_of_range_source_views_are_refused (__main__.BoundWorkspaceTests.test_incomplete_duplicate_and_out_of_range_source_views_are_refused) ... ok
+test_reserve_collision_with_stock_active_is_refused (__main__.BoundWorkspaceTests.test_reserve_collision_with_stock_active_is_refused) ... ok
+test_source_membership_rows_bind_but_never_enter_serialized_plan (__main__.BoundWorkspaceTests.test_source_membership_rows_bind_but_never_enter_serialized_plan) ... ok
+test_assign_is_immutable_bounded_and_globally_unique (__main__.ReservePlanContractTests.test_assign_is_immutable_bounded_and_globally_unique) ... ok
+test_complete_352_assignment_plan_stays_small_and_roundtrips (__main__.ReservePlanContractTests.test_complete_352_assignment_plan_stays_small_and_roundtrips) ... ok
+test_empty_plan_is_exact_canonical_and_contains_no_source_memberships (__main__.ReservePlanContractTests.test_empty_plan_is_exact_canonical_and_contains_no_source_memberships) ... ok
+test_noncanonical_extra_fields_and_false_distribution_are_refused (__main__.ReservePlanContractTests.test_noncanonical_extra_fields_and_false_distribution_are_refused) ... ok
+test_save_load_is_atomic_private_and_never_overwrites (__main__.ReservePlanContractTests.test_save_load_is_atomic_private_and_never_overwrites) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.039s
+
+OK

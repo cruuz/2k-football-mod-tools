@@ -1,0 +1,15 @@
+[
+  "data/nfl2k5_cave_reservations.json",
+  "docs/modern_arrowhead/README.md",
+  "mod_editor/core/mod_build.py",
+  "mod_editor/core/nfl2k5_modern_arrowhead.py",
+  "mod_editor/core/nfl2k5_modern_color.py",
+  "mod_editor/core/providers.py",
+  "packaging/check_2k5_mod_studio_runtime.py",
+  "packaging/check_apf2k8_mod_studio_runtime.py",
+  "tests/mod_editor/test_apf_studio_installer.py",
+  "tests/mod_editor/test_b68_a1_audit.py",
+  "tests/mod_editor/test_b71_a6_composition.py",
+  "tests/mod_editor/test_provider_integrity.py",
+  "tools/validate_all_mod_editor_capabilities.py"
+]

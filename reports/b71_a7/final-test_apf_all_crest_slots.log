@@ -1,0 +1,27 @@
+test_a_facade_with_no_source_leaves_the_teams_alone (__main__.PickerWidensOnLoadTests.test_a_facade_with_no_source_leaves_the_teams_alone) ... ok
+test_it_widens_from_the_teams_to_every_slot (__main__.PickerWidensOnLoadTests.test_it_widens_from_the_teams_to_every_slot) ... ok
+test_library_slots_are_labelled_by_index (__main__.PickerWidensOnLoadTests.test_library_slots_are_labelled_by_index) ... ok
+test_repopulating_is_idempotent (__main__.PickerWidensOnLoadTests.test_repopulating_is_idempotent)
+set_context runs on every refresh; it must not multiply the list. ... ok
+test_the_payload_stays_writer_compatible (__main__.PickerWidensOnLoadTests.test_the_payload_stays_writer_compatible)
+The build path uses only these two attributes. ... ok
+test_entry_indices_are_scattered_not_sequential (__main__.ResolvedSlotTests.test_entry_indices_are_scattered_not_sequential)
+Guards against anyone 'simplifying' this into index arithmetic. ... ok
+test_every_built_in_team_still_appears (__main__.ResolvedSlotTests.test_every_built_in_team_still_appears) ... ok
+test_every_slot_resolves (__main__.ResolvedSlotTests.test_every_slot_resolves) ... ok
+test_resolution_agrees_with_the_team_table_entry_indices (__main__.ResolvedSlotTests.test_resolution_agrees_with_the_team_table_entry_indices)
+A CRC mismatch would silently point a writer at the wrong package. ... ok
+test_slot_zero_is_a_library_slot_at_the_measured_entry (__main__.ResolvedSlotTests.test_slot_zero_is_a_library_slot_at_the_measured_entry) ... ok
+test_the_split_is_twenty_four_teams_and_the_rest_library (__main__.ResolvedSlotTests.test_the_split_is_twenty_four_teams_and_the_rest_library) ... ok
+test_a_library_slot_is_never_given_a_team_name (__main__.SlotContractTests.test_a_library_slot_is_never_given_a_team_name)
+Writable is proved; which picker position it backs is not. ... ok
+test_a_team_slot_is_labelled_by_team (__main__.SlotContractTests.test_a_team_slot_is_labelled_by_team) ... ok
+test_the_catalog_count_matches_the_logo_cache (__main__.SlotContractTests.test_the_catalog_count_matches_the_logo_cache)
+The two must agree or one of them is describing a different game. ... ok
+test_the_team_table_is_unchanged (__main__.SlotContractTests.test_the_team_table_is_unchanged)
+Existing callers must keep hitting exactly the targets they did. ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 2.085s
+
+OK

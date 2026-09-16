@@ -1,0 +1,16 @@
+.........MODEL_PROJECT_PROOF {"changed_bytes": 98644, "disc_size": 854016, "external_buffer_missing_at_build": true, "mode": "geometry", "project_sha256": "7101364eaa209005f2976d71dfca8e8684aea7bf303a5513eece9ebc4f8a354c", "quick_sha256": "7101364eaa209005f2976d71dfca8e8684aea7bf303a5513eece9ebc4f8a354c", "source_sha256": "3395ecbe02db68835b6dbc14602eba3e3e01d595fe800375534feeee26cdaa56", "source_unchanged": true, "witnessed": false}
+NFL2K5_BUILD_PHASE source_validation seconds=0.001060
+NFL2K5_COMPILE_CACHE hits=0 misses=0
+NFL2K5_BUILD_PHASE compile seconds=1.053502
+NFL2K5_BUILD_PHASE bind_source seconds=0.046163
+NFL2K5_BUILD_PHASE copy seconds=0.000856
+NFL2K5_BUILD_PHASE write_spans seconds=0.001867
+NFL2K5_BUILD_PHASE artifacts_and_directory seconds=0.015085
+NFL2K5_BUILD_PHASE full_identity_check seconds=0.102160
+NFL2K5_COMPILE_CACHE hits=0 misses=0
+.
+----------------------------------------------------------------------
+Ran 10 tests in 36.847s
+
+OK
+MODEL_PROJECT_PROOF {"changed_bytes": 328771, "disc_size": 854016, "guarded_resources": 4, "historical_receipt_replay": true, "mode": "skeleton", "project_sha256": "61e3fe2c5c95928c807b31ca2e5e0d80a4b7e0cd798e4084b1fda1bb178c1242", "quick_sha256": "61e3fe2c5c95928c807b31ca2e5e0d80a4b7e0cd798e4084b1fda1bb178c1242", "source_sha256": "3395ecbe02db68835b6dbc14602eba3e3e01d595fe800375534feeee26cdaa56", "witnessed": false}

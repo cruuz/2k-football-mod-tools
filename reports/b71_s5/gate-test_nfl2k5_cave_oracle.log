@@ -1,0 +1,48 @@
+test_bad_headers_refused (__main__.CaveOracleTests.test_bad_headers_refused) ... ok
+test_callback_store_is_retained_with_source_instruction (__main__.CaveOracleTests.test_callback_store_is_retained_with_source_instruction) ... ok
+test_cli_json_and_twenty_largest_summary_without_mutating_input (__main__.CaveOracleTests.test_cli_json_and_twenty_largest_summary_without_mutating_input) ... ok
+test_computed_jump_table_preserves_unproved_index_extent (__main__.CaveOracleTests.test_computed_jump_table_preserves_unproved_index_extent) ... ok
+test_data_embedded_in_code_is_not_padding (__main__.CaveOracleTests.test_data_embedded_in_code_is_not_padding) ... ok
+test_decoded_imports_are_reserved_by_reachability_and_external_effects_unknown (__main__.CaveOracleTests.test_decoded_imports_are_reserved_by_reachability_and_external_effects_unknown) ... ok
+test_exact_diff_tracks_last_byte_and_unchanged_pages (__main__.CaveOracleTests.test_exact_diff_tracks_last_byte_and_unchanged_pages) ... ok
+test_file_mapping_virtual_tail_and_section_gaps_are_not_free_data (__main__.CaveOracleTests.test_file_mapping_virtual_tail_and_section_gaps_are_not_free_data) ... ok
+test_legacy_projection_reproduces_gate_targets_and_negative_caves (__main__.CaveOracleTests.test_legacy_projection_reproduces_gate_targets_and_negative_caves) ... ok
+test_manifest_hash_completeness_and_source_drift_refused (__main__.CaveOracleTests.test_manifest_hash_completeness_and_source_drift_refused) ... ok
+test_missing_loader_root_and_budgets_fail_closed (__main__.CaveOracleTests.test_missing_loader_root_and_budgets_fail_closed) ... ok
+test_nonkernel_import_directory_and_utf16_name (__main__.CaveOracleTests.test_nonkernel_import_directory_and_utf16_name) ... ok
+test_overlapping_mappings_and_truncated_raw_data_refused (__main__.CaveOracleTests.test_overlapping_mappings_and_truncated_raw_data_refused) ... ok
+test_pointer_scan_includes_last_complete_word_and_other_executable_sections (__main__.CaveOracleTests.test_pointer_scan_includes_last_complete_word_and_other_executable_sections) ... ok
+test_recorder_refuses_unattributed_patch (__main__.CaveOracleTests.test_recorder_refuses_unattributed_patch) ... ok
+test_rel8_rel32_entry_fallthrough_and_instruction_interiors (__main__.CaveOracleTests.test_rel8_rel32_entry_fallthrough_and_instruction_interiors) ... ok
+test_release_manifest_includes_resource_build_steps (__main__.CaveOracleTests.test_release_manifest_includes_resource_build_steps) ... ERROR
+test_reservation_precedence_including_coincident_and_zero_bytes (__main__.CaveOracleTests.test_reservation_precedence_including_coincident_and_zero_bytes) ... ok
+test_retail_callback_and_seven_previously_negative_caves (__main__.CaveOracleTests.test_retail_callback_and_seven_previously_negative_caves) ... ok
+test_retail_current_stack_owns_every_supplied_cave_and_runtime_flag (__main__.CaveOracleTests.test_retail_current_stack_owns_every_supplied_cave_and_runtime_flag) ... ok
+test_retail_data_scan_never_offers_text (__main__.CaveOracleTests.test_retail_data_scan_never_offers_text) ... ok
+test_runtime_write_to_text_is_rejected_and_full_width_checked (__main__.CaveOracleTests.test_runtime_write_to_text_is_rejected_and_full_width_checked) ... ok
+test_scan_coverage_includes_short_runs_and_matches_exact_queries (__main__.CaveOracleTests.test_scan_coverage_includes_short_runs_and_matches_exact_queries) ... ok
+test_summary_limits_each_section_to_twenty_largest_candidates (__main__.CaveOracleTests.test_summary_limits_each_section_to_twenty_largest_candidates) ... ok
+test_tls_template_index_and_callbacks_are_roots (__main__.CaveOracleTests.test_tls_template_index_and_callbacks_are_roots) ... ok
+test_unaligned_pointer_is_a_speculative_root_not_a_proved_callback (__main__.CaveOracleTests.test_unaligned_pointer_is_a_speculative_root_not_a_proved_callback) ... ok
+test_unresolved_indirect_transfer_never_upgrades_unknown_to_free (__main__.CaveOracleTests.test_unresolved_indirect_transfer_never_upgrades_unknown_to_free) ... ok
+test_vtable_and_pointer_loaded_by_rooted_instruction (__main__.CaveOracleTests.test_vtable_and_pointer_loaded_by_rooted_instruction) ... ok
+test_write_gate_checks_second_operand_and_undecodable_suffix (__main__.CaveOracleTests.test_write_gate_checks_second_operand_and_undecodable_suffix) ... ok
+
+======================================================================
+ERROR: test_release_manifest_includes_resource_build_steps (__main__.CaveOracleTests.test_release_manifest_includes_resource_build_steps)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_cave_oracle.py", line 395, in test_release_manifest_includes_resource_build_steps
+    manifest = ReservationManifest.load(DEFAULT_MANIFEST, XbeImage(self.retail()), source_root=ROOT)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s5b/mod_editor/core/nfl2k5_cave_oracle.py", line 222, in load
+    return cls(json.loads(path.read_text(encoding="utf-8")), image, source_root=source_root)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s5b/mod_editor/core/nfl2k5_cave_oracle.py", line 217, in __init__
+    raise OracleError(f"stale reservation source: {relative}; regenerate manifest")
+mod_editor.core.nfl2k5_cave_oracle.OracleError: stale reservation source: mod_editor/core/nfl2k5_scorebug_sprite.py; regenerate manifest
+
+----------------------------------------------------------------------
+Ran 29 tests in 361.821s
+
+FAILED (errors=1)

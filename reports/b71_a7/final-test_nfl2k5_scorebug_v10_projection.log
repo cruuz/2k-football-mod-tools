@@ -1,0 +1,19 @@
+test_all_32_static_team_bindings_ignore_team_identity (__main__.ProjectionTests.test_all_32_static_team_bindings_ignore_team_identity) ... ok
+test_alternate_native_event_glyphs_fit_in_the_frame (__main__.ProjectionTests.test_alternate_native_event_glyphs_fit_in_the_frame) ... ok
+test_both_reference_rails_and_actual_frame_contain_v10 (__main__.ProjectionTests.test_both_reference_rails_and_actual_frame_contain_v10) ... ok
+test_modes_aspects_score_rotation_and_visibility_endpoints_stay_inside (__main__.ProjectionTests.test_modes_aspects_score_rotation_and_visibility_endpoints_stay_inside) ... ok
+test_native_audit_rejects_foreign_callbacks_and_runtime_hooks (__main__.ProjectionTests.test_native_audit_rejects_foreign_callbacks_and_runtime_hooks) ... ok
+test_native_binding_and_glyph_trace_contains_clocks_and_no_placeholder_text (__main__.ProjectionTests.test_native_binding_and_glyph_trace_contains_clocks_and_no_placeholder_text) ... ok
+test_native_clock_callbacks_switch_at_ten_minutes_and_quarter_updates (__main__.ProjectionTests.test_native_clock_callbacks_switch_at_ten_minutes_and_quarter_updates) ... ok
+test_render_keeps_left_mark_with_frame_winding_and_same_modes (__main__.ProjectionTests.test_render_keeps_left_mark_with_frame_winding_and_same_modes) ... ok
+test_static_replay_and_native_overlap_keep_retail_wrapper_plus_14 (__main__.ProjectionTests.test_static_replay_and_native_overlap_keep_retail_wrapper_plus_14) ... ok
+test_strip_and_all_submitted_text_are_white_except_possession (__main__.ProjectionTests.test_strip_and_all_submitted_text_are_white_except_possession) ... ok
+test_three_digit_scores_inches_overtime_and_possession_use_native_data (__main__.ProjectionTests.test_three_digit_scores_inches_overtime_and_possession_use_native_data) ... ok
+test_two_float_fields_are_shadow_offsets_not_font_scale (__main__.ProjectionTests.test_two_float_fields_are_shadow_offsets_not_font_scale) ... ok
+test_v8_negative_control_proves_the_static_defects (__main__.ProjectionTests.test_v8_negative_control_proves_the_static_defects) ... ok
+test_widescreen_activates_real_hook_without_vertical_scale_or_shift (__main__.ProjectionTests.test_widescreen_activates_real_hook_without_vertical_scale_or_shift) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 30.031s
+
+OK

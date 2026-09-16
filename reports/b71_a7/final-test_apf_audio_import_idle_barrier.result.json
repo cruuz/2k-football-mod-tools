@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_audio_import_idle_barrier",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_audio_import_idle_barrier.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:33:17.446965+00:00",
+  "ended": "2026-09-16T00:33:22.228407+00:00",
+  "seconds": 4.781,
+  "exit_code": 0
+}

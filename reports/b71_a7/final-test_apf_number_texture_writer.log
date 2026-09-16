@@ -1,0 +1,32 @@
+test_free_bytes_come_from_the_block_table_alone (__main__.NumberBudgetInspectorTests.test_free_bytes_come_from_the_block_table_alone) ... ok
+test_the_studio_bridge_formats_the_authoring_warning (__main__.NumberBudgetInspectorTests.test_the_studio_bridge_formats_the_authoring_warning) ... ok
+test_a_staged_set_overflow_names_every_digit (__main__.NumberBudgetTests.test_a_staged_set_overflow_names_every_digit) ... ok
+test_empty_or_unknown_digits_are_refused (__main__.NumberBudgetTests.test_empty_or_unknown_digits_are_refused) ... ok
+test_overflow_classifier_tells_digits_from_region_masks (__main__.NumberBudgetTests.test_overflow_classifier_tells_digits_from_region_masks) ... ok
+test_overflow_names_the_digit_and_the_package (__main__.NumberBudgetTests.test_overflow_names_the_digit_and_the_package) ... ok
+test_project_accepts_an_individual_digit (__main__.NumberBudgetTests.test_project_accepts_an_individual_digit) ... ok
+test_the_budget_status_line_names_free_bytes_and_the_new_encoder (__main__.NumberBudgetTests.test_the_budget_status_line_names_free_bytes_and_the_new_encoder) ... ok
+test_the_digit_band_floor_is_the_measured_solid_cost (__main__.NumberBudgetTests.test_the_digit_band_floor_is_the_measured_solid_cost) ... ok
+test_all_textures_marks_digits_editable (__main__.NumberCatalogTests.test_all_textures_marks_digits_editable) ... ok
+test_catalog_has_no_payloads (__main__.NumberCatalogTests.test_catalog_has_no_payloads) ... ok
+test_catalog_is_24_packages_by_20_textures (__main__.NumberCatalogTests.test_catalog_is_24_packages_by_20_textures) ... ok
+test_color_is_dxt1_and_normal_is_dxn (__main__.NumberCatalogTests.test_color_is_dxt1_and_normal_is_dxn) ... ok
+test_slot_zero_is_uniform_number_00 (__main__.NumberCatalogTests.test_slot_zero_is_uniform_number_00) ... ok
+test_writer_refuses_a_non_retail_0a (__main__.NumberCatalogTests.test_writer_refuses_a_non_retail_0a) ... ok
+test_writer_refuses_copied_0a_with_retail_size (__main__.NumberCatalogTests.test_writer_refuses_copied_0a_with_retail_size) ... ok
+test_a_small_edit_preserves_siblings_in_a_roomier_package (__main__.NumberDiscTests.test_a_small_edit_preserves_siblings_in_a_roomier_package) ... ok
+test_a_solid_colour_digit_uses_greedy_encoding_and_regenerated_mips (__main__.NumberDiscTests.test_a_solid_colour_digit_uses_greedy_encoding_and_regenerated_mips)
+DIGIT_BUDGET_REPORT2: the preserving encoder is wrong for whole ... ok
+test_a_solid_digit_now_fits_the_tightest_package (__main__.NumberDiscTests.test_a_solid_digit_now_fits_the_tightest_package)
+DIGIT_BUDGET_REPORT2: under the greedy encoder plus regenerated ... ok
+test_an_incompressible_digit_still_overflows_and_names_itself (__main__.NumberDiscTests.test_an_incompressible_digit_still_overflows_and_names_itself) ... ok
+test_catalog_matches_live_descriptors (__main__.NumberDiscTests.test_catalog_matches_live_descriptors) ... ok
+test_one_digit_can_be_staged_alone (__main__.NumberDiscTests.test_one_digit_can_be_staged_alone) ... ok
+test_package_2_slack_after_name_footer_is_nine_bytes (__main__.NumberDiscTests.test_package_2_slack_after_name_footer_is_nine_bytes) ... ok
+test_the_budget_inspector_matches_package_capacity_on_disc (__main__.NumberDiscTests.test_the_budget_inspector_matches_package_capacity_on_disc) ... ok
+test_build_groups_digits_in_one_package (__main__.NumberStudioCompileTests.test_build_groups_digits_in_one_package) ... ok
+
+----------------------------------------------------------------------
+Ran 25 tests in 278.800s
+
+OK

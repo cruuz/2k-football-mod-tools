@@ -1,0 +1,259 @@
+{
+  "updated_utc": "2026-09-16T03:26:17.287700+00:00",
+  "checks": {
+    "allocator-final": {
+      "exit_code": 0,
+      "seconds": 821.732,
+      "tests": 23,
+      "skipped": 0
+    },
+    "corrected-test_nfl2k5_scorebug_freeze_v2": {
+      "exit_code": 0,
+      "seconds": 341.322,
+      "tests": 7,
+      "skipped": 0
+    },
+    "corrected-test_nfl2k5_scorebug_resources": {
+      "exit_code": 0,
+      "seconds": 374.772,
+      "tests": 6,
+      "skipped": 0
+    },
+    "final-nfl2k5_scorebug_layout_test": {
+      "exit_code": 0,
+      "seconds": 1.465,
+      "tests": 15,
+      "skipped": 6
+    },
+    "final-nfl2k5_scorebug_mod_project_test": {
+      "exit_code": 0,
+      "seconds": 1.361,
+      "tests": 10,
+      "skipped": 0
+    },
+    "final-test_apf_scorebug_workspace_qt": {
+      "exit_code": 0,
+      "seconds": 1.417,
+      "tests": 11,
+      "skipped": 0
+    },
+    "final-test_build_panel_qt": {
+      "exit_code": 0,
+      "seconds": 2.874,
+      "tests": 13,
+      "skipped": 0
+    },
+    "final-test_mod_build": {
+      "exit_code": 0,
+      "seconds": 1.867,
+      "tests": 13,
+      "skipped": 0
+    },
+    "final-test_nfl2k5_scorebar_rim": {
+      "exit_code": 0,
+      "seconds": 14.382,
+      "tests": 8,
+      "skipped": 0
+    },
+    "final-test_nfl2k5_scorebar_v3": {
+      "exit_code": 0,
+      "seconds": 104.825,
+      "tests": 9,
+      "skipped": 0
+    },
+    "final-test_nfl2k5_scorebug_assets": {
+      "exit_code": 0,
+      "seconds": 151.668,
+      "tests": 8,
+      "skipped": 1
+    },
+    "final-test_nfl2k5_scorebug_author": {
+      "exit_code": 0,
+      "seconds": 6.712,
+      "tests": 12,
+      "skipped": 0
+    },
+    "final-test_nfl2k5_scorebug_fonts": {
+      "exit_code": 0,
+      "seconds": 9.467,
+      "tests": 10,
+      "skipped": 5
+    },
+    "final-test_nfl2k5_scorebug_freeze": {
+      "exit_code": 0,
+      "seconds": 249.322,
+      "tests": 7,
+      "skipped": 0
+    },
+    "final-test_nfl2k5_scorebug_ingame": {
+      "exit_code": 0,
+      "seconds": 15.675,
+      "tests": 11,
+      "skipped": 0
+    },
+    "final-test_nfl2k5_scorebug_ingame_fix": {
+      "exit_code": 0,
+      "seconds": 131.437,
+      "tests": 9,
+      "skipped": 0
+    },
+    "final-test_nfl2k5_scorebug_mnf": {
+      "exit_code": 0,
+      "seconds": 12.543,
+      "tests": 10,
+      "skipped": 0
+    },
+    "final-test_nfl2k5_scorebug_mnf_v3": {
+      "exit_code": 0,
+      "seconds": 51.821,
+      "tests": 7,
+      "skipped": 0
+    },
+    "final-test_nfl2k5_scorebug_native": {
+      "exit_code": 0,
+      "seconds": 134.934,
+      "tests": 4,
+      "skipped": 0
+    },
+    "final-test_nfl2k5_scorebug_projection": {
+      "exit_code": 0,
+      "seconds": 57.724,
+      "tests": 14,
+      "skipped": 0
+    },
+    "final-test_nfl2k5_scorebug_runtime": {
+      "exit_code": 0,
+      "seconds": 121.592,
+      "tests": 12,
+      "skipped": 0
+    },
+    "final-test_nfl2k5_scorebug_source_art": {
+      "exit_code": 0,
+      "seconds": 0.465,
+      "tests": 13,
+      "skipped": 3
+    },
+    "final-test_nfl2k5_scorebug_template": {
+      "exit_code": 0,
+      "seconds": 10.024,
+      "tests": 19,
+      "skipped": 0
+    },
+    "final-test_nfl2k5_scorebug_unified_adapter": {
+      "exit_code": 0,
+      "seconds": 0.18,
+      "tests": 5,
+      "skipped": 0
+    },
+    "final-test_nfl2k5_scorebug_v10_ingame": {
+      "exit_code": 0,
+      "seconds": 9.297,
+      "tests": 11,
+      "skipped": 0
+    },
+    "final-test_nfl2k5_scorebug_v10_projection": {
+      "exit_code": 0,
+      "seconds": 30.042,
+      "tests": 14,
+      "skipped": 0
+    },
+    "final-test_nfl2k5_scorebug_versions": {
+      "exit_code": 0,
+      "seconds": 9.836,
+      "tests": 4,
+      "skipped": 0
+    },
+    "final-test_nfl2k5_xbe_space": {
+      "exit_code": 0,
+      "seconds": 35.225,
+      "tests": 13,
+      "skipped": 1
+    },
+    "final-test_scorebug_studio_panel_qt": {
+      "exit_code": 0,
+      "seconds": 7.496,
+      "tests": 11,
+      "skipped": 0
+    },
+    "gate-test_xbe_patch_cave_references": {
+      "exit_code": 0,
+      "seconds": 1752.922,
+      "tests": 131,
+      "skipped": 0
+    },
+    "gate-test_xbe_patch_memory_writes": {
+      "exit_code": 0,
+      "seconds": 1558.063,
+      "tests": 119,
+      "skipped": 0
+    },
+    "opacity-release-test_phase1_packaging": {
+      "exit_code": 0,
+      "seconds": 2.219,
+      "tests": 23,
+      "skipped": 0
+    },
+    "opacity-release-test_product_catalog": {
+      "exit_code": 0,
+      "seconds": 0.155,
+      "tests": 9,
+      "skipped": 0
+    },
+    "opacity-release-test_provider_integrity": {
+      "exit_code": 0,
+      "seconds": 10.988,
+      "tests": 8,
+      "skipped": 0
+    },
+    "opacity-release-test_scorebug_sprite_preview_qt": {
+      "exit_code": 0,
+      "seconds": 12.87,
+      "tests": 2,
+      "skipped": 0
+    },
+    "opacity-tests": {
+      "exit_code": 0,
+      "seconds": 97.035,
+      "tests": 11,
+      "skipped": 0
+    },
+    "oracle-current": {
+      "exit_code": 0,
+      "seconds": 360.839,
+      "tests": 29,
+      "skipped": 0
+    },
+    "registry-current": {
+      "exit_code": 0,
+      "seconds": 0.157,
+      "tests": null,
+      "skipped": 0
+    },
+    "revised-test_nfl2k5_scorebug_exact": {
+      "exit_code": 0,
+      "seconds": 100.941,
+      "tests": 8,
+      "skipped": 0
+    },
+    "shipping-test_nfl2k5_scorebug_template_release": {
+      "exit_code": 0,
+      "seconds": 0.561,
+      "tests": 5,
+      "skipped": 0
+    },
+    "validators-plan": {
+      "exit_code": 0,
+      "seconds": 0.289,
+      "tests": null,
+      "skipped": 0
+    }
+  },
+  "failed_latest": [],
+  "missing_required": [
+    "tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py"
+  ],
+  "required_suites": 40,
+  "tests": 654,
+  "skips": 16,
+  "command_runs": 121
+}

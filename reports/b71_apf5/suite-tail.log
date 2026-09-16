@@ -1,0 +1,166 @@
+PASS test_apf_full_shell_visual_gate.py exit=0
+PASS test_apf_fourth_down_qt.py exit=0
+PASS test_apf_g12_surfaces.py exit=0
+PASS test_apf_helmet_crest_design_product.py exit=0
+PASS test_apf_helmet_logo_regions_qt.py exit=0
+PASS test_apf_iso_extraction_is_layout_tolerant.py exit=0
+PASS test_apf_import_offers_resize.py exit=0
+PASS test_apf_linear_txtr_png.py exit=0
+PASS test_apf_logo_surface_ownership.py exit=0
+PASS test_apf_helmet_logo_regions.py exit=0
+PASS test_apf_mask_preview_alpha.py exit=0
+PASS test_apf_model_export_gui.py exit=0
+PASS test_apf_helmet_logo_placement.py exit=0
+PASS test_apf_number_encode_defaults.py exit=0
+PASS test_apf_logo_patch.py exit=0
+PASS test_apf_package_map_writer.py exit=0
+FAIL test_apf_pass_fetch_export_qt.py exit=1
+{"command": ["/home/noah/2k-worktrees/astra-b71-apf5/.scratch/test-python/bin/python3", "tests/mod_editor/test_apf_pass_fetch_export_qt.py"], "started_utc": "2026-09-15T20:23:43.623177+00:00", "elapsed_seconds": 0.568, "exit_code": 1, "log": "reports/b71_apf5/test_apf_pass_fetch_export_qt.log"}
+..F....
+======================================================================
+FAIL: test_cancel_after_check_writes_nothing (__main__.ExportPanelTests.test_cancel_after_check_writes_nothing)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-apf5/tests/mod_editor/test_apf_pass_fetch_export_qt.py", line 127, in test_cancel_after_check_writes_nothing
+    self.assertEqual(list(self.root.glob("*.toml")), [])
+AssertionError: Lists differ: [PosixPath('/tmp/tmplcv_jz28/xenia.config.toml')] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+PosixPath('/tmp/tmplcv_jz28/xenia.config.toml')
+
+- [PosixPath('/tmp/tmplcv_jz28/xenia.config.toml')]
++ []
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.336s
+
+FAILED (failures=1)
+
+
+PASS test_apf_play_designer.py exit=0
+PASS test_apf_play_designer_project.py exit=0
+PASS test_apf_play_designer_qt.py exit=0
+PASS test_apf_playbook_route_gui.py exit=0
+PASS test_apf_playcall_patch.py exit=0
+PASS test_apf_logocache_patch.py exit=0
+PASS test_apf_model_import.py exit=0
+PASS test_apf_playcalling_editor_facade.py exit=0
+PASS test_apf_playcalling_editor_patches.py exit=0
+PASS test_apf_playcalling_editor_qt.py exit=0
+PASS test_apf_player_position_patch.py exit=0
+PASS test_apf_player_position_product_backend.py exit=0
+PASS test_apf_player_positions.py exit=0
+PASS test_apf_player_rating_patch.py exit=0
+PASS test_apf_player_rating_product_backend.py exit=0
+PASS test_apf_playcalling_editor_build.py exit=0
+PASS test_apf_player_ratings.py exit=0
+PASS test_apf_product_findings.py exit=0
+PASS test_apf_product_findings_gui.py exit=0
+PASS test_apf_product_validation_wrappers.py exit=0
+PASS test_apf_player_rating_sheet_import.py exit=0
+PASS test_apf_project_streaming.py exit=0
+PASS test_apf_ps3_probes.py exit=0
+PASS test_apf_ps3_roster_convert.py exit=0
+PASS test_apf_ps3_roster_import_qt.py exit=0
+PASS test_apf_ps3_speed.py exit=0
+PASS test_apf_project_document_workflow.py exit=0
+PASS test_apf_ps3_speed_packages.py exit=0
+PASS test_apf_ps3_texture_bundle_qt.py exit=0
+PASS test_apf_public_docs_registry_current.py exit=0
+PASS test_apf_rating_value_domains.py exit=0
+PASS test_apf_retail_crest_channel_audit.py exit=0
+PASS test_apf_roster_appearance_transfer.py exit=0
+PASS test_apf_roster_appearance_transfer_qt.py exit=0
+PASS test_apf_ps3_texture_bundle.py exit=0
+PASS test_apf_roster_identity_gui.py exit=0
+PASS test_apf_roster_workspace.py exit=0
+PASS test_apf_roster_workspace_gui.py exit=0
+PASS test_apf_save_playbook_assignments_gui.py exit=0
+PASS test_apf_roster_identity.py exit=0
+PASS test_apf_save_roster_players_gui.py exit=0
+PASS test_apf_scorebug_workspace_qt.py exit=0
+PASS test_apf_save_roster_players.py exit=0
+PASS test_apf_splb_add_multiple_formations.py exit=0
+PASS test_apf_splb_formation_personnel.py exit=0
+PASS test_apf_splb_tag_reassignment.py exit=0
+PASS test_apf_splb_writer.py exit=0
+PASS test_apf_stadium_material_findings.py exit=0
+PASS test_apf_stadium_model_import.py exit=0
+PASS test_apf_stadium_studio.py exit=0
+PASS test_apf_stadium_studio_gui.py exit=0
+PASS test_apf_shell_search_accessibility_qt.py exit=0
+PASS test_apf_stfs_roster_rehash.py exit=0
+PASS test_apf_studio_audio_gui.py exit=0
+PASS test_apf_studio_core.py exit=0
+PASS test_apf_studio_draft_logo.py exit=0
+PASS test_apf_studio_inspectors.py exit=0
+FAIL test_apf_studio_installer.py exit=1
+{"command": ["/home/noah/2k-worktrees/astra-b71-apf5/.scratch/test-python/bin/python3", "tests/mod_editor/test_apf_studio_installer.py"], "started_utc": "2026-09-15T20:26:55.730129+00:00", "elapsed_seconds": 10.033, "exit_code": 1, "log": "reports/b71_apf5/test_apf_studio_installer.log"}
+F.........F.....
+======================================================================
+FAIL: test_install_update_and_authenticated_uninstall (__main__.PerUserLifecycleTests.test_install_update_and_authenticated_uninstall)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-apf5/tests/mod_editor/test_apf_studio_installer.py", line 491, in test_install_update_and_authenticated_uninstall
+    self.assertEqual(runtime_result.returncode, 0, runtime_result.stderr)
+AssertionError: 1 != 0 : Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/usr/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1324, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'capstone'
+
+
+======================================================================
+FAIL: test_clean_allowlist_stage_passes_the_alpha32_runtime_gate (__main__.ReleaseClosureTests.test_clean_allowlist_stage_passes_the_alpha32_runtime_gate)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-apf5/tests/mod_editor/test_apf_studio_installer.py", line 320, in test_clean_allowlist_stage_passes_the_alpha32_runtime_gate
+    self.assertEqual(result.returncode, 0, result.stderr)
+AssertionError: 1 != 0 : APF2K8_MOD_STUDIO_RUNTIME_REFUSED: No module named 'capstone'
+
+
+----------------------------------------------------------------------
+Ran 16 tests in 9.913s
+
+FAILED (failures=2)
+
+
+PASS test_apf_studio_safety.py exit=0
+PASS test_apf_studio_text_edit.py exit=0
+PASS test_apf_team_art.py exit=0
+PASS test_apf_team_art_qt.py exit=0
+PASS test_apf_team_crest_selection.py exit=0
+PASS test_apf_team_logo_gui.py exit=0
+PASS test_apf_text_sheet_gui.py exit=0
+PASS test_apf_textlogo_gui.py exit=0
+PASS test_apf_playcall_research_native.py exit=0
+PASS test_apf_stadium_texture.py exit=0
+PASS test_apf_theme_layout_qt.py exit=0
+PASS test_apf_number_texture_writer.py exit=0
+PASS test_apf_uniform_equipment_colors_gui.py exit=0
+PASS test_apf_uniform_allocation_capacity.py exit=0
+PASS test_apf_uniform_independence.py exit=0
+PASS test_apf_uniform_inventory_gui.py exit=0
+PASS test_apf_wordmark_regions.py exit=0
+PASS test_apf_uniform_equipment_colors.py exit=0
+PASS test_apf_xenia_edge.py exit=0
+PASS test_apf_xenos_4444_mip_layout.py exit=0
+PASS test_apf_xenos_4444_png.py exit=0
+PASS test_apf_xenos_extra_formats_png.py exit=0
+PASS test_apf_xex_image.py exit=0
+PASS test_apf_wave_integration.py exit=0
+PASS test_apf_xma1_wizard_gui.py exit=0
+PASS test_apf_textlogo_writer.py exit=0
+PASS test_provider_integrity.py exit=0
+PASS test_product_catalog.py exit=0
+PASS test_phase1_packaging.py exit=0
+PASS test_capability_registry_module_commands.py exit=0
+PASS test_b69_a1_playcalling.py exit=0
+PASS test_apf_workspace_recovery.py exit=0
+PASS test_apf_xex_image_retail.py exit=0
+Completed 108 standalone suites; failures: ['test_apf_pass_fetch_export_qt.py', 'test_apf_studio_installer.py']

@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_uniform_independence",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_uniform_independence.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:58:23.899951+00:00",
+  "ended": "2026-09-16T00:58:25.385345+00:00",
+  "seconds": 1.485,
+  "exit_code": 0
+}

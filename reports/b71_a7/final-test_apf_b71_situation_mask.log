@@ -1,0 +1,11 @@
+test_canonical_toml_rejects_foreign_and_duplicate_writes (__main__.DataTests.test_canonical_toml_rejects_foreign_and_duplicate_writes) ... ok
+test_exact_data_roundtrip_and_independent_bits (__main__.DataTests.test_exact_data_roundtrip_and_independent_bits) ... ok
+test_exact_key_boundaries_sign_and_no_aliases (__main__.DataTests.test_exact_key_boundaries_sign_and_no_aliases) ... ok
+test_leaf_decode_ownership_and_pass_fetch_composition (__main__.DataTests.test_leaf_decode_ownership_and_pass_fetch_composition) ... ok
+test_refuse_bad_data_names_versions_padding_and_specials (__main__.DataTests.test_refuse_bad_data_names_versions_padding_and_specials) ... ok
+test_masks_default_off_stage_replay_undo_and_export (__main__.ProjectTests.test_masks_default_off_stage_replay_undo_and_export) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 3.844s
+
+OK

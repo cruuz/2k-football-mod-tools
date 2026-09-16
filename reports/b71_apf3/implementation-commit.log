@@ -1,0 +1,5 @@
+[astra/b71-apf3-situation-exclusions e902cf6c] APF: prove export refit and native TE depth fallback; document exclusion limits
+ 13 files changed, 922 insertions(+), 67 deletions(-)
+ create mode 100644 docs/research/apf_b71_apf3.md
+ create mode 100644 docs/research/apf_b71_apf3_registry.json
+ create mode 100644 tools/apf_b71_situation_probe.py

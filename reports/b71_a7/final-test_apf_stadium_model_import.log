@@ -1,0 +1,9 @@
+test_catalog_maps_only_the_proved_scene_and_77_nodes (__main__.StadiumModelImportTests.test_catalog_maps_only_the_proved_scene_and_77_nodes) ... ok
+test_changed_topology_fails_before_writer_and_leaves_no_output (__main__.StadiumModelImportTests.test_changed_topology_fails_before_writer_and_leaves_no_output) ... ok
+test_import_builds_canonical_recipe_then_uses_independent_verifier (__main__.StadiumModelImportTests.test_import_builds_canonical_recipe_then_uses_independent_verifier) ... ok
+test_parser_rejects_every_unproved_authoring_lane (__main__.StadiumModelImportTests.test_parser_rejects_every_unproved_authoring_lane) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.147s
+
+OK

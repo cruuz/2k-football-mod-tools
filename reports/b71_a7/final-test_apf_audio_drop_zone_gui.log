@@ -1,0 +1,22 @@
+test_active_pcm_or_pack_import_blocks_drop_and_direct_dispatch (__main__.ApfAudioDropZoneGuiTests.test_active_pcm_or_pack_import_blocks_drop_and_direct_dispatch) ... This plugin does not support propagateSizeHints()
+ok
+test_direct_drop_stays_disabled_until_registered_worker_is_idle (__main__.ApfAudioDropZoneGuiTests.test_direct_drop_stays_disabled_until_registered_worker_is_idle) ... This plugin does not support propagateSizeHints()
+ok
+test_drop_zone_is_visible_and_tracks_exact_slot_editability (__main__.ApfAudioDropZoneGuiTests.test_drop_zone_is_visible_and_tracks_exact_slot_editability) ... This plugin does not support propagateSizeHints()
+ok
+test_file_admission_accepts_one_regular_local_audio_file_only (__main__.ApfAudioDropZoneGuiTests.test_file_admission_accepts_one_regular_local_audio_file_only) ... ok
+test_runner_refusal_is_explained_and_restores_drop_immediately (__main__.ApfAudioDropZoneGuiTests.test_runner_refusal_is_explained_and_restores_drop_immediately) ... This plugin does not support propagateSizeHints()
+ok
+test_wav_drop_uses_configured_encoder_and_pcm_bridge (__main__.ApfAudioDropZoneGuiTests.test_wav_drop_uses_configured_encoder_and_pcm_bridge) ... This plugin does not support propagateSizeHints()
+ok
+test_wav_drop_without_encoder_continues_after_successful_setup (__main__.ApfAudioDropZoneGuiTests.test_wav_drop_without_encoder_continues_after_successful_setup) ... This plugin does not support propagateSizeHints()
+ok
+test_wav_drop_without_encoder_offers_guided_setup_and_stays_closed_when_declined (__main__.ApfAudioDropZoneGuiTests.test_wav_drop_without_encoder_offers_guided_setup_and_stays_closed_when_declined) ... This plugin does not support propagateSizeHints()
+ok
+test_xma_drop_captures_selected_identity_and_matches_button_route (__main__.ApfAudioDropZoneGuiTests.test_xma_drop_captures_selected_identity_and_matches_button_route) ... This plugin does not support propagateSizeHints()
+ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.177s
+
+OK

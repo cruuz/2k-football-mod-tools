@@ -1,0 +1,10 @@
+test_facade_invalidates_previous_build_only_after_success (__main__.DesignerProjectTests.test_facade_invalidates_previous_build_only_after_success) ... ok
+test_failed_compile_does_not_stage_or_create_undo (__main__.DesignerProjectTests.test_failed_compile_does_not_stage_or_create_undo) ... ok
+test_metadata_tampering_is_not_saved (__main__.DesignerProjectTests.test_metadata_tampering_is_not_saved) ... ok
+test_shared_resource_collision_refuses_atomic_staging (__main__.DesignerProjectTests.test_shared_resource_collision_refuses_atomic_staging) ... ok
+test_stage_undo_save_load_and_apply (__main__.DesignerProjectTests.test_stage_undo_save_load_and_apply) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.157s
+
+OK

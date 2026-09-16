@@ -1,0 +1,25 @@
+test_filters_use_labels_retail_assignments_and_project_edits (__main__.BrowserTests.test_filters_use_labels_retail_assignments_and_project_edits) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_grid_exists_before_worker_thumbnails_and_enter_opens_inspector (__main__.BrowserTests.test_grid_exists_before_worker_thumbnails_and_enter_opens_inspector) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_large_catalog_only_decodes_visible_rows_then_continues_on_scroll (__main__.BrowserTests.test_large_catalog_only_decodes_visible_rows_then_continues_on_scroll) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_late_thumbnail_cannot_repopulate_a_different_source (__main__.BrowserTests.test_late_thumbnail_cannot_repopulate_a_different_source) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_pair_dialog_requires_each_png_and_digits_allow_subset (__main__.BrowserTests.test_pair_dialog_requires_each_png_and_digits_allow_subset) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_short_inspector_preserves_preview_aspect_and_separates_layers (__main__.BrowserTests.test_short_inspector_preserves_preview_aspect_and_separates_layers) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.190s
+
+OK

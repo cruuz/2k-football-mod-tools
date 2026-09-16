@@ -1,0 +1,12 @@
+test_both_routes_show_full_sha_refusal_without_output_dialog (__main__.ExportPanelTests.test_both_routes_show_full_sha_refusal_without_output_dialog) ... ok
+test_busy_disables_all_export_choices (__main__.ExportPanelTests.test_busy_disables_all_export_choices) ... ok
+test_cancel_after_check_writes_nothing (__main__.ExportPanelTests.test_cancel_after_check_writes_nothing) ... ok
+test_cancelled_folder_opens_no_worker_or_output_dialog (__main__.ExportPanelTests.test_cancelled_folder_opens_no_worker_or_output_dialog) ... ok
+test_configured_and_explicit_updates_are_forwarded_only_for_game_mode (__main__.ExportPanelTests.test_configured_and_explicit_updates_are_forwarded_only_for_game_mode) ... ok
+test_default_game_folder_and_expert_controls (__main__.ExportPanelTests.test_default_game_folder_and_expert_controls) ... ok
+test_success_installs_in_xenia_and_reparses_config (__main__.ExportPanelTests.test_success_installs_in_xenia_and_reparses_config) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.307s
+
+OK

@@ -1,0 +1,491 @@
+{
+  "note": "Shell batches exactly as executed. Tool-return timing is not total duration when asynchronous=true. Exact test and final-check wall durations are in the linked validation ledgers. Initial read-only discovery batches preceded UTC logging. Subsequent delivery commands are timed separately in delivery-code.json, delivery.json and .scratch/bundle-final-verification.json.",
+  "initial_discovery": [
+    {
+      "command": "pwd && rg --files -g 'AGENTS.md' -g 'ASTRA_CONTEXT.md' -g 'BETA71_TRIAGE.md' -g 'ASTRA_B70_T2_REPORT.md' -g '*equipment*' -g '*project*' -g '*CHANGELOG*' -g '*changelog*' | head -100",
+      "exit_code": 0,
+      "tool_seconds": 0.000007975
+    },
+    {
+      "command": "cat ASTRA_CONTEXT.md BETA71_TRIAGE.md ASTRA_B70_T2_REPORT.md",
+      "exit_code": 0,
+      "tool_seconds": 0.00000502
+    },
+    {
+      "command": "git status --short && git log -5 --oneline && rg --files --hidden -g AGENTS.md -g '!\\.git' /home/noah/2k-worktrees /home/noah/.codex 2>/dev/null | head -60",
+      "exit_code": 0,
+      "tool_seconds": 0.574310104
+    },
+    {
+      "command": "tail -3 .scratch/explore.log",
+      "exit_code": 0,
+      "tool_seconds": 0.000006552
+    }
+  ],
+  "batches": [
+    {
+      "number": 1,
+      "command": "for p in /AGENTS.md /home/AGENTS.md /home/noah/AGENTS.md /home/noah/2k-worktrees/AGENTS.md AGENTS.md ASTRA_BRIEF.md; do if test -f \"$p\"; then cat \"$p\"; fi; done\nrg -n -A24 'Beta 70 bug reports' BETA71_TRIAGE.md\nsed -n '1,108p' ASTRA_B70_T2_REPORT.md\nrg --files --hidden -g AGENTS.md -g '!\\.git' .\nstat -c '%A %n' tools/nfl2k5_equipment_optimal\nls reports/assets | head",
+      "observed_utc": "2026-09-15T22:39:21.253Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 0.000007604,
+      "asynchronous": false
+    },
+    {
+      "number": 2,
+      "command": "git switch -c astra/b71-t4-project-load-equipment-fit local/stack-beta-71\nrg -n 'Cannot load equipment|Equipment art cannot fit|needs refit|optimal|load.*equipment' mod_editor/core/nfl2k5_uniform_equipment_writer.py mod_editor/core/equipment_staging.py mod_editor/core/nfl2k5_equipment_import.py mod_editor/studio mod_editor/gui/studio_qt.py\nsed -n '1,300p' mod_editor/core/equipment_staging.py",
+      "observed_utc": "2026-09-15T22:39:21.392Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 0.000004368,
+      "asynchronous": false
+    },
+    {
+      "number": 3,
+      "command": "cat /home/noah/PROJECTS.md /home/noah/projects.json\n git branch --show-current\n git rev-parse --git-dir --git-common-dir\n sed -n '120,230p' mod_editor/core/nfl2k5_uniform_equipment_writer.py\n sed -n '560,725p' mod_editor/core/nfl2k5_uniform_equipment_writer.py\n sed -n '725,1120p' mod_editor/core/nfl2k5_uniform_equipment_writer.py",
+      "observed_utc": "2026-09-15T22:39:34.110Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 0.000007764,
+      "asynchronous": false
+    },
+    {
+      "number": 4,
+      "command": "sed -n '1510,1760p' mod_editor/core/nfl2k5_uniform_equipment_writer.py\ncat mod_editor/core/nfl2k5_equipment_lz.py\nrg -n 'equipment|open_project|load_project' mod_editor/studio/facade.py mod_editor/studio/project_archive.py mod_editor/gui/studio_qt.py | tail -120\nrg --files tests/mod_editor | rg 'equipment|project|studio|facade|provider|product_catalog|phase1|b69_j1|b70_t2'\ntest -f '/home/noah/Desktop/2K5-8 Editors/beta71_evidence/discord_project_load_equipment_fit.png'",
+      "observed_utc": "2026-09-15T22:39:34.255Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 0.000012413,
+      "asynchronous": false
+    },
+    {
+      "number": 5,
+      "command": "git branch --show-current\n git rev-parse --git-dir --git-common-dir\nsed -n '125,215p' mod_editor/core/nfl2k5_uniform_equipment_writer.py\nsed -n '585,660p' mod_editor/core/nfl2k5_uniform_equipment_writer.py\nsed -n '1590,1735p' mod_editor/core/nfl2k5_uniform_equipment_writer.py\nsed -n '3540,3680p' mod_editor/studio/facade.py\nrg -n 'preflight_staged|validate_staged|equipment_fit_rows|Cannot load equipment' mod_editor\nsed -n '1,100p' mod_editor/core/nfl2k5_equipment_lz.py",
+      "observed_utc": "2026-09-15T22:39:48.863Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 0.000004569,
+      "asynchronous": false
+    },
+    {
+      "number": 6,
+      "command": "sed -n '735,1000p' mod_editor/core/nfl2k5_uniform_equipment_writer.py\nsed -n '1000,1150p' mod_editor/core/nfl2k5_uniform_equipment_writer.py\ncat tests/mod_editor/b70_equipment_fixture.py\ncat mod_editor/core/equipment_reporting.py",
+      "observed_utc": "2026-09-15T22:39:48.989Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 0.000008706,
+      "asynchronous": false
+    },
+    {
+      "number": 7,
+      "command": "sed -n '725,850p' mod_editor/core/nfl2k5_uniform_equipment_writer.py\nsed -n '1140,1260p' mod_editor/core/nfl2k5_uniform_equipment_writer.py\nrg -n -C10 'preflight_project_equipment|_remember_fit' mod_editor/core/studio_session.py mod_editor/studio/project_archive.py mod_editor/studio/facade.py\nsed -n '1,80p' mod_editor/core/nfl2k5_equipment_lz.py\nrg -n 'load|preflight|build' tests/mod_editor/test_b69_j1_fit.py tests/mod_editor/test_nfl2k5_equipment_import.py",
+      "observed_utc": "2026-09-15T22:39:56.874Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 0.000006212,
+      "asynchronous": false
+    },
+    {
+      "number": 8,
+      "command": "sed -n '655,732p' mod_editor/core/nfl2k5_uniform_equipment_writer.py\nrg -n -C8 'preflight_project_equipment|_remember_fit' mod_editor\nsed -n '1,115p' tests/mod_editor/test_b69_j1_fit.py\nsed -n '1,170p' tests/mod_editor/test_b70_t2_equipment.py\nsed -n '1,140p' tools/b70_t2_sock_probe.py\n git diff f7d6fc07 3c98d433 -- mod_editor/core/nfl2k5_uniform_equipment_writer.py | head -240",
+      "observed_utc": "2026-09-15T22:40:07.557Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 0.000006482,
+      "asynchronous": false
+    },
+    {
+      "number": 9,
+      "command": "sed -n '8640,8695p' mod_editor/gui/studio_qt.py\nrg -n -C5 'preflight_project_equipment' tools/nfl2k5_visual_mod_project.py\nsed -n '1,150p' tests/mod_editor/test_nfl2k5_equipment_import.py\nsed -n '1,140p' tests/mod_editor/test_nfl2k5_equipment_texture_chain.py\nrg -n 'build_project|project_edits_list|edits_list|project_list' mod_editor/gui/studio_qt.py | tail -35",
+      "observed_utc": "2026-09-15T22:40:23.092Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 0.000008306,
+      "asynchronous": false
+    },
+    {
+      "number": 10,
+      "command": "rg -n 'read_project\\(|def build|equipment_compile_cache|except.*Error' tools/nfl2k5_visual_mod_project.py | tail -55\nsed -n '1300,1405p' mod_editor/core/nfl2k5_uniform_equipment_writer.py\nsed -n '1,100p' mod_editor/core/nfl2k5_equipment_import_intent.py\nsed -n '1,100p' mod_editor/core/nfl2k5_equipment_import.py\nsed -n '3655,3755p' mod_editor/studio/facade.py\nsed -n '7760,7790p' mod_editor/gui/studio_qt.py\nsed -n '1,130p' tests/mod_editor/test_b70_t2_equipment.py\nsed -n '1,95p' tests/mod_editor/test_provider_integrity.py",
+      "observed_utc": "2026-09-15T22:40:37.190Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 0.0000053,
+      "asynchronous": false
+    },
+    {
+      "number": 11,
+      "command": "mkdir -p .scratch reports/b71_t4\npython3 - <<'PY'\nfrom pathlib import Path\nfrom mod_editor.core import nfl2k5_uniform_equipment_writer as w\nfrom mod_editor.core.nfl2k5_equipment_lz import _optimal_helper\nimport sys\nsys.path.insert(0,'tools')\nfrom nfl_outer import parse_archive,read_entry_bytes\nfrom nfl_txtr import parse_chunks,decode_chunk\np=Path('extracted/ESPN NFL 2K5 (USA)/vc_53450030/0')\na=parse_archive(p)\nt=next(t for t in w.load_targets()[0].values() if t.set_selector=='22H2' and t.name=='socks00')\nc=[c for c in parse_chunks(read_entry_bytes(a,a.entries[t.outer_index]),allow_trailing=True) if c.index==t.chunk_index][0]\nprint(t);print(c);print('helper',_optimal_helper())\nPY\n git show f7d6fc07:mod_editor/core/nfl2k5_uniform_equipment_writer.py > .scratch/b69_equipment_writer.py\n git show f7d6fc07:mod_editor/core/nfl2k5_equipment_lz.py > .scratch/b69_equipment_lz.py\n git show HEAD:mod_editor/core/nfl2k5_uniform_equipment_writer.py > .scratch/b70_equipment_writer.py\n git init --bare .scratch/t4.git\n python3 - <<'PY'\nfrom pathlib import Path\np=Path('.scratch/t4.git/objects/info/alternates')\np.write_text('/home/noah/2k-football-mod-tools/.git/objects\\n')\nPY\n git --git-dir=.scratch/t4.git --work-tree=. update-ref refs/heads/astra/b71-t4-project-load-equipment-fit e2f5c6e6\n git --git-dir=.scratch/t4.git --work-tree=. symbolic-ref HEAD refs/heads/astra/b71-t4-project-load-equipment-fit\n git --git-dir=.scratch/t4.git --work-tree=. read-tree HEAD",
+      "observed_utc": "2026-09-15T22:41:01.949Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 0.566884009,
+      "asynchronous": false
+    },
+    {
+      "number": 12,
+      "command": "PYTHONPATH=. python3 .scratch/explore.py > .scratch/explore.log 2>&1",
+      "observed_utc": "2026-09-15T22:41:41.062Z",
+      "exit_code": 130,
+      "tool_seconds_until_return_or_yield": 1.001227119,
+      "asynchronous": true
+    },
+    {
+      "number": 13,
+      "command": "sed -n '96,235p' mod_editor/core/nfl2k5_equipment_import_intent.py\nsed -n '1430,1535p' mod_editor/core/nfl2k5_uniform_equipment_writer.py\nsed -n '4045,4085p' tools/nfl2k5_visual_mod_project.py\nsed -n '1,80p' .scratch/explore.log\nrg -n 'project_includes_list|def _build_project|refit' mod_editor/gui/build_panel_qt.py\nrg -n 'def build\\(|preflight|canonical_document' mod_editor/core/nfl2k5_build_service.py | head -30",
+      "observed_utc": "2026-09-15T22:41:51.021Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 0.000006823,
+      "asynchronous": false
+    },
+    {
+      "number": 14,
+      "command": "sed -n '5595,5655p' mod_editor/gui/studio_qt.py\nsed -n '5690,5745p' mod_editor/gui/studio_qt.py\nsed -n '7677,7755p' mod_editor/gui/studio_qt.py\nsed -n '1300,1335p' mod_editor/core/nfl2k5_build_service.py\nrg -n 'equipment|read_project' mod_editor/core/nfl2k5_build_service.py\nsed -n '1,110p' .scratch/b69_equipment_lz.py\npkill -f '^python3 .scratch/explore.py$'",
+      "observed_utc": "2026-09-15T22:43:18.643Z",
+      "exit_code": 1,
+      "tool_seconds_until_return_or_yield": 0.000005841,
+      "asynchronous": false
+    },
+    {
+      "number": 15,
+      "command": "rg -n '_blocking_task' mod_editor/gui/studio_qt.py | tail -18\nsed -n '1,35p' .scratch/explore.log\nsed -n '260,350p' tests/mod_editor/test_studio_facade.py\nsed -n '1,120p' tests/mod_editor/test_b70_t2_wiring.py\npython3 - <<'PY'\nfrom pathlib import Path\np=Path('.scratch/explore.py')\ns=p.read_text().replace(\"oldlz=old_module('b69_lz','.scratch/b69_equipment_lz.py')\", \"oldlz=old_module('b69_lz','.scratch/b69_equipment_lz.py');oldlz.TOOLS=Path('tools').resolve()\")\ns=s.replace(\"for n in (10,30,60,100,150,200,300,400,600,900):\", \"for n in (10,30,60,100):\")\ns=s.replace(\"('b70',w)\", \"('b70',old_module('b70_writer','.scratch/b70_equipment_writer.py'))\")\ns=s.replace(\"patch.object(w,'_PARSE_CACHE',OrderedDict())\", \"patch.object(mod,'_PARSE_CACHE',OrderedDict())\")\np.write_text(s)\nPY\nPYTHONPATH=. python3 .scratch/explore.py > .scratch/explore.log 2>&1",
+      "observed_utc": "2026-09-15T22:45:35.657Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 1.001765451,
+      "asynchronous": true
+    },
+    {
+      "number": 16,
+      "command": "sed -n '2425,2460p' mod_editor/gui/studio_qt.py\nrg -n 'global_busy =|_busy|_task_count' mod_editor/gui/studio_qt.py | tail -25\nsed -n '1,20p' .scratch/explore.log\nrg -n 'def iter_edits|canonical_document' tests/mod_editor/test_studio_facade.py | head\nsed -n '1,35p' docs/mod_editor/2k5_mod_studio_changelog.md\nPYTHONPATH=. QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_nfl2k5_equipment_import.py",
+      "observed_utc": "2026-09-15T22:45:44.800Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 1.000820384,
+      "asynchronous": true
+    },
+    {
+      "number": 17,
+      "command": "ps -eo pid,args | rg '(explore.py|test_nfl2k5_equipment_import.py)'",
+      "observed_utc": "2026-09-15T22:45:52.172Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 0.000004719,
+      "asynchronous": false
+    },
+    {
+      "number": 18,
+      "command": "PYTHONPATH=. python3 .scratch/search_exact.py > .scratch/search_exact.log 2>&1",
+      "observed_utc": "2026-09-15T22:46:32.523Z",
+      "exit_code": 1,
+      "tool_seconds_until_return_or_yield": 1.001167582,
+      "asynchronous": true
+    },
+    {
+      "number": 19,
+      "command": "tail -8 .scratch/search_exact.log\npython3 - <<'PY'\nfrom pathlib import Path\np=Path('.scratch/search_exact.py');p.write_text(p.read_text().replace(\"return_value=False)\",\"return_value=False,create=True)\"))\nPY\nPYTHONPATH=. python3 .scratch/search_exact.py > .scratch/search_exact2.log 2>&1",
+      "observed_utc": "2026-09-15T22:46:52.994Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 1.000983091,
+      "asynchronous": true
+    },
+    {
+      "number": 20,
+      "command": "rg -n -A15 'class ProjectFile' tools/nfl2k5_visual_mod_project.py\nhead -5 .scratch/search_exact2.log\npython3 - <<'PY'\nfrom pathlib import Path\np=Path('.scratch/explore.log');print(p.read_bytes().replace(b'\\0',b'').decode()[-3500:])\nPY\nsed -n '8750,8775p' mod_editor/gui/studio_qt.py\nsed -n '8790,8810p' mod_editor/gui/studio_qt.py\nsed -n '1,6p' docs/mod_editor/2k5_mod_studio_changelog.md",
+      "observed_utc": "2026-09-15T22:47:01.742Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 0.000009067,
+      "asynchronous": false
+    },
+    {
+      "number": 21,
+      "command": "python3 packaging/repin.py --apply\nPYTHONPATH=. QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_b69_j1_fit.py",
+      "observed_utc": "2026-09-15T22:47:40.416Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 1.001475184,
+      "asynchronous": true
+    },
+    {
+      "number": 22,
+      "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_b71_t4_equipment_project.py > reports/b71_t4/initial-tests.log 2>&1",
+      "observed_utc": "2026-09-15T22:49:19.420Z",
+      "exit_code": 1,
+      "tool_seconds_until_return_or_yield": 1.001265939,
+      "asynchronous": true
+    },
+    {
+      "number": 23,
+      "command": "tail -30 reports/b71_t4/initial-tests.log\nrg -n '^class .*Facade' mod_editor/studio/facade.py\nhead -5 .scratch/exact.json\n git diff --stat\npython3 - <<'PY'\nimport sys\nsys.path.insert(0,'.scratch')\nfrom search_exact import *\nraw=candidate_for(arts(71,34),mod=old)\nfor label,mod in [('beta69',old),('beta70',old_module('b70check','.scratch/b70_equipment_writer.py'))]:\n try:\n  auth=inputs(arts(71,34))\n  v=mod._compile_group(span,c,decoded,info,rows,auth,set(auth),suggest_fit=False)\n  print(label,v.rebuild_info.recompressed_bytes,v.rebuild_info.strategy,v.attempts[-1],flush=True)\n except Exception as e: print(label,type(e).__name__,str(e),flush=True)\nfrom mod_editor.core.nfl2k5_equipment_lz import compress_equipment_optimal\nprint('greedy',len(compress_vc_lz(raw,stream_tag=info.stream_tag,offset_bits=10)[0]),'optimal',len(compress_equipment_optimal(raw,stream_tag=info.stream_tag,offset_bits=10,max_encoded_size=10000)),flush=True)\nPY",
+      "observed_utc": "2026-09-15T22:49:34.401Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 1.001526111,
+      "asynchronous": true
+    },
+    {
+      "number": 24,
+      "command": "tail -45 reports/b71_t4/initial-tests.log",
+      "observed_utc": "2026-09-15T22:49:59.095Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 0.000004819,
+      "asynchronous": false
+    },
+    {
+      "number": 25,
+      "command": "sed -n '300,445p' mod_editor/studio/project_archive.py\nsed -n '520,600p' mod_editor/studio/project_archive.py\nrg -n 'SCHEMA|manifest|source_sha256' mod_editor/studio/project_archive.py | head -24\nrg -n 'fit|optimal' tests/mod_editor/test_b70_t1* tests/mod_editor/test_nfl2k5_equipment_texture_chain.py | head -35\nrg -n 'read_project.*equipment_index' -g '*.py' mod_editor tests tools | head -20",
+      "observed_utc": "2026-09-15T22:50:31.561Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 0.000004829,
+      "asynchronous": false
+    },
+    {
+      "number": 26,
+      "command": "PYTHONPATH=. python3 tools/b71_t4_equipment_probe.py > reports/b71_t4/probe.log 2>&1",
+      "observed_utc": "2026-09-15T22:52:00.766Z",
+      "exit_code": 1,
+      "tool_seconds_until_return_or_yield": 1.001121087,
+      "asynchronous": true
+    },
+    {
+      "number": 27,
+      "command": "tail -45 reports/b71_t4/initial-tests.log\nsed -n '84,108p' tests/mod_editor/test_b70_t1_build_speed.py\nrg -n -C2 'def iter_edits' tests/mod_editor/test_studio_facade.py\n git diff --check",
+      "observed_utc": "2026-09-15T22:52:10.386Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 0.846155762,
+      "asynchronous": false
+    },
+    {
+      "number": 28,
+      "command": "python3 packaging/repin.py --apply > reports/b71_t4/repin.log 2>&1\nPYTHONPATH=. QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_studio_facade.py > reports/b71_t4/facade-initial.log 2>&1",
+      "observed_utc": "2026-09-15T22:52:52.698Z",
+      "exit_code": 1,
+      "tool_seconds_until_return_or_yield": 1.000690674,
+      "asynchronous": true
+    },
+    {
+      "number": 29,
+      "command": "tail -25 reports/b71_t4/probe.log\n tail -35 reports/b71_t4/facade-initial.log\nsed -n '338,398p' tests/mod_editor/test_studio_facade.py\nrg -n 'def canonical_document|def iter_edits|class _Session' tests/mod_editor/test_studio_facade.py\nrg -n 'def load_shareable_project|def attach_playbook' mod_editor/studio/session.py",
+      "observed_utc": "2026-09-15T22:53:00.532Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 0.0000054,
+      "asynchronous": false
+    },
+    {
+      "number": 30,
+      "command": "rg -n 'quantize' .scratch/b69_equipment_writer.py\nsed -n '42,110p' tests/mod_editor/test_studio_facade.py\nsed -n '140,166p' tests/mod_editor/test_b70_t1_diagnostics.py\nsed -n '744,756p' mod_editor/studio/session.py\n tail -4 reports/b71_t4/repin.log",
+      "observed_utc": "2026-09-15T22:53:08.997Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 0.000005441,
+      "asynchronous": false
+    },
+    {
+      "number": 31,
+      "command": "PYTHONPATH=. python3 tools/b71_t4_equipment_probe.py > reports/b71_t4/probe-2.log 2>&1",
+      "observed_utc": "2026-09-15T22:53:31.652Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 1.001167276,
+      "asynchronous": true
+    },
+    {
+      "number": 32,
+      "command": "PYTHONPATH=. QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_b71_t4_equipment_project.py > reports/b71_t4/project-tests-2.log 2>&1",
+      "observed_utc": "2026-09-15T22:54:11.987Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 1.000918968,
+      "asynchronous": true
+    },
+    {
+      "number": 33,
+      "command": "cat reports/b71_t4/probe-2.log\ncat reports/b71_t4/facade-initial.log\npython3 - <<'PY'\nimport json\nfrom pathlib import Path\nv=json.loads(Path('reports/b71_t4/reproduction/measurements.json').read_text())\nfor k,val in v.items():\n if isinstance(val,dict): print(k,{a:b for a,b in val.items() if a!='attempts'})\nPY\nstat -c '%a %h %n' tools/nfl2k5_equipment_optimal\n git ls-files -s tools/nfl2k5_equipment_optimal",
+      "observed_utc": "2026-09-15T22:54:27.351Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 0.000005049,
+      "asynchronous": false
+    },
+    {
+      "number": 34,
+      "command": "python3 packaging/repin.py --apply",
+      "observed_utc": "2026-09-15T22:54:35.816Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 1.001608659,
+      "asynchronous": true
+    },
+    {
+      "number": 35,
+      "command": "tail -12 reports/b71_t4/project-tests-2.log\n git diff --numstat",
+      "observed_utc": "2026-09-15T22:55:10.118Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 0.526236673,
+      "asynchronous": false
+    },
+    {
+      "number": 36,
+      "command": "python3 tools/b71_t4_validate.py",
+      "observed_utc": "2026-09-15T22:55:19.500Z",
+      "exit_code": 1,
+      "tool_seconds_until_return_or_yield": 1.001198789,
+      "asynchronous": true
+    },
+    {
+      "number": 37,
+      "command": "python3 packaging/repin.py --apply",
+      "observed_utc": "2026-09-15T22:56:03.566Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 1.000192206,
+      "asynchronous": true
+    },
+    {
+      "number": 38,
+      "command": "cat reports/b71_t4/tests/test_b69_j1_wiring.log\nrg -n 'preflight|_checked_rows|load_shareable' tests/mod_editor/test_b69_j1_wiring.py\ncat reports/b71_t4/project-tests-2.log\n tail -4 reports/b71_t4/tests/test_b71_t4_equipment_project.log",
+      "observed_utc": "2026-09-15T22:56:16.400Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 0.000004608,
+      "asynchronous": false
+    },
+    {
+      "number": 39,
+      "command": "sed -n '1,178p' tests/mod_editor/test_b69_j1_wiring.py\nrg -n 'class.*Tests|def test_' tests/mod_editor/test_b71_t4_equipment_project.py",
+      "observed_utc": "2026-09-15T22:56:26.532Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 0.00000495,
+      "asynchronous": false
+    },
+    {
+      "number": 40,
+      "command": "python3 packaging/repin.py --apply",
+      "observed_utc": "2026-09-15T22:57:30.444Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 1.001126472,
+      "asynchronous": true
+    },
+    {
+      "number": 41,
+      "command": "PYTHONPATH=. python3 - <<'PY' > .scratch/lower-bound.log 2>&1\nimport sys\nsys.path.insert(0,'.scratch')\nfrom explore import *\nb=old_module('b70_bound','.scratch/b70_equipment_writer.py')\nfor n in (150,200,300,400,600,1000):\n auth=inputs(arts(71,n),True)\n try:\n  v=b._compile_group(span,c,decoded,info,rows,auth,set(auth),suggest_fit=False)\n  print(n,'fit',v.rebuild_info.recompressed_bytes,flush=True)\n except b.EquipmentFitError as e:\n  print(n,e.required,e.required_is_lower_bound,flush=True)\n  if e.required==6785:\n   with patch('mod_editor.core.nfl2k5_equipment_lz.compress_equipment_optimal',oldlz.compress_equipment_optimal):\n    try:\n     v=old._compile_group(span,c,decoded,info,rows,dict(auth),set(auth),suggest_fit=False)\n     print('OLD',v.rebuild_info.recompressed_bytes,v.attempts[-1],flush=True)\n    except Exception as z: print('OLD failed',z,flush=True)\n   break\nPY",
+      "observed_utc": "2026-09-15T22:57:50.811Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 1.001137612,
+      "asynchronous": true
+    },
+    {
+      "number": 42,
+      "command": "git --git-dir=.scratch/t4.git --work-tree=. add -- mod_editor/core/equipment_reporting.py mod_editor/core/equipment_staging.py mod_editor/core/nfl2k5_uniform_equipment_writer.py mod_editor/core/providers.py mod_editor/gui/studio_qt.py mod_editor/studio/facade.py packaging/check_2k5_mod_studio_runtime.py tools/nfl2k5_visual_mod_project.py tests/mod_editor/test_b69_j1_fit.py tests/mod_editor/test_b69_j1_wiring.py tests/mod_editor/test_b70_t1_build_speed.py tests/mod_editor/test_b71_t4_equipment_project.py docs/mod_editor/2k5_mod_studio_changelog.md tools/b71_t4_equipment_probe.py tools/b71_t4_validate.py\n git --git-dir=.scratch/t4.git --work-tree=. commit -m 'Keep unfitting equipment edits on project open and offer undoable refit' -- mod_editor/core/equipment_reporting.py mod_editor/core/equipment_staging.py mod_editor/core/nfl2k5_uniform_equipment_writer.py mod_editor/core/providers.py mod_editor/gui/studio_qt.py mod_editor/studio/facade.py packaging/check_2k5_mod_studio_runtime.py tools/nfl2k5_visual_mod_project.py tests/mod_editor/test_b69_j1_fit.py tests/mod_editor/test_b69_j1_wiring.py tests/mod_editor/test_b70_t1_build_speed.py tests/mod_editor/test_b71_t4_equipment_project.py docs/mod_editor/2k5_mod_studio_changelog.md tools/b71_t4_equipment_probe.py tools/b71_t4_validate.py",
+      "observed_utc": "2026-09-15T22:58:16.618Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 1.001569222,
+      "asynchronous": true
+    },
+    {
+      "number": 43,
+      "command": "sed -n '4100,4205p' tools/nfl2k5_visual_mod_project.py\nsed -n '3360,3430p' tools/nfl2k5_visual_mod_project.py\nrg -n 'kept_retail|refus|strict' tools/nfl2k5_visual_mod_project.py | tail -35\n tail -6 .scratch/lower-bound.log",
+      "observed_utc": "2026-09-15T22:58:55.852Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 0.000004459,
+      "asynchronous": false
+    },
+    {
+      "number": 44,
+      "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport json\nsource=Path('reports/b71_t4/tests')\ndest=source.with_name('tests-initial')\nsource.rename(dest)\np=dest/'validation.json'\nrows=json.loads(p.read_text())\nfor row in rows: row['log']=row['log'].replace('/tests/', '/tests-initial/')\np.write_text(json.dumps(rows,indent=2)+'\\n')\nPY\npython3 tools/b71_t4_validate.py",
+      "observed_utc": "2026-09-15T22:59:17.788Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 1.001528863,
+      "asynchronous": true
+    },
+    {
+      "number": 45,
+      "command": "rg -n '^class Equipment|^def (_cached_parse|_compile_group|preflight_project_equipment|refit_equipment|require_equipment_fit|staging_targets|fit_caption)|stripe_floor|palette_limits if' mod_editor/core/nfl2k5_uniform_equipment_writer.py mod_editor/core/equipment_staging.py mod_editor/core/equipment_reporting.py\nrg -n 'equipment_fit_rows =|_remember_fit\\(self' mod_editor/studio/session.py\nrg -n 'def (_load_project_candidate|refit_equipment|build_iso|_refresh_build_includes|_refit_project_equipment)|refit_note|EquipmentRefitError as exc' mod_editor/studio/facade.py mod_editor/gui/studio_qt.py tools/nfl2k5_visual_mod_project.py\npython3 - <<'PY'\nfrom pathlib import Path\nfor filename,terms in [('.scratch/b69_equipment_writer.py',('def preflight_project_equipment','from mod_editor.core.equipment_palette import quantize')),('.scratch/b70_equipment_writer.py',('message = (f\"Equipment art cannot fit', 'stripe_floor =', 'for maximum in (limit', 'raise UniformEquipmentWriterError(\"Cannot load equipment', 'if record.get(\"greedy_miss\"', 'max(budget + 1'))]:\n print(filename)\n for n,line in enumerate(Path(filename).read_text().splitlines(),1):\n  if any(term in line for term in terms): print(n,line.strip())\nPY\n tail -6 .scratch/lower-bound.log\n du -sh .scratch reports/b71_t4",
+      "observed_utc": "2026-09-15T22:59:37.803Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 0.000003777,
+      "asynchronous": false
+    },
+    {
+      "number": 46,
+      "command": "python3 packaging/repin.py --apply",
+      "observed_utc": "2026-09-15T23:00:31.149Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 1.000548852,
+      "asynchronous": true
+    },
+    {
+      "number": 47,
+      "command": "cat reports/b71_t4/tests/test_b71_t4_equipment_project.log\n git --git-dir=.scratch/t4.git --work-tree=. status --short\nrg -n '^def |^    def ' mod_editor/core/equipment_staging.py | tail -12",
+      "observed_utc": "2026-09-15T23:00:58.382Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 0.000003677,
+      "asynchronous": false
+    },
+    {
+      "number": 48,
+      "command": "python3 - <<'PY'\nfrom datetime import datetime, timezone\nfrom pathlib import Path\nimport json, os, subprocess, time\nroot=Path.cwd(); out=root/'reports/b71_t4'; env=dict(os.environ,PYTHONPATH=str(root),QT_QPA_PLATFORM='offscreen')\ncommands=[['python3','tools/b71_t4_equipment_probe.py'],['python3','tests/mod_editor/test_b71_t4_equipment_project.py'],['python3','packaging/repin.py','--apply'],['git','diff','--check']]\nrows=[]\nfor number, command in enumerate(commands):\n start=datetime.now(timezone.utc).isoformat(); clock=time.monotonic(); log=out/f'final-{number}.log'\n with log.open('w') as stream: result=subprocess.run(command,env=env,stdout=stream,stderr=subprocess.STDOUT)\n row=dict(command='QT_QPA_PLATFORM=offscreen PYTHONPATH=. '+' '.join(command),started=start,exit_code=result.returncode,seconds=round(time.monotonic()-clock,3),log=str(log.relative_to(root)))\n rows.append(row); print(json.dumps(row),flush=True)\n (out/'final-checks.json').write_text(json.dumps(rows,indent=2)+'\\n')\n if result.returncode: raise SystemExit(result.returncode)\nPY",
+      "observed_utc": "2026-09-15T23:01:44.509Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 1.00056086,
+      "asynchronous": true
+    },
+    {
+      "number": 49,
+      "command": "python3 - <<'PY'\nimport json,re\nfrom pathlib import Path\nrows=json.loads(Path('reports/b71_t4/tests/validation.json').read_text())\ncount=skip=0\nfor row in rows:\n text=Path(row['log']).read_text(); n=re.search(r'Ran (\\d+) test',text); sk=re.search(r'OK \\(skipped=(\\d+)\\)',text)\n count+=int(n[1]) if n else 0;skip+=int(sk[1]) if sk else 0\n print(Path(row['log']).stem,n[1] if n else '?',row['exit_code'],row['seconds'], 'skip='+sk[1] if sk else '')\nprint('TOTAL',len(rows),count,skip)\nPY\ncat reports/b71_t4/final-checks.json\n tail -5 reports/b71_t4/final-1.log",
+      "observed_utc": "2026-09-15T23:02:07.803Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 0.000009929,
+      "asynchronous": false
+    },
+    {
+      "number": 50,
+      "command": "rg -n -C2 'skip|skipped|SKIP' reports/b71_t4/tests/test_2k5_uniform_equipment_export.log tests/mod_editor/test_2k5_uniform_equipment_export.py\nnl -ba mod_editor/core/nfl2k5_uniform_equipment_writer.py | sed -n '1660,1740p'\n git --git-dir=.scratch/t4.git --work-tree=. show --stat --oneline HEAD",
+      "observed_utc": "2026-09-15T23:02:14.778Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 0.000004709,
+      "asynchronous": false
+    },
+    {
+      "number": 51,
+      "command": "sed -n '12,37p' tests/mod_editor/test_2k5_uniform_equipment_export.py\nsed -n '538,558p' tests/mod_editor/test_2k5_uniform_equipment_export.py\npython3 - <<'PY'\nfrom pathlib import Path\np=Path('reports/assets/nfl2k5_uniform_tset_textures.tsv');print(str(p),p.is_file())\nPY",
+      "observed_utc": "2026-09-15T23:02:24.584Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 0.000003728,
+      "asynchronous": false
+    },
+    {
+      "number": 52,
+      "command": "rg -n '^_PACK0|^_XISO|^_INVENTORY' tests/mod_editor/test_2k5_uniform_equipment_export.py\nsed -n '35,64p' tests/mod_editor/test_2k5_uniform_equipment_export.py",
+      "observed_utc": "2026-09-15T23:02:31.098Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 0.000006452,
+      "asynchronous": false
+    },
+    {
+      "number": 53,
+      "command": "sed -n '549,630p' tests/mod_editor/test_2k5_uniform_equipment_export.py\nstat -c '%F %s %n' '/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso'\nls -l 'ESPN NFL 2K5 (USA).xiso.iso'",
+      "observed_utc": "2026-09-15T23:02:39.160Z",
+      "exit_code": 2,
+      "tool_seconds_until_return_or_yield": 0.00000557,
+      "asynchronous": false
+    },
+    {
+      "number": 54,
+      "command": "python3 - <<'PY'\nfrom datetime import datetime, timezone\nfrom pathlib import Path\nimport json, os, subprocess, time\nlink=Path('ESPN NFL 2K5 (USA).xiso.iso'); source=Path('/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso')\nassert not link.exists() and not link.is_symlink()\nlink.symlink_to(source)\nstart=datetime.now(timezone.utc).isoformat(); clock=time.monotonic()\ntry:\n with Path('reports/b71_t4/final-export.log').open('w') as log:\n  result=subprocess.run(['python3','tests/mod_editor/test_2k5_uniform_equipment_export.py'],env=dict(os.environ,PYTHONPATH=str(Path.cwd()),QT_QPA_PLATFORM='offscreen'),stdout=log,stderr=subprocess.STDOUT)\n row=dict(command='QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_2k5_uniform_equipment_export.py',started=start,exit_code=result.returncode,seconds=round(time.monotonic()-clock,3),log='reports/b71_t4/final-export.log',setup='Temporary read-only retail XISO symlink; removed in finally')\n Path('reports/b71_t4/final-export.json').write_text(json.dumps(row,indent=2)+'\\n');print(json.dumps(row),flush=True)\nfinally:\n link.unlink()\nraise SystemExit(result.returncode)\nPY",
+      "observed_utc": "2026-09-15T23:03:01.169Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 1.000453192,
+      "asynchronous": true
+    },
+    {
+      "number": 55,
+      "command": "cat reports/b71_t4/final-1.log\n tail -8 reports/b71_t4/final-export.log\n git --git-dir=.scratch/t4.git --work-tree=. diff --stat\n stat -c '%a %n' tools/nfl2k5_equipment_optimal",
+      "observed_utc": "2026-09-15T23:05:17.780Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 0.000005039,
+      "asynchronous": false
+    },
+    {
+      "number": 56,
+      "command": "python3 - <<'PY'\nfrom datetime import datetime, timezone\nfrom pathlib import Path\nimport json, subprocess, time\nprefix=['git','--git-dir=.scratch/t4.git','--work-tree=.']\npaths=['mod_editor/core/equipment_staging.py','mod_editor/core/providers.py','tests/mod_editor/test_b71_t4_equipment_project.py']\ncommands=[prefix+['add','--']+paths,prefix+['commit','-m','Validate the complete equipment refit before committing its PNG','--']+paths]\nrows=[]\nfor n,cmd in enumerate(commands):\n start=datetime.now(timezone.utc).isoformat();clock=time.monotonic();p=subprocess.run(cmd,text=True,capture_output=True)\n log=Path(f'reports/b71_t4/delivery-code-{n}.log');log.write_text(p.stdout+p.stderr)\n row=dict(argv=cmd,started=start,exit_code=p.returncode,seconds=round(time.monotonic()-clock,3),log=str(log));rows.append(row);print(json.dumps(row));print(p.stdout)\n if p.returncode: raise SystemExit(p.returncode)\nPath('reports/b71_t4/delivery-code.json').write_text(json.dumps(rows,indent=2)+'\\n')\nPY",
+      "observed_utc": "2026-09-15T23:06:17.517Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 0.000004519,
+      "asynchronous": false
+    },
+    {
+      "number": 57,
+      "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport json,re\np=Path('ASTRA_REPORT.md');text=p.read_text().replace('Implementation commit: `e67a097f`; subsequent commits finish transaction validation and evidence.','Implementation commits: `e67a097f` and `b96f6791`. The final documentation commit carries the evidence and handoff.')\ntext=text.replace('Final results and exact timings are listed below after the final run.', '**Final result: 31 standalone suites passed, 362 test cases, no remaining skips.** The last refit suite ran 12 tests; the final equipment-export rerun ran all 16.')\nrows=json.loads(Path('reports/b71_t4/tests/validation.json').read_text())\nlast=json.loads(Path('reports/b71_t4/final-checks.json').read_text())\nexport=json.loads(Path('reports/b71_t4/final-export.json').read_text())\nfor n,row in enumerate(rows):\n if 'test_b71_t4_equipment_project.py' in row['command']: rows[n]=last[1]\n if 'test_2k5_uniform_equipment_export.py' in row['command']: rows[n]=export\ncount=0\nfor row in rows:\n content=Path(row['log']).read_text();match=re.search(r'Ran (\\d+) test',content);count+=int(match[1]);assert row['exit_code']==0\nassert count==362\nrows.extend([last[0],last[2],last[3]])\nsummary='\\n### Final command results\\n\\nAll commands below use `QT_QPA_PLATFORM=offscreen PYTHONPATH=.`. UTC starts, durations and complete logs are also retained in the JSON ledgers.\\n\\n| Command | Start (UTC) | Seconds | Exit |\\n| --- | --- | ---: | ---: |\\n'\nfor row in rows:\n command=row['command'].replace('QT_QPA_PLATFORM=offscreen PYTHONPATH=. ','')\n summary+=f\"| `{command}` | {row['started'][11:19]} | {row['seconds']:.3f} | {row['exit_code']} |\\n\"\nsummary+='\\nCommit commands and their timings are in [delivery-code.json](reports/b71_t4/delivery-code.json). Bundle creation and verification are recorded in the final delivery ledger.\\n'\ntext=text.replace('\\n## Delivery and limits\\n',summary+'\\n## Delivery and limits\\n')\np.write_text(text)\nPY\n git diff --check",
+      "observed_utc": "2026-09-15T23:07:04.072Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 0.550735925,
+      "asynchronous": false
+    },
+    {
+      "number": 58,
+      "command": "python3 - <<'PY'\nfrom datetime import datetime, timezone\nfrom pathlib import Path\nimport json,subprocess,time\nprefix=['git','--git-dir=.scratch/t4.git','--work-tree=.']\ncommands=[prefix+['bundle','create','.scratch/astra-b71-t4.bundle','e2f5c6e6..astra/b71-t4-project-load-equipment-fit'],prefix+['bundle','verify','.scratch/astra-b71-t4.bundle']]\nrows=[]\nfor n,cmd in enumerate(commands):\n start=datetime.now(timezone.utc).isoformat();clock=time.monotonic();p=subprocess.run(cmd,text=True,capture_output=True)\n log=Path(f'reports/b71_t4/delivery-bundle-{n}.log');log.write_text(p.stdout+p.stderr)\n row=dict(argv=cmd,started=start,exit_code=p.returncode,seconds=round(time.monotonic()-clock,3),log=str(log));rows.append(row);print(json.dumps(row));print(p.stdout+p.stderr)\n if p.returncode: raise SystemExit(p.returncode)\nPath('reports/b71_t4/delivery.json').write_text(json.dumps({'scope':'Implementation bundle verification before documentation commit. Final bundle is regenerated and verified afterward; final receipt is .scratch/bundle-final-verification.json.','commands':rows},indent=2)+'\\n')\nPY",
+      "observed_utc": "2026-09-15T23:07:47.969Z",
+      "exit_code": 0,
+      "tool_seconds_until_return_or_yield": 0.000006632,
+      "asynchronous": false
+    }
+  ]
+}

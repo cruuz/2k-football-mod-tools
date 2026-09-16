@@ -3126,7 +3126,9 @@ class StudioMainWindow(QMainWindow):
 
     def _build_scorebar_page(self):
         self._scorebar_panel = ScorebugStudioPanel(defer_preview=True)
+        self._scorebar_panel.sprite_source_provider = lambda: getattr(self.facade, "source_path", None)
         self._scorebar_panel.folder_chosen.connect(self._scorebar_folder_chosen)
+        self._scorebar_panel.sprite_folder_chosen.connect(self._sprite_scorebar_folder_chosen)
         return self._scorebar_panel
 
     def _sync_constructed_page(self):
@@ -8674,6 +8676,51 @@ class StudioMainWindow(QMainWindow):
         self._build_includes_text = text
         if self._build_panel is not None:
             self._build_panel.project_includes_list.setPlainText(text)
+            from mod_editor.core.equipment_staging import cached_equipment_fit_rows
+            refits = [r for r in cached_equipment_fit_rows(session)
+                      if r.get('fit_status') == 'needs refit'] if session else []
+            panel = self._build_panel
+            if not refits and not hasattr(panel, 'equipment_refit_choice'):
+                return
+            if not hasattr(panel, 'equipment_refit_choice'):
+                panel.equipment_refit_choice = QComboBox()
+                panel.equipment_refit_choice.setAccessibleName('Equipment needing refit')
+                panel.equipment_refit_button = QPushButton('Refit equipment: reduce colours, then size')
+                panel.equipment_refit_button.setToolTip(
+                    'Check fewer colours at this size first, then smaller sizes. '
+                    'Fine detail and shades may change. Undo restores the original artwork.')
+                panel.equipment_refit_button.clicked.connect(self._refit_project_equipment)
+                layout = panel.project_includes_list.parentWidget().layout()
+                position = layout.indexOf(panel.project_includes_list) + 1
+                layout.insertWidget(position, panel.equipment_refit_choice)
+                layout.insertWidget(position + 1, panel.equipment_refit_button)
+            selected = panel.equipment_refit_choice.currentData()
+            panel.equipment_refit_choice.clear()
+            for row in refits:
+                panel.equipment_refit_choice.addItem(
+                    f"{row['set_selector']} / {row['asset_id'].rsplit(':', 1)[-1]}", row['asset_id'])
+            index = panel.equipment_refit_choice.findData(selected)
+            if index >= 0:
+                panel.equipment_refit_choice.setCurrentIndex(index)
+            panel.equipment_refit_choice.setVisible(bool(refits))
+            panel.equipment_refit_button.setVisible(bool(refits))
+            panel.equipment_refit_button.setEnabled(bool(refits) and not self._blocking
+                                                   and not self._embedded_operation_is_busy())
+
+    def _refit_project_equipment(self) -> None:
+        asset_id = self._build_panel.equipment_refit_choice.currentData()
+        if not asset_id or self._blocking or self._embedded_operation_is_busy():
+            return
+
+        def success(result):
+            self._discard_texture_master_draft(asset_id)
+            self._mark_workspace_changed()
+            self._refresh_edit_state(rebuild_components=True)
+            self._refresh_build_includes()
+            self._set_status(result.message)
+
+        self._start_task(lambda progress: self.facade.refit_equipment(asset_id, progress),
+                         success, label='Refitting equipment', blocking=True, show_errors=False)
 
     def _refresh_edit_state(self, *, rebuild_components: bool = False) -> None:
         count = int(getattr(self.facade, "modified_count", 0))
@@ -8716,6 +8763,9 @@ class StudioMainWindow(QMainWindow):
         metadata_count = int(getattr(self.facade, "project_metadata_count", 0))
         selected = self._selected_asset is not None
         global_busy = self._blocking or self._embedded_operation_is_busy()
+        if self._build_panel is not None and hasattr(self._build_panel, 'equipment_refit_button'):
+            self._build_panel.equipment_refit_button.setEnabled(not global_busy)
+            self._build_panel.equipment_refit_choice.setEnabled(not global_busy)
         enabled = ready and selected and not global_busy
         if hasattr(self, "export_button"):
             self.export_button.setEnabled(enabled)
@@ -8957,6 +9007,13 @@ class StudioMainWindow(QMainWindow):
             self._build_panel.set_senior_bowl_options(options)
             self._capture_music_build_settings()
             self._mark_workspace_changed()
+
+    def _sprite_scorebar_folder_chosen(self, folder: str) -> None:
+        self._scorebar_folder_chosen(folder)
+        self._build_panel.scorebug_check.setChecked(True)
+        self._build_panel.scorebug_runtime_check.setChecked(True)
+        self._capture_music_build_settings()
+        self._set_status("Sprite scorebug design and option handed to Build.")
 
     def _scorebar_folder_chosen(self, folder: str) -> None:
         """Scorebar Studio saved a folder: fill the Build tab's scorebar folder field."""

@@ -1,0 +1,126 @@
+{
+  "components": [
+    {
+      "component": "shared 64x64 team TXTR",
+      "count": 32,
+      "bytes": 168960,
+      "individual_bytes": [
+        5280,
+        5280,
+        5280,
+        5280,
+        5280,
+        5280,
+        5280,
+        5280,
+        5280,
+        5280,
+        5280,
+        5280,
+        5280,
+        5280,
+        5280,
+        5280,
+        5280,
+        5280,
+        5280,
+        5280,
+        5280,
+        5280,
+        5280,
+        5280,
+        5280,
+        5280,
+        5280,
+        5280,
+        5280,
+        5280,
+        5280,
+        5280
+      ],
+      "sha256": [
+        "3a9e50b70c033db35661afd4fae20abdb926dc0b1a246b1e54b498c44991dd46",
+        "69d1d6905348709e12d0d086768c74c3e300794782f0199ca70bb2ab156d465f",
+        "37cc7854ec9f54bc45ca3c074b8aa25bf60879023c4212adf0905b3883e0f1ff",
+        "2e4f9d5064ccbc013f16c22474fcbae2ae32589883554ee0e3bbd21bdb4d64a1",
+        "8eb67eddc566639a38810b96a094706a9cb84a633890f380bd88502ebf90e82f",
+        "7f01a4d5fa3d9d5ce93b13c3b637042b9fd68ec04cfb567047912f37fc62fea1",
+        "99ee2297f2abb9966be146201d0da5f37d0b5f5ea026c5815f9cb804b162d7d8",
+        "987c2e60c4d2ccb5b2073f901eddce4d78609709bb525ade94d540009d3facd3",
+        "e7466e8fc03b140e5a96d510f314db0f9d63b96825bc491863153cf1aaff0609",
+        "ab6f7264f661c63a13a1bccb05fde7f655124183e7af9d708cc7a2a99fea419a",
+        "3589b84ab83179fdbcfda768fd755cfd62140dbce977f96d6770f258ec2aa0c2",
+        "de035813852df9646fccc85120761894e0b6e20c81e8da82413af46143c47709",
+        "c37f7aded77dd436480af994cd641363d21ee9eb81611830d2b0b3ab802c80bd",
+        "2cf2438e2b0ee7b45e6ad2a1ab6a30cf79efad7c03f537707a38e9a5eff93e8c",
+        "2148d9cbfd0dc1dfd9c0b11be896bd9f16dab3faa37f0ea57e8fadb73496674e",
+        "7d1ca39af513fa555d6cbcbcf93099fd4c72e3fc6955e43bd4eb012231b86551",
+        "7a95e45a003234cfa6def0826fe811b1b3461a400e0f56b552953b4f07315d0a",
+        "61850e6b37926c555bb7a9d1c7a58b43be2b0a4eeddca14c892d00cd4e1bc33c",
+        "edc1d2729ff454b2b0ffdaa314d479c6dc4dca39084448a7791ab88afa0f6196",
+        "8ae8fb8f60219cb36cbbdc5bd9218e3d38fe56322a46e24e9331ff4980775708",
+        "a3ede0031be11601d1cf2c5828ead1b3f2fc5a80e24d7e16cb28b41870695542",
+        "95b39e23a704aca2be294a86f4c6b62ef1e8a39dc5e7a77dda91209fabaf1d72",
+        "a5416ad6803db68c33e2b6807c6efa69f1de3a44523ef2b4fb34fcbcb78bf07c",
+        "2118a48a37783103a6eca78ae55eb3a778bfcb57b50fc20c2cbd44f21cc115ec",
+        "aacf6fd60568986d40d470e84714adedc098e00b4e45e0899b5273e04424dcda",
+        "9799705b0a4bf03d715ee456f3fb1f2904d66cb473c00dc6a6e88dfca2a49d20",
+        "0c0af0f372b7eb9b9a6c49ab0ea06f0ef458456a5effd3ae298ed2a55f404bc3",
+        "c5148ec2f98ccf97ca2fc177bcc5177054a0e3e58d8106b6ba85ae0083effa39",
+        "02595bedcd64a34a82bdc3543eaa4beb95ce2d18645aa2bdd131b925c38f2013",
+        "d7b15fcd0bba1376764a43eac05053bbb167abda7c4b01ffd4b4cd3d62d97c94",
+        "4f89f26c331c3b38390b1726efe95d1e834f9225e0cadef40e89ce99c18ec7fd",
+        "fd71c01eab1651130727b795ad864a5ccd43df613c199c48d838c1b8bb05b8bb"
+      ]
+    },
+    {
+      "component": "neutral 32x32 TXTR",
+      "count": 1,
+      "bytes": 2208,
+      "individual_bytes": [
+        2208
+      ],
+      "sha256": [
+        "1280a70924e9640e185cd31740caf66e59fce858dcb3849736526692e3695257"
+      ]
+    },
+    {
+      "component": "painted 256x512 P8 atlas",
+      "count": 1,
+      "bytes": 132256,
+      "individual_bytes": [
+        132256
+      ],
+      "sha256": [
+        "1ebf25164d0c875dfe042c0a48f5b691b6cd121c4a959ec4f1c168eb0827f054"
+      ]
+    },
+    {
+      "component": "slot-9 FirstPersonComic FONT 256x256",
+      "count": 1,
+      "bytes": 80160,
+      "individual_bytes": [
+        80160
+      ],
+      "sha256": [
+        "f6dda6f230841b12d87975d18f2898195fb0d20e9f007494fcc5637617e0e8ab"
+      ]
+    },
+    {
+      "component": "core_bug quarter FONT 128x128",
+      "count": 1,
+      "bytes": 27040,
+      "individual_bytes": [
+        27040
+      ],
+      "sha256": [
+        "9dff63cb4df73646664c2d2d0ecf7067408b8dacae89b12fc923155f766b3397"
+      ]
+    }
+  ],
+  "total_appended_bytes": 410624,
+  "sector_aligned_growth": 411648,
+  "native_heap_bytes_from_s4": 414080,
+  "saved_from_v3": 2944,
+  "mib": 0.3916015625
+}

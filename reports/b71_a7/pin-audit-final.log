@@ -1,0 +1,131 @@
+{
+  "registry_total": 176,
+  "exact_union": true,
+  "exact_rows": true,
+  "pin_locations": [
+    {
+      "path": "packaging/check_2k5_mod_studio_runtime.py",
+      "line": 2178,
+      "anchor": "len(registry.capabilities) == 176"
+    },
+    {
+      "path": "packaging/check_2k5_mod_studio_runtime.py",
+      "line": 2182,
+      "anchor": "len(product_catalog.capabilities) == 102"
+    },
+    {
+      "path": "packaging/check_2k5_mod_studio_runtime.py",
+      "line": 2585,
+      "anchor": "registry=176 sections=12 nfl2k5_capabilities=102"
+    },
+    {
+      "path": "packaging/check_apf2k8_mod_studio_runtime.py",
+      "line": 1389,
+      "anchor": "len(registry.capabilities) == 176"
+    },
+    {
+      "path": "packaging/check_apf2k8_mod_studio_runtime.py",
+      "line": 1390,
+      "anchor": "== 73"
+    },
+    {
+      "path": "packaging/check_apf2k8_mod_studio_runtime.py",
+      "line": 1394,
+      "anchor": "len(cards) == 73"
+    },
+    {
+      "path": "tests/mod_editor/test_b68_a1_audit.py",
+      "line": 41,
+      "anchor": "len(registry.capabilities), 176"
+    },
+    {
+      "path": "tests/mod_editor/test_b68_a1_audit.py",
+      "line": 42,
+      "anchor": "len(catalog.capabilities), 102"
+    },
+    {
+      "path": "tests/mod_editor/test_b68_a1_audit.py",
+      "line": 54,
+      "anchor": "registry=176 sections=12 nfl2k5_capabilities=102"
+    },
+    {
+      "path": "tests/mod_editor/test_phase1_packaging.py",
+      "line": 571,
+      "anchor": "registry=176 sections=12 nfl2k5_capabilities=102"
+    },
+    {
+      "path": "tests/mod_editor/test_apf_studio_installer.py",
+      "line": 360,
+      "anchor": "len(registry.capabilities) == 176"
+    },
+    {
+      "path": "tests/mod_editor/test_product_catalog.py",
+      "line": 242,
+      "anchor": "(102, 80, 8, 1, 0, 10, 3)"
+    },
+    {
+      "path": "tests/mod_editor/test_product_catalog.py",
+      "line": 78,
+      "anchor": "nfl2k5.stadiums_fields.modern_arrowhead"
+    },
+    {
+      "path": "tests/mod_editor/test_product_catalog.py",
+      "line": 172,
+      "anchor": "self.assertEqual(set(first_ids), expected)"
+    },
+    {
+      "path": "tests/mod_editor/test_provider_integrity.py",
+      "line": 218,
+      "anchor": "[287, 10, 8, 9, 8, 9]"
+    },
+    {
+      "path": "tools/validate_all_mod_editor_capabilities.py",
+      "line": 62,
+      "anchor": "EXPECTED_CAPABILITIES = 176"
+    },
+    {
+      "path": "tools/validate_all_mod_editor_capabilities.py",
+      "line": 63,
+      "anchor": "EXPECTED_COVERED_CAPABILITIES = 171"
+    },
+    {
+      "path": "tools/validate_all_mod_editor_capabilities.py",
+      "line": 64,
+      "anchor": "EXPECTED_DEFERRED_CAPABILITIES = 5"
+    },
+    {
+      "path": "tools/validate_all_mod_editor_capabilities.py",
+      "line": 65,
+      "anchor": "EXPECTED_UNIQUE_VALIDATORS = 129"
+    }
+  ],
+  "evidence_files": 75,
+  "evidence_bytes": 2063157,
+  "builder_name": "NFL 2K5 MOD TEST 2026-09-15k (everything + painted bar)",
+  "builder_options": [
+    "scorebug",
+    "scorebug_runtime",
+    "modern_color",
+    "modern_arrowhead",
+    "widescreen"
+  ],
+  "builder_executed": false,
+  "builder_sha256": "b1eb3a72dd597791b5692edc9eb8f62928004008cc0bdc8573d8825049599fb0",
+  "code_bytes": 1380,
+  "code_budget": 1408,
+  "data_bytes": 128,
+  "requests": [
+    [
+      "nfl2k5_scorebug_runtime",
+      "code",
+      1408,
+      16
+    ],
+    [
+      "nfl2k5_scorebug_runtime",
+      "data",
+      128,
+      16
+    ]
+  ]
+}

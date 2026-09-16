@@ -1,0 +1,11 @@
+test_build_plan_off_presets_changes_receipt_state_and_project_archive (__main__.ColourControlsQtTests.test_build_plan_off_presets_changes_receipt_state_and_project_archive) ... ok
+test_daylight_broadcast_reset_updates_values_swatches_and_keeps_master_on (__main__.ColourControlsQtTests.test_daylight_broadcast_reset_updates_values_swatches_and_keeps_master_on) ... ok
+test_every_lever_has_slider_toggle_and_both_swatches (__main__.ColourControlsQtTests.test_every_lever_has_slider_toggle_and_both_swatches) ... ok
+test_links_rigs_class_and_resets_retain_master_off (__main__.ColourControlsQtTests.test_links_rigs_class_and_resets_retain_master_off) ... ok
+test_outside_swatch_follows_field_and_unlinked_saved_colour (__main__.ColourControlsQtTests.test_outside_swatch_follows_field_and_unlinked_saved_colour) ... ok
+test_reset_buttons_and_slider_notify_project_observer (__main__.ColourControlsQtTests.test_reset_buttons_and_slider_notify_project_observer) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 2.176s
+
+OK

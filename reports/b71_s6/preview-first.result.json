@@ -1,0 +1,12 @@
+{
+  "name": "preview-first",
+  "argv": [
+    "python3",
+    "-c",
+    "import sys; sys.path.insert(0,\"reports/b71_s6\"); import prove_previews as p; p.STATES=p.STATES[:2]; p.main()"
+  ],
+  "start_utc": "2026-09-16T06:10:03.825102+00:00",
+  "end_utc": "2026-09-16T06:10:29.816031+00:00",
+  "seconds": 25.991,
+  "exit_code": 0
+}

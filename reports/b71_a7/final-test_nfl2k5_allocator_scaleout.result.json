@@ -1,0 +1,12 @@
+{
+  "name": "final-test_nfl2k5_allocator_scaleout",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_nfl2k5_allocator_scaleout.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:33:13.105945+00:00",
+  "ended": "2026-09-16T00:48:10.874431+00:00",
+  "seconds": 897.769,
+  "exit_code": 0
+}

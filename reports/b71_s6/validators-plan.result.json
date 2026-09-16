@@ -1,0 +1,12 @@
+{
+  "name": "validators-plan",
+  "argv": [
+    "python3",
+    "tools/validate_all_mod_editor_capabilities.py",
+    "--list"
+  ],
+  "start_utc": "2026-09-16T06:34:02.340647+00:00",
+  "end_utc": "2026-09-16T06:34:02.637814+00:00",
+  "seconds": 0.297,
+  "exit_code": 0
+}

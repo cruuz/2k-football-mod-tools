@@ -1,0 +1,15 @@
+[
+  "docs/mod_editor/apf2k8_mod_studio_changelog.md",
+  "docs/mod_editor/apf_b67_play_calling_editor.md",
+  "mod_editor/apf_studio/book_content.py",
+  "mod_editor/apf_studio/facade.py",
+  "mod_editor/apf_studio/models.py",
+  "mod_editor/apf_studio/playcalling_editor_qt.py",
+  "mod_editor/apf_studio/playcalling_service.py",
+  "mod_editor/apf_studio/situation_mask_qt.py",
+  "mod_editor/capabilities/registry.v1.json",
+  "tests/mod_editor/test_apf_b69_editor_qt.py",
+  "tests/mod_editor/test_apf_b71_editor_workflow.py",
+  "tests/mod_editor/test_apf_b71_editor_workflow_qt.py",
+  "tests/mod_editor/test_apf_playcalling_editor_qt.py"
+]

@@ -1,0 +1,12 @@
+{
+  "name": "shipping-test_nfl2k5_scorebug_sprite",
+  "argv": [
+    "/usr/bin/python3",
+    "tests/mod_editor/test_nfl2k5_scorebug_sprite.py",
+    "-v"
+  ],
+  "start_utc": "2026-09-16T02:51:48.985377+00:00",
+  "end_utc": "2026-09-16T02:53:18.602761+00:00",
+  "seconds": 89.617,
+  "exit_code": 0
+}

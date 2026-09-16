@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_helmet_logo_regions",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_helmet_logo_regions.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:52:33.824708+00:00",
+  "ended": "2026-09-16T00:52:37.993367+00:00",
+  "seconds": 4.169,
+  "exit_code": 0
+}

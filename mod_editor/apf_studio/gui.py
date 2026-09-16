@@ -256,7 +256,7 @@ CATEGORY_BLURBS: dict[ApfCategory, str] = {
     ApfCategory.MENUS: "Search menu, layout, font, and localized text structures across the complete archive.",
     ApfCategory.AUDIO: "Browse soundtrack, commentary, stadium, presentation, and standalone XMA1 audio; play verified WAV previews, export original XMA, import ordinary audio through exact-slot conversion with your own XMA1 encoder, or batch-stage a retail-free XMA1 or PCM16 WAV folder or ZIP.",
     ApfCategory.GAMEPLAY: "Inspect mapped sliders and follow gameplay research; nothing is offered as an edit until it is proven safe.",
-    ApfCategory.PLAYBOOKS: "Edit CPU book formations, plays and same-formation audibles. Book Identity gives one team an independent offensive copy and opens it in Fine-tune. Build the original Studio project before cloning, then use the named book-edit recipe to continue. Content recipes remain editable. Expanded-book gameplay is UNWITNESSED.",
+    ApfCategory.PLAYBOOKS: "CPU Play Calling: pick a book, edit formations and personnel, preview, then build. Give a team its own book there when needed. Fine-tune Plays edits individual memberships and audibles. Gameplay is UNWITNESSED.",
     ApfCategory.FRANCHISE: "Browse season, schedule, save, and franchise structures while deeper franchise editing is researched.",
     ApfCategory.ALL_ASSETS: "Every record the live indexer sees appears here, including opaque and export-only resources.",
 }
@@ -19397,7 +19397,7 @@ class InspectorCategoryPage(QWidget):
             else None
         )
         self.play_designer = PlayDesignerPanel(facade, run_task) if category is ApfCategory.PLAYBOOKS else None
-        self.book_identity = BookIdentityPanel(run_task, facade=facade) if category is ApfCategory.PLAYBOOKS else None
+        self.book_identity = BookIdentityPanel(run_task, facade=facade, consolidated=True) if category is ApfCategory.PLAYBOOKS else None
         self.playbook_playcall = ApfPlaycallPanel(facade, run_task) if category is ApfCategory.PLAYBOOKS else None
         self.coverage_geometry = CoverageGeometryPanel(facade, run_task) if category is ApfCategory.PLAYBOOKS else None
         for panel in (self.play_designer, self.book_identity, self.playbook_playcall, self.coverage_geometry):
@@ -19442,6 +19442,7 @@ class InspectorCategoryPage(QWidget):
                 tabs.addTab(self.roster_planner, "53-player Planner")  # type: ignore[arg-type]
                 tabs.addTab(self.assets, "&Raw Roster Assets")  # type: ignore[arg-type]
             elif category is ApfCategory.PLAYBOOKS:
+                tabs.addTab(self.playbook_playcall, "CPU Play Calling")
                 tabs.addTab(self.inspector, "PLAY / DRCT Inspector")
                 tabs.addTab(self.playbook_membership, "Fine-tune Plays")  # type: ignore[arg-type]
                 tabs.addTab(self.playbook_package_maps, "Who lines up")  # type: ignore[arg-type]
@@ -19450,7 +19451,7 @@ class InspectorCategoryPage(QWidget):
                 tabs.addTab(self.play_designer, "Design Plays / Formations")
                 tabs.addTab(self.coverage_geometry, "Coverage Geometry (experimental)")
                 tabs.addTab(self.book_identity, "Book Identity")
-                tabs.addTab(self.playbook_playcall, "CPU Play Calling")
+                self.book_identity.cpuPlayCallingRequested.connect(lambda: tabs.setCurrentWidget(self.playbook_playcall))
                 tabs.addTab(self.assets, "Raw Playbook Assets")  # type: ignore[arg-type]
             else:
                 tabs.addTab(self.inspector, "Audio Browser")
@@ -20157,6 +20158,9 @@ class ApfStudioMainWindow(QMainWindow):
         quit_action.setShortcut("Ctrl+Q")
         quit_action.triggered.connect(self.close)
         self._refresh_recent_menus()
+        tools_menu = self.menuBar().addMenu("&Tools")
+        self.fourth_down_action = tools_menu.addAction("CPU fourth-down triggers…")
+        self.fourth_down_action.triggered.connect(self._fourth_down_triggers)
         self._install_help_menu()
 
     def _install_help_menu(self) -> None:
@@ -20766,7 +20770,7 @@ class ApfStudioMainWindow(QMainWindow):
         self.launch_button.setObjectName("launchButton")
         self.undo_button.setToolTip("Undo the most recent edit in this project.")
         self.revert_all_button.setToolTip("Nothing to revert—there are no active edits.")
-        self.configure_xenia_button.setToolTip("Choose Xenia Canary and its Wine launcher.")
+        self.configure_xenia_button.setToolTip("Choose Xenia Edge (recommended) or Canary. Controllers use SDL; Windows executables need Wine on Linux.")
         self.title_update_button.setToolTip(
             "Choose the Xbox 360 APF 2K8 title update 1.1 LIVE package. It is "
             "required on Xenia/Xbox and never shipped for PS3. Launch copies it "
@@ -21880,12 +21884,16 @@ class ApfStudioMainWindow(QMainWindow):
             "This folder contains your retail game data. Do not redistribute it; share the .apf2k8mod project instead.",
         )
 
+    def _fourth_down_triggers(self) -> None:
+        from .fourth_down_qt import FourthDownDialog
+        FourthDownDialog(self.facade.launcher, self).exec_()
+
     def _configure_xenia(self) -> None:
         selected, _filter = QFileDialog.getOpenFileName(
             self,
-            "Choose Xenia Canary",
+            "Choose Xenia Edge (recommended) or Canary",
             str(Path.home()),
-            "Xenia Canary (xenia_canary.exe xenia.exe xenia*);;All files (*)",
+            "Xenia runtimes (xenia* Xenia*);;Xenia Edge, renamed executable (*);;Xenia Canary, renamed executable (*);;All files (*)",
         )
         if not selected:
             return
@@ -21901,7 +21909,7 @@ class ApfStudioMainWindow(QMainWindow):
             QMessageBox.information(
                 self,
                 "Wine is also required",
-                "Xenia Canary is a Windows application. Choose your Wine executable next.",
+                "This Xenia executable is a Windows application. Choose your Wine executable next.",
             )
             selected_wine, _wine_filter = QFileDialog.getOpenFileName(
                 self,
@@ -21913,11 +21921,14 @@ class ApfStudioMainWindow(QMainWindow):
                 return
             wine = Path(selected_wine)
         try:
-            self.facade.configure_xenia(executable, wine)
+            runtime = ("edge" if _filter.startswith("Xenia Edge,") else
+                       "canary" if _filter.startswith("Xenia Canary,") else None)
+            self.facade.configure_xenia(executable, wine, runtime=runtime)
         except Exception as exc:
             self._show_error(str(exc), traceback.format_exc())
             return
-        self._last_detail = "Xenia Canary is configured. Build a game folder, then click Launch."
+        self._last_detail = (f"{self.facade.launcher.settings.runtime_label} is configured with SDL controllers. "
+                             "Build a game folder, then click Launch.")
         self._update_product_state()
 
     def _configure_title_update(self) -> None:
@@ -21949,7 +21960,7 @@ class ApfStudioMainWindow(QMainWindow):
                 answer = QMessageBox.question(
                     self,
                     "Xenia is not configured yet",
-                    blocker + "\n\nChoose Xenia Canary now?",
+                    blocker + "\n\nChoose Xenia Edge or Canary now?",
                     QMessageBox.Yes | QMessageBox.No,
                     QMessageBox.Yes,
                 )
@@ -21978,7 +21989,7 @@ class ApfStudioMainWindow(QMainWindow):
                 if self.facade.launcher.settings.title_update_path is None:
                     return
         self._run_task(
-            "Starting the last verified build in Xenia Canary",
+            f"Starting the last verified build in {self.facade.launcher.settings.runtime_label}",
             lambda _progress: self.facade.launch_xenia(),
             self._launch_complete,
             True,
@@ -21992,7 +22003,7 @@ class ApfStudioMainWindow(QMainWindow):
         QMessageBox.information(
             self,
             "Xenia started",
-            f"Xenia Canary started the verified modded default.xex.\n\n"
+            f"{self.facade.launcher.settings.runtime_label} started the verified modded default.xex with SDL controllers.\n\n"
             f"Process: {pid}\nLog: {log}\n\n{patch_status}",
         )
 

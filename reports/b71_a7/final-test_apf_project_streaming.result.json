@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_project_streaming",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_project_streaming.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:56:36.013357+00:00",
+  "ended": "2026-09-16T00:56:36.249294+00:00",
+  "seconds": 0.236,
+  "exit_code": 0
+}

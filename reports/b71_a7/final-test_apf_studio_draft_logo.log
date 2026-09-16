@@ -1,0 +1,12 @@
+test_compile_dispatches_only_the_pinned_writer_contract (__main__.DraftLogoBuildDispatchTests.test_compile_dispatches_only_the_pinned_writer_contract) ... ok
+test_compile_refuses_untyped_or_moved_draft_logo (__main__.DraftLogoBuildDispatchTests.test_compile_refuses_untyped_or_moved_draft_logo) ... ok
+test_exact_draft_logo_is_editable_without_unlocking_other_textures (__main__.DraftLogoCatalogTests.test_exact_draft_logo_is_editable_without_unlocking_other_textures) ... ok
+test_selector_capabilities_render_under_team_identity (__main__.DraftLogoCatalogTests.test_selector_capabilities_render_under_team_identity) ... ok
+test_ui_does_not_hide_capability_cards_and_names_raw_exports (__main__.DraftLogoCatalogTests.test_ui_does_not_hide_capability_cards_and_names_raw_exports) ... ok
+test_project_rejects_changed_draft_logo_coordinates (__main__.DraftLogoSessionAndProjectTests.test_project_rejects_changed_draft_logo_coordinates) ... ok
+test_replace_revert_and_project_roundtrip_are_typed_and_retail_free (__main__.DraftLogoSessionAndProjectTests.test_replace_revert_and_project_roundtrip_are_typed_and_retail_free) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.208s
+
+OK

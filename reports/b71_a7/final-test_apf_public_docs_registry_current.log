@@ -1,0 +1,10 @@
+test_every_public_document_names_the_new_boundaries (__main__.ApfPublicClaimsTests.test_every_public_document_names_the_new_boundaries) ... ok
+test_logo_ownership_doc_discloses_ui_linkage_and_runtime_boundary (__main__.ApfPublicClaimsTests.test_logo_ownership_doc_discloses_ui_linkage_and_runtime_boundary) ... ok
+test_playbook_registry_exposes_only_exact_stock_route_reuse (__main__.ApfPublicClaimsTests.test_playbook_registry_exposes_only_exact_stock_route_reuse) ... ok
+test_roster_audit_and_model_export_claims_are_exact (__main__.ApfPublicClaimsTests.test_roster_audit_and_model_export_claims_are_exact) ... ok
+test_team_crest_registry_replaces_the_stale_scale_patch_contract (__main__.ApfPublicClaimsTests.test_team_crest_registry_replaces_the_stale_scale_patch_contract) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.127s
+
+OK

@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_textlogo_writer",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_textlogo_writer.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:58:06.707638+00:00",
+  "ended": "2026-09-16T00:59:07.712275+00:00",
+  "seconds": 61.005,
+  "exit_code": 0
+}

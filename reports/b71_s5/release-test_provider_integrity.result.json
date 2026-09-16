@@ -1,0 +1,12 @@
+{
+  "name": "release-test_provider_integrity",
+  "argv": [
+    "/usr/bin/python3",
+    "tests/mod_editor/test_provider_integrity.py",
+    "-v"
+  ],
+  "start_utc": "2026-09-16T02:45:00.718084+00:00",
+  "end_utc": "2026-09-16T02:45:00.941796+00:00",
+  "seconds": 0.224,
+  "exit_code": 5
+}

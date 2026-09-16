@@ -1,0 +1,20 @@
+test_an_addition_with_unique_plays_reports_no_sharing (__main__.MultipleAdditionWriterTests.test_an_addition_with_unique_plays_reports_no_sharing) ... ok
+test_sharing_ignores_the_record_being_added (__main__.MultipleAdditionWriterTests.test_sharing_ignores_the_record_being_added) ... ok
+test_the_receipt_flags_records_whose_plays_resolve_elsewhere (__main__.MultipleAdditionWriterTests.test_the_receipt_flags_records_whose_plays_resolve_elsewhere) ... ok
+test_two_additions_compile_and_verify_in_one_build (__main__.MultipleAdditionWriterTests.test_two_additions_compile_and_verify_in_one_build) ... ok
+test_two_additions_or_both_mask_bits_into_the_book_supply (__main__.MultipleAdditionWriterTests.test_two_additions_or_both_mask_bits_into_the_book_supply) ... ok
+test_two_additions_under_one_package_gain_one_mask_bit (__main__.MultipleAdditionWriterTests.test_two_additions_under_one_package_gain_one_mask_bit) ... ok
+test_an_already_staged_slot_is_refused_not_overwritten (__main__.PanelAddFlowTests.test_an_already_staged_slot_is_refused_not_overwritten) ... ok
+test_several_staged_additions_round_trip_through_the_project (__main__.PanelAddFlowTests.test_several_staged_additions_round_trip_through_the_project) ... ok
+test_staging_an_add_moves_the_next_add_to_the_next_slot (__main__.PanelAddFlowTests.test_staging_an_add_moves_the_next_add_to_the_next_slot) ... ok
+test_the_add_button_flow_accepts_a_second_formation (__main__.PanelAddFlowTests.test_the_add_button_flow_accepts_a_second_formation)
+Urianus's exact complaint: the second add used to be refused. ... ok
+test_the_first_free_slot_appends_after_the_populated_run (__main__.PanelAddFlowTests.test_the_first_free_slot_appends_after_the_populated_run) ... ok
+test_the_third_add_uses_the_third_slot (__main__.PanelAddFlowTests.test_the_third_add_uses_the_third_slot) ... ok
+test_the_walk_ends_at_the_last_record_slot (__main__.PanelAddFlowTests.test_the_walk_ends_at_the_last_record_slot) ... ok
+test_the_walk_ends_when_every_free_slot_is_staged (__main__.PanelAddFlowTests.test_the_walk_ends_when_every_free_slot_is_staged) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.446s
+
+OK

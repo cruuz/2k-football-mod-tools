@@ -25,7 +25,7 @@ from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
 from tests.mod_editor.test_nfl2k5_xbe_space import synthetic, PublicTests, RETAIL, repin
 from tests.nfl2k5_allocator_stack import LEGACY_REQUESTS, REQUESTS, compose
 
-LARGE = (("synthetic_scaleout", "code", 16 * 1024, 4096),  # sized to fill the code pages beside every landed beta-66 owner (20 KiB until MyCareer M3 grew to 20,480 RX for Supersim; 40 KiB before deep zone and M3)
+LARGE = (("synthetic_scaleout", "code", 12 * 1024, 4096),  # S5 occupies another 4 KiB RX after the preserved owner union
          # no writable request: MyCareer M3's fixed state page takes the last RW page of the beta-63 union
          ("synthetic_scaleout", "read_only", 1024, 16))
 
@@ -34,7 +34,11 @@ class PlannerTests(unittest.TestCase):
     def test_large_owner_fits_and_legacy_owner_addresses_stay_exact(self):
         before = space._legacy_allocations(LEGACY_REQUESTS)
         report = space.plan(REQUESTS + LARGE)
-        self.assertEqual([a for a in report['allocations'] if a['owner'] in space.LEGACY_OWNERS], before)
+        stable = lambda a: a['owner'] in space.LEGACY_OWNERS and not (a['owner'] == 'nfl2k5_scorebug_runtime' and a['kind'] == 'code')
+        self.assertEqual([a for a in report['allocations'] if stable(a)], [a for a in before if stable(a)])
+        sprite = next(a for a in report['allocations'] if a['owner'] == 'nfl2k5_scorebug_runtime' and a['kind'] == 'code')
+        self.assertEqual(sprite['size'], 4096)
+        self.assertGreater(sprite['va'], max(a['va'] for a in before))
         self.assertEqual([report['capacity'][k]['capacity_bytes'] for k in ('code', 'data', 'read_only')],
                          [106496, 86016, 20480])
         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
@@ -51,7 +55,7 @@ class PlannerTests(unittest.TestCase):
             self.assertIn(list(request), requests)
         report = space.plan(requests)
         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
-                         [15680, 0, 2824])  # beta 69: J5 adds 896 RX, 4 RW and 140 RO bytes; MyCareer remains 20,480 RX
+                         [11584, 0, 2824])  # beta 69: J5 adds 896 RX, 4 RW and 140 RO bytes; MyCareer remains 20,480 RX
 
     def test_every_kind_exact_capacity_alignment_and_overflow(self):
         for kind, capacity in [('code', 98304), ('data', 81920), ('read_only', 16384)]:
@@ -315,11 +319,10 @@ class RetailTests(unittest.TestCase):
                  patch.object(art, "runtime_pack_status", return_value="applied") as resources:
                 self.assertEqual(scene.runtime_image_status(path), "applied")
                 # The reader receives a bounded PackView over the pack extent, probed with the
-                # runtime's default profile: beta 70's 2026 Monday Night Football package ("mnf";
-                # beta 69 probed the full v8 collection).
+                # runtime's default profile: the S5 sprite collection.
                 self.assertTrue(resources.called)
                 self.assertEqual(resources.call_args.kwargs.get('probe'), scene.runtime_image_status.__kwdefaults__['probe'])
-                self.assertEqual(resources.call_args.kwargs.get('probe'), 'mnf')
+                self.assertEqual(resources.call_args.kwargs.get('probe'), 'sprite')
                 bad = bytearray(full); bad[space.EXT_FILE_SIZE] ^= 1
                 path.write_bytes(bad + blob)
                 self.assertEqual(scene.runtime_image_status(path), "foreign")
@@ -347,7 +350,14 @@ class RetailTests(unittest.TestCase):
         self.assertEqual(first, second)
         old = {(a['owner'], a['kind']): a for a in space.layout(legacy)['allocations']}
         for a in space.layout(first)['allocations']:
-            if a['owner'] in space.LEGACY_OWNERS:
+            if (a['owner'],a['kind']) == ('nfl2k5_scorebug_runtime','code'):
+                from mod_editor.core import nfl2k5_scorebug_runtime as runtime
+                # S5 is a terminal scale owner: a different request union moves
+                # its RX allocation. Verify its regenerated code at that VA.
+                self.assertNotEqual(a['va'],old[a['owner'],a['kind']]['va'])
+                state=old[a['owner'],'data']['va']
+                self.assertEqual(first[a['raw']:a['raw']+a['size']],runtime.code_for(a['va'],state)[0])
+            elif a['owner'] in space.LEGACY_OWNERS:
                 self.assertEqual(a, old[a['owner'], a['kind']])
                 self.assertEqual(first[a['raw']:a['raw']+a['size']], legacy[a['raw']:a['raw']+a['size']])
         self.assertEqual(first[0xA10:space.META_COPY], legacy[0xA10:space.META_COPY])

@@ -1,0 +1,21 @@
+{
+  "before_bytes": 9860887,
+  "after_bytes": 7238608,
+  "before_sha256": "76974736907a29c6e418ecfdc7a37995bd6a1a57fdfa0b4e90a5a423cf271202",
+  "after_sha256": "2682d4d506c3900ac9319daed34ad56ea58f2a4c7000e0f575a97043bd05a354",
+  "compacted_historical_projections": {
+    "b71_a6_projection": {
+      "count": 138,
+      "sha256": "6889a53daba3f9fed3ea98c3df1525926df837e8db4df43232b2acec4375080d"
+    },
+    "b71_a7_projection": {
+      "count": 138,
+      "sha256": "5ed7c74d4b1e55ef6d28862d8b0326f639a7a9d05256f913376bf38dd8c1c67e"
+    },
+    "b71_s5_projection": {
+      "count": 138,
+      "sha256": "e982577a5456e30f3b4bbc4423fbb67e1c1332c6d513682255a45bbd3e15949a"
+    }
+  },
+  "reservations_steps_sources_and_xbe_unchanged": true
+}

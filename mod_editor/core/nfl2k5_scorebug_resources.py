@@ -571,7 +571,7 @@ RUNTIME_TEXTURE_COUNT, RUNTIME_TEXTURE_SPAN = 264, 5280
 RUNTIME_APPEND_SIZE = RUNTIME_TEXTURE_COUNT * RUNTIME_TEXTURE_SPAN + scoped_fonts.APPEND_SIZE
 RUNTIME_GROWTH = ((HUD_SIZE + RUNTIME_APPEND_SIZE + 2047) // 2048 - (HUD_SIZE + 2047) // 2048) * 2048
 # Filled by the reproducible compiler; no game bytes are distributed.
-RUNTIME_PINS = {'index': '1b4c2af593e2b61d42b5afc3ad9c67433eee2af4fc16920f8a1538640c956b10', 'hud_before': '2c23410c05c1ec266c3176b8b201f9a48b4a45ac148110ca569e5df25984e7c8', 'hud_after': 'a708cef355a26fabdbc02deb25f2f5bf68be4acf39b274d6a1abb813147109b2', 'appendix': '846864649a3b2309c476edb55fc9b14a912e062548d1a2abf474a8e3acf44063'}
+RUNTIME_PINS = {'index': '1b4c2af593e2b61d42b5afc3ad9c67433eee2af4fc16920f8a1538640c956b10', 'hud_before': '2c23410c05c1ec266c3176b8b201f9a48b4a45ac148110ca569e5df25984e7c8', 'hud_after': '9d3ca52d13a06de19fcdb27f122756ba67d23fc945c8efd0ba8308934b232fed', 'appendix': '846864649a3b2309c476edb55fc9b14a912e062548d1a2abf474a8e3acf44063'}
 
 
 def runtime_panel_name(asset_code, side, count):
@@ -582,8 +582,8 @@ def runtime_panel_name(asset_code, side, count):
     return f"sb{asset_code}{side[0]}{count}"
 
 
-def runtime_panel(template, image, name, *, indexed=None):
-    """128x32 swizzled P8, native 128-byte system buffer and 5120-byte video.
+def runtime_panel(template, image, name, *, indexed=None, size=(128, 32)):
+    """128x32 (or 64x64) swizzled P8, native 128-byte system buffer and 5120-byte video.
 
     The existing quantizer/swizzler produce the pixels. Uncompressed wrappers
     avoid adding any VC-LZ overlap/scratch requirement to the grown collection.
@@ -594,33 +594,64 @@ def runtime_panel(template, image, name, *, indexed=None):
     decoded = r.pinned(template, RESOURCES["score_buga"])
     system = bytearray(decoded[:128])
     encoded_name = (name + "\0").encode("utf-16le")
-    if len(encoded_name) > 24 or image.size != (128, 32):
+    width, height = size
+    if len(encoded_name) > 24 or image.size != size or size not in ((128, 32), (64, 64)):
         raise ValueError("invalid runtime texture dimensions/name")
     system[32:56] = encoded_name.ljust(24, b"\0")
-    struct.pack_into("<I", system, 56 + 12, 0x05710B29)  # 2D, P8, 1 mip, 128x32
+    # 2D, P8, 1 mip: the 128x32 word or the template's own 64x64 word.
+    struct.pack_into("<I", system, 56 + 12, 0x05710B29 if size == (128, 32) else 0x06610B29)
     if indexed is None:
-        palette, levels, _ = palettes.quantize_levels([palettes.MipLevel(0, 128, 32, image.tobytes())], 128)
+        palette, levels, _ = palettes.quantize_levels([palettes.MipLevel(0, width, height, image.tobytes())], 128)
         indices = levels[0]
     else:
         palette, indices = indexed
         if len(indices) != 4096 or not 1 <= len(palette) <= 256 or max(indices) >= len(palette):
             raise ValueError("invalid shared runtime panel palette")
-    video = r.tx.swizzle_2d(indices, 128, 32, 1) + palettes.palette_bytes(palette)
+    video = r.tx.swizzle_2d(indices, width, height, 1) + palettes.palette_bytes(palette)
     body = bytes(system) + video
     header = struct.pack("<4s7I", b"TXTR", len(body), 128, len(video), 0, 0, 0, 0)
     result = header + body
     chunk, roundtrip, _ = r.decode(result)
     tex = r.tx.parse_texture(roundtrip, chunk)
-    if len(result) != RUNTIME_TEXTURE_SPAN or roundtrip != body or (tex.width, tex.height, tex.name) != (128, 32, name):
+    if len(result) != RUNTIME_TEXTURE_SPAN or roundtrip != body or (tex.width, tex.height, tex.name) != (width, height, name):
         raise ValueError("runtime native TXTR round trip failed")
     return result
 
 
-def mnf_panel_span(template, team, side):
-    """One 2026 wing panel (team colour fade plus the current logo) as a native TXTR."""
+def logo_fit_for(team, logo_fit=None):
+    """The layout's logo fit for one team: the measured per-team value where a broadcast still exists, else the default."""
+    spec = logo_fit or {}
+    fit = dict(spec.get("default", {}))
+    fit.update(spec.get("by_team", {}).get(team, {}))
+    return fit
+
+
+def mnf_panel_span(template, team, side, *, plate_tints=None, logo_fit=None):
+    """Shared native logo TXTR with plate/wing ARGB in unused name padding."""
     from . import nfl2k5_scorebug_exact as exact
     code = "--" if team is None else TEAM_LOGOS[team]["asset_code"]
-    return runtime_panel(template, exact.mnf_panel(team, side), runtime_panel_name(code, side, 0))
+    from . import nfl2k5_scorebug_assets as assets
+    span=bytearray(assets.texture_chunk(runtime_panel_name(code, "home", 0), exact.mnf_panel(team, "home", fit=logo_fit_for(team, logo_fit)), template, colours=256, alpha_aware=True)[0])
+    # The six-character name ends at body+46. These two aligned padding words
+    # precede the descriptor at +56; neither changes the name or a loader field.
+    plate=0xff3a3f48 if team is None else exact.plate_argb(team)
+    if team in (plate_tints or {}):
+        plate=0xff000000 | int(plate_tints[team][1:],16)
+    wing=0xff4a4e58 if team is None else exact.wing_table()[int(code)]
+    import struct
+    struct.pack_into("<II",span,32+48,plate,wing)
+    return bytes(span)
+
+
+MNF_ATLAS_SPAN_SIZE = 132256
+MNF_LOGO_SPAN_SIZE = 5280
+MNF_NEUTRAL_SPAN_SIZE = 2208
+
+
+def mnf_atlas_span(template):
+    from . import nfl2k5_scorebug_assets as assets, nfl2k5_scorebug_exact as exact
+    return assets.texture_chunk("score_buga", exact.atlas_mnf(), template)[0]
+
 
 
 def panel_states(span, team, side):
@@ -646,8 +677,8 @@ def _compiled_panels(template, span, team, side):
 
 
 READ_BLOCK = 1024 * 1024
-PROBES = ("transport", "hooks", "resources", "neutral", "pair", "full", "mnf")
-MNF_VERSION = "scorebug-mnf-2026-v1"
+PROBES = ("transport", "hooks", "resources", "neutral", "pair", "full", "mnf", "sprite")
+MNF_VERSION = 'scorebug-mnf-2026-v4'
 # The in-place ESPN digit restyle of FONT4/FONT8 (outer 3, loaded at boot) is held back until it is
 # witnessed: a 2026-09-15 emulator boot with it applied stalled in the intro movie. Set
 # NFL2K5_MNF_FONTS=1 to include it in a build; status() follows the same switch.
@@ -733,11 +764,39 @@ def probe_codes(probe):
     return {"--"} | {v["asset_code"] for v in TEAM_LOGOS.values()}
 
 
-def probe_sizes(probe):
+# The ESPN clock font: one FONT resource appended to the HUD collection and bound by the
+# owner at setup (quarter, game clock, play clock). Built deterministically from the retail
+# font4 span and the broadcast glyph sheet; the size and digest are pinned.
+CLOCK_FONT_DONOR = 3
+CLOCK_FONT_SPAN_SIZE = 107200
+CLOCK_FONT_SHA256 = '487057d8626f0aaf9f37e21bc3360fa93337210fa8674fdb3056e645f28df091'
+
+
+def clock_font_spans(pack):
+    """The two appended FONT spans for the mnf collection (deterministic: retail font4 donor + the glyph sheet)."""
+    from . import nfl2k5_scorebug_mnf_font as mnf_font, nfl2k5_scorebug_fonts as fonts
+    donor = fonts.source_spans(pack)[CLOCK_FONT_DONOR]
+    clock, _ = mnf_font.clock_font(donor)
+    quarter, _ = mnf_font.clock_font(donor, name=mnf_font.QUARTER_FONT_NAME, scale=mnf_font.QUARTER_FONT_SCALE)
+    if len(clock) + len(quarter) != CLOCK_FONT_SPAN_SIZE:
+        raise ValueError("clock font span sizes changed")
+    return clock, quarter
+
+
+def clock_font_span(pack):
+    return b"".join(clock_font_spans(pack))
+
+
+
+
+def probe_sizes(probe, *, sprite_folder=None):
+    if probe == "sprite":
+        from .nfl2k5_scorebug_sprite import probe_sizes as sizes
+        return sizes(sprite_folder)
     if probe == "mnf":
-        # One panel per team side (plus the neutral pair), no private fonts.
-        count = len(probe_codes(probe)) * 2
-        appendix = count * RUNTIME_TEXTURE_SPAN
+        # One logo per team and one neutral, two private fonts and the painted atlas.
+        count = len(probe_codes(probe))
+        appendix = (count-1) * MNF_LOGO_SPAN_SIZE + MNF_NEUTRAL_SPAN_SIZE + CLOCK_FONT_SPAN_SIZE + MNF_ATLAS_SPAN_SIZE
         growth = ((HUD_SIZE + appendix + 2047) // 2048 - (HUD_SIZE + 2047) // 2048) * 2048
         return count, appendix, growth
     count = len(probe_codes(probe)) * 8
@@ -746,13 +805,16 @@ def probe_sizes(probe):
     return count, appendix, growth
 
 
-def compile_runtime_collection(pack, *, probe="full"):
+def compile_runtime_collection(pack, *, probe="full", sprite_folder=None, widescreen=False):
     """Pure bounded pack-0 compiler, retaining all unrelated bytes and entries.
 
     Insert at the end of outer 346, expand its existing index entry and pack 0,
     and move later virtual offsets by the same sector count. Other packs do not
     move physically. The old outer's chunks keep their offsets and wrappers.
     """
+    if probe == "sprite":
+        from .nfl2k5_scorebug_sprite import compile_collection
+        return compile_collection(pack,sprite_folder,widescreen)
     import struct
     from . import nfl2k5_scorebug_ingame as r
     import nfl_outer as outer
@@ -765,13 +827,13 @@ def compile_runtime_collection(pack, *, probe="full"):
     inputs = {n: pack[v["pack_offset"]:v["pack_offset"] + v["span_size"]] for n, v in RESOURCES.items()}
     from . import nfl2k5_scorebug_exact as exact
     patches = {"score_bug": r.stage_binding_scene(inputs["score_bug"], runtime=True)[0],
-               "score_buga": r.encode_atlas(inputs["score_buga"], exact.atlas_mnf())[0]}
+               "score_buga": r.encode_atlas(inputs["score_buga"], exact.atlas())[0]}
     panels, receipts = [], []
     for team, record in [(None, {"asset_code": "--"})] + sorted(TEAM_LOGOS.items()):
         if record["asset_code"] not in probe_codes(probe):
             continue
         span = b"" if team is None else pack[record["pack_offset"]:record["pack_offset"] + record["span_size"]]
-        for side in ("home", "away"):
+        for side in (("home",) if probe == "mnf" else ("home", "away")):
             if probe == "mnf":
                 data = mnf_panel_span(inputs["score_buga"], team, side)
                 name = runtime_panel_name(record["asset_code"], side, 0)
@@ -782,12 +844,22 @@ def compile_runtime_collection(pack, *, probe="full"):
                 name = runtime_panel_name(record["asset_code"], side, count)
                 receipts.append(dict(name=name, team=team, side=side, timeouts=count, size=len(data), sha256=r.digest(data)))
                 panels.append(data)
-    font_spans = scoped_fonts.compile_collection(pack) if texture_count and probe != "mnf" else ()
-    if tuple(map(len, font_spans)) != (scoped_fonts.SPAN_SIZES if texture_count and probe != "mnf" else ()):
-        raise ValueError("private scorebug FONT resource sizes changed")
+    if probe == "mnf":
+        from . import nfl2k5_scorebug_mnf_font as mnf_font
+        font_spans = clock_font_spans(pack)
+        font_names = (mnf_font.CLOCK_FONT_NAME, mnf_font.QUARTER_FONT_NAME)
+        if CLOCK_FONT_SHA256 is not None and r.digest(b"".join(font_spans)) != CLOCK_FONT_SHA256:
+            raise ValueError("clock font bytes changed")
+    else:
+        font_spans = scoped_fonts.compile_collection(pack) if texture_count else ()
+        font_names = scoped_fonts.NAMES
+        if tuple(map(len, font_spans)) != (scoped_fonts.SPAN_SIZES if texture_count else ()):
+            raise ValueError("private scorebug FONT resource sizes changed")
     receipts += [dict(name=name, kind="FONT", size=len(data), sha256=r.digest(data))
-                 for name, data in zip(scoped_fonts.NAMES, font_spans)]
-    appendix = b"".join((*panels, *font_spans))
+                 for name, data in zip(font_names, font_spans)]
+    atlas_spans = [mnf_atlas_span(inputs["score_buga"])] if probe == "mnf" else []
+    receipts += [dict(name="score_buga",kind="TXTR",size=len(data),sha256=r.digest(data)) for data in atlas_spans]
+    appendix = b"".join((*panels, *font_spans, *atlas_spans))
     if len(appendix) != append_size:
         raise ValueError("runtime texture collection size changed")
     end = HUD_START + HUD_SIZE
@@ -828,7 +900,7 @@ def compile_runtime_collection(pack, *, probe="full"):
     return result, dict(status="applied", version=MNF_VERSION if probe == "mnf" else RUNTIME_VERSION,
                         experimental=True, runtime_witnessed=False, fonts=font_receipts,
                         probe=probe, texture_count=texture_count, font_count=len(font_spans),
-                        native_heap_bytes=texture_count * 5376 + (scoped_fonts.HEAP_BYTES if font_spans else 0),
+                        native_heap_bytes=texture_count * 5376 + (132352 - 3072 if probe == "mnf" else 0) + (sum((len(span) + 127) // 128 * 128 for span in font_spans) if probe == "mnf" else (scoped_fonts.HEAP_BYTES if font_spans else 0)),
                         growth=len(result)-len(pack), sha256_before=pack_digest(pack), sha256_after=pack_digest(result),
                         outer_index=HUD_OUTER_INDEX, outer_size_before=HUD_SIZE,
                         outer_size_after=HUD_SIZE+append_size, resources=receipts,
@@ -837,7 +909,10 @@ def compile_runtime_collection(pack, *, probe="full"):
                         transport="sector insertion in pack 0; all later index offsets move equally")
 
 
-def runtime_pack_status(pack, *, probe="full"):
+def runtime_pack_status(pack, *, probe="full", sprite_folder=None):
+    if probe == "sprite":
+        from .nfl2k5_scorebug_sprite import pack_status
+        return pack_status(pack,sprite_folder)
     import struct
     from . import nfl2k5_scorebug_ingame as r
     import nfl_outer as outer
@@ -890,11 +965,11 @@ def runtime_pack_status(pack, *, probe="full"):
 
 # Reproducible subsets of the full collection. Pair includes both orientations
 # of TB and NE plus neutral fallbacks, so changing ends does not change assets.
-PROBE_APPEND_PINS = {'transport': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'hooks': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'neutral': 'e38a25fae3acb5fdd3ae5ddcb91798e047e1be27e862f319452ee176b6cb61fa', 'pair': '8c7da0308c4b96d66f124ec5c83939ac0376fac623ca76b777d67be0b1cfd515', 'mnf': '13d1edd95686245cb54856fa4b7e95aac2e23ddff4fe0c190cc54b0cf348768c'}
+PROBE_APPEND_PINS = {'transport': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'hooks': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'neutral': 'e38a25fae3acb5fdd3ae5ddcb91798e047e1be27e862f319452ee176b6cb61fa', 'pair': '8c7da0308c4b96d66f124ec5c83939ac0376fac623ca76b777d67be0b1cfd515', 'mnf': 'd05dafd984d0f68e9a1d7cf8e7d6d577364049a08f0be7ac332134ca8f1533ac'}
 
 # Native ABI bodies, normalized only for independently recognized scorebug fields/hooks.
 RUNTIME_ABI_GUARDS = [(1035472, 407, 'fae55450eb58f087e0e31b50636342c39d7b7df70361fae6b2ccda6e2fedfa60'), (1035888, 1466, 'fadbe0384fccb436be4f0fe52514aa9e38c543288a471ffc6b44e9ffde365b2f'), (1034688, 780, 'bdc0d7cda462c37ec5546944605fe12141a83c798965b78ebe5abe8467d379df'), (1031280, 73, '1fea8eb67ed1d7df96e85562ec8d79075736ed4d10e5cfbe18f1b7be05c01e60'), (281056, 104, '710fd5ba9fd2a147042dd4c5f133cc2a8d36dcdc10b47417d17ec65df9b46191'), (279504, 770, '1caaf5b258e1849435c7ed69dbc970f9ce5f265415c4dadecee3bef94dc8d6b3'), (199744, 37, 'dd3d52cc45c43dc86d8db7220d777346237b324dd9a00dce35c9de3362bbfdee'), (277792, 136, '03233a25e1afc3ef91892233872e5b9cf29404be7b250dbf17a62db248949d9f'), (282016, 20, '0ee1f6425e946ec6d8dd4aeae08c6ae211e9de4ba09f9648a75f052d1c6bed6e'), (216560, 108, 'f84f040777759d3417fb8bee34ab8e046cf40255e18c467530417ae504aad29c'), (216080, 267, '69266ee656258cc0c7c3f770b0a650452d18c4c84251088bb204fbecb3afa2fe'), (754112, 58, '13cd2011501c1d9567889a32898a944b6cd7dee7769062e7ad57a0994614c674'), (1032272, 29, '02136e09af5b89365ab949b6cdd50c82e2c705bf3e4a9a585f6561234e33de99'), (1032304, 29, '730201c327a46bc2ee757b942eef6efb387d47a9aa5d9cdde452e5539a296222'), (400464, 6, 'b47138018b9b2ec278b17d759b0d8e54f0c9c5c9181510e9d3716d37aa74d6a4'), (400480, 6, '7d1ab1e0e220598d0dfeec086c9327bcec8699bc836f0ee2d3930a8e3d500e9b'), (1031584, 9, '5e68b2fc2391d42f537a7a352387790a5c46114bbe4f2197a6293a5a9a6f1b63'), (1034192, 446, '61eb66a3851ced7740b600c9b2ec8dc32c1fcfdb6c980ae7995b78407b23390a'), (15124024, 24, '9385e4da55d331aa5b8649841a9206ccd44b267e2a05abb359cb178b7d862f67'), (15124276, 24, 'c9ce8e336a66c1f198ee4f2a11052c232675558077c0f6e328e689d5bd52aee2')]
 
 TEMPLATE_SCENE_SHA256 = '77dcbe4639c8cd35468aee28cd36cfc023b0bcf226572477a367d56d0ff00c24'
 STATIC_SCENE_SHA256 = '2d48ab3d3876a9e533a213c4cd22d181dc64a74f9292e5ed1a3fdd53e913de93'
-RUNTIME_SCENE_SHA256 = '1f45c765e2c3da70398b2e83d9fee2c5590842cb6b4abd8505e61389c7c7c2d5'
+RUNTIME_SCENE_SHA256 = '672d87a553faa5a1d5bc0484b591e5a28c4ff97c164f160ed8b37534b40249be'

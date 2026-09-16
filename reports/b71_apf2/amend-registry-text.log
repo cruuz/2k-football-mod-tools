@@ -1,0 +1,5 @@
+[astra/b71-apf2-situations b94f3dae] APF: replay CPU receipts after Fine-tune edits and document native situation limits
+ Date: Tue Sep 15 14:33:15 2026 -0400
+ 15 files changed, 708 insertions(+), 339 deletions(-)
+ create mode 100644 docs/research/apf_b71_situations.md
+ create mode 100644 docs/research/apf_b71_situations_registry.json

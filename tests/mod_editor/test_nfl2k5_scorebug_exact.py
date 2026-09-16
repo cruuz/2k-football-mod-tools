@@ -21,7 +21,7 @@ HAVE_IMAGES = all(importlib.util.find_spec(name) for name in ("PIL", "numpy"))
 class ContractTests(unittest.TestCase):
     def test_all_32_team_wordmarks_and_runtime_default_off(self):
         self.assertEqual(set(exact.NICKNAMES), set(art.TEAM_LOGOS))
-        self.assertEqual(art.PROBES, ("transport", "hooks", "resources", "neutral", "pair", "full", "mnf"))
+        self.assertEqual(art.PROBES, ("transport", "hooks", "resources", "neutral", "pair", "full", "mnf", "sprite"))
         from mod_editor.core import mod_build
         self.assertFalse(mod_build.BuildPlan(source="unused", target="unused").scorebug_runtime)
         for name, preset in mod_build.PRESETS.items():
@@ -107,9 +107,9 @@ class NativeTests(unittest.TestCase):
                     self.assertNotEqual(materials[name]["texture"], "0x0")
                     self.assertNotEqual(materials[name]["texture"], materials["cscore_buga"]["texture"])
                 self.assertNotEqual(materials["hscore_buga"]["texture"], materials["zscore_buga"]["texture"])
-                for name, expected_name in (("hscore_buga", "sb37h0"), ("zscore_buga", "sb20a0")):
+                for name, expected_name in (("hscore_buga", "sb37h0"), ("zscore_buga", "sb20h0")):
                     self.assertEqual(geometry["rendered_materials"][name]["name"], expected_name)
-                    self.assertEqual(geometry["rendered_materials"][name]["dimensions"], [128, 32])
+                    self.assertEqual(geometry["rendered_materials"][name]["dimensions"], [64, 64])  # beta 71: 64x64 wing textures
                 for row in geometry["winding"].values(): self.assertEqual(row["positive"], 0)
                 with Image.open(path) as image: pictures.append(image.convert("RGB"))
                 if not wide:
@@ -134,7 +134,7 @@ class NativeTests(unittest.TestCase):
         after = self.build.render(second, runtime=True, timeouts=(3, 1))
         self.assertEqual(before["positions"], after["positions"])
         self.assertEqual(before["rendered_materials"], after["rendered_materials"])
-        # The only change is the home timeout dashes ("- - -" to "-"), drawn as
+        # The only change is the home timeout dashes ("~ ~ ~" to "~"), drawn as
         # text through the team-name callback; its quad bounds the pixel change.
         differing = []
         for rb, ra in zip(before["draws"], after["draws"]):
@@ -143,8 +143,8 @@ class NativeTests(unittest.TestCase):
                 differing.append((rb, ra))
         self.assertEqual(len(differing), 1)
         rb, ra = differing[0]
-        self.assertEqual((rb["text"].count("-"), ra["text"].count("-")), (3, 1))
-        self.assertTrue(set(rb["text"]) <= set("- ") and set(ra["text"]) <= set("- "))
+        self.assertEqual((rb["text"].count("~"), ra["text"].count("~")), (3, 1))
+        self.assertTrue(set(rb["text"]) <= set("~ ") and set(ra["text"]) <= set("~ "))
         quads = [box_of([v["screen"] for v in row["vertices"]]) for row in (rb, ra) if row["vertices"]]
         self.assertTrue(quads)
         allowed = (min(q[0] for q in quads) - 1, min(q[1] for q in quads) - 1,
@@ -179,7 +179,7 @@ class NativeTests(unittest.TestCase):
         for probe in art.PROBES:
             compiled, receipt = art.compile_runtime_collection(self.build.view, probe=probe)
             self.assertEqual(art.runtime_pack_status(compiled, probe=probe), "applied")
-            self.assertEqual(receipt["version"], art.MNF_VERSION if probe == "mnf" else art.RUNTIME_VERSION)
+            self.assertEqual(receipt["version"], "scorebug-sprite-v1" if probe == "sprite" else art.MNF_VERSION if probe == "mnf" else art.RUNTIME_VERSION)
             self.assertEqual(receipt["texture_count"], art.probe_sizes(probe)[0])
 
 

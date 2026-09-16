@@ -1,0 +1,11 @@
+{
+  "name": "catalog-preflight",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_product_catalog.py"
+  ],
+  "started": "2026-09-16T00:14:29.841221+00:00",
+  "ended": "2026-09-16T00:14:29.994854+00:00",
+  "seconds": 0.154,
+  "exit_code": 0
+}

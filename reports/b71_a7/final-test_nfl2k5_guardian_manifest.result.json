@@ -1,0 +1,12 @@
+{
+  "name": "final-test_nfl2k5_guardian_manifest",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_nfl2k5_guardian_manifest.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:27:09.435980+00:00",
+  "ended": "2026-09-16T00:32:22.581987+00:00",
+  "seconds": 313.146,
+  "exit_code": 0
+}

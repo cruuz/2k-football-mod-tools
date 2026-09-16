@@ -1,0 +1,9 @@
+test_annotated_audio_rows_labeled_only_filters_unlabeled (__main__.AudioAnnotationFacadeTests.test_annotated_audio_rows_labeled_only_filters_unlabeled) ... ok
+test_bundle_and_batch_carry_metadata_but_keep_coordinate_paths (__main__.AudioAnnotationFacadeTests.test_bundle_and_batch_carry_metadata_but_keep_coordinate_paths) ... ok
+test_live_validation_crud_and_overlay_preserve_identity (__main__.AudioAnnotationFacadeTests.test_live_validation_crud_and_overlay_preserve_identity) ... ok
+test_project_load_rejects_syntactically_valid_nonexistent_cue (__main__.AudioAnnotationFacadeTests.test_project_load_rejects_syntactically_valid_nonexistent_cue) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.010s
+
+OK

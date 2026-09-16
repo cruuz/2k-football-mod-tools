@@ -1,0 +1,18 @@
+.E......
+======================================================================
+ERROR: test_colour_defaults_load_inside_the_isolated_provider_bundle (__main__.ProviderIntegrityTests.test_colour_defaults_load_inside_the_isolated_provider_bundle)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-c3/tests/mod_editor/test_provider_integrity.py", line 190, in test_colour_defaults_load_inside_the_isolated_provider_bundle
+    with _pinned_execution_bundle(WORKSPACE, {**provider.module_pins, **provider.data_pins},
+  File "/usr/lib/python3.12/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-c3/mod_editor/core/providers.py", line 488, in _pinned_execution_bundle
+    raise ProviderError(
+mod_editor.core.providers.ProviderError: Pinned colour settings evidence root must be a non-symlink directory
+
+----------------------------------------------------------------------
+Ran 8 tests in 13.085s
+
+FAILED (errors=1)

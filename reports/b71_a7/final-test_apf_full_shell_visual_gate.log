@@ -1,0 +1,8 @@
+test_every_headless_and_visual_gate_passed (__main__.ApfFullShellVisualGateTests.test_every_headless_and_visual_gate_passed) ... ok
+test_gate_is_pinned_to_the_exact_candidate_and_contact_sheets (__main__.ApfFullShellVisualGateTests.test_gate_is_pinned_to_the_exact_candidate_and_contact_sheets) ... ok
+test_receipt_keeps_runtime_and_distribution_boundaries_closed (__main__.ApfFullShellVisualGateTests.test_receipt_keeps_runtime_and_distribution_boundaries_closed) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+OK

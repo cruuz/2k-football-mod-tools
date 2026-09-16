@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_uniform_allocation_capacity",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_uniform_allocation_capacity.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:58:14.369827+00:00",
+  "ended": "2026-09-16T00:58:15.794881+00:00",
+  "seconds": 1.425,
+  "exit_code": 0
+}

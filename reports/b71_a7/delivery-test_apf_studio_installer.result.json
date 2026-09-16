@@ -1,0 +1,15 @@
+{
+  "name": "delivery-test_apf_studio_installer",
+  "argv": [
+    "env",
+    "-u",
+    "PYTHONPATH",
+    "python3",
+    "tests/mod_editor/test_apf_studio_installer.py",
+    "-v"
+  ],
+  "started": "2026-09-16T01:00:40.624191+00:00",
+  "ended": "2026-09-16T01:00:55.147116+00:00",
+  "seconds": 14.523,
+  "exit_code": 0
+}

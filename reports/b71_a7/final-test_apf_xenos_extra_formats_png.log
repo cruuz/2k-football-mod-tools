@@ -1,0 +1,11 @@
+test_1_5_5_5_decodes_alpha_bit (__main__.ExtraFormatPngDecodeTests.test_1_5_5_5_decodes_alpha_bit) ... ok
+test_5_6_5_decodes_opaque_rgb (__main__.ExtraFormatPngDecodeTests.test_5_6_5_decodes_opaque_rgb) ... ok
+test_8_8_decodes_two_channels (__main__.ExtraFormatPngDecodeTests.test_8_8_decodes_two_channels) ... ok
+test_8_bit_luma_decodes (__main__.ExtraFormatPngDecodeTests.test_8_bit_luma_decodes) ... ok
+test_png_roundtrip_write_for_565 (__main__.ExtraFormatPngDecodeTests.test_png_roundtrip_write_for_565) ... ok
+test_portme_message_names_unsupported_format (__main__.ExtraFormatPngDecodeTests.test_portme_message_names_unsupported_format) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.008s
+
+OK

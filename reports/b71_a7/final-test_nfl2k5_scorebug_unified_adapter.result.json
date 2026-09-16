@@ -1,0 +1,12 @@
+{
+  "name": "final-test_nfl2k5_scorebug_unified_adapter",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_nfl2k5_scorebug_unified_adapter.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:39:56.514729+00:00",
+  "ended": "2026-09-16T00:39:56.709255+00:00",
+  "seconds": 0.195,
+  "exit_code": 0
+}

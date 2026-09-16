@@ -58,8 +58,17 @@ WHEELS = (
     "PyQt5-sip==12.18.0",
     "Pillow==11.3.0",
     "capstone==5.0.7",
+    "numpy==1.26.4",
+    "unicorn==2.1.4",
 )
 WHEEL_SHA256 = {
+    # Native sprite preview: verified against the official PyPI file pages.
+    # https://pypi.org/project/numpy/1.26.4/#files
+    "numpy-1.26.4-cp312-cp312-win_amd64.whl":
+        "08beddf13648eb95f8d867350f6a018a4be2e5ad54c8d8caed89ebca558b2818",
+    # https://pypi.org/project/unicorn/2.1.4/#files
+    "unicorn-2.1.4-cp37-abi3-win_amd64.whl":
+        "d7107500c64ce5c168fbff6bef9485b5db1350050036f4cea568650cf8bdbdf5",
     # PyPI capstone 5.0.7 release metadata, including its native Windows DLL.
     "capstone-5.0.7-py3-none-win_amd64.whl":
         "4ab8bcb7da8f221ff45926ca168ca33e76f7237d06fbf3c10780002faa2670e1",

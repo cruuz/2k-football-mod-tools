@@ -1,0 +1,13 @@
+{
+  "command": [
+    "python3",
+    "tools/verify_colour_lighting_pins.py",
+    "extracted/ESPN NFL 2K5 (USA)/vc_53450030/0",
+    "--workers",
+    "8"
+  ],
+  "start_utc": "2026-09-15T21:35:03.916005+00:00",
+  "end_utc": "2026-09-15T21:39:54.844191+00:00",
+  "seconds": 290.928,
+  "exit_code": 0
+}

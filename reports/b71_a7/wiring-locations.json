@@ -1,0 +1,237 @@
+[
+  {
+    "path": "packaging/check_2k5_mod_studio_runtime.py",
+    "line": 2178,
+    "anchor": "len(registry.capabilities) == 176"
+  },
+  {
+    "path": "packaging/check_2k5_mod_studio_runtime.py",
+    "line": 2182,
+    "anchor": "len(product_catalog.capabilities) == 102"
+  },
+  {
+    "path": "packaging/check_2k5_mod_studio_runtime.py",
+    "line": 2585,
+    "anchor": "registry=176 sections=12 nfl2k5_capabilities=102"
+  },
+  {
+    "path": "packaging/check_apf2k8_mod_studio_runtime.py",
+    "line": 1389,
+    "anchor": "len(registry.capabilities) == 176"
+  },
+  {
+    "path": "packaging/check_apf2k8_mod_studio_runtime.py",
+    "line": 1390,
+    "anchor": "== 73"
+  },
+  {
+    "path": "packaging/check_apf2k8_mod_studio_runtime.py",
+    "line": 1394,
+    "anchor": "len(cards) == 73"
+  },
+  {
+    "path": "tests/mod_editor/test_b68_a1_audit.py",
+    "line": 41,
+    "anchor": "len(registry.capabilities), 176"
+  },
+  {
+    "path": "tests/mod_editor/test_b68_a1_audit.py",
+    "line": 42,
+    "anchor": "len(catalog.capabilities), 102"
+  },
+  {
+    "path": "tests/mod_editor/test_b68_a1_audit.py",
+    "line": 54,
+    "anchor": "registry=176 sections=12 nfl2k5_capabilities=102"
+  },
+  {
+    "path": "tests/mod_editor/test_phase1_packaging.py",
+    "line": 571,
+    "anchor": "registry=176 sections=12 nfl2k5_capabilities=102"
+  },
+  {
+    "path": "tests/mod_editor/test_apf_studio_installer.py",
+    "line": 360,
+    "anchor": "len(registry.capabilities) == 176"
+  },
+  {
+    "path": "tests/mod_editor/test_product_catalog.py",
+    "line": 242,
+    "anchor": "(102, 80, 8, 1, 0, 10, 3)"
+  },
+  {
+    "path": "tests/mod_editor/test_product_catalog.py",
+    "line": 78,
+    "anchor": "nfl2k5.stadiums_fields.modern_arrowhead"
+  },
+  {
+    "path": "tests/mod_editor/test_product_catalog.py",
+    "line": 172,
+    "anchor": "self.assertEqual(set(first_ids), expected)"
+  },
+  {
+    "path": "tests/mod_editor/test_provider_integrity.py",
+    "line": 218,
+    "anchor": "[288, 10, 8, 9, 8, 9]"
+  },
+  {
+    "path": "tools/validate_all_mod_editor_capabilities.py",
+    "line": 62,
+    "anchor": "EXPECTED_CAPABILITIES = 176"
+  },
+  {
+    "path": "tools/validate_all_mod_editor_capabilities.py",
+    "line": 63,
+    "anchor": "EXPECTED_COVERED_CAPABILITIES = 171"
+  },
+  {
+    "path": "tools/validate_all_mod_editor_capabilities.py",
+    "line": 64,
+    "anchor": "EXPECTED_DEFERRED_CAPABILITIES = 5"
+  },
+  {
+    "path": "tools/validate_all_mod_editor_capabilities.py",
+    "line": 65,
+    "anchor": "EXPECTED_UNIQUE_VALIDATORS = 129"
+  },
+  {
+    "path": "mod_editor/capabilities/registry.v1.json",
+    "line": 10565,
+    "anchor": "\"id\": \"nfl2k5.scorebug_presentation.runtime\""
+  },
+  {
+    "path": "mod_editor/capabilities/registry.v1.json",
+    "line": 9698,
+    "anchor": "\"id\": \"nfl2k5.presentation.modern_color_lighting\""
+  },
+  {
+    "path": "mod_editor/capabilities/registry.v1.json",
+    "line": 11583,
+    "anchor": "\"id\": \"nfl2k5.stadiums_fields.modern_arrowhead\""
+  },
+  {
+    "path": "mod_editor/capabilities/registry.v1.json",
+    "line": 2646,
+    "anchor": "\"id\": \"apf2k8.playbooks.cpu_playcalling\""
+  },
+  {
+    "path": "mod_editor/capabilities/registry.v1.json",
+    "line": 2822,
+    "anchor": "\"id\": \"apf2k8.playbooks.fourth_down\""
+  },
+  {
+    "path": "packaging/release-allowlist.txt",
+    "line": 929,
+    "anchor": "mod_editor/gui/colour_lighting_qt.py"
+  },
+  {
+    "path": "packaging/release-allowlist.txt",
+    "line": 930,
+    "anchor": "docs/modern_color/CONTROLS.md"
+  },
+  {
+    "path": "packaging/release-allowlist.txt",
+    "line": 931,
+    "anchor": "mod_editor/core/nfl2k5_scorebug_assets.py"
+  },
+  {
+    "path": "packaging/release-allowlist.txt",
+    "line": 932,
+    "anchor": "data/nfl2k5_scorebug_mnf/painted_label_2x.png"
+  },
+  {
+    "path": "packaging/release-allowlist.txt",
+    "line": 933,
+    "anchor": "data/nfl2k5_scorebug_mnf/painted_label_2x.json"
+  },
+  {
+    "path": "packaging/nfl2k5_scorebug_template_pngs.json",
+    "line": 291,
+    "anchor": "\"data/nfl2k5_scorebug_mnf/painted_label_2x.png\""
+  },
+  {
+    "path": "packaging/check_2k5_mod_studio_release.py",
+    "line": 304,
+    "anchor": "SCOREBUG_TEMPLATE_PNG_CATALOG_SHA256 ="
+  },
+  {
+    "path": "mod_editor/core/providers.py",
+    "line": 698,
+    "anchor": "\"mod_editor/core/nfl2k5_scorebug_assets.py\":"
+  },
+  {
+    "path": "mod_editor/core/providers.py",
+    "line": 563,
+    "anchor": "\"mod_editor/core/nfl2k5_modern_arrowhead.py\":"
+  },
+  {
+    "path": "mod_editor/gui/studio_qt.py",
+    "line": 8023,
+    "anchor": "from mod_editor.core.nfl2k5_build_service import summarize_kept_retail"
+  },
+  {
+    "path": "mod_editor/core/build_feedback.py",
+    "line": 53,
+    "anchor": "from mod_editor.core.nfl2k5_build_service import summarize_kept_retail"
+  },
+  {
+    "path": "mod_editor/core/mod_build.py",
+    "line": 1459,
+    "anchor": "if plan.modern_arrowhead:"
+  },
+  {
+    "path": "mod_editor/core/mod_build.py",
+    "line": 2139,
+    "anchor": "if plan.modern_arrowhead:"
+  },
+  {
+    "path": "mod_editor/core/mod_build.py",
+    "line": 2142,
+    "anchor": "retail_source=source"
+  },
+  {
+    "path": "mod_editor/core/nfl2k5_scorebug_runtime.py",
+    "line": 25,
+    "anchor": "CODE_SIZE, DATA_SIZE ="
+  },
+  {
+    "path": "mod_editor/core/nfl2k5_scorebug_runtime.py",
+    "line": 26,
+    "anchor": "REQUESTS ="
+  },
+  {
+    "path": "mod_editor/core/nfl2k5_scorebug_resources.py",
+    "line": 671,
+    "anchor": "MNF_VERSION ="
+  },
+  {
+    "path": "tools/nfl_main_menu_font.py",
+    "line": 119,
+    "anchor": "target = (field_offset + stored - 1) & 0xffffffff"
+  },
+  {
+    "path": "data/nfl2k5_cave_reservations.json",
+    "line": 301299,
+    "anchor": "\"b71_a7_projection\": {"
+  },
+  {
+    "path": "reports/b71_a7/build_testdisc71.py",
+    "line": 28,
+    "anchor": "NAME = "
+  },
+  {
+    "path": "reports/b71_a7/build_testdisc71.py",
+    "line": 30,
+    "anchor": "OPTIONS = "
+  },
+  {
+    "path": "WIRING_B71_S4.md",
+    "line": 58,
+    "anchor": "## 1. Windows helper build:"
+  },
+  {
+    "path": "WIRING_B71_S4.md",
+    "line": 101,
+    "anchor": "## 2. Digit shortfalls"
+  }
+]

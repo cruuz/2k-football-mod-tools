@@ -1,0 +1,16 @@
+test_category_formation_weights_and_uniform_draws (__main__.ModelNativeTests.test_category_formation_weights_and_uniform_draws) ... Native tuple matrix book 1/4 passed
+Native tuple matrix book 2/4 passed
+Native tuple matrix book 3/4 passed
+Native tuple matrix book 4/4 passed
+PROVED category vectors: 40 situations x 4 books; native uniform draws: 10240
+PROVED native category/formation/play tuples from captured native vectors: 10240
+ok
+test_formation_and_play_vectors (__main__.ModelNativeTests.test_formation_and_play_vectors) ... ok
+test_preview_performance (__main__.ModelNativeTests.test_preview_performance) ... Preview 256 seeds: 0.0255 seconds
+ok
+test_situation_row_and_run_adjustment_boundaries (__main__.ModelNativeTests.test_situation_row_and_run_adjustment_boundaries) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 1304.171s
+
+OK

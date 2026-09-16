@@ -1,0 +1,12 @@
+{
+  "name": "closure_units-suites",
+  "argv": [
+    "python3",
+    "reports/b71_a7/suites.py",
+    "closure_units"
+  ],
+  "started": "2026-09-16T00:33:14.386240+00:00",
+  "ended": "2026-09-16T00:33:24.107582+00:00",
+  "seconds": 9.721,
+  "exit_code": 1
+}

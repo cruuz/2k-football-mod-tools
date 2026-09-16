@@ -1,0 +1,35 @@
+.This plugin does not support propagateSizeHints()
+F......
+======================================================================
+FAIL: test_playbooks_workspace_exposes_the_save_assignment_tab (__main__.PanelTests.test_playbooks_workspace_exposes_the_save_assignment_tab)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-apf2/tests/mod_editor/test_apf_save_playbook_assignments_gui.py", line 169, in test_playbooks_workspace_exposes_the_save_assignment_tab
+    self.assertEqual(
+AssertionError: Lists differ: ['CPU Play Calling', 'PLAY / DRCT Inspector[178 chars]ets'] != ['PLAY / DRCT Inspector', 'Fine-tune Plays'[178 chars]ets']
+
+First differing element 0:
+'CPU Play Calling'
+'PLAY / DRCT Inspector'
+
+- ['CPU Play Calling',
+-  'PLAY / DRCT Inspector',
+? ^
+
++ ['PLAY / DRCT Inspector',
+? ^
+
+   'Fine-tune Plays',
+   'Who lines up',
+   'Assignment Routes',
+   'Save Assignments',
+   'Design Plays / Formations',
+   'Coverage Geometry (experimental)',
+   'Book Identity',
++  'CPU Play Calling',
+   'Raw Playbook Assets']
+
+----------------------------------------------------------------------
+Ran 8 tests in 1.728s
+
+FAILED (failures=1)

@@ -1,0 +1,12 @@
+test_address_relocation_does_not_hide_nonaddress_immediate (__main__.DiffTests.test_address_relocation_does_not_hide_nonaddress_immediate) ... ok
+test_extra_function_is_unmatched (__main__.DiffTests.test_extra_function_is_unmatched) ... ok
+test_flat_mapping_bounds_and_prologues (__main__.DiffTests.test_flat_mapping_bounds_and_prologues) ... ok
+test_integrity_at_each_level_and_bounds (__main__.StfsTests.test_integrity_at_each_level_and_bounds) ... ok
+test_one_level (__main__.StfsTests.test_one_level) ... ok
+test_reject_other_layout_before_any_payload (__main__.StfsTests.test_reject_other_layout_before_any_payload) ... ok
+test_zero_parent_status_two_levels_and_partial_final_block (__main__.StfsTests.test_zero_parent_status_two_levels_and_partial_final_block) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.014s
+
+OK

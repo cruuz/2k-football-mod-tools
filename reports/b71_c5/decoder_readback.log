@@ -1,0 +1,18 @@
+Modern colour: refitting 390 distinct field scenes, bump maps and divot layers
+Modern colour: 50 of 390 field scenes refit
+Modern colour: 100 of 390 field scenes refit
+Modern colour: 150 of 390 field scenes refit
+Modern colour: 200 of 390 field scenes refit
+Modern colour: 250 of 390 field scenes refit
+Modern colour: 300 of 390 field scenes refit
+Modern colour: 350 of 390 field scenes refit
+PASS s00dd.iff seven conditions and every outside tint
+PASS s00dr.iff seven conditions and every outside tint
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-c5/reports/b71_c5/prove_sidelines.py", line 174, in <module>
+    tx = mc._tools()[0]
+
+  File "/home/noah/2k-worktrees/astra-b71-c5/reports/b71_c5/prove_sidelines.py", line 131, in main
+    if args.all:
+                 
+AssertionError: s00ds.iff

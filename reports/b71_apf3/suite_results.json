@@ -1,0 +1,1656 @@
+{
+  "expected_standalone_suites": 183,
+  "passed_suite_files": 183,
+  "tests_reported_run": 1763,
+  "skips_reported": 12,
+  "failed_or_missing": [],
+  "suites": [
+    {
+      "suite": "tests/mod_editor/test_apf2k8_coverage_tuning.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf2k8_coverage_tuning.log",
+      "tests_run": 9,
+      "skipped": 0,
+      "elapsed_seconds": 1.318,
+      "started_utc": "2026-09-15T18:59:58.728200+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf2k8_playbook_route_writer.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf2k8_playbook_route_writer.log",
+      "tests_run": 12,
+      "skipped": 0,
+      "elapsed_seconds": 0.693,
+      "started_utc": "2026-09-15T18:59:58.729009+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_all_crest_slots.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_all_crest_slots.log",
+      "tests_run": 15,
+      "skipped": 0,
+      "elapsed_seconds": 1.107,
+      "started_utc": "2026-09-15T18:59:58.730114+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_audio_annotation_facade.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_audio_annotation_facade.log",
+      "tests_run": 4,
+      "skipped": 0,
+      "elapsed_seconds": 0.677,
+      "started_utc": "2026-09-15T18:59:58.731572+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_audio_annotations.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_audio_annotations.log",
+      "tests_run": 11,
+      "skipped": 0,
+      "elapsed_seconds": 0.307,
+      "started_utc": "2026-09-15T18:59:59.441855+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_audio_batch_export.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_audio_batch_export.log",
+      "tests_run": 15,
+      "skipped": 0,
+      "elapsed_seconds": 0.2,
+      "started_utc": "2026-09-15T18:59:59.456758+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_audio_batch_facade.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_audio_batch_facade.log",
+      "tests_run": 3,
+      "skipped": 0,
+      "elapsed_seconds": 0.372,
+      "started_utc": "2026-09-15T18:59:59.693020+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_audio_batch_gui.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_audio_batch_gui.log",
+      "tests_run": 7,
+      "skipped": 0,
+      "elapsed_seconds": 0.782,
+      "started_utc": "2026-09-15T18:59:59.783572+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_audio_decode_cancellation.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_audio_decode_cancellation.log",
+      "tests_run": 7,
+      "skipped": 0,
+      "elapsed_seconds": 2.025,
+      "started_utc": "2026-09-15T18:59:59.872575+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_audio_drop_zone_gui.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_audio_drop_zone_gui.log",
+      "tests_run": 9,
+      "skipped": 0,
+      "elapsed_seconds": 0.742,
+      "started_utc": "2026-09-15T19:00:00.082066+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_audio_encoder_gui.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_audio_encoder_gui.log",
+      "tests_run": 8,
+      "skipped": 0,
+      "elapsed_seconds": 0.719,
+      "started_utc": "2026-09-15T19:00:00.096295+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_audio_encoding.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_audio_encoding.log",
+      "tests_run": 21,
+      "skipped": 0,
+      "elapsed_seconds": 11.198,
+      "started_utc": "2026-09-15T19:00:00.596279+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_audio_import_idle_barrier.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_audio_import_idle_barrier.log",
+      "tests_run": 1,
+      "skipped": 0,
+      "elapsed_seconds": 3.929,
+      "started_utc": "2026-09-15T19:00:00.851362+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_audio_pcm_product_backend.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_audio_pcm_product_backend.log",
+      "tests_run": 11,
+      "skipped": 0,
+      "elapsed_seconds": 1.056,
+      "started_utc": "2026-09-15T19:00:00.856913+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_audio_replacement_pack.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_audio_replacement_pack.log",
+      "tests_run": 57,
+      "skipped": 0,
+      "elapsed_seconds": 0.661,
+      "started_utc": "2026-09-15T19:00:01.932546+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_audio_waveform_qt.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_audio_waveform_qt.log",
+      "tests_run": 9,
+      "skipped": 0,
+      "elapsed_seconds": 0.631,
+      "started_utc": "2026-09-15T19:00:01.948561+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_audo_exact_slot.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_audo_exact_slot.log",
+      "tests_run": 17,
+      "skipped": 0,
+      "elapsed_seconds": 0.25,
+      "started_utc": "2026-09-15T19:00:02.616550+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_audo_product_backend.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_audo_product_backend.log",
+      "tests_run": 3,
+      "skipped": 0,
+      "elapsed_seconds": 0.307,
+      "started_utc": "2026-09-15T19:00:02.627590+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_audo_project.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_audo_project.log",
+      "tests_run": 3,
+      "skipped": 0,
+      "elapsed_seconds": 0.183,
+      "started_utc": "2026-09-15T19:00:02.899030+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_ausb_exact_slot.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_ausb_exact_slot.log",
+      "tests_run": 10,
+      "skipped": 0,
+      "elapsed_seconds": 12.563,
+      "started_utc": "2026-09-15T19:00:02.968929+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_ausb_product_backend.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_ausb_product_backend.log",
+      "tests_run": 7,
+      "skipped": 0,
+      "elapsed_seconds": 0.322,
+      "started_utc": "2026-09-15T19:00:03.112091+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_b661_book_content.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_b661_book_content.log",
+      "tests_run": 5,
+      "skipped": 0,
+      "elapsed_seconds": 26.255,
+      "started_utc": "2026-09-15T19:00:03.464958+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_b661_ladder.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_b661_ladder.log",
+      "tests_run": 6,
+      "skipped": 1,
+      "elapsed_seconds": 0.438,
+      "started_utc": "2026-09-15T19:00:04.816935+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_b66_appearance.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_b66_appearance.log",
+      "tests_run": 3,
+      "skipped": 0,
+      "elapsed_seconds": 2.607,
+      "started_utc": "2026-09-15T19:00:05.294196+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_b66_personnel.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_b66_personnel.log",
+      "tests_run": 3,
+      "skipped": 0,
+      "elapsed_seconds": 5.29,
+      "started_utc": "2026-09-15T19:00:07.931328+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_b67_books_qt.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_b67_books_qt.log",
+      "tests_run": 3,
+      "skipped": 0,
+      "elapsed_seconds": 70.368,
+      "started_utc": "2026-09-15T19:00:11.829183+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_b67_clone.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_b67_clone.log",
+      "tests_run": 3,
+      "skipped": 0,
+      "elapsed_seconds": 39.061,
+      "started_utc": "2026-09-15T19:00:13.255080+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_b67_defense_model_native.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_b67_defense_model_native.log",
+      "tests_run": 4,
+      "skipped": 0,
+      "elapsed_seconds": 155.956,
+      "started_utc": "2026-09-15T19:00:15.564957+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_b67_model_edges_native.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_b67_model_edges_native.log",
+      "tests_run": 1,
+      "skipped": 0,
+      "elapsed_seconds": 93.491,
+      "started_utc": "2026-09-15T19:00:29.751130+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_b67_model_native.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_b67_model_native.log",
+      "tests_run": 4,
+      "skipped": 0,
+      "elapsed_seconds": 1310.218,
+      "started_utc": "2026-09-15T19:00:52.351902+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_b67_static_audit.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_b67_static_audit.log",
+      "tests_run": 1,
+      "skipped": 1,
+      "elapsed_seconds": 0.119,
+      "started_utc": "2026-09-15T19:01:22.228461+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_b67_writers.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_b67_writers.log",
+      "tests_run": 6,
+      "skipped": 0,
+      "elapsed_seconds": 0.414,
+      "started_utc": "2026-09-15T19:01:22.378582+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_b67_writers_native.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_b67_writers_native.log",
+      "tests_run": 5,
+      "skipped": 1,
+      "elapsed_seconds": 320.935,
+      "started_utc": "2026-09-15T19:01:22.829628+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_b67_xenia_patch.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_b67_xenia_patch.log",
+      "tests_run": 3,
+      "skipped": 0,
+      "elapsed_seconds": 0.325,
+      "started_utc": "2026-09-15T19:02:03.276100+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_b69_build.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_b69_build.log",
+      "tests_run": 1,
+      "skipped": 0,
+      "elapsed_seconds": 29.526,
+      "started_utc": "2026-09-15T19:02:03.641884+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_b69_control_audit.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_b69_control_audit.log",
+      "tests_run": 1,
+      "skipped": 1,
+      "elapsed_seconds": 0.106,
+      "started_utc": "2026-09-15T19:02:33.204407+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_b69_editor_qt.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_b69_editor_qt.log",
+      "tests_run": 4,
+      "skipped": 0,
+      "elapsed_seconds": 81.067,
+      "started_utc": "2026-09-15T19:02:33.347663+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_b69_formation_calling.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_b69_formation_calling.log",
+      "tests_run": 2,
+      "skipped": 0,
+      "elapsed_seconds": 0.446,
+      "started_utc": "2026-09-15T19:02:51.555143+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_b69_launch_patches.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_b69_launch_patches.log",
+      "tests_run": 5,
+      "skipped": 0,
+      "elapsed_seconds": 0.391,
+      "started_utc": "2026-09-15T19:02:52.034123+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_b69_native.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_b69_native.log",
+      "tests_run": 5,
+      "skipped": 0,
+      "elapsed_seconds": 840.236,
+      "started_utc": "2026-09-15T19:02:52.460096+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_b69_retirement_native.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_b69_retirement_native.log",
+      "tests_run": 3,
+      "skipped": 0,
+      "elapsed_seconds": 146.31,
+      "started_utc": "2026-09-15T19:03:54.446080+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_b69_schemes.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_b69_schemes.log",
+      "tests_run": 5,
+      "skipped": 0,
+      "elapsed_seconds": 42.965,
+      "started_utc": "2026-09-15T19:06:20.788902+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_b69_wiring.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_b69_wiring.log",
+      "tests_run": 2,
+      "skipped": 0,
+      "elapsed_seconds": 0.423,
+      "started_utc": "2026-09-15T19:06:43.799049+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_b70_stock_recipes.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_b70_stock_recipes.log",
+      "tests_run": 5,
+      "skipped": 0,
+      "elapsed_seconds": 199.927,
+      "started_utc": "2026-09-15T19:06:44.259111+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_b71_situations.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/exact-export-regression.log",
+      "tests_run": 10,
+      "skipped": 0,
+      "elapsed_seconds": 6.704,
+      "started_utc": "2026-09-15T19:15:39.361288+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_book_identity_qt.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_book_identity_qt.log",
+      "tests_run": 6,
+      "skipped": 0,
+      "elapsed_seconds": 0.264,
+      "started_utc": "2026-09-15T19:07:07.180770+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_book_unlock.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_book_unlock.log",
+      "tests_run": 19,
+      "skipped": 0,
+      "elapsed_seconds": 27.79,
+      "started_utc": "2026-09-15T19:07:07.482105+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_book_unlock_retail.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/retail-book-proof.log",
+      "tests_run": 6,
+      "skipped": 2,
+      "elapsed_seconds": 18.053,
+      "started_utc": "2026-09-15T19:25:35.863624+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_browser_workspace_handoff.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_browser_workspace_handoff.log",
+      "tests_run": 20,
+      "skipped": 0,
+      "elapsed_seconds": 0.924,
+      "started_utc": "2026-09-15T19:07:35.519212+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_build_ausb_overlays.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_build_ausb_overlays.log",
+      "tests_run": 5,
+      "skipped": 0,
+      "elapsed_seconds": 0.323,
+      "started_utc": "2026-09-15T19:07:36.475802+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_build_raw_span_overlays.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_build_raw_span_overlays.log",
+      "tests_run": 7,
+      "skipped": 0,
+      "elapsed_seconds": 0.352,
+      "started_utc": "2026-09-15T19:07:36.836591+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_capability_action_parity.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_capability_action_parity.log",
+      "tests_run": 11,
+      "skipped": 0,
+      "elapsed_seconds": 0.464,
+      "started_utc": "2026-09-15T19:07:37.219440+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_copied_volume_metadata.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_copied_volume_metadata.log",
+      "tests_run": 17,
+      "skipped": 0,
+      "elapsed_seconds": 0.325,
+      "started_utc": "2026-09-15T19:07:37.716064+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_coverage_research_tools.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_coverage_research_tools.log",
+      "tests_run": 7,
+      "skipped": 0,
+      "elapsed_seconds": 0.073,
+      "started_utc": "2026-09-15T19:07:38.075407+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_cpu_audibles.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_cpu_audibles.log",
+      "tests_run": 18,
+      "skipped": 0,
+      "elapsed_seconds": 3.039,
+      "started_utc": "2026-09-15T19:07:38.181003+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_crest_budget_import.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_crest_budget_import.log",
+      "tests_run": 12,
+      "skipped": 0,
+      "elapsed_seconds": 0.913,
+      "started_utc": "2026-09-15T19:07:41.258208+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_crest_fit.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_crest_fit.log",
+      "tests_run": 10,
+      "skipped": 0,
+      "elapsed_seconds": 28.659,
+      "started_utc": "2026-09-15T19:07:42.204765+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_cross_domain_audio_safety.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_cross_domain_audio_safety.log",
+      "tests_run": 4,
+      "skipped": 0,
+      "elapsed_seconds": 0.356,
+      "started_utc": "2026-09-15T19:08:10.897729+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_cubemap_face0_preview.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_cubemap_face0_preview.log",
+      "tests_run": 4,
+      "skipped": 0,
+      "elapsed_seconds": 22.09,
+      "started_utc": "2026-09-15T19:08:11.286827+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_custom_team_appearance_gui.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_custom_team_appearance_gui.log",
+      "tests_run": 5,
+      "skipped": 0,
+      "elapsed_seconds": 0.307,
+      "started_utc": "2026-09-15T19:08:33.413846+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_custom_team_appearance_patch.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_custom_team_appearance_patch.log",
+      "tests_run": 8,
+      "skipped": 0,
+      "elapsed_seconds": 7.014,
+      "started_utc": "2026-09-15T19:08:33.754609+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_defense_research_identity.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_defense_research_identity.log",
+      "tests_run": 1,
+      "skipped": 0,
+      "elapsed_seconds": 0.516,
+      "started_utc": "2026-09-15T19:08:40.804458+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_defense_research_native.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_defense_research_native.log",
+      "tests_run": 3,
+      "skipped": 1,
+      "elapsed_seconds": 140.606,
+      "started_utc": "2026-09-15T19:08:41.355597+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_digital_font.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_digital_font.log",
+      "tests_run": 14,
+      "skipped": 0,
+      "elapsed_seconds": 0.345,
+      "started_utc": "2026-09-15T19:10:04.217928+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_dxn_base_only_namefont.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_dxn_base_only_namefont.log",
+      "tests_run": 4,
+      "skipped": 0,
+      "elapsed_seconds": 13.239,
+      "started_utc": "2026-09-15T19:10:04.593320+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_dxt5a_general_preview.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_dxt5a_general_preview.log",
+      "tests_run": 3,
+      "skipped": 0,
+      "elapsed_seconds": 21.106,
+      "started_utc": "2026-09-15T19:10:17.864559+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_endzone_dxt5a.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_endzone_dxt5a.log",
+      "tests_run": 10,
+      "skipped": 1,
+      "elapsed_seconds": 38.131,
+      "started_utc": "2026-09-15T19:10:39.002031+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_export.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_export.log",
+      "tests_run": 2,
+      "skipped": 0,
+      "elapsed_seconds": 0.135,
+      "started_utc": "2026-09-15T19:11:01.996362+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_external_audio_bank_bundle.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_external_audio_bank_bundle.log",
+      "tests_run": 8,
+      "skipped": 0,
+      "elapsed_seconds": 0.349,
+      "started_utc": "2026-09-15T19:11:02.167707+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_field_art.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_field_art.log",
+      "tests_run": 6,
+      "skipped": 0,
+      "elapsed_seconds": 0.205,
+      "started_utc": "2026-09-15T19:11:02.551980+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_field_art_gui.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_field_art_gui.log",
+      "tests_run": 17,
+      "skipped": 0,
+      "elapsed_seconds": 0.853,
+      "started_utc": "2026-09-15T19:11:02.790833+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_field_art_patch.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_field_art_patch.log",
+      "tests_run": 26,
+      "skipped": 2,
+      "elapsed_seconds": 317.706,
+      "started_utc": "2026-09-15T19:11:03.677718+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_field_art_stock_label.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_field_art_stock_label.log",
+      "tests_run": 13,
+      "skipped": 0,
+      "elapsed_seconds": 0.475,
+      "started_utc": "2026-09-15T19:11:17.167788+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_field_extra_roundtrip.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_field_extra_roundtrip.log",
+      "tests_run": 5,
+      "skipped": 0,
+      "elapsed_seconds": 210.212,
+      "started_utc": "2026-09-15T19:11:17.678233+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_field_material_project.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_field_material_project.log",
+      "tests_run": 4,
+      "skipped": 0,
+      "elapsed_seconds": 0.785,
+      "started_utc": "2026-09-15T19:14:47.930844+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_field_material_writer.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_field_material_writer.log",
+      "tests_run": 5,
+      "skipped": 0,
+      "elapsed_seconds": 0.453,
+      "started_utc": "2026-09-15T19:14:48.768819+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_formation_alignment_writer.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_formation_alignment_writer.log",
+      "tests_run": 44,
+      "skipped": 0,
+      "elapsed_seconds": 0.412,
+      "started_utc": "2026-09-15T19:14:49.267789+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_full_shell_visual_gate.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_full_shell_visual_gate.log",
+      "tests_run": 3,
+      "skipped": 0,
+      "elapsed_seconds": 0.063,
+      "started_utc": "2026-09-15T19:14:49.713307+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_g12_surfaces.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_g12_surfaces.log",
+      "tests_run": 12,
+      "skipped": 0,
+      "elapsed_seconds": 0.637,
+      "started_utc": "2026-09-15T19:14:49.814991+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_helmet_crest_design_product.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_helmet_crest_design_product.log",
+      "tests_run": 13,
+      "skipped": 0,
+      "elapsed_seconds": 1.515,
+      "started_utc": "2026-09-15T19:14:50.486240+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_helmet_logo_placement.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_helmet_logo_placement.log",
+      "tests_run": 15,
+      "skipped": 0,
+      "elapsed_seconds": 7.644,
+      "started_utc": "2026-09-15T19:14:52.039538+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_helmet_logo_regions.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_helmet_logo_regions.log",
+      "tests_run": 12,
+      "skipped": 0,
+      "elapsed_seconds": 4.319,
+      "started_utc": "2026-09-15T19:14:59.720083+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_helmet_logo_regions_qt.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_helmet_logo_regions_qt.log",
+      "tests_run": 2,
+      "skipped": 0,
+      "elapsed_seconds": 1.472,
+      "started_utc": "2026-09-15T19:15:04.076690+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_import_offers_resize.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_import_offers_resize.log",
+      "tests_run": 5,
+      "skipped": 0,
+      "elapsed_seconds": 0.833,
+      "started_utc": "2026-09-15T19:15:05.608761+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_iso_extraction_is_layout_tolerant.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_iso_extraction_is_layout_tolerant.log",
+      "tests_run": 10,
+      "skipped": 0,
+      "elapsed_seconds": 0.265,
+      "started_utc": "2026-09-15T19:15:06.473971+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_linear_txtr_png.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_linear_txtr_png.log",
+      "tests_run": 3,
+      "skipped": 0,
+      "elapsed_seconds": 0.065,
+      "started_utc": "2026-09-15T19:15:06.770898+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_logo_patch.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_logo_patch.log",
+      "tests_run": 18,
+      "skipped": 0,
+      "elapsed_seconds": 16.185,
+      "started_utc": "2026-09-15T19:15:06.875796+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_logo_surface_ownership.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_logo_surface_ownership.log",
+      "tests_run": 4,
+      "skipped": 0,
+      "elapsed_seconds": 0.14,
+      "started_utc": "2026-09-15T19:15:23.107986+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_logocache_patch.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_logocache_patch.log",
+      "tests_run": 14,
+      "skipped": 0,
+      "elapsed_seconds": 57.603,
+      "started_utc": "2026-09-15T19:15:23.289844+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_mask_preview_alpha.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_mask_preview_alpha.log",
+      "tests_run": 7,
+      "skipped": 0,
+      "elapsed_seconds": 0.32,
+      "started_utc": "2026-09-15T19:16:20.939734+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_model_export_gui.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_model_export_gui.log",
+      "tests_run": 5,
+      "skipped": 0,
+      "elapsed_seconds": 4.919,
+      "started_utc": "2026-09-15T19:16:21.303934+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_model_import.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_model_import.log",
+      "tests_run": 6,
+      "skipped": 0,
+      "elapsed_seconds": 57.383,
+      "started_utc": "2026-09-15T19:16:21.428284+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_number_encode_defaults.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_number_encode_defaults.log",
+      "tests_run": 1,
+      "skipped": 0,
+      "elapsed_seconds": 3.131,
+      "started_utc": "2026-09-15T19:16:26.272924+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_number_texture_writer.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_number_texture_writer.log",
+      "tests_run": 25,
+      "skipped": 0,
+      "elapsed_seconds": 320.444,
+      "started_utc": "2026-09-15T19:16:29.463528+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_package_map_writer.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_package_map_writer.log",
+      "tests_run": 40,
+      "skipped": 0,
+      "elapsed_seconds": 1.632,
+      "started_utc": "2026-09-15T19:16:52.737026+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_pass_fetch_export_qt.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_pass_fetch_export_qt.log",
+      "tests_run": 7,
+      "skipped": 0,
+      "elapsed_seconds": 0.669,
+      "started_utc": "2026-09-15T19:16:54.414060+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_play_designer.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_play_designer.log",
+      "tests_run": 28,
+      "skipped": 0,
+      "elapsed_seconds": 18.43,
+      "started_utc": "2026-09-15T19:16:55.126808+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_play_designer_project.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_play_designer_project.log",
+      "tests_run": 5,
+      "skipped": 0,
+      "elapsed_seconds": 0.577,
+      "started_utc": "2026-09-15T19:17:13.593135+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_play_designer_qt.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_play_designer_qt.log",
+      "tests_run": 5,
+      "skipped": 0,
+      "elapsed_seconds": 0.428,
+      "started_utc": "2026-09-15T19:17:14.208140+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_playbook_route_gui.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_playbook_route_gui.log",
+      "tests_run": 7,
+      "skipped": 0,
+      "elapsed_seconds": 0.441,
+      "started_utc": "2026-09-15T19:17:14.677154+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_playcall_patch.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_playcall_patch.log",
+      "tests_run": 11,
+      "skipped": 0,
+      "elapsed_seconds": 2.215,
+      "started_utc": "2026-09-15T19:17:15.163638+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_playcall_research_native.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/native-final-pointer-check.log",
+      "tests_run": 30,
+      "skipped": 0,
+      "elapsed_seconds": 218.215,
+      "started_utc": "2026-09-15T19:28:29.197894+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_playcalling_editor_build.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_playcalling_editor_build.log",
+      "tests_run": 3,
+      "skipped": 0,
+      "elapsed_seconds": 93.504,
+      "started_utc": "2026-09-15T19:17:18.845588+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_playcalling_editor_facade.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_playcalling_editor_facade.log",
+      "tests_run": 7,
+      "skipped": 0,
+      "elapsed_seconds": 4.897,
+      "started_utc": "2026-09-15T19:18:52.398620+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_playcalling_editor_patches.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_playcalling_editor_patches.log",
+      "tests_run": 3,
+      "skipped": 0,
+      "elapsed_seconds": 0.934,
+      "started_utc": "2026-09-15T19:18:57.336944+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_playcalling_editor_qt.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/requested-te-label.log",
+      "tests_run": 13,
+      "skipped": 0,
+      "elapsed_seconds": 12.81,
+      "started_utc": "2026-09-15T19:20:28.423906+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_player_position_patch.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_player_position_patch.log",
+      "tests_run": 4,
+      "skipped": 0,
+      "elapsed_seconds": 8.796,
+      "started_utc": "2026-09-15T19:19:08.698858+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_player_position_product_backend.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_player_position_product_backend.log",
+      "tests_run": 7,
+      "skipped": 0,
+      "elapsed_seconds": 26.325,
+      "started_utc": "2026-09-15T19:19:17.539241+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_player_positions.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_player_positions.log",
+      "tests_run": 5,
+      "skipped": 0,
+      "elapsed_seconds": 0.184,
+      "started_utc": "2026-09-15T19:19:43.910304+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_player_rating_patch.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_player_rating_patch.log",
+      "tests_run": 12,
+      "skipped": 0,
+      "elapsed_seconds": 5.112,
+      "started_utc": "2026-09-15T19:19:44.138512+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_player_rating_product_backend.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_player_rating_product_backend.log",
+      "tests_run": 5,
+      "skipped": 0,
+      "elapsed_seconds": 13.58,
+      "started_utc": "2026-09-15T19:19:49.314963+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_player_rating_sheet_import.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_player_rating_sheet_import.log",
+      "tests_run": 7,
+      "skipped": 0,
+      "elapsed_seconds": 19.349,
+      "started_utc": "2026-09-15T19:20:02.930327+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_player_ratings.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_player_ratings.log",
+      "tests_run": 11,
+      "skipped": 0,
+      "elapsed_seconds": 1.516,
+      "started_utc": "2026-09-15T19:20:22.324743+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_product_findings.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_product_findings.log",
+      "tests_run": 7,
+      "skipped": 0,
+      "elapsed_seconds": 0.306,
+      "started_utc": "2026-09-15T19:20:23.892003+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_product_findings_gui.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_product_findings_gui.log",
+      "tests_run": 2,
+      "skipped": 0,
+      "elapsed_seconds": 0.711,
+      "started_utc": "2026-09-15T19:20:24.239165+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_product_validation_wrappers.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_product_validation_wrappers.log",
+      "tests_run": 5,
+      "skipped": 0,
+      "elapsed_seconds": 0.291,
+      "started_utc": "2026-09-15T19:20:24.985636+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_project_document_workflow.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_project_document_workflow.log",
+      "tests_run": 13,
+      "skipped": 0,
+      "elapsed_seconds": 41.225,
+      "started_utc": "2026-09-15T19:20:25.311779+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_project_streaming.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_project_streaming.log",
+      "tests_run": 6,
+      "skipped": 0,
+      "elapsed_seconds": 0.272,
+      "started_utc": "2026-09-15T19:20:57.678611+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_ps3_probes.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_ps3_probes.log",
+      "tests_run": 9,
+      "skipped": 0,
+      "elapsed_seconds": 1.283,
+      "started_utc": "2026-09-15T19:20:57.994155+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_ps3_roster_convert.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_ps3_roster_convert.log",
+      "tests_run": 13,
+      "skipped": 0,
+      "elapsed_seconds": 18.057,
+      "started_utc": "2026-09-15T19:20:59.315666+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_ps3_roster_import_qt.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_ps3_roster_import_qt.log",
+      "tests_run": 3,
+      "skipped": 0,
+      "elapsed_seconds": 1.811,
+      "started_utc": "2026-09-15T19:21:06.573987+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_ps3_speed.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_ps3_speed.log",
+      "tests_run": 15,
+      "skipped": 0,
+      "elapsed_seconds": 4.084,
+      "started_utc": "2026-09-15T19:21:08.424862+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_ps3_speed_packages.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_ps3_speed_packages.log",
+      "tests_run": 6,
+      "skipped": 0,
+      "elapsed_seconds": 11.077,
+      "started_utc": "2026-09-15T19:21:12.552253+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_ps3_texture_bundle.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_ps3_texture_bundle.log",
+      "tests_run": 28,
+      "skipped": 0,
+      "elapsed_seconds": 31.664,
+      "started_utc": "2026-09-15T19:21:17.405171+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_ps3_texture_bundle_qt.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_ps3_texture_bundle_qt.log",
+      "tests_run": 4,
+      "skipped": 0,
+      "elapsed_seconds": 0.457,
+      "started_utc": "2026-09-15T19:21:23.671429+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_public_docs_registry_current.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_public_docs_registry_current.log",
+      "tests_run": 5,
+      "skipped": 0,
+      "elapsed_seconds": 0.179,
+      "started_utc": "2026-09-15T19:21:24.161977+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_rating_value_domains.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_rating_value_domains.log",
+      "tests_run": 8,
+      "skipped": 0,
+      "elapsed_seconds": 0.249,
+      "started_utc": "2026-09-15T19:21:24.379616+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_retail_crest_channel_audit.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_retail_crest_channel_audit.log",
+      "tests_run": 1,
+      "skipped": 0,
+      "elapsed_seconds": 0.059,
+      "started_utc": "2026-09-15T19:21:24.662513+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_roster_appearance_transfer.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_roster_appearance_transfer.log",
+      "tests_run": 5,
+      "skipped": 0,
+      "elapsed_seconds": 9.338,
+      "started_utc": "2026-09-15T19:21:24.759131+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_roster_appearance_transfer_qt.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_roster_appearance_transfer_qt.log",
+      "tests_run": 3,
+      "skipped": 0,
+      "elapsed_seconds": 5.493,
+      "started_utc": "2026-09-15T19:21:34.137115+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_roster_identity.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_roster_identity.log",
+      "tests_run": 18,
+      "skipped": 0,
+      "elapsed_seconds": 12.582,
+      "started_utc": "2026-09-15T19:21:39.672150+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_roster_identity_gui.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_roster_identity_gui.log",
+      "tests_run": 17,
+      "skipped": 0,
+      "elapsed_seconds": 2.241,
+      "started_utc": "2026-09-15T19:21:49.105573+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_roster_workspace.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_roster_workspace.log",
+      "tests_run": 9,
+      "skipped": 0,
+      "elapsed_seconds": 0.185,
+      "started_utc": "2026-09-15T19:21:49.951038+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_roster_workspace_gui.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_roster_workspace_gui.log",
+      "tests_run": 1,
+      "skipped": 0,
+      "elapsed_seconds": 0.522,
+      "started_utc": "2026-09-15T19:21:50.171398+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_save_playbook_assignments_gui.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_save_playbook_assignments_gui.log",
+      "tests_run": 8,
+      "skipped": 0,
+      "elapsed_seconds": 1.792,
+      "started_utc": "2026-09-15T19:21:50.729174+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_save_roster_players.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_save_roster_players.log",
+      "tests_run": 7,
+      "skipped": 0,
+      "elapsed_seconds": 5.507,
+      "started_utc": "2026-09-15T19:21:51.384178+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_save_roster_players_gui.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_save_roster_players_gui.log",
+      "tests_run": 4,
+      "skipped": 0,
+      "elapsed_seconds": 1.204,
+      "started_utc": "2026-09-15T19:21:52.299177+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_scorebug_workspace_qt.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_scorebug_workspace_qt.log",
+      "tests_run": 11,
+      "skipped": 0,
+      "elapsed_seconds": 0.81,
+      "started_utc": "2026-09-15T19:21:52.565993+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_shell_search_accessibility_qt.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_shell_search_accessibility_qt.log",
+      "tests_run": 3,
+      "skipped": 0,
+      "elapsed_seconds": 13.288,
+      "started_utc": "2026-09-15T19:21:53.423238+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_splb_add_multiple_formations.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_splb_add_multiple_formations.log",
+      "tests_run": 14,
+      "skipped": 0,
+      "elapsed_seconds": 0.768,
+      "started_utc": "2026-09-15T19:21:53.538313+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_splb_formation_personnel.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_splb_formation_personnel.log",
+      "tests_run": 11,
+      "skipped": 0,
+      "elapsed_seconds": 1.407,
+      "started_utc": "2026-09-15T19:21:54.349315+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_splb_tag_reassignment.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_splb_tag_reassignment.log",
+      "tests_run": 86,
+      "skipped": 1,
+      "elapsed_seconds": 2.726,
+      "started_utc": "2026-09-15T19:21:55.803116+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_splb_writer.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_splb_writer.log",
+      "tests_run": 22,
+      "skipped": 0,
+      "elapsed_seconds": 0.494,
+      "started_utc": "2026-09-15T19:21:56.929068+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_stadium_material_findings.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_stadium_material_findings.log",
+      "tests_run": 6,
+      "skipped": 0,
+      "elapsed_seconds": 0.15,
+      "started_utc": "2026-09-15T19:21:57.472628+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_stadium_model_import.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_stadium_model_import.log",
+      "tests_run": 4,
+      "skipped": 0,
+      "elapsed_seconds": 0.425,
+      "started_utc": "2026-09-15T19:21:57.672862+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_stadium_studio.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_stadium_studio.log",
+      "tests_run": 4,
+      "skipped": 0,
+      "elapsed_seconds": 0.327,
+      "started_utc": "2026-09-15T19:21:58.139278+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_stadium_studio_gui.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_stadium_studio_gui.log",
+      "tests_run": 2,
+      "skipped": 0,
+      "elapsed_seconds": 0.706,
+      "started_utc": "2026-09-15T19:21:58.507065+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_stadium_texture.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_stadium_texture.log",
+      "tests_run": 5,
+      "skipped": 0,
+      "elapsed_seconds": 78.523,
+      "started_utc": "2026-09-15T19:21:58.569747+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_stfs_roster_rehash.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_stfs_roster_rehash.log",
+      "tests_run": 7,
+      "skipped": 1,
+      "elapsed_seconds": 0.73,
+      "started_utc": "2026-09-15T19:21:59.252126+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_studio_audio_gui.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_studio_audio_gui.log",
+      "tests_run": 32,
+      "skipped": 0,
+      "elapsed_seconds": 1.263,
+      "started_utc": "2026-09-15T19:22:00.019007+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_studio_core.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_studio_core.log",
+      "tests_run": 9,
+      "skipped": 0,
+      "elapsed_seconds": 0.272,
+      "started_utc": "2026-09-15T19:22:01.322387+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_studio_draft_logo.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_studio_draft_logo.log",
+      "tests_run": 7,
+      "skipped": 0,
+      "elapsed_seconds": 0.711,
+      "started_utc": "2026-09-15T19:22:01.634480+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_studio_inspectors.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_studio_inspectors.log",
+      "tests_run": 11,
+      "skipped": 0,
+      "elapsed_seconds": 2.698,
+      "started_utc": "2026-09-15T19:22:02.381589+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_studio_installer.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/installer-runtime-contract.log",
+      "tests_run": 16,
+      "skipped": 0,
+      "elapsed_seconds": 13.745,
+      "started_utc": "2026-09-15T19:27:44.056747+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_studio_safety.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_studio_safety.log",
+      "tests_run": 27,
+      "skipped": 0,
+      "elapsed_seconds": 0.584,
+      "started_utc": "2026-09-15T19:22:06.754555+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_studio_text_edit.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_studio_text_edit.log",
+      "tests_run": 7,
+      "skipped": 0,
+      "elapsed_seconds": 0.639,
+      "started_utc": "2026-09-15T19:22:07.380042+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_team_art.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_team_art.log",
+      "tests_run": 10,
+      "skipped": 0,
+      "elapsed_seconds": 13.427,
+      "started_utc": "2026-09-15T19:22:08.053880+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_team_art_qt.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_team_art_qt.log",
+      "tests_run": 6,
+      "skipped": 0,
+      "elapsed_seconds": 0.69,
+      "started_utc": "2026-09-15T19:22:18.536418+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_team_crest_selection.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_team_crest_selection.log",
+      "tests_run": 9,
+      "skipped": 0,
+      "elapsed_seconds": 0.821,
+      "started_utc": "2026-09-15T19:22:19.263120+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_team_logo_gui.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_team_logo_gui.log",
+      "tests_run": 23,
+      "skipped": 0,
+      "elapsed_seconds": 2.362,
+      "started_utc": "2026-09-15T19:22:20.118631+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_text_sheet_gui.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_text_sheet_gui.log",
+      "tests_run": 3,
+      "skipped": 0,
+      "elapsed_seconds": 0.693,
+      "started_utc": "2026-09-15T19:22:21.519707+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_textlogo_gui.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_textlogo_gui.log",
+      "tests_run": 5,
+      "skipped": 0,
+      "elapsed_seconds": 0.89,
+      "started_utc": "2026-09-15T19:22:22.249645+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_textlogo_writer.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_textlogo_writer.log",
+      "tests_run": 8,
+      "skipped": 0,
+      "elapsed_seconds": 62.141,
+      "started_utc": "2026-09-15T19:22:22.518401+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_theme_layout_qt.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_theme_layout_qt.log",
+      "tests_run": 8,
+      "skipped": 0,
+      "elapsed_seconds": 19.89,
+      "started_utc": "2026-09-15T19:22:23.179452+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_uniform_allocation_capacity.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_uniform_allocation_capacity.log",
+      "tests_run": 21,
+      "skipped": 0,
+      "elapsed_seconds": 1.545,
+      "started_utc": "2026-09-15T19:22:42.608377+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_uniform_equipment_colors.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_uniform_equipment_colors.log",
+      "tests_run": 7,
+      "skipped": 0,
+      "elapsed_seconds": 8.004,
+      "started_utc": "2026-09-15T19:22:43.107264+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_uniform_equipment_colors_gui.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_uniform_equipment_colors_gui.log",
+      "tests_run": 3,
+      "skipped": 0,
+      "elapsed_seconds": 0.245,
+      "started_utc": "2026-09-15T19:22:44.190136+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_uniform_independence.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_uniform_independence.log",
+      "tests_run": 22,
+      "skipped": 0,
+      "elapsed_seconds": 1.592,
+      "started_utc": "2026-09-15T19:22:44.473068+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_uniform_inventory_gui.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_uniform_inventory_gui.log",
+      "tests_run": 6,
+      "skipped": 0,
+      "elapsed_seconds": 2.711,
+      "started_utc": "2026-09-15T19:22:46.100048+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_wave_integration.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_wave_integration.log",
+      "tests_run": 8,
+      "skipped": 0,
+      "elapsed_seconds": 15.065,
+      "started_utc": "2026-09-15T19:22:48.848012+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_wordmark_regions.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_wordmark_regions.log",
+      "tests_run": 2,
+      "skipped": 0,
+      "elapsed_seconds": 0.153,
+      "started_utc": "2026-09-15T19:22:51.147799+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_workspace_recovery.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_workspace_recovery.log",
+      "tests_run": 20,
+      "skipped": 0,
+      "elapsed_seconds": 73.013,
+      "started_utc": "2026-09-15T19:22:51.332306+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_xenos_4444_mip_layout.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_xenos_4444_mip_layout.log",
+      "tests_run": 14,
+      "skipped": 0,
+      "elapsed_seconds": 1.916,
+      "started_utc": "2026-09-15T19:23:03.948733+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_xenos_4444_png.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_xenos_4444_png.log",
+      "tests_run": 3,
+      "skipped": 0,
+      "elapsed_seconds": 0.091,
+      "started_utc": "2026-09-15T19:23:05.899414+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_xenos_extra_formats_png.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_xenos_extra_formats_png.log",
+      "tests_run": 6,
+      "skipped": 0,
+      "elapsed_seconds": 0.095,
+      "started_utc": "2026-09-15T19:23:06.023309+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_xex_image.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_xex_image.log",
+      "tests_run": 17,
+      "skipped": 0,
+      "elapsed_seconds": 1.11,
+      "started_utc": "2026-09-15T19:23:06.154491+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_xex_image_retail.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_xex_image_retail.log",
+      "tests_run": 2,
+      "skipped": 0,
+      "elapsed_seconds": 74.942,
+      "started_utc": "2026-09-15T19:23:07.300487+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_apf_xma1_wizard_gui.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_apf_xma1_wizard_gui.log",
+      "tests_run": 17,
+      "skipped": 0,
+      "elapsed_seconds": 2.069,
+      "started_utc": "2026-09-15T19:23:17.128773+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_b69_a1_playcalling.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/test_b69_a1_playcalling.log",
+      "tests_run": 2,
+      "skipped": 0,
+      "elapsed_seconds": 45.748,
+      "started_utc": "2026-09-15T19:23:19.238412+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_provider_integrity.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/provider-final.log",
+      "tests_run": 7,
+      "skipped": 0,
+      "elapsed_seconds": 8.105,
+      "started_utc": "2026-09-15T19:32:29.890275+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_product_catalog.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/catalog-final.log",
+      "tests_run": 9,
+      "skipped": 0,
+      "elapsed_seconds": 0.154,
+      "started_utc": "2026-09-15T19:32:32.226204+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_phase1_packaging.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/phase1-final.log",
+      "tests_run": 23,
+      "skipped": 0,
+      "elapsed_seconds": 2.107,
+      "started_utc": "2026-09-15T19:32:31.065159+00:00"
+    },
+    {
+      "suite": "tests/mod_editor/test_capability_registry_module_commands.py",
+      "exit_code": 0,
+      "log": "reports/b71_apf3/registry-module-final.log",
+      "tests_run": 3,
+      "skipped": 0,
+      "elapsed_seconds": 0.099,
+      "started_utc": "2026-09-15T19:32:32.479082+00:00"
+    }
+  ]
+}

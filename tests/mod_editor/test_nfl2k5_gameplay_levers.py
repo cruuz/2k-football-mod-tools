@@ -95,7 +95,12 @@ class RetailTests(unittest.TestCase):
         base_requests = LEGACY_REQUESTS
         old = {a["owner"] + a["kind"]: a for a in space._allocations(base_requests)}
         new = {a["owner"] + a["kind"]: a for a in space.plan(REQUESTS)["allocations"]}
+        # The runtime scorebug owner outgrew its beta-61 slot in beta 71 (the sprite bar's owner) and is
+        # allocated after the reservations; its own address is pinned by the allocator gates and the manifest.
+        from mod_editor.core import nfl2k5_scorebug_runtime as runtime
         for key, allocation in old.items():
+            if key.startswith(runtime.OWNER):
+                continue
             self.assertEqual(new[key], allocation)
 
     def test_no_runtime_storage_shared_constants_or_unrelated_readers_changed(self):

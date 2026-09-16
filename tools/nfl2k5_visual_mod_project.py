@@ -4068,6 +4068,14 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                                     compile_cache=equipment_compile_cache,
                                 )
                             )
+                        except uniform_equipment_adapter.EquipmentRefitError as exc:
+                            fits = uniform_equipment_adapter.preflight_project_equipment(
+                                index_pin.path, [(None, asset_id, path) for asset_id, path in staged_equipment],
+                                compile_cache=equipment_compile_cache)
+                            raise ProjectError('\n'.join(
+                                f"Equipment / uniform set {row['set_selector']} / {row['asset_id']}: "
+                                f"needs refit: {row['fit_error']} Use Refit equipment in Build, or revert this item."
+                                for row in fits if row.get('fit_status') == 'needs refit')) from exc
                         except uniform_equipment_adapter.UniformEquipmentWriterError as exc:
                             raise ProjectError(str(exc)) from exc
                         built = [equipment_built]

@@ -1,0 +1,6 @@
+test_defaults_preview_and_reopen (__main__.FourthDownQtTests.test_defaults_preview_and_reopen) ... skipped 'Optional PySide6 is absent'
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+OK (skipped=1)

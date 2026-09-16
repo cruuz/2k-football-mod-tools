@@ -1,0 +1,1239 @@
+[
+  {
+    "name": "pin-compiler",
+    "command": [
+      "python3",
+      "reports/b71_s3/regenerate_pins.py"
+    ],
+    "start": "2026-09-15T20:34:17.093185+00:00",
+    "end": "2026-09-15T20:35:01.082681+00:00",
+    "seconds": 43.989,
+    "exit": 0
+  },
+  {
+    "name": "render-check",
+    "command": [
+      "python3",
+      "-"
+    ],
+    "start": "2026-09-15T20:36:54.138861+00:00",
+    "end": "2026-09-15T20:37:05.184800+00:00",
+    "seconds": 11.046,
+    "exit": 0
+  },
+  {
+    "name": "pin-compiler-final",
+    "command": [
+      "python3",
+      "reports/b71_s3/regenerate_pins.py"
+    ],
+    "start": "2026-09-15T20:38:35.172278+00:00",
+    "end": "2026-09-15T20:39:20.102552+00:00",
+    "seconds": 44.93,
+    "exit": 0
+  },
+  {
+    "name": "proof-v3",
+    "command": [
+      "python3",
+      "reports/b71_s3/prove_v3.py"
+    ],
+    "start": "2026-09-15T20:40:13.957437+00:00",
+    "end": "2026-09-15T20:40:52.127493+00:00",
+    "seconds": 38.17,
+    "exit": 0
+  },
+  {
+    "name": "repin-initial",
+    "command": [
+      "python3",
+      "packaging/repin.py",
+      "--apply"
+    ],
+    "start": "2026-09-15T20:41:53.323250+00:00",
+    "end": "2026-09-15T20:42:13.068347+00:00",
+    "seconds": 19.745,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_mnf_v3-rerun",
+    "command": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py"
+    ],
+    "start": "2026-09-15T20:44:01.066266+00:00",
+    "end": "2026-09-15T20:44:17.557493+00:00",
+    "seconds": 16.491,
+    "exit": 0
+  },
+  {
+    "name": "proof-v3-events",
+    "command": [
+      "python3",
+      "reports/b71_s3/prove_v3.py"
+    ],
+    "start": "2026-09-15T20:44:20.519889+00:00",
+    "end": "2026-09-15T20:44:58.955707+00:00",
+    "seconds": 38.436,
+    "exit": 0
+  },
+  {
+    "name": "pin-compiler-release",
+    "command": [
+      "python3",
+      "reports/b71_s3/regenerate_pins.py"
+    ],
+    "start": "2026-09-15T20:44:53.806440+00:00",
+    "end": "2026-09-15T20:45:38.524760+00:00",
+    "seconds": 44.718,
+    "exit": 0
+  },
+  {
+    "name": "repin-source",
+    "command": [
+      "python3",
+      "packaging/repin.py",
+      "--apply"
+    ],
+    "start": "2026-09-15T20:46:03.666330+00:00",
+    "end": "2026-09-15T20:46:24.515803+00:00",
+    "seconds": 20.849,
+    "exit": 0
+  },
+  {
+    "name": "proof-v3-final",
+    "command": [
+      "python3",
+      "reports/b71_s3/prove_v3.py"
+    ],
+    "start": "2026-09-15T20:47:19.230102+00:00",
+    "end": "2026-09-15T20:48:04.396358+00:00",
+    "seconds": 45.166,
+    "exit": 0
+  },
+  {
+    "name": "pin-compiler-v3",
+    "command": [
+      "python3",
+      "reports/b71_s3/regenerate_pins.py"
+    ],
+    "start": "2026-09-15T20:47:20.378696+00:00",
+    "end": "2026-09-15T20:48:05.472649+00:00",
+    "seconds": 45.094,
+    "exit": 0
+  },
+  {
+    "name": "registry-preflight",
+    "command": [
+      "python3",
+      "-m",
+      "mod_editor.capabilities.validate_registry"
+    ],
+    "start": "2026-09-15T20:47:45.757330+00:00",
+    "end": "2026-09-15T20:47:45.931929+00:00",
+    "seconds": 0.175,
+    "exit": 1
+  },
+  {
+    "name": "test_nfl2k5_scorebug_exact-preflight",
+    "command": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_exact.py"
+    ],
+    "start": "2026-09-15T20:47:46.037033+00:00",
+    "end": "2026-09-15T20:48:54.369967+00:00",
+    "seconds": 68.333,
+    "exit": 1
+  },
+  {
+    "name": "repin-validation",
+    "command": [
+      "python3",
+      "packaging/repin.py",
+      "--apply"
+    ],
+    "start": "2026-09-15T20:48:22.376586+00:00",
+    "end": "2026-09-15T20:48:43.867838+00:00",
+    "seconds": 21.491,
+    "exit": 0
+  },
+  {
+    "name": "manifest",
+    "command": [
+      "python3",
+      "reports/b71_s3/refresh_manifest.py"
+    ],
+    "start": "2026-09-15T20:48:23.503627+00:00",
+    "end": "2026-09-15T20:54:00.153623+00:00",
+    "seconds": 336.65,
+    "exit": 0
+  },
+  {
+    "name": "test_apf_scorebug_workspace_qt",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_apf_scorebug_workspace_qt.py"
+    ],
+    "start": "2026-09-15T20:48:34.064803+00:00",
+    "end": "2026-09-15T20:48:35.584695+00:00",
+    "seconds": 1.52,
+    "exit": 0
+  },
+  {
+    "name": "builder-plan",
+    "command": [
+      "python3",
+      "reports/b71_s3/build_testdisc71.py",
+      "--plan-only"
+    ],
+    "start": "2026-09-15T20:48:35.221648+00:00",
+    "end": "2026-09-15T20:48:35.524398+00:00",
+    "seconds": 0.303,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_assets",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_assets.py"
+    ],
+    "start": "2026-09-15T20:48:35.614943+00:00",
+    "end": "2026-09-15T20:51:06.018044+00:00",
+    "seconds": 150.403,
+    "exit": 1
+  },
+  {
+    "name": "proof-v3-measured-text",
+    "command": [
+      "python3",
+      "reports/b71_s3/prove_v3.py"
+    ],
+    "start": "2026-09-15T20:49:25.355800+00:00",
+    "end": "2026-09-15T20:50:11.761102+00:00",
+    "seconds": 46.405,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_author",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_author.py"
+    ],
+    "start": "2026-09-15T20:51:06.048537+00:00",
+    "end": "2026-09-15T20:51:12.600949+00:00",
+    "seconds": 6.552,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_exact",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_exact.py"
+    ],
+    "start": "2026-09-15T20:51:12.630575+00:00",
+    "end": "2026-09-15T20:52:36.892540+00:00",
+    "seconds": 84.262,
+    "exit": 1
+  },
+  {
+    "name": "proof-v3-ink",
+    "command": [
+      "python3",
+      "reports/b71_s3/prove_v3.py"
+    ],
+    "start": "2026-09-15T20:51:31.168503+00:00",
+    "end": "2026-09-15T20:52:17.153906+00:00",
+    "seconds": 45.985,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_assets-rerun",
+    "command": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_assets.py"
+    ],
+    "start": "2026-09-15T20:52:06.844121+00:00",
+    "end": "2026-09-15T20:54:40.967949+00:00",
+    "seconds": 154.124,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_fonts",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_fonts.py"
+    ],
+    "start": "2026-09-15T20:52:36.921099+00:00",
+    "end": "2026-09-15T20:52:45.078581+00:00",
+    "seconds": 8.157,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_freeze",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_freeze.py"
+    ],
+    "start": "2026-09-15T20:52:45.108080+00:00",
+    "end": "2026-09-15T20:56:48.947522+00:00",
+    "seconds": 243.839,
+    "exit": 0
+  },
+  {
+    "name": "xbe-memory",
+    "command": [
+      "python3",
+      "tests/mod_editor/test_xbe_patch_memory_writes.py"
+    ],
+    "start": "2026-09-15T20:54:00.187826+00:00",
+    "end": "2026-09-15T21:21:05.233798+00:00",
+    "seconds": 1625.046,
+    "exit": 0
+  },
+  {
+    "name": "xbe-caves",
+    "command": [
+      "python3",
+      "tests/mod_editor/test_xbe_patch_cave_references.py"
+    ],
+    "start": "2026-09-15T20:54:00.187953+00:00",
+    "end": "2026-09-15T21:12:35.185603+00:00",
+    "seconds": 1114.998,
+    "exit": 1
+  },
+  {
+    "name": "delivery-check",
+    "command": [
+      "python3",
+      "reports/b71_s3/check_delivery.py"
+    ],
+    "start": "2026-09-15T20:55:38.947128+00:00",
+    "end": "2026-09-15T20:55:39.239630+00:00",
+    "seconds": 0.293,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_exact-rerun",
+    "command": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_exact.py"
+    ],
+    "start": "2026-09-15T20:56:04.665488+00:00",
+    "end": "2026-09-15T20:57:26.183012+00:00",
+    "seconds": 81.518,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_freeze_v2",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py"
+    ],
+    "start": "2026-09-15T20:56:48.978583+00:00",
+    "end": "2026-09-15T20:57:49.438482+00:00",
+    "seconds": 60.46,
+    "exit": 1
+  },
+  {
+    "name": "pin-compiler-capsule",
+    "command": [
+      "python3",
+      "reports/b71_s3/regenerate_pins.py"
+    ],
+    "start": "2026-09-15T20:57:17.412176+00:00",
+    "end": "2026-09-15T20:58:01.448015+00:00",
+    "seconds": 44.036,
+    "exit": 0
+  },
+  {
+    "name": "proof-v3-capsule",
+    "command": [
+      "python3",
+      "reports/b71_s3/prove_v3.py"
+    ],
+    "start": "2026-09-15T20:57:28.667167+00:00",
+    "end": "2026-09-15T20:58:14.157532+00:00",
+    "seconds": 45.49,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_ingame",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_ingame.py"
+    ],
+    "start": "2026-09-15T20:57:49.467693+00:00",
+    "end": "2026-09-15T20:58:04.376523+00:00",
+    "seconds": 14.909,
+    "exit": 0
+  },
+  {
+    "name": "repin-capsule",
+    "command": [
+      "python3",
+      "packaging/repin.py",
+      "--apply"
+    ],
+    "start": "2026-09-15T20:57:49.823216+00:00",
+    "end": "2026-09-15T20:58:22.414505+00:00",
+    "seconds": 32.591,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_ingame_fix",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py"
+    ],
+    "start": "2026-09-15T20:58:04.405281+00:00",
+    "end": "2026-09-15T20:59:53.498650+00:00",
+    "seconds": 109.093,
+    "exit": 1
+  },
+  {
+    "name": "manifest-capsule",
+    "command": [
+      "python3",
+      "reports/b71_s3/refresh_manifest.py"
+    ],
+    "start": "2026-09-15T20:58:51.268795+00:00",
+    "end": "2026-09-15T20:58:51.749807+00:00",
+    "seconds": 0.481,
+    "exit": 1
+  },
+  {
+    "name": "test_nfl2k5_scorebug_mnf_v3-final",
+    "command": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py"
+    ],
+    "start": "2026-09-15T20:58:51.842495+00:00",
+    "end": "2026-09-15T20:59:08.996044+00:00",
+    "seconds": 17.154,
+    "exit": 1
+  },
+  {
+    "name": "test_nfl2k5_scorebug_assets-final",
+    "command": [
+      "/usr/bin/python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_assets.py"
+    ],
+    "start": "2026-09-15T20:58:53.170838+00:00",
+    "end": "2026-09-15T21:01:19.704022+00:00",
+    "seconds": 146.533,
+    "exit": 0
+  },
+  {
+    "name": "manifest-final",
+    "command": [
+      "python3",
+      "reports/b71_s3/refresh_manifest.py"
+    ],
+    "start": "2026-09-15T20:59:33.766259+00:00",
+    "end": "2026-09-15T21:04:46.779000+00:00",
+    "seconds": 313.013,
+    "exit": 1
+  },
+  {
+    "name": "test_nfl2k5_scorebug_mnf",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_mnf.py"
+    ],
+    "start": "2026-09-15T20:59:53.526353+00:00",
+    "end": "2026-09-15T21:00:05.303401+00:00",
+    "seconds": 11.777,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_mnf_v3",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py"
+    ],
+    "start": "2026-09-15T21:00:05.333079+00:00",
+    "end": "2026-09-15T21:00:21.872303+00:00",
+    "seconds": 16.539,
+    "exit": 1
+  },
+  {
+    "name": "proof-v3-final-metrics",
+    "command": [
+      "python3",
+      "reports/b71_s3/prove_v3.py"
+    ],
+    "start": "2026-09-15T21:00:21.476411+00:00",
+    "end": "2026-09-15T21:01:06.246083+00:00",
+    "seconds": 44.77,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_native",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_native.py"
+    ],
+    "start": "2026-09-15T21:00:21.900819+00:00",
+    "end": "2026-09-15T21:02:31.579261+00:00",
+    "seconds": 129.678,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_mnf_v3-verified",
+    "command": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py"
+    ],
+    "start": "2026-09-15T21:00:54.540627+00:00",
+    "end": "2026-09-15T21:01:11.352720+00:00",
+    "seconds": 16.812,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_author-final",
+    "command": [
+      "/usr/bin/python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_author.py"
+    ],
+    "start": "2026-09-15T21:01:19.732684+00:00",
+    "end": "2026-09-15T21:01:26.183652+00:00",
+    "seconds": 6.451,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_ingame_fix-final",
+    "command": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py"
+    ],
+    "start": "2026-09-15T21:01:25.691419+00:00",
+    "end": "2026-09-15T21:03:33.573785+00:00",
+    "seconds": 127.882,
+    "exit": 1
+  },
+  {
+    "name": "test_nfl2k5_scorebug_exact-final",
+    "command": [
+      "/usr/bin/python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_exact.py"
+    ],
+    "start": "2026-09-15T21:01:26.211286+00:00",
+    "end": "2026-09-15T21:02:49.296725+00:00",
+    "seconds": 83.085,
+    "exit": 0
+  },
+  {
+    "name": "repin-capsule-final",
+    "command": [
+      "python3",
+      "packaging/repin.py",
+      "--apply"
+    ],
+    "start": "2026-09-15T21:02:06.361653+00:00",
+    "end": "2026-09-15T21:02:17.396489+00:00",
+    "seconds": 11.035,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_projection",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_projection.py"
+    ],
+    "start": "2026-09-15T21:02:31.610116+00:00",
+    "end": "2026-09-15T21:03:29.356296+00:00",
+    "seconds": 57.746,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_fonts-final",
+    "command": [
+      "/usr/bin/python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_fonts.py"
+    ],
+    "start": "2026-09-15T21:02:49.325022+00:00",
+    "end": "2026-09-15T21:02:57.456706+00:00",
+    "seconds": 8.132,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_freeze-final",
+    "command": [
+      "/usr/bin/python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_freeze.py"
+    ],
+    "start": "2026-09-15T21:02:57.484726+00:00",
+    "end": "2026-09-15T21:07:00.744513+00:00",
+    "seconds": 243.26,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_resources",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_resources.py"
+    ],
+    "start": "2026-09-15T21:03:29.388546+00:00",
+    "end": "2026-09-15T21:05:21.636753+00:00",
+    "seconds": 112.248,
+    "exit": 1
+  },
+  {
+    "name": "pin-compiler-compact",
+    "command": [
+      "python3",
+      "reports/b71_s3/regenerate_pins.py"
+    ],
+    "start": "2026-09-15T21:05:01.429100+00:00",
+    "end": "2026-09-15T21:05:02.572682+00:00",
+    "seconds": 1.144,
+    "exit": 1
+  },
+  {
+    "name": "test_nfl2k5_scorebug_runtime",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_runtime.py"
+    ],
+    "start": "2026-09-15T21:05:21.666878+00:00",
+    "end": "2026-09-15T21:07:19.639805+00:00",
+    "seconds": 117.973,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_mnf_v3-compact",
+    "command": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py"
+    ],
+    "start": "2026-09-15T21:06:00.051937+00:00",
+    "end": "2026-09-15T21:06:01.133889+00:00",
+    "seconds": 1.082,
+    "exit": 1
+  },
+  {
+    "name": "pin-compiler-compact-verified",
+    "command": [
+      "python3",
+      "reports/b71_s3/regenerate_pins.py"
+    ],
+    "start": "2026-09-15T21:06:39.982534+00:00",
+    "end": "2026-09-15T21:07:25.627188+00:00",
+    "seconds": 45.645,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_freeze_v2-final",
+    "command": [
+      "/usr/bin/python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py"
+    ],
+    "start": "2026-09-15T21:07:00.779612+00:00",
+    "end": "2026-09-15T21:08:02.276191+00:00",
+    "seconds": 61.497,
+    "exit": 1
+  },
+  {
+    "name": "test_nfl2k5_scorebug_source_art",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_source_art.py"
+    ],
+    "start": "2026-09-15T21:07:19.668334+00:00",
+    "end": "2026-09-15T21:07:20.150131+00:00",
+    "seconds": 0.482,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_template",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_template.py"
+    ],
+    "start": "2026-09-15T21:07:20.180040+00:00",
+    "end": "2026-09-15T21:07:30.078872+00:00",
+    "seconds": 9.899,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_mnf_v3-compact-final",
+    "command": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py"
+    ],
+    "start": "2026-09-15T21:07:25.723824+00:00",
+    "end": "2026-09-15T21:07:59.507818+00:00",
+    "seconds": 33.784,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_template_release",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_template_release.py"
+    ],
+    "start": "2026-09-15T21:07:30.110175+00:00",
+    "end": "2026-09-15T21:07:30.693187+00:00",
+    "seconds": 0.583,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_unified_adapter",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_unified_adapter.py"
+    ],
+    "start": "2026-09-15T21:07:30.723045+00:00",
+    "end": "2026-09-15T21:07:30.893273+00:00",
+    "seconds": 0.17,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_v10_ingame",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_v10_ingame.py"
+    ],
+    "start": "2026-09-15T21:07:30.922806+00:00",
+    "end": "2026-09-15T21:07:40.077704+00:00",
+    "seconds": 9.155,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_v10_projection",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_v10_projection.py"
+    ],
+    "start": "2026-09-15T21:07:40.107871+00:00",
+    "end": "2026-09-15T21:08:10.058903+00:00",
+    "seconds": 29.951,
+    "exit": 0
+  },
+  {
+    "name": "repin-release",
+    "command": [
+      "python3",
+      "packaging/repin.py",
+      "--apply"
+    ],
+    "start": "2026-09-15T21:07:48.561283+00:00",
+    "end": "2026-09-15T21:08:10.927457+00:00",
+    "seconds": 22.366,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_versions",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_versions.py"
+    ],
+    "start": "2026-09-15T21:08:10.088157+00:00",
+    "end": "2026-09-15T21:08:20.110697+00:00",
+    "seconds": 10.023,
+    "exit": 0
+  },
+  {
+    "name": "test_scorebug_studio_panel_qt",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_scorebug_studio_panel_qt.py"
+    ],
+    "start": "2026-09-15T21:08:20.141962+00:00",
+    "end": "2026-09-15T21:08:27.585074+00:00",
+    "seconds": 7.443,
+    "exit": 0
+  },
+  {
+    "name": "proof-v3-release",
+    "command": [
+      "python3",
+      "reports/b71_s3/prove_v3.py"
+    ],
+    "start": "2026-09-15T21:08:26.353394+00:00",
+    "end": "2026-09-15T21:09:30.082382+00:00",
+    "seconds": 63.729,
+    "exit": 0
+  },
+  {
+    "name": "manifest-release",
+    "command": [
+      "python3",
+      "reports/b71_s3/refresh_manifest.py"
+    ],
+    "start": "2026-09-15T21:08:27.524667+00:00",
+    "end": "2026-09-15T21:14:36.398723+00:00",
+    "seconds": 368.874,
+    "exit": 0
+  },
+  {
+    "name": "test_apf_scorebug_workspace_qt-release",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_apf_scorebug_workspace_qt.py"
+    ],
+    "start": "2026-09-15T21:08:27.565544+00:00",
+    "end": "2026-09-15T21:08:28.223071+00:00",
+    "seconds": 0.658,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_assets-release",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_assets.py"
+    ],
+    "start": "2026-09-15T21:08:27.567180+00:00",
+    "end": "2026-09-15T21:11:17.769526+00:00",
+    "seconds": 170.202,
+    "exit": 0
+  },
+  {
+    "name": "nfl2k5_scorebug_layout_test",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/nfl2k5_scorebug_layout_test.py"
+    ],
+    "start": "2026-09-15T21:08:27.615405+00:00",
+    "end": "2026-09-15T21:08:29.108567+00:00",
+    "seconds": 1.493,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_author-release",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_author.py"
+    ],
+    "start": "2026-09-15T21:08:28.256884+00:00",
+    "end": "2026-09-15T21:08:35.210340+00:00",
+    "seconds": 6.953,
+    "exit": 0
+  },
+  {
+    "name": "nfl2k5_scorebug_mod_project_test",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/nfl2k5_scorebug_mod_project_test.py"
+    ],
+    "start": "2026-09-15T21:08:29.137318+00:00",
+    "end": "2026-09-15T21:08:30.507050+00:00",
+    "seconds": 1.37,
+    "exit": 0
+  },
+  {
+    "name": "test_provider_integrity",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_provider_integrity.py"
+    ],
+    "start": "2026-09-15T21:08:30.540888+00:00",
+    "end": "2026-09-15T21:08:39.763971+00:00",
+    "seconds": 9.223,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_exact-release",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_exact.py"
+    ],
+    "start": "2026-09-15T21:08:35.242273+00:00",
+    "end": "2026-09-15T21:09:59.012534+00:00",
+    "seconds": 83.77,
+    "exit": 0
+  },
+  {
+    "name": "test_product_catalog",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_product_catalog.py"
+    ],
+    "start": "2026-09-15T21:08:39.795806+00:00",
+    "end": "2026-09-15T21:08:39.955903+00:00",
+    "seconds": 0.16,
+    "exit": 0
+  },
+  {
+    "name": "test_phase1_packaging",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_phase1_packaging.py"
+    ],
+    "start": "2026-09-15T21:08:39.985496+00:00",
+    "end": "2026-09-15T21:08:42.338038+00:00",
+    "seconds": 2.353,
+    "exit": 0
+  },
+  {
+    "name": "registry-strict",
+    "command": [
+      "/usr/bin/python3",
+      "-m",
+      "mod_editor.capabilities.validate_registry"
+    ],
+    "start": "2026-09-15T21:08:42.371603+00:00",
+    "end": "2026-09-15T21:08:42.542017+00:00",
+    "seconds": 0.17,
+    "exit": 0
+  },
+  {
+    "name": "repin-before-source-commit",
+    "command": [
+      "python3",
+      "packaging/repin.py",
+      "--apply"
+    ],
+    "start": "2026-09-15T21:08:56.316751+00:00",
+    "end": "2026-09-15T21:09:07.462090+00:00",
+    "seconds": 11.145,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_fonts-release",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_fonts.py"
+    ],
+    "start": "2026-09-15T21:09:59.041491+00:00",
+    "end": "2026-09-15T21:10:08.041290+00:00",
+    "seconds": 9.0,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_freeze-release",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_freeze.py"
+    ],
+    "start": "2026-09-15T21:10:08.072000+00:00",
+    "end": "2026-09-15T21:15:40.388978+00:00",
+    "seconds": 332.317,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_freeze_v2-release",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py"
+    ],
+    "start": "2026-09-15T21:11:17.809800+00:00",
+    "end": "2026-09-15T21:18:16.028712+00:00",
+    "seconds": 418.219,
+    "exit": 0
+  },
+  {
+    "name": "builder-plan-release",
+    "command": [
+      "python3",
+      "reports/b71_s3/build_testdisc71.py",
+      "--plan-only"
+    ],
+    "start": "2026-09-15T21:14:24.793293+00:00",
+    "end": "2026-09-15T21:14:25.156192+00:00",
+    "seconds": 0.363,
+    "exit": 0
+  },
+  {
+    "name": "xbe-memory-release",
+    "command": [
+      "python3",
+      "tests/mod_editor/test_xbe_patch_memory_writes.py"
+    ],
+    "start": "2026-09-15T21:14:36.436663+00:00",
+    "end": "2026-09-15T21:40:55.625553+00:00",
+    "seconds": 1579.189,
+    "exit": 0
+  },
+  {
+    "name": "xbe-caves-release",
+    "command": [
+      "python3",
+      "tests/mod_editor/test_xbe_patch_cave_references.py"
+    ],
+    "start": "2026-09-15T21:14:36.443914+00:00",
+    "end": "2026-09-15T21:44:07.726756+00:00",
+    "seconds": 1771.283,
+    "exit": 0
+  },
+  {
+    "name": "delivery-check-release",
+    "command": [
+      "python3",
+      "reports/b71_s3/check_delivery.py"
+    ],
+    "start": "2026-09-15T21:15:17.994071+00:00",
+    "end": "2026-09-15T21:15:18.443785+00:00",
+    "seconds": 0.45,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_ingame-release",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_ingame.py"
+    ],
+    "start": "2026-09-15T21:15:40.431297+00:00",
+    "end": "2026-09-15T21:15:56.433482+00:00",
+    "seconds": 16.002,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_ingame_fix-release",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py"
+    ],
+    "start": "2026-09-15T21:15:56.464240+00:00",
+    "end": "2026-09-15T21:18:12.052101+00:00",
+    "seconds": 135.588,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_mnf-release",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_mnf.py"
+    ],
+    "start": "2026-09-15T21:18:12.082605+00:00",
+    "end": "2026-09-15T21:18:24.162927+00:00",
+    "seconds": 12.08,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_mnf_v3-release",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py"
+    ],
+    "start": "2026-09-15T21:18:16.059198+00:00",
+    "end": "2026-09-15T21:18:48.987907+00:00",
+    "seconds": 32.929,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_native-release",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_native.py"
+    ],
+    "start": "2026-09-15T21:18:24.193681+00:00",
+    "end": "2026-09-15T21:20:34.933789+00:00",
+    "seconds": 130.74,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_projection-release",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_projection.py"
+    ],
+    "start": "2026-09-15T21:18:49.017483+00:00",
+    "end": "2026-09-15T21:19:45.592718+00:00",
+    "seconds": 56.575,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_resources-release",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_resources.py"
+    ],
+    "start": "2026-09-15T21:19:45.621536+00:00",
+    "end": "2026-09-15T21:23:50.455841+00:00",
+    "seconds": 244.834,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_runtime-release",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_runtime.py"
+    ],
+    "start": "2026-09-15T21:20:34.963148+00:00",
+    "end": "2026-09-15T21:22:32.832797+00:00",
+    "seconds": 117.87,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_source_art-release",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_source_art.py"
+    ],
+    "start": "2026-09-15T21:22:32.864880+00:00",
+    "end": "2026-09-15T21:22:33.354499+00:00",
+    "seconds": 0.49,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_template-release",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_template.py"
+    ],
+    "start": "2026-09-15T21:22:33.383822+00:00",
+    "end": "2026-09-15T21:22:43.290132+00:00",
+    "seconds": 9.906,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_template_release-release",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_template_release.py"
+    ],
+    "start": "2026-09-15T21:22:43.319796+00:00",
+    "end": "2026-09-15T21:22:43.894417+00:00",
+    "seconds": 0.575,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_unified_adapter-release",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_unified_adapter.py"
+    ],
+    "start": "2026-09-15T21:22:43.924081+00:00",
+    "end": "2026-09-15T21:22:44.091424+00:00",
+    "seconds": 0.167,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_v10_ingame-release",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_v10_ingame.py"
+    ],
+    "start": "2026-09-15T21:22:44.120010+00:00",
+    "end": "2026-09-15T21:22:53.302212+00:00",
+    "seconds": 9.182,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_v10_projection-release",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_v10_projection.py"
+    ],
+    "start": "2026-09-15T21:22:53.334695+00:00",
+    "end": "2026-09-15T21:23:21.405658+00:00",
+    "seconds": 28.071,
+    "exit": 0
+  },
+  {
+    "name": "test_nfl2k5_scorebug_versions-release",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_versions.py"
+    ],
+    "start": "2026-09-15T21:23:21.434239+00:00",
+    "end": "2026-09-15T21:23:30.791009+00:00",
+    "seconds": 9.357,
+    "exit": 0
+  },
+  {
+    "name": "test_scorebug_studio_panel_qt-release",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_scorebug_studio_panel_qt.py"
+    ],
+    "start": "2026-09-15T21:23:30.820569+00:00",
+    "end": "2026-09-15T21:23:38.071201+00:00",
+    "seconds": 7.251,
+    "exit": 0
+  },
+  {
+    "name": "nfl2k5_scorebug_layout_test-release",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/nfl2k5_scorebug_layout_test.py"
+    ],
+    "start": "2026-09-15T21:23:38.099322+00:00",
+    "end": "2026-09-15T21:23:39.449271+00:00",
+    "seconds": 1.35,
+    "exit": 0
+  },
+  {
+    "name": "nfl2k5_scorebug_mod_project_test-release",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/nfl2k5_scorebug_mod_project_test.py"
+    ],
+    "start": "2026-09-15T21:23:39.477483+00:00",
+    "end": "2026-09-15T21:23:40.781779+00:00",
+    "seconds": 1.304,
+    "exit": 0
+  },
+  {
+    "name": "test_provider_integrity-release",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_provider_integrity.py"
+    ],
+    "start": "2026-09-15T21:23:40.809626+00:00",
+    "end": "2026-09-15T21:23:49.034345+00:00",
+    "seconds": 8.225,
+    "exit": 0
+  },
+  {
+    "name": "test_product_catalog-release",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_product_catalog.py"
+    ],
+    "start": "2026-09-15T21:23:49.065788+00:00",
+    "end": "2026-09-15T21:23:49.215742+00:00",
+    "seconds": 0.15,
+    "exit": 0
+  },
+  {
+    "name": "test_phase1_packaging-release",
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_phase1_packaging.py"
+    ],
+    "start": "2026-09-15T21:23:49.245319+00:00",
+    "end": "2026-09-15T21:23:51.323930+00:00",
+    "seconds": 2.079,
+    "exit": 0
+  },
+  {
+    "name": "registry-strict-release",
+    "command": [
+      "/usr/bin/python3",
+      "-m",
+      "mod_editor.capabilities.validate_registry"
+    ],
+    "start": "2026-09-15T21:23:51.355126+00:00",
+    "end": "2026-09-15T21:23:51.513704+00:00",
+    "seconds": 0.159,
+    "exit": 0
+  },
+  {
+    "name": "source-art-skip-details",
+    "command": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_source_art.py",
+      "-v"
+    ],
+    "start": "2026-09-15T21:24:48.344334+00:00",
+    "end": "2026-09-15T21:24:49.105129+00:00",
+    "seconds": 0.761,
+    "exit": 0
+  },
+  {
+    "name": "layout-skip-details",
+    "command": [
+      "env",
+      "NFL2K5_SCOREBUG_EMULATION_TEST=1",
+      "python3",
+      "tests/nfl2k5_scorebug_layout_test.py",
+      "-v"
+    ],
+    "start": "2026-09-15T21:24:48.357031+00:00",
+    "end": "2026-09-15T21:24:49.835383+00:00",
+    "seconds": 1.478,
+    "exit": 0
+  }
+]

@@ -1,0 +1,11 @@
+{
+  "name": "author-refined",
+  "argv": [
+    "python3",
+    "tools/scorebug_sprite/author_default.py"
+  ],
+  "start_utc": "2026-09-16T02:06:33.760729+00:00",
+  "end_utc": "2026-09-16T02:06:34.026477+00:00",
+  "seconds": 0.266,
+  "exit_code": 0
+}

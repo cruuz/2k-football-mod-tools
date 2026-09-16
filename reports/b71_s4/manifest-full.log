@@ -1,0 +1,31 @@
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s4/reports/b71_s4/refresh_manifest.py", line 35, in <module>
+    summary=projection.refresh(output)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s4/tools/mycareer_mode/refresh_settings_manifest.py", line 101, in refresh
+    CaveReferenceTests.setUpClass()
+  File "/home/noah/2k-worktrees/astra-b71-s4/reports/b71_s4/refresh_manifest.py", line 15, in setup
+    original()
+  File "/home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_xbe_patch_cave_references.py", line 151, in setUpClass
+    cls.patched, cls.music_receipt = compose(cls.patched, read_option_diagnostic=True, reverse=getattr(cls, "reverse_owners", False), scaleout=getattr(cls, "scaleout", False))
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s4/tests/nfl2k5_allocator_stack.py", line 137, in compose
+    payload, _ = space.apply(payload, REQUESTS + tuple(extra_requests), scaleout=scaleout)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s4/mod_editor/core/nfl2k5_cave_manifest.py", line 199, in observe
+    result = original(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s4/mod_editor/core/nfl2k5_xbe_space.py", line 372, in apply
+    return _apply_scaleout(payload, wanted)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s4/mod_editor/core/nfl2k5_xbe_space.py", line 861, in _apply_scaleout
+    allocations = _scale_allocations(requests)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s4/mod_editor/core/nfl2k5_xbe_space.py", line 668, in _scale_allocations
+    out = _legacy_allocations([r for r in requests if r[0] in LEGACY_OWNERS])
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s4/mod_editor/core/nfl2k5_xbe_space.py", line 98, in _legacy_allocations
+    _require(offset + size <= PAGE * (2 if kind == "code" else 1),
+  File "/home/noah/2k-worktrees/astra-b71-s4/mod_editor/core/nfl2k5_xbe_space.py", line 55, in _require
+    raise ValueError(message)
+ValueError: code page capacity exceeded; no unreserved page may be used

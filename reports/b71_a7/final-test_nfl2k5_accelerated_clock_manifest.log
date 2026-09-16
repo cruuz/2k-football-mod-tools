@@ -1,0 +1,10 @@
+test_all_hooks_and_complete_child_are_recorded (__main__.ManifestTests.test_all_hooks_and_complete_child_are_recorded) ... ok
+test_all_three_allocations_are_reserved_with_owned_parent_pages (__main__.ManifestTests.test_all_three_allocations_are_reserved_with_owned_parent_pages) ... ok
+test_live_hook_interiors_have_no_external_retail_references (__main__.ManifestTests.test_live_hook_interiors_have_no_external_retail_references) ... ok
+test_projection_supports_the_complete_gate_relocation (__main__.ManifestTests.test_projection_supports_the_complete_gate_relocation) ... ok
+test_unobserved_source_drift_cannot_be_recertified (__main__.ManifestTests.test_unobserved_source_drift_cannot_be_recertified) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 10.017s
+
+OK

@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_b67_xenia_patch",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_b67_xenia_patch.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:35:31.851266+00:00",
+  "ended": "2026-09-16T00:35:32.262539+00:00",
+  "seconds": 0.411,
+  "exit_code": 0
+}

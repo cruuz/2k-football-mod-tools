@@ -1,0 +1,1791 @@
+{
+  "scope": "PROVED offline. Native shadow light term, not rendered length/softness. Afternoon uses existing extrapolated screen factor.",
+  "owner_sha256": "510fa19c502668ab653ad54374c42dff32764eca848a15182c81558c51c6afa7",
+  "all_bundle_pins_sha256": "f4ef2c5a179ad39a07f4670ed924e3c4a605a6a2775518a78aa790306c706295",
+  "bundle_count": 477,
+  "rigs": [
+    {
+      "name": "day",
+      "va": "0x4e73b0",
+      "retail_sha256": "8591344f69f7a0013c4e9cf9b5ae4e8dbc4f894488b97dd2a97be8885f9073e1",
+      "before_sha256": "a78a892d15fe6477dcc3615a4f3ee8bd5919f0971f186c33e445ccf124c67586",
+      "after_sha256": "e77439624117ce755c72533701ad83395cd60e071ec0c7ad4b9b3a3d190df7bf",
+      "before": {
+        "shadow": 0.2750000059604645,
+        "ambient": [
+          0.9399999976158142,
+          0.9599999785423279,
+          1.0
+        ],
+        "ambient_intensity": 0.5799999833106995,
+        "lights": [
+          [
+            [
+              1.0,
+              0.9800000190734863,
+              0.9399999976158142
+            ],
+            1.2000000476837158
+          ],
+          [
+            [
+              0.8999999761581421,
+              0.9399999976158142,
+              1.0
+            ],
+            0.47999998927116394
+          ]
+        ]
+      },
+      "after": {
+        "shadow": 0.3199999928474426,
+        "ambient": [
+          0.9399999976158142,
+          0.9599999785423279,
+          1.0
+        ],
+        "ambient_intensity": 0.4399999976158142,
+        "lights": [
+          [
+            [
+              1.0,
+              0.9399999976158142,
+              0.8799999952316284
+            ],
+            1.600000023841858
+          ],
+          [
+            [
+              0.3199999928474426,
+              0.4000000059604645,
+              1.0
+            ],
+            0.9900000095367432
+          ]
+        ]
+      },
+      "changed_offsets": [
+        "0x10",
+        "0x11",
+        "0x12",
+        "0x13",
+        "0x24",
+        "0x25",
+        "0x26",
+        "0x28",
+        "0x29",
+        "0x2a",
+        "0x40",
+        "0x41",
+        "0x42",
+        "0x60",
+        "0x61",
+        "0x62",
+        "0x63",
+        "0x64",
+        "0x65",
+        "0x66",
+        "0x67",
+        "0x80",
+        "0x81",
+        "0x82",
+        "0x83",
+        "0x100",
+        "0x101",
+        "0x102"
+      ],
+      "count": 2,
+      "directions": [
+        [
+          0.43299999833106995,
+          0.8659999966621399,
+          0.25
+        ],
+        [
+          -0.6119999885559082,
+          0.7070000171661377,
+          -0.3540000021457672
+        ]
+      ],
+      "stored_key_elevation_degrees": 59.99981802788343,
+      "stored_shadow_length_per_unit_height": 0.5773545038808322,
+      "key_to_ambient": 3.636363710253692,
+      "directional_to_ambient": 5.886363744119968,
+      "prediction_before": [
+        83,
+        99,
+        47
+      ],
+      "prediction_after": [
+        89,
+        105,
+        61
+      ],
+      "hsv": {
+        "hue_degrees": 81.818,
+        "saturation": 0.419048,
+        "value": 0.411765
+      },
+      "reference": [
+        88,
+        105,
+        61
+      ],
+      "native_shadow": {
+        "native_getter": "0x64000",
+        "consumer": "0x12fb8d",
+        "descriptor_writer": "0x2af50",
+        "intensity": -0.3199999928474426,
+        "direction_unchanged": true,
+        "code_sha256": {
+          "0x64000": "4f9d41960ceb3c1c6834b7bf6b0cc6fa16fac3eb4e11e71c901a7b23ce9e5681",
+          "0x12fb8d": "3d07ecef2ddee8e429bb3943da8b3abc34efba3f83c5a0080f0dccd6234b6c5c",
+          "0x2af50": "bae0f2fd71437c67bc545e2a0a925ca4f5570324d76dc3a05f7451b6e206e96c"
+        }
+      }
+    },
+    {
+      "name": "night_indoor",
+      "va": "0x4e74d0",
+      "retail_sha256": "d27737d3020b5ae17ed9854c1a1f372f004b68ed7aca92d263b267414098d782",
+      "before_sha256": "18c6d914b12edc22d092cea97b7839d4f4611e23b5a898cbceeb4d74222b9fb9",
+      "after_sha256": "18c6d914b12edc22d092cea97b7839d4f4611e23b5a898cbceeb4d74222b9fb9",
+      "before": {
+        "shadow": 0.16500000655651093,
+        "ambient": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "ambient_intensity": 0.5,
+        "lights": [
+          [
+            [
+              1.0,
+              1.0,
+              1.0
+            ],
+            0.8600000143051147
+          ],
+          [
+            [
+              1.0,
+              1.0,
+              1.0
+            ],
+            0.8600000143051147
+          ],
+          [
+            [
+              1.0,
+              1.0,
+              1.0
+            ],
+            0.8600000143051147
+          ]
+        ]
+      },
+      "after": {
+        "shadow": 0.16500000655651093,
+        "ambient": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "ambient_intensity": 0.5,
+        "lights": [
+          [
+            [
+              1.0,
+              1.0,
+              1.0
+            ],
+            0.8600000143051147
+          ],
+          [
+            [
+              1.0,
+              1.0,
+              1.0
+            ],
+            0.8600000143051147
+          ],
+          [
+            [
+              1.0,
+              1.0,
+              1.0
+            ],
+            0.8600000143051147
+          ]
+        ]
+      },
+      "changed_offsets": [],
+      "count": 3,
+      "directions": [
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.7070000171661377,
+          0.7070000171661377
+        ],
+        [
+          0.0,
+          0.7070000171661377,
+          -0.7070000171661377
+        ]
+      ],
+      "stored_key_elevation_degrees": 90.0,
+      "stored_shadow_length_per_unit_height": 0.0,
+      "key_to_ambient": 1.7200000286102295,
+      "directional_to_ambient": 5.1600000858306885,
+      "prediction_before": [
+        102,
+        122,
+        52
+      ],
+      "prediction_after": [
+        102,
+        122,
+        52
+      ],
+      "hsv": {
+        "hue_degrees": 77.143,
+        "saturation": 0.57377,
+        "value": 0.478431
+      },
+      "reference": [
+        107,
+        121,
+        53
+      ],
+      "native_shadow": {
+        "native_getter": "0x64000",
+        "consumer": "0x12fb8d",
+        "descriptor_writer": "0x2af50",
+        "intensity": -0.16500000655651093,
+        "direction_unchanged": true,
+        "code_sha256": {
+          "0x64000": "4f9d41960ceb3c1c6834b7bf6b0cc6fa16fac3eb4e11e71c901a7b23ce9e5681",
+          "0x12fb8d": "3d07ecef2ddee8e429bb3943da8b3abc34efba3f83c5a0080f0dccd6234b6c5c",
+          "0x2af50": "bae0f2fd71437c67bc545e2a0a925ca4f5570324d76dc3a05f7451b6e206e96c"
+        }
+      }
+    },
+    {
+      "name": "alt_day",
+      "va": "0x4e75f0",
+      "retail_sha256": "6aa37cf70658ad446dc83df3201eca0e826c6b66fbdfdf68d0cf2b546dddaedb",
+      "before_sha256": "f6f80216e8cf2010b84fcaa46a9a6b50728c27bca47b1ed7c13810fdc220751c",
+      "after_sha256": "f6f80216e8cf2010b84fcaa46a9a6b50728c27bca47b1ed7c13810fdc220751c",
+      "before": {
+        "shadow": 0.2750000059604645,
+        "ambient": [
+          0.9200000166893005,
+          0.949999988079071,
+          1.0
+        ],
+        "ambient_intensity": 0.44999998807907104,
+        "lights": [
+          [
+            [
+              1.0,
+              0.9800000190734863,
+              0.9399999976158142
+            ],
+            1.100000023841858
+          ],
+          [
+            [
+              0.8999999761581421,
+              0.9399999976158142,
+              1.0
+            ],
+            0.4000000059604645
+          ],
+          [
+            [
+              0.8999999761581421,
+              0.9399999976158142,
+              1.0
+            ],
+            0.4000000059604645
+          ]
+        ]
+      },
+      "after": {
+        "shadow": 0.2750000059604645,
+        "ambient": [
+          0.9200000166893005,
+          0.949999988079071,
+          1.0
+        ],
+        "ambient_intensity": 0.44999998807907104,
+        "lights": [
+          [
+            [
+              1.0,
+              0.9800000190734863,
+              0.9399999976158142
+            ],
+            1.100000023841858
+          ],
+          [
+            [
+              0.8999999761581421,
+              0.9399999976158142,
+              1.0
+            ],
+            0.4000000059604645
+          ],
+          [
+            [
+              0.8999999761581421,
+              0.9399999976158142,
+              1.0
+            ],
+            0.4000000059604645
+          ]
+        ]
+      },
+      "changed_offsets": [],
+      "count": 3,
+      "directions": [
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.7070000171661377,
+          0.7070000171661377
+        ],
+        [
+          0.0,
+          0.7070000171661377,
+          -0.7070000171661377
+        ]
+      ],
+      "stored_key_elevation_degrees": 90.0,
+      "stored_shadow_length_per_unit_height": 0.0,
+      "key_to_ambient": 2.4444445621820177,
+      "directional_to_ambient": 4.222222413545778,
+      "prediction_before": [
+        74,
+        89,
+        38
+      ],
+      "prediction_after": [
+        74,
+        89,
+        38
+      ],
+      "hsv": {
+        "hue_degrees": 77.647,
+        "saturation": 0.573034,
+        "value": 0.34902
+      },
+      "reference": null,
+      "native_shadow": {
+        "native_getter": "0x64000",
+        "consumer": "0x12fb8d",
+        "descriptor_writer": "0x2af50",
+        "intensity": -0.2750000059604645,
+        "direction_unchanged": true,
+        "code_sha256": {
+          "0x64000": "4f9d41960ceb3c1c6834b7bf6b0cc6fa16fac3eb4e11e71c901a7b23ce9e5681",
+          "0x12fb8d": "3d07ecef2ddee8e429bb3943da8b3abc34efba3f83c5a0080f0dccd6234b6c5c",
+          "0x2af50": "bae0f2fd71437c67bc545e2a0a925ca4f5570324d76dc3a05f7451b6e206e96c"
+        }
+      }
+    },
+    {
+      "name": "alt_dynamic",
+      "va": "0x4e7710",
+      "retail_sha256": "80e6f376951a72abadbc337078f48136ce23c5e03bad72e151f451add8048bd0",
+      "before_sha256": "00ce7e0fafa7b22c47925dd57ca01e8f362930627478f127023f797de8818887",
+      "after_sha256": "00ce7e0fafa7b22c47925dd57ca01e8f362930627478f127023f797de8818887",
+      "before": {
+        "shadow": 0.2750000059604645,
+        "ambient": [
+          0.949999988079071,
+          0.9700000286102295,
+          1.0
+        ],
+        "ambient_intensity": 0.41999998688697815,
+        "lights": [
+          [
+            [
+              1.0,
+              0.9700000286102295,
+              0.9200000166893005
+            ],
+            1.100000023841858
+          ],
+          [
+            [
+              0.8999999761581421,
+              0.9399999976158142,
+              1.0
+            ],
+            0.4000000059604645
+          ],
+          [
+            [
+              0.8999999761581421,
+              0.9399999976158142,
+              1.0
+            ],
+            0.4000000059604645
+          ]
+        ]
+      },
+      "after": {
+        "shadow": 0.2750000059604645,
+        "ambient": [
+          0.949999988079071,
+          0.9700000286102295,
+          1.0
+        ],
+        "ambient_intensity": 0.41999998688697815,
+        "lights": [
+          [
+            [
+              1.0,
+              0.9700000286102295,
+              0.9200000166893005
+            ],
+            1.100000023841858
+          ],
+          [
+            [
+              0.8999999761581421,
+              0.9399999976158142,
+              1.0
+            ],
+            0.4000000059604645
+          ],
+          [
+            [
+              0.8999999761581421,
+              0.9399999976158142,
+              1.0
+            ],
+            0.4000000059604645
+          ]
+        ]
+      },
+      "changed_offsets": [],
+      "count": 3,
+      "directions": [
+        [
+          0.0,
+          0.4300000071525574,
+          0.902999997138977
+        ],
+        [
+          0.0,
+          0.7070000171661377,
+          0.7070000171661377
+        ],
+        [
+          0.0,
+          0.7070000171661377,
+          -0.7070000171661377
+        ]
+      ],
+      "stored_key_elevation_degrees": 25.463345502282728,
+      "stored_shadow_length_per_unit_height": 2.099999958415365,
+      "key_to_ambient": 2.619047757584496,
+      "directional_to_ambient": 4.523809750199055,
+      "prediction_before": [
+        73,
+        88,
+        38
+      ],
+      "prediction_after": [
+        73,
+        88,
+        38
+      ],
+      "hsv": {
+        "hue_degrees": 78.0,
+        "saturation": 0.568182,
+        "value": 0.345098
+      },
+      "reference": null,
+      "native_shadow": {
+        "native_getter": "0x64000",
+        "consumer": "0x12fb8d",
+        "descriptor_writer": "0x2af50",
+        "intensity": -0.2750000059604645,
+        "direction_unchanged": true,
+        "code_sha256": {
+          "0x64000": "4f9d41960ceb3c1c6834b7bf6b0cc6fa16fac3eb4e11e71c901a7b23ce9e5681",
+          "0x12fb8d": "3d07ecef2ddee8e429bb3943da8b3abc34efba3f83c5a0080f0dccd6234b6c5c",
+          "0x2af50": "bae0f2fd71437c67bc545e2a0a925ca4f5570324d76dc3a05f7451b6e206e96c"
+        }
+      }
+    },
+    {
+      "name": "rain",
+      "va": "0x4e7830",
+      "retail_sha256": "1fb3e7fe93ff73a2d1ddf11ac443e57c65459cf833b6104cd357bf8b96572758",
+      "before_sha256": "ccfb026911c23bd9f5505f98599b70e19cb8b2e17b9412a6f3cdc64c65bec890",
+      "after_sha256": "ccfb026911c23bd9f5505f98599b70e19cb8b2e17b9412a6f3cdc64c65bec890",
+      "before": {
+        "shadow": 0.029999999329447746,
+        "ambient": [
+          0.9200000166893005,
+          0.9300000071525574,
+          0.9800000190734863
+        ],
+        "ambient_intensity": 0.46000000834465027,
+        "lights": [
+          [
+            [
+              0.9200000166893005,
+              0.9399999976158142,
+              1.0
+            ],
+            0.699999988079071
+          ],
+          [
+            [
+              0.9200000166893005,
+              0.9399999976158142,
+              1.0
+            ],
+            0.699999988079071
+          ],
+          [
+            [
+              0.9200000166893005,
+              0.9399999976158142,
+              1.0
+            ],
+            0.699999988079071
+          ]
+        ]
+      },
+      "after": {
+        "shadow": 0.029999999329447746,
+        "ambient": [
+          0.9200000166893005,
+          0.9300000071525574,
+          0.9800000190734863
+        ],
+        "ambient_intensity": 0.46000000834465027,
+        "lights": [
+          [
+            [
+              0.9200000166893005,
+              0.9399999976158142,
+              1.0
+            ],
+            0.699999988079071
+          ],
+          [
+            [
+              0.9200000166893005,
+              0.9399999976158142,
+              1.0
+            ],
+            0.699999988079071
+          ],
+          [
+            [
+              0.9200000166893005,
+              0.9399999976158142,
+              1.0
+            ],
+            0.699999988079071
+          ]
+        ]
+      },
+      "changed_offsets": [],
+      "count": 3,
+      "directions": [
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.5,
+          0.8659999966621399
+        ],
+        [
+          0.0,
+          0.5,
+          -0.8659999966621399
+        ]
+      ],
+      "stored_key_elevation_degrees": 90.0,
+      "stored_shadow_length_per_unit_height": 0.0,
+      "key_to_ambient": 1.521739076914545,
+      "directional_to_ambient": 4.5652172307436345,
+      "prediction_before": [
+        78,
+        95,
+        43
+      ],
+      "prediction_after": [
+        78,
+        95,
+        43
+      ],
+      "hsv": {
+        "hue_degrees": 79.615,
+        "saturation": 0.547368,
+        "value": 0.372549
+      },
+      "reference": null,
+      "native_shadow": {
+        "native_getter": "0x64000",
+        "consumer": "0x12fb8d",
+        "descriptor_writer": "0x2af50",
+        "intensity": -0.029999999329447746,
+        "direction_unchanged": true,
+        "code_sha256": {
+          "0x64000": "4f9d41960ceb3c1c6834b7bf6b0cc6fa16fac3eb4e11e71c901a7b23ce9e5681",
+          "0x12fb8d": "3d07ecef2ddee8e429bb3943da8b3abc34efba3f83c5a0080f0dccd6234b6c5c",
+          "0x2af50": "bae0f2fd71437c67bc545e2a0a925ca4f5570324d76dc3a05f7451b6e206e96c"
+        }
+      }
+    },
+    {
+      "name": "snow",
+      "va": "0x4e7950",
+      "retail_sha256": "7a28bdcdc00c37078da18e5479ea534071c6a7a9389f445fe7c72d5773ad1c5d",
+      "before_sha256": "8c95f170e019d0eb8654b3b3e23fc1c6d78d4d593f5ad1df6c32c00c493d5ee4",
+      "after_sha256": "8c95f170e019d0eb8654b3b3e23fc1c6d78d4d593f5ad1df6c32c00c493d5ee4",
+      "before": {
+        "shadow": 0.11500000208616257,
+        "ambient": [
+          0.9599999785423279,
+          0.9700000286102295,
+          1.0
+        ],
+        "ambient_intensity": 0.5,
+        "lights": [
+          [
+            [
+              0.949999988079071,
+              0.9599999785423279,
+              1.0
+            ],
+            0.6200000047683716
+          ],
+          [
+            [
+              0.949999988079071,
+              0.9599999785423279,
+              1.0
+            ],
+            0.6200000047683716
+          ],
+          [
+            [
+              0.949999988079071,
+              0.9599999785423279,
+              1.0
+            ],
+            0.6200000047683716
+          ]
+        ]
+      },
+      "after": {
+        "shadow": 0.11500000208616257,
+        "ambient": [
+          0.9599999785423279,
+          0.9700000286102295,
+          1.0
+        ],
+        "ambient_intensity": 0.5,
+        "lights": [
+          [
+            [
+              0.949999988079071,
+              0.9599999785423279,
+              1.0
+            ],
+            0.6200000047683716
+          ],
+          [
+            [
+              0.949999988079071,
+              0.9599999785423279,
+              1.0
+            ],
+            0.6200000047683716
+          ],
+          [
+            [
+              0.949999988079071,
+              0.9599999785423279,
+              1.0
+            ],
+            0.6200000047683716
+          ]
+        ]
+      },
+      "changed_offsets": [],
+      "count": 3,
+      "directions": [
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.5,
+          0.8659999966621399
+        ],
+        [
+          0.0,
+          0.5,
+          -0.8659999966621399
+        ]
+      ],
+      "stored_key_elevation_degrees": 90.0,
+      "stored_shadow_length_per_unit_height": 0.0,
+      "key_to_ambient": 1.2400000095367432,
+      "directional_to_ambient": 3.7200000286102295,
+      "prediction_before": [
+        74,
+        90,
+        40
+      ],
+      "prediction_after": [
+        74,
+        90,
+        40
+      ],
+      "hsv": {
+        "hue_degrees": 79.2,
+        "saturation": 0.555556,
+        "value": 0.352941
+      },
+      "reference": null,
+      "native_shadow": {
+        "native_getter": "0x64000",
+        "consumer": "0x12fb8d",
+        "descriptor_writer": "0x2af50",
+        "intensity": -0.11500000208616257,
+        "direction_unchanged": true,
+        "code_sha256": {
+          "0x64000": "4f9d41960ceb3c1c6834b7bf6b0cc6fa16fac3eb4e11e71c901a7b23ce9e5681",
+          "0x12fb8d": "3d07ecef2ddee8e429bb3943da8b3abc34efba3f83c5a0080f0dccd6234b6c5c",
+          "0x2af50": "bae0f2fd71437c67bc545e2a0a925ca4f5570324d76dc3a05f7451b6e206e96c"
+        }
+      }
+    },
+    {
+      "name": "afternoon",
+      "va": "0x4e7a70",
+      "retail_sha256": "d789e452238ca98842b941776b63befb0b264bbf513bb303a7f67ff031d40e15",
+      "before_sha256": "3b9fb968fbde08feefa57b2e146089d021ea69fd39da52907459bb970eb58dc0",
+      "after_sha256": "f025a2fa059ad96e560c05b331a530dfef1bbd076a362f1982c903b6d0f8deeb",
+      "before": {
+        "shadow": 0.27000001072883606,
+        "ambient": [
+          1.0,
+          0.949999988079071,
+          0.8600000143051147
+        ],
+        "ambient_intensity": 0.44999998807907104,
+        "lights": [
+          [
+            [
+              1.0,
+              0.9399999976158142,
+              0.8399999737739563
+            ],
+            1.2000000476837158
+          ],
+          [
+            [
+              0.699999988079071,
+              0.7799999713897705,
+              1.0
+            ],
+            0.25999999046325684
+          ],
+          [
+            [
+              0.699999988079071,
+              0.7799999713897705,
+              1.0
+            ],
+            0.25999999046325684
+          ]
+        ]
+      },
+      "after": {
+        "shadow": 0.2199999988079071,
+        "ambient": [
+          1.0,
+          0.9599999785423279,
+          1.0
+        ],
+        "ambient_intensity": 0.6000000238418579,
+        "lights": [
+          [
+            [
+              1.0,
+              0.9100000262260437,
+              0.7799999713897705
+            ],
+            1.2000000476837158
+          ],
+          [
+            [
+              0.4000000059604645,
+              0.4449999928474426,
+              1.0
+            ],
+            1.0399999618530273
+          ],
+          [
+            [
+              0.4000000059604645,
+              0.4449999928474426,
+              1.0
+            ],
+            1.0399999618530273
+          ]
+        ]
+      },
+      "changed_offsets": [
+        "0x4",
+        "0x5",
+        "0x6",
+        "0x8",
+        "0x9",
+        "0xa",
+        "0x10",
+        "0x11",
+        "0x12",
+        "0x13",
+        "0x24",
+        "0x25",
+        "0x26",
+        "0x28",
+        "0x29",
+        "0x2a",
+        "0x60",
+        "0x61",
+        "0x62",
+        "0x63",
+        "0x64",
+        "0x65",
+        "0x66",
+        "0x67",
+        "0x83",
+        "0xa0",
+        "0xa1",
+        "0xa2",
+        "0xa3",
+        "0xa4",
+        "0xa5",
+        "0xa6",
+        "0xa7",
+        "0xc3",
+        "0x100",
+        "0x101",
+        "0x102"
+      ],
+      "count": 3,
+      "directions": [
+        [
+          0.0,
+          0.4300000071525574,
+          0.902999997138977
+        ],
+        [
+          0.7639999985694885,
+          0.3199999928474426,
+          -0.5600000023841858
+        ],
+        [
+          -0.7639999985694885,
+          0.3199999928474426,
+          -0.5600000023841858
+        ]
+      ],
+      "stored_key_elevation_degrees": 25.463345502282728,
+      "stored_shadow_length_per_unit_height": 2.099999958415365,
+      "key_to_ambient": 2.0,
+      "directional_to_ambient": 5.466666401757145,
+      "prediction_before": [
+        67,
+        78,
+        32
+      ],
+      "prediction_after": [
+        87,
+        103,
+        61
+      ],
+      "hsv": {
+        "hue_degrees": 82.857,
+        "saturation": 0.407767,
+        "value": 0.403922
+      },
+      "reference": [
+        98,
+        119,
+        72
+      ],
+      "native_shadow": {
+        "native_getter": "0x64000",
+        "consumer": "0x12fb8d",
+        "descriptor_writer": "0x2af50",
+        "intensity": -0.2199999988079071,
+        "direction_unchanged": true,
+        "code_sha256": {
+          "0x64000": "4f9d41960ceb3c1c6834b7bf6b0cc6fa16fac3eb4e11e71c901a7b23ce9e5681",
+          "0x12fb8d": "3d07ecef2ddee8e429bb3943da8b3abc34efba3f83c5a0080f0dccd6234b6c5c",
+          "0x2af50": "bae0f2fd71437c67bc545e2a0a925ca4f5570324d76dc3a05f7451b6e206e96c"
+        }
+      }
+    }
+  ],
+  "decoded_bundles": [
+    {
+      "name": "s08dd.iff",
+      "retail_sha256": "822e605a7d385130b6184b371a5d37d45ae95bb442f759c408acc02ddc79b23c",
+      "applied_sha256": "3bb9b30b0286bb1eadf811a4f97abe97109d5e3648f636c637a860bd5356296d",
+      "decoded": [
+        {
+          "kind": "decoded colour-map mean",
+          "rgb": [
+            98,
+            128,
+            60
+          ]
+        },
+        {
+          "kind": "decoded colour-map mean",
+          "rgb": [
+            177,
+            219,
+            88
+          ]
+        }
+      ],
+      "rig": "day",
+      "prediction": [
+        87,
+        107,
+        52
+      ],
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 185824,
+          "before_sha256": "f250f8a798c7a01ff06e4add2ae43561350945d97b506a80e04991b8f5ab95d5",
+          "after_sha256": "fc5c07af73ec4e64ed5b7691e1ac9a79bc33a233780ac9c0fcbeb6b2cdf8cc73",
+          "palettes": [
+            {
+              "material": "color_premipped",
+              "offset": 168704,
+              "gain": 1.0,
+              "changed": 144
+            },
+            {
+              "material": "grass_outside_premipped",
+              "offset": 348736,
+              "gain": 1.414,
+              "changed": 123
+            },
+            {
+              "material": "endzone_N_L",
+              "offset": 67456,
+              "gain": 1.0,
+              "changed": 186
+            },
+            {
+              "material": "endzone_N_M",
+              "offset": 112128,
+              "gain": 1.0,
+              "changed": 195
+            },
+            {
+              "material": "endzone_N_R",
+              "offset": 156800,
+              "gain": 1.0,
+              "changed": 195
+            }
+          ],
+          "materials": [],
+          "vertex_tints": 96,
+          "refit": true,
+          "encoder": "greedy",
+          "fill": "trailing",
+          "padding_bytes": 8,
+          "alias_scratch": 6,
+          "scratch_bytes": 16
+        },
+        {
+          "kind": "normal",
+          "offset": 211824,
+          "size": 175904,
+          "before_sha256": "88b0adbc194359bcd1689e041e172e216f5db2c0aa5f7b3b1f72c2634dc42132",
+          "after_sha256": "d54ba92f1d0ae5c166543ba03799ee64ce8411e3c7deb1618029010f10cefb67",
+          "refit": false,
+          "raw": true
+        },
+        {
+          "kind": "tint",
+          "offset": 387812,
+          "size": 4,
+          "before_sha256": "ad95131bc0b799c0b1af477fb14fcf26a6a9f76079e48bf090acb7e8367bfd0e",
+          "after_sha256": "ad95131bc0b799c0b1af477fb14fcf26a6a9f76079e48bf090acb7e8367bfd0e"
+        },
+        {
+          "kind": "divots",
+          "offset": 387824,
+          "size": 4928,
+          "before_sha256": "1b00b07bc19ecfc8265821f85fb5a468dd974795d5ea542ba5c8caa4332be7e5",
+          "after_sha256": "a2e0057e08a6a214f585a0479fc33e1ac798285c3c46048bfef1b43746c94557",
+          "refit": true,
+          "encoder": "greedy",
+          "fill": "trailing",
+          "padding_bytes": 2,
+          "alias_scratch": 120,
+          "scratch_bytes": 128
+        }
+      ]
+    },
+    {
+      "name": "s13dd.iff",
+      "retail_sha256": "b5bcf870b8c855c5006e5fbe6268851bf18001bdf5d910e8b7d2e5ed93e08642",
+      "applied_sha256": "0d22705139aac34085801274a5abaad0f3b8dded59cf360083d5b5fb3ca40e84",
+      "decoded": [
+        {
+          "kind": "decoded colour-map mean",
+          "rgb": [
+            103,
+            125,
+            65
+          ]
+        },
+        {
+          "kind": "decoded colour-map mean",
+          "rgb": [
+            183,
+            216,
+            100
+          ]
+        }
+      ],
+      "rig": "day",
+      "prediction": [
+        90,
+        105,
+        60
+      ],
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 200528,
+          "before_sha256": "44b327633a9a4a168f6d4c3857c0daf06eec327ba8921ca406ce2c0424eaae6d",
+          "after_sha256": "8f02ef17fbfe72d09835f195f81926c89e3766b408e833650a21d47b161224af",
+          "palettes": [
+            {
+              "material": "color_premipped",
+              "offset": 73856,
+              "gain": 1.0,
+              "changed": 120
+            },
+            {
+              "material": "grass_outside_premipped",
+              "offset": 476352,
+              "gain": 1.464,
+              "changed": 150
+            },
+            {
+              "material": "endzone_N_L",
+              "offset": 118528,
+              "gain": 1.0,
+              "changed": 246
+            },
+            {
+              "material": "endzone_N_M",
+              "offset": 163200,
+              "gain": 1.0,
+              "changed": 252
+            },
+            {
+              "material": "endzone_N_R",
+              "offset": 207872,
+              "gain": 1.0,
+              "changed": 276
+            },
+            {
+              "material": "center_logo",
+              "offset": 296256,
+              "gain": 1.0,
+              "changed": 225
+            }
+          ],
+          "materials": [],
+          "vertex_tints": 96,
+          "refit": true,
+          "encoder": "greedy",
+          "fill": "trailing",
+          "padding_bytes": 14,
+          "alias_scratch": 8,
+          "scratch_bytes": 16
+        },
+        {
+          "kind": "normal",
+          "offset": 226528,
+          "size": 175904,
+          "before_sha256": "88b0adbc194359bcd1689e041e172e216f5db2c0aa5f7b3b1f72c2634dc42132",
+          "after_sha256": "d54ba92f1d0ae5c166543ba03799ee64ce8411e3c7deb1618029010f10cefb67",
+          "refit": false,
+          "raw": true
+        },
+        {
+          "kind": "tint",
+          "offset": 402516,
+          "size": 4,
+          "before_sha256": "ad95131bc0b799c0b1af477fb14fcf26a6a9f76079e48bf090acb7e8367bfd0e",
+          "after_sha256": "ad95131bc0b799c0b1af477fb14fcf26a6a9f76079e48bf090acb7e8367bfd0e"
+        },
+        {
+          "kind": "divots",
+          "offset": 402528,
+          "size": 4928,
+          "before_sha256": "be5e690d8826598792d460f76b7f1a3a29f5b4a2656f931178ee1f485525ba65",
+          "after_sha256": "b92fd3c9ba0e2d3c66f84a6770a2c52ee9f4af8bc9b43dc23b6a3df67f59ebd6",
+          "refit": true,
+          "encoder": "greedy",
+          "fill": "trailing",
+          "padding_bytes": 3,
+          "alias_scratch": 119,
+          "scratch_bytes": 128
+        }
+      ]
+    },
+    {
+      "name": "s13ad.iff",
+      "retail_sha256": "d3eb28787a5d09f61c9ec6b7f73ff115c3d78e77691ef56ec3256e4274f0658a",
+      "applied_sha256": "302696b9ad49ac25a93d596f5b942417c1f479fff3254248ccf9d0f2541a4fa9",
+      "decoded": [
+        {
+          "kind": "decoded colour-map mean",
+          "rgb": [
+            103,
+            125,
+            65
+          ]
+        },
+        {
+          "kind": "decoded colour-map mean",
+          "rgb": [
+            183,
+            216,
+            100
+          ]
+        }
+      ],
+      "rig": "afternoon",
+      "prediction": [
+        88,
+        103,
+        60
+      ],
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 200608,
+          "before_sha256": "b16d2ed6d009187ca5fed35e3dc7b4ecbfe47f0eeefbdaf1e46b39568d484f8e",
+          "after_sha256": "eb256290121fe767249fa18603dcc4ec627ecb88937ee7107080f8bc9fd7b481",
+          "palettes": [
+            {
+              "material": "color_premipped",
+              "offset": 73856,
+              "gain": 1.0,
+              "changed": 120
+            },
+            {
+              "material": "grass_outside_premipped",
+              "offset": 476352,
+              "gain": 1.464,
+              "changed": 150
+            },
+            {
+              "material": "endzone_N_L",
+              "offset": 118528,
+              "gain": 1.0,
+              "changed": 246
+            },
+            {
+              "material": "endzone_N_M",
+              "offset": 163200,
+              "gain": 1.0,
+              "changed": 252
+            },
+            {
+              "material": "endzone_N_R",
+              "offset": 207872,
+              "gain": 1.0,
+              "changed": 276
+            },
+            {
+              "material": "center_logo",
+              "offset": 296256,
+              "gain": 1.0,
+              "changed": 225
+            }
+          ],
+          "materials": [],
+          "vertex_tints": 1915,
+          "refit": true,
+          "encoder": "greedy",
+          "fill": "trailing",
+          "padding_bytes": 7,
+          "alias_scratch": 1,
+          "scratch_bytes": 16
+        },
+        {
+          "kind": "normal",
+          "offset": 226608,
+          "size": 175904,
+          "before_sha256": "88b0adbc194359bcd1689e041e172e216f5db2c0aa5f7b3b1f72c2634dc42132",
+          "after_sha256": "d54ba92f1d0ae5c166543ba03799ee64ce8411e3c7deb1618029010f10cefb67",
+          "refit": false,
+          "raw": true
+        },
+        {
+          "kind": "tint",
+          "offset": 402596,
+          "size": 4,
+          "before_sha256": "40f17b0c5ea03add098d0ef0074c1e9f7628aa622f84e13b40851a7031ca2421",
+          "after_sha256": "399597696c5daf8208f95e89ce85512188a85881f9d7e534521fb25ba2e69265"
+        },
+        {
+          "kind": "divots",
+          "offset": 402608,
+          "size": 4928,
+          "before_sha256": "be5e690d8826598792d460f76b7f1a3a29f5b4a2656f931178ee1f485525ba65",
+          "after_sha256": "b92fd3c9ba0e2d3c66f84a6770a2c52ee9f4af8bc9b43dc23b6a3df67f59ebd6",
+          "refit": true,
+          "encoder": "greedy",
+          "fill": "trailing",
+          "padding_bytes": 3,
+          "alias_scratch": 119,
+          "scratch_bytes": 128
+        }
+      ]
+    },
+    {
+      "name": "s13nd.iff",
+      "retail_sha256": "5592ea6a02995b9f4df8c67fc7043dbe60a0c701c1c05f2364f8e27d2d762f26",
+      "applied_sha256": "6b1f6d98600efeccd84bcb2122798b233fd820930e61b0d4a757859358520d94",
+      "decoded": [
+        {
+          "kind": "decoded colour-map mean",
+          "rgb": [
+            103,
+            125,
+            65
+          ]
+        },
+        {
+          "kind": "decoded colour-map mean",
+          "rgb": [
+            183,
+            216,
+            100
+          ]
+        }
+      ],
+      "rig": "night_indoor",
+      "prediction": [
+        103,
+        122,
+        51
+      ],
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 200528,
+          "before_sha256": "aff16dcfbbddf63da45481552996c49b72cfc132bcc59748710c138ad8a53a3b",
+          "after_sha256": "ae8208214e88dcc8549425dc4c61605f7c75cf82700768db73bf3d3f6371b26a",
+          "palettes": [
+            {
+              "material": "color_premipped",
+              "offset": 73856,
+              "gain": 1.0,
+              "changed": 120
+            },
+            {
+              "material": "grass_outside_premipped",
+              "offset": 476352,
+              "gain": 1.464,
+              "changed": 150
+            },
+            {
+              "material": "endzone_N_L",
+              "offset": 118528,
+              "gain": 1.0,
+              "changed": 246
+            },
+            {
+              "material": "endzone_N_M",
+              "offset": 163200,
+              "gain": 1.0,
+              "changed": 252
+            },
+            {
+              "material": "endzone_N_R",
+              "offset": 207872,
+              "gain": 1.0,
+              "changed": 276
+            },
+            {
+              "material": "center_logo",
+              "offset": 296256,
+              "gain": 1.0,
+              "changed": 225
+            }
+          ],
+          "materials": [],
+          "vertex_tints": 328,
+          "refit": true,
+          "encoder": "greedy",
+          "fill": "trailing",
+          "padding_bytes": 16,
+          "alias_scratch": 10,
+          "scratch_bytes": 16
+        },
+        {
+          "kind": "normal",
+          "offset": 226528,
+          "size": 175904,
+          "before_sha256": "88b0adbc194359bcd1689e041e172e216f5db2c0aa5f7b3b1f72c2634dc42132",
+          "after_sha256": "d54ba92f1d0ae5c166543ba03799ee64ce8411e3c7deb1618029010f10cefb67",
+          "refit": false,
+          "raw": true
+        },
+        {
+          "kind": "tint",
+          "offset": 402516,
+          "size": 4,
+          "before_sha256": "6be24cd381faad50f1b72a79181c46e561e5d4f90fae7a838c4ecbdb2f8df7e0",
+          "after_sha256": "ad95131bc0b799c0b1af477fb14fcf26a6a9f76079e48bf090acb7e8367bfd0e"
+        },
+        {
+          "kind": "divots",
+          "offset": 402528,
+          "size": 4928,
+          "before_sha256": "be5e690d8826598792d460f76b7f1a3a29f5b4a2656f931178ee1f485525ba65",
+          "after_sha256": "b92fd3c9ba0e2d3c66f84a6770a2c52ee9f4af8bc9b43dc23b6a3df67f59ebd6",
+          "refit": true,
+          "encoder": "greedy",
+          "fill": "trailing",
+          "padding_bytes": 3,
+          "alias_scratch": 119,
+          "scratch_bytes": 128
+        }
+      ]
+    },
+    {
+      "name": "s11dd.iff",
+      "retail_sha256": "b0a8e1bd6b5e618767173da25f16af02bf79fff9638d3a7e719b721e0070f340",
+      "applied_sha256": "973b12e1221eb7746e8551fadd22d1d1bab87640e099ffbe6dba0cd564b43158",
+      "decoded": [
+        {
+          "kind": "decoded colour-map mean",
+          "rgb": [
+            52,
+            90,
+            61
+          ]
+        },
+        {
+          "kind": "decoded colour-map mean",
+          "rgb": [
+            119,
+            180,
+            95
+          ]
+        }
+      ],
+      "rig": "night_indoor",
+      "prediction": [
+        67,
+        101,
+        48
+      ],
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 265520,
+          "before_sha256": "afdad9a8a335697b5f80f16d86facf4a6209517a5fcdfca6d5889d1c988beb40",
+          "after_sha256": "c50786d50a0e8b368ec6f5e0801ad15225fb91dc72335fd0fcdfee022c717542",
+          "palettes": [
+            {
+              "material": "color_premipped",
+              "offset": 302976,
+              "gain": 1.0,
+              "changed": 6
+            },
+            {
+              "material": "grass_outside_premipped",
+              "offset": 571456,
+              "gain": 1.096,
+              "changed": 48
+            },
+            {
+              "material": "endzone_N_L",
+              "offset": 67712,
+              "gain": 1.0,
+              "changed": 0
+            },
+            {
+              "material": "endzone_N_M",
+              "offset": 112384,
+              "gain": 1.0,
+              "changed": 0
+            },
+            {
+              "material": "endzone_N_R",
+              "offset": 157056,
+              "gain": 1.0,
+              "changed": 0
+            },
+            {
+              "material": "endzone_S_L",
+              "offset": 201728,
+              "gain": 1.0,
+              "changed": 0
+            },
+            {
+              "material": "endzone_S_M",
+              "offset": 246400,
+              "gain": 1.0,
+              "changed": 0
+            },
+            {
+              "material": "endzone_S_R",
+              "offset": 291072,
+              "gain": 1.0,
+              "changed": 0
+            },
+            {
+              "material": "center_logo",
+              "offset": 391360,
+              "gain": 1.0,
+              "changed": 21
+            }
+          ],
+          "materials": [],
+          "vertex_tints": 96,
+          "refit": true,
+          "encoder": "greedy",
+          "fill": "trailing",
+          "padding_bytes": 5,
+          "alias_scratch": 3,
+          "scratch_bytes": 16
+        },
+        {
+          "kind": "normal",
+          "offset": 286368,
+          "size": 165856,
+          "before_sha256": "4c9d116256ca6390128c9045c1b95eb0b2d605086d82b2dee5af55baff5f5c5a",
+          "after_sha256": "76b99a6b9071d5dc37173de84c4d856c51e34d40d7c7dd20bd2f2bfd5d6176de",
+          "refit": true,
+          "encoder": "greedy",
+          "fill": "trailing",
+          "padding_bytes": 23,
+          "alias_scratch": 4613,
+          "scratch_bytes": 4624
+        },
+        {
+          "kind": "tint",
+          "offset": 452308,
+          "size": 4,
+          "before_sha256": "ad95131bc0b799c0b1af477fb14fcf26a6a9f76079e48bf090acb7e8367bfd0e",
+          "after_sha256": "ad95131bc0b799c0b1af477fb14fcf26a6a9f76079e48bf090acb7e8367bfd0e"
+        }
+      ]
+    },
+    {
+      "name": "s09dd.iff",
+      "retail_sha256": "e465ae726533eb38ba9f60265c50c895a8c615229d7959e71d706a192bb5d807",
+      "applied_sha256": "7dcb7d27b67b9d0995dd05cdee7650f0876ea45f367c12243bc13dc4ea446ca4",
+      "decoded": [
+        {
+          "kind": "material +0x18",
+          "rgb": [
+            64,
+            96,
+            51
+          ]
+        },
+        {
+          "kind": "material +0x18",
+          "rgb": [
+            142,
+            187,
+            89
+          ]
+        }
+      ],
+      "rig": "night_indoor",
+      "prediction": [
+        80,
+        105,
+        45
+      ],
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 119360,
+          "before_sha256": "84910569c46f04a71def49df37cc9991cc91f663f4ad8435b840fef1b5cbabb8",
+          "after_sha256": "37098c75c142e819871c525f39cf8b472fa4c896cff5d489aafb1180a713391d",
+          "palettes": [
+            {
+              "material": "grass_outside_premipped",
+              "offset": 424640,
+              "gain": 1.0,
+              "changed": 57
+            },
+            {
+              "material": "endzone_N_L",
+              "offset": 66816,
+              "gain": 1.0,
+              "changed": 159
+            },
+            {
+              "material": "endzone_N_M",
+              "offset": 111488,
+              "gain": 1.0,
+              "changed": 132
+            },
+            {
+              "material": "endzone_N_R",
+              "offset": 156160,
+              "gain": 1.0,
+              "changed": 117
+            },
+            {
+              "material": "center_logo",
+              "offset": 244544,
+              "gain": 1.0,
+              "changed": 0
+            }
+          ],
+          "materials": [
+            {
+              "material": "color_premipped",
+              "field": "0x18",
+              "before": "0xff406033",
+              "after": "0xff8ebb59"
+            }
+          ],
+          "vertex_tints": 96,
+          "refit": true,
+          "encoder": "greedy",
+          "fill": "trailing",
+          "padding_bytes": 10,
+          "alias_scratch": 0,
+          "scratch_bytes": 16
+        },
+        {
+          "kind": "normal",
+          "offset": 140224,
+          "size": 175904,
+          "before_sha256": "a0591b091a54a7fbc38601d7fdd739f6a1d7b054381745291226acfd4336094a",
+          "after_sha256": "50e175a280ed2be721e9c7a655be9cca0d2ebc765930d711b4976bc99e6f528d",
+          "refit": false,
+          "raw": true
+        },
+        {
+          "kind": "tint",
+          "offset": 316212,
+          "size": 4,
+          "before_sha256": "ad95131bc0b799c0b1af477fb14fcf26a6a9f76079e48bf090acb7e8367bfd0e",
+          "after_sha256": "ad95131bc0b799c0b1af477fb14fcf26a6a9f76079e48bf090acb7e8367bfd0e"
+        }
+      ]
+    }
+  ],
+  "xbe_receipt": {
+    "state": "applied",
+    "enabled": true,
+    "label": "EXPERIMENTAL / UNWITNESSED",
+    "runtime_witnessed": false,
+    "schema": "nfl2k5_colour_lighting_receipt/v1",
+    "settings": {
+      "schema": "nfl2k5_colour_lighting/v1",
+      "values": {
+        "turf.hue_target": 72.0,
+        "turf.hue_pull": 0.5,
+        "turf.saturation": 1.12,
+        "turf.value_lift": 2.8,
+        "endzones.hue_target": 72.0,
+        "endzones.hue_pull": 0.5,
+        "endzones.saturation": 1.12,
+        "endzones.value_lift": 2.8,
+        "outside.hue_target": 72.0,
+        "outside.hue_pull": 0.5,
+        "outside.saturation": 1.12,
+        "outside.value_lift": 2.8,
+        "turf.map_contrast": 1.0,
+        "outside.match": 1.0,
+        "outside.falloff": 0.45,
+        "divots.contrast": 0.3,
+        "normal.flatten": 0.68,
+        "tints.day": 1.0,
+        "tints.afternoon": 1.0,
+        "tints.night": 1.0,
+        "rig_day.gain": 1.0,
+        "rig_day.balance": 1.0,
+        "rig_day.ambient": 0.44,
+        "rig_day.key": 1.6,
+        "rig_day.fill": 0.99,
+        "rig_night_indoor.gain": 1.0,
+        "rig_night_indoor.balance": 1.0,
+        "rig_night_indoor.ambient": 0.5,
+        "rig_night_indoor.key": 0.86,
+        "rig_night_indoor.fill": 0.86,
+        "rig_alt_day.gain": 1.0,
+        "rig_alt_day.balance": 1.0,
+        "rig_alt_day.ambient": 0.45,
+        "rig_alt_day.key": 1.1,
+        "rig_alt_day.fill": 0.4,
+        "rig_alt_dynamic.gain": 1.0,
+        "rig_alt_dynamic.balance": 1.0,
+        "rig_alt_dynamic.ambient": 0.42,
+        "rig_alt_dynamic.key": 1.1,
+        "rig_alt_dynamic.fill": 0.4,
+        "rig_rain.gain": 1.0,
+        "rig_rain.balance": 1.0,
+        "rig_rain.ambient": 0.46,
+        "rig_rain.key": 0.7,
+        "rig_rain.fill": 0.7,
+        "rig_snow.gain": 1.0,
+        "rig_snow.balance": 1.0,
+        "rig_snow.ambient": 0.5,
+        "rig_snow.key": 0.62,
+        "rig_snow.fill": 0.62,
+        "rig_afternoon.gain": 1.0,
+        "rig_afternoon.balance": 1.0,
+        "rig_afternoon.ambient": 0.6,
+        "rig_afternoon.key": 1.2,
+        "rig_afternoon.fill": 1.04
+      },
+      "disabled": [],
+      "enabled": {
+        "turf": true,
+        "endzones": true,
+        "outside": true,
+        "divots": true,
+        "normal": true,
+        "tints": true,
+        "rig_day": true,
+        "rig_afternoon": true,
+        "rig_night_indoor": true,
+        "rig_rain": true,
+        "rig_snow": true,
+        "rig_alt_day": true,
+        "rig_alt_dynamic": true
+      },
+      "linked": {
+        "endzones": true,
+        "outside": true
+      },
+      "preview_class": "outdoor",
+      "preview_rig": "night_indoor"
+    },
+    "settings_sha256": "397dd8980d4d428347a06035a899b08b0add584a80408d02d50d57a3123bb381",
+    "tables": [
+      {
+        "name": "day",
+        "va": "0x4e73b0"
+      },
+      {
+        "name": "night_indoor",
+        "va": "0x4e74d0"
+      },
+      {
+        "name": "alt_day",
+        "va": "0x4e75f0"
+      },
+      {
+        "name": "alt_dynamic",
+        "va": "0x4e7710"
+      },
+      {
+        "name": "rain",
+        "va": "0x4e7830"
+      },
+      {
+        "name": "snow",
+        "va": "0x4e7950"
+      },
+      {
+        "name": "afternoon",
+        "va": "0x4e7a70"
+      }
+    ],
+    "changed_bytes": 289,
+    "edits": [
+      {
+        "label": "day",
+        "va": "0x4e73b0",
+        "size": 288
+      },
+      {
+        "label": "night_indoor",
+        "va": "0x4e74d0",
+        "size": 288
+      },
+      {
+        "label": "alt_day",
+        "va": "0x4e75f0",
+        "size": 288
+      },
+      {
+        "label": "alt_dynamic",
+        "va": "0x4e7710",
+        "size": 288
+      },
+      {
+        "label": "rain",
+        "va": "0x4e7830",
+        "size": 288
+      },
+      {
+        "label": "snow",
+        "va": "0x4e7950",
+        "size": 288
+      },
+      {
+        "label": "afternoon",
+        "va": "0x4e7a70",
+        "size": 288
+      }
+    ]
+  }
+}

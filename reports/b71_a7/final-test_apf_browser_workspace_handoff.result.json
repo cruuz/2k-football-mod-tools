@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_browser_workspace_handoff",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_browser_workspace_handoff.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:44:45.033407+00:00",
+  "ended": "2026-09-16T00:44:45.921018+00:00",
+  "seconds": 0.888,
+  "exit_code": 0
+}

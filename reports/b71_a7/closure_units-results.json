@@ -1,0 +1,26 @@
+[
+  {
+    "path": "tests/mod_editor/test_product_catalog.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_phase1_packaging.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_provider_integrity.py",
+    "exit_code": 1
+  },
+  {
+    "path": "tests/mod_editor/test_providers.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_capability_registry_module_commands.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_b68_a1_audit.py",
+    "exit_code": 0
+  }
+]

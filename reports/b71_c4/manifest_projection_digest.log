@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-c4/reports/b71_c4/project_manifest.py", line 85, in <module>
+    main()
+  File "/home/noah/2k-worktrees/astra-b71-c4/reports/b71_c4/project_manifest.py", line 67, in main
+    assert cursor>=hi,(row,'write exceeds historical ownership')
+           ^^^^^^^^^^
+AssertionError: ({'start': '0x10a40', 'end': '0x10a48', 'size': 8, 'owner': 'nfl2k5_scorebug_runtime', 'basis': 'observed byte diff'}, 'write exceeds historical ownership')

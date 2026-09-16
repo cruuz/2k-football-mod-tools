@@ -1,0 +1,11 @@
+{
+  "name": "delivery-check",
+  "command": [
+    "python3",
+    "reports/b71_s3/check_delivery.py"
+  ],
+  "start": "2026-09-15T20:55:38.947128+00:00",
+  "end": "2026-09-15T20:55:39.239630+00:00",
+  "seconds": 0.293,
+  "exit": 0
+}

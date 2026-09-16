@@ -1,0 +1,12 @@
+test_pinned_source_has_no_signature_verification (__main__.LocalXeniaAuditTests.test_pinned_source_has_no_signature_verification) ... skipped 'optional local Xenia source revision d09cae8d is unavailable'
+test_boundary_offsets_match_xenia_equation (__main__.RehashTests.test_boundary_offsets_match_xenia_equation) ... ok
+test_chain_incompatibility_and_shared_directory_are_refused (__main__.RehashTests.test_chain_incompatibility_and_shared_directory_are_refused) ... ok
+test_companion_file_preserved_and_sparse_directory_refused (__main__.RehashTests.test_companion_file_preserved_and_sparse_directory_refused) ... ok
+test_known_synthetic_roster_round_trip_all_copies_and_chains (__main__.RehashTests.test_known_synthetic_roster_round_trip_all_copies_and_chains) ... ok
+test_metadata_payload_and_receipt_tampering_are_rejected (__main__.RehashTests.test_metadata_payload_and_receipt_tampering_are_rejected) ... ok
+test_one_level_and_all_magics (__main__.RehashTests.test_one_level_and_all_magics) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.521s
+
+OK (skipped=1)

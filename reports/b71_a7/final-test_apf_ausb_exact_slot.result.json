@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_ausb_exact_slot",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_ausb_exact_slot.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:33:19.459575+00:00",
+  "ended": "2026-09-16T00:33:33.139266+00:00",
+  "seconds": 13.68,
+  "exit_code": 0
+}

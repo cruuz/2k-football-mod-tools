@@ -1,0 +1,130 @@
+bash tools/validate_apf_audo_exact_slot.sh	apf2k8.audio.xma_export
+bash tools/validate_apf_ausb_exact_slot.sh	apf2k8.audio.ausb_xma_export
+bash tools/validate_apf_digital_font_typed_provider.sh	apf2k8.scorebug_presentation.digital_font
+bash tools/validate_apf_franchise_runtime_ownership.sh	apf2k8.schedules_franchise.retained
+bash tools/validate_apf_helmet_typed_provider.sh	apf2k8.uniforms.helmet_color_00_23
+bash tools/validate_apf_jersey_family_patch.sh	apf2k8.uniforms.jersey_00_23
+bash tools/validate_apf_jersey_selector_patch.sh	apf2k8.colors.uniform_selector_jersey_dealias
+bash tools/validate_apf_logo_patch.sh	apf2k8.logos_cards.team_logo
+bash tools/validate_apf_pants_typed_provider.sh	apf2k8.uniforms.pants_color_00_23
+bash tools/validate_apf_scene.sh	apf2k8.portraits_faces.hi_head
+bash tools/validate_apf_shoulder_typed_provider.sh	apf2k8.uniforms.shoulder_color_00_23
+bash tools/validate_apf_stadium_catalog_position_patch.sh	apf2k8.models.scne_same_count_position
+bash tools/validate_apf_stadium_node17_topology.sh	apf2k8.models.scne_same_footprint_topology
+bash tools/validate_apf_static_gltf.sh	apf2k8.models.scne_gltf,apf2k8.stadiums.geometry
+bash tools/validate_apf_texture_patch.sh	apf2k8.logos_cards.draft_logo
+bash tools/validate_apf_uniform_inventory.sh	apf2k8.colors.uniform_selector_bytes,apf2k8.logos_cards.uniform_catalog,apf2k8.uniforms.catalog
+bash tools/validate_apf_uniform_selector_mod_release.sh	apf2k8.colors.uniform_selector_all_family_capacity
+bash tools/validate_apf_uniform_xenia_runtime.sh	apf2k8.uniforms.jersey_06_runtime
+bash tools/validate_cross_title_model_compatibility.sh	apf2k8.cross_title_model_conversion.nfl_to_apf,nfl2k5.cross_title_model_conversion.to_apf
+bash tools/validate_director_inventory.sh	nfl2k5.scripts.director_playbook
+bash tools/validate_gameplay_tuning_ai_draft_audit.sh	apf2k8.gameplay_tuning_sliders.roster_view,nfl2k5.gameplay_tuning_sliders.rating_view
+bash tools/validate_layout_inventory.sh	apf2k8.menus.layouts,nfl2k5.menus.layouts
+bash tools/validate_menu_state_trace_closure.sh	apf2k8.mode_state_routing.state_graph,nfl2k5.mode_state_routing.state_graph
+bash tools/validate_mod_editor_gameplay_inspection.sh	apf2k8.cpu_ai_draft.logic
+bash tools/validate_nfl2k5_audo_fixed_slots.sh	nfl2k5.audio.fixed_audo_wav
+bash tools/validate_nfl2k5_ps2_save.sh	nfl2k5ps2.saves.roster_name_writer
+bash tools/validate_nfl2k5_visual_mod_project.sh	nfl2k5.audio.ausb_fixed_range_wav,nfl2k5.crib.assets,nfl2k5.logos.team_select_cards
+bash tools/validate_nfl2k5_xbox_save_inventory.sh	nfl2k5.saves.dashboard
+bash tools/validate_nfl_actual_jersey_binding_away_loader_safe_xemu_runtime.sh	nfl2k5.uniforms.detroit_away_runtime
+bash tools/validate_nfl_create_team_field_art_pipeline.sh	nfl2k5.stadiums.create_team_field_art
+bash tools/validate_nfl_draft_weight_xbe_integrity_probe.sh	nfl2k5.cpu_ai_draft.logic
+bash tools/validate_nfl_franchise_limit_feasibility.sh	nfl2k5.schedules_franchise.database
+bash tools/validate_nfl_full_audio.sh	nfl2k5.audio.audo_wav
+bash tools/validate_nfl_group36_xemu_runtime_result_v2.sh	nfl2k5.models.scne_same_footprint_geometry
+bash tools/validate_nfl_live_face_texture.sh	nfl2k5.portraits_faces.live_textures
+bash tools/validate_nfl_menu_back_audio_modding.sh	nfl2k5.audio.menu_back_wav
+bash tools/validate_nfl_player_portrait_pipeline.sh	nfl2k5.portraits_faces.roster_portraits
+bash tools/validate_nfl_player_roster_general.sh	nfl2k5.players.disc_roster
+bash tools/validate_nfl_scorebug_runtime_receipts.sh	nfl2k5.scorebug_presentation.score_buga_runtime,nfl2k5.scorebug_presentation.shield_espn_runtime
+bash tools/validate_nfl_stadium_catalog_position_patch.sh	nfl2k5.models.scne_same_count_position
+bash tools/validate_nfl_stadium_upper_deck_subset_patch.sh	nfl2k5.models.scne_upper_deck_source_subset
+bash tools/validate_nfl_static_gltf.sh	nfl2k5.stadiums.geometry
+bash tools/validate_nfl_uniform_color_xiso_direct.sh	nfl2k5.colors.unif_words
+bash tools/validate_scorebug_products.sh	apf2k8.scorebug_presentation.inventory,nfl2k5.scorebug_presentation.inventory
+python3 -m mod_editor.core.nfl2k5_animation_import --help	nfl2k5.animations.inspect_export
+python3 -m mod_editor.core.nfl2k5_franchise_2026 --self-check	nfl2k5.schedules_franchise.rules_2026_inspection
+python3 -m mod_editor.core.nfl2k5_hires_pack catalog	nfl2k5.textures.hires_pack
+python3 -m mod_editor.core.nfl2k5_modern_naming check	nfl2k5.menus.modern_naming
+python3 -m tests.mod_editor.test_apf_b67_clone	apf2k8.playbooks.own_books
+python3 -m tests.mod_editor.test_apf_b67_model_native	apf2k8.playbooks.selector_preview
+python3 -m tests.mod_editor.test_apf_b67_writers	apf2k8.playbooks.formation_categories,apf2k8.playbooks.play_ratings,apf2k8.playbooks.retire_category
+python3 -m tests.mod_editor.test_apf_b67_writers_native	apf2k8.playbooks.category_curves,apf2k8.playbooks.formation_ratings,apf2k8.playbooks.remove_formation,apf2k8.playbooks.row_coverage,apf2k8.playbooks.team_tendency
+python3 -m tests.mod_editor.test_apf_b69_formation_calling	apf2k8.playbooks.never_call
+python3 -m tests.mod_editor.test_apf_b69_schemes	apf2k8.playbooks.offensive_schemes,apf2k8.playbooks.scheme_spreadsheet
+python3 -m tests.mod_editor.test_apf_field_material_writer	apf2k8.field_art.material_opacity
+python3 -m tests.mod_editor.test_apf_fourth_down	apf2k8.playbooks.fourth_down
+python3 -m tests.mod_editor.test_apf_playcall_patch	apf2k8.playbooks.pass_fetch_te_bias
+python3 -m tests.mod_editor.test_apf_playcalling_editor_build	apf2k8.playbooks.own_team_books
+python3 -m tests.mod_editor.test_apf_playcalling_editor_facade	apf2k8.playbooks.cpu_playcalling
+python3 -m tests.mod_editor.test_apf_playcalling_editor_patches	apf2k8.playbooks.personnel_curve_patch
+python3 -m tests.mod_editor.test_apf_playcalling_editor_qt	apf2k8.playbooks.master_personnel
+python3 -m tests.mod_editor.test_apf_team_art	apf2k8.logos_cards.team_art_browser
+python3 -m tests.mod_editor.test_b69_j1_fit	nfl2k5.textures.all_p8,nfl2k5.uniforms.all_visual
+python3 -m tests.mod_editor.test_colour_lighting	nfl2k5.presentation.modern_color_lighting
+python3 -m tests.mod_editor.test_nfl2k5_abilities_v2	nfl2k5.gameplay.abilities_runtime
+python3 -m tests.mod_editor.test_nfl2k5_abilities_v2_qt	nfl2k5.rosters.abilities_v2
+python3 -m tests.mod_editor.test_nfl2k5_accelerated_clock	nfl2k5.gameplay.accelerated_clock
+python3 -m tests.mod_editor.test_nfl2k5_b68_game_composition	nfl2k5.scorebug_presentation.runtime
+python3 -m tests.mod_editor.test_nfl2k5_b69_rules	nfl2k5.gameplay.coin_defer,nfl2k5.gameplay.cpu_scrambles,nfl2k5.gameplay.decided_clock
+python3 -m tests.mod_editor.test_nfl2k5_calendar_engine	nfl2k5.schedules_franchise.calendar_engine
+python3 -m tests.mod_editor.test_nfl2k5_coverage_trail	nfl2k5.gameplay.coverage_trail
+python3 -m tests.mod_editor.test_nfl2k5_cpu_money_downs	nfl2k5.gameplay.cpu_money_downs
+python3 -m tests.mod_editor.test_nfl2k5_crib_reclaim	nfl2k5.crib.movie_reclaim
+python3 -m tests.mod_editor.test_nfl2k5_deep_zone	nfl2k5.gameplay.deep_zone_tiers
+python3 -m tests.mod_editor.test_nfl2k5_defensive_try_stats	nfl2k5.gameplay_tuning_sliders.defensive_try
+python3 -m tests.mod_editor.test_nfl2k5_espn25_rosters	nfl2k5.rosters.espn25_real_rosters
+python3 -m tests.mod_editor.test_nfl2k5_espn25_scenarios	nfl2k5.espn25.scenarios_rosters
+python3 -m tests.mod_editor.test_nfl2k5_franchise_autosave	nfl2k5.gameplay.franchise_autosave
+python3 -m tests.mod_editor.test_nfl2k5_franchise_edit_player	nfl2k5.gameplay.franchise_edit_player
+python3 -m tests.mod_editor.test_nfl2k5_gameplay_levers	nfl2k5.gameplay.coverage_slider,nfl2k5.gameplay.scramble_tuning
+python3 -m tests.mod_editor.test_nfl2k5_guardian_overlay	nfl2k5.equipment.guardian_overlay
+python3 -m tests.mod_editor.test_nfl2k5_helmet_finish	nfl2k5.uniforms.helmet_finish
+python3 -m tests.mod_editor.test_nfl2k5_match_coverage	nfl2k5.scripts.match_coverage
+python3 -m tests.mod_editor.test_nfl2k5_model_project	nfl2k5.models.scne_gltf
+python3 -m tests.mod_editor.test_nfl2k5_modern_arrowhead	nfl2k5.stadiums_fields.modern_arrowhead
+python3 -m tests.mod_editor.test_nfl2k5_momentum_collisions	nfl2k5.gameplay.momentum
+python3 -m tests.mod_editor.test_nfl2k5_music_playlist	nfl2k5.music.playlist
+python3 -m tests.mod_editor.test_nfl2k5_my_career	nfl2k5.mode.my_career
+python3 -m tests.mod_editor.test_nfl2k5_my_career_draft	nfl2k5.mode.my_career_inline
+python3 -m tests.mod_editor.test_nfl2k5_my_career_playcalling	nfl2k5.mode.my_career_playcalling
+python3 -m tests.mod_editor.test_nfl2k5_my_career_prospects	nfl2k5.mode.my_career_prospects
+python3 -m tests.mod_editor.test_nfl2k5_penalties	nfl2k5.gameplay.chop_block_toggle
+python3 -m tests.mod_editor.test_nfl2k5_play_rules	nfl2k5.scripts.play_rules
+python3 -m tests.mod_editor.test_nfl2k5_playbook_pair	nfl2k5.gameplay.playbook_pair
+python3 -m tests.mod_editor.test_nfl2k5_player_star_draw	nfl2k5.players_rosters.filled_star
+python3 -m tests.mod_editor.test_nfl2k5_position_choices	nfl2k5_xbox.position_pool_filters
+python3 -m tests.mod_editor.test_nfl2k5_practice_squad_screen	nfl2k5.franchise.practice_squad_screen
+python3 -m tests.mod_editor.test_nfl2k5_presentation_v6	nfl2k5.camera.broadcast_v6
+python3 -m tests.mod_editor.test_nfl2k5_qb_spy_man_rush	nfl2k5.gameplay.qb_spy
+python3 -m tests.mod_editor.test_nfl2k5_read_option_diagnostic	nfl2k5.gameplay.read_option_runtime
+python3 -m tests.mod_editor.test_nfl2k5_roster_arena_growth	nfl2k5.rosters.arena_growth
+python3 -m tests.mod_editor.test_nfl2k5_roster_csv	nfl2k5.rosters.player_csv
+python3 -m tests.mod_editor.test_nfl2k5_roster_storage	nfl2k5.stadiums_fields.all_stadiums
+python3 -m tests.mod_editor.test_nfl2k5_scorebug_author	nfl2k5.scorebug_presentation.studio
+python3 -m tests.mod_editor.test_nfl2k5_scorebug_resources	nfl2k5.scorebug_presentation.runtime_probes
+python3 -m tests.mod_editor.test_nfl2k5_scorebug_template	nfl2k5.scorebug_presentation.template
+python3 -m tests.mod_editor.test_nfl2k5_screen_hooks	nfl2k5.gameplay.screen_hooks
+python3 -m tests.mod_editor.test_nfl2k5_senior_bowl	nfl2k5.franchise.senior_bowl_preview
+python3 -m tests.mod_editor.test_nfl2k5_shoe_relief	nfl2k5.uniforms.bump_textures
+python3 -m tests.mod_editor.test_nfl2k5_stadium_editor_roundtrip	nfl2k5.stadiums_fields.blender_textures
+python3 -m tests.mod_editor.test_nfl2k5_team_names_2026	nfl2k5.players.team_names_2026
+python3 -m tests.mod_editor.test_nfl2k5_throw_arc	nfl2k5.gameplay.flatter_deep_ball
+python3 -m tests.mod_editor.test_nfl2k5_uniform_choice_screens	nfl2k5.uniforms.colour_choice
+python3 -m tests.mod_editor.test_nfl2k5_weather	nfl2k5.weather.climate_editor
+python3 -m tests.mod_editor.test_nfl2k5_weather_native	nfl2k5.weather.haze_coefficient
+python3 -m tests.mod_editor.test_nfl2k5_weekly_prep	nfl2k5.franchise.weekly_preparation
+python3 -m tests.mod_editor.test_nfl2k5_xbe_space	nfl2k5.gameplay.kickoff_relocated,nfl2k5.gameplay.xbe_space
+python3 -m tests.mod_editor.test_roster_save_to_disc	nfl2k5.rosters.save_to_disc
+python3 -m tests.mod_editor.test_rosters_data_qt	nfl2k5.players.age_shift
+python3 -m tools.validate_beta61_integrated_features	nfl2k5.gameplay.zone_drop_cap
+python3 packaging/check_apf2k8_mod_studio_runtime.py	apf2k8.cpu_ai_draft.play_design.concept_recipes,apf2k8.cpu_ai_draft.play_design.cpu_calls,apf2k8.cpu_ai_draft.play_design.create_formation,apf2k8.cpu_ai_draft.play_design.create_play,apf2k8.cpu_ai_draft.play_design.defensive_assignments,apf2k8.cpu_ai_draft.play_design.edit_play,apf2k8.cpu_ai_draft.play_design.five_step_drop,apf2k8.cpu_ai_draft.play_design.spy,apf2k8.gameplay_tuning_sliders.coverage_geometry,apf2k8.logos_cards.ps3_texture_bundle,apf2k8.playbooks.clone,apf2k8.playbooks.cpu_audibles,apf2k8.playbooks.identity,apf2k8.playbooks.scheme_presets,apf2k8.players_rosters.ps3_roster_import
+python3 tools/validate_apf_custom_team_appearance.py	apf2k8.colors.uniform_selector_appearance_custom_team
+python3 tools/validate_apf_field_art_product.py	apf2k8.field_art.base_texture
+python3 tools/validate_apf_logocache_product.py	apf2k8.logos_cards.team_logo_cache
+python3 tools/validate_apf_playbook_route_writer.py	apf2k8.scripts.director_playbook
+python3 tools/validate_apf_roster_identity_patch.py	apf2k8.players.roster
+python3 tools/validate_apf_stadium_texture_product.py	apf2k8.stadiums.textures
+python3 tools/validate_apf_textlogo_product.py	apf2k8.logos_cards.textlogo_wordmarks
+python3 tools/validate_beta61_integrated_features.py	nfl2k5.models.guardian_cap_c_trial,nfl2k5.music.bank_rebuild,nfl2k5.music.fixed_slot,nfl2k5.music.policy,nfl2k5.schedules_franchise.season_cap,nfl2k5.screens.timing
+MOD_EDITOR_CAPABILITY_VALIDATION_PLAN_OK capabilities=176 covered=171 deferred_without_validator=5 unique_validators=129

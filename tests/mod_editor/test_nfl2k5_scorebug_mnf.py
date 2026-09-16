@@ -42,10 +42,6 @@ class OwnerCodeTests(unittest.TestCase):
             self.assertEqual(content[at:at + 2], b"\xc7\x05")
             self.assertEqual(struct.unpack_from("<I", content, at + 2)[0], runtime.CITY_CALLBACKS[side])
             self.assertEqual(struct.unpack_from("<I", content, at + 6)[0], labels[f"dash_text{side}"])
-        at = labels["plate_table_ref"] - code_va
-        self.assertEqual(struct.unpack_from("<I", content, at)[0], labels["plate_table"])
-        table = struct.unpack_from("<40I", content, labels["plate_table"] - code_va)
-        self.assertEqual(list(table), exact.plate_table())
 
     def test_plate_table_is_indexed_by_asset_code(self):
         table = exact.plate_table()
@@ -54,9 +50,9 @@ class OwnerCodeTests(unittest.TestCase):
         self.assertEqual(table[int(TEAM_LOGOS["KC"]["asset_code"])], exact.plate_argb("KC"))
         self.assertEqual(table[int(TEAM_LOGOS["DEN"]["asset_code"])], exact.plate_argb("DEN"))
         self.assertTrue(all(word >> 24 == 0xFF for word in table))
-        # Dark primaries are brightened along their hue, never toward grey.
+        # Near-black primaries use the explicit secondary-colour table.
         den = exact.plate_argb("DEN")
-        self.assertGreater(den & 0xFF, (den >> 16) & 0xFF)
+        self.assertEqual(den, 0xFFFB4F14)
 
     def test_state_layout_fits_the_data_page(self):
         self.assertLess(runtime.PHASE + 4, runtime.DATA_SIZE)
@@ -73,16 +69,34 @@ class OwnerCodeTests(unittest.TestCase):
 
 
 class ArtTests(unittest.TestCase):
-    def test_atlas_and_panels(self):
-        atlas = exact.atlas_mnf()
-        self.assertEqual(atlas.size, (64, 64))
-        self.assertLessEqual(len(set(atlas.getdata())), 256)
-        for team, side in (("DEN", "away"), ("KC", "home"), (None, "away")):
-            panel = exact.mnf_panel(team, side)
-            self.assertEqual(panel.size, (128, 32))
-        away = exact.mnf_panel("KC", "away")
-        # The team colour sits at the outer cap (left for away) and fades toward the middle.
-        self.assertGreater(away.getpixel((0, 16))[0], away.getpixel((120, 16))[0])
+    def test_painted_atlas_masks_and_shared_logo_cells(self):
+        atlas=exact.atlas_mnf()
+        self.assertEqual(atlas.size,(256,512))
+        a,b,c,d=exact.MNF_REGIONS['ramp']
+        self.assertEqual(atlas.getpixel((a,(b+d)//2))[:3],(255,255,255))
+        self.assertGreater(atlas.getpixel((a,(b+d)//2))[3],atlas.getpixel((c-1,(b+d)//2))[3])
+        for team in ('DEN','KC'):
+            left,right=exact.mnf_panel(team,'away'),exact.mnf_panel(team,'home')
+            self.assertEqual(left.size,(64,64))
+            self.assertEqual(left.tobytes(),right.tobytes())
+            self.assertIsNotNone(left.getchannel('A').getbbox())
+        self.assertIsNone(exact.mnf_panel(None,'home').getchannel('A').getbbox())
+
+    @unittest.skipUnless(INDEX.is_file(), 'private retail pack absent')
+    def test_painted_strips_use_only_the_intended_quads(self):
+        from mod_editor.core import nfl2k5_scorebug_ingame as r
+        rec=r.RESOURCES['score_bug']
+        with INDEX.open('rb') as stream:
+            stream.seek(rec['pack_offset']);span=stream.read(rec['span_size'])
+        mesh=exact.mesh_mnf(r.pinned(span,rec))
+        counts=[]
+        for k,indices in r.layout.strips(mesh.buf):
+            count=0
+            for i in range(len(indices)-2):
+                a,b,c=[mesh.pos[v] for v in indices[i:i+3]]
+                if abs((b[0]-a[0])*(c[1]-a[1])-(c[0]-a[0])*(b[1]-a[1]))>1e-5:count+=1
+            counts.append(count)
+        self.assertEqual(counts,[2,2,2,6,3,2,2,2,2,2,2])
 
     def test_layout_measurements_are_the_broadcast_ones(self):
         bar = exact.MNF_BAR
@@ -92,9 +106,11 @@ class ArtTests(unittest.TestCase):
 
     def test_probe_sizes_for_the_compact_profile(self):
         count, appendix, growth = resources.probe_sizes("mnf")
-        self.assertEqual(count, 66)
-        self.assertEqual(appendix, 66 * resources.RUNTIME_TEXTURE_SPAN)
-        self.assertLess(count * 5376, 400_000)
+        self.assertEqual(count, 33)
+        # 66 wing panels plus the two appended clock fonts (FirstPersonComic and core_bug).
+        self.assertEqual(appendix, 32 * 5280 + 2208 + 132256 + resources.CLOCK_FONT_SPAN_SIZE)
+        self.assertEqual(resources.CLOCK_FONT_SPAN_SIZE, 80160 + 27040)
+        self.assertLess(appendix, 413_569)
         self.assertEqual(growth % 2048, 0)
 
 
@@ -131,8 +147,8 @@ class RetailFontTests(unittest.TestCase):
         with INDEX.open("rb") as stream:
             stream.seek(arec["pack_offset"]); aspan = stream.read(arec["span_size"])
         anew, ainfo = r.encode_atlas(aspan, exact.atlas_mnf())
-        self.assertTrue(ainfo["wrapper_identical"])
-        self.assertEqual(len(anew), len(aspan))
+        self.assertEqual((ainfo["width"],ainfo["height"]),(256,512))
+        self.assertEqual(len(anew), resources.MNF_ATLAS_SPAN_SIZE)
 
 
 if __name__ == "__main__":

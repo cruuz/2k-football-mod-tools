@@ -48,6 +48,8 @@ def restore(panel, state):
             box.setChecked(value == "matte" if key == "helmet_finish"
                            else value == "jukebox_menus" if key == "music_policy"
                            else value != "retail" if key == "cpu_money_downs" else bool(value))
+        panel.colour_lighting.set_settings(choices["modern_color_settings"])
+        panel.colour_lighting.set_active(choices["modern_color"])
         panel.ceiling_spin.setValue(round(choices["max_deep_yards"]))
         panel.arc_spin.setValue(round(choices["arc"] * 100))
         panel._momentum_last_positive = choices["momentum"] or 50
@@ -151,6 +153,9 @@ class GameplayBuildLink:
 
 def observe_build_choices(panel, changed):
     """Persist controls which are not shared with the Gameplay page too."""
+    colour_lighting = getattr(panel, "colour_lighting", None)
+    if colour_lighting is not None:
+        colour_lighting.changed.connect(changed)
     for widget in panel.findChildren(QObject):
         if isinstance(widget, QCheckBox):
             widget.toggled.connect(changed)

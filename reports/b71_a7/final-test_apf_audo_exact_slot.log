@@ -1,0 +1,22 @@
+test_failed_pcm_preview_leaves_no_destination_or_hidden_temp (__main__.RiffAndValidationTests.test_failed_pcm_preview_leaves_no_destination_or_hidden_temp) ... ok
+test_ffmpeg_error_layout_error_and_128_sample_delta_are_rejected (__main__.RiffAndValidationTests.test_ffmpeg_error_layout_error_and_128_sample_delta_are_rejected) ... ok
+test_import_returns_raw_packets_only_and_decodes_ephemeral_target_wrapper (__main__.RiffAndValidationTests.test_import_returns_raw_packets_only_and_decodes_ephemeral_target_wrapper) ... ok
+test_non_packet_multiple_and_nonzero_riff_padding_are_rejected (__main__.RiffAndValidationTests.test_non_packet_multiple_and_nonzero_riff_padding_are_rejected) ... ok
+test_packet_gate_rejects_exact_near_and_cross_source_reuse (__main__.RiffAndValidationTests.test_packet_gate_rejects_exact_near_and_cross_source_reuse) ... ok
+test_raw_project_payload_gets_cheap_and_complete_reauthorization (__main__.RiffAndValidationTests.test_raw_project_payload_gets_cheap_and_complete_reauthorization) ... ok
+test_riff_container_and_fmt_corruption_fail_closed (__main__.RiffAndValidationTests.test_riff_container_and_fmt_corruption_fail_closed) ... ok
+test_staged_payload_pcm_preview_is_verified_and_published_no_replace (__main__.RiffAndValidationTests.test_staged_payload_pcm_preview_is_verified_and_published_no_replace) ... ok
+test_standalone_cli_prints_receipt_only_and_refuses_source_payload (__main__.RiffAndValidationTests.test_standalone_cli_prints_receipt_only_and_refuses_source_payload) ... ok
+test_strict_one_stream_parser_recovers_only_packet_payload (__main__.RiffAndValidationTests.test_strict_one_stream_parser_recovers_only_packet_payload) ... ok
+test_target_metadata_aliases_agree_and_reject_bool_or_bad_bounds (__main__.RiffAndValidationTests.test_target_metadata_aliases_agree_and_reject_bool_or_bad_bounds) ... ok
+test_target_shape_and_every_apf_packet_header_field_are_enforced (__main__.RiffAndValidationTests.test_target_shape_and_every_apf_packet_header_field_are_enforced) ... ok
+test_batch_resolver_uses_one_archive_reader_and_one_parse_per_outer (__main__.SourceResolverTests.test_batch_resolver_uses_one_archive_reader_and_one_parse_per_outer) ... ok
+test_hash_inventory_fails_if_the_complete_source_count_changes (__main__.SourceResolverTests.test_hash_inventory_fails_if_the_complete_source_count_changes) ... ok
+test_one_pass_inventory_covers_all_payloads_and_packets_without_bytes (__main__.SourceResolverTests.test_one_pass_inventory_covers_all_payloads_and_packets_without_bytes) ... ok
+test_resolver_pins_stable_identity_and_one_absolute_0a_span (__main__.SourceResolverTests.test_resolver_pins_stable_identity_and_one_absolute_0a_span) ... ok
+test_resolver_rejects_compressed_or_non_0a_sram (__main__.SourceResolverTests.test_resolver_rejects_compressed_or_non_0a_sram) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.114s
+
+OK

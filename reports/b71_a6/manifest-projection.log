@@ -1,0 +1,13 @@
+{
+  "spans": 13089,
+  "observed_steps": 138,
+  "disc_built": false,
+  "changed_sources": [
+    "mod_editor/core/mod_build.py",
+    "mod_editor/core/nfl2k5_modern_color.py",
+    "mod_editor/core/nfl2k5_scorebug_exact.py",
+    "mod_editor/core/nfl2k5_scorebug_resources.py",
+    "mod_editor/core/nfl2k5_scorebug_runtime.py"
+  ],
+  "manifest_sha256": "bbc7b1afd93bd4e0c7cabb02452d54e7ac05e6fe6e0d26d4ffdaf381a5368315"
+}

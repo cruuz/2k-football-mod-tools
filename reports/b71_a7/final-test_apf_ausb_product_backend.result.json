@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_ausb_product_backend",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_ausb_product_backend.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:33:19.548538+00:00",
+  "ended": "2026-09-16T00:33:19.913301+00:00",
+  "seconds": 0.365,
+  "exit_code": 0
+}

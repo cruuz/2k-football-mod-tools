@@ -1,0 +1,11 @@
+{
+  "name": "delivery-nfl_uniform_color_patch_test",
+  "argv": [
+    "python3",
+    "tests/nfl_uniform_color_patch_test.py"
+  ],
+  "started": "2026-09-16T00:42:57.843880+00:00",
+  "ended": "2026-09-16T00:42:57.909747+00:00",
+  "seconds": 0.066,
+  "exit_code": 0
+}

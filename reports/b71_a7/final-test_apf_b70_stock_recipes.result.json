@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_b70_stock_recipes",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_b70_stock_recipes.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:40:40.183435+00:00",
+  "ended": "2026-09-16T00:44:12.348910+00:00",
+  "seconds": 212.165,
+  "exit_code": 0
+}

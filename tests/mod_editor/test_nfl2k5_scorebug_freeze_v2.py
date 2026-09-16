@@ -34,13 +34,18 @@ def control(c, version):
         c.hook_control(False)
         return
     if version == 'old':
-        if (m.code['va'], m.state) != (old.CODE_VA, old.DATA_VA):
-            raise AssertionError('historical control allocation moved')
+        if m.state != old.DATA_VA:
+            raise AssertionError('historical control data allocation moved')
+        # S5 moved its larger RX owner. The preserved v4 bytes are absolute:
+        # execute this historical control at its original, now-unused RX span.
+        assert bytes(m.uc.mem_read(old.CODE_VA,len(old.CODE))) == b'\xcc'*len(old.CODE)
+        destination = old.CODE_VA
         content, labels = old.CODE, old.HOOK_LABELS
     else:
         content, labels = r.code_for(m.code['va'], m.state)
-    m.uc.mem_write(m.code['va'], content)
-    m.uc.ctl_remove_cache(m.code['va'], m.code['va'] + len(content))
+        destination = m.code['va']
+    m.uc.mem_write(destination, content)
+    m.uc.ctl_remove_cache(destination, destination + len(content))
     for name, (va, _original) in r.HOOKS.items():
         m.uc.mem_write(va, r.hook_bytes(name, labels))
         m.uc.ctl_remove_cache(va, va + 5)
@@ -104,8 +109,8 @@ class InstallationTests(unittest.TestCase):
         cls.retail = XBE.read_bytes()
         cls.patched, cls.receipt = r.apply(cls.retail)
 
-    def test_unchanged_budget_and_static_v3_both_orders(self):
-        self.assertEqual((r.CODE_SIZE, r.DATA_SIZE), (1408, 128))
+    def test_named_budget_and_static_v3_both_orders(self):
+        self.assertEqual((r.CODE_SIZE, r.DATA_SIZE), (4096, 128))
         code, data = r.sites(self.patched)
         self.assertLess(len(r.code_for(code['va'], data['va'])[0].rstrip(b'\xcc')), r.CODE_SIZE)
         left = r.apply(r.scene.apply_xbe(self.retail)[0])[0]
@@ -131,8 +136,10 @@ class InstallationTests(unittest.TestCase):
                         with self.assertRaises(ValueError):
                             r.apply(bad)
         self.assertEqual(hashlib.sha256(old.CODE).hexdigest(), old.CODE_SHA256)
-        base = space.apply(r.scene.apply_xbe(self.retail)[0], r.REQUESTS)[0]
-        self.assertEqual(tuple(s['va'] for s in r.sites(base)), (old.CODE_VA, old.DATA_VA))
+        legacy_requests = tuple((o,k,len(old.CODE) if k=='code' else n,a) for o,k,n,a in r.REQUESTS)
+        base = space.apply(r.scene.apply_xbe(self.retail)[0], legacy_requests)[0]
+        historical = {a['kind']:a['va'] for a in space.layout(base)['allocations'] if a['owner']==r.OWNER}
+        self.assertEqual((historical['code'],historical['data']), (old.CODE_VA, old.DATA_VA))
         old_xbe = bytearray(space.install_code(base, r.OWNER, old.CODE)[0])
         for name, (va, _original) in r.HOOKS.items():
             off = XbeImage(base).offset(va)
@@ -159,7 +166,7 @@ class NativeBindingTests(unittest.TestCase):
         cls.addClassCleanup(cls.stream.close)
         cls.source = art.PackView.from_fd(cls.stream.fileno(), 0, PACK.stat().st_size)
         cls.fonts = read_fonts(PACK)
-        cls.probes = {p: art.compile_runtime_collection(cls.source, probe=p) for p in art.PROBES}
+        cls.probes = {p: art.compile_runtime_collection(cls.source, probe=p) for p in ("transport","hooks","resources","neutral","pair","full","mnf")}
         cls.evidence = dict(schema='scorebug-freeze-native-v2', runtime_witnessed=False,
                             community_cause_proved=False, installation=receipt,
                             old_code_sha256=old.CODE_SHA256, cases={})
@@ -239,7 +246,9 @@ class NativeBindingTests(unittest.TestCase):
 
     def test_all_six_profiles_enter_complete_frames_draw_and_reenter(self):
         results = []
-        for probe in art.PROBES:
+        # This historic FONT-alias fixture installs a synthetic retail scene.
+        # Sprite SCNE replacement and zero-FONT frames are in the sprite suite.
+        for probe in ("transport","hooks","resources","neutral","pair","full","mnf"):
             with self.subTest(probe=probe):
                 c = self.collection(probe)
                 m = c.m
@@ -279,7 +288,10 @@ class NativeBindingTests(unittest.TestCase):
             self.assertEqual(m.get(material + 0x30), 0)
             self.assertTrue(m.get(material + 8) & 1)
             self.assertIn(m.get(r.SCORE_FONTS[side]), m.fonts)
-        self.assertEqual(m.get(m.state + r.FONT_SCORE), 0)
+        # Missing named HUD keeps retail callbacks and fonts. State +84 now
+        # caches the away plate colour; it is no longer a private FONT pointer.
+        self.assertEqual(m.get(0xA9594C), 0xFC050)
+        self.assertEqual(m.get(0xA95984), 0xFC070)
         self.evidence['cases']['missing_hud'] = entry
 
     def test_retail_game_loader_constructs_an_ordinary_named_hud_context(self):

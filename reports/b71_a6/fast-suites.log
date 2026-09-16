@@ -1,0 +1,34 @@
+{"label": "final-test_nfl2k5_accelerated_clock_manifest", "exit_code": 0, "seconds": 15.955, "started": "2026-09-15T22:42:05.905625+00:00", "log": "reports/b71_a6/final-test_nfl2k5_accelerated_clock_manifest.log"}
+PASS test_nfl2k5_accelerated_clock_manifest.py
+{"label": "final-test_nfl2k5_cpu_money_downs_manifest", "exit_code": 0, "seconds": 7.288, "started": "2026-09-15T22:42:21.860814+00:00", "log": "reports/b71_a6/final-test_nfl2k5_cpu_money_downs_manifest.log"}
+PASS test_nfl2k5_cpu_money_downs_manifest.py
+{"label": "final-test_nfl2k5_defensive_try_manifest", "exit_code": 0, "seconds": 7.643, "started": "2026-09-15T22:42:29.149514+00:00", "log": "reports/b71_a6/final-test_nfl2k5_defensive_try_manifest.log"}
+PASS test_nfl2k5_defensive_try_manifest.py
+{"label": "final-test_nfl2k5_abilities_v2_manifest", "exit_code": 0, "seconds": 441.842, "started": "2026-09-15T22:42:05.904914+00:00", "log": "reports/b71_a6/final-test_nfl2k5_abilities_v2_manifest.log"}
+PASS test_nfl2k5_abilities_v2_manifest.py
+{"label": "final-test_nfl2k5_music_playlist_manifest", "exit_code": 0, "seconds": 4.377, "started": "2026-09-15T22:49:27.747774+00:00", "log": "reports/b71_a6/final-test_nfl2k5_music_playlist_manifest.log"}
+PASS test_nfl2k5_music_playlist_manifest.py
+{"label": "final-test_nfl2k5_my_career_manifest", "exit_code": 0, "seconds": 11.97, "started": "2026-09-15T22:49:32.125548+00:00", "log": "reports/b71_a6/final-test_nfl2k5_my_career_manifest.log"}
+PASS test_nfl2k5_my_career_manifest.py
+{"label": "final-test_nfl2k5_guardian_manifest", "exit_code": 0, "seconds": 431.65, "started": "2026-09-15T22:42:36.793169+00:00", "log": "reports/b71_a6/final-test_nfl2k5_guardian_manifest.log"}
+PASS test_nfl2k5_guardian_manifest.py
+{"label": "final-test_nfl2k5_read_option_diagnostic_manifest", "exit_code": 0, "seconds": 0.492, "started": "2026-09-15T22:49:48.443577+00:00", "log": "reports/b71_a6/final-test_nfl2k5_read_option_diagnostic_manifest.log"}
+PASS test_nfl2k5_read_option_diagnostic_manifest.py
+{"label": "final-test_nfl2k5_screen_hooks_manifest", "exit_code": 0, "seconds": 4.686, "started": "2026-09-15T22:49:48.935498+00:00", "log": "reports/b71_a6/final-test_nfl2k5_screen_hooks_manifest.log"}
+PASS test_nfl2k5_screen_hooks_manifest.py
+{"label": "final-test_nfl2k5_seven_on_seven_manifest", "exit_code": 0, "seconds": 1.051, "started": "2026-09-15T22:49:53.622359+00:00", "log": "reports/b71_a6/final-test_nfl2k5_seven_on_seven_manifest.log"}
+PASS test_nfl2k5_seven_on_seven_manifest.py
+{"label": "final-test_provider_integrity", "exit_code": 0, "seconds": 14.622, "started": "2026-09-15T22:49:54.673257+00:00", "log": "reports/b71_a6/final-test_provider_integrity.log"}
+PASS test_provider_integrity.py
+{"label": "final-test_providers", "exit_code": 0, "seconds": 5.011, "started": "2026-09-15T22:50:09.295946+00:00", "log": "reports/b71_a6/final-test_providers.log"}
+PASS test_providers.py
+{"label": "final-test_product_catalog", "exit_code": 0, "seconds": 0.24, "started": "2026-09-15T22:50:14.307057+00:00", "log": "reports/b71_a6/final-test_product_catalog.log"}
+PASS test_product_catalog.py
+{"label": "final-test_phase1_packaging", "exit_code": 0, "seconds": 4.035, "started": "2026-09-15T22:50:14.547533+00:00", "log": "reports/b71_a6/final-test_phase1_packaging.log"}
+PASS test_phase1_packaging.py
+{"label": "final-test_b68_a1_audit", "exit_code": 0, "seconds": 9.617, "started": "2026-09-15T22:50:18.582705+00:00", "log": "reports/b71_a6/final-test_b68_a1_audit.log"}
+PASS test_b68_a1_audit.py
+{"label": "final-test_capability_registry_module_commands", "exit_code": 0, "seconds": 0.174, "started": "2026-09-15T22:50:28.200567+00:00", "log": "reports/b71_a6/final-test_capability_registry_module_commands.log"}
+PASS test_capability_registry_module_commands.py
+{"label": "final-test_nfl2k5_playbook_pair_manifest", "exit_code": 0, "seconds": 370.523, "started": "2026-09-15T22:49:44.095691+00:00", "log": "reports/b71_a6/final-test_nfl2k5_playbook_pair_manifest.log"}
+PASS test_nfl2k5_playbook_pair_manifest.py

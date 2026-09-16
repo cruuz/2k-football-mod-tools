@@ -1,0 +1,10 @@
+test_facade_delegates_value_replace_and_invalidates_last_build (__main__.PlayerRatingSessionProjectTests.test_facade_delegates_value_replace_and_invalidates_last_build) ... ok
+test_project_rejects_noncanonical_or_retargeted_rating (__main__.PlayerRatingSessionProjectTests.test_project_rejects_noncanonical_or_retargeted_rating) ... ok
+test_rating_input_is_strict_integer_0_to_99 (__main__.PlayerRatingSessionProjectTests.test_rating_input_is_strict_integer_0_to_99) ... ok
+test_replace_value_revert_and_retail_free_project_roundtrip (__main__.PlayerRatingSessionProjectTests.test_replace_value_revert_and_retail_free_project_roundtrip) ... ok
+test_team_name_and_rating_compose_into_one_disjoint_runtime_entry (__main__.RealRosterCompositionTests.test_team_name_and_rating_compose_into_one_disjoint_runtime_entry) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 9.169s
+
+OK

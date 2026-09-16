@@ -1,0 +1,11 @@
+{
+  "name": "build-engine-no-rodata",
+  "argv": [
+    "python3",
+    "tools/scorebug_sprite/build_runtime.py"
+  ],
+  "start_utc": "2026-09-16T02:07:32.797817+00:00",
+  "end_utc": "2026-09-16T02:07:32.962390+00:00",
+  "seconds": 0.165,
+  "exit_code": 1
+}

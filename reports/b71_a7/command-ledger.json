@@ -1,0 +1,5321 @@
+[
+  {
+    "name": "archive-commit",
+    "argv": [
+      "git",
+      "commit",
+      "-m",
+      "Archive anonymized S4 handoff before integration",
+      "--",
+      "ASTRA_B71_S4_REPORT.md",
+      "WIRING_B71_S4.md",
+      "reports/b71_a7/INHERITED_A6_REPORT.md"
+    ],
+    "started": "2026-09-16T00:11:48.435431+00:00",
+    "ended": "2026-09-16T00:11:48.446176+00:00",
+    "seconds": 0.011,
+    "exit_code": 1
+  },
+  {
+    "name": "archive-stage",
+    "argv": [
+      "git",
+      "add",
+      "--",
+      "ASTRA_B71_S4_REPORT.md",
+      "WIRING_B71_S4.md",
+      "reports/b71_a7/INHERITED_A6_REPORT.md"
+    ],
+    "started": "2026-09-16T00:11:57.857258+00:00",
+    "ended": "2026-09-16T00:11:57.872364+00:00",
+    "seconds": 0.015,
+    "exit_code": 0
+  },
+  {
+    "name": "archive-commit-final",
+    "argv": [
+      "git",
+      "commit",
+      "-m",
+      "Archive anonymized S4 handoff before integration",
+      "--",
+      "ASTRA_B71_S4_REPORT.md",
+      "WIRING_B71_S4.md",
+      "reports/b71_a7/INHERITED_A6_REPORT.md"
+    ],
+    "started": "2026-09-16T00:11:57.899646+00:00",
+    "ended": "2026-09-16T00:12:00.328465+00:00",
+    "seconds": 2.429,
+    "exit_code": 0
+  },
+  {
+    "name": "merge-s4",
+    "argv": [
+      "git",
+      "merge",
+      "--no-commit",
+      "--no-ff",
+      "7b54e354"
+    ],
+    "started": "2026-09-16T00:12:00.359084+00:00",
+    "ended": "2026-09-16T00:12:00.672949+00:00",
+    "seconds": 0.314,
+    "exit_code": 1
+  },
+  {
+    "name": "hydrate-evidence",
+    "argv": [
+      "python3",
+      "reports/b71_apf4/hydrate.py"
+    ],
+    "started": "2026-09-16T00:13:13.586544+00:00",
+    "ended": "2026-09-16T00:13:13.641216+00:00",
+    "seconds": 0.055,
+    "exit_code": 0
+  },
+  {
+    "name": "registry-strict",
+    "argv": [
+      "python3",
+      "-m",
+      "mod_editor.capabilities.validate_registry"
+    ],
+    "started": "2026-09-16T00:13:13.670023+00:00",
+    "ended": "2026-09-16T00:13:13.876739+00:00",
+    "seconds": 0.207,
+    "exit_code": 0
+  },
+  {
+    "name": "validation-plan",
+    "argv": [
+      "python3",
+      "tools/validate_all_mod_editor_capabilities.py",
+      "--list"
+    ],
+    "started": "2026-09-16T00:13:13.905152+00:00",
+    "ended": "2026-09-16T00:13:14.188034+00:00",
+    "seconds": 0.283,
+    "exit_code": 0
+  },
+  {
+    "name": "prepare-test-python",
+    "argv": [
+      "python3",
+      "reports/b71_apf5/prepare_test_python.py"
+    ],
+    "started": "2026-09-16T00:13:14.218877+00:00",
+    "ended": "2026-09-16T00:13:14.492324+00:00",
+    "seconds": 0.273,
+    "exit_code": 0
+  },
+  {
+    "name": "hydrate-release-tools",
+    "argv": [
+      "python3",
+      "reports/b71_apf2/hydrate_tools.py"
+    ],
+    "started": "2026-09-16T00:13:14.521129+00:00",
+    "ended": "2026-09-16T00:13:14.568954+00:00",
+    "seconds": 0.048,
+    "exit_code": 0
+  },
+  {
+    "name": "pin-audit",
+    "argv": [
+      "python3",
+      "reports/b71_a7/audit_pins.py"
+    ],
+    "started": "2026-09-16T00:14:29.666926+00:00",
+    "ended": "2026-09-16T00:14:29.811944+00:00",
+    "seconds": 0.145,
+    "exit_code": 1
+  },
+  {
+    "name": "catalog-preflight",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_product_catalog.py"
+    ],
+    "started": "2026-09-16T00:14:29.841221+00:00",
+    "ended": "2026-09-16T00:14:29.994854+00:00",
+    "seconds": 0.154,
+    "exit_code": 0
+  },
+  {
+    "name": "pin-audit-final",
+    "argv": [
+      "python3",
+      "reports/b71_a7/audit_pins.py"
+    ],
+    "started": "2026-09-16T00:14:45.766442+00:00",
+    "ended": "2026-09-16T00:14:46.451032+00:00",
+    "seconds": 0.685,
+    "exit_code": 0
+  },
+  {
+    "name": "repin",
+    "argv": [
+      "python3",
+      "packaging/repin.py",
+      "--apply"
+    ],
+    "started": "2026-09-16T00:14:46.480719+00:00",
+    "ended": "2026-09-16T00:14:57.071708+00:00",
+    "seconds": 10.591,
+    "exit_code": 0
+  },
+  {
+    "name": "manifest-production",
+    "argv": [
+      "bash",
+      "reports/b71_a7/manifest_regen.sh"
+    ],
+    "started": "2026-09-16T00:15:20.795979+00:00",
+    "ended": "2026-09-16T00:15:20.800714+00:00",
+    "seconds": 0.005,
+    "exit_code": 1
+  },
+  {
+    "name": "manifest-projection",
+    "argv": [
+      "python3",
+      "reports/b71_a7/refresh_manifest_projection.py"
+    ],
+    "started": "2026-09-16T00:15:20.827829+00:00",
+    "ended": "2026-09-16T00:15:21.339045+00:00",
+    "seconds": 0.511,
+    "exit_code": 1
+  },
+  {
+    "name": "manifest-projection-final",
+    "argv": [
+      "python3",
+      "reports/b71_a7/refresh_manifest_projection.py"
+    ],
+    "started": "2026-09-16T00:15:45.455355+00:00",
+    "ended": "2026-09-16T00:21:12.518328+00:00",
+    "seconds": 327.063,
+    "exit_code": 0
+  },
+  {
+    "name": "volume",
+    "argv": [
+      "python3",
+      "reports/b71_a7/measure_volume.py"
+    ],
+    "started": "2026-09-16T00:16:55.400708+00:00",
+    "ended": "2026-09-16T00:17:02.716970+00:00",
+    "seconds": 7.316,
+    "exit_code": 0
+  },
+  {
+    "name": "repin-release-label",
+    "argv": [
+      "python3",
+      "packaging/repin.py",
+      "--apply"
+    ],
+    "started": "2026-09-16T00:19:01.441217+00:00",
+    "ended": "2026-09-16T00:19:11.716561+00:00",
+    "seconds": 10.275,
+    "exit_code": 0
+  },
+  {
+    "name": "manifest-projection-delivery",
+    "argv": [
+      "python3",
+      "reports/b71_a7/refresh_manifest_projection.py"
+    ],
+    "started": "2026-09-16T00:21:29.732471+00:00",
+    "ended": "2026-09-16T00:26:53.797759+00:00",
+    "seconds": 324.065,
+    "exit_code": 0
+  },
+  {
+    "name": "fast-suites",
+    "argv": [
+      "python3",
+      "reports/b71_a7/suites.py",
+      "fast"
+    ],
+    "started": "2026-09-16T00:27:00.233131+00:00",
+    "ended": "2026-09-16T00:32:50.500030+00:00",
+    "seconds": 350.267,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_abilities_v2_manifest",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_abilities_v2_manifest.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:27:00.265137+00:00",
+    "ended": "2026-09-16T00:32:11.207241+00:00",
+    "seconds": 310.942,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_accelerated_clock_manifest",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_accelerated_clock_manifest.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:27:00.265591+00:00",
+    "ended": "2026-09-16T00:27:10.553995+00:00",
+    "seconds": 10.288,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_cpu_money_downs_manifest",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_cpu_money_downs_manifest.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:27:00.266293+00:00",
+    "ended": "2026-09-16T00:27:04.819870+00:00",
+    "seconds": 4.554,
+    "exit_code": 0
+  },
+  {
+    "name": "merge-checkpoint",
+    "argv": [
+      "python3",
+      "reports/b71_a7/commit_checkpoint.py",
+      "merge-s4-commit",
+      "Merge S4 painted bar into A6 with bounded manifest and release wiring"
+    ],
+    "started": "2026-09-16T00:27:01.405575+00:00",
+    "ended": "2026-09-16T00:27:01.708045+00:00",
+    "seconds": 0.302,
+    "exit_code": 1
+  },
+  {
+    "name": "merge-s4-commit-stage",
+    "argv": [
+      "git",
+      "add",
+      "-f",
+      "--",
+      "ASTRA_B71_S4_REPORT.md",
+      "ASTRA_LAST_MESSAGE.md",
+      "ASTRA_REPORT.md",
+      "WIRING.md",
+      "WIRING_B71_S4.md",
+      "data/nfl2k5_cave_reservations.json",
+      "data/nfl2k5_scorebug_mnf/painted_label_2x.json",
+      "data/nfl2k5_scorebug_mnf/painted_label_2x.png",
+      "docs/mod_editor/2k5_mod_studio_changelog.md",
+      "mod_editor/capabilities/registry.v1.json",
+      "mod_editor/core/nfl2k5_scorebug_exact.py",
+      "mod_editor/core/nfl2k5_scorebug_ingame.py",
+      "mod_editor/core/nfl2k5_scorebug_mnf_font.py",
+      "mod_editor/core/nfl2k5_scorebug_resources.py",
+      "mod_editor/core/nfl2k5_scorebug_runtime.py",
+      "mod_editor/core/providers.py",
+      "packaging/check_2k5_mod_studio_release.py",
+      "packaging/nfl2k5_scorebug_template_pngs.json",
+      "packaging/release-allowlist.txt",
+      "reports/b71_a7/INHERITED_A6_REPORT.md",
+      "reports/b71_a7/archive-commit-final.log",
+      "reports/b71_a7/archive-commit-final.result.json",
+      "reports/b71_a7/archive-commit.log",
+      "reports/b71_a7/archive-commit.result.json",
+      "reports/b71_a7/archive-stage.log",
+      "reports/b71_a7/archive-stage.result.json",
+      "reports/b71_a7/audit_pins.py",
+      "reports/b71_a7/build_testdisc71.py",
+      "reports/b71_a7/catalog-preflight.log",
+      "reports/b71_a7/catalog-preflight.result.json",
+      "reports/b71_a7/closures.py",
+      "reports/b71_a7/commit_checkpoint.py",
+      "reports/b71_a7/deliver.py",
+      "reports/b71_a7/fast-suite-paths.json",
+      "reports/b71_a7/fast-suites.log",
+      "reports/b71_a7/final-test_nfl2k5_abilities_v2_manifest.log",
+      "reports/b71_a7/final-test_nfl2k5_accelerated_clock_manifest.log",
+      "reports/b71_a7/final-test_nfl2k5_cpu_money_downs_manifest.log",
+      "reports/b71_a7/final_audit.py",
+      "reports/b71_a7/gates.sh",
+      "reports/b71_a7/hydrate-evidence.log",
+      "reports/b71_a7/hydrate-evidence.result.json",
+      "reports/b71_a7/hydrate-release-tools.log",
+      "reports/b71_a7/hydrate-release-tools.result.json",
+      "reports/b71_a7/label-release-pin.json",
+      "reports/b71_a7/manifest-production.log",
+      "reports/b71_a7/manifest-production.result.json",
+      "reports/b71_a7/manifest-projection-delivery.log",
+      "reports/b71_a7/manifest-projection-delivery.result.json",
+      "reports/b71_a7/manifest-projection-final.log",
+      "reports/b71_a7/manifest-projection-final.result.json",
+      "reports/b71_a7/manifest-projection.log",
+      "reports/b71_a7/manifest-projection.result.json",
+      "reports/b71_a7/manifest_regen.sh",
+      "reports/b71_a7/measure_volume.py",
+      "reports/b71_a7/merge-checkpoint.log",
+      "reports/b71_a7/merge-s4.log",
+      "reports/b71_a7/merge-s4.result.json",
+      "reports/b71_a7/pin-audit-final.log",
+      "reports/b71_a7/pin-audit-final.result.json",
+      "reports/b71_a7/pin-audit.json",
+      "reports/b71_a7/pin-audit.log",
+      "reports/b71_a7/pin-audit.result.json",
+      "reports/b71_a7/prepare-test-python.log",
+      "reports/b71_a7/prepare-test-python.result.json",
+      "reports/b71_a7/refresh_manifest_projection.py",
+      "reports/b71_a7/registry-strict.log",
+      "reports/b71_a7/registry-strict.result.json",
+      "reports/b71_a7/remaining.sh",
+      "reports/b71_a7/repin-release-label.log",
+      "reports/b71_a7/repin-release-label.result.json",
+      "reports/b71_a7/repin.log",
+      "reports/b71_a7/repin.result.json",
+      "reports/b71_a7/run.py",
+      "reports/b71_a7/suites.py",
+      "reports/b71_a7/validation-plan.log",
+      "reports/b71_a7/validation-plan.result.json",
+      "reports/b71_a7/volume.json",
+      "reports/b71_a7/volume.log",
+      "reports/b71_a7/volume.result.json",
+      "reports/b71_a7/wiring-locations.json",
+      "reports/b71_a7/write_report.py",
+      "reports/b71_s4/all_events_43.png",
+      "reports/b71_s4/all_events_43_crop.png",
+      "reports/b71_s4/all_events_wide.png",
+      "reports/b71_s4/all_events_wide_crop.png",
+      "reports/b71_s4/atlas_decoded.png",
+      "reports/b71_s4/ball_on_43.png",
+      "reports/b71_s4/ball_on_43_crop.png",
+      "reports/b71_s4/ball_on_wide.png",
+      "reports/b71_s4/ball_on_wide_crop.png",
+      "reports/b71_s4/build_testdisc71.py",
+      "reports/b71_s4/builder_prepared.json",
+      "reports/b71_s4/cave-oracle-final-launch.log",
+      "reports/b71_s4/cave-oracle-final.log",
+      "reports/b71_s4/cave-oracle-final.result.json",
+      "reports/b71_s4/check_delivery.py",
+      "reports/b71_s4/command_ledger.json",
+      "reports/b71_s4/compare_43.png",
+      "reports/b71_s4/compare_wide.png",
+      "reports/b71_s4/comparison-diagnostic.json",
+      "reports/b71_s4/compiler_pins.json",
+      "reports/b71_s4/contact_sheet.py",
+      "reports/b71_s4/contract-compact.log",
+      "reports/b71_s4/contract-compact.result.json",
+      "reports/b71_s4/delivery-check.log",
+      "reports/b71_s4/delivery-check.result.json",
+      "reports/b71_s4/delivery-suites-driver.log",
+      "reports/b71_s4/delivery_checks.json",
+      "reports/b71_s4/delivery_commit_paths.json",
+      "reports/b71_s4/evidence_hydration.json",
+      "reports/b71_s4/evidence_paths.json",
+      "reports/b71_s4/final-delivery-suite-summary.json",
+      "reports/b71_s4/final-final-suite-summary.json",
+      "reports/b71_s4/final-sealed-suite-summary.json",
+      "reports/b71_s4/final-suite-summary.json",
+      "reports/b71_s4/final-suites-driver.log",
+      "reports/b71_s4/finalize_delivery.py",
+      "reports/b71_s4/flag_43.png",
+      "reports/b71_s4/flag_43_crop.png",
+      "reports/b71_s4/flag_wide.png",
+      "reports/b71_s4/flag_wide_crop.png",
+      "reports/b71_s4/hang_time_43.png",
+      "reports/b71_s4/hang_time_43_crop.png",
+      "reports/b71_s4/hang_time_wide.png",
+      "reports/b71_s4/hang_time_wide_crop.png",
+      "reports/b71_s4/initial-render.log",
+      "reports/b71_s4/initial-render.result.json",
+      "reports/b71_s4/layout-skip-details.log",
+      "reports/b71_s4/layout-skip-details.result.json",
+      "reports/b71_s4/live_clock_hidden_43.png",
+      "reports/b71_s4/live_clock_hidden_43_crop.png",
+      "reports/b71_s4/live_clock_hidden_wide.png",
+      "reports/b71_s4/live_clock_hidden_wide_crop.png",
+      "reports/b71_s4/logo_fit.json",
+      "reports/b71_s4/make_report.py",
+      "reports/b71_s4/manifest-compact.log",
+      "reports/b71_s4/manifest-compact.result.json",
+      "reports/b71_s4/manifest-final.log",
+      "reports/b71_s4/manifest-final.result.json",
+      "reports/b71_s4/manifest-full.log",
+      "reports/b71_s4/manifest-full.result.json",
+      "reports/b71_s4/manifest-launch.log",
+      "reports/b71_s4/manifest.log",
+      "reports/b71_s4/manifest.result.json",
+      "reports/b71_s4/measure_text_rgb.py",
+      "reports/b71_s4/measurements.json",
+      "reports/b71_s4/mnf-contract.log",
+      "reports/b71_s4/mnf-contract.result.json",
+      "reports/b71_s4/mnf-native.log",
+      "reports/b71_s4/mnf-native.result.json",
+      "reports/b71_s4/multi_digit_scores.json",
+      "reports/b71_s4/native-compact.log",
+      "reports/b71_s4/native-compact.result.json",
+      "reports/b71_s4/native-final.log",
+      "reports/b71_s4/native-final.result.json",
+      "reports/b71_s4/nfl2k5_scorebug_layout_test-delivery.log",
+      "reports/b71_s4/nfl2k5_scorebug_layout_test-delivery.result.json",
+      "reports/b71_s4/nfl2k5_scorebug_layout_test-final.log",
+      "reports/b71_s4/nfl2k5_scorebug_layout_test-final.result.json",
+      "reports/b71_s4/nfl2k5_scorebug_layout_test-release.log",
+      "reports/b71_s4/nfl2k5_scorebug_layout_test-release.result.json",
+      "reports/b71_s4/nfl2k5_scorebug_layout_test-sealed.log",
+      "reports/b71_s4/nfl2k5_scorebug_layout_test-sealed.result.json",
+      "reports/b71_s4/nfl2k5_scorebug_mod_project_test-delivery.log",
+      "reports/b71_s4/nfl2k5_scorebug_mod_project_test-delivery.result.json",
+      "reports/b71_s4/nfl2k5_scorebug_mod_project_test-final.log",
+      "reports/b71_s4/nfl2k5_scorebug_mod_project_test-final.result.json",
+      "reports/b71_s4/nfl2k5_scorebug_mod_project_test-release.log",
+      "reports/b71_s4/nfl2k5_scorebug_mod_project_test-release.result.json",
+      "reports/b71_s4/nfl2k5_scorebug_mod_project_test-sealed.log",
+      "reports/b71_s4/nfl2k5_scorebug_mod_project_test-sealed.result.json",
+      "reports/b71_s4/no_den_43.json",
+      "reports/b71_s4/no_den_43.png",
+      "reports/b71_s4/no_den_wide.json",
+      "reports/b71_s4/no_den_wide.png",
+      "reports/b71_s4/owner-compact.log",
+      "reports/b71_s4/owner-compact.result.json",
+      "reports/b71_s4/owner-pairwise-final-launch.log",
+      "reports/b71_s4/owner-pairwise-final.log",
+      "reports/b71_s4/owner-pairwise-final.result.json",
+      "reports/b71_s4/phase1-closure.log",
+      "reports/b71_s4/phase1-closure.result.json",
+      "reports/b71_s4/pins-compact.log",
+      "reports/b71_s4/pins-compact.result.json",
+      "reports/b71_s4/pins-density.log",
+      "reports/b71_s4/pins-density.result.json",
+      "reports/b71_s4/pins-final.log",
+      "reports/b71_s4/pins-final.result.json",
+      "reports/b71_s4/pins-uv.log",
+      "reports/b71_s4/pins-uv.result.json",
+      "reports/b71_s4/pins.log",
+      "reports/b71_s4/pins.result.json",
+      "reports/b71_s4/proof-current.log",
+      "reports/b71_s4/proof-current.result.json",
+      "reports/b71_s4/proof-density.log",
+      "reports/b71_s4/proof-density.result.json",
+      "reports/b71_s4/proof-final.log",
+      "reports/b71_s4/proof-final.result.json",
+      "reports/b71_s4/proof-release.log",
+      "reports/b71_s4/proof-release.result.json",
+      "reports/b71_s4/proof-text-fit.log",
+      "reports/b71_s4/proof-text-fit.result.json",
+      "reports/b71_s4/proof-uv.log",
+      "reports/b71_s4/proof-uv.result.json",
+      "reports/b71_s4/proof-v4.log",
+      "reports/b71_s4/proof-v4.result.json",
+      "reports/b71_s4/prove_v4.py",
+      "reports/b71_s4/provider-check.log",
+      "reports/b71_s4/provider-check.result.json",
+      "reports/b71_s4/provider-closure.log",
+      "reports/b71_s4/provider-closure.result.json",
+      "reports/b71_s4/raster_label.py",
+      "reports/b71_s4/refresh_manifest.py",
+      "reports/b71_s4/regenerate_pins.py",
+      "reports/b71_s4/registry-strict-delivery.log",
+      "reports/b71_s4/registry-strict-delivery.result.json",
+      "reports/b71_s4/registry-strict-final-evidence.log",
+      "reports/b71_s4/registry-strict-final-evidence.result.json",
+      "reports/b71_s4/registry-strict-final.log",
+      "reports/b71_s4/registry-strict-final.result.json",
+      "reports/b71_s4/registry-strict-hydrated.log",
+      "reports/b71_s4/registry-strict-hydrated.result.json",
+      "reports/b71_s4/registry-strict-release.log",
+      "reports/b71_s4/registry-strict-release.result.json",
+      "reports/b71_s4/registry-strict-sealed.log",
+      "reports/b71_s4/registry-strict-sealed.result.json",
+      "reports/b71_s4/registry-strict-v4.log",
+      "reports/b71_s4/registry-strict-v4.result.json",
+      "reports/b71_s4/render_43.json",
+      "reports/b71_s4/render_43.png",
+      "reports/b71_s4/render_43_crop.png",
+      "reports/b71_s4/render_wide.json",
+      "reports/b71_s4/render_wide.png",
+      "reports/b71_s4/render_wide_crop.png",
+      "reports/b71_s4/repin-compact.log",
+      "reports/b71_s4/repin-compact.result.json",
+      "reports/b71_s4/repin-contracts.log",
+      "reports/b71_s4/repin-contracts.result.json",
+      "reports/b71_s4/repin-delivery.log",
+      "reports/b71_s4/repin-delivery.result.json",
+      "reports/b71_s4/repin-evidence.log",
+      "reports/b71_s4/repin-evidence.result.json",
+      "reports/b71_s4/repin-final.log",
+      "reports/b71_s4/repin-final.result.json",
+      "reports/b71_s4/repin-preflight.log",
+      "reports/b71_s4/repin-preflight.result.json",
+      "reports/b71_s4/repin-release.log",
+      "reports/b71_s4/repin-release.result.json",
+      "reports/b71_s4/repin-uv.log",
+      "reports/b71_s4/repin-uv.result.json",
+      "reports/b71_s4/run_final_suites.py",
+      "reports/b71_s4/run_logged.py",
+      "reports/b71_s4/score_43.png",
+      "reports/b71_s4/score_43_crop.png",
+      "reports/b71_s4/score_wide.png",
+      "reports/b71_s4/score_wide_crop.png",
+      "reports/b71_s4/scores_100_43.png",
+      "reports/b71_s4/scores_100_43_crop.png",
+      "reports/b71_s4/scores_100_wide.png",
+      "reports/b71_s4/scores_100_wide_crop.png",
+      "reports/b71_s4/scores_28_43.png",
+      "reports/b71_s4/scores_28_43_crop.png",
+      "reports/b71_s4/scores_28_wide.png",
+      "reports/b71_s4/scores_28_wide_crop.png",
+      "reports/b71_s4/scores_999_43.png",
+      "reports/b71_s4/scores_999_43_crop.png",
+      "reports/b71_s4/scores_999_wide.png",
+      "reports/b71_s4/scores_999_wide_crop.png",
+      "reports/b71_s4/sealed-suites-driver.log",
+      "reports/b71_s4/second-render.log",
+      "reports/b71_s4/second-render.result.json",
+      "reports/b71_s4/source-art-skip-details.log",
+      "reports/b71_s4/source-art-skip-details.result.json",
+      "reports/b71_s4/states.json",
+      "reports/b71_s4/states_contact_sheet.png",
+      "reports/b71_s4/suites-driver.log",
+      "reports/b71_s4/test_apf_scorebug_workspace_qt-delivery.log",
+      "reports/b71_s4/test_apf_scorebug_workspace_qt-delivery.result.json",
+      "reports/b71_s4/test_apf_scorebug_workspace_qt-final.log",
+      "reports/b71_s4/test_apf_scorebug_workspace_qt-final.result.json",
+      "reports/b71_s4/test_apf_scorebug_workspace_qt-release.log",
+      "reports/b71_s4/test_apf_scorebug_workspace_qt-release.result.json",
+      "reports/b71_s4/test_apf_scorebug_workspace_qt-sealed.log",
+      "reports/b71_s4/test_apf_scorebug_workspace_qt-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_assets-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_assets-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_assets-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_assets-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_assets-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_assets-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_assets-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_assets-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_author-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_author-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_author-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_author-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_author-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_author-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_author-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_author-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_exact-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_exact-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_exact-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_exact-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_exact-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_exact-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_exact-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_exact-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_fonts-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_fonts-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_fonts-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_fonts-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_fonts-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_fonts-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_fonts-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_fonts-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze_v2-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze_v2-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze_v2-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze_v2-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze_v2-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze_v2-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze_v2-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze_v2-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame_fix-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame_fix-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame_fix-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame_fix-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame_fix-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame_fix-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame_fix-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame_fix-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf_v3-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf_v3-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf_v3-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf_v3-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf_v3-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf_v3-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf_v3-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf_v3-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_native-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_native-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_native-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_native-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_native-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_native-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_native-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_native-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_projection-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_projection-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_projection-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_projection-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_projection-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_projection-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_projection-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_projection-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_resources-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_resources-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_resources-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_resources-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_resources-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_resources-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_resources-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_resources-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_runtime-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_runtime-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_runtime-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_runtime-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_runtime-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_runtime-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_runtime-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_runtime-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_source_art-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_source_art-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_source_art-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_source_art-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_source_art-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_source_art-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_source_art-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_source_art-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_template-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_template-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_template-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_template-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_template-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_template-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_template-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_template-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_template_release-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_template_release-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_template_release-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_template_release-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_template_release-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_template_release-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_template_release-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_template_release-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_unified_adapter-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_unified_adapter-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_unified_adapter-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_unified_adapter-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_unified_adapter-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_unified_adapter-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_unified_adapter-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_unified_adapter-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_ingame-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_ingame-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_ingame-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_ingame-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_ingame-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_ingame-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_ingame-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_ingame-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_projection-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_projection-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_projection-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_projection-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_projection-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_projection-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_projection-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_projection-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_versions-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_versions-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_versions-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_versions-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_versions-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_versions-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_versions-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_versions-sealed.result.json",
+      "reports/b71_s4/test_phase1_packaging-delivery.log",
+      "reports/b71_s4/test_phase1_packaging-delivery.result.json",
+      "reports/b71_s4/test_phase1_packaging-final.log",
+      "reports/b71_s4/test_phase1_packaging-final.result.json",
+      "reports/b71_s4/test_phase1_packaging-release.log",
+      "reports/b71_s4/test_phase1_packaging-release.result.json",
+      "reports/b71_s4/test_phase1_packaging-sealed.log",
+      "reports/b71_s4/test_phase1_packaging-sealed.result.json",
+      "reports/b71_s4/test_product_catalog-delivery.log",
+      "reports/b71_s4/test_product_catalog-delivery.result.json",
+      "reports/b71_s4/test_product_catalog-final.log",
+      "reports/b71_s4/test_product_catalog-final.result.json",
+      "reports/b71_s4/test_product_catalog-release.log",
+      "reports/b71_s4/test_product_catalog-release.result.json",
+      "reports/b71_s4/test_product_catalog-sealed.log",
+      "reports/b71_s4/test_product_catalog-sealed.result.json",
+      "reports/b71_s4/test_provider_integrity-delivery.log",
+      "reports/b71_s4/test_provider_integrity-delivery.result.json",
+      "reports/b71_s4/test_provider_integrity-final.log",
+      "reports/b71_s4/test_provider_integrity-final.result.json",
+      "reports/b71_s4/test_provider_integrity-release.log",
+      "reports/b71_s4/test_provider_integrity-release.result.json",
+      "reports/b71_s4/test_provider_integrity-sealed.log",
+      "reports/b71_s4/test_provider_integrity-sealed.result.json",
+      "reports/b71_s4/test_scorebug_studio_panel_qt-delivery.log",
+      "reports/b71_s4/test_scorebug_studio_panel_qt-delivery.result.json",
+      "reports/b71_s4/test_scorebug_studio_panel_qt-final.log",
+      "reports/b71_s4/test_scorebug_studio_panel_qt-final.result.json",
+      "reports/b71_s4/test_scorebug_studio_panel_qt-release.log",
+      "reports/b71_s4/test_scorebug_studio_panel_qt-release.result.json",
+      "reports/b71_s4/test_scorebug_studio_panel_qt-sealed.log",
+      "reports/b71_s4/test_scorebug_studio_panel_qt-sealed.result.json",
+      "reports/b71_s4/text-rgb-final.log",
+      "reports/b71_s4/text-rgb-final.result.json",
+      "reports/b71_s4/text_rgb_mae.json",
+      "reports/b71_s4/xbe-cave-references-final-launch.log",
+      "reports/b71_s4/xbe-cave-references-final.log",
+      "reports/b71_s4/xbe-cave-references-final.result.json",
+      "reports/b71_s4/xbe-caves-final-launch.log",
+      "reports/b71_s4/xbe-caves-final.log",
+      "reports/b71_s4/xbe-caves-final.result.json",
+      "reports/b71_s4/xbe-memory-compact-launch.log",
+      "reports/b71_s4/xbe-memory-compact.log",
+      "reports/b71_s4/xbe-memory-compact.result.json",
+      "reports/b71_s4/xbe-memory-final-launch.log",
+      "reports/b71_s4/xbe-memory-final.log",
+      "reports/b71_s4/xbe-memory-final.result.json",
+      "reports/b71_s4/xbe-memory-launch.log",
+      "reports/b71_s4/xbe-memory.log",
+      "reports/b71_s4/xbe-memory.result.json",
+      "tests/mod_editor/test_nfl2k5_scorebug_exact.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_fonts.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_ingame.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_mnf.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_native.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_resources.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_runtime.py",
+      "tools/nfl2k5_scorebug_exact.py",
+      "tools/nfl2k5_scorebug_projection.py",
+      "tools/nfl_main_menu_font.py"
+    ],
+    "started": "2026-09-16T00:27:01.463394+00:00",
+    "ended": "2026-09-16T00:27:01.623788+00:00",
+    "seconds": 0.16,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_defensive_try_manifest",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_defensive_try_manifest.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:27:04.820514+00:00",
+    "ended": "2026-09-16T00:27:09.435345+00:00",
+    "seconds": 4.615,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_guardian_manifest",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_guardian_manifest.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:27:09.435980+00:00",
+    "ended": "2026-09-16T00:32:22.581987+00:00",
+    "seconds": 313.146,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_music_playlist_manifest",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_music_playlist_manifest.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:27:10.554379+00:00",
+    "ended": "2026-09-16T00:27:14.348295+00:00",
+    "seconds": 3.794,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_my_career_manifest",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_my_career_manifest.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:27:14.348914+00:00",
+    "ended": "2026-09-16T00:27:22.510741+00:00",
+    "seconds": 8.162,
+    "exit_code": 0
+  },
+  {
+    "name": "merge-checkpoint-final",
+    "argv": [
+      "python3",
+      "reports/b71_a7/commit_checkpoint.py",
+      "merge-s4-commit-final",
+      "Merge S4 painted bar into A6 with bounded manifest and release wiring"
+    ],
+    "started": "2026-09-16T00:27:18.824611+00:00",
+    "ended": "2026-09-16T00:27:19.039236+00:00",
+    "seconds": 0.215,
+    "exit_code": 0
+  },
+  {
+    "name": "merge-s4-commit-final-stage",
+    "argv": [
+      "git",
+      "add",
+      "-f",
+      "--",
+      "ASTRA_B71_S4_REPORT.md",
+      "ASTRA_LAST_MESSAGE.md",
+      "ASTRA_REPORT.md",
+      "WIRING.md",
+      "WIRING_B71_S4.md",
+      "data/nfl2k5_cave_reservations.json",
+      "data/nfl2k5_scorebug_mnf/painted_label_2x.json",
+      "data/nfl2k5_scorebug_mnf/painted_label_2x.png",
+      "docs/mod_editor/2k5_mod_studio_changelog.md",
+      "mod_editor/capabilities/registry.v1.json",
+      "mod_editor/core/nfl2k5_scorebug_exact.py",
+      "mod_editor/core/nfl2k5_scorebug_ingame.py",
+      "mod_editor/core/nfl2k5_scorebug_mnf_font.py",
+      "mod_editor/core/nfl2k5_scorebug_resources.py",
+      "mod_editor/core/nfl2k5_scorebug_runtime.py",
+      "mod_editor/core/providers.py",
+      "packaging/check_2k5_mod_studio_release.py",
+      "packaging/nfl2k5_scorebug_template_pngs.json",
+      "packaging/release-allowlist.txt",
+      "reports/b71_a7/INHERITED_A6_REPORT.md",
+      "reports/b71_a7/archive-commit-final.log",
+      "reports/b71_a7/archive-commit-final.result.json",
+      "reports/b71_a7/archive-commit.log",
+      "reports/b71_a7/archive-commit.result.json",
+      "reports/b71_a7/archive-stage.log",
+      "reports/b71_a7/archive-stage.result.json",
+      "reports/b71_a7/audit_pins.py",
+      "reports/b71_a7/build_testdisc71.py",
+      "reports/b71_a7/catalog-preflight.log",
+      "reports/b71_a7/catalog-preflight.result.json",
+      "reports/b71_a7/closures.py",
+      "reports/b71_a7/commit_checkpoint.py",
+      "reports/b71_a7/deliver.py",
+      "reports/b71_a7/fast-suite-paths.json",
+      "reports/b71_a7/fast-suites.log",
+      "reports/b71_a7/final-test_nfl2k5_abilities_v2_manifest.log",
+      "reports/b71_a7/final-test_nfl2k5_accelerated_clock_manifest.log",
+      "reports/b71_a7/final-test_nfl2k5_accelerated_clock_manifest.result.json",
+      "reports/b71_a7/final-test_nfl2k5_cpu_money_downs_manifest.log",
+      "reports/b71_a7/final-test_nfl2k5_cpu_money_downs_manifest.result.json",
+      "reports/b71_a7/final-test_nfl2k5_defensive_try_manifest.log",
+      "reports/b71_a7/final-test_nfl2k5_defensive_try_manifest.result.json",
+      "reports/b71_a7/final-test_nfl2k5_guardian_manifest.log",
+      "reports/b71_a7/final-test_nfl2k5_music_playlist_manifest.log",
+      "reports/b71_a7/final-test_nfl2k5_music_playlist_manifest.result.json",
+      "reports/b71_a7/final-test_nfl2k5_my_career_manifest.log",
+      "reports/b71_a7/final_audit.py",
+      "reports/b71_a7/gates.sh",
+      "reports/b71_a7/hydrate-evidence.log",
+      "reports/b71_a7/hydrate-evidence.result.json",
+      "reports/b71_a7/hydrate-release-tools.log",
+      "reports/b71_a7/hydrate-release-tools.result.json",
+      "reports/b71_a7/label-release-pin.json",
+      "reports/b71_a7/manifest-production.log",
+      "reports/b71_a7/manifest-production.result.json",
+      "reports/b71_a7/manifest-projection-delivery.log",
+      "reports/b71_a7/manifest-projection-delivery.result.json",
+      "reports/b71_a7/manifest-projection-final.log",
+      "reports/b71_a7/manifest-projection-final.result.json",
+      "reports/b71_a7/manifest-projection.log",
+      "reports/b71_a7/manifest-projection.result.json",
+      "reports/b71_a7/manifest_regen.sh",
+      "reports/b71_a7/measure_volume.py",
+      "reports/b71_a7/merge-checkpoint-final.log",
+      "reports/b71_a7/merge-checkpoint.log",
+      "reports/b71_a7/merge-checkpoint.result.json",
+      "reports/b71_a7/merge-s4-commit-paths.json",
+      "reports/b71_a7/merge-s4-commit-stage.log",
+      "reports/b71_a7/merge-s4-commit-stage.result.json",
+      "reports/b71_a7/merge-s4.log",
+      "reports/b71_a7/merge-s4.result.json",
+      "reports/b71_a7/pin-audit-final.log",
+      "reports/b71_a7/pin-audit-final.result.json",
+      "reports/b71_a7/pin-audit.json",
+      "reports/b71_a7/pin-audit.log",
+      "reports/b71_a7/pin-audit.result.json",
+      "reports/b71_a7/prepare-test-python.log",
+      "reports/b71_a7/prepare-test-python.result.json",
+      "reports/b71_a7/refresh_manifest_projection.py",
+      "reports/b71_a7/registry-strict.log",
+      "reports/b71_a7/registry-strict.result.json",
+      "reports/b71_a7/remaining.sh",
+      "reports/b71_a7/repin-release-label.log",
+      "reports/b71_a7/repin-release-label.result.json",
+      "reports/b71_a7/repin.log",
+      "reports/b71_a7/repin.result.json",
+      "reports/b71_a7/run.py",
+      "reports/b71_a7/suites.py",
+      "reports/b71_a7/validation-plan.log",
+      "reports/b71_a7/validation-plan.result.json",
+      "reports/b71_a7/volume.json",
+      "reports/b71_a7/volume.log",
+      "reports/b71_a7/volume.result.json",
+      "reports/b71_a7/wiring-locations.json",
+      "reports/b71_a7/write_report.py",
+      "reports/b71_s4/all_events_43.png",
+      "reports/b71_s4/all_events_43_crop.png",
+      "reports/b71_s4/all_events_wide.png",
+      "reports/b71_s4/all_events_wide_crop.png",
+      "reports/b71_s4/atlas_decoded.png",
+      "reports/b71_s4/ball_on_43.png",
+      "reports/b71_s4/ball_on_43_crop.png",
+      "reports/b71_s4/ball_on_wide.png",
+      "reports/b71_s4/ball_on_wide_crop.png",
+      "reports/b71_s4/build_testdisc71.py",
+      "reports/b71_s4/builder_prepared.json",
+      "reports/b71_s4/cave-oracle-final-launch.log",
+      "reports/b71_s4/cave-oracle-final.log",
+      "reports/b71_s4/cave-oracle-final.result.json",
+      "reports/b71_s4/check_delivery.py",
+      "reports/b71_s4/command_ledger.json",
+      "reports/b71_s4/compare_43.png",
+      "reports/b71_s4/compare_wide.png",
+      "reports/b71_s4/comparison-diagnostic.json",
+      "reports/b71_s4/compiler_pins.json",
+      "reports/b71_s4/contact_sheet.py",
+      "reports/b71_s4/contract-compact.log",
+      "reports/b71_s4/contract-compact.result.json",
+      "reports/b71_s4/delivery-check.log",
+      "reports/b71_s4/delivery-check.result.json",
+      "reports/b71_s4/delivery-suites-driver.log",
+      "reports/b71_s4/delivery_checks.json",
+      "reports/b71_s4/delivery_commit_paths.json",
+      "reports/b71_s4/evidence_hydration.json",
+      "reports/b71_s4/evidence_paths.json",
+      "reports/b71_s4/final-delivery-suite-summary.json",
+      "reports/b71_s4/final-final-suite-summary.json",
+      "reports/b71_s4/final-sealed-suite-summary.json",
+      "reports/b71_s4/final-suite-summary.json",
+      "reports/b71_s4/final-suites-driver.log",
+      "reports/b71_s4/finalize_delivery.py",
+      "reports/b71_s4/flag_43.png",
+      "reports/b71_s4/flag_43_crop.png",
+      "reports/b71_s4/flag_wide.png",
+      "reports/b71_s4/flag_wide_crop.png",
+      "reports/b71_s4/hang_time_43.png",
+      "reports/b71_s4/hang_time_43_crop.png",
+      "reports/b71_s4/hang_time_wide.png",
+      "reports/b71_s4/hang_time_wide_crop.png",
+      "reports/b71_s4/initial-render.log",
+      "reports/b71_s4/initial-render.result.json",
+      "reports/b71_s4/layout-skip-details.log",
+      "reports/b71_s4/layout-skip-details.result.json",
+      "reports/b71_s4/live_clock_hidden_43.png",
+      "reports/b71_s4/live_clock_hidden_43_crop.png",
+      "reports/b71_s4/live_clock_hidden_wide.png",
+      "reports/b71_s4/live_clock_hidden_wide_crop.png",
+      "reports/b71_s4/logo_fit.json",
+      "reports/b71_s4/make_report.py",
+      "reports/b71_s4/manifest-compact.log",
+      "reports/b71_s4/manifest-compact.result.json",
+      "reports/b71_s4/manifest-final.log",
+      "reports/b71_s4/manifest-final.result.json",
+      "reports/b71_s4/manifest-full.log",
+      "reports/b71_s4/manifest-full.result.json",
+      "reports/b71_s4/manifest-launch.log",
+      "reports/b71_s4/manifest.log",
+      "reports/b71_s4/manifest.result.json",
+      "reports/b71_s4/measure_text_rgb.py",
+      "reports/b71_s4/measurements.json",
+      "reports/b71_s4/mnf-contract.log",
+      "reports/b71_s4/mnf-contract.result.json",
+      "reports/b71_s4/mnf-native.log",
+      "reports/b71_s4/mnf-native.result.json",
+      "reports/b71_s4/multi_digit_scores.json",
+      "reports/b71_s4/native-compact.log",
+      "reports/b71_s4/native-compact.result.json",
+      "reports/b71_s4/native-final.log",
+      "reports/b71_s4/native-final.result.json",
+      "reports/b71_s4/nfl2k5_scorebug_layout_test-delivery.log",
+      "reports/b71_s4/nfl2k5_scorebug_layout_test-delivery.result.json",
+      "reports/b71_s4/nfl2k5_scorebug_layout_test-final.log",
+      "reports/b71_s4/nfl2k5_scorebug_layout_test-final.result.json",
+      "reports/b71_s4/nfl2k5_scorebug_layout_test-release.log",
+      "reports/b71_s4/nfl2k5_scorebug_layout_test-release.result.json",
+      "reports/b71_s4/nfl2k5_scorebug_layout_test-sealed.log",
+      "reports/b71_s4/nfl2k5_scorebug_layout_test-sealed.result.json",
+      "reports/b71_s4/nfl2k5_scorebug_mod_project_test-delivery.log",
+      "reports/b71_s4/nfl2k5_scorebug_mod_project_test-delivery.result.json",
+      "reports/b71_s4/nfl2k5_scorebug_mod_project_test-final.log",
+      "reports/b71_s4/nfl2k5_scorebug_mod_project_test-final.result.json",
+      "reports/b71_s4/nfl2k5_scorebug_mod_project_test-release.log",
+      "reports/b71_s4/nfl2k5_scorebug_mod_project_test-release.result.json",
+      "reports/b71_s4/nfl2k5_scorebug_mod_project_test-sealed.log",
+      "reports/b71_s4/nfl2k5_scorebug_mod_project_test-sealed.result.json",
+      "reports/b71_s4/no_den_43.json",
+      "reports/b71_s4/no_den_43.png",
+      "reports/b71_s4/no_den_wide.json",
+      "reports/b71_s4/no_den_wide.png",
+      "reports/b71_s4/owner-compact.log",
+      "reports/b71_s4/owner-compact.result.json",
+      "reports/b71_s4/owner-pairwise-final-launch.log",
+      "reports/b71_s4/owner-pairwise-final.log",
+      "reports/b71_s4/owner-pairwise-final.result.json",
+      "reports/b71_s4/phase1-closure.log",
+      "reports/b71_s4/phase1-closure.result.json",
+      "reports/b71_s4/pins-compact.log",
+      "reports/b71_s4/pins-compact.result.json",
+      "reports/b71_s4/pins-density.log",
+      "reports/b71_s4/pins-density.result.json",
+      "reports/b71_s4/pins-final.log",
+      "reports/b71_s4/pins-final.result.json",
+      "reports/b71_s4/pins-uv.log",
+      "reports/b71_s4/pins-uv.result.json",
+      "reports/b71_s4/pins.log",
+      "reports/b71_s4/pins.result.json",
+      "reports/b71_s4/proof-current.log",
+      "reports/b71_s4/proof-current.result.json",
+      "reports/b71_s4/proof-density.log",
+      "reports/b71_s4/proof-density.result.json",
+      "reports/b71_s4/proof-final.log",
+      "reports/b71_s4/proof-final.result.json",
+      "reports/b71_s4/proof-release.log",
+      "reports/b71_s4/proof-release.result.json",
+      "reports/b71_s4/proof-text-fit.log",
+      "reports/b71_s4/proof-text-fit.result.json",
+      "reports/b71_s4/proof-uv.log",
+      "reports/b71_s4/proof-uv.result.json",
+      "reports/b71_s4/proof-v4.log",
+      "reports/b71_s4/proof-v4.result.json",
+      "reports/b71_s4/prove_v4.py",
+      "reports/b71_s4/provider-check.log",
+      "reports/b71_s4/provider-check.result.json",
+      "reports/b71_s4/provider-closure.log",
+      "reports/b71_s4/provider-closure.result.json",
+      "reports/b71_s4/raster_label.py",
+      "reports/b71_s4/refresh_manifest.py",
+      "reports/b71_s4/regenerate_pins.py",
+      "reports/b71_s4/registry-strict-delivery.log",
+      "reports/b71_s4/registry-strict-delivery.result.json",
+      "reports/b71_s4/registry-strict-final-evidence.log",
+      "reports/b71_s4/registry-strict-final-evidence.result.json",
+      "reports/b71_s4/registry-strict-final.log",
+      "reports/b71_s4/registry-strict-final.result.json",
+      "reports/b71_s4/registry-strict-hydrated.log",
+      "reports/b71_s4/registry-strict-hydrated.result.json",
+      "reports/b71_s4/registry-strict-release.log",
+      "reports/b71_s4/registry-strict-release.result.json",
+      "reports/b71_s4/registry-strict-sealed.log",
+      "reports/b71_s4/registry-strict-sealed.result.json",
+      "reports/b71_s4/registry-strict-v4.log",
+      "reports/b71_s4/registry-strict-v4.result.json",
+      "reports/b71_s4/render_43.json",
+      "reports/b71_s4/render_43.png",
+      "reports/b71_s4/render_43_crop.png",
+      "reports/b71_s4/render_wide.json",
+      "reports/b71_s4/render_wide.png",
+      "reports/b71_s4/render_wide_crop.png",
+      "reports/b71_s4/repin-compact.log",
+      "reports/b71_s4/repin-compact.result.json",
+      "reports/b71_s4/repin-contracts.log",
+      "reports/b71_s4/repin-contracts.result.json",
+      "reports/b71_s4/repin-delivery.log",
+      "reports/b71_s4/repin-delivery.result.json",
+      "reports/b71_s4/repin-evidence.log",
+      "reports/b71_s4/repin-evidence.result.json",
+      "reports/b71_s4/repin-final.log",
+      "reports/b71_s4/repin-final.result.json",
+      "reports/b71_s4/repin-preflight.log",
+      "reports/b71_s4/repin-preflight.result.json",
+      "reports/b71_s4/repin-release.log",
+      "reports/b71_s4/repin-release.result.json",
+      "reports/b71_s4/repin-uv.log",
+      "reports/b71_s4/repin-uv.result.json",
+      "reports/b71_s4/run_final_suites.py",
+      "reports/b71_s4/run_logged.py",
+      "reports/b71_s4/score_43.png",
+      "reports/b71_s4/score_43_crop.png",
+      "reports/b71_s4/score_wide.png",
+      "reports/b71_s4/score_wide_crop.png",
+      "reports/b71_s4/scores_100_43.png",
+      "reports/b71_s4/scores_100_43_crop.png",
+      "reports/b71_s4/scores_100_wide.png",
+      "reports/b71_s4/scores_100_wide_crop.png",
+      "reports/b71_s4/scores_28_43.png",
+      "reports/b71_s4/scores_28_43_crop.png",
+      "reports/b71_s4/scores_28_wide.png",
+      "reports/b71_s4/scores_28_wide_crop.png",
+      "reports/b71_s4/scores_999_43.png",
+      "reports/b71_s4/scores_999_43_crop.png",
+      "reports/b71_s4/scores_999_wide.png",
+      "reports/b71_s4/scores_999_wide_crop.png",
+      "reports/b71_s4/sealed-suites-driver.log",
+      "reports/b71_s4/second-render.log",
+      "reports/b71_s4/second-render.result.json",
+      "reports/b71_s4/source-art-skip-details.log",
+      "reports/b71_s4/source-art-skip-details.result.json",
+      "reports/b71_s4/states.json",
+      "reports/b71_s4/states_contact_sheet.png",
+      "reports/b71_s4/suites-driver.log",
+      "reports/b71_s4/test_apf_scorebug_workspace_qt-delivery.log",
+      "reports/b71_s4/test_apf_scorebug_workspace_qt-delivery.result.json",
+      "reports/b71_s4/test_apf_scorebug_workspace_qt-final.log",
+      "reports/b71_s4/test_apf_scorebug_workspace_qt-final.result.json",
+      "reports/b71_s4/test_apf_scorebug_workspace_qt-release.log",
+      "reports/b71_s4/test_apf_scorebug_workspace_qt-release.result.json",
+      "reports/b71_s4/test_apf_scorebug_workspace_qt-sealed.log",
+      "reports/b71_s4/test_apf_scorebug_workspace_qt-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_assets-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_assets-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_assets-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_assets-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_assets-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_assets-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_assets-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_assets-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_author-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_author-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_author-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_author-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_author-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_author-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_author-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_author-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_exact-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_exact-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_exact-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_exact-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_exact-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_exact-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_exact-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_exact-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_fonts-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_fonts-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_fonts-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_fonts-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_fonts-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_fonts-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_fonts-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_fonts-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze_v2-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze_v2-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze_v2-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze_v2-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze_v2-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze_v2-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze_v2-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze_v2-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame_fix-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame_fix-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame_fix-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame_fix-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame_fix-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame_fix-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame_fix-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame_fix-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf_v3-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf_v3-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf_v3-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf_v3-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf_v3-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf_v3-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf_v3-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf_v3-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_native-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_native-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_native-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_native-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_native-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_native-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_native-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_native-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_projection-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_projection-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_projection-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_projection-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_projection-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_projection-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_projection-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_projection-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_resources-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_resources-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_resources-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_resources-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_resources-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_resources-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_resources-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_resources-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_runtime-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_runtime-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_runtime-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_runtime-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_runtime-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_runtime-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_runtime-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_runtime-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_source_art-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_source_art-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_source_art-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_source_art-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_source_art-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_source_art-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_source_art-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_source_art-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_template-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_template-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_template-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_template-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_template-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_template-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_template-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_template-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_template_release-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_template_release-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_template_release-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_template_release-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_template_release-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_template_release-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_template_release-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_template_release-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_unified_adapter-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_unified_adapter-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_unified_adapter-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_unified_adapter-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_unified_adapter-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_unified_adapter-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_unified_adapter-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_unified_adapter-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_ingame-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_ingame-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_ingame-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_ingame-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_ingame-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_ingame-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_ingame-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_ingame-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_projection-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_projection-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_projection-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_projection-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_projection-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_projection-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_projection-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_projection-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_versions-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_versions-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_versions-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_versions-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_versions-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_versions-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_versions-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_versions-sealed.result.json",
+      "reports/b71_s4/test_phase1_packaging-delivery.log",
+      "reports/b71_s4/test_phase1_packaging-delivery.result.json",
+      "reports/b71_s4/test_phase1_packaging-final.log",
+      "reports/b71_s4/test_phase1_packaging-final.result.json",
+      "reports/b71_s4/test_phase1_packaging-release.log",
+      "reports/b71_s4/test_phase1_packaging-release.result.json",
+      "reports/b71_s4/test_phase1_packaging-sealed.log",
+      "reports/b71_s4/test_phase1_packaging-sealed.result.json",
+      "reports/b71_s4/test_product_catalog-delivery.log",
+      "reports/b71_s4/test_product_catalog-delivery.result.json",
+      "reports/b71_s4/test_product_catalog-final.log",
+      "reports/b71_s4/test_product_catalog-final.result.json",
+      "reports/b71_s4/test_product_catalog-release.log",
+      "reports/b71_s4/test_product_catalog-release.result.json",
+      "reports/b71_s4/test_product_catalog-sealed.log",
+      "reports/b71_s4/test_product_catalog-sealed.result.json",
+      "reports/b71_s4/test_provider_integrity-delivery.log",
+      "reports/b71_s4/test_provider_integrity-delivery.result.json",
+      "reports/b71_s4/test_provider_integrity-final.log",
+      "reports/b71_s4/test_provider_integrity-final.result.json",
+      "reports/b71_s4/test_provider_integrity-release.log",
+      "reports/b71_s4/test_provider_integrity-release.result.json",
+      "reports/b71_s4/test_provider_integrity-sealed.log",
+      "reports/b71_s4/test_provider_integrity-sealed.result.json",
+      "reports/b71_s4/test_scorebug_studio_panel_qt-delivery.log",
+      "reports/b71_s4/test_scorebug_studio_panel_qt-delivery.result.json",
+      "reports/b71_s4/test_scorebug_studio_panel_qt-final.log",
+      "reports/b71_s4/test_scorebug_studio_panel_qt-final.result.json",
+      "reports/b71_s4/test_scorebug_studio_panel_qt-release.log",
+      "reports/b71_s4/test_scorebug_studio_panel_qt-release.result.json",
+      "reports/b71_s4/test_scorebug_studio_panel_qt-sealed.log",
+      "reports/b71_s4/test_scorebug_studio_panel_qt-sealed.result.json",
+      "reports/b71_s4/text-rgb-final.log",
+      "reports/b71_s4/text-rgb-final.result.json",
+      "reports/b71_s4/text_rgb_mae.json",
+      "reports/b71_s4/xbe-cave-references-final-launch.log",
+      "reports/b71_s4/xbe-cave-references-final.log",
+      "reports/b71_s4/xbe-cave-references-final.result.json",
+      "reports/b71_s4/xbe-caves-final-launch.log",
+      "reports/b71_s4/xbe-caves-final.log",
+      "reports/b71_s4/xbe-caves-final.result.json",
+      "reports/b71_s4/xbe-memory-compact-launch.log",
+      "reports/b71_s4/xbe-memory-compact.log",
+      "reports/b71_s4/xbe-memory-compact.result.json",
+      "reports/b71_s4/xbe-memory-final-launch.log",
+      "reports/b71_s4/xbe-memory-final.log",
+      "reports/b71_s4/xbe-memory-final.result.json",
+      "reports/b71_s4/xbe-memory-launch.log",
+      "reports/b71_s4/xbe-memory.log",
+      "reports/b71_s4/xbe-memory.result.json",
+      "tests/mod_editor/test_nfl2k5_scorebug_exact.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_fonts.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_ingame.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_mnf.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_native.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_resources.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_runtime.py",
+      "tests/mod_editor/test_provider_integrity.py",
+      "tools/nfl2k5_scorebug_exact.py",
+      "tools/nfl2k5_scorebug_projection.py",
+      "tools/nfl_main_menu_font.py"
+    ],
+    "started": "2026-09-16T00:27:18.884957+00:00",
+    "ended": "2026-09-16T00:27:18.967517+00:00",
+    "seconds": 0.083,
+    "exit_code": 0
+  },
+  {
+    "name": "merge-s4-commit-final",
+    "argv": [
+      "git",
+      "commit",
+      "--include",
+      "-m",
+      "Merge S4 painted bar into A6 with bounded manifest and release wiring",
+      "--",
+      "ASTRA_B71_S4_REPORT.md",
+      "ASTRA_LAST_MESSAGE.md",
+      "ASTRA_REPORT.md",
+      "WIRING.md",
+      "WIRING_B71_S4.md",
+      "data/nfl2k5_cave_reservations.json",
+      "data/nfl2k5_scorebug_mnf/painted_label_2x.json",
+      "data/nfl2k5_scorebug_mnf/painted_label_2x.png",
+      "docs/mod_editor/2k5_mod_studio_changelog.md",
+      "mod_editor/capabilities/registry.v1.json",
+      "mod_editor/core/nfl2k5_scorebug_exact.py",
+      "mod_editor/core/nfl2k5_scorebug_ingame.py",
+      "mod_editor/core/nfl2k5_scorebug_mnf_font.py",
+      "mod_editor/core/nfl2k5_scorebug_resources.py",
+      "mod_editor/core/nfl2k5_scorebug_runtime.py",
+      "mod_editor/core/providers.py",
+      "packaging/check_2k5_mod_studio_release.py",
+      "packaging/nfl2k5_scorebug_template_pngs.json",
+      "packaging/release-allowlist.txt",
+      "reports/b71_a7/INHERITED_A6_REPORT.md",
+      "reports/b71_a7/archive-commit-final.log",
+      "reports/b71_a7/archive-commit-final.result.json",
+      "reports/b71_a7/archive-commit.log",
+      "reports/b71_a7/archive-commit.result.json",
+      "reports/b71_a7/archive-stage.log",
+      "reports/b71_a7/archive-stage.result.json",
+      "reports/b71_a7/audit_pins.py",
+      "reports/b71_a7/build_testdisc71.py",
+      "reports/b71_a7/catalog-preflight.log",
+      "reports/b71_a7/catalog-preflight.result.json",
+      "reports/b71_a7/closures.py",
+      "reports/b71_a7/commit_checkpoint.py",
+      "reports/b71_a7/deliver.py",
+      "reports/b71_a7/fast-suite-paths.json",
+      "reports/b71_a7/fast-suites.log",
+      "reports/b71_a7/final-test_nfl2k5_abilities_v2_manifest.log",
+      "reports/b71_a7/final-test_nfl2k5_accelerated_clock_manifest.log",
+      "reports/b71_a7/final-test_nfl2k5_accelerated_clock_manifest.result.json",
+      "reports/b71_a7/final-test_nfl2k5_cpu_money_downs_manifest.log",
+      "reports/b71_a7/final-test_nfl2k5_cpu_money_downs_manifest.result.json",
+      "reports/b71_a7/final-test_nfl2k5_defensive_try_manifest.log",
+      "reports/b71_a7/final-test_nfl2k5_defensive_try_manifest.result.json",
+      "reports/b71_a7/final-test_nfl2k5_guardian_manifest.log",
+      "reports/b71_a7/final-test_nfl2k5_music_playlist_manifest.log",
+      "reports/b71_a7/final-test_nfl2k5_music_playlist_manifest.result.json",
+      "reports/b71_a7/final-test_nfl2k5_my_career_manifest.log",
+      "reports/b71_a7/final_audit.py",
+      "reports/b71_a7/gates.sh",
+      "reports/b71_a7/hydrate-evidence.log",
+      "reports/b71_a7/hydrate-evidence.result.json",
+      "reports/b71_a7/hydrate-release-tools.log",
+      "reports/b71_a7/hydrate-release-tools.result.json",
+      "reports/b71_a7/label-release-pin.json",
+      "reports/b71_a7/manifest-production.log",
+      "reports/b71_a7/manifest-production.result.json",
+      "reports/b71_a7/manifest-projection-delivery.log",
+      "reports/b71_a7/manifest-projection-delivery.result.json",
+      "reports/b71_a7/manifest-projection-final.log",
+      "reports/b71_a7/manifest-projection-final.result.json",
+      "reports/b71_a7/manifest-projection.log",
+      "reports/b71_a7/manifest-projection.result.json",
+      "reports/b71_a7/manifest_regen.sh",
+      "reports/b71_a7/measure_volume.py",
+      "reports/b71_a7/merge-checkpoint-final.log",
+      "reports/b71_a7/merge-checkpoint.log",
+      "reports/b71_a7/merge-checkpoint.result.json",
+      "reports/b71_a7/merge-s4-commit-paths.json",
+      "reports/b71_a7/merge-s4-commit-stage.log",
+      "reports/b71_a7/merge-s4-commit-stage.result.json",
+      "reports/b71_a7/merge-s4.log",
+      "reports/b71_a7/merge-s4.result.json",
+      "reports/b71_a7/pin-audit-final.log",
+      "reports/b71_a7/pin-audit-final.result.json",
+      "reports/b71_a7/pin-audit.json",
+      "reports/b71_a7/pin-audit.log",
+      "reports/b71_a7/pin-audit.result.json",
+      "reports/b71_a7/prepare-test-python.log",
+      "reports/b71_a7/prepare-test-python.result.json",
+      "reports/b71_a7/refresh_manifest_projection.py",
+      "reports/b71_a7/registry-strict.log",
+      "reports/b71_a7/registry-strict.result.json",
+      "reports/b71_a7/remaining.sh",
+      "reports/b71_a7/repin-release-label.log",
+      "reports/b71_a7/repin-release-label.result.json",
+      "reports/b71_a7/repin.log",
+      "reports/b71_a7/repin.result.json",
+      "reports/b71_a7/run.py",
+      "reports/b71_a7/suites.py",
+      "reports/b71_a7/validation-plan.log",
+      "reports/b71_a7/validation-plan.result.json",
+      "reports/b71_a7/volume.json",
+      "reports/b71_a7/volume.log",
+      "reports/b71_a7/volume.result.json",
+      "reports/b71_a7/wiring-locations.json",
+      "reports/b71_a7/write_report.py",
+      "reports/b71_s4/all_events_43.png",
+      "reports/b71_s4/all_events_43_crop.png",
+      "reports/b71_s4/all_events_wide.png",
+      "reports/b71_s4/all_events_wide_crop.png",
+      "reports/b71_s4/atlas_decoded.png",
+      "reports/b71_s4/ball_on_43.png",
+      "reports/b71_s4/ball_on_43_crop.png",
+      "reports/b71_s4/ball_on_wide.png",
+      "reports/b71_s4/ball_on_wide_crop.png",
+      "reports/b71_s4/build_testdisc71.py",
+      "reports/b71_s4/builder_prepared.json",
+      "reports/b71_s4/cave-oracle-final-launch.log",
+      "reports/b71_s4/cave-oracle-final.log",
+      "reports/b71_s4/cave-oracle-final.result.json",
+      "reports/b71_s4/check_delivery.py",
+      "reports/b71_s4/command_ledger.json",
+      "reports/b71_s4/compare_43.png",
+      "reports/b71_s4/compare_wide.png",
+      "reports/b71_s4/comparison-diagnostic.json",
+      "reports/b71_s4/compiler_pins.json",
+      "reports/b71_s4/contact_sheet.py",
+      "reports/b71_s4/contract-compact.log",
+      "reports/b71_s4/contract-compact.result.json",
+      "reports/b71_s4/delivery-check.log",
+      "reports/b71_s4/delivery-check.result.json",
+      "reports/b71_s4/delivery-suites-driver.log",
+      "reports/b71_s4/delivery_checks.json",
+      "reports/b71_s4/delivery_commit_paths.json",
+      "reports/b71_s4/evidence_hydration.json",
+      "reports/b71_s4/evidence_paths.json",
+      "reports/b71_s4/final-delivery-suite-summary.json",
+      "reports/b71_s4/final-final-suite-summary.json",
+      "reports/b71_s4/final-sealed-suite-summary.json",
+      "reports/b71_s4/final-suite-summary.json",
+      "reports/b71_s4/final-suites-driver.log",
+      "reports/b71_s4/finalize_delivery.py",
+      "reports/b71_s4/flag_43.png",
+      "reports/b71_s4/flag_43_crop.png",
+      "reports/b71_s4/flag_wide.png",
+      "reports/b71_s4/flag_wide_crop.png",
+      "reports/b71_s4/hang_time_43.png",
+      "reports/b71_s4/hang_time_43_crop.png",
+      "reports/b71_s4/hang_time_wide.png",
+      "reports/b71_s4/hang_time_wide_crop.png",
+      "reports/b71_s4/initial-render.log",
+      "reports/b71_s4/initial-render.result.json",
+      "reports/b71_s4/layout-skip-details.log",
+      "reports/b71_s4/layout-skip-details.result.json",
+      "reports/b71_s4/live_clock_hidden_43.png",
+      "reports/b71_s4/live_clock_hidden_43_crop.png",
+      "reports/b71_s4/live_clock_hidden_wide.png",
+      "reports/b71_s4/live_clock_hidden_wide_crop.png",
+      "reports/b71_s4/logo_fit.json",
+      "reports/b71_s4/make_report.py",
+      "reports/b71_s4/manifest-compact.log",
+      "reports/b71_s4/manifest-compact.result.json",
+      "reports/b71_s4/manifest-final.log",
+      "reports/b71_s4/manifest-final.result.json",
+      "reports/b71_s4/manifest-full.log",
+      "reports/b71_s4/manifest-full.result.json",
+      "reports/b71_s4/manifest-launch.log",
+      "reports/b71_s4/manifest.log",
+      "reports/b71_s4/manifest.result.json",
+      "reports/b71_s4/measure_text_rgb.py",
+      "reports/b71_s4/measurements.json",
+      "reports/b71_s4/mnf-contract.log",
+      "reports/b71_s4/mnf-contract.result.json",
+      "reports/b71_s4/mnf-native.log",
+      "reports/b71_s4/mnf-native.result.json",
+      "reports/b71_s4/multi_digit_scores.json",
+      "reports/b71_s4/native-compact.log",
+      "reports/b71_s4/native-compact.result.json",
+      "reports/b71_s4/native-final.log",
+      "reports/b71_s4/native-final.result.json",
+      "reports/b71_s4/nfl2k5_scorebug_layout_test-delivery.log",
+      "reports/b71_s4/nfl2k5_scorebug_layout_test-delivery.result.json",
+      "reports/b71_s4/nfl2k5_scorebug_layout_test-final.log",
+      "reports/b71_s4/nfl2k5_scorebug_layout_test-final.result.json",
+      "reports/b71_s4/nfl2k5_scorebug_layout_test-release.log",
+      "reports/b71_s4/nfl2k5_scorebug_layout_test-release.result.json",
+      "reports/b71_s4/nfl2k5_scorebug_layout_test-sealed.log",
+      "reports/b71_s4/nfl2k5_scorebug_layout_test-sealed.result.json",
+      "reports/b71_s4/nfl2k5_scorebug_mod_project_test-delivery.log",
+      "reports/b71_s4/nfl2k5_scorebug_mod_project_test-delivery.result.json",
+      "reports/b71_s4/nfl2k5_scorebug_mod_project_test-final.log",
+      "reports/b71_s4/nfl2k5_scorebug_mod_project_test-final.result.json",
+      "reports/b71_s4/nfl2k5_scorebug_mod_project_test-release.log",
+      "reports/b71_s4/nfl2k5_scorebug_mod_project_test-release.result.json",
+      "reports/b71_s4/nfl2k5_scorebug_mod_project_test-sealed.log",
+      "reports/b71_s4/nfl2k5_scorebug_mod_project_test-sealed.result.json",
+      "reports/b71_s4/no_den_43.json",
+      "reports/b71_s4/no_den_43.png",
+      "reports/b71_s4/no_den_wide.json",
+      "reports/b71_s4/no_den_wide.png",
+      "reports/b71_s4/owner-compact.log",
+      "reports/b71_s4/owner-compact.result.json",
+      "reports/b71_s4/owner-pairwise-final-launch.log",
+      "reports/b71_s4/owner-pairwise-final.log",
+      "reports/b71_s4/owner-pairwise-final.result.json",
+      "reports/b71_s4/phase1-closure.log",
+      "reports/b71_s4/phase1-closure.result.json",
+      "reports/b71_s4/pins-compact.log",
+      "reports/b71_s4/pins-compact.result.json",
+      "reports/b71_s4/pins-density.log",
+      "reports/b71_s4/pins-density.result.json",
+      "reports/b71_s4/pins-final.log",
+      "reports/b71_s4/pins-final.result.json",
+      "reports/b71_s4/pins-uv.log",
+      "reports/b71_s4/pins-uv.result.json",
+      "reports/b71_s4/pins.log",
+      "reports/b71_s4/pins.result.json",
+      "reports/b71_s4/proof-current.log",
+      "reports/b71_s4/proof-current.result.json",
+      "reports/b71_s4/proof-density.log",
+      "reports/b71_s4/proof-density.result.json",
+      "reports/b71_s4/proof-final.log",
+      "reports/b71_s4/proof-final.result.json",
+      "reports/b71_s4/proof-release.log",
+      "reports/b71_s4/proof-release.result.json",
+      "reports/b71_s4/proof-text-fit.log",
+      "reports/b71_s4/proof-text-fit.result.json",
+      "reports/b71_s4/proof-uv.log",
+      "reports/b71_s4/proof-uv.result.json",
+      "reports/b71_s4/proof-v4.log",
+      "reports/b71_s4/proof-v4.result.json",
+      "reports/b71_s4/prove_v4.py",
+      "reports/b71_s4/provider-check.log",
+      "reports/b71_s4/provider-check.result.json",
+      "reports/b71_s4/provider-closure.log",
+      "reports/b71_s4/provider-closure.result.json",
+      "reports/b71_s4/raster_label.py",
+      "reports/b71_s4/refresh_manifest.py",
+      "reports/b71_s4/regenerate_pins.py",
+      "reports/b71_s4/registry-strict-delivery.log",
+      "reports/b71_s4/registry-strict-delivery.result.json",
+      "reports/b71_s4/registry-strict-final-evidence.log",
+      "reports/b71_s4/registry-strict-final-evidence.result.json",
+      "reports/b71_s4/registry-strict-final.log",
+      "reports/b71_s4/registry-strict-final.result.json",
+      "reports/b71_s4/registry-strict-hydrated.log",
+      "reports/b71_s4/registry-strict-hydrated.result.json",
+      "reports/b71_s4/registry-strict-release.log",
+      "reports/b71_s4/registry-strict-release.result.json",
+      "reports/b71_s4/registry-strict-sealed.log",
+      "reports/b71_s4/registry-strict-sealed.result.json",
+      "reports/b71_s4/registry-strict-v4.log",
+      "reports/b71_s4/registry-strict-v4.result.json",
+      "reports/b71_s4/render_43.json",
+      "reports/b71_s4/render_43.png",
+      "reports/b71_s4/render_43_crop.png",
+      "reports/b71_s4/render_wide.json",
+      "reports/b71_s4/render_wide.png",
+      "reports/b71_s4/render_wide_crop.png",
+      "reports/b71_s4/repin-compact.log",
+      "reports/b71_s4/repin-compact.result.json",
+      "reports/b71_s4/repin-contracts.log",
+      "reports/b71_s4/repin-contracts.result.json",
+      "reports/b71_s4/repin-delivery.log",
+      "reports/b71_s4/repin-delivery.result.json",
+      "reports/b71_s4/repin-evidence.log",
+      "reports/b71_s4/repin-evidence.result.json",
+      "reports/b71_s4/repin-final.log",
+      "reports/b71_s4/repin-final.result.json",
+      "reports/b71_s4/repin-preflight.log",
+      "reports/b71_s4/repin-preflight.result.json",
+      "reports/b71_s4/repin-release.log",
+      "reports/b71_s4/repin-release.result.json",
+      "reports/b71_s4/repin-uv.log",
+      "reports/b71_s4/repin-uv.result.json",
+      "reports/b71_s4/run_final_suites.py",
+      "reports/b71_s4/run_logged.py",
+      "reports/b71_s4/score_43.png",
+      "reports/b71_s4/score_43_crop.png",
+      "reports/b71_s4/score_wide.png",
+      "reports/b71_s4/score_wide_crop.png",
+      "reports/b71_s4/scores_100_43.png",
+      "reports/b71_s4/scores_100_43_crop.png",
+      "reports/b71_s4/scores_100_wide.png",
+      "reports/b71_s4/scores_100_wide_crop.png",
+      "reports/b71_s4/scores_28_43.png",
+      "reports/b71_s4/scores_28_43_crop.png",
+      "reports/b71_s4/scores_28_wide.png",
+      "reports/b71_s4/scores_28_wide_crop.png",
+      "reports/b71_s4/scores_999_43.png",
+      "reports/b71_s4/scores_999_43_crop.png",
+      "reports/b71_s4/scores_999_wide.png",
+      "reports/b71_s4/scores_999_wide_crop.png",
+      "reports/b71_s4/sealed-suites-driver.log",
+      "reports/b71_s4/second-render.log",
+      "reports/b71_s4/second-render.result.json",
+      "reports/b71_s4/source-art-skip-details.log",
+      "reports/b71_s4/source-art-skip-details.result.json",
+      "reports/b71_s4/states.json",
+      "reports/b71_s4/states_contact_sheet.png",
+      "reports/b71_s4/suites-driver.log",
+      "reports/b71_s4/test_apf_scorebug_workspace_qt-delivery.log",
+      "reports/b71_s4/test_apf_scorebug_workspace_qt-delivery.result.json",
+      "reports/b71_s4/test_apf_scorebug_workspace_qt-final.log",
+      "reports/b71_s4/test_apf_scorebug_workspace_qt-final.result.json",
+      "reports/b71_s4/test_apf_scorebug_workspace_qt-release.log",
+      "reports/b71_s4/test_apf_scorebug_workspace_qt-release.result.json",
+      "reports/b71_s4/test_apf_scorebug_workspace_qt-sealed.log",
+      "reports/b71_s4/test_apf_scorebug_workspace_qt-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_assets-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_assets-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_assets-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_assets-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_assets-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_assets-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_assets-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_assets-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_author-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_author-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_author-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_author-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_author-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_author-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_author-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_author-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_exact-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_exact-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_exact-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_exact-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_exact-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_exact-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_exact-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_exact-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_fonts-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_fonts-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_fonts-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_fonts-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_fonts-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_fonts-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_fonts-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_fonts-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze_v2-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze_v2-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze_v2-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze_v2-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze_v2-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze_v2-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze_v2-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_freeze_v2-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame_fix-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame_fix-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame_fix-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame_fix-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame_fix-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame_fix-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame_fix-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_ingame_fix-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf_v3-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf_v3-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf_v3-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf_v3-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf_v3-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf_v3-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf_v3-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_mnf_v3-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_native-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_native-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_native-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_native-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_native-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_native-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_native-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_native-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_projection-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_projection-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_projection-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_projection-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_projection-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_projection-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_projection-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_projection-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_resources-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_resources-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_resources-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_resources-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_resources-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_resources-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_resources-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_resources-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_runtime-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_runtime-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_runtime-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_runtime-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_runtime-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_runtime-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_runtime-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_runtime-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_source_art-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_source_art-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_source_art-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_source_art-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_source_art-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_source_art-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_source_art-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_source_art-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_template-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_template-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_template-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_template-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_template-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_template-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_template-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_template-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_template_release-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_template_release-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_template_release-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_template_release-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_template_release-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_template_release-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_template_release-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_template_release-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_unified_adapter-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_unified_adapter-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_unified_adapter-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_unified_adapter-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_unified_adapter-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_unified_adapter-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_unified_adapter-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_unified_adapter-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_ingame-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_ingame-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_ingame-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_ingame-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_ingame-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_ingame-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_ingame-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_ingame-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_projection-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_projection-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_projection-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_projection-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_projection-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_projection-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_projection-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_v10_projection-sealed.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_versions-delivery.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_versions-delivery.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_versions-final.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_versions-final.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_versions-release.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_versions-release.result.json",
+      "reports/b71_s4/test_nfl2k5_scorebug_versions-sealed.log",
+      "reports/b71_s4/test_nfl2k5_scorebug_versions-sealed.result.json",
+      "reports/b71_s4/test_phase1_packaging-delivery.log",
+      "reports/b71_s4/test_phase1_packaging-delivery.result.json",
+      "reports/b71_s4/test_phase1_packaging-final.log",
+      "reports/b71_s4/test_phase1_packaging-final.result.json",
+      "reports/b71_s4/test_phase1_packaging-release.log",
+      "reports/b71_s4/test_phase1_packaging-release.result.json",
+      "reports/b71_s4/test_phase1_packaging-sealed.log",
+      "reports/b71_s4/test_phase1_packaging-sealed.result.json",
+      "reports/b71_s4/test_product_catalog-delivery.log",
+      "reports/b71_s4/test_product_catalog-delivery.result.json",
+      "reports/b71_s4/test_product_catalog-final.log",
+      "reports/b71_s4/test_product_catalog-final.result.json",
+      "reports/b71_s4/test_product_catalog-release.log",
+      "reports/b71_s4/test_product_catalog-release.result.json",
+      "reports/b71_s4/test_product_catalog-sealed.log",
+      "reports/b71_s4/test_product_catalog-sealed.result.json",
+      "reports/b71_s4/test_provider_integrity-delivery.log",
+      "reports/b71_s4/test_provider_integrity-delivery.result.json",
+      "reports/b71_s4/test_provider_integrity-final.log",
+      "reports/b71_s4/test_provider_integrity-final.result.json",
+      "reports/b71_s4/test_provider_integrity-release.log",
+      "reports/b71_s4/test_provider_integrity-release.result.json",
+      "reports/b71_s4/test_provider_integrity-sealed.log",
+      "reports/b71_s4/test_provider_integrity-sealed.result.json",
+      "reports/b71_s4/test_scorebug_studio_panel_qt-delivery.log",
+      "reports/b71_s4/test_scorebug_studio_panel_qt-delivery.result.json",
+      "reports/b71_s4/test_scorebug_studio_panel_qt-final.log",
+      "reports/b71_s4/test_scorebug_studio_panel_qt-final.result.json",
+      "reports/b71_s4/test_scorebug_studio_panel_qt-release.log",
+      "reports/b71_s4/test_scorebug_studio_panel_qt-release.result.json",
+      "reports/b71_s4/test_scorebug_studio_panel_qt-sealed.log",
+      "reports/b71_s4/test_scorebug_studio_panel_qt-sealed.result.json",
+      "reports/b71_s4/text-rgb-final.log",
+      "reports/b71_s4/text-rgb-final.result.json",
+      "reports/b71_s4/text_rgb_mae.json",
+      "reports/b71_s4/xbe-cave-references-final-launch.log",
+      "reports/b71_s4/xbe-cave-references-final.log",
+      "reports/b71_s4/xbe-cave-references-final.result.json",
+      "reports/b71_s4/xbe-caves-final-launch.log",
+      "reports/b71_s4/xbe-caves-final.log",
+      "reports/b71_s4/xbe-caves-final.result.json",
+      "reports/b71_s4/xbe-memory-compact-launch.log",
+      "reports/b71_s4/xbe-memory-compact.log",
+      "reports/b71_s4/xbe-memory-compact.result.json",
+      "reports/b71_s4/xbe-memory-final-launch.log",
+      "reports/b71_s4/xbe-memory-final.log",
+      "reports/b71_s4/xbe-memory-final.result.json",
+      "reports/b71_s4/xbe-memory-launch.log",
+      "reports/b71_s4/xbe-memory.log",
+      "reports/b71_s4/xbe-memory.result.json",
+      "tests/mod_editor/test_nfl2k5_scorebug_exact.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_fonts.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_ingame.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_mnf.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_native.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_resources.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_runtime.py",
+      "tests/mod_editor/test_provider_integrity.py",
+      "tools/nfl2k5_scorebug_exact.py",
+      "tools/nfl2k5_scorebug_projection.py",
+      "tools/nfl_main_menu_font.py"
+    ],
+    "started": "2026-09-16T00:27:18.973931+00:00",
+    "ended": "2026-09-16T00:27:19.034020+00:00",
+    "seconds": 0.06,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_playbook_pair_manifest",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_playbook_pair_manifest.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:27:22.511133+00:00",
+    "ended": "2026-09-16T00:32:50.489564+00:00",
+    "seconds": 327.978,
+    "exit_code": 0
+  },
+  {
+    "name": "frozen-source-check",
+    "argv": [
+      "python3",
+      "-c",
+      "import hashlib,json;from pathlib import Path;d=json.loads(Path(\".scratch/a7-product-frozen.json\").read_text());assert all(hashlib.sha256(Path(p).read_bytes()).hexdigest()==h for p,h in d.items());print(len(d),\"unchanged product/test/docs paths\")"
+    ],
+    "started": "2026-09-16T00:29:24.269831+00:00",
+    "ended": "2026-09-16T00:29:24.705234+00:00",
+    "seconds": 0.435,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_read_option_diagnostic_manifest",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_read_option_diagnostic_manifest.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:32:11.207848+00:00",
+    "ended": "2026-09-16T00:32:11.635317+00:00",
+    "seconds": 0.427,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_screen_hooks_manifest",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_screen_hooks_manifest.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:32:11.635784+00:00",
+    "ended": "2026-09-16T00:32:15.995148+00:00",
+    "seconds": 4.359,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_seven_on_seven_manifest",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_seven_on_seven_manifest.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:32:15.995535+00:00",
+    "ended": "2026-09-16T00:32:16.795120+00:00",
+    "seconds": 0.8,
+    "exit_code": 0
+  },
+  {
+    "name": "detached-gates",
+    "argv": [
+      "bash",
+      "reports/b71_a7/gates.sh"
+    ],
+    "started": "2026-09-16T00:33:13.075861+00:00",
+    "ended": "2026-09-16T01:04:15.082341+00:00",
+    "seconds": 1862.006,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_xbe_patch_memory_writes",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_xbe_patch_memory_writes.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:13.105381+00:00",
+    "ended": "2026-09-16T01:00:22.007600+00:00",
+    "seconds": 1628.902,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_allocator_scaleout",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_allocator_scaleout.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:13.105945+00:00",
+    "ended": "2026-09-16T00:48:10.874431+00:00",
+    "seconds": 897.769,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_xbe_patch_cave_references",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_xbe_patch_cave_references.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:13.111072+00:00",
+    "ended": "2026-09-16T01:04:15.076426+00:00",
+    "seconds": 1861.965,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_cave_oracle",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_cave_oracle.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:13.117505+00:00",
+    "ended": "2026-09-16T00:40:06.286843+00:00",
+    "seconds": 413.169,
+    "exit_code": 0
+  },
+  {
+    "name": "remaining-suites",
+    "argv": [
+      "bash",
+      "reports/b71_a7/remaining.sh"
+    ],
+    "started": "2026-09-16T00:33:14.355840+00:00",
+    "ended": "2026-09-16T01:25:03.767966+00:00",
+    "seconds": 3109.412,
+    "exit_code": 1
+  },
+  {
+    "name": "final-test_nfl2k5_owner_pairwise_composition",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:14.385911+00:00",
+    "ended": "2026-09-16T01:24:37.355299+00:00",
+    "seconds": 3082.969,
+    "exit_code": 0
+  },
+  {
+    "name": "closure_units-suites",
+    "argv": [
+      "python3",
+      "reports/b71_a7/suites.py",
+      "closure_units"
+    ],
+    "started": "2026-09-16T00:33:14.386240+00:00",
+    "ended": "2026-09-16T00:33:24.107582+00:00",
+    "seconds": 9.721,
+    "exit_code": 1
+  },
+  {
+    "name": "presentation-suites",
+    "argv": [
+      "python3",
+      "reports/b71_a7/suites.py",
+      "presentation"
+    ],
+    "started": "2026-09-16T00:33:14.386284+00:00",
+    "ended": "2026-09-16T00:43:01.378778+00:00",
+    "seconds": 586.993,
+    "exit_code": 1
+  },
+  {
+    "name": "apf-suites",
+    "argv": [
+      "python3",
+      "reports/b71_a7/suites.py",
+      "apf"
+    ],
+    "started": "2026-09-16T00:33:14.386327+00:00",
+    "ended": "2026-09-16T01:00:00.983317+00:00",
+    "seconds": 1606.597,
+    "exit_code": 1
+  },
+  {
+    "name": "final-colour-all-pins",
+    "argv": [
+      "python3",
+      "tools/verify_colour_lighting_pins.py",
+      "extracted/ESPN NFL 2K5 (USA)/vc_53450030/0",
+      "--workers",
+      "4"
+    ],
+    "started": "2026-09-16T00:33:14.388000+00:00",
+    "ended": "2026-09-16T00:43:19.938767+00:00",
+    "seconds": 605.551,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_provider_integrity",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_provider_integrity.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:14.417547+00:00",
+    "ended": "2026-09-16T00:33:18.712528+00:00",
+    "seconds": 4.295,
+    "exit_code": 1
+  },
+  {
+    "name": "final-test_providers",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_providers.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:14.417893+00:00",
+    "ended": "2026-09-16T00:33:18.799371+00:00",
+    "seconds": 4.381,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_product_catalog",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_product_catalog.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:14.418595+00:00",
+    "ended": "2026-09-16T00:33:14.672340+00:00",
+    "seconds": 0.254,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_colour_lighting",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_colour_lighting.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:14.423610+00:00",
+    "ended": "2026-09-16T00:33:47.828560+00:00",
+    "seconds": 33.405,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_colour_lighting_qt",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_colour_lighting_qt.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:14.423989+00:00",
+    "ended": "2026-09-16T00:33:17.474638+00:00",
+    "seconds": 3.051,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_modern_color",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_modern_color.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:14.424596+00:00",
+    "ended": "2026-09-16T00:33:21.701494+00:00",
+    "seconds": 7.277,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_scorebar_rim",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_scorebar_rim.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:14.425366+00:00",
+    "ended": "2026-09-16T00:33:32.167967+00:00",
+    "seconds": 17.743,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf2k8_coverage_tuning",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf2k8_coverage_tuning.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:14.426317+00:00",
+    "ended": "2026-09-16T00:33:17.451953+00:00",
+    "seconds": 3.026,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf2k8_playbook_route_writer",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf2k8_playbook_route_writer.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:14.426784+00:00",
+    "ended": "2026-09-16T00:33:15.227465+00:00",
+    "seconds": 0.801,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_all_crest_slots",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_all_crest_slots.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:14.427286+00:00",
+    "ended": "2026-09-16T00:33:16.647981+00:00",
+    "seconds": 2.221,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_audio_annotation_facade",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_audio_annotation_facade.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:14.428100+00:00",
+    "ended": "2026-09-16T00:33:15.196365+00:00",
+    "seconds": 0.768,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_phase1_packaging",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_phase1_packaging.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:14.672915+00:00",
+    "ended": "2026-09-16T00:33:17.130388+00:00",
+    "seconds": 2.457,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_audio_annotations",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_audio_annotations.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:15.197293+00:00",
+    "ended": "2026-09-16T00:33:15.538295+00:00",
+    "seconds": 0.341,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_audio_batch_export",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_audio_batch_export.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:15.227937+00:00",
+    "ended": "2026-09-16T00:33:15.460645+00:00",
+    "seconds": 0.233,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_audio_batch_facade",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_audio_batch_facade.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:15.461355+00:00",
+    "ended": "2026-09-16T00:33:15.887105+00:00",
+    "seconds": 0.426,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_audio_batch_gui",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_audio_batch_gui.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:15.538852+00:00",
+    "ended": "2026-09-16T00:33:16.426987+00:00",
+    "seconds": 0.888,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_audio_decode_cancellation",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_audio_decode_cancellation.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:15.887877+00:00",
+    "ended": "2026-09-16T00:33:17.932298+00:00",
+    "seconds": 2.044,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_audio_drop_zone_gui",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_audio_drop_zone_gui.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:16.427458+00:00",
+    "ended": "2026-09-16T00:33:17.161872+00:00",
+    "seconds": 0.734,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_audio_encoder_gui",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_audio_encoder_gui.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:16.648716+00:00",
+    "ended": "2026-09-16T00:33:17.446427+00:00",
+    "seconds": 0.798,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_b68_a1_audit",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_b68_a1_audit.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:17.130917+00:00",
+    "ended": "2026-09-16T00:33:24.097120+00:00",
+    "seconds": 6.966,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_audio_encoding",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_audio_encoding.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:17.162464+00:00",
+    "ended": "2026-09-16T00:33:29.110526+00:00",
+    "seconds": 11.948,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_audio_import_idle_barrier",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_audio_import_idle_barrier.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:17.446965+00:00",
+    "ended": "2026-09-16T00:33:22.228407+00:00",
+    "seconds": 4.781,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_audio_pcm_product_backend",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_audio_pcm_product_backend.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:17.452453+00:00",
+    "ended": "2026-09-16T00:33:18.690007+00:00",
+    "seconds": 1.238,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_scorebar_v3",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_scorebar_v3.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:17.475525+00:00",
+    "ended": "2026-09-16T00:35:03.885406+00:00",
+    "seconds": 106.41,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_audio_replacement_pack",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_audio_replacement_pack.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:17.932802+00:00",
+    "ended": "2026-09-16T00:33:18.891547+00:00",
+    "seconds": 0.959,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_audio_waveform_qt",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_audio_waveform_qt.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:18.690458+00:00",
+    "ended": "2026-09-16T00:33:19.350400+00:00",
+    "seconds": 0.66,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_capability_registry_module_commands",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_capability_registry_module_commands.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:18.713073+00:00",
+    "ended": "2026-09-16T00:33:18.834076+00:00",
+    "seconds": 0.121,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_audo_exact_slot",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_audo_exact_slot.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:18.891977+00:00",
+    "ended": "2026-09-16T00:33:19.144756+00:00",
+    "seconds": 0.253,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_audo_product_backend",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_audo_product_backend.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:19.145190+00:00",
+    "ended": "2026-09-16T00:33:19.458894+00:00",
+    "seconds": 0.314,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_audo_project",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_audo_project.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:19.351103+00:00",
+    "ended": "2026-09-16T00:33:19.548091+00:00",
+    "seconds": 0.197,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_ausb_exact_slot",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_ausb_exact_slot.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:19.459575+00:00",
+    "ended": "2026-09-16T00:33:33.139266+00:00",
+    "seconds": 13.68,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_ausb_product_backend",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_ausb_product_backend.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:19.548538+00:00",
+    "ended": "2026-09-16T00:33:19.913301+00:00",
+    "seconds": 0.365,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_b661_book_content",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_b661_book_content.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:19.914202+00:00",
+    "ended": "2026-09-16T00:33:48.794772+00:00",
+    "seconds": 28.881,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_scorebug_assets",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_assets.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:21.702112+00:00",
+    "ended": "2026-09-16T00:35:57.641160+00:00",
+    "seconds": 155.939,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_b661_ladder",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_b661_ladder.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:22.229538+00:00",
+    "ended": "2026-09-16T00:33:22.715881+00:00",
+    "seconds": 0.486,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_b66_appearance",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_b66_appearance.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:22.716511+00:00",
+    "ended": "2026-09-16T00:33:25.620624+00:00",
+    "seconds": 2.904,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_b66_personnel",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_b66_personnel.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:25.621635+00:00",
+    "ended": "2026-09-16T00:33:31.577620+00:00",
+    "seconds": 5.956,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_b67_books_qt",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_b67_books_qt.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:29.111225+00:00",
+    "ended": "2026-09-16T00:34:40.594036+00:00",
+    "seconds": 71.483,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_b67_clone",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_b67_clone.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:31.578179+00:00",
+    "ended": "2026-09-16T00:34:34.133389+00:00",
+    "seconds": 62.555,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_scorebug_author",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_author.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:32.168620+00:00",
+    "ended": "2026-09-16T00:33:39.083459+00:00",
+    "seconds": 6.915,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_b67_defense_model_native",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_b67_defense_model_native.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:33.139800+00:00",
+    "ended": "2026-09-16T00:36:22.393716+00:00",
+    "seconds": 169.254,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_scorebug_exact",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_exact.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:39.084040+00:00",
+    "ended": "2026-09-16T00:35:09.323178+00:00",
+    "seconds": 90.239,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_scorebug_fonts",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_fonts.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:47.829115+00:00",
+    "ended": "2026-09-16T00:33:59.874493+00:00",
+    "seconds": 12.045,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_b67_model_edges_native",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_b67_model_edges_native.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:48.795247+00:00",
+    "ended": "2026-09-16T00:35:31.850724+00:00",
+    "seconds": 103.055,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_scorebug_freeze",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_freeze.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:33:59.875182+00:00",
+    "ended": "2026-09-16T00:39:41.558944+00:00",
+    "seconds": 341.684,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_b67_model_native",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_b67_model_native.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:34:34.133945+00:00",
+    "ended": "2026-09-16T00:56:18.554305+00:00",
+    "seconds": 1304.42,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_b67_static_audit",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_b67_static_audit.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:34:40.594942+00:00",
+    "ended": "2026-09-16T00:34:40.752175+00:00",
+    "seconds": 0.157,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_b67_writers",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_b67_writers.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:34:40.752906+00:00",
+    "ended": "2026-09-16T00:34:41.256119+00:00",
+    "seconds": 0.503,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_b67_writers_native",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_b67_writers_native.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:34:41.256847+00:00",
+    "ended": "2026-09-16T00:40:37.420454+00:00",
+    "seconds": 356.164,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_scorebug_freeze_v2",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:35:03.886431+00:00",
+    "ended": "2026-09-16T00:41:47.601811+00:00",
+    "seconds": 403.715,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_scorebug_ingame",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_ingame.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:35:09.323784+00:00",
+    "ended": "2026-09-16T00:35:27.279805+00:00",
+    "seconds": 17.956,
+    "exit_code": 0
+  },
+  {
+    "name": "pin-audit-delivery",
+    "argv": [
+      "python3",
+      "reports/b71_a7/audit_pins.py"
+    ],
+    "started": "2026-09-16T00:35:13.735476+00:00",
+    "ended": "2026-09-16T00:35:14.176962+00:00",
+    "seconds": 0.442,
+    "exit_code": 0
+  },
+  {
+    "name": "repin-provider-closure",
+    "argv": [
+      "python3",
+      "packaging/repin.py",
+      "--apply"
+    ],
+    "started": "2026-09-16T00:35:14.231064+00:00",
+    "ended": "2026-09-16T00:35:30.452151+00:00",
+    "seconds": 16.221,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_scorebug_ingame_fix",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:35:27.280929+00:00",
+    "ended": "2026-09-16T00:38:05.465258+00:00",
+    "seconds": 158.184,
+    "exit_code": 0
+  },
+  {
+    "name": "manifest-projection-provider-closure",
+    "argv": [
+      "python3",
+      "reports/b71_a7/refresh_manifest_projection.py"
+    ],
+    "started": "2026-09-16T00:35:30.492002+00:00",
+    "ended": "2026-09-16T00:42:10.538699+00:00",
+    "seconds": 400.047,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_b67_xenia_patch",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_b67_xenia_patch.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:35:31.851266+00:00",
+    "ended": "2026-09-16T00:35:32.262539+00:00",
+    "seconds": 0.411,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_b69_build",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_b69_build.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:35:32.263294+00:00",
+    "ended": "2026-09-16T00:36:15.353962+00:00",
+    "seconds": 43.091,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_scorebug_mnf",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_mnf.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:35:57.641759+00:00",
+    "ended": "2026-09-16T00:36:10.278069+00:00",
+    "seconds": 12.636,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_scorebug_mnf_v3",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:36:10.279054+00:00",
+    "ended": "2026-09-16T00:37:07.603210+00:00",
+    "seconds": 57.324,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_b69_control_audit",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_b69_control_audit.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:36:15.355014+00:00",
+    "ended": "2026-09-16T00:36:15.471796+00:00",
+    "seconds": 0.117,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_b69_editor_qt",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_b69_editor_qt.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:36:15.472525+00:00",
+    "ended": "2026-09-16T00:38:02.892944+00:00",
+    "seconds": 107.42,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_b69_formation_calling",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_b69_formation_calling.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:36:22.394658+00:00",
+    "ended": "2026-09-16T00:36:23.335099+00:00",
+    "seconds": 0.94,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_b69_launch_patches",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_b69_launch_patches.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:36:23.335712+00:00",
+    "ended": "2026-09-16T00:36:23.981864+00:00",
+    "seconds": 0.646,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_b69_native",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_b69_native.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:36:23.982705+00:00",
+    "ended": "2026-09-16T00:51:10.375767+00:00",
+    "seconds": 886.393,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_scorebug_native",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_native.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:37:07.604013+00:00",
+    "ended": "2026-09-16T00:39:23.853037+00:00",
+    "seconds": 136.249,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_b69_retirement_native",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_b69_retirement_native.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:38:02.893650+00:00",
+    "ended": "2026-09-16T00:40:39.566585+00:00",
+    "seconds": 156.673,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_scorebug_projection",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_projection.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:38:05.465844+00:00",
+    "ended": "2026-09-16T00:39:14.154024+00:00",
+    "seconds": 68.688,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_scorebug_resources",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_resources.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:39:14.154618+00:00",
+    "ended": "2026-09-16T00:43:01.369224+00:00",
+    "seconds": 227.215,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_scorebug_runtime",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_runtime.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:39:23.853454+00:00",
+    "ended": "2026-09-16T00:41:42.466914+00:00",
+    "seconds": 138.613,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_scorebug_source_art",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_source_art.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:39:41.559522+00:00",
+    "ended": "2026-09-16T00:39:42.243372+00:00",
+    "seconds": 0.684,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_scorebug_template",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_template.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:39:42.244060+00:00",
+    "ended": "2026-09-16T00:39:55.907469+00:00",
+    "seconds": 13.663,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_scorebug_template_release",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_template_release.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:39:55.908038+00:00",
+    "ended": "2026-09-16T00:39:56.514144+00:00",
+    "seconds": 0.606,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_scorebug_unified_adapter",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_unified_adapter.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:39:56.514729+00:00",
+    "ended": "2026-09-16T00:39:56.709255+00:00",
+    "seconds": 0.195,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_scorebug_v10_ingame",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_v10_ingame.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:39:56.709905+00:00",
+    "ended": "2026-09-16T00:40:06.402442+00:00",
+    "seconds": 9.693,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_scorebug_v10_projection",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_v10_projection.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:40:06.403071+00:00",
+    "ended": "2026-09-16T00:40:36.754361+00:00",
+    "seconds": 30.351,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_scorebug_versions",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_scorebug_versions.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:40:36.755023+00:00",
+    "ended": "2026-09-16T00:40:47.989987+00:00",
+    "seconds": 11.235,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_b69_schemes",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_b69_schemes.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:40:37.421027+00:00",
+    "ended": "2026-09-16T00:41:36.746990+00:00",
+    "seconds": 59.326,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_b69_wiring",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_b69_wiring.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:40:39.567159+00:00",
+    "ended": "2026-09-16T00:40:40.182522+00:00",
+    "seconds": 0.615,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_b70_stock_recipes",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_b70_stock_recipes.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:40:40.183435+00:00",
+    "ended": "2026-09-16T00:44:12.348910+00:00",
+    "seconds": 212.165,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_scorebug_studio_panel_qt",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_scorebug_studio_panel_qt.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:40:47.990859+00:00",
+    "ended": "2026-09-16T00:40:55.883255+00:00",
+    "seconds": 7.892,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_unif_color_argb_parse",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_unif_color_argb_parse.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:40:55.884398+00:00",
+    "ended": "2026-09-16T00:40:56.995419+00:00",
+    "seconds": 1.111,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_unif_color_control",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_unif_color_control.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:40:56.996036+00:00",
+    "ended": "2026-09-16T00:41:07.274508+00:00",
+    "seconds": 10.278,
+    "exit_code": 0
+  },
+  {
+    "name": "final-nfl2k5_scorebug_layout_test",
+    "argv": [
+      "python3",
+      "tests/nfl2k5_scorebug_layout_test.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:41:07.275037+00:00",
+    "ended": "2026-09-16T00:41:09.553208+00:00",
+    "seconds": 2.278,
+    "exit_code": 0
+  },
+  {
+    "name": "final-nfl2k5_scorebug_mod_project_test",
+    "argv": [
+      "python3",
+      "tests/nfl2k5_scorebug_mod_project_test.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:41:09.554073+00:00",
+    "ended": "2026-09-16T00:41:11.437124+00:00",
+    "seconds": 1.883,
+    "exit_code": 0
+  },
+  {
+    "name": "final-nfl_uniform_color_patch_test",
+    "argv": [
+      "python3",
+      "tests/nfl_uniform_color_patch_test.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:41:11.437748+00:00",
+    "ended": "2026-09-16T00:41:11.531007+00:00",
+    "seconds": 0.093,
+    "exit_code": 2
+  },
+  {
+    "name": "final-test_nfl_uniform_colour_records",
+    "argv": [
+      "python3",
+      "tests/test_nfl_uniform_colour_records.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:41:11.531494+00:00",
+    "ended": "2026-09-16T00:41:14.609360+00:00",
+    "seconds": 3.078,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_modern_arrowhead",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_modern_arrowhead.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:41:14.609891+00:00",
+    "ended": "2026-09-16T00:41:48.642851+00:00",
+    "seconds": 34.033,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_b71_situation_mask",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_b71_situation_mask.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:41:36.747646+00:00",
+    "ended": "2026-09-16T00:41:41.171529+00:00",
+    "seconds": 4.424,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_b71_situation_mask_abi",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_b71_situation_mask_abi.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:41:41.172011+00:00",
+    "ended": "2026-09-16T00:41:45.603798+00:00",
+    "seconds": 4.432,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_b71_a6_composition",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_b71_a6_composition.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:41:42.467620+00:00",
+    "ended": "2026-09-16T00:41:42.783762+00:00",
+    "seconds": 0.316,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_build_panel_qt",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_build_panel_qt.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:41:42.784411+00:00",
+    "ended": "2026-09-16T00:41:45.920025+00:00",
+    "seconds": 3.136,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_b71_situation_mask_install",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_b71_situation_mask_install.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:41:45.604500+00:00",
+    "ended": "2026-09-16T00:41:46.928481+00:00",
+    "seconds": 1.324,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_mod_build",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_mod_build.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:41:45.920570+00:00",
+    "ended": "2026-09-16T00:41:47.883132+00:00",
+    "seconds": 1.963,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_b71_situation_mask_native",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_b71_situation_mask_native.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:41:46.928917+00:00",
+    "ended": "2026-09-16T00:47:51.484925+00:00",
+    "seconds": 364.556,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_discord_bugs_1",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_discord_bugs_1.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:41:47.602360+00:00",
+    "ended": "2026-09-16T00:41:49.185576+00:00",
+    "seconds": 1.583,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_nfl2k5_depth_chart_rows",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_nfl2k5_depth_chart_rows.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:41:47.883697+00:00",
+    "ended": "2026-09-16T00:42:36.369896+00:00",
+    "seconds": 48.486,
+    "exit_code": 0
+  },
+  {
+    "name": "delivery-closure_units-suites",
+    "argv": [
+      "python3",
+      "reports/b71_a7/suites.py",
+      "closure_units",
+      "delivery-"
+    ],
+    "started": "2026-09-16T00:42:19.348869+00:00",
+    "ended": "2026-09-16T00:42:34.222887+00:00",
+    "seconds": 14.874,
+    "exit_code": 0
+  },
+  {
+    "name": "delivery-test_provider_integrity",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_provider_integrity.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:42:19.390048+00:00",
+    "ended": "2026-09-16T00:42:34.211989+00:00",
+    "seconds": 14.822,
+    "exit_code": 0
+  },
+  {
+    "name": "delivery-test_providers",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_providers.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:42:19.390638+00:00",
+    "ended": "2026-09-16T00:42:24.076772+00:00",
+    "seconds": 4.686,
+    "exit_code": 0
+  },
+  {
+    "name": "delivery-test_product_catalog",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_product_catalog.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:42:19.391516+00:00",
+    "ended": "2026-09-16T00:42:19.566664+00:00",
+    "seconds": 0.175,
+    "exit_code": 0
+  },
+  {
+    "name": "delivery-test_phase1_packaging",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_phase1_packaging.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:42:19.567456+00:00",
+    "ended": "2026-09-16T00:42:22.050351+00:00",
+    "seconds": 2.483,
+    "exit_code": 0
+  },
+  {
+    "name": "delivery-test_b68_a1_audit",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_b68_a1_audit.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:42:22.050888+00:00",
+    "ended": "2026-09-16T00:42:29.180796+00:00",
+    "seconds": 7.13,
+    "exit_code": 0
+  },
+  {
+    "name": "delivery-test_capability_registry_module_commands",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_capability_registry_module_commands.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:42:24.077459+00:00",
+    "ended": "2026-09-16T00:42:24.257045+00:00",
+    "seconds": 0.18,
+    "exit_code": 0
+  },
+  {
+    "name": "provider-count-stage",
+    "argv": [
+      "git",
+      "add",
+      "--",
+      "tests/mod_editor/test_provider_integrity.py"
+    ],
+    "started": "2026-09-16T00:42:34.271478+00:00",
+    "ended": "2026-09-16T00:42:34.284924+00:00",
+    "seconds": 0.013,
+    "exit_code": 0
+  },
+  {
+    "name": "provider-count-commit",
+    "argv": [
+      "git",
+      "commit",
+      "-m",
+      "Pin the combined provider closure including the painted atlas dependency",
+      "--",
+      "tests/mod_editor/test_provider_integrity.py"
+    ],
+    "started": "2026-09-16T00:42:34.349000+00:00",
+    "ended": "2026-09-16T00:42:34.430057+00:00",
+    "seconds": 0.081,
+    "exit_code": 0
+  },
+  {
+    "name": "delivery-nfl_uniform_color_patch_test",
+    "argv": [
+      "python3",
+      "tests/nfl_uniform_color_patch_test.py"
+    ],
+    "started": "2026-09-16T00:42:57.843880+00:00",
+    "ended": "2026-09-16T00:42:57.909747+00:00",
+    "seconds": 0.066,
+    "exit_code": 0
+  },
+  {
+    "name": "presentation-reconciled",
+    "argv": [
+      "python3",
+      "reports/b71_a7/reconcile_presentation.py"
+    ],
+    "started": "2026-09-16T00:43:51.638041+00:00",
+    "ended": "2026-09-16T00:43:51.669449+00:00",
+    "seconds": 0.031,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_b71_situation_mask_qt",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_b71_situation_mask_qt.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:44:12.349581+00:00",
+    "ended": "2026-09-16T00:44:14.235371+00:00",
+    "seconds": 1.886,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_b71_situations",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_b71_situations.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:44:14.236000+00:00",
+    "ended": "2026-09-16T00:44:18.985333+00:00",
+    "seconds": 4.749,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_book_identity_qt",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_book_identity_qt.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:44:18.986064+00:00",
+    "ended": "2026-09-16T00:44:19.267832+00:00",
+    "seconds": 0.282,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_book_unlock",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_book_unlock.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:44:19.268426+00:00",
+    "ended": "2026-09-16T00:44:44.877262+00:00",
+    "seconds": 25.609,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_book_unlock_retail",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_book_unlock_retail.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:44:44.877954+00:00",
+    "ended": "2026-09-16T00:44:45.032740+00:00",
+    "seconds": 0.155,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_browser_workspace_handoff",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_browser_workspace_handoff.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:44:45.033407+00:00",
+    "ended": "2026-09-16T00:44:45.921018+00:00",
+    "seconds": 0.888,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_build_ausb_overlays",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_build_ausb_overlays.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:44:45.921650+00:00",
+    "ended": "2026-09-16T00:44:46.239285+00:00",
+    "seconds": 0.318,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_build_raw_span_overlays",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_build_raw_span_overlays.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:44:46.239950+00:00",
+    "ended": "2026-09-16T00:44:46.569511+00:00",
+    "seconds": 0.33,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_capability_action_parity",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_capability_action_parity.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:44:46.570201+00:00",
+    "ended": "2026-09-16T00:44:47.025853+00:00",
+    "seconds": 0.456,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_copied_volume_metadata",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_copied_volume_metadata.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:44:47.026482+00:00",
+    "ended": "2026-09-16T00:44:47.341741+00:00",
+    "seconds": 0.315,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_coverage_research_tools",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_coverage_research_tools.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:44:47.342641+00:00",
+    "ended": "2026-09-16T00:44:47.420500+00:00",
+    "seconds": 0.078,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_cpu_audibles",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_cpu_audibles.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:44:47.421163+00:00",
+    "ended": "2026-09-16T00:44:50.428533+00:00",
+    "seconds": 3.007,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_crest_budget_import",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_crest_budget_import.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:44:50.429171+00:00",
+    "ended": "2026-09-16T00:44:51.288599+00:00",
+    "seconds": 0.859,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_crest_fit",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_crest_fit.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:44:51.289254+00:00",
+    "ended": "2026-09-16T00:45:19.759748+00:00",
+    "seconds": 28.471,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_cross_domain_audio_safety",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_cross_domain_audio_safety.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:45:19.760161+00:00",
+    "ended": "2026-09-16T00:45:20.125997+00:00",
+    "seconds": 0.366,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_cubemap_face0_preview",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_cubemap_face0_preview.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:45:20.126587+00:00",
+    "ended": "2026-09-16T00:45:41.510602+00:00",
+    "seconds": 21.384,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_custom_team_appearance_gui",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_custom_team_appearance_gui.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:45:41.511221+00:00",
+    "ended": "2026-09-16T00:45:41.820822+00:00",
+    "seconds": 0.31,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_custom_team_appearance_patch",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_custom_team_appearance_patch.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:45:41.821375+00:00",
+    "ended": "2026-09-16T00:45:48.876307+00:00",
+    "seconds": 7.055,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_defense_research_identity",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_defense_research_identity.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:45:48.877044+00:00",
+    "ended": "2026-09-16T00:45:49.383852+00:00",
+    "seconds": 0.507,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_defense_research_native",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_defense_research_native.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:45:49.384494+00:00",
+    "ended": "2026-09-16T00:48:09.301400+00:00",
+    "seconds": 139.917,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_digital_font",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_digital_font.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:47:51.485863+00:00",
+    "ended": "2026-09-16T00:47:51.838575+00:00",
+    "seconds": 0.353,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_dxn_base_only_namefont",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_dxn_base_only_namefont.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:47:51.839186+00:00",
+    "ended": "2026-09-16T00:48:13.863490+00:00",
+    "seconds": 22.024,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_dxt5a_general_preview",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_dxt5a_general_preview.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:48:09.301824+00:00",
+    "ended": "2026-09-16T00:48:30.055237+00:00",
+    "seconds": 20.753,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_endzone_dxt5a",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_endzone_dxt5a.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:48:13.863894+00:00",
+    "ended": "2026-09-16T00:48:51.774377+00:00",
+    "seconds": 37.91,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_export",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_export.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:48:30.055843+00:00",
+    "ended": "2026-09-16T00:48:30.174836+00:00",
+    "seconds": 0.119,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_external_audio_bank_bundle",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_external_audio_bank_bundle.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:48:30.175401+00:00",
+    "ended": "2026-09-16T00:48:30.510722+00:00",
+    "seconds": 0.335,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_field_art",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_field_art.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:48:30.511294+00:00",
+    "ended": "2026-09-16T00:48:30.689515+00:00",
+    "seconds": 0.178,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_field_art_gui",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_field_art_gui.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:48:30.690092+00:00",
+    "ended": "2026-09-16T00:48:31.549605+00:00",
+    "seconds": 0.86,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_field_art_patch",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_field_art_patch.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:48:31.550062+00:00",
+    "ended": "2026-09-16T00:53:33.002264+00:00",
+    "seconds": 301.452,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_field_art_stock_label",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_field_art_stock_label.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:48:51.774868+00:00",
+    "ended": "2026-09-16T00:48:52.253951+00:00",
+    "seconds": 0.479,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_field_extra_roundtrip",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_field_extra_roundtrip.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:48:52.254370+00:00",
+    "ended": "2026-09-16T00:52:24.062553+00:00",
+    "seconds": 211.808,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_field_material_project",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_field_material_project.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:51:10.376260+00:00",
+    "ended": "2026-09-16T00:51:10.952450+00:00",
+    "seconds": 0.576,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_field_material_writer",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_field_material_writer.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:51:10.953208+00:00",
+    "ended": "2026-09-16T00:51:11.287707+00:00",
+    "seconds": 0.335,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_formation_alignment_writer",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_formation_alignment_writer.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:51:11.288239+00:00",
+    "ended": "2026-09-16T00:51:11.641742+00:00",
+    "seconds": 0.354,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_fourth_down",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_fourth_down.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:51:11.642281+00:00",
+    "ended": "2026-09-16T00:51:11.845124+00:00",
+    "seconds": 0.203,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_fourth_down_native",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_fourth_down_native.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:51:11.845725+00:00",
+    "ended": "2026-09-16T00:52:56.369508+00:00",
+    "seconds": 104.524,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_fourth_down_qt",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_fourth_down_qt.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:52:24.063169+00:00",
+    "ended": "2026-09-16T00:52:24.264458+00:00",
+    "seconds": 0.201,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_full_shell_visual_gate",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_full_shell_visual_gate.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:52:24.265094+00:00",
+    "ended": "2026-09-16T00:52:24.312326+00:00",
+    "seconds": 0.047,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_g12_surfaces",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_g12_surfaces.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:52:24.312917+00:00",
+    "ended": "2026-09-16T00:52:24.842318+00:00",
+    "seconds": 0.529,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_helmet_crest_design_product",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_helmet_crest_design_product.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:52:24.842753+00:00",
+    "ended": "2026-09-16T00:52:26.342540+00:00",
+    "seconds": 1.5,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_helmet_logo_placement",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_helmet_logo_placement.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:52:26.342944+00:00",
+    "ended": "2026-09-16T00:52:33.824058+00:00",
+    "seconds": 7.481,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_helmet_logo_regions",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_helmet_logo_regions.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:52:33.824708+00:00",
+    "ended": "2026-09-16T00:52:37.993367+00:00",
+    "seconds": 4.169,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_helmet_logo_regions_qt",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_helmet_logo_regions_qt.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:52:37.994020+00:00",
+    "ended": "2026-09-16T00:52:39.250097+00:00",
+    "seconds": 1.256,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_import_offers_resize",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_import_offers_resize.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:52:39.250480+00:00",
+    "ended": "2026-09-16T00:52:39.903421+00:00",
+    "seconds": 0.653,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_iso_extraction_is_layout_tolerant",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_iso_extraction_is_layout_tolerant.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:52:39.904035+00:00",
+    "ended": "2026-09-16T00:52:40.117296+00:00",
+    "seconds": 0.213,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_linear_txtr_png",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_linear_txtr_png.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:52:40.117870+00:00",
+    "ended": "2026-09-16T00:52:40.179528+00:00",
+    "seconds": 0.062,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_logo_patch",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_logo_patch.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:52:40.180107+00:00",
+    "ended": "2026-09-16T00:52:54.161259+00:00",
+    "seconds": 13.981,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_logo_surface_ownership",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_logo_surface_ownership.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:52:54.161694+00:00",
+    "ended": "2026-09-16T00:52:54.252383+00:00",
+    "seconds": 0.091,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_logocache_patch",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_logocache_patch.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:52:54.253022+00:00",
+    "ended": "2026-09-16T00:53:38.919998+00:00",
+    "seconds": 44.667,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_mask_preview_alpha",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_mask_preview_alpha.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:52:56.369987+00:00",
+    "ended": "2026-09-16T00:52:56.546781+00:00",
+    "seconds": 0.177,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_model_export_gui",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_model_export_gui.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:52:56.547313+00:00",
+    "ended": "2026-09-16T00:52:59.274446+00:00",
+    "seconds": 2.727,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_model_import",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_model_import.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:52:59.275148+00:00",
+    "ended": "2026-09-16T00:53:53.517563+00:00",
+    "seconds": 54.242,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_number_encode_defaults",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_number_encode_defaults.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:53:33.002919+00:00",
+    "ended": "2026-09-16T00:53:35.208934+00:00",
+    "seconds": 2.206,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_number_texture_writer",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_number_texture_writer.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:53:35.209583+00:00",
+    "ended": "2026-09-16T00:58:14.369353+00:00",
+    "seconds": 279.16,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_package_map_writer",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_package_map_writer.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:53:38.920440+00:00",
+    "ended": "2026-09-16T00:53:40.300243+00:00",
+    "seconds": 1.38,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_pass_fetch_export_qt",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_pass_fetch_export_qt.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:53:40.300912+00:00",
+    "ended": "2026-09-16T00:53:40.832951+00:00",
+    "seconds": 0.532,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_play_designer",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_play_designer.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:53:40.833545+00:00",
+    "ended": "2026-09-16T00:53:54.998968+00:00",
+    "seconds": 14.165,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_play_designer_project",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_play_designer_project.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:53:53.518019+00:00",
+    "ended": "2026-09-16T00:53:54.050737+00:00",
+    "seconds": 0.533,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_play_designer_qt",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_play_designer_qt.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:53:54.051331+00:00",
+    "ended": "2026-09-16T00:53:54.426108+00:00",
+    "seconds": 0.375,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_playbook_route_gui",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_playbook_route_gui.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:53:54.426569+00:00",
+    "ended": "2026-09-16T00:53:54.815608+00:00",
+    "seconds": 0.389,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_playcall_patch",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_playcall_patch.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:53:54.816514+00:00",
+    "ended": "2026-09-16T00:53:56.898426+00:00",
+    "seconds": 2.082,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_playcall_research_native",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_playcall_research_native.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:53:54.999593+00:00",
+    "ended": "2026-09-16T00:57:45.558150+00:00",
+    "seconds": 230.559,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_playcalling_editor_build",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_playcalling_editor_build.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:53:56.899049+00:00",
+    "ended": "2026-09-16T00:55:34.536505+00:00",
+    "seconds": 97.637,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_playcalling_editor_facade",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_playcalling_editor_facade.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:55:34.537362+00:00",
+    "ended": "2026-09-16T00:55:37.749280+00:00",
+    "seconds": 3.212,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_playcalling_editor_patches",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_playcalling_editor_patches.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:55:37.749896+00:00",
+    "ended": "2026-09-16T00:55:38.306328+00:00",
+    "seconds": 0.556,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_playcalling_editor_qt",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_playcalling_editor_qt.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:55:38.307179+00:00",
+    "ended": "2026-09-16T00:55:47.018326+00:00",
+    "seconds": 8.711,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_player_position_patch",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_player_position_patch.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:55:47.019100+00:00",
+    "ended": "2026-09-16T00:55:54.281030+00:00",
+    "seconds": 7.262,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_player_position_product_backend",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_player_position_product_backend.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:55:54.281522+00:00",
+    "ended": "2026-09-16T00:56:15.955506+00:00",
+    "seconds": 21.674,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_player_positions",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_player_positions.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:56:15.956112+00:00",
+    "ended": "2026-09-16T00:56:16.072401+00:00",
+    "seconds": 0.116,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_player_rating_patch",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_player_rating_patch.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:56:16.073234+00:00",
+    "ended": "2026-09-16T00:56:20.423978+00:00",
+    "seconds": 4.351,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_player_rating_product_backend",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_player_rating_product_backend.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:56:18.554721+00:00",
+    "ended": "2026-09-16T00:56:28.087268+00:00",
+    "seconds": 9.533,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_player_rating_sheet_import",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_player_rating_sheet_import.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:56:20.424769+00:00",
+    "ended": "2026-09-16T00:56:36.012844+00:00",
+    "seconds": 15.588,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_player_ratings",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_player_ratings.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:56:28.087899+00:00",
+    "ended": "2026-09-16T00:56:28.940061+00:00",
+    "seconds": 0.852,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_product_findings",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_product_findings.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:56:28.941028+00:00",
+    "ended": "2026-09-16T00:56:29.118479+00:00",
+    "seconds": 0.177,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_product_findings_gui",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_product_findings_gui.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:56:29.119075+00:00",
+    "ended": "2026-09-16T00:56:29.779781+00:00",
+    "seconds": 0.661,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_product_validation_wrappers",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_product_validation_wrappers.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:56:29.780402+00:00",
+    "ended": "2026-09-16T00:56:30.048838+00:00",
+    "seconds": 0.268,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_project_document_workflow",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_project_document_workflow.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:56:30.049527+00:00",
+    "ended": "2026-09-16T00:57:03.623497+00:00",
+    "seconds": 33.574,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_project_streaming",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_project_streaming.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:56:36.013357+00:00",
+    "ended": "2026-09-16T00:56:36.249294+00:00",
+    "seconds": 0.236,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_ps3_probes",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_ps3_probes.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:56:36.249841+00:00",
+    "ended": "2026-09-16T00:56:37.457587+00:00",
+    "seconds": 1.208,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_ps3_roster_convert",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_ps3_roster_convert.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:56:37.458135+00:00",
+    "ended": "2026-09-16T00:56:54.891824+00:00",
+    "seconds": 17.434,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_ps3_roster_import_qt",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_ps3_roster_import_qt.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:56:54.892426+00:00",
+    "ended": "2026-09-16T00:56:56.697072+00:00",
+    "seconds": 1.805,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_ps3_speed",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_ps3_speed.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:56:56.697587+00:00",
+    "ended": "2026-09-16T00:57:00.828765+00:00",
+    "seconds": 4.131,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_ps3_speed_packages",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_ps3_speed_packages.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:00.829366+00:00",
+    "ended": "2026-09-16T00:57:11.362759+00:00",
+    "seconds": 10.533,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_ps3_texture_bundle",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_ps3_texture_bundle.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:03.624284+00:00",
+    "ended": "2026-09-16T00:57:34.363648+00:00",
+    "seconds": 30.739,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_ps3_texture_bundle_qt",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_ps3_texture_bundle_qt.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:11.363732+00:00",
+    "ended": "2026-09-16T00:57:11.828864+00:00",
+    "seconds": 0.465,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_public_docs_registry_current",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_public_docs_registry_current.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:11.829711+00:00",
+    "ended": "2026-09-16T00:57:12.014130+00:00",
+    "seconds": 0.184,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_rating_value_domains",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_rating_value_domains.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:12.014832+00:00",
+    "ended": "2026-09-16T00:57:12.216355+00:00",
+    "seconds": 0.202,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_retail_crest_channel_audit",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_retail_crest_channel_audit.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:12.217180+00:00",
+    "ended": "2026-09-16T00:57:12.270054+00:00",
+    "seconds": 0.053,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_roster_appearance_transfer",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_roster_appearance_transfer.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:12.270621+00:00",
+    "ended": "2026-09-16T00:57:21.143728+00:00",
+    "seconds": 8.873,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_roster_appearance_transfer_qt",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_roster_appearance_transfer_qt.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:21.144496+00:00",
+    "ended": "2026-09-16T00:57:26.289605+00:00",
+    "seconds": 5.145,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_roster_identity",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_roster_identity.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:26.290034+00:00",
+    "ended": "2026-09-16T00:57:38.437732+00:00",
+    "seconds": 12.148,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_roster_identity_gui",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_roster_identity_gui.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:34.364139+00:00",
+    "ended": "2026-09-16T00:57:36.320280+00:00",
+    "seconds": 1.956,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_roster_workspace",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_roster_workspace.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:36.320781+00:00",
+    "ended": "2026-09-16T00:57:36.477597+00:00",
+    "seconds": 0.157,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_roster_workspace_gui",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_roster_workspace_gui.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:36.478217+00:00",
+    "ended": "2026-09-16T00:57:36.903517+00:00",
+    "seconds": 0.425,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_save_playbook_assignments_gui",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_save_playbook_assignments_gui.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:36.903920+00:00",
+    "ended": "2026-09-16T00:57:38.346180+00:00",
+    "seconds": 1.442,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_save_roster_players",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_save_roster_players.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:38.346729+00:00",
+    "ended": "2026-09-16T00:57:43.148184+00:00",
+    "seconds": 4.801,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_save_roster_players_gui",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_save_roster_players_gui.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:38.438216+00:00",
+    "ended": "2026-09-16T00:57:39.264199+00:00",
+    "seconds": 0.826,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_scorebug_workspace_qt",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_scorebug_workspace_qt.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:39.264663+00:00",
+    "ended": "2026-09-16T00:57:39.917403+00:00",
+    "seconds": 0.653,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_shell_search_accessibility_qt",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_shell_search_accessibility_qt.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:39.917840+00:00",
+    "ended": "2026-09-16T00:57:51.486641+00:00",
+    "seconds": 11.569,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_splb_add_multiple_formations",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_splb_add_multiple_formations.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:43.148734+00:00",
+    "ended": "2026-09-16T00:57:43.774686+00:00",
+    "seconds": 0.626,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_splb_formation_personnel",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_splb_formation_personnel.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:43.775188+00:00",
+    "ended": "2026-09-16T00:57:44.990196+00:00",
+    "seconds": 1.215,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_splb_tag_reassignment",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_splb_tag_reassignment.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:44.990947+00:00",
+    "ended": "2026-09-16T00:57:47.258539+00:00",
+    "seconds": 2.268,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_splb_writer",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_splb_writer.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:45.558637+00:00",
+    "ended": "2026-09-16T00:57:45.942895+00:00",
+    "seconds": 0.384,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_stadium_material_findings",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_stadium_material_findings.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:45.943463+00:00",
+    "ended": "2026-09-16T00:57:46.072396+00:00",
+    "seconds": 0.129,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_stadium_model_import",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_stadium_model_import.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:46.073093+00:00",
+    "ended": "2026-09-16T00:57:46.367333+00:00",
+    "seconds": 0.294,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_stadium_studio",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_stadium_studio.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:46.367923+00:00",
+    "ended": "2026-09-16T00:57:46.616822+00:00",
+    "seconds": 0.249,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_stadium_studio_gui",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_stadium_studio_gui.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:46.617406+00:00",
+    "ended": "2026-09-16T00:57:47.210623+00:00",
+    "seconds": 0.593,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_stadium_texture",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_stadium_texture.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:47.211220+00:00",
+    "ended": "2026-09-16T00:59:05.528264+00:00",
+    "seconds": 78.317,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_stfs_roster_rehash",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_stfs_roster_rehash.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:47.259120+00:00",
+    "ended": "2026-09-16T00:57:47.928472+00:00",
+    "seconds": 0.669,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_studio_audio_gui",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_studio_audio_gui.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:47.928908+00:00",
+    "ended": "2026-09-16T00:57:49.154371+00:00",
+    "seconds": 1.225,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_studio_core",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_studio_core.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:49.155128+00:00",
+    "ended": "2026-09-16T00:57:49.422298+00:00",
+    "seconds": 0.267,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_studio_draft_logo",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_studio_draft_logo.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:49.422889+00:00",
+    "ended": "2026-09-16T00:57:49.976257+00:00",
+    "seconds": 0.553,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_studio_inspectors",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_studio_inspectors.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:49.976860+00:00",
+    "ended": "2026-09-16T00:57:52.471300+00:00",
+    "seconds": 2.494,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_studio_installer",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_studio_installer.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:51.487132+00:00",
+    "ended": "2026-09-16T00:58:04.540392+00:00",
+    "seconds": 13.053,
+    "exit_code": 1
+  },
+  {
+    "name": "final-test_apf_studio_safety",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_studio_safety.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:52.471934+00:00",
+    "ended": "2026-09-16T00:57:52.940124+00:00",
+    "seconds": 0.468,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_studio_text_edit",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_studio_text_edit.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:52.941173+00:00",
+    "ended": "2026-09-16T00:57:53.487834+00:00",
+    "seconds": 0.547,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_team_art",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_team_art.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:57:53.488229+00:00",
+    "ended": "2026-09-16T00:58:04.314076+00:00",
+    "seconds": 10.826,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_team_art_qt",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_team_art_qt.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:58:04.314616+00:00",
+    "ended": "2026-09-16T00:58:04.924275+00:00",
+    "seconds": 0.61,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_team_crest_selection",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_team_crest_selection.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:58:04.541466+00:00",
+    "ended": "2026-09-16T00:58:05.247337+00:00",
+    "seconds": 0.706,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_team_logo_gui",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_team_logo_gui.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:58:04.925118+00:00",
+    "ended": "2026-09-16T00:58:07.128057+00:00",
+    "seconds": 2.203,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_text_sheet_gui",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_text_sheet_gui.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:58:05.247795+00:00",
+    "ended": "2026-09-16T00:58:05.835216+00:00",
+    "seconds": 0.587,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_textlogo_gui",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_textlogo_gui.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:58:05.835610+00:00",
+    "ended": "2026-09-16T00:58:06.706706+00:00",
+    "seconds": 0.871,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_textlogo_writer",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_textlogo_writer.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:58:06.707638+00:00",
+    "ended": "2026-09-16T00:59:07.712275+00:00",
+    "seconds": 61.005,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_theme_layout_qt",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_theme_layout_qt.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:58:07.128527+00:00",
+    "ended": "2026-09-16T00:58:26.514143+00:00",
+    "seconds": 19.386,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_uniform_allocation_capacity",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_uniform_allocation_capacity.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:58:14.369827+00:00",
+    "ended": "2026-09-16T00:58:15.794881+00:00",
+    "seconds": 1.425,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_uniform_equipment_colors",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_uniform_equipment_colors.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:58:15.795439+00:00",
+    "ended": "2026-09-16T00:58:23.683911+00:00",
+    "seconds": 7.888,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_uniform_equipment_colors_gui",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_uniform_equipment_colors_gui.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:58:23.684413+00:00",
+    "ended": "2026-09-16T00:58:23.899292+00:00",
+    "seconds": 0.215,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_uniform_independence",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_uniform_independence.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:58:23.899951+00:00",
+    "ended": "2026-09-16T00:58:25.385345+00:00",
+    "seconds": 1.485,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_uniform_inventory_gui",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_uniform_inventory_gui.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:58:25.386062+00:00",
+    "ended": "2026-09-16T00:58:28.016050+00:00",
+    "seconds": 2.63,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_wave_integration",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_wave_integration.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:58:26.514754+00:00",
+    "ended": "2026-09-16T00:58:41.170463+00:00",
+    "seconds": 14.656,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_wordmark_regions",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_wordmark_regions.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:58:28.016451+00:00",
+    "ended": "2026-09-16T00:58:28.198456+00:00",
+    "seconds": 0.182,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_workspace_recovery",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_workspace_recovery.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:58:28.198936+00:00",
+    "ended": "2026-09-16T00:59:39.119515+00:00",
+    "seconds": 70.921,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_xenia_edge",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_xenia_edge.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:58:41.171262+00:00",
+    "ended": "2026-09-16T00:58:41.360432+00:00",
+    "seconds": 0.189,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_xenos_4444_mip_layout",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_xenos_4444_mip_layout.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:58:41.360872+00:00",
+    "ended": "2026-09-16T00:58:43.306302+00:00",
+    "seconds": 1.945,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_xenos_4444_png",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_xenos_4444_png.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:58:43.306987+00:00",
+    "ended": "2026-09-16T00:58:43.402260+00:00",
+    "seconds": 0.095,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_xenos_extra_formats_png",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_xenos_extra_formats_png.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:58:43.403041+00:00",
+    "ended": "2026-09-16T00:58:43.496620+00:00",
+    "seconds": 0.094,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_xex_image",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_xex_image.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:58:43.497254+00:00",
+    "ended": "2026-09-16T00:58:44.615632+00:00",
+    "seconds": 1.118,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_xex_image_retail",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_xex_image_retail.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:58:44.616444+00:00",
+    "ended": "2026-09-16T01:00:00.973655+00:00",
+    "seconds": 76.357,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_apf_xma1_wizard_gui",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_apf_xma1_wizard_gui.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:59:05.528918+00:00",
+    "ended": "2026-09-16T00:59:07.458135+00:00",
+    "seconds": 1.929,
+    "exit_code": 0
+  },
+  {
+    "name": "final-test_b69_a1_playcalling",
+    "argv": [
+      "python3",
+      "tests/mod_editor/test_b69_a1_playcalling.py",
+      "-v"
+    ],
+    "started": "2026-09-16T00:59:07.458755+00:00",
+    "ended": "2026-09-16T00:59:54.410306+00:00",
+    "seconds": 46.952,
+    "exit_code": 0
+  },
+  {
+    "name": "delivery-test_apf_studio_installer",
+    "argv": [
+      "env",
+      "-u",
+      "PYTHONPATH",
+      "python3",
+      "tests/mod_editor/test_apf_studio_installer.py",
+      "-v"
+    ],
+    "started": "2026-09-16T01:00:40.624191+00:00",
+    "ended": "2026-09-16T01:00:55.147116+00:00",
+    "seconds": 14.523,
+    "exit_code": 0
+  },
+  {
+    "name": "apf-reconciled",
+    "argv": [
+      "python3",
+      "reports/b71_a7/reconcile_apf.py"
+    ],
+    "started": "2026-09-16T01:01:04.278724+00:00",
+    "ended": "2026-09-16T01:01:04.315303+00:00",
+    "seconds": 0.037,
+    "exit_code": 0
+  },
+  {
+    "name": "closures",
+    "argv": [
+      "python3",
+      "reports/b71_a7/closures.py"
+    ],
+    "started": "2026-09-16T01:24:37.388100+00:00",
+    "ended": "2026-09-16T01:25:03.761444+00:00",
+    "seconds": 26.373,
+    "exit_code": 0
+  },
+  {
+    "name": "stage-2k5-final",
+    "argv": [
+      "python3",
+      "packaging/stage_release.py",
+      "packaging/release-allowlist.txt",
+      "/home/noah/2k-worktrees/astra-b71-a7/.scratch/a7-release-2k5"
+    ],
+    "started": "2026-09-16T01:24:37.416419+00:00",
+    "ended": "2026-09-16T01:24:37.770951+00:00",
+    "seconds": 0.355,
+    "exit_code": 0
+  },
+  {
+    "name": "release-2k5-final",
+    "argv": [
+      "env",
+      "PYTHONDONTWRITEBYTECODE=1",
+      "python3",
+      "packaging/check_2k5_mod_studio_release.py",
+      "/home/noah/2k-worktrees/astra-b71-a7/.scratch/a7-release-2k5"
+    ],
+    "started": "2026-09-16T01:24:37.771513+00:00",
+    "ended": "2026-09-16T01:24:44.686201+00:00",
+    "seconds": 6.915,
+    "exit_code": 0
+  },
+  {
+    "name": "runtime-2k5-final",
+    "argv": [
+      "env",
+      "PYTHONDONTWRITEBYTECODE=1",
+      "PYTHONNOUSERSITE=1",
+      "PYTHONPATH=/home/noah/2k-worktrees/astra-b71-a7/.scratch/a7-release-2k5",
+      "/home/noah/2k-worktrees/astra-b71-a7/.scratch/test-python/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-a7/.scratch/a7-release-2k5/packaging/check_2k5_mod_studio_runtime.py"
+    ],
+    "started": "2026-09-16T01:24:44.686818+00:00",
+    "ended": "2026-09-16T01:24:53.068070+00:00",
+    "seconds": 8.381,
+    "exit_code": 0
+  },
+  {
+    "name": "stage-apf-final",
+    "argv": [
+      "python3",
+      "packaging/stage_release.py",
+      "packaging/apf2k8-release-allowlist.txt",
+      "/home/noah/2k-worktrees/astra-b71-a7/.scratch/a7-release-apf"
+    ],
+    "started": "2026-09-16T01:24:53.145370+00:00",
+    "ended": "2026-09-16T01:24:53.233861+00:00",
+    "seconds": 0.088,
+    "exit_code": 0
+  },
+  {
+    "name": "release-apf-final",
+    "argv": [
+      "env",
+      "PYTHONDONTWRITEBYTECODE=1",
+      "python3",
+      "packaging/check_apf2k8_mod_studio_release.py",
+      "/home/noah/2k-worktrees/astra-b71-a7/.scratch/a7-release-apf"
+    ],
+    "started": "2026-09-16T01:24:53.234278+00:00",
+    "ended": "2026-09-16T01:24:53.618879+00:00",
+    "seconds": 0.385,
+    "exit_code": 0
+  },
+  {
+    "name": "runtime-apf-final",
+    "argv": [
+      "env",
+      "PYTHONDONTWRITEBYTECODE=1",
+      "PYTHONNOUSERSITE=1",
+      "PYTHONPATH=/home/noah/2k-worktrees/astra-b71-a7/.scratch/a7-release-apf",
+      "/home/noah/2k-worktrees/astra-b71-a7/.scratch/test-python/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-a7/.scratch/a7-release-apf/packaging/check_apf2k8_mod_studio_runtime.py"
+    ],
+    "started": "2026-09-16T01:24:53.619407+00:00",
+    "ended": "2026-09-16T01:25:03.744613+00:00",
+    "seconds": 10.125,
+    "exit_code": 0
+  },
+  {
+    "name": "final-audit",
+    "argv": [
+      "python3",
+      "reports/b71_a7/final_audit.py"
+    ],
+    "started": "2026-09-16T01:25:12.513416+00:00",
+    "ended": "2026-09-16T01:25:13.201515+00:00",
+    "seconds": 0.688,
+    "exit_code": 0
+  },
+  {
+    "name": "write-report",
+    "argv": [
+      "python3",
+      "reports/b71_a7/write_report.py"
+    ],
+    "started": "2026-09-16T01:25:13.231822+00:00",
+    "ended": "2026-09-16T01:25:13.274204+00:00",
+    "seconds": 0.042,
+    "exit_code": 0
+  },
+  {
+    "name": "archive-audit",
+    "argv": [
+      "python3",
+      "/tmp/b71_a7_archive_audit.py"
+    ],
+    "started": "2026-09-16T01:25:13.305099+00:00",
+    "ended": "2026-09-16T01:25:13.518314+00:00",
+    "seconds": 0.213,
+    "exit_code": 0
+  },
+  {
+    "name": "delivery-scorebug-layout-emulation",
+    "argv": [
+      "env",
+      "NFL2K5_SCOREBUG_EMULATION_TEST=1",
+      "python3",
+      "tests/nfl2k5_scorebug_layout_test.py",
+      "-v"
+    ],
+    "started": "2026-09-16T01:25:34.323547+00:00",
+    "ended": "2026-09-16T01:25:35.758637+00:00",
+    "seconds": 1.435,
+    "exit_code": 0
+  },
+  {
+    "name": "final-audit-delivery",
+    "argv": [
+      "python3",
+      "reports/b71_a7/final_audit.py"
+    ],
+    "started": "2026-09-16T01:26:01.521250+00:00",
+    "ended": "2026-09-16T01:26:02.204115+00:00",
+    "seconds": 0.683,
+    "exit_code": 0
+  },
+  {
+    "name": "cleanup-test-support",
+    "argv": [
+      "/usr/bin/python3",
+      "-c",
+      "from pathlib import Path;import shutil;root=Path.cwd();paths=[root/\".scratch/test-python\",root/\"reports/b71_a7/__pycache__\",root/\".scratch/b71-a7-manifest.json\",root/\".scratch/b71-a7-parent-manifest.json\",root/\".scratch/a7-product-frozen.json\"];[(shutil.rmtree(p) if p.is_dir() else p.unlink()) for p in paths if p.exists()];print(\"Removed temporary interpreter, duplicate projection files and report bytecode; retained private Git and delivery evidence.\")"
+    ],
+    "started": "2026-09-16T01:28:04.390259+00:00",
+    "ended": "2026-09-16T01:28:04.423242+00:00",
+    "seconds": 0.033,
+    "exit_code": 0
+  }
+]

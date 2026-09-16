@@ -1,0 +1,1 @@
+{"name": "repack-corrected", "argv": ["git", "--git-dir=.scratch/b71-s5-git", "--work-tree=.", "repack", "-d", "--local"], "start_utc": "2026-09-16T03:20:49.387292+00:00", "end_utc": "2026-09-16T03:20:52.507037+00:00", "seconds": 3.12, "exit_code": 0}

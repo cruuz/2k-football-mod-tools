@@ -1,0 +1,3 @@
+[astra/b71-c4-day-afternoon f9c2ac27] Tune Broadcast day and afternoon rigs while pinning approved night and all turf bundles
+ 13 files changed, 174 insertions(+), 49 deletions(-)
+ create mode 100644 tests/mod_editor/test_nfl2k5_daylight_composition.py

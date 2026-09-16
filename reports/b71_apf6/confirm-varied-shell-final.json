@@ -1,0 +1,367 @@
+{
+  "label": "confirm-varied-shell-final",
+  "source_index": "/media/noah/Storage/for codex 1.0/extracted/All-Pro Football 2K8 (USA)/0A",
+  "source_index_sha256": "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e",
+  "first_load_seconds": 2.749832797999261,
+  "edits": [
+    {
+      "edit": 1,
+      "kind": "play_rating",
+      "seconds": 0.28878281501238234
+    },
+    {
+      "edit": 2,
+      "kind": "ratings",
+      "seconds": 0.2908217709918972
+    },
+    {
+      "edit": 3,
+      "kind": "audibles",
+      "seconds": 0.36090694699669257
+    },
+    {
+      "edit": 4,
+      "kind": "play_rating",
+      "seconds": 0.2882655850116862
+    },
+    {
+      "edit": 5,
+      "kind": "ratings",
+      "seconds": 0.27963979200285394
+    },
+    {
+      "edit": 6,
+      "kind": "audibles",
+      "seconds": 0.10790610300318804
+    },
+    {
+      "edit": 7,
+      "kind": "play_rating",
+      "seconds": 0.07806941200396977
+    },
+    {
+      "edit": 8,
+      "kind": "ratings",
+      "seconds": 0.2704443900001934
+    },
+    {
+      "edit": 9,
+      "kind": "audibles",
+      "seconds": 0.10861206499976106
+    },
+    {
+      "edit": 10,
+      "kind": "play_rating",
+      "seconds": 0.27923191800073255
+    },
+    {
+      "edit": 11,
+      "kind": "ratings",
+      "seconds": 0.30542896200495306
+    },
+    {
+      "edit": 12,
+      "kind": "audibles",
+      "seconds": 0.10967025099671446
+    },
+    {
+      "edit": 13,
+      "kind": "play_rating",
+      "seconds": 0.28650207100145053
+    },
+    {
+      "edit": 14,
+      "kind": "ratings",
+      "seconds": 0.2733615489996737
+    },
+    {
+      "edit": 15,
+      "kind": "audibles",
+      "seconds": 0.1109588909894228
+    },
+    {
+      "edit": 16,
+      "kind": "play_rating",
+      "seconds": 0.2929594009910943
+    },
+    {
+      "edit": 17,
+      "kind": "ratings",
+      "seconds": 0.28607344899501186
+    },
+    {
+      "edit": 18,
+      "kind": "audibles",
+      "seconds": 0.11379589300486259
+    },
+    {
+      "edit": 19,
+      "kind": "play_rating",
+      "seconds": 0.27131806999386754
+    },
+    {
+      "edit": 20,
+      "kind": "ratings",
+      "seconds": 0.29210670800239313
+    },
+    {
+      "edit": 21,
+      "kind": "audibles",
+      "seconds": 0.11108101900026668
+    },
+    {
+      "edit": 22,
+      "kind": "play_rating",
+      "seconds": 0.27540553799190093
+    },
+    {
+      "edit": 23,
+      "kind": "ratings",
+      "seconds": 0.2693298059894005
+    },
+    {
+      "edit": 24,
+      "kind": "audibles",
+      "seconds": 0.11522110899386462
+    },
+    {
+      "edit": 25,
+      "kind": "play_rating",
+      "seconds": 0.27518165300716646
+    },
+    {
+      "edit": 26,
+      "kind": "ratings",
+      "seconds": 0.2725782600027742
+    },
+    {
+      "edit": 27,
+      "kind": "audibles",
+      "seconds": 0.11553574199206196
+    },
+    {
+      "edit": 28,
+      "kind": "play_rating",
+      "seconds": 0.30823847799911164
+    },
+    {
+      "edit": 29,
+      "kind": "ratings",
+      "seconds": 0.2738115249958355
+    },
+    {
+      "edit": 30,
+      "kind": "audibles",
+      "seconds": 0.11319435300538316
+    },
+    {
+      "edit": 31,
+      "kind": "play_rating",
+      "seconds": 0.08382246900873724
+    },
+    {
+      "edit": 32,
+      "kind": "ratings",
+      "seconds": 0.2754225940007018
+    },
+    {
+      "edit": 33,
+      "kind": "audibles",
+      "seconds": 0.11238634800247382
+    },
+    {
+      "edit": 34,
+      "kind": "play_rating",
+      "seconds": 0.2754405159939779
+    },
+    {
+      "edit": 35,
+      "kind": "ratings",
+      "seconds": 0.27168000901292544
+    },
+    {
+      "edit": 36,
+      "kind": "audibles",
+      "seconds": 0.11332369499723427
+    },
+    {
+      "edit": 37,
+      "kind": "play_rating",
+      "seconds": 0.30442427399975713
+    },
+    {
+      "edit": 38,
+      "kind": "ratings",
+      "seconds": 0.292058374005137
+    },
+    {
+      "edit": 39,
+      "kind": "audibles",
+      "seconds": 0.11936838799738325
+    },
+    {
+      "edit": 40,
+      "kind": "play_rating",
+      "seconds": 0.2849643470108276
+    },
+    {
+      "edit": 41,
+      "kind": "ratings",
+      "seconds": 0.28587876200617757
+    },
+    {
+      "edit": 42,
+      "kind": "audibles",
+      "seconds": 0.11858968899468891
+    },
+    {
+      "edit": 43,
+      "kind": "play_rating",
+      "seconds": 0.2899223189888289
+    },
+    {
+      "edit": 44,
+      "kind": "ratings",
+      "seconds": 0.29265650500019547
+    },
+    {
+      "edit": 45,
+      "kind": "audibles",
+      "seconds": 0.1484493789903354
+    },
+    {
+      "edit": 46,
+      "kind": "play_rating",
+      "seconds": 0.29597426499822177
+    },
+    {
+      "edit": 47,
+      "kind": "ratings",
+      "seconds": 0.2950028299965197
+    },
+    {
+      "edit": 48,
+      "kind": "audibles",
+      "seconds": 0.11936410701309796
+    },
+    {
+      "edit": 49,
+      "kind": "play_rating",
+      "seconds": 0.08934764900186565
+    },
+    {
+      "edit": 50,
+      "kind": "ratings",
+      "seconds": 0.29224570699443575
+    },
+    {
+      "edit": 51,
+      "kind": "audibles",
+      "seconds": 0.1209557690017391
+    },
+    {
+      "edit": 52,
+      "kind": "play_rating",
+      "seconds": 0.2968013700010488
+    },
+    {
+      "edit": 53,
+      "kind": "ratings",
+      "seconds": 0.29424691799795255
+    },
+    {
+      "edit": 54,
+      "kind": "audibles",
+      "seconds": 0.12075481801002752
+    },
+    {
+      "edit": 55,
+      "kind": "play_rating",
+      "seconds": 0.1211266699974658
+    },
+    {
+      "edit": 56,
+      "kind": "ratings",
+      "seconds": 0.29564330299035646
+    },
+    {
+      "edit": 57,
+      "kind": "audibles",
+      "seconds": 0.12189889700675849
+    },
+    {
+      "edit": 58,
+      "kind": "play_rating",
+      "seconds": 0.29669628498959355
+    },
+    {
+      "edit": 59,
+      "kind": "ratings",
+      "seconds": 0.2919195629947353
+    },
+    {
+      "edit": 60,
+      "kind": "audibles",
+      "seconds": 0.12718480799230747
+    },
+    {
+      "edit": 61,
+      "kind": "play_rating",
+      "seconds": 0.3082958070008317
+    },
+    {
+      "edit": 62,
+      "kind": "ratings",
+      "seconds": 0.3026147670025239
+    },
+    {
+      "edit": 63,
+      "kind": "audibles",
+      "seconds": 0.15768513499642722
+    }
+  ],
+  "total_seconds": 14.040579861975857,
+  "mean_seconds": 0.2228663470154898,
+  "median_seconds": 0.27518165300716646,
+  "max_seconds": 0.36090694699669257,
+  "phases_inclusive": {
+    "source books": [
+      1,
+      0.7273421930003678
+    ],
+    "MASTER inventory": [
+      2,
+      0.1732984640111681
+    ],
+    "base state": [
+      1,
+      0.8156089870026335
+    ],
+    "ledger read": [
+      382,
+      0.14186901588982437
+    ],
+    "state including replay": [
+      191,
+      2.349889868972241
+    ],
+    "context and rows": [
+      128,
+      2.598050273983972
+    ],
+    "predictions": [
+      128,
+      8.151408270990942
+    ],
+    "situation candidates": [
+      128,
+      1.769481372932205
+    ],
+    "apply and validate": [
+      63,
+      1.5260471220535692
+    ]
+  },
+  "platform": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "method": "63 mixed edits: 21 play ratings, 21 formation ratings, 21 balanced audibles; same O-ManBlock export; UI Confirm plus synchronous shell CPU-page reset and panel refresh; cycling formations; phase times overlap."
+}

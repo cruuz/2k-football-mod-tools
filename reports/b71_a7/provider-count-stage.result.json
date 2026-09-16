@@ -1,0 +1,13 @@
+{
+  "name": "provider-count-stage",
+  "argv": [
+    "git",
+    "add",
+    "--",
+    "tests/mod_editor/test_provider_integrity.py"
+  ],
+  "started": "2026-09-16T00:42:34.271478+00:00",
+  "ended": "2026-09-16T00:42:34.284924+00:00",
+  "seconds": 0.013,
+  "exit_code": 0
+}

@@ -1,0 +1,12 @@
+test_audo_and_ausb_default_exports_keep_legacy_direct_path (__main__.DecoderCancellationTests.test_audo_and_ausb_default_exports_keep_legacy_direct_path) ... ok
+test_ausb_exact_slot_preserves_same_cancellation_class (__main__.DecoderCancellationTests.test_ausb_exact_slot_preserves_same_cancellation_class) ... ok
+test_callback_exception_becomes_clear_audio_error (__main__.DecoderCancellationTests.test_callback_exception_becomes_clear_audio_error) ... ok
+test_cancel_stops_detached_stdio_helper_in_same_process_group (__main__.DecoderCancellationTests.test_cancel_stops_detached_stdio_helper_in_same_process_group) ... ok
+test_cancellable_runner_timeout_stops_term_resistant_process (__main__.DecoderCancellationTests.test_cancellable_runner_timeout_stops_term_resistant_process) ... ok
+test_cancellable_stock_export_publishes_nothing_after_cancel (__main__.DecoderCancellationTests.test_cancellable_stock_export_publishes_nothing_after_cancel) ... ok
+test_exact_slot_cancel_kills_decoder_group_and_removes_partial_wav (__main__.DecoderCancellationTests.test_exact_slot_cancel_kills_decoder_group_and_removes_partial_wav) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 1.868s
+
+OK

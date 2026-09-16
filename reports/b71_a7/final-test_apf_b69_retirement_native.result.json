@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_b69_retirement_native",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_b69_retirement_native.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:38:02.893650+00:00",
+  "ended": "2026-09-16T00:40:39.566585+00:00",
+  "seconds": 156.673,
+  "exit_code": 0
+}

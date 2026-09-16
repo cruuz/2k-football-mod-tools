@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_logocache_patch",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_logocache_patch.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:52:54.253022+00:00",
+  "ended": "2026-09-16T00:53:38.919998+00:00",
+  "seconds": 44.667,
+  "exit_code": 0
+}

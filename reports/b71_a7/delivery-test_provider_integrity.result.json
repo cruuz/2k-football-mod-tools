@@ -1,0 +1,12 @@
+{
+  "name": "delivery-test_provider_integrity",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_provider_integrity.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:42:19.390048+00:00",
+  "ended": "2026-09-16T00:42:34.211989+00:00",
+  "seconds": 14.822,
+  "exit_code": 0
+}

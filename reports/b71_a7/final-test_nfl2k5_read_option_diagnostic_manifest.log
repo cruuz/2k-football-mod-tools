@@ -1,0 +1,6 @@
+setUpClass (__main__.OwnershipRevalidationTests) ... skipped 'selected manifest uses a different Build fingerprint; historical diagnostic projection not applicable'
+
+----------------------------------------------------------------------
+Ran 0 tests in 0.284s
+
+OK (skipped=1)

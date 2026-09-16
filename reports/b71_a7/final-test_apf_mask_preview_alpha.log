@@ -1,0 +1,12 @@
+test_cached_note_survives_a_second_view (__main__.ApfMaskPreviewAlphaTests.test_cached_note_survives_a_second_view) ... ok
+test_empty_source_is_reported_as_empty_not_alpha_masked (__main__.ApfMaskPreviewAlphaTests.test_empty_source_is_reported_as_empty_not_alpha_masked) ... ok
+test_encode_preserves_real_alpha (__main__.ApfMaskPreviewAlphaTests.test_encode_preserves_real_alpha) ... ok
+test_encode_restores_zero_alpha_from_original_mask (__main__.ApfMaskPreviewAlphaTests.test_encode_restores_zero_alpha_from_original_mask) ... ok
+test_uniform_zero_alpha_is_force_opaqued_for_display (__main__.ApfMaskPreviewAlphaTests.test_uniform_zero_alpha_is_force_opaqued_for_display) ... ok
+test_varying_alpha_is_left_alone (__main__.ApfMaskPreviewAlphaTests.test_varying_alpha_is_left_alone) ... ok
+test_visible_export_pixels_round_trip_to_retail_alpha (__main__.ApfMaskPreviewAlphaTests.test_visible_export_pixels_round_trip_to_retail_alpha) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.005s
+
+OK

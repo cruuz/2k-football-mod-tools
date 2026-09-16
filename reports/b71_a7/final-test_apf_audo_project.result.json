@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_audo_project",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_audo_project.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:33:19.351103+00:00",
+  "ended": "2026-09-16T00:33:19.548091+00:00",
+  "seconds": 0.197,
+  "exit_code": 0
+}

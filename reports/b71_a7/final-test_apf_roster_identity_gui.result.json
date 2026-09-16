@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_roster_identity_gui",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_roster_identity_gui.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:57:34.364139+00:00",
+  "ended": "2026-09-16T00:57:36.320280+00:00",
+  "seconds": 1.956,
+  "exit_code": 0
+}

@@ -1,0 +1,13 @@
+test_every_conflict_names_both_features_before_build_compiles_or_copies (__main__.ProviderBoundaryTests.test_every_conflict_names_both_features_before_build_compiles_or_copies) ... ok
+test_final_book_identity_failure_cleans_staging_without_publication (__main__.ProviderBoundaryTests.test_final_book_identity_failure_cleans_staging_without_publication) ... ok
+test_profile_identity_and_duplicate_recipe_keys_fail_closed (__main__.ProviderBoundaryTests.test_profile_identity_and_duplicate_recipe_keys_fail_closed) ... ok
+test_coverage_roundtrip_undo_revert_and_composed_preview (__main__.RetailIntegrationTests.test_coverage_roundtrip_undo_revert_and_composed_preview) ... ok
+test_crest_detail_survives_project_import_directory_cleanup (__main__.RetailIntegrationTests.test_crest_detail_survives_project_import_directory_cleanup) ... ok
+test_designer_example_uses_actual_build_dispatcher_and_three_entries (__main__.RetailIntegrationTests.test_designer_example_uses_actual_build_dispatcher_and_three_entries) ... ok
+test_presets_compose_after_audibles_and_roundtrip (__main__.RetailIntegrationTests.test_presets_compose_after_audibles_and_roundtrip) ... ok
+test_rejected_coverage_does_not_record_undo_or_store_payload (__main__.RetailIntegrationTests.test_rejected_coverage_does_not_record_undo_or_store_payload) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 14.312s
+
+OK

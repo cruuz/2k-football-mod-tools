@@ -1,0 +1,10 @@
+test_cpu_dialog_uses_named_book_record_indices (__main__.DesignerQtTests.test_cpu_dialog_uses_named_book_record_indices) ... ok
+test_formation_edits_all_alignment_variants (__main__.DesignerQtTests.test_formation_edits_all_alignment_variants) ... ok
+test_panel_disables_without_source_and_emits_after_stage (__main__.DesignerQtTests.test_panel_disables_without_source_and_emits_after_stage) ... ok
+test_play_fields_produce_a_private_chain (__main__.DesignerQtTests.test_play_fields_produce_a_private_chain) ... ok
+test_refresh_preserves_unstaged_draft (__main__.DesignerQtTests.test_refresh_preserves_unstaged_draft) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.134s
+
+OK

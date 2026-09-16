@@ -1,0 +1,11 @@
+{
+  "name": "proof-v3-release",
+  "command": [
+    "python3",
+    "reports/b71_s3/prove_v3.py"
+  ],
+  "start": "2026-09-15T21:08:26.353394+00:00",
+  "end": "2026-09-15T21:09:30.082382+00:00",
+  "seconds": 63.729,
+  "exit": 0
+}

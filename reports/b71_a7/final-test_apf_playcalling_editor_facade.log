@@ -1,0 +1,12 @@
+test_all_levers_are_replayable_events (__main__.FacadeTests.test_all_levers_are_replayable_events) ... ok
+test_audibles_and_defense_contract (__main__.FacadeTests.test_audibles_and_defense_contract) ... ok
+test_capability_handoff_schema_and_new_file_closure (__main__.FacadeTests.test_capability_handoff_schema_and_new_file_closure) ... ok
+test_invalid_recipes_and_tampered_payload_fail_closed (__main__.FacadeTests.test_invalid_recipes_and_tampered_payload_fail_closed) ... ok
+test_ratings_preview_cache_undo_and_project_roundtrip (__main__.FacadeTests.test_ratings_preview_cache_undo_and_project_roundtrip) ... ok
+test_single_and_all_clone_plans_preserve_shared_donor (__main__.FacadeTests.test_single_and_all_clone_plans_preserve_shared_donor) ... ok
+test_warning_refusal_and_stale_reviews (__main__.FacadeTests.test_warning_refusal_and_stale_reviews) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 2.849s
+
+OK

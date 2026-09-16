@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_b67_model_edges_native",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_b67_model_edges_native.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:33:48.795247+00:00",
+  "ended": "2026-09-16T00:35:31.850724+00:00",
+  "seconds": 103.055,
+  "exit_code": 0
+}

@@ -1,0 +1,12 @@
+{
+  "name": "early-test_mod_build",
+  "argv": [
+    "/usr/bin/python3",
+    "tests/mod_editor/test_mod_build.py",
+    "-v"
+  ],
+  "start_utc": "2026-09-16T02:21:29.460153+00:00",
+  "end_utc": "2026-09-16T02:21:31.716314+00:00",
+  "seconds": 2.256,
+  "exit_code": 0
+}

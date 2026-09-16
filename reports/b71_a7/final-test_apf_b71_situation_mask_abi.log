@@ -1,0 +1,8 @@
+test_full_registers_cr_fprs_fpscr_stack_and_guarded_writes (__main__.AbiTests.test_full_registers_cr_fprs_fpscr_stack_and_guarded_writes) ... ok
+test_special_phases_are_byte_identical (__main__.AbiTests.test_special_phases_are_byte_identical) ... ok
+test_unrelated_mask_keeps_original_empty_category (__main__.AbiTests.test_unrelated_mask_keeps_original_empty_category) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 4.287s
+
+OK

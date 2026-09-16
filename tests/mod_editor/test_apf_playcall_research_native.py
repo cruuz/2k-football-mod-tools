@@ -426,6 +426,255 @@ class NativePlaycallTests(unittest.TestCase):
             expected = next(e.play_index for e in record.entries if e.y == slot)
             self.assertEqual(m.call(0x84A8AA80, BOOK, formation, slot), MASTER + 0x80C4 + expected * 100)
 
+    def test_b71_spreadsheet_buckets_share_native_inputs_not_stored_lists(self):
+        from mod_editor.core.apf2k8_offensive_schemes import BUCKETS
+        from mod_editor.core import apf2k8_playcall_model as model
+        self.assertEqual(len(BUCKETS), 23)
+        observed = []
+        for updated in (False, True):
+            m = self.machine(130, updated=updated)
+            for bucket in BUCKETS:
+                s = bucket.situation()
+                m.configure(down=s.down, yards=s.distance_yards, goal_yards=s.yards_to_goal,
+                            period=s.period, clock=s.clock_seconds, score=s.score_margin)
+                row = m.call(m.va(0x84867600))
+                self.assertEqual(row, model.requested_offense_row(s), bucket.name)
+                chosen, weights = category_candidates(m, row)
+                expected = model.category_weights(self.books[130].body, self.master, row, s)
+                self.assertEqual([c for c, _ in weights], [c for c, _ in expected], bucket.name)
+                for (category, actual), (_, weight) in zip(weights, expected):
+                    self.assertAlmostEqual(actual, weight, delta=1e-6, msg=str((bucket.name, category)))
+                    captured = []
+                    def capture(z):
+                        count = z.reg(4)
+                        weights = struct.unpack('>' + str(count) + 'f', z.cpu.mem_read(z.reg(3), count * 4))
+                        captured.extend(((z.get(z.reg(1) + 0xF0 + i * 4) - MASTER - 0x244) // 184, weight)
+                                        for i, weight in enumerate(weights))
+                    m.observers[m.va(0x84863388)] = capture
+                    m.call(m.va(0x848693F8), MANAGER, 14, MASTER + 0x44 + category * 16, 0, 0)
+                    del m.observers[m.va(0x84863388)]
+                    expected_forms = model.formation_weights(self.books[130].body, self.master, category, s)
+                    self.assertEqual([f for f, _ in captured], [f for f, _ in expected_forms])
+                    for (_, actual), (_, weight) in zip(captured, expected_forms):
+                        self.assertAlmostEqual(actual, weight, delta=1e-6, msg=str((bucket.name, category)))
+                observed.append((updated, bucket.name, row, chosen))
+        first = {name: (row, chosen) for updated, name, row, chosen in observed if not updated}
+        self.assertEqual(first['Openers'], first['1st and 10'])
+        self.assertEqual(first['Sudden change'], first['1st and 10'])
+        self.assertEqual(first['After negative play'], first['2nd and 11+'])
+        print('PROVED 23 proxy bucket row/category pairs BASE/TU:', observed, flush=True)
+
+    def test_b71_minimum_rating_is_still_a_singleton_candidate(self):
+        from mod_editor.core import apf2k8_playcall_model as model
+        body = self.books[130].body
+        # Retain exactly Queens formation 14. Removal is the production writer;
+        # this isolated native fixture does not claim lineup-ladder coverage.
+        for form in sorted({r.formation_index for r in self.books[130].records if r.populated} - {14}):
+            body = splb.remove_formation(body, form).book
+        body = splb.set_formation_ratings(body, 14, (7, 7, 7))
+        for updated in (False, True):
+            m = self.machine(splb.parse_book(body, 130), updated=updated, down=3, yards=8, goal_yards=50, run_share=0)
+            m.normalize()
+            _, weights = category_candidates(m, 10)
+            self.assertEqual([c for c, _ in weights], [6])
+            self.assertAlmostEqual(weights[0][1], .05, delta=1e-6)
+            m.call(m.va(0x84869058), MANAGER, MASTER + 0x244 + 14 * 184, 0)
+            self.assertAlmostEqual(m.fpr(1), .1, delta=1e-6)
+            for fraction in (0., .01, .5, .99):
+                m.configure(down=3, yards=8, goal_yards=50, run_share=0, fraction=fraction)
+                m.call(m.va(0x8486CE88), MANAGER, OUTPUT, stop=m.va(0x8486D0CC), bound=2000000)
+                self.assertEqual(m.get(OUTPUT), MASTER + 0x44 + 6 * 16)
+                self.assertEqual(m.get(OUTPUT + 4), MASTER + 0x244 + 14 * 184)
+                self.assertTrue(m.get(OUTPUT + 12))
+            self.assertEqual(model.draw(((14, .1),), .99), 14)
+            self.assertEqual(model.draw(((14, 0.),), .99), 14)
+        print('PROVED only Queens at 7/7/7: category weight .05; formation weight .1; 8/8 full calls select Queens (0 TE category)', flush=True)
+
+    def test_b71_membership_and_primary_preference_decide_formation_candidates(self):
+        from mod_editor.core import apf2k8_playcall_model as model
+        body = self.books[767].body
+        # 68 is primarily Ace; add Kings as a secondary membership. Native
+        # Kings primaries outrank it until those primaries are removed.
+        body = splb.set_formation_categories(body, 68, 2, (5,))
+        s = model.Situation(3, 8, 50, 1, 900, 0, 3)
+        for updated in (False, True):
+            m = self.machine(splb.parse_book(body, 767), updated=updated, down=3, yards=8, goal_yards=50)
+            captured = []
+            def capture(z):
+                count = z.reg(4)
+                captured.extend((z.get(z.reg(1) + 0xF0 + i * 4) - MASTER - 0x244) // 184 for i in range(count))
+            m.observers[m.va(0x84863388)] = capture
+            m.call(m.va(0x848693F8), MANAGER, 14, MASTER + 0x44 + 5 * 16, 0, 0)
+            self.assertNotIn(68, captured)
+            self.assertEqual(captured, [f for f, _ in model.formation_weights(body, self.master, 5, s)])
+            del m.observers[m.va(0x84863388)]
+        print('PROVED secondary membership does not override surviving primary formations in that category', flush=True)
+
+    def test_b71_te_category_removal_has_real_membership_exclusion(self):
+        # Move Queens formation 14 to Straight (one TE) and remove Queens 15.
+        # This edits book-wide membership; no independent situation mask exists.
+        body = splb.set_formation_categories(self.books[130].body, 14, 7, ())
+        for form in sorted({r.formation_index for r in splb.parse_book(body, 130).records
+                            if r.populated and int.from_bytes(r.trailer[4:], 'big') & (1 << 6)}):
+            body = splb.remove_formation(body, form).book
+        for updated in (False, True):
+            m = self.machine(splb.parse_book(body, 130), updated=updated, down=3, yards=8, goal_yards=50, run_share=0)
+            normalized = m.normalize()
+            self.assertNotIn(6, splb.book_category_rows(normalized))
+            for fraction in (.25, .5, .75):
+                m.configure(down=3, yards=8, goal_yards=50, run_share=0, fraction=fraction)
+                m.call(m.va(0x8486CE88), MANAGER, OUTPUT, stop=m.va(0x8486D0CC), bound=2000000)
+                category = (m.get(OUTPUT) - MASTER - 0x44) // 16
+                self.assertEqual(category, 7)
+                roles = self.runtime_master[0x49 + category * 16:0x54 + category * 16]
+                self.assertEqual(sum((role & 31) == 8 for role in roles), 1)
+                self.assertEqual(m.get(OUTPUT + 4), MASTER + 0x244 + 14 * 184)
+        print('PROVED membership edit: 6/6 BASE/TU third-and-8 selected tuples use Straight, 1 TE role; on-field builder and later substitution UNWITNESSED', flush=True)
+
+    def test_apf3_all_rating_values_are_positive_in_all_queries_and_both_interpolation_arms(self):
+        from itertools import product
+        from mod_editor.core import apf2k8_playcall_model as model
+        from mod_editor.core.apf2k8_offensive_schemes import BUCKETS
+        comparisons, minimum = 0, 100.
+        for updated in (False, True):
+            m = self.machine(130, updated=updated)
+            for ratings, situations in (
+                *((((value,) * 3), tuple(b.situation() for b in BUCKETS)) for value in range(8)),
+                *((ratings, (model.Situation(1, 7.5, 50, 1, 900, 0, 3),
+                              model.Situation(3, 6, 50, 1, 900, 0, 3)))
+                  for ratings in product(range(8), repeat=3)),
+            ):
+                body = splb.set_formation_ratings(self.books[130].body, 14, ratings)
+                parsed = splb.parse_book(body, 130)
+                record = next(r for r in parsed.records if r.populated and r.formation_index == 14)
+                m.install(parsed)
+                for s in situations:
+                    m.configure(down=s.down, yards=s.distance_yards, goal_yards=s.yards_to_goal,
+                                period=s.period, clock=s.clock_seconds, score=s.score_margin, run_share=0)
+                    for category in (False, True):
+                        m.call(m.va(0x84869058), MANAGER, MASTER + 0x244 + 14 * 184, int(category))
+                        actual = m.fpr(1)
+                        expected = model.formation_weight(record, self.master, s, category=category, run_share=0)
+                        self.assertAlmostEqual(actual, expected, delta=1e-6, msg=str((updated, ratings, s, category)))
+                        self.assertGreater(actual, 0)
+                        minimum = min(minimum, actual)
+                        comparisons += 1
+        self.assertEqual(comparisons, 4832)
+        self.assertAlmostEqual(minimum, .1, delta=1e-6)
+        print('PROVED BASE/TU: all 8 encoded ratings over 23 queries and all 512 triples in both interpolation arms; '
+              f'{comparisons} native/model weights; minimum={minimum}; no rating exclusion value', flush=True)
+
+    def test_apf3_reassignment_keeps_a_formation_in_every_query_and_zero_mask_removes_it_everywhere(self):
+        from mod_editor.core.apf2k8_offensive_schemes import BUCKETS
+        from mod_editor.core.apf2k8_formation_calling import set_never_call, membership_masks
+        from tools.apf_b71_situation_probe import call_tuple
+        body = self.books[130].body
+        for form in sorted({r.formation_index for r in self.books[130].records if r.populated} - {14}):
+            body = splb.remove_formation(body, form).book
+        observed = []
+        for updated in (False, True):
+            for category in (3, 6, 7):
+                changed = splb.set_formation_categories(body, 14, category, ())
+                m = self.machine(splb.parse_book(changed, 130), updated=updated)
+                m.normalize()
+                for bucket in BUCKETS:
+                    s = bucket.situation()
+                    m.configure(down=s.down, yards=s.distance_yards, goal_yards=s.yards_to_goal,
+                                period=s.period, clock=s.clock_seconds, score=s.score_margin, run_share=0)
+                    row = m.call(m.va(0x84867600))
+                    selected, weights = category_candidates(m, row)
+                    self.assertEqual(selected, category)
+                    self.assertGreater(dict(weights)[category], 0)
+                    formation = m.call(m.va(0x848693F8), MANAGER, 14, MASTER + 0x44 + category * 16, 0, 0)
+                    self.assertEqual(formation, MASTER + 0x244 + 14 * 184)
+                    m.call(m.va(0x8486CE88), MANAGER, OUTPUT, bound=2000000)
+                    triple = call_tuple(m, OUTPUT)
+                    # These two labels are documented ordinary-query proxies.
+                    # The full native call can request a kick instead. Preserve
+                    # that real branch rather than stubbing it into scrimmage.
+                    if bucket.name not in ('4th down', '2pt'):
+                        self.assertEqual(triple[:2], (category, 14), (updated, bucket.name, triple))
+                    self.assertGreaterEqual(triple[2], 0)
+                    self.assertLess(triple[2], 586)
+                    observed.append((updated, category, bucket.name, triple))
+            original = self.books[130].body
+            disabled = set_never_call(original, 14, True, membership_masks(original, 14))
+            m = self.machine(splb.parse_book(disabled, 130), updated=updated)
+            m.normalize()
+            for bucket in BUCKETS:
+                s = bucket.situation()
+                m.configure(down=s.down, yards=s.distance_yards, goal_yards=s.yards_to_goal,
+                            period=s.period, clock=s.clock_seconds, score=s.score_margin, run_share=0)
+                captured = []
+                def capture(z):
+                    captured.extend((z.get(z.reg(1) + 0xF0 + i * 4) - MASTER - 0x244) // 184
+                                    for i in range(z.reg(4)))
+                m.observers[m.va(0x84863388)] = capture
+                m.call(m.va(0x848693F8), MANAGER, 14, MASTER + 0x44 + 6 * 16, 0, 0)
+                del m.observers[m.va(0x84863388)]
+                self.assertEqual(captured, [2, 24])
+        self.assertEqual(len(observed), 138)
+        print('PROVED BASE/TU 138 ordinary category/formation component pairs retain formation 14 across all 23 queries. '
+              'Full tuples under categories 3/6/7 follow; fourth-down and 2pt proxies can take real special branches:', observed, flush=True)
+        print('PROVED BASE/TU 46 formation buffers: clearing only formation 14 word B removes it in every query; '
+              'other Queens 2/24 remain. Membership is category-scoped, not situation-scoped.', flush=True)
+
+    def test_apf3_committed_third_and_eight_through_native_depth_selection_and_eleven_assignments(self):
+        from tools.apf_b71_situation_probe import straight_for_queens, call_tuple, finish_lineup
+        import json
+        _, stages = straight_for_queens(INDEX)
+        edited = splb.parse_book(stages[-1][1], 130)
+        receipts = []
+        for updated in (False, True):
+            for available in (True, False):
+                for fraction in (.25, .5, .75):
+                    m = self.machine(edited, updated=updated, down=3, yards=8, goal_yards=50,
+                                     run_share=0, fraction=fraction)
+                    normalized = m.normalize()
+                    self.assertNotIn(6, splb.book_category_rows(normalized))
+                    # Use the real current-call address. CE88 executes through
+                    # its return, including stores after the old D0CC boundary.
+                    m.call(m.va(0x8486CE88), MANAGER, TEAM + 4, bound=2000000)
+                    triple = call_tuple(m)
+                    self.assertEqual(triple[:2], (7, 133))
+                    self.assertEqual(m.get(TEAM + 0x70), m.get(TEAM + 8))
+                    self.assertEqual(m.get(TEAM + 0x68), m.get(TEAM + 0x10))
+                    self.assertEqual(m.get(TEAM + 0x6C), m.get(TEAM + 0x14))
+                    self.assertIn(m.va(0x8486D0D8), m.visited)
+                    receipt = finish_lineup(m, tight_end_available=available)
+                    self.assertEqual(len(receipt['executed']), 6)
+                    self.assertEqual([role for _, role in receipt['requested_roles']], receipt['roles_34'])
+                    self.assertEqual(receipt['roles_34'].count(8), 1)
+                    self.assertEqual(receipt['primary_roles_35'].count(8), 1)
+                    self.assertEqual(receipt['selected_te_depth_players'], int(available))
+                    self.assertEqual(receipt['provider_depths'], receipt['selected_depths'])
+                    self.assertEqual(receipt['selected_depths'][6], (3, 0) if available else (2, 0))
+                    self.assertEqual(receipt['tuple_before'], receipt['tuple_after'])
+                    receipts.append({'updated': updated, 'fraction': fraction, **receipt})
+        print('PROVED full native depth/lineup receipts (synthetic roster; equipment refresh bounded): '
+              + json.dumps(receipts, sort_keys=True), flush=True)
+
+    def test_apf3_original_apf2_one_te_tuple_reaches_the_final_lineup(self):
+        from tools.apf_b71_situation_probe import call_tuple, finish_lineup
+        import json
+        body = splb.set_formation_categories(self.books[130].body, 14, 7, ())
+        for form in (2, 24):
+            body = splb.remove_formation(body, form).book
+        for updated in (False, True):
+            for available in (True, False):
+                m = self.machine(splb.parse_book(body, 130), updated=updated, down=3, yards=8,
+                                 goal_yards=50, run_share=0)
+                m.normalize()
+                m.call(m.va(0x8486CE88), MANAGER, TEAM + 4, bound=2000000)
+                self.assertEqual(call_tuple(m)[:2], (7, 14))
+                receipt = finish_lineup(m, tight_end_available=available)
+                self.assertEqual(len(receipt['executed']), 6)
+                self.assertEqual(receipt['selected_te_depth_players'], int(available))
+                self.assertEqual(receipt['roles_34'].count(8), 1)
+                self.assertEqual(receipt['primary_roles_35'].count(8), 1)
+                self.assertEqual(receipt['selected_depths'][6], (3, 0) if available else (2, 0))
+                print('PROVED APF-2 tuple extended: ' + json.dumps({'updated': updated, **receipt}, sort_keys=True), flush=True)
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

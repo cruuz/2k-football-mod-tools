@@ -1,0 +1,18 @@
+test_every_built_in_team_is_offered (__main__.CrestTableTests.test_every_built_in_team_is_offered) ... ok
+test_lookups_refuse_rather_than_guess (__main__.CrestTableTests.test_lookups_refuse_rather_than_guess) ... ok
+test_no_two_teams_share_a_crest_package (__main__.CrestTableTests.test_no_two_teams_share_a_crest_package)
+A shared package would silently repaint somebody else's helmet. ... ok
+test_the_default_is_still_the_target_the_writers_always_used (__main__.CrestTableTests.test_the_default_is_still_the_target_the_writers_always_used)
+Existing callers that pass nothing must not silently move. ... ok
+test_the_new_york_team_is_the_knights (__main__.CrestTableTests.test_the_new_york_team_is_the_knights) ... ok
+test_the_philadelphia_team_is_the_americans (__main__.CrestTableTests.test_the_philadelphia_team_is_the_americans)
+The row this whole exercise turned on. ... ok
+test_it_opens_on_the_historical_default (__main__.PanelSelectionTests.test_it_opens_on_the_historical_default) ... ok
+test_the_chosen_team_reaches_both_writers (__main__.PanelSelectionTests.test_the_chosen_team_reaches_both_writers)
+The whole point: pick Americans, and outer 1133 is what gets written. ... ok
+test_the_picker_lists_every_team (__main__.PanelSelectionTests.test_the_picker_lists_every_team) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.114s
+
+OK

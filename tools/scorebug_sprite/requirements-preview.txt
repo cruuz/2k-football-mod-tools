@@ -1,0 +1,4 @@
+Pillow==11.3.0
+numpy==1.26.4
+unicorn==2.1.4
+capstone==5.0.7

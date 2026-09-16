@@ -1,0 +1,15 @@
+test_batch_propagates_fit_policy_and_keeps_receipts (__main__.CrestFitTests.test_batch_propagates_fit_policy_and_keeps_receipts) ... ok
+test_first_fit_greedy_and_each_shade_step_reparse (__main__.CrestFitTests.test_first_fit_greedy_and_each_shade_step_reparse) ... ok
+test_measurement_cache_keys_pixels_and_preserved_layout (__main__.CrestFitTests.test_measurement_cache_keys_pixels_and_preserved_layout) ... ok
+test_optimal_before_any_reduction (__main__.CrestFitTests.test_optimal_before_any_reduction) ... ok
+test_refusal_and_disabled_reduction (__main__.CrestFitTests.test_refusal_and_disabled_reduction) ... ok
+test_reparse_gate_still_refuses_wrong_decoded_blocks (__main__.CrestFitTests.test_reparse_gate_still_refuses_wrong_decoded_blocks) ... ok
+test_single_layer_preserves_sibling_and_hashes (__main__.CrestFitTests.test_single_layer_preserves_sibling_and_hashes) ... ok
+test_all_rgb_nibbles_snap_independently_and_alpha_is_untouched (__main__.SafetyTests.test_all_rgb_nibbles_snap_independently_and_alpha_is_untouched) ... ok
+test_best_reuses_reviewed_binary_predicate_and_rejects_overlap (__main__.SafetyTests.test_best_reuses_reviewed_binary_predicate_and_rejects_overlap) ... ok
+test_roundtripping_overlap_is_still_refused (__main__.SafetyTests.test_roundtripping_overlap_is_still_refused) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 28.306s
+
+OK

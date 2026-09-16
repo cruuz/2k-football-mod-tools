@@ -1,0 +1,11 @@
+{
+  "name": "build-engine",
+  "argv": [
+    "python3",
+    "tools/scorebug_sprite/build_runtime.py"
+  ],
+  "start_utc": "2026-09-16T02:06:33.517633+00:00",
+  "end_utc": "2026-09-16T02:06:33.724694+00:00",
+  "seconds": 0.207,
+  "exit_code": 1
+}

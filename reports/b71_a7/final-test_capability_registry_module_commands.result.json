@@ -1,0 +1,12 @@
+{
+  "name": "final-test_capability_registry_module_commands",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_capability_registry_module_commands.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:33:18.713073+00:00",
+  "ended": "2026-09-16T00:33:18.834076+00:00",
+  "seconds": 0.121,
+  "exit_code": 0
+}

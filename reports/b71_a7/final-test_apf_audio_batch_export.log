@@ -1,0 +1,20 @@
+test_cancellation_publishes_accounted_partial_manifest (__main__.ApfAudioBatchExportTests.test_cancellation_publishes_accounted_partial_manifest) ... ok
+test_coordinate_paths_are_deterministic_and_ignore_colliding_names (__main__.ApfAudioBatchExportTests.test_coordinate_paths_are_deterministic_and_ignore_colliding_names) ... ok
+test_duplicate_coordinates_cannot_overwrite_an_archive_member (__main__.ApfAudioBatchExportTests.test_duplicate_coordinates_cannot_overwrite_an_archive_member) ... ok
+test_existing_destination_is_never_overwritten (__main__.ApfAudioBatchExportTests.test_existing_destination_is_never_overwritten) ... ok
+test_global_batch_limit_matches_the_complete_pinned_surface (__main__.ApfAudioBatchExportTests.test_global_batch_limit_matches_the_complete_pinned_surface) ... ok
+test_invalid_requests_are_rejected_before_any_export (__main__.ApfAudioBatchExportTests.test_invalid_requests_are_rejected_before_any_export) ... ok
+test_metadata_and_csv_text_are_control_and_formula_safe (__main__.ApfAudioBatchExportTests.test_metadata_and_csv_text_are_control_and_formula_safe) ... ok
+test_no_identity_and_unknown_identity_are_manifested_not_exported (__main__.ApfAudioBatchExportTests.test_no_identity_and_unknown_identity_are_manifested_not_exported) ... ok
+test_per_sound_failure_is_recorded_and_later_rows_continue (__main__.ApfAudioBatchExportTests.test_per_sound_failure_is_recorded_and_later_rows_continue) ... ok
+test_physical_bank_and_ausb_index_rows_fail_closed_as_unsupported (__main__.ApfAudioBatchExportTests.test_physical_bank_and_ausb_index_rows_fail_closed_as_unsupported) ... ok
+test_playlist_preserves_success_order_and_normalized_durations (__main__.ApfAudioBatchExportTests.test_playlist_preserves_success_order_and_normalized_durations) ... ok
+test_progress_hook_failure_leaves_no_published_or_staging_archive (__main__.ApfAudioBatchExportTests.test_progress_hook_failure_leaves_no_published_or_staging_archive) ... ok
+test_snapshot_rows_include_every_semantic_family_in_product_order (__main__.ApfAudioBatchExportTests.test_snapshot_rows_include_every_semantic_family_in_product_order) ... ok
+test_symlink_payload_is_never_copied (__main__.ApfAudioBatchExportTests.test_symlink_payload_is_never_copied) ... ok
+test_wav_request_is_forwarded_only_for_an_advertised_identity (__main__.ApfAudioBatchExportTests.test_wav_request_is_forwarded_only_for_an_advertised_identity) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.026s
+
+OK

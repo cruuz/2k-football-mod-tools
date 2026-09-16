@@ -1,0 +1,10 @@
+{
+  "command": [
+    "python3",
+    "tests/mod_editor/test_xbe_patch_cave_references.py"
+  ],
+  "start_utc": "2026-09-15T19:58:24.510917+00:00",
+  "end_utc": "2026-09-15T20:28:04.658738+00:00",
+  "seconds": 1780.148,
+  "exit_code": 0
+}

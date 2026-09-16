@@ -1,0 +1,22 @@
+[
+  {
+    "path": "tests/mod_editor/test_nfl2k5_cave_oracle.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_allocator_scaleout.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_xbe_patch_memory_writes.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_xbe_patch_cave_references.py",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py",
+    "exit_code": 0
+  }
+]

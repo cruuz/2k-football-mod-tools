@@ -1,0 +1,51 @@
+........E..
+======================================================================
+ERROR: test_playbook_pack_step_lands_in_the_receipt (__main__.PresetTests.test_playbook_pack_step_lands_in_the_receipt)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-c3/mod_editor/core/nfl2k5_throw_tuning.py", line 741, in image_xbe_extent
+    offset, length = xc.xbe_extent(descriptor, size)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-c3/tools/nfl_uniform_color_xiso_direct_patch.py", line 692, in xbe_extent
+    entry = file_extent(descriptor, image_size, "default.xbe", entries=entries)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-c3/tools/nfl_uniform_color_xiso_direct_patch.py", line 663, in file_extent
+    entries, _directory = parse_xdvdfs(descriptor, image_size)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-c3/tools/nfl_uniform_color_xiso_direct_patch.py", line 484, in parse_xdvdfs
+    base_offset = locate_xdvdfs_base(descriptor, image_size)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-c3/tools/nfl_uniform_color_xiso_direct_patch.py", line 369, in locate_xdvdfs_base
+    raise PatchError(
+nfl_uniform_color_xiso_direct_patch.PatchError: No Xbox XDVDFS filesystem was found in this image. The known game-partition offsets (0x0, 0x18300000, 0xFD90000, 0x2080000) were checked and then the first 1024 MiB were searched sector by sector. This does not look like an Xbox disc image.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-c3/mod_editor/core/mod_build.py", line 1010, in build
+    receipt = _build(replace(plan, source=str(effective_source), target=str(directory / target.name), overwrite=False), progress,
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-c3/mod_editor/core/mod_build.py", line 1429, in _build
+    if previous_colour is not None or modern.xbe_status(_xbe_bytes(source), previous_settings) == "applied":
+                                                        ^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-c3/mod_editor/core/mod_build.py", line 817, in _xbe_bytes
+    off, length = tt.image_xbe_extent(fd, size)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-c3/mod_editor/core/nfl2k5_throw_tuning.py", line 743, in image_xbe_extent
+    raise ThrowTuningError(f"disc image has no default.xbe: {exc}") from exc
+mod_editor.core.nfl2k5_throw_tuning.ThrowTuningError: disc image has no default.xbe: No Xbox XDVDFS filesystem was found in this image. The known game-partition offsets (0x0, 0x18300000, 0xFD90000, 0x2080000) were checked and then the first 1024 MiB were searched sector by sector. This does not look like an Xbox disc image.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-c3/tests/mod_editor/test_mod_build.py", line 195, in test_playbook_pack_step_lands_in_the_receipt
+    receipt = mod_build.build(
+              ^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-c3/mod_editor/core/mod_build.py", line 1043, in build
+    raise _with_identity(exc, source, tt.is_disc_image(source)) from exc
+ValueError: disc image has no default.xbe: No Xbox XDVDFS filesystem was found in this image. The known game-partition offsets (0x0, 0x18300000, 0xFD90000, 0x2080000) were checked and then the first 1024 MiB were searched sector by sector. This does not look like an Xbox disc image. This image is: unknown image. No Xbox XDVDFS filesystem was found in this image. The known game-partition offsets (0x0, 0x18300000, 0xFD90000, 0x2080000) were checked and then the first 1024 MiB were searched sector by sector. This does not look like an Xbox disc image.
+
+----------------------------------------------------------------------
+Ran 11 tests in 1.519s
+
+FAILED (errors=1)

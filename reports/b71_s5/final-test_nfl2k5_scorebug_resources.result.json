@@ -1,0 +1,12 @@
+{
+  "name": "final-test_nfl2k5_scorebug_resources",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_nfl2k5_scorebug_resources.py",
+    "-v"
+  ],
+  "start_utc": "2026-09-16T02:42:07.620519+00:00",
+  "end_utc": "2026-09-16T02:47:41.010012+00:00",
+  "seconds": 333.39,
+  "exit_code": 1
+}

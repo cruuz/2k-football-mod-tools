@@ -178,10 +178,10 @@ class RetailTests(unittest.TestCase):
         # Compiler itself ran above. Reuse its exact immutable output so failure
         # injection exercises IO rather than repeating artwork quantization.
         real_compile=a.compile_runtime_collection
-        def compile(pack, *, probe='full'):
+        def compile(pack, *, probe='full', sprite_folder=None, widescreen=False):
             state=a.runtime_pack_status(pack,probe=probe)
             if state=='applied':return pack,{'status':'already_applied','changed_bytes':0}
-            self.assertEqual(state,'retail');return real_compile(pack,probe=probe)
+            self.assertEqual(state,'retail');return real_compile(pack,probe=probe,sprite_folder=sprite_folder)
         # A Mock retains every argument in call_args_list, including each
         # complete 194 MB pack. These replacements need no call history.
         with tempfile.TemporaryDirectory() as tmp,patch.object(a,'compile_runtime_collection',new=compile):
@@ -213,6 +213,7 @@ class RetailTests(unittest.TestCase):
                 entries,_=r.layout.xc.parse_xdvdfs(f.fileno(),path.stat().st_size)
                 x=entries['default.xbe'];f.seek(x.byte_offset)
                 self.assertEqual(kickoff.status(f.read(x.size)),'applied')
+            written_xbe_size=len(runtime.apply(self.xbe)[0])
             for mode in ('pack','pack_node','xbe','xbe_node','same_size_xbe'):
                 xbe=runtime.space.apply(self.xbe,runtime.REQUESTS)[0] if mode=='same_size_xbe' else None
                 self.image(path,xbe)
@@ -224,7 +225,7 @@ class RetailTests(unittest.TestCase):
                     if len(data)==8:nodes+=1
                     hit=(mode=='pack' and off==(before_size+2047)&-2048 and len(data)==a.READ_BLOCK
                          or mode=='pack_node' and nodes==1 and len(data)==8
-                         or mode in ('xbe','same_size_xbe') and len(data)==runtime.space.FILE_SIZE
+                         or mode in ('xbe','same_size_xbe') and len(data)==written_xbe_size
                          or mode=='xbe_node' and nodes==2 and len(data)==8)
                     if not failed and hit:
                         failed=True;real(fd,data[:3],off);return 3
@@ -243,18 +244,24 @@ class RetailTests(unittest.TestCase):
                 compiled, receipt=a.compile_runtime_collection(self.before,probe=probe)
                 self.assertEqual(len(compiled),r.PACK_SIZE+growth)
                 self.assertEqual(receipt['texture_count'],count)
-                font_count = len(fonts.NAMES) if count and probe != 'mnf' else 0
-                self.assertEqual(len(receipt['resources']),count + font_count)
+                font_count = 0 if probe == 'sprite' else 2 if probe == 'mnf' else (len(fonts.NAMES) if count else 0)
+                font_heap = sum((size + 127) // 128 * 128 for size in (80160, 27040)) if probe == 'mnf' else (fonts.HEAP_BYTES if font_count else 0)
+                self.assertEqual(len(receipt['resources']),count + font_count + (1 if probe in ('mnf','sprite') else 0))
                 self.assertEqual(receipt['font_count'], font_count)
-                self.assertEqual(receipt['native_heap_bytes'],count*5376 + (fonts.HEAP_BYTES if font_count else 0))
+                self.assertEqual(receipt['native_heap_bytes'],sum((r['size']+127)//128*128 for r in receipt['resources']) if probe=='sprite' else count*5376 + font_heap + (132352-3072 if probe=='mnf' else 0))
                 self.assertEqual(a.runtime_pack_status(compiled,probe=probe),'applied')
                 self.assertIs(a.compile_runtime_collection(compiled,probe=probe)[0],compiled)
                 names={item['name'] for item in receipt['resources'] if item.get('kind') != 'FONT'}
-                states = 1 if probe == 'mnf' else 4
-                self.assertEqual(names,{a.runtime_panel_name(code,side,n) for code in a.probe_codes(probe)
-                                        for side in ('home','away') for n in range(states)})
+                states = 1 if probe in ('mnf','sprite') else 4
+                sides = ('home',) if probe in ('mnf','sprite') else ('home','away')
+                expected_names = {a.runtime_panel_name(code,side,n) for code in a.probe_codes(probe)
+                                  for side in sides for n in range(states)}
+                if probe in ('mnf','sprite'):
+                    expected_names.add('score_buga')
+                if probe=='sprite':expected_names.add('score_bug')
+                self.assertEqual(names, expected_names)
                 for other in a.PROBES:
-                    same=a.probe_codes(probe)==a.probe_codes(other) and (probe=='mnf')==(other=='mnf')
+                    same=a.probe_codes(probe)==a.probe_codes(other) and (probe=='mnf')==(other=='mnf') and (probe=='sprite')==(other=='sprite')
                     self.assertEqual(a.runtime_pack_status(compiled,probe=other),'applied' if same else 'foreign')
                 self.image(path)
                 if probe=='transport':

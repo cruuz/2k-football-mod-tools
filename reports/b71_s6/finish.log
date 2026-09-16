@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s6/reports/b71_s6/prove_finish.py", line 41, in <module>
+    assert stats['after']['mean_dark_rgb_error']<stats['before']['mean_dark_rgb_error']*.6,stats
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'before': {'edge_samples': 7331, 'mean_dark_rgb_error': 1.8186056164685698, 'p95_dark_rgb_error': 7.10720703125, 'max_dark_rgb_error': 19.356617647058826}, 'after': {'edge_samples': 7163, 'mean_dark_rgb_error': 1.5049889875043798, 'p95_dark_rgb_error': 6.1663344439338275, 'max_dark_rgb_error': 17.056683708639692}, 'transparent_pixels_made_visible': 0, 'opaque_pixels_made_translucent': 0, 'partial_coverage_pixels': 390}

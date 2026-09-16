@@ -20,6 +20,16 @@ import struct
 from dataclasses import dataclass
 from pathlib import Path
 
+# The shipped Windows runtime is an embeddable CPython whose ._pth file
+# defines sys.path outright and, unlike a normal interpreter, does NOT add
+# this script's own directory -- so the sibling imports below fail there
+# with ModuleNotFoundError unless the directory is put back explicitly.
+import sys as _sys
+from pathlib import Path as _Path
+_here = str(_Path(__file__).resolve().parent)
+if _here not in _sys.path:
+    _sys.path.insert(0, _here)
+
 from nfl_outer import parse_archive
 from nfl_scene_probe import (
     ProbeError,
@@ -114,7 +124,9 @@ def field_pointer(data: bytes, field_offset: int, limit: int) -> tuple[int, int]
     if field_offset < 0 or field_offset + 4 > limit:
         raise FontError(f"pointer field 0x{field_offset:x} is out of bounds")
     stored, = struct.unpack_from("<I", data, field_offset)
-    target = field_offset + stored - 1
+    # The native x86 relocator adds a 32-bit field-relative displacement.
+    # Appended range tables can point backward to retained donor glyphs.
+    target = (field_offset + stored - 1) & 0xffffffff
     if not 0 <= target < limit:
         raise FontError(
             f"pointer field 0x{field_offset:x}: target 0x{target:x} is out of bounds")
@@ -651,7 +663,7 @@ def main() -> int:
         report, fonts, glyphs = build(args)
         args.json.parent.mkdir(parents=True, exist_ok=True)
         args.json.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n",
-                             encoding="utf-8")
+                             encoding="utf-8", newline="\n")
         write_tsv(args.fonts_tsv, fonts)
         write_tsv(args.glyphs_tsv, glyphs)
     except (FontError, ProbeError, OSError, ValueError, struct.error) as exc:

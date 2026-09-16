@@ -1,0 +1,8 @@
+test_compiled_matchup_native_selection_removal_and_component_candidates (__main__.DefenseResearchTests.test_compiled_matchup_native_selection_removal_and_component_candidates) ... ok
+test_native_rng_matches_full_64_bit_reference_and_wraps_indices (__main__.DefenseResearchTests.test_native_rng_matches_full_64_bit_reference_and_wraps_indices) ... ok
+test_tu_function_shapes_and_loader_offset_delta (__main__.DefenseResearchTests.test_tu_function_shapes_and_loader_offset_delta) ... skipped 'Set APF_RETAIL_TU_PE to the pinned reconstructed TU 1.1 flat image'
+
+----------------------------------------------------------------------
+Ran 3 tests in 139.749s
+
+OK (skipped=1)

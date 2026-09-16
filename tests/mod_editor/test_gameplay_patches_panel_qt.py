@@ -36,6 +36,7 @@ class GameplayPatchesPanelTests(unittest.TestCase):
             "cpu_scrambles": ("0.25 to 0.50", "per game are not established"),
             "coin_defer": ("CPU winners", "a human Defer choice is not available"),
             "decided_clock": ("your selected margin", "not mathematical elimination"),
+            "scorebug_runtime": ("one PNG and JSON design", "Preview it over a screenshot", "Requires Scorebug and a disc image"),
         }
         for key, _label, explanation in PATCHES:
             # These job captions describe their retail constraints directly;

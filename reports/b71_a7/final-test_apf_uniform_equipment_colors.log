@@ -1,0 +1,12 @@
+test_equipment_colors_compose_with_another_roster_edit_class (__main__.RetailUniformEquipmentColorTests.test_equipment_colors_compose_with_another_roster_edit_class) ... ok
+test_real_source_resolves_every_team_and_identity_is_verbatim (__main__.RetailUniformEquipmentColorTests.test_real_source_resolves_every_team_and_identity_is_verbatim) ... ok
+test_real_writer_changes_only_four_selector_bytes (__main__.RetailUniformEquipmentColorTests.test_real_writer_changes_only_four_selector_bytes) ... ok
+test_bounds_reject_bools_and_out_of_range_indices (__main__.UniformEquipmentColorContractTests.test_bounds_reject_bools_and_out_of_range_indices) ... ok
+test_payload_and_project_metadata_are_canonical (__main__.UniformEquipmentColorContractTests.test_payload_and_project_metadata_are_canonical) ... ok
+test_project_round_trip_keeps_only_selector_indices (__main__.UniformEquipmentColorContractTests.test_project_round_trip_keeps_only_selector_indices) ... ok
+test_synthetic_all_40_pointer_graph_is_unique_and_fail_closed (__main__.UniformEquipmentColorContractTests.test_synthetic_all_40_pointer_graph_is_unique_and_fail_closed) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 7.662s
+
+OK

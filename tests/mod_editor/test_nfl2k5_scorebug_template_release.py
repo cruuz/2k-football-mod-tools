@@ -22,6 +22,7 @@ class TemplateReleaseTests(unittest.TestCase):
         self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
         self.root=Path(self.tmp.name).resolve()/'stage';self.root.mkdir()
         self.files=[p.relative_to(ROOT).as_posix() for p in sorted((ROOT/'docs/scorebug_template').rglob('*')) if p.is_file()]
+        self.files.extend(['data/nfl2k5_scorebug_sprite/template.png','data/nfl2k5_scorebug_sprite/layout.json'])
         self.files.append(release.SCOREBUG_TEMPLATE_PNG_CATALOG)
         for name in self.files:
             dest=self.root/name;dest.parent.mkdir(parents=True,exist_ok=True)

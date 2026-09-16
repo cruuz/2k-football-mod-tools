@@ -1,0 +1,6 @@
+test_sparse_receipt_matches_pinned_private_image (__main__.AuditTests.test_sparse_receipt_matches_pinned_private_image) ... skipped 'Owned pinned BASE PE absent; set APF_RETAIL_PE'
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+OK (skipped=1)

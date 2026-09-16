@@ -1,13 +1,22 @@
-T2 wiring delivered on astra/b70-a3-t2-wiring from ded9c222.
+S6 is complete on `astra/b71-s6-sprite-pass2`, based on S5 `0520e2e1`.
 
-Bundle: .scratch/astra-b70-a3.bundle
-Source/test commit: cbcccaee; final report commit and bundle verification details: .scratch/astra-b70-a3-delivery.json.
-Report: ASTRA_REPORT.md. Complete logs: reports/b70_a3/.
+The sprite finish now has clean logo feathers, a shaded crimson plate and light
+notch, round capsule ends, a stronger top rim and smooth wing ramps. All 50
+state/aspect previews pass the one-HUD-pixel bounds and ink checks. The append
+remains 323,808 bytes, with zero FONT resources and 46 quads. Native owner
+instructions, allocations and the complete stack XBE are identical to S5.
 
-25 standalone suites: 22 pass, 3 nonzero. All T2/A3 and provider integrity checks pass. Registry remains 174 rows; all capability count pins and protected scorebug/modern-color files are preserved.
+All 40 required suites pass: 1162 tests,
+16 explicit skips. Final provider, catalog, phase1, strict registry,
+XBE, oracle and pairwise checks are recorded in `ASTRA_REPORT.md` and
+`reports/b71_s6`. The final pins and bounded cave projection are current.
 
-Strict validation remains blocked by 148 baseline evidence paths, first docs/research/apf_audio.md. Shell and packaging suites also lack private inputs. The extra T1 speed suite retains three old T2-encoding expectation failures; exact assertions are in the report. No test was weakened. Cache reuse and provider closure seams are fixed.
+The private bundle is `.scratch/astra-b71-s6.bundle`. Its commit, hash, size and
+independent fetch verification are in `.scratch/b71-s6-delivery.json`.
 
-Claude must regenerate the cave manifest and run the hydrated gates. Every in-game outcome remains UNWITNESSED. No push.
+The disc-n builder is prepared with disc m's options and has not been run:
+`NFL 2K5 MOD TEST 2026-09-16n (sprite scorebug pass 2 + everything)`.
+Gameplay, intro and GPU appearance remain UNWITNESSED. No disc build, xemu
+session or push was performed.
 
 ASTRA_DONE

@@ -1,0 +1,9 @@
+error: full-volume inputs require --full-volume
+error: full-volume inputs require --full-volume
+error: --source-volume is required with --full-volume
+error: --source is required with --full-volume
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 0.078s
+
+OK

@@ -1,0 +1,14 @@
+test_readable_white_and_yellow_bound_and_dark_primary_preservation (__main__.ContrastTests.test_readable_white_and_yellow_bound_and_dark_primary_preservation) ... ok
+test_all_six_states_keep_middle_geometry_fonts_and_live_values_in_both_aspects_and_modes (__main__.NativeV3Tests.test_all_six_states_keep_middle_geometry_fonts_and_live_values_in_both_aspects_and_modes) ... ok
+test_full_new_spans_and_every_guard_refuse_mixed_bytes_before_mutation (__main__.NativeV3Tests.test_full_new_spans_and_every_guard_refuse_mixed_bytes_before_mutation) ... ok
+test_native_contrast_matches_rule_at_every_channel_value_and_boundary (__main__.NativeV3Tests.test_native_contrast_matches_rule_at_every_channel_value_and_boundary) ... ok
+test_native_material_draw_reads_callback_tint_and_emits_shader_constant (__main__.NativeV3Tests.test_native_material_draw_reads_callback_tint_and_emits_shader_constant) ... ok
+test_new_three_capture_calibration_and_v3_forecasts (__main__.NativeV3Tests.test_new_three_capture_calibration_and_v3_forecasts) ... ok
+test_retail_team_lookup_and_existing_callbacks_write_only_two_bound_materials (__main__.NativeV3Tests.test_retail_team_lookup_and_existing_callbacks_write_only_two_bound_materials) ... ok
+test_transitions_do_not_close_center_and_clocks_are_read_again_each_draw (__main__.NativeV3Tests.test_transitions_do_not_close_center_and_clocks_are_read_again_each_draw) ... ok
+test_v2_negative_control_reproduces_the_witness_and_retains_native_event_requests (__main__.NativeV3Tests.test_v2_negative_control_reproduces_the_witness_and_retains_native_event_requests) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 106.043s
+
+OK

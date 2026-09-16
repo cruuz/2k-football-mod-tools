@@ -1,0 +1,11 @@
+{
+  "name": "test_nfl2k5_scorebug_versions-release",
+  "command": [
+    "/usr/bin/python3",
+    "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_versions.py"
+  ],
+  "start": "2026-09-15T21:23:21.434239+00:00",
+  "end": "2026-09-15T21:23:30.791009+00:00",
+  "seconds": 9.357,
+  "exit": 0
+}

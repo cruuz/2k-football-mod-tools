@@ -1,0 +1,12 @@
+{
+  "name": "final-test_nfl2k5_depth_chart_rows",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_nfl2k5_depth_chart_rows.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:41:47.883697+00:00",
+  "ended": "2026-09-16T00:42:36.369896+00:00",
+  "seconds": 48.486,
+  "exit_code": 0
+}

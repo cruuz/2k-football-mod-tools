@@ -1,0 +1,11 @@
+test_clone_edit_recipe_and_build_leave_original_shared_book_and_roster_intact (__main__.ContentTests.test_clone_edit_recipe_and_build_leave_original_shared_book_and_roster_intact) ... ok
+test_identity_button_opens_a_real_fine_tune_panel_on_clone (__main__.ContentTests.test_identity_button_opens_a_real_fine_tune_panel_on_clone) ... This plugin does not support propagateSizeHints()
+ok
+test_late_stock_load_cannot_replace_the_selected_clone (__main__.ContentTests.test_late_stock_load_cannot_replace_the_selected_clone) ... ok
+test_new_folder_required_and_tampered_name_refused (__main__.ContentTests.test_new_folder_required_and_tampered_name_refused) ... ok
+test_recipe_content_clone_is_verified_and_idempotent_without_editing_donor (__main__.ContentTests.test_recipe_content_clone_is_verified_and_idempotent_without_editing_donor) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 28.622s
+
+OK

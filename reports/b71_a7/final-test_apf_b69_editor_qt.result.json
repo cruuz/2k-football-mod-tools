@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_b69_editor_qt",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_b69_editor_qt.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:36:15.472525+00:00",
+  "ended": "2026-09-16T00:38:02.892944+00:00",
+  "seconds": 107.42,
+  "exit_code": 0
+}

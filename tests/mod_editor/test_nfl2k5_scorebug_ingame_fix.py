@@ -183,13 +183,13 @@ class NativeFixTests(unittest.TestCase):
 
     def test_play_clock_color_isolated_and_static_composes_in_both_orders(self):
         code, labels = runtime.code_for(0x14ba2c0,0x14bb000)
-        with mock.patch.object(runtime,'PLAY_CLOCK_NORMAL',runtime.WHITE):
+        with mock.patch.object(runtime,'PLAY_CLOCK_NORMAL',runtime.DARK):
             light, light_labels = runtime.code_for(0x14ba2c0,0x14bb000)
         self.assertEqual(labels,light_labels)
-        at = code.index(bytes.fromhex('c705485aa900')+struct.pack('<I',runtime.DARK))+6
+        at = code.index(bytes.fromhex('c705485aa900')+struct.pack('<I',runtime.WHITE))+6
         self.assertEqual(code[:at],light[:at]); self.assertEqual(code[at+4:],light[at+4:])
-        self.assertEqual(light[at:at+4],b'\xff'*4)
-        # Beta 70 keeps the capsule ink dark and turns the play clock ESPN red under five.
+        self.assertEqual(light[at:at+4],struct.pack('<I',runtime.DARK))
+        # V3 keeps white play-clock ink independent of the red cell material.
         first = runtime.apply(scene.apply_xbe(self.build.payload)[0])[0]
         second = scene.apply_xbe(runtime.apply(self.build.payload)[0])[0]
         self.assertEqual(first,second)
@@ -197,7 +197,7 @@ class NativeFixTests(unittest.TestCase):
         self.assertEqual(scene.apply_xbe(first)[0],first)
         for va in (0xa95894,0xa958bc):
             off=scene.layout.sbpos.va_to_off(first,va)
-            self.assertEqual(first[off:off+4],struct.pack('<I',runtime.WHITE))
+            self.assertEqual(first[off:off+4],struct.pack('<I',0xfff6f6f6))
             bad=bytearray(first);bad[off:off+4]=bytes.fromhex('78563412')
             self.assertEqual(runtime.status(bytes(bad)),'foreign')
             with self.assertRaises(ValueError): runtime.apply(bytes(bad))
@@ -219,7 +219,8 @@ class NativeFixTests(unittest.TestCase):
                     self.assertEqual(rows['0xfbeb0']['text'],'Ball on HOU 35')
                     event=box(rows['0xfbeb0'])
                     # Beta 70: events cover the down plate on purpose; the scores stay clear.
-                    for callback in ('0xfc050','0xfc070'):
+                    for record in runtime.SCORE_CALLBACKS:
+                        callback=hex(capture['machine'].get(record))
                         self.assertFalse(overlap(event,box(rows[callback])))
                     self.assertEqual(projection.containment_failures({**geometry,**drawn},geometry['frame'],.02),{})
                 finally:

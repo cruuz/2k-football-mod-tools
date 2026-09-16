@@ -1,0 +1,11 @@
+{
+  "name": "mnf-contract",
+  "command": [
+    "python3",
+    "tests/mod_editor/test_nfl2k5_scorebug_mnf.py"
+  ],
+  "start": "2026-09-15T22:05:10.323110+00:00",
+  "end": "2026-09-15T22:05:22.100200+00:00",
+  "seconds": 11.777,
+  "exit": 1
+}

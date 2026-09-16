@@ -1,0 +1,21 @@
+[
+  "data/apf2k8/patch_reservations.json",
+  "docs/mod_editor/apf2k8_mod_studio_changelog.md",
+  "docs/research/apf_b71_apf4.md",
+  "mod_editor/apf_studio/facade.py",
+  "mod_editor/apf_studio/launcher.py",
+  "mod_editor/apf_studio/playcalling_build.py",
+  "mod_editor/apf_studio/playcalling_editor_qt.py",
+  "mod_editor/apf_studio/playcalling_service.py",
+  "mod_editor/apf_studio/situation_masks.py",
+  "mod_editor/apf_studio/situation_mask_qt.py",
+  "mod_editor/capabilities/registry.v1.json",
+  "mod_editor/core/apf2k8_playcall_model.py",
+  "mod_editor/core/apf2k8_situation_mask.py",
+  "packaging/apf2k8-release-allowlist.txt",
+  "tests/mod_editor/test_apf_b71_situation_mask.py",
+  "tests/mod_editor/test_apf_b71_situation_mask_abi.py",
+  "tests/mod_editor/test_apf_b71_situation_mask_native.py",
+  "tests/mod_editor/test_apf_b71_situation_mask_qt.py",
+  "WIRING.md"
+]

@@ -1,0 +1,7 @@
+[
+  "tests/mod_editor/test_nfl2k5_cave_oracle.py",
+  "tests/mod_editor/test_nfl2k5_allocator_scaleout.py",
+  "tests/mod_editor/test_xbe_patch_memory_writes.py",
+  "tests/mod_editor/test_xbe_patch_cave_references.py",
+  "tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py"
+]

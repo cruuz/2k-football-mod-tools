@@ -1,0 +1,10 @@
+test_all_targets_emit_the_exact_unified_five_value_contract (__main__.ScorebugUnifiedAdapterTests.test_all_targets_emit_the_exact_unified_five_value_contract) ... ok
+test_edit_is_strictly_logical_and_offset_free (__main__.ScorebugUnifiedAdapterTests.test_edit_is_strictly_logical_and_offset_free) ... ok
+test_importer_target_pack_aliases_and_arithmetic_fail_closed (__main__.ScorebugUnifiedAdapterTests.test_importer_target_pack_aliases_and_arithmetic_fail_closed) ... ok
+test_public_report_dependency_is_metadata_and_matches_typed_importer (__main__.ScorebugUnifiedAdapterTests.test_public_report_dependency_is_metadata_and_matches_typed_importer) ... ok
+test_replacement_preview_and_changed_run_proofs_fail_closed (__main__.ScorebugUnifiedAdapterTests.test_replacement_preview_and_changed_run_proofs_fail_closed) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.054s
+
+OK

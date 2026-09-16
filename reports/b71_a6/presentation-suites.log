@@ -1,0 +1,70 @@
+{"label": "final-test_apf_uniform_equipment_colors_gui", "exit_code": 0, "seconds": 0.425, "started": "2026-09-15T22:42:05.909601+00:00", "log": "reports/b71_a6/final-test_apf_uniform_equipment_colors_gui.log"}
+PASS test_apf_uniform_equipment_colors_gui.py
+{"label": "final-test_apf_scorebug_workspace_qt", "exit_code": 0, "seconds": 1.459, "started": "2026-09-15T22:42:05.907888+00:00", "log": "reports/b71_a6/final-test_apf_scorebug_workspace_qt.log"}
+PASS test_apf_scorebug_workspace_qt.py
+{"label": "final-test_colour_lighting_qt", "exit_code": 0, "seconds": 3.301, "started": "2026-09-15T22:42:07.367181+00:00", "log": "reports/b71_a6/final-test_colour_lighting_qt.log"}
+PASS test_colour_lighting_qt.py
+{"label": "final-test_apf_uniform_equipment_colors", "exit_code": 0, "seconds": 9.299, "started": "2026-09-15T22:42:05.908841+00:00", "log": "reports/b71_a6/final-test_apf_uniform_equipment_colors.log"}
+PASS test_apf_uniform_equipment_colors.py
+{"label": "final-test_nfl2k5_modern_color", "exit_code": 0, "seconds": 12.039, "started": "2026-09-15T22:42:10.669236+00:00", "log": "reports/b71_a6/final-test_nfl2k5_modern_color.log"}
+PASS test_nfl2k5_modern_color.py
+{"label": "final-test_nfl2k5_scorebug_author", "exit_code": 0, "seconds": 10.588, "started": "2026-09-15T22:42:22.708924+00:00", "log": "reports/b71_a6/final-test_nfl2k5_scorebug_author.log"}
+PASS test_nfl2k5_scorebug_author.py
+{"label": "final-test_colour_lighting", "exit_code": 0, "seconds": 38.659, "started": "2026-09-15T22:42:06.335567+00:00", "log": "reports/b71_a6/final-test_colour_lighting.log"}
+PASS test_colour_lighting.py
+{"label": "final-test_nfl2k5_scorebug_fonts", "exit_code": 0, "seconds": 11.798, "started": "2026-09-15T22:42:44.995085+00:00", "log": "reports/b71_a6/final-test_nfl2k5_scorebug_fonts.log"}
+PASS test_nfl2k5_scorebug_fonts.py
+{"label": "final-test_nfl2k5_scorebug_exact", "exit_code": 0, "seconds": 120.481, "started": "2026-09-15T22:42:33.297467+00:00", "log": "reports/b71_a6/final-test_nfl2k5_scorebug_exact.log"}
+PASS test_nfl2k5_scorebug_exact.py
+{"label": "final-test_nfl2k5_scorebug_assets", "exit_code": 0, "seconds": 225.569, "started": "2026-09-15T22:42:15.208901+00:00", "log": "reports/b71_a6/final-test_nfl2k5_scorebug_assets.log"}
+PASS test_nfl2k5_scorebug_assets.py
+{"label": "final-test_nfl2k5_scorebug_ingame", "exit_code": 0, "seconds": 24.419, "started": "2026-09-15T22:46:00.778572+00:00", "log": "reports/b71_a6/final-test_nfl2k5_scorebug_ingame.log"}
+PASS test_nfl2k5_scorebug_ingame.py
+{"label": "final-test_nfl2k5_scorebug_freeze", "exit_code": 0, "seconds": 380.812, "started": "2026-09-15T22:42:56.793846+00:00", "log": "reports/b71_a6/final-test_nfl2k5_scorebug_freeze.log"}
+PASS test_nfl2k5_scorebug_freeze.py
+{"label": "final-test_nfl2k5_scorebug_ingame_fix", "exit_code": 0, "seconds": 189.66, "started": "2026-09-15T22:46:25.198387+00:00", "log": "reports/b71_a6/final-test_nfl2k5_scorebug_ingame_fix.log"}
+PASS test_nfl2k5_scorebug_ingame_fix.py
+{"label": "final-test_nfl2k5_scorebug_mnf", "exit_code": 0, "seconds": 19.783, "started": "2026-09-15T22:49:17.606702+00:00", "log": "reports/b71_a6/final-test_nfl2k5_scorebug_mnf.log"}
+PASS test_nfl2k5_scorebug_mnf.py
+{"label": "final-test_nfl2k5_scorebug_mnf_v3", "exit_code": 0, "seconds": 42.366, "started": "2026-09-15T22:49:34.858502+00:00", "log": "reports/b71_a6/final-test_nfl2k5_scorebug_mnf_v3.log"}
+PASS test_nfl2k5_scorebug_mnf_v3.py
+{"label": "final-test_nfl2k5_scorebug_projection", "exit_code": 0, "seconds": 87.299, "started": "2026-09-15T22:50:17.224598+00:00", "log": "reports/b71_a6/final-test_nfl2k5_scorebug_projection.log"}
+PASS test_nfl2k5_scorebug_projection.py
+{"label": "final-test_nfl2k5_scorebug_freeze_v2", "exit_code": 0, "seconds": 486.464, "started": "2026-09-15T22:44:33.778819+00:00", "log": "reports/b71_a6/final-test_nfl2k5_scorebug_freeze_v2.log"}
+PASS test_nfl2k5_scorebug_freeze_v2.py
+{"label": "final-test_nfl2k5_scorebug_native", "exit_code": 0, "seconds": 190.994, "started": "2026-09-15T22:49:37.390304+00:00", "log": "reports/b71_a6/final-test_nfl2k5_scorebug_native.log"}
+PASS test_nfl2k5_scorebug_native.py
+{"label": "final-test_nfl2k5_scorebug_source_art", "exit_code": 0, "seconds": 0.724, "started": "2026-09-15T22:52:48.385102+00:00", "log": "reports/b71_a6/final-test_nfl2k5_scorebug_source_art.log"}
+PASS test_nfl2k5_scorebug_source_art.py
+{"label": "final-test_nfl2k5_scorebug_template", "exit_code": 0, "seconds": 12.082, "started": "2026-09-15T22:52:49.109025+00:00", "log": "reports/b71_a6/final-test_nfl2k5_scorebug_template.log"}
+PASS test_nfl2k5_scorebug_template.py
+{"label": "final-test_nfl2k5_scorebug_template_release", "exit_code": 0, "seconds": 0.649, "started": "2026-09-15T22:53:01.191297+00:00", "log": "reports/b71_a6/final-test_nfl2k5_scorebug_template_release.log"}
+PASS test_nfl2k5_scorebug_template_release.py
+{"label": "final-test_nfl2k5_scorebug_unified_adapter", "exit_code": 0, "seconds": 0.192, "started": "2026-09-15T22:53:01.840847+00:00", "log": "reports/b71_a6/final-test_nfl2k5_scorebug_unified_adapter.log"}
+PASS test_nfl2k5_scorebug_unified_adapter.py
+{"label": "final-test_nfl2k5_scorebug_v10_ingame", "exit_code": 0, "seconds": 10.604, "started": "2026-09-15T22:53:02.033719+00:00", "log": "reports/b71_a6/final-test_nfl2k5_scorebug_v10_ingame.log"}
+PASS test_nfl2k5_scorebug_v10_ingame.py
+{"label": "final-test_nfl2k5_scorebug_v10_projection", "exit_code": 0, "seconds": 38.704, "started": "2026-09-15T22:53:12.637787+00:00", "log": "reports/b71_a6/final-test_nfl2k5_scorebug_v10_projection.log"}
+PASS test_nfl2k5_scorebug_v10_projection.py
+{"label": "final-test_nfl2k5_scorebug_versions", "exit_code": 0, "seconds": 10.684, "started": "2026-09-15T22:53:51.342112+00:00", "log": "reports/b71_a6/final-test_nfl2k5_scorebug_versions.log"}
+PASS test_nfl2k5_scorebug_versions.py
+{"label": "final-test_scorebug_studio_panel_qt", "exit_code": 0, "seconds": 7.581, "started": "2026-09-15T22:54:02.026798+00:00", "log": "reports/b71_a6/final-test_scorebug_studio_panel_qt.log"}
+PASS test_scorebug_studio_panel_qt.py
+{"label": "final-test_unif_color_argb_parse", "exit_code": 0, "seconds": 1.141, "started": "2026-09-15T22:54:09.608544+00:00", "log": "reports/b71_a6/final-test_unif_color_argb_parse.log"}
+PASS test_unif_color_argb_parse.py
+{"label": "final-test_unif_color_control", "exit_code": 0, "seconds": 10.038, "started": "2026-09-15T22:54:10.749771+00:00", "log": "reports/b71_a6/final-test_unif_color_control.log"}
+PASS test_unif_color_control.py
+{"label": "final-test_nfl2k5_modern_arrowhead", "exit_code": 0, "seconds": 23.043, "started": "2026-09-15T22:54:20.788225+00:00", "log": "reports/b71_a6/final-test_nfl2k5_modern_arrowhead.log"}
+PASS test_nfl2k5_modern_arrowhead.py
+{"label": "final-test_b71_a6_composition", "exit_code": 0, "seconds": 0.309, "started": "2026-09-15T22:54:43.831929+00:00", "log": "reports/b71_a6/final-test_b71_a6_composition.log"}
+PASS test_b71_a6_composition.py
+{"label": "final-test_build_panel_qt", "exit_code": 0, "seconds": 2.939, "started": "2026-09-15T22:54:44.141459+00:00", "log": "reports/b71_a6/final-test_build_panel_qt.log"}
+PASS test_build_panel_qt.py
+{"label": "final-test_mod_build", "exit_code": 0, "seconds": 2.022, "started": "2026-09-15T22:54:47.080395+00:00", "log": "reports/b71_a6/final-test_mod_build.log"}
+PASS test_mod_build.py
+{"label": "final-test_discord_bugs_1", "exit_code": 0, "seconds": 1.592, "started": "2026-09-15T22:54:49.102795+00:00", "log": "reports/b71_a6/final-test_discord_bugs_1.log"}
+PASS test_discord_bugs_1.py
+{"label": "final-test_nfl2k5_scorebug_runtime", "exit_code": 0, "seconds": 136.984, "started": "2026-09-15T22:52:40.243230+00:00", "log": "reports/b71_a6/final-test_nfl2k5_scorebug_runtime.log"}
+PASS test_nfl2k5_scorebug_runtime.py
+{"label": "final-test_nfl2k5_scorebug_resources", "exit_code": 0, "seconds": 269.177, "started": "2026-09-15T22:51:44.523829+00:00", "log": "reports/b71_a6/final-test_nfl2k5_scorebug_resources.log"}
+PASS test_nfl2k5_scorebug_resources.py

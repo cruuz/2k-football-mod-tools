@@ -1,0 +1,14 @@
+test_all_32_team_wordmarks_and_runtime_default_off (__main__.ContractTests.test_all_32_team_wordmarks_and_runtime_default_off) ... ok
+test_authored_capitals_and_neutral_timeout_variants_are_portable (__main__.ContractTests.test_authored_capitals_and_neutral_timeout_variants_are_portable) ... ok
+test_reference_identity_and_active_viewport_transform (__main__.ContractTests.test_reference_identity_and_active_viewport_transform) ... ok
+test_rendered_ink_does_not_count_possession_or_clock_rim_as_text (__main__.ContractTests.test_rendered_ink_does_not_count_possession_or_clock_rim_as_text) ... ok
+test_comparator_reports_pixel_mismatches_even_when_geometry_is_exact (__main__.NativeTests.test_comparator_reports_pixel_mismatches_even_when_geometry_is_exact) ... ok
+test_current_compiler_and_every_probe_identity_are_reproducible (__main__.NativeTests.test_current_compiler_and_every_probe_identity_are_reproducible) ... ok
+test_live_timeouts_change_only_the_selected_runtime_panel (__main__.NativeTests.test_live_timeouts_change_only_the_selected_runtime_panel)
+Beta 70: timeouts are text through the team-name callbacks; the wing ... ok
+test_runtime_scene_and_actual_native_materials_match_all_five_boundaries (__main__.NativeTests.test_runtime_scene_and_actual_native_materials_match_all_five_boundaries) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 85.244s
+
+OK

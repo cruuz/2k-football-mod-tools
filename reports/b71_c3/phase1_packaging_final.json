@@ -1,0 +1,10 @@
+{
+  "command": [
+    "python3",
+    "tests/mod_editor/test_phase1_packaging.py"
+  ],
+  "exit_code": 0,
+  "seconds": 2.792,
+  "started_utc": "2026-09-15T19:22:33.639025+00:00",
+  "log": "phase1_packaging_final.log"
+}

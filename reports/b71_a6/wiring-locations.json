@@ -1,0 +1,565 @@
+[
+  {
+    "path": "mod_editor/capabilities/registry.v1.json",
+    "anchor": "C5 updates outside data",
+    "lines": [
+      9703
+    ]
+  },
+  {
+    "path": "mod_editor/capabilities/registry.v1.json",
+    "anchor": "Outside uses a separate response",
+    "lines": [
+      9704
+    ]
+  },
+  {
+    "path": "mod_editor/capabilities/registry.v1.json",
+    "anchor": "Linked outside palettes",
+    "lines": [
+      9724
+    ]
+  },
+  {
+    "path": "mod_editor/capabilities/registry.v1.json",
+    "anchor": "Broadcast resets daylight",
+    "lines": [
+      9740
+    ]
+  },
+  {
+    "path": "mod_editor/capabilities/registry.v1.json",
+    "anchor": "\"id\": \"nfl2k5.scorebug_presentation.runtime\"",
+    "lines": [
+      10562
+    ]
+  },
+  {
+    "path": "mod_editor/capabilities/registry.v1.json",
+    "anchor": "\"id\": \"nfl2k5.stadiums_fields.modern_arrowhead\"",
+    "lines": [
+      11577
+    ]
+  },
+  {
+    "path": "mod_editor/capabilities/registry.v1.json",
+    "anchor": "\"id\": \"apf2k8.playbooks.cpu_playcalling\"",
+    "lines": [
+      2646
+    ]
+  },
+  {
+    "path": "mod_editor/capabilities/registry.v1.json",
+    "anchor": "\"id\": \"apf2k8.playbooks.fourth_down\"",
+    "lines": [
+      2822
+    ]
+  },
+  {
+    "path": "mod_editor/core/mod_build.py",
+    "anchor": "modern_color_settings:",
+    "lines": [
+      269
+    ]
+  },
+  {
+    "path": "mod_editor/core/mod_build.py",
+    "anchor": "modern_arrowhead:",
+    "lines": [
+      270,
+      1459,
+      2139
+    ]
+  },
+  {
+    "path": "mod_editor/core/mod_build.py",
+    "anchor": "colour.normalize_settings",
+    "lines": [
+      1206
+    ]
+  },
+  {
+    "path": "mod_editor/core/mod_build.py",
+    "anchor": "if plan.modern_arrowhead:",
+    "lines": [
+      1459,
+      2139
+    ]
+  },
+  {
+    "path": "mod_editor/core/mod_build.py",
+    "anchor": "retail_source=source",
+    "lines": [
+      2142
+    ]
+  },
+  {
+    "path": "mod_editor/core/nfl2k5_build_settings.py",
+    "anchor": "\"modern_color_settings\", \"modern_arrowhead\"",
+    "lines": [
+      31
+    ]
+  },
+  {
+    "path": "mod_editor/gui/build_panel_qt.py",
+    "anchor": "self.colour_lighting =",
+    "lines": [
+      799
+    ]
+  },
+  {
+    "path": "mod_editor/gui/build_panel_qt.py",
+    "anchor": "self.modern_arrowhead_check =",
+    "lines": [
+      804
+    ]
+  },
+  {
+    "path": "mod_editor/gui/build_panel_qt.py",
+    "anchor": "modern_color_settings=self.",
+    "lines": [
+      1604
+    ]
+  },
+  {
+    "path": "mod_editor/gui/build_panel_qt.py",
+    "anchor": "modern_arrowhead=self.",
+    "lines": [
+      1605
+    ]
+  },
+  {
+    "path": "mod_editor/core/nfl2k5_modern_arrowhead.py",
+    "anchor": "def paint_scene",
+    "lines": [
+      142
+    ]
+  },
+  {
+    "path": "mod_editor/core/nfl2k5_modern_arrowhead.py",
+    "anchor": "def image_status",
+    "lines": [
+      261
+    ]
+  },
+  {
+    "path": "mod_editor/core/nfl2k5_modern_arrowhead.py",
+    "anchor": "def apply_to_image",
+    "lines": [
+      306
+    ]
+  },
+  {
+    "path": "mod_editor/core/nfl2k5_modern_arrowhead.py",
+    "anchor": "def combined_bundle",
+    "lines": [
+      339
+    ]
+  },
+  {
+    "path": "mod_editor/core/nfl2k5_modern_arrowhead.py",
+    "anchor": "def apply_combined_to_image",
+    "lines": [
+      361
+    ]
+  },
+  {
+    "path": "mod_editor/core/nfl2k5_modern_color.py",
+    "anchor": "def modern_field_scene",
+    "lines": [
+      748
+    ]
+  },
+  {
+    "path": "mod_editor/apf_studio/launcher.py",
+    "anchor": "if kind == \"situations\":",
+    "lines": [
+      475
+    ]
+  },
+  {
+    "path": "mod_editor/apf_studio/launcher.py",
+    "anchor": "if kind == \"fourth_down\":",
+    "lines": [
+      480
+    ]
+  },
+  {
+    "path": "mod_editor/apf_studio/launcher.py",
+    "anchor": "for kind in (\"pass_fetch\"",
+    "lines": [
+      580
+    ]
+  },
+  {
+    "path": "packaging/check_2k5_mod_studio_runtime.py",
+    "anchor": "len(registry.capabilities) ==",
+    "lines": [
+      2178
+    ]
+  },
+  {
+    "path": "packaging/check_2k5_mod_studio_runtime.py",
+    "anchor": "len(product_catalog.capabilities) ==",
+    "lines": [
+      2182
+    ]
+  },
+  {
+    "path": "packaging/check_2k5_mod_studio_runtime.py",
+    "anchor": "registry=176",
+    "lines": [
+      2585
+    ]
+  },
+  {
+    "path": "packaging/check_apf2k8_mod_studio_runtime.py",
+    "anchor": "len(registry.capabilities) ==",
+    "lines": [
+      1389
+    ]
+  },
+  {
+    "path": "packaging/check_apf2k8_mod_studio_runtime.py",
+    "anchor": "len(cards) == 73",
+    "lines": [
+      1394
+    ]
+  },
+  {
+    "path": "packaging/check_apf2k8_mod_studio_runtime.py",
+    "anchor": "apf2k8.playbooks.fourth_down",
+    "lines": [
+      1416
+    ]
+  },
+  {
+    "path": "packaging/apf2k8-release-allowlist.txt",
+    "anchor": "mod_editor/core/apf2k8_situation_mask.py",
+    "lines": [
+      299
+    ]
+  },
+  {
+    "path": "packaging/apf2k8-release-allowlist.txt",
+    "anchor": "mod_editor/core/apf2k8_fourth_down.py",
+    "lines": [
+      304
+    ]
+  },
+  {
+    "path": "packaging/release-allowlist.txt",
+    "anchor": "mod_editor/core/nfl2k5_modern_arrowhead.py",
+    "lines": [
+      898
+    ]
+  },
+  {
+    "path": "packaging/check_2k5_mod_studio_release.py",
+    "anchor": "SCOREBUG_TEMPLATE_PNG_CATALOG_SHA256 =",
+    "lines": [
+      304
+    ]
+  },
+  {
+    "path": "mod_editor/core/providers.py",
+    "anchor": "\"mod_editor/core/nfl2k5_modern_arrowhead.py\":",
+    "lines": [
+      563
+    ]
+  },
+  {
+    "path": "tests/mod_editor/test_b68_a1_audit.py",
+    "anchor": "len(registry.capabilities), 176",
+    "lines": [
+      41
+    ]
+  },
+  {
+    "path": "tests/mod_editor/test_phase1_packaging.py",
+    "anchor": "registry=176 sections=12",
+    "lines": [
+      571
+    ]
+  },
+  {
+    "path": "tests/mod_editor/test_apf_studio_installer.py",
+    "anchor": "len(registry.capabilities) == 176",
+    "lines": [
+      360
+    ]
+  },
+  {
+    "path": "tests/mod_editor/test_product_catalog.py",
+    "anchor": "(102, 80, 8, 1, 0, 10, 3)",
+    "lines": [
+      242
+    ]
+  },
+  {
+    "path": "tests/mod_editor/test_product_catalog.py",
+    "anchor": "modern_arrowhead",
+    "lines": [
+      78
+    ]
+  },
+  {
+    "path": "tools/validate_all_mod_editor_capabilities.py",
+    "anchor": "EXPECTED_CAPABILITIES =",
+    "lines": [
+      62
+    ]
+  },
+  {
+    "path": "tools/validate_all_mod_editor_capabilities.py",
+    "anchor": "EXPECTED_COVERED_CAPABILITIES =",
+    "lines": [
+      63
+    ]
+  },
+  {
+    "path": "tools/validate_all_mod_editor_capabilities.py",
+    "anchor": "EXPECTED_DEFERRED_CAPABILITIES =",
+    "lines": [
+      64
+    ]
+  },
+  {
+    "path": "tools/validate_all_mod_editor_capabilities.py",
+    "anchor": "EXPECTED_UNIQUE_VALIDATORS =",
+    "lines": [
+      65
+    ]
+  },
+  {
+    "path": "mod_editor/capabilities/registry.v1.json",
+    "anchor": "\"id\": \"apf2k8.playbooks.identity\"",
+    "lines": [
+      2894
+    ]
+  },
+  {
+    "path": "mod_editor/capabilities/registry.v1.json",
+    "anchor": "\"id\": \"apf2k8.playbooks.offensive_schemes\"",
+    "lines": [
+      3097
+    ]
+  },
+  {
+    "path": "mod_editor/capabilities/registry.v1.json",
+    "anchor": "\"id\": \"apf2k8.playbooks.scheme_presets\"",
+    "lines": [
+      3636
+    ]
+  },
+  {
+    "path": "mod_editor/capabilities/registry.v1.json",
+    "anchor": "\"id\": \"apf2k8.playbooks.scheme_spreadsheet\"",
+    "lines": [
+      3704
+    ]
+  },
+  {
+    "path": "packaging/apf2k8-release-allowlist.txt",
+    "anchor": "mod_editor/apf_studio/situation_masks.py",
+    "lines": [
+      300
+    ]
+  },
+  {
+    "path": "packaging/apf2k8-release-allowlist.txt",
+    "anchor": "mod_editor/apf_studio/situation_mask_qt.py",
+    "lines": [
+      301
+    ]
+  },
+  {
+    "path": "packaging/apf2k8-release-allowlist.txt",
+    "anchor": "docs/research/apf_b71_apf3.md",
+    "lines": [
+      294
+    ]
+  },
+  {
+    "path": "packaging/apf2k8-release-allowlist.txt",
+    "anchor": "docs/research/apf_b71_apf4.md",
+    "lines": [
+      302
+    ]
+  },
+  {
+    "path": "packaging/apf2k8-release-allowlist.txt",
+    "anchor": "mod_editor/apf_studio/fourth_down_qt.py",
+    "lines": [
+      305
+    ]
+  },
+  {
+    "path": "packaging/apf2k8-release-allowlist.txt",
+    "anchor": "docs/mod_editor/apf2k8_fourth_down_and_xenia.md",
+    "lines": [
+      306
+    ]
+  },
+  {
+    "path": "packaging/apf2k8-release-allowlist.txt",
+    "anchor": "docs/research/apf_b71_fourth_down.md",
+    "lines": [
+      307
+    ]
+  },
+  {
+    "path": "data/apf2k8/patch_reservations.json",
+    "anchor": "\"end_inclusive\": \"0x84D0E2FF\"",
+    "lines": [
+      13
+    ]
+  },
+  {
+    "path": "data/apf2k8/patch_reservations.json",
+    "anchor": "\"owner\": \"apf2k8_situation_mask_data\"",
+    "lines": [
+      21
+    ]
+  },
+  {
+    "path": "data/apf2k8/patch_reservations.json",
+    "anchor": "\"owner\": \"apf2k8_situation_mask_code\"",
+    "lines": [
+      26
+    ]
+  },
+  {
+    "path": "data/apf2k8/patch_reservations.json",
+    "anchor": "\"owner\": \"apf2k8_situation_mask_receipts\"",
+    "lines": [
+      31
+    ]
+  },
+  {
+    "path": "packaging/check_apf2k8_mod_studio_runtime.py",
+    "anchor": "\"mod_editor.core.apf2k8_fourth_down\"",
+    "lines": [
+      73
+    ]
+  },
+  {
+    "path": "packaging/check_apf2k8_mod_studio_runtime.py",
+    "anchor": "\"mod_editor.apf_studio.fourth_down_qt\"",
+    "lines": [
+      74
+    ]
+  },
+  {
+    "path": "packaging/check_apf2k8_mod_studio_runtime.py",
+    "anchor": "'mod_editor.core.apf2k8_situation_mask'",
+    "lines": [
+      106
+    ]
+  },
+  {
+    "path": "packaging/check_apf2k8_mod_studio_runtime.py",
+    "anchor": "'mod_editor.apf_studio.situation_masks'",
+    "lines": [
+      107
+    ]
+  },
+  {
+    "path": "packaging/check_apf2k8_mod_studio_runtime.py",
+    "anchor": "'mod_editor.apf_studio.situation_mask_qt'",
+    "lines": [
+      108
+    ]
+  },
+  {
+    "path": "packaging/check_apf2k8_mod_studio_runtime.py",
+    "anchor": "expected = {\"apf2k8_situation_mask_data\"",
+    "lines": [
+      589
+    ]
+  },
+  {
+    "path": "packaging/check_apf2k8_mod_studio_runtime.py",
+    "anchor": "mask.verify_code(profile,code)",
+    "lines": [
+      606
+    ]
+  },
+  {
+    "path": "packaging/check_apf2k8_mod_studio_runtime.py",
+    "anchor": "Situation canonical export changed",
+    "lines": [
+      610
+    ]
+  },
+  {
+    "path": "packaging/check_apf2k8_mod_studio_runtime.py",
+    "anchor": "Situation masks must start off",
+    "lines": [
+      615
+    ]
+  },
+  {
+    "path": "mod_editor/apf_studio/models.py",
+    "anchor": "one_shot_target=\"mod_editor.core.apf2k8_fourth_down:write_patch\"",
+    "lines": [
+      176
+    ]
+  },
+  {
+    "path": "mod_editor/apf_studio/gui.py",
+    "anchor": "self.fourth_down_action =",
+    "lines": [
+      20162
+    ]
+  },
+  {
+    "path": "mod_editor/apf_studio/gui.py",
+    "anchor": "def _fourth_down_triggers",
+    "lines": [
+      21887
+    ]
+  },
+  {
+    "path": "mod_editor/apf_studio/gui.py",
+    "anchor": "def _configure_xenia",
+    "lines": [
+      21891
+    ]
+  },
+  {
+    "path": "mod_editor/apf_studio/launcher.py",
+    "anchor": "\"edge\": \"xenia-edge.config.toml\"",
+    "lines": [
+      127
+    ]
+  },
+  {
+    "path": "mod_editor/apf_studio/launcher.py",
+    "anchor": "def write_controller_config",
+    "lines": [
+      229
+    ]
+  },
+  {
+    "path": "mod_editor/apf_studio/launcher.py",
+    "anchor": "def _sdl_config",
+    "lines": [
+      371
+    ]
+  },
+  {
+    "path": "mod_editor/core/apf2k8_xex.py",
+    "anchor": "def xenia_content_roots",
+    "lines": [
+      274
+    ]
+  },
+  {
+    "path": "mod_editor/core/apf2k8_xex.py",
+    "anchor": "for name in (\"xenia-edge.config.toml\"",
+    "lines": [
+      292
+    ]
+  }
+]

@@ -27,7 +27,8 @@ FEATURE_KEYS += (
     "music_project", "music_library", "commentary", "name", "author", "notes",
 )
 FEATURE_KEYS += ("weather_plan", "weather_haze", "coin_defer", "decided_clock",
-                 "decided_clock_margin", "decided_clock_seconds", "cpu_scrambles", "modern_color")
+                 "decided_clock_margin", "decided_clock_seconds", "cpu_scrambles", "modern_color",
+                 "modern_color_settings", "modern_arrowhead")
 MUSIC_KEYS = ("music_shuffle", "music_shuffle_selection")
 
 
@@ -45,6 +46,8 @@ def build_settings(value):
     result = music.build_settings({key: value[key] for key in MUSIC_KEYS if key in value})
     choices = {**defaults(), **deepcopy({key: value[key] for key in FEATURE_KEYS if key in value})}
     tt._require(choices["helmet_finish"] in ("glossy", "matte"), "Helmet finish must be glossy or matte")
+    from . import nfl2k5_modern_color as colour
+    colour.normalize_settings(choices["modern_color_settings"])
     expected = defaults()
     for key in FEATURE_KEYS:
         item, default = choices[key], expected[key]

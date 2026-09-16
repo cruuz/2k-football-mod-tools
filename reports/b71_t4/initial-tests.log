@@ -1,0 +1,20 @@
+...............E..
+======================================================================
+ERROR: test_one_click_refit_via_facade_reports_fit_survives_save_and_undo (__main__.ProjectRecoveryTests.test_one_click_refit_via_facade_reports_fit_survives_save_and_undo)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t4/tests/mod_editor/test_b71_t4_equipment_project.py", line 93, in test_one_click_refit_via_facade_reports_fit_survives_save_and_undo
+    session.save_shareable_project(self.project)
+  File "/home/noah/2k-worktrees/astra-b71-t4/mod_editor/studio/session.py", line 4130, in save_shareable_project
+    return save_project_archive(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-t4/mod_editor/studio/project_archive.py", line 652, in save_project_archive
+    _publish_archive(
+  File "/home/noah/2k-worktrees/astra-b71-t4/mod_editor/studio/project_archive.py", line 175, in _publish_archive
+    raise ValidationError(f"A file already exists there: {destination}")
+mod_editor.core.errors.ValidationError: A file already exists there: /tmp/equipment-session-py2jt1tv/older.2k5mod
+
+----------------------------------------------------------------------
+Ran 18 tests in 75.726s
+
+FAILED (errors=1)

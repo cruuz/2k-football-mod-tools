@@ -1,0 +1,17 @@
+{
+  "builder": "reports/b71_c5/build_testdisc71.py",
+  "sha256": "d33ce25cfb513367d0933523bf035d2ac2dae156dabb7915e0207c83cf80add7",
+  "validation": "AST/syntax and source contract only; builder never imported or executed",
+  "name": "NFL 2K5 MOD TEST 2026-09-15k (sidelines + day tuning + scorebug v2 + widescreen)",
+  "preset": "softdrink_advanced",
+  "options": {
+    "scorebug": true,
+    "scorebug_runtime": true,
+    "modern_color": true,
+    "widescreen": true
+  },
+  "maximum_mod_test_images": 3,
+  "preserves_all_patch_archives": true,
+  "refuses_existing_named_outputs": true,
+  "readback": "scorebug resources/runtime, modern colour XBE and all 477 bundles, seven rig pins, night pin, widescreen 16:9"
+}

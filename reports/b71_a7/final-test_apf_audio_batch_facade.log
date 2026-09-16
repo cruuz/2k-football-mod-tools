@@ -1,0 +1,8 @@
+test_optional_cancellation_is_forwarded_and_explained_in_progress (__main__.ApfAudioBatchFacadeTests.test_optional_cancellation_is_forwarded_and_explained_in_progress) ... ok
+test_requires_a_loaded_source_and_rejects_invalid_batch_requests (__main__.ApfAudioBatchFacadeTests.test_requires_a_loaded_source_and_rejects_invalid_batch_requests) ... ok
+test_routes_wav_rows_with_source_fingerprint_and_read_only_state (__main__.ApfAudioBatchFacadeTests.test_routes_wav_rows_with_source_fingerprint_and_read_only_state) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.008s
+
+OK

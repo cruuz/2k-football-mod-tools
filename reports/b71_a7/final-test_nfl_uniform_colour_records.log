@@ -1,0 +1,18 @@
+test_the_packs_hold_many_disagreeing_colour_records (__main__.RealPackTests.test_the_packs_hold_many_disagreeing_colour_records) ... ok
+test_the_report_states_it_writes_nothing (__main__.RealPackTests.test_the_report_states_it_writes_nothing) ... ok
+test_the_span_the_old_writer_pinned_is_one_of_them (__main__.RealPackTests.test_the_span_the_old_writer_pinned_is_one_of_them)
+0x055CA850 in pack A was described as global. It is record N of many. ... ok
+test_a_truncated_tail_is_skipped_rather_than_crashing (__main__.RecordLayoutTests.test_a_truncated_tail_is_skipped_rather_than_crashing) ... ok
+test_disagreeing_records_are_reported_as_per_record (__main__.RecordLayoutTests.test_disagreeing_records_are_reported_as_per_record) ... ok
+test_every_record_is_found_not_just_the_first (__main__.RecordLayoutTests.test_every_record_is_found_not_just_the_first)
+The old writer knew one location; the point is that there are many. ... ok
+test_identical_records_alone_would_not_prove_per_record (__main__.RecordLayoutTests.test_identical_records_alone_would_not_prove_per_record)
+The claim has to come from disagreement, not from record count. ... ok
+test_the_colour_is_read_from_the_documented_offset (__main__.RecordLayoutTests.test_the_colour_is_read_from_the_documented_offset) ... ok
+test_the_package_header_is_not_counted_as_a_record (__main__.RecordLayoutTests.test_the_package_header_is_not_counted_as_a_record)
+'UnifP' contains 'Unif' and would otherwise inflate every count. ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 2.998s
+
+OK

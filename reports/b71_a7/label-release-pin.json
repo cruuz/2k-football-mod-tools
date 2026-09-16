@@ -1,0 +1,10 @@
+{
+  "path": "data/nfl2k5_scorebug_mnf/painted_label_2x.png",
+  "contract": {
+    "width": 512,
+    "height": 256,
+    "size": 11138,
+    "sha256": "b8632704a110087b939a2e1de98c54eebc2354f40bb89d3eb2f0b16bdfa45b2d"
+  },
+  "catalog_sha256": "02ef51901d0d5fbef6232b14cc40e759f02fa26c2f0e445493e5f912efd760ac"
+}

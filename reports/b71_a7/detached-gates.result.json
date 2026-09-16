@@ -1,0 +1,11 @@
+{
+  "name": "detached-gates",
+  "argv": [
+    "bash",
+    "reports/b71_a7/gates.sh"
+  ],
+  "started": "2026-09-16T00:33:13.075861+00:00",
+  "ended": "2026-09-16T01:04:15.082341+00:00",
+  "seconds": 1862.006,
+  "exit_code": 0
+}

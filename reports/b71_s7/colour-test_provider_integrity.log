@@ -1,0 +1,14 @@
+F.......
+======================================================================
+FAIL: test_all_external_writer_and_verifier_import_closures_are_exactly_pinned (__main__.ProviderIntegrityTests.test_all_external_writer_and_verifier_import_closures_are_exactly_pinned)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/fable-b71-s7/tests/mod_editor/test_provider_integrity.py", line 286, in test_all_external_writer_and_verifier_import_closures_are_exactly_pinned
+    self.assertEqual(
+AssertionError: {'dat[30 chars]n': 'df09f36fb57a7a05570a469f1232bf97381b69c75[652 chars]b4f'} != {'dat[30 chars]n': '244dc1edd173de8acf2f6cafbfacaa5b7a09d5abc[652 chars]b4f'}
+Diff is 865 characters long. Set self.maxDiff to None to see it.
+
+----------------------------------------------------------------------
+Ran 8 tests in 9.701s
+
+FAILED (failures=1)

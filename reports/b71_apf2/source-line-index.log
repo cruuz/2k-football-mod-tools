@@ -1,0 +1,86 @@
+tests/mod_editor/test_apf_b71_situations.py:85:            with self.assertRaisesRegex(ValueError, "conflict with a CPU Play Calling edit"):
+mod_editor/apf_studio/book_identity_qt.py:32:    def __init__(self, run_task, *, facade=None, consolidated=False):
+mod_editor/apf_studio/book_identity_qt.py:163:        if consolidated:
+mod_editor/apf_studio/book_identity_qt.py:165:            pointer = QLabel('Use <a href="cpu-playcalling">CPU Play Calling</a> to pick books, edit formations and personnel, preview, and build.')
+mod_editor/apf_studio/book_identity_qt.py:265:    def set_context(self):
+packaging/apf2k8-release-allowlist.txt:281:# Beta 67 P4: CPU Play Calling editor.
+packaging/apf2k8-release-allowlist.txt:293:docs/research/apf_b71_situations.md
+mod_editor/core/apf2k8_playcall_model.py:260:def formation_candidate_records(book, master, category_id):
+mod_editor/core/apf2k8_playcall_model.py:274:def situation_candidates(book, master, situation, *, requested_row=None):
+mod_editor/core/apf2k8_playcall_model.py:511:def predict_offense(book: bytes, master: bytes, tendency_run_share: float, situation: Situation, *, seeds: int = 256) -> CallDistribution:
+mod_editor/core/apf2k8_playcall_model.py:556:def predict_defense(book: bytes, master: bytes, offense_category_row: int, yards_to_goal: float, *, seeds: int = 256) -> CallDistribution:
+mod_editor/core/apf2k8_book_clone.py:274:def rebuild_resource(source, replacement: bytes) -> tuple[bytes, dict]:
+tests/mod_editor/test_apf_book_identity_qt.py:111:        panel = BookIdentityPanel(lambda *_: None, consolidated=True)
+mod_editor/apf_studio/playcalling_service.py:70:        raise ValidationError("CPU Play Calling identity or metadata changed")
+mod_editor/apf_studio/playcalling_service.py:77:        raise ValidationError("CPU Play Calling recipe is too large")
+mod_editor/apf_studio/playcalling_service.py:98:        raise ValidationError(f"Invalid CPU Play Calling recipe: {exc}") from exc
+mod_editor/apf_studio/playcalling_service.py:108:        raise ValidationError("Choose a CPU Play Calling edit")
+mod_editor/apf_studio/playcalling_service.py:123:        raise ValidationError("Unknown CPU Play Calling control or fields")
+mod_editor/apf_studio/playcalling_service.py:180:        raise ValidationError("CPU Play Calling recipe changed after staging")
+mod_editor/apf_studio/playcalling_service.py:259:                raise ValidationError("CPU Play Calling needs the beta-67 model and writers; integrate job P3 first.") from exc
+mod_editor/apf_studio/playcalling_service.py:274:                raise ValidationError("An earlier book edit changed; undo or revert CPU Play Calling and review again")
+mod_editor/apf_studio/playcalling_service.py:277:    def rebase_membership(self, session, modifications):
+mod_editor/apf_studio/playcalling_service.py:328:    def scheme_csv(self, session, team, *, book=None, preview_tendency=None):
+mod_editor/apf_studio/playcalling_service.py:539:    def context(self, session, team, side, *, book=None, preview_tendency=None):
+mod_editor/apf_studio/playcalling_service.py:574:    def predict(self, context, side, rows):
+mod_editor/apf_studio/playcalling_service.py:595:    def situations(self, context, side):
+mod_editor/apf_studio/playcalling_service.py:616:    parser = argparse.ArgumentParser(description="Build authored CPU Play Calling; gameplay UNWITNESSED")
+mod_editor/core/apf2k8_splb_writer.py:2326:def fit_book_h7a(encoded: bytes, body: bytes, shift: int, budget: int) -> tuple[bytes, dict]:
+mod_editor/apf_studio/playcalling_editor_qt.py:330:        self.receipt_table = table(("Control", "Book / team", "Before", "After", "Retired categories"), "Staged CPU Play Calling receipt")
+mod_editor/apf_studio/playcalling_editor_qt.py:359:        self.notice = note(outer, "Load a game folder to start editing CPU Play Calling.")
+mod_editor/apf_studio/playcalling_editor_qt.py:374:    def _task(self, label, operation, done, blocking=False):
+mod_editor/apf_studio/playcalling_editor_qt.py:425:    def set_context(self, *_):
+mod_editor/apf_studio/playcalling_editor_qt.py:447:    def _selection_changed(self, *_):
+mod_editor/apf_studio/playcalling_editor_qt.py:477:    def refresh(self):
+mod_editor/apf_studio/playcalling_editor_qt.py:492:            self.notice.setText(f"CPU Play Calling could not read this project: {plain_error(exc)}")
+mod_editor/apf_studio/playcalling_editor_qt.py:663:    def review_request(self, request, confirm=False):
+mod_editor/apf_studio/playcalling_editor_qt.py:680:            self._task("Stage CPU Play Calling edit", operation, staged, True)
+mod_editor/apf_studio/playcalling_editor_qt.py:701:        self._task("Review CPU Play Calling edit", lambda p: self.facade.playcalling_review(request, p), done)
+mod_editor/apf_studio/playcalling_editor_qt.py:719:        self._task("Stage CPU Play Calling edit", lambda p: self.facade.stage_playcalling(review, p), done, True)
+mod_editor/apf_studio/session.py:2775:    def apply_splb_membership_batch(
+mod_editor/apf_studio/session.py:2869:                raise SessionError(f"These Fine-tune edits conflict with a CPU Play Calling edit: {exc}. Undo that CPU edit, then try again.") from exc
+docs/mod_editor/apf2k8_mod_studio_changelog.md:5:- CPU Play Calling previews the selected book, including USER-O and USER-D, with a separate preview run share. Staging formation ratings no longer leaves the tab locked. Book Identity points to this shared workflow.
+tests/mod_editor/test_apf_playcall_research_native.py:429:    def test_b71_spreadsheet_buckets_share_native_inputs_not_stored_lists(self):
+tests/mod_editor/test_apf_playcall_research_native.py:467:    def test_b71_minimum_rating_is_still_a_singleton_candidate(self):
+tests/mod_editor/test_apf_playcall_research_native.py:493:    def test_b71_membership_and_primary_preference_decide_formation_candidates(self):
+tests/mod_editor/test_apf_playcall_research_native.py:513:    def test_b71_te_category_removal_has_real_membership_exclusion(self):
+mod_editor/apf_studio/gui.py:259:    ApfCategory.PLAYBOOKS: "CPU Play Calling: pick a book, edit formations and personnel, preview, then build. Give a team its own book there when needed. Fine-tune Plays edits individual memberships and audibles. Gameplay is UNWITNESSED.",
+mod_editor/apf_studio/gui.py:2338:    def set_context(self) -> None:
+mod_editor/apf_studio/gui.py:2360:    def refresh(self, preserve_asset_id: str | None = None) -> None:
+mod_editor/apf_studio/gui.py:2480:    def _selection_changed(self) -> None:
+mod_editor/apf_studio/gui.py:3198:    def set_context(self) -> None:
+mod_editor/apf_studio/gui.py:3254:    def refresh(self, preserve_asset_id: str | None = None) -> None:
+mod_editor/apf_studio/gui.py:3350:    def _selection_changed(self) -> None:
+mod_editor/apf_studio/gui.py:3879:    def set_context(self) -> None:
+mod_editor/apf_studio/gui.py:4961:    def set_context(self) -> None:
+mod_editor/apf_studio/gui.py:6468:    def set_context(self) -> None:
+mod_editor/apf_studio/gui.py:6536:    def _selection_changed(self) -> None:
+mod_editor/apf_studio/gui.py:6848:    def set_context(self) -> None:
+mod_editor/apf_studio/gui.py:6868:    def refresh(self) -> None:
+mod_editor/apf_studio/gui.py:6899:    def set_context(self) -> None:
+mod_editor/apf_studio/gui.py:6916:    def refresh(self) -> None:
+mod_editor/apf_studio/gui.py:7291:    def set_context(self) -> None:
+mod_editor/apf_studio/gui.py:8198:    def set_context(self) -> None:
+mod_editor/apf_studio/gui.py:8234:    def refresh(self) -> None:
+mod_editor/apf_studio/gui.py:8517:    def set_context(self) -> None:
+mod_editor/apf_studio/gui.py:8569:    def refresh(self) -> None:
+mod_editor/apf_studio/gui.py:9967:    def set_context(self) -> None:
+mod_editor/apf_studio/gui.py:10108:    def _selection_changed(self) -> None:
+mod_editor/apf_studio/gui.py:10360:    def set_context(self) -> None:
+mod_editor/apf_studio/gui.py:10559:    def set_context(self) -> None:
+mod_editor/apf_studio/gui.py:10588:    def refresh(self) -> None:
+mod_editor/apf_studio/gui.py:10808:    def refresh_values(self, preserve_field_id: str | None = None) -> None:
+mod_editor/apf_studio/gui.py:11192:    def refresh_value(self, preserve_code: int | None = None) -> None:
+mod_editor/apf_studio/gui.py:15267:    def refresh(self, preserve_row_id: str | None = None) -> None:
+mod_editor/apf_studio/gui.py:15644:    def _selection_changed(self) -> None:
+mod_editor/apf_studio/gui.py:19400:        self.book_identity = BookIdentityPanel(run_task, facade=facade, consolidated=True) if category is ApfCategory.PLAYBOOKS else None
+mod_editor/apf_studio/gui.py:19445:                tabs.addTab(self.playbook_playcall, "CPU Play Calling")
+mod_editor/apf_studio/gui.py:19525:    def set_context(self, service: ApfInspectorService | None) -> None:
+mod_editor/apf_studio/gui.py:19612:    def refresh(self) -> None:
+mod_editor/apf_studio/gui.py:19898:    def set_context(self, facade: ApfStudioFacade) -> None:
+mod_editor/apf_studio/gui.py:20854:    def _task_progress(self, stage: str, completed: int, total: int) -> None:
+mod_editor/apf_studio/gui.py:20862:    def _task_failed(self, _worker: _BackgroundTask, message: str, detail: str, show_errors: bool = True, on_error: Callable[[str], None] | None = None) -> None:
+mod_editor/apf_studio/gui.py:20867:    def _task_finished(self, worker: _BackgroundTask) -> None:
+mod_editor/apf_studio/gui.py:21816:            lines.append("This copy contains CPU Play Calling edits. Gameplay remains UNWITNESSED.")
+mod_editor/apf_studio/gui.py:21870:        book_note = ("CPU Play Calling changes are recorded in book-content-receipt.json. Gameplay remains UNWITNESSED.\n\n"
+mod_editor/apf_studio/gui.py:21871:                     if owners or "CPU Play Calling edits" in detail else "")

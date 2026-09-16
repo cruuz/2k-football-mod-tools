@@ -1,0 +1,33 @@
+................E..E.........
+======================================================================
+ERROR: test_release_manifest_includes_resource_build_steps (__main__.CaveOracleTests.test_release_manifest_includes_resource_build_steps)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-c4/tests/mod_editor/test_nfl2k5_cave_oracle.py", line 395, in test_release_manifest_includes_resource_build_steps
+    manifest = ReservationManifest.load(DEFAULT_MANIFEST, XbeImage(self.retail()), source_root=ROOT)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-c4/mod_editor/core/nfl2k5_cave_oracle.py", line 222, in load
+    return cls(json.loads(path.read_text(encoding="utf-8")), image, source_root=source_root)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-c4/mod_editor/core/nfl2k5_cave_oracle.py", line 217, in __init__
+    raise OracleError(f"stale reservation source: {relative}; regenerate manifest")
+mod_editor.core.nfl2k5_cave_oracle.OracleError: stale reservation source: mod_editor/core/mod_build.py; regenerate manifest
+
+======================================================================
+ERROR: test_retail_current_stack_owns_every_supplied_cave_and_runtime_flag (__main__.CaveOracleTests.test_retail_current_stack_owns_every_supplied_cave_and_runtime_flag)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-c4/tests/mod_editor/test_nfl2k5_cave_oracle.py", line 382, in test_retail_current_stack_owns_every_supplied_cave_and_runtime_flag
+    manifest = ReservationManifest.load(DEFAULT_MANIFEST, image, source_root=ROOT)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-c4/mod_editor/core/nfl2k5_cave_oracle.py", line 222, in load
+    return cls(json.loads(path.read_text(encoding="utf-8")), image, source_root=source_root)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-c4/mod_editor/core/nfl2k5_cave_oracle.py", line 217, in __init__
+    raise OracleError(f"stale reservation source: {relative}; regenerate manifest")
+mod_editor.core.nfl2k5_cave_oracle.OracleError: stale reservation source: mod_editor/core/mod_build.py; regenerate manifest
+
+----------------------------------------------------------------------
+Ran 29 tests in 365.404s
+
+FAILED (errors=2)

@@ -1,0 +1,219 @@
+[
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_b71_t4_equipment_project.py",
+    "started": "2026-09-15T22:59:16.726118+00:00",
+    "exit_code": 0,
+    "seconds": 61.628,
+    "log": "reports/b71_t4/tests/test_b71_t4_equipment_project.log"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_b69_j1_fit.py",
+    "started": "2026-09-15T22:59:16.726498+00:00",
+    "exit_code": 0,
+    "seconds": 12.288,
+    "log": "reports/b71_t4/tests/test_b69_j1_fit.log"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_b69_j1_build.py",
+    "started": "2026-09-15T22:59:29.014624+00:00",
+    "exit_code": 0,
+    "seconds": 2.436,
+    "log": "reports/b71_t4/tests/test_b69_j1_build.log"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_b69_j1_wiring.py",
+    "started": "2026-09-15T22:59:31.451062+00:00",
+    "exit_code": 0,
+    "seconds": 1.424,
+    "log": "reports/b71_t4/tests/test_b69_j1_wiring.log"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_b70_t1_build_speed.py",
+    "started": "2026-09-15T22:59:32.875390+00:00",
+    "exit_code": 0,
+    "seconds": 19.416,
+    "log": "reports/b71_t4/tests/test_b70_t1_build_speed.log"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_b70_t2_equipment.py",
+    "started": "2026-09-15T22:59:52.291611+00:00",
+    "exit_code": 0,
+    "seconds": 1.515,
+    "log": "reports/b71_t4/tests/test_b70_t2_equipment.log"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_b70_t2_reporting.py",
+    "started": "2026-09-15T22:59:53.807231+00:00",
+    "exit_code": 0,
+    "seconds": 0.258,
+    "log": "reports/b71_t4/tests/test_b70_t2_reporting.log"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_b70_t2_wiring.py",
+    "started": "2026-09-15T22:59:54.065169+00:00",
+    "exit_code": 0,
+    "seconds": 0.78,
+    "log": "reports/b71_t4/tests/test_b70_t2_wiring.log"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_equipment_import.py",
+    "started": "2026-09-15T22:59:54.845543+00:00",
+    "exit_code": 0,
+    "seconds": 2.3,
+    "log": "reports/b71_t4/tests/test_nfl2k5_equipment_import.log"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_equipment_consumers.py",
+    "started": "2026-09-15T22:59:57.146102+00:00",
+    "exit_code": 0,
+    "seconds": 30.083,
+    "log": "reports/b71_t4/tests/test_nfl2k5_equipment_consumers.log"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_equipment_import_wiring.py",
+    "started": "2026-09-15T23:00:18.354526+00:00",
+    "exit_code": 0,
+    "seconds": 0.859,
+    "log": "reports/b71_t4/tests/test_nfl2k5_equipment_import_wiring.log"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_equipment_scope_wiring.py",
+    "started": "2026-09-15T23:00:19.214150+00:00",
+    "exit_code": 0,
+    "seconds": 2.005,
+    "log": "reports/b71_t4/tests/test_nfl2k5_equipment_scope_wiring.log"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_equipment_texture_chain.py",
+    "started": "2026-09-15T23:00:21.219713+00:00",
+    "exit_code": 0,
+    "seconds": 3.206,
+    "log": "reports/b71_t4/tests/test_nfl2k5_equipment_texture_chain.log"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_equipment_texture_native.py",
+    "started": "2026-09-15T23:00:24.425569+00:00",
+    "exit_code": 0,
+    "seconds": 0.269,
+    "log": "reports/b71_t4/tests/test_nfl2k5_equipment_texture_native.log"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_equipment_retail_roundtrip.py",
+    "started": "2026-09-15T23:00:24.694570+00:00",
+    "exit_code": 0,
+    "seconds": 15.385,
+    "log": "reports/b71_t4/tests/test_nfl2k5_equipment_retail_roundtrip.log"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_2k5_uniform_equipment_export.py",
+    "started": "2026-09-15T23:00:27.229067+00:00",
+    "exit_code": 0,
+    "seconds": 23.909,
+    "log": "reports/b71_t4/tests/test_2k5_uniform_equipment_export.log"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_project_document_workflow.py",
+    "started": "2026-09-15T23:00:40.080121+00:00",
+    "exit_code": 0,
+    "seconds": 15.836,
+    "log": "reports/b71_t4/tests/test_project_document_workflow.log"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_studio_session.py",
+    "started": "2026-09-15T23:00:51.137993+00:00",
+    "exit_code": 0,
+    "seconds": 0.911,
+    "log": "reports/b71_t4/tests/test_studio_session.log"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_studio_facade.py",
+    "started": "2026-09-15T23:00:52.049207+00:00",
+    "exit_code": 0,
+    "seconds": 0.374,
+    "log": "reports/b71_t4/tests/test_studio_facade.log"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_studio_shell_layout_qt.py",
+    "started": "2026-09-15T23:00:52.423649+00:00",
+    "exit_code": 0,
+    "seconds": 40.654,
+    "log": "reports/b71_t4/tests/test_studio_shell_layout_qt.log"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_studio_qt_models.py",
+    "started": "2026-09-15T23:00:55.916343+00:00",
+    "exit_code": 0,
+    "seconds": 0.925,
+    "log": "reports/b71_t4/tests/test_studio_qt_models.log"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_studio_visual_asset_routing.py",
+    "started": "2026-09-15T23:00:56.841954+00:00",
+    "exit_code": 0,
+    "seconds": 3.527,
+    "log": "reports/b71_t4/tests/test_studio_visual_asset_routing.log"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_facade_external_build.py",
+    "started": "2026-09-15T23:01:00.369043+00:00",
+    "exit_code": 0,
+    "seconds": 0.326,
+    "log": "reports/b71_t4/tests/test_facade_external_build.log"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_uniform_bundle_cross_project.py",
+    "started": "2026-09-15T23:01:00.695290+00:00",
+    "exit_code": 0,
+    "seconds": 2.79,
+    "log": "reports/b71_t4/tests/test_uniform_bundle_cross_project.log"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_nfl2k5_model_project.py",
+    "started": "2026-09-15T23:01:03.485995+00:00",
+    "exit_code": 0,
+    "seconds": 37.88,
+    "log": "reports/b71_t4/tests/test_nfl2k5_model_project.log"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_models_project_wiring.py",
+    "started": "2026-09-15T23:01:33.077524+00:00",
+    "exit_code": 0,
+    "seconds": 9.283,
+    "log": "reports/b71_t4/tests/test_models_project_wiring.log"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_provider_integrity.py",
+    "started": "2026-09-15T23:01:41.366775+00:00",
+    "exit_code": 0,
+    "seconds": 9.694,
+    "log": "reports/b71_t4/tests/test_provider_integrity.log"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_providers.py",
+    "started": "2026-09-15T23:01:42.360690+00:00",
+    "exit_code": 0,
+    "seconds": 3.762,
+    "log": "reports/b71_t4/tests/test_providers.log"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_product_catalog.py",
+    "started": "2026-09-15T23:01:46.122814+00:00",
+    "exit_code": 0,
+    "seconds": 0.167,
+    "log": "reports/b71_t4/tests/test_product_catalog.log"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tests/mod_editor/test_phase1_packaging.py",
+    "started": "2026-09-15T23:01:46.289781+00:00",
+    "exit_code": 0,
+    "seconds": 2.171,
+    "log": "reports/b71_t4/tests/test_phase1_packaging.log"
+  },
+  {
+    "command": "QT_QPA_PLATFORM=offscreen PYTHONPATH=. python3 tools/test_nfl2k5_visual_mod_project.py",
+    "started": "2026-09-15T23:01:48.460927+00:00",
+    "exit_code": 0,
+    "seconds": 2.512,
+    "log": "reports/b71_t4/tests/test_nfl2k5_visual_mod_project.log"
+  }
+]

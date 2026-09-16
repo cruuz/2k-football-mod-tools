@@ -180,7 +180,9 @@ class RetailTests(unittest.TestCase):
     def test_extended_allocator_fits_union_and_refuses_missing_owner(self):
         grown, _ = space.apply(self.retail, zone.REQUESTS + kickoff.REQUESTS + runtime.REQUESTS)
         self.assertEqual(space.status(grown), "applied")
-        self.assertEqual(len([r for r in space.layout(grown)["regions"] if r["kind"] == "code"]), 2)
+        # Beta 71: the sprite scorebug owner's 4,096-byte code needs the scale region as well, so this union spans
+        # three code regions where the 1,408-byte owner through beta 70 fitted in two.
+        self.assertEqual(len([r for r in space.layout(grown)["regions"] if r["kind"] == "code"]), 3)
         grown = kickoff.apply(self.retail)[0]
         with self.assertRaisesRegex(ValueError, "missing zone-drop allocation"):
             zone.apply(grown)

@@ -1,0 +1,11 @@
+{
+  "name": "test_nfl2k5_scorebug_fonts-delivery",
+  "command": [
+    "/usr/bin/python3",
+    "/home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_fonts.py"
+  ],
+  "start": "2026-09-15T22:33:35.797172+00:00",
+  "end": "2026-09-15T22:33:44.708893+00:00",
+  "seconds": 8.912,
+  "exit": 0
+}

@@ -1,0 +1,11 @@
+{
+  "name": "proof-uv",
+  "command": [
+    "python3",
+    "reports/b71_s4/prove_v4.py"
+  ],
+  "start": "2026-09-15T22:20:05.507952+00:00",
+  "end": "2026-09-15T22:21:27.741055+00:00",
+  "seconds": 82.233,
+  "exit": 0
+}

@@ -1,0 +1,43 @@
+{"command": ["python3", "packaging/repin.py", "--apply"], "started_utc": "2026-09-16T06:47:44.495365+00:00", "elapsed_seconds": 11.321, "exit_code": 0, "log": "reports/b71_apf6/repin-final.log"}
+
+applied 0 pin update(s)
+
+{"command": ["python3", "-m", "mod_editor.capabilities.validate_registry"], "started_utc": "2026-09-16T06:47:55.847571+00:00", "elapsed_seconds": 0.156, "exit_code": 0, "log": "reports/b71_apf6/strict-registry-final.log"}
+MOD_CAPABILITY_REGISTRY_VALIDATION_PASS schema=vc_mod_capability_registry/v1 games=3 surfaces=21 capabilities=176
+
+{"command": ["python3", "reports/b71_apf6/audit_delivery.py"], "started_utc": "2026-09-16T06:47:56.032803+00:00", "elapsed_seconds": 0.063, "exit_code": 0, "log": "reports/b71_apf6/delivery-audit.log"}
+{
+  "base": "cea8a3c85db408dafeea15b361faee9d05be33a7",
+  "total_capabilities": 176,
+  "apf_capabilities": 73,
+  "new_rows": 0,
+  "capability_id_set_sha256": "a5e791c1047da40e2d13827d93b97b9510de5676742e9777b0a049d2b274fa46",
+  "scratch_bytes": 36697643,
+  "h7a_mode": "0755",
+  "changed_paths": [
+    "docs/mod_editor/apf2k8_mod_studio_changelog.md",
+    "docs/mod_editor/apf_b67_play_calling_editor.md",
+    "mod_editor/apf_studio/book_content.py",
+    "mod_editor/apf_studio/facade.py",
+    "mod_editor/apf_studio/models.py",
+    "mod_editor/apf_studio/playcalling_editor_qt.py",
+    "mod_editor/apf_studio/playcalling_service.py",
+    "mod_editor/apf_studio/situation_mask_qt.py",
+    "mod_editor/capabilities/registry.v1.json",
+    "tests/mod_editor/test_apf_b69_editor_qt.py",
+    "tests/mod_editor/test_apf_b71_editor_workflow.py",
+    "tests/mod_editor/test_apf_b71_editor_workflow_qt.py",
+    "tests/mod_editor/test_apf_playcalling_editor_qt.py"
+  ],
+  "gameplay": "UNWITNESSED"
+}
+
+{"command": ["python3", "packaging/stage_release.py", "packaging/apf2k8-release-allowlist.txt", ".scratch/apf-release"], "started_utc": "2026-09-16T06:47:56.125458+00:00", "elapsed_seconds": 0.089, "exit_code": 0, "log": "reports/b71_apf6/release-stage-final.log"}
+staged 289 files; 0 declared inputs absent
+
+{"command": ["env", "PYTHONDONTWRITEBYTECODE=1", "python3", "packaging/check_apf2k8_mod_studio_release.py", ".scratch/apf-release"], "started_utc": "2026-09-16T06:47:56.246562+00:00", "elapsed_seconds": 0.385, "exit_code": 0, "log": "reports/b71_apf6/release-check-final.log"}
+APF2K8_MOD_STUDIO_RELEASE_PASS files=289 bytes=10453181 metadata=8 install_surface=8 retail_hashes=7 extractor=reviewed private=false retail=false symlinks=false undeclared=false
+
+{"command": ["env", "PYTHONDONTWRITEBYTECODE=1", "PYTHONNOUSERSITE=1", "PYTHONPATH=/home/noah/2k-worktrees/astra-b71-apf6/.scratch/apf-release", ".scratch/test-python/bin/python3", ".scratch/apf-release/packaging/check_apf2k8_mod_studio_runtime.py"], "started_utc": "2026-09-16T06:47:56.660845+00:00", "elapsed_seconds": 10.469, "exit_code": 0, "log": "reports/b71_apf6/release-runtime-final.log"}
+APF2K8_MOD_STUDIO_RUNTIME_PASS modules=161 capabilities=73 universal=private_source_not_provided uniforms=private_source_not_provided uniform_inventory=private_source_not_provided audio_query_lifecycle=applied_token_debounce_guarded audio_shortlist_clear=one_level_ordered_restore audio_preview_lifecycle=request_owned_success_failure audio_preview_cancellation=request_owned_process_group_cancel audio_waveform_cancellation=request_owned_process_group_cancel audio_add_all_matching=applied_query_atomic_256 audio_session_teardown=cancel_drain_before_close_source audio_replacement_confirmation=fully_validated_read_only_preview_then_explicit_apply audio_replacement_token=exact_member_result_source_session_project_revision audio_replacement_noop=cancel_unchanged audio_replacement_lifecycle=worker_drained_before_confirmation audio_direct_drop=selected_exact_slot_xma1_or_conformed_audio audio_mutation_lifecycle=submission_to_worker_idle retail_source_required=false
+

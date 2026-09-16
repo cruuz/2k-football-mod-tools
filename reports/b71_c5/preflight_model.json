@@ -1,0 +1,10 @@
+{
+  "command": [
+    "python3",
+    "reports/b71_c5/preflight_model.py"
+  ],
+  "start_utc": "2026-09-15T21:17:19.259911+00:00",
+  "end_utc": "2026-09-15T21:19:37.547645+00:00",
+  "seconds": 138.288,
+  "exit_code": 1
+}

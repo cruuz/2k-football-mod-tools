@@ -1,0 +1,19 @@
+[
+  "tests/mod_editor/test_nfl2k5_abilities_v2_manifest.py",
+  "tests/mod_editor/test_nfl2k5_accelerated_clock_manifest.py",
+  "tests/mod_editor/test_nfl2k5_cpu_money_downs_manifest.py",
+  "tests/mod_editor/test_nfl2k5_defensive_try_manifest.py",
+  "tests/mod_editor/test_nfl2k5_guardian_manifest.py",
+  "tests/mod_editor/test_nfl2k5_music_playlist_manifest.py",
+  "tests/mod_editor/test_nfl2k5_my_career_manifest.py",
+  "tests/mod_editor/test_nfl2k5_playbook_pair_manifest.py",
+  "tests/mod_editor/test_nfl2k5_read_option_diagnostic_manifest.py",
+  "tests/mod_editor/test_nfl2k5_screen_hooks_manifest.py",
+  "tests/mod_editor/test_nfl2k5_seven_on_seven_manifest.py",
+  "tests/mod_editor/test_provider_integrity.py",
+  "tests/mod_editor/test_providers.py",
+  "tests/mod_editor/test_product_catalog.py",
+  "tests/mod_editor/test_phase1_packaging.py",
+  "tests/mod_editor/test_b68_a1_audit.py",
+  "tests/mod_editor/test_capability_registry_module_commands.py"
+]

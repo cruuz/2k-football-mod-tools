@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_field_material_project",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_field_material_project.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:51:10.376260+00:00",
+  "ended": "2026-09-16T00:51:10.952450+00:00",
+  "seconds": 0.576,
+  "exit_code": 0
+}

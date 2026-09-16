@@ -1,0 +1,105 @@
+EEEE.....
+======================================================================
+ERROR: setUpClass (__main__.PatchWriteTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_xbe_patch_memory_writes.py", line 226, in setUpClass
+    cls.patched, cls.music_receipt = compose(cls.patched, read_option_diagnostic=True, reverse=getattr(cls, "reverse_owners", False), scaleout=getattr(cls, "scaleout", False))
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s4/tests/nfl2k5_allocator_stack.py", line 137, in compose
+    payload, _ = space.apply(payload, REQUESTS + tuple(extra_requests), scaleout=scaleout)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s4/mod_editor/core/nfl2k5_xbe_space.py", line 372, in apply
+    return _apply_scaleout(payload, wanted)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s4/mod_editor/core/nfl2k5_xbe_space.py", line 861, in _apply_scaleout
+    allocations = _scale_allocations(requests)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s4/mod_editor/core/nfl2k5_xbe_space.py", line 668, in _scale_allocations
+    out = _legacy_allocations([r for r in requests if r[0] in LEGACY_OWNERS])
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s4/mod_editor/core/nfl2k5_xbe_space.py", line 98, in _legacy_allocations
+    _require(offset + size <= PAGE * (2 if kind == "code" else 1),
+  File "/home/noah/2k-worktrees/astra-b71-s4/mod_editor/core/nfl2k5_xbe_space.py", line 55, in _require
+    raise ValueError(message)
+ValueError: code page capacity exceeded; no unreserved page may be used
+
+======================================================================
+ERROR: setUpClass (__main__.ReverseOwnerOrderTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_xbe_patch_memory_writes.py", line 226, in setUpClass
+    cls.patched, cls.music_receipt = compose(cls.patched, read_option_diagnostic=True, reverse=getattr(cls, "reverse_owners", False), scaleout=getattr(cls, "scaleout", False))
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s4/tests/nfl2k5_allocator_stack.py", line 137, in compose
+    payload, _ = space.apply(payload, REQUESTS + tuple(extra_requests), scaleout=scaleout)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s4/mod_editor/core/nfl2k5_xbe_space.py", line 372, in apply
+    return _apply_scaleout(payload, wanted)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s4/mod_editor/core/nfl2k5_xbe_space.py", line 861, in _apply_scaleout
+    allocations = _scale_allocations(requests)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s4/mod_editor/core/nfl2k5_xbe_space.py", line 668, in _scale_allocations
+    out = _legacy_allocations([r for r in requests if r[0] in LEGACY_OWNERS])
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s4/mod_editor/core/nfl2k5_xbe_space.py", line 98, in _legacy_allocations
+    _require(offset + size <= PAGE * (2 if kind == "code" else 1),
+  File "/home/noah/2k-worktrees/astra-b71-s4/mod_editor/core/nfl2k5_xbe_space.py", line 55, in _require
+    raise ValueError(message)
+ValueError: code page capacity exceeded; no unreserved page may be used
+
+======================================================================
+ERROR: setUpClass (__main__.ScaleoutOwnerTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_xbe_patch_memory_writes.py", line 226, in setUpClass
+    cls.patched, cls.music_receipt = compose(cls.patched, read_option_diagnostic=True, reverse=getattr(cls, "reverse_owners", False), scaleout=getattr(cls, "scaleout", False))
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s4/tests/nfl2k5_allocator_stack.py", line 137, in compose
+    payload, _ = space.apply(payload, REQUESTS + tuple(extra_requests), scaleout=scaleout)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s4/mod_editor/core/nfl2k5_xbe_space.py", line 372, in apply
+    return _apply_scaleout(payload, wanted)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s4/mod_editor/core/nfl2k5_xbe_space.py", line 861, in _apply_scaleout
+    allocations = _scale_allocations(requests)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s4/mod_editor/core/nfl2k5_xbe_space.py", line 668, in _scale_allocations
+    out = _legacy_allocations([r for r in requests if r[0] in LEGACY_OWNERS])
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s4/mod_editor/core/nfl2k5_xbe_space.py", line 98, in _legacy_allocations
+    _require(offset + size <= PAGE * (2 if kind == "code" else 1),
+  File "/home/noah/2k-worktrees/astra-b71-s4/mod_editor/core/nfl2k5_xbe_space.py", line 55, in _require
+    raise ValueError(message)
+ValueError: code page capacity exceeded; no unreserved page may be used
+
+======================================================================
+ERROR: setUpClass (__main__.ScaleoutReverseOwnerTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_xbe_patch_memory_writes.py", line 226, in setUpClass
+    cls.patched, cls.music_receipt = compose(cls.patched, read_option_diagnostic=True, reverse=getattr(cls, "reverse_owners", False), scaleout=getattr(cls, "scaleout", False))
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s4/tests/nfl2k5_allocator_stack.py", line 137, in compose
+    payload, _ = space.apply(payload, REQUESTS + tuple(extra_requests), scaleout=scaleout)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s4/mod_editor/core/nfl2k5_xbe_space.py", line 372, in apply
+    return _apply_scaleout(payload, wanted)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s4/mod_editor/core/nfl2k5_xbe_space.py", line 861, in _apply_scaleout
+    allocations = _scale_allocations(requests)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s4/mod_editor/core/nfl2k5_xbe_space.py", line 668, in _scale_allocations
+    out = _legacy_allocations([r for r in requests if r[0] in LEGACY_OWNERS])
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s4/mod_editor/core/nfl2k5_xbe_space.py", line 98, in _legacy_allocations
+    _require(offset + size <= PAGE * (2 if kind == "code" else 1),
+  File "/home/noah/2k-worktrees/astra-b71-s4/mod_editor/core/nfl2k5_xbe_space.py", line 55, in _require
+    raise ValueError(message)
+ValueError: code page capacity exceeded; no unreserved page may be used
+
+----------------------------------------------------------------------
+Ran 5 tests in 40.550s
+
+FAILED (errors=4)

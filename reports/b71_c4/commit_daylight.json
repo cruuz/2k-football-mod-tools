@@ -1,0 +1,27 @@
+{
+  "command": [
+    "git",
+    "--git-dir=.scratch/astra-c4.git",
+    "commit",
+    "-m",
+    "Tune Broadcast day and afternoon rigs while pinning approved night and all turf bundles",
+    "--",
+    "data/nfl2k5_modern_color_pins.json",
+    "docs/mod_editor/2k5_mod_studio_changelog.md",
+    "docs/modern_color/CONTROLS.md",
+    "mod_editor/capabilities/registry.v1.json",
+    "mod_editor/core/nfl2k5_modern_color.py",
+    "mod_editor/core/providers.py",
+    "mod_editor/gui/colour_lighting_qt.py",
+    "tests/mod_editor/test_colour_lighting.py",
+    "tests/mod_editor/test_colour_lighting_qt.py",
+    "tests/mod_editor/test_nfl2k5_modern_color.py",
+    "tests/mod_editor/test_provider_integrity.py",
+    "tests/mod_editor/test_nfl2k5_daylight_composition.py",
+    "tools/verify_colour_lighting_pins.py"
+  ],
+  "start_utc": "2026-09-15T20:08:04.446222+00:00",
+  "end_utc": "2026-09-15T20:08:04.526082+00:00",
+  "seconds": 0.08,
+  "exit_code": 0
+}

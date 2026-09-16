@@ -1,0 +1,14 @@
+test_release_allowlist_ships_the_panel_service_and_writer (__main__.PackagingTests.test_release_allowlist_ships_the_panel_service_and_writer) ... ok
+test_playbooks_workspace_exposes_the_save_assignment_tab (__main__.PanelTests.test_playbooks_workspace_exposes_the_save_assignment_tab) ... This plugin does not support propagateSizeHints()
+ok
+test_raw_save_lists_every_team_and_stages_both_sides (__main__.PanelTests.test_raw_save_lists_every_team_and_stages_both_sides) ... ok
+test_signed_save_lists_assignments_and_explains_disabled_write (__main__.PanelTests.test_signed_save_lists_assignments_and_explains_disabled_write) ... ok
+test_a_save_changed_after_inspection_is_refused_without_outputs (__main__.ServiceTests.test_a_save_changed_after_inspection_is_refused_without_outputs) ... ok
+test_both_assignments_write_to_new_file_and_verify (__main__.ServiceTests.test_both_assignments_write_to_new_file_and_verify) ... ok
+test_inspection_exposes_all_sided_choices_and_all_team_slots (__main__.ServiceTests.test_inspection_exposes_all_sided_choices_and_all_team_slots) ... ok
+test_signed_con_writes_only_a_verified_raw_handoff (__main__.ServiceTests.test_signed_con_writes_only_a_verified_raw_handoff) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 1.190s
+
+OK

@@ -1,0 +1,10 @@
+test_derived_weave_dirtmap_and_non_six_endzone_are_pinned (__main__.FieldExtraContractTests.test_derived_weave_dirtmap_and_non_six_endzone_are_pinned) ... ok
+test_dirtmap_helmet_retail_png_is_a_bit_exact_noop (__main__.FieldExtraNoOpTests.test_dirtmap_helmet_retail_png_is_a_bit_exact_noop) ... ok
+test_extra_format18_endzone_retail_png_is_a_bit_exact_noop (__main__.FieldExtraNoOpTests.test_extra_format18_endzone_retail_png_is_a_bit_exact_noop) ... ok
+test_weave_jersey0_retail_png_is_a_bit_exact_noop (__main__.FieldExtraNoOpTests.test_weave_jersey0_retail_png_is_a_bit_exact_noop) ... ok
+test_one_pixel_edit_changes_only_weave_jersey0_and_fits_h7a (__main__.FieldExtraWeaveEditTests.test_one_pixel_edit_changes_only_weave_jersey0_and_fits_h7a) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 211.419s
+
+OK

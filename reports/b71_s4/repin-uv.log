@@ -1,0 +1,8 @@
+[1] mod_editor/core/providers.py: mod_editor/core/nfl2k5_scorebug_exact.py
+    321b8a1b91856483a910ae674817304b9e4e05b489a7e155b1413d168ac8ed41
+ -> ea1b0c44cf7a65e8e4b0444ecc0856faca1f1e0f7e1cd36e6e3d6b0c99b6128a
+[1] mod_editor/core/providers.py: mod_editor/core/nfl2k5_scorebug_resources.py
+    a206e68a71014cfdd8907a010541985507d87f6cead0520a39b86e71862b50bc
+ -> 3ce353fc6e10c5eaddf2c03cf4cd99de13610f6d4b285554fb2158d2c495fcad
+
+applied 2 pin update(s)

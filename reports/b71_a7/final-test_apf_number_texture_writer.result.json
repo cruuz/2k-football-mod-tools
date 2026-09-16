@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_number_texture_writer",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_number_texture_writer.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:53:35.209583+00:00",
+  "ended": "2026-09-16T00:58:14.369353+00:00",
+  "seconds": 279.16,
+  "exit_code": 0
+}

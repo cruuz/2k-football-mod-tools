@@ -1,0 +1,19 @@
+.E
+======================================================================
+ERROR: setUpClass (__main__.NativeTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s3/tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py", line 26, in setUpClass
+    cls.build=Build(PACK,PACK.parents[1]/'default.xbe');cls.addClassCleanup(cls.build.close)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s3/tools/nfl2k5_scorebug_exact.py", line 250, in __init__
+    self.font_spans = art.clock_font_spans(self.view)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s3/mod_editor/core/nfl2k5_scorebug_resources.py", line 753, in clock_font_spans
+    raise ValueError("clock font span sizes changed")
+ValueError: clock font span sizes changed
+
+----------------------------------------------------------------------
+Ran 1 test in 0.813s
+
+FAILED (errors=1)

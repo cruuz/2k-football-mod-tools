@@ -1,0 +1,16 @@
+{
+  "setup": {
+    "writes": 166,
+    "foreign": []
+  },
+  "update": {
+    "writes": 2282,
+    "foreign": []
+  },
+  "oversized_refusal": "The scorebug exceeds the 0.4 MB resource limit; reduce the atlas or scene.",
+  "field_containment": {
+    "states": 50,
+    "max_hud_error": 0.0068359375,
+    "errors": []
+  }
+}

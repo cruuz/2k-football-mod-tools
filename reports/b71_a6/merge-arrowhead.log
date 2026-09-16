@@ -1,0 +1,18 @@
+Auto-merging docs/mod_editor/2k5_mod_studio_changelog.md
+CONFLICT (content): Merge conflict in docs/mod_editor/2k5_mod_studio_changelog.md
+Auto-merging mod_editor/capabilities/registry.v1.json
+Auto-merging mod_editor/core/mod_build.py
+CONFLICT (content): Merge conflict in mod_editor/core/mod_build.py
+Auto-merging mod_editor/core/nfl2k5_build_settings.py
+CONFLICT (content): Merge conflict in mod_editor/core/nfl2k5_build_settings.py
+Auto-merging mod_editor/core/providers.py
+CONFLICT (content): Merge conflict in mod_editor/core/providers.py
+Auto-merging mod_editor/gui/build_panel_qt.py
+CONFLICT (content): Merge conflict in mod_editor/gui/build_panel_qt.py
+Auto-merging packaging/check_2k5_mod_studio_release.py
+CONFLICT (content): Merge conflict in packaging/check_2k5_mod_studio_release.py
+Auto-merging packaging/check_2k5_mod_studio_runtime.py
+CONFLICT (content): Merge conflict in packaging/check_2k5_mod_studio_runtime.py
+Auto-merging packaging/nfl2k5_scorebug_template_pngs.json
+Auto-merging packaging/release-allowlist.txt
+Automatic merge failed; fix conflicts and then commit the result.

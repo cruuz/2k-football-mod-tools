@@ -1,0 +1,11 @@
+{
+  "name": "provider-closure",
+  "command": [
+    "python3",
+    "tests/mod_editor/test_provider_integrity.py"
+  ],
+  "start": "2026-09-15T22:18:35.819342+00:00",
+  "end": "2026-09-15T22:18:44.105323+00:00",
+  "seconds": 8.286,
+  "exit": 0
+}

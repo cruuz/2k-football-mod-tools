@@ -1,0 +1,16 @@
+test_availability_does_not_depend_on_old_missing_audit (__main__.MetadataTests.test_availability_does_not_depend_on_old_missing_audit) ... ok
+test_team_asset_codes_are_not_roster_ids (__main__.MetadataTests.test_team_asset_codes_are_not_roster_ids) ... ok
+test_unrecognized_resource_and_corrupt_spans_refuse (__main__.MetadataTests.test_unrecognized_resource_and_corrupt_spans_refuse) ... ok
+test_all_real_team_sources_pin_and_stage_both_sides (__main__.RetailTests.test_all_real_team_sources_pin_and_stage_both_sides) ... ok
+test_mixed_xbe_and_foreign_driver_refuse (__main__.RetailTests.test_mixed_xbe_and_foreign_driver_refuse) ... ok
+test_resources_keep_wrapper_allocation_and_loader_overlap_budget (__main__.RetailTests.test_resources_keep_wrapper_allocation_and_loader_overlap_budget) ... ok
+test_scene_changes_only_geometry_uvs_vertex_colours_and_text_transforms (__main__.RetailTests.test_scene_changes_only_geometry_uvs_vertex_colours_and_text_transforms) ... ok
+test_scene_proportions_both_mark_modes_and_field_anchors (__main__.RetailTests.test_scene_proportions_both_mark_modes_and_field_anchors) ... ok
+test_staged_binding_scene_has_independent_materials_and_cannot_be_mistaken_for_installed (__main__.RetailTests.test_staged_binding_scene_has_independent_materials_and_cannot_be_mistaken_for_installed) ... ok
+test_transaction_refuses_late_foreign_resource_before_any_write_and_reapplies (__main__.RetailTests.test_transaction_refuses_late_foreign_resource_before_any_write_and_reapplies) ... ok
+test_xbe_idempotence_guards_shared_shield_and_native_animation (__main__.RetailTests.test_xbe_idempotence_guards_shared_shield_and_native_animation) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 8.762s
+
+OK

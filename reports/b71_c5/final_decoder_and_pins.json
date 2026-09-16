@@ -1,0 +1,10 @@
+{
+  "command": [
+    "python3",
+    "reports/b71_c5/rebuild_and_prove.py"
+  ],
+  "start_utc": "2026-09-15T21:29:17.237324+00:00",
+  "end_utc": "2026-09-15T21:44:28.533935+00:00",
+  "seconds": 911.297,
+  "exit_code": 0
+}

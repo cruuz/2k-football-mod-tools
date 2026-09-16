@@ -1,0 +1,11 @@
+test_config_writer_preserves_settings_and_is_idempotent (__main__.EdgeTests.test_config_writer_preserves_settings_and_is_idempotent) ... ok
+test_detect_save_reload_and_explicit_renamed_edge (__main__.EdgeTests.test_detect_save_reload_and_explicit_renamed_edge) ... ok
+test_failed_configuration_preserves_previous_runtime (__main__.EdgeTests.test_failed_configuration_preserves_previous_runtime) ... ok
+test_invalid_config_never_launches_or_overwrites (__main__.EdgeTests.test_invalid_config_never_launches_or_overwrites) ... ok
+test_launch_windows_native_and_wine_use_sdl_and_selected_config (__main__.EdgeTests.test_launch_windows_native_and_wine_use_sdl_and_selected_config) ... ok
+test_legacy_settings_load_without_mutation (__main__.EdgeTests.test_legacy_settings_load_without_mutation) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.039s
+
+OK

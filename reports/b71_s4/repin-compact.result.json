@@ -1,0 +1,12 @@
+{
+  "name": "repin-compact",
+  "command": [
+    "python3",
+    "packaging/repin.py",
+    "--apply"
+  ],
+  "start": "2026-09-15T22:15:01.079453+00:00",
+  "end": "2026-09-15T22:15:21.519985+00:00",
+  "seconds": 20.441,
+  "exit": 0
+}

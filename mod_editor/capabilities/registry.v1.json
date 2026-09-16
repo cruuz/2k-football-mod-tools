@@ -2622,24 +2622,40 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "tests/mod_editor/test_apf_playcalling_editor_facade.py",
-        "docs/mod_editor/apf_b67_play_calling_editor.md"
+        "docs/mod_editor/apf_b67_play_calling_editor.md",
+        "docs/research/apf_b71_situations.md",
+        "tests/mod_editor/test_apf_b71_situations.py",
+        "tests/mod_editor/test_apf_playcall_research_native.py",
+        "tests/mod_editor/test_apf_playcalling_editor_qt.py",
+        "docs/research/apf_b71_apf3.md",
+        "tools/apf_b71_situation_probe.py",
+        "docs/research/apf_b71_apf4.md",
+        "tests/mod_editor/test_apf_b71_situation_mask.py",
+        "tests/mod_editor/test_apf_b71_situation_mask_native.py",
+        "tests/mod_editor/test_apf_b71_situation_mask_qt.py",
+        "tests/mod_editor/test_apf_b71_situation_mask_abi.py",
+        "tests/mod_editor/test_apf_b71_situation_mask_install.py",
+        "tests/mod_editor/test_apf_b71_editor_workflow.py",
+        "tests/mod_editor/test_apf_b71_editor_workflow_qt.py"
       ],
       "game": "apf2k8_xbox360",
       "gui": {
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "CPU Play Calling tab with worker previews, reviewed edits and explicit staging. No option or patch is enabled by a preset. Merge only with the accepted P3 core writers."
+        "reason": "Named-book preview, per-situation exclusions and stored personnel-row editing use explicit undoable project edits. No preset enables or stages masks. Install the matching authored XEX patch separately."
       },
       "id": "apf2k8.playbooks.cpu_playcalling",
       "input_constraints": [
-        "A loaded APF source and the integrated beta-67 P3 model/writers are required. No production substitutes are supplied.",
+        "A loaded APF source is required; book edits use the production SPLB and MASTER writers.",
         "Book choices resolve by name; project replay checks reviewed before/after facts and refuses conflicts.",
-        "MASTER and curve changes affect every book; personnel retirement with uncovered rows is refused until P3 classifies the lineup callers as non-CPU."
+        "MASTER and curve changes affect every book; personnel retirement with uncovered rows is refused while lineup caller reachability remains unclassified.",
+        "Twelve independent live buckets use actual down 1..4 and absolute longitudinal distance up to 2, over 2 through 7, or over 7 yards. The older 23 labels remain representative queries. The patch filters ordinary CPU offense draws only; special phases and explicit calls bypass it.",
+        "Computed personnel requests are read-only; stored MASTER comparison rows remain editable with an explicit all-books scope. An empty TE depth list substitutes an FB.",
+        "At most 48 named mask profiles; only ordinary formations 0..150. Empty filtered draws fall back to their complete original candidates and record native counters. Exported builds contain separate BASE/TU patches and the canonical data block."
       ],
       "portme": [
-        "Integrate and run P3 writer/model proofs before merging this proposed offline-writer-proved row; P4 synthetic contract tests alone do not prove those writers.",
-        "Keep gameplay UNWITNESSED until Noah observes edited calls in the game."
+        "Witness installed BASE/TU patches, actual book identity through save/USER lifecycle and final on-field personnel in game."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -2649,7 +2665,7 @@
       },
       "runtime": {
         "evidence": [],
-        "scope": "UNWITNESSED. P4 proves UI, project/undo, synthetic archive composition and installer plumbing using injected test contract modules. Real P3 integration and gameplay require separate acceptance.",
+        "scope": "PROVED bounded BASE/TU weights, current-call stores, native depth/provider selection and all eleven lineup assignments with synthetic player pools. Empty TE depth lists select an FB-depth player while the requested TE role remains. Only equipment refresh leaves are bounded out of the lineup path. Saved USER lifecycle and actual gameplay remain UNWITNESSED. APF-4 adds bounded execution of independent down/distance mask leaves on both images, including draw fallback receipts. It does not supply a gameplay witness.",
         "status": "not-tested"
       },
       "selectors": {
@@ -2660,15 +2676,18 @@
             "required": true
           }
         ],
-        "notes": "The facade stages one authored recipe containing ordered, undoable edit receipts; the copied-game builder applies it after existing asset edits."
+        "notes": "The facade stages one authored recipe containing ordered, undoable edit receipts; the copied-game builder applies it after existing asset edits. Confirm invokes the existing review checks automatically. Pending edits are checked together; independent clean edits stage atomically and blocked dependencies remain pending. Source resources and validated receipt prefixes are cached with identity invalidation."
       },
       "source_container": {
         "format": "APF SPLB, MASTER PLAY and ROST; authored Xenia TOML for patches",
-        "hash_pins": [],
+        "hash_pins": [
+          "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf",
+          "65f522ce1cdda42cf19c112e9ec07302e89c81e4148c9f22e6db5e03952f9457"
+        ],
         "resource": "Team book assignments, named books and MASTER personnel",
         "retail_file": "User-owned All-Pro Football 2K8 (USA) extracted game folder"
       },
-      "summary": "Per-team call preview and staged formation ratings, play ratings, personnel, removals, tendency and audibles. Gameplay UNWITNESSED.",
+      "summary": "CPU Play Calling edits named books and independent exclusions in twelve live down/distance buckets. Both native draws filter against a persistent per-book mask and retain their original candidates if emptied. Requested rows show computed values and editable shared MASTER rows. Explicit patch installation is required; gameplay UNWITNESSED.",
       "surface": "scripts_config",
       "title": "CPU Play Calling editor",
       "validation_command": "python3 -m tests.mod_editor.test_apf_playcalling_editor_facade"
@@ -2783,6 +2802,77 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.apf2k8_fourth_down --profile <base|tu_1_1> --output <authored.patch.toml> [--thresholds <authored.json>] [--enable]",
+        "module": "mod_editor/core/apf2k8_fourth_down.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/research/apf_b71_fourth_down.md",
+        "tests/mod_editor/test_apf_fourth_down.py",
+        "tests/mod_editor/test_apf_fourth_down_native.py",
+        "tests/mod_editor/test_apf_fourth_down_qt.py",
+        "tests/mod_editor/test_apf_xenia_edge.py"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Tools menu opens the independent global-threshold editor. No preset enables this patch. Installation requires explicit opt-in."
+      },
+      "id": "apf2k8.playbooks.fourth_down",
+      "input_constraints": [
+        "Pinned Xbox 360 BASE or TU 1.1 executable profile; global settings affect every CPU book.",
+        "Eight finite bounded numeric thresholds. Canonical patch parser refuses changed addresses, instructions or unrelated writes.",
+        "Patch reserves read-only image padding 0x844DBD80..0x844DBDC0 and code padding 0x84D0D000..0x84D0D040. Other patches must not overlap."
+      ],
+      "portme": [
+        "Witness the full offside/timeout/next-call sequence and edited choices in a running match.",
+        "Check native Windows and Edge controller input; this job only tests configuration and mocked launch."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship authored code and patch recipes only. No retail images, books or reconstructed title updates.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "UNWITNESSED in-game. Pinned bounded native decision and snap-controller frontiers; explicit readiness, RNG and kicker-range adapters. No emulator launched.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "base or tu_1_1",
+            "name": "profile",
+            "required": true
+          },
+          {
+            "allowed": "Eight finite fields; omitted means retail defaults.",
+            "name": "thresholds",
+            "required": false
+          }
+        ],
+        "notes": "Separate authored Xenia patch; no SPLB/MASTER situation edits."
+      },
+      "source_container": {
+        "format": "Hash-keyed Xenia patch TOML",
+        "hash_pins": [
+          "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf",
+          "65f522ce1cdda42cf19c112e9ec07302e89c81e4148c9f22e6db5e03952f9457"
+        ],
+        "resource": "Executable decision literals and own-half comparison",
+        "retail_file": "User-owned APF Xbox 360 BASE or Title Update 1.1"
+      },
+      "summary": "Global go/punt/field-goal and draw-offside thresholds with retail defaults, neutral preview and opt-in Xenia patch. Gameplay UNWITNESSED.",
+      "surface": "scripts_config",
+      "title": "CPU fourth-down triggers (EXPERIMENTAL)",
+      "validation_command": "python3 -m tests.mod_editor.test_apf_fourth_down"
+    },
+    {
+      "backend": {
         "command": "python3 tools/apf_book_unlock.py identity --source <0A>",
         "module": "tools/apf_book_unlock.py",
         "operation": "inspect"
@@ -2790,14 +2880,18 @@
       "classification": "read-only-mapped",
       "evidence": [
         "docs/mod_editor/apf_wave_2026_09_09.md",
-        "docs/mod_editor/apf_b661_cpu_book_control.md"
+        "docs/mod_editor/apf_b661_cpu_book_control.md",
+        "docs/research/apf_b71_situations.md",
+        "tests/mod_editor/test_apf_b71_situations.py",
+        "tests/mod_editor/test_apf_playcall_research_native.py",
+        "tests/mod_editor/test_apf_playcalling_editor_qt.py"
       ],
       "game": "apf2k8_xbox360",
       "gui": {
         "default_enabled": true,
         "expose": true,
         "mode": "view",
-        "reason": "Integrated in the APF Studio with offline validation; gameplay UNWITNESSED."
+        "reason": "One-line navigation to CPU Play Calling; redundant book and scheme controls are hidden in the integrated studio."
       },
       "id": "apf2k8.playbooks.identity",
       "input_constraints": [
@@ -2837,7 +2931,7 @@
         "resource": "filename-addressed book resources and root[11] labels; root[4] team pointers",
         "retail_file": "user-owned extracted APF Xbox 360 game folder"
       },
-      "summary": "Explain each team label and name-resolved book, then open the chosen or newly cloned game folder in Fine-tune. Finish the original Studio project before cloning because directory entry indices shift.",
+      "summary": "Inspect serialized book identity through the underlying tools; the integrated Book Identity tab points to CPU Play Calling for book selection, copies and edits.",
       "surface": "scripts_config",
       "title": "Book Identity",
       "validation_command": "python3 packaging/check_apf2k8_mod_studio_runtime.py"
@@ -2989,14 +3083,18 @@
         "tests/mod_editor/test_apf_b69_schemes.py",
         "tests/mod_editor/test_apf_b69_editor_qt.py",
         "tests/mod_editor/test_apf_b69_build.py",
-        "tests/mod_editor/test_apf_b69_native.py"
+        "tests/mod_editor/test_apf_b69_native.py",
+        "docs/research/apf_b71_situations.md",
+        "tests/mod_editor/test_apf_b71_situations.py",
+        "tests/mod_editor/test_apf_playcall_research_native.py",
+        "tests/mod_editor/test_apf_playcalling_editor_qt.py"
       ],
       "game": "apf2k8_xbox360",
       "gui": {
         "default_enabled": false,
-        "expose": true,
+        "expose": false,
         "mode": "edit",
-        "reason": "Explicit review in the existing CPU Play Calling tab; options start off. The integrated real writers, reparse, project replay, Undo and copied build are tested. Gameplay UNWITNESSED."
+        "reason": "Legacy recipes remain loadable and scriptable; duplicate scheme controls are hidden from the integrated book workflow. Nothing is staged automatically."
       },
       "id": "apf2k8.playbooks.offensive_schemes",
       "input_constraints": [
@@ -3007,7 +3105,7 @@
         "Shared book is cloned for the selected team; aliased team tendency pointers are refused. Reapplying adds deltas again."
       ],
       "portme": [
-        "Run the named 7ET/Urianus witness steps in ASTRA_B69_J9_REPORT.md before promoting any runtime claim."
+        "Retest the current book workflow in ASTRA_REPORT.md before promoting any runtime claim."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -3524,14 +3622,18 @@
       "evidence": [
         "docs/mod_editor/apf_wave_2026_09_09.md",
         "docs/mod_editor/apf_b661_cpu_book_control.md",
-        "docs/mod_editor/apf2k8_book_identity_walkthrough.md"
+        "docs/mod_editor/apf2k8_book_identity_walkthrough.md",
+        "docs/research/apf_b71_situations.md",
+        "tests/mod_editor/test_apf_b71_situations.py",
+        "tests/mod_editor/test_apf_playcall_research_native.py",
+        "tests/mod_editor/test_apf_playcalling_editor_qt.py"
       ],
       "game": "apf2k8_xbox360",
       "gui": {
-        "default_enabled": true,
-        "expose": true,
+        "default_enabled": false,
+        "expose": false,
         "mode": "edit",
-        "reason": "Book Identity links the walkthrough and exposes replacement unchecked by default, per book. Offline writer/reparse proved; gameplay UNWITNESSED."
+        "reason": "Legacy recipes remain loadable and scriptable; duplicate scheme controls are hidden from the integrated book workflow. Nothing is staged automatically."
       },
       "id": "apf2k8.playbooks.scheme_presets",
       "input_constraints": [
@@ -3588,14 +3690,18 @@
         "docs/mod_editor/apf_b69_schemes.md",
         "ASTRA_B69_J9_REPORT.md",
         "tests/mod_editor/test_apf_b69_schemes.py",
-        "tests/mod_editor/test_apf_b69_editor_qt.py"
+        "tests/mod_editor/test_apf_b69_editor_qt.py",
+        "docs/research/apf_b71_situations.md",
+        "tests/mod_editor/test_apf_b71_situations.py",
+        "tests/mod_editor/test_apf_playcall_research_native.py",
+        "tests/mod_editor/test_apf_playcalling_editor_qt.py"
       ],
       "game": "apf2k8_xbox360",
       "gui": {
         "default_enabled": false,
         "expose": true,
         "mode": "export",
-        "reason": "Export play call spreadsheet in CPU Play Calling writes UTF-8 CSV of the current staged offense. It is a planning aid with explicit proxy rows and probability limits."
+        "reason": "Export beside the situation candidate editor; the CSV names the selected book and preview run share."
       },
       "id": "apf2k8.playbooks.scheme_spreadsheet",
       "input_constraints": [
@@ -3605,7 +3711,7 @@
         "No scripted sequence is installed; requested pick counts and run-by-row intent remain planning annotations."
       ],
       "portme": [
-        "Run the named 7ET/Urianus witness steps in ASTRA_B69_J9_REPORT.md before promoting any runtime claim."
+        "Retest the current book workflow in ASTRA_REPORT.md before promoting any runtime claim."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -3634,7 +3740,7 @@
         "resource": "Team book assignments, named books and MASTER personnel",
         "retail_file": "User-owned All-Pro Football 2K8 (USA) extracted game folder"
       },
-      "summary": "Export the staged offensive book as CSV in all 23 coaching buckets, with actual model probabilities, representative engine rows and separate coaching-intent run percentages.",
+      "summary": "Export the selected staged offensive book with a team-independent preview run share and 23 labeled situation proxies; no independent per-situation list or on-field guarantee.",
       "surface": "scripts_config",
       "title": "Play call spreadsheet",
       "validation_command": "python3 -m tests.mod_editor.test_apf_b69_schemes"
@@ -9579,23 +9685,29 @@
       "evidence": [
         "tests/mod_editor/test_nfl2k5_modern_color.py",
         "data/nfl2k5_modern_color_pins.json",
-        "docs/modern_color/README.md"
+        "docs/modern_color/README.md",
+        "tests/mod_editor/test_colour_lighting.py",
+        "tests/mod_editor/test_colour_lighting_qt.py",
+        "docs/modern_color/CONTROLS.md",
+        "reports/b71_s7/strength_proof.json"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "EXPERIMENTAL / UNWITNESSED. Build tab checkbox; Off in every preset. Needs a disc image."
+        "reason": "EXPERIMENTAL. Build: Colour & lighting controls with predicted swatches, per-lever toggles and Broadcast / Retail resets. Off in every preset; settings persist with the project."
       },
       "id": "nfl2k5.presentation.modern_color_lighting",
       "input_constraints": [
-        "Seven pinned .rdata light tables (0x120 bytes each) behind the retail selector FUN_000641c0 and installer FUN_000f2360; ambient colour/intensity and light colours/intensities rewritten, directions, counts and the shadow value unchanged.",
-        "477 pinned stadium bundles: Fldd tint word, detail_normal palette (uncompressed) and the field SCNE refit into its fixed VC-LZ span with the retail wrapper; only retail or already-modern bundles are accepted.",
-        "Targets measured from 2026 Week 1 broadcast stills per game; appearance in game is unwitnessed."
+        "Seven pinned .rdata light tables (0x120 bytes each) behind the retail selector and installer. Ambient, key, fill and white balance use the existing owner; directions and counts stay retail. Day/afternoon colour recipe also blends their shadow strength; the five other shadow values remain retail. Night and dome share one table.",
+        "477 pinned stadium bundles: field SCNE, detail_normal, divots and Fldd tint. Fixed spans and retail wrappers remain unchanged. Unfit spans retain retail bytes and their receipts name the limitation.",
+        "Custom settings are validated finite values with bounded ranges. Each slider and group has an Off switch. End-zone and outside colour follow turf unless unlinked. Map contrast only adjusts variation already encoded in a colour map.",
+        "Regrading needs the original retail source. Same-recipe builds can replay only recognized bytes; custom status requires its own per-bundle receipt and transform revision. C5 updates outside data in 477 bundle pins; all seven C4 rig pins and all field maps remain exact.",
+        "PREDICTED turf uses the calibrated map-times-rig model. Outside uses a separate response calibrated from one day strip; other conditions and classes extrapolate it. Linked outside means, including neutral vertex shade, stay within 8 percent below FIELD and no more saturated under the model. Wear, bump detail and stripes remain outside the mean model."
       ],
       "portme": [
-        "Witness one day, one late-afternoon, one night and one dome game against the broadcast stills; then tune per-bucket rigs."
+        "Witness custom settings in day, afternoon, night, dome, rain and snow games; check whites and skin, painted end zones, outside grass, mowing contrast and far-field shimmer at matching resolution."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -9606,9 +9718,13 @@
       "runtime": {
         "evidence": [
           "docs/modern_color/README.md",
-          "tests/mod_editor/test_nfl2k5_modern_color.py"
+          "tests/mod_editor/test_nfl2k5_modern_color.py",
+          "FABLE_B71_COLOR2_REPORT_2026-09-15.md",
+          "tests/mod_editor/test_colour_lighting.py",
+          "tests/mod_editor/test_colour_lighting_qt.py",
+          "docs/modern_color/CONTROLS.md"
         ],
-        "scope": "Offline byte receipts and decoder read-back only; no played, appearance or performance outcome is witnessed.",
+        "scope": "Offline custom parameter writes, decode read-back, byte-preserving wrappers, swatch calibration and offscreen project save/reload. All C4 field maps and seven rigs remain exact. Linked outside palettes and separate vertex tints follow FIELD predictions under every rig, including material-only fields. Outside colour across stadiums and conditions, custom settings and shimmer behaviour remain UNWITNESSED in game.",
         "status": "not-tested"
       },
       "selectors": {
@@ -9617,9 +9733,14 @@
             "allowed": "false (default) or true",
             "name": "enabled",
             "required": false
+          },
+          {
+            "allowed": "nfl2k5_colour_lighting/v1 project document; 56 bounded numeric controls including the overall strength blend (default 0.5), group switches, per-control disabled list, surface links and preview selectors",
+            "name": "modern_color_settings",
+            "required": false
           }
         ],
-        "notes": "Off restores the retail light rigs only; grass bundles stay as the source carries them."
+        "notes": "Option remains Off in all presets. Broadcast resets daylight rigs to C4, outside surfaces to the C5 FIELD link, and other controls to v2.1. Retail resets every lever to its retail value. Unlink outside surfaces to use stored custom colour. Regrading needs original retail. Custom status is applied (custom) with a matching .colour-lighting.json receipt and transform revision."
       },
       "source_container": {
         "format": "Xbox XBE .rdata tables with section-digest repair, plus in-place fixed-span archive resources in the stadium bundles",
@@ -9629,13 +9750,13 @@
           "6ebd76243822a62010a280cf54d9b72974a6236501f68d45aad19421d3377e28",
           "c9f0e5c7bd79926056f91cd21d8ae05b929eb5d635e22da5ea89d941bfdc7f9b"
         ],
-        "resource": "VA 0x4E73B0..0x4E7B90 light tables; archive outers 3136..3625 field scenes, detail_normal and Fldd chunks",
+        "resource": "VA 0x4E73B0..0x4E7B90 light tables; 477 archive bundles with field scenes, detail_normal, divots and Fldd tint",
         "retail_file": "default.xbe (light tables) and the vc_53450030 archive packs holding the 477 stadium bundles"
       },
-      "summary": "Change one existing dry outdoor haze endpoint from 0.8 to 1.0, with recognized Off restoration. Does not force fog or add sky art; camera parameter proof only.",
+      "summary": "Tune stadium turf, linked end zones and outside grass, divot contrast, bump flattening, time-of-day tints and seven existing light rigs. Preview the calibrated mean turf colour, save custom project settings and build with fixed-span receipts.",
       "surface": "stadiums_fields",
       "title": "Modern colour and lighting (experimental)",
-      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_modern_color"
+      "validation_command": "python3 -m tests.mod_editor.test_colour_lighting"
     },
     {
       "backend": {
@@ -10427,24 +10548,46 @@
         "tests/mod_editor/test_nfl2k5_b68_game_composition.py",
         "docs/nfl2k5_b68_t3_composition.json",
         "tests/mod_editor/test_nfl2k5_scorebug_mnf.py",
-        "FABLE_B70_SCOREBUG_REPORT_2026-09-15.md"
+        "FABLE_B70_SCOREBUG_REPORT_2026-09-15.md",
+        "tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py",
+        "reports/b71_s4/measurements.json",
+        "reports/b71_s4/states.json",
+        "reports/b71_s4/compare_43.png",
+        "reports/b71_s4/compare_wide.png",
+        "reports/b71_s4/text_rgb_mae.json",
+        "reports/b71_s4/logo_fit.json",
+        "reports/b71_s4/final-delivery-suite-summary.json",
+        "docs/mod_editor/sprite_scorebug.md",
+        "tests/mod_editor/test_nfl2k5_scorebug_sprite.py",
+        "reports/b71_s5/scene-route.json",
+        "reports/b71_s5/measurements.json",
+        "reports/b71_s5/states.json",
+        "reports/b71_s5/volume.json",
+        "reports/b71_s6/measurements.json",
+        "reports/b71_s6/finish-proof.json",
+        "reports/b71_s6/owner-bounds.json",
+        "reports/b71_s6/states.json",
+        "reports/b71_s6/volume.json",
+        "reports/b71_s8/espn_mnf_measure.json",
+        "reports/b71_s8/display_model.json",
+        "reports/b71_s8/watermark_still_vs_cell_4x.png"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "EXPERIMENTAL / UNWITNESSED. Beta 70: the 2026 Monday Night Football bug (logos, possession plate, timeout dashes, ESPN red play clock, ESPN digits). The beta 69 freeze after Berman's intro was reproduced in the emulator on 2026-09-15: the 1.7 MB of appended HUD art made the resource loader read a chunk into a null buffer; the rebuilt option appends 0.35 MB, the size class that reached the coin toss in the same test. Not yet played by a person."
+        "reason": "EXPERIMENTAL / UNWITNESSED. Preview executes the actual owner and renders its live quads. The 323,808-byte append stays below the historical freeze-class volume ceiling; a played intro and match remain required."
       },
       "id": "nfl2k5.scorebug_presentation.runtime",
       "input_constraints": [
         "User-owned pinned NFL 2K5 USA disc with retail HUD resources, or a completely recognized runtime installation.",
         "Use a disposable output copy; reserve the selected allocator owner union before installing hooks.",
-        "An XBE alone cannot install the required 66 native panel textures. Rebuild from a supported base for the new hooks or a changed owner set; old hook code is refused."
+        "An XBE alone cannot install the atlas, 33 shared logos and enlarged scene. Use the shipped sprite PNG/JSON folder or a validated compatible design and rebuild from a supported base."
       ],
       "portme": [
-        "Witness the 2026 bar in Play Now with the Berman intro on (the beta 69 crash path), then in Franchise; report the wing logos, the plate colour on a change of possession, the dashes after a timeout, the red play clock under five seconds.",
-        "Logos, timeouts, possession colour and clock colours are unwitnessed; the static v3 scorebar remains the witnessed fallback."
+        "Witness the intro, kickoff, live play, possession change, scores including three digits, timeouts, both clocks and all retail events in Play Now and Franchise at both aspects.",
+        "Compare the played frame with the generated native preview; current sprite gameplay and GPU appearance remain UNWITNESSED."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -10463,15 +10606,39 @@
           "FABLE_B70_SCOREBUG_REPORT_2026-09-15.md",
           "docs/scorebug_mnf/witness/run6_play4_live_play.jpg",
           "docs/scorebug_mnf/witness/run6_gdb_registers.txt",
-          "tests/mod_editor/test_nfl2k5_scorebug_mnf.py"
+          "tests/mod_editor/test_nfl2k5_scorebug_mnf.py",
+          "FABLE_B71_WINGS_REPORT_2026-09-15.md",
+          "tests/mod_editor/test_nfl2k5_scorebug_fonts.py",
+          "FABLE_B71_FONT_REPORT_2026-09-15.md",
+          "tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py",
+          "reports/b71_s4/measurements.json",
+          "reports/b71_s4/states.json",
+          "reports/b71_s4/compare_43.png",
+          "reports/b71_s4/compare_wide.png",
+          "reports/b71_s4/text_rgb_mae.json",
+          "reports/b71_s4/logo_fit.json",
+          "reports/b71_s4/final-delivery-suite-summary.json",
+          "docs/mod_editor/sprite_scorebug.md",
+          "tests/mod_editor/test_nfl2k5_scorebug_sprite.py",
+          "reports/b71_s5/scene-route.json",
+          "reports/b71_s5/measurements.json",
+          "reports/b71_s5/states.json",
+          "reports/b71_s5/volume.json",
+          "reports/b71_s6/measurements.json",
+          "reports/b71_s6/finish-proof.json",
+          "reports/b71_s6/owner-bounds.json",
+          "reports/b71_s6/states.json",
+          "reports/b71_s6/volume.json",
+          "reports/b71_s7/plate_contrast.json",
+          "reports/b71_s7/plate_contact_sheet.png"
         ],
-        "scope": "The previous GPU-fence repair passes its historical control. Beta 68 exercises scorebug-enabled composed BuildPlans, native collection loading, setup at FCE56, update at FCFA2, font glyph draws, re-entry and the separate presentation/kickoff fixtures. andrethealchemist's selected/unselected comparison identifies this option as a reported trigger, but the stopped instruction, real asynchronous loader/GPU state and full scene lifetime are unavailable. No Berman fix is claimed. In-game behavior remains UNWITNESSED. Beta 70: the freeze was reproduced with the debugger (bugcheck 0x1E, a write to address 0 at kernel 0x8001DBD4 while the resource loader was busy) and removed; a second stop at the coin toss was removed the same day; one xemu run reached live play with the 2026 bar drawn (docs/scorebug_mnf/witness/). See FABLE_B70_SCOREBUG_REPORT_2026-09-15.md.",
+        "scope": "Native collection loading proves the enlarged same-name SCNE and atlas win HUD lookup. The owner calls retail getters and writes preallocated glyph quads, tints wings and possession plate with team colours lifted as lit on air (a lightness floor, with the white label checked at 4.5:1 or better on the shaded plate for all 32 teams), and retains retail FLAG, FUMBLE, hang time and ball-on callbacks. Rotating score slabs conflict with the new scores and are suppressed. Standard geometry and glyph ink are within one HUD pixel at both aspects. Bounded register/FPU, idempotence, ownership, foreign-byte and volume checks do not prove a played intro or GPU appearance.",
         "status": "not-tested"
       },
       "selectors": {
         "fields": [
           {
-            "allowed": "false in every preset; manual true implies scorebug and xbe_space and selects the full diagnostic profile",
+            "allowed": "false in every preset; manual true implies scorebug and xbe_space and selects the sprite profile",
             "name": "scorebug_runtime",
             "required": true
           }
@@ -10479,7 +10646,7 @@
         "notes": "Implies scorebug and xbe_space. Relocated kickoff is independent and requires its existing alignment prerequisites."
       },
       "source_container": {
-        "format": "XBE and native TXTR/FONT/SCNE resources in XDVDFS pack 0",
+        "format": "XBE and native TXTR/SCNE resources in XDVDFS pack 0; retail FONT resources unchanged",
         "hash_pins": [
           "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
           "2c23410c05c1ec266c3176b8b201f9a48b4a45ac148110ca569e5df25984e7c8",
@@ -10488,10 +10655,10 @@
         "resource": "owned RX/RW hook allocations plus HUD outer 346 and its archive index",
         "retail_file": "user-owned default.xbe and vc_53450030/0 in an NFL 2K5 USA disc"
       },
-      "summary": "The ESPN Monday Night Football 2026 bar at runtime: team-colour wings with the current logos, white scores, a down plate in the possessing team's colour, the clock capsule and timeout dashes; 66 appended wing textures (0.35 MB) and no private fonts. The freeze after Berman's intro reported on beta 69 (andrethealchemist: 'Unselecting that option fixed the issue for me.') was reproduced in the emulator, a kernel bugcheck from a null loader buffer after an allocation failure under the 1.7 MB appended volume, and removed by the smaller volume. Seen by Claude in one xemu run into live play; not witnessed by a player. Off in every preset.",
+      "summary": "One PNG and JSON design compiles to 47 atlas quads, 33 logo textures and an enlarged same-name scene, laid out for the display the disc is built for (4:3, or the widescreen option's 27/32-contracted 16:9 picture) so the bar keeps the measured broadcast proportions. Scores, clocks, labels and timeout ticks use sprites; no FONT resource is appended. Clean logo edges, shaded possession plate, light notch, rounded capsule ends, smooth wing ramps, a yellow FLAG plate with a dark label and a brand layer group (the ESPN MNF watermark lifted from broadcast stills at its measured opacity) retain a 323,808-byte append. Native CPU execution and both-aspect software previews with display-space images are proved; played-game appearance remains UNWITNESSED and the option is off in every preset.",
       "surface": "scorebug_presentation",
-      "title": "Scorebug effects (reported Berman freeze)",
-      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_b68_game_composition"
+      "title": "Sprite scorebug (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_scorebug_sprite"
     },
     {
       "backend": {
@@ -11423,6 +11590,74 @@
       "surface": "stadiums_fields",
       "title": "Blender Stadium textures (experimental, unwitnessed)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_stadium_editor_roundtrip"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_modern_arrowhead status <source>",
+        "module": "mod_editor/core/nfl2k5_modern_arrowhead.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_modern_arrowhead.py",
+        "data/nfl2k5_modern_arrowhead_pins.json",
+        "docs/modern_arrowhead/README.md"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Build tab checkbox; Off in every preset. Needs a disc image; Off does not restore an already-modern source."
+      },
+      "id": "nfl2k5.stadiums_fields.modern_arrowhead",
+      "input_constraints": [
+        "Nine pinned Arrowhead bundles (s13 day/afternoon/night x dry/rain/snow): the field SCNE (three end zone textures, the centre mark) and the stadium SCNE (seats, wall pads, fascia boards, wall ads, three fan banners, the tarp) refit inside their fixed VC-LZ spans with the retail wrappers; only retail or already-modern bundles are accepted.",
+        "Fourteen authored RGBA8 PNGs in data/nfl2k5_modern_arrowhead compiled at build time into the retail P8 allocations (palette and mips regenerated); the crowd figures, grass colour map, bump map, lights and geometry are untouched.",
+        "Appearance in game is unwitnessed."
+      ],
+      "portme": [
+        "Witness Arrowhead at night and by day against the 2026 broadcast stills; then tune the seat tone, the boards and the end zone lettering."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute authoring tools, values and verified recipes only. Never bundle a retail roster, executable, disc or texture.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "docs/modern_arrowhead/README.md",
+          "tests/mod_editor/test_nfl2k5_modern_arrowhead.py"
+        ],
+        "scope": "Offline byte receipts and decoder read-back only; no played or appearance outcome is witnessed.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false (default) or true",
+            "name": "enabled",
+            "required": false
+          }
+        ],
+        "notes": "On rewrites the nine Arrowhead bundles; Off leaves the source as it is (an already-modern source stays modern)."
+      },
+      "source_container": {
+        "format": "In-place fixed-span SCNE resources in the nine Arrowhead stadium bundles of the vc_53450030 archive packs",
+        "hash_pins": [
+          "b5bcf870b8c855c5006e5fbe6268851bf18001bdf5d910e8b7d2e5ed93e08642",
+          "ab585b3dceefe2c073726e66e3baa725f0d5f5fe4fad36d5823edd93c3f2c661",
+          "10fd1f8746f6b143af77f077b2f48f50e5ce2bcc258fdf8c82a5473d115d73a9",
+          "d3eb28787a5d09f61c9ec6b7f73ff115c3d78e77691ef56ec3256e4274f0658a"
+        ],
+        "resource": "archive entries s13dd/s13ad/s13nd/s13dr/s13ar/s13nr/s13ds/s13as/s13ns: field scene (chunk 0) and stadium scene (chunk 6)",
+        "retail_file": "the vc_53450030 archive packs holding the Arrowhead bundles"
+      },
+      "summary": "The Kansas City home stadium packages toward the 2026 look: red seats, red wall pads with the gold rail, current fascia boards and wall ads, CHIEFS end zones with the mark at both ends, the current mark at midfield and Chiefs fan banners, refit inside the retail spans. Off in every preset; the crowd, grass and lights stay retail; unwitnessed in game.",
+      "surface": "stadiums_fields",
+      "title": "Modern Arrowhead (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_modern_arrowhead"
     },
     {
       "backend": {

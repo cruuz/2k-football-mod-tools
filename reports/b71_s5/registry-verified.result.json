@@ -1,0 +1,12 @@
+{
+  "name": "registry-verified",
+  "argv": [
+    "python3",
+    "-m",
+    "mod_editor.capabilities.validate_registry"
+  ],
+  "start_utc": "2026-09-16T02:50:18.895971+00:00",
+  "end_utc": "2026-09-16T02:50:19.068336+00:00",
+  "seconds": 0.172,
+  "exit_code": 0
+}

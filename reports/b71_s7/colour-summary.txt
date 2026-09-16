@@ -1,0 +1,10 @@
+test_nfl2k5_modern_color exit=0 12s Ran 10 tests in 11.232s OK 
+test_colour_lighting exit=0 32s Ran 12 tests in 31.878s OK 
+test_colour_lighting_qt exit=0 2s Ran 6 tests in 1.536s OK 
+test_nfl2k5_daylight_composition exit=0 27s OK 
+test_b71_a6_composition exit=0 0s Ran 2 tests in 0.036s OK 
+test_mod_build exit=0 3s Ran 13 tests in 1.936s OK 
+test_product_catalog exit=0 0s Ran 9 tests in 0.045s OK 
+test_provider_integrity exit=1 10s Ran 8 tests in 9.701s FAILED (failures=1) 
+test_phase1_packaging exit=0 2s Ran 23 tests in 2.092s OK 
+ALL DONE

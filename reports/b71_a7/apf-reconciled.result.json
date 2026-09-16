@@ -1,0 +1,11 @@
+{
+  "name": "apf-reconciled",
+  "argv": [
+    "python3",
+    "reports/b71_a7/reconcile_apf.py"
+  ],
+  "started": "2026-09-16T01:01:04.278724+00:00",
+  "ended": "2026-09-16T01:01:04.315303+00:00",
+  "seconds": 0.037,
+  "exit_code": 0
+}

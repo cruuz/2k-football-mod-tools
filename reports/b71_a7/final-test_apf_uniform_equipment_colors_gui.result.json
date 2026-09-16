@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_uniform_equipment_colors_gui",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_uniform_equipment_colors_gui.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:58:23.684413+00:00",
+  "ended": "2026-09-16T00:58:23.899292+00:00",
+  "seconds": 0.215,
+  "exit_code": 0
+}

@@ -1,0 +1,224 @@
+{
+  "name": "s13as.iff",
+  "sha256": "fa3295f03428f85e84aeba86f0b0cd4830f6e4ceee02ccc7c62347b2531df8bf",
+  "seconds": 322.41958541900385,
+  "art_textures": [
+    "endzone_L.png",
+    "endzone_M.png",
+    "endzone_R.png",
+    "center_logo.png"
+  ],
+  "decoded_colour_outside_art_exact": true,
+  "retail_field_wrapper_exact": true,
+  "stadium_applied_pin_exact": true,
+  "other_bundle_bytes_exact": true,
+  "write_reparse_replay_tamper": true,
+  "disc_built": false,
+  "edits": [
+    {
+      "kind": "field",
+      "offset": 0,
+      "size": 170768,
+      "retail": "6e42f5a424bb4f4f634c00a7e7e4c6b2024a7e40bb86f3503a3d78b1266ed73d",
+      "applied": "58128b9d7f37d779abfa64010c054ba9dde8dbb09377461cb52097af7bdaeaa4",
+      "detail": {
+        "palettes": [
+          {
+            "material": "color_premipped",
+            "offset": 71040,
+            "changed": 78
+          },
+          {
+            "material": "grass_outside_premipped",
+            "offset": 457152,
+            "changed": 0
+          },
+          {
+            "material": "endzone_N_L",
+            "offset": 115712,
+            "changed": 81
+          },
+          {
+            "material": "endzone_N_M",
+            "offset": 160384,
+            "changed": 192
+          },
+          {
+            "material": "endzone_N_R",
+            "offset": 205056,
+            "changed": 87
+          },
+          {
+            "material": "center_logo",
+            "offset": 293440,
+            "changed": 87
+          }
+        ],
+        "materials": [],
+        "vertex_tints": 1915,
+        "outside": {
+          "link_amount": 0,
+          "field_rgb": [
+            215.6512451171875,
+            241.0504150390625,
+            161.6793212890625
+          ],
+          "before_rgb": [],
+          "after_rgb": []
+        },
+        "refit": true,
+        "encoder": "greedy",
+        "fill": "trailing",
+        "padding_bytes": 3,
+        "alias_scratch": 3,
+        "scratch_bytes": 16
+      }
+    },
+    {
+      "kind": "stadium",
+      "offset": 402816,
+      "size": 975472,
+      "retail": "cb0edb550018cbc1692da15a42862965f40aad8fe0b0718eaa7dd17c1ba30c4b",
+      "applied": "a6b02a464a88a3f91ea75bc240f17f672d787162300793be3f27ac69cc4297b2",
+      "detail": {
+        "scene": "stadium",
+        "textures": [
+          {
+            "texture": 2,
+            "png": "yardside.png",
+            "material": [
+              "yardside"
+            ],
+            "palette_entries": 256,
+            "size": [
+              64,
+              64
+            ],
+            "mips": 4
+          },
+          {
+            "texture": 3,
+            "png": "yardfront.png",
+            "material": [
+              "yardfront"
+            ],
+            "palette_entries": 256,
+            "size": [
+              128,
+              128
+            ],
+            "mips": 5
+          },
+          {
+            "texture": 4,
+            "png": "ad01.png",
+            "material": [
+              "ad01"
+            ],
+            "palette_entries": 255,
+            "size": [
+              256,
+              256
+            ],
+            "mips": 6
+          },
+          {
+            "texture": 6,
+            "png": "seat03.png",
+            "material": [
+              "seat03"
+            ],
+            "palette_entries": 249,
+            "size": [
+              128,
+              128
+            ],
+            "mips": 5
+          },
+          {
+            "texture": 8,
+            "png": "seat_rows.png",
+            "material": [
+              "seat02",
+              "seat01"
+            ],
+            "palette_entries": 256,
+            "size": [
+              128,
+              128
+            ],
+            "mips": 5
+          },
+          {
+            "texture": 18,
+            "png": "banner_corp.png",
+            "material": [
+              "banner_corp"
+            ],
+            "palette_entries": 256,
+            "size": [
+              256,
+              256
+            ],
+            "mips": 6
+          },
+          {
+            "texture": 19,
+            "png": "banner_home_team.png",
+            "material": [
+              "banner_home_team"
+            ],
+            "palette_entries": 256,
+            "size": [
+              128,
+              128
+            ],
+            "mips": 5
+          },
+          {
+            "texture": 20,
+            "png": "banner_home_player.png",
+            "material": [
+              "banner_home_player"
+            ],
+            "palette_entries": 256,
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5
+          },
+          {
+            "texture": 21,
+            "png": "banner_away_team.png",
+            "material": [
+              "banner_away_team"
+            ],
+            "palette_entries": 254,
+            "size": [
+              128,
+              128
+            ],
+            "mips": 5
+          },
+          {
+            "texture": 42,
+            "png": "tarp_red.png",
+            "material": [
+              "tarpGreen"
+            ],
+            "palette_entries": 255,
+            "size": [
+              128,
+              128
+            ],
+            "mips": 5
+          }
+        ],
+        "encoded_bytes": 975418,
+        "consumed_cap": 975427,
+        "scratch_after": 128
+      }
+    }
+  ]
+}

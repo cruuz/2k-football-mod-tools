@@ -1,0 +1,12 @@
+{
+  "name": "registry-current",
+  "argv": [
+    "python3",
+    "-m",
+    "mod_editor.capabilities.validate_registry"
+  ],
+  "start_utc": "2026-09-16T03:19:05.561773+00:00",
+  "end_utc": "2026-09-16T03:19:05.718507+00:00",
+  "seconds": 0.157,
+  "exit_code": 0
+}

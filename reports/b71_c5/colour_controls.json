@@ -1,0 +1,10 @@
+{
+  "command": [
+    "python3",
+    "tests/mod_editor/test_colour_lighting.py"
+  ],
+  "start_utc": "2026-09-15T21:09:43.418265+00:00",
+  "end_utc": "2026-09-15T21:10:15.260616+00:00",
+  "seconds": 31.842,
+  "exit_code": 1
+}

@@ -1,0 +1,17 @@
+/home/noah/2k-worktrees/astra-b71-s5b/tools/scorebug_sprite/runtime.c: In function ‘sprite_update’:
+/home/noah/2k-worktrees/astra-b71-s5b/tools/scorebug_sprite/runtime.c:120:2: error: this ‘if’ clause does not guard... [-Werror=misleading-indentation]
+  120 |  if(!s->home)V(material(b,5)+8)|=1;if(!s->away)V(material(b,8)+8)|=1;
+      |  ^~
+/home/noah/2k-worktrees/astra-b71-s5b/tools/scorebug_sprite/runtime.c:120:36: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+  120 |  if(!s->home)V(material(b,5)+8)|=1;if(!s->away)V(material(b,8)+8)|=1;
+      |                                    ^~
+cc1: all warnings being treated as errors
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tools/scorebug_sprite/build_runtime.py", line 80, in <module>
+    result = generate()
+             ^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tools/scorebug_sprite/build_runtime.py", line 19, in generate
+    subprocess.run(["gcc", "-m32", optimize, "-ffreestanding", "-fno-builtin", "-fno-pic", "-fno-pie",
+  File "/usr/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['gcc', '-m32', '-Oz', '-ffreestanding', '-fno-builtin', '-fno-pic', '-fno-pie', '-fno-stack-protector', '-fno-asynchronous-unwind-tables', '-fno-unwind-tables', '-fomit-frame-pointer', '-fno-jump-tables', '-mpreferred-stack-boundary=2', '-mno-sse', '-mno-mmx', '-Wall', '-Wextra', '-Werror', '-c', '/home/noah/2k-worktrees/astra-b71-s5b/tools/scorebug_sprite/runtime.c', '-o', '/tmp/scorebug-sprite-code-5pycvkz3/c.o']' returned non-zero exit status 1.

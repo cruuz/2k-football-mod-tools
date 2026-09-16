@@ -1,0 +1,197 @@
+[
+  {
+    "path": "tests/mod_editor/test_colour_lighting_qt.py",
+    "receipt": "final-test_colour_lighting_qt.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_modern_color.py",
+    "receipt": "final-test_nfl2k5_modern_color.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebar_rim.py",
+    "receipt": "final-test_nfl2k5_scorebar_rim.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_author.py",
+    "receipt": "final-test_nfl2k5_scorebug_author.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_colour_lighting.py",
+    "receipt": "final-test_colour_lighting.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_fonts.py",
+    "receipt": "final-test_nfl2k5_scorebug_fonts.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebar_v3.py",
+    "receipt": "final-test_nfl2k5_scorebar_v3.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_exact.py",
+    "receipt": "final-test_nfl2k5_scorebug_exact.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_ingame.py",
+    "receipt": "final-test_nfl2k5_scorebug_ingame.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_assets.py",
+    "receipt": "final-test_nfl2k5_scorebug_assets.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_mnf.py",
+    "receipt": "final-test_nfl2k5_scorebug_mnf.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py",
+    "receipt": "final-test_nfl2k5_scorebug_mnf_v3.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py",
+    "receipt": "final-test_nfl2k5_scorebug_ingame_fix.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_projection.py",
+    "receipt": "final-test_nfl2k5_scorebug_projection.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_native.py",
+    "receipt": "final-test_nfl2k5_scorebug_native.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_freeze.py",
+    "receipt": "final-test_nfl2k5_scorebug_freeze.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_source_art.py",
+    "receipt": "final-test_nfl2k5_scorebug_source_art.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_template.py",
+    "receipt": "final-test_nfl2k5_scorebug_template.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_template_release.py",
+    "receipt": "final-test_nfl2k5_scorebug_template_release.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_unified_adapter.py",
+    "receipt": "final-test_nfl2k5_scorebug_unified_adapter.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_v10_ingame.py",
+    "receipt": "final-test_nfl2k5_scorebug_v10_ingame.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_v10_projection.py",
+    "receipt": "final-test_nfl2k5_scorebug_v10_projection.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_versions.py",
+    "receipt": "final-test_nfl2k5_scorebug_versions.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_scorebug_studio_panel_qt.py",
+    "receipt": "final-test_scorebug_studio_panel_qt.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_unif_color_argb_parse.py",
+    "receipt": "final-test_unif_color_argb_parse.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_unif_color_control.py",
+    "receipt": "final-test_unif_color_control.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/nfl2k5_scorebug_layout_test.py",
+    "receipt": "final-nfl2k5_scorebug_layout_test.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/nfl2k5_scorebug_mod_project_test.py",
+    "receipt": "final-nfl2k5_scorebug_mod_project_test.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/nfl_uniform_color_patch_test.py",
+    "receipt": "delivery-nfl_uniform_color_patch_test.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/test_nfl_uniform_colour_records.py",
+    "receipt": "final-test_nfl_uniform_colour_records.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_runtime.py",
+    "receipt": "final-test_nfl2k5_scorebug_runtime.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_b71_a6_composition.py",
+    "receipt": "final-test_b71_a6_composition.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_build_panel_qt.py",
+    "receipt": "final-test_build_panel_qt.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py",
+    "receipt": "final-test_nfl2k5_scorebug_freeze_v2.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_mod_build.py",
+    "receipt": "final-test_mod_build.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_modern_arrowhead.py",
+    "receipt": "final-test_nfl2k5_modern_arrowhead.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_discord_bugs_1.py",
+    "receipt": "final-test_discord_bugs_1.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_depth_chart_rows.py",
+    "receipt": "final-test_nfl2k5_depth_chart_rows.result.json",
+    "exit_code": 0
+  },
+  {
+    "path": "tests/mod_editor/test_nfl2k5_scorebug_resources.py",
+    "receipt": "final-test_nfl2k5_scorebug_resources.result.json",
+    "exit_code": 0
+  }
+]

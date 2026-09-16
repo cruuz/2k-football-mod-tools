@@ -1,0 +1,12 @@
+{
+  "name": "final-test_apf_book_unlock",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_book_unlock.py",
+    "-v"
+  ],
+  "started": "2026-09-16T00:44:19.268426+00:00",
+  "ended": "2026-09-16T00:44:44.877262+00:00",
+  "seconds": 25.609,
+  "exit_code": 0
+}

@@ -1,0 +1,122 @@
+test_complete_ratings_sheet_action_is_private_and_blocking (__main__.ApfRosterIdentityGuiTests.test_complete_ratings_sheet_action_is_private_and_blocking) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_disabled_product_mode_is_read_only_but_keeps_limits_visible (__main__.ApfRosterIdentityGuiTests.test_disabled_product_mode_is_read_only_but_keeps_limits_visible) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_large_shared_name_allocation_discloses_all_23_fields_in_dialog (__main__.ApfRosterIdentityGuiTests.test_large_shared_name_allocation_discloses_all_23_fields_in_dialog) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_native_100_is_shown_exactly_and_never_silently_clamped (__main__.ApfRosterIdentityGuiTests.test_native_100_is_shown_exactly_and_never_silently_clamped) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_over_limit_and_nul_names_fail_before_dispatch_with_plain_errors (__main__.ApfRosterIdentityGuiTests.test_over_limit_and_nul_names_fail_before_dispatch_with_plain_errors) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_player_base_ratings_are_exact_searchable_editable_and_hide_for_nonplayers (__main__.ApfRosterIdentityGuiTests.test_player_base_ratings_are_exact_searchable_editable_and_hide_for_nonplayers) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_player_names_replace_revert_and_disclose_every_alias_owner (__main__.ApfRosterIdentityGuiTests.test_player_names_replace_revert_and_disclose_every_alias_owner) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_player_position_dropdown_applies_reverts_and_marks_the_player (__main__.ApfRosterIdentityGuiTests.test_player_position_dropdown_applies_reverts_and_marks_the_player) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_rating_apply_and_individual_revert_refresh_badges_and_project_state (__main__.ApfRosterIdentityGuiTests.test_rating_apply_and_individual_revert_refresh_badges_and_project_state) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_ratings_sheet_import_previews_before_one_explicit_batch_apply (__main__.ApfRosterIdentityGuiTests.test_ratings_sheet_import_previews_before_one_explicit_batch_apply) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_ratings_sheet_preview_errors_cannot_be_overridden (__main__.ApfRosterIdentityGuiTests.test_ratings_sheet_preview_errors_cannot_be_overridden) ... ok
+test_ratings_sheet_preview_explains_counts_and_requires_conflict_acknowledgment (__main__.ApfRosterIdentityGuiTests.test_ratings_sheet_preview_explains_counts_and_requires_conflict_acknowledgment) ... ok
+test_ratings_sheet_source_conflicts_are_never_overrideable (__main__.ApfRosterIdentityGuiTests.test_ratings_sheet_source_conflicts_are_never_overrideable) ... ok
+test_shared_modified_allocation_is_counted_once_per_row (__main__.ApfRosterIdentityGuiTests.test_shared_modified_allocation_is_counted_once_per_row) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_team_display_name_replace_and_revert_refresh_the_row (__main__.ApfRosterIdentityGuiTests.test_team_display_name_replace_and_revert_refresh_the_row) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_team_fields_and_read_only_row_boundaries_are_explicit (__main__.ApfRosterIdentityGuiTests.test_team_fields_and_read_only_row_boundaries_are_explicit) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_zero_capacity_player_name_is_explicitly_read_only (__main__.ApfRosterIdentityGuiTests.test_zero_capacity_player_name_is_explicitly_read_only) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+/usr/lib/python3.12/tempfile.py:1075: ResourceWarning: Implicitly cleaning up <TemporaryDirectory '/tmp/apf-theme-ny6p9ive'>
+  _warnings.warn(warn_message, ResourceWarning)
+
+----------------------------------------------------------------------
+Ran 17 tests in 1.369s
+
+OK
