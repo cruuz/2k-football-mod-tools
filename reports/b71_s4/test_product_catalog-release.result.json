@@ -1,0 +1,11 @@
+{
+  "name": "test_product_catalog-release",
+  "command": [
+    "/usr/bin/python3",
+    "/home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_product_catalog.py"
+  ],
+  "start": "2026-09-15T22:22:29.884703+00:00",
+  "end": "2026-09-15T22:22:30.061635+00:00",
+  "seconds": 0.177,
+  "exit": 0
+}

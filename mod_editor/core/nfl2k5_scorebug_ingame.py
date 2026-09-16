@@ -189,7 +189,10 @@ def template_uv(region, x, y):
 
 
 def encode_atlas(template: bytes, image) -> tuple[bytes, dict]:
-    """Reuse the existing bounded P8 quantizer and exact VC-LZ filler."""
+    """Encode the retail fixed span, or the explicit appended painted atlas."""
+    if image.size == (256,512):
+        from . import nfl2k5_scorebug_assets as assets
+        return assets.texture_chunk("score_buga", image, template)
     import nfl_tset_png_import as palettes
     chunk, decoded, info = decode(template)
     def candidate(palette, levels):

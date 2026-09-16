@@ -1,0 +1,4 @@
+{"name": "final-test_nfl2k5_cpu_money_downs_manifest", "started": "2026-09-16T00:27:00.266293+00:00", "ended": "2026-09-16T00:27:04.819870+00:00", "seconds": 4.554, "exit_code": 0}
+{"name": "final-test_nfl2k5_defensive_try_manifest", "started": "2026-09-16T00:27:04.820514+00:00", "ended": "2026-09-16T00:27:09.435345+00:00", "seconds": 4.615, "exit_code": 0}
+{"name": "final-test_nfl2k5_accelerated_clock_manifest", "started": "2026-09-16T00:27:00.265591+00:00", "ended": "2026-09-16T00:27:10.553995+00:00", "seconds": 10.288, "exit_code": 0}
+{"name": "final-test_nfl2k5_music_playlist_manifest", "started": "2026-09-16T00:27:10.554379+00:00", "ended": "2026-09-16T00:27:14.348295+00:00", "seconds": 3.794, "exit_code": 0}

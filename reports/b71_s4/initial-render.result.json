@@ -1,0 +1,12 @@
+{
+  "name": "initial-render",
+  "command": [
+    "python3",
+    "-c",
+    "from pathlib import Path;from nfl2k5_scorebug_exact import Build;p=Path(\"extracted/ESPN NFL 2K5 (USA)/vc_53450030/0\");b=Build(p,p.parents[1]/\"default.xbe\");g=b.render(Path(\"reports/b71_s4/initial.png\"),runtime=True,matchup=(\"DEN\",\"KC\"),score_values=(7,7),previous_scores=(7,7),quarter=2,game_seconds=273,play_seconds=4,down=3);import json;Path(\"reports/b71_s4/initial.json\").write_text(json.dumps(g));b.close()"
+  ],
+  "start": "2026-09-15T21:57:39.460927+00:00",
+  "end": "2026-09-15T21:57:45.356777+00:00",
+  "seconds": 5.896,
+  "exit": 0
+}

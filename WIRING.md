@@ -1,7 +1,13 @@
-# A6 integration wiring
+# Beta 71 A7 integration wiring
 
-C5's four registry fields are applied. S3, Arrowhead, APF-4 and APF-5 are merged in order. Both APF managed patch kinds are retained. All capability count pins are reconciled to 176 total, 102 2K5 and 73 APF; the remaining capability belongs to the third game.
+All protected files are granted for this job. S4 has no newly authored deferred wiring: `git diff 464423f0 7b54e354 -- WIRING.md` is empty. Its inherited beta-70 T1 instructions are archived anonymously in `WIRING_B71_S4.md`.
 
-The shared Arrowhead field scene composes authored art before colour transforms and compresses once inside its retail wrapper. Whole-bundle and per-site receipts verify both options. All implementation wiring is direct; see ASTRA_REPORT.md for file:line locations and validation.
+- The inherited completion-dialog hooks are already active at `mod_editor/gui/studio_qt.py:8023` and `mod_editor/core/build_feedback.py:53`.
+- The inherited Windows-helper and digit-fit proposals are historical follow-ups, not S4 changes. This merge does not add an unreviewed executable or a digit writer.
+- S4's runtime registry metadata is merged by capability ID; all 176 unique rows remain.
+- The release allowlist retains the colour controls and documentation and adds the scorebug assets module and both label assets.
+- The authored label PNG has an exact path/size/dimensions/SHA-256 catalog entry and a refreshed catalog hash in the release checker. The binary-asset validator is unchanged.
+- Provider/runtime seals are regenerated with `packaging/repin.py --apply`; counts remain 287 providers and 176 registry capabilities.
+- The cave reservation manifest is regenerated last as the complete forward bounded XBE projection. Production regeneration remains required. External command: `bash reports/b71_a7/manifest_regen.sh`.
 
-The production cave manifest remains blocked by the read-only Storage mount. reports/b71_a6/manifest_regen.sh is the exact external regeneration command. The local projection is explicitly not a production disc receipt. The requested disc builder is prepared and must not be reported as run.
+Exact file:line locations, measurements and final command receipts are in `ASTRA_REPORT.md` and `reports/b71_a7/`.

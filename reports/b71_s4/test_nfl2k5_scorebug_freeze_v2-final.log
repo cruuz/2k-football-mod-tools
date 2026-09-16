@@ -1,0 +1,13 @@
+..F....
+======================================================================
+FAIL: test_absent_named_hud_does_not_borrow_other_collections_resources (__main__.NativeBindingTests.test_absent_named_hud_does_not_borrow_other_collections_resources)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py", line 282, in test_absent_named_hud_does_not_borrow_other_collections_resources
+    self.assertEqual(m.get(m.state + r.FONT_SCORE), 0)
+AssertionError: 4282007368 != 0
+
+----------------------------------------------------------------------
+Ran 7 tests in 268.656s
+
+FAILED (failures=1)

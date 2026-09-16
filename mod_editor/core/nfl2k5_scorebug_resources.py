@@ -571,7 +571,7 @@ RUNTIME_TEXTURE_COUNT, RUNTIME_TEXTURE_SPAN = 264, 5280
 RUNTIME_APPEND_SIZE = RUNTIME_TEXTURE_COUNT * RUNTIME_TEXTURE_SPAN + scoped_fonts.APPEND_SIZE
 RUNTIME_GROWTH = ((HUD_SIZE + RUNTIME_APPEND_SIZE + 2047) // 2048 - (HUD_SIZE + 2047) // 2048) * 2048
 # Filled by the reproducible compiler; no game bytes are distributed.
-RUNTIME_PINS = {'index': '1b4c2af593e2b61d42b5afc3ad9c67433eee2af4fc16920f8a1538640c956b10', 'hud_before': '2c23410c05c1ec266c3176b8b201f9a48b4a45ac148110ca569e5df25984e7c8', 'hud_after': '0640bfc0eaec03a6ca696b70b3e96acd7f7fbd313ab08fd8e2a304033675929f', 'appendix': '846864649a3b2309c476edb55fc9b14a912e062548d1a2abf474a8e3acf44063'}
+RUNTIME_PINS = {'index': '1b4c2af593e2b61d42b5afc3ad9c67433eee2af4fc16920f8a1538640c956b10', 'hud_before': '2c23410c05c1ec266c3176b8b201f9a48b4a45ac148110ca569e5df25984e7c8', 'hud_after': '9d3ca52d13a06de19fcdb27f122756ba67d23fc945c8efd0ba8308934b232fed', 'appendix': '846864649a3b2309c476edb55fc9b14a912e062548d1a2abf474a8e3acf44063'}
 
 
 def runtime_panel_name(asset_code, side, count):
@@ -619,10 +619,29 @@ def runtime_panel(template, image, name, *, indexed=None, size=(128, 32)):
 
 
 def mnf_panel_span(template, team, side):
-    """One 2026 wing panel (team colour fade plus the current logo) as a native TXTR."""
+    """Shared native logo TXTR with plate/wing ARGB in unused name padding."""
     from . import nfl2k5_scorebug_exact as exact
     code = "--" if team is None else TEAM_LOGOS[team]["asset_code"]
-    return runtime_panel(template, exact.mnf_panel(team, side), runtime_panel_name(code, side, 0), size=(64, 64))
+    from . import nfl2k5_scorebug_assets as assets
+    span=bytearray(assets.texture_chunk(runtime_panel_name(code, "home", 0), exact.mnf_panel(team, "home"), template, colours=128)[0])
+    # The six-character name ends at body+46. These two aligned padding words
+    # precede the descriptor at +56; neither changes the name or a loader field.
+    plate=0xff3a3f48 if team is None else exact.plate_argb(team)
+    wing=0xff4a4e58 if team is None else exact.wing_table()[int(code)]
+    import struct
+    struct.pack_into("<II",span,32+48,plate,wing)
+    return bytes(span)
+
+
+MNF_ATLAS_SPAN_SIZE = 132256
+MNF_LOGO_SPAN_SIZE = 5280
+MNF_NEUTRAL_SPAN_SIZE = 2208
+
+
+def mnf_atlas_span(template):
+    from . import nfl2k5_scorebug_assets as assets, nfl2k5_scorebug_exact as exact
+    return assets.texture_chunk("score_buga", exact.atlas_mnf(), template)[0]
+
 
 
 def panel_states(span, team, side):
@@ -649,7 +668,7 @@ def _compiled_panels(template, span, team, side):
 
 READ_BLOCK = 1024 * 1024
 PROBES = ("transport", "hooks", "resources", "neutral", "pair", "full", "mnf")
-MNF_VERSION = 'scorebug-mnf-2026-v3'
+MNF_VERSION = 'scorebug-mnf-2026-v4'
 # The in-place ESPN digit restyle of FONT4/FONT8 (outer 3, loaded at boot) is held back until it is
 # witnessed: a 2026-09-15 emulator boot with it applied stalled in the intro movie. Set
 # NFL2K5_MNF_FONTS=1 to include it in a build; status() follows the same switch.
@@ -739,8 +758,8 @@ def probe_codes(probe):
 # owner at setup (quarter, game clock, play clock). Built deterministically from the retail
 # font4 span and the broadcast glyph sheet; the size and digest are pinned.
 CLOCK_FONT_DONOR = 3
-CLOCK_FONT_SPAN_SIZE = 65088   # FirstPersonComic 38,048 bytes plus core_bug 27,040 bytes
-CLOCK_FONT_SHA256 = 'e2274fc68ee752d833048a00489b6e65ed3de078cfebf1800f52fa2b612a9dc1'
+CLOCK_FONT_SPAN_SIZE = 107200
+CLOCK_FONT_SHA256 = '487057d8626f0aaf9f37e21bc3360fa93337210fa8674fdb3056e645f28df091'
 
 
 def clock_font_spans(pack):
@@ -762,9 +781,9 @@ def clock_font_span(pack):
 
 def probe_sizes(probe):
     if probe == "mnf":
-        # One panel per team side (plus the neutral pair), plus the ESPN clock font.
-        count = len(probe_codes(probe)) * 2
-        appendix = count * RUNTIME_TEXTURE_SPAN + CLOCK_FONT_SPAN_SIZE
+        # One logo per team and one neutral, two private fonts and the painted atlas.
+        count = len(probe_codes(probe))
+        appendix = (count-1) * MNF_LOGO_SPAN_SIZE + MNF_NEUTRAL_SPAN_SIZE + CLOCK_FONT_SPAN_SIZE + MNF_ATLAS_SPAN_SIZE
         growth = ((HUD_SIZE + appendix + 2047) // 2048 - (HUD_SIZE + 2047) // 2048) * 2048
         return count, appendix, growth
     count = len(probe_codes(probe)) * 8
@@ -792,13 +811,13 @@ def compile_runtime_collection(pack, *, probe="full"):
     inputs = {n: pack[v["pack_offset"]:v["pack_offset"] + v["span_size"]] for n, v in RESOURCES.items()}
     from . import nfl2k5_scorebug_exact as exact
     patches = {"score_bug": r.stage_binding_scene(inputs["score_bug"], runtime=True)[0],
-               "score_buga": r.encode_atlas(inputs["score_buga"], exact.atlas_mnf())[0]}
+               "score_buga": r.encode_atlas(inputs["score_buga"], exact.atlas())[0]}
     panels, receipts = [], []
     for team, record in [(None, {"asset_code": "--"})] + sorted(TEAM_LOGOS.items()):
         if record["asset_code"] not in probe_codes(probe):
             continue
         span = b"" if team is None else pack[record["pack_offset"]:record["pack_offset"] + record["span_size"]]
-        for side in ("home", "away"):
+        for side in (("home",) if probe == "mnf" else ("home", "away")):
             if probe == "mnf":
                 data = mnf_panel_span(inputs["score_buga"], team, side)
                 name = runtime_panel_name(record["asset_code"], side, 0)
@@ -822,7 +841,9 @@ def compile_runtime_collection(pack, *, probe="full"):
             raise ValueError("private scorebug FONT resource sizes changed")
     receipts += [dict(name=name, kind="FONT", size=len(data), sha256=r.digest(data))
                  for name, data in zip(font_names, font_spans)]
-    appendix = b"".join((*panels, *font_spans))
+    atlas_spans = [mnf_atlas_span(inputs["score_buga"])] if probe == "mnf" else []
+    receipts += [dict(name="score_buga",kind="TXTR",size=len(data),sha256=r.digest(data)) for data in atlas_spans]
+    appendix = b"".join((*panels, *font_spans, *atlas_spans))
     if len(appendix) != append_size:
         raise ValueError("runtime texture collection size changed")
     end = HUD_START + HUD_SIZE
@@ -863,7 +884,7 @@ def compile_runtime_collection(pack, *, probe="full"):
     return result, dict(status="applied", version=MNF_VERSION if probe == "mnf" else RUNTIME_VERSION,
                         experimental=True, runtime_witnessed=False, fonts=font_receipts,
                         probe=probe, texture_count=texture_count, font_count=len(font_spans),
-                        native_heap_bytes=texture_count * 5376 + (sum((len(span) + 127) // 128 * 128 for span in font_spans) if probe == "mnf" else (scoped_fonts.HEAP_BYTES if font_spans else 0)),
+                        native_heap_bytes=texture_count * 5376 + (132352 - 3072 if probe == "mnf" else 0) + (sum((len(span) + 127) // 128 * 128 for span in font_spans) if probe == "mnf" else (scoped_fonts.HEAP_BYTES if font_spans else 0)),
                         growth=len(result)-len(pack), sha256_before=pack_digest(pack), sha256_after=pack_digest(result),
                         outer_index=HUD_OUTER_INDEX, outer_size_before=HUD_SIZE,
                         outer_size_after=HUD_SIZE+append_size, resources=receipts,
@@ -925,11 +946,11 @@ def runtime_pack_status(pack, *, probe="full"):
 
 # Reproducible subsets of the full collection. Pair includes both orientations
 # of TB and NE plus neutral fallbacks, so changing ends does not change assets.
-PROBE_APPEND_PINS = {'transport': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'hooks': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'neutral': 'e38a25fae3acb5fdd3ae5ddcb91798e047e1be27e862f319452ee176b6cb61fa', 'pair': '8c7da0308c4b96d66f124ec5c83939ac0376fac623ca76b777d67be0b1cfd515', 'mnf': '53bce6cee1f12068f3fc183dcce3bc6bda3bdaef9886d7bc3e2ba7221ef7c7c7'}
+PROBE_APPEND_PINS = {'transport': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'hooks': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'neutral': 'e38a25fae3acb5fdd3ae5ddcb91798e047e1be27e862f319452ee176b6cb61fa', 'pair': '8c7da0308c4b96d66f124ec5c83939ac0376fac623ca76b777d67be0b1cfd515', 'mnf': '9aa1d7c8aa75b5250a04ffb8af876b22781dc34f279f0f1074773df7dbd98b66'}
 
 # Native ABI bodies, normalized only for independently recognized scorebug fields/hooks.
 RUNTIME_ABI_GUARDS = [(1035472, 407, 'fae55450eb58f087e0e31b50636342c39d7b7df70361fae6b2ccda6e2fedfa60'), (1035888, 1466, 'fadbe0384fccb436be4f0fe52514aa9e38c543288a471ffc6b44e9ffde365b2f'), (1034688, 780, 'bdc0d7cda462c37ec5546944605fe12141a83c798965b78ebe5abe8467d379df'), (1031280, 73, '1fea8eb67ed1d7df96e85562ec8d79075736ed4d10e5cfbe18f1b7be05c01e60'), (281056, 104, '710fd5ba9fd2a147042dd4c5f133cc2a8d36dcdc10b47417d17ec65df9b46191'), (279504, 770, '1caaf5b258e1849435c7ed69dbc970f9ce5f265415c4dadecee3bef94dc8d6b3'), (199744, 37, 'dd3d52cc45c43dc86d8db7220d777346237b324dd9a00dce35c9de3362bbfdee'), (277792, 136, '03233a25e1afc3ef91892233872e5b9cf29404be7b250dbf17a62db248949d9f'), (282016, 20, '0ee1f6425e946ec6d8dd4aeae08c6ae211e9de4ba09f9648a75f052d1c6bed6e'), (216560, 108, 'f84f040777759d3417fb8bee34ab8e046cf40255e18c467530417ae504aad29c'), (216080, 267, '69266ee656258cc0c7c3f770b0a650452d18c4c84251088bb204fbecb3afa2fe'), (754112, 58, '13cd2011501c1d9567889a32898a944b6cd7dee7769062e7ad57a0994614c674'), (1032272, 29, '02136e09af5b89365ab949b6cdd50c82e2c705bf3e4a9a585f6561234e33de99'), (1032304, 29, '730201c327a46bc2ee757b942eef6efb387d47a9aa5d9cdde452e5539a296222'), (400464, 6, 'b47138018b9b2ec278b17d759b0d8e54f0c9c5c9181510e9d3716d37aa74d6a4'), (400480, 6, '7d1ab1e0e220598d0dfeec086c9327bcec8699bc836f0ee2d3930a8e3d500e9b'), (1031584, 9, '5e68b2fc2391d42f537a7a352387790a5c46114bbe4f2197a6293a5a9a6f1b63'), (1034192, 446, '61eb66a3851ced7740b600c9b2ec8dc32c1fcfdb6c980ae7995b78407b23390a'), (15124024, 24, '9385e4da55d331aa5b8649841a9206ccd44b267e2a05abb359cb178b7d862f67'), (15124276, 24, 'c9ce8e336a66c1f198ee4f2a11052c232675558077c0f6e328e689d5bd52aee2')]
 
 TEMPLATE_SCENE_SHA256 = '77dcbe4639c8cd35468aee28cd36cfc023b0bcf226572477a367d56d0ff00c24'
 STATIC_SCENE_SHA256 = '2d48ab3d3876a9e533a213c4cd22d181dc64a74f9292e5ed1a3fdd53e913de93'
-RUNTIME_SCENE_SHA256 = '6ce5035c78ed997e00948b5ff2a64a06906a62ee94d40c599fb2534f4b669874'
+RUNTIME_SCENE_SHA256 = '672d87a553faa5a1d5bc0484b591e5a28c4ff97c164f160ed8b37534b40249be'

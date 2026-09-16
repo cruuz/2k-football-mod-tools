@@ -288,6 +288,12 @@
       "size": 3482,
       "width": 64
     },
+    "data/nfl2k5_scorebug_mnf/painted_label_2x.png": {
+      "height": 256,
+      "sha256": "b8632704a110087b939a2e1de98c54eebc2354f40bb89d3eb2f0b16bdfa45b2d",
+      "size": 11138,
+      "width": 512
+    },
     "docs/mod_editor/scorebug_studio/page_fable_down.png": {
       "height": 936,
       "sha256": "932f31ce9ae3e50544a969b4fe5ead9e0a9cec2d05762c6e7e044d2f6f772d63",

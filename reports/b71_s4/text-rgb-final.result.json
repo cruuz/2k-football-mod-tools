@@ -1,0 +1,11 @@
+{
+  "name": "text-rgb-final",
+  "command": [
+    "python3",
+    "reports/b71_s4/measure_text_rgb.py"
+  ],
+  "start": "2026-09-15T23:04:30.216710+00:00",
+  "end": "2026-09-15T23:04:30.571049+00:00",
+  "seconds": 0.354,
+  "exit": 0
+}

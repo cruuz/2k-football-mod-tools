@@ -174,7 +174,11 @@ class RetailTests(unittest.TestCase):
         data=r.decode(span)[1]
         for v in range(80,96):
             self.assertEqual(struct.unpack_from("<h",data,r.layout.S1+v*10+8)[0],0)
-        self.assertEqual(r.layout.strips(data),r.layout.strips(r.decode(self.inputs["score_bug"])[1]))
+        # Painted quads replace the nine-slice indices within the same command spans.
+        for k,indices in r.layout.strips(data):
+            lo,hi,_name=r.layout.SUBMESHES[k]
+            self.assertTrue(indices and all(lo<=v<=hi for v in indices))
+        self.assertEqual([len(indices) for _,indices in r.layout.strips(data)],[4,4,4,16,10,4,4,4,4,4,4])
 
     def test_transaction_refuses_late_foreign_resource_before_any_write_and_reapplies(self):
         from mod_editor.core import nfl2k5_throw_tuning as tt

@@ -1,0 +1,3 @@
+test_actual_requests_match_budget_and_complete_gate_union (__main__.BudgetTests.test_actual_requests_match_budget_and_complete_gate_union) ... ok
+test_allocation_projection_keeps_retail_and_refuses_unknown_owners (__main__.ManifestTests.test_allocation_projection_keeps_retail_and_refuses_unknown_owners) ... ok
+test_observed_sites_named_rx_rw_and_fingerprints (__main__.ManifestTests.test_observed_sites_named_rx_rw_and_fingerprints) ... 

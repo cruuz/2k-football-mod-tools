@@ -1,0 +1,6 @@
+{"name": "merge-s4-commit-stage", "started": "2026-09-16T00:27:01.463394+00:00", "ended": "2026-09-16T00:27:01.623788+00:00", "seconds": 0.16, "exit_code": 0}
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-a7/reports/b71_a7/commit_checkpoint.py", line 20, in <module>
+    assert staged <= set(paths), sorted(staged - set(paths))
+           ^^^^^^^^^^^^^^^^^^^^
+AssertionError: ['tests/mod_editor/test_provider_integrity.py']

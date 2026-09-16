@@ -1,0 +1,14 @@
+[1] mod_editor/core/providers.py: mod_editor/core/nfl2k5_scorebug_exact.py
+    6adebca3061caa87cffaab90dcad7fecf346ab1a867a568753a933712ac135cf
+ -> 321b8a1b91856483a910ae674817304b9e4e05b489a7e155b1413d168ac8ed41
+[1] mod_editor/core/providers.py: mod_editor/core/nfl2k5_scorebug_mnf_font.py
+    d73d6f20b0839253585f4038319d44629cdbb16ad265db1bde72d54c27b1c8b9
+ -> fa2c3a006af66af408345ace6bc43870d8b92dae90b93cb8c8969628737cffd7
+[1] mod_editor/core/providers.py: mod_editor/core/nfl2k5_scorebug_resources.py
+    3503de7f2c2f3494b1c0d4a65d64983866f0942d46237189846cb10ecdc5b6fa
+ -> a206e68a71014cfdd8907a010541985507d87f6cead0520a39b86e71862b50bc
+[1] mod_editor/core/providers.py: mod_editor/core/nfl2k5_scorebug_runtime.py
+    35b475aa3d956a5b0a077c8906226691bb1aad167dfcd96902c45015ec3f4dce
+ -> e5ffe826feefad8a5303ea2cde858d12e099f41490891a77a222fdc132eb5711
+
+applied 4 pin update(s)

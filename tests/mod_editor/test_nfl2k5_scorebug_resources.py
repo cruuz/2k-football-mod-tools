@@ -244,16 +244,20 @@ class RetailTests(unittest.TestCase):
                 self.assertEqual(len(compiled),r.PACK_SIZE+growth)
                 self.assertEqual(receipt['texture_count'],count)
                 font_count = 2 if probe == 'mnf' else (len(fonts.NAMES) if count else 0)
-                font_heap = sum((size + 127) // 128 * 128 for size in (38048, 27040)) if probe == 'mnf' else (fonts.HEAP_BYTES if font_count else 0)
-                self.assertEqual(len(receipt['resources']),count + font_count)
+                font_heap = sum((size + 127) // 128 * 128 for size in (80160, 27040)) if probe == 'mnf' else (fonts.HEAP_BYTES if font_count else 0)
+                self.assertEqual(len(receipt['resources']),count + font_count + (1 if probe=='mnf' else 0))
                 self.assertEqual(receipt['font_count'], font_count)
-                self.assertEqual(receipt['native_heap_bytes'],count*5376 + font_heap)
+                self.assertEqual(receipt['native_heap_bytes'],count*5376 + font_heap + (132352-3072 if probe=='mnf' else 0))
                 self.assertEqual(a.runtime_pack_status(compiled,probe=probe),'applied')
                 self.assertIs(a.compile_runtime_collection(compiled,probe=probe)[0],compiled)
                 names={item['name'] for item in receipt['resources'] if item.get('kind') != 'FONT'}
                 states = 1 if probe == 'mnf' else 4
-                self.assertEqual(names,{a.runtime_panel_name(code,side,n) for code in a.probe_codes(probe)
-                                        for side in ('home','away') for n in range(states)})
+                sides = ('home',) if probe == 'mnf' else ('home','away')
+                expected_names = {a.runtime_panel_name(code,side,n) for code in a.probe_codes(probe)
+                                  for side in sides for n in range(states)}
+                if probe == 'mnf':
+                    expected_names.add('score_buga')
+                self.assertEqual(names, expected_names)
                 for other in a.PROBES:
                     same=a.probe_codes(probe)==a.probe_codes(other) and (probe=='mnf')==(other=='mnf')
                     self.assertEqual(a.runtime_pack_status(compiled,probe=other),'applied' if same else 'foreign')

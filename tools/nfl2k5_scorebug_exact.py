@@ -177,8 +177,9 @@ def compare(reference_image, rendered, geometry, text_boxes, *, runtime=False, r
     meshes = {"frame_rim": geometry["frame"], "centre_pill": geometry["down"],
               "clock_strip": geometry["clock"]}
     if runtime:
-        meshes.update(left_panel=geometry["objects"].get("zscore_buga"),
-                      right_panel=geometry["objects"].get("hscore_buga"))
+        meshes.update(left_panel=geometry["objects"].get("yscore_buga"),
+                      right_panel=geometry["objects"].get("yscore_buga1"))
+    meshes.update(geometry.get("comparison_regions", {}))
     for name, box in regions_source.items():
         target = list(exact.hud_box(box))
         if geometry["widescreen"]:
@@ -295,7 +296,7 @@ def compiler_pins(build):
     runtime = scene.stage_binding_scene(build.spans["score_bug"], runtime=True)[0]
     texture = scene.encode_atlas(build.spans["score_buga"], exact.atlas())[0]
     # The runtime collection carries the 2026 atlas; the static pin keeps the v3 atlas.
-    runtime_texture = scene.encode_atlas(build.spans["score_buga"], exact.atlas_mnf())[0]
+    runtime_texture = scene.encode_atlas(build.spans["score_buga"], exact.atlas())[0]
     hud = bytearray(build.view[art.HUD_START:art.HUD_START + art.HUD_SIZE])
     for name, data in (("score_bug", runtime), ("score_buga", runtime_texture)):
         off = art.RESOURCES[name]["pack_offset"] - art.HUD_START
@@ -316,7 +317,7 @@ def compiler_pins(build):
                                       for probe in ("transport", "hooks", "neutral", "pair")},
                                    "mnf": scene.digest(b"".join(art.mnf_panel_span(build.spans["score_buga"], team, side)
                                                                 for team, _record in [(None, None)] + sorted(art.TEAM_LOGOS.items())
-                                                                for side in ("home", "away")) + art.clock_font_span(build.view))})
+                                                                for side in ("home",)) + art.clock_font_span(build.view) + art.mnf_atlas_span(build.spans["score_buga"]))})
 
 
 def supplemental_evidence(build, output):

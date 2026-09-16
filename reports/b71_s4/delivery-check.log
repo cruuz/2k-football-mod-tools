@@ -1,0 +1,21 @@
+{
+  "volume_bytes": 410624,
+  "sector_growth": 411648,
+  "native_heap_bytes": 414080,
+  "code_bytes": 1380,
+  "code_budget": 1408,
+  "data_budget": 128,
+  "manifest_sources_fresh": true,
+  "final_suite_sources_fresh": true,
+  "builder_name": "NFL 2K5 MOD TEST 2026-09-15j (painted bar + colour + widescreen)",
+  "builder_options": [
+    "scorebug",
+    "scorebug_runtime",
+    "modern_color",
+    "widescreen"
+  ],
+  "builder_executed": false,
+  "boundary_acceptance": true,
+  "exact_pixel_match": false,
+  "registry_sha256": "fe4d24c8361fdb73c3440c8e84f375a9dae2bff9c48fd170e1a880562cd7e574"
+}

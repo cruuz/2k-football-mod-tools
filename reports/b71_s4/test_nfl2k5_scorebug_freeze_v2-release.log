@@ -1,0 +1,18 @@
+.E.....
+======================================================================
+ERROR: test_new_dependencies_and_old_sealed_owner_refuse_before_mutation (__main__.InstallationTests.test_new_dependencies_and_old_sealed_owner_refuse_before_mutation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s4/tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py", line 136, in test_new_dependencies_and_old_sealed_owner_refuse_before_mutation
+    old_xbe = bytearray(space.install_code(base, r.OWNER, old.CODE)[0])
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s4/mod_editor/core/nfl2k5_xbe_space.py", line 428, in install_code
+    _require(len(code) == a["size"], "code must fill its exact named allocation")
+  File "/home/noah/2k-worktrees/astra-b71-s4/mod_editor/core/nfl2k5_xbe_space.py", line 55, in _require
+    raise ValueError(message)
+ValueError: code must fill its exact named allocation
+
+----------------------------------------------------------------------
+Ran 7 tests in 257.235s
+
+FAILED (errors=1)

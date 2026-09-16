@@ -104,7 +104,7 @@ class InstallationTests(unittest.TestCase):
         cls.retail = XBE.read_bytes()
         cls.patched, cls.receipt = r.apply(cls.retail)
 
-    def test_unchanged_budget_and_static_v3_both_orders(self):
+    def test_named_budget_and_static_v3_both_orders(self):
         self.assertEqual((r.CODE_SIZE, r.DATA_SIZE), (1408, 128))
         code, data = r.sites(self.patched)
         self.assertLess(len(r.code_for(code['va'], data['va'])[0].rstrip(b'\xcc')), r.CODE_SIZE)
@@ -279,7 +279,10 @@ class NativeBindingTests(unittest.TestCase):
             self.assertEqual(m.get(material + 0x30), 0)
             self.assertTrue(m.get(material + 8) & 1)
             self.assertIn(m.get(r.SCORE_FONTS[side]), m.fonts)
-        self.assertEqual(m.get(m.state + r.FONT_SCORE), 0)
+        # Missing named HUD keeps retail callbacks and fonts. State +84 now
+        # caches the away plate colour; it is no longer a private FONT pointer.
+        self.assertEqual(m.get(0xA9594C), 0xFC050)
+        self.assertEqual(m.get(0xA95984), 0xFC070)
         self.evidence['cases']['missing_hud'] = entry
 
     def test_retail_game_loader_constructs_an_ordinary_named_hud_context(self):

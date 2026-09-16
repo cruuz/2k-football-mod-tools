@@ -1,0 +1,11 @@
+{
+  "name": "contract-compact",
+  "command": [
+    "python3",
+    "tests/mod_editor/test_nfl2k5_scorebug_mnf.py"
+  ],
+  "start": "2026-09-15T22:16:30.625992+00:00",
+  "end": "2026-09-15T22:16:42.930734+00:00",
+  "seconds": 12.305,
+  "exit": 0
+}

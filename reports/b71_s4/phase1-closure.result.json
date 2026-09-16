@@ -1,0 +1,11 @@
+{
+  "name": "phase1-closure",
+  "command": [
+    "python3",
+    "tests/mod_editor/test_phase1_packaging.py"
+  ],
+  "start": "2026-09-15T22:18:44.135592+00:00",
+  "end": "2026-09-15T22:18:46.224436+00:00",
+  "seconds": 2.089,
+  "exit": 0
+}

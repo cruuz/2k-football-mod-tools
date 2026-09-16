@@ -259,6 +259,8 @@ def private_font(span, source):
                                 struct.unpack_from('<16f',decoded,off+16),
                                 struct.unpack_from('<4f',decoded,off+80)))
     video = decoded[chunk.system_bytes:]
+    size=256 if chunk.video_bytes==256*256+1024 else source.width
+    source=replace(source,width=size,height=size)
     pixels = source.width * source.height
     return replace(source, name=text, decoded=decoded, decoded_sha256=r.digest(decoded),
                    object_offset=obj, range_offset=range_at, minimum=minimum, maximum=maximum,
@@ -418,7 +420,7 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
         for span, (slot, _sx, _sy) in zip(runtime_fonts, scoped.SCALES):
             # Runtime fonts with a 128-square mask (the ESPN clock font) parse against font4;
             # the v8 collection's slots come from SCALES.
-            source = fonts[3] if r.decode(span)[0].video_bytes == 128 * 128 + 1024 else fonts[slot]
+            source = fonts[3] if r.decode(span)[0].video_bytes in (128 * 128 + 1024,256 * 256 + 1024) else fonts[slot]
             private_receipts.append(m.load_private_font(span, private_font(span, source)))
     m.put(0xa6a9d0, 720); m.put(0xa6a9d4, 480)
     m.run(0xfccd0, limit=500000)
@@ -539,8 +541,8 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
                 visible_elements=list(visible_elements),
                 native_visibility=visibility_state, visibility_trace=visibility_trace,
                 frame=frame_bounds, frame_material=frame_name,
-                clock=bounds(range(166,174)) if runtime_textures is not None else bounds(range(48, 52 if all(name in visible for name in ('yscore_buga', 'yscore_buga1')) else 64)),
-                down=bounds(range(64, 76 if runtime_textures is not None else 80)),
+                clock=bounds(range(56,60)) if runtime_textures is not None else bounds(range(48, 52 if all(name in visible for name in ('yscore_buga', 'yscore_buga1')) else 64)),
+                down=bounds(range(64, 68 if runtime_textures is not None else 80)),
                 down_pointer=bounds(range(76,80)) if runtime_textures is not None else None,
                 frame_instructions=frame_instructions, widescreen=widescreen, mode=mode,
                 text_scale_x=27 / 32 if widescreen else 1,

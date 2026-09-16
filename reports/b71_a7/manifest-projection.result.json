@@ -1,0 +1,11 @@
+{
+  "name": "manifest-projection",
+  "argv": [
+    "python3",
+    "reports/b71_a7/refresh_manifest_projection.py"
+  ],
+  "started": "2026-09-16T00:15:20.827829+00:00",
+  "ended": "2026-09-16T00:15:21.339045+00:00",
+  "seconds": 0.511,
+  "exit_code": 1
+}

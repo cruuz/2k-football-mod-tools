@@ -107,7 +107,7 @@ class NativeTests(unittest.TestCase):
                     self.assertNotEqual(materials[name]["texture"], "0x0")
                     self.assertNotEqual(materials[name]["texture"], materials["cscore_buga"]["texture"])
                 self.assertNotEqual(materials["hscore_buga"]["texture"], materials["zscore_buga"]["texture"])
-                for name, expected_name in (("hscore_buga", "sb37h0"), ("zscore_buga", "sb20a0")):
+                for name, expected_name in (("hscore_buga", "sb37h0"), ("zscore_buga", "sb20h0")):
                     self.assertEqual(geometry["rendered_materials"][name]["name"], expected_name)
                     self.assertEqual(geometry["rendered_materials"][name]["dimensions"], [64, 64])  # beta 71: 64x64 wing textures
                 for row in geometry["winding"].values(): self.assertEqual(row["positive"], 0)

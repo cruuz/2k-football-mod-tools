@@ -1,0 +1,11 @@
+{
+  "name": "manifest-production",
+  "argv": [
+    "bash",
+    "reports/b71_a7/manifest_regen.sh"
+  ],
+  "started": "2026-09-16T00:15:20.795979+00:00",
+  "ended": "2026-09-16T00:15:20.800714+00:00",
+  "seconds": 0.005,
+  "exit_code": 1
+}

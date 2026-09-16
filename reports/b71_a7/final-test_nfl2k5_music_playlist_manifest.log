@@ -1,0 +1,7 @@
+test_complete_union_and_builder_include_playlist (__main__.ManifestTests.test_complete_union_and_builder_include_playlist) ... ok
+test_real_writer_records_all_hooks_and_three_complete_children (__main__.ManifestTests.test_real_writer_records_all_hooks_and_three_complete_children) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 3.647s
+
+OK

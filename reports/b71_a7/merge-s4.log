@@ -1,0 +1,15 @@
+Auto-merging ASTRA_LAST_MESSAGE.md
+CONFLICT (content): Merge conflict in ASTRA_LAST_MESSAGE.md
+Auto-merging ASTRA_REPORT.md
+CONFLICT (content): Merge conflict in ASTRA_REPORT.md
+Auto-merging data/nfl2k5_cave_reservations.json
+CONFLICT (content): Merge conflict in data/nfl2k5_cave_reservations.json
+Auto-merging docs/mod_editor/2k5_mod_studio_changelog.md
+CONFLICT (content): Merge conflict in docs/mod_editor/2k5_mod_studio_changelog.md
+Auto-merging mod_editor/capabilities/registry.v1.json
+Auto-merging mod_editor/core/providers.py
+Auto-merging packaging/release-allowlist.txt
+CONFLICT (content): Merge conflict in packaging/release-allowlist.txt
+Auto-merging tests/mod_editor/test_provider_integrity.py
+CONFLICT (content): Merge conflict in tests/mod_editor/test_provider_integrity.py
+Automatic merge failed; fix conflicts and then commit the result.

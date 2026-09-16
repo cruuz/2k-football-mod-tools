@@ -1,0 +1,12 @@
+{
+  "name": "registry-strict",
+  "argv": [
+    "python3",
+    "-m",
+    "mod_editor.capabilities.validate_registry"
+  ],
+  "started": "2026-09-16T00:13:13.670023+00:00",
+  "ended": "2026-09-16T00:13:13.876739+00:00",
+  "seconds": 0.207,
+  "exit_code": 0
+}

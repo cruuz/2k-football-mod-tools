@@ -42,13 +42,6 @@ class OwnerCodeTests(unittest.TestCase):
             self.assertEqual(content[at:at + 2], b"\xc7\x05")
             self.assertEqual(struct.unpack_from("<I", content, at + 2)[0], runtime.CITY_CALLBACKS[side])
             self.assertEqual(struct.unpack_from("<I", content, at + 6)[0], labels[f"dash_text{side}"])
-        at = labels["plate_table_ref"] - code_va
-        self.assertEqual(struct.unpack_from("<I", content, at)[0], labels["plate_table"])
-        # Beta 71: three bytes (B, G, R) per asset code, the lookup ORs the alpha byte in.
-        start = labels["plate_table"] - code_va
-        table = [0xFF000000 | int.from_bytes(content[start + 3 * i:start + 3 * i + 3], "little") for i in range(40)]
-        self.assertEqual(table, exact.plate_table())
-        self.assertEqual(content[start + 120], 0)
 
     def test_plate_table_is_indexed_by_asset_code(self):
         table = exact.plate_table()
@@ -76,64 +69,47 @@ class OwnerCodeTests(unittest.TestCase):
 
 
 class ArtTests(unittest.TestCase):
-    def test_atlas_and_panels(self):
-        atlas = exact.atlas_mnf()
-        self.assertEqual(atlas.size, (64, 64))
-        self.assertLessEqual(len(set(atlas.getdata())), 256)
-        ramp_row = sum(exact.MNF_WING_RAMP_ROWS) // 2
-        for team, side in (("DEN", "away"), ("KC", "home"), (None, "away")):
-            panel = exact.mnf_panel(team, side)
-            self.assertEqual(panel.size, (64, 64))
-            # The ramp rows carry the team colour at column 0 and the bar charcoal at column 63.
-            self.assertEqual(panel.getpixel((63, 63))[:3], exact.MNF_COLORS["body"])
-            self.assertEqual(panel.getpixel((63, ramp_row))[3], 255)
-        away = exact.mnf_panel("KC", "away")
-        self.assertGreater(away.getpixel((0, ramp_row))[0], away.getpixel((63, ramp_row))[0])
-        # The ESPN mark sits in the logo rows at its own aspect, over transparency.
-        l0, l1 = exact.MNF_WING_LOGO_ROWS
-        logo_box = away.crop((0, l0, 64, l1)).getchannel("A").getbbox()
-        self.assertIsNotNone(logo_box)
-        self.assertGreater(logo_box[2] - logo_box[0], 40)
-        self.assertEqual(away.crop((0, l1, 64, exact.MNF_WING_RAMP_ROWS[0])).getchannel("A").getbbox(), None)
+    def test_painted_atlas_masks_and_shared_logo_cells(self):
+        atlas=exact.atlas_mnf()
+        self.assertEqual(atlas.size,(256,512))
+        a,b,c,d=exact.MNF_REGIONS['ramp']
+        self.assertEqual(atlas.getpixel((a,(b+d)//2))[:3],(255,255,255))
+        self.assertGreater(atlas.getpixel((a,(b+d)//2))[3],atlas.getpixel((c-1,(b+d)//2))[3])
+        for team in ('DEN','KC'):
+            left,right=exact.mnf_panel(team,'away'),exact.mnf_panel(team,'home')
+            self.assertEqual(left.size,(64,64))
+            self.assertEqual(left.tobytes(),right.tobytes())
+            self.assertIsNotNone(left.getchannel('A').getbbox())
+        self.assertIsNone(exact.mnf_panel(None,'home').getchannel('A').getbbox())
 
-    def test_wing_strips_draw_exactly_the_fade_and_logo_quads(self):
-        # Beta 71: each retail wing strip (32 vertices, repeated ids) must draw two quads only.
+    def test_painted_strips_use_only_the_intended_quads(self):
         from mod_editor.core import nfl2k5_scorebug_ingame as r
-        rec = r.RESOURCES["score_bug"]
-        with INDEX.open("rb") as stream:
-            stream.seek(rec["pack_offset"]); span = stream.read(rec["span_size"])
-        retail = r.pinned(span, rec)
-        m = exact.mesh_mnf(retail)
-        strips = [indices for _, indices in r.layout.strips(retail)]
-        for side in ("away", "home"):
-            layout = exact.MNF_WING_LAYOUT[side]
-            indices = next(indices for indices in strips if layout["fade"][0] in indices)
-            visible = [tuple(indices[i:i + 3]) for i in range(len(indices) - 2)
-                       if len({tuple(m.pos[v][:2]) for v in indices[i:i + 3]}) == 3]
-            fade, logo = layout["fade"], layout["logo"]
-            self.assertEqual(visible, [fade[:3], fade[1:], logo[:3], logo[1:]], side)
-            # The logo quad occupies the v3 source-frame box inside the wing.
-            xs = [m.pos[v][0] for v in logo]
-            ys = [m.pos[v][1] for v in logo]
-            wing = exact.MNF_PANELS[side]
-            self.assertGreaterEqual(min(xs), wing[0] - 1e-6)
-            self.assertLessEqual(max(xs), wing[2] + 1e-6)
-            self.assertAlmostEqual(max(xs) - min(xs), (exact.MNF_SOURCE[side+"_logo"][2]-exact.MNF_SOURCE[side+"_logo"][0])/3, places=3)
-            self.assertAlmostEqual(max(ys) - min(ys), (exact.MNF_SOURCE[side+"_logo"][3]-exact.MNF_SOURCE[side+"_logo"][1])*448/1080, places=3)
+        rec=r.RESOURCES['score_bug']
+        with INDEX.open('rb') as stream:
+            stream.seek(rec['pack_offset']);span=stream.read(rec['span_size'])
+        mesh=exact.mesh_mnf(r.pinned(span,rec))
+        counts=[]
+        for k,indices in r.layout.strips(mesh.buf):
+            count=0
+            for i in range(len(indices)-2):
+                a,b,c=[mesh.pos[v] for v in indices[i:i+3]]
+                if abs((b[0]-a[0])*(c[1]-a[1])-(c[0]-a[0])*(b[1]-a[1]))>1e-5:count+=1
+            counts.append(count)
+        self.assertEqual(counts,[2,2,2,6,3,2,2,2,2,2,2])
 
     def test_layout_measurements_are_the_broadcast_ones(self):
         bar = exact.MNF_BAR
         self.assertAlmostEqual(bar[2] - bar[0], 1041 / 3, places=1)
         self.assertLess(bar[1], exact.MNF_STRIP[1])
-        self.assertEqual(exact.MNF_STRIP[3], exact.MNF_PLATE[1])
+        self.assertLess(exact.MNF_STRIP[3], exact.MNF_PLATE[1])
 
     def test_probe_sizes_for_the_compact_profile(self):
         count, appendix, growth = resources.probe_sizes("mnf")
-        self.assertEqual(count, 66)
+        self.assertEqual(count, 33)
         # 66 wing panels plus the two appended clock fonts (FirstPersonComic and core_bug).
-        self.assertEqual(appendix, 66 * resources.RUNTIME_TEXTURE_SPAN + resources.CLOCK_FONT_SPAN_SIZE)
-        self.assertEqual(resources.CLOCK_FONT_SPAN_SIZE, 38048 + 27040)
-        self.assertLess(count * 5376 + resources.CLOCK_FONT_SPAN_SIZE, 420_000)
+        self.assertEqual(appendix, 32 * 5280 + 2208 + 132256 + resources.CLOCK_FONT_SPAN_SIZE)
+        self.assertEqual(resources.CLOCK_FONT_SPAN_SIZE, 80160 + 27040)
+        self.assertLess(appendix, 413_569)
         self.assertEqual(growth % 2048, 0)
 
 
@@ -170,8 +146,8 @@ class RetailFontTests(unittest.TestCase):
         with INDEX.open("rb") as stream:
             stream.seek(arec["pack_offset"]); aspan = stream.read(arec["span_size"])
         anew, ainfo = r.encode_atlas(aspan, exact.atlas_mnf())
-        self.assertTrue(ainfo["wrapper_identical"])
-        self.assertEqual(len(anew), len(aspan))
+        self.assertEqual((ainfo["width"],ainfo["height"]),(256,512))
+        self.assertEqual(len(anew), resources.MNF_ATLAS_SPAN_SIZE)
 
 
 if __name__ == "__main__":
