@@ -101,7 +101,9 @@ class CompleteOwnerTests(unittest.TestCase):
             self.assertEqual(image.sections[index].raw, original.raw)
         legacy_requests = tt.kickoff_relocated_patch.REQUESTS + tt.scorebug_runtime_patch.REQUESTS
         legacy = space.apply(self.retail, legacy_requests)[0]
-        self.assertEqual(len(legacy), space.FILE_SIZE)
+        # Beta 71: the two-owner layout alone needs the scale region for the 4,096-byte sprite owner, so its file
+        # is one page-aligned region longer than the beta-61 size; the full union still fits FILE_SIZE (asserted above).
+        self.assertEqual(len(legacy) - space.FILE_SIZE, 69632)
         # Beta 71: the sprite scorebug owner's 4,096-byte code no longer fits the first cave after the kickoff
         # owner (it was 1,408 at CODE_VA+2656 through beta 70) and is allocated in the scale region after the union.
         self.assertEqual([a["va"] for a in space.layout(legacy)["allocations"]],
@@ -109,6 +111,8 @@ class CompleteOwnerTests(unittest.TestCase):
                           space.CODE_VA+126976, space.DATA_VA+16])
         full_sites = {(a["owner"], a["kind"]): a for a in layout["allocations"]}
         for a in space.layout(legacy)["allocations"]:
+            if a["owner"] == tt.scorebug_runtime_patch.OWNER and a["kind"] == "code":
+                continue   # beta 71: the grown sprite owner sits after the union; the gates and the manifest pin it
             self.assertEqual(a, full_sites[a["owner"], a["kind"]])
         self.assertEqual(compose(self.retail, reverse=True)[0], self.full)
 
