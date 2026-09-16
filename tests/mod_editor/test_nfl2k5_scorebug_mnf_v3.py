@@ -13,7 +13,15 @@ class ContractTests(unittest.TestCase):
   self.assertEqual(exact.MNF_SOURCE['plate'],(837,947,1083,983))
   self.assertEqual(exact.MNF_SOURCE['strip'],(839,999,1082,1040))
   self.assertEqual(exact.plate_argb('KC'),0xffe31837)
-  self.assertEqual(exact.plate_argb('LV'),0xffa5acaf)
+  # Lit plate colours (S7): LV's silver secondary is lowered until the white label keeps 4.5:1 on the masked plate,
+  # DAL's navy primary is lifted to the plate lightness floor; every team clears the contrast floor.
+  self.assertEqual(exact.plate_rgb('LV'),(134,145,150))
+  self.assertEqual(exact.plate_rgb('DAL'),(0,66,184))
+  self.assertEqual(exact.lit_rgb((0,53,148),exact.PLATE_LIGHTNESS_FLOOR),(0,66,184))
+  self.assertEqual(exact.wing_rgb('DEN'),(55,93,163))
+  self.assertEqual(exact.wing_rgb('LV'),(110,110,110))
+  for team in exact.ESPN_PLATE:
+   self.assertGreaterEqual(exact.contrast_ratio((255,255,255),exact.lit_plate_rgb(exact.plate_rgb(team))),exact.PLATE_LABEL_CONTRAST,team)
   self.assertEqual(art.probe_sizes('mnf')[1],410624)
   self.assertLess(art.probe_sizes('mnf')[1],420000)
   self.assertEqual(owner.PLAY_CLOCK_CELL,0xffd70033)
