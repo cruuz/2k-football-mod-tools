@@ -88,6 +88,9 @@ class ApfPlayCallingEditor(QWidget):
         self._context = None
         self._book_source = None
         self._review = None
+        self._pending = []
+        self._pending_session = None
+        self._pending_blockers = {}
         self._generation = 0
         self._busy = False
         self._loading = False
@@ -179,7 +182,7 @@ class ApfPlayCallingEditor(QWidget):
         self.candidate_table = table(("Formation", "Personnel", "Requested TEs", "Personnel weight", "Formation weight"), "All ordinary situation candidates before the draw")
         self.candidate_table.setMaximumHeight(260)
         situation_root.addWidget(self.candidate_table)
-        self.situation_remove = button(situation_root, "Review removal from this book", "Remove the selected ordinary formation completely from this book, including every situation; review remaining personnel first.", self.remove_candidate)
+        self.situation_remove = button(situation_root, "Confirm removal from this book", "Remove the selected ordinary formation completely from this book, including every situation; review remaining personnel first.", self.remove_candidate)
         donor_row = QHBoxLayout()
         self.add_donor = explain(QComboBox(), "Choose a book on the same side that already contains the formation to add.")
         self.add_donor.setAccessibleName("Formation donor book")
@@ -188,7 +191,7 @@ class ApfPlayCallingEditor(QWidget):
         donor_row.addWidget(QLabel("Add from book")); donor_row.addWidget(self.add_donor)
         donor_row.addWidget(self.add_formation)
         situation_root.addLayout(donor_row)
-        self.add_button = button(situation_root, "Review formation addition", "Add the selected donor formation as an explicit book edit, then preview all affected situations.", self.stage_addition)
+        self.add_button = button(situation_root, "Confirm formation addition", "Add the selected donor formation as an explicit book edit, then preview all affected situations.", self.stage_addition)
         self.bucket_export = button(situation_root, "Export play call spreadsheet…", "Export the selected offensive book in all 23 preview buckets, with their shared-data limits.", self.export_scheme)
         root.addWidget(self.situation_group)
         from .situation_mask_qt import SituationMaskPanel
@@ -254,7 +257,7 @@ class ApfPlayCallingEditor(QWidget):
             rating_form.addRow(label + " (raw 0–7)", row)
             self.ratings.append(slider)
         lever_root.addLayout(rating_form)
-        self.ratings_button = button(lever_root, "Stage formation ratings", "The game will use these three ratings for this formation in the built book.", self.stage_ratings)
+        self.ratings_button = button(lever_root, "Confirm formation ratings", "The game will use these three ratings for this formation in the built book.", self.stage_ratings)
         self.play_picker = explain(QComboBox(), "The game draws among the plays present in this formation.")
         self.play_picker.setAccessibleName("Play")
         lever_root.addWidget(self.play_picker)
@@ -263,7 +266,7 @@ class ApfPlayCallingEditor(QWidget):
         explain(self.play_rating, "Lower X increases initial play weight. Actual calls also depend on the situation, personnel, available plays and history.")
         lever_root.addWidget(self.play_rating)
         note(lever_root, "Play X rating: 0 = called most; larger numbers give the play less weight, alongside suitability and run/pass choice.")
-        self.play_rating_button = button(lever_root, "Stage play rating", "The game will use this X rating when choosing this play in the selected formation.", self.stage_play_rating)
+        self.play_rating_button = button(lever_root, "Confirm play rating", "The game will use this X rating when choosing this play in the selected formation.", self.stage_play_rating)
         self.primary = explain(QComboBox(), "The game advertises this formation under its primary personnel category.")
         self.primary.setAccessibleName("Primary personnel")
         lever_root.addWidget(QLabel("Primary personnel")); lever_root.addWidget(self.primary)
@@ -272,37 +275,50 @@ class ApfPlayCallingEditor(QWidget):
         self.secondary.setMaximumHeight(150)
         lever_root.addWidget(QLabel("Also available to these personnel categories")); lever_root.addWidget(self.secondary)
         note(lever_root, "Primary personnel is the formation's main category; checked secondary categories also make it available to the game's personnel selection.")
-        self.categories_button = button(lever_root, "Review personnel change", "The game will advertise this formation under the chosen categories after you review the row coverage.", self.stage_categories)
-        self.remove_button = button(lever_root, "Remove formation", "The game will lose this formation and its plays from this book after you review the surviving personnel and confirm.", self.remove_formation)
+        self.categories_button = button(lever_root, "Confirm personnel change", "The game will advertise this formation under the chosen categories after you review the row coverage.", self.stage_categories)
+        self.remove_button = button(lever_root, "Confirm remove formation", "The game will lose this formation and its plays from this book after you review the surviving personnel and confirm.", self.remove_formation)
         self.never_call = explain(QCheckBox("Never call (ordinary CPU lottery)"), "Exclude this ordinary formation without deleting its plays or moving records; explicit user calls and special calls are outside this control.")
         lever_root.addWidget(self.never_call)
-        self.never_button = button(lever_root, "Review Never call", "Review this formation's CPU exclusion or restore its saved personnel memberships; Undo also restores it.", self.stage_never_call)
+        self.never_button = button(lever_root, "Confirm Never call", "Review this formation's CPU exclusion or restore its saved personnel memberships; Undo also restores it.", self.stage_never_call)
         note(lever_root, "Never call preserves the record and requires another formation for its personnel. "
              "Special formations 151–162 remain protected: their cached-call path bypasses this switch. "
              "A saved USER book or global merge can supply another copy. Reload the built book; gameplay is UNWITNESSED.")
         self.retire_picker = explain(QComboBox(), "The game will stop advertising this personnel category anywhere in this book if a valid replacement remains.")
         self.retire_picker.setAccessibleName("Personnel to retire")
         lever_root.addWidget(self.retire_picker)
-        self.retire_button = button(lever_root, "Retire personnel", "The game will lose this category from all surviving primary and secondary memberships after you review coverage and confirm.", self.retire)
+        self.retire_button = button(lever_root, "Confirm retire personnel and run/pass share", "The game will lose this category from all surviving primary and secondary memberships after you review coverage and confirm.", self.retire)
         self.tendency = QSlider(Qt.Horizontal); self.tendency.setRange(0, 100)
         self.tendency.setAccessibleName("Team run share percent")
         explain(self.tendency, "The game starts from this team's run share, then adjusts it for down, distance, score and urgency.")
         self.tendency_label = note(lever_root, "Run share: 50%; pass share: 50%.")
         self.tendency.valueChanged.connect(lambda v: self.tendency_label.setText(f"Run share: {v}%; pass share: {100-v}%. The game adjusts this for the situation."))
         lever_root.addWidget(self.tendency)
-        self.tendency_button = button(lever_root, "Stage team run/pass tendency", "The game will use this run share for the selected team even when other teams share its book.", self.stage_tendency)
-        self.audibles_button = button(lever_root, "Stage balanced CPU audibles", "The game will use existing run and pass plays in each formation's audible slots; formations missing either kind cannot be balanced.", self.stage_audibles)
+        self.tendency_button = button(lever_root, "Confirm team run/pass tendency", "The game will use this run share for the selected team even when other teams share its book.", self.stage_tendency)
+        self.audibles_button = button(lever_root, "Confirm balanced CPU audibles", "The game will use existing run and pass plays in each formation's audible slots; formations missing either kind cannot be balanced.", self.stage_audibles)
         note(lever_root, "Use Fine-tune Plays for individual audible slots; automatic balancing keeps each formation's existing plays.")
         root.addWidget(self.levers)
 
-        self.review_group = QGroupBox("Review before staging")
+        self.review_group = QGroupBox("Pending edits")
         review_root = QVBoxLayout(self.review_group)
-        self.review_label = note(review_root, "A removal or personnel change lists retired categories and the lineup resolver's remaining candidates before you confirm.")
+        self.queue_edits = explain(QCheckBox("Add edits to Pending edits"),
+                                   "Collect any number of book, personnel, situation and team edits, then check and stage them with Confirm all.")
+        review_root.addWidget(self.queue_edits)
+        self.pending_table = table(("Edit", "Book / team / row", "Checks and next step", "Undo / clear"), "Pending edits")
+        self.pending_table.setMaximumHeight(240)
+        review_root.addWidget(self.pending_table)
+        self.confirm_button = button(review_root, "Confirm all", "Run every review and the combined checks, then stage the clean set in one Undo step. Blocked edits stay in this list.", self.confirm_review)
+        self.clear_pending_button = button(review_root, "Clear pending edits", "Discard the pending list without changing staged edits.", self.clear_pending)
+        self.details_toggle = explain(QCheckBox("Show review details"), "Expand the coverage and retired personnel review. Reading it is optional; Confirm always runs these checks.")
+        review_root.addWidget(self.details_toggle)
+        self.review_details = QWidget()
+        detail_root = QVBoxLayout(self.review_details)
+        self.review_label = note(detail_root, "Confirm runs the writer, personnel and coverage checks automatically.")
         self.coverage_table = table(("Requested row", "Remaining personnel categories", "Coverage"), "Lineup resolver row coverage")
         self.coverage_table.setMaximumHeight(220)
-        review_root.addWidget(self.coverage_table)
-        self.confirm_button = button(review_root, "Confirm and stage reviewed edit", "The game copy will include exactly the reviewed change; Undo restores the previous staged recipe.", self.confirm_review)
-        self.confirm_button.setEnabled(False)
+        detail_root.addWidget(self.coverage_table)
+        self.details_toggle.toggled.connect(self.review_details.setVisible)
+        self.review_details.setVisible(False)
+        review_root.addWidget(self.review_details)
         root.addWidget(self.review_group)
 
         self.master_group = QGroupBox("MASTER personnel: EXPERIMENTAL, changes every book on the disc")
@@ -322,7 +338,7 @@ class ApfPlayCallingEditor(QWidget):
         self.master_row.setAccessibleName("Personnel category row")
         explain(self.master_row, "The game compares this row with the requested personnel row when weighing this category in every book.")
         master_root.addWidget(self.master_row)
-        self.master_row_button = button(master_root, "Stage personnel row", "The game will compare this category at its new row in every book on the disc.", self.stage_master_row)
+        self.master_row_button = button(master_root, "Confirm personnel row", "The game will compare this category at its new row in every book on the disc.", self.stage_master_row)
         self.roles = []
         role_form = QFormLayout()
         for i in range(11):
@@ -331,7 +347,7 @@ class ApfPlayCallingEditor(QWidget):
             role_form.addRow(f"Player {i+1}", control)
             self.roles.append(control)
         master_root.addLayout(role_form)
-        self.roles_button = button(master_root, "Stage eleven personnel roles", "The game will fill this category's eleven lineup slots using these roles in every book on the disc.", self.stage_roles)
+        self.roles_button = button(master_root, "Confirm eleven personnel roles", "The game will fill this category's eleven lineup slots using these roles in every book on the disc.", self.stage_roles)
         note(master_root, "5-2 sits one row below the ordinary request, so the game never weighs it; move it to row 13 to make it an ordinary candidate. This refers to ordinary matchups; near-goal requests can differ.")
         self.fix_52_button = button(master_root, "Make 5-2 an ordinary candidate (row 13)", "The game will be able to weigh 5-2 against an ordinary defensive personnel request in every book carrying it.", self.fix_52)
         root.addWidget(self.master_group)
@@ -376,6 +392,10 @@ class ApfPlayCallingEditor(QWidget):
         self.candidate_table.itemSelectionChanged.connect(self._candidate_changed)
         self.candidate_search.textChanged.connect(self._filter_candidates)
         self.add_donor.currentIndexChanged.connect(self._add_donor_changed)
+        root.insertWidget(1, self.queue_edits)
+        self._confirm_labels = {control: control.text() for control in self.findChildren(QPushButton)
+                                if control.text().startswith("Confirm ") and control is not self.confirm_button}
+        self.queue_edits.toggled.connect(self._queue_mode_changed)
         self.set_context()
 
     def _source(self):
@@ -424,7 +444,8 @@ class ApfPlayCallingEditor(QWidget):
         self.bucket_export.setEnabled(enabled and self.side_picker.currentData() == "offense")
         self.master_group.setEnabled(enabled and self._context is not None)
         self.review_group.setEnabled(enabled)
-        self.confirm_button.setEnabled(enabled and self._review is not None and not self._review["refused"])
+        self.confirm_button.setEnabled(enabled and bool(self._pending))
+        self.clear_pending_button.setEnabled(enabled and bool(self._pending))
         self.undo_button.setEnabled(enabled)
         self.experiments.setEnabled(not self._busy and not self._loading)
 
@@ -434,6 +455,12 @@ class ApfPlayCallingEditor(QWidget):
         self._enable()
 
     def set_context(self, *_):
+        session = getattr(getattr(self.facade, "session", None), "session_id", None)
+        if session != self._pending_session:
+            self._pending = []
+            self._pending_blockers = {}
+            self._pending_session = session
+            self._render_pending()
         self._generation += 1
         self._loading = False
         self._review = None
@@ -684,63 +711,115 @@ class ApfPlayCallingEditor(QWidget):
             return None
         return {"kind": kind, "book": self._context["book"], **values}
 
-    def review_request(self, request, confirm=False):
-        if request is None:
-            return
-        self._review = None
-        if not confirm:
-            # The shell still owns the review worker during its success signal.
-            # Starting a blocking stage there is refused, leaving _loading set.
-            # Review and stage one ordinary edit in the same worker instead.
-            def operation(progress):
-                review = self.facade.playcalling_review(request, progress)
-                if not review["refused"] and not review["event"]["warning"]:
-                    self.facade.stage_playcalling(review, progress)
-                    return True
-                raise ValidationError(review["event"]["warning"])
-            def staged(_):
-                self.modifiedChanged.emit()
-                self.refresh()
-            self._task("Stage CPU Play Calling edit", operation, staged, True)
-            return
-        def done(review):
-            self._review = review
-            event = review["event"]
-            names = review["category_names"]
-            fill(self.coverage_table, [(row, ", ".join(names[i] for i in ids) or "None", "Covered" if ids else "No candidate") for row, ids in event["coverage"].items()])
-            text = (event["warning"] or "The writer accepted this edit.") + " Retired categories: " + (", ".join(review["retired_names"]) or "none") + "."
-            if request["kind"] == "scheme":
-                receipt = event["after"]["scheme_receipt"]
-                forms = {f["id"]: f["name"] for f in self._context["formations"]}
-                rows = [("Team run %", receipt["run_percentage_before"], receipt["run_percentage_after"])]
-                rows += [(f"{forms.get(r['formation'], r['formation'])} ({r['personnel']} personnel)", r["before"], r["after"]) for r in receipt["formations"]]
-                rows += [(f"Optional row {i} run/pass", [v[i] for v in receipt["row_weights_before"]],
-                          [v[i] for v in receipt["row_weights_after"]]) for i in range(11)]
-                fill(self.scheme_details, rows)
-                self.scheme_details.setVisible(True)
-                missing = ", ".join(receipt["missing_preferred_personnel"]) or "none"
-                text = f"Review {receipt['scheme']['name']} for {event['after']['book']}. Missing preferred personnel: {missing}. " + " ".join(receipt["notes"])
-            self.review_label.setText(text)
-            self.notice.setText(text)
-        self._task("Review CPU Play Calling edit", lambda p: self.facade.playcalling_review(request, p), done)
+    def _queue_mode_changed(self, queued):
+        for control, label in self._confirm_labels.items():
+            control.setText("Add " + label[len("Confirm "):] + " to pending" if queued else label)
+        self.situation_masks.render()
 
-    def confirm_review(self):
-        if self._review is None or self._review["refused"]:
+    def _render_pending(self):
+        fill(self.pending_table, [(*service.PlayCallingService.describe_request(request),
+                                  self._pending_blockers.get(i, "Checks run on Confirm all"), "")
+                                 for i, request in enumerate(self._pending)])
+        for i in range(len(self._pending)):
+            clear = explain(QPushButton("Undo / clear"), "Remove only this pending edit; staged edits stay in the project.")
+            clear.clicked.connect(lambda checked=False, row=i: self.clear_pending(row))
+            self.pending_table.setCellWidget(i, 3, clear)
+        self._enable()
+        if self._context:
+            self.situation_masks.render()
+
+    def clear_pending(self, row=None):
+        if type(row) is int:
+            del self._pending[row]
+        else:
+            self._pending.clear()
+        self._pending_blockers.clear()
+        self._render_pending()
+        if self._context:
+            self.situation_masks.set_context(self._context, self.side_picker.currentData())
+
+    def review_request(self, request, confirm=False):
+        # Historical callers all come here, including the live situation panel.
+        # `confirm` is retained for compatibility; every action now checks itself.
+        if request is not None:
+            self.submit_requests([request])
+
+    def submit_requests(self, requests):
+        from copy import deepcopy
+        requests = deepcopy(requests)
+        if self.queue_edits.isChecked():
+            self._pending.extend(requests)
+            self._render_pending()
+            self.notice.setText(f"{len(self._pending)} pending edits. Confirm all runs the checks together.")
             return
-        review = self._review
-        def done(_):
-            self._review = None
-            if review["event"]["request"]["kind"] in {"clones", "scheme"}:
-                rows = review["event"]["request"]["assignments"]
-                own = next((r["clone_name"] for r in rows if r["team_index"] == self.team_picker.currentData()), None)
-                if own:
-                    self._updating = True
-                    self.donor_picker.addItem(own)
-                    self.donor_picker.setCurrentText(own)
-                    self._updating = False
+        self._confirm_requests(requests, queued=False)
+
+    def _show_reviews(self, reviews):
+        rows, messages = [], []
+        for review in reviews:
+            self._review = review
+            event, names = review['event'], review['category_names']
+            what, where = service.PlayCallingService.describe_request(event['request'])
+            messages.append(f"{what}, {where}: " + (event['warning'] or "The writer accepted this edit.") +
+                            " Retired categories: " + (", ".join(review['retired_names']) or "none") + ".")
+            rows.extend((f"{where}: {row}", ", ".join(names[i] for i in ids) or "None",
+                         "Covered" if ids else "No candidate") for row, ids in event['coverage'].items())
+        fill(self.coverage_table, rows)
+        self.review_label.setText("\n".join(messages))
+
+    def _confirmed(self, requests, result, *, queued):
+        self._show_reviews(result['reviews'])
+        staged = set(result['staged'])
+        blocked = {b['index']: f"{b['what']}, {b['where']}: {b['why']} Fix: {b['fix']}" for b in result['blockers']}
+        remaining = [r for i, r in enumerate(requests) if i not in staged]
+        offset = 0 if queued else len(self._pending)
+        if queued:
+            self._pending = remaining
+            self._pending_blockers.clear()
+        else:
+            self._pending.extend(remaining)
+        for row, i in enumerate(i for i in range(len(requests)) if i not in staged):
+            self._pending_blockers[offset + row] = blocked[i]
+        self._render_pending()
+        if staged:
+            for i in sorted(staged):
+                request = requests[i]
+                if request['kind'] in {'clones', 'scheme'}:
+                    own = next((r['clone_name'] for r in request['assignments'] if r['team_index'] == self.team_picker.currentData()), None)
+                    if own:
+                        self._updating = True
+                        self.donor_picker.addItem(own)
+                        self.donor_picker.setCurrentText(own)
+                        self._updating = False
             self.modifiedChanged.emit()
             self.refresh()
-        self._task("Stage CPU Play Calling edit", lambda p: self.facade.stage_playcalling(review, p), done, True)
+        self.notice.setText(f"Staged {len(staged)} edits in one Undo step. " +
+                            ("\n".join(blocked.values()) if blocked else "All checks passed."))
+
+    def _confirm_requests(self, requests, *, queued):
+        self._task("Confirm CPU Play Calling edits", lambda p: self.facade.confirm_playcalling(requests, p),
+                   lambda result: self._confirmed(requests, result, queued=queued), True)
+
+    def confirm_review(self):
+        if self._pending:
+            from copy import deepcopy
+            self._confirm_requests(deepcopy(self._pending), queued=True)
+
+    def _planned_edit(self, label, plan):
+        queued = self.queue_edits.isChecked()
+        def operation(progress):
+            request = plan(progress)
+            result = None if queued else self.facade.confirm_playcalling([request], progress)
+            return request, result
+        def done(value):
+            request, result = value
+            fill(self.plan_table, [(r["team_name"], r["label_id"], r["donor_name"], r["clone_name"]) for r in request["assignments"]])
+            self.plan_table.setVisible(bool(request["assignments"]))
+            if queued:
+                self.submit_requests([request])
+            else:
+                self._confirmed([request], result, queued=False)
+        self._task(label, operation, done, not queued)
 
     def own_book(self, every):
         if not self._context:
@@ -748,21 +827,12 @@ class ApfPlayCallingEditor(QWidget):
         side = self.side_picker.currentData()
         team = None if every else self.team_picker.currentData()
         donor = None if every else self.donor_picker.currentText()
-        def done(request):
-            fill(self.plan_table, [(r["team_name"], r["label_id"], r["donor_name"], r["clone_name"]) for r in request["assignments"]])
-            self.plan_table.setVisible(True)
-            self.review_request(request, True)
-        self._task("Plan independent team books", lambda p: self.facade.playcalling_plan(side, team, donor, p), done)
+        self._planned_edit("Confirm independent team books", lambda p: self.facade.playcalling_plan(side, team, donor, p))
 
     def apply_scheme(self):
-        if not self._context:
-            return
-        team, scheme_id = self.team_picker.currentData(), self.scheme_picker.currentData()
-        def planned(request):
-            fill(self.plan_table, [(r["team_name"], r["label_id"], r["donor_name"], r["clone_name"]) for r in request["assignments"]])
-            self.plan_table.setVisible(bool(request["assignments"]))
-            self.review_request(request, True)
-        self._task("Plan team scheme", lambda p: self.facade.playcalling_scheme_plan(team, scheme_id, p), planned)
+        if self._context:
+            team, scheme_id = self.team_picker.currentData(), self.scheme_picker.currentData()
+            self._planned_edit("Confirm team scheme", lambda p: self.facade.playcalling_scheme_plan(team, scheme_id, p))
 
     def export_scheme(self):
         team = self.team_picker.currentData()
@@ -808,7 +878,9 @@ class ApfPlayCallingEditor(QWidget):
         self.review_request(self._book_request("never_call", formation=form["id"], never=self.never_call.isChecked(), restore_masks=form["restore_masks"]), True)
 
     def retire(self):
-        self.review_request(self._book_request("retire", category=self.retire_picker.currentData()), True)
+        request = self._book_request("retire", category=self.retire_picker.currentData())
+        if request is not None:
+            self.submit_requests([request, {"kind": "tendency", "team": self.team_picker.currentData(), "value": self.tendency.value()}])
 
     def stage_tendency(self):
         self.review_request({"kind": "tendency", "team": self.team_picker.currentData(), "value": self.tendency.value()})

@@ -50,7 +50,8 @@ class QtTests(FacadeFixture):
         self.assertEqual(self.panel.grid.item(0, 1).text(), "13")
         self.assertGreaterEqual(self.panel.donor_picker.findText("USER-d"), 0)
 
-    def test_review_own_book_table_then_stage_and_undo(self):
+    def test_queue_own_book_table_then_confirm_and_undo(self):
+        self.panel.queue_edits.setChecked(True)
         self.panel.donor_picker.setCurrentIndex(self.panel.donor_picker.findText("USER-o"))
         self.panel.own_team_button.click()
         self.assertEqual(self.panel.plan_table.rowCount(), 1)
@@ -86,17 +87,20 @@ class QtTests(FacadeFixture):
         self.assertEqual(self.panel.formation_picker.count(), 1)
         self.panel.retire_picker.setCurrentIndex(self.panel.retire_picker.findData(3))
         self.panel.retire_button.click(); self.panel.confirm_button.click()
-        self.assertEqual(kind(), "retire")
-        self.assertEqual(self.panel.receipt_table.rowCount(), 7)
+        self.assertEqual(kind(), "tendency")
+        self.assertEqual(self.facade._playcalling.events(self.facade.session)[-2]["request"]["kind"], "retire")
+        self.assertEqual(self.panel.receipt_table.rowCount(), 8)
 
     def test_warning_and_refusal_show_coverage_and_retired_names(self):
         self.backend.holes = True
         for callers in ("cpu", "unclassified", "non_cpu"):
             self.backend.lineup_callers = callers
+            self.panel.clear_pending()
             self.panel.remove_button.click()
             self.assertEqual(self.panel.coverage_table.item(8, 2).text(), "No candidate")
             self.assertIn("Personnel 3", self.panel.review_label.text())
-            self.assertEqual(self.panel.confirm_button.isEnabled(), callers == "non_cpu")
+            self.assertEqual(self.panel.confirm_button.isEnabled(), callers != "non_cpu")
+            self.assertEqual(bool(self.facade.session.modifications), callers == "non_cpu")
         self.panel.confirm_button.click()
         self.assertTrue(self.facade.session.modifications)
 

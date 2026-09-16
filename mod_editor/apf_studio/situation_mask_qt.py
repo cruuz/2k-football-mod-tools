@@ -72,7 +72,10 @@ class SituationMaskPanel(QGroupBox):
         self.context=context
         self.setEnabled(side=='offense' and context is not None and not self.owner._loading)
         self.loading=True
-        self.enabled.setChecked(context['state'].situation_masks_enabled)
+        enabled = context['state'].situation_masks_enabled
+        for request in self.owner._pending:
+            if request['kind'] == 'situation_masks_enabled': enabled = request['enabled']
+        self.enabled.setChecked(enabled)
         selected=self.personnel.currentData();self.personnel.clear()
         for c in context['categories']:
             if c.row<=10:self.personnel.addItem(c.name,c.id)
@@ -95,13 +98,20 @@ class SituationMaskPanel(QGroupBox):
                              f'Computed requested row: {row}; RNG range here: {low}–{high}. '
                              'Urgency and overtime field position can change it further. Use Preview for this sample.')
         candidates=model.situation_candidates(state.books[book],state.master,s)
-        masks=state.situation_masks.get(book,[[] for _ in range(12)])[self.bucket.currentIndex()]
+        masks=set(state.situation_masks.get(book,[[] for _ in range(12)])[self.bucket.currentIndex()])
+        pending = set()
+        for request in self.owner._pending:
+            if request['kind'] == 'situation_mask' and request['book'] == book and request['key'] == self.bucket.currentIndex():
+                pending.add(request['formation'])
+                if request['exclude']: masks.add(request['formation'])
+                else: masks.discard(request['formation'])
         forms=[f for f in self.context['formations'] if f['id']<151]
         self.candidates.setRowCount(len(forms))
         for i,f in enumerate(forms):
             pairs=[c for c in candidates if c['formation']==f['id']]
             text='Candidate' if pairs else 'No ordinary candidate at this sample'
             if f['id'] in masks:text+='; excluded when patch is enabled'
+            if f['id'] in pending:text+='; pending confirmation'
             personnel=', '.join(dict.fromkeys(f"{c['personnel']} ({c['tight_ends']} TE)" for c in pairs)) or '—'
             for col,value in enumerate((f['name'],text,personnel)):
                 item=QTableWidgetItem(value);item.setFlags(item.flags()&~Qt.ItemIsEditable);self.candidates.setItem(i,col,item)
@@ -109,7 +119,7 @@ class SituationMaskPanel(QGroupBox):
             check.setAccessibleName(f"Exclude {f['name']} in {self.bucket.currentText()}")
             check.setToolTip("Exclude this formation only in the selected live bucket; an empty draw falls back to the original candidates.")
             check.setAccessibleDescription(check.toolTip())
-            check.setEnabled(state.situation_masks_enabled)
+            check.setEnabled(state.situation_masks_enabled or self.owner.queue_edits.isChecked())
             check.toggled.connect(lambda value,formation=f['id']:self.exclude(formation,value))
             self.candidates.setCellWidget(i,3,check)
         self.candidates.resizeColumnsToContents()
