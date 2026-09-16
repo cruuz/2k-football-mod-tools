@@ -125,6 +125,10 @@ def quantized_position(px,py,z=-4):
 
 def quantized_uv(box,size,flip=False):
     x0,y0,x1,y1=box
+    # A stretched one-texel strip must sample its centre. Sampling its edges
+    # blends the transparent packing gutter across the whole body quad.
+    if x1-x0==1:x0=x1=x0+.5
+    if y1-y0==1:y0=y1=y0+.5
     if flip:x0,x1=x1,x0
     return tuple(round(v*32767) for x,y in ((x0,y0),(x1,y0),(x0,y1),(x1,y1)) for v in (2*x/size[0]-1,2*y/size[1]-1))
 

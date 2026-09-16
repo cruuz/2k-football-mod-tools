@@ -319,8 +319,7 @@ class RetailTests(unittest.TestCase):
                  patch.object(art, "runtime_pack_status", return_value="applied") as resources:
                 self.assertEqual(scene.runtime_image_status(path), "applied")
                 # The reader receives a bounded PackView over the pack extent, probed with the
-                # runtime's default profile: beta 70's 2026 Monday Night Football package ("mnf";
-                # beta 69 probed the full v8 collection).
+                # runtime's default profile: the S5 sprite collection.
                 self.assertTrue(resources.called)
                 self.assertEqual(resources.call_args.kwargs.get('probe'), scene.runtime_image_status.__kwdefaults__['probe'])
                 self.assertEqual(resources.call_args.kwargs.get('probe'), 'sprite')
@@ -351,7 +350,14 @@ class RetailTests(unittest.TestCase):
         self.assertEqual(first, second)
         old = {(a['owner'], a['kind']): a for a in space.layout(legacy)['allocations']}
         for a in space.layout(first)['allocations']:
-            if a['owner'] in space.LEGACY_OWNERS:
+            if (a['owner'],a['kind']) == ('nfl2k5_scorebug_runtime','code'):
+                from mod_editor.core import nfl2k5_scorebug_runtime as runtime
+                # S5 is a terminal scale owner: a different request union moves
+                # its RX allocation. Verify its regenerated code at that VA.
+                self.assertNotEqual(a['va'],old[a['owner'],a['kind']]['va'])
+                state=old[a['owner'],'data']['va']
+                self.assertEqual(first[a['raw']:a['raw']+a['size']],runtime.code_for(a['va'],state)[0])
+            elif a['owner'] in space.LEGACY_OWNERS:
                 self.assertEqual(a, old[a['owner'], a['kind']])
                 self.assertEqual(first[a['raw']:a['raw']+a['size']], legacy[a['raw']:a['raw']+a['size']])
         self.assertEqual(first[0xA10:space.META_COPY], legacy[0xA10:space.META_COPY])

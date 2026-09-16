@@ -1,0 +1,10 @@
+{
+  "source_seals": 339,
+  "all_current": true,
+  "stack_xbe_sha256": "472862f4eac5420137f97529fe3c27b5f000f0ab6a005bd1d8a14d46c753bd60",
+  "same_xbe_and_allocations_as_before_atlas_uv_fix": true,
+  "manifest_bytes": 8204660,
+  "manifest_sha256": "b07ce2cbcca465b203c25809008493df9d0f29a68f0807def600b48caa4bdcd1",
+  "runtime_witnessed": false,
+  "disc_built": false
+}

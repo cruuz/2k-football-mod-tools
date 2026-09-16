@@ -67,6 +67,23 @@ class NativeTests(unittest.TestCase):
     rows=[q for q in self.preview.compiled.quads if q['name'].startswith(role+':')]
     visible=sum(bool(struct.unpack_from('<I',c['live_decoded'],scene.layout.S1+q['vertex']*10)[0]) for q in rows)
     self.assertEqual(visible,count,role)
+ def test_opaque_body_blocks_the_screenshot_under_translucent_wings(self):
+  from PIL import Image,ImageChops
+  import nfl2k5_scorebug_projection as projection
+  for wide in (False,True):
+   g,c=self.capture(away='NO',home='DEN',possession='away',widescreen=wide)
+   with tempfile.TemporaryDirectory() as directory:
+    pictures=[]
+    for background in ('black','white'):
+     path=Path(directory)/(background+'.png')
+     projection.render_native(c['live_decoded'],self.preview.atlas,self.preview.fonts,g,path,
+       texture_spans=c['texture_spans'],background=Image.new('RGB',(640,480),background))
+     pictures.append(Image.open(path).convert('RGB'))
+    # Interior pixels must not change with the background, including beneath
+    # the translucent wing ramps and around their transparent logo cutouts.
+    left,right=(177,463) if wide else (150,490)
+    delta=ImageChops.difference(*pictures).crop((left,414,right,446))
+    self.assertLessEqual(max(v[1] for v in delta.getextrema()),1)
  def test_updates_values_hide_unused_slots_and_keep_retail_events(self):
   g,c=self.capture();m=c['machine'];code,data=owner.sites(self.patched);update=owner.code_for(code['va'],data['va'])[1]['update']
   rows=self.preview.compiled.quads
