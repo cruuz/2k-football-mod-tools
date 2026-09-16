@@ -252,6 +252,17 @@ def resample_logo(image, size):
     image = alpha_bleed(image)
     image = image.convert("RGBa").resize(size, Image.Resampling.LANCZOS).convert("RGBA")
     image.putalpha(image.getchannel("A").point(lambda a: 0 if a < 16 else 255 if a > 239 else a))
+    # Keep fractional coverage only in the one-texel silhouette boundary band.
+    # Anisotropic logo fitting can otherwise stretch a source feather to two
+    # texels, leaving a few faint islands even after the ringing tail is removed.
+    import numpy as np
+    alpha = np.asarray(image.getchannel("A")).copy()
+    solid = alpha >= 128
+    padded = np.pad(solid, 1, mode="edge")
+    neighbors = [padded[y:y+image.height, x:x+image.width] for y in range(3) for x in range(3)]
+    boundary = np.logical_or.reduce(neighbors) & ~np.logical_and.reduce(neighbors)
+    alpha[~boundary] = np.where(solid[~boundary], 255, 0)
+    image.putalpha(Image.fromarray(alpha))
     return alpha_bleed(image)
 
 
@@ -269,7 +280,7 @@ def quantize_alpha_aware(image, maximum=256):
     require(32 <= maximum <= 256, "alpha-aware P8 needs 32..256 entries")
     a = np.asarray(image.convert("RGBA")).copy()
     # Sub-3% filter ringing is outside the one-texel feather, not new detail.
-    a[:, :, 3][a[:, :, 3] < 8] = 0
+    a[:, :, 3][(a[:, :, 3] < 8) & (a[:, :, :3].min(axis=2) < 250)] = 0
     colors, inverse, counts = np.unique(a.reshape(-1, 4), axis=0, return_inverse=True, return_counts=True)
     groups = np.where(colors[:, 3] == 0, 0, np.where(colors[:, 3] == 255, 1,
                       np.where((colors[:, :3] == 255).all(axis=1), 2, 3)))

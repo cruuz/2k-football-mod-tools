@@ -42,6 +42,10 @@ class ContractTests(unittest.TestCase):
   # Analytic source-over at a half-covered straight-RGBA edge must retain hue.
   self.assertGreater(decoded[16,7,0],200)
   self.assertGreater(len(np.unique(a[:,:,3])),2)
+  solid=a[:,:,3]>=128;pad=np.pad(solid,1,mode='edge')
+  adjacent=[pad[y:y+32,x:x+32] for y in range(3) for x in range(3)]
+  boundary=np.logical_or.reduce(adjacent)&~np.logical_and.reduce(adjacent)
+  self.assertFalse((((a[:,:,3]>0)&(a[:,:,3]<255))&~boundary).any())
  def test_wing_palette_is_monotonic_and_round_ends_have_coverage(self):
   import numpy as np
   from mod_editor.core import nfl2k5_scorebug_assets as assets

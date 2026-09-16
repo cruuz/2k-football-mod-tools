@@ -56,6 +56,7 @@ def load_layout(folder=None):
     for name,row in spec['cells'].items():
         require(_box(row.get('box'),image.size) and all(type(v)==int for v in row['box']), 'Invalid PNG cell: '+name)
     require(len(spec.get('static',[]))<=24 and len(spec.get('fields',[]))<=16, 'Too many scorebug layers or fields.')
+    require(isinstance(spec.get('plate_tints', {}), dict), 'Possession plate tints must be an object.')
     for team, colour in spec.get('plate_tints', {}).items():
         from .nfl2k5_scorebug_resources import TEAM_LOGOS
         require(team in TEAM_LOGOS and isinstance(colour, str) and len(colour)==7 and colour[0]=='#', 'Invalid possession plate tint.')

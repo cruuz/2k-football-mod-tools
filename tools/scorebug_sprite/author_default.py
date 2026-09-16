@@ -25,7 +25,7 @@ def pill(w,h,r,color,ends='both'):
 body=pill(1041,110,8,(37,37,37,255));a=np.asarray(body).copy()
 # Visible reflection near the top, and the dark lower rim retained in the art.
 for y in range(110):
- value=round(36+21*np.exp(-y/11)-4*y/109)
+ value=round(39+21*np.exp(-y/11)-4*y/109)
  a[y,:,:3]=[value]*3
 for y in (0,1):a[y,:,:3]=(74,80,88)
 for y in (108,109):a[y,:,:3]=(13,20,28)
@@ -42,7 +42,7 @@ plate=pill(246,36,6,(255,255,255,255));a=np.asarray(plate).copy()
 for y in range(36):
  for x in range(246):
   # Soft inner edge shading, plus a restrained top lip and darker bottom lip.
-  shade=211-37*y/35-14*np.exp(-min(x,245-x)/4)-9*np.exp(-(35-y)/2)
+  shade=211-18*y/35-14*np.exp(-min(x,245-x)/4)-9*np.exp(-(35-y)/2)
   if y==0:shade=211
   a[y,x,:3]=round(shade)
 put('plate',Image.fromarray(a))
