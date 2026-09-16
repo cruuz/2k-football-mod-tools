@@ -3,7 +3,7 @@ from pathlib import Path
 import json
 import sys
 import tempfile
-from PyQt5.QtCore import QProcess, Qt, pyqtSignal
+from PyQt5.QtCore import QProcess, QTimer, Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import (QCheckBox,QComboBox,QDialog,QFileDialog,QFormLayout,QHBoxLayout,
                             QLabel,QLineEdit,QPushButton,QScrollArea,QSpinBox,QVBoxLayout,QWidget)
@@ -46,7 +46,7 @@ class SpritePreviewDialog(QDialog):
         use=QPushButton('Use design in Build');use.setAccessibleName('Use sprite design in Build');use.clicked.connect(self._use_design);root.addWidget(use)
         self.status=QLabel('Choose a screenshot and your game source, then Preview. The design uses the sprite scorebug option.');self.status.setWordWrap(True);root.addWidget(self.status)
         self.picture=QLabel();self.picture.setAlignment(Qt.AlignCenter);self.picture.setAccessibleName('Native sprite scorebug over the screenshot')
-        scroll=QScrollArea();scroll.setWidgetResizable(True);scroll.setWidget(self.picture);root.addWidget(scroll,1)
+        self.scroll=QScrollArea();self.scroll.setWidgetResizable(True);self.scroll.setWidget(self.picture);root.addWidget(self.scroll,1)
         note=QLabel('Experimental scorebug. The preview shows the compiled design; appearance in a played game still needs verification.');note.setWordWrap(True);root.addWidget(note)
 
     def _use_design(self):
@@ -54,6 +54,8 @@ class SpritePreviewDialog(QDialog):
             from mod_editor.core.nfl2k5_scorebug_sprite import compile_folder
             compile_folder(self.folder.text())
         except (OSError,ValueError) as exc:self.status.setText(str(exc));return
+        except (KeyError,TypeError,AttributeError):
+            self.status.setText('Invalid sprite design. Check the required fields in layout.json against the supplied template.');return
         self.design_chosen.emit(self.folder.text());self.status.setText('Sprite design handed to Build with the sprite scorebug option enabled.')
 
     def _choose(self,edit,kind):
@@ -84,6 +86,11 @@ class SpritePreviewDialog(QDialog):
             else:self.status.setText('Preview failed: '+(message.strip().splitlines()[-1] if message.strip() else 'Check the selected game source and design folder.'))
             return
         pixmap=QPixmap(str(self.output));self.picture.setPixmap(pixmap.scaledToWidth(960,Qt.SmoothTransformation));self.status.setText('Preview ready. Scores, labels and ticks use the compiled sprite quads.')
+        QTimer.singleShot(0,self._show_bar)
+
+    def _show_bar(self):
+        self.scroll.verticalScrollBar().setValue(self.scroll.verticalScrollBar().maximum())
+        horizontal=self.scroll.horizontalScrollBar();horizontal.setValue(horizontal.maximum()//2)
 
     def _error(self,_error):
         self.preview_button.setEnabled(True);self.status.setText('The preview process could not start. Check this installation’s Python runtime and try again.')
