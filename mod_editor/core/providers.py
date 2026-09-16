@@ -561,7 +561,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_build_service.py": "3a92a92a018809d4217c0cbe548b45dfa46434d64f16c98565babbcb87b55cd0",
         "mod_editor/core/nfl2k5_build_settings.py": "c2f14dd6cd0b0a8036824f88760c1688a2367b24423b4e526294e023fda05d94",
         "mod_editor/core/nfl2k5_modern_arrowhead.py": "8c05ccc48b1ad155f126e79e9cce03ab9853b0d068937150dfb1f3ba23c3ee3a",
-        "mod_editor/core/nfl2k5_modern_color.py": "4f69c89f99cf78971a4daf1c7d4f34c6d575261e60f61bb74b7f550e30a6686a",
+        "mod_editor/core/nfl2k5_modern_color.py": "ce4f54af29f911d32cd70a360f98b20a6fab21598fe529e26f47655e8da1db7c",
         "mod_editor/core/nfl2k5_bump_strength.py": "79f9264fbe0813db9be66f22e35f8944e35b92ae415132d819eda50920e41bb0",
         "mod_editor/core/nfl2k5_calendar_engine.py": "796246b2248eddda3a0e57ed791b53cc1446fe3a3128ad39397ababe873ab841",
         "mod_editor/core/nfl2k5_calendar_engine_code.py": "9b43e835f1df76f85ecb13e7ef593d2eee884a1fa82fe41ea3d813186445ca22",
@@ -696,11 +696,11 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_save_writer.py": "5a883cd1e449e8c796dc9453e6e9245390715d081979c024ac1182ef2c483bc4",
         "mod_editor/core/nfl2k5_scorebar_v3.py": "406ed027b583e9d49dee9a671eab085af171c2d2b50ab5bc115e487ff45d5d91",
         "mod_editor/core/nfl2k5_scorebug_assets.py": "1ed15a2f5c75ccd67308d24484705fd5a135216f4a14aa2522fa90720bd11c04",
-        "mod_editor/core/nfl2k5_scorebug_exact.py": "f81ff290c1de60978b53cb81c43197ef318c5008cc51f733d9e8df33c3188cdd",
+        "mod_editor/core/nfl2k5_scorebug_exact.py": "84291c8fba14b82803c315bbb714d40f29ba588499432157390dbba4d169f64a",
         "mod_editor/core/nfl2k5_scorebug_fonts.py": "b292f93b7bc25b64a379069b77c9172c1b92cf79553bfe4a7be835d1ad7119e9",
         "mod_editor/core/nfl2k5_scorebug_ingame.py": "e9059d7dfe4e425f76ac1e43d8fc302871a1ae22de7ce139fdcb3ceeb43a2321",
         "mod_editor/core/nfl2k5_scorebug_mnf_font.py": "fa2c3a006af66af408345ace6bc43870d8b92dae90b93cb8c8969628737cffd7",
-        "mod_editor/core/nfl2k5_scorebug_resources.py": "3f039c1a901408cd9ce7a3b139f66cc1340ab495ecd60fa6c5127de8d9d4428b",
+        "mod_editor/core/nfl2k5_scorebug_resources.py": "5599d5069209e62e5d2155c380c9b945037485d41049f06108751619e5ea31f9",
         'mod_editor/core/nfl2k5_scorebug_sprite.py': 'd5daacdd63bd63c4f059a74b0472633686e72db0410505f08fbc071a4cb0cfed',
         'mod_editor/core/nfl2k5_scorebug_sprite_code.py': 'df3ee27bca7d94abaccadc79a00e7ca8ac2d877b52585a12cf9d1a271f9c9283',
         'tools/nfl2k5_scorebug_exact.py': '9541b744aaaa3c839526349b2eb3e65e4631ea4e72d9dc79aa6bdd667c1911bb',
@@ -810,7 +810,7 @@ class Nfl2k5UnifiedVisualProvider:
         "tools/xbox_ima_encoder.py": "2f6c7209674d93c542f4c67fdab2ebfa4aaa8a6a21d6b4a08d07a9996bf79d76"
     }
     data_pins: Mapping[str, str] = {
-        "data/nfl2k5_modern_color_pins.json": "244dc1edd173de8acf2f6cafbfacaa5b7a09d5abc1bda277201369dd28262c15",
+        "data/nfl2k5_modern_color_pins.json": "df09f36fb57a7a05570a469f1232bf97381b69c759e89ebfddb0522a94b3bd01",
         "mod_editor/data/nfl2k5_crib_catalog.v1.json":
             "c78801144df2f070e003ba458c5affa15a52cc00221cc1a3d9983f1fbf172cd8",
         "mod_editor/data/nfl2k5_equipment_chain_pins.v1.json": "1057ef17a6680edf64d83ce563f168e5c6850c63c7b212423d70486838591295",

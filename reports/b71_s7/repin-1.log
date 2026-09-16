@@ -1,0 +1,14 @@
+[1] mod_editor/core/providers.py: mod_editor/core/nfl2k5_modern_color.py
+    4f69c89f99cf78971a4daf1c7d4f34c6d575261e60f61bb74b7f550e30a6686a
+ -> ce4f54af29f911d32cd70a360f98b20a6fab21598fe529e26f47655e8da1db7c
+[1] mod_editor/core/providers.py: mod_editor/core/nfl2k5_scorebug_exact.py
+    f81ff290c1de60978b53cb81c43197ef318c5008cc51f733d9e8df33c3188cdd
+ -> 84291c8fba14b82803c315bbb714d40f29ba588499432157390dbba4d169f64a
+[1] mod_editor/core/providers.py: mod_editor/core/nfl2k5_scorebug_resources.py
+    3f039c1a901408cd9ce7a3b139f66cc1340ab495ecd60fa6c5127de8d9d4428b
+ -> 5599d5069209e62e5d2155c380c9b945037485d41049f06108751619e5ea31f9
+[1] mod_editor/core/providers.py: data/nfl2k5_modern_color_pins.json
+    244dc1edd173de8acf2f6cafbfacaa5b7a09d5abc1bda277201369dd28262c15
+ -> df09f36fb57a7a05570a469f1232bf97381b69c759e89ebfddb0522a94b3bd01
+
+applied 4 pin update(s)

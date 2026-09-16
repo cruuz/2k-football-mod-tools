@@ -9686,7 +9686,8 @@
         "docs/modern_color/README.md",
         "tests/mod_editor/test_colour_lighting.py",
         "tests/mod_editor/test_colour_lighting_qt.py",
-        "docs/modern_color/CONTROLS.md"
+        "docs/modern_color/CONTROLS.md",
+        "reports/b71_s7/strength_proof.json"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -9732,7 +9733,7 @@
             "required": false
           },
           {
-            "allowed": "nfl2k5_colour_lighting/v1 project document; 55 bounded numeric controls, group switches, per-control disabled list, surface links and preview selectors",
+            "allowed": "nfl2k5_colour_lighting/v1 project document; 56 bounded numeric controls including the overall strength blend (default 0.5), group switches, per-control disabled list, surface links and preview selectors",
             "name": "modern_color_settings",
             "required": false
           }
@@ -10622,9 +10623,11 @@
           "reports/b71_s6/finish-proof.json",
           "reports/b71_s6/owner-bounds.json",
           "reports/b71_s6/states.json",
-          "reports/b71_s6/volume.json"
+          "reports/b71_s6/volume.json",
+          "reports/b71_s7/plate_contrast.json",
+          "reports/b71_s7/plate_contact_sheet.png"
         ],
-        "scope": "Native collection loading proves the enlarged same-name SCNE and atlas win HUD lookup. The owner calls retail getters and writes preallocated glyph quads, tints wings and possession plate, and retains retail FLAG, FUMBLE, hang time and ball-on callbacks. Rotating score slabs conflict with the new scores and are suppressed. Standard geometry and glyph ink are within one HUD pixel at both aspects. Bounded register/FPU, idempotence, ownership, foreign-byte and volume checks do not prove a played intro or GPU appearance.",
+        "scope": "Native collection loading proves the enlarged same-name SCNE and atlas win HUD lookup. The owner calls retail getters and writes preallocated glyph quads, tints wings and possession plate with team colours lifted as lit on air (a lightness floor, with the white label checked at 4.5:1 or better on the shaded plate for all 32 teams), and retains retail FLAG, FUMBLE, hang time and ball-on callbacks. Rotating score slabs conflict with the new scores and are suppressed. Standard geometry and glyph ink are within one HUD pixel at both aspects. Bounded register/FPU, idempotence, ownership, foreign-byte and volume checks do not prove a played intro or GPU appearance.",
         "status": "not-tested"
       },
       "selectors": {

@@ -1,0 +1,233 @@
+[
+ {
+  "bundle": "s13dd.iff",
+  "rig": "day",
+  "retail": {
+   "map_mean": [
+    102.6,
+    125.0,
+    65.1
+   ],
+   "ambient_intensity": 0.285,
+   "key": 1.2,
+   "fill": 0.2,
+   "shadow": 0.275,
+   "key_colour": [
+    1.0,
+    1.0,
+    0.722
+   ],
+   "predicted": [
+    35,
+    44,
+    18
+   ],
+   "saturation": 0.591,
+   "value": 0.173,
+   "bundle_sha256": "b5bcf870b8c855c5006e5fbe6268851bf18001bdf5d910e8b7d2e5ed93e08642"
+  },
+  "retail_identical": true,
+  "half": {
+   "map_mean": [
+    142.6,
+    170.5,
+    82.8
+   ],
+   "ambient_intensity": 0.3625,
+   "key": 1.4,
+   "fill": 0.595,
+   "shadow": 0.2975,
+   "key_colour": [
+    1.0,
+    0.97,
+    0.801
+   ],
+   "predicted": [
+    62,
+    76,
+    36
+   ],
+   "saturation": 0.526,
+   "value": 0.298,
+   "bundle_sha256": "40d31be5df792043e3e2ce0bbb460e188e537c0480c5a7f13b05aa06f8b9f789"
+  },
+  "full": {
+   "map_mean": [
+    183.0,
+    216.2,
+    100.3
+   ],
+   "ambient_intensity": 0.44,
+   "key": 1.6,
+   "fill": 0.99,
+   "shadow": 0.32,
+   "key_colour": [
+    1.0,
+    0.94,
+    0.88
+   ],
+   "predicted": [
+    90,
+    105,
+    60
+   ],
+   "saturation": 0.429,
+   "value": 0.412,
+   "bundle_sha256": "50a72c8e62bc18e7db4a84421d496e1a83fdbbe86403d0cf7e4e7854d76921fb"
+  }
+ },
+ {
+  "bundle": "s13ad.iff",
+  "rig": "afternoon",
+  "retail": {
+   "map_mean": [
+    102.6,
+    125.0,
+    65.1
+   ],
+   "ambient_intensity": 0.27,
+   "key": 1.0,
+   "fill": 0.15,
+   "shadow": 0.27,
+   "key_colour": [
+    1.0,
+    0.92,
+    0.65
+   ],
+   "predicted": [
+    26,
+    30,
+    12
+   ],
+   "saturation": 0.6,
+   "value": 0.118,
+   "bundle_sha256": "d3eb28787a5d09f61c9ec6b7f73ff115c3d78e77691ef56ec3256e4274f0658a"
+  },
+  "retail_identical": true,
+  "half": {
+   "map_mean": [
+    142.6,
+    170.5,
+    82.8
+   ],
+   "ambient_intensity": 0.435,
+   "key": 1.1,
+   "fill": 0.595,
+   "shadow": 0.245,
+   "key_colour": [
+    1.0,
+    0.915,
+    0.715
+   ],
+   "predicted": [
+    53,
+    61,
+    32
+   ],
+   "saturation": 0.475,
+   "value": 0.239,
+   "bundle_sha256": "d2ce73a517356dccfdfe699cc7c1d427ce8df318de1cd9c9146e3b12b103ae7b"
+  },
+  "full": {
+   "map_mean": [
+    183.0,
+    216.2,
+    100.3
+   ],
+   "ambient_intensity": 0.6,
+   "key": 1.2,
+   "fill": 1.04,
+   "shadow": 0.22,
+   "key_colour": [
+    1.0,
+    0.91,
+    0.78
+   ],
+   "predicted": [
+    88,
+    103,
+    60
+   ],
+   "saturation": 0.417,
+   "value": 0.404,
+   "bundle_sha256": "7c049c12eba993f9c39cec01ea25de1e876117e19c1fd188ecae68615f9706bf"
+  }
+ },
+ {
+  "bundle": "s13nd.iff",
+  "rig": "night_indoor",
+  "retail": {
+   "map_mean": [
+    102.6,
+    125.0,
+    65.1
+   ],
+   "ambient_intensity": 0.31,
+   "key": 0.672,
+   "fill": 0.672,
+   "shadow": 0.165,
+   "key_colour": [
+    0.952,
+    0.952,
+    1.0
+   ],
+   "predicted": [
+    41,
+    51,
+    25
+   ],
+   "saturation": 0.51,
+   "value": 0.2,
+   "bundle_sha256": "5592ea6a02995b9f4df8c67fc7043dbe60a0c701c1c05f2364f8e27d2d762f26"
+  },
+  "retail_identical": true,
+  "half": {
+   "map_mean": [
+    142.6,
+    170.5,
+    82.8
+   ],
+   "ambient_intensity": 0.405,
+   "key": 0.766,
+   "fill": 0.766,
+   "shadow": 0.165,
+   "key_colour": [
+    0.976,
+    0.976,
+    1.0
+   ],
+   "predicted": [
+    68,
+    82,
+    37
+   ],
+   "saturation": 0.549,
+   "value": 0.322,
+   "bundle_sha256": "6c4388e0e631e9cb58880c3dbc3fc1ce5de5f5f1c85432b8e6e3df556443a20b"
+  },
+  "full": {
+   "map_mean": [
+    183.0,
+    216.2,
+    100.3
+   ],
+   "ambient_intensity": 0.5,
+   "key": 0.86,
+   "fill": 0.86,
+   "shadow": 0.165,
+   "key_colour": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "predicted": [
+    103,
+    122,
+    51
+   ],
+   "saturation": 0.582,
+   "value": 0.478,
+   "bundle_sha256": "575e429a174f8316d78bc8df1271d1f5796cfc5b2af51b5f4aac45ff763eb965"
+  }
+ }
+]

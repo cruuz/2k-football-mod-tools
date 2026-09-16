@@ -55,6 +55,7 @@ HELP_TEXT = (
     "Each slider has an Off switch; values stay with the project. Directions, counts and retail wrappers stay unchanged. "
     "Day and afternoon colour balance also blends their shadow strength. Refits add build time; any span that cannot fit stays retail "
     "and is named in the receipt. Swatches are predicted means, and custom appearance is unwitnessed. "
+    "Overall strength blends every written value between retail (0) and the Broadcast values (1); the default is 0.5. "
     "Off in every preset. Use the original retail source to change or reset an already-built grade."
 )
 ROOT = Path(__file__).resolve().parents[2]
@@ -111,6 +112,9 @@ MODERN_RIGS = {
 # the Arrowhead hue (73 degrees). Value is lifted through a curve, 1 - (1 - v)^G,
 # so the darkest blades gain the most and the brightest never clip.
 HUE_TARGET, HUE_PULL, SAT_SCALE, VAL_GAMMA = 72.0, 0.50, 1.12, 2.8
+# Beta 71 (9/16): the full Broadcast grade was judged too vibrant in game, so every
+# written value is blended toward retail by an overall strength, default half.
+STRENGTH_DEFAULT = 0.5
 NORMAL_FLATTEN = 0.32
 # v2.1 (2026-09-15, from the first colour v2 test): the field also draws a "divots"
 # wear layer (64x64 P8, dark green, about 36 percent alpha over most of the turf)
@@ -172,10 +176,10 @@ def sha(data):
 # never preset edits. Disabled controls retain their authored value for re-use.
 SETTINGS_SCHEMA = "nfl2k5_colour_lighting/v1"
 RECEIPT_SCHEMA = "nfl2k5_colour_lighting_receipt/v1"
-TRANSFORM_REVISION = "c5-field-linked-outside-v1"
+TRANSFORM_REVISION = "s7-overall-strength-v1"
 RIG_LABELS = {"day": "Day", "afternoon": "Afternoon", "night_indoor": "Night / dome (shared)",
               "rain": "Rain", "snow": "Snow", "alt_day": "Alternate day", "alt_dynamic": "Alternate dynamic"}
-GROUPS = {"turf": "Turf", "endzones": "End zones / centre logo", "outside": "Outside grass",
+GROUPS = {"master": "Overall strength", "turf": "Turf", "endzones": "End zones / centre logo", "outside": "Outside grass",
           "divots": "Blotches / wear", "normal": "Bump detail", "tints": "Time-of-day tints",
           **{"rig_" + name: label + " lights" for name, label in RIG_LABELS.items()}}
 
@@ -197,6 +201,8 @@ def control_specs():
     def add(group, key, label, default, retail, low, high, step):
         specs[group + "." + key] = dict(group=group, label=label, default=default,
                                         retail=retail, minimum=low, maximum=high, step=step)
+    # Every written value is retail + (broadcast - retail) x strength: 0 is retail, 1 the full Broadcast recipe.
+    add("master", "strength", "Modern colour strength (retail 0 to broadcast 1)", STRENGTH_DEFAULT, 1, 0, 1, .01)
     for group in ("turf", "endzones", "outside"):
         add(group, "hue_target", "Broadcast hue (degrees)", HUE_TARGET, HUE_TARGET, 45, 150, 1)
         add(group, "hue_pull", "Hue pull", HUE_PULL, 0, 0, 1, .01)
@@ -274,6 +280,29 @@ def control_value(settings, key):
             else settings["values"][key])
 
 
+def strength(settings):
+    """The overall blend applied to every written value (0 retail, 1 full Broadcast)."""
+    doc = settings if type(settings) is dict and "values" in settings and "disabled" in settings else normalize_settings(settings)
+    return control_value(doc, "master.strength")
+
+
+def blend(retail_value, broadcast_value, k):
+    """retail + (broadcast - retail) x k, exact at both ends."""
+    if k == 1:
+        return broadcast_value
+    if k == 0:
+        return retail_value
+    return retail_value + (broadcast_value - retail_value) * k
+
+
+def blend_bytes(retail_bytes, broadcast_bytes, k):
+    if k == 1:
+        return bytes(broadcast_bytes)
+    if k == 0:
+        return bytes(retail_bytes)
+    return bytes(min(255, max(0, round(a + (b - a) * k))) for a, b in zip(retail_bytes, broadcast_bytes))
+
+
 def surface_group(settings, surface):
     return "turf" if surface in settings["linked"] and settings["linked"][surface] else surface
 
@@ -286,12 +315,18 @@ def configured_rig(name, settings=None):
         return retail
     modern = MODERN_RIGS[name]
     val = lambda key: control_value(doc, group + "." + key)
-    blend = lambda a, b: tuple(x + (y - x) * val("balance") for x, y in zip(a, b))
-    return dict(shadow=retail["shadow"] + (modern.get("shadow", retail["shadow"]) - retail["shadow"]) * val("balance"),
-                ambient=blend(retail["ambient"], modern["ambient"]),
+    mix = lambda a, b: tuple(x + (y - x) * val("balance") for x, y in zip(a, b))
+    full = dict(shadow=retail["shadow"] + (modern.get("shadow", retail["shadow"]) - retail["shadow"]) * val("balance"),
+                ambient=mix(retail["ambient"], modern["ambient"]),
                 ambient_intensity=val("ambient") * val("gain"),
-                lights=tuple((blend(old[0], new[0]), val("key" if i == 0 else "fill") * val("gain"))
+                lights=tuple((mix(old[0], new[0]), val("key" if i == 0 else "fill") * val("gain"))
                              for i, (old, new) in enumerate(zip(retail["lights"], modern["lights"]))))
+    k = strength(doc)
+    return dict(shadow=blend(retail["shadow"], full["shadow"], k),
+                ambient=tuple(blend(a, b, k) for a, b in zip(retail["ambient"], full["ambient"])),
+                ambient_intensity=blend(retail["ambient_intensity"], full["ambient_intensity"], k),
+                lights=tuple((tuple(blend(a, b, k) for a, b in zip(old[0], new[0])), blend(old[1], new[1], k))
+                             for old, new in zip(retail["lights"], full["lights"])))
 
 
 def corrected_tint(rgba, settings=None):
@@ -300,7 +335,7 @@ def corrected_tint(rgba, settings=None):
     if target is None:
         return tuple(rgba)
     bucket = "afternoon" if rgba[:3] == (255, 238, 205) else "night" if rgba[:3] == (242, 255, 255) else "day"
-    amount = control_value(doc, "tints." + bucket)
+    amount = control_value(doc, "tints." + bucket) * strength(doc)
     return tuple(min(255, max(0, round(a + (b - a) * amount))) for a, b in zip(rgba, target))
 
 
@@ -473,8 +508,7 @@ def regrade_palette(palette, *, gain=1.0, alpha_scale=1.0, settings=None, surfac
         v = min(1.0, lift_value(v, val("value_lift")) * gain)
         r2, g2, b2 = (min(255, max(0, round(c * 255))) for c in colorsys.hsv_to_rgb(h, s, v))
         out[i * 4:i * 4 + 4] = bytes((b2, g2, r2, new_a))
-    return bytes(out)
-
+    return blend_bytes(palette, out, strength(doc))
 
 def _palette_counts(out, system, texture):
     tx, inv, ResourceRecord, HEADER = _tools()
@@ -518,6 +552,11 @@ def outside_link_amount(settings):
     return control_value(settings, "outside.match") if settings["linked"]["outside"] else 0.0
 
 
+def effective_link_amount(settings):
+    """The link amount actually written: the match control scaled by the overall strength."""
+    return outside_link_amount(settings) * strength(settings)
+
+
 def match_outside_palette(palette, field_rgb, counts, settings=None, *, mask=None):
     """Match the FIELD prediction under every rig through the surface response.
 
@@ -527,7 +566,7 @@ def match_outside_palette(palette, field_rgb, counts, settings=None, *, mask=Non
     Only the linked match control opts in; unlinked custom colour remains free.
     """
     doc = normalize_settings(settings)
-    amount = outside_link_amount(doc)
+    amount = effective_link_amount(doc)
     mask = palette if mask is None else mask
     mean = _palette_mean(palette, counts, mask=mask, hue_max=180)
     if not amount or mean is None or field_rgb is None:
@@ -556,7 +595,7 @@ def match_outside_palette(palette, field_rgb, counts, settings=None, *, mask=Non
 def linked_outside_tint(rgba, settings=None):
     """Remove separate colour casts and bound edge shade for a linked surface."""
     doc = normalize_settings(settings)
-    amount = outside_link_amount(doc)
+    amount = effective_link_amount(doc)
     r, g, b, a = rgba
     shade = max(OUTSIDE_MIN_SHADE, 255 - round((255-max(r, g, b)) * control_value(doc, "outside.falloff")))
     return tuple(round(v + (shade-v) * amount) for v in (r, g, b)) + (a,)
@@ -633,9 +672,11 @@ def flatten_normal_palette(palette, settings=None):
     require(len(palette) == 1024, "palette size")
     doc = normalize_settings(settings)
     amount = control_value(doc, "normal.flatten")
-    if amount == 0:
+    k = strength(doc)
+    if amount == 0 or k == 0:
         return bytes(palette)
     residual = NORMAL_FLATTEN if amount == control_specs()["normal.flatten"]["default"] else 1 - amount
+    residual = 1 - (1 - residual) * k
     if not looks_like_normal_palette(palette):
         return bytes(palette)
     out = bytearray(palette)
@@ -809,7 +850,7 @@ def modern_field_scene(span, *, outer_index=0, settings=None, modern_arrowhead=F
         if name == OUTSIDE_MATERIAL:
             outside_mean = _palette_mean(graded, counts, mask=before, hue_max=180)
             outside_linked = bool(field_rgb is not None and outside_mean and max(outside_mean) and outside_link_amount(doc))
-            receipt["outside"] = dict(link_amount=outside_link_amount(doc) if outside_linked else 0, field_rgb=list(field_rgb) if field_rgb is not None else None,
+            receipt["outside"] = dict(link_amount=effective_link_amount(doc) if outside_linked else 0, field_rgb=list(field_rgb) if field_rgb is not None else None,
                                       before_rgb=list(_palette_mean(graded, counts, mask=before, hue_max=180) or ()),
                                       after_rgb=list(_palette_mean(after, counts, mask=before, hue_max=180) or ()))
     for shape in rec["shapes"]:
@@ -825,7 +866,7 @@ def modern_field_scene(span, *, outer_index=0, settings=None, modern_arrowhead=F
             new = corrected_tint((r, g, b, a), doc) if (r, g, b, a) in VERTEX_TINTS else None
             if new is None and shape["name"] == "Outside_grass" and r == g == b and r < 255 and a == 255:
                 # The outside grass darkens toward the edges through grey vertex colours; keep less of the falloff.
-                lifted = 255 - round((255 - r) * control_value(doc, "outside.falloff"))
+                lifted = round(blend(r, 255 - (255 - r) * control_value(doc, "outside.falloff"), strength(doc)))
                 new = (lifted, lifted, lifted, 255)
             if shape["name"] == "Outside_grass" and outside_linked:
                 new = linked_outside_tint((r, g, b, a), doc)
