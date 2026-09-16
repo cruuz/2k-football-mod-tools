@@ -27,18 +27,33 @@ body=pill(1041,110,8,(37,37,37,255));a=np.asarray(body).copy()
 for y in range(110):
  value=round(36+21*np.exp(-y/11)-4*y/109)
  a[y,:,:3]=[value]*3
-for y in (0,1):a[y,:,:3]=(60,64,70)
+for y in (0,1):a[y,:,:3]=(74,80,88)
 for y in (108,109):a[y,:,:3]=(13,20,28)
 body=Image.fromarray(a);put('body',body)
 # Three authored slices preserve the full-resolution silhouette at the ends.
 b=cells['body']['box'];cells['body_left']={'box':[b[0],b[1],b[0]+10,b[3]]};cells['body_middle']={'box':[b[0]+10,b[1],b[0]+11,b[3]]};cells['body_right']={'box':[b[2]-10,b[1],b[2],b[3]]}
 ramp=pill(213,110,8,(255,255,255,255),'left');a=np.asarray(ramp).copy()
-for x in range(213):a[:,x,3]=(a[:,x,3].astype(float)*(1-x/212)).round().astype('uint8')
+for x in range(213):a[:,x,3]=(a[:,x,3].astype(float)*(1-x/212)**1.5).round().astype('uint8')
+# Let the body rim show through the tinted wings. The horizontal mask remains monotonic.
+a[:2,:,3]=(a[:2,:,3].astype(float)*.35).round().astype('uint8');a[-2:,:,3]=0
 put('wing',Image.fromarray(a))
-plate=Image.new('RGBA',(246,41),(255,255,255,0));plate.paste(pill(246,36,6,(255,255,255,255)),(0,5));d=ImageDraw.Draw(plate);d.polygon([(114,5),(121,0),(128,5)],fill='white');put('plate',plate)
-put('housing',pill(246,62,18,(24,24,26,255)))
-put('capsule',pill(180,40,20,(248,248,250,255),'left'))
-put('red',pill(63,41,20,(215,0,51,255),'right'))
+# A neutral luminance mask is modulated by the possessing team's tint.
+plate=pill(246,36,6,(255,255,255,255));a=np.asarray(plate).copy()
+for y in range(36):
+ for x in range(246):
+  # Soft inner edge shading, plus a restrained top lip and darker bottom lip.
+  shade=211-37*y/35-14*np.exp(-min(x,245-x)/4)-9*np.exp(-(35-y)/2)
+  if y==0:shade=211
+  a[y,x,:3]=round(shade)
+put('plate',Image.fromarray(a))
+notch=Image.new('RGBA',(56,20),(255,255,255,0));d=ImageDraw.Draw(notch)
+d.polygon([(0,0),(55,0),(28,19)],fill=(255,248,250,255))
+put('pointer',notch.resize((14,5),Image.Resampling.LANCZOS))
+put('housing',pill(246,62,18,(24,24,26,255)).resize((82,26),Image.Resampling.LANCZOS))
+# Store the round ends at the 4:3 HUD sampling footprint, so bilinear minification
+# does not skip their subpixel silhouette coverage. Source-space boxes stay exact.
+put('capsule',pill(180,40,20,(248,248,250,255),'left').resize((60,17),Image.Resampling.LANCZOS))
+put('red',pill(63,41,20,(215,0,51,255),'right').resize((21,17),Image.Resampling.LANCZOS))
 put('tick',Image.new('RGBA',(20,6),(255,255,255,255)))
 put('event',Image.new('RGBA',(2,2),(37,37,37,255)))
 sets={}
@@ -68,7 +83,8 @@ static=[]
 def s(name,box,cell,mat=3,tint='none',**kw):static.append(dict(name=name,box=box,cell=cell,material=mat,tint=tint,**kw))
 s('body_left',[437,942,447,1052],'body_left');s('body',[447,942,1468,1052],'body_middle');s('body_right',[1468,942,1478,1052],'body_right')
 s('housing',[837,983,1083,1045],'housing');s('capsule',[839,999,1019,1039],'capsule')
-s('plate',[837,942,1083,983],'plate',4,'possessing team')
+s('plate',[837,947,1083,983],'plate',4,'possessing team')
+s('pointer',[951,942,965,947],'pointer',4)
 s('away_wing',[437,942,650,1052],'wing',9,'away team');s('home_wing',[1265,942,1478,1052],'wing',9,'home team',flip_x=True)
 s('red',[1019,999,1082,1040],'red',9)
 s('away_logo',[453,943,653,1050],'logo',8);s('home_logo',[1268,943,1468,1050],'logo',5)
@@ -89,6 +105,7 @@ for row in static:row['z']=-2 if row['cell']=='logo' else -1 if 'wing' in row['n
 for row in fields:row['z']=-5
 layout=dict(schema='nfl2k5_scorebug_sprite/v1',frame=[1920,1080],atlas=[256,512],template='template.png',cells=cells,glyph_sets=sets,static=static,fields=fields,
  events=[dict(name=n,material=m,box=[837,947,1083,983],cell='event',z=-7) for n,m in [('FUMBLE',0),('ball on',1),('FLAG',2),('hang time',10)]],
+ plate_tints={'KC':'#D70E48'},
  reference_boxes={'bar':[437,942,1478,1052],'away_score':[736,965,776,1018],'home_score':[1140,965,1180,1018],'down':[898,955,1021,978],'clock':[920,1006,1000,1033],'quarter':[850,1009,892,1028],'play_clock':[1042,1009,1057,1028]},
  provenance=dict(font='Noto Sans Display Bold, condensed raster fit',license='SIL Open Font License 1.1',font_sha256=hashlib.sha256(FONT.read_bytes()).hexdigest(),author='tools/scorebug_sprite/author_default.py',rendered_once=True,font_distributed=False))
 OUT.mkdir(parents=True,exist_ok=True);sheet.save(OUT/'template.png');(OUT/'layout.json').write_text(json.dumps(layout,indent=2)+'\n')

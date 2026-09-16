@@ -651,6 +651,8 @@ def mnf_panel(team, side):
             scale = min((c-a)/logo.width,(d-b)/logo.height)
             w = max(1,round(logo.width*scale*64/(c-a)))
             h = max(1,round(logo.height*scale*(l1-l0)/(d-b)))
-            logo = logo.resize((w, h), Image.Resampling.LANCZOS)
-            im.alpha_composite(logo, (((64-w)//2), l0 + (l1 - l0 - h) // 2))
+            from .nfl2k5_scorebug_assets import resample_logo, alpha_bleed
+            logo = resample_logo(logo, (w, h))
+            im.paste(logo, (((64-w)//2), l0 + (l1 - l0 - h) // 2))
+            im = alpha_bleed(im)
     return im

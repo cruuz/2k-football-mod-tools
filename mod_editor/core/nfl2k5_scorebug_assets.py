@@ -213,7 +213,100 @@ def retail_font_span(pack_read, slot: int) -> bytes:
 
 
 # ------------------------------------------------------------------------ textures
-def texture_chunk(name: str, image, template: bytes, *, colours: int = 256) -> tuple[bytes, dict]:
+def alpha_bleed(image, pixels=6):
+    """Extend visible RGB into zero-alpha texels without expanding the silhouette.
+
+    NV2A samples straight RGBA. Transparent black therefore darkens a bilinear
+    edge even though it contributes no coverage. Keep this RGB after resizing
+    and after placing a mark on its transparent canvas.
+    """
+    import numpy as np
+    from PIL import Image
+    a = np.asarray(image.convert("RGBA")).copy()
+    known = a[:, :, 3] > 0
+    for _ in range(pixels):
+        previous = known.copy()
+        for dy, dx in ((-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)):
+            sy = slice(max(0, -dy), min(a.shape[0], a.shape[0]-dy))
+            sx = slice(max(0, -dx), min(a.shape[1], a.shape[1]-dx))
+            ty = slice(max(0, dy), min(a.shape[0], a.shape[0]+dy))
+            tx = slice(max(0, dx), min(a.shape[1], a.shape[1]+dx))
+            take = previous[sy, sx] & ~known[ty, tx]
+            a[ty, tx, :3][take] = a[sy, sx, :3][take]
+            known[ty, tx][take] = True
+        if np.array_equal(previous, known):
+            break
+    return Image.fromarray(a)
+
+
+def resample_logo(image, size):
+    """Bleed before filtering, explicitly filter premultiplied, retain one feather.
+
+    The source marks contain faint Lanczos ringing outside their outline. Drop
+    the <1/16-coverage tail and snap the opaque core; retain intermediate edge
+    coverage instead of thresholding the silhouette to a hard cutout.
+    """
+    from PIL import Image
+    image = image.convert("RGBA")
+    image.putalpha(image.getchannel("A").point(lambda a: 0 if a < 16 else 255 if a > 239 else a))
+    image = alpha_bleed(image)
+    image = image.convert("RGBa").resize(size, Image.Resampling.LANCZOS).convert("RGBA")
+    image.putalpha(image.getchannel("A").point(lambda a: 0 if a < 16 else 255 if a > 239 else a))
+    return alpha_bleed(image)
+
+
+def quantize_alpha_aware(image, maximum=256):
+    """P8 with exact alpha endpoints and a dedicated white-mask alpha ramp.
+
+    Never average transparent, opaque and feather texels into the same palette
+    entry. Rank feather colours in premultiplied RGBA, and preserve the RGB of
+    zero-alpha gutters for the GPU's straight-RGBA bilinear sampler. No dithering.
+    Historical texture authors keep their original quantizer unless opted in.
+    """
+    from collections import Counter
+    import numpy as np
+    import nfl_tset_png_import as palettes
+    require(32 <= maximum <= 256, "alpha-aware P8 needs 32..256 entries")
+    a = np.asarray(image.convert("RGBA")).copy()
+    # Sub-3% filter ringing is outside the one-texel feather, not new detail.
+    a[:, :, 3][a[:, :, 3] < 8] = 0
+    colors, inverse, counts = np.unique(a.reshape(-1, 4), axis=0, return_inverse=True, return_counts=True)
+    groups = np.where(colors[:, 3] == 0, 0, np.where(colors[:, 3] == 255, 1,
+                      np.where((colors[:, :3] == 255).all(axis=1), 2, 3)))
+    budgets = [maximum//8, maximum//2, maximum//4, maximum-maximum//8-maximum//2-maximum//4]
+    # Reclaim unused categories (especially neutral fallback and simple logos).
+    sizes = [int((groups == i).sum()) for i in range(4)]
+    limits = [min(n, b) for n, b in zip(sizes, budgets)]
+    while sum(limits) < min(maximum, len(colors)):
+        candidates = [i for i in range(4) if limits[i] < sizes[i]]
+        i = max(candidates, key=lambda i: (sizes[i]-limits[i], -i))
+        limits[i] += 1
+    palette = []
+    mapping = np.zeros(len(colors), dtype=np.uint8)
+    for group, limit in enumerate(limits):
+        ids = np.flatnonzero(groups == group)
+        if not len(ids):
+            continue
+        raw = colors[ids].astype(np.int32)
+        working = raw.copy()
+        if group == 3:
+            working[:, :3] = (working[:, :3]*working[:, 3:]+127)//255
+        histogram = Counter()
+        for color, count in zip(working, counts[ids]):
+            histogram[tuple(map(int, color))] += int(count)
+        representatives = np.array(palettes.median_cut_palette(histogram, limit), dtype=np.int32)
+        error = working[:, None, :]-representatives[None, :, :]
+        # Coverage matters more than faint RGB. This also keeps the white ramp monotonic.
+        error[:, :, 3] *= 2
+        nearest = (error*error).sum(axis=2).argmin(axis=1)
+        mapping[ids] = nearest + len(palette)
+        if group == 3:
+            representatives[:, :3] = np.minimum(255, (representatives[:, :3]*255+representatives[:, 3:]//2)//np.maximum(1, representatives[:, 3:]))
+        palette.extend(tuple(map(int, color)) for color in representatives)
+    return palette, mapping[inverse].tobytes()
+
+
+def texture_chunk(name: str, image, template: bytes, *, colours: int = 256, alpha_aware: bool = False) -> tuple[bytes, dict]:
     """An uncompressed P8 TXTR chunk of any power-of-two size (32..512 per side).
 
     ``template`` is a retail P8 TXTR span (score_buga); its 128-byte system
@@ -236,7 +329,11 @@ def texture_chunk(name: str, image, template: bytes, *, colours: int = 256) -> t
     struct.pack_into("<I", system, descriptor + 12, (lh << 24) | (lw << 20) | P8_FORMAT)
     struct.pack_into("<I", system, descriptor + 16, 0)                          # dimensions from the format word
     rgba = image.convert("RGBA")
-    palette, levels, _ = palettes.quantize_levels([palettes.MipLevel(0, w, h, rgba.tobytes())], colours)
+    if alpha_aware:
+        palette, indices = quantize_alpha_aware(rgba, colours)
+        levels = [indices]
+    else:
+        palette, levels, _ = palettes.quantize_levels([palettes.MipLevel(0, w, h, rgba.tobytes())], colours)
     video = r.tx.swizzle_2d(levels[0], w, h, 1) + palettes.palette_bytes(palette)
     payload = bytes(system) + video
     header = struct.pack("<4s7I", b"TXTR", len(payload), 128, len(video), 0, 0, 0, 0)

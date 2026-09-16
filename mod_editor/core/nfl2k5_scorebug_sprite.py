@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_FOLDER = ROOT / 'data/nfl2k5_scorebug_sprite'
 VERSION = 'scorebug-sprite-v1'
 MAGIC, MARKER_OFFSET, TABLE_OFFSET = 0x35525053, 0x60, 16512
-MAX_APPEND = 400 * 1024
+MAX_APPEND = 400_000
 SOURCES = ('home score', 'away score', 'home timeouts', 'away timeouts', 'quarter', 'clock', 'play clock', 'down and distance')
 TINTS = ('none', 'home team', 'away team', 'possessing team')
 FIELD = struct.Struct('<8I6i')  # source, first vertex, capacity, glyph offset/count, colour, flags, visibility, anchor x/y/z, width, align, advance
@@ -56,6 +56,10 @@ def load_layout(folder=None):
     for name,row in spec['cells'].items():
         require(_box(row.get('box'),image.size) and all(type(v)==int for v in row['box']), 'Invalid PNG cell: '+name)
     require(len(spec.get('static',[]))<=24 and len(spec.get('fields',[]))<=16, 'Too many scorebug layers or fields.')
+    for team, colour in spec.get('plate_tints', {}).items():
+        from .nfl2k5_scorebug_resources import TEAM_LOGOS
+        require(team in TEAM_LOGOS and isinstance(colour, str) and len(colour)==7 and colour[0]=='#', 'Invalid possession plate tint.')
+        int(colour[1:],16)
     names=set()
     for row in spec['static']+spec['fields']+spec.get('events',[]):
         require(row['name'] not in names, 'Duplicate scorebug layer: '+row['name']);names.add(row['name'])
@@ -94,8 +98,10 @@ class Compiled:
 def _pack(images, size):
     """Deterministic nonrotating MaxRects with a transparent sampling gutter."""
     from PIL import Image
+    from .nfl2k5_scorebug_assets import alpha_bleed
     atlas=Image.new('RGBA',tuple(size),(255,255,255,0));free=[(0,0,*size)];placed={}
     for name,image in sorted(images.items(),key=lambda kv:(-max(kv[1].size),-kv[1].width*kv[1].height,kv[0])):
+        image=alpha_bleed(image)
         w,h=image.width+2,image.height+2
         fits=[(min(fw-w,fh-h),max(fw-w,fh-h),y,x,i) for i,(x,y,fw,fh) in enumerate(free) if w<=fw and h<=fh]
         require(fits, 'The cells do not fit the atlas; reduce unused art or choose 512×512.')
@@ -227,8 +233,8 @@ def appendix(pack,folder=None):
     sources={n:pack[r['pack_offset']:r['pack_offset']+r['span_size']] for n,r in art.RESOURCES.items()}
     template=sources['score_buga'];scene.pinned(template,art.RESOURCES['score_buga'])
     chunks=[('TXTR','sb--h0',art.mnf_panel_span(template,None,'home'))]
-    for team,rec in sorted(art.TEAM_LOGOS.items()):chunks.append(('TXTR','sb'+rec['asset_code']+'h0',art.mnf_panel_span(template,team,'home')))
-    chunks.append(('TXTR','score_buga',texture_chunk('score_buga',c.atlas,template)[0]))
+    for team,rec in sorted(art.TEAM_LOGOS.items()):chunks.append(('TXTR','sb'+rec['asset_code']+'h0',art.mnf_panel_span(template,team,'home',plate_tints=c.spec.get('plate_tints'))))
+    chunks.append(('TXTR','score_buga',texture_chunk('score_buga',c.atlas,template,alpha_aware=True)[0]))
     chunks.append(('SCNE','score_bug',scene_span(scene.pinned(sources['score_bug'],art.RESOURCES['score_bug']),c)))
     receipts=[dict(kind=k,name=n,size=len(b),sha256=hashlib.sha256(b).hexdigest()) for k,n,b in chunks]
     data=b''.join(b for _,_,b in chunks)

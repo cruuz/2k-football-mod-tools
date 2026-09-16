@@ -49,7 +49,7 @@ source, glyph set, cap height (`size`), alignment, anchor, colour and slot count
 Glyphs name a cell, advance and optional raise. Width is compressed only when a
 value exceeds its field box, allowing three-digit scores without overlap.
 
-The default scene contains 45 quads: 11 static/logo quads, 30 glyph/tick slots,
+The default scene contains 46 quads: 11 static/logo quads, 30 glyph/tick slots,
 and four retail event backgrounds. It uses 180 of 286 retail vertices. Material
 push-buffer capacities still bound each group; the compiler refuses an overflow
 before changing a game. A 512×512 atlas is accepted only if the complete append
@@ -58,3 +58,16 @@ The default 256×512 atlas plus 33 logos and enlarged scene appends 323,808 byte
 Retail FONT resources stay byte-for-byte unchanged. FLAG, FUMBLE, hang time and
 ball-on text use retail fonts and event callbacks. The rotating score slabs
 conflict with sprite scores, so scores remain on the root while that event runs.
+
+The default pass 2 art uses a neutral luminance mask for the possession plate.
+Optional `plate_tints` in the JSON overrides individual broadcast plate colours;
+other teams retain their primary or the existing secondary choice. The light
+notch is a separate untinted quad. Round capsule ends are filtered to their HUD
+sampling footprint in the PNG; their source-space boxes and glyph anchors stay
+unchanged. The compiler bleeds cell RGB before packing and keeps transparent,
+opaque and feather palette entries separate. Logos use six pixels of RGB bleed
+before explicit premultiplied resampling and again after placement. No dithering
+is used. The default remains 323,808 appended bytes; the hard sprite limit is
+400,000 bytes. Native 16:9 coordinates contract by 27/32 and display restoration
+reverses that transform, preserving logo and round-end proportions. Console GPU
+sampling and played-game appearance remain UNWITNESSED.

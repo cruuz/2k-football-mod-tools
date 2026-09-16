@@ -20,13 +20,42 @@ NATIVE=RETAIL and importlib.util.find_spec('unicorn') is not None
 
 class ContractTests(unittest.TestCase):
  def test_layout_capacity_full_alpha_and_source_boxes(self):
-  c=sprite.compile_folder();self.assertEqual(c.atlas.size,(256,512));self.assertEqual(len(c.quads),45)
+  c=sprite.compile_folder();self.assertEqual(c.atlas.size,(256,512));self.assertEqual(len(c.quads),46)
   self.assertLess(sprite.probe_sizes()[1],400*1024)
   for digit in '0123456789':self.assertEqual(c.spec['glyph_sets']['score']['glyphs'][digit]['size'],[40,53])
   self.assertEqual(len(set(c.atlas.getchannel('A').getdata())),256)
   self.assertFalse(list(sprite.DEFAULT_FOLDER.glob('*.ttf')))
   self.assertEqual(c.spec['reference_boxes']['bar'],[437,942,1478,1052])
   self.assertEqual(sprite.compile_folder().table,c.table)
+ def test_alpha_aware_palette_preserves_coverage_and_bleeds_straight_rgb(self):
+  import numpy as np
+  from PIL import Image
+  from mod_editor.core import nfl2k5_scorebug_assets as assets
+  im=Image.new('RGBA',(64,64));im.paste((225,100,30,255),(16,16,48,48))
+  resized=assets.resample_logo(im,(32,32));a=np.asarray(resized)
+  palette,indices=assets.quantize_alpha_aware(resized,128)
+  decoded=np.asarray(palette,dtype=np.uint8)[np.frombuffer(indices,dtype=np.uint8)].reshape(a.shape)
+  self.assertTrue((decoded[:,:,3][a[:,:,3]==0]==0).all())
+  self.assertTrue((decoded[:,:,3][a[:,:,3]==255]==255).all())
+  self.assertLessEqual(abs(a[16,6,:3].astype(int)-[225,100,30]).max(),1)
+  self.assertEqual(a[16,6,3],0)
+  # Analytic source-over at a half-covered straight-RGBA edge must retain hue.
+  self.assertGreater(decoded[16,7,0],200)
+  self.assertGreater(len(np.unique(a[:,:,3])),2)
+ def test_wing_palette_is_monotonic_and_round_ends_have_coverage(self):
+  import numpy as np
+  from mod_editor.core import nfl2k5_scorebug_assets as assets
+  c=sprite.compile_folder();palette,indices=assets.quantize_alpha_aware(c.atlas)
+  a=np.asarray(palette,dtype=np.uint8)[np.frombuffer(indices,dtype=np.uint8)].reshape(c.atlas.height,c.atlas.width,4)
+  x,y,r,b=c.cells['wing'];profile=a[(y+b)//2,x:r,3].astype(int)
+  self.assertTrue((np.diff(profile)<=0).all())
+  self.assertEqual((profile[0],profile[-1]),(255,0))
+  for name in ('capsule','red'):
+   x,y,r,b=c.cells[name];alpha=a[y:b,x:r,3]
+   edge=alpha[:,0 if name=='capsule' else -1]
+   self.assertLess(edge[0],16)
+   self.assertGreater(edge[len(edge)//2],200)
+   self.assertGreater(len(set(edge)),3)
  def test_future_layout_changes_are_data_and_invalid_layouts_refuse(self):
   with tempfile.TemporaryDirectory() as directory:
    p=Path(directory);spec,image=sprite.load_layout();image.save(p/'template.png')
@@ -103,7 +132,9 @@ class NativeTests(unittest.TestCase):
    g,c=self.capture(away=away,home=home,possession=possessing)
    row=next(q for q in self.preview.compiled.quads if q['name']=='plate')
    word=struct.unpack_from('<I',c['live_decoded'],scene.layout.S1+row['vertex']*10)[0]
-   self.assertEqual(word,exact.plate_argb(home if possessing=='home' else away))
+   team=home if possessing=='home' else away
+   tint=self.preview.compiled.spec.get('plate_tints',{}).get(team)
+   self.assertEqual(word,0xff000000|int(tint[1:],16) if tint else exact.plate_argb(team))
    names={r['name']:r for r in g['materials']}
    for name,team in (('hscore_buga',home),('zscore_buga',away)):
     span=c['texture_spans'][names[name]['texture']];chunk,body,_=scene.decode(span)
@@ -148,7 +179,7 @@ class NativeTests(unittest.TestCase):
   self.assertEqual(result['fonts'],0);self.assertEqual(result['textures'],34)
   self.assertLess(receipt['appended_bytes'],400*1024)
   self.assertEqual(m.get(obj+0x1c),11)
-  self.assertEqual(m.get(obj-256+sprite.TABLE_OFFSET+28),45)
+  self.assertEqual(m.get(obj-256+sprite.TABLE_OFFSET+28),46)
  def test_collection_round_trip_and_foreign_byte_refusal(self):
   with PACK.open('rb') as stream:
    original=art.PackView.from_fd(stream.fileno(),0,PACK.stat().st_size)
