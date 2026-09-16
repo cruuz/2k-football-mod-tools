@@ -102,9 +102,11 @@ class CompleteOwnerTests(unittest.TestCase):
         legacy_requests = tt.kickoff_relocated_patch.REQUESTS + tt.scorebug_runtime_patch.REQUESTS
         legacy = space.apply(self.retail, legacy_requests)[0]
         self.assertEqual(len(legacy), space.FILE_SIZE)
+        # Beta 71: the sprite scorebug owner's 4,096-byte code no longer fits the first cave after the kickoff
+        # owner (it was 1,408 at CODE_VA+2656 through beta 70) and is allocated in the scale region after the union.
         self.assertEqual([a["va"] for a in space.layout(legacy)["allocations"]],
                          [space.CODE_VA, space.CODE_VA+704, space.DATA_VA,
-                          space.CODE_VA+2656, space.DATA_VA+16])
+                          space.CODE_VA+126976, space.DATA_VA+16])
         full_sites = {(a["owner"], a["kind"]): a for a in layout["allocations"]}
         for a in space.layout(legacy)["allocations"]:
             self.assertEqual(a, full_sites[a["owner"], a["kind"]])
