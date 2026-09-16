@@ -1,5 +1,9 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.93 — beta 71.1: the reports after beta 71 — 2026-09-16
+
+- Identity bump for the beta 71.1 hotfix. The APF fixes in this hotfix are listed below as they land.
+
 ## 0.1.0-alpha.92 — beta 71: CPU play calling situations and the play-calling page (in progress, 2026-09-15)
 
 - CPU Play Calling keeps source books and validated staged edits in memory, so a single edit updates its affected book. Confirm runs the existing checks automatically, with optional review details and inline fixes for blockers. Pending edits collects personnel, formations, Never call, retirement with run/pass share, tendencies, audibles, requested rows and situation masks; Confirm all checks their interactions and stages the clean set in one Undo step. Blocked rows stay available to clear. MASTER personnel still affects every book.
