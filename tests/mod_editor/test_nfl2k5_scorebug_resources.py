@@ -178,7 +178,7 @@ class RetailTests(unittest.TestCase):
         # Compiler itself ran above. Reuse its exact immutable output so failure
         # injection exercises IO rather than repeating artwork quantization.
         real_compile=a.compile_runtime_collection
-        def compile(pack, *, probe='full', sprite_folder=None):
+        def compile(pack, *, probe='full', sprite_folder=None, widescreen=False):
             state=a.runtime_pack_status(pack,probe=probe)
             if state=='applied':return pack,{'status':'already_applied','changed_bytes':0}
             self.assertEqual(state,'retail');return real_compile(pack,probe=probe,sprite_folder=sprite_folder)

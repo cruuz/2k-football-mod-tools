@@ -179,7 +179,7 @@ class ExecutableTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_dynamic_kickoff_relocated as kickoff
         from mod_editor.core import nfl2k5_xbe_space as space
         events = []
-        def resources(image, *, with_kickoff=False, extra_requests=(), **_kwargs):
+        def resources(image, *, with_kickoff=False, extra_requests=(), scorebug_folder=None, widescreen=False, **_kwargs):
             events.append('runtime')
             before = build._xbe_bytes(Path(image))
             for key in ('all_stadiums','coverage_slider','scramble_tuning','music_shuffle','practice_squad_screen','abilities','qb_spy'):

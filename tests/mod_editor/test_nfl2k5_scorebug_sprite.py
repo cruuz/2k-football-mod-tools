@@ -20,7 +20,7 @@ NATIVE=RETAIL and importlib.util.find_spec('unicorn') is not None
 
 class ContractTests(unittest.TestCase):
  def test_layout_capacity_full_alpha_and_source_boxes(self):
-  c=sprite.compile_folder();self.assertEqual(c.atlas.size,(256,512));self.assertEqual(len(c.quads),46)
+  c=sprite.compile_folder();self.assertEqual(c.atlas.size,(256,512));self.assertEqual(len(c.quads),47)
   self.assertLess(sprite.probe_sizes()[1],400*1024)
   for digit in '0123456789':self.assertEqual(c.spec['glyph_sets']['score']['glyphs'][digit]['size'],[40,53])
   self.assertEqual(len(set(c.atlas.getchannel('A').getdata())),256)
@@ -77,6 +77,48 @@ class ContractTests(unittest.TestCase):
    except ValueError:continue
    self.assertFalse(plan.scorebug_runtime)
 
+class DisplayModelTests(unittest.TestCase):
+ def test_display_scale_gives_broadcast_proportions_on_both_displays(self):
+  spec=sprite.load_layout()[0]
+  boxes={r['name']:r['box'] for r in spec['static']}
+  boxes['bar']=spec['reference_boxes']['bar']
+  for wide in (False,True):
+   for name in ('bar','capsule','plate','away_logo','home_logo','housing'):
+    src=boxes[name];shown=sprite.display_box(sprite.contracted(sprite.hud_box(src,wide),wide),wide)
+    want=(src[2]-src[0])/(src[3]-src[1]);have=(shown[2]-shown[0])/(shown[3]-shown[1])
+    self.assertAlmostEqual(have/want,1,delta=.005,msg=(name,wide))
+    if wide:
+     for a,b in zip(shown,src):self.assertAlmostEqual(a,b,delta=.5,msg=name)  # 16:9: one source pixel is one display pixel
+   self.assertAlmostEqual(sprite.x_scale(wide),640/sprite.DISPLAY[wide]['size'][0]/sprite.DISPLAY[wide]['contraction'])
+ def test_pinned_brand_watermark_stays_drawable_and_compiled_tables_differ_only_by_display(self):
+  spec=sprite.load_layout()[0];brand=spec['brand'][0]
+  self.assertEqual((brand['name'],brand['cell'],brand['material'],brand['pin']),('watermark','espn_mnf',9,'top-right'))
+  self.assertEqual(brand['box'],[1655,35,1869,64]);self.assertAlmostEqual(brand['opacity'],0.714,delta=.02)
+  self.assertTrue({'frames','method','measured_opacity','colour'}<=set(brand['source']))
+  for wide in (False,True):
+   c=sprite.compile_folder(widescreen=wide);row=next(q for q in c.quads if q['name']=='watermark')
+   self.assertTrue(row['brand']);self.assertEqual(row['tint'],'none')
+   self.assertEqual(row['box'][2],sprite.drawable_right(wide)-sprite.PIN_MARGIN);self.assertEqual(row['layout_box'],brand['box'])
+   hud=sprite.hud_box(row['box'],wide);self.assertLessEqual(hud[2],640);self.assertGreater(hud[0],520)
+   self.assertEqual(c.widescreen,wide)
+   x0,y0,x1,y1=c.cells['espn_mnf'];packed=c.atlas.crop((x0,y0,x1,y1))
+   self.assertLessEqual(packed.getchannel('A').getextrema()[1],round(255*brand['opacity'])+1)  # opacity applied when packed
+  narrow,wide=sprite.compile_folder(widescreen=False),sprite.compile_folder(widescreen=True)
+  self.assertNotEqual(narrow.table,wide.table);self.assertEqual(len(narrow.table),len(wide.table))
+  self.assertEqual(narrow.atlas.tobytes(),wide.atlas.tobytes())
+ def test_flag_cell_is_yellow_with_a_dark_label_and_brand_cell_is_full_coverage(self):
+  spec,image=sprite.load_layout()
+  flag=image.crop(spec['cells']['flag']['box']);r,g,b,a=flag.resize((1,1)).getpixel((0,0))
+  self.assertGreater(r,200);self.assertGreater(g,150);self.assertLess(b,40)
+  self.assertLess(flag.convert('L').crop((95,6,150,30)).getextrema()[0],60)  # dark label ink inside the plate
+  self.assertEqual(next(e for e in spec['events'] if e['name']=='FLAG')['cell'],'flag')
+  mark=image.crop(spec['cells']['espn_mnf']['box']);self.assertEqual(mark.size,(214,29))
+  self.assertEqual(mark.getchannel('A').getextrema()[1],255)  # the template keeps full coverage; the row carries the opacity
+  self.assertEqual(mark.convert('RGB').getextrema(),((255,255),(251,251),(241,241)))
+ def test_flag_literal_is_blanked_at_equal_length(self):
+  rows={va:(old,new) for va,old,new,_ in owner.override_edits()}
+  old,new=rows[0xE6C464];self.assertEqual(old,'FLAG\0'.encode('utf-16le'));self.assertEqual(new,bytes(10))
+
 @unittest.skipUnless(NATIVE,'Pinned USA game and Unicorn required')
 class NativeTests(unittest.TestCase):
  @classmethod
@@ -87,17 +129,15 @@ class NativeTests(unittest.TestCase):
   for wide in (False,True):
    g,c=self.capture(widescreen=wide)
    self.assertTrue(all(not row['vertices'] for row in g['draws']))
-   for q in self.preview.compiled.quads:
+   for q in self.preview.modes[wide]['compiled'].quads:
     if q['dynamic']:continue
     points=g['positions'][q['vertex']:q['vertex']+4]
     box=[min(p[0] for p in points),min(p[1] for p in points),max(p[0] for p in points),max(p[1] for p in points)]
-    want=list(exact.hud_box(q['box']))
-    if wide:
-     for k in (0,2):want[k]=320+(want[k]-320)*27/32
+    want=list(sprite.contracted(sprite.hud_box(q['box'],wide),wide))
     self.assertLess(max(abs(a-b) for a,b in zip(box,want)),.02,q['name'])
    expected={'away_score':1,'home_score':1,'clock':4,'play_clock':1,'quarter':2,'down':5,'home_timeouts':3,'away_timeouts':3}
    for role,count in expected.items():
-    rows=[q for q in self.preview.compiled.quads if q['name'].startswith(role+':')]
+    rows=[q for q in self.preview.modes[wide]['compiled'].quads if q['name'].startswith(role+':')]
     visible=sum(bool(struct.unpack_from('<I',c['live_decoded'],scene.layout.S1+q['vertex']*10)[0]) for q in rows)
     self.assertEqual(visible,count,role)
  def test_opaque_body_blocks_the_screenshot_under_translucent_wings(self):
@@ -130,7 +170,8 @@ class NativeTests(unittest.TestCase):
     self.assertEqual(sum(bool(struct.unpack_from('<I',actual,scene.layout.S1+q['vertex']*10)[0]) for q in rows if q['name'].startswith(role+':')),count,(role,score,timeouts,play))
   for event in ('FLAG','FUMBLE','hang time','ball on'):
    g,c=self.capture(event=event)
-   self.assertTrue(any(row['vertices'] for row in g['draws']),event)
+   # The FLAG plate carries its own dark label; its retail white text is blanked.
+   self.assertEqual(any(row['vertices'] for row in g['draws']),event!='FLAG',event)
  def test_plate_secondary_and_team_material_bindings(self):
   for away,home,possessing in (('DEN','KC','home'),('NO','DEN','away')):
    g,c=self.capture(away=away,home=home,possession=possessing)
@@ -183,7 +224,7 @@ class NativeTests(unittest.TestCase):
   self.assertEqual(result['fonts'],0);self.assertEqual(result['textures'],34)
   self.assertLess(receipt['appended_bytes'],400*1024)
   self.assertEqual(m.get(obj+0x1c),11)
-  self.assertEqual(m.get(obj-256+sprite.TABLE_OFFSET+28),46)
+  self.assertEqual(m.get(obj-256+sprite.TABLE_OFFSET+28),47)
  def test_collection_round_trip_and_foreign_byte_refusal(self):
   with PACK.open('rb') as stream:
    original=art.PackView.from_fd(stream.fileno(),0,PACK.stat().st_size)

@@ -673,6 +673,22 @@
         646,
         190
       ]
+    },
+    "flag": {
+      "box": [
+        648,
+        167,
+        894,
+        203
+      ]
+    },
+    "espn_mnf": {
+      "box": [
+        896,
+        167,
+        1110,
+        196
+      ]
     }
   },
   "glyph_sets": {
@@ -1681,6 +1697,34 @@
       "z": -5
     }
   ],
+  "brand": [
+    {
+      "name": "watermark",
+      "cell": "espn_mnf",
+      "box": [
+        1655,
+        35,
+        1869,
+        64
+      ],
+      "material": 9,
+      "tint": "none",
+      "pin": "top-right",
+      "opacity": 0.714,
+      "z": 0,
+      "source": {
+        "frames": "Broncos-vs-Chiefs-Week1-Highlights/frames, every 30th frame from frame_000101 (999 candidates, 944 with the mark present)",
+        "method": "per-pixel temporal minimum of luminance over frames that carry the mark lifts the static semi-transparent overlay off its darkest background; alpha=(min-black)/(255-black); coverage=alpha/p95(alpha)",
+        "black_level": 0.0,
+        "measured_opacity": 0.714,
+        "colour": [
+          255,
+          251,
+          241
+        ]
+      }
+    }
+  ],
   "events": [
     {
       "name": "FUMBLE",
@@ -1715,7 +1759,7 @@
         1083,
         983
       ],
-      "cell": "event",
+      "cell": "flag",
       "z": -7
     },
     {
@@ -1784,6 +1828,7 @@
     "font_sha256": "1640ba8acb852d9e00406e166d1fc0cedd62a4c20342fd92f1f6dbc7baa61de2",
     "author": "tools/scorebug_sprite/author_default.py",
     "rendered_once": true,
-    "font_distributed": false
+    "font_distributed": false,
+    "brand": "brand cells are coverage masks lifted from broadcast stills; each brand row records its source frames, method, opacity and colour"
   }
 }

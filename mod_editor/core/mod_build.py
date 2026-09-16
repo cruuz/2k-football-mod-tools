@@ -1939,6 +1939,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if plan.scorebug_runtime:
         progress("Installing team logos and scorebug effects (unwitnessed)", 0, 0)
         rec = _core_module("nfl2k5_scorebug_ingame").runtime_apply_in_place(target, with_kickoff=plan.kickoff_relocated, scorebug_folder=plan.scorebug_folder or None,
+            widescreen=bool(plan.widescreen),
             extra_requests=tuple(row for row in all_requests if row[0] not in {
                 tt.scorebug_runtime_patch.OWNER, tt.kickoff_relocated_patch.OWNER}))
         receipt["steps"].append({"step": "scorebug_runtime", **rec})
