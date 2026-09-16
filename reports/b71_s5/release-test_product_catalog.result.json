@@ -1,0 +1,12 @@
+{
+  "name": "release-test_product_catalog",
+  "argv": [
+    "/usr/bin/python3",
+    "tests/mod_editor/test_product_catalog.py",
+    "-v"
+  ],
+  "start_utc": "2026-09-16T02:45:00.718417+00:00",
+  "end_utc": "2026-09-16T02:45:00.857765+00:00",
+  "seconds": 0.139,
+  "exit_code": 5
+}

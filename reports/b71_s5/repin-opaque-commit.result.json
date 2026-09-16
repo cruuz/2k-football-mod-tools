@@ -1,0 +1,12 @@
+{
+  "name": "repin-opaque-commit",
+  "argv": [
+    "python3",
+    "packaging/repin.py",
+    "--apply"
+  ],
+  "start_utc": "2026-09-16T03:19:26.866598+00:00",
+  "end_utc": "2026-09-16T03:19:38.392253+00:00",
+  "seconds": 11.526,
+  "exit_code": 0
+}

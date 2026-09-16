@@ -1,0 +1,15 @@
+test_layout_measurements_are_the_broadcast_ones (__main__.ArtTests.test_layout_measurements_are_the_broadcast_ones) ... ok
+test_painted_atlas_masks_and_shared_logo_cells (__main__.ArtTests.test_painted_atlas_masks_and_shared_logo_cells) ... ok
+test_painted_strips_use_only_the_intended_quads (__main__.ArtTests.test_painted_strips_use_only_the_intended_quads) ... ok
+test_probe_sizes_for_the_compact_profile (__main__.ArtTests.test_probe_sizes_for_the_compact_profile) ... ok
+test_overrides_and_literals_are_recognized_fields (__main__.OwnerCodeTests.test_overrides_and_literals_are_recognized_fields) ... ok
+test_owner_fits_its_named_allocation_and_patches_its_pointers (__main__.OwnerCodeTests.test_owner_fits_its_named_allocation_and_patches_its_pointers) ... ok
+test_plate_table_is_indexed_by_asset_code (__main__.OwnerCodeTests.test_plate_table_is_indexed_by_asset_code) ... ok
+test_state_layout_fits_the_data_page (__main__.OwnerCodeTests.test_state_layout_fits_the_data_page) ... ok
+test_fonts_restyle_in_place_and_are_pinned (__main__.RetailFontTests.test_fonts_restyle_in_place_and_are_pinned) ... ok
+test_runtime_scene_and_atlas_refit (__main__.RetailFontTests.test_runtime_scene_and_atlas_refit) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 12.308s
+
+OK

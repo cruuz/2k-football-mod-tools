@@ -1,0 +1,11 @@
+{
+  "name": "atlas-final",
+  "argv": [
+    "python3",
+    "reports/b71_s5/prove_atlas.py"
+  ],
+  "start_utc": "2026-09-16T03:05:14.062975+00:00",
+  "end_utc": "2026-09-16T03:05:21.314810+00:00",
+  "seconds": 7.252,
+  "exit_code": 1
+}

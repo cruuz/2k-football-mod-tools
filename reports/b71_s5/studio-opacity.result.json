@@ -1,0 +1,11 @@
+{
+  "name": "studio-opacity",
+  "argv": [
+    "python3",
+    "reports/b71_s5/prove_studio.py"
+  ],
+  "start_utc": "2026-09-16T03:14:48.714501+00:00",
+  "end_utc": "2026-09-16T03:15:01.730609+00:00",
+  "seconds": 13.016,
+  "exit_code": 0
+}

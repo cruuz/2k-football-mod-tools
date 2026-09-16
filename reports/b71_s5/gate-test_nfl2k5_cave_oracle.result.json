@@ -1,0 +1,12 @@
+{
+  "name": "gate-test_nfl2k5_cave_oracle",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_nfl2k5_cave_oracle.py",
+    "-v"
+  ],
+  "start_utc": "2026-09-16T03:12:41.075849+00:00",
+  "end_utc": "2026-09-16T03:18:47.344704+00:00",
+  "seconds": 366.269,
+  "exit_code": 1
+}

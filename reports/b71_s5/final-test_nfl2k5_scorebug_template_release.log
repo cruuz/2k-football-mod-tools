@@ -1,0 +1,48 @@
+test_all_template_files_pass_staging_with_exact_reviewed_png_count (__main__.TemplateReleaseTests.test_all_template_files_pass_staging_with_exact_reviewed_png_count) ... ERROR
+test_arbitrary_png_cannot_use_the_template_directory_or_a_renamed_reviewed_file (__main__.TemplateReleaseTests.test_arbitrary_png_cannot_use_the_template_directory_or_a_renamed_reviewed_file) ... FAIL
+test_catalog_tampering_and_missing_catalog_do_not_create_an_exception (__main__.TemplateReleaseTests.test_catalog_tampering_and_missing_catalog_do_not_create_an_exception) ... ok
+test_changed_reviewed_png_refuses_even_when_filename_is_allowlisted (__main__.TemplateReleaseTests.test_changed_reviewed_png_refuses_even_when_filename_is_allowlisted) ... FAIL
+test_staged_compiler_finds_default_art_without_repository_or_legacy_exports (__main__.TemplateReleaseTests.test_staged_compiler_finds_default_art_without_repository_or_legacy_exports) ... ok
+
+======================================================================
+ERROR: test_all_template_files_pass_staging_with_exact_reviewed_png_count (__main__.TemplateReleaseTests.test_all_template_files_pass_staging_with_exact_reviewed_png_count)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_template_release.py", line 35, in test_all_template_files_pass_staging_with_exact_reviewed_png_count
+    result=release.audit_release(self.root,self.allowlist)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s5b/packaging/check_2k5_mod_studio_release.py", line 566, in audit_release
+    scorebug_pngs = _scorebug_template_pngs(release_root)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s5b/packaging/check_2k5_mod_studio_release.py", line 315, in _scorebug_template_pngs
+    raise ReleaseCheckError("reviewed scorebar PNG catalog hash changed")
+scorebar_release_check.ReleaseCheckError: reviewed scorebar PNG catalog hash changed
+
+======================================================================
+FAIL: test_arbitrary_png_cannot_use_the_template_directory_or_a_renamed_reviewed_file (__main__.TemplateReleaseTests.test_arbitrary_png_cannot_use_the_template_directory_or_a_renamed_reviewed_file)
+----------------------------------------------------------------------
+scorebar_release_check.ReleaseCheckError: reviewed scorebar PNG catalog hash changed
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_template_release.py", line 51, in test_arbitrary_png_cannot_use_the_template_directory_or_a_renamed_reviewed_file
+    with self.assertRaisesRegex(release.ReleaseCheckError,'suffix is forbidden'):
+AssertionError: "suffix is forbidden" does not match "reviewed scorebar PNG catalog hash changed"
+
+======================================================================
+FAIL: test_changed_reviewed_png_refuses_even_when_filename_is_allowlisted (__main__.TemplateReleaseTests.test_changed_reviewed_png_refuses_even_when_filename_is_allowlisted)
+----------------------------------------------------------------------
+scorebar_release_check.ReleaseCheckError: reviewed scorebar PNG catalog hash changed
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_template_release.py", line 43, in test_changed_reviewed_png_refuses_even_when_filename_is_allowlisted
+    with self.assertRaisesRegex(release.ReleaseCheckError,'PNG identity changed'):
+AssertionError: "PNG identity changed" does not match "reviewed scorebar PNG catalog hash changed"
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.405s
+
+FAILED (failures=2, errors=1)

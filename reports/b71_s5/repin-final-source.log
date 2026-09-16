@@ -1,0 +1,14 @@
+[1] mod_editor/core/providers.py: mod_editor/core/nfl2k5_scorebug_sprite.py
+    c1485e710d1b870638f9d29d649ee8dade50e0db4ab8906fb5a7fc48f63fd724
+ -> 720822390e1c9fb855b84d229a0506f93650cd9537a6371e97f7a31b76506674
+[1] mod_editor/core/providers.py: tools/nfl2k5_scorebug_reference.py
+    32ef741eb84bdf022de8cae357895eea891e6265c025e57afd4d49a37a6f4444
+ -> 5186fbbbc75619518cdad41763d4fcb9d438bb2bf37ee98bc74b265c6446b435
+[1] packaging/check_2k5_mod_studio_runtime.py: mod_editor/gui/build_panel_qt.py
+    7c4ba55055dc80607f0f8245be3982a4d131ce026101b274835ef8ceba2a21b4
+ -> ae5e28fe4f55e3df5b62038183c32608ea70e232eb2c3f9a5f885e840d00e0c4
+[1] packaging/check_2k5_mod_studio_runtime.py: mod_editor/gui/beta62_options.py
+    f952b005161209eef1b2fa090528f4a017a657718c034d122d9bcc6550c68e72
+ -> 9821228f671cafffaa76893726345597c6b8d78574bf032193ccbe4a69334e41
+
+applied 4 pin update(s)

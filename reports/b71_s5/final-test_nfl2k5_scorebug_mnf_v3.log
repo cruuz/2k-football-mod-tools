@@ -1,0 +1,12 @@
+test_measured_boxes_secondary_choices_and_safe_volume (__main__.ContractTests.test_measured_boxes_secondary_choices_and_safe_volume) ... ok
+test_clock_white_digit_red_cell_urgency_and_disabled_boundaries (__main__.NativeTests.test_clock_white_digit_red_cell_urgency_and_disabled_boundaries) ... ok
+test_event_slab_samples_charcoal_after_atlas_uv_normalization (__main__.NativeTests.test_event_slab_samples_charcoal_after_atlas_uv_normalization) ... ok
+test_missing_private_font_keeps_native_clock_formatters (__main__.NativeTests.test_missing_private_font_keeps_native_clock_formatters) ... ok
+test_native_geometry_both_aspects_and_all_visible_triangle_winding (__main__.NativeTests.test_native_geometry_both_aspects_and_all_visible_triangle_winding) ... ok
+test_native_score_callback_decimal_range_and_ascii_preservation (__main__.NativeTests.test_native_score_callback_decimal_range_and_ascii_preservation) ... ok
+test_painted_mask_tints_come_from_native_logo_lookup (__main__.NativeTests.test_painted_mask_tints_come_from_native_logo_lookup) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 51.494s
+
+OK

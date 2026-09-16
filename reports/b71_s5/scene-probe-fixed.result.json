@@ -1,0 +1,11 @@
+{
+  "name": "scene-probe-fixed",
+  "argv": [
+    "python3",
+    "reports/b71_s5/probe_scene.py"
+  ],
+  "start_utc": "2026-09-16T01:58:34.153831+00:00",
+  "end_utc": "2026-09-16T01:58:53.309104+00:00",
+  "seconds": 19.155,
+  "exit_code": 0
+}

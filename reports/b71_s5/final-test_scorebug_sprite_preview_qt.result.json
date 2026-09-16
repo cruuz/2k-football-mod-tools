@@ -1,0 +1,12 @@
+{
+  "name": "final-test_scorebug_sprite_preview_qt",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_scorebug_sprite_preview_qt.py",
+    "-v"
+  ],
+  "start_utc": "2026-09-16T02:45:12.617549+00:00",
+  "end_utc": "2026-09-16T02:45:25.122327+00:00",
+  "seconds": 12.505,
+  "exit_code": 0
+}

@@ -1,0 +1,9 @@
+retail Chunk(index=0, offset=0, kind='SCNE', stored_size=4800, system_bytes=16512, video_bytes=0, compression_magic=4276993775, overlap_scratch_bytes=16, reserved0=0, reserved1=0)
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s5b/reports/b71_s5/probe_scene.py", line 43, in <module>
+    if __name__=='__main__': main()
+                             ^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s5b/reports/b71_s5/probe_scene.py", line 35, in main
+    assert obj and bytes(m.uc.mem_read(obj-256+len(grown)-16,16)) == b'SPRITE-SCNE-S5\0\0'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

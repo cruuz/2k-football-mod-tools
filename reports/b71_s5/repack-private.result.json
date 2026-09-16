@@ -1,0 +1,15 @@
+{
+  "name": "repack-private",
+  "argv": [
+    "git",
+    "--git-dir=.scratch/b71-s5-git",
+    "--work-tree=.",
+    "repack",
+    "-d",
+    "--local"
+  ],
+  "start_utc": "2026-09-16T03:15:11.590049+00:00",
+  "end_utc": "2026-09-16T03:15:14.609998+00:00",
+  "seconds": 3.02,
+  "exit_code": 0
+}

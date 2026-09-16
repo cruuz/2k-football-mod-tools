@@ -1,0 +1,11 @@
+{
+  "name": "owner-bounds-final",
+  "argv": [
+    "python3",
+    "reports/b71_s5/prove_owner_bounds.py"
+  ],
+  "start_utc": "2026-09-16T03:18:13.515821+00:00",
+  "end_utc": "2026-09-16T03:18:33.837998+00:00",
+  "seconds": 20.322,
+  "exit_code": 0
+}

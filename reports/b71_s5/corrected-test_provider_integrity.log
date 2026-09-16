@@ -1,0 +1,13 @@
+test_all_external_writer_and_verifier_import_closures_are_exactly_pinned (__main__.ProviderIntegrityTests.test_all_external_writer_and_verifier_import_closures_are_exactly_pinned) ... ok
+test_colour_defaults_load_inside_the_isolated_provider_bundle (__main__.ProviderIntegrityTests.test_colour_defaults_load_inside_the_isolated_provider_bundle) ... ok
+test_private_bundle_executes_hashed_bytes_after_workspace_replacement (__main__.ProviderIntegrityTests.test_private_bundle_executes_hashed_bytes_after_workspace_replacement) ... ok
+test_private_bundle_rejects_hardlinked_modules_and_post_stage_tampering (__main__.ProviderIntegrityTests.test_private_bundle_rejects_hardlinked_modules_and_post_stage_tampering) ... ok
+test_provider_owned_inputs_reject_hardlinks (__main__.ProviderIntegrityTests.test_provider_owned_inputs_reject_hardlinks) ... ok
+test_unified_bundle_is_init_free_and_executes_help_and_visual_validate (__main__.ProviderIntegrityTests.test_unified_bundle_is_init_free_and_executes_help_and_visual_validate) ... ok
+test_unified_registry_authorization_is_an_exact_contract (__main__.ProviderIntegrityTests.test_unified_registry_authorization_is_an_exact_contract) ... ok
+test_unified_source_record_identity_is_exact (__main__.ProviderIntegrityTests.test_unified_source_record_identity_is_exact) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 11.132s
+
+OK

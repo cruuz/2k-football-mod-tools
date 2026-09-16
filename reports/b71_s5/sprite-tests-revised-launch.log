@@ -1,0 +1,1 @@
+{"name": "sprite-tests-revised", "argv": ["python3", "tests/mod_editor/test_nfl2k5_scorebug_sprite.py", "-v"], "start_utc": "2026-09-16T02:19:10.769541+00:00", "end_utc": "2026-09-16T02:20:38.844186+00:00", "seconds": 88.075, "exit_code": 0}

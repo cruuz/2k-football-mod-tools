@@ -1,0 +1,12 @@
+{
+  "name": "final-test_build_panel_qt",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_build_panel_qt.py",
+    "-v"
+  ],
+  "start_utc": "2026-09-16T02:45:35.363245+00:00",
+  "end_utc": "2026-09-16T02:45:38.237017+00:00",
+  "seconds": 2.874,
+  "exit_code": 0
+}

@@ -1,0 +1,28 @@
+test_cli_text_json_and_refusal_without_build_or_output (__main__.PlannerTests.test_cli_text_json_and_refusal_without_build_or_output) ... ok
+test_directory_capacity_does_not_depend_on_content_hash_entropy (__main__.PlannerTests.test_directory_capacity_does_not_depend_on_content_hash_entropy) ... ok
+test_documented_beta62_owner_budget_table_fits (__main__.PlannerTests.test_documented_beta62_owner_budget_table_fits) ... ok
+test_every_kind_exact_capacity_alignment_and_overflow (__main__.PlannerTests.test_every_kind_exact_capacity_alignment_and_overflow) ... ok
+test_large_owner_fits_and_legacy_owner_addresses_stay_exact (__main__.PlannerTests.test_large_owner_fits_and_legacy_owner_addresses_stay_exact) ... ok
+test_boot_logo_transfers_owned_header_storage_before_new_headers (tests.mod_editor.test_nfl2k5_xbe_space.PublicTests.test_boot_logo_transfers_owned_header_storage_before_new_headers) ... ok
+test_every_owned_component_is_pinned_and_foreign_refuses_before_mutation (tests.mod_editor.test_nfl2k5_xbe_space.PublicTests.test_every_owned_component_is_pinned_and_foreign_refuses_before_mutation) ... ok
+test_layout_determinism_alignment_capacity_and_header_slack (tests.mod_editor.test_nfl2k5_xbe_space.PublicTests.test_layout_determinism_alignment_capacity_and_header_slack) ... ok
+test_owned_code_installation_and_manifest_builder (tests.mod_editor.test_nfl2k5_xbe_space.PublicTests.test_owned_code_installation_and_manifest_builder) ... ok
+test_request_errors_and_rebuild_refusal (tests.mod_editor.test_nfl2k5_xbe_space.PublicTests.test_request_errors_and_rebuild_refusal) ... ok
+test_second_code_page_relocates_pinned_library_and_can_hold_logo (tests.mod_editor.test_nfl2k5_xbe_space.PublicTests.test_second_code_page_relocates_pinned_library_and_can_hold_logo) ... ok
+test_synthetic_disc_round_trip_and_all_rollback_paths (tests.mod_editor.test_nfl2k5_xbe_space.PublicTests.test_synthetic_disc_round_trip_and_all_rollback_paths) ... ok
+test_full_legacy_owner_union_large_owner_both_orders_and_retained_hooks (__main__.RetailTests.test_full_legacy_owner_union_large_owner_both_orders_and_retained_hooks) ... ok
+test_runtime_scorebug_reader_accepts_scaleout_and_still_validates_xbe (__main__.RetailTests.test_runtime_scorebug_reader_accepts_scaleout_and_still_validates_xbe) ... ok
+test_special_before_after_scaleout_and_both_allocator_inputs (__main__.RetailTests.test_special_before_after_scaleout_and_both_allocator_inputs) ... ok
+test_corruption_and_resealed_unknown_bytes_refuse_before_mutation (__main__.SyntheticTests.test_corruption_and_resealed_unknown_bytes_refuse_before_mutation) ... ok
+test_every_page_and_child_is_recorded_in_manifest (__main__.SyntheticTests.test_every_page_and_child_is_recorded_in_manifest) ... ok
+test_header_accounting_all_descriptors_and_runtime_permissions (__main__.SyntheticTests.test_header_accounting_all_descriptors_and_runtime_permissions) ... ok
+test_legacy_directory_decodes_its_original_request_packing (__main__.SyntheticTests.test_legacy_directory_decodes_its_original_request_packing) ... ok
+test_music_both_orders_and_all_legacy_bytes_stay_identical (__main__.SyntheticTests.test_music_both_orders_and_all_legacy_bytes_stay_identical) ... ok
+test_sealed_code_ro_replay_and_changed_request_refusal (__main__.SyntheticTests.test_sealed_code_ro_replay_and_changed_request_refusal) ... ok
+test_synthetic_rx_pages_execute_and_write_rw (__main__.SyntheticTests.test_synthetic_rx_pages_execute_and_write_rw) ... ok
+test_writer_growth_replay_and_rollback_on_both_write_stages (__main__.SyntheticTests.test_writer_growth_replay_and_rollback_on_both_write_stages) ... ok
+
+----------------------------------------------------------------------
+Ran 23 tests in 821.470s
+
+OK

@@ -1,0 +1,4 @@
+[astra/b71-s5-sprite-scorebug 494480c9] Sample atlas strips opaquely and prove the final native sprite output
+ 166 files changed, 186 insertions(+), 142 deletions(-)
+ create mode 100644 reports/b71_s5/projection-identity.json
+ create mode 100644 reports/b71_s5/prove_projection_identity.py

@@ -1,0 +1,42 @@
+test_all_32_team_wordmarks_and_runtime_default_off (__main__.ContractTests.test_all_32_team_wordmarks_and_runtime_default_off) ... FAIL
+test_authored_capitals_and_neutral_timeout_variants_are_portable (__main__.ContractTests.test_authored_capitals_and_neutral_timeout_variants_are_portable) ... ok
+test_reference_identity_and_active_viewport_transform (__main__.ContractTests.test_reference_identity_and_active_viewport_transform) ... ok
+test_rendered_ink_does_not_count_possession_or_clock_rim_as_text (__main__.ContractTests.test_rendered_ink_does_not_count_possession_or_clock_rim_as_text) ... ok
+test_comparator_reports_pixel_mismatches_even_when_geometry_is_exact (__main__.NativeTests.test_comparator_reports_pixel_mismatches_even_when_geometry_is_exact) ... ok
+test_current_compiler_and_every_probe_identity_are_reproducible (__main__.NativeTests.test_current_compiler_and_every_probe_identity_are_reproducible) ... FAIL
+test_live_timeouts_change_only_the_selected_runtime_panel (__main__.NativeTests.test_live_timeouts_change_only_the_selected_runtime_panel)
+Beta 70: timeouts are text through the team-name callbacks; the wing ... ok
+test_runtime_scene_and_actual_native_materials_match_all_five_boundaries (__main__.NativeTests.test_runtime_scene_and_actual_native_materials_match_all_five_boundaries) ... ok
+
+======================================================================
+FAIL: test_all_32_team_wordmarks_and_runtime_default_off (__main__.ContractTests.test_all_32_team_wordmarks_and_runtime_default_off)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_exact.py", line 24, in test_all_32_team_wordmarks_and_runtime_default_off
+    self.assertEqual(art.PROBES, ("transport", "hooks", "resources", "neutral", "pair", "full", "mnf"))
+AssertionError: Tuples differ: ('transport', 'hooks', 'resources', 'neutral', 'pair', 'full', 'mnf', 'sprite') != ('transport', 'hooks', 'resources', 'neutral', 'pair', 'full', 'mnf')
+
+First tuple contains 1 additional elements.
+First extra element 7:
+'sprite'
+
+- ('transport', 'hooks', 'resources', 'neutral', 'pair', 'full', 'mnf', 'sprite')
+?                                                                     ----------
+
++ ('transport', 'hooks', 'resources', 'neutral', 'pair', 'full', 'mnf')
+
+======================================================================
+FAIL: test_current_compiler_and_every_probe_identity_are_reproducible (__main__.NativeTests.test_current_compiler_and_every_probe_identity_are_reproducible)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_exact.py", line 182, in test_current_compiler_and_every_probe_identity_are_reproducible
+    self.assertEqual(receipt["version"], art.MNF_VERSION if probe == "mnf" else art.RUNTIME_VERSION)
+AssertionError: 'scorebug-sprite-v1' != 'scorebug-runtime-v4-scoped-fonts'
+- scorebug-sprite-v1
++ scorebug-runtime-v4-scoped-fonts
+
+
+----------------------------------------------------------------------
+Ran 8 tests in 99.227s
+
+FAILED (failures=2)

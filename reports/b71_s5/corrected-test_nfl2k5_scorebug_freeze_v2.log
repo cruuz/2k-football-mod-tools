@@ -1,0 +1,12 @@
+test_named_budget_and_static_v3_both_orders (__main__.InstallationTests.test_named_budget_and_static_v3_both_orders) ... ok
+test_new_dependencies_and_old_sealed_owner_refuse_before_mutation (__main__.InstallationTests.test_new_dependencies_and_old_sealed_owner_refuse_before_mutation) ... ok
+test_absent_named_hud_does_not_borrow_other_collections_resources (__main__.NativeBindingTests.test_absent_named_hud_does_not_borrow_other_collections_resources) ... ok
+test_all_six_profiles_enter_complete_frames_draw_and_reenter (__main__.NativeBindingTests.test_all_six_profiles_enter_complete_frames_draw_and_reenter) ... ok
+test_indexed_texture_cannot_be_bound_as_a_private_score_font (__main__.NativeBindingTests.test_indexed_texture_cannot_be_bound_as_a_private_score_font) ... ok
+test_old_binding_enters_eviction_wait_fixed_and_native_controls_return (__main__.NativeBindingTests.test_old_binding_enters_eviction_wait_fixed_and_native_controls_return) ... ok
+test_retail_game_loader_constructs_an_ordinary_named_hud_context (__main__.NativeBindingTests.test_retail_game_loader_constructs_an_ordinary_named_hud_context) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 273.332s
+
+OK

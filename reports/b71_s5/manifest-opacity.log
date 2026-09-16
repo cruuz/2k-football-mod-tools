@@ -1,0 +1,15 @@
+{
+  "spans": 13137,
+  "observed_steps": 138,
+  "disc_built": false,
+  "changed_sources": [
+    "mod_editor/core/mod_build.py",
+    "mod_editor/core/nfl2k5_scorebug_ingame.py",
+    "mod_editor/core/nfl2k5_scorebug_resources.py",
+    "mod_editor/core/nfl2k5_scorebug_runtime.py",
+    "mod_editor/core/nfl2k5_xbe_space.py",
+    "tools/nfl2k5_scorebug_projection.py",
+    "tools/nfl2k5_scorebug_reference.py"
+  ],
+  "manifest_sha256": "b07ce2cbcca465b203c25809008493df9d0f29a68f0807def600b48caa4bdcd1"
+}

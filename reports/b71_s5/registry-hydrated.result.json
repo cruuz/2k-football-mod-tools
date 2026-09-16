@@ -1,0 +1,12 @@
+{
+  "name": "registry-hydrated",
+  "argv": [
+    "python3",
+    "-m",
+    "mod_editor.capabilities.validate_registry"
+  ],
+  "start_utc": "2026-09-16T02:49:39.164026+00:00",
+  "end_utc": "2026-09-16T02:49:39.354941+00:00",
+  "seconds": 0.191,
+  "exit_code": 1
+}

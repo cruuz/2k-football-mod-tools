@@ -1,0 +1,31 @@
+test_boot_logo_transfers_owned_header_storage_before_new_headers (__main__.PublicTests.test_boot_logo_transfers_owned_header_storage_before_new_headers) ... ok
+test_every_owned_component_is_pinned_and_foreign_refuses_before_mutation (__main__.PublicTests.test_every_owned_component_is_pinned_and_foreign_refuses_before_mutation) ... ok
+test_layout_determinism_alignment_capacity_and_header_slack (__main__.PublicTests.test_layout_determinism_alignment_capacity_and_header_slack) ... ok
+test_owned_code_installation_and_manifest_builder (__main__.PublicTests.test_owned_code_installation_and_manifest_builder) ... ok
+test_request_errors_and_rebuild_refusal (__main__.PublicTests.test_request_errors_and_rebuild_refusal) ... ok
+test_second_code_page_relocates_pinned_library_and_can_hold_logo (__main__.PublicTests.test_second_code_page_relocates_pinned_library_and_can_hold_logo) ... ok
+test_synthetic_disc_round_trip_and_all_rollback_paths (__main__.PublicTests.test_synthetic_disc_round_trip_and_all_rollback_paths) ... ok
+test_both_special_orders_byte_identical_and_writer_round_trip (__main__.RetailTests.test_both_special_orders_byte_identical_and_writer_round_trip) ... ok
+test_every_instruction_is_identical_after_address_normalization (__main__.RetailTests.test_every_instruction_is_identical_after_address_normalization) ... ok
+test_fresh_allocation_proof_and_retired_cave_pin (__main__.RetailTests.test_fresh_allocation_proof_and_retired_cave_pin) ... ERROR
+test_header_mapped_relocated_reset_writes_data_and_returns_with_registers (__main__.RetailTests.test_header_mapped_relocated_reset_writes_data_and_returns_with_registers) ... ok
+test_mixed_hooks_and_owner_corruption_refused_even_with_repinned_digest (__main__.RetailTests.test_mixed_hooks_and_owner_corruption_refused_even_with_repinned_digest) ... ok
+test_relocated_lineup_hold_and_contact_release_in_both_directions (__main__.RetailTests.test_relocated_lineup_hold_and_contact_release_in_both_directions) ... skipped 'v2-era mechanism check: since kickoff v3 the plan/motion hooks call through for held players and silence the writers instead of suppressing the callback counter; the hold, readiness and release contract is proved by tests/mod_editor/test_nfl2k5_kickoff_v3.py and test_nfl2k5_kickoff_v4.py on full-frame fixtures'
+
+======================================================================
+ERROR: test_fresh_allocation_proof_and_retired_cave_pin (__main__.RetailTests.test_fresh_allocation_proof_and_retired_cave_pin)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_xbe_space.py", line 261, in test_fresh_allocation_proof_and_retired_cave_pin
+    self.assertEqual(space.allocation_evidence(self.retail, manifest, allocated=combined)["encoded_references"], [])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s5b/mod_editor/core/nfl2k5_xbe_space.py", line 475, in allocation_evidence
+    _require(any(a["owner"] == overlap.detail.split(":", 1)[0] and a["va"] <= start < end <= a["va"] + a["size"]
+  File "/home/noah/2k-worktrees/astra-b71-s5b/mod_editor/core/nfl2k5_xbe_space.py", line 55, in _require
+    raise ValueError(message)
+ValueError: new pages overlap another manifest owner
+
+----------------------------------------------------------------------
+Ran 13 tests in 22.575s
+
+FAILED (errors=1, skipped=1)

@@ -1,0 +1,11 @@
+{
+  "name": "projection-identity",
+  "argv": [
+    "python3",
+    "reports/b71_s5/prove_projection_identity.py"
+  ],
+  "start_utc": "2026-09-16T03:19:04.061687+00:00",
+  "end_utc": "2026-09-16T03:19:04.288817+00:00",
+  "seconds": 0.227,
+  "exit_code": 0
+}

@@ -1,0 +1,12 @@
+{
+  "name": "owner-first",
+  "argv": [
+    "python3",
+    "-c",
+    "from pathlib import Path; from mod_editor.core import nfl2k5_scorebug_runtime as r; p=Path(\"extracted/ESPN NFL 2K5 (USA)/default.xbe\").read_bytes(); q,rec=r.apply(p); print(r.status(q),r.sites(q),r.code_for(*[v[\"va\"] for v in r.sites(q)])[1]); print(r.apply(q)[1])"
+  ],
+  "start_utc": "2026-09-16T02:08:31.985694+00:00",
+  "end_utc": "2026-09-16T02:08:35.093076+00:00",
+  "seconds": 3.107,
+  "exit_code": 0
+}

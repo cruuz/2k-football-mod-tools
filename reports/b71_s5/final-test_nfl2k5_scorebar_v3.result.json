@@ -1,0 +1,12 @@
+{
+  "name": "final-test_nfl2k5_scorebar_v3",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_nfl2k5_scorebar_v3.py",
+    "-v"
+  ],
+  "start_utc": "2026-09-16T02:35:05.335443+00:00",
+  "end_utc": "2026-09-16T02:36:50.160369+00:00",
+  "seconds": 104.825,
+  "exit_code": 0
+}

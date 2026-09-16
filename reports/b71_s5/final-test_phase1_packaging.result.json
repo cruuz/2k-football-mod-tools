@@ -1,0 +1,12 @@
+{
+  "name": "final-test_phase1_packaging",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_phase1_packaging.py",
+    "-v"
+  ],
+  "start_utc": "2026-09-16T02:45:33.150107+00:00",
+  "end_utc": "2026-09-16T02:45:35.362926+00:00",
+  "seconds": 2.213,
+  "exit_code": 0
+}

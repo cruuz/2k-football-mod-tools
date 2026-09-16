@@ -1,0 +1,1 @@
+{"name": "scene-probe", "argv": ["python3", "reports/b71_s5/probe_scene.py"], "start_utc": "2026-09-16T01:57:58.721102+00:00", "end_utc": "2026-09-16T01:58:17.960411+00:00", "seconds": 19.239, "exit_code": 1}

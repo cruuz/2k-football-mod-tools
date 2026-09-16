@@ -1,0 +1,1 @@
+{"name": "oracle-current", "argv": ["python3", "tests/mod_editor/test_nfl2k5_cave_oracle.py", "-v"], "start_utc": "2026-09-16T03:19:04.387153+00:00", "end_utc": "2026-09-16T03:25:05.226052+00:00", "seconds": 360.839, "exit_code": 0}

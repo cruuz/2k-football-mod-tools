@@ -1,0 +1,12 @@
+{
+  "name": "final-test_nfl2k5_scorebug_v10_projection",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_nfl2k5_scorebug_v10_projection.py",
+    "-v"
+  ],
+  "start_utc": "2026-09-16T02:45:01.300429+00:00",
+  "end_utc": "2026-09-16T02:45:31.342280+00:00",
+  "seconds": 30.042,
+  "exit_code": 0
+}

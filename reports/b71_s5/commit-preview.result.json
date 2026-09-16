@@ -1,0 +1,18 @@
+{
+  "name": "commit-preview",
+  "argv": [
+    "git",
+    "--git-dir=.scratch/b71-s5-git",
+    "--work-tree=.",
+    "commit",
+    "-m",
+    "Keep the native scorebug visible when Studio preview opens",
+    "--",
+    "mod_editor/gui/scorebug_sprite_preview_qt.py",
+    "tests/mod_editor/test_scorebug_sprite_preview_qt.py"
+  ],
+  "start_utc": "2026-09-16T03:06:36.643743+00:00",
+  "end_utc": "2026-09-16T03:06:36.690859+00:00",
+  "seconds": 0.047,
+  "exit_code": 0
+}

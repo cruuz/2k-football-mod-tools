@@ -1,0 +1,16 @@
+test_changing_a_colour_marks_dirty_and_undo_redo_restore_it (__main__.ScorebugStudioPanelTests.test_changing_a_colour_marks_dirty_and_undo_redo_restore_it) ... ok
+test_colour_limit_is_undoable_and_flows_into_the_saved_folder (__main__.ScorebugStudioPanelTests.test_colour_limit_is_undoable_and_flows_into_the_saved_folder) ... ok
+test_errors_show_in_the_result_label_instead_of_dialogs (__main__.ScorebugStudioPanelTests.test_errors_show_in_the_result_label_instead_of_dialogs) ... ok
+test_every_control_has_an_accessible_name_and_no_em_dashes (__main__.ScorebugStudioPanelTests.test_every_control_has_an_accessible_name_and_no_em_dashes) ... ok
+test_page_lists_the_parts_presets_preview_and_the_game_note (__main__.ScorebugStudioPanelTests.test_page_lists_the_parts_presets_preview_and_the_game_note) ... ok
+test_reference_round_trips_through_the_page_byte_for_byte (__main__.ScorebugStudioPanelTests.test_reference_round_trips_through_the_page_byte_for_byte) ... ok
+test_sample_state_writes_the_centre_text_and_undoes_as_one_step (__main__.ScorebugStudioPanelTests.test_sample_state_writes_the_centre_text_and_undoes_as_one_step) ... ok
+test_save_reopen_and_use_in_build_emit_the_folder (__main__.ScorebugStudioPanelTests.test_save_reopen_and_use_in_build_emit_the_folder) ... ok
+test_slider_drags_merge_into_one_undo_step_and_controls_write_the_document (__main__.ScorebugStudioPanelTests.test_slider_drags_merge_into_one_undo_step_and_controls_write_the_document) ... ok
+test_use_my_image_fits_the_picture_and_colours_take_over_when_removed (__main__.ScorebugStudioPanelTests.test_use_my_image_fits_the_picture_and_colours_take_over_when_removed) ... ok
+test_widescreen_zoom_and_team_colours_change_only_the_preview (__main__.ScorebugStudioPanelTests.test_widescreen_zoom_and_team_colours_change_only_the_preview) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 7.340s
+
+OK

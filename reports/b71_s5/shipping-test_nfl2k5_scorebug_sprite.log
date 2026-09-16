@@ -1,0 +1,15 @@
+test_future_layout_changes_are_data_and_invalid_layouts_refuse (__main__.ContractTests.test_future_layout_changes_are_data_and_invalid_layouts_refuse) ... ok
+test_layout_capacity_full_alpha_and_source_boxes (__main__.ContractTests.test_layout_capacity_full_alpha_and_source_boxes) ... ok
+test_production_route_is_sprite_and_presets_stay_off (__main__.ContractTests.test_production_route_is_sprite_and_presets_stay_off) ... ok
+test_collection_round_trip_and_foreign_byte_refusal (__main__.NativeTests.test_collection_round_trip_and_foreign_byte_refusal) ... ok
+test_foreign_code_and_idempotence (__main__.NativeTests.test_foreign_code_and_idempotence) ... ok
+test_native_appended_scene_replaces_retail_with_no_fonts (__main__.NativeTests.test_native_appended_scene_replaces_retail_with_no_fonts) ... ok
+test_native_owner_registers_fpu_and_write_ownership (__main__.NativeTests.test_native_owner_registers_fpu_and_write_ownership) ... ok
+test_native_values_both_aspects_and_no_font_quads (__main__.NativeTests.test_native_values_both_aspects_and_no_font_quads) ... ok
+test_plate_secondary_and_team_material_bindings (__main__.NativeTests.test_plate_secondary_and_team_material_bindings) ... ok
+test_updates_values_hide_unused_slots_and_keep_retail_events (__main__.NativeTests.test_updates_values_hide_unused_slots_and_keep_retail_events) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 89.334s
+
+OK

@@ -1,0 +1,2 @@
+This plugin does not support propagateSizeHints()
+Preview ready. Scores, labels and ticks use the compiled sprite quads.

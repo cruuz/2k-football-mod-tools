@@ -1,0 +1,152 @@
+test_clock_boundaries_disabled_nan_negative_and_resume (__main__.ExecutionTests.test_clock_boundaries_disabled_nan_negative_and_resume) ... ERROR
+test_down_distance_possession_refresh_only_on_changes (__main__.ExecutionTests.test_down_distance_possession_refresh_only_on_changes) ... ERROR
+test_native_collection_reader_uses_grown_end_and_wrapper_sizes (__main__.ExecutionTests.test_native_collection_reader_uses_grown_end_and_wrapper_sizes) ... ok
+test_native_loading_binding_fallback_and_next_game (__main__.ExecutionTests.test_native_loading_binding_fallback_and_next_game) ... ERROR
+test_native_visibility_and_slide_driver_after_new_down (__main__.ExecutionTests.test_native_visibility_and_slide_driver_after_new_down) ... ERROR
+test_register_flags_x87_sse_and_owned_writes (__main__.ExecutionTests.test_register_flags_x87_sse_and_owned_writes) ... ERROR
+test_score_flash_first_population_change_expiry_and_scene_reset (__main__.ExecutionTests.test_score_flash_first_population_change_expiry_and_scene_reset) ... ERROR
+test_timeout_counts_independent_reset_and_invalid (__main__.ExecutionTests.test_timeout_counts_independent_reset_and_invalid)
+Beta 70: timeouts are text. The wing textures never change with the count; ... ERROR
+test_both_orders_identical_stable_allocations_and_idempotence (__main__.PatchTests.test_both_orders_identical_stable_allocations_and_idempotence) ... ok
+test_foreign_hook_code_data_guard_and_partial_install_refuse (__main__.PatchTests.test_foreign_hook_code_data_guard_and_partial_install_refuse) ... ok
+test_recorded_owner_has_complete_hooks_and_zero_data_allocation (__main__.PatchTests.test_recorded_owner_has_complete_hooks_and_zero_data_allocation) ... ok
+test_capacity_all_names_and_no_toolchain_dependency (__main__.PublicTests.test_capacity_all_names_and_no_toolchain_dependency) ... ok
+
+======================================================================
+ERROR: test_clock_boundaries_disabled_nan_negative_and_resume (__main__.ExecutionTests.test_clock_boundaries_disabled_nan_negative_and_resume)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_runtime.py", line 273, in test_clock_boundaries_disabled_nan_negative_and_resume
+    m=self.machine()
+      ^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_runtime.py", line 211, in machine
+    m.identity();m.setup();return m
+                 ^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_runtime.py", line 179, in setup
+    def setup(self):self.run(self.labels['setup'])
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_runtime.py", line 166, in run
+    self.uc.emu_start(va,self.STOP,count=limit)
+  File "/home/noah/.local/lib/python3.12/site-packages/unicorn/unicorn_py3/unicorn.py", line 766, in emu_start
+    raise UcError(status)
+unicorn.unicorn_py3.unicorn.UcError: Invalid memory read (UC_ERR_READ_UNMAPPED)
+
+======================================================================
+ERROR: test_down_distance_possession_refresh_only_on_changes (__main__.ExecutionTests.test_down_distance_possession_refresh_only_on_changes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_runtime.py", line 266, in test_down_distance_possession_refresh_only_on_changes
+    m=self.machine();m.float(0xa95a04,30);m.update()
+      ^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_runtime.py", line 211, in machine
+    m.identity();m.setup();return m
+                 ^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_runtime.py", line 179, in setup
+    def setup(self):self.run(self.labels['setup'])
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_runtime.py", line 166, in run
+    self.uc.emu_start(va,self.STOP,count=limit)
+  File "/home/noah/.local/lib/python3.12/site-packages/unicorn/unicorn_py3/unicorn.py", line 766, in emu_start
+    raise UcError(status)
+unicorn.unicorn_py3.unicorn.UcError: Invalid memory read (UC_ERR_READ_UNMAPPED)
+
+======================================================================
+ERROR: test_native_loading_binding_fallback_and_next_game (__main__.ExecutionTests.test_native_loading_binding_fallback_and_next_game)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_runtime.py", line 213, in test_native_loading_binding_fallback_and_next_game
+    m=self.machine()
+      ^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_runtime.py", line 211, in machine
+    m.identity();m.setup();return m
+                 ^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_runtime.py", line 179, in setup
+    def setup(self):self.run(self.labels['setup'])
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_runtime.py", line 166, in run
+    self.uc.emu_start(va,self.STOP,count=limit)
+  File "/home/noah/.local/lib/python3.12/site-packages/unicorn/unicorn_py3/unicorn.py", line 766, in emu_start
+    raise UcError(status)
+unicorn.unicorn_py3.unicorn.UcError: Invalid memory read (UC_ERR_READ_UNMAPPED)
+
+======================================================================
+ERROR: test_native_visibility_and_slide_driver_after_new_down (__main__.ExecutionTests.test_native_visibility_and_slide_driver_after_new_down)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_runtime.py", line 308, in test_native_visibility_and_slide_driver_after_new_down
+    m=self.machine();m.update()
+      ^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_runtime.py", line 211, in machine
+    m.identity();m.setup();return m
+                 ^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_runtime.py", line 179, in setup
+    def setup(self):self.run(self.labels['setup'])
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_runtime.py", line 166, in run
+    self.uc.emu_start(va,self.STOP,count=limit)
+  File "/home/noah/.local/lib/python3.12/site-packages/unicorn/unicorn_py3/unicorn.py", line 766, in emu_start
+    raise UcError(status)
+unicorn.unicorn_py3.unicorn.UcError: Invalid memory read (UC_ERR_READ_UNMAPPED)
+
+======================================================================
+ERROR: test_register_flags_x87_sse_and_owned_writes (__main__.ExecutionTests.test_register_flags_x87_sse_and_owned_writes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_runtime.py", line 334, in test_register_flags_x87_sse_and_owned_writes
+    m=self.machine();x=m.x
+      ^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_runtime.py", line 211, in machine
+    m.identity();m.setup();return m
+                 ^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_runtime.py", line 179, in setup
+    def setup(self):self.run(self.labels['setup'])
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_runtime.py", line 166, in run
+    self.uc.emu_start(va,self.STOP,count=limit)
+  File "/home/noah/.local/lib/python3.12/site-packages/unicorn/unicorn_py3/unicorn.py", line 766, in emu_start
+    raise UcError(status)
+unicorn.unicorn_py3.unicorn.UcError: Invalid memory read (UC_ERR_READ_UNMAPPED)
+
+======================================================================
+ERROR: test_score_flash_first_population_change_expiry_and_scene_reset (__main__.ExecutionTests.test_score_flash_first_population_change_expiry_and_scene_reset)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_runtime.py", line 257, in test_score_flash_first_population_change_expiry_and_scene_reset
+    m=self.machine();m.put(m.home,7);m.update()
+      ^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_runtime.py", line 211, in machine
+    m.identity();m.setup();return m
+                 ^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_runtime.py", line 179, in setup
+    def setup(self):self.run(self.labels['setup'])
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_runtime.py", line 166, in run
+    self.uc.emu_start(va,self.STOP,count=limit)
+  File "/home/noah/.local/lib/python3.12/site-packages/unicorn/unicorn_py3/unicorn.py", line 766, in emu_start
+    raise UcError(status)
+unicorn.unicorn_py3.unicorn.UcError: Invalid memory read (UC_ERR_READ_UNMAPPED)
+
+======================================================================
+ERROR: test_timeout_counts_independent_reset_and_invalid (__main__.ExecutionTests.test_timeout_counts_independent_reset_and_invalid)
+Beta 70: timeouts are text. The wing textures never change with the count;
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_runtime.py", line 238, in test_timeout_counts_independent_reset_and_invalid
+    m=self.machine()
+      ^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_runtime.py", line 211, in machine
+    m.identity();m.setup();return m
+                 ^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_runtime.py", line 179, in setup
+    def setup(self):self.run(self.labels['setup'])
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tests/mod_editor/test_nfl2k5_scorebug_runtime.py", line 166, in run
+    self.uc.emu_start(va,self.STOP,count=limit)
+  File "/home/noah/.local/lib/python3.12/site-packages/unicorn/unicorn_py3/unicorn.py", line 766, in emu_start
+    raise UcError(status)
+unicorn.unicorn_py3.unicorn.UcError: Invalid memory read (UC_ERR_READ_UNMAPPED)
+
+----------------------------------------------------------------------
+Ran 12 tests in 118.806s
+
+FAILED (errors=7)

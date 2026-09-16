@@ -1,0 +1,12 @@
+{
+  "name": "gate-test_xbe_patch_cave_references",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_xbe_patch_cave_references.py",
+    "-v"
+  ],
+  "start_utc": "2026-09-16T02:46:43.012761+00:00",
+  "end_utc": "2026-09-16T03:15:55.934935+00:00",
+  "seconds": 1752.922,
+  "exit_code": 0
+}

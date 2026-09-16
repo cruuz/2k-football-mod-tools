@@ -1,0 +1,19 @@
+{
+  "name": "preview-first",
+  "argv": [
+    "python3",
+    "-m",
+    "mod_editor.core.nfl2k5_scorebug_sprite",
+    "preview",
+    "--screenshot",
+    "/home/noah/Desktop/Broncos-vs-Chiefs-Week1-Highlights/frames/frame_012001.jpg",
+    "--aspect",
+    "4:3",
+    "--output",
+    "reports/b71_s5/first.png"
+  ],
+  "start_utc": "2026-09-16T02:09:42.645429+00:00",
+  "end_utc": "2026-09-16T02:09:55.747254+00:00",
+  "seconds": 13.102,
+  "exit_code": 0
+}

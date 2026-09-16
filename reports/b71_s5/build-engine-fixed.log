@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tools/scorebug_sprite/build_runtime.py", line 80, in <module>
+    result = generate()
+             ^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s5b/tools/scorebug_sprite/build_runtime.py", line 43, in generate
+    raise ValueError("mutable runtime data must use owned RW")
+ValueError: mutable runtime data must use owned RW

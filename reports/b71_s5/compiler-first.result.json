@@ -1,0 +1,12 @@
+{
+  "name": "compiler-first",
+  "argv": [
+    "python3",
+    "-c",
+    "from mod_editor.core.nfl2k5_scorebug_sprite import *; c=compile_folder(); print(len(c.quads),len(c.table),probe_sizes()); c.atlas.save(\"reports/b71_s5/atlas.png\")"
+  ],
+  "start_utc": "2026-09-16T02:04:31.868493+00:00",
+  "end_utc": "2026-09-16T02:04:32.162459+00:00",
+  "seconds": 0.294,
+  "exit_code": 0
+}

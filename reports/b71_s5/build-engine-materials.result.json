@@ -1,0 +1,11 @@
+{
+  "name": "build-engine-materials",
+  "argv": [
+    "python3",
+    "tools/scorebug_sprite/build_runtime.py"
+  ],
+  "start_utc": "2026-09-16T02:11:17.453043+00:00",
+  "end_utc": "2026-09-16T02:11:17.563642+00:00",
+  "seconds": 0.111,
+  "exit_code": 0
+}

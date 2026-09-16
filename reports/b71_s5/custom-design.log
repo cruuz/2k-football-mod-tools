@@ -1,0 +1,12 @@
+{
+  "owner_sha256": "3ac2cc0192032ad2b3b295e97ce0ad7a7c00a89807b2b95eb50ba71c6e8025f4",
+  "custom_anchor": [
+    762.0,
+    965
+  ],
+  "native_center_x": 254.00482177734375,
+  "custom_height": 40,
+  "native_height": 16.585693359375,
+  "colour": "0xFFFFAA22",
+  "code_changed": false
+}
