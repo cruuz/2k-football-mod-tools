@@ -3,6 +3,7 @@
 ## v1.0 RC97, beta 71.1: the reports after beta 71 (2026-09-16)
 
 - **Beta 71.1 hotfix: safer Linux updates.** Updates keep a local Python runtime, check the new app in a separate folder before switching, and restore the old folder if the new studio cannot open. Existing backups stay available, and a failed update explains where the old copy is. Linux launchers reuse the selected runtime without requiring a system Python install. Install this hotfix manually if your current updater has already stopped the app from opening; older installed updaters cannot gain these safeguards until the hotfix is installed. SteamOS desktop confirmation is still pending.
+- **Sprite scorebug layer order.** The compiler now submits overlapping plates, glyphs, digits and timeout ticks in layout order, with shared sprite depth and capacity checks. Preview follows the scene’s submitted draw order. Native tests show down-and-distance and Goal labels at both aspects; the reported missing in-game label still needs a played retest. Appended resources remain 323,808 bytes.
 
 ## v1.0 RC96, beta 71: lighting and colour, a modern Arrowhead, and the 2026 scorebug closer to the broadcast (in progress, 2026-09-15)
 

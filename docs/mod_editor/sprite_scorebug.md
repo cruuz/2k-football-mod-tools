@@ -49,14 +49,25 @@ source, glyph set, cap height (`size`), alignment, anchor, colour and slot count
 Glyphs name a cell, advance and optional raise. Width is compressed only when a
 value exceeds its field box, allowing three-digit scores without overlap.
 
-The default scene contains 46 quads: 12 static/logo quads, 30 glyph/tick slots,
-and four retail event backgrounds. It uses 180 of 286 retail vertices. Material
-push-buffer capacities still bound each group; the compiler refuses an overflow
-before changing a game. A 512×512 atlas is accepted only if the complete append
+The supplied layout declares `layer_order: "increasing-z"`: higher `z` draws
+over lower `z` where their boxes overlap. Equal values follow declaration order
+(static, brand, fields, events). Older layouts without that setting keep their
+original decreasing-depth convention. Depth is a logical layer value; compiled
+sprite vertices share one GPU depth. Material numbers are allocation preferences
+for ordinary atlas layers; logo and event bindings remain fixed. The compiler
+fits whole fields first, moves static plates when necessary, orders the scene's
+draw descriptors and sorts quads inside each buffer. It refuses layouts that
+cannot fit without reversing an overlap. Preview reads those actual descriptors
+and buffers without using depth to correct their order.
+
+The default scene contains 47 quads: 12 static/logo quads, a watermark,
+30 glyph/tick slots and four retail event backgrounds. It uses 188 of 286
+retail vertices. A 512×512 atlas is accepted only if the complete append
 still fits the 400,000-byte ceiling; with the default logos it exceeds that ceiling.
 The default 256×512 atlas plus 33 logos and enlarged scene appends 323,808 bytes.
-Retail FONT resources stay byte-for-byte unchanged. FLAG, FUMBLE, hang time and
-ball-on text use retail fonts and event callbacks. The rotating score slabs
+Retail FONT resources stay byte-for-byte unchanged. The FLAG label is baked into
+its yellow plate; FUMBLE, hang time and ball-on text retain retail callbacks.
+The rotating score slabs
 conflict with sprite scores, so scores remain on the root while that event runs.
 
 The default pass 2 art uses a neutral luminance mask for the possession plate.
@@ -68,6 +79,6 @@ unchanged. The compiler bleeds cell RGB before packing and keeps transparent,
 opaque and feather palette entries separate. Logos use six pixels of RGB bleed
 before explicit premultiplied resampling and again after placement. No dithering
 is used. The default remains 323,808 appended bytes; the hard sprite limit is
-400,000 bytes. Native 16:9 coordinates contract by 27/32 and display restoration
-reverses that transform, preserving logo and round-end proportions. Console GPU
+400,000 bytes. Native 16:9 coordinates contract by 27/32; the full 640×448 HUD
+area is then shown at the target display aspect. Console GPU
 sampling and played-game appearance remain UNWITNESSED.
