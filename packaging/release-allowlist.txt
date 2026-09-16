@@ -931,3 +931,15 @@ docs/modern_color/CONTROLS.md
 mod_editor/core/nfl2k5_scorebug_assets.py
 data/nfl2k5_scorebug_mnf/painted_label_2x.png
 data/nfl2k5_scorebug_mnf/painted_label_2x.json
+mod_editor/core/nfl2k5_scorebug_sprite.py
+mod_editor/core/nfl2k5_scorebug_sprite_code.py
+mod_editor/gui/scorebug_sprite_preview_qt.py
+data/nfl2k5_scorebug_sprite/template.png
+data/nfl2k5_scorebug_sprite/layout.json
+docs/mod_editor/sprite_scorebug.md
+tools/scorebug_sprite/requirements-preview.txt
+tools/nfl2k5_scorebug_exact.py
+tools/nfl2k5_scorebug_projection.py
+tools/nfl2k5_scorebug_template_proof.py
+tools/nfl_main_menu_font.py
+tools/nfl_normshort3_positions.py

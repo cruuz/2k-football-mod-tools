@@ -42,14 +42,18 @@ from mod_editor.core import nfl2k5_decided_clock as decided_clock
 from mod_editor.core import nfl2k5_cpu_scrambles as cpu_scrambles
 
 
-LEGACY_REQUESTS = (kickoff.REQUESTS + runtime.REQUESTS + momentum.REQUESTS
+# Historical v1 footprint: S5 relocates its larger RX owner after the scale
+# union. Keep this snapshot for v1 decoding and unaffected address comparisons.
+LEGACY_RUNTIME_REQUESTS = tuple((o,k,1408 if k == 'code' else n,a)
+                                for o,k,n,a in runtime.REQUESTS)
+LEGACY_REQUESTS = (kickoff.REQUESTS + LEGACY_RUNTIME_REQUESTS + momentum.REQUESTS
                    + defensive_try.REQUESTS[:2] + zone_drop.REQUESTS)
 # Abilities v2 expands the existing immutable owner; use its live REQUESTS.
 # Read option v2 grows the existing owner; its live REQUESTS include RW/RO.
 # Both installation orders use this same union and require rebuild from base.
 # MyCareer M3 includes its separate final RW page; its relocated 16 KiB code
 # leaves every other owner at the previous union's address.
-REQUESTS = (camera.REQUESTS + LEGACY_REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS
+REQUESTS = (camera.REQUESTS + tuple(r for r in LEGACY_REQUESTS if r[0] != runtime.OWNER) + runtime.REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS
             + playlist.REQUESTS + practice_screen.REQUESTS + abilities.REQUESTS + qb_spy.REQUESTS + calendar.REQUESTS
             + defensive_try.REQUESTS[2:] + read_option.REQUESTS + franchise_2026.REQUESTS + senior_bowl.REQUESTS + animation_xbe.REQUESTS + guardian.REQUESTS + my_career.REQUESTS + screen_hooks.REQUESTS + arena_growth.REQUESTS + autosave.REQUESTS + espn25.REQUESTS + coverage_trail.REQUESTS + deep_zone.REQUESTS + playbook_pair.REQUESTS + weekly_prep.REQUESTS + money_downs.REQUESTS + edit_player.REQUESTS + seven.REQUESTS)
 REQUESTS += accelerated_clock.REQUESTS

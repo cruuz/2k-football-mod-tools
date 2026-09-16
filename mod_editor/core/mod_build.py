@@ -1236,7 +1236,10 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         if not plan.scorebug:
             raise ValueError("A scorebar artwork folder needs the ESPN scorebar option")
         if plan.scorebug_runtime:
-            raise ValueError("A scorebar artwork folder cannot be combined with the runtime scorebug")
+            sprite = _core_module("nfl2k5_scorebug_sprite")
+            if sprite is None:
+                raise ValueError("The sprite scorebug compiler is missing; update this installation")
+            sprite.compile_folder(plan.scorebug_folder)
         if not tt.is_disc_image(plan.source):
             raise ValueError("A scorebar artwork folder needs a disc image source")
     if not isinstance(plan.hires_families, (tuple, list)) or any(type(x) is not str for x in plan.hires_families):
@@ -1935,7 +1938,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             f"{counts['qb_spy_count']} QB spy assignments. EXPERIMENTAL / UNWITNESSED.")
     if plan.scorebug_runtime:
         progress("Installing team logos and scorebug effects (unwitnessed)", 0, 0)
-        rec = _core_module("nfl2k5_scorebug_ingame").runtime_apply_in_place(target, with_kickoff=plan.kickoff_relocated,
+        rec = _core_module("nfl2k5_scorebug_ingame").runtime_apply_in_place(target, with_kickoff=plan.kickoff_relocated, scorebug_folder=plan.scorebug_folder or None,
             extra_requests=tuple(row for row in all_requests if row[0] not in {
                 tt.scorebug_runtime_patch.OWNER, tt.kickoff_relocated_patch.OWNER}))
         receipt["steps"].append({"step": "scorebug_runtime", **rec})

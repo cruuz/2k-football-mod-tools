@@ -667,7 +667,7 @@ def _compiled_panels(template, span, team, side):
 
 
 READ_BLOCK = 1024 * 1024
-PROBES = ("transport", "hooks", "resources", "neutral", "pair", "full", "mnf")
+PROBES = ("transport", "hooks", "resources", "neutral", "pair", "full", "mnf", "sprite")
 MNF_VERSION = 'scorebug-mnf-2026-v4'
 # The in-place ESPN digit restyle of FONT4/FONT8 (outer 3, loaded at boot) is held back until it is
 # witnessed: a 2026-09-15 emulator boot with it applied stalled in the intro movie. Set
@@ -779,7 +779,10 @@ def clock_font_span(pack):
 
 
 
-def probe_sizes(probe):
+def probe_sizes(probe, *, sprite_folder=None):
+    if probe == "sprite":
+        from .nfl2k5_scorebug_sprite import probe_sizes as sizes
+        return sizes(sprite_folder)
     if probe == "mnf":
         # One logo per team and one neutral, two private fonts and the painted atlas.
         count = len(probe_codes(probe))
@@ -792,13 +795,16 @@ def probe_sizes(probe):
     return count, appendix, growth
 
 
-def compile_runtime_collection(pack, *, probe="full"):
+def compile_runtime_collection(pack, *, probe="full", sprite_folder=None):
     """Pure bounded pack-0 compiler, retaining all unrelated bytes and entries.
 
     Insert at the end of outer 346, expand its existing index entry and pack 0,
     and move later virtual offsets by the same sector count. Other packs do not
     move physically. The old outer's chunks keep their offsets and wrappers.
     """
+    if probe == "sprite":
+        from .nfl2k5_scorebug_sprite import compile_collection
+        return compile_collection(pack,sprite_folder)
     import struct
     from . import nfl2k5_scorebug_ingame as r
     import nfl_outer as outer
@@ -893,7 +899,10 @@ def compile_runtime_collection(pack, *, probe="full"):
                         transport="sector insertion in pack 0; all later index offsets move equally")
 
 
-def runtime_pack_status(pack, *, probe="full"):
+def runtime_pack_status(pack, *, probe="full", sprite_folder=None):
+    if probe == "sprite":
+        from .nfl2k5_scorebug_sprite import pack_status
+        return pack_status(pack,sprite_folder)
     import struct
     from . import nfl2k5_scorebug_ingame as r
     import nfl_outer as outer

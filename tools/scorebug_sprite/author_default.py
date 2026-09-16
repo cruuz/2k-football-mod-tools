@@ -1,0 +1,95 @@
+"""One-time default art author. The product reads only template.png and layout.json."""
+from pathlib import Path
+import hashlib,json
+from PIL import Image,ImageDraw,ImageFont
+import numpy as np
+ROOT=Path(__file__).resolve().parents[2]
+OUT=ROOT/'data/nfl2k5_scorebug_sprite'
+FONT=Path('/usr/share/fonts/truetype/noto/NotoSansDisplay-Bold.ttf')
+# Noto Sans Display is SIL OFL 1.1. Fit its bold outlines to condensed broadcast cells.
+sheet=Image.new('RGBA',(1536,512),(255,255,255,0));cells={};cursor=[0,0,0]
+def put(name,im):
+ w,h=im.size;x,y,row=cursor
+ if x+w+2>sheet.width:x=0;y+=row+2;row=0
+ assert y+h+2<=sheet.height,name
+ sheet.paste(im,(x,y));cells[name]={'box':[x,y,x+w,y+h]}
+ cursor[:]=[x+w+2,y,max(row,h)]
+ return name
+
+def pill(w,h,r,color,ends='both'):
+ im=Image.new('RGBA',(w*4,h*4),(255,255,255,0));d=ImageDraw.Draw(im)
+ d.rounded_rectangle((0,0,w*4-1,h*4-1),r*4,fill=color)
+ if ends=='left':d.rectangle((w*2,0,w*4-1,h*4-1),fill=color)
+ if ends=='right':d.rectangle((0,0,w*2,h*4-1),fill=color)
+ return im.resize((w,h),Image.Resampling.LANCZOS)
+body=pill(1041,110,8,(37,37,37,255));a=np.asarray(body).copy()
+# Visible reflection near the top, and the dark lower rim retained in the art.
+for y in range(110):
+ value=round(36+21*np.exp(-y/11)-4*y/109)
+ a[y,:,:3]=[value]*3
+for y in (0,1):a[y,:,:3]=(60,64,70)
+for y in (108,109):a[y,:,:3]=(13,20,28)
+body=Image.fromarray(a);put('body',body)
+# Three authored slices preserve the full-resolution silhouette at the ends.
+b=cells['body']['box'];cells['body_left']={'box':[b[0],b[1],b[0]+10,b[3]]};cells['body_middle']={'box':[b[0]+10,b[1],b[0]+11,b[3]]};cells['body_right']={'box':[b[2]-10,b[1],b[2],b[3]]}
+ramp=pill(213,110,8,(255,255,255,255),'left');a=np.asarray(ramp).copy()
+for x in range(213):a[:,x,3]=(a[:,x,3].astype(float)*(1-x/212)).round().astype('uint8')
+put('wing',Image.fromarray(a))
+plate=Image.new('RGBA',(246,41),(255,255,255,0));plate.paste(pill(246,36,6,(255,255,255,255)),(0,5));d=ImageDraw.Draw(plate);d.polygon([(114,5),(121,0),(128,5)],fill='white');put('plate',plate)
+put('housing',pill(246,62,18,(24,24,26,255)))
+put('capsule',pill(180,40,20,(248,248,250,255),'left'))
+put('red',pill(63,41,20,(215,0,51,255),'right'))
+put('tick',Image.new('RGBA',(20,6),(255,255,255,255)))
+put('event',Image.new('RGBA',(2,2),(37,37,37,255)))
+sets={}
+def glyph(token,w,h):
+ # Rasterize outlines once at 4x, then retain a full-alpha native-sized cell.
+ f=ImageFont.truetype(str(FONT),h*6)
+ b=f.getbbox(token);im=Image.new('L',(b[2]-b[0],b[3]-b[1]));ImageDraw.Draw(im).text((-b[0],-b[1]),token,font=f,fill=255)
+ im=im.crop(im.getbbox()).resize((w,h),Image.Resampling.LANCZOS)
+ rgba=Image.new('RGBA',(w,h),'white');rgba.putalpha(im);return rgba
+for name,w,h in [('score',40,53),('clock',23,27),('small',15,19),('label',16,23)]:
+ g={}
+ for t in '0123456789':
+  cell=put(name+'_'+t,glyph(t,w,h));g[t]={'cell':cell,'size':[w,h],'advance':w+2}
+ if name=='clock':g[':']={'cell':put('colon',glyph(':',5,18)),'size':[5,18],'advance':7,'raise':-4}
+ if name in ('small','label'):
+  for t in ('st','nd','rd','th','&','Goal','GOAL','and','OT','ST','ND','RD','TH','Inch','es'):
+   gh=13 if name=='small' and t in ('ST','ND','RD','TH','st','nd','rd','th') else h
+   width=round(len(t)*gh*.57) if t!='&' else round(gh*.72)
+   if name=='small' and t in ('ST','ND','RD','TH','st','nd','rd','th'):width=25
+   if name=='label' and t=='&':width=19
+   cell=put(name+'_'+t,glyph(t,width,gh));g[t]={'cell':cell,'size':[width,gh],'advance':width+2,'raise':0}
+ g[' ']={'cell':'tick','size':[0,0],'advance':11 if name=='label' else 6}
+ if name=='label':g['~']={'cell':'tick','size':[20,6],'advance':30}
+ sets[name]={'cap_height':h,'glyphs':g}
+sets['ticks']={'cap_height':6,'glyphs':{'~':{'cell':'tick','size':[20,6],'advance':30}}}
+static=[]
+def s(name,box,cell,mat=3,tint='none',**kw):static.append(dict(name=name,box=box,cell=cell,material=mat,tint=tint,**kw))
+s('body_left',[437,942,447,1052],'body_left');s('body',[447,942,1468,1052],'body_middle');s('body_right',[1468,942,1478,1052],'body_right')
+s('housing',[837,983,1083,1045],'housing');s('capsule',[839,999,1019,1039],'capsule')
+s('plate',[837,942,1083,983],'plate',4,'possessing team')
+s('away_wing',[437,942,650,1052],'wing',9,'away team');s('home_wing',[1265,942,1478,1052],'wing',9,'home team',flip_x=True)
+s('red',[1019,999,1082,1040],'red',9)
+s('away_logo',[453,943,653,1050],'logo',8);s('home_logo',[1268,943,1468,1050],'logo',5)
+fields=[]
+def f(name,source,box,glyphset,slots,mat,colour,anchor=None,**kw):
+ fields.append(dict(name=name,source=source,box=box,glyph_set=glyphset,slots=slots,material=mat,colour=colour,alignment='center',anchor=anchor or [(box[0]+box[2])/2,box[1]],size=box[3]-box[1],**kw))
+f('away_score','away score',[696,965,816,1018],'score',3,6,'#E1E1E1')
+f('home_score','home score',[1100,965,1220,1018],'score',3,6,'#E1E1E1')
+f('clock','clock',[920,1006,1000,1033],'clock',5,6,'#000000')
+f('play_clock','play clock',[1028,1009,1073,1028],'small',2,6,'#FFFFFF',anchor=[1049.5,1009],strip_zero=True)
+f('quarter','quarter',[850,1009,892,1028],'small',3,6,'#1E1E1E')
+f('away_timeouts','away timeouts',[717,1032,797,1038],'ticks',3,7,'#F6F6F6',anchor=[717,1032],timeout=True)
+f('home_timeouts','home timeouts',[1120,1032,1200,1038],'ticks',3,7,'#F6F6F6',anchor=[1120,1032],timeout=True)
+f('down','down and distance',[850,955,1070,978],'label',8,7,'#FFFFFF')
+for x in fields:
+ if x.get('timeout'):x['alignment']='left'
+for row in static:row['z']=-2 if row['cell']=='logo' else -1 if 'wing' in row['name'] else -3 if row['material'] in (4,9) else 0
+for row in fields:row['z']=-5
+layout=dict(schema='nfl2k5_scorebug_sprite/v1',frame=[1920,1080],atlas=[256,512],template='template.png',cells=cells,glyph_sets=sets,static=static,fields=fields,
+ events=[dict(name=n,material=m,box=[837,947,1083,983],cell='event',z=-7) for n,m in [('FUMBLE',0),('ball on',1),('FLAG',2),('hang time',10)]],
+ reference_boxes={'bar':[437,942,1478,1052],'away_score':[736,965,776,1018],'home_score':[1140,965,1180,1018],'down':[898,955,1021,978],'clock':[920,1006,1000,1033],'quarter':[850,1009,892,1028],'play_clock':[1042,1009,1057,1028]},
+ provenance=dict(font='Noto Sans Display Bold, condensed raster fit',license='SIL Open Font License 1.1',font_sha256=hashlib.sha256(FONT.read_bytes()).hexdigest(),author='tools/scorebug_sprite/author_default.py',rendered_once=True,font_distributed=False))
+OUT.mkdir(parents=True,exist_ok=True);sheet.save(OUT/'template.png');(OUT/'layout.json').write_text(json.dumps(layout,indent=2)+'\n')
+print('authored',cursor,OUT)

@@ -133,6 +133,7 @@ class ScorebugStudioPanel(QWidget):
     """Left: parts and their controls. Centre: the live preview. Right: presets, folders, Build."""
 
     folder_chosen = pyqtSignal(str)
+    sprite_folder_chosen = pyqtSignal(str)
     document_changed = pyqtSignal()
 
     def __init__(self, parent=None, *, registry=None, defer_preview=False):
@@ -172,6 +173,11 @@ class ScorebugStudioPanel(QWidget):
         intro = QLabel(INTRO)
         intro.setWordWrap(True)
         root.addWidget(intro)
+        self.sprite_preview_button = QPushButton("Preview sprite scorebug…")
+        self.sprite_preview_button.setAccessibleName("Preview the sprite scorebug over a screenshot")
+        self.sprite_preview_button.setToolTip("Choose a game state and see the compiled sprite design over your screenshot")
+        self.sprite_preview_button.clicked.connect(self._show_sprite_preview)
+        root.addWidget(self.sprite_preview_button)
         columns = QHBoxLayout()
         root.addLayout(columns, 1)
         columns.addLayout(self._build_left(), 0)
@@ -907,6 +913,13 @@ class ScorebugStudioPanel(QWidget):
                      "the scorebar folder is filled in.")
 
     # ------------------------------------------------------------- preview
+    def _show_sprite_preview(self):
+        from .scorebug_sprite_preview_qt import SpritePreviewDialog
+        source = self.sprite_source_provider() if callable(getattr(self, 'sprite_source_provider', None)) else None
+        self._sprite_preview_dialog = SpritePreviewDialog(self, source=source)
+        self._sprite_preview_dialog.design_chosen.connect(self.sprite_folder_chosen.emit)
+        self._sprite_preview_dialog.show()
+
     def _schedule_preview(self) -> None:
         if self._preview_pending:
             return

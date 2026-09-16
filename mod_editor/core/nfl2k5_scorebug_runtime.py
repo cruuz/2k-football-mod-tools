@@ -1,12 +1,9 @@
 """EXPERIMENTAL / UNWITNESSED 2026 Monday Night Football scorebug owner in owned RX/RW pages.
 
-Beta 71 revision 8 uses one shared logo texture per team, two team-tinted
-atlas masks and a painted charcoal body. Colour constants travel in the
-logo's unused name padding and are cached in the existing 128-byte state.
-The owner remains within its 1,408-byte legacy RX allocation. Native score,
-timeout, clock, down and event callbacks retain their gameplay predicates.
-The slot-9 font carries dense score, clock and label cells; core_bug supplies
-the quarter. All texture/font lookup stays scoped to the resident HUD.
+Beta 71 revision 9 selects the sprite engine for an appended SPR5 scene.
+The PNG/JSON compiler supplies every quad and glyph; production resources
+contain no appended FONT. Historical resource probes retain their ABI fallback.
+The larger RX owner is promoted by the allocator; all mutable state remains RW.
 
 Private textures are resolved in GAMEDATA, the resident HUD collection.
 Reserve the union of REQUESTS and other owners before applying either patch.
@@ -22,11 +19,11 @@ from .nfl2k5_draft_ai import _Asm
 from .nfl2k5_bump_strength import _sections, section_digest
 
 OWNER = "nfl2k5_scorebug_runtime"
-CODE_SIZE, DATA_SIZE = 1408, 128
+CODE_SIZE, DATA_SIZE = 4096, 128
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
 HOOKS = {"setup": (0xFCE56, bytes.fromhex("e845f3ffff")),
          "update": (0xFCFA2, bytes.fromhex("e819faffff"))}
-REVISION = 8
+REVISION = 9
 # State (128 bytes): scene, populated, two wing materials, the plate material,
 # two wing textures, two scores, two flash timers, down, possession, ball/line,
 # phase, red cell, wing colours and plate colours. All state stays in the owned RW page.
@@ -96,7 +93,7 @@ def _restore(a):
     a.b("0fae0c24 8be5 61 9d")
 
 
-def code_for(code_va, data_va):
+def _legacy_code_for(code_va, data_va):
     a = _Asm(code_va)
     def b(s): a.b(s)
     def absop(op, va): b(op + _u(va))
@@ -341,9 +338,54 @@ def code_for(code_va, data_va):
     struct.pack_into("<I", content, a.labels["play_callback"] + 6, code_va + a.labels["play_text"])
     for side in (0,1):
         struct.pack_into("<I",content,a.labels[f"clock_callback{side}"]+6,code_va+a.labels[f"clock_text{side}"])
-    if len(content) > CODE_SIZE:
+    if len(content) > 1408:
         raise ValueError(f"scorebug code exceeds its named allocation: {len(content)}")
-    return bytes(content).ljust(CODE_SIZE, b"\xcc"), {k: code_va + v for k, v in a.labels.items()}
+    return bytes(content).ljust(1408, b"\xcc"), {k: code_va + v for k, v in a.labels.items()}
+
+
+def code_for(code_va, data_va):
+    """Sprite dispatch plus the sealed historical resource fallback.
+
+    Only a scene carrying the compiler's SPR5 marker selects the quad engine.
+    The old resource probes keep their original callback ABI and font behavior.
+    Production builds append the sprite scene and no FONT resources.
+    """
+    from . import nfl2k5_scorebug_sprite_code as engine
+    legacy, labels = _legacy_code_for(code_va, data_va)
+    engine_va = code_va + len(legacy)
+    content = bytearray(engine.CODE)
+    for offset, kind, name, value in engine.RELOCATIONS:
+        if name != 'code':
+            raise ValueError('foreign sprite engine relocation')
+        addend = struct.unpack_from('<I', content, offset)[0]
+        value = addend + value + (engine_va if kind == 1 else -offset)
+        struct.pack_into('<I', content, offset, value & 0xffffffff)
+    start = engine_va + len(content)
+    a = _Asm(start)
+    for name, native in (('setup', 0xfc1a0), ('update', 0xfc9c0)):
+        a.label(name)
+        a.b('9c 50 a1' + _u(0xa95528) + ' 85c0')
+        a.j8('74', name+'_legacy')
+        a.b('81b860ffffff' + _u(0x35525053))
+        a.j8('75', name+'_legacy')
+        a.b('58 9d')
+        if name == 'update': a.b('ff742404')
+        a.call(native)
+        _save(a)
+        a.b('68'+_u(data_va))
+        a.call(engine_va + engine.LABELS['sprite_'+name])
+        a.b('83c404')
+        _restore(a)
+        a.b('c3' if name=='setup' else 'c20400')
+        a.label(name+'_legacy'); a.b('58 9d')
+        a.b('e9'+struct.pack('<i', labels[name]-(start+sum(a._size(i) for i in a.items))-5).hex())
+    dispatch=a.assemble()
+    result=legacy+bytes(content)+dispatch
+    if len(result)>CODE_SIZE:
+        raise ValueError('sprite owner exceeds its named RX allocation: '+str(len(result)))
+    labels.update({name:start+offset for name,offset in a.labels.items()})
+    labels.update({name:engine_va+offset for name,offset in engine.LABELS.items()})
+    return result.ljust(CODE_SIZE,b'\xcc'),labels
 
 
 def sites(payload):
@@ -457,4 +499,4 @@ def apply(payload):
                         binding_collection="GAMEDATA", binding_revision=REVISION,
                         allocation=ar, installation=ir, scorebug=sr,
                         reservations=space.reservations(result),
-                        requires_resources="scorebug-mnf-2026-v4; XBE alone does not install art or fonts")
+                        requires_resources="scorebug-sprite-v1; XBE alone does not install the PNG, layout or logos")

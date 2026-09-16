@@ -1610,7 +1610,7 @@ class BuildPanel(QWidget):
             music_project=(self.music_project_field.text().strip() or None) if self.music_project_check.isChecked() else None,
             music_library=(self.music_library_field.text().strip() or None) if self.music_library_check.isChecked() else None,
             hires_pack=self.hires_pack_check.isChecked(), hires_folder=self.hires_folder_field.text().strip(),
-            scorebug_folder=(self.scorebug_folder_field.text().strip() if self.scorebug_check.isChecked() and not self.scorebug_runtime_check.isChecked() else ""),
+            scorebug_folder=(self.scorebug_folder_field.text().strip() if self.scorebug_check.isChecked() else ""),
             hires_scale=self.hires_scale_combo.currentData(), hires_target=self.hires_target_combo.currentData(),
             guardian_cap=self.guardian_cap_check.isChecked(),
             scorebug=self.scorebug_check.isChecked(), commentary=list(self.commentary),
@@ -1931,7 +1931,7 @@ class BuildPanel(QWidget):
         self._schedule_hires_budget()
         for widget in (self.hires_folder_field, self.hires_folder_button, self.hires_scale_combo, self.hires_target_combo):
             widget.setEnabled(self.hires_pack_check.isEnabled() and self.hires_pack_check.isChecked())
-        scorebar_art = self.scorebug_check.isEnabled() and self.scorebug_check.isChecked() and not self.scorebug_runtime_check.isChecked()
+        scorebar_art = self.scorebug_check.isEnabled() and self.scorebug_check.isChecked()
         for widget in (self.scorebug_folder_field, self.scorebug_folder_button):
             widget.setEnabled(scorebar_art)
         self.ceiling_spin.setEnabled(self.throw_check.isChecked())

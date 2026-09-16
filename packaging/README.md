@@ -16,7 +16,7 @@ Installers should place these files as follows:
 | `packaging/2k5-mod-studio.desktop` | `/usr/share/applications/2k5-mod-studio.desktop` |
 | `packaging/2k5-mod-studio.svg` | `/usr/share/icons/hicolor/scalable/apps/2k5-mod-studio.svg` |
 
-The application package depends on Python 3, PyQt5, and Pillow. On Debian/Linux
+The application package depends on Python 3, PyQt5, and Pillow. Sprite Preview also requires NumPy, Unicorn and Capstone; see `docs/mod_editor/sprite_scorebug.md`. On Debian/Linux
 Mint those package names are normally `python3`, `python3-pyqt5`, and
 `python3-pil`. A portable development build can instead symlink the launcher
 into a directory on `PATH`; the launcher resolves that symlink back to the

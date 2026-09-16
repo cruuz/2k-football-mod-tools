@@ -1190,7 +1190,7 @@
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
         "mod_payload": "metadata-only",
-        "rule": "Distribute the compatibility analyzer, Blender helper, transforms, and user-authored recipes\u2014not converted retail meshes or textures.",
+        "rule": "Distribute the compatibility analyzer, Blender helper, transforms, and user-authored recipes—not converted retail meshes or textures.",
         "tooling": "source-and-schemas-only"
       },
       "runtime": {
@@ -3894,19 +3894,19 @@
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "The on-disc roster inspector edits and individually reverts all 40 team display-name allocations, nonempty pure player first/last-name allocations, 31 independent native base ratings, and exact 0\u201316 positions through token-preserving ROST writers. It enforces allocation limits, discloses every alias owner, preserves source native rating 100 without allowing it as a new edit, and atomically updates position +0x34 with its required +0x35 mirror. On-disc jersey numbers, Overall, abilities, tier, membership, depth, zero-capacity/mixed-owner names, and abbreviations stay locked. The separate Save Players raw-save workspace exposes 149 exact packed/numeric fields per player, all 15 allocation-bounded text fields, and count-preserving populated membership swaps; it publishes a verified raw Roster.ROS handoff and does not claim signed-container reinjection or runtime consumption. All 2,254 on-disc players and current ratings can be privately exported, paired RPCS3/Xenia stock exports are classified, and the 53-row planner remains project-only. The token-preserving name route has bounded Xenia visibility, the rating route loaded successfully without a numeric readout, and the first changed-position spot check remains pending. True 53-active-player support still requires coordinated consumer and storage work; passive headless observation did not reach the exact consumer, so modified mode remains locked."
+        "reason": "The on-disc roster inspector edits and individually reverts all 40 team display-name allocations, nonempty pure player first/last-name allocations, 31 independent native base ratings, and exact 0–16 positions through token-preserving ROST writers. It enforces allocation limits, discloses every alias owner, preserves source native rating 100 without allowing it as a new edit, and atomically updates position +0x34 with its required +0x35 mirror. On-disc jersey numbers, Overall, abilities, tier, membership, depth, zero-capacity/mixed-owner names, and abbreviations stay locked. The separate Save Players raw-save workspace exposes 149 exact packed/numeric fields per player, all 15 allocation-bounded text fields, and count-preserving populated membership swaps; it publishes a verified raw Roster.ROS handoff and does not claim signed-container reinjection or runtime consumption. All 2,254 on-disc players and current ratings can be privately exported, paired RPCS3/Xenia stock exports are classified, and the 53-row planner remains project-only. The token-preserving name route has bounded Xenia visibility, the rating route loaded successfully without a numeric readout, and the first changed-position spot check remains pending. True 53-active-player support still requires coordinated consumer and storage work; passive headless observation did not reach the exact consumer, so modified mode remains locked."
       },
       "id": "apf2k8.players.roster",
       "input_constraints": [
         "The on-disc project lane uses only the pinned roster_english.iff resource. The separate Save Players lane accepts a raw Roster.ROS or verified CON/LIVE/PIRS extraction and publishes only a new raw payload handoff.",
         "Address an existing source-derived identity allocation by stable pool index; never store source text, preimages, source-derived absolute archive/string locations, or pointers in a project.",
-        "Reviewed player-record-relative rating coordinates ship as retail-free schema metadata; each project edit addresses a semantic player index and stable rating ID and stores only the user-selected 0\u201399 value, never source bytes.",
-        "Reviewed player-position codes and record-relative +0x34/+0x35 coordinates ship as retail-free schema metadata; each project edit stores only one user-selected code 0\u201316 and never the source code or record bytes.",
+        "Reviewed player-record-relative rating coordinates ship as retail-free schema metadata; each project edit addresses a semantic player index and stable rating ID and stores only the user-selected 0–99 value, never source bytes.",
+        "Reviewed player-position codes and record-relative +0x34/+0x35 coordinates ship as retail-free schema metadata; each project edit stores only one user-selected code 0–16 and never the source code or record bytes.",
         "A complete ratings-sheet CSV is a private retail-derived local export from the user's copy; it must never enter a project or public release.",
         "Paired APFe RPCS3/Xenia text exports are compared positionally: duplicated labels are disambiguated, trailing unlabeled fields stay explicitly unlabeled, and only the exact bounded TeamJerseyBytes RGBA-to-ARGB serialization transform is normalized. The audit is read-only and its report must stay private if it contains source-exported roster data.",
         "Only an existing team display-name allocation or nonempty positive-capacity allocation owned exclusively by player first/last-name fields is writable as identity text; its replacement must fit the exact original UTF-16BE character limit and every disclosed mapped alias changes together.",
-        "Base-rating replacement accepts only exact whole numbers 0\u201399. Inspect and preserve an externally authored native 100 exactly, and allow individual Revert to restore it, but never silently clamp or accept 100 as a new public edit.",
-        "Player-position replacement accepts only exact whole-number codes 0\u201316, refuses a source record whose semantic +0x34 and mirror +0x35 bytes differ, and always changes or reverts that pair together. It does not automatically change ratings, team membership, or depth charts.",
+        "Base-rating replacement accepts only exact whole numbers 0–99. Inspect and preserve an externally authored native 100 exactly, and allow individual Revert to restore it, but never silently clamp or accept 100 as a new public edit.",
+        "Player-position replacement accepts only exact whole-number codes 0–16, refuses a source record whose semantic +0x34 and mirror +0x35 bytes differ, and always changes or reverts that pair together. It does not automatically change ratings, team membership, or depth charts.",
         "In the on-disc 0A project lane, keep empty or zero-capacity player names, mixed-owner allocations, both team-abbreviation fields, jersey numbers, Overall, abilities, Gold/Silver/Bronze tier, membership, depth charts, and every other unnamed player/team field read-only.",
         "In Save Players, expose only the 149 exact packed/numeric field IDs, 15 allocation-bounded text fields, and count-preserving populated membership swaps. Overall, insertion/capacity expansion, signed-container reinjection/rehash/resign, and runtime consumption remain unavailable or unproved.",
         "Never store reserve indices at team +0x120..+0x126; stock code owns those bytes. No in-record or other extension-storage location is authorized."
@@ -5810,7 +5810,7 @@
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
         "mod_payload": "metadata-only",
-        "rule": "Distribute the compatibility analyzer, Blender helper, transforms, and user-authored recipes\u2014not converted retail assets.",
+        "rule": "Distribute the compatibility analyzer, Blender helper, transforms, and user-authored recipes—not converted retail assets.",
         "tooling": "source-and-schemas-only"
       },
       "runtime": {
@@ -8295,7 +8295,7 @@
         "Senior Bowl preparation only: the default seed-1 squads include MyPlayer. Native event transport and stat isolation are unresolved. Requests and trades stay out.",
         "All 17 retail positions have three native Create Player templates; the pools profile offers 16 live positions and merges EDGE ratings. Position-specific input decode and switch guards are bounded-native proofs; mesh movement, manual routes, catches and block animations remain unwitnessed outside Noah's reported QB play.",
         "Apartment > Settings offers First Person Football Off/On (default Off), Supersim Off/Skip presentation/Fast forward (new-career default Fast forward), MyPlayer star On/Off (default On) and MyPlayer stat line On/Off (default On). All choices persist in the signed 128-byte career footer (byte 82: bit 0 first person, bit 1 Supersim Off, bit 2 star Off, bit 3 Fast forward, bit 4 stat line Off). Old zero-filled footers keep Skip presentation. The Apartment action Sim to next appearance launches the scheduled game and arms the settled-appearance wait. Fast forward runs up to eight native updates per presented frame with one input poll. Initial/OT toss, challenge, tips, pause and disconnected controllers use native prompts at normal speed. B cancels the current CPU sequence until the next native snap without changing the saved Supersim choice. Hardware speed, audio and visual behavior remain unwitnessed.",
-        "Apartment Settings adds Who calls the plays: You call every play (default), By position (QB offense, ILB defense, including one-pool LB), or Coach calls the plays. The choice lives in footer byte 82 bits 5..6. Footer byte 83 stores the creation tier. A zero-filled old footer keeps the original caller and creation behavior. Fast-forward hand-back invalidates the absent unit's CPU choice for a human caller, then opens the native play-call screen. Coach policy keeps that native choice and restores MyPlayer's execution controller. In-game outcomes remain UNWITNESSED. andrethealchemist separately confirms the beta-68 fixes: \u201cWow! Everything I asked for was fixed in beta 68!\u201d"
+        "Apartment Settings adds Who calls the plays: You call every play (default), By position (QB offense, ILB defense, including one-pool LB), or Coach calls the plays. The choice lives in footer byte 82 bits 5..6. Footer byte 83 stores the creation tier. A zero-filled old footer keeps the original caller and creation behavior. Fast-forward hand-back invalidates the absent unit's CPU choice for a human caller, then opens the native play-call screen. Coach policy keeps that native choice and restores MyPlayer's execution controller. In-game outcomes remain UNWITNESSED. andrethealchemist separately confirms the beta-68 fixes: “Wow! Everything I asked for was fixed in beta 68!”"
       ],
       "portme": [
         "Complete the Noah witness list in ASTRA_MYCAREER_DRAFT_REPORT.md.",
@@ -9534,7 +9534,7 @@
         "resource": "Frame call 0x64F21 and the same five pinned star spans (474 bytes total)",
         "retail_file": "User-owned default.xbe"
       },
-      "summary": "Draw an opaque white five-point star with a near-black edge at every active tagged player\u2019s feet.",
+      "summary": "Draw an opaque white five-point star with a near-black edge at every active tagged player’s feet.",
       "surface": "players_rosters",
       "title": "Filled star under tagged players",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_player_star_draw"
@@ -10024,7 +10024,7 @@
             "required": true
           }
         ],
-        "notes": "CSV menu on \u2605 Rosters; export every player or this list, import with preview. Numeric contract_value is in $10,000 units."
+        "notes": "CSV menu on ★ Rosters; export every player or this list, import with preview. Numeric contract_value is in $10,000 units."
       },
       "source_container": {
         "format": "ROST/save body",
@@ -10553,24 +10553,30 @@
         "reports/b71_s4/compare_wide.png",
         "reports/b71_s4/text_rgb_mae.json",
         "reports/b71_s4/logo_fit.json",
-        "reports/b71_s4/final-delivery-suite-summary.json"
+        "reports/b71_s4/final-delivery-suite-summary.json",
+        "docs/mod_editor/sprite_scorebug.md",
+        "tests/mod_editor/test_nfl2k5_scorebug_sprite.py",
+        "reports/b71_s5/scene-route.json",
+        "reports/b71_s5/measurements.json",
+        "reports/b71_s5/states.json",
+        "reports/b71_s5/volume.json"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "EXPERIMENTAL / UNWITNESSED. Native renderer evidence covers both aspect ratios, score/clock callbacks and retail event slabs. The 410,624-byte append stays near the historical 0.4 MB volume that passed the intro; the current build still needs a played-game intro and match check."
+        "reason": "EXPERIMENTAL / UNWITNESSED. Preview executes the actual owner and renders its live quads. The 323,808-byte append stays below the historical freeze-class volume ceiling; a played intro and match remain required."
       },
       "id": "nfl2k5.scorebug_presentation.runtime",
       "input_constraints": [
         "User-owned pinned NFL 2K5 USA disc with retail HUD resources, or a completely recognized runtime installation.",
         "Use a disposable output copy; reserve the selected allocator owner union before installing hooks.",
-        "An XBE alone cannot install the required 33 shared logo textures, painted atlas and two FONT resources. Rebuild from a supported base; foreign or old owner bytes are refused."
+        "An XBE alone cannot install the atlas, 33 shared logos and enlarged scene. Use the shipped sprite PNG/JSON folder or a validated compatible design and rebuild from a supported base."
       ],
       "portme": [
-        "Witness the 2026 bar in Play Now with the Berman intro on (the beta 69 crash path), then in Franchise; report the wing logos, the plate colour on a change of possession, the dashes after a timeout, the red play clock under five seconds.",
-        "Logos, timeouts, possession colour and clock colours are unwitnessed; the static v3 scorebar remains the witnessed fallback."
+        "Witness the intro, kickoff, live play, possession change, scores including three digits, timeouts, both clocks and all retail events in Play Now and Franchise at both aspects.",
+        "Compare the played frame with the generated native preview; current sprite gameplay and GPU appearance remain UNWITNESSED."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -10600,15 +10606,21 @@
           "reports/b71_s4/compare_wide.png",
           "reports/b71_s4/text_rgb_mae.json",
           "reports/b71_s4/logo_fit.json",
-          "reports/b71_s4/final-delivery-suite-summary.json"
+          "reports/b71_s4/final-delivery-suite-summary.json",
+          "docs/mod_editor/sprite_scorebug.md",
+          "tests/mod_editor/test_nfl2k5_scorebug_sprite.py",
+          "reports/b71_s5/scene-route.json",
+          "reports/b71_s5/measurements.json",
+          "reports/b71_s5/states.json",
+          "reports/b71_s5/volume.json"
         ],
-        "scope": "V4 uses native HUD collection lookup, a same-name 256x512 painted atlas, 33 shared logo textures, two appended FONTs, the fixed 4,800-byte scene and owned setup/update hooks. Score, clock and play-clock digits occupy separate slot-9 ranges; the red cell retains native urgency and visibility. Bounded native CPU execution and software raster comparisons keep every measured region and text box within one HUD pixel at 4:3 and widescreen. RGB comparisons still fail the exact-image threshold. Retail event states draw readably. These checks do not prove GPU appearance or intro peak-memory behavior in a played game.",
+        "scope": "Native collection loading proves the enlarged same-name SCNE and atlas win HUD lookup. The owner calls retail getters and writes preallocated glyph quads, tints wings and possession plate, and retains retail FLAG, FUMBLE, hang time and ball-on callbacks. Rotating score slabs conflict with the new scores and are suppressed. Standard geometry and glyph ink are within one HUD pixel at both aspects. Bounded register/FPU, idempotence, ownership, foreign-byte and volume checks do not prove a played intro or GPU appearance.",
         "status": "not-tested"
       },
       "selectors": {
         "fields": [
           {
-            "allowed": "false in every preset; manual true implies scorebug and xbe_space and selects the full diagnostic profile",
+            "allowed": "false in every preset; manual true implies scorebug and xbe_space and selects the sprite profile",
             "name": "scorebug_runtime",
             "required": true
           }
@@ -10616,7 +10628,7 @@
         "notes": "Implies scorebug and xbe_space. Relocated kickoff is independent and requires its existing alignment prerequisites."
       },
       "source_container": {
-        "format": "XBE and native TXTR/FONT/SCNE resources in XDVDFS pack 0",
+        "format": "XBE and native TXTR/SCNE resources in XDVDFS pack 0; retail FONT resources unchanged",
         "hash_pins": [
           "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
           "2c23410c05c1ec266c3176b8b201f9a48b4a45ac148110ca569e5df25984e7c8",
@@ -10625,10 +10637,10 @@
         "resource": "owned RX/RW hook allocations plus HUD outer 346 and its archive index",
         "retail_file": "user-owned default.xbe and vc_53450030/0 in an NFL 2K5 USA disc"
       },
-      "summary": "2026 painted scorebug: flat charcoal body, owner-tinted wing masks, shared full-height team marks, corrected possession plate, bold sans label, 53-pixel score digits, bright timeout ticks and a white clock capsule. Appends 410,624 bytes. Native execution and software renders are proved; v4 remains unwitnessed in game and off in every preset.",
+      "summary": "One PNG and JSON design compiles to 45 atlas quads, 33 logo textures and an enlarged same-name scene. Scores, clocks, labels and timeout ticks use sprites; no FONT resource is appended. Default append is 323,808 bytes. Native CPU execution and both-aspect software previews are proved; played-game appearance remains UNWITNESSED and the option is off in every preset.",
       "surface": "scorebug_presentation",
-      "title": "ESPN Monday Night Football 2026 scorebug (experimental)",
-      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_b68_game_composition"
+      "title": "Sprite scorebug (experimental)",
+      "validation_command": "python3 tests/mod_editor/test_nfl2k5_scorebug_sprite.py -v"
     },
     {
       "backend": {
@@ -11732,7 +11744,7 @@
       },
       "summary": "Replace all 11,395 standalone textures, including every uniform package's four P8 presentation variants, all raw aggregate menu-logo/mini-card slots, every franchise/draft logo surface, and all 4,080 explicit-size A1 player strips through a transactional cross-pack route where needed; also replace 28,530 package-local uniform-equipment palettes while preserving fixed spans and all unselected siblings.",
       "surface": "textures",
-      "title": "NFL 2K5 All Textures \u2014 standalone and uniform-equipment editing",
+      "title": "NFL 2K5 All Textures — standalone and uniform-equipment editing",
       "validation_command": "python3 -m tests.mod_editor.test_b69_j1_fit"
     },
     {

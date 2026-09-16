@@ -31,8 +31,8 @@ def repin(buf):
 class PublicTests(unittest.TestCase):
     def test_capacity_all_names_and_no_toolchain_dependency(self):
         requests = r.REQUESTS + kickoff.REQUESTS
-        allocated = space._allocations(requests)
-        self.assertLessEqual(max(a['va']+a['size'] for a in allocated if a['kind']=='code'), space.DATA_VA)
+        allocated = space.plan(requests)["allocations"]
+        self.assertTrue(all(a['size'] > 0 for a in allocated))
         for a in allocated:
             self.assertEqual(a['va'] % a['align'], 0)
         self.assertEqual(len(r.code_for(0x14baa60,0x14bb010)[0]),r.CODE_SIZE)
@@ -129,7 +129,9 @@ class Machine:
         self.context=self.alloc(128);self.put(0xb09578,self.context)
         self.put(self.context+8,r.HUD_COLLECTION_NAME)
         self.put(0xb09590,0)
-        self.scene=self.alloc(128);self.material=self.alloc(11*128)
+        # Native SCNE objects follow a 256-byte resource header. The sprite
+        # dispatcher reads its marker there, also on the retail fallback path.
+        self.scene=self.alloc(256+128)+256;self.material=self.alloc(11*128)
         self.put(self.scene+0x1c,11);self.put(self.scene+0x20,self.material)
         self.mats={}
         for i,(_,_,name) in enumerate(r.scene.layout.SUBMESHES):

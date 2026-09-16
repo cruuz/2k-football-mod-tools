@@ -3126,7 +3126,9 @@ class StudioMainWindow(QMainWindow):
 
     def _build_scorebar_page(self):
         self._scorebar_panel = ScorebugStudioPanel(defer_preview=True)
+        self._scorebar_panel.sprite_source_provider = lambda: getattr(self.facade, "source_path", None)
         self._scorebar_panel.folder_chosen.connect(self._scorebar_folder_chosen)
+        self._scorebar_panel.sprite_folder_chosen.connect(self._sprite_scorebar_folder_chosen)
         return self._scorebar_panel
 
     def _sync_constructed_page(self):
@@ -8957,6 +8959,13 @@ class StudioMainWindow(QMainWindow):
             self._build_panel.set_senior_bowl_options(options)
             self._capture_music_build_settings()
             self._mark_workspace_changed()
+
+    def _sprite_scorebar_folder_chosen(self, folder: str) -> None:
+        self._scorebar_folder_chosen(folder)
+        self._build_panel.scorebug_check.setChecked(True)
+        self._build_panel.scorebug_runtime_check.setChecked(True)
+        self._capture_music_build_settings()
+        self._set_status("Sprite scorebug design and option handed to Build.")
 
     def _scorebar_folder_chosen(self, folder: str) -> None:
         """Scorebar Studio saved a folder: fill the Build tab's scorebar folder field."""

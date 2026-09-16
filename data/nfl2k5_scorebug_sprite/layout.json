@@ -1,0 +1,1765 @@
+{
+  "schema": "nfl2k5_scorebug_sprite/v1",
+  "frame": [
+    1920,
+    1080
+  ],
+  "atlas": [
+    256,
+    512
+  ],
+  "template": "template.png",
+  "cells": {
+    "body": {
+      "box": [
+        0,
+        0,
+        1041,
+        110
+      ]
+    },
+    "body_left": {
+      "box": [
+        0,
+        0,
+        10,
+        110
+      ]
+    },
+    "body_middle": {
+      "box": [
+        10,
+        0,
+        11,
+        110
+      ]
+    },
+    "body_right": {
+      "box": [
+        1031,
+        0,
+        1041,
+        110
+      ]
+    },
+    "wing": {
+      "box": [
+        1043,
+        0,
+        1256,
+        110
+      ]
+    },
+    "plate": {
+      "box": [
+        1258,
+        0,
+        1504,
+        41
+      ]
+    },
+    "housing": {
+      "box": [
+        0,
+        112,
+        246,
+        174
+      ]
+    },
+    "capsule": {
+      "box": [
+        248,
+        112,
+        428,
+        152
+      ]
+    },
+    "red": {
+      "box": [
+        430,
+        112,
+        493,
+        153
+      ]
+    },
+    "tick": {
+      "box": [
+        495,
+        112,
+        515,
+        118
+      ]
+    },
+    "event": {
+      "box": [
+        517,
+        112,
+        519,
+        114
+      ]
+    },
+    "score_0": {
+      "box": [
+        521,
+        112,
+        561,
+        165
+      ]
+    },
+    "score_1": {
+      "box": [
+        563,
+        112,
+        603,
+        165
+      ]
+    },
+    "score_2": {
+      "box": [
+        605,
+        112,
+        645,
+        165
+      ]
+    },
+    "score_3": {
+      "box": [
+        647,
+        112,
+        687,
+        165
+      ]
+    },
+    "score_4": {
+      "box": [
+        689,
+        112,
+        729,
+        165
+      ]
+    },
+    "score_5": {
+      "box": [
+        731,
+        112,
+        771,
+        165
+      ]
+    },
+    "score_6": {
+      "box": [
+        773,
+        112,
+        813,
+        165
+      ]
+    },
+    "score_7": {
+      "box": [
+        815,
+        112,
+        855,
+        165
+      ]
+    },
+    "score_8": {
+      "box": [
+        857,
+        112,
+        897,
+        165
+      ]
+    },
+    "score_9": {
+      "box": [
+        899,
+        112,
+        939,
+        165
+      ]
+    },
+    "clock_0": {
+      "box": [
+        941,
+        112,
+        964,
+        139
+      ]
+    },
+    "clock_1": {
+      "box": [
+        966,
+        112,
+        989,
+        139
+      ]
+    },
+    "clock_2": {
+      "box": [
+        991,
+        112,
+        1014,
+        139
+      ]
+    },
+    "clock_3": {
+      "box": [
+        1016,
+        112,
+        1039,
+        139
+      ]
+    },
+    "clock_4": {
+      "box": [
+        1041,
+        112,
+        1064,
+        139
+      ]
+    },
+    "clock_5": {
+      "box": [
+        1066,
+        112,
+        1089,
+        139
+      ]
+    },
+    "clock_6": {
+      "box": [
+        1091,
+        112,
+        1114,
+        139
+      ]
+    },
+    "clock_7": {
+      "box": [
+        1116,
+        112,
+        1139,
+        139
+      ]
+    },
+    "clock_8": {
+      "box": [
+        1141,
+        112,
+        1164,
+        139
+      ]
+    },
+    "clock_9": {
+      "box": [
+        1166,
+        112,
+        1189,
+        139
+      ]
+    },
+    "colon": {
+      "box": [
+        1191,
+        112,
+        1196,
+        130
+      ]
+    },
+    "small_0": {
+      "box": [
+        1198,
+        112,
+        1213,
+        131
+      ]
+    },
+    "small_1": {
+      "box": [
+        1215,
+        112,
+        1230,
+        131
+      ]
+    },
+    "small_2": {
+      "box": [
+        1232,
+        112,
+        1247,
+        131
+      ]
+    },
+    "small_3": {
+      "box": [
+        1249,
+        112,
+        1264,
+        131
+      ]
+    },
+    "small_4": {
+      "box": [
+        1266,
+        112,
+        1281,
+        131
+      ]
+    },
+    "small_5": {
+      "box": [
+        1283,
+        112,
+        1298,
+        131
+      ]
+    },
+    "small_6": {
+      "box": [
+        1300,
+        112,
+        1315,
+        131
+      ]
+    },
+    "small_7": {
+      "box": [
+        1317,
+        112,
+        1332,
+        131
+      ]
+    },
+    "small_8": {
+      "box": [
+        1334,
+        112,
+        1349,
+        131
+      ]
+    },
+    "small_9": {
+      "box": [
+        1351,
+        112,
+        1366,
+        131
+      ]
+    },
+    "small_st": {
+      "box": [
+        1368,
+        112,
+        1393,
+        125
+      ]
+    },
+    "small_nd": {
+      "box": [
+        1395,
+        112,
+        1420,
+        125
+      ]
+    },
+    "small_rd": {
+      "box": [
+        1422,
+        112,
+        1447,
+        125
+      ]
+    },
+    "small_th": {
+      "box": [
+        1449,
+        112,
+        1474,
+        125
+      ]
+    },
+    "small_&": {
+      "box": [
+        1476,
+        112,
+        1490,
+        131
+      ]
+    },
+    "small_Goal": {
+      "box": [
+        0,
+        176,
+        43,
+        195
+      ]
+    },
+    "small_GOAL": {
+      "box": [
+        45,
+        176,
+        88,
+        195
+      ]
+    },
+    "small_and": {
+      "box": [
+        90,
+        176,
+        122,
+        195
+      ]
+    },
+    "small_OT": {
+      "box": [
+        124,
+        176,
+        146,
+        195
+      ]
+    },
+    "small_ST": {
+      "box": [
+        148,
+        176,
+        173,
+        189
+      ]
+    },
+    "small_ND": {
+      "box": [
+        175,
+        176,
+        200,
+        189
+      ]
+    },
+    "small_RD": {
+      "box": [
+        202,
+        176,
+        227,
+        189
+      ]
+    },
+    "small_TH": {
+      "box": [
+        229,
+        176,
+        254,
+        189
+      ]
+    },
+    "small_Inch": {
+      "box": [
+        256,
+        176,
+        299,
+        195
+      ]
+    },
+    "small_es": {
+      "box": [
+        301,
+        176,
+        323,
+        195
+      ]
+    },
+    "label_0": {
+      "box": [
+        325,
+        176,
+        341,
+        199
+      ]
+    },
+    "label_1": {
+      "box": [
+        343,
+        176,
+        359,
+        199
+      ]
+    },
+    "label_2": {
+      "box": [
+        361,
+        176,
+        377,
+        199
+      ]
+    },
+    "label_3": {
+      "box": [
+        379,
+        176,
+        395,
+        199
+      ]
+    },
+    "label_4": {
+      "box": [
+        397,
+        176,
+        413,
+        199
+      ]
+    },
+    "label_5": {
+      "box": [
+        415,
+        176,
+        431,
+        199
+      ]
+    },
+    "label_6": {
+      "box": [
+        433,
+        176,
+        449,
+        199
+      ]
+    },
+    "label_7": {
+      "box": [
+        451,
+        176,
+        467,
+        199
+      ]
+    },
+    "label_8": {
+      "box": [
+        469,
+        176,
+        485,
+        199
+      ]
+    },
+    "label_9": {
+      "box": [
+        487,
+        176,
+        503,
+        199
+      ]
+    },
+    "label_st": {
+      "box": [
+        505,
+        176,
+        531,
+        199
+      ]
+    },
+    "label_nd": {
+      "box": [
+        533,
+        176,
+        559,
+        199
+      ]
+    },
+    "label_rd": {
+      "box": [
+        561,
+        176,
+        587,
+        199
+      ]
+    },
+    "label_th": {
+      "box": [
+        589,
+        176,
+        615,
+        199
+      ]
+    },
+    "label_&": {
+      "box": [
+        617,
+        176,
+        636,
+        199
+      ]
+    },
+    "label_Goal": {
+      "box": [
+        638,
+        176,
+        690,
+        199
+      ]
+    },
+    "label_GOAL": {
+      "box": [
+        692,
+        176,
+        744,
+        199
+      ]
+    },
+    "label_and": {
+      "box": [
+        746,
+        176,
+        785,
+        199
+      ]
+    },
+    "label_OT": {
+      "box": [
+        787,
+        176,
+        813,
+        199
+      ]
+    },
+    "label_ST": {
+      "box": [
+        815,
+        176,
+        841,
+        199
+      ]
+    },
+    "label_ND": {
+      "box": [
+        843,
+        176,
+        869,
+        199
+      ]
+    },
+    "label_RD": {
+      "box": [
+        871,
+        176,
+        897,
+        199
+      ]
+    },
+    "label_TH": {
+      "box": [
+        899,
+        176,
+        925,
+        199
+      ]
+    },
+    "label_Inch": {
+      "box": [
+        927,
+        176,
+        979,
+        199
+      ]
+    },
+    "label_es": {
+      "box": [
+        981,
+        176,
+        1007,
+        199
+      ]
+    }
+  },
+  "glyph_sets": {
+    "score": {
+      "cap_height": 53,
+      "glyphs": {
+        "0": {
+          "cell": "score_0",
+          "size": [
+            40,
+            53
+          ],
+          "advance": 42
+        },
+        "1": {
+          "cell": "score_1",
+          "size": [
+            40,
+            53
+          ],
+          "advance": 42
+        },
+        "2": {
+          "cell": "score_2",
+          "size": [
+            40,
+            53
+          ],
+          "advance": 42
+        },
+        "3": {
+          "cell": "score_3",
+          "size": [
+            40,
+            53
+          ],
+          "advance": 42
+        },
+        "4": {
+          "cell": "score_4",
+          "size": [
+            40,
+            53
+          ],
+          "advance": 42
+        },
+        "5": {
+          "cell": "score_5",
+          "size": [
+            40,
+            53
+          ],
+          "advance": 42
+        },
+        "6": {
+          "cell": "score_6",
+          "size": [
+            40,
+            53
+          ],
+          "advance": 42
+        },
+        "7": {
+          "cell": "score_7",
+          "size": [
+            40,
+            53
+          ],
+          "advance": 42
+        },
+        "8": {
+          "cell": "score_8",
+          "size": [
+            40,
+            53
+          ],
+          "advance": 42
+        },
+        "9": {
+          "cell": "score_9",
+          "size": [
+            40,
+            53
+          ],
+          "advance": 42
+        },
+        " ": {
+          "cell": "tick",
+          "size": [
+            0,
+            0
+          ],
+          "advance": 6
+        }
+      }
+    },
+    "clock": {
+      "cap_height": 27,
+      "glyphs": {
+        "0": {
+          "cell": "clock_0",
+          "size": [
+            23,
+            27
+          ],
+          "advance": 25
+        },
+        "1": {
+          "cell": "clock_1",
+          "size": [
+            23,
+            27
+          ],
+          "advance": 25
+        },
+        "2": {
+          "cell": "clock_2",
+          "size": [
+            23,
+            27
+          ],
+          "advance": 25
+        },
+        "3": {
+          "cell": "clock_3",
+          "size": [
+            23,
+            27
+          ],
+          "advance": 25
+        },
+        "4": {
+          "cell": "clock_4",
+          "size": [
+            23,
+            27
+          ],
+          "advance": 25
+        },
+        "5": {
+          "cell": "clock_5",
+          "size": [
+            23,
+            27
+          ],
+          "advance": 25
+        },
+        "6": {
+          "cell": "clock_6",
+          "size": [
+            23,
+            27
+          ],
+          "advance": 25
+        },
+        "7": {
+          "cell": "clock_7",
+          "size": [
+            23,
+            27
+          ],
+          "advance": 25
+        },
+        "8": {
+          "cell": "clock_8",
+          "size": [
+            23,
+            27
+          ],
+          "advance": 25
+        },
+        "9": {
+          "cell": "clock_9",
+          "size": [
+            23,
+            27
+          ],
+          "advance": 25
+        },
+        ":": {
+          "cell": "colon",
+          "size": [
+            5,
+            18
+          ],
+          "advance": 7,
+          "raise": -4
+        },
+        " ": {
+          "cell": "tick",
+          "size": [
+            0,
+            0
+          ],
+          "advance": 6
+        }
+      }
+    },
+    "small": {
+      "cap_height": 19,
+      "glyphs": {
+        "0": {
+          "cell": "small_0",
+          "size": [
+            15,
+            19
+          ],
+          "advance": 17
+        },
+        "1": {
+          "cell": "small_1",
+          "size": [
+            15,
+            19
+          ],
+          "advance": 17
+        },
+        "2": {
+          "cell": "small_2",
+          "size": [
+            15,
+            19
+          ],
+          "advance": 17
+        },
+        "3": {
+          "cell": "small_3",
+          "size": [
+            15,
+            19
+          ],
+          "advance": 17
+        },
+        "4": {
+          "cell": "small_4",
+          "size": [
+            15,
+            19
+          ],
+          "advance": 17
+        },
+        "5": {
+          "cell": "small_5",
+          "size": [
+            15,
+            19
+          ],
+          "advance": 17
+        },
+        "6": {
+          "cell": "small_6",
+          "size": [
+            15,
+            19
+          ],
+          "advance": 17
+        },
+        "7": {
+          "cell": "small_7",
+          "size": [
+            15,
+            19
+          ],
+          "advance": 17
+        },
+        "8": {
+          "cell": "small_8",
+          "size": [
+            15,
+            19
+          ],
+          "advance": 17
+        },
+        "9": {
+          "cell": "small_9",
+          "size": [
+            15,
+            19
+          ],
+          "advance": 17
+        },
+        "st": {
+          "cell": "small_st",
+          "size": [
+            25,
+            13
+          ],
+          "advance": 27,
+          "raise": 0
+        },
+        "nd": {
+          "cell": "small_nd",
+          "size": [
+            25,
+            13
+          ],
+          "advance": 27,
+          "raise": 0
+        },
+        "rd": {
+          "cell": "small_rd",
+          "size": [
+            25,
+            13
+          ],
+          "advance": 27,
+          "raise": 0
+        },
+        "th": {
+          "cell": "small_th",
+          "size": [
+            25,
+            13
+          ],
+          "advance": 27,
+          "raise": 0
+        },
+        "&": {
+          "cell": "small_&",
+          "size": [
+            14,
+            19
+          ],
+          "advance": 16,
+          "raise": 0
+        },
+        "Goal": {
+          "cell": "small_Goal",
+          "size": [
+            43,
+            19
+          ],
+          "advance": 45,
+          "raise": 0
+        },
+        "GOAL": {
+          "cell": "small_GOAL",
+          "size": [
+            43,
+            19
+          ],
+          "advance": 45,
+          "raise": 0
+        },
+        "and": {
+          "cell": "small_and",
+          "size": [
+            32,
+            19
+          ],
+          "advance": 34,
+          "raise": 0
+        },
+        "OT": {
+          "cell": "small_OT",
+          "size": [
+            22,
+            19
+          ],
+          "advance": 24,
+          "raise": 0
+        },
+        "ST": {
+          "cell": "small_ST",
+          "size": [
+            25,
+            13
+          ],
+          "advance": 27,
+          "raise": 0
+        },
+        "ND": {
+          "cell": "small_ND",
+          "size": [
+            25,
+            13
+          ],
+          "advance": 27,
+          "raise": 0
+        },
+        "RD": {
+          "cell": "small_RD",
+          "size": [
+            25,
+            13
+          ],
+          "advance": 27,
+          "raise": 0
+        },
+        "TH": {
+          "cell": "small_TH",
+          "size": [
+            25,
+            13
+          ],
+          "advance": 27,
+          "raise": 0
+        },
+        "Inch": {
+          "cell": "small_Inch",
+          "size": [
+            43,
+            19
+          ],
+          "advance": 45,
+          "raise": 0
+        },
+        "es": {
+          "cell": "small_es",
+          "size": [
+            22,
+            19
+          ],
+          "advance": 24,
+          "raise": 0
+        },
+        " ": {
+          "cell": "tick",
+          "size": [
+            0,
+            0
+          ],
+          "advance": 6
+        }
+      }
+    },
+    "label": {
+      "cap_height": 23,
+      "glyphs": {
+        "0": {
+          "cell": "label_0",
+          "size": [
+            16,
+            23
+          ],
+          "advance": 18
+        },
+        "1": {
+          "cell": "label_1",
+          "size": [
+            16,
+            23
+          ],
+          "advance": 18
+        },
+        "2": {
+          "cell": "label_2",
+          "size": [
+            16,
+            23
+          ],
+          "advance": 18
+        },
+        "3": {
+          "cell": "label_3",
+          "size": [
+            16,
+            23
+          ],
+          "advance": 18
+        },
+        "4": {
+          "cell": "label_4",
+          "size": [
+            16,
+            23
+          ],
+          "advance": 18
+        },
+        "5": {
+          "cell": "label_5",
+          "size": [
+            16,
+            23
+          ],
+          "advance": 18
+        },
+        "6": {
+          "cell": "label_6",
+          "size": [
+            16,
+            23
+          ],
+          "advance": 18
+        },
+        "7": {
+          "cell": "label_7",
+          "size": [
+            16,
+            23
+          ],
+          "advance": 18
+        },
+        "8": {
+          "cell": "label_8",
+          "size": [
+            16,
+            23
+          ],
+          "advance": 18
+        },
+        "9": {
+          "cell": "label_9",
+          "size": [
+            16,
+            23
+          ],
+          "advance": 18
+        },
+        "st": {
+          "cell": "label_st",
+          "size": [
+            26,
+            23
+          ],
+          "advance": 28,
+          "raise": 0
+        },
+        "nd": {
+          "cell": "label_nd",
+          "size": [
+            26,
+            23
+          ],
+          "advance": 28,
+          "raise": 0
+        },
+        "rd": {
+          "cell": "label_rd",
+          "size": [
+            26,
+            23
+          ],
+          "advance": 28,
+          "raise": 0
+        },
+        "th": {
+          "cell": "label_th",
+          "size": [
+            26,
+            23
+          ],
+          "advance": 28,
+          "raise": 0
+        },
+        "&": {
+          "cell": "label_&",
+          "size": [
+            19,
+            23
+          ],
+          "advance": 21,
+          "raise": 0
+        },
+        "Goal": {
+          "cell": "label_Goal",
+          "size": [
+            52,
+            23
+          ],
+          "advance": 54,
+          "raise": 0
+        },
+        "GOAL": {
+          "cell": "label_GOAL",
+          "size": [
+            52,
+            23
+          ],
+          "advance": 54,
+          "raise": 0
+        },
+        "and": {
+          "cell": "label_and",
+          "size": [
+            39,
+            23
+          ],
+          "advance": 41,
+          "raise": 0
+        },
+        "OT": {
+          "cell": "label_OT",
+          "size": [
+            26,
+            23
+          ],
+          "advance": 28,
+          "raise": 0
+        },
+        "ST": {
+          "cell": "label_ST",
+          "size": [
+            26,
+            23
+          ],
+          "advance": 28,
+          "raise": 0
+        },
+        "ND": {
+          "cell": "label_ND",
+          "size": [
+            26,
+            23
+          ],
+          "advance": 28,
+          "raise": 0
+        },
+        "RD": {
+          "cell": "label_RD",
+          "size": [
+            26,
+            23
+          ],
+          "advance": 28,
+          "raise": 0
+        },
+        "TH": {
+          "cell": "label_TH",
+          "size": [
+            26,
+            23
+          ],
+          "advance": 28,
+          "raise": 0
+        },
+        "Inch": {
+          "cell": "label_Inch",
+          "size": [
+            52,
+            23
+          ],
+          "advance": 54,
+          "raise": 0
+        },
+        "es": {
+          "cell": "label_es",
+          "size": [
+            26,
+            23
+          ],
+          "advance": 28,
+          "raise": 0
+        },
+        " ": {
+          "cell": "tick",
+          "size": [
+            0,
+            0
+          ],
+          "advance": 11
+        },
+        "~": {
+          "cell": "tick",
+          "size": [
+            20,
+            6
+          ],
+          "advance": 30
+        }
+      }
+    },
+    "ticks": {
+      "cap_height": 6,
+      "glyphs": {
+        "~": {
+          "cell": "tick",
+          "size": [
+            20,
+            6
+          ],
+          "advance": 30
+        }
+      }
+    }
+  },
+  "static": [
+    {
+      "name": "body_left",
+      "box": [
+        437,
+        942,
+        447,
+        1052
+      ],
+      "cell": "body_left",
+      "material": 3,
+      "tint": "none",
+      "z": 0
+    },
+    {
+      "name": "body",
+      "box": [
+        447,
+        942,
+        1468,
+        1052
+      ],
+      "cell": "body_middle",
+      "material": 3,
+      "tint": "none",
+      "z": 0
+    },
+    {
+      "name": "body_right",
+      "box": [
+        1468,
+        942,
+        1478,
+        1052
+      ],
+      "cell": "body_right",
+      "material": 3,
+      "tint": "none",
+      "z": 0
+    },
+    {
+      "name": "housing",
+      "box": [
+        837,
+        983,
+        1083,
+        1045
+      ],
+      "cell": "housing",
+      "material": 3,
+      "tint": "none",
+      "z": 0
+    },
+    {
+      "name": "capsule",
+      "box": [
+        839,
+        999,
+        1019,
+        1039
+      ],
+      "cell": "capsule",
+      "material": 3,
+      "tint": "none",
+      "z": 0
+    },
+    {
+      "name": "plate",
+      "box": [
+        837,
+        942,
+        1083,
+        983
+      ],
+      "cell": "plate",
+      "material": 4,
+      "tint": "possessing team",
+      "z": -3
+    },
+    {
+      "name": "away_wing",
+      "box": [
+        437,
+        942,
+        650,
+        1052
+      ],
+      "cell": "wing",
+      "material": 9,
+      "tint": "away team",
+      "z": -1
+    },
+    {
+      "name": "home_wing",
+      "box": [
+        1265,
+        942,
+        1478,
+        1052
+      ],
+      "cell": "wing",
+      "material": 9,
+      "tint": "home team",
+      "flip_x": true,
+      "z": -1
+    },
+    {
+      "name": "red",
+      "box": [
+        1019,
+        999,
+        1082,
+        1040
+      ],
+      "cell": "red",
+      "material": 9,
+      "tint": "none",
+      "z": -3
+    },
+    {
+      "name": "away_logo",
+      "box": [
+        453,
+        943,
+        653,
+        1050
+      ],
+      "cell": "logo",
+      "material": 8,
+      "tint": "none",
+      "z": -2
+    },
+    {
+      "name": "home_logo",
+      "box": [
+        1268,
+        943,
+        1468,
+        1050
+      ],
+      "cell": "logo",
+      "material": 5,
+      "tint": "none",
+      "z": -2
+    }
+  ],
+  "fields": [
+    {
+      "name": "away_score",
+      "source": "away score",
+      "box": [
+        696,
+        965,
+        816,
+        1018
+      ],
+      "glyph_set": "score",
+      "slots": 3,
+      "material": 6,
+      "colour": "#E1E1E1",
+      "alignment": "center",
+      "anchor": [
+        756.0,
+        965
+      ],
+      "size": 53,
+      "z": -5
+    },
+    {
+      "name": "home_score",
+      "source": "home score",
+      "box": [
+        1100,
+        965,
+        1220,
+        1018
+      ],
+      "glyph_set": "score",
+      "slots": 3,
+      "material": 6,
+      "colour": "#E1E1E1",
+      "alignment": "center",
+      "anchor": [
+        1160.0,
+        965
+      ],
+      "size": 53,
+      "z": -5
+    },
+    {
+      "name": "clock",
+      "source": "clock",
+      "box": [
+        920,
+        1006,
+        1000,
+        1033
+      ],
+      "glyph_set": "clock",
+      "slots": 5,
+      "material": 6,
+      "colour": "#000000",
+      "alignment": "center",
+      "anchor": [
+        960.0,
+        1006
+      ],
+      "size": 27,
+      "z": -5
+    },
+    {
+      "name": "play_clock",
+      "source": "play clock",
+      "box": [
+        1028,
+        1009,
+        1073,
+        1028
+      ],
+      "glyph_set": "small",
+      "slots": 2,
+      "material": 6,
+      "colour": "#FFFFFF",
+      "alignment": "center",
+      "anchor": [
+        1049.5,
+        1009
+      ],
+      "size": 19,
+      "strip_zero": true,
+      "z": -5
+    },
+    {
+      "name": "quarter",
+      "source": "quarter",
+      "box": [
+        850,
+        1009,
+        892,
+        1028
+      ],
+      "glyph_set": "small",
+      "slots": 3,
+      "material": 6,
+      "colour": "#1E1E1E",
+      "alignment": "center",
+      "anchor": [
+        871.0,
+        1009
+      ],
+      "size": 19,
+      "z": -5
+    },
+    {
+      "name": "away_timeouts",
+      "source": "away timeouts",
+      "box": [
+        717,
+        1032,
+        797,
+        1038
+      ],
+      "glyph_set": "ticks",
+      "slots": 3,
+      "material": 7,
+      "colour": "#F6F6F6",
+      "alignment": "left",
+      "anchor": [
+        717,
+        1032
+      ],
+      "size": 6,
+      "timeout": true,
+      "z": -5
+    },
+    {
+      "name": "home_timeouts",
+      "source": "home timeouts",
+      "box": [
+        1120,
+        1032,
+        1200,
+        1038
+      ],
+      "glyph_set": "ticks",
+      "slots": 3,
+      "material": 7,
+      "colour": "#F6F6F6",
+      "alignment": "left",
+      "anchor": [
+        1120,
+        1032
+      ],
+      "size": 6,
+      "timeout": true,
+      "z": -5
+    },
+    {
+      "name": "down",
+      "source": "down and distance",
+      "box": [
+        850,
+        955,
+        1070,
+        978
+      ],
+      "glyph_set": "label",
+      "slots": 8,
+      "material": 7,
+      "colour": "#FFFFFF",
+      "alignment": "center",
+      "anchor": [
+        960.0,
+        955
+      ],
+      "size": 23,
+      "z": -5
+    }
+  ],
+  "events": [
+    {
+      "name": "FUMBLE",
+      "material": 0,
+      "box": [
+        837,
+        947,
+        1083,
+        983
+      ],
+      "cell": "event",
+      "z": -7
+    },
+    {
+      "name": "ball on",
+      "material": 1,
+      "box": [
+        837,
+        947,
+        1083,
+        983
+      ],
+      "cell": "event",
+      "z": -7
+    },
+    {
+      "name": "FLAG",
+      "material": 2,
+      "box": [
+        837,
+        947,
+        1083,
+        983
+      ],
+      "cell": "event",
+      "z": -7
+    },
+    {
+      "name": "hang time",
+      "material": 10,
+      "box": [
+        837,
+        947,
+        1083,
+        983
+      ],
+      "cell": "event",
+      "z": -7
+    }
+  ],
+  "reference_boxes": {
+    "bar": [
+      437,
+      942,
+      1478,
+      1052
+    ],
+    "away_score": [
+      736,
+      965,
+      776,
+      1018
+    ],
+    "home_score": [
+      1140,
+      965,
+      1180,
+      1018
+    ],
+    "down": [
+      898,
+      955,
+      1021,
+      978
+    ],
+    "clock": [
+      920,
+      1006,
+      1000,
+      1033
+    ],
+    "quarter": [
+      850,
+      1009,
+      892,
+      1028
+    ],
+    "play_clock": [
+      1042,
+      1009,
+      1057,
+      1028
+    ]
+  },
+  "provenance": {
+    "font": "Noto Sans Display Bold, condensed raster fit",
+    "license": "SIL Open Font License 1.1",
+    "font_sha256": "1640ba8acb852d9e00406e166d1fc0cedd62a4c20342fd92f1f6dbc7baa61de2",
+    "author": "tools/scorebug_sprite/author_default.py",
+    "rendered_once": true,
+    "font_distributed": false
+  }
+}
