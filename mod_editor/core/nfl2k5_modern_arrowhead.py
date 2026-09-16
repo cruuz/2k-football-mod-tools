@@ -424,7 +424,7 @@ def record_pins(source, out_path=PINS_PATH, *, progress=None):
                                             encoded_bytes=e["encoded_bytes"], consumed_cap=e["consumed_cap"], scratch_after=e["scratch_after"],
                                             textures=[t["png"] for t in e["textures"]]) for e in edits]))
     document = dict(schema=PINS_SCHEMA, venue="Arrowhead Stadium", art=art_pins(), bundles=bundles)
-    Path(out_path).write_text(json.dumps(document, indent=1) + "\n", encoding="utf-8")
+    Path(out_path).write_text(json.dumps(document, indent=1) + "\n", encoding="utf-8", newline="\n")
     return document
 
 

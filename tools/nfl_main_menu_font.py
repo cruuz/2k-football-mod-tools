@@ -653,7 +653,7 @@ def main() -> int:
         report, fonts, glyphs = build(args)
         args.json.parent.mkdir(parents=True, exist_ok=True)
         args.json.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n",
-                             encoding="utf-8")
+                             encoding="utf-8", newline="\n")
         write_tsv(args.fonts_tsv, fonts)
         write_tsv(args.glyphs_tsv, glyphs)
     except (FontError, ProbeError, OSError, ValueError, struct.error) as exc:

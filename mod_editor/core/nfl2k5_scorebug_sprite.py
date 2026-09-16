@@ -402,7 +402,7 @@ class NativePreview:
             result=dict(state=normalize_state(state),widescreen=widescreen,quads=boxes,volume=self.volume,
                         draws=[dict(text=r['text'],glyph_quads=len(r['vertices'])//4) for r in geometry['draws']],
                         raster=raster,runtime_witnessed=False)
-            Path(path).with_suffix('.json').write_text(json.dumps(result,indent=2)+'\n')
+            Path(path).with_suffix('.json').write_text(json.dumps(result,indent=2)+'\n', newline="\n")
             return result
         finally:capture['machine'].close()
 

@@ -408,7 +408,7 @@ def main() -> int:
         ],
     }
     args.json.parent.mkdir(parents=True, exist_ok=True)
-    args.json.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    args.json.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
     print(
         "NFL_NORMSHORT3_POSITIONS_COMPLETE "
         f"shaders={SHADER_OBJECT_COUNT} shapes={report['corpus']['register_zero_format_counts']['NORMSHORT3']} "

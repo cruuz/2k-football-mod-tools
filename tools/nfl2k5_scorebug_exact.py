@@ -495,14 +495,14 @@ def main(argv=None):
         pins = compiler_pins(build)
         if args.accept_palette:
             path = Path(exact.__file__)
-            path.write_text(re.sub(r"^RED_BIAS = .*", "RED_BIAS = " + str(best_bias), path.read_text(), flags=re.M), encoding="utf-8")
+            path.write_text(re.sub(r"^RED_BIAS = .*", "RED_BIAS = " + str(best_bias), path.read_text(), flags=re.M), encoding="utf-8", newline="\n")
             path = Path(art.__file__)
             contents = path.read_text()
             for key, value in pins.items():
                 contents, count = re.subn(r"^" + key + r" = .*", key + " = " + repr(value), contents, flags=re.M)
                 if count != 1:
                     raise ValueError("missing unique compiler identity " + key)
-            path.write_text(contents, encoding="utf-8")
+            path.write_text(contents, encoding="utf-8", newline="\n")
             # Pin objects imported by the unchanged public writer as well.
             for key, value in pins.items():
                 setattr(art, key, value)

@@ -133,7 +133,7 @@ def main(argv=None):
         strip=strip.resize((952,96 if i<2 else 105),Image.Resampling.LANCZOS)
         strips.paste(strip,(4,i*136+26))
     strips.save(args.output/'v10_bar_comparison.png')
-    (args.output/'v10_native_audit.json').write_text(json.dumps(audit,indent=2)+'\n',encoding='utf-8')
+    (args.output/'v10_native_audit.json').write_text(json.dumps(audit,indent=2)+'\n',encoding='utf-8', newline="\n")
     print(json.dumps({'status':audit['status'],'resources':audit['static_receipts']['resources'],
                       'direction_modes_pixel_identical':True,'output':str(args.output)},indent=2))
     return 0

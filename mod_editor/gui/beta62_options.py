@@ -38,7 +38,7 @@ SCOREBUG_RUNTIME_HELP = (
     "Draw the scorebug from one PNG and JSON design, with live scores, clocks, downs, "
     "timeout ticks and team colours. Preview it over a screenshot from Scorebar Studio. "
     "A scorebar folder selects a compatible sprite design. Requires Scorebug and a disc image. "
-    "Experimental and not yet witnessed in a played game; rebuild from the supported base."
+    "EXPERIMENTAL / UNWITNESSED in a played game; rebuild from the supported base."
 )
 
 PRACTICE_HELP = (
