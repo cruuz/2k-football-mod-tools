@@ -797,7 +797,7 @@ def probe_sizes(probe, *, sprite_folder=None):
     return count, appendix, growth
 
 
-def compile_runtime_collection(pack, *, probe="full", sprite_folder=None):
+def compile_runtime_collection(pack, *, probe="full", sprite_folder=None, widescreen=False):
     """Pure bounded pack-0 compiler, retaining all unrelated bytes and entries.
 
     Insert at the end of outer 346, expand its existing index entry and pack 0,
@@ -806,7 +806,7 @@ def compile_runtime_collection(pack, *, probe="full", sprite_folder=None):
     """
     if probe == "sprite":
         from .nfl2k5_scorebug_sprite import compile_collection
-        return compile_collection(pack,sprite_folder)
+        return compile_collection(pack,sprite_folder,widescreen)
     import struct
     from . import nfl2k5_scorebug_ingame as r
     import nfl_outer as outer

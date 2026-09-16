@@ -77,7 +77,8 @@ STATIC_OVERRIDES = {
     0xA95A48: CAPSULE_INK,                          # play clock (rewritten per frame)
     0xA95904: 3, 0xA9592C: 3,                       # game clock centred in its capsule cell (retail: right-aligned)
 }
-LITERALS = {0xE6C404: ("Goal", "GOAL")}  # the down plate reads "1st & GOAL" like the broadcast
+LITERALS = {0xE6C404: ("Goal", "GOAL"),          # the down plate reads "1st & GOAL" like the broadcast
+            0xE6C464: ("FLAG", "\0\0\0\0")}  # the sprite FLAG plate carries its own dark label; the retail white text is blanked
 
 
 def _u(value):

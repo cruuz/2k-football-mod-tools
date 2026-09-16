@@ -10564,7 +10564,10 @@
         "reports/b71_s6/finish-proof.json",
         "reports/b71_s6/owner-bounds.json",
         "reports/b71_s6/states.json",
-        "reports/b71_s6/volume.json"
+        "reports/b71_s6/volume.json",
+        "reports/b71_s8/espn_mnf_measure.json",
+        "reports/b71_s8/display_model.json",
+        "reports/b71_s8/watermark_still_vs_cell_4x.png"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -10647,7 +10650,7 @@
         "resource": "owned RX/RW hook allocations plus HUD outer 346 and its archive index",
         "retail_file": "user-owned default.xbe and vc_53450030/0 in an NFL 2K5 USA disc"
       },
-      "summary": "One PNG and JSON design compiles to 46 atlas quads, 33 logo textures and an enlarged same-name scene. Scores, clocks, labels and timeout ticks use sprites; no FONT resource is appended. Clean logo edges, shaded possession plate, light notch, rounded capsule ends and smooth wing ramps retain a 323,808-byte append. Native CPU execution and both-aspect software previews are proved; played-game appearance remains UNWITNESSED and the option is off in every preset.",
+      "summary": "One PNG and JSON design compiles to 47 atlas quads, 33 logo textures and an enlarged same-name scene, laid out for the display the disc is built for (4:3, or the widescreen option's 27/32-contracted 16:9 picture) so the bar keeps the measured broadcast proportions. Scores, clocks, labels and timeout ticks use sprites; no FONT resource is appended. Clean logo edges, shaded possession plate, light notch, rounded capsule ends, smooth wing ramps, a yellow FLAG plate with a dark label and a brand layer group (the ESPN MNF watermark lifted from broadcast stills at its measured opacity) retain a 323,808-byte append. Native CPU execution and both-aspect software previews with display-space images are proved; played-game appearance remains UNWITNESSED and the option is off in every preset.",
       "surface": "scorebug_presentation",
       "title": "Sprite scorebug (experimental)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_scorebug_sprite"

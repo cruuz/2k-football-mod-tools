@@ -842,7 +842,7 @@ def preview_data(source: Path, *, scorebug_folder=None):
     return m,image
 
 
-def runtime_image_plan(fd: int, *, with_kickoff: bool = False, extra_requests=(), probe="sprite", scorebug_folder=None):
+def runtime_image_plan(fd: int, *, with_kickoff: bool = False, extra_requests=(), probe="sprite", scorebug_folder=None, widescreen=False):
     """Preflight both files before any write; use the generalized extent reader."""
     from . import nfl2k5_scorebug_runtime as runtime, nfl2k5_scorebug_resources as resources
     from . import nfl2k5_xbe_space as space, nfl2k5_dynamic_kickoff_relocated as kickoff
@@ -869,9 +869,9 @@ def runtime_image_plan(fd: int, *, with_kickoff: bool = False, extra_requests=()
     if with_kickoff:
         prepared, _ = kickoff.apply(prepared)
     new_xbe, xr = runtime.apply(prepared) if hooks else apply_xbe(prepared)
-    new_pack, pr = resources.compile_runtime_collection(pack, probe=probe, sprite_folder=scorebug_folder)
+    new_pack, pr = resources.compile_runtime_collection(pack, probe=probe, sprite_folder=scorebug_folder, widescreen=widescreen)
     return ((pack_entry, pack, new_pack), (xbe_entry, xbe, new_xbe)), dict(
-        version=resources.RUNTIME_VERSION, status=states[0], experimental=True,
+        version=resources.RUNTIME_VERSION, status=states[0], experimental=True, display_aspect="16:9" if widescreen else "4:3",
         probe=probe, hooks_installed=hooks, runtime_witnessed=False,
         runtime_team_logos=hooks and probe in ("full", "pair"), timeout_dimming=hooks and probe != "hooks",
         score_flash=hooks, down_refresh=hooks, under_5_color=hooks, resources=pr, xbe=xr)
@@ -915,7 +915,7 @@ def runtime_image_status(path, *, probe="sprite", scorebug_folder=None):
         return "foreign"
 
 
-def runtime_apply_in_place(path, *, with_kickoff=False, extra_requests=(), probe="sprite", scorebug_folder=None):
+def runtime_apply_in_place(path, *, with_kickoff=False, extra_requests=(), probe="sprite", scorebug_folder=None, widescreen=False):
     """Transactional resource growth and allocator XBE transport on an output copy.
 
     Pack 0 is appended intact, then its existing XDVDFS node is switched. The
@@ -927,7 +927,7 @@ def runtime_apply_in_place(path, *, with_kickoff=False, extra_requests=(), probe
     from . import nfl2k5_scorebug_resources as resources
     with Path(path).open("r+b") as stream:
         fd = stream.fileno()
-        jobs, receipt = runtime_image_plan(fd, with_kickoff=with_kickoff, extra_requests=extra_requests, probe=probe, scorebug_folder=scorebug_folder)
+        jobs, receipt = runtime_image_plan(fd, with_kickoff=with_kickoff, extra_requests=extra_requests, probe=probe, scorebug_folder=scorebug_folder, widescreen=widescreen)
         original_size = os.fstat(fd).st_size
         nodes = []
         for entry, before, _after in jobs:
