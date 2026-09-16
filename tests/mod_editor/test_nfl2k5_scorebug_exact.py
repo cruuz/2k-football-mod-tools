@@ -21,7 +21,7 @@ HAVE_IMAGES = all(importlib.util.find_spec(name) for name in ("PIL", "numpy"))
 class ContractTests(unittest.TestCase):
     def test_all_32_team_wordmarks_and_runtime_default_off(self):
         self.assertEqual(set(exact.NICKNAMES), set(art.TEAM_LOGOS))
-        self.assertEqual(art.PROBES, ("transport", "hooks", "resources", "neutral", "pair", "full", "mnf"))
+        self.assertEqual(art.PROBES, ("transport", "hooks", "resources", "neutral", "pair", "full", "mnf", "sprite"))
         from mod_editor.core import mod_build
         self.assertFalse(mod_build.BuildPlan(source="unused", target="unused").scorebug_runtime)
         for name, preset in mod_build.PRESETS.items():
@@ -179,7 +179,7 @@ class NativeTests(unittest.TestCase):
         for probe in art.PROBES:
             compiled, receipt = art.compile_runtime_collection(self.build.view, probe=probe)
             self.assertEqual(art.runtime_pack_status(compiled, probe=probe), "applied")
-            self.assertEqual(receipt["version"], art.MNF_VERSION if probe == "mnf" else art.RUNTIME_VERSION)
+            self.assertEqual(receipt["version"], "scorebug-sprite-v1" if probe == "sprite" else art.MNF_VERSION if probe == "mnf" else art.RUNTIME_VERSION)
             self.assertEqual(receipt["texture_count"], art.probe_sizes(probe)[0])
 
 

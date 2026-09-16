@@ -40,7 +40,7 @@ preview wheels by SHA-256. No dependency installation is needed to author a PNG.
 No font file is shipped: the Noto Sans Display Bold glyphs were rendered once
 under its SIL Open Font License 1.1, condensed and fitted to the specified sizes.
 The one-time author script records the local source font path; it is not a build
-or preview dependency. Noto attribution: Copyright 2015 Google Inc.
+or preview dependency. Noto attribution: Copyright 2015–2020 Google LLC.
 
 The layout uses source pixels on a 1920×1080 frame. `cells` name rectangles in
 the PNG. `static` rows give a cell, frame box, depth (`z`) and tint (`none`,

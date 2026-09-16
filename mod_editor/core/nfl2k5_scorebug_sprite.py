@@ -278,7 +278,7 @@ def compile_collection(pack,folder=None):
     parts,growth=assets.grow_pack(read,len(pack),{art.HUD_OUTER_INDEX:[data]})
     result=art.join_views([(source if isinstance(source,bytes) else pack,offset,size) for source,offset,size in parts])
     require(pack_status(result,folder)=='applied','Sprite collection read-back failed.')
-    return result,dict(receipt,status='applied',growth=len(result)-len(pack),sha256_before=art.pack_digest(pack),sha256_after=art.pack_digest(result),runtime_witnessed=False,experimental=True)
+    return result,dict(receipt,resources=receipt['components'],probe='sprite',fonts=[],outer_index=art.HUD_OUTER_INDEX,outer_size_before=art.HUD_SIZE,outer_size_after=art.HUD_SIZE+len(data),status='applied',growth=len(result)-len(pack),sha256_before=art.pack_digest(pack),sha256_after=art.pack_digest(result),runtime_witnessed=False,experimental=True)
 
 
 STANDARD_STATE = dict(away='DEN', home='KC', away_score=7, home_score=7,

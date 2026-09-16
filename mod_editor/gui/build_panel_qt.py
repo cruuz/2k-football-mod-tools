@@ -885,7 +885,7 @@ class BuildPanel(QWidget):
         scorebar_row.addWidget(self.scorebug_folder_button)
         pl.addLayout(scorebar_row)
         self.scorebug_runtime_check = self._option(
-            pl, "scorebug_runtime", "ESPN Monday Night Football 2026 scorebug (experimental)",
+            pl, "scorebug_runtime", "Sprite scorebug (experimental)",
             r62_ui.SCOREBUG_RUNTIME_HELP, needs_image=True, badge=NOT_TESTED,
             details=r62_ui.SCOREBUG_RUNTIME_HELP)
         self.music_policy_check = self._option(pl, "music_policy", "Use jukebox songs in menus", "Retail: menus use the menu bank. Patch: menus use the 59 jukebox recordings in the game's random order. The 7 menu tracks are not included yet. Twelve jukebox tracks are spoken outtakes.", badge=NOT_TESTED)

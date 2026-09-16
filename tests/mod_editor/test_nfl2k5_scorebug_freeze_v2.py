@@ -105,7 +105,7 @@ class InstallationTests(unittest.TestCase):
         cls.patched, cls.receipt = r.apply(cls.retail)
 
     def test_named_budget_and_static_v3_both_orders(self):
-        self.assertEqual((r.CODE_SIZE, r.DATA_SIZE), (1408, 128))
+        self.assertEqual((r.CODE_SIZE, r.DATA_SIZE), (4096, 128))
         code, data = r.sites(self.patched)
         self.assertLess(len(r.code_for(code['va'], data['va'])[0].rstrip(b'\xcc')), r.CODE_SIZE)
         left = r.apply(r.scene.apply_xbe(self.retail)[0])[0]
@@ -131,7 +131,8 @@ class InstallationTests(unittest.TestCase):
                         with self.assertRaises(ValueError):
                             r.apply(bad)
         self.assertEqual(hashlib.sha256(old.CODE).hexdigest(), old.CODE_SHA256)
-        base = space.apply(r.scene.apply_xbe(self.retail)[0], r.REQUESTS)[0]
+        legacy_requests = tuple((o,k,len(old.CODE) if k=='code' else n,a) for o,k,n,a in r.REQUESTS)
+        base = space.apply(r.scene.apply_xbe(self.retail)[0], legacy_requests)[0]
         self.assertEqual(tuple(s['va'] for s in r.sites(base)), (old.CODE_VA, old.DATA_VA))
         old_xbe = bytearray(space.install_code(base, r.OWNER, old.CODE)[0])
         for name, (va, _original) in r.HOOKS.items():
@@ -159,7 +160,7 @@ class NativeBindingTests(unittest.TestCase):
         cls.addClassCleanup(cls.stream.close)
         cls.source = art.PackView.from_fd(cls.stream.fileno(), 0, PACK.stat().st_size)
         cls.fonts = read_fonts(PACK)
-        cls.probes = {p: art.compile_runtime_collection(cls.source, probe=p) for p in art.PROBES}
+        cls.probes = {p: art.compile_runtime_collection(cls.source, probe=p) for p in ("transport","hooks","resources","neutral","pair","full","mnf")}
         cls.evidence = dict(schema='scorebug-freeze-native-v2', runtime_witnessed=False,
                             community_cause_proved=False, installation=receipt,
                             old_code_sha256=old.CODE_SHA256, cases={})
@@ -239,7 +240,9 @@ class NativeBindingTests(unittest.TestCase):
 
     def test_all_six_profiles_enter_complete_frames_draw_and_reenter(self):
         results = []
-        for probe in art.PROBES:
+        # This historic FONT-alias fixture installs a synthetic retail scene.
+        # Sprite SCNE replacement and zero-FONT frames are in the sprite suite.
+        for probe in ("transport","hooks","resources","neutral","pair","full","mnf"):
             with self.subTest(probe=probe):
                 c = self.collection(probe)
                 m = c.m
