@@ -301,7 +301,7 @@ REVIEWED_ICON_SHA256 = (
 # V10's new pixel art is distributable; retail PNGs remain forbidden. Each
 # exception is an exact reviewed path, byte count, hash and PNG dimension.
 SCOREBUG_TEMPLATE_PNG_CATALOG = "packaging/nfl2k5_scorebug_template_pngs.json"
-SCOREBUG_TEMPLATE_PNG_CATALOG_SHA256 = "02ef51901d0d5fbef6232b14cc40e759f02fa26c2f0e445493e5f912efd760ac"
+SCOREBUG_TEMPLATE_PNG_CATALOG_SHA256 = "4b2d51037a650ad63f6097fc573a7a9752a83acb9ec99621684caedf98073cdb"
 
 
 def _scorebug_template_pngs(root: Path) -> dict:

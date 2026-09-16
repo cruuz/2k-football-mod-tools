@@ -34,13 +34,18 @@ def control(c, version):
         c.hook_control(False)
         return
     if version == 'old':
-        if (m.code['va'], m.state) != (old.CODE_VA, old.DATA_VA):
-            raise AssertionError('historical control allocation moved')
+        if m.state != old.DATA_VA:
+            raise AssertionError('historical control data allocation moved')
+        # S5 moved its larger RX owner. The preserved v4 bytes are absolute:
+        # execute this historical control at its original, now-unused RX span.
+        assert bytes(m.uc.mem_read(old.CODE_VA,len(old.CODE))) == b'\xcc'*len(old.CODE)
+        destination = old.CODE_VA
         content, labels = old.CODE, old.HOOK_LABELS
     else:
         content, labels = r.code_for(m.code['va'], m.state)
-    m.uc.mem_write(m.code['va'], content)
-    m.uc.ctl_remove_cache(m.code['va'], m.code['va'] + len(content))
+        destination = m.code['va']
+    m.uc.mem_write(destination, content)
+    m.uc.ctl_remove_cache(destination, destination + len(content))
     for name, (va, _original) in r.HOOKS.items():
         m.uc.mem_write(va, r.hook_bytes(name, labels))
         m.uc.ctl_remove_cache(va, va + 5)
@@ -133,7 +138,8 @@ class InstallationTests(unittest.TestCase):
         self.assertEqual(hashlib.sha256(old.CODE).hexdigest(), old.CODE_SHA256)
         legacy_requests = tuple((o,k,len(old.CODE) if k=='code' else n,a) for o,k,n,a in r.REQUESTS)
         base = space.apply(r.scene.apply_xbe(self.retail)[0], legacy_requests)[0]
-        self.assertEqual(tuple(s['va'] for s in r.sites(base)), (old.CODE_VA, old.DATA_VA))
+        historical = {a['kind']:a['va'] for a in space.layout(base)['allocations'] if a['owner']==r.OWNER}
+        self.assertEqual((historical['code'],historical['data']), (old.CODE_VA, old.DATA_VA))
         old_xbe = bytearray(space.install_code(base, r.OWNER, old.CODE)[0])
         for name, (va, _original) in r.HOOKS.items():
             off = XbeImage(base).offset(va)

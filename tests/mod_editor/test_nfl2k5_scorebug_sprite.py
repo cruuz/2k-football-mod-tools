@@ -71,11 +71,12 @@ class NativeTests(unittest.TestCase):
   g,c=self.capture();m=c['machine'];code,data=owner.sites(self.patched);update=owner.code_for(code['va'],data['va'])[1]['update']
   rows=self.preview.compiled.quads
   for score,timeouts,clock,play,down,period in ((0,0,7,12,1,1),(28,1,7,3,2,2),(100,2,273,4,3,3),(7,3,273,12,4,5)):
-   m.put(m.home,score);m.put(m.away,score);m.put(m.home+4,timeouts);m.put(m.away+4,timeouts)
+   away_score=100 if score==7 else 7
+   m.put(m.home,score);m.put(m.away,away_score);m.put(m.home+4,timeouts);m.put(m.away+4,3-timeouts)
    m.float(m.game_clock+16,clock);m.float(m.clock+16,play);m.put(m.play+4,down);m.put(0xe602c4,period)
    m.run(update,(0x3c888889,),limit=500000)
    actual=bytes(m.uc.mem_read(c['body'],len(self.preview.scene)))
-   for role,count in (('home_score',len(str(score))),('away_score',len(str(score))),('home_timeouts',timeouts),('away_timeouts',timeouts),('play_clock',len(str(play)))):
+   for role,count in (('home_score',len(str(score))),('away_score',len(str(away_score))),('home_timeouts',timeouts),('away_timeouts',3-timeouts),('play_clock',len(str(play)))):
     self.assertEqual(sum(bool(struct.unpack_from('<I',actual,scene.layout.S1+q['vertex']*10)[0]) for q in rows if q['name'].startswith(role+':')),count,(role,score,timeouts,play))
   for event in ('FLAG','FUMBLE','hang time','ball on'):
    g,c=self.capture(event=event)
