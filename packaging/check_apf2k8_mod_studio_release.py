@@ -806,7 +806,9 @@ def _validate_install_surface(relative: str, text: str, info: os.stat_result) ->
         ),
         "tools/launch_apf2k8_mod_studio.sh": (
             "PYTHONNOUSERSITE=1",
-            "python3 -m mod_editor.apf_studio",
+            '"$studio_python" -m mod_editor.apf_studio',
+            ".studio-python",
+            "--update-check",
             "XDG_STATE_HOME",
             "last-launch.log",
         ),

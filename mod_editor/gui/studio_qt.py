@@ -9868,6 +9868,8 @@ def launch_studio(
     window.show()
     # Keep a Python reference when embedded in an existing QApplication.
     setattr(app, "_2k5_mod_studio_window", window)
+    from mod_editor.core.self_update import notify_update_ready
+    notify_update_ready()
     return app.exec_()
 
 

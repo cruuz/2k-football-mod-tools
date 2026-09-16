@@ -82,8 +82,10 @@ def _make_tarball(top: str, files: dict[str, bytes]) -> bytes:
 
 
 RELEASE_FILES = {
-    "mod_editor/__init__.py": b"",
+    "mod_editor/__init__.py": b"__version__ = 'test-version'\n",
     "mod_editor/__main__.py": b"print('new')\n",
+    "mod_editor/gui/__init__.py": b"",
+    "mod_editor/gui/studio_qt.py": b"",
     "tools/launch_2k5_mod_studio.sh": b"#!/bin/sh\n",
     "2K5-Mod-Studio.bat": b"@echo off\n",
 }
@@ -279,7 +281,7 @@ class TarballApplyTests(unittest.TestCase):
         started = []
         with tempfile.TemporaryDirectory() as tmp:
             root = _tarball_install(Path(tmp).resolve())
-            install = U.detect_install(root, platform="linux", executable="python3")
+            install = U.detect_install(root, platform="linux", executable=sys.executable)
             plan = U.run_update(_document(files), install=install, work=Path(tmp).resolve() / "dl",
                                 opener=_opener(files), spawn_tarball=lambda cmd, cwd: started.append((cmd, cwd)))
             self.assertEqual((root / "mod_editor" / "__main__.py").read_text(), "print('new')\n")
@@ -287,10 +289,10 @@ class TarballApplyTests(unittest.TestCase):
             self.assertEqual((previous / "mod_editor" / "__main__.py").read_text(), "print('old')\n")
             self.assertTrue(os.access(root / "tools" / "launch_2k5_mod_studio.sh", os.X_OK))
             self.assertFalse((Path(tmp).resolve() / (root.name + ".new")).exists())
-        self.assertEqual(started, [(["python3", "-m", "mod_editor", "--studio"], root)])
+        self.assertEqual(started, [([str(Path(sys.executable)), "-m", "mod_editor", "--studio"], root)])
         self.assertTrue(any("previous" in note for note in plan.notes))
 
-    def test_a_second_update_replaces_the_previous_copy(self) -> None:
+    def test_a_second_update_keeps_both_previous_copies(self) -> None:
         payload = _make_tarball("top", RELEASE_FILES)
         with tempfile.TemporaryDirectory() as tmp:
             root = _tarball_install(Path(tmp).resolve())
@@ -301,10 +303,12 @@ class TarballApplyTests(unittest.TestCase):
             tarball = Path(tmp).resolve() / "t.tar.gz"
             tarball.write_bytes(payload)
             U.apply_tarball(plan, tarball, spawn=lambda *_a: None)
-            self.assertFalse((previous / "stale").exists())
-            self.assertTrue((previous / "2K5-Mod-Studio.bat").exists())
+            self.assertTrue((previous / "stale").exists())
+            backups = list(root.parent.glob(root.name + ".previous-*"))
+            self.assertEqual(len(backups), 1)
+            self.assertTrue((backups[0] / "2K5-Mod-Studio.bat").exists())
 
-    def test_a_folder_that_cannot_be_renamed_falls_back_to_a_sibling(self) -> None:
+    def test_a_folder_that_cannot_be_renamed_stays_usable(self) -> None:
         payload = _make_tarball("2K5-Mod-Studio-v1.0-RC99-2026-09-09", RELEASE_FILES)
         started = []
         with tempfile.TemporaryDirectory() as tmp:
@@ -312,20 +316,18 @@ class TarballApplyTests(unittest.TestCase):
             plan = U.UpdatePlan("2k5", "beta-99", U.detect_install(root, platform="linux"), U.ReleaseAsset("t", HOST + "t", 1), None)
             tarball = Path(tmp).resolve() / "t.tar.gz"
             tarball.write_bytes(payload)
-            real_rename = os.rename
+            real_rename = os.replace
 
             def refuse(src, dst):
                 if Path(src) == root:
                     raise PermissionError("in use")
                 return real_rename(src, dst)
 
-            with unittest.mock.patch.object(U.os, "rename", refuse):
-                new_root, _cmd = U.apply_tarball(plan, tarball, spawn=lambda cmd, cwd: started.append(cwd))
-            self.assertEqual(new_root, Path(tmp).resolve() / "2K5-Mod-Studio-v1.0-RC99-2026-09-09")
-            self.assertEqual((new_root / "mod_editor" / "__main__.py").read_text(), "print('new')\n")
+            with unittest.mock.patch.object(U.os, "replace", refuse):
+                with self.assertRaisesRegex(U.SelfUpdateError, "old version is unchanged"):
+                    U.apply_tarball(plan, tarball, spawn=lambda cmd, cwd: started.append(cwd))
             self.assertEqual((root / "mod_editor" / "__main__.py").read_text(), "print('old')\n")
-            self.assertEqual(started, [new_root])
-        self.assertTrue(any("could not be replaced" in note for note in plan.notes))
+            self.assertEqual(started, [])
 
     def test_hostile_archives_are_refused(self) -> None:
         def archive_with(name: str, link: bool = False) -> bytes:
@@ -415,7 +417,7 @@ class BannerTests(unittest.TestCase):
         self.update_ui = update_ui
         self.tmp = tempfile.TemporaryDirectory()
         self.root = _tarball_install(Path(self.tmp.name).resolve())
-        self.install = U.detect_install(self.root, platform="linux", executable="python3")
+        self.install = U.detect_install(self.root, platform="linux", executable=sys.executable)
 
     def tearDown(self) -> None:
         self.app.processEvents()
@@ -469,7 +471,7 @@ class BannerTests(unittest.TestCase):
             self.assertTrue(banner.wait_idle())
         self.assertEqual(len(ready), 1)
         self.assertEqual(ready[0].tag, "beta-99")
-        self.assertEqual(started, [(["python3", "-m", "mod_editor", "--studio"], self.root)])
+        self.assertEqual(started, [([str(Path(sys.executable)), "-m", "mod_editor", "--studio"], self.root)])
         self.assertEqual((self.root / "mod_editor" / "__main__.py").read_text(), "print('new')\n")
         self.assertIn("beta-99 is installed", banner.message.text())
         # The quit is a timer so the message is seen; fire it.

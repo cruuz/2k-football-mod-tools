@@ -34,6 +34,8 @@ import subprocess
 import sys
 import tarfile
 import tempfile
+import time
+import uuid
 from typing import Callable, Mapping, Sequence
 import urllib.error
 import urllib.request
@@ -43,6 +45,7 @@ ProgressSink = Callable[[str, int, int], None]
 USER_AGENT = "2k-football-mod-tools-self-update"
 MAX_ASSET_BYTES = 400 * 1024 * 1024
 CHUNK = 1 << 20
+STARTUP_TIMEOUT_SECONDS = 60.0
 UNSUPPORTED_LAYOUT_MESSAGE = (
     "This copy was not installed with the Setup or the portable archive; "
     "download the latest Setup.exe from the release page and run it. "
@@ -90,6 +93,10 @@ class SelfUpdateError(RuntimeError):
     """A refusal with a message the banner can show."""
 
 
+class _RestoreError(SelfUpdateError):
+    """The original tree is safe but could not be renamed back automatically."""
+
+
 @dataclass(frozen=True)
 class ReleaseAsset:
     name: str
@@ -133,7 +140,9 @@ def detect_install(root: Path | None = None, product: str = "2k5", *, platform: 
         return InstallKind("checkout", root, (executable, *args), "a git checkout updates with git pull")
     # GitHub's source ZIP contains the launchers too. It is not a portable
     # release and must never be swapped out as though it were one.
-    if (root / ".github").is_dir() or (root / "tests").is_dir():
+    # The release allowlist also ships a few tests. That directory alone does
+    # not identify a source ZIP (beta 70's portable archive contains it).
+    if (root / ".github").is_dir():
         return InstallKind("unknown", root, (executable, *args), UNSUPPORTED_LAYOUT_MESSAGE)
     runtime = root.parent / "runtime"
     pythonw = runtime / "pythonw.exe"
@@ -313,113 +322,266 @@ def _safe_members(archive: tarfile.TarFile, top: str) -> list[tarfile.TarInfo]:
             raise SelfUpdateError(f"the archive contains an unexpected path: {name}")
         if member.issym() or member.islnk():
             raise SelfUpdateError(f"the archive contains a link: {name}")
+        if not (member.isdir() or member.isfile()):
+            raise SelfUpdateError(f"the archive contains a special file: {name}")
+        if "__pycache__" in Path(name).parts or name.endswith((".pyc", ".pyo")):
+            continue
         members.append(member)
     return members
 
 
 def unpack_tarball(tarball: Path, parent: Path, *, progress: ProgressSink | None = None) -> Path:
-    """Unpack ``<top>/...`` from the archive into ``parent/<top>.new``; returns that folder."""
+    """Strip one archive root into a fresh sibling; never merge with an install."""
     progress = progress or (lambda *_a: None)
+    try:
+        return _unpack_tarball(tarball, parent, progress)
+    except (OSError, tarfile.TarError) as exc:
+        raise SelfUpdateError(f"The release could not be unpacked: {exc}") from exc
+
+
+def _unpack_tarball(tarball: Path, parent: Path, progress: ProgressSink) -> Path:
     with tarfile.open(tarball, "r:gz") as archive:
         first = archive.next()
         if first is None:
             raise SelfUpdateError("the archive is empty")
         top = first.name.split("/")[0]
+        if not top or top in (".", ".."):
+            raise SelfUpdateError("the archive has no application folder")
         members = _safe_members(archive, top)
-        staging = parent / f"{top}.new"
-        if staging.exists():
-            shutil.rmtree(staging)
-        staging.mkdir(parents=True)
-        for index, member in enumerate(members):
-            relative = Path(member.name).relative_to(top) if member.name != top else Path(".")
-            target = staging / relative
-            if member.isdir():
-                target.mkdir(parents=True, exist_ok=True)
-            elif member.isfile():
-                target.parent.mkdir(parents=True, exist_ok=True)
-                source = archive.extractfile(member)
-                assert source is not None
-                with open(target, "wb") as handle:
-                    shutil.copyfileobj(source, handle)
-                if member.mode & 0o111:
-                    target.chmod(target.stat().st_mode | 0o111)
-            if index % 50 == 0:
-                progress("Unpacking", index, len(members))
-        progress("Unpacking", len(members), len(members))
-    if not (staging / "mod_editor" / "__main__.py").exists():
-        shutil.rmtree(staging, ignore_errors=True)
-        raise SelfUpdateError("the archive does not contain the studio")
+        parent.mkdir(parents=True, exist_ok=True)
+        staging = Path(tempfile.mkdtemp(prefix=f".{top}.new-", dir=parent))
+        try:
+            directories = []
+            for index, member in enumerate(members):
+                relative = Path(member.name).relative_to(top)
+                target = staging / relative
+                if member.isdir():
+                    target.mkdir(parents=True, exist_ok=True)
+                    directories.append((target, member.mode & 0o777))
+                else:
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    source = archive.extractfile(member)
+                    assert source is not None
+                    with source, open(target, "xb") as handle:
+                        shutil.copyfileobj(source, handle)
+                    target.chmod(member.mode & 0o777)
+                if index % 50 == 0:
+                    progress("Unpacking", index, len(members))
+            if not (staging / "mod_editor" / "__main__.py").is_file():
+                raise SelfUpdateError("the archive does not contain the studio")
+            for target, mode in reversed(directories):
+                target.chmod(mode)
+            progress("Unpacking", len(members), len(members))
+        except Exception:
+            shutil.rmtree(staging, ignore_errors=True)
+            raise
     return staging
 
 
 def swap_install(current: Path, staging: Path) -> Path:
-    """Replace ``current`` with ``staging``; the old folder stays as ``<current>.previous``."""
-    previous = current.with_name(current.name + ".previous")
-    if previous.exists():
-        shutil.rmtree(previous)
-    os.rename(current, previous)
+    """Two same-filesystem atomic renames, retaining every previous backup."""
+    previous = _unused_sibling(current, ".previous")
+    os.replace(current, previous)
     try:
-        os.rename(staging, current)
-    except OSError:
-        os.rename(previous, current)
+        os.replace(staging, current)
+    except OSError as exc:
+        try:
+            os.replace(previous, current)
+        except OSError as restore_error:
+            raise _RestoreError(f"The update could not be installed ({exc}) or restored ({restore_error}). "
+                                f"Your old version is safe at {previous}. Move it back to {current} before reopening.") from exc
         raise
     return previous
 
 
+def _unused_sibling(root: Path, suffix: str) -> Path:
+    candidate = root.with_name(root.name + suffix)
+    if os.path.lexists(candidate):
+        candidate = root.with_name(root.name + suffix + "-" + uuid.uuid4().hex)
+    return candidate
+
+
+def _stage_python(plan: UpdatePlan, staging: Path) -> str:
+    """Keep the active home-directory runtime, without moving the running copy.
+
+    Do not resolve the executable's symlink: a venv's bin/python often links to
+    an external Python but needs its local pyvenv.cfg and site-packages.
+    """
+    root = plan.install.root
+    executable = Path(os.path.abspath(shutil.which(plan.install.relaunch[0])
+                                     or plan.install.relaunch[0]))
+    try:
+        relative = executable.relative_to(root)
+    except ValueError:
+        staged_python = str(executable)
+        saved_python = staged_python
+    else:
+        if len(relative.parts) < 3 or relative.parts[0] in {"mod_editor", "tools"}:
+            raise SelfUpdateError("The local Python runtime layout is not supported. Keep this copy and install the release in a separate folder.")
+        runtime = relative.parts[0]
+        if (staging / runtime).exists():
+            raise SelfUpdateError(f"The release conflicts with your Python runtime folder: {runtime}")
+        shutil.copytree(root / runtime, staging / runtime, symlinks=True,
+                        ignore=shutil.ignore_patterns("__pycache__", "*.pyc", "*.pyo"))
+        # Absolute links into the old runtime must work in staging and after
+        # either rename. Keep external base-Python links as they were.
+        for link in (staging / runtime).rglob("*"):
+            if link.is_symlink():
+                target = Path(os.readlink(link))
+                if target.is_absolute() and target.is_relative_to(root):
+                    replacement = staging / target.relative_to(root)
+                    link.unlink()
+                    link.symlink_to(os.path.relpath(replacement, link.parent))
+        staged_python = str(staging / relative)
+        saved_python = str(relative)
+    (staging / ".studio-python").write_text(saved_python + "\n", encoding="utf-8")
+    return staged_python
+
+
+def _launch_environment(root: Path) -> dict[str, str]:
+    env = dict(os.environ)
+    for key in ("PYTHONHOME", "PYTHONSTARTUP", "MOD_STUDIO_UPDATE_READY"):
+        env.pop(key, None)
+    env.update(PYTHONPATH=str(root), PYTHONDONTWRITEBYTECODE="1", PYTHONNOUSERSITE="1")
+    return env
+
+
+def check_tarball_launch(root: Path, executable: str, product: str) -> str:
+    """Import the staged app and its GUI without creating a window; print version."""
+    module = str(PRODUCTS[product]["module"])
+    gui = "mod_editor.gui.studio_qt" if product == "2k5" else "mod_editor.apf_studio.gui"
+    launcher = root / str(PRODUCTS[product]["launcher_sh"])
+    if not sys.platform.startswith("win") and (not launcher.is_file() or not os.access(launcher, os.X_OK)):
+        raise SelfUpdateError(f"The new release's launcher is missing or is not executable: {launcher}")
+    code = (
+        "import importlib, pathlib; "
+        f"app = importlib.import_module({module!r}); "
+        "assert pathlib.Path(app.__file__).resolve().is_relative_to(pathlib.Path.cwd()), 'wrong app imported'; "
+        f"importlib.import_module({module + '.__main__'!r}); "
+        f"importlib.import_module({gui!r}); "
+        "print(app.__version__)"
+    )
+    result = subprocess.run([executable, "-B", "-s", "-c", code], cwd=root,
+                            env=_launch_environment(root), capture_output=True,
+                            text=True, timeout=60)
+    if result.returncode or not result.stdout.strip():
+        detail = result.stderr.strip().splitlines()
+        raise SelfUpdateError(f"The new version failed its launch check (exit {result.returncode}). "
+                              + (detail[-1][-1000:] if detail else "No version was printed."))
+    return result.stdout.strip()
+
+
+def notify_update_ready() -> None:
+    """Called by the GUI after showing its main window, on its first event loop."""
+    ready = os.environ.pop("MOD_STUDIO_UPDATE_READY", "")
+    if ready:
+        from PyQt5.QtCore import QTimer
+        def acknowledge() -> None:
+            try:
+                Path(ready).write_text("ready\n", encoding="utf-8")
+            except OSError:
+                pass  # The waiting updater will restore the old version.
+        QTimer.singleShot(0, acknowledge)
+
+
+def _start_tarball(command: Sequence[str], root: Path) -> None:
+    """Wait for the new window's event loop, retaining stderr on startup failure."""
+    with tempfile.TemporaryDirectory(prefix=".studio-start-", dir=root.parent) as folder:
+        ready = Path(folder) / "ready"
+        env = _launch_environment(root)
+        env["MOD_STUDIO_UPDATE_READY"] = str(ready)
+        # Keep the logfile after the short-lived handshake directory is gone.
+        log_path = root / ".update-launch.log"
+        with log_path.open("wb") as log:
+            process = subprocess.Popen(command, cwd=root, env=env, close_fds=True,
+                                       start_new_session=not sys.platform.startswith("win"),
+                                       stdin=subprocess.DEVNULL, stdout=log, stderr=log)
+        try:
+            deadline = time.monotonic() + STARTUP_TIMEOUT_SECONDS
+            while time.monotonic() < deadline:
+                status = process.poll()
+                if status is not None:
+                    detail = log_path.read_text(errors="replace").strip().splitlines()
+                    raise SelfUpdateError(f"The new studio exited before opening (exit {status}). "
+                                          + (detail[-1][-1000:] if detail else "No startup message was produced."))
+                if ready.is_file():
+                    return
+                time.sleep(0.1)
+            raise SelfUpdateError(f"The new studio did not confirm that its window opened within {STARTUP_TIMEOUT_SECONDS:g} seconds.")
+        except Exception:
+            if process.poll() is None:
+                process.terminate()
+                try:
+                    process.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    process.kill()
+                    process.wait()
+            raise
+
+
 def apply_tarball(plan: UpdatePlan, tarball: Path, *, progress: ProgressSink | None = None,
                   spawn: Callable[[Sequence[str], Path], object] | None = None) -> tuple[Path, list[str]]:
-    """Unpack beside the install, swap the folders, start the new copy; the caller quits afterwards.
+    """Check a complete sibling before switching; restore the old copy on failure.
 
-    Returns the folder the new version runs from and the command that started it. That folder is
-    the current one when the swap succeeded, and a sibling named after the archive when something
-    still held the current folder open (Windows refuses to rename a folder with an open file in it,
-    and the ``.bat`` that started the studio is exactly that); the note on the plan says which."""
+    ``spawn`` is a synchronous test/integration hook: it must return only after
+    startup is confirmed, and raise if the new app fails to start.
+    """
     progress = progress or (lambda *_a: None)
     root = plan.install.root
     parent = root.parent
     if not os.access(parent, os.W_OK):
         raise SelfUpdateError(f"{parent} is not writable, so the studio cannot replace itself there. "
                               "Move the folder somewhere you own, or download the release from GitHub.")
-    staging = unpack_tarball(tarball, parent, progress=progress)
-    progress("Switching to the new version", 0, 1)
+    lock = root.with_name(root.name + ".update-lock")
     try:
-        cwd = Path.cwd().resolve()
-    except OSError:
-        cwd = None
-    if cwd is not None and (cwd == root or root in cwd.parents):
-        # a process whose working directory is inside the folder would block the rename (Windows refuses it)
-        try:
-            os.chdir(parent)
-        except OSError:
-            pass
-    new_root = root
+        lock.mkdir()
+    except FileExistsError as exc:
+        raise SelfUpdateError(f"Another update is using this folder. Your old version is at {root}. "
+                              f"If no update is running, remove {lock} and try again.") from exc
+    staging = None
+    previous = None
     try:
-        swap_install(root, staging)
-        plan.notes.append(f"installed over {root}; the previous version is kept beside it as {root.name}.previous")
-    except OSError as exc:
-        fallback = parent / staging.name[: -len(".new")]
-        if fallback.exists():
-            fallback = parent / f"{fallback.name}-{plan.tag}"
+        staging = unpack_tarball(tarball, parent, progress=progress)
+        staging.chmod(root.stat().st_mode & 0o777)
+        staged_python = _stage_python(plan, staging)
+        progress("Checking that the new version can start", 0, 1)
+        version = check_tarball_launch(staging, staged_python, plan.product)
+        command = [staged_python, *map(str, PRODUCTS[plan.product]["args"])]
+        if Path(staged_python).is_relative_to(staging):
+            command[0] = str(root / Path(staged_python).relative_to(staging))
+        progress(f"Checked version {version}; switching folders", 0, 1)
+        previous = swap_install(root, staging)
+        # Check again at its final path (venv relocation and absolute paths).
+        check_tarball_launch(root, command[0], plan.product)
+        progress("Waiting for the new studio to open", 0, 1)
+        if spawn is None:
+            _start_tarball(command, root)
+        else:
+            spawn(command, root)
+        plan.notes.append(f"Installed {version}. The previous version is kept at {previous}.")
+        progress(plan.notes[-1], 1, 1)
+        return root, command
+    except _RestoreError:
+        raise
+    except Exception as exc:
+        if previous is None:
+            raise SelfUpdateError(f"The update was not installed: {exc}\n"
+                                  f"Your old version is unchanged at {root}. Keep using it or download the release again.") from exc
+        failed = _unused_sibling(root, ".failed-update")
         try:
-            os.rename(staging, fallback)
-        except OSError as inner:
-            raise SelfUpdateError(f"The new version was unpacked to {staging} but could not be moved into place "
-                                  f"({inner}). Start it from there.") from inner
-        new_root = fallback
-        plan.notes.append(f"{root} could not be replaced while it was in use ({exc}); "
-                          f"the new version is in {fallback}. Start it from there from now on; the old folder can be deleted.")
-    progress("Switching to the new version", 1, 1)
-    command = list(plan.install.relaunch)
-    if spawn is None:
-        env = dict(os.environ)
-        env["PYTHONPATH"] = str(new_root)
-        subprocess.Popen(command, cwd=str(new_root), env=env, close_fds=True,
-                         start_new_session=not sys.platform.startswith("win"),
-                         creationflags=getattr(subprocess, "DETACHED_PROCESS", 0) | getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0),
-                         stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    else:
-        spawn(command, new_root)
-    return new_root, command
+            os.replace(root, failed)
+            os.replace(previous, root)
+        except OSError as rollback_error:
+            raise SelfUpdateError(f"The new version could not start: {exc}\n"
+                                  f"Automatic restore failed: {rollback_error}. Your old version is at {previous}; "
+                                  f"move it back to {root} before reopening. The failed update is at {failed}.") from exc
+        raise SelfUpdateError(f"The new version could not start: {exc}\n"
+                              f"Your old version was restored at {root}. Keep using it. "
+                              f"The failed update and its startup log are at {failed}.") from exc
+    finally:
+        if staging is not None and staging.exists():
+            shutil.rmtree(staging, ignore_errors=True)
+        lock.rmdir()
 
 
 # ------------------------------------------------------------------ one call for the banner
@@ -433,14 +595,20 @@ def run_update(document: Mapping[str, object], product: str = "2k5", *, progress
     progress = progress or (lambda *_a: None)
     install = install or detect_install(product=product)
     plan = plan_update(document, install, product)
+    owned_work = work is None
     work = work or Path(tempfile.mkdtemp(prefix="2k-mod-studio-update-"))
-    asset_path = fetch_update(plan, work, progress=progress, opener=opener)
-    if install.kind == "windows-installer":
-        progress("Handing over to the installer", 0, 1)
-        apply_windows_installer(plan, asset_path, spawn=spawn_windows)
-        plan.notes.append("the installer runs as soon as the studio closes, then reopens it")
-    else:
-        apply_tarball(plan, asset_path, progress=progress, spawn=spawn_tarball)
+    try:
+        asset_path = fetch_update(plan, work, progress=progress, opener=opener)
+        if install.kind == "windows-installer":
+            progress("Handing over to the installer", 0, 1)
+            apply_windows_installer(plan, asset_path, spawn=spawn_windows)
+            plan.notes.append("the installer runs as soon as the studio closes, then reopens it")
+        else:
+            apply_tarball(plan, asset_path, progress=progress, spawn=spawn_tarball)
+    finally:
+        # NSIS still needs its downloaded installer after the caller exits.
+        if owned_work and install.kind != "windows-installer":
+            shutil.rmtree(work, ignore_errors=True)
     return plan
 
 

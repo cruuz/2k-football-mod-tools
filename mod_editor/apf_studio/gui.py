@@ -22152,6 +22152,8 @@ def launch_studio(
                 offer_matching_recovery=offer_recovery,
             ),
         )
+    from mod_editor.core.self_update import notify_update_ready
+    notify_update_ready()
     result = application.exec_()
     # Dispose styled widgets before the application/font/pixmap caches leave
     # scope. This also releases closed, parented authoring dialogs.

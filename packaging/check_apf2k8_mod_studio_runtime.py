@@ -348,13 +348,15 @@ def _check_desktop_contract() -> None:
     for marker in (
         "PYTHONDONTWRITEBYTECODE=1",
         "PYTHONNOUSERSITE=1",
-        "python3 -m mod_editor.apf_studio",
+        '"$studio_python" -m mod_editor.apf_studio',
+        ".studio-python",
+        "--update-check",
         "zenity --error",
         "kdialog",
         "XDG_STATE_HOME",
         "mktemp -d",
-        "python3-pyqt5",
-        "python3-pil",
+        "PyQt5 is missing from the selected Python runtime",
+        "Pillow is missing from the selected Python runtime",
         "last-launch.log",
     ):
         require(marker in script, f"no-terminal launcher omitted {marker!r}")

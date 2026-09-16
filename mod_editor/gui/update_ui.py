@@ -310,9 +310,10 @@ class UpdateBanner(QFrame):
                    "folder, and reopens the studio when it is done.")
         else:
             how = ("The studio downloads the release, checks it against its published "
-                   "SHA-256, unpacks it beside this folder, switches the folders and "
-                   "starts the new version. The previous version stays next to it as "
-                   f"{plan.install.root.name}.previous until you delete it.")
+                   "SHA-256, unpacks it beside this folder and checks that it can start. "
+                   "It then switches folders and opens the new version. If startup fails, "
+                   "the old version is restored. Previous versions stay in sibling folders "
+                   "whose names end with .previous or start with .previous- until you delete them.")
         box.setInformativeText(f"{how}\n\nSave your work first: the studio closes to finish.\n\n"
                                f"Download: {plan.asset.name} ({plan.size_mb:.0f} MB)")
         install_button = box.addButton("Install and restart", QMessageBox.AcceptRole)
@@ -374,7 +375,8 @@ class UpdateBanner(QFrame):
             )
         else:
             self.message.setText(
-                f"{plan.tag} is installed and starting. This window closes now."
+                f"{plan.tag} is installed and open. This window closes now. "
+                + " ".join(plan.notes)
             )
         self.update_ready.emit(plan)
         QTimer.singleShot(1200, self.request_quit)

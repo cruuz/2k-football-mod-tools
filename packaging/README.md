@@ -22,6 +22,41 @@ Mint those package names are normally `python3`, `python3-pyqt5`, and
 into a directory on `PATH`; the launcher resolves that symlink back to the
 application root.
 
+### Portable updates and SteamOS
+
+The Linux tarball contains application code, not a bundled Python distribution.
+On a system with no Python, first supply a working Python runtime with the app's
+dependencies in the user's home directory. No write to the system partition is
+needed. The launchers recognize `.venv/bin/python3`, `venv/bin/python3`, and
+`runtime/bin/python3`, or an explicit `MOD_STUDIO_PYTHON` executable path.
+
+The updater copies an active runtime inside the install into a fresh sibling
+alongside the new application. It records the chosen executable in
+`.studio-python` (relative for a local runtime), imports the new app and GUI and
+prints the version before switching. The old install is renamed to `.previous`
+or a unique `.previous-*` sibling if that backup already exists. A second check
+at the final path and a startup acknowledgement from the new GUI gate success.
+Check failure keeps the old folder in place; startup failure restores it and
+keeps the failed tree and `.update-launch.log` beside it. The running window
+reports the recovery paths and stays open. No backup is automatically deleted.
+`tools/launch_2k5_mod_studio.sh --update-check` and the APF equivalent run the
+import/version check without opening a window.
+
+Publish this hotfix as `beta-71.1`: beta 69, 70 and 71 already compare
+`beta-N` and `beta-N.M` numerically. Their parser accepts one to six major digits
+and one to three optional hotfix digits, not a second dotted suffix. Release
+discovery and safely applying a release are separate: an older updater does
+not acquire the fixed transaction until the hotfix is installed. For a local
+runtime install, extract the hotfix separately and retain/copy the runtime, or
+restore the existing `.previous` folder before installing manually. The shipped
+beta 70/71 tarballs also contain allowlisted tests that their old detector
+mistakes for a source ZIP, hiding Update now; the fixed detector accepts them.
+
+The startup acknowledgement proves the main window reached its event loop,
+not that every later operation works. A power loss between the two renames or a
+filesystem that refuses rollback can require restoring the retained backup by
+hand. Windows Setup's NSIS wait/relaunch path is unchanged.
+
 ## Local Windows CI
 
 On Linux with Wine, run the Windows test-file matrix using the same SHA-256
