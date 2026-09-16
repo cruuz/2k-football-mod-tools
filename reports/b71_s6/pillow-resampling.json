@@ -1,0 +1,7 @@
+{
+  "pillow_version": "10.2.0",
+  "installed_source": "/usr/lib/python3/dist-packages/PIL/Image.py",
+  "resize_source_sha256": "196a350a6b124b91cb3819b331a66a8843ef6e93a65b42ecf9d76111250e0ca7",
+  "premultiplied_branch": "        if self.mode in [\"LA\", \"RGBA\"] and resample != Resampling.NEAREST:\n            im = self.convert({\"LA\": \"La\", \"RGBA\": \"RGBa\"}[self.mode])\n            im = im.resize(size, resample, box)\n            return im.convert(self.mode)",
+  "conclusion": "Non-nearest RGBA resize already converts through RGBa; the old canvas placement still erased zero-alpha RGB."
+}

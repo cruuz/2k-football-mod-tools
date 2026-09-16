@@ -1,0 +1,15 @@
+test_artifact_verifier_reconstructs_bytes_and_rejects_forgery (__main__.ScorebugProjectTests.test_artifact_verifier_reconstructs_bytes_and_rejects_forgery) ... ok
+test_difference_run_and_offset_hash_are_deterministic (__main__.ScorebugProjectTests.test_difference_run_and_offset_hash_are_deterministic) ... ok
+test_duplicate_target_is_rejected (__main__.ScorebugProjectTests.test_duplicate_target_is_rejected) ... ok
+test_example_is_canonical_and_all_three_importers_pass (__main__.ScorebugProjectTests.test_example_is_canonical_and_all_three_importers_pass) ... ok
+test_forged_source_pin_is_rejected (__main__.ScorebugProjectTests.test_forged_source_pin_is_rejected) ... ok
+test_noncanonical_json_is_rejected (__main__.ScorebugProjectTests.test_noncanonical_json_is_rejected) ... ok
+test_png_hash_pin_is_rejected_before_import (__main__.ScorebugProjectTests.test_png_hash_pin_is_rejected_before_import) ... ok
+test_symlink_png_is_rejected (__main__.ScorebugProjectTests.test_symlink_png_is_rejected) ... ok
+test_union_record_checks_every_byte_in_a_synthetic_image (__main__.ScorebugProjectTests.test_union_record_checks_every_byte_in_a_synthetic_image) ... ok
+test_unknown_field_and_target_are_rejected (__main__.ScorebugProjectTests.test_unknown_field_and_target_are_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 1.232s
+
+OK

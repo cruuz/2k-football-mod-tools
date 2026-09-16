@@ -1,0 +1,20 @@
+test_availability_reports_optional_modules (__main__.ModBuildTests.test_availability_reports_optional_modules) ... ok
+test_colour_preflight_routes_custom_parameters_and_refuses_before_copy (__main__.ModBuildTests.test_colour_preflight_routes_custom_parameters_and_refuses_before_copy) ... ok
+test_colour_receipt_is_published_with_the_disc_and_stale_receipts_are_removed (__main__.ModBuildTests.test_colour_receipt_is_published_with_the_disc_and_stale_receipts_are_removed) ... ok
+test_plan_applies_all_xbe_patches_in_one_copy (__main__.ModBuildTests.test_plan_applies_all_xbe_patches_in_one_copy) ... ok
+test_refuses_same_file_and_scorebug_on_bare_xbe (__main__.ModBuildTests.test_refuses_same_file_and_scorebug_on_bare_xbe) ... ok
+test_scorebug_availability_follows_the_generator_not_local_assets (__main__.ModBuildTests.test_scorebug_availability_follows_the_generator_not_local_assets)
+True without the developer asset folder; false when the generator cannot run. ... ok
+test_advanced_is_a_superset_of_basic_except_the_kick_split (__main__.PresetTests.test_advanced_is_a_superset_of_basic_except_the_kick_split) ... ok
+test_basic_keeps_the_game_in_2004 (__main__.PresetTests.test_basic_keeps_the_game_in_2004) ... ok
+test_every_preset_names_every_toggle (__main__.PresetTests.test_every_preset_names_every_toggle) ... ok
+test_experimental_is_advanced_plus_widescreen_and_kickoff_lineup (__main__.PresetTests.test_experimental_is_advanced_plus_widescreen_and_kickoff_lineup) ... ok
+test_playbook_pack_step_lands_in_the_receipt (__main__.PresetTests.test_playbook_pack_step_lands_in_the_receipt) ... ok
+test_playbook_packs_are_off_by_default_and_need_a_disc (__main__.PresetTests.test_playbook_packs_are_off_by_default_and_need_a_disc)
+A community book is a user choice like commentary: never in a preset. ... ok
+test_unknown_preset_is_refused_and_names_are_kept (__main__.PresetTests.test_unknown_preset_is_refused_and_names_are_kept) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 1.829s
+
+OK

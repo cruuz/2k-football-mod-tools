@@ -1,0 +1,16 @@
+{
+  "path": "data/nfl2k5_scorebug_sprite/template.png",
+  "before": {
+    "height": 512,
+    "sha256": "9c177205e023cd221e629dbab4ca9aef6e47e0efa3adc47147a7c143bbddf067",
+    "size": 54876,
+    "width": 1536
+  },
+  "after": {
+    "height": 512,
+    "sha256": "6531a4c253b4c70176caa46465aae4fceaaa16f4f770a54fb3a1557a0732482d",
+    "size": 53254,
+    "width": 1536
+  },
+  "catalog_sha256": "05bc8ff7eb618ac7e5e94222e42950c2e97c9184ab9e2528cf910846da209b19"
+}

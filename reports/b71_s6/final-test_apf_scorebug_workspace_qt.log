@@ -1,0 +1,16 @@
+test_a_scene_without_embedded_art_reports_none (__main__.ApfScorebugWorkspaceTests.test_a_scene_without_embedded_art_reports_none) ... ok
+test_component_map_lists_seven_parts_and_names_the_runtime_sampler (__main__.ApfScorebugWorkspaceTests.test_component_map_lists_seven_parts_and_names_the_runtime_sampler) ... ok
+test_descriptor_walk_finds_and_decodes_an_embedded_texture (__main__.ApfScorebugWorkspaceTests.test_descriptor_walk_finds_and_decodes_an_embedded_texture) ... ok
+test_embedded_graphics_are_listed_and_labelled_unproved (__main__.ApfScorebugWorkspaceTests.test_embedded_graphics_are_listed_and_labelled_unproved) ... ok
+test_page_leads_with_the_scorebug_art_then_its_components (__main__.ApfScorebugWorkspaceTests.test_page_leads_with_the_scorebug_art_then_its_components) ... ok
+test_page_minimum_width_survives_a_1040_wide_shell (__main__.ApfScorebugWorkspaceTests.test_page_minimum_width_survives_a_1040_wide_shell) ... ok
+test_read_only_row_offers_no_edit_button_and_the_writer_row_does (__main__.ApfScorebugWorkspaceTests.test_read_only_row_offers_no_edit_button_and_the_writer_row_does) ... ok
+test_scorebug_team_logos_no_longer_files_under_logos (__main__.ApfScorebugWorkspaceTests.test_scorebug_team_logos_no_longer_files_under_logos) ... ok
+test_shared_texture_ids_are_detected (__main__.ApfScorebugWorkspaceTests.test_shared_texture_ids_are_detected) ... ok
+test_the_two_routable_presentation_rows_name_their_real_owner (__main__.ApfScorebugWorkspaceTests.test_the_two_routable_presentation_rows_name_their_real_owner) ... ok
+test_unloaded_page_says_what_to_do_instead_of_showing_nothing (__main__.ApfScorebugWorkspaceTests.test_unloaded_page_says_what_to_do_instead_of_showing_nothing) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.136s
+
+OK

@@ -1,0 +1,11 @@
+{
+  "name": "manifest-sealed",
+  "argv": [
+    "python3",
+    "reports/b71_s6/refresh_manifest_projection.py"
+  ],
+  "start_utc": "2026-09-16T06:30:27.737979+00:00",
+  "end_utc": "2026-09-16T06:36:04.760951+00:00",
+  "seconds": 337.023,
+  "exit_code": 0
+}

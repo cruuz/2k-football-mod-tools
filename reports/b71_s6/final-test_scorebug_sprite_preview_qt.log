@@ -1,0 +1,8 @@
+test_actual_process_reads_iso_and_shows_native_preview (__main__.PreviewTests.test_actual_process_reads_iso_and_shows_native_preview) ... This plugin does not support propagateSizeHints()
+ok
+test_invalid_inputs_are_readable_and_design_handoff_validates (__main__.PreviewTests.test_invalid_inputs_are_readable_and_design_handoff_validates) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 9.927s
+
+OK

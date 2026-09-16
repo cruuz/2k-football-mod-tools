@@ -1,0 +1,64 @@
+{
+  "DEN": {
+    "source_size": [
+      64,
+      64
+    ],
+    "source_zero_alpha": 2797,
+    "source_black_transparent": 2724,
+    "panel_zero_alpha": 1907,
+    "panel_black_transparent": 1907,
+    "transparent_pixels_made_visible": 0,
+    "opaque_pixels_made_translucent": 377,
+    "max_false_alpha": 0
+  },
+  "KC": {
+    "source_size": [
+      64,
+      64
+    ],
+    "source_zero_alpha": 2207,
+    "source_black_transparent": 2206,
+    "panel_zero_alpha": 1431,
+    "panel_black_transparent": 1431,
+    "transparent_pixels_made_visible": 0,
+    "opaque_pixels_made_translucent": 393,
+    "max_false_alpha": 0
+  },
+  "body_left": {
+    "alpha_max_error": 2,
+    "opaque_pixels_made_translucent": 7,
+    "transparent_pixels_made_visible": 0,
+    "rgba_unique": 50
+  },
+  "body_middle": {
+    "alpha_max_error": 1,
+    "opaque_pixels_made_translucent": 1,
+    "transparent_pixels_made_visible": 0,
+    "rgba_unique": 13
+  },
+  "wing": {
+    "alpha_max_error": 2,
+    "opaque_pixels_made_translucent": 0,
+    "transparent_pixels_made_visible": 0,
+    "rgba_unique": 73
+  },
+  "capsule": {
+    "alpha_max_error": 1,
+    "opaque_pixels_made_translucent": 0,
+    "transparent_pixels_made_visible": 0,
+    "rgba_unique": 40
+  },
+  "red": {
+    "alpha_max_error": 2,
+    "opaque_pixels_made_translucent": 0,
+    "transparent_pixels_made_visible": 0,
+    "rgba_unique": 48
+  },
+  "plate": {
+    "alpha_max_error": 1,
+    "opaque_pixels_made_translucent": 0,
+    "transparent_pixels_made_visible": 0,
+    "rgba_unique": 13
+  }
+}

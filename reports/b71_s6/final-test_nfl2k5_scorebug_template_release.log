@@ -1,0 +1,23 @@
+test_all_template_files_pass_staging_with_exact_reviewed_png_count (__main__.TemplateReleaseTests.test_all_template_files_pass_staging_with_exact_reviewed_png_count) ... ERROR
+test_arbitrary_png_cannot_use_the_template_directory_or_a_renamed_reviewed_file (__main__.TemplateReleaseTests.test_arbitrary_png_cannot_use_the_template_directory_or_a_renamed_reviewed_file) ... ok
+test_catalog_tampering_and_missing_catalog_do_not_create_an_exception (__main__.TemplateReleaseTests.test_catalog_tampering_and_missing_catalog_do_not_create_an_exception) ... ok
+test_changed_reviewed_png_refuses_even_when_filename_is_allowlisted (__main__.TemplateReleaseTests.test_changed_reviewed_png_refuses_even_when_filename_is_allowlisted) ... ok
+test_staged_compiler_finds_default_art_without_repository_or_legacy_exports (__main__.TemplateReleaseTests.test_staged_compiler_finds_default_art_without_repository_or_legacy_exports) ... ok
+
+======================================================================
+ERROR: test_all_template_files_pass_staging_with_exact_reviewed_png_count (__main__.TemplateReleaseTests.test_all_template_files_pass_staging_with_exact_reviewed_png_count)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s6/tests/mod_editor/test_nfl2k5_scorebug_template_release.py", line 36, in test_all_template_files_pass_staging_with_exact_reviewed_png_count
+    result=release.audit_release(self.root,self.allowlist)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s6/packaging/check_2k5_mod_studio_release.py", line 630, in audit_release
+    _validate_scorebug_template_png(path, relative, info, scorebug_pngs[relative])
+  File "/home/noah/2k-worktrees/astra-b71-s6/packaging/check_2k5_mod_studio_release.py", line 325, in _validate_scorebug_template_png
+    raise ReleaseCheckError(f"reviewed scorebar PNG size changed: {relative}")
+scorebar_release_check.ReleaseCheckError: reviewed scorebar PNG size changed: data/nfl2k5_scorebug_sprite/template.png
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.489s
+
+FAILED (errors=1)

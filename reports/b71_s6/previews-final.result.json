@@ -1,0 +1,11 @@
+{
+  "name": "previews-final",
+  "argv": [
+    "python3",
+    "reports/b71_s6/prove_previews.py"
+  ],
+  "start_utc": "2026-09-16T06:20:17.693053+00:00",
+  "end_utc": "2026-09-16T06:23:00.102652+00:00",
+  "seconds": 162.41,
+  "exit_code": 0
+}

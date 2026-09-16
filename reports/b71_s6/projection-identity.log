@@ -1,0 +1,15 @@
+{
+  "source_seals": 339,
+  "all_current": true,
+  "stack_xbe_sha256": "472862f4eac5420137f97529fe3c27b5f000f0ab6a005bd1d8a14d46c753bd60",
+  "same_xbe_and_allocations_as_s5": true,
+  "unchanged_owner_sources": {
+    "mod_editor/core/nfl2k5_scorebug_runtime.py": "2410091eb0e06d7245d1b2d28058fb142c379d69731d0214582bd15f34656a70",
+    "mod_editor/core/nfl2k5_scorebug_sprite_code.py": "df3ee27bca7d94abaccadc79a00e7ca8ac2d877b52585a12cf9d1a271f9c9283",
+    "mod_editor/core/nfl2k5_xbe_space.py": "091d540327358361cbfe6beaa274acaca2cf93e4244ee5db719d976c2e887218"
+  },
+  "manifest_bytes": 7238608,
+  "runtime_witnessed": false,
+  "disc_built": false,
+  "projection_model": "BOUNDED BETA-71 S6 XBE PROJECTION; retained historical retail reservations and freshly observed complete forward XBE stack; no disc build"
+}

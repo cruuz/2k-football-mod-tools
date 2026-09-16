@@ -1,0 +1,10 @@
+test_all_template_files_pass_staging_with_exact_reviewed_png_count (__main__.TemplateReleaseTests.test_all_template_files_pass_staging_with_exact_reviewed_png_count) ... ok
+test_arbitrary_png_cannot_use_the_template_directory_or_a_renamed_reviewed_file (__main__.TemplateReleaseTests.test_arbitrary_png_cannot_use_the_template_directory_or_a_renamed_reviewed_file) ... ok
+test_catalog_tampering_and_missing_catalog_do_not_create_an_exception (__main__.TemplateReleaseTests.test_catalog_tampering_and_missing_catalog_do_not_create_an_exception) ... ok
+test_changed_reviewed_png_refuses_even_when_filename_is_allowlisted (__main__.TemplateReleaseTests.test_changed_reviewed_png_refuses_even_when_filename_is_allowlisted) ... ok
+test_staged_compiler_finds_default_art_without_repository_or_legacy_exports (__main__.TemplateReleaseTests.test_staged_compiler_finds_default_art_without_repository_or_legacy_exports) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.487s
+
+OK

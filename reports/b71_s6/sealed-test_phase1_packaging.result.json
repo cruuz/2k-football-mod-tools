@@ -1,0 +1,12 @@
+{
+  "name": "sealed-test_phase1_packaging",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_phase1_packaging.py",
+    "-v"
+  ],
+  "start_utc": "2026-09-16T06:31:44.704876+00:00",
+  "end_utc": "2026-09-16T06:31:46.815644+00:00",
+  "seconds": 2.111,
+  "exit_code": 0
+}

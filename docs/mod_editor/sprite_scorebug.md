@@ -49,11 +49,11 @@ source, glyph set, cap height (`size`), alignment, anchor, colour and slot count
 Glyphs name a cell, advance and optional raise. Width is compressed only when a
 value exceeds its field box, allowing three-digit scores without overlap.
 
-The default scene contains 46 quads: 11 static/logo quads, 30 glyph/tick slots,
+The default scene contains 46 quads: 12 static/logo quads, 30 glyph/tick slots,
 and four retail event backgrounds. It uses 180 of 286 retail vertices. Material
 push-buffer capacities still bound each group; the compiler refuses an overflow
 before changing a game. A 512×512 atlas is accepted only if the complete append
-still fits the 400 KiB ceiling; with the default logos it exceeds that ceiling.
+still fits the 400,000-byte ceiling; with the default logos it exceeds that ceiling.
 The default 256×512 atlas plus 33 logos and enlarged scene appends 323,808 bytes.
 Retail FONT resources stay byte-for-byte unchanged. FLAG, FUMBLE, hang time and
 ball-on text use retail fonts and event callbacks. The rotating score slabs

@@ -1,0 +1,19 @@
+{
+  "base": "0520e2e1df15818fe86494a13b7c55966d2a039c",
+  "source_sha256": {
+    "mod_editor/core/nfl2k5_scorebug_assets.py": "e5dbb12c95d0e3254d483f82fa301e31ddd2f4d6ca66f2add0c1b7eca902bcb7",
+    "mod_editor/core/nfl2k5_scorebug_exact.py": "ea1b0c44cf7a65e8e4b0444ecc0856faca1f1e0f7e1cd36e6e3d6b0c99b6128a",
+    "mod_editor/core/nfl2k5_scorebug_resources.py": "be9e9ee3470fe3f8e611863ba49334fde8e9d5d0eff111f73386705479e39be0",
+    "mod_editor/core/nfl2k5_scorebug_sprite.py": "b4697c80c0126208bb1914b9dd3c29ae32373fcf9f975cd620ddc8b75e7c21f5"
+  },
+  "artifact_sha256": {
+    "reports/b71_s6/DEN_before_p8.png": "2e99c3566176d1910c0c218505e2183e80bd10f043dea5e9c6ef5152a64e0a99",
+    "reports/b71_s6/atlas_before_input.png": "0aa907626485c90d9c6471586520fed6a073776aef8860d44e46f7dbf1d03655",
+    "reports/b71_s6/DEN_before_input.png": "00cd4f66ba66625fc6c3565b028d8fe64aa6c387ab4a1b1c3eb2f2296b65f5e3",
+    "reports/b71_s6/KC_before_p8.png": "9527dba28ea1104482d965a7d0b39013d892aa8833d6e6d224a5325715b71d57",
+    "reports/b71_s6/KC_before_input.png": "586baa65c5d50d4ca9ffc4939d66a0c451ceb16fd3da99c0adcd067a2a6d9b50",
+    "reports/b71_s6/atlas_before.png": "1c20fca460dd7b3c55853fa648dc8e6de1d966dda62782d77fdb354c675152c3"
+  },
+  "capture_result": "reports/b71_s6/before.result.json",
+  "note": "Captured before edits; the historical capture script now refuses execution on newer compiler sources."
+}

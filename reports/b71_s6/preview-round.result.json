@@ -1,0 +1,12 @@
+{
+  "name": "preview-round",
+  "argv": [
+    "python3",
+    "-c",
+    "import sys; sys.path.insert(0,\"reports/b71_s6\"); import prove_previews as p; p.STATES=p.STATES[:1]; p.main()"
+  ],
+  "start_utc": "2026-09-16T06:11:41.169122+00:00",
+  "end_utc": "2026-09-16T06:12:01.067248+00:00",
+  "seconds": 19.898,
+  "exit_code": 0
+}
