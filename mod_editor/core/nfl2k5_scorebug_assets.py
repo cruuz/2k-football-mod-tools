@@ -509,7 +509,8 @@ def image_status(path) -> str:
             if entry.size == PACK_SIZE:
                 return "retail"
             import nfl_outer as outer
-            table = os.pread(fd, outer.HEADER_SIZE + 400 * 12, entry.byte_offset)
+            from . import platform_compat as io
+            table = io.pread(fd, outer.HEADER_SIZE + 400 * 12, entry.byte_offset)
             _, length, _ = struct.unpack_from("<3I", table, outer.HEADER_SIZE + GLOBAL_OUTER * 12)
             return "applied" if length > GLOBAL_SIZE else "foreign"
     except (OSError, KeyError, struct.error, ValueError):

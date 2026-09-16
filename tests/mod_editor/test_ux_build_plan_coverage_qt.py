@@ -89,6 +89,7 @@ class BuildPlanCoverageTests(unittest.TestCase):
             "roster_edits", "commentary", "playbook_packs", "name", "author", "notes",
             "accelerated_clock_minimum_seconds",  # the Minimum Play Clock Time combo beside the clock check box
             "decided_clock_margin", "decided_clock_seconds", "cpu_scrambles",
+            "modern_color_settings",  # the Colour & lighting page (strength and the 55 controls) beside the modern colour check box
         }
         self.assertEqual(fields - bound, set(), "BuildPlan fields with no control on the Build tab")
         self.assertEqual(bound - fields, set(), "controls that name a field BuildPlan no longer has")
