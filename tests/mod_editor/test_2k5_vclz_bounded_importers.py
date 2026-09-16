@@ -82,6 +82,14 @@ NOT_PNG_IMPORTERS = frozenset({
     # stream has no fixed span to overflow; the plain 256-entry quantizer is the
     # intended output and the bounded ladder would lower quality for no reason.
     "mod_editor/core/nfl2k5_hires_texture.py",
+    # The modern Arrowhead compiler (beta 71) paints fourteen shipped, authored
+    # PNGs into their retail P8 allocations inside the decoded scene and refits
+    # the whole scene in its fixed span through the stadium texture writer's
+    # scene refit, the same shape as that writer: it quantizes into a decoded
+    # allocation and owns its compression separately. The art is fixed data,
+    # not a user import, and every applied bundle is pinned, so the fit is
+    # proved once at author time rather than stepped down per build.
+    "mod_editor/core/nfl2k5_modern_arrowhead.py",
 })
 
 
