@@ -117,6 +117,31 @@ class PanelTests(unittest.TestCase):
         pointer.linkActivated.emit("cpu-playcalling")
         self.assertEqual(calls, [True])
 
+    def test_consolidated_manual_utility_retains_all_40_slots_and_review(self):
+        panel = BookIdentityPanel(self.panel.run_task, consolidated=True)
+        self.addCleanup(panel.close)
+        panel.show_manual_allocation()
+        self.assertTrue(panel.content.isVisibleTo(panel))
+        parsed = identity.RosterIdentity(self.parsed.labels,
+            tuple(identity.Team(i, f'Synthetic {i}', 0, 2, 200+i*8, 204+i*8)
+                  for i in range(40)), 'synthetic')
+        with patch.object(identity, 'read_disc_roster', return_value=b'synthetic'), \
+             patch.object(identity, 'parse_roster_identity', return_value=parsed), \
+             patch.object(identity, 'disc_book_identity_report', return_value=identity.book_identity_report(parsed)):
+            panel.load_path(Path('synthetic-game/0A'))
+        self.assertEqual(panel.team.count(), 40)
+        panel.team.setCurrentIndex(39)
+        self.assertEqual(panel.label.count(), 1)
+        class Plan:
+            report = {'status': 'UNWITNESSED', 'book_identity': identity.book_identity_report(parsed)}
+        with patch('mod_editor.apf_studio.book_identity_qt.clone.compile_unlock', return_value=Plan()) as compile_mock:
+            panel.review_selection()
+        request = compile_mock.call_args.args[1][0]
+        self.assertEqual((request.team_index, request.label_id), (39, 1))
+        self.assertTrue(panel.build.isEnabled())
+        panel.manual_allocation.click()
+        self.assertFalse(panel.content.isVisibleTo(panel))
+
 
 if __name__ == "__main__":
     unittest.main()

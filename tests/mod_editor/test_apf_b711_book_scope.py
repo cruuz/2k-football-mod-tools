@@ -43,5 +43,26 @@ class BookScopeTests(unittest.TestCase):
             self.skipTest('Owned APF index absent; set APF_RETAIL_INDEX for the real label census')
         self.check_scope(INDEX, retail=True)
 
+    def test_retail_manual_allocation_exceeds_24_without_consuming_user_labels(self):
+        from tests.mod_editor.test_apf_playcall_research_native import INDEX
+        if not INDEX.is_file():
+            self.skipTest('Owned APF index absent; set APF_RETAIL_INDEX for archive allocation')
+        roster = identity.read_disc_roster(INDEX)
+        before = identity.parse_roster_identity(roster)
+        # Separate compilations: default label names overlap across sides.
+        # This deliberately reassigns saved slots, unlike the automatic plan.
+        for side, count in (('offense', 35), ('defense', 32)):
+            reserved = {getattr(t, side) for t in before.teams[24:]}
+            labels = [l for l in before.labels if l.side == side and l.index not in reserved]
+            requests = [clone.CloneRequest(label.index, team.index,
+                          before.labels[getattr(team, side)].kind)
+                        for team, label in zip(before.teams, labels)]
+            compiled = clone.compile_unlock(INDEX, requests)
+            self.assertEqual(len(compiled.clones), count)
+            after = identity.parse_roster_identity(compiled.roster_body)
+            self.assertEqual(len({after.labels[getattr(t, side)].kind for t in after.teams}), count + 1)
+            for label in reserved:
+                self.assertEqual(after.labels[label], before.labels[label])
+
 
 if __name__ == '__main__': unittest.main()

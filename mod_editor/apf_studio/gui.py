@@ -19459,6 +19459,10 @@ class InspectorCategoryPage(QWidget):
                 tabs.addTab(self.coverage_geometry, "Coverage Geometry (experimental)")
                 tabs.addTab(self.book_identity, "Book Identity")
                 self.book_identity.cpuPlayCallingRequested.connect(lambda: tabs.setCurrentWidget(self.playbook_playcall))
+                def open_manual_books():
+                    self.book_identity.show_manual_allocation()
+                    tabs.setCurrentWidget(self.book_identity)
+                self.playbook_playcall.manualBookAllocationRequested.connect(open_manual_books)
                 tabs.addTab(self.assets, "Raw Playbook Assets")  # type: ignore[arg-type]
             else:
                 tabs.addTab(self.inspector, "Audio Browser")

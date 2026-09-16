@@ -11,9 +11,14 @@ points here. Every in-game outcome remains **UNWITNESSED**.
    **Give this team its own book**. The assignments are checked automatically. The new
    named book becomes the edit target. **Give every team its own book** covers the
    24 disc teams on the selected side, or 48 independent books across offense and
-   defense. The retail 36 offensive / 33 defensive labels share resources; they
-   are not 36 independent teams. The 16 saved-team slots retain their USER-o /
-   USER-d assignments. Use **Save Assignments** for supported roster saves.
+   defense. This action's scope is not an archive capacity limit: the retail pool
+   has 36 offensive / 33 defensive labels, initially sharing resources. The
+   automatic action preserves the 16 saved-team slots and their USER-o / USER-d
+   assignments. **Manual book allocation…** restores the broader Book Identity
+   utility: build your current project, choose that built folder, select any of
+   its 40 roster slots and an unused label, review, then build a new folder.
+   This can exceed 24 allocations and can change saved-team slots. Loaded roster
+   saves can override disc assignments; use **Save Assignments** for those saves.
 3. Choose a **Situation**. Its candidate table lists formations, personnel and
    the number of tight-end roles. Select a candidate and use **Fine-tune formation
    weights** beside the table. Its three raw ratings control short, medium and

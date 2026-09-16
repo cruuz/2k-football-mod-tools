@@ -74,6 +74,11 @@ class FieldLayoutTests(unittest.TestCase):
                         self.assertIs(page.workspace_tabs.currentWidget(), page.field_scroll)
                         self.assertFalse(facade.source_ready)
                 self.assertGreater(heights[1], heights[0] + 200)
+                books = window._pages[ApfCategory.PLAYBOOKS]
+                books.playbook_playcall.manualBookAllocationRequested.emit()
+                self.assertIs(books.workspace_tabs.currentWidget(), books.book_identity)
+                self.assertTrue(books.book_identity.manual_allocation.isChecked())
+                self.assertTrue(books.book_identity.content.isVisibleTo(books.book_identity))
             finally:
                 window._allow_close = True; window.close(); self.app.processEvents()
                 facade.close()
@@ -157,6 +162,13 @@ class FineTuneQtTests(FacadeFixture):
             self.assertEqual(len(event['request']['assignments']), 24)
         self.assertIn('48 independent books', p.capacity_note.text())
         self.assertIn('36 offensive', p.capacity_note.text())
+
+    def test_manual_allocation_handoff_does_not_stage_or_change_source(self):
+        calls = []
+        self.panel.manualBookAllocationRequested.connect(lambda: calls.append(True))
+        self.panel.manual_books_button.click()
+        self.assertEqual(calls, [True])
+        self.assertFalse(self.facade.session.modifications)
 
 
 if __name__ == '__main__': unittest.main()

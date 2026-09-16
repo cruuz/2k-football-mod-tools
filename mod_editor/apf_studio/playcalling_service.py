@@ -44,8 +44,10 @@ RATING_MAPPING = (
 )
 BOOK_CAPACITY_EXPLANATION = (
     "Give every team its own book covers the 24 disc teams: 24 offense and 24 defense "
-    "copies, 48 independent books across both sides. The retail 36 offensive and 33 "
-    "defensive labels are names sharing book content, not 36 independent teams. "
+    "copies, 48 independent books across both sides. This is the action's scope, not "
+    "an archive limit. The retail pool has 36 offensive and 33 defensive labels; "
+    "labels initially share content. Manual book allocation opens all 40 roster slots "
+    "and unused labels after you build your project. "
     "The 16 saved-team slots keep their shared USER-o / USER-d assignments; edit saved "
     "assignments through Save Assignments. This is the same disc-team scope as beta 67."
 )

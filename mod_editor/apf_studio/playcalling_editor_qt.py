@@ -81,6 +81,7 @@ def fill(widget, rows):
 
 class ApfPlayCallingEditor(QWidget):
     modifiedChanged = pyqtSignal()
+    manualBookAllocationRequested = pyqtSignal()
 
     def __init__(self, facade, run_task):
         super().__init__()
@@ -140,6 +141,9 @@ class ApfPlayCallingEditor(QWidget):
         self.own_all_button = button(row, "Give every team its own book", "The game will use one independent copy of each team's current book on this side after you review and stage all 24 assignments.", lambda: self.own_book(True))
         team_root.addLayout(row)
         self.capacity_note = note(team_root, service.BOOK_CAPACITY_EXPLANATION)
+        self.manual_books_button = button(team_root, "Manual book allocation…",
+            "Open Book Identity's existing built-folder workflow for all 40 roster slots and unused labels. Build staged edits first.",
+            lambda: self.manualBookAllocationRequested.emit())
         self.plan_table = table(("Team", "Label", "Donor", "Clone name"), "Own-book plan to review before staging")
         self.plan_table.setMaximumHeight(260)
         self.plan_table.setVisible(False)
