@@ -187,6 +187,12 @@ commits or the bundle. The existing runtime registry row includes S6 evidence;
 no capability rows were added. The RC96 bullet and design documentation describe
 the finish and retain experimental, off-by-default and UNWITNESSED status.
 
+The brief's registry, packaging-pin and cave-projection requirements include
+direct edits to protected `mod_editor/capabilities/registry.v1.json`,
+`packaging/check_2k5_mod_studio_release.py` (the template-catalog digest only),
+and `data/nfl2k5_cave_reservations.json`. Those edits are complete; no deferred
+wiring is needed.
+
 The cave projection observes the complete current writer stack. It seals
 {identity['source_seals']} current source files, preserves every S5 allocation,
 and produces the same stack XBE SHA-256:

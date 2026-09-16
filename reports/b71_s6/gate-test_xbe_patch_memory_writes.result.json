@@ -1,0 +1,12 @@
+{
+  "name": "gate-test_xbe_patch_memory_writes",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_xbe_patch_memory_writes.py",
+    "-v"
+  ],
+  "start_utc": "2026-09-16T06:36:04.761630+00:00",
+  "end_utc": "2026-09-16T07:01:52.923693+00:00",
+  "seconds": 1548.162,
+  "exit_code": 0
+}

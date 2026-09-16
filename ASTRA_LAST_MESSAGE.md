@@ -1,21 +1,22 @@
-S5 is complete on `astra/b71-s5-sprite-scorebug`, based on integrated `cea8a3c8`.
+S6 is complete on `astra/b71-s6-sprite-pass2`, based on S5 `0520e2e1`.
 
-One PNG and JSON now drive 45 atlas quads, including native score, clock,
-down, quarter and timeout values. The enlarged same-name scene wins the native
-lookup. The append is 323,808 bytes including logos, with zero FONT resources.
-The light top reflection is retained. Studio's Preview uses the native owner
-and shared raster; 50 state/aspect comparisons are in `reports/b71_s5`.
+The sprite finish now has clean logo feathers, a shaded crimson plate and light
+notch, round capsule ends, a stronger top rim and smooth wing ramps. All 50
+state/aspect previews pass the one-HUD-pixel bounds and ink checks. The append
+remains 323,808 bytes, with zero FONT resources and 46 quads. Native owner
+instructions, allocations and the complete stack XBE are identical to S5.
 
-All 40 required suites have passing latest results:
-1160 tests, including 16 explicit historical/input skips.
-The two XBE gates, cave oracle, owner-pair matrix, provider, catalog, phase1 and
-strict registry checks pass. The final projection and source pins are current.
+All 40 required suites pass: 1162 tests,
+16 explicit skips. Final provider, catalog, phase1, strict registry,
+XBE, oracle and pairwise checks are recorded in `ASTRA_REPORT.md` and
+`reports/b71_s6`. The final pins and bounded cave projection are current.
 
-See `ASTRA_REPORT.md` for routes, measurements, volumes and the full command ledger.
-The private bundle is `.scratch/astra-b71-s5.bundle`; its final commit and independent
-fetch verification are in `.scratch/b71-s5-delivery.json`.
+The private bundle is `.scratch/astra-b71-s6.bundle`. Its commit, hash, size and
+independent fetch verification are in `.scratch/b71-s6-delivery.json`.
 
-The test-disc builder is prepared but was not run. Gameplay, GPU appearance and
-the intro remain UNWITNESSED. No xemu session, disc build or push was performed.
+The disc-n builder is prepared with disc m's options and has not been run:
+`NFL 2K5 MOD TEST 2026-09-16n (sprite scorebug pass 2 + everything)`.
+Gameplay, intro and GPU appearance remain UNWITNESSED. No disc build, xemu
+session or push was performed.
 
 ASTRA_DONE

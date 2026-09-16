@@ -1,13 +1,8 @@
 {
   "required_suites": 40,
-  "missing_required": [
-    "tests/mod_editor/test_xbe_patch_memory_writes.py",
-    "tests/mod_editor/test_xbe_patch_cave_references.py",
-    "tests/mod_editor/test_nfl2k5_cave_oracle.py",
-    "tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py"
-  ],
+  "missing_required": [],
   "failed_latest": [],
-  "tests": 377,
+  "tests": 1162,
   "skips": 16,
   "checks": {
     "tests/mod_editor/test_apf_scorebug_workspace_qt.py": {
@@ -513,6 +508,62 @@
       "exit_code": 0,
       "tests": 13,
       "skips": 1
+    },
+    "tests/mod_editor/test_xbe_patch_memory_writes.py": {
+      "name": "gate-test_xbe_patch_memory_writes",
+      "argv": [
+        "python3",
+        "tests/mod_editor/test_xbe_patch_memory_writes.py",
+        "-v"
+      ],
+      "start_utc": "2026-09-16T06:36:04.761630+00:00",
+      "end_utc": "2026-09-16T07:01:52.923693+00:00",
+      "seconds": 1548.162,
+      "exit_code": 0,
+      "tests": 119,
+      "skips": 0
+    },
+    "tests/mod_editor/test_xbe_patch_cave_references.py": {
+      "name": "gate-test_xbe_patch_cave_references",
+      "argv": [
+        "python3",
+        "tests/mod_editor/test_xbe_patch_cave_references.py",
+        "-v"
+      ],
+      "start_utc": "2026-09-16T06:36:04.762363+00:00",
+      "end_utc": "2026-09-16T07:05:00.039766+00:00",
+      "seconds": 1735.277,
+      "exit_code": 0,
+      "tests": 131,
+      "skips": 0
+    },
+    "tests/mod_editor/test_nfl2k5_cave_oracle.py": {
+      "name": "gate-test_nfl2k5_cave_oracle",
+      "argv": [
+        "python3",
+        "tests/mod_editor/test_nfl2k5_cave_oracle.py",
+        "-v"
+      ],
+      "start_utc": "2026-09-16T07:01:52.924157+00:00",
+      "end_utc": "2026-09-16T07:07:48.651997+00:00",
+      "seconds": 355.728,
+      "exit_code": 0,
+      "tests": 29,
+      "skips": 0
+    },
+    "tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py": {
+      "name": "gate-test_nfl2k5_owner_pairwise_composition",
+      "argv": [
+        "python3",
+        "tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py",
+        "-v"
+      ],
+      "start_utc": "2026-09-16T07:05:00.040155+00:00",
+      "end_utc": "2026-09-16T07:52:52.076248+00:00",
+      "seconds": 2872.036,
+      "exit_code": 0,
+      "tests": 506,
+      "skips": 0
     }
   }
 }
