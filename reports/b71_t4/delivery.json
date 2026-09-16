@@ -1,0 +1,34 @@
+{
+  "scope": "Implementation bundle verification before documentation commit. Final bundle is regenerated and verified afterward; final receipt is .scratch/bundle-final-verification.json.",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "--git-dir=.scratch/t4.git",
+        "--work-tree=.",
+        "bundle",
+        "create",
+        ".scratch/astra-b71-t4.bundle",
+        "e2f5c6e6..astra/b71-t4-project-load-equipment-fit"
+      ],
+      "started": "2026-09-15T23:07:47.869100+00:00",
+      "exit_code": 0,
+      "seconds": 0.041,
+      "log": "reports/b71_t4/delivery-bundle-0.log"
+    },
+    {
+      "argv": [
+        "git",
+        "--git-dir=.scratch/t4.git",
+        "--work-tree=.",
+        "bundle",
+        "verify",
+        ".scratch/astra-b71-t4.bundle"
+      ],
+      "started": "2026-09-15T23:07:47.910293+00:00",
+      "exit_code": 0,
+      "seconds": 0.017,
+      "log": "reports/b71_t4/delivery-bundle-1.log"
+    }
+  ]
+}

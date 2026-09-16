@@ -1,0 +1,36 @@
+[
+  {
+    "argv": [
+      "git",
+      "--git-dir=.scratch/t4.git",
+      "--work-tree=.",
+      "add",
+      "--",
+      "mod_editor/core/equipment_staging.py",
+      "mod_editor/core/providers.py",
+      "tests/mod_editor/test_b71_t4_equipment_project.py"
+    ],
+    "started": "2026-09-15T23:06:17.430758+00:00",
+    "exit_code": 0,
+    "seconds": 0.013,
+    "log": "reports/b71_t4/delivery-code-0.log"
+  },
+  {
+    "argv": [
+      "git",
+      "--git-dir=.scratch/t4.git",
+      "--work-tree=.",
+      "commit",
+      "-m",
+      "Validate the complete equipment refit before committing its PNG",
+      "--",
+      "mod_editor/core/equipment_staging.py",
+      "mod_editor/core/providers.py",
+      "tests/mod_editor/test_b71_t4_equipment_project.py"
+    ],
+    "started": "2026-09-15T23:06:17.444019+00:00",
+    "exit_code": 0,
+    "seconds": 0.035,
+    "log": "reports/b71_t4/delivery-code-1.log"
+  }
+]

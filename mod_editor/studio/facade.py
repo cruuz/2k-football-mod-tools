@@ -3710,6 +3710,10 @@ class Nfl2k5StudioFacade:
                 f"{annotation_count} audio cue label"
                 f"{'s' if annotation_count != 1 else ''}"
             )
+        from mod_editor.core.equipment_staging import cached_equipment_fit_rows
+        refits = [r for r in cached_equipment_fit_rows(candidate) if r.get('fit_status') == 'needs refit']
+        refit_note = ('\nEquipment needs refit. Open Build and use Refit equipment: reduce colours, then size.\n'
+            + '\n'.join(f"{r['set_selector']} / {r['asset_id']}: {r['fit_error']}" for r in refits)) if refits else ''
         return StudioOperationResult(
             "\n".join(getattr(candidate, "model_source_warnings", ()))
             + ("\n" if getattr(candidate, "model_source_warnings", ()) else "")
@@ -3718,10 +3722,18 @@ class Nfl2k5StudioFacade:
                 "Build when you are ready."
                 if replacement_count else
                 "Cue labels are project metadata and do not change a built XISO."
-            ),
+            ) + refit_note,
             current_identity.path,
             current_identity,
         )
+
+    def refit_equipment(self, asset_id: str, progress: ProgressSink) -> object:
+        from mod_editor.core.equipment_staging import refit_equipment
+        progress("Reducing equipment colours, then size", 0, 1)
+        with self._lock:
+            result = refit_equipment(self._require_session(), asset_id)
+        progress(result.message, 1, 1)
+        return result
 
     def build_iso(self, destination: Path, progress: ProgressSink) -> object:
         with self._lock:
@@ -3729,6 +3741,8 @@ class Nfl2k5StudioFacade:
             session = self._require_session()
         if cache is None:
             raise ValidationError("Load your NFL 2K5 XISO before building.")
+        from mod_editor.core.equipment_staging import require_equipment_fit
+        require_equipment_fit(session)
 
         def build_progress(event: BuildEvent) -> None:
             progress(event.message, event.completed, event.total)

@@ -173,7 +173,11 @@ class UniformEquipmentWriterError(ValueError):
     """A logical selector, private source, PNG, or fixed span is unsafe."""
 
 
-class EquipmentFitError(UniformEquipmentWriterError):
+class EquipmentRefitError(UniformEquipmentWriterError):
+    """Valid artwork that cannot be compiled within the fixed allocation."""
+
+
+class EquipmentFitError(EquipmentRefitError):
     """Measured compressed overflow, with a separately checked retry choice."""
 
     def __init__(self, budget, required, attempts, suggestion=None, *, required_is_lower_bound=False):
@@ -616,9 +620,7 @@ def _cached_parse(candidate: bytes, stream_tag: int, offset_bits: int, budget: i
     _PARSE_CACHE.move_to_end(key)
     ceiling = _greedy_ceiling(budget)
     greedy = record.get("greedy")
-    if greedy is None:
-        if record.get("greedy_miss", 0) >= ceiling:
-            raise EquipmentSizeOverflow(max(budget + 1, 9 + (record["greedy_miss"] - 9) * 9 // 17), budget, exact=False)
+    if greedy is None and record.get("greedy_miss", 0) < ceiling:
         try:
             greedy, _ = compress_vc_lz(candidate, stream_tag=stream_tag,
                 offset_bits=offset_bits, max_encoded_size=ceiling, verify_roundtrip=True)
@@ -627,11 +629,9 @@ def _cached_parse(candidate: bytes, stream_tag: int, offset_bits: int, budget: i
             if not _overflow(exc):
                 raise
             record["greedy_miss"] = ceiling
-            raise EquipmentSizeOverflow(max(budget + 1, 9 + (record["greedy_miss"] - 9) * 9 // 17), budget, exact=False) from exc
-    if len(greedy) > ceiling:
-        raise EquipmentSizeOverflow(max(budget + 1, 9 + (len(greedy) - 10) * 9 // 17),
-                                    budget, exact=False)
-    if len(greedy) <= budget:
+    # A greedy cutoff is not an optimal measurement. Always ask the bounded
+    # optimal encoder before declaring this candidate too large.
+    if greedy is not None and len(greedy) <= budget:
         return greedy, "retail_greedy"
     optimal = record.get("optimal")
     # 512 bytes preserves exact measurements near the boundary, while a
@@ -691,8 +691,8 @@ def _rebuild_grown_video(template_span: bytes, candidate: bytes):
         encoded, _expanded = fill_stream(encoded, candidate, chunk.stored_size, slack=min(scratch, 16))
         padding = chunk.stored_size - len(encoded)
         minimum = minimum_vc_lz_overlap_scratch(encoded, chunk.stored_size, len(candidate))
-    _require(padding <= scratch and minimum <= scratch,
-             "Equipment cannot fit with the retail loader scratch allowance")
+    if padding > scratch or minimum > scratch:
+        raise EquipmentRefitError("Equipment cannot fit with the retail loader scratch allowance")
     video = len(candidate) - chunk.system_bytes
     rebuilt = HEADER.pack(
         b"TSET", chunk.stored_size, chunk.system_bytes, video,
@@ -1199,7 +1199,7 @@ def _compile_group(
                 break
         sizes = [attempt["required_bytes"] for attempt in attempts if attempt.get("required_bytes") is not None]
         if not sizes:
-            raise UniformEquipmentWriterError("Equipment artwork cannot fit while retaining the complete mip chain and edge coverage. Simplify the artwork or explicitly choose a smaller game image and import it again.")
+            raise EquipmentRefitError("Equipment artwork cannot fit while retaining the complete mip chain and edge coverage. Use Refit equipment to reduce colours, then size.")
         raise EquipmentFitError(chunk.stored_size, min(sizes), tuple(attempts), suggestion,
             required_is_lower_bound=not any(a.get("required_bytes") == min(sizes)
                 and not a.get("required_is_lower_bound") for a in attempts))
@@ -1660,7 +1660,7 @@ __all__ = [
 
 def preflight_project_equipment(index_path: Path, edits: Iterable[tuple[int | None, str, Path]],
                                 *, compile_cache: EquipmentCompileCache | None = None) -> list[dict[str, Any]]:
-    """Validate ALL restored equipment groups before publishing a loaded session.
+    """Check restored equipment without making a fit miss a project-open error.
 
     Old PNG-only recolours and npTC/v1 private chains keep their original intent.
     No migration invents mip bytes, silently downsizes art, or drops an edit.
@@ -1680,16 +1680,47 @@ def preflight_project_equipment(index_path: Path, edits: Iterable[tuple[int | No
                   + f"Equipment / {asset_id.rsplit(':', 1)[-1]} / "
                   f"uniform set {by_id[asset_id].set_selector if asset_id in by_id else 'unknown'} / {asset_id}"
                   for number, asset_id, _ in group]
-        try:
-            compiled = build_unified_uniform_equipment_imports(index_path,
-                [(asset_id, path) for _, asset_id, path in group],
-                pack_hashes=hashes, compile_cache=cache, preflight_only=True)
-            for _, asset_id, _ in group:
+        def compile_rows(items):
+            return build_unified_uniform_equipment_imports(index_path,
+                [(asset_id, path) for _, asset_id, path in items],
+                pack_hashes=hashes, compile_cache=cache, preflight_only=True,
+                fit_asset_id=items[-1][1])
+
+        def measured(items, compiled):
+            for _, asset_id, _ in items:
                 target = by_id[asset_id]
                 fit_rows.append(dict(compiled.edit_templates[target.reference_index],
                                      asset_id=asset_id, set_selector=target.set_selector,
+                                     fit_status="fits",
                                      encoded_bytes=compiled.rebuild_info.recompressed_bytes))
+
+        try:
+            try:
+                measured(group, compile_rows(group))
+            except EquipmentRefitError:
+                # Variants share a physical span. Measure them separately, then
+                # check each addition to the fitting subset. Never claim that
+                # two independently fitting edits necessarily fit together.
+                accepted = []
+                compiled = None
+                for item in group:
+                    number, asset_id, path = item
+                    try:
+                        candidate = compile_rows(accepted + [item])
+                    except EquipmentRefitError as exc:
+                        target = by_id[asset_id]
+                        fit_rows.append(dict(asset_id=asset_id, set_selector=target.set_selector,
+                            fit_status="needs refit", fit_error=str(exc), budget=getattr(exc, "budget", None),
+                            required=getattr(exc, "required", None),
+                            required_is_lower_bound=getattr(exc, "required_is_lower_bound", False),
+                            attempts=getattr(exc, "attempts", ()), suggestion=getattr(exc, "suggestion", None),
+                            project_edit_index=number))
+                    else:
+                        accepted.append(item)
+                        compiled = candidate
+                if compiled is not None:
+                    measured(accepted, compiled)
         except (OSError, ValueError, ValidationError) as exc:
             raise UniformEquipmentWriterError("Cannot load equipment edits: " + "; ".join(labels)
-                + f": {exc} Reimport the named part using the checked size, or remove that edit in the older studio and save the project again.") from exc
+                + f": {exc}") from exc
     return fit_rows

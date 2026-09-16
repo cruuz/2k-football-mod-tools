@@ -3,7 +3,6 @@
 The UI enters here. Consumer resolution and legacy import contracts stay in
 their existing modules; one combined compile supplies the actual fit receipt.
 """
-from collections import defaultdict
 from pathlib import Path
 import hashlib
 import tempfile
@@ -32,25 +31,34 @@ def staging_targets(target, by_id):
 
 
 def _checked_rows(session, paths, by_id, *, selected=None):
-    from .nfl2k5_uniform_equipment_writer import staged_equipment_cache, build_unified_uniform_equipment_imports
-    # Use the same validated memory/disk cache as project-load preflight. A
-    # session-only cache makes reopening a saved import repeat the fit ladder.
-    cache = staged_equipment_cache()
-    groups = defaultdict(list)
-    for asset_id, path in sorted(paths.items()):
-        t = by_id[asset_id]
-        groups[t.outer_index, t.chunk_index].append((asset_id, path))
-    rows = []
-    for group in groups.values():
-        compiled = build_unified_uniform_equipment_imports(
-            session.cache.pack0, group, preflight_only=True, compile_cache=cache,
-            fit_asset_id=selected if any(asset_id == selected for asset_id, _ in group) else None)
-        for asset_id, _ in group:
-            t = by_id[asset_id]
-            rows.append(dict(compiled.edit_templates[t.reference_index], asset_id=asset_id,
-                             set_selector=t.set_selector,
-                             encoded_bytes=compiled.rebuild_info.recompressed_bytes))
+    from .nfl2k5_uniform_equipment_writer import preflight_project_equipment
+    rows = preflight_project_equipment(session.cache.pack0,
+        [(None, asset_id, path) for asset_id, path in sorted(paths.items())])
+    if selected is not None:
+        row = next((r for r in rows if r['asset_id'] == selected), None)
+        if row is not None and row.get('fit_status') == 'needs refit':
+            _raise_fit(row)
     return rows
+
+
+def _raise_fit(row):
+    from .nfl2k5_uniform_equipment_writer import EquipmentFitError, EquipmentRefitError
+    if row.get('budget') is None:
+        raise EquipmentRefitError(row['fit_error'])
+    raise EquipmentFitError(row['budget'], row['required'], row['attempts'], row['suggestion'],
+                            required_is_lower_bound=row['required_is_lower_bound'])
+
+
+def require_equipment_fit(session):
+    """Build gate: check current bytes and name only edits still needing refit."""
+    if not any(key.startswith('tset:') for key in session.modified_asset_ids):
+        return
+    failed = [r for r in equipment_fit_rows(session) if r.get('fit_status') == 'needs refit']
+    if failed:
+        raise ValidationError('\n'.join(
+            f"Cannot build Equipment / uniform set {r['set_selector']} / {r['asset_id']}: "
+            f"needs refit: {r['fit_error']} Use Refit equipment in Build, or revert this item."
+            for r in failed))
 
 
 def equipment_fit_rows(session):
@@ -95,7 +103,10 @@ def cached_equipment_fit_rows(session):
     unmeasured project returns no rows and must say that its fit is pending.
     Build always compiles/checks the bytes independently.
     """
-    rows = getattr(session, "_equipment_fit_receipts", {}).get(_fit_identity(session), ())
+    cache = getattr(session, "_equipment_fit_receipts", None)
+    if not cache:
+        return ()
+    rows = cache.get(_fit_identity(session), ())
     return tuple(dict(row) for row in rows)
 
 
@@ -142,7 +153,7 @@ def stage_equipment_import(session, asset, path, *, independent=None, scale=1, s
             png.write_bytes(with_import_mode(canonical, t.asset_id, rgba, independent=independent, scale=scale))
             replacements.append((copy, png))
             current[t.asset_id] = png
-        # Both clean and mud share one span and one fit, before any mutation.
+        # Keep each variant's fit status, including an existing unresolved sibling.
         checked = _checked_rows(session, current, by_id, selected=asset.asset_id)
         result = session.replace_batch(tuple(replacements), label="Import equipment texture")
         _remember_fit(session, checked)
@@ -155,7 +166,8 @@ def stage_equipment_import(session, asset, path, *, independent=None, scale=1, s
         message = f"Equipment artwork restored in {len(staged)} slots."
     else:
         row = next(r for r in checked if r["asset_id"] == asset.asset_id)
-        fits = sorted({r["fit_summary"] for r in checked if r["asset_id"] in consumer_ids})
+        from .equipment_reporting import fit_caption
+        fits = sorted({fit_caption(r) for r in checked if r["asset_id"] in consumer_ids})
         message = f"Equipment artwork {row['fit_summary']}."
         if row.get("palette_method") == "preserved_retail":
             message += " Retail palette and distance images preserved exactly."
@@ -168,6 +180,68 @@ def stage_equipment_import(session, asset, path, *, independent=None, scale=1, s
                     f"{rule} In-game outcome UNWITNESSED.")
     return EquipmentImportResult(message, receipt, result.changed_asset_ids,
                                  asset.asset_id in result.modified_asset_ids, consumer_ids)
+
+
+def refit_equipment(session, asset_id):
+    """One explicit, undoable reduction: colours at the current size, then size.
+
+    Rewrites only this item's authored PNG. Shared spans are checked with every
+    currently fitting sibling; unresolved siblings retain their original bytes.
+    """
+    from . import nfl2k5_uniform_equipment_writer as writer
+    from .nfl2k5_equipment_import_intent import import_settings, OWN_TEXTURE
+    from .nfl2k5_digit_texture import make_digit_mips
+    by_id, _ = writer.load_targets()
+    target = by_id.get(asset_id)
+    edits = {e.asset_id: e for e in session.iter_edits() if e.asset_id in by_id}
+    if target is None or asset_id not in edits:
+        raise ValidationError('Choose a staged equipment item to refit.')
+    for edit in edits.values():
+        _validate_staged(edit)
+    asset = session._visual_asset(asset_id)
+    payload, rgba = session.asset_io.validate_replacement(asset, edits[asset_id].replacement_path)
+    mode, current_scale = import_settings(payload, asset_id, rgba)
+    independent = mode == OWN_TEXTURE
+    measured = equipment_fit_rows(session)
+    ready = {r['asset_id'] for r in measured if r.get('fit_status') != 'needs refit'}
+    group = [(key, edit.replacement_path) for key, edit in edits.items()
+             if key != asset_id and key in ready
+             and (by_id[key].outer_index, by_id[key].chunk_index)
+                 == (target.outer_index, target.chunk_index)]
+    levels = make_digit_mips(rgba, target.width, target.height, target.mip_levels)
+    seen = set()
+    last = None
+    with tempfile.TemporaryDirectory(prefix='equipment-refit-', dir=session.replacements) as directory:
+        png = Path(directory) / 'refit.png'
+        for scale in ((s for s in (1, 2, 4) if s >= current_scale) if independent else (1,)):
+            for limit in writer.PALETTE_LIMITS:
+                palette, indices, _ = writer._quantize_art(levels[:1], limit)
+                reduced = b''.join(bytes(palette[i]) for i in indices[0])
+                candidate = with_import_mode(writer.encode_rgba_png(target.width, target.height, reduced),
+                    asset_id, reduced, independent=independent, scale=scale)
+                digest = hashlib.sha256(candidate).digest()
+                if digest in seen:
+                    continue
+                seen.add(digest)
+                png.write_bytes(candidate)
+                try:
+                    compiled = writer.build_unified_uniform_equipment_imports(session.cache.pack0,
+                        group + [(asset_id, png)], preflight_only=True, fit_asset_id=asset_id)
+                    prospective = {key: edit.replacement_path for key, edit in edits.items()}
+                    prospective[asset_id] = png
+                    checked = _checked_rows(session, prospective, by_id, selected=asset_id)
+                except writer.EquipmentRefitError as exc:
+                    last = exc
+                    continue
+                row = compiled.edit_templates[target.reference_index]
+                result = session.replace_batch(((asset, png),), label='Refit equipment')
+                _remember_fit(session, checked)
+                message = (f"Equipment {target.set_selector} / {target.name} {row['fit_summary']}; "
+                           f"{compiled.rebuild_info.recompressed_bytes:,} bytes encoded. "
+                           "Fine detail and shades may change. Undo restores the original artwork.")
+                return EquipmentImportResult(message, {'edits': checked}, result.changed_asset_ids,
+                    asset_id in result.modified_asset_ids, (asset_id,))
+    raise ValidationError(f'Refit could not find a fitting colour count or size. {last}')
 
 
 def revert_equipment_import(session, asset):

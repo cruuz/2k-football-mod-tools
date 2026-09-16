@@ -17,8 +17,8 @@ from mod_editor.core.nfl2k5_equipment_lz import compress_equipment_optimal
 from nfl_txtr import HEADER, parse_chunks
 
 
-def tight_fixture(root):
-    f = Fixture(root, margin=0)
+def tight_fixture(root, *, family=8, names=None):
+    f = Fixture(root, margin=0, family=family, names=names)
     raw = bytearray(f.decoded)
     rows = []
     for row in f.rows:
@@ -32,7 +32,7 @@ def tight_fixture(root):
     stored = (len(encoded)+128+15)&~15
     f.span = HEADER.pack(b'TSET', stored, f.chunk.system_bytes, f.chunk.video_bytes,
         0xFEEDBEEF, stored, 0, 0)+encoded+bytes(stored-len(encoded))
-    f.chunk = replace(parse_chunks(f.span)[0], index=8)
+    f.chunk = replace(parse_chunks(f.span)[0], index=family)
     f.pack.write_bytes(f.span)
     rng = random.Random(69)
     rgba = b''.join(bytes((rng.randrange(256),rng.randrange(256),rng.randrange(256),255)) for _ in range(1024))
@@ -57,7 +57,7 @@ class FitTests(unittest.TestCase):
             self.assertEqual(receipt['edits'][0]['encoded_dimensions'],[16,16])
             self.assertEqual(f.pack.read_bytes(),before)
 
-    def test_load_refuses_unhonourable_legacy_group_before_session_mutation(self):
+    def test_load_retains_unhonourable_legacy_group_for_refit(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             f,rgba = tight_fixture(root)
@@ -66,9 +66,14 @@ class FitTests(unittest.TestCase):
             project = root/'legacy.json'
             project.write_bytes(tool.canonical_json(dict(schema=tool.SCHEMA,purpose='legacy own chain',
                 edits=[dict(kind=tool.UNIFORM_EQUIPMENT_KIND,asset_id=asset,png=str(png))])))
-            with f.context(), patch.object(tool,'uniform_equipment_adapter',writer), \
-                 self.assertRaisesRegex(ValueError,'Cannot load equipment edits:.*shoes01.*200 bytes.*Reimport'):
-                tool.read_project(project,equipment_index=f.pack)
+            with f.context(), patch.object(tool,'uniform_equipment_adapter',writer):
+                loaded = tool.read_project(project,equipment_index=f.pack)
+                rows = writer.preflight_project_equipment(f.pack, [(0, asset, png)])
+            self.assertEqual(loaded.value['edits'][0]['asset_id'], asset)
+            self.assertEqual(rows[0]['fit_status'], 'needs refit')
+            self.assertIn('200 bytes', rows[0]['fit_error'])
+            with self.assertRaises(writer.EquipmentFitError):
+                f.build([(asset, png)])
             self.assertEqual(f.pack.read_bytes(),f.span)
 
     def test_legacy_glove_record_retains_full_mip_chain(self):

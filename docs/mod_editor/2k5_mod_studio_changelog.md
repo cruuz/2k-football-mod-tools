@@ -14,6 +14,9 @@
 
 
 - **Modern Arrowhead (Build tab, "Modern Arrowhead (experimental)", `modern_arrowhead`, off in every preset, needs a disc image).** The nine Kansas City home stadium packages (day, afternoon, night; dry, rain, snow) take the 2026 look of GEHA Field at Arrowhead: red seats and tarps, red wall pads with the gold rail and CHIEFS KINGDOM, current fascia boards and wall ads, CHIEFS end zones with the current mark at both ends and at midfield, and Chiefs fan banners. Fourteen embedded textures per package are compiled from authored PNGs into their retail P8 allocations (palette and mips regenerated) and both scenes are refit inside their fixed spans with the retail wrappers untouched; every bundle carries retail and modern pins and the build refuses foreign bundles. The crowd figures, grass, lights, walls and geometry stay retail; Off leaves an already-modern source as it is. Proved offline by byte receipts and decoder read-back (`docs/modern_arrowhead/`); appearance in game is UNWITNESSED.
+
+- **Projects reopen when equipment needs refitting.** An oversized sock or other equipment edit stays in the project with its exact fit error; other edits remain intact. Build names the item needing refit. Normal and mud variants are checked separately and together, and the optimal encoder runs before a compressed-size miss is declared. Build now offers one-click Refit equipment, checking fewer colours before smaller sizes and reporting the resulting fit. Undo restores the original artwork. In-game appearance remains UNWITNESSED.
+
 ## v1.0 RC95, beta 70: the ESPN Monday Night Football 2026 scorebug, modern colour and lighting, and the reports after beta 69 (2026-09-15)
 
 Beta 70 rebuilds the ESPN scorebug to the 2026 Monday Night Football broadcast package, adds a modern colour and lighting option, and answers the ESPN NFL 2K5 reports in Discord after beta 69; bullets are added as each change lands.

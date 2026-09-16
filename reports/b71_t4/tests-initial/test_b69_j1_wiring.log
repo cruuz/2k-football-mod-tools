@@ -1,0 +1,32 @@
+.EE..E.
+======================================================================
+ERROR: test_build_list_method_renders_all_original_indices_and_newest_observed_edit (__main__.AppliedWiringTests.test_build_list_method_renders_all_original_indices_and_newest_observed_edit)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t4/tests/mod_editor/test_b69_j1_wiring.py", line 103, in test_build_list_method_renders_all_original_indices_and_newest_observed_edit
+    render(baseline=True)
+  File "<string>", line 35, in _refresh_build_includes
+NameError: name 'QComboBox' is not defined
+
+======================================================================
+ERROR: test_load_hook_refuses_real_unfit_group_and_cleans_before_session_mutation (__main__.AppliedWiringTests.test_load_hook_refuses_real_unfit_group_and_cleans_before_session_mutation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t4/tests/mod_editor/test_b69_j1_wiring.py", line 128, in test_load_hook_refuses_real_unfit_group_and_cleans_before_session_mutation
+    namespace['load_shareable_project'](owner,root/'old.2k5mod')
+  File "<string>", line 23, in load_shareable_project
+AttributeError: 'types.SimpleNamespace' object has no attribute 'play_route_edits'
+
+======================================================================
+ERROR: test_load_hook_refuses_real_unfit_group_and_cleans_before_session_mutation (__main__.WiringTests.test_load_hook_refuses_real_unfit_group_and_cleans_before_session_mutation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t4/tests/mod_editor/test_b69_j1_wiring.py", line 128, in test_load_hook_refuses_real_unfit_group_and_cleans_before_session_mutation
+    namespace['load_shareable_project'](owner,root/'old.2k5mod')
+  File "<string>", line 23, in load_shareable_project
+AttributeError: 'types.SimpleNamespace' object has no attribute 'play_route_edits'
+
+----------------------------------------------------------------------
+Ran 7 tests in 9.335s
+
+FAILED (errors=3)
