@@ -178,7 +178,7 @@ class ApfStudioFacade:
 
     def playcalling_context(self, team=0, side="offense", progress: Progress = _noop, *, book=None, preview_tendency=None):
         with self._session_lock:
-            progress("Reading team books and staged play-calling edits", 0, 1)
+            progress("Updating the selected book and its staged edits", 0, 1)
             return self._playcalling.context(self.require_session(), team, side, book=book, preview_tendency=preview_tendency)
 
     def playcalling_predict(self, context, side, rows, progress: Progress = _noop):
@@ -210,6 +210,14 @@ class ApfStudioFacade:
         with self._session_lock:
             result = self._playcalling.stage(self.require_session(), review)
             self.last_build = None
+            return result
+
+    def confirm_playcalling(self, requests, progress: Progress = _noop):
+        with self._session_lock:
+            progress("Checking pending play-calling edits", 0, len(requests))
+            result = self._playcalling.confirm(self.require_session(), requests)
+            if result['staged']:
+                self.last_build = None
             return result
 
     def playcalling_snapshot(self):

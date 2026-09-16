@@ -11,10 +11,37 @@ selected side. USER books bring their contents; they use the same call selector.
 Global books supply special teams and may have no ordinary calls to preview.
 
 **Give every team its own book** prepares an independent copy of each team's
-current book on this side. It keeps their different starting contents. Review
-the team, label, donor and clone name in the table, then choose **Confirm and
-stage reviewed edit**. The build inserts the clones together. You can edit a
+current book on this side. It keeps their different starting contents. The
+confirmation checks the team, label, donor and clone name automatically. The build inserts the clones together. You can edit a
 staged clone immediately; its shared donor keeps its own contents.
+
+## Confirm and Pending edits
+
+Each **Confirm** action runs the same writer, personnel and coverage checks
+used by the review. Clean edits stage immediately. **Show review details**
+expands the coverage and retired categories; reading it is optional.
+
+Enable **Add edits to Pending edits** to collect choices across books, teams,
+formations, personnel, Never call, retirement and its run/pass share, audibles,
+requested rows and situation masks. Buttons change to **Add … to pending**.
+The queue captures the selected book and values at the time of the action.
+Previews continue to describe staged edits until you confirm the queue.
+
+**Confirm all** checks every row and their combined effects. A removal cannot
+silently discard another pending edit's formation, and two personnel changes
+cannot jointly empty required coverage. Every blocker names the edit, location,
+cause and next step. Edits on a blocked book stay pending together. Shared
+MASTER or ownership dependencies keep the whole affected batch pending.
+Independent clean edits stage as one transaction and one Undo step. A failed
+write leaves the staged project unchanged. **Undo / clear** removes one draft;
+**Clear pending edits** removes all drafts. Confirm drafts before saving the
+project; pending choices last for this open session only.
+
+Parsed source resources are reused by path, size, modification time and hash.
+Replacing a source or a staged recipe invalidates its cached data. Ordinary
+edits reuse already validated receipts and refresh only the selected book's
+view; the existing copied-game build still replays and verifies the recipe.
+MASTER controls retain their experimental warning and affect every book.
 
 ## Live call preview
 
@@ -58,17 +85,17 @@ accessible description, with the main rules printed beside the controls.
 | Control | What the game does with it |
 |---|---|
 | Short, medium and long ratings, 0–7 | A **lower** raw number makes the game weigh this formation more: the first field for short yardage, the second for medium, the third for long. 0 is the strongest setting and 4 through 7 all share the weakest. |
-| Stage formation ratings | Uses those three ratings for this formation in the built book. |
+| Confirm formation ratings | Uses those three ratings for this formation in the built book. |
 | Play X rating, 0–7 | Weighs lower X ratings more heavily; **0 = called most**. |
-| Stage play rating | Uses that X rating for this play in this formation. |
+| Confirm play rating | Uses that X rating for this play in this formation. |
 | Primary personnel | Advertises the formation under this main personnel category. |
 | Checked secondary personnel | Also makes the formation reachable under those personnel categories. |
-| Review personnel change | Shows the lineup resolver's remaining row coverage before staging the new categories. |
+| Confirm personnel change | Shows the lineup resolver's remaining row coverage before staging the new categories. |
 | Remove formation | Removes this formation's records and plays from this book after coverage review. |
 | Retire personnel | Strikes the category from surviving primary and secondary memberships when the writer can preserve a valid book. |
 | Team run share | Starts from this team's run percentage, then adjusts it for the situation; it affects this team even when its book is shared. |
-| Stage team run/pass tendency | Saves that starting run share for this team in the built roster. |
-| Stage balanced CPU audibles | Uses existing run and pass plays for the formation's audible slots; formations lacking either kind cannot be balanced. |
+| Confirm team run/pass tendency | Saves that starting run share for this team in the built roster. |
+| Confirm balanced CPU audibles | Uses existing run and pass plays for the formation's audible slots; formations lacking either kind cannot be balanced. |
 
 The raw formation numbers are **not** a conventional “higher is better” scale.
 For equal ratings the game weighs 0/0/0 as category 3 and formation 0.5, 1/1/1 as
@@ -82,8 +109,9 @@ brief's heavy 7/7/7 goal-line recipe therefore favours the *other* formations: u
 raw 0/0/0 on the heavy set and 7/7/7 on the sets you want called less.
 These are P3's measured values from `docs/mod_editor/apf_b67_play_calling.md`.
 
-For removals and personnel changes, **Review before staging** names retired
-categories and lists every requested row with its remaining candidates.
+For removals and personnel changes, **Confirm** checks retired categories
+and every requested row with its remaining candidates. Optional review details
+show the results.
 When the research classifies the lineup resolver's callers as non-CPU, an
 uncovered row is a warning that you can confirm. If a CPU caller reaches it,
 or classification is still unknown, the page refuses the unsafe change and

@@ -1,0 +1,32 @@
+.F...F.....F.
+======================================================================
+FAIL: test_every_book_lever_stages_and_refreshes (__main__.QtTests.test_every_book_lever_stages_and_refreshes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-apf6/tests/mod_editor/test_apf_playcalling_editor_qt.py", line 89, in test_every_book_lever_stages_and_refreshes
+    self.assertEqual(kind(), "retire")
+AssertionError: 'tendency' != 'retire'
+- tendency
++ retire
+
+
+======================================================================
+FAIL: test_review_own_book_table_then_stage_and_undo (__main__.QtTests.test_review_own_book_table_then_stage_and_undo)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-apf6/tests/mod_editor/test_apf_playcalling_editor_qt.py", line 58, in test_review_own_book_table_then_stage_and_undo
+    self.assertFalse(self.facade.session.modifications)
+AssertionError: (Modification(asset_id='apf:playbooks:cpu-playcalling', kind='apf_playcalling', replacement_path=PosixPath('/tmp/apf-playcalling-test-j4k8jvig/cache/sessions/1aa64bada248435881d6cce53047b09e/replacements/c0f3483302988043d1eddd5b20ed923f9fbea806cc44e35a3098dcc4abfc5ea8.json'), replacement_sha256='c0f3483302988043d1eddd5b20ed923f9fbea806cc44e35a3098dcc4abfc5ea8', metadata={'schema': 'apf_playcalling/v1'}),) is not false
+
+======================================================================
+FAIL: test_warning_and_refusal_show_coverage_and_retired_names (__main__.QtTests.test_warning_and_refusal_show_coverage_and_retired_names)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-apf6/tests/mod_editor/test_apf_playcalling_editor_qt.py", line 99, in test_warning_and_refusal_show_coverage_and_retired_names
+    self.assertEqual(self.panel.confirm_button.isEnabled(), callers == "non_cpu")
+AssertionError: True != False
+
+----------------------------------------------------------------------
+Ran 13 tests in 4.334s
+
+FAILED (failures=3)

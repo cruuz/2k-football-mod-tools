@@ -19,23 +19,88 @@ import apf_outer
 import playbook_inventory
 
 
-def book_catalog(index):
-    archive = apf_outer.parse_archive(index)
-    labels = identity.parse_roster_identity(identity.read_disc_roster(index)).labels
+class BookSourceCache:
+    """Session-local, bounded resource cache for an immutable source export.
+
+    Watch the index and the packs containing books, MASTER and ROST. Hash the
+    compressed resource span when its file identity changes, not a multi-GB
+    pack on each edit. A change elsewhere in a pack retains unchanged books.
+    ctime/inode also detect replacements which preserve size and mtime.
+    """
+    def __init__(self):
+        self.files = {}
+        self.resources = {}
+        self.archive = None
+        self.index_key = None
+
+    @staticmethod
+    def stat_key(path):
+        path = Path(path).resolve()
+        stat = path.stat()
+        return (str(path), stat.st_size, stat.st_mtime_ns, stat.st_ctime_ns, stat.st_ino)
+
+    def open(self, index):
+        key = self.stat_key(index)
+        if self.index_key != key:
+            payload = Path(index).read_bytes()
+            index_key = (*key, hashlib.sha256(payload).hexdigest())
+            self.archive = apf_outer.parse_archive(Path(index))
+            self.resources.clear()
+            self.files.clear()
+            self.index_key = key
+            self.index_identity = index_key
+        return self.archive
+
+    def token(self, index):
+        self.open(index)
+        return (self.index_identity, tuple(self.stat_key(path) for path in sorted(self.files)))
+
+    def resource(self, index, name_id, read):
+        archive = self.open(index)
+        entries = [e for e in archive.entries if e.name_id == name_id]
+        if len(entries) != 1:
+            raise ValidationError('A named book resource is missing or duplicated; reopen the source export')
+        entry = entries[0]
+        paths = sorted({archive.packs[s.pack_ordinal].path for s in entry.segments})
+        stamps = tuple(self.stat_key(path) for path in paths)
+        self.files.update(dict.fromkeys(paths))
+        old = self.resources.get(name_id)
+        if old is not None and old[0] == stamps:
+            return old[2]
+        import apf_inner
+        with apf_inner.ArchiveReader(archive) as reader:
+            sha = hashlib.sha256(reader.read(entry, 0, entry.size)).hexdigest()
+        value = old[2] if old is not None and old[1] == sha else read()
+        if stamps != tuple(self.stat_key(path) for path in paths):
+            raise ValidationError('The source export changed while reading; finish copying it and refresh')
+        self.resources[name_id] = (stamps, sha, value)
+        return value
+
+    def roster(self, index):
+        import apf_roster
+        return self.resource(index, apf_roster.OUTER_NAME_ID, lambda: identity.read_disc_roster(index))
+
+
+def book_catalog(index, cache=None):
+    archive = cache.open(index) if cache else apf_outer.parse_archive(index)
+    labels = identity.parse_roster_identity(cache.roster(index) if cache else identity.read_disc_roster(index)).labels
     names = set(splb.STOCK_BOOKS.values()) | {label.kind for label in labels}
     by_id = {entry.name_id: entry for entry in archive.entries}
     books = {}
     for name in sorted(names):
         entry = by_id.get(identity.filename_id(name))
         if entry is not None:
-            book = splb.read_book(index, entry.table_index)
+            read = lambda: splb.read_book(index, entry.table_index)
+            book = cache.resource(index, entry.name_id, read) if cache else read()
             if book.name != name:
                 raise ValidationError('Book label type and resource name disagree')
             books[entry.table_index] = book
     return books
 
 
-def master_inventory(index):
+def master_inventory(index, cache=None):
+    if cache is not None:
+        return cache.resource(index, zlib.crc32(b'PLAYBOOK_MASTER.IFF'), lambda: master_inventory(index))
     source = identity.read_resource(index, zlib.crc32(b'PLAYBOOK_MASTER.IFF'), 'mpb', 'PLAY')
     return playbook_inventory.parse_apf_body(source[3], source[1].table_index, 0), source[3]
 

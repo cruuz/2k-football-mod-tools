@@ -2,6 +2,8 @@
 
 ## 0.1.0-alpha.92 — beta 71: CPU play calling situations and the play-calling page (in progress, 2026-09-15)
 
+- CPU Play Calling keeps source books and validated staged edits in memory, so a single edit updates its affected book. Confirm runs the existing checks automatically, with optional review details and inline fixes for blockers. Pending edits collects personnel, formations, Never call, retirement with run/pass share, tendencies, audibles, requested rows and situation masks; Confirm all checks their interactions and stages the clean set in one Undo step. Blocked rows stay available to clear. MASTER personnel still affects every book.
+
 - CPU Play Calling adds optional per-book exclusions in twelve live down and distance buckets. Both native draws use the independent mask; an empty filtered draw falls back to its original candidates and records the fallback. Enable it explicitly and install the matching BASE or TU 1.1 patch. No preset stages it; gameplay remains unwitnessed.
 - Live situations show the computed personnel request and the editable stored comparison row with its scope of all books. An empty TE depth list substitutes an FB. Masks and row edits support preview, undo, project save/reload and build receipts. See the [APF-4 proof and retest guide](../research/apf_b71_apf4.md).
 

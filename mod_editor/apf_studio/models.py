@@ -147,10 +147,11 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
         _actions(ApfProductAction.PREVIEW, ApfProductAction.REPLACE,
                  ApfProductAction.REVERT, ApfProductAction.BUILD_COPY),
         replace_method="stage_playcalling",
+        additional_replace_methods=("confirm_playcalling",),
         revert_method="revert",
         product_note=(
-            "CPU Play Calling reviews named team books and stages an authored "
-            "recipe with Undo, Save Project and copied-game Build. The tab "
+            "CPU Play Calling confirms individual or pending edits with automatic "
+            "checks and stages one authored recipe with Undo, Save Project and copied-game Build. The tab "
             "predicts calls in a worker. Gameplay UNWITNESSED."
         ),
     )

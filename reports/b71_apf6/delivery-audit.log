@@ -1,0 +1,25 @@
+{
+  "base": "cea8a3c85db408dafeea15b361faee9d05be33a7",
+  "total_capabilities": 176,
+  "apf_capabilities": 73,
+  "new_rows": 0,
+  "capability_id_set_sha256": "a5e791c1047da40e2d13827d93b97b9510de5676742e9777b0a049d2b274fa46",
+  "scratch_bytes": 36697643,
+  "h7a_mode": "0755",
+  "changed_paths": [
+    "docs/mod_editor/apf2k8_mod_studio_changelog.md",
+    "docs/mod_editor/apf_b67_play_calling_editor.md",
+    "mod_editor/apf_studio/book_content.py",
+    "mod_editor/apf_studio/facade.py",
+    "mod_editor/apf_studio/models.py",
+    "mod_editor/apf_studio/playcalling_editor_qt.py",
+    "mod_editor/apf_studio/playcalling_service.py",
+    "mod_editor/apf_studio/situation_mask_qt.py",
+    "mod_editor/capabilities/registry.v1.json",
+    "tests/mod_editor/test_apf_b69_editor_qt.py",
+    "tests/mod_editor/test_apf_b71_editor_workflow.py",
+    "tests/mod_editor/test_apf_b71_editor_workflow_qt.py",
+    "tests/mod_editor/test_apf_playcalling_editor_qt.py"
+  ],
+  "gameplay": "UNWITNESSED"
+}

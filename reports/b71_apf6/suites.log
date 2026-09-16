@@ -1,0 +1,217 @@
+PASS test_apf_audio_annotation_facade.py exit=0
+PASS test_apf2k8_playbook_route_writer.py exit=0
+PASS test_apf_audio_batch_export.py exit=0
+PASS test_apf_audio_annotations.py exit=0
+PASS test_apf_all_crest_slots.py exit=0
+PASS test_apf_audio_batch_facade.py exit=0
+PASS test_apf2k8_coverage_tuning.py exit=0
+PASS test_apf_audio_batch_gui.py exit=0
+PASS test_apf_audio_drop_zone_gui.py exit=0
+PASS test_apf_audio_encoder_gui.py exit=0
+PASS test_apf_audio_pcm_product_backend.py exit=0
+PASS test_apf_audio_decode_cancellation.py exit=0
+PASS test_apf_audio_waveform_qt.py exit=0
+PASS test_apf_audio_replacement_pack.py exit=0
+PASS test_apf_audo_exact_slot.py exit=0
+PASS test_apf_audo_product_backend.py exit=0
+PASS test_apf_audo_project.py exit=0
+PASS test_apf_ausb_product_backend.py exit=0
+PASS test_apf_audio_import_idle_barrier.py exit=0
+PASS test_apf_b661_ladder.py exit=0
+PASS test_apf_b66_appearance.py exit=0
+PASS test_apf_audio_encoding.py exit=0
+PASS test_apf_b66_personnel.py exit=0
+PASS test_apf_ausb_exact_slot.py exit=0
+PASS test_apf_b661_book_content.py exit=0
+PASS test_apf_b67_clone.py exit=0
+PASS test_apf_b67_books_qt.py exit=0
+PASS test_apf_b67_static_audit.py exit=0
+PASS test_apf_b67_writers.py exit=0
+PASS test_apf_b67_model_edges_native.py exit=0
+PASS test_apf_b67_xenia_patch.py exit=0
+PASS test_apf_b69_build.py exit=0
+PASS test_apf_b69_control_audit.py exit=0
+PASS test_apf_b67_defense_model_native.py exit=0
+PASS test_apf_b69_formation_calling.py exit=0
+PASS test_apf_b69_launch_patches.py exit=0
+FAIL test_apf_b69_editor_qt.py exit=1
+{"command": ["/home/noah/2k-worktrees/astra-b71-apf6/.scratch/test-python/bin/python3", "tests/mod_editor/test_apf_b69_editor_qt.py"], "started_utc": "2026-09-16T06:37:42.258928+00:00", "elapsed_seconds": 79.219, "exit_code": 1, "log": "reports/b71_apf6/test_apf_b69_editor_qt.log"}
+test_atomic_clone_scheme_undo_and_saved_recipe_replay (__main__.EditorTests.test_atomic_clone_scheme_undo_and_saved_recipe_replay) ... ok
+test_never_call_restores_original_membership_and_undo (__main__.EditorTests.test_never_call_restores_original_membership_and_undo) ... ok
+test_scheme_review_stage_export_undo_and_52_real_name (__main__.EditorTests.test_scheme_review_stage_export_undo_and_52_real_name) ... FAIL
+test_shared_book_bypass_and_tampered_review_refused (__main__.EditorTests.test_shared_book_bypass_and_tampered_review_refused) ... ok
+
+======================================================================
+FAIL: test_scheme_review_stage_export_undo_and_52_real_name (__main__.EditorTests.test_scheme_review_stage_export_undo_and_52_real_name)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-apf6/tests/mod_editor/test_apf_b69_editor_qt.py", line 32, in test_scheme_review_stage_export_undo_and_52_real_name
+    self.assertFalse(self.facade.session.modifications)
+AssertionError: (Modification(asset_id='apf:playbooks:cpu-playcalling', kind='apf_playcalling', replacement_path=PosixPath('/tmp/apf-playcalling-test-jx05onzr/cache/sessions/c711143a834649cab5d16c1a70418670/replacements/81fb8953fca5bb427b99bee40f24d5d0110b96f0929d7264d260ca2ecfa880f3.json'), replacement_sha256='81fb8953fca5bb427b99bee40f24d5d0110b96f0929d7264d260ca2ecfa880f3', metadata={'schema': 'apf_playcalling/v1'}),) is not false
+
+----------------------------------------------------------------------
+Ran 4 tests in 78.822s
+
+FAILED (failures=1)
+
+
+PASS test_apf_b69_retirement_native.py exit=0
+PASS test_apf_b67_writers_native.py exit=0
+PASS test_apf_b69_wiring.py exit=0
+PASS test_apf_b69_schemes.py exit=0
+PASS test_apf_b71_editor_workflow.py exit=0
+PASS test_apf_b71_editor_workflow_qt.py exit=0
+PASS test_apf_b71_situation_mask.py exit=0
+PASS test_apf_b71_situation_mask_abi.py exit=0
+PASS test_apf_b71_situation_mask_install.py exit=0
+PASS test_apf_b70_stock_recipes.py exit=0
+PASS test_apf_b71_situation_mask_qt.py exit=0
+PASS test_apf_b71_situations.py exit=0
+PASS test_apf_book_identity_qt.py exit=0
+PASS test_apf_book_unlock.py exit=0
+PASS test_apf_book_unlock_retail.py exit=0
+PASS test_apf_browser_workspace_handoff.py exit=0
+PASS test_apf_build_ausb_overlays.py exit=0
+PASS test_apf_build_raw_span_overlays.py exit=0
+PASS test_apf_capability_action_parity.py exit=0
+PASS test_apf_copied_volume_metadata.py exit=0
+PASS test_apf_coverage_research_tools.py exit=0
+PASS test_apf_cpu_audibles.py exit=0
+PASS test_apf_crest_budget_import.py exit=0
+PASS test_apf_crest_fit.py exit=0
+PASS test_apf_cross_domain_audio_safety.py exit=0
+PASS test_apf_cubemap_face0_preview.py exit=0
+PASS test_apf_custom_team_appearance_gui.py exit=0
+PASS test_apf_custom_team_appearance_patch.py exit=0
+PASS test_apf_defense_research_identity.py exit=0
+PASS test_apf_b71_situation_mask_native.py exit=0
+PASS test_apf_digital_font.py exit=0
+PASS test_apf_dxn_base_only_namefont.py exit=0
+PASS test_apf_dxt5a_general_preview.py exit=0
+PASS test_apf_defense_research_native.py exit=0
+PASS test_apf_export.py exit=0
+PASS test_apf_external_audio_bank_bundle.py exit=0
+PASS test_apf_field_art.py exit=0
+PASS test_apf_field_art_gui.py exit=0
+PASS test_apf_endzone_dxt5a.py exit=0
+PASS test_apf_field_art_stock_label.py exit=0
+PASS test_apf_b69_native.py exit=0
+PASS test_apf_field_material_project.py exit=0
+PASS test_apf_field_material_writer.py exit=0
+PASS test_apf_formation_alignment_writer.py exit=0
+PASS test_apf_fourth_down.py exit=0
+PASS test_apf_field_extra_roundtrip.py exit=0
+PASS test_apf_fourth_down_qt.py exit=0
+PASS test_apf_full_shell_visual_gate.py exit=0
+PASS test_apf_g12_surfaces.py exit=0
+PASS test_apf_helmet_crest_design_product.py exit=0
+PASS test_apf_helmet_logo_placement.py exit=0
+PASS test_apf_helmet_logo_regions.py exit=0
+PASS test_apf_helmet_logo_regions_qt.py exit=0
+PASS test_apf_import_offers_resize.py exit=0
+PASS test_apf_iso_extraction_is_layout_tolerant.py exit=0
+PASS test_apf_linear_txtr_png.py exit=0
+PASS test_apf_fourth_down_native.py exit=0
+PASS test_apf_logo_surface_ownership.py exit=0
+PASS test_apf_logo_patch.py exit=0
+PASS test_apf_mask_preview_alpha.py exit=0
+PASS test_apf_model_export_gui.py exit=0
+PASS test_apf_field_art_patch.py exit=0
+PASS test_apf_logocache_patch.py exit=0
+PASS test_apf_number_encode_defaults.py exit=0
+PASS test_apf_package_map_writer.py exit=0
+PASS test_apf_pass_fetch_export_qt.py exit=0
+PASS test_apf_model_import.py exit=0
+PASS test_apf_play_designer_project.py exit=0
+PASS test_apf_play_designer_qt.py exit=0
+PASS test_apf_playbook_route_gui.py exit=0
+PASS test_apf_play_designer.py exit=0
+PASS test_apf_playcall_patch.py exit=0
+PASS test_apf_playcalling_editor_build.py exit=0
+PASS test_apf_playcalling_editor_facade.py exit=0
+PASS test_apf_playcalling_editor_patches.py exit=0
+PASS test_apf_playcalling_editor_qt.py exit=0
+PASS test_apf_player_position_patch.py exit=0
+PASS test_apf_player_position_product_backend.py exit=0
+PASS test_apf_player_positions.py exit=0
+PASS test_apf_player_rating_patch.py exit=0
+PASS test_apf_b67_model_native.py exit=0
+PASS test_apf_player_rating_product_backend.py exit=0
+PASS test_apf_player_ratings.py exit=0
+PASS test_apf_product_findings.py exit=0
+PASS test_apf_product_findings_gui.py exit=0
+PASS test_apf_product_validation_wrappers.py exit=0
+PASS test_apf_player_rating_sheet_import.py exit=0
+PASS test_apf_project_streaming.py exit=0
+PASS test_apf_ps3_probes.py exit=0
+PASS test_apf_ps3_roster_convert.py exit=0
+PASS test_apf_ps3_roster_import_qt.py exit=0
+PASS test_apf_project_document_workflow.py exit=0
+PASS test_apf_ps3_speed.py exit=0
+PASS test_apf_ps3_speed_packages.py exit=0
+PASS test_apf_ps3_texture_bundle_qt.py exit=0
+PASS test_apf_public_docs_registry_current.py exit=0
+PASS test_apf_rating_value_domains.py exit=0
+PASS test_apf_retail_crest_channel_audit.py exit=0
+PASS test_apf_roster_appearance_transfer.py exit=0
+PASS test_apf_roster_appearance_transfer_qt.py exit=0
+PASS test_apf_ps3_texture_bundle.py exit=0
+PASS test_apf_roster_identity_gui.py exit=0
+PASS test_apf_roster_workspace.py exit=0
+PASS test_apf_roster_workspace_gui.py exit=0
+PASS test_apf_save_playbook_assignments_gui.py exit=0
+PASS test_apf_roster_identity.py exit=0
+PASS test_apf_save_roster_players_gui.py exit=0
+PASS test_apf_scorebug_workspace_qt.py exit=0
+PASS test_apf_save_roster_players.py exit=0
+PASS test_apf_splb_add_multiple_formations.py exit=0
+PASS test_apf_splb_formation_personnel.py exit=0
+PASS test_apf_splb_tag_reassignment.py exit=0
+PASS test_apf_splb_writer.py exit=0
+PASS test_apf_stadium_material_findings.py exit=0
+PASS test_apf_stadium_model_import.py exit=0
+PASS test_apf_stadium_studio.py exit=0
+PASS test_apf_stadium_studio_gui.py exit=0
+PASS test_apf_playcall_research_native.py exit=0
+PASS test_apf_stfs_roster_rehash.py exit=0
+PASS test_apf_studio_audio_gui.py exit=0
+PASS test_apf_studio_core.py exit=0
+PASS test_apf_studio_draft_logo.py exit=0
+PASS test_apf_shell_search_accessibility_qt.py exit=0
+PASS test_apf_studio_inspectors.py exit=0
+PASS test_apf_studio_safety.py exit=0
+PASS test_apf_studio_text_edit.py exit=0
+PASS test_apf_team_art.py exit=0
+PASS test_apf_team_art_qt.py exit=0
+PASS test_apf_team_crest_selection.py exit=0
+PASS test_apf_studio_installer.py exit=0
+PASS test_apf_text_sheet_gui.py exit=0
+PASS test_apf_team_logo_gui.py exit=0
+PASS test_apf_textlogo_gui.py exit=0
+PASS test_apf_number_texture_writer.py exit=0
+PASS test_apf_uniform_allocation_capacity.py exit=0
+PASS test_apf_theme_layout_qt.py exit=0
+PASS test_apf_uniform_equipment_colors_gui.py exit=0
+PASS test_apf_uniform_independence.py exit=0
+PASS test_apf_uniform_equipment_colors.py exit=0
+PASS test_apf_uniform_inventory_gui.py exit=0
+PASS test_apf_wordmark_regions.py exit=0
+PASS test_apf_wave_integration.py exit=0
+PASS test_apf_xenia_edge.py exit=0
+PASS test_apf_xenos_4444_mip_layout.py exit=0
+PASS test_apf_xenos_4444_png.py exit=0
+PASS test_apf_xenos_extra_formats_png.py exit=0
+PASS test_apf_xex_image.py exit=0
+PASS test_apf_stadium_texture.py exit=0
+PASS test_apf_xma1_wizard_gui.py exit=0
+PASS test_apf_textlogo_writer.py exit=0
+PASS test_provider_integrity.py exit=0
+PASS test_product_catalog.py exit=0
+PASS test_phase1_packaging.py exit=0
+PASS test_capability_registry_module_commands.py exit=0
+PASS test_studio_qt_models.py exit=0
+PASS test_apf_workspace_recovery.py exit=0
+PASS test_b69_a1_playcalling.py exit=0
+PASS test_apf_xex_image_retail.py exit=0
+PASS test_studio_shell_layout_qt.py exit=0
+Completed 196 standalone suites; failures: ['test_apf_b69_editor_qt.py']

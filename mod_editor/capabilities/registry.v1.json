@@ -2634,7 +2634,9 @@
         "tests/mod_editor/test_apf_b71_situation_mask_native.py",
         "tests/mod_editor/test_apf_b71_situation_mask_qt.py",
         "tests/mod_editor/test_apf_b71_situation_mask_abi.py",
-        "tests/mod_editor/test_apf_b71_situation_mask_install.py"
+        "tests/mod_editor/test_apf_b71_situation_mask_install.py",
+        "tests/mod_editor/test_apf_b71_editor_workflow.py",
+        "tests/mod_editor/test_apf_b71_editor_workflow_qt.py"
       ],
       "game": "apf2k8_xbox360",
       "gui": {
@@ -2674,7 +2676,7 @@
             "required": true
           }
         ],
-        "notes": "The facade stages one authored recipe containing ordered, undoable edit receipts; the copied-game builder applies it after existing asset edits."
+        "notes": "The facade stages one authored recipe containing ordered, undoable edit receipts; the copied-game builder applies it after existing asset edits. Confirm invokes the existing review checks automatically. Pending edits are checked together; independent clean edits stage atomically and blocked dependencies remain pending. Source resources and validated receipt prefixes are cached with identity invalidation."
       },
       "source_container": {
         "format": "APF SPLB, MASTER PLAY and ROST; authored Xenia TOML for patches",
