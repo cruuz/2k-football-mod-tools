@@ -51,6 +51,19 @@ class AllocationTests(unittest.TestCase):
   current=sprite.compile_folder()
   self.assertEqual(c.table,current.table)
   self.assertEqual(c.material_order,current.material_order)
+ def test_overlaps_follow_native_anchors_in_custom_layouts(self):
+  spec,image=sprite.load_layout()
+  clock=next(r for r in spec['fields'] if r['name']=='play_clock')
+  clock['anchor']=[950,955];clock['z']=-16
+  with tempfile.TemporaryDirectory() as directory:
+   p=Path(directory);image.save(p/'template.png');(p/'layout.json').write_text(json.dumps(spec))
+   c=sprite.compile_folder(p)
+  # Its declared box still lies over the red clock cell, but its native glyphs
+  # now overlap the down label. The later label must cover those clock glyphs.
+  by_name={q['name']:q for q in c.quads}
+  a,b=by_name['play_clock:0'],by_name['down:0']
+  self.assertLess((c.material_order.index(a['material']),a['layer_rank']),
+                  (c.material_order.index(b['material']),b['layer_rank']))
 
 @unittest.skipUnless((ROOT/'extracted/ESPN NFL 2K5 (USA)/default.xbe').is_file() and importlib.util.find_spec('unicorn'),'Retail and Unicorn required')
 class NativeOrderTests(unittest.TestCase):

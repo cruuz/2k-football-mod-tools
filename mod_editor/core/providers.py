@@ -701,7 +701,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_scorebug_ingame.py": "7b37ab8120a1bfe7322cf074fbfa8bf095a21daf54311f038927f83f35a5e81a",
         "mod_editor/core/nfl2k5_scorebug_mnf_font.py": "fa2c3a006af66af408345ace6bc43870d8b92dae90b93cb8c8969628737cffd7",
         "mod_editor/core/nfl2k5_scorebug_resources.py": "efab76f29c174bca8efe8c296d9dee13bd8d10e10949c9c1b614aeaf9e87d187",
-        'mod_editor/core/nfl2k5_scorebug_sprite.py': '81f02a7e3216225ecfa12a90714ace90d68f8fc78ff98a1bc2eda5ec720a6a4e',
+        'mod_editor/core/nfl2k5_scorebug_sprite.py': 'dd55a124f4835375055a1029aad5fb3e0b4a3afce6bf850eca2d507038171028',
         'mod_editor/core/nfl2k5_scorebug_sprite_code.py': 'df3ee27bca7d94abaccadc79a00e7ca8ac2d877b52585a12cf9d1a271f9c9283',
         'tools/nfl2k5_scorebug_exact.py': '69e80b09ede53a5e0658c7561deb2e08acfd56bff82effdf6048573120af2c82',
         'tools/nfl2k5_scorebug_projection.py': 'eb8aa363908f049515ee79cb30ea92fa516a4dfe70a0a446a1b704925f831fa7',

@@ -175,11 +175,25 @@ def _allocate_layers(layers, spec):
     capacities = [(words-4)//3 for _, words in scene.layout.SUBMESH_COMMANDS]
     direction = 1 if spec.get('layer_order') == 'increasing-z' else -1
     ordered = sorted(range(len(layers)), key=lambda i: (direction*layers[i].get('z', 0), i))
+    def footprint(row):
+        if 'slots' not in row:
+            return row['box']
+        # Runtime placement uses the anchor, not the declared box's origin.
+        # Include raised glyphs and the full compressed field width so custom
+        # anchors cannot introduce an overlap absent from the allocation graph.
+        x,y = row['anchor']; width = row['box'][2]-row['box'][0]
+        left = x-width*(0.5 if row['alignment']=='center' else 1 if row['alignment']=='right' else 0)
+        glyphs = spec['glyph_sets'][row['glyph_set']]
+        factor = row['size']/glyphs['cap_height']
+        top = min(-g.get('raise',0)*factor for g in glyphs['glyphs'].values())
+        bottom = max((g['size'][1]-g.get('raise',0))*factor for g in glyphs['glyphs'].values())
+        return left,y+top,left+width,y+bottom
+    boxes = [footprint(row) for row in layers]
     overlaps = []
     for at, i in enumerate(ordered):
-        a = layers[i]['box']
+        a = boxes[i]
         for j in ordered[at+1:]:
-            b = layers[j]['box']
+            b = boxes[j]
             if max(a[0], b[0]) < min(a[2], b[2]) and max(a[1], b[1]) < min(a[3], b[3]):
                 overlaps.append((i, j))
     costs = [r.get('slots', 1) for r in layers]
