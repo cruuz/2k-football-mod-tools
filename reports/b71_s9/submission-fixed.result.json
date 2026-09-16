@@ -1,0 +1,11 @@
+{
+  "name": "submission-fixed",
+  "argv": [
+    "python3",
+    "reports/b71_s9/probe_submission.py"
+  ],
+  "start_utc": "2026-09-16T23:28:46.674105+00:00",
+  "end_utc": "2026-09-16T23:29:03.848765+00:00",
+  "seconds": 17.175,
+  "exit_code": 0
+}

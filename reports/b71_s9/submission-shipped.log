@@ -1,0 +1,9 @@
+last_visits ['0x2493a', '0x2493e', '0x24540', '0x24543', '0x24546', '0x24549', '0x2454b', '0x2454f', '0x24555', '0x24559', '0x2455f', '0x24562', '0x24566', '0x2456c', '0x24570', '0x24572', '0x24574', '0x24578', '0x2458b', '0x2458d']
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s9/reports/b71_s9/probe_submission.py", line 21, in <module>
+    m.run(0x243d0,(m.get(b+256+0x20),0,0),ecx=b+scene.layout.SHAPE,edx=c['matrices'],limit=200000)
+  File "/home/noah/2k-worktrees/astra-b71-s9/tools/nfl2k5_scorebug_projection.py", line 186, in run
+    self.uc.emu_start(va, self.STOP, count=limit)
+  File "/home/noah/.local/lib/python3.12/site-packages/unicorn/unicorn_py3/unicorn.py", line 766, in emu_start
+    raise UcError(status)
+unicorn.unicorn_py3.unicorn.UcError: Invalid memory read (UC_ERR_READ_UNMAPPED)

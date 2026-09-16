@@ -1,0 +1,11 @@
+{
+  "name": "delivery-inputs",
+  "argv": [
+    "python3",
+    "reports/b71_s9/verify_delivery_inputs.py"
+  ],
+  "start_utc": "2026-09-16T23:30:13.938975+00:00",
+  "end_utc": "2026-09-16T23:30:14.305122+00:00",
+  "seconds": 0.366,
+  "exit_code": 0
+}

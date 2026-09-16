@@ -1,0 +1,12 @@
+{
+  "name": "owner-reproducible",
+  "argv": [
+    "python3",
+    "tools/scorebug_sprite/build_runtime.py",
+    "--check"
+  ],
+  "start_utc": "2026-09-16T23:33:10.977342+00:00",
+  "end_utc": "2026-09-16T23:33:11.129085+00:00",
+  "seconds": 0.152,
+  "exit_code": 0
+}

@@ -1,0 +1,14 @@
+test_ambiguous_stadium_surface_and_team_identity_are_explicit (__main__.ProductCatalogTests.test_ambiguous_stadium_surface_and_team_identity_are_explicit) ... ok
+test_category_and_global_counts_match_the_registry (__main__.ProductCatalogTests.test_category_and_global_counts_match_the_registry) ... ok
+test_classification_maps_to_product_language (__main__.ProductCatalogTests.test_classification_maps_to_product_language) ... ok
+test_complete_sidebar_is_present_in_mandated_order (__main__.ProductCatalogTests.test_complete_sidebar_is_present_in_mandated_order) ... ok
+test_crib_capability_is_owned_only_by_the_crib (__main__.ProductCatalogTests.test_crib_capability_is_owned_only_by_the_crib) ... ok
+test_every_nfl_capability_is_assigned_exactly_once (__main__.ProductCatalogTests.test_every_nfl_capability_is_assigned_exactly_once) ... ok
+test_findings_hooks_add_normalized_deduplicated_notes_only (__main__.ProductCatalogTests.test_findings_hooks_add_normalized_deduplicated_notes_only) ... ok
+test_findings_hooks_reject_non_string_notes (__main__.ProductCatalogTests.test_findings_hooks_reject_non_string_notes) ... ok
+test_streaming_audio_blocker_preserves_complete_research_boundary (__main__.ProductCatalogTests.test_streaming_audio_blocker_preserves_complete_research_boundary) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.045s
+
+OK

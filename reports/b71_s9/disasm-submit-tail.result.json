@@ -1,0 +1,12 @@
+{
+  "name": "disasm-submit-tail",
+  "argv": [
+    "python3",
+    "reports/b71_s9/disassemble.py",
+    "245b9:249b0"
+  ],
+  "start_utc": "2026-09-16T23:08:36.796829+00:00",
+  "end_utc": "2026-09-16T23:08:37.032064+00:00",
+  "seconds": 0.235,
+  "exit_code": 0
+}

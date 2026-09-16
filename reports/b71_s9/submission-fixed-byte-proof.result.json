@@ -1,0 +1,11 @@
+{
+  "name": "submission-fixed-byte-proof",
+  "argv": [
+    "python3",
+    "reports/b71_s9/probe_submission.py"
+  ],
+  "start_utc": "2026-09-16T23:32:13.181586+00:00",
+  "end_utc": "2026-09-16T23:32:30.507291+00:00",
+  "seconds": 17.326,
+  "exit_code": 0
+}

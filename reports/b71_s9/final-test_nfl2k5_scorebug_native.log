@@ -1,0 +1,10 @@
+test_exact_async_chain_old_and_new_end_and_setup_registration_order (__main__.NativeTests.test_exact_async_chain_old_and_new_end_and_setup_registration_order) ... ok
+test_native_decompressor_matches_refitted_scene_and_atlas_in_place (__main__.NativeTests.test_native_decompressor_matches_refitted_scene_and_atlas_in_place) ... ok
+test_native_loader_wait_and_gpu_fence_are_distinct_bounded_witnesses (__main__.NativeTests.test_native_loader_wait_and_gpu_fence_are_distinct_bounded_witnesses) ... ok
+test_native_uncompressed_allocation_failure_advances_without_spin (__main__.NativeTests.test_native_uncompressed_allocation_failure_advances_without_spin) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 101.454s
+
+OK
+native collection: {'events': 188, 'max_callback_instructions': 811219, 'registered_txtr': 44, 'registered_font': 0, 'heap_bytes': 678144} {'events': 730, 'max_callback_instructions': 811219, 'registered_txtr': 308, 'registered_font': 7, 'heap_bytes': 2435200}

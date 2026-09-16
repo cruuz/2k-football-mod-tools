@@ -1,0 +1,11 @@
+{
+  "name": "raster-shipped",
+  "argv": [
+    "python3",
+    "reports/b71_s9/probe_order_raster.py"
+  ],
+  "start_utc": "2026-09-16T23:13:11.233488+00:00",
+  "end_utc": "2026-09-16T23:13:30.345920+00:00",
+  "seconds": 19.112,
+  "exit_code": 0
+}

@@ -1,0 +1,13 @@
+{
+  "name": "disasm-material",
+  "argv": [
+    "python3",
+    "reports/b71_s9/disassemble.py",
+    "24160:243d0",
+    "28110:28160"
+  ],
+  "start_utc": "2026-09-16T23:09:15.479159+00:00",
+  "end_utc": "2026-09-16T23:09:15.722152+00:00",
+  "seconds": 0.243,
+  "exit_code": 0
+}

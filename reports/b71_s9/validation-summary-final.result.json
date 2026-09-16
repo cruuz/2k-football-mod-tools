@@ -1,0 +1,11 @@
+{
+  "name": "validation-summary-final",
+  "argv": [
+    "python3",
+    "reports/b71_s9/summarize_validation.py"
+  ],
+  "start_utc": "2026-09-16T23:57:03.664978+00:00",
+  "end_utc": "2026-09-16T23:57:03.692490+00:00",
+  "seconds": 0.028,
+  "exit_code": 0
+}

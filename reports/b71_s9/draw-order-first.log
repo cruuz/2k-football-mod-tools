@@ -1,0 +1,9 @@
+test_default_overlap_order_and_reserved_bindings (__main__.AllocationTests.test_default_overlap_order_and_reserved_bindings) ... ok
+test_full_label_batch_moves_plate_and_repairs_a_material_cycle (__main__.AllocationTests.test_full_label_batch_moves_plate_and_repairs_a_material_cycle) ... ok
+test_legacy_depth_convention_preserves_visual_layering (__main__.AllocationTests.test_legacy_depth_convention_preserves_visual_layering) ... ok
+test_preview_obeys_descriptor_order_and_cannot_rescue_an_overdrawn_label (__main__.NativeOrderTests.test_preview_obeys_descriptor_order_and_cannot_rescue_an_overdrawn_label) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 25.348s
+
+OK

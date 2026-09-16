@@ -1,0 +1,11 @@
+{
+  "name": "submission-shipped",
+  "argv": [
+    "python3",
+    "reports/b71_s9/probe_submission.py"
+  ],
+  "start_utc": "2026-09-16T23:12:41.968501+00:00",
+  "end_utc": "2026-09-16T23:12:58.630195+00:00",
+  "seconds": 16.662,
+  "exit_code": 1
+}
