@@ -1,0 +1,4 @@
+[astra/b71-u1-linux-update 9571ae83] Fix Linux tarball updates with checked staging and automatic rollback
+ 16 files changed, 700 insertions(+), 130 deletions(-)
+ create mode 100644 tests/mod_editor/test_self_update_linux.py
+9571ae83 Fix Linux tarball updates with checked staging and automatic rollback

@@ -1,0 +1,137 @@
+packaging/check_apf2k8_mod_studio_release.py-93-INSTALL_SURFACE = frozenset(
+packaging/check_apf2k8_mod_studio_release.py-94-    {
+packaging/check_apf2k8_mod_studio_release.py-95-        "APF-2K8-Mod-Studio.sh",
+packaging/check_apf2k8_mod_studio_release.py-96-        "APF2K8-README.md",
+packaging/check_apf2k8_mod_studio_release.py-97-        "install.sh",
+packaging/check_apf2k8_mod_studio_release.py-98-        "uninstall.sh",
+packaging/check_apf2k8_mod_studio_release.py-99-        "packaging/apf2k8_mod_studio_installer.py",
+packaging/check_apf2k8_mod_studio_release.py:100:        "tools/launch_apf2k8_mod_studio.sh",
+packaging/check_apf2k8_mod_studio_release.py-101-        "packaging/apf2k8-mod-studio.desktop",
+packaging/check_apf2k8_mod_studio_release.py-102-        "packaging/apf2k8-mod-studio.svg",
+packaging/check_apf2k8_mod_studio_release.py-103-    }
+packaging/check_apf2k8_mod_studio_release.py-104-)
+packaging/check_apf2k8_mod_studio_release.py-105-INSTALL_EXECUTABLES = frozenset(
+packaging/check_apf2k8_mod_studio_release.py-106-    {
+packaging/check_apf2k8_mod_studio_release.py-107-        "APF-2K8-Mod-Studio.sh",
+packaging/check_apf2k8_mod_studio_release.py-108-        "install.sh",
+packaging/check_apf2k8_mod_studio_release.py-109-        "uninstall.sh",
+packaging/check_apf2k8_mod_studio_release.py-110-        "packaging/apf2k8_mod_studio_installer.py",
+packaging/check_apf2k8_mod_studio_release.py:111:        "tools/launch_apf2k8_mod_studio.sh",
+packaging/check_apf2k8_mod_studio_release.py-112-    }
+packaging/check_apf2k8_mod_studio_release.py-113-)
+packaging/check_apf2k8_mod_studio_release.py-114-
+packaging/check_apf2k8_mod_studio_release.py-115-# Product-release identity and the Alpha34 cue-annotation boundary. These
+packaging/check_apf2k8_mod_studio_release.py-116-# are source/docs markers only: no game bytes, replacement payload hashes, or
+packaging/check_apf2k8_mod_studio_release.py-117-# private paths are embedded in the release checker.
+packaging/check_apf2k8_mod_studio_release.py-118-REQUIRED_PRODUCT_CONTRACT_MARKERS = {
+--
+packaging/check_apf2k8_mod_studio_release.py-779-def _validate_install_surface(relative: str, text: str, info: os.stat_result) -> None:
+packaging/check_apf2k8_mod_studio_release.py-780-    if relative not in INSTALL_SURFACE:
+packaging/check_apf2k8_mod_studio_release.py-781-        return
+packaging/check_apf2k8_mod_studio_release.py-782-    if relative in INSTALL_EXECUTABLES and not info.st_mode & stat.S_IXUSR:
+packaging/check_apf2k8_mod_studio_release.py-783-        raise ReleaseCheckError(f"install/launch surface is not executable: {relative}")
+packaging/check_apf2k8_mod_studio_release.py-784-    required_markers: dict[str, tuple[str, ...]] = {
+packaging/check_apf2k8_mod_studio_release.py-785-        "APF-2K8-Mod-Studio.sh": (
+packaging/check_apf2k8_mod_studio_release.py:786:            "tools/launch_apf2k8_mod_studio.sh",
+packaging/check_apf2k8_mod_studio_release.py-787-            'exec "$launcher" "$@"',
+packaging/check_apf2k8_mod_studio_release.py-788-        ),
+packaging/check_apf2k8_mod_studio_release.py-789-        "install.sh": (
+packaging/check_apf2k8_mod_studio_release.py-790-            "apf2k8_mod_studio_installer.py",
+packaging/check_apf2k8_mod_studio_release.py-791-            "PYTHONDONTWRITEBYTECODE=1",
+packaging/check_apf2k8_mod_studio_release.py-792-            'install --source-root "$release_root"',
+packaging/check_apf2k8_mod_studio_release.py-793-        ),
+--
+packaging/check_apf2k8_mod_studio_release.py-800-            'INSTALL_SCHEMA = "apf2k8_mod_studio_install/v1"',
+packaging/check_apf2k8_mod_studio_release.py-801-            "contains_retail_game_data",
+packaging/check_apf2k8_mod_studio_release.py-802-            "preserves_user_data_on_uninstall",
+packaging/check_apf2k8_mod_studio_release.py-803-            "Do not use sudo or run this installer as root",
+packaging/check_apf2k8_mod_studio_release.py-804-            "_validate_app_marker",
+packaging/check_apf2k8_mod_studio_release.py-805-            "_preflight_external",
+packaging/check_apf2k8_mod_studio_release.py-806-        ),
+packaging/check_apf2k8_mod_studio_release.py:807:        "tools/launch_apf2k8_mod_studio.sh": (
+packaging/check_apf2k8_mod_studio_release.py-808-            "PYTHONNOUSERSITE=1",
+packaging/check_apf2k8_mod_studio_release.py:809:            "python3 -m mod_editor.apf_studio",
+packaging/check_apf2k8_mod_studio_release.py-810-            "XDG_STATE_HOME",
+packaging/check_apf2k8_mod_studio_release.py-811-            "last-launch.log",
+packaging/check_apf2k8_mod_studio_release.py-812-        ),
+packaging/check_apf2k8_mod_studio_release.py-813-        "packaging/apf2k8-mod-studio.desktop": (
+packaging/check_apf2k8_mod_studio_release.py-814-            "Exec=apf2k8-mod-studio",
+packaging/check_apf2k8_mod_studio_release.py-815-            "TryExec=apf2k8-mod-studio",
+packaging/check_apf2k8_mod_studio_release.py-816-            "Icon=apf2k8-mod-studio",
+--
+packaging/check_apf2k8_mod_studio_runtime.py-336-        "TryExec": "apf2k8-mod-studio",
+packaging/check_apf2k8_mod_studio_runtime.py-337-        "Icon": "apf2k8-mod-studio",
+packaging/check_apf2k8_mod_studio_runtime.py-338-        "Terminal": "false",
+packaging/check_apf2k8_mod_studio_runtime.py-339-    }
+packaging/check_apf2k8_mod_studio_runtime.py-340-    for key, value in expected.items():
+packaging/check_apf2k8_mod_studio_runtime.py-341-        require(row.get(key) == value, f"desktop entry {key} changed")
+packaging/check_apf2k8_mod_studio_runtime.py-342-
+packaging/check_apf2k8_mod_studio_runtime.py:343:    launcher = ROOT / "tools/launch_apf2k8_mod_studio.sh"
+packaging/check_apf2k8_mod_studio_runtime.py-344-    launcher_info = _require_regular(launcher, "no-terminal APF launcher")
+packaging/check_apf2k8_mod_studio_runtime.py-345-    require(launcher_info.st_mode & stat.S_IXUSR,
+packaging/check_apf2k8_mod_studio_runtime.py-346-            "no-terminal APF launcher is not executable")
+packaging/check_apf2k8_mod_studio_runtime.py-347-    script = launcher.read_text(encoding="utf-8")
+packaging/check_apf2k8_mod_studio_runtime.py-348-    for marker in (
+packaging/check_apf2k8_mod_studio_runtime.py-349-        "PYTHONDONTWRITEBYTECODE=1",
+packaging/check_apf2k8_mod_studio_runtime.py-350-        "PYTHONNOUSERSITE=1",
+packaging/check_apf2k8_mod_studio_runtime.py:351:        "python3 -m mod_editor.apf_studio",
+packaging/check_apf2k8_mod_studio_runtime.py-352-        "zenity --error",
+packaging/check_apf2k8_mod_studio_runtime.py-353-        "kdialog",
+packaging/check_apf2k8_mod_studio_runtime.py-354-        "XDG_STATE_HOME",
+packaging/check_apf2k8_mod_studio_runtime.py-355-        "mktemp -d",
+packaging/check_apf2k8_mod_studio_runtime.py-356-        "python3-pyqt5",
+packaging/check_apf2k8_mod_studio_runtime.py-357-        "python3-pil",
+packaging/check_apf2k8_mod_studio_runtime.py-358-        "last-launch.log",
+--
+packaging/check_apf2k8_mod_studio_runtime.py-406-
+packaging/check_apf2k8_mod_studio_runtime.py-407-
+packaging/check_apf2k8_mod_studio_runtime.py-408-def _check_install_contract() -> None:
+packaging/check_apf2k8_mod_studio_runtime.py-409-    scripts = (
+packaging/check_apf2k8_mod_studio_runtime.py-410-        ROOT / "install.sh",
+packaging/check_apf2k8_mod_studio_runtime.py-411-        ROOT / "uninstall.sh",
+packaging/check_apf2k8_mod_studio_runtime.py-412-        ROOT / "APF-2K8-Mod-Studio.sh",
+packaging/check_apf2k8_mod_studio_runtime.py:413:        ROOT / "tools/launch_apf2k8_mod_studio.sh",
+packaging/check_apf2k8_mod_studio_runtime.py-414-    )
+packaging/check_apf2k8_mod_studio_runtime.py-415-    for script in scripts:
+packaging/check_apf2k8_mod_studio_runtime.py-416-        info = _require_regular(script, "install/launch script")
+packaging/check_apf2k8_mod_studio_runtime.py-417-        require(info.st_mode & stat.S_IXUSR, f"install/launch script is not executable: {script.name}")
+packaging/check_apf2k8_mod_studio_runtime.py-418-        text = script.read_text(encoding="utf-8")
+packaging/check_apf2k8_mod_studio_runtime.py-419-        require(
+packaging/check_apf2k8_mod_studio_runtime.py-420-            all(token not in text for token in ("rm -rf", "rm -fr", "DISPLAY=:0", "xdotool")),
+        for declared in (
+            "mod_editor/core/nfl2k5_compile_cache.py",
+            "tools/nfl2k5_equipment_optimal",
+            "tools/nfl2k5_equipment_optimal.c",
+        ):
+            self.assertIn(declared + "\n", allowlist)
+
+    def test_launcher_and_packaging_docs_require_pyqt5_not_tk(self) -> None:
+        launcher = (ROOT / "tools/launch_2k5_mod_studio.sh").read_text(encoding="utf-8")
+        readme = (ROOT / "packaging/README.md").read_text(encoding="utf-8")
+        # Windows CI documents unavailable optional modules separately from the
+        # desktop installation requirements; those diagnostics are not dependencies.
+        install_readme = readme.split("\n## Local Windows CI\n", 1)[0]
+        combined = launcher + "\n" + install_readme
+        self.assertIn("from PyQt5 import QtWidgets; import PIL; import mod_editor", launcher)
+        self.assertIn("python3 -m mod_editor --studio", combined)
+        self.assertIn("python3-pyqt5", readme)
+        self.assertNotIn("tkinter", combined.casefold())
+        self.assertNotIn("python3-tk", combined.casefold())
+        self.assertNotIn("python/tk/pillow", combined.casefold())
+        self.assertNotRegex(combined, r"(?i)\btk(?:inter)?\b")
+
+    def test_only_exact_reviewed_metadata_can_cross_reports_boundary(self) -> None:
+        for relative in release_gate.REVIEWED_METADATA:
+            self.assertIsNone(
+                release_gate._forbidden_path(release_gate.PurePosixPath(relative))
+2	0	docs/mod_editor/2k5_mod_studio_changelog.md
+2	0	mod_editor/apf_studio/gui.py
+248	82	mod_editor/core/self_update.py
+2	0	mod_editor/gui/studio_qt.py
+6	4	mod_editor/gui/update_ui.py
+35	0	packaging/README.md
+1	1	packaging/check_2k5_mod_studio_runtime.py
+18	16	tests/mod_editor/test_self_update.py
+37	9	tools/launch_2k5_mod_studio.sh
+38	11	tools/launch_apf2k8_mod_studio.sh
+drwxrwxr-x 73 noah noah 36864 Sep 16 19:22 reports/assets

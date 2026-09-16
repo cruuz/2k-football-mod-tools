@@ -1,0 +1,35 @@
+OVERLAID ARCHIVE 674eafe0c8489a35e3628ad5b780e3c828556e860695f9fb8aa476b682528674 patches ('mod_editor/core/self_update.py', 'mod_editor/core/update_check.py', 'mod_editor/gui/studio_qt.py', 'mod_editor/gui/update_ui.py', 'tools/launch_2k5_mod_studio.sh')
+FIXED DETECTION InstallKind(kind='tarball', root=PosixPath('/tmp/b71-u1-fixed-fco8hj4g/2K5-Mod-Studio-v1.0-RC95-20260915'), relaunch=('/tmp/b71-u1-fixed-fco8hj4g/2K5-Mod-Studio-v1.0-RC95-20260915/.venv/bin/python3', '-m', 'mod_editor', '--studio'), detail='/tmp/b71-u1-fixed-fco8hj4g/2K5-Mod-Studio-v1.0-RC95-20260915')
+Downloading 2K5-Mod-Studio-v1.0-RC96-20260916.tar.gz
+Downloading 2K5-Mod-Studio-v1.0-RC96-20260916.tar.gz
+Downloading 2K5-Mod-Studio-v1.0-RC96-20260916.tar.gz
+Downloading 2K5-Mod-Studio-v1.0-RC96-20260916.tar.gz
+Downloading 2K5-Mod-Studio-v1.0-RC96-20260916.tar.gz
+Downloading 2K5-Mod-Studio-v1.0-RC96-20260916.tar.gz
+Downloading 2K5-Mod-Studio-v1.0-RC96-20260916.tar.gz
+Downloading 2K5-Mod-Studio-v1.0-RC96-20260916.tar.gz
+Downloading 2K5-Mod-Studio-v1.0-RC96-20260916.tar.gz
+Downloading 2K5-Mod-Studio-v1.0-RC96-20260916.tar.gz
+Downloading 2K5-Mod-Studio-v1.0-RC96-20260916.tar.gz
+Downloading 2K5-Mod-Studio-v1.0-RC96-20260916.tar.gz
+Downloading 2K5-Mod-Studio-v1.0-RC96-20260916.tar.gz
+Downloading 2K5-Mod-Studio-v1.0-RC96-20260916.tar.gz
+Downloading 2K5-Mod-Studio-v1.0-RC96-20260916.tar.gz
+Downloading 2K5-Mod-Studio-v1.0-RC96-20260916.tar.gz
+Downloading 2K5-Mod-Studio-v1.0-RC96-20260916.tar.gz.sha256
+Verifying the download
+Verified
+Checking that the new version can start
+CHILD {"command": ["/tmp/b71-u1-fixed-fco8hj4g/.2K5-Mod-Studio-v1.0-RC96-20260916.new-ma2kyh96/.venv/bin/python3", "-B", "-s", "-c", "import importlib, pathlib; app = importlib.import_module('mod_editor'); assert pathlib.Path(app.__file__).resolve().is_relative_to(pathlib.Path.cwd()), 'wrong app imported'; importlib.import_module('mod_editor.__main__'); importlib.import_module('mod_editor.gui.studio_qt'); print(app.__version__)"], "cwd": "/tmp/b71-u1-fixed-fco8hj4g/.2K5-Mod-Studio-v1.0-RC96-20260916.new-ma2kyh96", "pid": 4}
+Checked version 1.0.0rc96; switching folders
+CHILD {"command": ["/tmp/b71-u1-fixed-fco8hj4g/2K5-Mod-Studio-v1.0-RC95-20260915/.venv/bin/python3", "-B", "-s", "-c", "import importlib, pathlib; app = importlib.import_module('mod_editor'); assert pathlib.Path(app.__file__).resolve().is_relative_to(pathlib.Path.cwd()), 'wrong app imported'; importlib.import_module('mod_editor.__main__'); importlib.import_module('mod_editor.gui.studio_qt'); print(app.__version__)"], "cwd": "/tmp/b71-u1-fixed-fco8hj4g/2K5-Mod-Studio-v1.0-RC95-20260915", "pid": 5}
+Waiting for the new studio to open
+CHILD {"command": ["/tmp/b71-u1-fixed-fco8hj4g/2K5-Mod-Studio-v1.0-RC95-20260915/.venv/bin/python3", "-m", "mod_editor", "--studio"], "cwd": "/tmp/b71-u1-fixed-fco8hj4g/2K5-Mod-Studio-v1.0-RC95-20260915", "pid": 6}
+Installed 1.0.0rc96. The previous version is kept at /tmp/b71-u1-fixed-fco8hj4g/2K5-Mod-Studio-v1.0-RC95-20260915.previous.
+SUCCESS 10.74 ['Installed 1.0.0rc96. The previous version is kept at /tmp/b71-u1-fixed-fco8hj4g/2K5-Mod-Studio-v1.0-RC95-20260915.previous.']
+LIVE CHILDREN [(4, 0), (5, 0), (6, None)]
+REAL LAUNCHER, NO PYTHON ON PATH {"command": ["/tmp/b71-u1-fixed-fco8hj4g/2K5-Mod-Studio-v1.0-RC95-20260915/tools/launch_2k5_mod_studio.sh", "--update-check"], "exit_code": 0, "stdout": "1.0.0rc96\n", "stderr": ""}
+MODE 0o755
+NO APP BYTECODE CACHES; PREVIOUS KEPT True
+STOPPED TEST GUI 6 -15
+CLEANED all temporary extracted releases and runtimes

@@ -1,0 +1,159 @@
+        if line and not line.startswith("#"):
+            values.append(line)
+    return tuple(values)
+
+
+def _stage_release(destination: Path) -> None:
+    for relative in _release_entries():
+        parts = PurePosixPath(relative).parts
+        source = ROOT.joinpath(*parts)
+        target = destination.joinpath(*parts)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, target, follow_symlinks=False)
+        source_mode = source.stat(follow_symlinks=False).st_mode
+        target.chmod(0o755 if source_mode & stat.S_IXUSR else 0o644)
+
+
+def _launcher_python() -> str:
+    """Return the interpreter the shipped Linux launcher actually uses.
+
+    Pytest is often installed in an isolated virtual environment that does not
+    inherit distro packages such as PyQt5.  The product launcher deliberately
+    executes the system ``python3`` after checking those distro dependencies,
+    so using ``sys.executable`` here would test the runner rather than the
+    installed application.  Windows has a separate bundled-runtime installer.
+    """
+
+    if os.name != "nt":
+        executable = shutil.which("python3")
+        if executable is not None:
+            return executable
+    return sys.executable
+
+
+@unittest.skipIf(
+    os.name == "nt",
+    "the per-user XDG installer is POSIX-only; Windows ships the NSIS installer",
+)
+class ReleaseClosureTests(unittest.TestCase):
+    def test_literal_local_import_gate_catches_a_lazy_missing_module(self) -> None:
+        gate_path = ROOT / "packaging/check_apf2k8_mod_studio_runtime.py"
+        spec = importlib.util.spec_from_file_location(
+            "_apf_runtime_import_closure_test", gate_path
+        )
+        assert spec is not None and spec.loader is not None
+        gate = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(gate)
+        with tempfile.TemporaryDirectory(prefix="apf-lazy-import-closure-") as temporary:
+            stage = Path(temporary)
+            feature = stage / "mod_editor/apf_studio/feature.py"
+            feature.parent.mkdir(parents=True)
+            feature.write_text(
+                "def on_click():\n"
+                "    from mod_editor.core.shipped_only_in_source import value\n"
+                "    return value\n",
+                encoding="utf-8",
+            )
+            'ausb_binding.handler_id == "audio.ausb_exact_slot_editor"',
+            "roster_workspace.MASTER_ROSTER_SLOTS == 53",
+            'roster_workspace.FILE_EXTENSION == ".apf2k8roster"',
+        ):
+            self.assertIn(marker, runtime)
+
+    def test_clean_allowlist_stage_passes_the_alpha32_runtime_gate(self) -> None:
+        with tempfile.TemporaryDirectory(
+            prefix="apf-alpha32-runtime-stage-"
+        ) as temporary_name:
+            stage = Path(temporary_name) / "release"
+            stage.mkdir()
+            _stage_release(stage)
+            environment = os.environ.copy()
+            environment.update(
+                {
+                    "PYTHONDONTWRITEBYTECODE": "1",
+                    "PYTHONNOUSERSITE": "1",
+                    "QT_QPA_PLATFORM": "offscreen",
+                }
+            )
+            result = subprocess.run(
+                [
+                    _launcher_python(),
+                    str(stage / "packaging/check_apf2k8_mod_studio_runtime.py"),
+                ],
+                cwd=stage,
+                env=environment,
+                stdin=subprocess.DEVNULL,
+                capture_output=True,
+                text=True,
+                timeout=120,
+                check=False,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("APF2K8_MOD_STUDIO_RUNTIME_PASS", result.stdout)
+
+    def test_stadium_studio_source_closure_is_declared_without_derived_media(self) -> None:
+        entries = set(_release_entries())
+            "mod_editor/apf_studio/roster_workspace.py",
+            "mod_editor/apf_studio/roster_workspace_qt.py",
+            "tools/apf_ausb_exact_slot.py",
+        ):
+            self.assertTrue((paths.app_dir / relative).is_file(), relative)
+        record = json.loads(paths.record.read_text(encoding="utf-8"))
+        self.assertFalse(record["contains_retail_game_data"])
+        self.assertTrue(record["preserves_user_data_on_uninstall"])
+        self.assertIn(str(paths.app_dir / "tools/launch_apf2k8_mod_studio.sh"), paths.wrapper.read_text())
+        self.assertIn(f'Exec="{paths.wrapper}"', paths.desktop.read_text(encoding="utf-8"))
+
+        runtime_environment = self.environment.copy()
+        runtime_environment.update(
+            {
+                "PYTHONDONTWRITEBYTECODE": "1",
+                "PYTHONNOUSERSITE": "1",
+                "PYTHONPATH": str(paths.app_dir),
+                "QT_QPA_PLATFORM": "offscreen",
+            }
+        )
+        installed_probe = (
+            "import importlib,importlib.util,pathlib,sys;"
+            "path=pathlib.Path('packaging/check_apf2k8_mod_studio_runtime.py').resolve();"
+            "spec=importlib.util.spec_from_file_location('installed_apf_runtime_gate',path);"
+            "gate=importlib.util.module_from_spec(spec);"
+            "sys.modules[spec.name]=gate;"
+            "spec.loader.exec_module(gate);"
+            "modules={name:importlib.import_module(name) for name in gate.PRODUCT_MODULES};"
+            "gate._check_audio_packet_reuse_release_boundary(modules);"
+            "print('APF_AUDIO_PACKET_GATE_PASS')"
+        )
+        runtime_result = subprocess.run(
+            [_launcher_python(), "-c", installed_probe],
+            cwd=paths.app_dir,
+            env=runtime_environment,
+            stdin=subprocess.DEVNULL,
+            capture_output=True,
+            text=True,
+            timeout=120,
+            check=False,
+        )
+        self.assertEqual(runtime_result.returncode, 0, runtime_result.stderr)
+        self.assertIn(
+            "APF_AUDIO_PACKET_GATE_PASS",
+            runtime_result.stdout,
+# Beta 71 A7 integration wiring
+
+All protected files are granted for this job. S4 has no newly authored deferred wiring: `git diff 464423f0 7b54e354 -- WIRING.md` is empty. Its inherited beta-70 T1 instructions are archived anonymously in `WIRING_B71_S4.md`.
+
+- The inherited completion-dialog hooks are already active at `mod_editor/gui/studio_qt.py:8023` and `mod_editor/core/build_feedback.py:53`.
+- The inherited Windows-helper and digit-fit proposals are historical follow-ups, not S4 changes. This merge does not add an unreviewed executable or a digit writer.
+- S4's runtime registry metadata is merged by capability ID; all 176 unique rows remain.
+- The release allowlist retains the colour controls and documentation and adds the scorebug assets module and both label assets.
+- The authored label PNG has an exact path/size/dimensions/SHA-256 catalog entry and a refreshed catalog hash in the release checker. The binary-asset validator is unchanged.
+- Provider/runtime seals are regenerated with `packaging/repin.py --apply`; the combined closure is 288 modules (A6 287 plus S4's painted-atlas assets dependency), with 176 registry capabilities.
+- The cave reservation manifest is regenerated last as the complete forward bounded XBE projection. Production regeneration remains required. External command: `bash reports/b71_a7/manifest_regen.sh`.
+
+Exact file:line locations, measurements and final command receipts are in `ASTRA_REPORT.md` and `reports/b71_a7/`.
+tests/mod_editor/test_beta69_studios_offscreen.py:24:    from PyQt5.QtWidgets import QApplication, QLabel, QAbstractButton, QAbstractSpinBox, QComboBox, QTabWidget, QMessageBox, QFileDialog, QPushButton
+tests/mod_editor/test_beta69_studios_offscreen.py:32:    app = QApplication.instance() or QApplication([])
+tests/mod_editor/test_studio_shell_layout_qt.py:21:from PyQt5.QtWidgets import QApplication, QTabWidget  # noqa: E402
+tests/mod_editor/test_studio_shell_layout_qt.py:34:        cls.application = QApplication.instance() or QApplication([])
+ASTRA_LAST_MESSAGE.md
+ASTRA_REPORT.md

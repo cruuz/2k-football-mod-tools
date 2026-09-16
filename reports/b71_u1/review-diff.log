@@ -1,0 +1,319 @@
+ mod_editor/apf_studio/gui.py         |   2 +
+ mod_editor/core/self_update.py       | 330 ++++++++++++++++++++++++++---------
+ mod_editor/gui/studio_qt.py          |   2 +
+ tests/mod_editor/test_self_update.py |  34 ++--
+ tools/launch_2k5_mod_studio.sh       |  46 ++++-
+ tools/launch_apf2k8_mod_studio.sh    |  49 ++++--
+ 6 files changed, 345 insertions(+), 118 deletions(-)
+48:STARTUP_TIMEOUT_SECONDS = 60.0
+486:def _start_tarball(command: Sequence[str], root: Path) -> None:
+499:            deadline = time.monotonic() + STARTUP_TIMEOUT_SECONDS
+508:            raise SelfUpdateError(f"The new studio did not confirm that its window opened within {STARTUP_TIMEOUT_SECONDS:g} seconds.")
+556:            _start_tarball(command, root)
+562:    except _RestoreError:
+# 2K5 Mod Studio — Product Changelog
+
+## v1.0 RC96, beta 71: lighting and colour, a modern Arrowhead, and the 2026 scorebug closer to the broadcast (in progress, 2026-09-15)
+
+- **Sprite scorebug: possession plate and wing colours as lit on air.** A dark primary (the Cowboys' navy, and likewise the Giants, Colts, Bills, Rams, Ravens, Vikings, Packers, Eagles, Jets, Commanders and Jaguars) drew the possession plate near black under the plate's shading, so the label could not be read. Plate tints are now lifted to a lightness floor taken from the measured broadcast plate, with hue and saturation kept, and the white label is checked against the shaded plate for every team: gold, silver and action green are lowered until it reads at 4.5:1 or better. Wing ramps use the same lit rule at the measured wing lightness, so a navy wing reads blue instead of merging with the bar. Appended resources only; the executable owner is unchanged.
+- **Modern colour and lighting: an overall strength control, default half.** The full Broadcast grade was judged too vibrant in game. The Colour & lighting page now starts with an Overall strength slider (0 retail, 1 the full recipe) and every value the option writes is retail + (broadcast - retail) x strength: grass colour maps, material colour words, vertex tints, the bump flatten amount, the divot alpha, the time-of-day tint words, the outside-grass link and all seven light rigs. The default is 0.5; 1 reproduces the previous Broadcast bytes exactly and the Retail and Broadcast buttons keep working. Pins are rebuilt at the default; the predicted Arrowhead night turf moves from (102, 122, 52) at full strength to (67, 82, 37) at half. Off in every preset; appearance unwitnessed.
+
+- **The beta 70 scorebug reports.** The timeout dashes were drawn from the other team's count because the two city text records were bound in the opposite order from the score records; the runtime owner now reads each side's own record. The retail event states (flag, fumble, hang time, "Ball on") draw on charcoal slabs instead of a white oval and stay readable with the bar. Team marks are the current ESPN logos at the broadcast's proportions instead of the squeezed 64 by 32 art, and the quarter, game clock and play clock no longer crowd one capsule. Those fixes were seen in the emulator on the interim discs and carry into the sprite scorebug below; the far-field artifacts on the deep part of the field and the gameplay freeze reported on the Advanced pack are still open (see the FAQ).
+
+- **Sprite scorebug (experimental, off in every preset).** The design is now one PNG plus one JSON layout, including the light top reflection, stronger rims, round capsule ends and a shaded crimson possession plate with a light notch. Team marks now retain edge colour through transparent gutters, premultiplied resizing and alpha-aware P8 conversion; wing masks fade smoothly into the body. Scores, clocks, labels and timeout ticks use atlas quads with rendered condensed glyphs, with no FONT resources appended. Studio's Preview runs the native owner and shows its quads over a chosen screenshot at both aspects; a new compatible design needs no code change. The default append is 323,808 bytes including logos and the enlarged scene. Native loading, layout, preservation and ownership checks are proved; GPU appearance and a played intro remain UNWITNESSED.
+
+- **Sprite scorebug: broadcast proportions on screen, a yellow FLAG plate and the ESPN watermark (experimental, off in every preset).** The compiler now lays the bar out for the display the disc is built for: the 640x448 HUD is shown at 4:3 or, with the widescreen option, contracted by 27/32 and stretched to 16:9, so one layout column is one broadcast pixel on that display and the bar, logos, capsule and plate keep the measured broadcast proportions instead of the earlier one-fifth horizontal squeeze. Studio's Preview renders both aspects and also writes a display-space image of the modelled picture. The FLAG state shows a broadcast-yellow plate with a dark FLAG label baked into the cell; the retail white FLAG label is blanked at the same length. A new `brand` layer group holds exact replicas lifted from broadcast stills, the first being the ESPN MNF watermark: a coverage mask from the per-pixel temporal minimum over 944 frames, drawn at the measured 0.71 opacity in the top right and pinned to the last drawable column of each display. The appended size stays 323,808 bytes. Native layout, ownership and volume checks are proved; the played-game picture remains UNWITNESSED.
+
+- Linked outside grass now follows each field's colour target, including sidelines and grass behind the end zones. The calibrated model places its mean about 3% darker, with neutral edge tints keeping it within 8% and no more saturated across day, afternoon, night and dome conditions. Unlink surfaces to retain a separate custom colour. Field and light-rig bytes retain the day tuning; final appearance still needs an in-game comparison.
+
+- **Day and afternoon colour and shadows (Build, Broadcast default, experimental).** Daylight rigs reduce predicted turf saturation to about 0.42 and keep value near 0.40, with warmer sunlight, cool sky fill, stronger day shadow contrast and a gentler afternoon shadow term. Day predicts (89, 105, 61) against the broadcast reference (88, 105, 61); afternoon predicts (87, 103, 61). The approved night/dome rig, all 477 turf bundles, retail light directions and counts remain pinned. Broadcast and Retail resets include the revised defaults. Final shadow length, softness, uniforms and far-field colour remain UNWITNESSED.
+
+- **Colour & lighting controls (Build, experimental, off in every preset).** The Broadcast default keeps the v2.1 look. Sliders and switches adjust turf hue, saturation and brightness, existing map contrast, divot blotches, linked or independent end-zone and outside grass, bump flattening, tints, and gain, white balance, ambient, key and fill for all seven retail light rigs. Night and dome share their retail rig. Predicted turf swatches sit beside broadcast targets and label the model's limits. Broadcast and Retail reset the project settings; custom values survive save/reload and carry an “applied (custom)” receipt. Regrading an already-built disc requires its original retail source. Retail wrappers, fixed spans, light directions, counts and default byte pins stay intact. Custom appearance and far-field shimmer remain UNWITNESSED.
+
+- **Modern colour and lighting, calibrated (Build tab, "Modern colour and lighting (experimental)", `modern_color`, off in every preset).** Beta 70's option barely moved the field: measured in game at Arrowhead at night the turf drew at (51, 61, 32) against the broadcast's (107, 121, 53). The drawn field is about a fifth of the colour map times the light rig, so the option now lifts every grass colour map through a brightness curve (Arrowhead's median (100, 125, 66) becomes (181, 216, 102)), keeps it slightly more saturated and pulled toward the Arrowhead hue, raises the night and day rigs (neutral white at night), makes the night tint neutral and flattens the grass bump map further. The calibrated model predicts (102, 122, 52) at Arrowhead at night and (83, 99, 47) in a day game. A first test of that build measured the surface at value 0.33..0.41 (broadcast 0.41..0.47) but showed darker end zones and sidelines and dark blotches, so the option now also fades the field's divots wear layer to 30 percent alpha with its greens re-graded, re-grades the six end-zone maps and the centre logo, lifts the outside grass to the field's mean and halves its edge falloff, tints the end-zone overlays like the grass, and edits the bump palette at the descriptor's true offset (beta 70 wrote it 128 bytes early). The v2.1 lighting and field look have been confirmed in game; custom settings remain UNWITNESSED and the far-field shimmer seen at high internal resolution is not yet attributed (retail draws the same detail layer).
+tests/mod_editor/test_emulator_launch_polish.py
+tests/mod_editor/test_apf_full_shell_visual_gate.py
+tests/mod_editor/test_apf_studio_installer.py
+tests/mod_editor/test_apf_shell_search_accessibility_qt.py
+tests/mod_editor/test_product_shell_accessibility_qt.py
+tests/mod_editor/test_studio_shell_layout_qt.py
+tests/mod_editor/test_apf_b69_launch_patches.py
+
+## Retail-free release gate
+
+Never stage a release by copying the workspace. Create a new staging directory
+from the explicit paths in `release-allowlist.txt`, then run:
+
+```bash
+python3 packaging/check_2k5_mod_studio_release.py /path/to/staged-release
+python3 /path/to/staged-release/packaging/check_2k5_mod_studio_runtime.py
+desktop-file-validate /path/to/staged-release/packaging/2k5-mod-studio.desktop
+bash -n /path/to/staged-release/tools/launch_2k5_mod_studio.sh
+python3 packaging/check_2k5_mod_studio_release.py /path/to/staged-release
+```
+
+The release gate refuses undeclared files, symlinks, hardlinks, special files,
+world-writable files, binary or non-UTF-8 content other than the one pinned
+application icon, known NFL 2K5 retail hashes
+and container magic, retail/container/media extensions (including glTF/GLB),
+either known private workstation home/mount prefix in staged text, and any path
+under extracted, reports, assets, build, cache, originals, runtime, or other
+local-data roots. Generic documentation examples such as `/opt/...` remain
+valid. Ordinary product files have an 8 MiB ceiling.
+Reviewed metadata may exceed that ceiling only at its exact pinned size.
+
+RC29 carries forward the Audio replacement-pack confirmation boundary as
+`AUDIO_REPLACEMENT_PREFLIGHT_CONTRACT=fully_validated_read_only_preview_then_explicit_apply`.
+It also requires project-backed Audio cue annotations to remain
+`project_metadata_only_stable_logical_cue_id`: custom titles/notes are
+searchable and recoverable but never enter buildable XISO edit state.
+The clean-stage checker requires the frozen sanitized preview-result fields,
+repr-hidden opaque token, session mutation-revision/token API, facade and
+service Preview/Apply signatures, GUI explicit-Apply handoff, and the service
+ordering that reopens and revalidates the exact pack before its atomic batch
+write. Its positive receipt is
+`audio_pack_import=validated_preview_token_apply`. Preview, Cancel, and
+unchanged-only paths publish no project edit or Undo action; an Apply token is
+session-local and is never a retail-data or rollback container.
+
+`reports/` has one narrow exception: the gate admits exactly fourteen size-,
+SHA-256-, and schema-pinned JSON catalogs required by the current product.
+They cover uniforms, Team Select cards, portraits, faces, create-team field
+art, scorebug textures, and standalone-audio ownership. Four additional
+reviewed snapshots live under `mod_editor/data/`: the compact 498-entry Crib
+catalog, the sanitized Gameplay inspector data, the sanitized named Main Menu
+inspector data, and the compact package-local uniform-equipment catalog.
+All eighteen reviewed metadata files are pinned by the
+same contract. They contain selectors, dimensions, offsets, hashes, ownership
+labels, and constraints, but no compressed spans, decoded pixels, decoded
+audio, replacement spans, or other retail payload bytes. An arbitrary report
+or any changed byte in a reviewed catalog is refused.
+#!/usr/bin/env python3
+"""Re-sync SHA-256 self-integrity pins after editing pinned modules.
+
+Two pin shapes are handled, both located with `ast` so that class-scoped
+attributes never leak across classes:
+
+  A. dict entry   "path/to/file.py": "<64hex>",
+  B. attribute    <name>_sha256 = "<64hex>"   paired with a sibling
+                  <name> = "path/to/file.py"  in the SAME class/module scope.
+
+A pin is only rewritten when its path resolves to a real file inside the
+repo *and* the recomputed digest differs.  Hashes with no resolvable repo
+path (retail ISO/XBE pins, negative-test fixtures) are left alone.
+
+It only ever recomputes a pin from the bytes the pin covers; it never relaxes,
+removes or widens one.  Run it with no arguments first to see what WOULD change,
+then with ``--apply``.
+
+Usage:  python3 packaging/repin.py [--apply] [--root DIR] [--include-tests]
+"""
+
+from __future__ import annotations
+
+import argparse
+import ast
+import hashlib
+import re
+import sys
+from pathlib import Path
+
+HEX64 = re.compile(r"^[0-9a-f]{64}$")
+PATHISH = re.compile(r"^[A-Za-z0-9_][A-Za-z0-9_./-]*\.(?:py|json|sh|txt|schema\.json)$")
+
+Replacement = tuple[int, int, int, int, str, str, str]  # positions, old, new, label
+
+
+def digest(path: Path, cache: dict[str, str]) -> str | None:
+    rel = path.as_posix()
+    if rel not in cache:
+        try:
+            handle = open(path, "rb")
+        except OSError:
+            cache[rel] = ""
+        else:
+            with handle:
+                h = hashlib.sha256()
+                for chunk in iter(lambda: handle.read(1 << 20), b""):
+                    h.update(chunk)
+            cache[rel] = h.hexdigest()
+    return cache[rel] or None
+
+
+def string_value(node: ast.AST) -> str | None:
+    if isinstance(node, ast.Constant) and isinstance(node.value, str):
+        return node.value
+    return None
+
+
+def scope_assignments(body: list[ast.stmt]) -> dict[str, str]:
+    """name -> string literal, for simple assignments directly in this body."""
+    found: dict[str, str] = {}
+    for stmt in body:
+        targets: list[ast.expr] = []
+        if isinstance(stmt, ast.Assign):
+            targets = list(stmt.targets)
+            value = stmt.value
+        elif isinstance(stmt, ast.AnnAssign) and stmt.value is not None:
+            targets = [stmt.target]
+            value = stmt.value
+        else:
+            continue
+        text = string_value(value)
+        if text is None:
+            continue
+        for target in targets:
+            if isinstance(target, ast.Name):
+                found[target.id] = text
+    return found
+
+
+def collect(source: Path, root: Path, cache: dict[str, str]) -> list[Replacement]:
+    text = source.read_text(encoding="utf-8")
+    try:
+        tree = ast.parse(text)
+    except SyntaxError as exc:
+        print(f"!! cannot parse {source}: {exc}", file=sys.stderr)
+        return []
+
+    out: list[Replacement] = []
+
+    def want(rel: str) -> str | None:
+        if not PATHISH.match(rel):
+            return None
+        return digest(root / rel, cache)
+
+    # --- shape A: dict entries keyed by a repo-relative path ------------
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Dict):
+            continue
+        for key, value in zip(node.keys, node.values):
+            if key is None:
+                continue
+            rel = string_value(key)
+            current = string_value(value)
+            if rel is None or current is None or not HEX64.match(current):
+                continue
+            fresh = want(rel)
+            if fresh is None or fresh == current:
+                continue
+            out.append(
+                (
+                    value.lineno,
+                    value.col_offset,
+                    value.end_lineno or value.lineno,
+                    value.end_col_offset or 0,
+                    current,
+                    fresh,
+                    rel,
+                )
+            )
+
+    # --- shape B: <name>_sha256 paired with sibling <name> --------------
+    scopes: list[list[ast.stmt]] = [tree.body]
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
+            scopes.append(node.body)
+
+    for body in scopes:
+        names = scope_assignments(body)
+        for stmt in body:
+            if isinstance(stmt, ast.Assign):
+                targets, value = list(stmt.targets), stmt.value
+            elif isinstance(stmt, ast.AnnAssign) and stmt.value is not None:
+                targets, value = [stmt.target], stmt.value
+            else:
+                continue
+            current = string_value(value)
+            if current is None or not HEX64.match(current):
+                continue
+            for target in targets:
+                if not isinstance(target, ast.Name) or not target.id.endswith("_sha256"):
+                    continue
+                rel = names.get(target.id[: -len("_sha256")])
+                if rel is None:
+                    continue
+                fresh = want(rel)
+                if fresh is None or fresh == current:
+                    continue
+                out.append(
+                    (
+                        value.lineno,
+                        value.col_offset,
+                        value.end_lineno or value.lineno,
+                        value.end_col_offset or 0,
+                        current,
+                        fresh,
+                        f"{target.id} -> {rel}",
+                    )
+                )
+    return out
+
+
+def apply_replacements(source: Path, reps: list[Replacement]) -> None:
+    lines = source.read_text(encoding="utf-8").splitlines(keepends=True)
+    # Apply bottom-up so earlier offsets stay valid.
+    for lineno, col, end_lineno, end_col, old, new, _label in sorted(reps, reverse=True):
+        if lineno != end_lineno:
+            raise SystemExit(f"multi-line pin literal at {source}:{lineno}; refusing")
+        line = lines[lineno - 1]
+        segment = line[col:end_col]
+        if old not in segment:
+            raise SystemExit(f"pin text drift at {source}:{lineno}: {segment!r}")
+        lines[lineno - 1] = line[:col] + segment.replace(old, new, 1) + line[end_col:]
+    source.write_text("".join(lines), encoding="utf-8", newline="\n")
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--apply", action="store_true")
+    parser.add_argument(
+        "--root",
+        default=str(Path(__file__).resolve().parent.parent),
+        help="repository root (defaults to the tree this script lives in)",
+    )
+    parser.add_argument("--include-tests", action="store_true")
+    args = parser.parse_args()
+
+    root = Path(args.root).resolve()
+    targets: list[Path] = []
+    for path in sorted(root.rglob("*.py")):
+        rel = path.relative_to(root).as_posix()
+        # Skipped: dot-directories (.git, scratch trees) and tools/vendor/,
+        # which holds third-party sources -- Ghidra ships Python 2 scripts that
+        # will not parse here. Nothing under either carries one of our pins; the
+        # vendored extract-xiso binaries are pinned from packaging/, which is
+        # scanned.
+        if (
+            rel.startswith(".")
+            or rel.startswith(("build/", "dist/", "tools/vendor/"))
+            or "__pycache__" in rel
+        ):
+            continue
+        if not args.include_tests and (rel.startswith("tests/") or "_test" in Path(rel).name):
+            continue
+        targets.append(path)
+
+    total = 0
+    for round_number in range(1, 9):
+        cache: dict[str, str] = {}
+        round_total = 0
+        for path in targets:
+            reps = collect(path, root, cache)
+            if not reps:
+                continue
+            for *_pos, old, new, label in reps:
+                print(f"[{round_number}] {path.relative_to(root)}: {label}\n    {old}\n -> {new}")
+            round_total += len(reps)
+            if args.apply:
+                apply_replacements(path, reps)
+        total += round_total
+        if round_total == 0 or not args.apply:
+            break
+    print(f"\n{'applied' if args.apply else 'would apply'} {total} pin update(s)")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+

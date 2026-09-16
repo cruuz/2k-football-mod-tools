@@ -1,0 +1,11 @@
+tests/mod_editor/test_self_update_linux.py:34:        "tools/launch_2k5_mod_studio.sh": (REPO / "tools/launch_2k5_mod_studio.sh").read_bytes(),
+tests/mod_editor/test_self_update_linux.py:116:        launched = subprocess.run([str(self.root / "tools/launch_2k5_mod_studio.sh"), "--update-check"],
+tests/mod_editor/test_self_update_linux.py:122:        self.assertEqual((self.root / "tools/launch_2k5_mod_studio.sh").stat().st_mode & 0o777, 0o755)
+tests/mod_editor/test_self_update.py:89:    "tools/launch_2k5_mod_studio.sh": b"#!/bin/sh\n",
+tests/mod_editor/test_self_update.py:109:            (root / "tools" / "launch_2k5_mod_studio.sh").write_text("")
+tests/mod_editor/test_self_update.py:144:            (root / "tools" / "launch_apf2k8_mod_studio.sh").write_text("")
+tests/mod_editor/test_self_update.py:189:        (apf_root / "tools" / "launch_apf2k8_mod_studio.sh").write_text("")
+tests/mod_editor/test_self_update.py:290:            self.assertTrue(os.access(root / "tools" / "launch_2k5_mod_studio.sh", os.X_OK))
+tests/mod_editor/test_apf_studio_installer.py:370:            ROOT / "tools/launch_apf2k8_mod_studio.sh"
+tests/mod_editor/test_apf_studio_installer.py:458:        self.assertIn(str(paths.app_dir / "tools/launch_apf2k8_mod_studio.sh"), paths.wrapper.read_text())
+tests/mod_editor/test_phase1_packaging.py:278:        launcher = (ROOT / "tools/launch_2k5_mod_studio.sh").read_text(encoding="utf-8")

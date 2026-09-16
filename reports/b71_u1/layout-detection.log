@@ -1,0 +1,91 @@
+2K5-Mod-Studio-v1.0-RC95-20260915/tests
+2K5-Mod-Studio-v1.0-RC95-20260915/tests/mod_editor
+2K5-Mod-Studio-v1.0-RC95-20260915/tests/mod_editor/test_nfl2k5_scorebug_mnf.py
+112:tests/mod_editor/test_nfl2k5_scorebug_mnf.py
+900:tests/mod_editor/test_nfl2k5_modern_arrowhead.py
+def launch_studio(
+    facade: StudioFacade | None = None,
+    *,
+    product_catalog: ProductCatalog | None = None,
+    uniform_catalog: Nfl2k5UniformCatalog | None = None,
+    extended_visual_catalog: Nfl2k5ExtendedVisualCatalog | None = None,
+) -> int:
+    """Launch 2K5 Mod Studio and return Qt's process exit code."""
+
+    app = QApplication.instance()
+    if app is None:
+        # These attributes must be selected before Qt creates a GUI
+        # application. Embedded callers may already have made that choice.
+        QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+        QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
+        app = QApplication([])
+        # Only when this call owns the application: an embedded caller has its
+        # own error handling and should not have it replaced. Installing the
+        # hook is also what stops PyQt5 aborting the process, so an unexpected
+        # error becomes a dialog instead of a window that simply disappears.
+        crash_report.install("2K5 Mod Studio")
+    app.setApplicationName("2K5 Mod Studio")
+    app.setOrganizationName("2K5 Mod Studio")
+    # Application-wide, not just per-window: dialogs and the taskbar group take
+    # their picture from here, and a window that has one while its own message
+    # boxes fall back to the Qt default looks half-finished.
+    icon = _window_icon()
+    if icon is not None:
+        app.setWindowIcon(icon)
+    window = StudioMainWindow(
+        facade,
+        product_catalog=product_catalog,
+        uniform_catalog=uniform_catalog,
+        extended_visual_catalog=extended_visual_catalog,
+        workspace_store=WorkspaceStateStore(),
+        offer_recovery=True,
+    )
+    window.show()
+    # Keep a Python reference when embedded in an existing QApplication.
+    setattr(app, "_2k5_mod_studio_window", window)
+    return app.exec_()
+
+
+__all__ = [
+    "BrowseOnlyFacade",
+            # State is a convenience/safety layer, never a condition for
+            # opening the editor or accessing a user's source read-only.
+            state_error = str(exc).strip()
+            workspace_store = None
+    # A positional CLI source is loaded first.  Its success callback offers
+    # recovery only when the candidate is bound to that exact path and hash,
+    # avoiding two competing QTimer(0) source flows or stacked dialogs.
+    window = ApfStudioMainWindow(
+        facade,
+        workspace_store=workspace_store,
+        offer_recovery=offer_recovery and initial_source is None,
+    )
+    window.show()
+    setattr(application, "_apf2k8_mod_studio_window", window)
+    if initial_category is not None:
+        window.navigation.setCurrentRow(APF_CATEGORY_ORDER.index(initial_category))
+        if initial_workspace is not None:
+            page = window._pages.get(initial_category)
+            if isinstance(page, InspectorCategoryPage):
+                page.open_workspace(initial_workspace)
+    if state_error:
+        window.operation_status.setText(
+            f"Private recovery is unavailable for this run: {state_error}"
+        )
+    if initial_source is not None:
+        QTimer.singleShot(
+            0,
+            lambda: window._load_source_path(
+                initial_source,
+                offer_matching_recovery=offer_recovery,
+            ),
+        )
+    result = application.exec_()
+    # Dispose styled widgets before the application/font/pixmap caches leave
+    # scope. This also releases closed, parented authoring dialogs.
+    from PyQt5.QtCore import QCoreApplication, QEvent
+    window.deleteLater()
+    QCoreApplication.sendPostedEvents(None, QEvent.DeferredDelete)
+    setattr(application, "_apf2k8_mod_studio_window", None)
+    return result
+

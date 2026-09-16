@@ -1,0 +1,45 @@
+tests/mod_editor/test_self_update_manual_layout.py
+tests/mod_editor/test_studio_qt_models.py
+tests/mod_editor/test_apf_studio_inspectors.py
+tests/mod_editor/test_nfl2k5_stadium_studio.py
+tests/mod_editor/test_apf_studio_core.py
+tests/mod_editor/test_update_check.py
+tests/mod_editor/test_nfl2k5_scorebug_template_release.py
+tests/mod_editor/test_apf_studio_audio_gui.py
+tests/mod_editor/test_apf_studio_text_edit.py
+tests/mod_editor/test_apf_stadium_studio.py
+tests/mod_editor/test_self_update.py
+tests/mod_editor/test_apf_studio_draft_logo.py
+tests/mod_editor/test_studio_facade.py
+tests/mod_editor/test_self_update_linux.py
+tests/mod_editor/test_stage_release.py
+tests/mod_editor/test_studio_inspection.py
+tests/mod_editor/test_studio_session.py
+tests/mod_editor/test_studio_visual_asset_routing.py
+tests/mod_editor/test_apf_studio_installer.py
+tests/mod_editor/test_studio_shell_layout_qt.py
+tests/mod_editor/test_beta69_studios_offscreen.py
+tests/mod_editor/test_apf_studio_safety.py
+tests/mod_editor/test_apf_stadium_studio_gui.py
+tests/mod_editor/test_scorebug_studio_panel_qt.py
+ M WIRING.md
+ M docs/mod_editor/2k5_mod_studio_changelog.md
+ M mod_editor/apf_studio/gui.py
+ M mod_editor/core/self_update.py
+ M mod_editor/gui/studio_qt.py
+ M mod_editor/gui/update_ui.py
+ M packaging/README.md
+ M packaging/check_2k5_mod_studio_runtime.py
+ M packaging/check_apf2k8_mod_studio_release.py
+ M packaging/check_apf2k8_mod_studio_runtime.py
+ M tests/mod_editor/test_self_update.py
+ M tools/launch_2k5_mod_studio.sh
+ M tools/launch_apf2k8_mod_studio.sh
+?? .scratch/
+?? ASTRA_BRIEF.md
+?? ASTRA_CONTEXT.md
+?? BETA71_TRIAGE.md
+?? THE1WAM_TEMPLATE.txt
+?? extracted
+?? reports/b71_u1/
+?? tests/mod_editor/test_self_update_linux.py

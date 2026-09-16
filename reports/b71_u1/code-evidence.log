@@ -1,0 +1,45 @@
+windows_install_command BYTE-FOR-BYTE UNCHANGED
+apply_windows_installer BYTE-FOR-BYTE UNCHANGED
+beta-69 tag 42a0e609c04a875cdf4142c2bf962756309b9019
+19:  ``<name>.previous``), and the studio is relaunched from the new folder.
+104:    relaunch: tuple[str, ...]       # the command that starts this install again
+136:    if (root / ".github").is_dir() or (root / "tests").is_dir():
+282:def windows_install_command(installer: Path, install_dir: Path, pid: int, *, relaunch: bool = True) -> str:
+285:    if relaunch:
+299:        subprocess.Popen(command, creationflags=flags, close_fds=True, cwd=str(installer.parent),
+300:                         stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+345:                    target.chmod(target.stat().st_mode | 0o111)
+355:def swap_install(current: Path, staging: Path) -> Path:
+360:    os.rename(current, previous)
+362:        os.rename(staging, current)
+364:        os.rename(previous, current)
+397:        swap_install(root, staging)
+404:            os.rename(staging, fallback)
+412:    command = list(plan.install.relaunch)
+416:        subprocess.Popen(command, cwd=str(new_root), env=env, close_fds=True,
+419:                         stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+449:           "apply_windows_installer", "windows_install_command", "unpack_tarball", "swap_install", "apply_tarball",
+6:show_studio_error() {
+17:if ! command -v python3 >/dev/null 2>&1; then
+18:    show_studio_error "Python 3 is not installed. Install Python 3, PyQt5, and Pillow, then reopen 2K5 Mod Studio."
+19:    exit 1
+36:        show_studio_error "The application folder could not be opened. Reinstall 2K5 Mod Studio."
+37:        exit 1
+54:if ! python3 -c 'from PyQt5 import QtWidgets; import PIL; import mod_editor' >"$studio_log" 2>&1; then
+55:    show_studio_error "A required application component is missing. Install Python 3, PyQt5, and Pillow, then reopen 2K5 Mod Studio.\n\nDetails were saved to: $studio_log"
+56:    exit 1
+59:if python3 -m mod_editor --studio "$@" >"$studio_log" 2>&1; then
+69:show_studio_error "2K5 Mod Studio could not start.\n\n$studio_details\n\nFull details: $studio_log"
+mod_editor/core/update_check.py:41:BUILD_RELEASE_TAG = "beta-71.1"
+mod_editor/core/update_check.py:49:_BETA = re.compile(r"^beta-(\d{1,6})(?:\.(\d{1,3}))?$")
+mod_editor/core/update_check.py:135:    current_tag: str = BUILD_RELEASE_TAG,
+mod_editor/core/self_update.py:317:def _safe_members(archive: tarfile.TarFile, top: str) -> list[tarfile.TarInfo]:
+mod_editor/core/self_update.py:333:def unpack_tarball(tarball: Path, parent: Path, *, progress: ProgressSink | None = None) -> Path:
+mod_editor/core/self_update.py:381:def swap_install(current: Path, staging: Path) -> Path:
+mod_editor/core/self_update.py:404:def _stage_python(plan: UpdatePlan, staging: Path) -> str:
+mod_editor/core/self_update.py:449:def check_tarball_launch(root: Path, executable: str, product: str) -> str:
+mod_editor/core/self_update.py:474:def notify_update_ready() -> None:
+mod_editor/core/self_update.py:487:def _start_tarball(command: Sequence[str], root: Path) -> None:
+mod_editor/core/self_update.py:522:def apply_tarball(plan: UpdatePlan, tarball: Path, *, progress: ProgressSink | None = None,
+mod_editor/core/self_update.py:589:def run_update(document: Mapping[str, object], product: str = "2k5", *, progress: ProgressSink | None = None,
+02bbadd184e85498a441d3be71e70f8de94b9b0a

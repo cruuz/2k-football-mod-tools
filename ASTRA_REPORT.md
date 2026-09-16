@@ -1,342 +1,963 @@
-# Beta 71 S6: sprite scorebug pass 2
+# Beta 71.1 U1: Linux tarball update and rollback
 
-S6 corrects the residual logo fringe, possession plate, round ends, rim and wing
-finish in the PNG/JSON sprite design and shared texture compiler. The append
-remains **323,808 bytes**, exactly S5's total: 34 TXTRs and one enlarged SCNE,
-with **zero FONT resources**. The separate light notch brings the quad count to
-46 and fits inside existing scene padding. The native owner instructions,
-allocator layout and complete stack XBE are byte-identical to S5.
+Implemented on `astra/b71-u1-linux-update`, based on
+`02bbadd184e85498a441d3be71e70f8de94b9b0a`. The branch and all new Git objects live
+in `.scratch/private.git`; the original worktree Git directory and HEAD were
+not changed. Implementation commit: `9571ae83`. Delivery is the incremental
+`.scratch/astra-b71-u1.bundle`, with the release-tree base as its prerequisite.
+No push, network request, emulator, desktop display, or audio playback was used.
+Qt execution was offscreen. All full extracted releases and test GUI processes
+were cleaned up.
 
-The private branch is `astra/b71-s6-sprite-pass2`, based on S5
-`0520e2e1df15818fe86494a13b7c55966d2a039c`. Private Git metadata is in
-`.scratch/b71-s6-git`; the shared worktree Git metadata was read only. Delivery
-is `.scratch/astra-b71-s6.bundle`. Explicit-path commits and independent bundle
-fetch verification are recorded in `.scratch/b71-s6-delivery.json`.
+## Result and witness boundary
 
-**PROVED:** decoded textures, native loading/owner execution, field coverage,
-software raster measurements, freeze-class resource volume and integration
-checks. **UNWITNESSED:** console GPU sampling, played intro, live gameplay and
-full display appearance. No disc build, xemu session or push was performed.
+**PROVED:** the old tarball apply path loses an interpreter installed inside the
+application folder. Running the shipped beta 70 updater against the shipped
+beta 71 archive in a disposable install with `.venv/bin/python3` moves the runtime
+into `.previous`, then raises `FileNotFoundError` trying its old path. With no
+Python on `PATH`, reopening the launcher exits 1. The fixed updater passes a
+real-payload, offscreen update/relaunch test and retains the local runtime.
 
-## Design and cause
+**UNWITNESSED:** this is not an exact reconstruction of the reported SteamOS
+desktop session. The untouched beta 70 archive unexpectedly contains an
+allowlisted `tests/` directory, which its own detector treats as a source ZIP,
+hiding Update now. The first reproduction exposed that refusal. The controlled
+reproduction therefore explicitly supplies `InstallKind('tarball', ...)` to
+exercise the shipped apply code without modifying that code or either archive.
+The reported installation history, wrapper, runtime and actual clicked button
+are unknown. Runtime loss is a demonstrated mechanism consistent with the
+symptom, not proof of those unknown details. An ordinary system-Python install
+did **not** brick in the same controlled update.
 
-1. **Logo edges.** `nfl2k5_scorebug_exact.mnf_panel` previously composited onto
-   transparent black, leaving all 1,907 DEN and 1,431 KC zero-alpha panel texels
-   with black RGB. The source PNGs themselves have 2,724 and 2,206 black
-   transparent pixels. The old RGBA median cut also changed 377 DEN and 393 KC
-   opaque texels into partial coverage. It did not make zero-alpha texels
-   nonzero; the before diagnostic records zero such changes. Pillow's RGBA
-   resize already premultiplies, so black contamination was not proved to arise
-   solely in that resize. It survived canvas placement and palette conversion
-   into the straight-RGBA bilinear sampling path; faint resampling tails made
-   its dashed outline visible.
+The report was: “Won't even open it anymore. If I entirely uninstall and go
+through the whole reinstall process it works fine again.” A SteamOS desktop
+confirmation is still needed after manual installation of this hotfix.
 
-   `nfl2k5_scorebug_assets.alpha_bleed` extends visible RGB six texels into
-   transparent space before resizing and again after placement; `resample_logo`
-   explicitly filters RGBa, removes faint ringing and bounds fractional coverage
-   to the one-texel silhouette boundary. The atlas packer bleeds each cell too.
-   `quantize_alpha_aware` separates transparent, opaque, white-mask and coloured
-   feather entries, measures feather colour in premultiplied RGBA, and never
-   dithers. It keeps low-alpha white ramps continuous. Both logos now have zero
-   changed alpha endpoints and zero feather texels outside that boundary band.
-   All palette slots were already resident, so using up to 256 instead of 128
-   colours adds no bytes. Historical non-MNF texture authors retain their
-   original quantizer. Shared MNF pins were regenerated from the current builder.
+## Inputs and exact broken state
 
-2. **Plate and pointer.** `template.png` has a neutral luminance gradient with
-   soft inner edge shading and a darker lower lip. The source plate is
-   [837,947,1083,983]. JSON's optional `plate_tints` supplies KC's broadcast
-   crimson tint; other teams retain their existing primary/secondary choices.
-   The [951,942,965,947] pointer is a separate light, untinted, downward notch.
-   The measured top and bottom strips below exclude white label ink.
+The hub alias supplied in the brief did not contain the tarballs. Both were
+present under the read-only existing scratchpad at:
 
-3. **Capsule and play-clock cell.** The left capsule and right red cell are
-   filtered to their HUD footprint in the PNG, preserving curved edge coverage
-   during bilinear sampling. Their boxes stay [839,999,1019,1039] and
-   [1019,999,1082,1040]. Both decoded end masks are vertically symmetric, have
-   transparent corners, full centre coverage and a feather. The red fill is
-   (215,0,51). The digit's [1042,1009,1057,1028] ink target and anchor 1049.5
-   stay fixed. Comparing the isolated native digit to the full bar loses **zero
-   coverage** at both aspects: no other material clips it. Its native centre
-   error is below 0.003 HUD px. No owner draw-order patch was needed.
+`/tmp/claude-1000/-home-noah-Desktop-2K5-8-Editors/7d06c350-f66f-4c4d-acf4-cdbdbedff1da/scratchpad/`
 
-4. **Body and wings.** The body keeps the r=8 silhouette, gains a stronger
-   two-source-pixel top rim over the soft highlight, reaches charcoal near
-   (37,37,37) in the middle and retains its dark two-pixel bottom rim. Wing
-   masks fade by (1-x)^1.5; their top alpha admits the rim and their bottom alpha
-   admits the dark border. Both decoded P8 column profiles are monotonic from
-   the outer team colour to body colour, with no inner seam. Additional columns from the actual native raster, with
-   logos/text hidden only for that diagnostic, have zero channel reversals at
-   both aspects. Black-background
-   crops isolate the new rounded corners from the screenshot's existing rails.
+| Release | Relative asset path | Size | SHA-256, verified against local sidecar |
+| --- | --- | ---: | --- |
+| beta 70 | `b70/ship/assets70/2K5-Mod-Studio-v1.0-RC95-20260915.tar.gz` | 15,900,836 | `2f8e104f1c07769e5b93dda93b26c61bba1521985971e9d44225f56d265592ec` |
+| beta 71 | `b71/ship/assets71/2K5-Mod-Studio-v1.0-RC96-20260916.tar.gz` | 16,067,243 | `aeb245db395605d62485e3b87700d0d10782b6c22bff9cc82ba6944f0e380b1a` |
 
-5. **Widescreen and states.** The native 27/32 x contraction is retained and
-   undone for display-restored comparisons. Logo, round-end and corner quads
-   have the same restored dimensions at both aspects within
-   0.000000 source pixels.
-   Every S5 state was rerendered: DEN/KC, NO/DEN, scores 0/7/28/100, 0:07,
-   play clocks 3/4/12, all downs, OT, Inches, Goal, timeouts 0..3, FLAG, FUMBLE,
-   hang time, ball on, score slabs and hidden play clock. The ordinary bar uses
-   no FONT draws. Event callbacks and their inherited formatting remain; FUMBLE
-   hides the play-clock digit and the score slabs leave sprite scores attached
-   to the root. These are native state fixtures, not played-game captures.
+These are local release copies, not a fresh independent download from GitHub.
+Their `self_update.py` files are byte-identical to the base release tree.
+They have a single top-level folder, 924/962 tar members, no symlinks, no Python
+runtime, and no `__pycache__`. Packaging normalizes executable modes to 0755 and
+regular files to 0644 (`packaging/build_archive.py:48`); the release gate rejects
+runtime directories, compiled bytecode, links and undeclared payloads.
 
-## Measured comparison
+After the controlled legacy update, the sandbox contained:
 
-| Region | ESPN RGB | S5 RGB | S6 RGB |
-| --- | --- | --- | --- |
-| plate_top | [187.48, 14.94, 63.3] | [232.5, 23.25, 55.25] | [180.0, 10.0, 59.25] |
-| plate_bottom | [165.82, 8.51, 54.2] | [228.0, 24.0, 55.33] | [162.42, 10.62, 54.33] |
-| body_top_rim | [32.0, 38.2, 32.2] | [55.5, 60.4, 54.85] | [63.75, 69.0, 65.35] |
-| body_highlight | [46.8, 59.52, 91.84] | [49.66, 49.8, 49.8] | [52.84, 52.92, 53.2] |
-| body_middle | [37.0, 37.0, 37.0] | [34.3, 34.3, 34.3] | [37.3, 37.3, 37.3] |
-| body_bottom_rim | [47.55, 46.05, 56.25] | [11.0, 12.35, 16.75] | [11.55, 13.3, 17.6] |
-| red_cell | [214.73, 0.0, 53.24] | [214.81, 1.42, 52.14] | [214.81, 1.42, 52.14] |
+```text
+2K5-Mod-Studio-v1.0-RC95-20260915/              # beta 71 app, same shortcut path
+    mod_editor/...                          # complete RC96 tree
+    tools/launch_2k5_mod_studio.sh             # mode 0775 under this host's umask
+    .venv/                                   # MISSING
+2K5-Mod-Studio-v1.0-RC95-20260915.previous/     # intact beta 70 tree
+    .venv/bin/python3                        # interpreter moved here
+    mod_editor/__pycache__/sentinel.pyc       # old cache stays here
+download/                                   # verified update and sidecar
+state/                                      # sandbox launch diagnostics
+```
 
-The exact sample rectangles and the separate 16:9 measurements are in
-`finish-proof.json`. Frame/JPEG rim samples include the photograph's rail
-placement and tinted reflection; they are not substituted for the requested
-neutral design colours. The sprite render remains softer than the broadcast
-photograph at the native 640x480 HUD sampling limit. The legacy RGB comparator
-continues to report a mismatch; no pixel-identical claim is made.
+There was no nested RC96 folder and no half-extracted replacement. The old app
+cache was not copied into the new tree. The launcher remained executable, but
+the old extraction code turned its shipped 0755 into 0775 on this umask; this
+is a separate permission-preservation bug, not the observed missing interpreter.
 
-| Logo | Mean dark RGB sampling error, S5 | S6 | S5 95th percentile | S6 |
-| --- | ---: | ---: | ---: | ---: |
-| DEN | 1.819 | 1.462 | 7.107 | 6.173 |
-| KC | 5.551 | 0.378 | 24.894 | 2.250 |
+## Root cause, with original release line numbers
 
-This samples decoded P8 with straight versus premultiplied bilinear filtering
-at identical fractional positions; it isolates dark sampling error, not a
-photographic similarity score. The extra hidden-RGB ablation preserves every
-alpha byte while replacing zero-alpha RGB, separately demonstrating that cause.
-The source marks remain 64x64; this pass does not invent higher-resolution detail.
+- `mod_editor/core/self_update.py:136` rejects any `tests/` directory, including
+  the one shipped in beta 70 and 71. This explains the raw archive's refusal.
+- `detect_install`, lines 129 and 145, stores `sys.executable` in the tarball relaunch
+  command. For a local venv this is `<install>/.venv/bin/python3`, not a system
+  executable. Resolving that symlink to the base interpreter would also lose
+  the venv's dependency environment.
+- `unpack_tarball`, lines 320–352, extracts application files only. It has no
+  runtime preservation or import/launch check. Line 345 adds execute bits to
+  the umask-derived mode instead of applying the archived mode.
+- `swap_install`, lines 355–365, deletes an older `.previous`, renames the live
+  tree, and places the extracted tree at its path. Its rollback covers only
+  the second rename, not subsequent startup failure.
+- `apply_tarball`, line 397, switches before checking startup. Lines 412–416
+  reuse the old interpreter path and call `Popen`. The venv was moved to
+  `.previous`, and the incoming tarball carries no replacement: `Popen` raises
+  `FileNotFoundError: [Errno 2] No such file or directory: '<install>/.venv/bin/python3'`.
+  The reproduction child exits 1. The GUI's existing worker catches the error
+  and keeps its current window open, but the on-disk installation is already
+  switched and there is no automatic restore.
+- Line 419 discards stdout/stderr and the updater never checks child exit status.
+  If an interpreter starts but the new app fails during import, the updater
+  can report success and close the old window with no traceback visible to the
+  user. This second failure mode follows directly from the code; the historical
+  SteamOS child traceback is **UNWITNESSED**.
+- `tools/launch_2k5_mod_studio.sh:17–19` requires `python3` on `PATH` before
+  resolving the app root. In the no-system-Python simulation after runtime
+  loss, it exits 1 with “Python 3 is not installed. Install Python 3, PyQt5, and
+  Pillow, then reopen 2K5 Mod Studio.” Terminal stderr was observed. A desktop
+  launch would use zenity/kdialog if available, otherwise a terminal-less
+  shortcut can show nothing. The actual SteamOS dialog behavior is unwitnessed.
 
-Standard static boundaries: **0.006285 HUD px** maximum error. Dynamic
-boundaries: **0.166789 HUD px**. Visible glyph ink: **0.829630 HUD px**.
-All visible fields across 50 captures remain within their boxes with maximum
-containment error **0.006836 HUD px**.
-Setup/update recorded 166 / 2283
-writes and zero writes outside the allowlist. Native tests preserve GPRs, flags,
-x87, MXCSR and XMM state, call displaced routines once, reparse all resources,
-retain retail HUD bytes and refuse foreign code/data/resources. The custom
-PNG/JSON design proof still changes position, size and colour with identical
-owner instructions.
+The beta-57 ship/stack notes and RC81 changelog describe sibling extraction,
+backup, relaunch and the Windows NSIS wait path. Their blanket claim that a
+failure leaves the old copy untouched is not true for the demonstrated Linux
+relaunch failure. The NSIS path has its own process wait and remains unchanged.
 
-## Review artifacts
+## Fix
 
-- [ESPN / S5 / S6 at 4:3, 2x](reports/b71_s6/espn_s5_s6_43_2x.png)
-- [ESPN / S5 / S6 at 16:9, 2x](reports/b71_s6/espn_s5_s6_169_2x.png)
-- [All 50 state/aspect crops](reports/b71_s6/states_contact_sheet.png)
-- [DEN edges at 4x](reports/b71_s6/DEN_edge_compare_43_4x.png) and [16:9](reports/b71_s6/DEN_edge_compare_169_4x.png)
-- [KC edges at 4x](reports/b71_s6/KC_edge_compare_43_4x.png) and [16:9](reports/b71_s6/KC_edge_compare_169_4x.png)
-- [Decoded wing column profiles](reports/b71_s6/wing_column_profiles.png)
-- [Clean background, 4:3](reports/b71_s6/clean_background_43_2x.png) and [16:9](reports/b71_s6/clean_background_169_2x.png)
-- [Day background, 4:3](reports/b71_s6/day_43.png) and [16:9](reports/b71_s6/day_169.png)
-- [Decoded P8 atlas](reports/b71_s6/atlas.png), [finish measurements](reports/b71_s6/finish-proof.json), [native geometry/ink](reports/b71_s6/measurements.json)
+- `self_update.py:333`: unique sibling staging, one stripped archive root,
+  exact archived permission bits, bytecode excluded, and staging cleanup on
+  failure. Special files and links in incoming archives are refused.
+- `self_update.py:404`: copy the active in-folder Python runtime without moving
+  the running environment. Internal absolute runtime links become relative;
+  external base-Python links remain intact. A relative `.studio-python` selector
+  makes the runtime usable both in staging and at the final path. An external
+  active interpreter is recorded as an absolute path. Unsupported/conflicting
+  runtime layouts are refused before switching.
+- `self_update.py:449`: a fresh process imports the candidate app, CLI and GUI,
+  verifies the app import comes from that candidate, prints its version and
+  must exit 0. This runs before touching the current installation and again
+  after switching, using the selected interpreter with isolated app paths and
+  bytecode writes disabled.
+- `self_update.py:381,522`: retain the previous tree using same-filesystem
+  atomic renames. A pre-existing `.previous` is preserved and a unique backup
+  name is used. A per-install sibling lock prevents overlapping transactions.
+  Rename failure restores the original tree when the filesystem permits it.
+- `self_update.py:474,487`: the new GUI acknowledges its first event loop after
+  showing its window. An early exit, including exit 0 without acknowledgement,
+  a spawn error, a post-switch check failure, or a 60-second startup timeout
+  causes rollback. A timed-out child is stopped before restoring. The failed
+  tree and `.update-launch.log` remain beside the restored app for inspection.
+  Error messages name the failure, the old version's location and the next step.
+  An unrecoverable filesystem rename refusal also names the retained backup.
+- Both Linux launchers honor `.studio-python`, local `.venv`/`venv`/`runtime`
+  interpreters, or `MOD_STUDIO_PYTHON`. `--update-check` imports the app and GUI,
+  prints the version, and exits without a display. Runtime selection no longer
+  requires modifying SteamOS's read-only system partition or finding a system
+  Python. The tarball still does not manufacture a runtime where none exists.
+- Two-line GUI acknowledgement hooks and updated banner wording are documented
+  in `WIRING.md`. APF packaging contracts follow the selected interpreter. The
+  2K5 GUI source seal was regenerated by `repin.py --apply`. No game writers,
+  registry rows, cave reservations or Windows installer files changed. Both
+  Windows handoff functions were compared byte-for-byte with the base.
 
-The ESPN/S5 comparison and both disc-i shine screenshots requested in the brief
-were opened and reviewed. Screenshots used as preview backgrounds are preserved;
-any uncovered pixels of an earlier bar remain visible. The separate black
-background proof avoids that confound when reviewing the new rims and corners.
+There are two atomic renames, not a crash-atomic multi-directory transaction.
+Power loss between them can require restoring `.previous` manually. A later
+application crash after startup acknowledgement is outside this startup check.
+Unknown custom runtime layouts safely refuse the update instead of guessing.
+Projects stored inside the application folder remain in the retained old tree.
 
-## Resource and integration proof
+## Hotfix tag compatibility and rollout
 
-| Component | Count | Bytes each | Total |
-| --- | ---: | ---: | ---: |
-| Team logo TXTR | 32 | 5,280 | 168,960 |
-| Neutral logo TXTR | 1 | 2,208 | 2,208 |
-| P8 atlas TXTR, 256x512 | 1 | 132,256 | 132,256 |
-| Scene with layout | 1 | 20,384 | 20,384 |
-| FONT | 0 | 0 | 0 |
-| **Append** | **35** | | **323,808** |
+Use **`beta-71.1`**. The beta 69 Git tag
+`42a0e609c04a875cdf4142c2bf962756309b9019`, the shipped beta 70 archive and shipped
+beta 71 archive all use the same numeric parser:
+`^beta-(\d{1,6})(?:\.(\d{1,3}))?$`. They compare `(major, hotfix)` tuples, treating
+an omitted hotfix as zero. All three implementations were executed against an
+out-of-order mocked release list and selected `beta-71.1` as newer.
 
-Native heap-rounded sum: 327,168 bytes. Sector pack growth: 323,584 bytes.
-The hard sprite limit is 400,000 bytes; the oversized profile refusal is tested.
-This is a freeze-class volume proof, not a witnessed intro peak-memory trace.
+The generic tag filter additionally accepts 1–64 ASCII letters, digits, dots,
+underscores and hyphens. Other spellings can pass that filter but do not get
+numeric ordering; recognized numeric releases take precedence in selection.
+`beta-71.1.1` is not recognized numerically. The parser grammar was already
+correct and is unchanged. The fixed build's `BUILD_RELEASE_TAG` is now
+`beta-71.1`, so it will not offer itself again. Product versions remain RC96
+and alpha.92; no public release was created.
 
-Provider pins and legacy compiler pins are regenerated. Provider integrity,
-product catalog, phase1 packaging and strict registry validation run without
-skipping file checks. The 75 inherited private evidence inputs were verified as
-independent copies against their inventory (2,063,157 bytes); they are not in
-commits or the bundle. The existing runtime registry row includes S6 evidence;
-no capability rows were added. The RC96 bullet and design documentation describe
-the finish and retain experimental, off-by-default and UNWITNESSED status.
+**Old code cannot retroactively receive the new transaction before applying
+the hotfix.** Users with in-folder Python should manually extract the hotfix
+to a separate folder and retain/copy their working runtime. Users already
+affected can close the app, keep the failed new folder, and restore the intact
+`.previous` folder to the original install path before proceeding. No system
+partition write is needed. The old detector may offer only Get the update even
+though its tag parser discovers the hotfix. The changelog explains the manual
+migration without reporter names.
 
-The brief's registry, packaging-pin and cave-projection requirements include
-direct edits to protected `mod_editor/capabilities/registry.v1.json`,
-`packaging/check_2k5_mod_studio_release.py` (the template-catalog digest only),
-and `data/nfl2k5_cave_reservations.json`. Those edits are complete; no deferred
-wiring is needed.
+## Verification
 
-The cave projection observes the complete current writer stack. It seals
-339 current source files, preserves every S5 allocation,
-and produces the same stack XBE SHA-256:
-`472862f4eac5420137f97529fe3c27b5f000f0ab6a005bd1d8a14d46c753bd60`.
-Both XBE gates, cave oracle and owner-pair matrix were run detached against the
-final seals even though owner instructions did not change. Duplicate historical projection payloads were compacted below the 8 MiB
-reader bound; the complete top-level write ledger, reservations, source seals
-and XBE identity were proved unchanged. The projection is
-explicitly not a release-disc receipt; inherited disc fields remain historical
-and production regeneration is required when a disc is built.
+**PROVED:** 146 tests passed across the following complete standalone files;
+all final executions exited 0. Required suites and supplemental integration
+checks are linked to full logs in the command receipts below.
 
-`reports/b71_s6/build_testdisc71.py` is prepared with disc m's
-`softdrink_advanced` plan and the five enabled options: scorebug,
-scorebug_runtime, modern_color, modern_arrowhead and widescreen. Its name is
-**NFL 2K5 MOD TEST 2026-09-16n (sprite scorebug pass 2 + everything)**.
-`verify_builder.py` imports and checks the immutable plan without calling the
-builder. The builds directory is untouched. No disc or patch export was run.
+| Suite | Tests |
+| --- | ---: |
+| `test_self_update.py` | 26 |
+| `test_self_update_manual_layout.py` | 1 |
+| `test_update_check.py` | 21 |
+| `test_self_update_linux.py` | 14 |
+| `test_provider_integrity.py` | 8 |
+| `test_product_catalog.py` | 9 |
+| `test_phase1_packaging.py` | 23 |
+| `test_stage_release.py` | 10 |
+| `test_apf_studio_installer.py` | 16 |
+| `test_studio_shell_layout_qt.py` | 18 |
 
-## Completed checks
+The new regression suite performs real temp-dir tarball-to-tarball updates,
+retains a real venv-only dependency, executes the shipped shell launcher with
+no Python on PATH, checks modes/layout/caches/backups, and exercises import,
+rename, final-path check, spawn, child-exit and startup-timeout failures. A real
+child acknowledges startup in the success case. Existing banner and NSIS tests
+also pass.
 
-All **40 required suites** have passing latest results:
-**1162 tests, 16 explicit skips**. Missing: none.
-The skips retain their exact reasons in the suite logs; they cover historical
-retired mechanisms, unavailable private developer inputs and read-only storage
-for a full-disc transaction. Native sprite loading, owner, raster and geometry
-checks are not skipped. Gameplay, intro and GPU appearance still require a
-played witness at both aspects, including possessions, timeouts and all events.
+The full-payload fixed replay uses beta 70's extracted tree and a beta 71 archive
+overlaid with this patch's five 2K5 updater/launcher/GUI files. Its two checks
+print `1.0.0rc96` and exit 0; the actual offscreen studio reaches its event loop.
+The updated launcher prints `1.0.0rc96`, exits 0 with no Python on PATH, remains
+0755, and leaves no app bytecode caches. The previous tree is retained. The
+test then deliberately terminates its GUI (SIGTERM, -15), after successful
+acknowledgement, and removes its sandbox. This termination is test cleanup,
+not a startup failure. Final replay command: 17.575 seconds, exit 0.
 
-| Check | Tests | Skips | Seconds | Exit |
-| --- | ---: | ---: | ---: | ---: |
-| [test_apf_scorebug_workspace_qt](reports/b71_s6/final-test_apf_scorebug_workspace_qt.log) | 11 | 0 | 1.463 | 0 |
-| [test_build_panel_qt](reports/b71_s6/final-test_build_panel_qt.log) | 13 | 0 | 3.354 | 0 |
-| [test_mod_build](reports/b71_s6/final-test_mod_build.log) | 13 | 0 | 2.13 | 0 |
-| [test_nfl2k5_allocator_scaleout](reports/b71_s6/final-test_nfl2k5_allocator_scaleout.log) | 23 | 0 | 821.091 | 0 |
-| [test_nfl2k5_cave_oracle](reports/b71_s6/gate-test_nfl2k5_cave_oracle.log) | 29 | 0 | 355.728 | 0 |
-| [test_nfl2k5_owner_pairwise_composition](reports/b71_s6/gate-test_nfl2k5_owner_pairwise_composition.log) | 506 | 0 | 2872.036 | 0 |
-| [test_nfl2k5_scorebar_rim](reports/b71_s6/final-test_nfl2k5_scorebar_rim.log) | 8 | 0 | 14.159 | 0 |
-| [test_nfl2k5_scorebar_v3](reports/b71_s6/final-test_nfl2k5_scorebar_v3.log) | 9 | 0 | 100.715 | 0 |
-| [test_nfl2k5_scorebug_assets](reports/b71_s6/final-test_nfl2k5_scorebug_assets.log) | 8 | 1 | 148.199 | 0 |
-| [test_nfl2k5_scorebug_author](reports/b71_s6/final-test_nfl2k5_scorebug_author.log) | 12 | 0 | 6.3 | 0 |
-| [test_nfl2k5_scorebug_exact](reports/b71_s6/sealed-test_nfl2k5_scorebug_exact.log) | 8 | 0 | 86.154 | 0 |
-| [test_nfl2k5_scorebug_fonts](reports/b71_s6/final-test_nfl2k5_scorebug_fonts.log) | 10 | 5 | 8.884 | 0 |
-| [test_nfl2k5_scorebug_freeze](reports/b71_s6/final-test_nfl2k5_scorebug_freeze.log) | 7 | 0 | 242.333 | 0 |
-| [test_nfl2k5_scorebug_freeze_v2](reports/b71_s6/sealed-test_nfl2k5_scorebug_freeze_v2.log) | 7 | 0 | 330.688 | 0 |
-| [test_nfl2k5_scorebug_ingame](reports/b71_s6/final-test_nfl2k5_scorebug_ingame.log) | 11 | 0 | 14.66 | 0 |
-| [test_nfl2k5_scorebug_ingame_fix](reports/b71_s6/final-test_nfl2k5_scorebug_ingame_fix.log) | 9 | 0 | 126.344 | 0 |
-| [test_nfl2k5_scorebug_mnf](reports/b71_s6/final-test_nfl2k5_scorebug_mnf.log) | 10 | 0 | 11.974 | 0 |
-| [test_nfl2k5_scorebug_mnf_v3](reports/b71_s6/final-test_nfl2k5_scorebug_mnf_v3.log) | 7 | 0 | 49.02 | 0 |
-| [test_nfl2k5_scorebug_native](reports/b71_s6/final-test_nfl2k5_scorebug_native.log) | 4 | 0 | 131.24 | 0 |
-| [test_nfl2k5_scorebug_projection](reports/b71_s6/final-test_nfl2k5_scorebug_projection.log) | 14 | 0 | 58.007 | 0 |
-| [test_nfl2k5_scorebug_resources](reports/b71_s6/sealed-test_nfl2k5_scorebug_resources.log) | 6 | 0 | 288.703 | 0 |
-| [test_nfl2k5_scorebug_runtime](reports/b71_s6/final-test_nfl2k5_scorebug_runtime.log) | 12 | 0 | 119.768 | 0 |
-| [test_nfl2k5_scorebug_source_art](reports/b71_s6/final-test_nfl2k5_scorebug_source_art.log) | 13 | 3 | 0.472 | 0 |
-| [test_nfl2k5_scorebug_sprite](reports/b71_s6/sealed-test_nfl2k5_scorebug_sprite.log) | 13 | 0 | 78.494 | 0 |
-| [test_nfl2k5_scorebug_template](reports/b71_s6/final-test_nfl2k5_scorebug_template.log) | 19 | 0 | 9.932 | 0 |
-| [test_nfl2k5_scorebug_template_release](reports/b71_s6/sealed-test_nfl2k5_scorebug_template_release.log) | 5 | 0 | 0.55 | 0 |
-| [test_nfl2k5_scorebug_unified_adapter](reports/b71_s6/final-test_nfl2k5_scorebug_unified_adapter.log) | 5 | 0 | 0.165 | 0 |
-| [test_nfl2k5_scorebug_v10_ingame](reports/b71_s6/final-test_nfl2k5_scorebug_v10_ingame.log) | 11 | 0 | 9.028 | 0 |
-| [test_nfl2k5_scorebug_v10_projection](reports/b71_s6/final-test_nfl2k5_scorebug_v10_projection.log) | 14 | 0 | 28.835 | 0 |
-| [test_nfl2k5_scorebug_versions](reports/b71_s6/final-test_nfl2k5_scorebug_versions.log) | 4 | 0 | 9.846 | 0 |
-| [test_nfl2k5_xbe_space](reports/b71_s6/final-test_nfl2k5_xbe_space.log) | 13 | 1 | 34.063 | 0 |
-| [test_phase1_packaging](reports/b71_s6/sealed-test_phase1_packaging.log) | 23 | 0 | 2.111 | 0 |
-| [test_product_catalog](reports/b71_s6/sealed-test_product_catalog.log) | 9 | 0 | 0.154 | 0 |
-| [test_provider_integrity](reports/b71_s6/sealed-test_provider_integrity.log) | 8 | 0 | 9.98 | 0 |
-| [test_scorebug_sprite_preview_qt](reports/b71_s6/sealed-test_scorebug_sprite_preview_qt.log) | 2 | 0 | 10.038 | 0 |
-| [test_scorebug_studio_panel_qt](reports/b71_s6/final-test_scorebug_studio_panel_qt.log) | 11 | 0 | 7.388 | 0 |
-| [test_xbe_patch_cave_references](reports/b71_s6/gate-test_xbe_patch_cave_references.log) | 131 | 0 | 1735.277 | 0 |
-| [test_xbe_patch_memory_writes](reports/b71_s6/gate-test_xbe_patch_memory_writes.log) | 119 | 0 | 1548.162 | 0 |
-| [nfl2k5_scorebug_layout_test](reports/b71_s6/final-nfl2k5_scorebug_layout_test.log) | 15 | 6 | 1.429 | 0 |
-| [nfl2k5_scorebug_mod_project_test](reports/b71_s6/final-nfl2k5_scorebug_mod_project_test.log) | 10 | 0 | 1.319 | 0 |
+Strict registry validation passed with **176 capabilities**, without skipping
+file checks. Both clean allowlist stages passed release checks before and after
+runtime execution: **2K5 917 files, 250 product modules + 35 tool modules**;
+**APF 289 files, 161 modules**. The final combined release-gate command took
+33.774 seconds, exit 0. Both launcher shell syntax checks passed. `repin.py
+--apply` changed the one GUI source seal initially and subsequent runs reported
+zero updates. The final `git diff --check` passed; the first report-generation
+attempt left an extra blank line at EOF, which was corrected before delivery.
 
-## Exact detached command ledger
+Failures retained in the evidence: the first raw-archive reproduction was
+refused by the legacy detector; the controlled reproduction then proved the
+runtime loss. The first supplemental APF run rejected its outdated literal
+system-Python launcher contract, corrected in both gates. The next runs lacked
+Capstone because those tests choose `python3` from PATH with user-site packages
+disabled. A private offline test venv exposing the already installed Capstone,
+Unicorn and NumPy, selected on PATH, passed all 16 tests. No dependency was
+downloaded or installed into the system. These earlier failures are not hidden.
+The first finalization attempt stopped at that report whitespace check before
+committing or creating a bundle; its exact receipt is retained as
+`reports/b71_u1/finalization-attempt1.json`.
 
-`run_logged.py` starts each command in a new process session, captures its log
-and waits in a supervisor. The tool yields while it runs, so progress remains
-visible. An initial orphan-only launch did not survive the sandbox's process
-namespace lifetime; it produced no proof and was replaced with this supervised
-detached pattern. No process-name kill was used. Times below are UTC. Source
-reads and short authoring edits were not benchmark runs; final Git commands and
-bundle verification are in the private delivery receipt.
+**UNWITNESSED:** an actual SteamOS desktop update, that user's original layout,
+live GitHub bytes, native Windows/macOS execution, later editing/building after
+startup, and power-loss recovery. The no-system-Python test removes Python from
+PATH, not from the host filesystem; its venv still has a working external base
+interpreter. A wholly self-contained home runtime on a system lacking that
+base is not a witnessed platform test. No emulator or in-game verification.
 
-Failed and superseded attempts remain visible: an initial import-path fix, one
-one-level RGB rounding expectation, the initial sampling-error threshold,
-stale shared-MNF pins, and projections that correctly refused source edits
-during observation. The final checks use regenerated pins and current source
-seals. Native/XBE tests and strict registry file checks remain enabled.
+## Delivery
 
-| Log | Started UTC | Seconds | Exit | Exact argv |
-| --- | --- | ---: | ---: | --- |
-| [before](reports/b71_s6/before.log) | 2026-09-16T06:06:36.790066+00:00 | 7.58 | 0 | `python3 reports/b71_s6/inspect_before.py` |
-| [preview-first](reports/b71_s6/preview-first.log) | 2026-09-16T06:10:03.825102+00:00 | 25.991 | 0 | `python3 -c 'import sys; sys.path.insert(0,"reports/b71_s6"); import prove_previews as p; p.STATES=p.STATES[:2]; p.main()'` |
-| [preview-round](reports/b71_s6/preview-round.log) | 2026-09-16T06:11:41.169122+00:00 | 19.898 | 0 | `python3 -c 'import sys; sys.path.insert(0,"reports/b71_s6"); import prove_previews as p; p.STATES=p.STATES[:1]; p.main()'` |
-| [sprite-first](reports/b71_s6/sprite-first.log) | 2026-09-16T06:12:48.277022+00:00 | 75.485 | 1 | `python3 tests/mod_editor/test_nfl2k5_scorebug_sprite.py -v` |
-| [previews](reports/b71_s6/previews.log) | 2026-09-16T06:14:25.466475+00:00 | 160.811 | 0 | `python3 reports/b71_s6/prove_previews.py` |
-| [finish](reports/b71_s6/finish.log) | 2026-09-16T06:16:10.578888+00:00 | 4.693 | 1 | `python3 reports/b71_s6/prove_finish.py` |
-| [manifest](reports/b71_s6/manifest.log) | 2026-09-16T06:16:23.067182+00:00 | 0.567 | 1 | `python3 reports/b71_s6/refresh_manifest_projection.py` |
-| [manifest-current](reports/b71_s6/manifest-current.log) | 2026-09-16T06:17:07.295363+00:00 | 333.928 | 1 | `python3 reports/b71_s6/refresh_manifest_projection.py` |
-| [finish-current](reports/b71_s6/finish-current.log) | 2026-09-16T06:17:08.445184+00:00 | 17.063 | 0 | `python3 reports/b71_s6/prove_finish.py` |
-| [final-test_apf_scorebug_workspace_qt](reports/b71_s6/final-test_apf_scorebug_workspace_qt.log) | 2026-09-16T06:17:18.546619+00:00 | 1.463 | 0 | `python3 tests/mod_editor/test_apf_scorebug_workspace_qt.py -v` |
-| [final-test_nfl2k5_scorebar_rim](reports/b71_s6/final-test_nfl2k5_scorebar_rim.log) | 2026-09-16T06:17:18.547056+00:00 | 14.159 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebar_rim.py -v` |
-| [final-test_nfl2k5_scorebar_v3](reports/b71_s6/final-test_nfl2k5_scorebar_v3.log) | 2026-09-16T06:17:18.547728+00:00 | 100.715 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebar_v3.py -v` |
-| [final-test_nfl2k5_scorebug_assets](reports/b71_s6/final-test_nfl2k5_scorebug_assets.log) | 2026-09-16T06:17:20.009725+00:00 | 148.199 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_assets.py -v` |
-| [final-test_nfl2k5_scorebug_author](reports/b71_s6/final-test_nfl2k5_scorebug_author.log) | 2026-09-16T06:17:32.706692+00:00 | 6.3 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_author.py -v` |
-| [final-test_nfl2k5_scorebug_exact](reports/b71_s6/final-test_nfl2k5_scorebug_exact.log) | 2026-09-16T06:17:39.007456+00:00 | 63.376 | 1 | `python3 tests/mod_editor/test_nfl2k5_scorebug_exact.py -v` |
-| [owner-bounds](reports/b71_s6/owner-bounds.log) | 2026-09-16T06:18:30.632083+00:00 | 15.533 | 0 | `python3 reports/b71_s6/prove_owner_bounds.py` |
-| [custom-design](reports/b71_s6/custom-design.log) | 2026-09-16T06:18:31.810635+00:00 | 8.392 | 0 | `python3 reports/b71_s6/prove_custom_design.py` |
-| [final-test_nfl2k5_scorebug_fonts](reports/b71_s6/final-test_nfl2k5_scorebug_fonts.log) | 2026-09-16T06:18:42.384035+00:00 | 8.884 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_fonts.py -v` |
-| [final-test_nfl2k5_scorebug_freeze](reports/b71_s6/final-test_nfl2k5_scorebug_freeze.log) | 2026-09-16T06:18:51.268146+00:00 | 242.333 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_freeze.py -v` |
-| [final-test_nfl2k5_scorebug_freeze_v2](reports/b71_s6/final-test_nfl2k5_scorebug_freeze_v2.log) | 2026-09-16T06:18:59.263150+00:00 | 53.428 | 1 | `python3 tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py -v` |
-| [final-test_nfl2k5_scorebug_ingame](reports/b71_s6/final-test_nfl2k5_scorebug_ingame.log) | 2026-09-16T06:19:48.209387+00:00 | 14.66 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_ingame.py -v` |
-| [final-test_nfl2k5_scorebug_ingame_fix](reports/b71_s6/final-test_nfl2k5_scorebug_ingame_fix.log) | 2026-09-16T06:19:52.691495+00:00 | 126.344 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py -v` |
-| [final-test_nfl2k5_scorebug_mnf](reports/b71_s6/final-test_nfl2k5_scorebug_mnf.log) | 2026-09-16T06:20:02.869616+00:00 | 11.974 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_mnf.py -v` |
-| [final-test_nfl2k5_scorebug_mnf_v3](reports/b71_s6/final-test_nfl2k5_scorebug_mnf_v3.log) | 2026-09-16T06:20:14.844186+00:00 | 49.02 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py -v` |
-| [previews-final](reports/b71_s6/previews-final.log) | 2026-09-16T06:20:17.693053+00:00 | 162.41 | 0 | `python3 reports/b71_s6/prove_previews.py` |
-| [final-test_nfl2k5_scorebug_native](reports/b71_s6/final-test_nfl2k5_scorebug_native.log) | 2026-09-16T06:21:03.864849+00:00 | 131.24 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_native.py -v` |
-| [compiler-pins](reports/b71_s6/compiler-pins.log) | 2026-09-16T06:21:15.285408+00:00 | 0.093 | 1 | `python3 reports/b71_s6/regenerate_pins.py` |
-| [compiler-pins-current](reports/b71_s6/compiler-pins-current.log) | 2026-09-16T06:21:34.705017+00:00 | 38.55 | 0 | `python3 reports/b71_s6/regenerate_pins.py` |
-| [final-test_nfl2k5_scorebug_projection](reports/b71_s6/final-test_nfl2k5_scorebug_projection.log) | 2026-09-16T06:21:59.035602+00:00 | 58.007 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_projection.py -v` |
-| [previews-release](reports/b71_s6/previews-release.log) | 2026-09-16T06:22:51.881309+00:00 | 164.711 | 0 | `python3 reports/b71_s6/prove_previews.py` |
-| [final-test_nfl2k5_scorebug_resources](reports/b71_s6/final-test_nfl2k5_scorebug_resources.log) | 2026-09-16T06:22:53.601968+00:00 | 286.168 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_resources.py -v` |
-| [final-test_nfl2k5_scorebug_runtime](reports/b71_s6/final-test_nfl2k5_scorebug_runtime.log) | 2026-09-16T06:22:57.042645+00:00 | 119.768 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_runtime.py -v` |
-| [manifest-final](reports/b71_s6/manifest-final.log) | 2026-09-16T06:23:12.684386+00:00 | 336.259 | 1 | `python3 reports/b71_s6/refresh_manifest_projection.py` |
-| [final-test_nfl2k5_scorebug_source_art](reports/b71_s6/final-test_nfl2k5_scorebug_source_art.log) | 2026-09-16T06:23:15.105082+00:00 | 0.472 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_source_art.py -v` |
-| [final-test_nfl2k5_scorebug_sprite](reports/b71_s6/final-test_nfl2k5_scorebug_sprite.log) | 2026-09-16T06:23:15.577809+00:00 | 78.136 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_sprite.py -v` |
-| [finish-release](reports/b71_s6/finish-release.log) | 2026-09-16T06:24:21.173205+00:00 | 17.461 | 0 | `python3 reports/b71_s6/prove_finish.py` |
-| [final-test_nfl2k5_scorebug_template](reports/b71_s6/final-test_nfl2k5_scorebug_template.log) | 2026-09-16T06:24:33.714298+00:00 | 9.932 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_template.py -v` |
-| [final-test_nfl2k5_scorebug_template_release](reports/b71_s6/final-test_nfl2k5_scorebug_template_release.log) | 2026-09-16T06:24:43.646237+00:00 | 0.552 | 1 | `python3 tests/mod_editor/test_nfl2k5_scorebug_template_release.py -v` |
-| [final-test_nfl2k5_scorebug_unified_adapter](reports/b71_s6/final-test_nfl2k5_scorebug_unified_adapter.log) | 2026-09-16T06:24:44.198418+00:00 | 0.165 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_unified_adapter.py -v` |
-| [final-test_nfl2k5_scorebug_v10_ingame](reports/b71_s6/final-test_nfl2k5_scorebug_v10_ingame.log) | 2026-09-16T06:24:44.363871+00:00 | 9.028 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_v10_ingame.py -v` |
-| [final-test_nfl2k5_scorebug_v10_projection](reports/b71_s6/final-test_nfl2k5_scorebug_v10_projection.log) | 2026-09-16T06:24:53.392039+00:00 | 28.835 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_v10_projection.py -v` |
-| [final-test_nfl2k5_scorebug_versions](reports/b71_s6/final-test_nfl2k5_scorebug_versions.log) | 2026-09-16T06:24:56.811295+00:00 | 9.846 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_versions.py -v` |
-| [release-test_nfl2k5_scorebug_exact](reports/b71_s6/release-test_nfl2k5_scorebug_exact.log) | 2026-09-16T06:25:00.558351+00:00 | 85.508 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_exact.py -v` |
-| [release-test_nfl2k5_scorebug_freeze_v2](reports/b71_s6/release-test_nfl2k5_scorebug_freeze_v2.log) | 2026-09-16T06:25:00.581213+00:00 | 330.767 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py -v` |
-| [final-test_scorebug_sprite_preview_qt](reports/b71_s6/final-test_scorebug_sprite_preview_qt.log) | 2026-09-16T06:25:06.657451+00:00 | 10.094 | 0 | `python3 tests/mod_editor/test_scorebug_sprite_preview_qt.py -v` |
-| [final-test_scorebug_studio_panel_qt](reports/b71_s6/final-test_scorebug_studio_panel_qt.log) | 2026-09-16T06:25:16.751611+00:00 | 7.388 | 0 | `python3 tests/mod_editor/test_scorebug_studio_panel_qt.py -v` |
-| [final-nfl2k5_scorebug_layout_test](reports/b71_s6/final-nfl2k5_scorebug_layout_test.log) | 2026-09-16T06:25:22.227266+00:00 | 1.429 | 0 | `python3 tests/nfl2k5_scorebug_layout_test.py -v` |
-| [final-nfl2k5_scorebug_mod_project_test](reports/b71_s6/final-nfl2k5_scorebug_mod_project_test.log) | 2026-09-16T06:25:23.656398+00:00 | 1.319 | 0 | `python3 tests/nfl2k5_scorebug_mod_project_test.py -v` |
-| [final-test_provider_integrity](reports/b71_s6/final-test_provider_integrity.log) | 2026-09-16T06:25:24.139845+00:00 | 9.901 | 0 | `python3 tests/mod_editor/test_provider_integrity.py -v` |
-| [final-test_product_catalog](reports/b71_s6/final-test_product_catalog.log) | 2026-09-16T06:25:24.976273+00:00 | 0.155 | 0 | `python3 tests/mod_editor/test_product_catalog.py -v` |
-| [final-test_phase1_packaging](reports/b71_s6/final-test_phase1_packaging.log) | 2026-09-16T06:25:25.131431+00:00 | 2.157 | 0 | `python3 tests/mod_editor/test_phase1_packaging.py -v` |
-| [final-test_mod_build](reports/b71_s6/final-test_mod_build.log) | 2026-09-16T06:25:27.288462+00:00 | 2.13 | 0 | `python3 tests/mod_editor/test_mod_build.py -v` |
-| [final-test_build_panel_qt](reports/b71_s6/final-test_build_panel_qt.log) | 2026-09-16T06:25:29.419036+00:00 | 3.354 | 0 | `python3 tests/mod_editor/test_build_panel_qt.py -v` |
-| [final-test_nfl2k5_allocator_scaleout](reports/b71_s6/final-test_nfl2k5_allocator_scaleout.log) | 2026-09-16T06:25:32.773222+00:00 | 821.091 | 0 | `python3 tests/mod_editor/test_nfl2k5_allocator_scaleout.py -v` |
-| [final-test_nfl2k5_xbe_space](reports/b71_s6/final-test_nfl2k5_xbe_space.log) | 2026-09-16T06:25:34.041218+00:00 | 34.063 | 0 | `python3 tests/mod_editor/test_nfl2k5_xbe_space.py -v` |
-| [compiler-pins-feather](reports/b71_s6/compiler-pins-feather.log) | 2026-09-16T06:26:23.165812+00:00 | 38.547 | 0 | `python3 reports/b71_s6/regenerate_pins.py` |
-| [previews-sealed](reports/b71_s6/previews-sealed.log) | 2026-09-16T06:30:06.686465+00:00 | 163.833 | 0 | `python3 reports/b71_s6/prove_previews.py` |
-| [sealed-test_nfl2k5_scorebug_sprite](reports/b71_s6/sealed-test_nfl2k5_scorebug_sprite.log) | 2026-09-16T06:30:07.865720+00:00 | 78.494 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_sprite.py -v` |
-| [sealed-test_nfl2k5_scorebug_exact](reports/b71_s6/sealed-test_nfl2k5_scorebug_exact.log) | 2026-09-16T06:30:07.866087+00:00 | 86.154 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_exact.py -v` |
-| [sealed-test_nfl2k5_scorebug_freeze_v2](reports/b71_s6/sealed-test_nfl2k5_scorebug_freeze_v2.log) | 2026-09-16T06:30:07.866541+00:00 | 330.688 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py -v` |
-| [manifest-sealed](reports/b71_s6/manifest-sealed.log) | 2026-09-16T06:30:27.737979+00:00 | 337.023 | 0 | `python3 reports/b71_s6/refresh_manifest_projection.py` |
-| [art-pin](reports/b71_s6/art-pin.log) | 2026-09-16T06:30:44.341251+00:00 | 0.028 | 0 | `python3 reports/b71_s6/refresh_art_pin.py` |
-| [sealed-test_nfl2k5_scorebug_resources](reports/b71_s6/sealed-test_nfl2k5_scorebug_resources.log) | 2026-09-16T06:31:26.360504+00:00 | 288.703 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_resources.py -v` |
-| [sealed-test_nfl2k5_scorebug_template_release](reports/b71_s6/sealed-test_nfl2k5_scorebug_template_release.log) | 2026-09-16T06:31:34.020131+00:00 | 0.55 | 0 | `python3 tests/mod_editor/test_nfl2k5_scorebug_template_release.py -v` |
-| [sealed-test_provider_integrity](reports/b71_s6/sealed-test_provider_integrity.log) | 2026-09-16T06:31:34.570581+00:00 | 9.98 | 0 | `python3 tests/mod_editor/test_provider_integrity.py -v` |
-| [sealed-test_product_catalog](reports/b71_s6/sealed-test_product_catalog.log) | 2026-09-16T06:31:44.550537+00:00 | 0.154 | 0 | `python3 tests/mod_editor/test_product_catalog.py -v` |
-| [sealed-test_phase1_packaging](reports/b71_s6/sealed-test_phase1_packaging.log) | 2026-09-16T06:31:44.704876+00:00 | 2.111 | 0 | `python3 tests/mod_editor/test_phase1_packaging.py -v` |
-| [sealed-test_scorebug_sprite_preview_qt](reports/b71_s6/sealed-test_scorebug_sprite_preview_qt.log) | 2026-09-16T06:31:46.816004+00:00 | 10.038 | 0 | `python3 tests/mod_editor/test_scorebug_sprite_preview_qt.py -v` |
-| [finish-sealed](reports/b71_s6/finish-sealed.log) | 2026-09-16T06:34:02.002966+00:00 | 17.665 | 0 | `python3 reports/b71_s6/prove_finish.py` |
-| [owner-bounds-sealed](reports/b71_s6/owner-bounds-sealed.log) | 2026-09-16T06:34:02.018423+00:00 | 15.397 | 0 | `python3 reports/b71_s6/prove_owner_bounds.py` |
-| [builder-final](reports/b71_s6/builder-final.log) | 2026-09-16T06:34:02.039388+00:00 | 0.267 | 0 | `python3 reports/b71_s6/verify_builder.py` |
-| [validators-plan](reports/b71_s6/validators-plan.log) | 2026-09-16T06:34:02.340647+00:00 | 0.297 | 0 | `python3 tools/validate_all_mod_editor_capabilities.py --list` |
-| [registry-final](reports/b71_s6/registry-final.log) | 2026-09-16T06:35:37.547353+00:00 | 0.153 | 0 | `python3 -m mod_editor.capabilities.validate_registry` |
-| [gate-test_xbe_patch_memory_writes](reports/b71_s6/gate-test_xbe_patch_memory_writes.log) | 2026-09-16T06:36:04.761630+00:00 | 1548.162 | 0 | `python3 tests/mod_editor/test_xbe_patch_memory_writes.py -v` |
-| [gate-test_xbe_patch_cave_references](reports/b71_s6/gate-test_xbe_patch_cave_references.log) | 2026-09-16T06:36:04.762363+00:00 | 1735.277 | 0 | `python3 tests/mod_editor/test_xbe_patch_cave_references.py -v` |
-| [projection-compaction](reports/b71_s6/projection-compaction.log) | 2026-09-16T06:37:34.167526+00:00 | 0.542 | 0 | `python3 reports/b71_s6/compact_projection.py` |
-| [projection-identity](reports/b71_s6/projection-identity.log) | 2026-09-16T06:37:34.740736+00:00 | 0.222 | 0 | `python3 reports/b71_s6/prove_projection_identity.py` |
-| [registry-strict](reports/b71_s6/registry-strict.log) | 2026-09-16T06:39:13.864781+00:00 | 0.148 | 0 | `python3 -m mod_editor.capabilities.validate_registry` |
-| [finish-native-profile](reports/b71_s6/finish-native-profile.log) | 2026-09-16T06:41:14.347687+00:00 | 19.4 | 0 | `python3 reports/b71_s6/prove_finish.py` |
-| [gate-test_nfl2k5_cave_oracle](reports/b71_s6/gate-test_nfl2k5_cave_oracle.log) | 2026-09-16T07:01:52.924157+00:00 | 355.728 | 0 | `python3 tests/mod_editor/test_nfl2k5_cave_oracle.py -v` |
-| [gate-test_nfl2k5_owner_pairwise_composition](reports/b71_s6/gate-test_nfl2k5_owner_pairwise_composition.log) | 2026-09-16T07:05:00.040155+00:00 | 2872.036 | 0 | `python3 tests/mod_editor/test_nfl2k5_owner_pairwise_composition.py -v` |
+The implementation and evidence are explicit-path commits in
+`.scratch/private.git`. The bundle exports only this branch's commits above
+`02bbadd1`; it was verified against that base. The original worktree's `.git`
+file still targets its original Git directory, whose HEAD remains `02bbadd1`.
+`ASTRA_LAST_MESSAGE.md` ends with `ASTRA_DONE`. The command journal and report
+include earlier failed attempts as well as final passing checks. Full output,
+reproduction scripts, original shipped updater snapshots and all command
+receipts are under `reports/b71_u1/`.
 
-ASTRA_DONE
+The final evidence commit/bundle operations are performed by
+`python3 reports/b71_u1/finalize.py`. Their exact commands, UTC starts, durations,
+exit codes, commit IDs and bundle SHA-256 are recorded in
+[the finalization receipt](.scratch/delivery.json), outside the commits to avoid
+a self-referential bundle hash. The report, test logs and reproduction scripts
+are included in the bundle; the finalization receipt remains beside it.
+
+<!-- U1 COMMAND LEDGER -->
+
+## Command receipts
+
+All shell commands after initial discovery run through `reports/b71_u1/run.py`. The JSONL ledger carries the exact command, UTC start, elapsed seconds, and exit status; each linked log contains the complete captured output. Reproduction and release-gate logs also record their child commands and statuses. Tool file edits are represented by the explicit-path commits. Initial read-only discovery receipts are transcribed from tool results below; one truncated timing is honestly unavailable.
+
+| Command / output | UTC start | Seconds | Exit |
+| --- | --- | ---: | ---: |
+| [private-git](reports/b71_u1/private-git.log) | 2026-09-16T23:24:16.794358+00:00 | 2.747 | 0 |
+| [packaging-read](reports/b71_u1/packaging-read.log) | 2026-09-16T23:24:38.980962+00:00 | 0.016 | 0 |
+| [archives-inspect](reports/b71_u1/archives-inspect.log) | 2026-09-16T23:24:38.994329+00:00 | 0.978 | 0 |
+| [install-read](reports/b71_u1/install-read.log) | 2026-09-16T23:24:46.399582+00:00 | 0.18 | 0 |
+| [shipped-reproduction](reports/b71_u1/shipped-reproduction.log) | 2026-09-16T23:26:32.541618+00:00 | 6.29 | 1 |
+| [readiness-read](reports/b71_u1/readiness-read.log) | 2026-09-16T23:26:49.785900+00:00 | 0.015 | 0 |
+| [layout-detection](reports/b71_u1/layout-detection.log) | 2026-09-16T23:26:59.918330+00:00 | 0.269 | 0 |
+| [shipped-reproduction-controlled](reports/b71_u1/shipped-reproduction-controlled.log) | 2026-09-16T23:27:26.246533+00:00 | 9.31 | 0 |
+| [launcher-edit](reports/b71_u1/launcher-edit.log) | 2026-09-16T23:30:37.911158+00:00 | 0.023 | 0 |
+| [manual-update-tests](reports/b71_u1/manual-update-tests.log) | 2026-09-16T23:34:01.062322+00:00 | 0.159 | 0 |
+| [update-check-tests](reports/b71_u1/update-check-tests.log) | 2026-09-16T23:34:01.049383+00:00 | 0.207 | 0 |
+| [linux-update-tests](reports/b71_u1/linux-update-tests.log) | 2026-09-16T23:34:01.020686+00:00 | 1.324 | 0 |
+| [self-update-tests](reports/b71_u1/self-update-tests.log) | 2026-09-16T23:34:01.040169+00:00 | 1.79 | 0 |
+| [review-diff](reports/b71_u1/review-diff.log) | 2026-09-16T23:34:13.890119+00:00 | 0.081 | 0 |
+| [launcher-test-discovery](reports/b71_u1/launcher-test-discovery.log) | 2026-09-16T23:35:01.720486+00:00 | 0.073 | 0 |
+| [strict-validator](reports/b71_u1/strict-validator.log) | 2026-09-16T23:35:01.721773+00:00 | 0.125 | 0 |
+| [product-catalog](reports/b71_u1/product-catalog.log) | 2026-09-16T23:35:01.684464+00:00 | 0.194 | 0 |
+| [phase1-packaging](reports/b71_u1/phase1-packaging.log) | 2026-09-16T23:35:01.699745+00:00 | 2.192 | 0 |
+| [provider-integrity](reports/b71_u1/provider-integrity.log) | 2026-09-16T23:35:01.667121+00:00 | 10.749 | 0 |
+| [repin-first](reports/b71_u1/repin-first.log) | 2026-09-16T23:35:29.036640+00:00 | 21.945 | 0 |
+| [apf-installer-tests](reports/b71_u1/apf-installer-tests.log) | 2026-09-16T23:36:38.591030+00:00 | 0.608 | 1 |
+| [launcher-contracts](reports/b71_u1/launcher-contracts.log) | 2026-09-16T23:36:49.599253+00:00 | 0.053 | 0 |
+| [fixed-release-replay](reports/b71_u1/fixed-release-replay.log) | 2026-09-16T23:36:38.578354+00:00 | 17.57 | 0 |
+| [tag-compatibility](reports/b71_u1/tag-compatibility.log) | 2026-09-16T23:37:19.730876+00:00 | 0.15 | 0 |
+| [apf-installer-tests-fixed](reports/b71_u1/apf-installer-tests-fixed.log) | 2026-09-16T23:37:19.711060+00:00 | 9.58 | 1 |
+| [validation-environment](reports/b71_u1/validation-environment.log) | 2026-09-16T23:37:53.795354+00:00 | 0.612 | 0 |
+| [offline-test-runtime](reports/b71_u1/offline-test-runtime.log) | 2026-09-16T23:38:36.276584+00:00 | 0.25 | 0 |
+| [apf-installer-runtime-complete](reports/b71_u1/apf-installer-runtime-complete.log) | 2026-09-16T23:38:36.800343+00:00 | 10.059 | 1 |
+| [staged-release-gates](reports/b71_u1/staged-release-gates.log) | 2026-09-16T23:38:36.791573+00:00 | 35.515 | 0 |
+| [final-test-discovery](reports/b71_u1/final-test-discovery.log) | 2026-09-16T23:39:19.149936+00:00 | 0.037 | 0 |
+| [repin-before-code-commit](reports/b71_u1/repin-before-code-commit.log) | 2026-09-16T23:39:08.445197+00:00 | 11.485 | 0 |
+| [apf-runtime-selection](reports/b71_u1/apf-runtime-selection.log) | 2026-09-16T23:39:33.147092+00:00 | 0.024 | 0 |
+| [preserve-inherited-wiring](reports/b71_u1/preserve-inherited-wiring.log) | 2026-09-16T23:40:00.583572+00:00 | 0.032 | 0 |
+| [stage-release-tests](reports/b71_u1/stage-release-tests.log) | 2026-09-16T23:40:00.771456+00:00 | 0.142 | 0 |
+| [apf-installer-final](reports/b71_u1/apf-installer-final.log) | 2026-09-16T23:40:00.735090+00:00 | 15.019 | 0 |
+| [studio-shell-tests](reports/b71_u1/studio-shell-tests.log) | 2026-09-16T23:40:00.756942+00:00 | 45.978 | 0 |
+| [linux-update-final](reports/b71_u1/linux-update-final.log) | 2026-09-16T23:41:03.777051+00:00 | 1.338 | 0 |
+| [self-update-final](reports/b71_u1/self-update-final.log) | 2026-09-16T23:41:03.790534+00:00 | 1.735 | 0 |
+| [hotfix-marker-scope](reports/b71_u1/hotfix-marker-scope.log) | 2026-09-16T23:41:46.308904+00:00 | 0.008 | 0 |
+| [update-check-final](reports/b71_u1/update-check-final.log) | 2026-09-16T23:42:09.116982+00:00 | 0.168 | 0 |
+| [repin-code-final](reports/b71_u1/repin-code-final.log) | 2026-09-16T23:42:09.135492+00:00 | 11.136 | 0 |
+| [code-commit](reports/b71_u1/code-commit.log) | 2026-09-16T23:43:18.837358+00:00 | 0.153 | 0 |
+| [code-evidence](reports/b71_u1/code-evidence.log) | 2026-09-16T23:43:52.127932+00:00 | 0.085 | 0 |
+| [fixed-release-final](reports/b71_u1/fixed-release-final.log) | 2026-09-16T23:43:52.119992+00:00 | 17.575 | 0 |
+| [staged-release-final](reports/b71_u1/staged-release-final.log) | 2026-09-16T23:43:52.103646+00:00 | 33.774 | 0 |
+| [report-line-audit](reports/b71_u1/report-line-audit.log) | 2026-09-16T23:48:10.867834+00:00 | 0.02 | 0 |
+| [evidence-review](reports/b71_u1/evidence-review.log) | 2026-09-16T23:49:39.143464+00:00 | 0.048 | 0 |
+| [retain-finalization-attempt](reports/b71_u1/retain-finalization-attempt.log) | 2026-09-16T23:50:34.013945+00:00 | 0.003 | 0 |
+
+### Exact commands
+
+<details><summary>private-git: exit 0, 2.747 seconds</summary>
+
+```bash
+git init --bare .scratch/private.git && git --git-dir=.scratch/private.git config core.bare false && git --git-dir=.scratch/private.git config core.worktree /home/noah/2k-worktrees/astra-b71-u1 && python3 -c 'from pathlib import Path; Path(".scratch/private.git/objects/info/alternates").write_text("/home/noah/2k-football-mod-tools/.git/objects\n")' && git --git-dir=.scratch/private.git update-ref refs/heads/astra/b71-u1-linux-update 02bbadd184e85498a441d3be71e70f8de94b9b0a && git --git-dir=.scratch/private.git symbolic-ref HEAD refs/heads/astra/b71-u1-linux-update && git --git-dir=.scratch/private.git read-tree HEAD && git --git-dir=.scratch/private.git status --short
+```
+
+</details>
+
+<details><summary>packaging-read: exit 0, 0.016 seconds</summary>
+
+```bash
+sed -n '1,190p' packaging/stage_release.py && sed -n '168,280p' packaging/check_2k5_mod_studio_release.py && cat tools/launch_apf2k8_mod_studio.sh && rg -n 'strict|argparse' mod_editor/capabilities/validate_registry.py packaging/repin.py && rg --files packaging | sort
+```
+
+</details>
+
+<details><summary>archives-inspect: exit 0, 0.978 seconds</summary>
+
+```bash
+python3 - <<'PY'
+from pathlib import Path
+import tarfile, sys, hashlib
+base=Path('/tmp/claude-1000/-home-noah-Desktop-2K5-8-Editors/7d06c350-f66f-4c4d-acf4-cdbdbedff1da/scratchpad')
+print('interpreter',sys.executable)
+for tag in ('b70','b71'):
+ p=next((base/tag/'ship'/('assets'+tag[1:])).glob('2K5*.tar.gz'))
+ print(p, p.stat().st_size, hashlib.sha256(p.read_bytes()).hexdigest())
+ with tarfile.open(p) as a:
+  m=a.getmembers();print('members',len(m),'bytes',sum(x.size for x in m),'tops',set(x.name.split('/')[0] for x in m))
+  print('caches/venv/runtime/links',[(x.name,x.linkname) for x in m if '__pycache__' in x.name or '/.venv/' in x.name or '/runtime/' in x.name or x.issym()])
+  for name in ('mod_editor/core/self_update.py','mod_editor/core/update_check.py','tools/launch_2k5_mod_studio.sh'):
+   member=next(x for x in m if x.name.endswith('/'+name));payload=a.extractfile(member).read()
+   out=Path('reports/b71_u1')/(tag+'-'+Path(name).name+'.txt');out.write_bytes(payload)
+   print(name,oct(member.mode), 'same as HEAD',payload==Path(name).read_bytes())
+PY
+```
+
+</details>
+
+<details><summary>install-read: exit 0, 0.18 seconds</summary>
+
+```bash
+cat install.sh && cat packaging/build_archive.py && sed -n '1,160p' packaging/README.md && rg -n 'beta|hotfix|TAG' tests/mod_editor/test_update_check.py && git tag -l 'beta-69' && python3 -c 'from PyQt5 import QtWidgets; import PIL; import numpy; print("dependencies available")'
+```
+
+</details>
+
+<details><summary>shipped-reproduction: exit 1, 6.29 seconds</summary>
+
+```bash
+python3 reports/b71_u1/reproduce.py
+```
+
+</details>
+
+<details><summary>readiness-read: exit 0, 0.015 seconds</summary>
+
+```bash
+rg -n 'def launch_studio|\.show\(|exec_\(' mod_editor/gui/studio_qt.py mod_editor/apf_studio/gui.py && sed -n '1,130p' tests/mod_editor/test_self_update_manual_layout.py && sed -n '310,365p' mod_editor/capabilities/validate_registry.py && sed -n '1,110p' tests/mod_editor/test_phase1_packaging.py && git show beta-69:mod_editor/core/update_check.py | head -80
+```
+
+</details>
+
+<details><summary>layout-detection: exit 0, 0.269 seconds</summary>
+
+```bash
+python3 - <<'PY'
+from pathlib import Path
+import tarfile
+p=next(Path('/tmp/claude-1000/-home-noah-Desktop-2K5-8-Editors/7d06c350-f66f-4c4d-acf4-cdbdbedff1da/scratchpad/b70/ship/assets70').glob('2K5*.tar.gz'))
+with tarfile.open(p) as a:
+ for m in a.getmembers():
+  if '/tests' in m.name or '/.github' in m.name: print(m.name)
+PY
+rg -n '^tests|.github' packaging/release-allowlist.txt && sed -n '9831,9875p' mod_editor/gui/studio_qt.py && sed -n '22123,22163p' mod_editor/apf_studio/gui.py
+```
+
+</details>
+
+<details><summary>shipped-reproduction-controlled: exit 0, 9.31 seconds</summary>
+
+```bash
+python3 reports/b71_u1/reproduce.py
+```
+
+</details>
+
+<details><summary>launcher-edit: exit 0, 0.023 seconds</summary>
+
+```bash
+python3 - <<'PY'
+from pathlib import Path
+for product, name in (('2k5','launch_2k5_mod_studio.sh'), ('apf','launch_apf2k8_mod_studio.sh')):
+ p=Path('tools')/name
+ text=p.read_text()
+ start=text.index('if ! command -v python3')
+ end=text.index('\nfi',start)+len('\nfi\n')
+ text=text[:start]+text[end:]
+ pos=text.index('\n',text.index('portable_root=$(dirname'))
+ selector='''
+
+# An in-app update records the interpreter that already runs this install.
+# A local runtime travels with the app, so SteamOS needs no system changes.
+studio_python=${MOD_STUDIO_PYTHON:-}
+if [[ -z "$studio_python" && -f "$portable_root/.studio-python" ]]; then
+    IFS= read -r studio_python < "$portable_root/.studio-python" || true
+    if [[ -n "$studio_python" && "$studio_python" != /* ]]; then
+        studio_python="$portable_root/$studio_python"
+    fi
+fi
+if [[ -z "$studio_python" ]]; then
+    for candidate in "$portable_root/.venv/bin/python3" "$portable_root/venv/bin/python3" "$portable_root/runtime/bin/python3"; do
+        if [[ -x "$candidate" ]]; then
+            studio_python=$candidate
+            break
+        fi
+    done
+fi
+if [[ -z "$studio_python" ]]; then
+    studio_python=$(command -v python3 || true)
+fi
+if [[ -z "$studio_python" || ! -x "$studio_python" ]]; then
+    show_studio_error "The Python runtime for this copy is missing. Restore the previous application folder or select your installed Python with MOD_STUDIO_PYTHON, then reopen the studio."
+    exit 1
+fi
+'''
+ text=text[:pos]+selector+text[pos:]
+ text=text.replace('if ! python3 ', 'if ! "$studio_python" ').replace('if python3 ', 'if "$studio_python" ').replace('exec python3 ', 'exec "$studio_python" ')
+ text=text.replace('Install Python 3, PyQt5, and Pillow, then reopen 2K5 Mod Studio.', 'Restore the Python runtime and its PyQt5 and Pillow packages, then reopen 2K5 Mod Studio.')
+ text=text.replace("'PyQt5 is missing from the system Python installation. On Linux Mint/Ubuntu, run: sudo apt install python3-pyqt5'", "'PyQt5 is missing from the selected Python runtime. Restore that runtime or install PyQt5 into it.'")
+ text=text.replace("'Pillow is missing from the system Python installation. On Linux Mint/Ubuntu, run: sudo apt install python3-pil'", "'Pillow is missing from the selected Python runtime. Restore that runtime or install Pillow into it.'")
+ module='mod_editor' if product=='2k5' else 'mod_editor.apf_studio'
+ gui='mod_editor.gui.studio_qt' if product=='2k5' else 'mod_editor.apf_studio.gui'
+ idx=text.index('\nif ! "$studio_python" -c')
+ check=f'''\n# Headless launch check: imports the app and its GUI, prints the version, exits.\nif [[ "${{1:-}}" == "--update-check" ]]; then\n    exec "$studio_python" -B -s -c 'import {module}; import {module}.__main__; import {gui}; print({module}.__version__)'\nfi\n'''
+ text=text[:idx]+check+text[idx:]
+ if product=='2k5':
+  text=text.replace('if command -v zenity', 'if [[ -n "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ]] && command -v zenity').replace('elif command -v kdialog','elif [[ -n "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ]] && command -v kdialog')
+  text=text.replace('export PYTHONNOUSERSITE=1','export PYTHONNOUSERSITE=1\nexport PYTHONPATH="$portable_root"')
+ p.write_text(text)
+PY
+```
+
+</details>
+
+<details><summary>manual-update-tests: exit 0, 0.159 seconds</summary>
+
+```bash
+QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_self_update_manual_layout.py
+```
+
+</details>
+
+<details><summary>update-check-tests: exit 0, 0.207 seconds</summary>
+
+```bash
+QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_update_check.py
+```
+
+</details>
+
+<details><summary>linux-update-tests: exit 0, 1.324 seconds</summary>
+
+```bash
+QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_self_update_linux.py
+```
+
+</details>
+
+<details><summary>self-update-tests: exit 0, 1.79 seconds</summary>
+
+```bash
+QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_self_update.py
+```
+
+</details>
+
+<details><summary>review-diff: exit 0, 0.081 seconds</summary>
+
+```bash
+git --git-dir=.scratch/private.git diff --stat && git --git-dir=.scratch/private.git diff --check && rg -n "except _RestoreError|_start_tarball|STARTUP_TIMEOUT" mod_editor/core/self_update.py && head -20 docs/mod_editor/2k5_mod_studio_changelog.md && rg --files tests/mod_editor -g "*launch*" -g "*installer*" -g "*shell*" && sed -n "156,205p" packaging/README.md && cat packaging/repin.py
+```
+
+</details>
+
+<details><summary>launcher-test-discovery: exit 0, 0.073 seconds</summary>
+
+```bash
+rg -n 'launch_2k5_mod_studio|launch_apf2k8_mod_studio|notify_update_ready' tests/mod_editor && git --git-dir=.scratch/private.git diff --check
+```
+
+</details>
+
+<details><summary>strict-validator: exit 0, 0.125 seconds</summary>
+
+```bash
+PYTHONPATH=. python3 mod_editor/capabilities/validate_registry.py
+```
+
+</details>
+
+<details><summary>product-catalog: exit 0, 0.194 seconds</summary>
+
+```bash
+QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_product_catalog.py
+```
+
+</details>
+
+<details><summary>phase1-packaging: exit 0, 2.192 seconds</summary>
+
+```bash
+QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_phase1_packaging.py
+```
+
+</details>
+
+<details><summary>provider-integrity: exit 0, 10.749 seconds</summary>
+
+```bash
+QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_provider_integrity.py
+```
+
+</details>
+
+<details><summary>repin-first: exit 0, 21.945 seconds</summary>
+
+```bash
+python3 packaging/repin.py --apply
+```
+
+</details>
+
+<details><summary>apf-installer-tests: exit 1, 0.608 seconds</summary>
+
+```bash
+QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_apf_studio_installer.py
+```
+
+</details>
+
+<details><summary>launcher-contracts: exit 0, 0.053 seconds</summary>
+
+```bash
+rg -n -C 7 'python3 -m mod_editor|launch_apf2k8_mod_studio.sh' packaging/check_apf2k8_mod_studio_release.py packaging/check_apf2k8_mod_studio_runtime.py packaging/check_2k5_mod_studio_runtime.py && sed -n '270,295p' tests/mod_editor/test_phase1_packaging.py && git --git-dir=.scratch/private.git diff --numstat && ls -ld reports/assets
+```
+
+</details>
+
+<details><summary>fixed-release-replay: exit 0, 17.57 seconds</summary>
+
+```bash
+QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 reports/b71_u1/fixed_replay.py
+```
+
+</details>
+
+<details><summary>tag-compatibility: exit 0, 0.15 seconds</summary>
+
+```bash
+python3 - <<'PY'
+from pathlib import Path
+from unittest.mock import patch
+import subprocess, types, sys, hashlib
+sources={'beta-69 git tag':subprocess.check_output(['git','show','beta-69:mod_editor/core/update_check.py'], text=True), 'beta-70 shipped tarball':Path('reports/b71_u1/b70-update_check.py.txt').read_text(), 'beta-71 shipped tarball':Path('reports/b71_u1/b71-update_check.py.txt').read_text()}
+for n,(label,source) in enumerate(sources.items()):
+ name=f'mod_editor.core._compat{n}'
+ m=types.ModuleType(name);m.__package__='mod_editor.core';sys.modules[name]=m;exec(compile(source,label,'exec'),m.__dict__)
+ print(label,hashlib.sha256(source.encode()).hexdigest(),'BUILD',m.BUILD_RELEASE_TAG,'_BETA',m._BETA.pattern,'_TAG',m._TAG.pattern)
+ with patch.object(m,'_read',return_value=[{'tag_name':'beta-71'},{'tag_name':'beta-71.1'},{'tag_name':'beta-70'}]):
+  r=m.check(m.BUILD_RELEASE_TAG);print(r);assert r.available and r.latest_tag=='beta-71.1'
+ print('beta-71.1.1:',m._beta_number('beta-71.1.1'))
+PY
+bash -n tools/launch_2k5_mod_studio.sh tools/launch_apf2k8_mod_studio.sh
+```
+
+</details>
+
+<details><summary>apf-installer-tests-fixed: exit 1, 9.58 seconds</summary>
+
+```bash
+QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_apf_studio_installer.py
+```
+
+</details>
+
+<details><summary>validation-environment: exit 0, 0.612 seconds</summary>
+
+```bash
+python3 - <<'PY'
+import importlib.util, site
+for n in ('capstone','unicorn','numpy','PyQt5'):
+ s=importlib.util.find_spec(n);print(n,s.origin if s else None)
+print(site.getsitepackages());print(site.getusersitepackages())
+PY
+rg -n 'strict|add_argument' tools/validate_all_mod_editor_capabilities.py && rg -n 'PYTHONNOUSERSITE|site|isolated|capstone' tests/mod_editor/test_apf_studio_installer.py packaging/check_apf2k8_mod_studio_runtime.py && rg --files /home/noah/.cache /tmp -g '*capstone*.whl' -g '*unicorn*.whl' 2>/dev/null | head -20
+```
+
+</details>
+
+<details><summary>offline-test-runtime: exit 0, 0.25 seconds</summary>
+
+```bash
+python3 -m venv --without-pip --system-site-packages .scratch/test-env && python3 - <<'PY'
+from pathlib import Path
+import site, subprocess
+runtime=Path('.scratch/test-env/bin/python3').resolve()
+dest=Path(subprocess.check_output(['.scratch/test-env/bin/python3','-c','import sysconfig; print(sysconfig.get_path("purelib"))'],text=True).strip())
+source=Path(site.getusersitepackages())
+for pattern in ('capstone*','unicorn*','numpy*'):
+ for p in source.glob(pattern):
+  target=dest/p.name
+  if not target.exists(): target.symlink_to(p,target_is_directory=p.is_dir())
+print('offline test runtime uses pre-existing packages:', sorted(p.name for p in dest.iterdir()))
+PY
+PYTHONNOUSERSITE=1 .scratch/test-env/bin/python3 -c 'import capstone, unicorn, numpy; print(capstone.__version__, unicorn.__version__, numpy.__version__)'
+```
+
+</details>
+
+<details><summary>apf-installer-runtime-complete: exit 1, 10.059 seconds</summary>
+
+```bash
+QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. .scratch/test-env/bin/python3 tests/mod_editor/test_apf_studio_installer.py
+```
+
+</details>
+
+<details><summary>staged-release-gates: exit 0, 35.515 seconds</summary>
+
+```bash
+.scratch/test-env/bin/python3 reports/b71_u1/release_gates.py
+```
+
+</details>
+
+<details><summary>final-test-discovery: exit 0, 0.037 seconds</summary>
+
+```bash
+rg --files tests/mod_editor -g "*studio*" -g "*release*" -g "*update*" && git --git-dir=.scratch/private.git status --short
+```
+
+</details>
+
+<details><summary>repin-before-code-commit: exit 0, 11.485 seconds</summary>
+
+```bash
+python3 packaging/repin.py --apply && git --git-dir=.scratch/private.git diff --check
+```
+
+</details>
+
+<details><summary>apf-runtime-selection: exit 0, 0.024 seconds</summary>
+
+```bash
+sed -n '30,85p' tests/mod_editor/test_apf_studio_installer.py && sed -n '286,324p' tests/mod_editor/test_apf_studio_installer.py && sed -n '450,494p' tests/mod_editor/test_apf_studio_installer.py && git --git-dir=.scratch/private.git show HEAD:WIRING.md | head -25 && rg -n 'launch_studio|QApplication' tests/mod_editor/test_studio_shell_layout_qt.py tests/mod_editor/test_beta69_studios_offscreen.py && git --git-dir=.scratch/private.git ls-files ASTRA_REPORT.md ASTRA_LAST_MESSAGE.md
+```
+
+</details>
+
+<details><summary>preserve-inherited-wiring: exit 0, 0.032 seconds</summary>
+
+```bash
+python3 - <<'PY'
+from pathlib import Path
+import subprocess
+p=Path('WIRING.md');new=p.read_text();old=subprocess.check_output(['git','--git-dir=.scratch/private.git','show','HEAD:WIRING.md'],text=True);p.write_text(old+'\n'+new)
+PY
+```
+
+</details>
+
+<details><summary>stage-release-tests: exit 0, 0.142 seconds</summary>
+
+```bash
+QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_stage_release.py
+```
+
+</details>
+
+<details><summary>apf-installer-final: exit 0, 15.019 seconds</summary>
+
+```bash
+PATH="$PWD/.scratch/test-env/bin:$PATH" QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_apf_studio_installer.py
+```
+
+</details>
+
+<details><summary>studio-shell-tests: exit 0, 45.978 seconds</summary>
+
+```bash
+QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_studio_shell_layout_qt.py
+```
+
+</details>
+
+<details><summary>linux-update-final: exit 0, 1.338 seconds</summary>
+
+```bash
+QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_self_update_linux.py
+```
+
+</details>
+
+<details><summary>self-update-final: exit 0, 1.735 seconds</summary>
+
+```bash
+QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_self_update.py
+```
+
+</details>
+
+<details><summary>hotfix-marker-scope: exit 0, 0.008 seconds</summary>
+
+```bash
+rg -n 'BUILD_RELEASE_TAG|beta-71' tests/mod_editor/test_*update* packaging/check_*.py packaging/windows/build_windows_installer.py mod_editor/gui/update_ui.py mod_editor/gui/studio_qt.py mod_editor/apf_studio/gui.py | head -65
+```
+
+</details>
+
+<details><summary>update-check-final: exit 0, 0.168 seconds</summary>
+
+```bash
+QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 tests/mod_editor/test_update_check.py
+```
+
+</details>
+
+<details><summary>repin-code-final: exit 0, 11.136 seconds</summary>
+
+```bash
+python3 packaging/repin.py --apply && git --git-dir=.scratch/private.git diff --check
+```
+
+</details>
+
+<details><summary>code-commit: exit 0, 0.153 seconds</summary>
+
+```bash
+git --git-dir=.scratch/private.git add -- 'mod_editor/core/self_update.py' 'mod_editor/core/update_check.py' 'mod_editor/gui/studio_qt.py' 'mod_editor/gui/update_ui.py' 'mod_editor/apf_studio/gui.py' 'tools/launch_2k5_mod_studio.sh' 'tools/launch_apf2k8_mod_studio.sh' 'packaging/README.md' 'packaging/check_2k5_mod_studio_runtime.py' 'packaging/check_apf2k8_mod_studio_release.py' 'packaging/check_apf2k8_mod_studio_runtime.py' 'tests/mod_editor/test_self_update.py' 'tests/mod_editor/test_self_update_linux.py' 'tests/mod_editor/test_update_check.py' 'docs/mod_editor/2k5_mod_studio_changelog.md' 'WIRING.md' && git --git-dir=.scratch/private.git commit -m 'Fix Linux tarball updates with checked staging and automatic rollback' -- 'mod_editor/core/self_update.py' 'mod_editor/core/update_check.py' 'mod_editor/gui/studio_qt.py' 'mod_editor/gui/update_ui.py' 'mod_editor/apf_studio/gui.py' 'tools/launch_2k5_mod_studio.sh' 'tools/launch_apf2k8_mod_studio.sh' 'packaging/README.md' 'packaging/check_2k5_mod_studio_runtime.py' 'packaging/check_apf2k8_mod_studio_release.py' 'packaging/check_apf2k8_mod_studio_runtime.py' 'tests/mod_editor/test_self_update.py' 'tests/mod_editor/test_self_update_linux.py' 'tests/mod_editor/test_update_check.py' 'docs/mod_editor/2k5_mod_studio_changelog.md' 'WIRING.md' && git --git-dir=.scratch/private.git log -1 --oneline
+```
+
+</details>
+
+<details><summary>code-evidence: exit 0, 0.085 seconds</summary>
+
+```bash
+python3 - <<'PY'
+import ast, subprocess
+from pathlib import Path
+old=subprocess.check_output(['git','show','02bbadd1:mod_editor/core/self_update.py'],text=True)
+new=Path('mod_editor/core/self_update.py').read_text()
+for function in ('windows_install_command','apply_windows_installer'):
+ def body(src):
+  return ast.get_source_segment(src, next(n for n in ast.parse(src).body if isinstance(n,ast.FunctionDef) and n.name==function))
+ assert body(old)==body(new)
+ print(function,'BYTE-FOR-BYTE UNCHANGED')
+print('beta-69 tag', subprocess.check_output(['git','rev-parse','beta-69^{}'],text=True).strip())
+PY
+rg -n 'tests|relaunch|target.chmod|os.rename|subprocess.Popen|DEVNULL|swap_install' reports/b71_u1/b70-self_update.py.txt && rg -n 'python3|show_studio_error|exit 1' reports/b71_u1/b70-launch_2k5_mod_studio.sh.txt && rg -n '^def (_safe_members|unpack_tarball|swap_install|_stage_python|check_tarball_launch|notify_update_ready|_start_tarball|apply_tarball|run_update)|BUILD_RELEASE_TAG|_BETA =' mod_editor/core/self_update.py mod_editor/core/update_check.py && git diff 02bbadd1 -- packaging/windows/build_windows_installer.py && git --git-dir=.scratch/private.git diff --check && git rev-parse HEAD
+```
+
+</details>
+
+<details><summary>fixed-release-final: exit 0, 17.575 seconds</summary>
+
+```bash
+QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 PYTHONPATH=. python3 reports/b71_u1/fixed_replay.py
+```
+
+</details>
+
+<details><summary>staged-release-final: exit 0, 33.774 seconds</summary>
+
+```bash
+.scratch/test-env/bin/python3 reports/b71_u1/release_gates.py
+```
+
+</details>
+
+<details><summary>report-line-audit: exit 0, 0.02 seconds</summary>
+
+```bash
+nl -ba reports/b71_u1/b70-self_update.py.txt | sed -n '126,154p;320,367p;390,421p' && nl -ba packaging/build_archive.py | sed -n '42,63p' && rg -n 'def _on_done|except Exception|_update_failure|return InstallKind' mod_editor/gui/update_ui.py reports/b71_u1/b70-self_update.py.txt && du -sh .scratch && git --git-dir=.scratch/private.git diff --check
+```
+
+</details>
+
+<details><summary>evidence-review: exit 0, 0.048 seconds</summary>
+
+```bash
+python3 - <<'PY'
+from pathlib import Path
+import json
+rows=[json.loads(line) for line in Path('reports/b71_u1/commands.jsonl').read_text().splitlines()]
+print('journal',len(rows),'commands; failed labels',[(r['label'],r['exit_code']) for r in rows if r['exit_code']])
+assert Path('ASTRA_LAST_MESSAGE.md').read_text().rstrip().endswith('ASTRA_DONE')
+for name in ('run.py','reproduce.py','fixed_replay.py','release_gates.py','render_command_report.py','finalize.py'):
+ p=Path('reports/b71_u1')/name;compile(p.read_text(),str(p),'exec')
+print('evidence scripts compile; completion marker present')
+PY
+git --git-dir=.scratch/private.git diff --stat && git --git-dir=.scratch/private.git diff --check
+```
+
+</details>
+
+<details><summary>retain-finalization-attempt: exit 0, 0.003 seconds</summary>
+
+```bash
+cp .scratch/delivery.json reports/b71_u1/finalization-attempt1.json
+```
+
+</details>
+
+### Initial discovery (before the journal)
+
+<details><summary>Exit 0; 3.557e-06 seconds</summary>
+
+```bash
+pwd && rg --files -g 'AGENTS.md' -g 'ASTRA_CONTEXT.md' -g 'BETA71_TRIAGE.md' -g '*beta*57*' -g '*release*check*' -g 'repin.py' -g '*update*' -g '*validat*' -g '*phase1*' -g '*product*catalog*' -g '*provider*integrity*'
+```
+
+
+
+</details>
+
+<details><summary>Exit 2; 0.549948276 seconds</summary>
+
+```bash
+git status --short && git rev-parse HEAD && git log -3 --oneline && ls -la .git .scratch
+```
+
+.scratch did not exist yet
+
+</details>
+
+<details><summary>Exit 0; 3.136e-06 seconds</summary>
+
+```bash
+cat ASTRA_CONTEXT.md BETA71_TRIAGE.md && cat mod_editor/core/self_update.py mod_editor/core/update_check.py
+```
+
+
+
+</details>
+
+<details><summary>Exit 0; 0.110436398 seconds</summary>
+
+```bash
+rg --files -g AGENTS.md -g '*57*' -g '*release*' packaging .github && ls /home/noah && cat .git && rg -n 'WAITPID|RELAUNCH|beta.57|Beta 57' CHANGELOG* docs packaging mod_editor tests/mod_editor/test*update*
+```
+
+
+
+</details>
+
+<details><summary>Exit 0; 3.527e-06 seconds</summary>
+
+```bash
+cat /home/noah/AGENTS.md && cat ASTRA_BRIEF.md && sed -n '/## Beta 71 release issues/,$p' BETA71_TRIAGE.md && cat mod_editor/core/self_update.py
+```
+
+
+
+</details>
+
+<details><summary>Exit 2; time UNWITNESSED</summary>
+
+```bash
+ls packaging && sed -n '1710,1765p' docs/mod_editor/2k5_mod_studio_changelog.md && cat mod_editor/gui/update_ui.py && ls -lh '/home/noah/Desktop/2K5-8 Editors/session_scripts_2026-09-15/b70/ship/assets70/' && rg --files '/home/noah/Desktop/2K5-8 Editors' -g '*RC96*tar.gz' -g '*RC95*tar.gz' -g '*beta57*' -g '*BETA57*'
+```
+
+hub archive directory absent; timing was not retained from the truncated tool output (UNWITNESSED)
+
+</details>
+
+<details><summary>Exit 0; 3.146e-06 seconds</summary>
+
+```bash
+sed -n '130,470p' mod_editor/core/self_update.py
+```
+
+
+
+</details>
+
+<details><summary>Exit 0; 4.087e-06 seconds</summary>
+
+```bash
+cat tools/launch_2k5_mod_studio.sh && rg -n 'tar|venv|python|runtime|chmod|launch' packaging/stage_release.py packaging/check_2k5_mod_studio_release.py .github/workflows/* && sed -n '1713,1765p' docs/mod_editor/2k5_mod_studio_changelog.md && ls '/home/noah/Desktop/2K5-8 Editors' && cat /home/noah/PROJECTS.md /home/noah/projects.json
+```
+
+
+
+</details>
+
+<details><summary>Exit 0; 2.981270912 seconds</summary>
+
+```bash
+python3 - <<'PY'
+from pathlib import Path
+p=Path('/home/noah/Desktop/2K5-8 Editors')
+print('hub',p.exists(),p.resolve())
+for root in (p,Path('/home/noah/Downloads'),Path('/tmp')):
+ for pat in ('*RC95*.tar.gz','*RC96*.tar.gz','*BETA57*','*beta57*'):
+  for f in root.rglob(pat): print(f, f.stat().st_size)
+PY
+```
+
+
+
+</details>
+
+<details><summary>Exit 0; 4.458e-06 seconds</summary>
+
+```bash
+sed -n '1716,1755p' docs/mod_editor/2k5_mod_studio_changelog.md && cat tests/mod_editor/test_self_update.py
+```
+
+
+
+</details>
+
+<details><summary>Exit 2; 2.855e-06 seconds</summary>
+
+```bash
+mkdir -p .scratch reports/b71_u1 && git rev-parse --git-common-dir && df -h . /tmp && rg -n 'Python|venv|Steam|pip' docs/mod_editor/*install* tools/install* tools/launch_apf2k8_mod_studio.sh && sed -n '1,200p' packaging/stage_release.py && sed -n '168,280p' packaging/check_2k5_mod_studio_release.py
+```
+
+nonexistent discovery globs; subsequent packaging reads were rerun and journalled
+
+</details>
+
+<details><summary>Exit 0; 3.115e-06 seconds</summary>
+
+```bash
+cat '/home/noah/Desktop/2K5-8 Editors/BETA57_SHIP_2026-09-03.md' && rg -n -i 'updat|tarball|python' '/home/noah/Desktop/2K5-8 Editors/BETA57_STACK_2026-09-03.md' && cat mod_editor/__init__.py && sed -n '1,100p' mod_editor/__main__.py && cat mod_editor/apf_studio/__main__.py && sed -n '1,85p' mod_editor/apf_studio/__init__.py
+```
+
+
+
+</details>
