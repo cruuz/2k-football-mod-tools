@@ -110,8 +110,9 @@ shortcut changed outside the installer is reported and preserved, not erased.
   previews and exports. **Build writes into the folder you pick** — choose the
   directory Xenia already loads and confirm replace. The studio no longer
   creates an `APF2K8-Mod-TIMESTAMP` child inside an empty folder.
-- Python 3, PyQt5, and Pillow. The launcher reports each missing dependency in
-  plain language before trying to open the application.
+- Python 3.11 or 3.12 and the packages in `packaging/requirements-studio.txt`,
+  including NumPy 1.26.4. The launcher checks PyQt5 and Pillow before opening;
+  optional acceleration remains usable through its fallback when NumPy is absent.
 - Xenia Canary for playing the result. Xemu is an original-Xbox emulator and is
   not the correct emulator for APF 2K8. On Xbox and Xenia, **title update 1.1**
   is required; it never shipped for PS3. Use **Title Update 1.1…** so Launch

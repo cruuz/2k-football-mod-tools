@@ -696,6 +696,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_save_rost.py": "2440e0796000f08bff319e5967675fc0b4df09ad7534733562fbbb22d8fbdac2",
         "mod_editor/core/nfl2k5_save_writer.py": "5a883cd1e449e8c796dc9453e6e9245390715d081979c024ac1182ef2c483bc4",
         "mod_editor/core/nfl2k5_scorebar_v3.py": "406ed027b583e9d49dee9a671eab085af171c2d2b50ab5bc115e487ff45d5d91",
+        "mod_editor/core/runtime_dependencies.py": "326c47fbd24a2cbd5e360b32fd8754434a8433d21bea7efda23bebbc0e9343ac",
         "mod_editor/core/nfl2k5_scorebug_assets.py": "d255b98046e8012a31b380884357ee635c94194181b1e68dba145c836bcb4aa7",
         "mod_editor/core/nfl2k5_scorebug_exact.py": "ff33710e689b86b6aa2f55134adeed6cd3e486667b18c8b13cac89e2d6ab3855",
         "mod_editor/core/nfl2k5_scorebug_fonts.py": "b292f93b7bc25b64a379069b77c9172c1b92cf79553bfe4a7be835d1ad7119e9",

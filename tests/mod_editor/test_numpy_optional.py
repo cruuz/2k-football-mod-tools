@@ -105,6 +105,29 @@ with tempfile.TemporaryDirectory() as folder:
             with self.assertRaises(ModuleNotFoundError):
                 require_numpy('Sprite')
 
+    def test_modified_scorebug_verification_does_not_abort_option_inspection(self):
+        self.child('''
+from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
+import tempfile
+from mod_editor.core import nfl2k5_scorebug_ingame as scene
+from mod_editor.core import nfl2k5_scorebug_resources as art
+from mod_editor.core import nfl2k5_scorebug_runtime as runtime
+from mod_editor.core import nfl2k5_xbe_space as space
+from mod_editor.core import platform_compat as io
+from mod_editor.core.runtime_dependencies import MissingDependency, numpy_install_message
+with tempfile.TemporaryDirectory() as folder:
+    source = Path(folder)/'fixture.iso'
+    source.write_bytes(b'bounded status fixture')
+    entries = {'vc_53450030/0': SimpleNamespace(size=scene.PACK_SIZE, byte_offset=0),
+               'default.xbe': SimpleNamespace(size=space.special.RETAIL_FILE_SIZE, byte_offset=0)}
+    with patch.object(scene.layout.xc, 'parse_xdvdfs', return_value=(entries, None)), patch.object(io, 'pread', return_value=b''), patch.object(runtime, 'status', return_value='applied'), patch.object(art, 'runtime_pack_status', side_effect=MissingDependency(numpy_install_message('Scorebug texture conversion'))):
+        result = scene.runtime_image_status(source)
+    assert 'needs the numpy package' in result, result
+    assert '-m pip install numpy==1.26.4' in result, result
+''')
+
 
 if __name__ == '__main__':
     unittest.main()

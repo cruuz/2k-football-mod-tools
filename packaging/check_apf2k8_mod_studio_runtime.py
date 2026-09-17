@@ -2713,6 +2713,8 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         _check_clean_stage()
+        # Embeddable Python and -I do not add the script directory.
+        sys.path.insert(0, str(ROOT / "packaging"))
         from runtime_dependencies import check_runtime_dependencies
         check_runtime_dependencies(ROOT)
         _check_extractor()
