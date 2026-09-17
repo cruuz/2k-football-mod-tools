@@ -1,0 +1,11 @@
+{
+  "name": "build-owner-final",
+  "argv": [
+    "python3",
+    "tools/scorebug_sprite/build_runtime.py"
+  ],
+  "start_utc": "2026-09-17T00:15:48.082028+00:00",
+  "end_utc": "2026-09-17T00:15:48.196781+00:00",
+  "seconds": 0.115,
+  "exit_code": 0
+}

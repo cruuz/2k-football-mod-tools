@@ -1,0 +1,12 @@
+{
+  "name": "disasm-history-write",
+  "argv": [
+    "python3",
+    "reports/b71_s9/disassemble.py",
+    "a73b0:a7940"
+  ],
+  "start_utc": "2026-09-17T00:18:53.989995+00:00",
+  "end_utc": "2026-09-17T00:18:54.234362+00:00",
+  "seconds": 0.244,
+  "exit_code": 0
+}

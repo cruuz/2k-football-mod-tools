@@ -1,0 +1,17 @@
+{
+  "name": "commit-regression",
+  "argv": [
+    "git",
+    "--git-dir=.scratch/astra-b71-s10.git",
+    "--work-tree=.",
+    "commit",
+    "-m",
+    "Cover pending, closing and unavailable native event elements",
+    "--",
+    "tests/mod_editor/test_nfl2k5_scorebug_down_visibility.py"
+  ],
+  "start_utc": "2026-09-17T00:23:56.412754+00:00",
+  "end_utc": "2026-09-17T00:23:56.456701+00:00",
+  "seconds": 0.044,
+  "exit_code": 0
+}

@@ -1,0 +1,222 @@
+[
+  {
+    "va": "0xfc1b1",
+    "instruction": "mov dword ptr [0xba2f14], 0"
+  },
+  {
+    "va": "0xfc330",
+    "instruction": "mov dword ptr [0xba2f14], 1"
+  },
+  {
+    "va": "0xfc340",
+    "instruction": "mov dword ptr [0xba2f14], 0"
+  },
+  {
+    "va": "0xfc3b7",
+    "instruction": "mov esi, 0xa95a04"
+  },
+  {
+    "va": "0xfc68b",
+    "instruction": "cmp esi, 0xa959d0"
+  },
+  {
+    "va": "0xfc739",
+    "instruction": "mov dword ptr [ecx + 0xa95a14], 1"
+  },
+  {
+    "va": "0xfc743",
+    "instruction": "mov dword ptr [ecx + 0xa95a18], 0"
+  },
+  {
+    "va": "0xfc74d",
+    "instruction": "mov dword ptr [ecx + 0xa95a1c], eax"
+  },
+  {
+    "va": "0xfcacc",
+    "instruction": "mov dword ptr [0xa95b50], edx"
+  },
+  {
+    "va": "0xfcb0e",
+    "instruction": "fld dword ptr [0xa95c34]"
+  },
+  {
+    "va": "0xfcb14",
+    "instruction": "mov dword ptr [0xa95ae0], 1"
+  },
+  {
+    "va": "0xfcb1e",
+    "instruction": "fcomp dword ptr [0xa95c24]"
+  },
+  {
+    "va": "0xfcb2b",
+    "instruction": "mov dword ptr [0xa95ae0], edi"
+  },
+  {
+    "va": "0xfcb31",
+    "instruction": "fld dword ptr [0xa95b54]"
+  },
+  {
+    "va": "0xfcb37",
+    "instruction": "mov dword ptr [0xa95a00], edi"
+  },
+  {
+    "va": "0xfcb3d",
+    "instruction": "fcomp dword ptr [0xa95b44]"
+  },
+  {
+    "va": "0xfcb54",
+    "instruction": "mov dword ptr [0xa95a70], 1"
+  },
+  {
+    "va": "0xfcb60",
+    "instruction": "mov dword ptr [0xa95a70], edi"
+  },
+  {
+    "va": "0xfcb67",
+    "instruction": "mov dword ptr [0xa95bc0], edi"
+  },
+  {
+    "va": "0xfcb8d",
+    "instruction": "fld dword ptr [0xa95b54]"
+  },
+  {
+    "va": "0xfcb98",
+    "instruction": "fcomp dword ptr [0xa95b44]"
+  },
+  {
+    "va": "0xfcba4",
+    "instruction": "mov dword ptr [0xa95ae0], edi"
+  },
+  {
+    "va": "0xfcbaa",
+    "instruction": "mov dword ptr [0xa95a00], ecx"
+  },
+  {
+    "va": "0xfcbc0",
+    "instruction": "mov dword ptr [0xa95a70], ecx"
+  },
+  {
+    "va": "0xfcbc8",
+    "instruction": "mov dword ptr [0xa95a70], edi"
+  },
+  {
+    "va": "0xfcbd0",
+    "instruction": "mov dword ptr [0xa95bc0], ecx"
+  },
+  {
+    "va": "0xfcbdd",
+    "instruction": "fld dword ptr [0xa95b54]"
+  },
+  {
+    "va": "0xfcbe9",
+    "instruction": "fcomp dword ptr [0xa95b44]"
+  },
+  {
+    "va": "0xfcbef",
+    "instruction": "mov dword ptr [0xa95ae0], edi"
+  },
+  {
+    "va": "0xfcc00",
+    "instruction": "fld dword ptr [0xa95c34]"
+  },
+  {
+    "va": "0xfcc06",
+    "instruction": "fcomp dword ptr [0xa95c24]"
+  },
+  {
+    "va": "0xfcc1d",
+    "instruction": "cmp dword ptr [0xba2f14], edi"
+  },
+  {
+    "va": "0xfcc28",
+    "instruction": "mov dword ptr [0xa95a00], esi"
+  },
+  {
+    "va": "0xfcc40",
+    "instruction": "mov dword ptr [0xa95bc0], esi"
+  },
+  {
+    "va": "0xfcc48",
+    "instruction": "mov dword ptr [0xa95a00], edi"
+  },
+  {
+    "va": "0xfcc53",
+    "instruction": "mov dword ptr [0xa95bc0], edi"
+  },
+  {
+    "va": "0xfcc5e",
+    "instruction": "fld dword ptr [0xa95b54]"
+  },
+  {
+    "va": "0xfcc64",
+    "instruction": "fcomp dword ptr [0xa95b44]"
+  },
+  {
+    "va": "0xfcc77",
+    "instruction": "mov dword ptr [0xa95c30], esi"
+  },
+  {
+    "va": "0xfcc7f",
+    "instruction": "mov dword ptr [0xa95c30], edi"
+  },
+  {
+    "va": "0xfcc85",
+    "instruction": "fld dword ptr [0xa95b54]"
+  },
+  {
+    "va": "0xfcc8b",
+    "instruction": "fcomp dword ptr [0xa95b44]"
+  },
+  {
+    "va": "0xfcca6",
+    "instruction": "mov dword ptr [0xa95a70], esi"
+  },
+  {
+    "va": "0xfccae",
+    "instruction": "mov dword ptr [0xa95a70], edi"
+  },
+  {
+    "va": "0xfccbd",
+    "instruction": "mov dword ptr [0xa95bc0], esi"
+  },
+  {
+    "va": "0xfcd16",
+    "instruction": "mov edi, 0xa959c4"
+  },
+  {
+    "va": "0xfce2a",
+    "instruction": "cmp esi, 0xa959cc"
+  },
+  {
+    "va": "0xfcecc",
+    "instruction": "mov ecx, 0xa95a18"
+  },
+  {
+    "va": "0xfd164",
+    "instruction": "mov edi, 0xa95a20"
+  },
+  {
+    "va": "0xfd1ee",
+    "instruction": "movaps xmm0, xmmword ptr [eax + 0xa959e0]"
+  },
+  {
+    "va": "0xfd1fa",
+    "instruction": "fld dword ptr [eax + 0xa95a04]"
+  },
+  {
+    "va": "0xfd200",
+    "instruction": "mov ecx, dword ptr [eax + 0xa959c8]"
+  },
+  {
+    "va": "0xfd211",
+    "instruction": "lea eax, [eax + 0xa959c8]"
+  },
+  {
+    "va": "0xfd2b8",
+    "instruction": "mov eax, dword ptr [esi + 0xa959fc]"
+  },
+  {
+    "va": "0xfd40a",
+    "instruction": "cmp esi, 0xa959e8"
+  }
+]

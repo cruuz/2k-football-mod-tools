@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s10/reports/b71_s10/probe_disc_n_bindings.py", line 17, in <module>
+    c={};g=p.native_geometry(payload,decoded,fonts=preview.fonts,texture_span=chunks[-2],runtime_textures=chunks[:-1],capture=c,widescreen=True,visibility_state='kickoff',visible_elements=(),game_seconds=300)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s10/tools/nfl2k5_scorebug_projection.py", line 359, in native_geometry
+    validate_native_code(payload)
+  File "/home/noah/2k-worktrees/astra-b71-s10/tools/nfl2k5_scorebug_projection.py", line 46, in validate_native_code
+    raise ValueError('static audit refuses scorebug runtime or foreign hooks')
+ValueError: static audit refuses scorebug runtime or foreign hooks

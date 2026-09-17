@@ -1,0 +1,12 @@
+test_gpu_wait_native_packet_callback_releases_same_suspended_continuation (__main__.FreezeTests.test_gpu_wait_native_packet_callback_releases_same_suspended_continuation) ... ok
+test_historical_beta61_binding_code_also_returns_in_current_resource_fixture (__main__.FreezeTests.test_historical_beta61_binding_code_also_returns_in_current_resource_fixture) ... ok
+test_loader_wait_native_completion_clears_busy_before_setup_callback (__main__.FreezeTests.test_loader_wait_native_completion_clears_busy_before_setup_callback) ... ok
+test_native_practice_predicate_skips_scorebug_setup (__main__.FreezeTests.test_native_practice_predicate_skips_scorebug_setup) ... ok
+test_parent_initializer_and_complete_first_frame_with_and_without_bindings (__main__.FreezeTests.test_parent_initializer_and_complete_first_frame_with_and_without_bindings) ... ok
+test_private_lookup_does_not_queue_work_in_an_unrelated_cache (__main__.FreezeTests.test_private_lookup_does_not_queue_work_in_an_unrelated_cache) ... ok
+test_special_lookup_contexts_pending_and_ready_do_not_wait_in_binding (__main__.FreezeTests.test_special_lookup_contexts_pending_and_ready_do_not_wait_in_binding) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 200.348s
+
+OK

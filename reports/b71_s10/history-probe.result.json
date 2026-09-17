@@ -1,0 +1,11 @@
+{
+  "name": "history-probe",
+  "argv": [
+    "python3",
+    "reports/b71_s10/probe_history.py"
+  ],
+  "start_utc": "2026-09-17T00:19:41.118194+00:00",
+  "end_utc": "2026-09-17T00:20:06.202322+00:00",
+  "seconds": 25.084,
+  "exit_code": 0
+}

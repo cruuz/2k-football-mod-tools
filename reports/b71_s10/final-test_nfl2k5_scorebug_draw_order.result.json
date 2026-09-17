@@ -1,0 +1,12 @@
+{
+  "name": "final-test_nfl2k5_scorebug_draw_order",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_nfl2k5_scorebug_draw_order.py",
+    "-v"
+  ],
+  "start_utc": "2026-09-17T00:13:53.498820+00:00",
+  "end_utc": "2026-09-17T00:14:19.386481+00:00",
+  "seconds": 25.888,
+  "exit_code": 0
+}

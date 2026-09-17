@@ -1,0 +1,11 @@
+{
+  "name": "native-sequence-clock-fixture-final",
+  "argv": [
+    "python3",
+    "reports/b71_s10/prove_sequence.py"
+  ],
+  "start_utc": "2026-09-17T00:30:30.862967+00:00",
+  "end_utc": "2026-09-17T00:32:42.967033+00:00",
+  "seconds": 132.104,
+  "exit_code": 0
+}

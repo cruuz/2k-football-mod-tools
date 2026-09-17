@@ -1,0 +1,12 @@
+{
+  "name": "report-script-syntax",
+  "argv": [
+    "python3",
+    "-c",
+    "import ast; from pathlib import Path; files=list(Path(\"reports/b71_s10\").glob(\"*.py\")); [ast.parse(p.read_text(),filename=str(p)) for p in files]; print(len(files), \"report scripts parsed; prepared disc not imported\")"
+  ],
+  "start_utc": "2026-09-17T00:29:29.279959+00:00",
+  "end_utc": "2026-09-17T00:29:29.321275+00:00",
+  "seconds": 0.041,
+  "exit_code": 0
+}

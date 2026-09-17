@@ -1,0 +1,6 @@
+kickoff 43 requests [1, 1, 1, 0, 0, 0] glyphs 0 visible label pixels 0
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s10/reports/b71_s10/prove_sequence.py", line 48, in <module>
+    if state in ('flag','fumble','kickoff') or name in ('ball_on','latched_pre_snap'):assert changed==0,(name,aspect,changed)
+                                                                                             ^^^^^^^^^^
+AssertionError: ('ball_on', '43', 66)

@@ -1,0 +1,12 @@
+{
+  "name": "disasm-latch",
+  "argv": [
+    "python3",
+    "reports/b71_s9/disassemble.py",
+    "fc330:fc360"
+  ],
+  "start_utc": "2026-09-17T00:07:06.536441+00:00",
+  "end_utc": "2026-09-17T00:07:06.767857+00:00",
+  "seconds": 0.231,
+  "exit_code": 0
+}

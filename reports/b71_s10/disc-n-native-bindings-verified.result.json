@@ -1,0 +1,11 @@
+{
+  "name": "disc-n-native-bindings-verified",
+  "argv": [
+    "python3",
+    "reports/b71_s10/probe_disc_n_bindings.py"
+  ],
+  "start_utc": "2026-09-17T00:41:21.872525+00:00",
+  "end_utc": "2026-09-17T00:41:44.340150+00:00",
+  "seconds": 22.468,
+  "exit_code": 0
+}

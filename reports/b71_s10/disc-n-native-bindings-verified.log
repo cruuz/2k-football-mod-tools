@@ -1,0 +1,198 @@
+{
+  "actual_disc_read_only": true,
+  "disc_owner_matches_s9": true,
+  "static_and_wide_apply_are_byte_identical": true,
+  "xbe_sha256": "059eef45adfa600cb92523e785d471993a94826a807816fad94a11e2882a5fe7",
+  "scene_sha256": "e7fbe22e03ea114259f4505507d1614bb9d3327a9590ddc3250a7678b07a2c9f",
+  "states": [
+    {
+      "state": "kickoff",
+      "requests": [
+        1,
+        1,
+        1,
+        0,
+        0,
+        0
+      ],
+      "bindings": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "slides": [
+        30.0,
+        30.0,
+        30.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "down_colors": [
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "state": "after_play",
+      "requests": [
+        1,
+        1,
+        0,
+        0,
+        1,
+        0
+      ],
+      "bindings": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "slides": [
+        30.0,
+        30.0,
+        0.0,
+        0.0,
+        45.0,
+        0.0
+      ],
+      "down_colors": [
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "state": "pre_snap",
+      "requests": [
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "bindings": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "slides": [
+        30.0,
+        30.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "down_colors": [
+        "0xffffffff",
+        "0xffffffff",
+        "0x0",
+        "0xffffffff",
+        "0x0",
+        "0xffffffff",
+        "0xffffffff",
+        "0x0"
+      ]
+    },
+    {
+      "state": "flag",
+      "requests": [
+        1,
+        1,
+        0,
+        1,
+        0,
+        0
+      ],
+      "bindings": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "slides": [
+        30.0,
+        30.0,
+        0.0,
+        30.0,
+        0.0,
+        0.0
+      ],
+      "down_colors": [
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "state": "pre_snap",
+      "requests": [
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "bindings": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "slides": [
+        30.0,
+        30.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "down_colors": [
+        "0xffffffff",
+        "0xffffffff",
+        "0x0",
+        "0xffffffff",
+        "0x0",
+        "0xffffffff",
+        "0xffffffff",
+        "0x0"
+      ]
+    }
+  ],
+  "limitations": [
+    "Synthetic world queries and native latch calls; not captured gameplay memory",
+    "GPU not executed; no emulator opened"
+  ]
+}

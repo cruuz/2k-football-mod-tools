@@ -1,0 +1,11 @@
+{
+  "name": "byte-audit-final",
+  "argv": [
+    "python3",
+    "reports/b71_s10/audit_scene_bytes.py"
+  ],
+  "start_utc": "2026-09-17T00:16:36.336998+00:00",
+  "end_utc": "2026-09-17T00:16:55.191643+00:00",
+  "seconds": 18.855,
+  "exit_code": 0
+}

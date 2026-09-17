@@ -1,0 +1,12 @@
+{
+  "name": "verified-test_apf_scorebug_workspace_qt",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_apf_scorebug_workspace_qt.py",
+    "-v"
+  ],
+  "start_utc": "2026-09-17T00:20:39.904590+00:00",
+  "end_utc": "2026-09-17T00:20:40.618042+00:00",
+  "seconds": 0.713,
+  "exit_code": 0
+}

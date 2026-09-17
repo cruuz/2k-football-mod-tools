@@ -1,0 +1,23 @@
+test_reference_widest_preview_uses_patched_texels (__main__.ReferenceLayoutTests.test_reference_widest_preview_uses_patched_texels) ... ok
+test_ball_live_hide_gate_retail_vs_persistent (__main__.ScorebugEmulationTests.test_ball_live_hide_gate_retail_vs_persistent) ... skipped 'bounded CPU tests require unicorn and NFL2K5_SCOREBUG_EMULATION_TEST=1'
+test_placement_mode_shows_one_mark_copy_and_one_frame (__main__.ScorebugEmulationTests.test_placement_mode_shows_one_mark_copy_and_one_frame) ... skipped 'bounded CPU tests require unicorn and NFL2K5_SCOREBUG_EMULATION_TEST=1'
+test_possession_change_timed_show_retail_vs_persistent (__main__.ScorebugEmulationTests.test_possession_change_timed_show_retail_vs_persistent) ... skipped 'bounded CPU tests require unicorn and NFL2K5_SCOREBUG_EMULATION_TEST=1'
+test_edited_mesh_refits_the_retail_fixed_span (__main__.ScorebugLayoutTests.test_edited_mesh_refits_the_retail_fixed_span) ... ok
+test_layout_is_deterministic_and_stays_in_range (__main__.ScorebugLayoutTests.test_layout_is_deterministic_and_stays_in_range) ... ok
+test_mesh_refuses_foreign_bytes (__main__.ScorebugLayoutTests.test_mesh_refuses_foreign_bytes) ... ok
+test_retail_mesh_parses_to_the_known_layout (__main__.ScorebugLayoutTests.test_retail_mesh_parses_to_the_known_layout) ... ok
+test_status_refuses_what_it_cannot_prove (__main__.ScorebugLayoutTests.test_status_refuses_what_it_cannot_prove) ... ok
+test_strips_come_from_the_scene_not_the_research_export (__main__.ScorebugLayoutTests.test_strips_come_from_the_scene_not_the_research_export)
+The mockup used to read an intermediate glTF that is not in a release (and gated the ... skipped 'the intermediate glTF research export is not in this tree'
+test_v6_both_mark_copies_are_laid_identically_with_retail_uvs (__main__.ScorebugLayoutTests.test_v6_both_mark_copies_are_laid_identically_with_retail_uvs)
+FUN_000fc200 shows zz_ESPN_bug1 in placement mode 0 and zz_ESPN_bug in mode 1, so both ... ok
+test_v6_pill_fits_the_widest_down_and_distance_strings (__main__.ScorebugLayoutTests.test_v6_pill_fits_the_widest_down_and_distance_strings)
+FUN_000fc7d0 formats "%s & %s" from 1st..4th and %d / Goal / Inches: "4th & Inches" is ... ok
+test_v6_preview_renders_normal_and_widest (__main__.ScorebugLayoutTests.test_v6_preview_renders_normal_and_widest) ... ok
+test_patch_xbe_recolours_black_fields_and_nops_the_hide_calls (__main__.ScorebugXbePatchTests.test_patch_xbe_recolours_black_fields_and_nops_the_hide_calls) ... skipped 'base disc image not present'
+test_patch_xbe_refuses_foreign_bytes_at_a_site (__main__.ScorebugXbePatchTests.test_patch_xbe_refuses_foreign_bytes_at_a_site) ... skipped 'base disc image not present'
+
+----------------------------------------------------------------------
+Ran 15 tests in 1.211s
+
+OK (skipped=6)

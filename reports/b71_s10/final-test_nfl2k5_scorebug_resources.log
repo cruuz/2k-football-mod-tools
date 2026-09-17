@@ -1,0 +1,11 @@
+test_invalid_names_and_foreign_extents_refuse (__main__.PublicTests.test_invalid_names_and_foreign_extents_refuse) ... ok
+test_all_264_native_objects_identity_pixels_and_dimming (__main__.RetailTests.test_all_264_native_objects_identity_pixels_and_dimming) ... ok
+test_all_probe_sets_are_exact_idempotent_and_refuse_other_profiles (__main__.RetailTests.test_all_probe_sets_are_exact_idempotent_and_refuse_other_profiles) ... ok
+test_disc_growth_replay_and_rollback_at_pack_node_and_xbe_writes (__main__.RetailTests.test_disc_growth_replay_and_rollback_at_pack_node_and_xbe_writes) ... ok
+test_index_maps_every_unchanged_outer_to_identical_physical_pack_offsets (__main__.RetailTests.test_index_maps_every_unchanged_outer_to_identical_physical_pack_offsets) ... ok
+test_status_replay_and_corruption_at_each_owned_boundary (__main__.RetailTests.test_status_replay_and_corruption_at_each_owned_boundary) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 298.340s
+
+OK

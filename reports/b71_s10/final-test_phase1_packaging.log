@@ -1,0 +1,28 @@
+test_accepts_declared_text_only_stage (__main__.ModStudioPackagingTests.test_accepts_declared_text_only_stage) ... ok
+test_accepts_the_reviewed_equipment_helper_pair (__main__.ModStudioPackagingTests.test_accepts_the_reviewed_equipment_helper_pair) ... ok
+test_allows_unrelated_portable_absolute_path_examples (__main__.ModStudioPackagingTests.test_allows_unrelated_portable_absolute_path_examples) ... ok
+test_arbitrary_report_is_refused_even_when_manifest_names_it (__main__.ModStudioPackagingTests.test_arbitrary_report_is_refused_even_when_manifest_names_it) ... ok
+test_clean_runtime_probe_uses_product_registry_mode (__main__.ModStudioPackagingTests.test_clean_runtime_probe_uses_product_registry_mode) ... ok
+test_launcher_and_packaging_docs_require_pyqt5_not_tk (__main__.ModStudioPackagingTests.test_launcher_and_packaging_docs_require_pyqt5_not_tk) ... ok
+test_only_exact_reviewed_metadata_can_cross_reports_boundary (__main__.ModStudioPackagingTests.test_only_exact_reviewed_metadata_can_cross_reports_boundary) ... ok
+test_private_audio_origin_inventory_is_refused_by_name_or_schema (__main__.ModStudioPackagingTests.test_private_audio_origin_inventory_is_refused_by_name_or_schema) ... ok
+test_private_derived_cache_tree_is_refused_under_allowed_prefix (__main__.ModStudioPackagingTests.test_private_derived_cache_tree_is_refused_under_allowed_prefix) ... ok
+test_refuses_container_even_when_prefix_is_allowlisted (__main__.ModStudioPackagingTests.test_refuses_container_even_when_prefix_is_allowlisted) ... ok
+test_refuses_equipment_helper_that_is_group_writable (__main__.ModStudioPackagingTests.test_refuses_equipment_helper_that_is_group_writable) ... ok
+test_refuses_equipment_helper_with_a_changed_hash (__main__.ModStudioPackagingTests.test_refuses_equipment_helper_with_a_changed_hash) ... ok
+test_refuses_equipment_helper_with_a_changed_size (__main__.ModStudioPackagingTests.test_refuses_equipment_helper_with_a_changed_size) ... ok
+test_refuses_extracted_tree_even_when_allowlisted (__main__.ModStudioPackagingTests.test_refuses_extracted_tree_even_when_allowlisted) ... ok
+test_refuses_generated_stadium_gltf_even_when_allowlisted (__main__.ModStudioPackagingTests.test_refuses_generated_stadium_gltf_even_when_allowlisted) ... ok
+test_refuses_known_private_host_paths_in_staged_text (__main__.ModStudioPackagingTests.test_refuses_known_private_host_paths_in_staged_text) ... ok
+test_refuses_symlinks (__main__.ModStudioPackagingTests.test_refuses_symlinks) ... ok
+test_refuses_the_same_bytes_under_a_renamed_path (__main__.ModStudioPackagingTests.test_refuses_the_same_bytes_under_a_renamed_path) ... ok
+test_refuses_undeclared_and_disguised_binary_files (__main__.ModStudioPackagingTests.test_refuses_undeclared_and_disguised_binary_files) ... ok
+test_release_allowlist_has_scanner_and_metadata_but_not_private_inventory (__main__.ModStudioPackagingTests.test_release_allowlist_has_scanner_and_metadata_but_not_private_inventory) ... ok
+test_reviewed_equipment_helper_pins_agree_across_the_repository (__main__.ModStudioPackagingTests.test_reviewed_equipment_helper_pins_agree_across_the_repository) ... ok
+test_reviewed_metadata_files_match_exact_contract_and_have_no_payload (__main__.ModStudioPackagingTests.test_reviewed_metadata_files_match_exact_contract_and_have_no_payload) ... ok
+test_source_version_and_visible_product_label_are_pinned (__main__.ModStudioPackagingTests.test_source_version_and_visible_product_label_are_pinned) ... ok
+
+----------------------------------------------------------------------
+Ran 23 tests in 2.105s
+
+OK

@@ -1,0 +1,113 @@
+
+ROUTINE 0xa7900 0xa79e0
+000a7900  call      0x1bb190
+000a7905  mov       dword ptr [0xb6ff60], esi
+000a790b  mov       dword ptr [0xb667d0], 1
+000a7915  pop       esi
+000a7916  ret
+000a7917  nop
+000a7918  nop
+000a7919  nop
+000a791a  nop
+000a791b  nop
+000a791c  nop
+000a791d  nop
+000a791e  nop
+000a791f  nop
+000a7920  call      0xa77e0
+000a7925  mov       dword ptr [0xb667d0], 0
+000a792f  ret
+000a7930  jmp       0x1e91f0
+000a7935  nop
+000a7936  nop
+000a7937  nop
+000a7938  nop
+000a7939  nop
+000a793a  nop
+000a793b  nop
+000a793c  nop
+000a793d  nop
+000a793e  nop
+000a793f  nop
+000a7940  mov       eax, dword ptr [0xb6ff64]
+000a7945  ret
+000a7946  nop
+000a7947  nop
+000a7948  nop
+000a7949  nop
+000a794a  nop
+000a794b  nop
+000a794c  nop
+000a794d  nop
+000a794e  nop
+000a794f  nop
+000a7950  mov       eax, dword ptr [0xb667d0]
+000a7955  test      eax, eax
+000a7957  je        0xa7960
+000a7959  fld       dword ptr [0xb6ff7c]
+000a795f  ret
+000a7960  fld       dword ptr [0x4e4180]
+000a7966  ret
+000a7967  nop
+000a7968  nop
+000a7969  nop
+000a796a  nop
+000a796b  nop
+000a796c  nop
+000a796d  nop
+000a796e  nop
+000a796f  nop
+000a7970  mov       eax, ecx
+000a7972  push      esi
+000a7973  cdq
+000a7974  mov       esi, 5
+000a7979  idiv      esi
+000a797b  pop       esi
+000a797c  imul      edx, edx, 0x4b0
+000a7982  cmp       dword ptr [edx + 0xb6e7f0], ecx
+000a7988  jne       0xa7991
+000a798a  lea       eax, [edx + 0xb6e800]
+000a7990  ret
+000a7991  xor       eax, eax
+000a7993  ret
+000a7994  nop
+000a7995  nop
+000a7996  nop
+000a7997  nop
+000a7998  nop
+000a7999  nop
+000a799a  nop
+000a799b  nop
+000a799c  nop
+000a799d  nop
+000a799e  nop
+000a799f  nop
+000a79a0  push      esi
+000a79a1  mov       eax, ecx
+000a79a3  cdq
+000a79a4  mov       esi, 5
+000a79a9  idiv      esi
+000a79ab  mov       eax, edx
+000a79ad  imul      edx, edx, 0x4b0
+000a79b3  cmp       dword ptr [edx + 0xb6e7f0], ecx
+000a79b9  pop       esi
+000a79ba  jne       0xa79c5
+000a79bc  imul      eax, eax, 0x58
+000a79bf  add       eax, 0xb66610
+000a79c4  ret
+000a79c5  xor       eax, eax
+000a79c7  ret
+000a79c8  nop
+000a79c9  nop
+000a79ca  nop
+000a79cb  nop
+000a79cc  nop
+000a79cd  nop
+000a79ce  nop
+000a79cf  nop
+000a79d0  sub       ecx, 0xb667e0
+000a79d6  push      esi
+000a79d7  sar       ecx, 6
+000a79da  push      edi
+000a79db  mov       edi, ecx
+000a79dd  xor       esi, esi

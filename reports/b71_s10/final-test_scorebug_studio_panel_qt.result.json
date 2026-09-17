@@ -1,0 +1,12 @@
+{
+  "name": "final-test_scorebug_studio_panel_qt",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_scorebug_studio_panel_qt.py",
+    "-v"
+  ],
+  "start_utc": "2026-09-17T00:23:24.715385+00:00",
+  "end_utc": "2026-09-17T00:23:32.160231+00:00",
+  "seconds": 7.445,
+  "exit_code": 0
+}

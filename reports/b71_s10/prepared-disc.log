@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s10/reports/b71_s10/verify_prepared_disc.py", line 7, in <module>
+    assert ast.dump(plan(a))==ast.dump(plan(b))
+                    ^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s10/reports/b71_s10/verify_prepared_disc.py", line 6, in <lambda>
+    plan=lambda tree:next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='plan')
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+StopIteration

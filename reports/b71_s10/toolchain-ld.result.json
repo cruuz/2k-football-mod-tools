@@ -1,0 +1,11 @@
+{
+  "name": "toolchain-ld",
+  "argv": [
+    "ld",
+    "--version"
+  ],
+  "start_utc": "2026-09-17T00:23:06.172226+00:00",
+  "end_utc": "2026-09-17T00:23:06.178738+00:00",
+  "seconds": 0.007,
+  "exit_code": 0
+}

@@ -1,0 +1,11 @@
+{
+  "name": "all-suites",
+  "argv": [
+    "python3",
+    "reports/b71_s10/run_final_suites.py"
+  ],
+  "start_utc": "2026-09-17T00:12:57.276022+00:00",
+  "end_utc": "2026-09-17T00:37:25.281094+00:00",
+  "seconds": 1468.005,
+  "exit_code": 1
+}

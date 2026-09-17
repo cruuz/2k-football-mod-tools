@@ -1,0 +1,12 @@
+{
+  "name": "disasm-clock",
+  "argv": [
+    "python3",
+    "reports/b71_s9/disassemble.py",
+    "fc100:fc190"
+  ],
+  "start_utc": "2026-09-17T00:30:03.344734+00:00",
+  "end_utc": "2026-09-17T00:30:03.588357+00:00",
+  "seconds": 0.244,
+  "exit_code": 0
+}

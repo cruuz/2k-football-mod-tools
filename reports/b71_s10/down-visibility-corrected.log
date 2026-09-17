@@ -1,0 +1,7 @@
+test_kickoff_ball_on_flag_and_every_down_keep_native_history (__main__.DownVisibilityTests.test_kickoff_ball_on_flag_and_every_down_keep_native_history) ... ok
+test_real_draw_gate_not_pending_requests (__main__.DownVisibilityTests.test_real_draw_gate_not_pending_requests) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 39.543s
+
+OK

@@ -1,0 +1,11 @@
+{
+  "name": "prove-states-final",
+  "argv": [
+    "python3",
+    "reports/b71_s10/prove_states.py"
+  ],
+  "start_utc": "2026-09-17T00:20:08.563644+00:00",
+  "end_utc": "2026-09-17T00:33:00.265175+00:00",
+  "seconds": 771.702,
+  "exit_code": 0
+}
