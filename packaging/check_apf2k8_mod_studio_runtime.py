@@ -2713,6 +2713,8 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         _check_clean_stage()
+        from runtime_dependencies import check_runtime_dependencies
+        check_runtime_dependencies(ROOT)
         _check_extractor()
         _check_h7a_encoder()
         _check_desktop_contract()

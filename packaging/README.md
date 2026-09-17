@@ -16,7 +16,7 @@ Installers should place these files as follows:
 | `packaging/2k5-mod-studio.desktop` | `/usr/share/applications/2k5-mod-studio.desktop` |
 | `packaging/2k5-mod-studio.svg` | `/usr/share/icons/hicolor/scalable/apps/2k5-mod-studio.svg` |
 
-The application package depends on Python 3, PyQt5, and Pillow. Sprite Preview also requires NumPy, Unicorn and Capstone; see `docs/mod_editor/sprite_scorebug.md`. On Debian/Linux
+Install the pinned application packages with `python3 -m pip install -r packaging/requirements-studio.txt` in the selected runtime. These include NumPy 1.26.4, PyQt5, Pillow, Unicorn and Capstone; see `docs/mod_editor/sprite_scorebug.md`. On Debian/Linux
 Mint those package names are normally `python3`, `python3-pyqt5`, and
 `python3-pil`. A portable development build can instead symlink the launcher
 into a directory on `PATH`; the launcher resolves that symlink back to the
@@ -295,3 +295,20 @@ The runtime checker disables bytecode publication before importing product or
 tool modules. The final repeated release check is still mandatory: it proves
 the probe did not leave a cache, temporary output, private source artifact, or
 any other undeclared file in the stage.
+
+### Third-party dependency closure
+
+Both runtime checks statically scan every Python file under the staged
+`mod_editor` product package, including imports inside callbacks. Literal
+`import_module` calls and `LAZY_RUNTIME_IMPORTS` tuples are included. Mark any
+third-party import delegated to a tool in the calling product module's tuple;
+external applications such as Blender use their own interpreter. Optional
+acceleration imports are still required in releases.
+
+The probe imports each dependency in the selected interpreter with `-I`, so
+user-site packages or PYTHONPATH cannot hide an incomplete runtime. Run the
+checks with the tarball's selected `.venv/bin/python3`. The Windows builder
+also calls the same scan against `runtime/Lib/site-packages` after copying the
+application, including NumPy's native extension and supporting DLLs. It cannot
+satisfy a missing Windows package with a Linux build-host install. Run the full
+runtime checks on the target platform for binary loading and GUI validation.

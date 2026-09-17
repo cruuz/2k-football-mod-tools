@@ -1,0 +1,7 @@
+# Install into the Python selected by MOD_STUDIO_PYTHON or the local .venv.
+# NumPy matches CI and the hash-pinned Windows installer runtime.
+PyQt5==5.15.11
+Pillow==11.3.0
+numpy==1.26.4
+capstone==5.0.7
+unicorn==2.1.4

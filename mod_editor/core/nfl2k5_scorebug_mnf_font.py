@@ -81,7 +81,8 @@ def _cell(decoded: bytes, record: int, width: int):
 
 def _paint(decoded, slot, width, sources):
     from PIL import Image
-    import numpy as np
+    from .runtime_dependencies import require_numpy
+    np = require_numpy("Scorebug texture conversion")
     from . import nfl2k5_scorebug_ingame as r
     system_bytes = _system_bytes(decoded)
     video = decoded[system_bytes:]
@@ -214,7 +215,8 @@ def apply(span: bytes, slot: int) -> tuple[bytes, dict]:
 def preview(slot: int, out: Path) -> Path:
     """Render the restyled atlas beside the retail one (development aid)."""
     from PIL import Image
-    import numpy as np
+    from .runtime_dependencies import require_numpy
+    np = require_numpy("Scorebug texture conversion")
     from . import nfl2k5_scorebug_ingame as r, nfl2k5_scorebug_fonts as fonts
     import os
     index = os.environ.get("NFL2K5_RETAIL_INDEX") or str(Path(__file__).resolve().parents[2] / "extracted" / "ESPN NFL 2K5 (USA)" / "vc_53450030" / "0")
@@ -280,7 +282,8 @@ def _fit_source(char, cw, ch, sources):
 
 
 def clock_font(donor_span: bytes, *, name: str = CLOCK_FONT_NAME, scale: tuple = CLOCK_FONT_SCALE) -> tuple[bytes, dict]:
-    import numpy as np
+    from .runtime_dependencies import require_numpy
+    np = require_numpy("Scorebug texture conversion")
     from . import nfl2k5_scorebug_ingame as r
     chunk, source, _ = r.decode(donor_span)
     if (chunk.kind, chunk.system_bytes, chunk.video_bytes) != ("FONT", 9472, 17408) or digest(source) != RETAIL_DECODED_SHA256[CLOCK_FONT_DONOR]:

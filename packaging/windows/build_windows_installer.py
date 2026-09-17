@@ -16,7 +16,7 @@ hashes, same pins -- and only gains an interpreter beside it.
 Layout produced inside the install directory::
 
     runtime\\python.exe          private CPython (python.org embeddable build)
-    runtime\\Lib\\site-packages  PyQt5, Pillow
+    runtime\\Lib\\site-packages  PyQt5, Pillow, NumPy, Capstone, Unicorn
     app\\...                     the staged release tree, unmodified
 
 ``runtime\\python312._pth`` puts ``..\\app`` on ``sys.path``, so ``mod_editor``
@@ -123,7 +123,7 @@ def fetch(url: str, dest: pathlib.Path, expected: str | None = None) -> pathlib.
 
 
 def build_runtime(work: pathlib.Path, downloads: pathlib.Path) -> pathlib.Path:
-    """Unpack a private CPython and install the two GUI dependencies into it."""
+    """Unpack private CPython and install every hash-pinned runtime dependency."""
     runtime = work / "runtime"
     if runtime.exists():
         shutil.rmtree(runtime)
@@ -136,6 +136,38 @@ def build_runtime(work: pathlib.Path, downloads: pathlib.Path) -> pathlib.Path:
     site_packages = runtime / "Lib" / "site-packages"
     site_packages.mkdir(parents=True, exist_ok=True)
 
+    install_wheels(site_packages, downloads)
+
+    # The embeddable build ignores site-packages and the working directory unless
+    # its ._pth says otherwise. Paths here are relative to python.exe.
+    pth = next(runtime.glob("python*._pth"))
+    pth.write_text(
+        "\n".join(
+            [
+                pth.name.replace("._pth", ".zip"),
+                ".",
+                "Lib\\site-packages",
+                "..\\app",
+                # The product shells out to app\tools\*.py, and a ._pth file
+                # makes this interpreter behave unlike every other one: it does
+                # NOT prepend a script's own directory to sys.path. Those
+                # scripts import each other, so without this entry they died
+                # with ModuleNotFoundError on installed Windows copies only --
+                # never in CI, never from the tarball. The scripts also insert
+                # their own directory now; this is the belt to that pair of
+                # braces, and it costs nothing.
+                "..\\app\\tools",
+                "import site",
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    return runtime
+
+
+def install_wheels(site_packages: pathlib.Path, downloads: pathlib.Path) -> None:
+    """Install the exact reviewed wheels, independent of the cross-build host."""
     # Windows wheels, fetched on whatever platform this build runs on.
     subprocess.run(
         [
@@ -169,34 +201,8 @@ def build_runtime(work: pathlib.Path, downloads: pathlib.Path) -> pathlib.Path:
             )
         with zipfile.ZipFile(present[name]) as archive:
             archive.extractall(site_packages)
-    print(f"      verified {len(WHEEL_SHA256)} pinned wheels + the interpreter")
+    print(f"      verified {len(WHEEL_SHA256)} pinned wheels")
 
-    # The embeddable build ignores site-packages and the working directory unless
-    # its ._pth says otherwise. Paths here are relative to python.exe.
-    pth = next(runtime.glob("python*._pth"))
-    pth.write_text(
-        "\n".join(
-            [
-                pth.name.replace("._pth", ".zip"),
-                ".",
-                "Lib\\site-packages",
-                "..\\app",
-                # The product shells out to app\tools\*.py, and a ._pth file
-                # makes this interpreter behave unlike every other one: it does
-                # NOT prepend a script's own directory to sys.path. Those
-                # scripts import each other, so without this entry they died
-                # with ModuleNotFoundError on installed Windows copies only --
-                # never in CI, never from the tarball. The scripts also insert
-                # their own directory now; this is the belt to that pair of
-                # braces, and it costs nothing.
-                "..\\app\\tools",
-                "import site",
-                "",
-            ]
-        ),
-        encoding="utf-8",
-    )
-    return runtime
 
 
 def build_icon(repo: pathlib.Path, icon_rel: str, out: pathlib.Path) -> pathlib.Path | None:
@@ -266,7 +272,7 @@ def main() -> int:
 
     product = PRODUCTS[args.product]
 
-    print(f"[1/4] private CPython + PyQt5/Pillow")
+    print(f"[1/4] private CPython + pinned Studio dependencies")
     build_runtime(work, downloads)
 
     print(f"[2/4] application tree from {stage}")
@@ -274,6 +280,11 @@ def main() -> int:
     if app.exists():
         shutil.rmtree(app)
     shutil.copytree(stage, app)
+
+    # Audit the actual assembled runtime before an installer can be published.
+    sys.path.insert(0, str(repo / "packaging"))
+    from runtime_dependencies import check_runtime_dependencies
+    check_runtime_dependencies(app, work / "runtime")
 
     print("[3/4] icon")
     icon = build_icon(repo, product["icon"], work / f"{args.product}.ico")

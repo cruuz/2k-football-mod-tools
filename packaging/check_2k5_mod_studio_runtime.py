@@ -1701,6 +1701,8 @@ def _exercise_texture_master(texture_master: object) -> None:
 
 
 def main() -> int:
+    from runtime_dependencies import check_runtime_dependencies
+    check_runtime_dependencies(ROOT)
     require(REPORTS.is_dir() and not REPORTS.is_symlink(),
             "reviewed target metadata directory is missing")
     actual_reports = {

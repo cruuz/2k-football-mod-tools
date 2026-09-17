@@ -16,6 +16,28 @@ container's actual size.
 Community: questions, bug reports and shared patches live on the Discord,
 https://discord.gg/dpMJCnJZD (also under Help > Join the Discord… in both studios).
 
+
+## Python packages for portable installs
+
+Windows Setup includes its own Python 3.12.10 and NumPy 1.26.4 with the other
+Studio packages. Update now installs the complete new Windows runtime too.
+If a bundled package is missing, reinstall the latest Setup.
+
+The Linux tarball contains application files and no Python runtime. Use Python
+3.11 or 3.12 with `packaging/requirements-studio.txt`, which pins NumPy 1.26.4 to
+the same version as CI. From the extracted application folder:
+
+```sh
+python3 -m venv .venv
+.venv/bin/python3 -m pip install -r packaging/requirements-studio.txt
+```
+
+The launcher selects this `.venv`, or the interpreter set by `MOD_STUDIO_PYTHON`.
+Install packages into that same interpreter. A missing NumPy package leaves the
+studio usable; actions requiring it explain the package and install command.
+Portable updates retain the selected local runtime and all its site-packages,
+including NumPy. An external interpreter remains your responsibility.
+
 ## First disc: open, choose, build, play
 
 1. Click **Open game disc…** and choose your untouched USA Xbox disc image. Wait for **Disc open**.

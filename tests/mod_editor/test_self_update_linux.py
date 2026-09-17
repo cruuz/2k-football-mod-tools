@@ -126,6 +126,30 @@ class LinuxUpdateTests(unittest.TestCase):
         self.assertEqual((self.root / "private-mode.txt").stat().st_mode & 0o777, 0o640)
         self.assertEqual((self.root / "tools/launch_2k5_mod_studio.sh").stat().st_mode & 0o777, 0o755)
 
+    def test_update_preserves_real_numpy_and_native_libraries(self):
+        try:
+            import numpy
+        except ImportError:
+            self.skipTest("numpy required for the runtime preservation regression")
+        runtime = self.root / ".venv"
+        venv.EnvBuilder(with_pip=False).create(runtime)
+        python = runtime / "bin/python3"
+        site = Path(subprocess.check_output([str(python), "-c", "import sysconfig; print(sysconfig.get_path('purelib'))"], text=True).strip())
+        package = Path(numpy.__file__).parent
+        copied = []
+        for source in (package, package.with_name("numpy.libs")):
+            if source.exists():
+                shutil.copytree(source, site / source.name, ignore=shutil.ignore_patterns("__pycache__"))
+                copied.extend(path for path in (site / source.name).rglob("*") if path.is_file())
+        pins = {path.relative_to(runtime): hashlib.sha256(path.read_bytes()).hexdigest() for path in copied}
+        self.install = U.detect_install(self.root, executable=str(python))
+        self.update(self.confirmed)
+        for relative, digest in pins.items():
+            self.assertEqual(hashlib.sha256((runtime / relative).read_bytes()).hexdigest(), digest)
+        result = subprocess.check_output([str(python), "-I", "-B", "-c", "import numpy as np; print(np.__version__, np.arange(4).sum())"], text=True)
+        self.assertEqual(result.strip(), numpy.__version__ + " 6")
+        self.assertTrue((self.root.with_name(self.root.name + ".previous") / ".venv").is_dir())
+
     def test_failed_import_never_renames_current_or_calls_relaunch(self):
         archive(self.new, "71.1", bad_import=True)
         before = self.root.stat().st_ino

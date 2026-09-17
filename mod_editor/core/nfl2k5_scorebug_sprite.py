@@ -15,6 +15,8 @@ import struct
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_FOLDER = ROOT / 'data/nfl2k5_scorebug_sprite'
 VERSION = 'scorebug-sprite-v1'
+# Native preview imports these through the projection tool on demand.
+LAZY_RUNTIME_IMPORTS = ('unicorn', 'capstone')
 MAGIC, MARKER_OFFSET, TABLE_OFFSET = 0x35525053, 0x60, 16512
 MAX_APPEND = 400_000
 # Raw SCNE material records stay in place: the owner binds them by name/index.
@@ -409,9 +411,14 @@ def appendix(pack,folder=None,widescreen=False):
 
 def probe_sizes(folder=None):
     from . import nfl2k5_scorebug_resources as art
-    c=compile_folder(folder)
-    scene_size=(TABLE_OFFSET+len(c.table)+127)//128*128+32
-    appended=32*5280+2208+c.atlas.width*c.atlas.height+1184+scene_size
+    # Inspection needs dimensions and table lengths, never compiled pixels.
+    spec, _image = load_layout(folder)
+    fields = spec['fields']
+    table_size = HEADER.size + len(fields)*FIELD.size + (len(spec['static'])+len(spec.get('brand', [])))*STATIC.size
+    table_size += sum(len(spec['glyph_sets'][name]['glyphs'])*GLYPH.size
+                      for name, _cap in {(r['glyph_set'], r['size']) for r in fields})
+    scene_size=(TABLE_OFFSET+table_size+127)//128*128+32
+    appended=32*5280+2208+math.prod(spec['atlas'])+1184+scene_size
     require(appended<MAX_APPEND,'The scorebug exceeds the 0.4 MB resource limit.')
     growth=((art.HUD_SIZE+appended+2047)//2048-(art.HUD_SIZE+2047)//2048)*2048
     return 34,appended,growth
@@ -582,7 +589,9 @@ class NativePreview:
     def _display_image(self,capture,geometry,mode,source,widescreen,path):
         """The raster in display pixels: the 640x448 viewport scaled to the modelled picture over the screenshot."""
         from PIL import Image
-        import numpy as np, tempfile
+        import tempfile
+        from .runtime_dependencies import require_numpy
+        np = require_numpy("Sprite scorebug preview")
         import nfl2k5_scorebug_projection as projection
         d=DISPLAY[bool(widescreen)]
         with tempfile.TemporaryDirectory() as directory:

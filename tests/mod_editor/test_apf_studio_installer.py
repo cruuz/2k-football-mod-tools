@@ -301,6 +301,7 @@ class ReleaseClosureTests(unittest.TestCase):
                 {
                     "PYTHONDONTWRITEBYTECODE": "1",
                     "PYTHONNOUSERSITE": "1",
+                    "PYTHONPATH": str(stage),
                     "QT_QPA_PLATFORM": "offscreen",
                 }
             )

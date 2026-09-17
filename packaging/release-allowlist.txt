@@ -944,3 +944,8 @@ tools/nfl2k5_scorebug_projection.py
 tools/nfl2k5_scorebug_template_proof.py
 tools/nfl_main_menu_font.py
 tools/nfl_normshort3_positions.py
+
+# Runtime dependency audit and portable Python requirements.
+mod_editor/core/runtime_dependencies.py
+packaging/runtime_dependencies.py
+packaging/requirements-studio.txt

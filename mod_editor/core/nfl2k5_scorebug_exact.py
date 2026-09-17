@@ -615,7 +615,8 @@ def atlas_mnf():
     charcoal with the owner tint. All rounded silhouettes are painted masks.
     """
     from PIL import Image, ImageDraw
-    import numpy as np
+    from .runtime_dependencies import require_numpy
+    np = require_numpy("Scorebug texture conversion")
     im = Image.new("RGBA", (256,512))
     def tile(name, size, radius, color, *, end=None):
         w,h=size; out=Image.new("RGBA",(w*2,h*2)); d=ImageDraw.Draw(out)

@@ -1235,6 +1235,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if not isinstance(plan.scorebug_folder, str):
         raise ValueError("The scorebar artwork folder must be text")
     plan = replace(plan, scorebug_folder=plan.scorebug_folder.strip())
+    if plan.scorebug or plan.scorebug_runtime:
+        from .runtime_dependencies import require_numpy
+        require_numpy("Scorebug build")
     if plan.scorebug_folder:
         if not plan.scorebug:
             raise ValueError("A scorebar artwork folder needs the ESPN scorebar option")
