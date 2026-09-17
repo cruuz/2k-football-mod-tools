@@ -221,7 +221,9 @@ class WiringTests(unittest.TestCase):
     def test_B17_PROVED_existing_disabled_build_reason_names_next_step(self):
         from mod_editor.gui.studio_qt import _build_blocker_message
         self.assertIn("Open your game disc", _build_blocker_message(ready=False, edit_count=0, busy=False))
-        self.assertIn("at least one project edit", _build_blocker_message(ready=True, edit_count=0, busy=False))
+        # Beta 71.1 (T5): a project with nothing ticked is no longer refused. Build makes a
+        # verified unchanged copy, and the message names the next step for customizing it.
+        self.assertIn("Choose changes on ★ Build & Share", _build_blocker_message(ready=True, edit_count=0, busy=False))
         self.assertIn("Wait", _build_blocker_message(ready=True, edit_count=1, busy=True))
 
 

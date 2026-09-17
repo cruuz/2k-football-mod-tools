@@ -49,7 +49,8 @@ BOOK_CAPACITY_EXPLANATION = (
     "labels initially share content. Manual book allocation opens all 40 roster slots "
     "and unused labels after you build your project. "
     "The 16 saved-team slots keep their shared USER-o / USER-d assignments; edit saved "
-    "assignments through Save Assignments. This is the same disc-team scope as beta 67."
+    "assignments through Save Assignments. This disc-team scope has not changed in this "
+    "release."
 )
 # Authored experiment values, not a native witness. P3's core accepts exactly five
 # offensive weights and three defensive ones, starting at one and never increasing.

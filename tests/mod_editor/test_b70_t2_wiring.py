@@ -47,7 +47,9 @@ class WiringTests(unittest.TestCase):
                 self.assertIn('Project edit index 0',output.toPlainText())
                 edit.replacement_sha256='changed'
                 render()
-                self.assertIn('measurement unavailable',output.toPlainText())
+                # Beta 71.1 (T5): opening no longer fits, so the live build list marks a stale
+                # receipt 'fit pending' where the beta 70 proposal said 'measurement unavailable'.
+                self.assertRegex(output.toPlainText(),r'measurement unavailable|fit pending')
                 self.assertNotIn(rows[0]['fit_summary'],output.toPlainText())
             output.close()
             app.processEvents()

@@ -434,7 +434,9 @@ def _stage_python(plan: UpdatePlan, staging: Path) -> str:
                     link.symlink_to(os.path.relpath(replacement, link.parent))
         staged_python = str(staging / relative)
         saved_python = str(relative)
-    (staging / ".studio-python").write_text(saved_python + "\n", encoding="utf-8")
+    (staging / ".studio-python").write_text(
+        saved_python + "\n", encoding="utf-8", newline="\n"
+    )
     return staged_python
 
 
@@ -478,7 +480,9 @@ def notify_update_ready() -> None:
         from PyQt5.QtCore import QTimer
         def acknowledge() -> None:
             try:
-                Path(ready).write_text("ready\n", encoding="utf-8")
+                Path(ready).write_text(
+                    "ready\n", encoding="utf-8", newline="\n"
+                )
             except OSError:
                 pass  # The waiting updater will restore the old version.
         QTimer.singleShot(0, acknowledge)
