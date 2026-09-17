@@ -1,0 +1,9 @@
+{
+  "command": [
+    "/tmp/astra-b711-p1-python/bin/python3",
+    "tests/mod_editor/test_numpy_optional.py"
+  ],
+  "start": "2026-09-17T03:10:13.149038+00:00",
+  "seconds": 13.373,
+  "exit_code": 0
+}

@@ -1,0 +1,10 @@
+{
+  "command": [
+    "/tmp/astra-b711-p1-python/bin/python3",
+    "packaging/check_apf2k8_mod_studio_release.py",
+    "/tmp/astra-b711-p1-stages/apf2k8"
+  ],
+  "start": "2026-09-17T03:06:26.145719+00:00",
+  "seconds": 0.384,
+  "exit_code": 0
+}

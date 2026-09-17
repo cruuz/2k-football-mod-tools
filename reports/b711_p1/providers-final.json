@@ -1,0 +1,9 @@
+{
+  "command": [
+    "/tmp/astra-b711-p1-python/bin/python3",
+    "tests/mod_editor/test_providers.py"
+  ],
+  "start": "2026-09-17T02:52:44.522020+00:00",
+  "seconds": 3.71,
+  "exit_code": 0
+}

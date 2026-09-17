@@ -1,0 +1,9 @@
+{
+  "command": [
+    "/tmp/astra-b711-p1-python/bin/python3",
+    "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_apf_studio_inspectors.py"
+  ],
+  "start": "2026-09-17T02:45:39.723855+00:00",
+  "seconds": 2.377,
+  "exit_code": 0
+}

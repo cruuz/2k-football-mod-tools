@@ -1,0 +1,9 @@
+{
+  "command": [
+    "/tmp/astra-b711-p1-python/bin/python3",
+    "mod_editor/capabilities/validate_registry.py"
+  ],
+  "start": "2026-09-17T02:51:28.359403+00:00",
+  "seconds": 0.095,
+  "exit_code": 0
+}

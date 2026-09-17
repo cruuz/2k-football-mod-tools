@@ -1,0 +1,9 @@
+{
+  "command": [
+    "/tmp/astra-b711-p1-python/bin/python3",
+    "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_studio_session.py"
+  ],
+  "start": "2026-09-17T02:50:44.362735+00:00",
+  "seconds": 1.585,
+  "exit_code": 0
+}

@@ -1,0 +1,9 @@
+{
+  "command": [
+    "/tmp/astra-b711-p1-python/bin/python3",
+    ".scratch/windows_payload.py"
+  ],
+  "start": "2026-09-17T02:48:05.895796+00:00",
+  "seconds": 15.485,
+  "exit_code": 0
+}

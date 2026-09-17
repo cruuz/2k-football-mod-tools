@@ -1,0 +1,238 @@
+2K5-Mod-Studio-1.0.0rc96-Setup.exe c004624f22afd587425950a687164031f9416c2d8a03a1c1b2a3e6b75185def8 sidecar= c004624f22afd587425950a687164031f9416c2d8a03a1c1b2a3e6b75185def8  2K5-Mod-Studio-1.0.0rc96-Setup.exe
+2026-07-26 20:00:00 .....       574231               runtime/python.cat
+2026-07-26 20:00:00 .....       104952               runtime/python.exe
+2026-07-26 20:00:00 .....        70376               runtime/python3.dll
+2026-07-26 20:00:00 .....           66               runtime/python312._pth
+2026-07-26 20:00:00 .....      6945272               runtime/python312.dll
+2026-07-26 20:00:00 .....      3835482               runtime/python312.zip
+2026-07-26 20:00:00 .....       104304               runtime/pythonw.exe
+2026-07-26 20:00:00 .....         2139               runtime/Lib/site-packages/PyQt5-5.15.11.dist-info/METADATA
+2026-07-26 20:00:00 .....          552               runtime/Lib/site-packages/PyQt5_Qt5-5.15.2.dist-info/METADATA
+2026-07-26 20:00:00 .....         3418               runtime/Lib/site-packages/capstone-5.0.7.dist-info/METADATA
+2026-07-26 20:00:00 .....        17798               runtime/Lib/site-packages/numpy/__init__.py
+2026-07-26 20:00:00 .....       158502               runtime/Lib/site-packages/numpy/__init__.pyi
+2026-07-26 20:00:00 .....         2192               runtime/Lib/site-packages/numpy/core/_multiarray_umath.cp312-win_amd64.lib
+2026-07-26 20:00:00 .....      2842624               runtime/Lib/site-packages/numpy/core/_multiarray_umath.cp312-win_amd64.pyd
+2026-07-26 20:00:00 .....        61040               runtime/Lib/site-packages/numpy-1.26.4.dist-info/METADATA
+2026-07-26 20:00:00 .....     38168576               runtime/Lib/site-packages/numpy.libs/libopenblas64__v0.3.23-293-gc2f4bdbb-gcc_10_3_0-2bde3a66a51006b2b53eb373ff767a3f.dll
+2026-07-26 20:00:00 .....         9200               runtime/Lib/site-packages/pillow-11.3.0.dist-info/METADATA
+2026-07-26 20:00:00 .....          516               runtime/Lib/site-packages/pyqt5_sip-12.18.0.dist-info/METADATA
+2026-07-26 20:00:00 .....         4330               runtime/Lib/site-packages/unicorn-2.1.4.dist-info/METADATA
+2K5-Mod-Studio-v1.0-RC96-20260916.tar.gz aeb245db395605d62485e3b87700d0d10782b6c22bff9cc82ba6944f0e380b1a sidecar= aeb245db395605d62485e3b87700d0d10782b6c22bff9cc82ba6944f0e380b1a  2K5-Mod-Studio-v1.0-RC96-20260916.tar.gz
+runtime entries []
+requirements ['2K5-Mod-Studio-v1.0-RC96-20260916/tools/scorebug_sprite/requirements-preview.txt']
+2K5-Mod-Studio-v1.0-RC96-20260916/tools/launch_2k5_mod_studio.sh #!/usr/bin/env bash
+set -u
+
+studio_name="2K5 Mod Studio"
+
+show_studio_error() {
+    local message=$1
+    if command -v zenity >/dev/null 2>&1; then
+        zenity --error --title="$studio_name" --width=520 --text="$message"
+    elif command -v kdialog >/dev/null 2>&1; then
+        kdialog --title "$studio_name" --error "$message"
+    else
+        printf '%s: %s\n' "$studio_name" "$message" >&2
+    fi
+}
+
+if ! command -v python3 >/dev/null 2>&1; then
+    show_studio_error "Python 3 is not installed. Install Python 3, PyQt5, and Pillow, then reopen 2K5 Mod Studio."
+    exit 1
+fi
+
+launcher_path=${BASH_SOURCE[0]}
+if command -v readlink >/dev/null 2>&1; then
+    resolved_launcher=$(readlink -f -- "$launcher_path" 2>/dev/null || true)
+    if [[ -n "$resolved_launcher" ]]; then
+        launcher_path=$resolved_launcher
+    fi
+fi
+launcher_dir=$(CDPATH= cd -- "$(dirname -- "$launcher_path")" && pwd -P)
+portable_root=$(dirname -- "$launcher_dir")
+
+# A portable build keeps this launcher in <app>/tools. An installed Python
+# package needs no working-directory adjustment.
+if [[ -f "$portable_root/mod_editor/__main__.py" ]]; then
+    cd -- "$portable_root" || {
+        show_studio_error "The application folder could not be opened. Reinstall 2K5 Mod Studio."
+        exit 1
+    }
+fi
+
+state_base=${XDG_STATE_HOME:-${HOME:-}/.local/state}
+if [[ -z "$state_base" ]]; then
+    state_base=/tmp
+fi
+studio_state_dir="$state_base/2k5-mod-studio"
+if ! mkdir -p -- "$studio_state_dir" 2>/dev/null; then
+    studio_state_dir=/tmp
+fi
+studio_log="$studio_state_dir/last-launch.log"
+
+export PYTHONDONTWRITEBYTECODE=1
+export PYTHONNOUSERSITE=1
+
+if ! python3 -c 'from PyQt5 import QtWidgets; import PIL; import mod_editor' >"$studio_log" 2>&1; then
+    show_studio_error "A required application component is missing. Install Python 3, PyQt5, and Pillow, then reopen 2K5 Mod Studio.\n\nDetails were saved to: $studio_log"
+    exit 1
+fi
+
+if python3 -m mod_editor --studio "$@" >"$studio_log" 2>&1; then
+    exit 0
+else
+    studio_status=$?
+fi
+
+studio_details=$(tail -n 12 -- "$studio_log" 2>/dev/null || true)
+if [[ -z "$studio_details" ]]; then
+    studio_details="No diagnostic message was produced."
+fi
+show_studio_error "2K5 Mod Studio could not start.\n\n$studio_details\n\nFull details: $studio_log"
+exit "$studio_status"
+
+APF-2K8-Mod-Studio-0.1.0-alpha.92-Setup.exe d30621b00f6930c1193115e5b1cbe3249ba7ff5a035c4c65651022398883066f sidecar= d30621b00f6930c1193115e5b1cbe3249ba7ff5a035c4c65651022398883066f  APF-2K8-Mod-Studio-0.1.0-alpha.92-Setup.exe
+2026-07-26 20:00:00 .....       574231               runtime/python.cat
+2026-07-26 20:00:00 .....       104952               runtime/python.exe
+2026-07-26 20:00:00 .....        70376               runtime/python3.dll
+2026-07-26 20:00:00 .....           66               runtime/python312._pth
+2026-07-26 20:00:00 .....      6945272               runtime/python312.dll
+2026-07-26 20:00:00 .....      3835482               runtime/python312.zip
+2026-07-26 20:00:00 .....       104304               runtime/pythonw.exe
+2026-07-26 20:00:00 .....         2139               runtime/Lib/site-packages/PyQt5-5.15.11.dist-info/METADATA
+2026-07-26 20:00:00 .....          552               runtime/Lib/site-packages/PyQt5_Qt5-5.15.2.dist-info/METADATA
+2026-07-26 20:00:00 .....         3418               runtime/Lib/site-packages/capstone-5.0.7.dist-info/METADATA
+2026-07-26 20:00:00 .....        17798               runtime/Lib/site-packages/numpy/__init__.py
+2026-07-26 20:00:00 .....       158502               runtime/Lib/site-packages/numpy/__init__.pyi
+2026-07-26 20:00:00 .....         2192               runtime/Lib/site-packages/numpy/core/_multiarray_umath.cp312-win_amd64.lib
+2026-07-26 20:00:00 .....      2842624               runtime/Lib/site-packages/numpy/core/_multiarray_umath.cp312-win_amd64.pyd
+2026-07-26 20:00:00 .....        61040               runtime/Lib/site-packages/numpy-1.26.4.dist-info/METADATA
+2026-07-26 20:00:00 .....     38168576               runtime/Lib/site-packages/numpy.libs/libopenblas64__v0.3.23-293-gc2f4bdbb-gcc_10_3_0-2bde3a66a51006b2b53eb373ff767a3f.dll
+2026-07-26 20:00:00 .....         9200               runtime/Lib/site-packages/pillow-11.3.0.dist-info/METADATA
+2026-07-26 20:00:00 .....          516               runtime/Lib/site-packages/pyqt5_sip-12.18.0.dist-info/METADATA
+2026-07-26 20:00:00 .....         4330               runtime/Lib/site-packages/unicorn-2.1.4.dist-info/METADATA
+apf2k8-mod-studio-0.1.0-alpha.92-20260916.tar.gz fffeea292542ee362b5e4012c4d6b6f24bd5f4668e188c2b2129cbf4a9e3b332 sidecar= fffeea292542ee362b5e4012c4d6b6f24bd5f4668e188c2b2129cbf4a9e3b332  apf2k8-mod-studio-0.1.0-alpha.92-20260916.tar.gz
+runtime entries []
+requirements []
+apf2k8-mod-studio-0.1.0-alpha.92-20260916/tools/launch_apf2k8_mod_studio.sh #!/usr/bin/env bash
+set -u
+
+umask 077
+
+studio_name="APF 2K8 Mod Studio"
+
+show_studio_error() {
+    local message=$1
+    if [[ -n "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ]] && command -v zenity >/dev/null 2>&1; then
+        zenity --error --title="$studio_name" --width=540 --text="$message"
+    elif [[ -n "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ]] && command -v kdialog >/dev/null 2>&1; then
+        kdialog --title "$studio_name" --error "$message"
+    else
+        printf '%s: %s\n' "$studio_name" "$message" >&2
+    fi
+}
+
+if ! command -v python3 >/dev/null 2>&1; then
+    show_studio_error "Python 3 is not installed. On Linux Mint/Ubuntu, install it with: sudo apt install python3 python3-pyqt5 python3-pil"
+    exit 1
+fi
+
+launcher_path=${BASH_SOURCE[0]}
+if command -v readlink >/dev/null 2>&1; then
+    resolved_launcher=$(readlink -f -- "$launcher_path" 2>/dev/null || true)
+    if [[ -n "$resolved_launcher" ]]; then
+        launcher_path=$resolved_launcher
+    fi
+fi
+launcher_dir=$(CDPATH= cd -- "$(dirname -- "$launcher_path")" && pwd -P)
+portable_root=$(dirname -- "$launcher_dir")
+
+if [[ ! -f "$portable_root/mod_editor/apf_studio/__main__.py" || -L "$portable_root/mod_editor/apf_studio/__main__.py" ]]; then
+    show_studio_error "A required application file is missing. Keep the portable folder together, or run install.sh again. Missing: $portable_root/mod_editor/apf_studio/__main__.py"
+    exit 1
+fi
+cd -- "$portable_root" || {
+    show_studio_error "The application folder could not be opened: $portable_root"
+    exit 1
+}
+
+studio_state_base=${XDG_STATE_HOME:-}
+if [[ -z "$studio_state_base" ]]; then
+    if [[ -n "${HOME:-}" && "$HOME" = /* ]]; then
+        studio_state_base="$HOME/.local/state"
+    else
+        studio_state_base=""
+    fi
+fi
+if [[ -n "$studio_state_base" && "$studio_state_base" != /* ]]; then
+    show_studio_error "XDG_STATE_HOME must be an absolute path. Fix that environment setting and reopen the app."
+    exit 1
+fi
+studio_state_dir="$studio_state_base/apf2k8-mod-studio"
+if [[ -z "$studio_state_base" || -L "$studio_state_dir" ]] || ! mkdir -p -- "$studio_state_dir" 2>/dev/null; then
+    studio_state_dir=$(mktemp -d "/tmp/apf2k8-mod-studio-launch-${UID:-user}.XXXXXX" 2>/dev/null || true)
+fi
+if [[ -z "$studio_state_dir" || ! -d "$studio_state_dir" || -L "$studio_state_dir" ]]; then
+    show_studio_error "A private diagnostic folder could not be created. Check permissions for your user state directory."
+    exit 1
+fi
+studio_log="$studio_state_dir/last-launch.log"
+if [[ -L "$studio_log" ]]; then
+    studio_log="$studio_state_dir/launch-$$.log"
+fi
+if ! : >"$studio_log" 2>/dev/null; then
+    show_studio_error "The diagnostic log could not be created: $studio_log"
+    exit 1
+fi
+chmod 600 -- "$studio_log" 2>/dev/null || true
+
+export PYTHONDONTWRITEBYTECODE=1
+export PYTHONNOUSERSITE=1
+export PYTHONPATH="$portable_root"
+# Keep diagnostics, recent-file metadata, and the replacement-only recovery
+# project in the exact same private directory.  This also makes the guarded
+# mktemp fallback coherent when HOME/XDG state is unavailable.
+export APF2K8_MOD_STUDIO_STATE_DIR="$studio_state_dir"
+
+if ! python3 -c 'from PyQt5 import QtWidgets' >>"$studio_log" 2>&1; then
+    printf -v studio_message '%s\n\nDetails: %s' \
+        'PyQt5 is missing from the system Python installation. On Linux Mint/Ubuntu, run: sudo apt install python3-pyqt5' \
+        "$studio_log"
+    show_studio_error "$studio_message"
+    exit 1
+fi
+if ! python3 -c 'import PIL' >>"$studio_log" 2>&1; then
+    printf -v studio_message '%s\n\nDetails: %s' \
+        'Pillow is missing from the system Python installation. On Linux Mint/Ubuntu, run: sudo apt install python3-pil' \
+        "$studio_log"
+    show_studio_error "$studio_message"
+    exit 1
+fi
+if ! python3 -c 'import mod_editor.apf_studio.gui' >>"$studio_log" 2>&1; then
+    printf -v studio_message '%s\n\nDetails: %s' \
+        'An APF 2K8 Mod Studio program file is missing or damaged. Run install.sh again, or re-extract the portable release.' \
+        "$studio_log"
+    show_studio_error "$studio_message"
+    exit 1
+fi
+
+if [[ "${1:-}" == "--version" || "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+    exec python3 -m mod_editor.apf_studio "$@"
+fi
+
+if python3 -m mod_editor.apf_studio "$@" >>"$studio_log" 2>&1; then
+    exit 0
+else
+    studio_status=$?
+fi
+
+studio_details=$(tail -n 12 -- "$studio_log" 2>/dev/null || true)
+if [[ -z "$studio_details" ]]; then
+    studio_details="No diagnostic message was produced."
+fi
+printf -v studio_message 'APF 2K8 Mod Studio could not start.\n\n%s\n\nFull details: %s' \
+    "$studio_details" "$studio_log"
+show_studio_error "$studio_message"
+exit "$studio_status"
+

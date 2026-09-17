@@ -1,0 +1,9 @@
+{
+  "command": [
+    "/tmp/astra-b711-p1-python/bin/python3",
+    "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py"
+  ],
+  "start": "2026-09-17T02:48:50.875385+00:00",
+  "seconds": 126.641,
+  "exit_code": 0
+}

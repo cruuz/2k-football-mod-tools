@@ -30,6 +30,12 @@ class MissingNumpyTests(unittest.TestCase):
                 raise unittest.SkipTest(f'{name} is needed for the offscreen studio regression')
             shutil.copytree(Path(spec.origin).parent, cls.site/name,
                             ignore=shutil.ignore_patterns('__pycache__'))
+            # Binary Pillow wheels can keep their JPEG/PNG libraries beside
+            # PIL. Preserve those without introducing NumPy into the fixture.
+            if name == 'PIL':
+                libraries = Path(spec.origin).parent.parent/'pillow.libs'
+                if libraries.is_dir():
+                    shutil.copytree(libraries, cls.site/libraries.name)
 
     def child(self, code, timeout=120):
         bootstrap = f'import sys; sys.path[:0] = {[str(ROOT), str(ROOT/"tools"), str(ROOT/"tests"), str(ROOT/"tests/mod_editor")]!r}; '

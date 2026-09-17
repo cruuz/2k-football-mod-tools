@@ -1,0 +1,8 @@
+COMMAND ['/tmp/astra-b711-p1-removed/bin/python3', '-I', '-B', '/tmp/astra-b711-p1-stages/2k5/packaging/check_2k5_mod_studio_runtime.py'] EXIT 1
+2K5_MOD_STUDIO_RUNTIME_CLOSURE_REFUSED: No module named 'runtime_dependencies'
+
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-p1/.scratch/missing_release.py", line 22, in <module>
+    assert result.returncode==1 and 'Staged runtime is missing third-party dependencies: ' in result.stderr and 'numpy' in result.stderr
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

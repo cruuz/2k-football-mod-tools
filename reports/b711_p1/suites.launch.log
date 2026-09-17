@@ -1,0 +1,76 @@
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_apf_studio_core.py"], "start": "2026-09-17T02:45:39.215299+00:00", "seconds": 0.458, "exit_code": 0}
+test_apf_studio_core.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_apf_studio_draft_logo.py"], "start": "2026-09-17T02:45:39.208650+00:00", "seconds": 1.255, "exit_code": 0}
+test_apf_studio_draft_logo.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_apf_studio_audio_gui.py"], "start": "2026-09-17T02:45:39.226024+00:00", "seconds": 1.807, "exit_code": 0}
+test_apf_studio_audio_gui.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_apf_studio_safety.py"], "start": "2026-09-17T02:45:41.074901+00:00", "seconds": 0.827, "exit_code": 0}
+test_apf_studio_safety.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_apf_studio_inspectors.py"], "start": "2026-09-17T02:45:39.723855+00:00", "seconds": 2.377, "exit_code": 0}
+test_apf_studio_inspectors.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_apf_studio_text_edit.py"], "start": "2026-09-17T02:45:41.941224+00:00", "seconds": 1.234, "exit_code": 0}
+test_apf_studio_text_edit.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_apf_studio_installer.py"], "start": "2026-09-17T02:45:40.524890+00:00", "seconds": 3.485, "exit_code": 1}
+test_apf_studio_installer.py 1
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_local_windows_ci.py"], "start": "2026-09-17T02:45:43.207166+00:00", "seconds": 2.457, "exit_code": 0}
+test_local_windows_ci.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_mod_build.py"], "start": "2026-09-17T02:45:44.044871+00:00", "seconds": 2.291, "exit_code": 0}
+test_mod_build.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_beta69_studios_offscreen.py"], "start": "2026-09-17T02:45:42.140536+00:00", "seconds": 11.092, "exit_code": 0}
+test_beta69_studios_offscreen.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_mod_build_performance.py"], "start": "2026-09-17T02:45:53.273862+00:00", "seconds": 7.451, "exit_code": 0}
+test_mod_build_performance.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_mod_build_beta62_integration3.py"], "start": "2026-09-17T02:45:46.411634+00:00", "seconds": 157.57, "exit_code": 0}
+test_mod_build_beta62_integration3.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_nfl2k5_scorebug_assets.py"], "start": "2026-09-17T02:46:00.802470+00:00", "seconds": 146.589, "exit_code": 0}
+test_nfl2k5_scorebug_assets.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_nfl2k5_scorebug_fonts.py"], "start": "2026-09-17T02:48:27.458791+00:00", "seconds": 8.568, "exit_code": 0}
+test_nfl2k5_scorebug_fonts.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_nfl2k5_scorebug_ingame.py"], "start": "2026-09-17T02:48:36.087370+00:00", "seconds": 14.719, "exit_code": 0}
+test_nfl2k5_scorebug_ingame.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_mod_build_beta62_integration.py"], "start": "2026-09-17T02:45:45.724406+00:00", "seconds": 194.702, "exit_code": 0}
+test_mod_build_beta62_integration.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_nfl2k5_scorebug_mnf.py"], "start": "2026-09-17T02:49:00.488572+00:00", "seconds": 12.395, "exit_code": 0}
+test_nfl2k5_scorebug_mnf.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_nfl2k5_scorebug_exact.py"], "start": "2026-09-17T02:48:24.052109+00:00", "seconds": 86.443, "exit_code": 0}
+test_nfl2k5_scorebug_exact.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py"], "start": "2026-09-17T02:49:12.926251+00:00", "seconds": 49.429, "exit_code": 0}
+test_nfl2k5_scorebug_mnf_v3.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_nfl2k5_scorebug_template_release.py"], "start": "2026-09-17T02:50:02.416701+00:00", "seconds": 0.538, "exit_code": 0}
+test_nfl2k5_scorebug_template_release.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_numpy_optional.py"], "start": "2026-09-17T02:50:03.031062+00:00", "seconds": 12.685, "exit_code": 0}
+test_numpy_optional.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_phase1_packaging.py"], "start": "2026-09-17T02:50:15.765241+00:00", "seconds": 2.056, "exit_code": 0}
+test_phase1_packaging.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_product_catalog.py"], "start": "2026-09-17T02:50:17.882637+00:00", "seconds": 0.15, "exit_code": 0}
+test_product_catalog.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_provider_integrity.py"], "start": "2026-09-17T02:50:18.097675+00:00", "seconds": 9.261, "exit_code": 1}
+test_provider_integrity.py 1
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_providers.py"], "start": "2026-09-17T02:50:27.424184+00:00", "seconds": 4.05, "exit_code": 0}
+test_providers.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_scorebug_studio_panel_qt.py"], "start": "2026-09-17T02:50:31.544089+00:00", "seconds": 7.437, "exit_code": 0}
+test_scorebug_studio_panel_qt.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_self_update.py"], "start": "2026-09-17T02:50:39.019612+00:00", "seconds": 1.767, "exit_code": 0}
+test_self_update.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_self_update_manual_layout.py"], "start": "2026-09-17T02:50:40.837880+00:00", "seconds": 0.136, "exit_code": 0}
+test_self_update_manual_layout.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_stage_release.py"], "start": "2026-09-17T02:50:41.050592+00:00", "seconds": 0.134, "exit_code": 0}
+test_stage_release.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_studio_facade.py"], "start": "2026-09-17T02:50:41.216599+00:00", "seconds": 0.761, "exit_code": 0}
+test_studio_facade.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_studio_inspection.py"], "start": "2026-09-17T02:50:42.031139+00:00", "seconds": 0.613, "exit_code": 0}
+test_studio_inspection.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_studio_qt_models.py"], "start": "2026-09-17T02:50:42.695743+00:00", "seconds": 1.611, "exit_code": 0}
+test_studio_qt_models.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_studio_session.py"], "start": "2026-09-17T02:50:44.362735+00:00", "seconds": 1.585, "exit_code": 0}
+test_studio_session.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py"], "start": "2026-09-17T02:48:50.875385+00:00", "seconds": 126.641, "exit_code": 0}
+test_nfl2k5_scorebug_ingame_fix.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_studio_visual_asset_routing.py"], "start": "2026-09-17T02:50:57.562000+00:00", "seconds": 3.572, "exit_code": 0}
+test_studio_visual_asset_routing.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_nfl2k5_scorebug_sprite.py"], "start": "2026-09-17T02:49:50.558216+00:00", "seconds": 94.543, "exit_code": 0}
+test_nfl2k5_scorebug_sprite.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_studio_shell_layout_qt.py"], "start": "2026-09-17T02:50:45.981039+00:00", "seconds": 42.325, "exit_code": 0}
+test_studio_shell_layout_qt.py 0
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "mod_editor/capabilities/validate_registry.py"], "start": "2026-09-17T02:51:28.359403+00:00", "seconds": 0.095, "exit_code": 0}
+SUITE_FILES 37 FAILURES 2

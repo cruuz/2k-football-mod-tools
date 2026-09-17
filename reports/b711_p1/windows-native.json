@@ -1,0 +1,20 @@
+{
+  "command": [
+    "env",
+    "DISPLAY=",
+    "WINEDEBUG=-all",
+    "WINEPREFIX=/tmp/astra-b711-p1-wine",
+    "QT_QPA_PLATFORM=offscreen",
+    "timeout",
+    "55",
+    "wine",
+    "/tmp/astra-b711-p1-runtime/published/runtime/python.exe",
+    "-I",
+    "-B",
+    "-c",
+    "import sys, numpy, capstone, unicorn; from PyQt5.QtWidgets import QApplication; from PIL import Image; app=QApplication([]); print(sys.version); print(numpy.__version__, numpy.arange(4).sum()); print(capstone.__version__, unicorn.__version__, Image.__version__)"
+  ],
+  "start": "2026-09-17T02:48:57.382086+00:00",
+  "seconds": 0.134,
+  "exit_code": -31
+}

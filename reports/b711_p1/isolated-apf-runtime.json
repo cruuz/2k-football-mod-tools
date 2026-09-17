@@ -1,0 +1,13 @@
+{
+  "command": [
+    "env",
+    "PYTHONPATH=",
+    "/tmp/astra-b711-p1-python/bin/python3",
+    "-I",
+    "-B",
+    "/tmp/astra-b711-p1-stages/apf2k8/packaging/check_apf2k8_mod_studio_runtime.py"
+  ],
+  "start": "2026-09-17T02:56:49.319723+00:00",
+  "seconds": 11.562,
+  "exit_code": 0
+}

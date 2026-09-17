@@ -1,0 +1,11 @@
+{
+  "command": [
+    "/tmp/astra-b711-p1-python/bin/python3",
+    "packaging/stage_release.py",
+    "packaging/release-allowlist.txt",
+    "/tmp/astra-b711-p1-stages/2k5"
+  ],
+  "start": "2026-09-17T02:55:54.281521+00:00",
+  "seconds": 0.288,
+  "exit_code": 0
+}

@@ -1,0 +1,11 @@
+{
+  "command": [
+    "env",
+    "PYTHONPATH=/tmp/astra-b711-p1-stages/2k5",
+    "/tmp/astra-b711-p1-python/bin/python3",
+    "/tmp/astra-b711-p1-stages/2k5/packaging/check_2k5_mod_studio_runtime.py"
+  ],
+  "start": "2026-09-17T02:54:09.610099+00:00",
+  "seconds": 11.572,
+  "exit_code": 0
+}

@@ -1,0 +1,10 @@
+{
+  "command": [
+    "/tmp/astra-b711-p1-python/bin/python3",
+    "packaging/check_2k5_mod_studio_release.py",
+    "/tmp/astra-b711-p1-stages/2k5"
+  ],
+  "start": "2026-09-17T02:54:02.881734+00:00",
+  "seconds": 6.7,
+  "exit_code": 0
+}

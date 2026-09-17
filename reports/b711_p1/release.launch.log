@@ -1,0 +1,9 @@
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "packaging/stage_release.py", "packaging/release-allowlist.txt", "/tmp/astra-b711-p1-stages/2k5"], "start": "2026-09-17T02:46:13.160219+00:00", "seconds": 0.377, "exit_code": 0}
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "packaging/check_2k5_mod_studio_release.py", "/tmp/astra-b711-p1-stages/2k5"], "start": "2026-09-17T02:46:13.564989+00:00", "seconds": 6.942, "exit_code": 0}
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/tmp/astra-b711-p1-stages/2k5/packaging/check_2k5_mod_studio_runtime.py"], "start": "2026-09-17T02:46:20.536125+00:00", "seconds": 11.877, "exit_code": 0}
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "packaging/check_2k5_mod_studio_release.py", "/tmp/astra-b711-p1-stages/2k5"], "start": "2026-09-17T02:46:32.441256+00:00", "seconds": 6.806, "exit_code": 0}
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "packaging/stage_release.py", "packaging/apf2k8-release-allowlist.txt", "/tmp/astra-b711-p1-stages/apf2k8"], "start": "2026-09-17T02:46:39.276841+00:00", "seconds": 0.088, "exit_code": 0}
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "packaging/check_apf2k8_mod_studio_release.py", "/tmp/astra-b711-p1-stages/apf2k8"], "start": "2026-09-17T02:46:39.394381+00:00", "seconds": 0.381, "exit_code": 0}
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "/tmp/astra-b711-p1-stages/apf2k8/packaging/check_apf2k8_mod_studio_runtime.py"], "start": "2026-09-17T02:46:39.806294+00:00", "seconds": 9.903, "exit_code": 1}
+{"command": ["/tmp/astra-b711-p1-python/bin/python3", "packaging/check_apf2k8_mod_studio_release.py", "/tmp/astra-b711-p1-stages/apf2k8"], "start": "2026-09-17T02:46:49.737449+00:00", "seconds": 0.378, "exit_code": 0}
+RELEASE_FAILURES 1

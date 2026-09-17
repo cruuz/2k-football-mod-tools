@@ -1,0 +1,32 @@
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-p1/.scratch/baseline.py", line 16, in <module>
+    mod_build.inspect(source)
+  File "/home/noah/2k-worktrees/astra-b71-p1/mod_editor/core/mod_build.py", line 582, in inspect
+    report = tt.read_any(source)
+             ^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-p1/mod_editor/core/nfl2k5_throw_tuning.py", line 867, in read_any
+    return read_image(path) if is_disc_image(path) else read_xbe(path)
+           ^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-p1/mod_editor/core/nfl2k5_throw_tuning.py", line 802, in read_image
+    "scorebug_runtime_resources": scorebug_reference.runtime_image_status(path),
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-p1/mod_editor/core/nfl2k5_scorebug_ingame.py", line 898, in runtime_image_status
+    if p.size in (PACK_SIZE, PACK_SIZE + resources.probe_sizes(probe,sprite_folder=scorebug_folder)[2]):
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-p1/mod_editor/core/nfl2k5_scorebug_resources.py", line 795, in probe_sizes
+    return sizes(sprite_folder)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-p1/mod_editor/core/nfl2k5_scorebug_sprite.py", line 412, in probe_sizes
+    c=compile_folder(folder)
+      ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-p1/mod_editor/core/nfl2k5_scorebug_sprite.py", line 297, in compile_folder
+    atlas,cells=_pack(images,spec['atlas'])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-p1/mod_editor/core/nfl2k5_scorebug_sprite.py", line 252, in _pack
+    image=alpha_bleed(image)
+          ^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-p1/mod_editor/core/nfl2k5_scorebug_assets.py", line 223, in alpha_bleed
+    import numpy as np
+  File "/home/noah/2k-worktrees/astra-b71-p1/.scratch/baseline.py", line 11, in find_spec
+    raise ModuleNotFoundError("No module named 'numpy'", name='numpy')
+ModuleNotFoundError: No module named 'numpy'
