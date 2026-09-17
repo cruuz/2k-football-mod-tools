@@ -50,7 +50,9 @@ def third_party_imports(root: Path) -> dict[str, list[str]]:
                 top = name.split('.')[0]
                 if not top or top in sys.stdlib_module_names or top in local:
                     continue
-                found.setdefault(name, []).append(f'{path.relative_to(root)}:{node.lineno}')
+                # as_posix(): the audit's sites are quoted in refusals, JSON receipts and the
+                # release logs, so they read the same on Windows as on Linux and macOS.
+                found.setdefault(name, []).append(f'{path.relative_to(root).as_posix()}:{node.lineno}')
     return {name: sorted(set(sites)) for name, sites in sorted(found.items())}
 
 
