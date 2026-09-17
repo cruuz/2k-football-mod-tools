@@ -112,15 +112,18 @@ class DownVisibilityTests(unittest.TestCase):
             # Isolated gate cases include a one-frame pending event, the
             # closing down slide, and an unavailable binding. These are not
             # claimed to be captured live-game memory values.
-            for request, slide, binding, events, expected in (
-                    (1, 30, 1, 0, True), (0, 30, 1, 0, True),
-                    (1, 0, 1, 0, False), (1, 30, 0, 0, False),
-                    (1, 30, 1, 1, True)):
+            for request, slide, binding, events, event_slide, event_binding, expected in (
+                    (1, 30, 1, 0, 0, 1, True), (0, 30, 1, 0, 0, 1, True),
+                    (1, 0, 1, 0, 0, 1, False), (1, 30, 0, 0, 0, 1, False),
+                    (1, 30, 1, 1, 0, 1, True),  # pending, not yet drawable
+                    (1, 30, 1, 0, 30, 1, False),  # request ended; event still closing
+                    (1, 30, 1, 1, 30, 0, True)):  # unavailable event cannot hide the label
                 m.put(0xa95a00, request); m.float(0xa95a04, slide); m.put(0xa95a20, binding)
-                for va in (0xa95ae0, 0xa95b50, 0xa95bc0, 0xa95c30): m.put(va, events)
+                for va in (0xa95ae0, 0xa95b50, 0xa95bc0, 0xa95c30):
+                    m.put(va, events); m.float(va + 4, event_slide); m.put(va + 0x20, event_binding)
                 m.run(call, limit=500000)
                 entered, _ = seq.native_draw()
-                self.assertEqual(0 in entered, expected)
+                self.assertEqual(0 in entered and not any(i in entered for i in (2, 3, 4, 5)), expected)
                 self.assertEqual(seq.read()['visible_glyphs'], 5 if expected else 0)
 
     def test_kickoff_ball_on_flag_and_every_down_keep_native_history(self):
