@@ -1,0 +1,9 @@
+{
+  "command": [
+    "/usr/bin/python3",
+    "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_studio_shell_layout_qt.py"
+  ],
+  "started": "2026-09-17T00:03:08.572249+00:00",
+  "exit_code": 0,
+  "seconds": 40.32653650298016
+}

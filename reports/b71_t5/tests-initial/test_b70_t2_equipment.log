@@ -1,0 +1,61 @@
+....EEE.
+======================================================================
+ERROR: test_mud_only_does_not_overwrite_normal (__main__.SiblingTests.test_mud_only_does_not_overwrite_normal)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b70_t2_equipment.py", line 66, in test_mud_only_does_not_overwrite_normal
+    result = self.stage(self.f.assets['tset:0:8:1:shoes01_mud'])
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b70_t2_equipment.py", line 35, in stage
+    return staging.stage_equipment_import(self.f.session, asset or self.asset, self.png, independent=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/equipment_staging.py", line 160, in stage_equipment_import
+    checked = _checked_rows(session, current, by_id, selected=asset.asset_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/equipment_staging.py", line 40, in _checked_rows
+    _raise_fit(row)
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/equipment_staging.py", line 48, in _raise_fit
+    raise EquipmentFitError(row['budget'], row['required'], row['attempts'], row['suggestion'],
+mod_editor.core.nfl2k5_uniform_equipment_writer.EquipmentFitError: Equipment art cannot fit: it missed the 5,216-byte span by 84,784 bytes (90,000 bytes required at the smallest measured encoding). No fitting smaller size was established in the bounded check. Simplify the artwork and import it again.
+
+======================================================================
+ERROR: test_normal_and_mud_one_fit_one_undo_and_revert_roundtrip (__main__.SiblingTests.test_normal_and_mud_one_fit_one_undo_and_revert_roundtrip)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b70_t2_equipment.py", line 38, in test_normal_and_mud_one_fit_one_undo_and_revert_roundtrip
+    result = self.stage()
+             ^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b70_t2_equipment.py", line 35, in stage
+    return staging.stage_equipment_import(self.f.session, asset or self.asset, self.png, independent=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/equipment_staging.py", line 160, in stage_equipment_import
+    checked = _checked_rows(session, current, by_id, selected=asset.asset_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/equipment_staging.py", line 40, in _checked_rows
+    _raise_fit(row)
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/equipment_staging.py", line 48, in _raise_fit
+    raise EquipmentFitError(row['budget'], row['required'], row['attempts'], row['suggestion'],
+mod_editor.core.nfl2k5_uniform_equipment_writer.EquipmentFitError: Equipment art cannot fit: it missed the 5,216-byte span by 84,784 bytes (90,000 bytes required at the smallest measured encoding). No fitting smaller size was established in the bounded check. Simplify the artwork and import it again.
+
+======================================================================
+ERROR: test_repeat_and_restore_original (__main__.SiblingTests.test_repeat_and_restore_original)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b70_t2_equipment.py", line 79, in test_repeat_and_restore_original
+    self.stage()
+  File "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b70_t2_equipment.py", line 35, in stage
+    return staging.stage_equipment_import(self.f.session, asset or self.asset, self.png, independent=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/equipment_staging.py", line 160, in stage_equipment_import
+    checked = _checked_rows(session, current, by_id, selected=asset.asset_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/equipment_staging.py", line 40, in _checked_rows
+    _raise_fit(row)
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/equipment_staging.py", line 48, in _raise_fit
+    raise EquipmentFitError(row['budget'], row['required'], row['attempts'], row['suggestion'],
+mod_editor.core.nfl2k5_uniform_equipment_writer.EquipmentFitError: Equipment art cannot fit: it missed the 5,216-byte span by 84,784 bytes (90,000 bytes required at the smallest measured encoding). No fitting smaller size was established in the bounded check. Simplify the artwork and import it again.
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.701s
+
+FAILED (errors=3)

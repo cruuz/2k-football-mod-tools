@@ -1,0 +1,9 @@
+{
+  "command": [
+    "/usr/bin/python3",
+    "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b70_t2_reporting.py"
+  ],
+  "started": "2026-09-17T00:02:43.188062+00:00",
+  "exit_code": 0,
+  "seconds": 0.2643398199870717
+}

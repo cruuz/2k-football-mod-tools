@@ -1,0 +1,50 @@
+[1] mod_editor/core/providers.py: mod_editor/core/build_io.py
+    bb5bf2cf27bea644fa7f7ef694ff5a9368a076a04d59379fcdb568ace6167744
+ -> 0c799a99abe82ddb28b6f6334c7e4d349e7d74d82e1dd021d3df4415c2e0600f
+[1] mod_editor/core/providers.py: mod_editor/core/equipment_reporting.py
+    2f5f303aef2c7ee84aee4948e3fecd165949dcdd433330d4e917c439a371523c
+ -> cd1b6299ab18b9a51db85fe284123361de2d5f78b3cf9dc0ca1662dd916265f6
+[1] mod_editor/core/providers.py: mod_editor/core/equipment_staging.py
+    fc8079d21c81505038dcc8603c3581ce3434b71b9ce5155218f24eadb98cde40
+ -> 148065e04833d01e426a796094c8c2637c2cf65457703dddfb8d7aa31b84f51e
+[1] mod_editor/core/providers.py: mod_editor/core/mod_build.py
+    793115ba5b2063b3682c69557271ff48926825fec527662a5b7a199f45ce9d25
+ -> 9ba8d0a86537573a9c8cb13d7dc7da6ceeb4c62da27c1ac2b1a286f7b880bcb8
+[1] mod_editor/core/providers.py: mod_editor/core/nfl2k5_build_service.py
+    3a92a92a018809d4217c0cbe548b45dfa46434d64f16c98565babbcb87b55cd0
+ -> 4d3a46003617b71e032c40cdf09ac09dbb59eafb99c9350ca1eab352f3f631e1
+[1] mod_editor/core/providers.py: mod_editor/core/nfl2k5_equipment_lz.py
+    047997819ae44347417e93f1c93b6027c3a800c9fe3c22596657acabb77eaf6d
+ -> bf39c57d0cbe6df98e130a82d1ed7a052697598254dc645e65024221395c8507
+[1] mod_editor/core/providers.py: mod_editor/core/nfl2k5_uniform_equipment_writer.py
+    92f19e14888344de43fb8a4a195ca1833e35a3b4ae939bfc66009f554f4138d4
+ -> 5ff4cbe18b5612984cd93a9b278f282861e43f815e5d8b230daa0f228960dc99
+[1] mod_editor/core/providers.py: mod_editor/studio/project_archive.py
+    3556062a7cf178ef416706543e71270783d04439494420810fb7a10ca7f01479
+ -> 2e510dadcf67ee94d44580b144f319ad6946d495c1681549db0a96c5c14bda7c
+[1] mod_editor/core/providers.py: mod_editor/studio/session.py
+    95d654407e3bf191d86c7817e9d380ce65e025439a83df52a00dea97cc1a413a
+ -> b352c450ff04647f1b507679dd9b9e85fdc4758686e8bde505a5e26cb48ed75e
+[1] mod_editor/core/providers.py: tools/nfl2k5_visual_mod_project.py
+    e1b9a83d934a7cec7d354778f50981f463907e9e139200b2c0f21b3238593568
+ -> 2b0717fab82e6641bf10dff2da1cc78e59bf5721534d55f773acf31400da4e4f
+[1] mod_editor/core/providers.py: backend_module_sha256 -> tools/nfl2k5_visual_mod_project.py
+    e1b9a83d934a7cec7d354778f50981f463907e9e139200b2c0f21b3238593568
+ -> 2b0717fab82e6641bf10dff2da1cc78e59bf5721534d55f773acf31400da4e4f
+[1] packaging/check_2k5_mod_studio_runtime.py: mod_editor/gui/studio_qt.py
+    7ce27b130eb1bf4e3f459fccab1de4017e9e1d45803cc06cc217fcee06ebc1a1
+ -> bce2486fa6c2cb126abb30391e406b89ed4c3eaf6bbdec164dee0503eaba21af
+[1] packaging/check_2k5_mod_studio_runtime.py: mod_editor/studio/facade.py
+    5be36e941e043aff1a4add1c7b556ab854e9620175d80e29051c3e8e20916c50
+ -> db65f7ef97c2504d5a78364834da566f2c2764a4bfed28788f02a018663e90c2
+[1] packaging/check_2k5_mod_studio_runtime.py: mod_editor/studio/project_archive.py
+    3556062a7cf178ef416706543e71270783d04439494420810fb7a10ca7f01479
+ -> 2e510dadcf67ee94d44580b144f319ad6946d495c1681549db0a96c5c14bda7c
+[1] packaging/check_2k5_mod_studio_runtime.py: mod_editor/studio/session.py
+    95d654407e3bf191d86c7817e9d380ce65e025439a83df52a00dea97cc1a413a
+ -> b352c450ff04647f1b507679dd9b9e85fdc4758686e8bde505a5e26cb48ed75e
+[1] packaging/check_2k5_mod_studio_runtime.py: mod_editor/gui/build_panel_qt.py
+    ae5e28fe4f55e3df5b62038183c32608ea70e232eb2c3f9a5f885e840d00e0c4
+ -> 185cd929e11774f881ecf07bdd19d39e317d9f805e8e60272ce40c4955791a85
+
+applied 16 pin update(s)

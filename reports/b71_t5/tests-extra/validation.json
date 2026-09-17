@@ -1,0 +1,92 @@
+[
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_beta69_studios_offscreen.py"
+    ],
+    "started": "2026-09-17T00:03:03.993942+00:00",
+    "exit_code": 0,
+    "seconds": 9.730186711007264
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_music_playlist_project.py"
+    ],
+    "started": "2026-09-17T00:03:03.994303+00:00",
+    "exit_code": 0,
+    "seconds": 1.1157388650171924
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_stadium_studio.py"
+    ],
+    "started": "2026-09-17T00:03:05.110312+00:00",
+    "exit_code": 0,
+    "seconds": 0.1641755659948103
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_studio_inspection.py"
+    ],
+    "started": "2026-09-17T00:03:05.274822+00:00",
+    "exit_code": 0,
+    "seconds": 0.5651685769844335
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_texture_master_facades.py"
+    ],
+    "started": "2026-09-17T00:03:05.840346+00:00",
+    "exit_code": 0,
+    "seconds": 0.5652088210044894
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_uniform_sharing.py"
+    ],
+    "started": "2026-09-17T00:03:06.405898+00:00",
+    "exit_code": 0,
+    "seconds": 0.1644244740018621
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_platform_compat.py"
+    ],
+    "started": "2026-09-17T00:03:06.570650+00:00",
+    "exit_code": 0,
+    "seconds": 0.3648019550018944
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_platform_compat_durability.py"
+    ],
+    "started": "2026-09-17T00:03:06.936010+00:00",
+    "exit_code": 0,
+    "seconds": 0.16409197699977085
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_platform_compat_paths.py"
+    ],
+    "started": "2026-09-17T00:03:07.100463+00:00",
+    "exit_code": 0,
+    "seconds": 0.41491021899855696
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_platform_compat_ownership.py"
+    ],
+    "started": "2026-09-17T00:03:07.515652+00:00",
+    "exit_code": 0,
+    "seconds": 0.26467008001054637
+  }
+]

@@ -1,0 +1,12 @@
+{
+  "command": [
+    "python3",
+    "tools/b71_t5_project_probe.py",
+    "02bbadd1",
+    "30",
+    "--late-change"
+  ],
+  "started": "2026-09-17T00:07:51.612814+00:00",
+  "exit_code": 0,
+  "seconds": 0.7158292809908744
+}

@@ -1,0 +1,5 @@
+[1] packaging/check_2k5_mod_studio_runtime.py: mod_editor/gui/studio_qt.py
+    666cc0a0841c0127a7f8bdb6fa224dc96362b1cf0c872d1fb54f6d9aad4c40c8
+ -> a5b7751bfb038f84bdc9d84eaa092e9f528e895ccd19411c8f2d3601edacecf6
+
+applied 1 pin update(s)

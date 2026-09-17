@@ -1,0 +1,32 @@
+..FF.
+======================================================================
+FAIL: test_load_retains_unhonourable_legacy_group_for_refit (__main__.FitTests.test_load_retains_unhonourable_legacy_group_for_refit)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b69_j1_fit.py", line 74, in test_load_retains_unhonourable_legacy_group_for_refit
+    self.assertIn('200 bytes', rows[0]['fit_error'])
+AssertionError: '200 bytes' not found in 'Equipment art cannot fit: it missed the 464-byte span by at least 214 bytes (678 bytes required at the proved lower bound). 16 x 16 at 2 colours would fit for tset:0:8:0:shoes01. Choose Try that to check and import that size. Fine detail and shades will change.'
+
+======================================================================
+FAIL: test_shortfall_and_largest_retry_recompile_with_identical_budget_and_scratch (__main__.FitTests.test_shortfall_and_largest_retry_recompile_with_identical_budget_and_scratch)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b69_j1_fit.py", line 50, in test_shortfall_and_largest_retry_recompile_with_identical_budget_and_scratch
+    self.assertEqual((error.budget,error.required), (464,664))
+AssertionError: Tuples differ: (464, 678) != (464, 664)
+
+First differing element 1:
+678
+664
+
+- (464, 678)
+?        ^^
+
++ (464, 664)
+?        ^^
+
+
+----------------------------------------------------------------------
+Ran 5 tests in 5.240s
+
+FAILED (failures=2)

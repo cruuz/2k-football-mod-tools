@@ -1,0 +1,14 @@
+..E....
+======================================================================
+ERROR: test_load_hook_refuses_corrupt_art_and_cleans_before_session_mutation (__main__.AppliedWiringTests.test_load_hook_refuses_corrupt_art_and_cleans_before_session_mutation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b69_j1_wiring.py", line 129, in test_load_hook_refuses_corrupt_art_and_cleans_before_session_mutation
+    namespace['load_shareable_project'](owner,root/'old.2k5mod')
+  File "<string>", line 18, in load_shareable_project
+AttributeError: 'types.SimpleNamespace' object has no attribute 'play_route_edits'
+
+----------------------------------------------------------------------
+Ran 7 tests in 1.547s
+
+FAILED (errors=1)

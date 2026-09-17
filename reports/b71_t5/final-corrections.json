@@ -1,0 +1,16 @@
+{
+  "command": [
+    "python3",
+    "tools/b71_t5_validate.py",
+    "tests-corrections",
+    "test_b71_t5_project_open",
+    "test_project_document_workflow",
+    "test_studio_shell_layout_qt",
+    "test_provider_integrity",
+    "test_b70_t1_diagnostics",
+    "test_2k5_build_is_explainable"
+  ],
+  "started": "2026-09-17T00:06:39.103257+00:00",
+  "exit_code": 1,
+  "seconds": 40.78268288701656
+}

@@ -1,0 +1,27 @@
+{
+  "count": 600,
+  "outcome": "opened",
+  "revision": "02bbadd1",
+  "seconds": 429.32166406098986,
+  "phases": {
+    "load_project_archive": {
+      "calls": 1,
+      "seconds": 0.7059820540016517
+    },
+    "_compile_group": {
+      "calls": 200,
+      "seconds": 418.833583575848
+    },
+    "compress_vc_lz": {
+      "calls": 459,
+      "seconds": 8.171260459610494
+    },
+    "compress_equipment_optimal": {
+      "calls": 259,
+      "seconds": 6.9062490611104295
+    }
+  },
+  "source_unchanged": true,
+  "replacements": 600,
+  "fixture": "synthetic TSETs, real PNGs/codecs/loader; no retail package I/O"
+}

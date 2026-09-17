@@ -1,0 +1,9 @@
+{
+  "command": [
+    "python3",
+    "tools/test_nfl2k5_visual_mod_project.py"
+  ],
+  "started": "2026-09-17T00:02:12.024318+00:00",
+  "exit_code": 0,
+  "seconds": 2.918918979994487
+}

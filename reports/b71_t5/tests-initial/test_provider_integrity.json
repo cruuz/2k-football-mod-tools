@@ -1,0 +1,9 @@
+{
+  "command": [
+    "/usr/bin/python3",
+    "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_provider_integrity.py"
+  ],
+  "started": "2026-09-16T23:40:35.299551+00:00",
+  "exit_code": 1,
+  "seconds": 6.7248574850091245
+}

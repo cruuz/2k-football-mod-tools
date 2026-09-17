@@ -1,0 +1,13 @@
+.....F.............
+======================================================================
+FAIL: test_incompatible_retail_chain_copies_exact_bytes_or_refuses (__main__.EquipmentChainTests.test_incompatible_retail_chain_copies_exact_bytes_or_refuses)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_equipment_texture_chain.py", line 211, in test_incompatible_retail_chain_copies_exact_bytes_or_refuses
+    self.assertEqual(build.call_count, 1, "Exact retail art must not fall through to palette reduction")
+AssertionError: 2 != 1 : Exact retail art must not fall through to palette reduction
+
+----------------------------------------------------------------------
+Ran 19 tests in 4.122s
+
+FAILED (failures=1)

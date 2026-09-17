@@ -1,0 +1,10 @@
+{
+  "command": [
+    "python3",
+    "packaging/repin.py",
+    "--apply"
+  ],
+  "started": "2026-09-16T23:38:06.911151+00:00",
+  "exit_code": 0,
+  "seconds": 22.651413157989737
+}

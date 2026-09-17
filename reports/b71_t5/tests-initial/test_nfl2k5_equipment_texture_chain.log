@@ -1,0 +1,17 @@
+.......F...........
+======================================================================
+FAIL: test_optimal_lossless_fallback_preserves_exact_texture_bytes (__main__.EquipmentChainTests.test_optimal_lossless_fallback_preserves_exact_texture_bytes)
+----------------------------------------------------------------------
+mod_editor.core.nfl2k5_equipment_lz.EquipmentSearchTimeout: Equipment optimal fit could not finish within its search bound. Use Refit equipment to reduce colours or size, or revert this item.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_equipment_texture_chain.py", line 255, in test_optimal_lossless_fallback_preserves_exact_texture_bytes
+    with self.assertRaisesRegex(writer.TxtrError, "search limit"):
+AssertionError: "search limit" does not match "Equipment optimal fit could not finish within its search bound. Use Refit equipment to reduce colours or size, or revert this item."
+
+----------------------------------------------------------------------
+Ran 19 tests in 4.247s
+
+FAILED (failures=1)

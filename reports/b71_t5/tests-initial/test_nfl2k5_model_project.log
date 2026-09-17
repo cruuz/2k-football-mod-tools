@@ -1,0 +1,32 @@
+.....E...NFL2K5_BUILD_PHASE source_validation seconds=0.001006
+NFL2K5_BUILD_ITEM {"message": "Preparing Project edit index 0: Models / model edit / team or uniform set not applicable / texture player-body-o3", "done": 0, "total": 1}
+NFL2K5_COMPILE_CACHE hits=0 misses=0
+NFL2K5_BUILD_PHASE compile seconds=1.045046
+NFL2K5_BUILD_PHASE bind_source seconds=0.046581
+NFL2K5_BUILD_PHASE copy seconds=0.000815
+NFL2K5_BUILD_PHASE write_spans seconds=0.001755
+NFL2K5_BUILD_PHASE artifacts_and_directory seconds=0.013060
+NFL2K5_BUILD_PHASE full_identity_check seconds=0.101073
+NFL2K5_BUILD_ITEM {"message": "Preparing Project edit index 0: Models / model edit / team or uniform set not applicable / texture player-body-o3", "done": 0, "total": 1}
+NFL2K5_COMPILE_CACHE hits=0 misses=0
+.
+======================================================================
+ERROR: test_facade_save_reopen_stale_sources_build_compiled_bytes_and_revert (__main__.RetailProjectTests.test_facade_save_reopen_stale_sources_build_compiled_bytes_and_revert)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_model_project.py", line 189, in test_facade_save_reopen_stale_sources_build_compiled_bytes_and_revert
+    opened = self.facade.load_project(project,lambda *a:None)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/studio/facade.py", line 3562, in load_project
+    return self._load_project_candidate(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/studio/facade.py", line 3634, in _load_project_candidate
+    count = (candidate.load_shareable_project(source, progress=progress)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: ModelProjectSession.load_shareable_project() got an unexpected keyword argument 'progress'
+
+----------------------------------------------------------------------
+Ran 10 tests in 36.062s
+
+FAILED (errors=1)
+MODEL_PROJECT_PROOF {"changed_bytes": 328771, "disc_size": 854016, "guarded_resources": 4, "historical_receipt_replay": true, "mode": "skeleton", "project_sha256": "61e3fe2c5c95928c807b31ca2e5e0d80a4b7e0cd798e4084b1fda1bb178c1242", "quick_sha256": "61e3fe2c5c95928c807b31ca2e5e0d80a4b7e0cd798e4084b1fda1bb178c1242", "source_sha256": "3395ecbe02db68835b6dbc14602eba3e3e01d595fe800375534feeee26cdaa56", "witnessed": false}

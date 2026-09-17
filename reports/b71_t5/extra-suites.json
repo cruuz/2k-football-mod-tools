@@ -1,0 +1,20 @@
+{
+  "command": [
+    "python3",
+    "tools/b71_t5_validate.py",
+    "tests-extra",
+    "test_beta69_studios_offscreen",
+    "test_music_playlist_project",
+    "test_nfl2k5_stadium_studio",
+    "test_studio_inspection",
+    "test_texture_master_facades",
+    "test_uniform_sharing",
+    "test_platform_compat",
+    "test_platform_compat_durability",
+    "test_platform_compat_paths",
+    "test_platform_compat_ownership"
+  ],
+  "started": "2026-09-17T00:03:03.961778+00:00",
+  "exit_code": 0,
+  "seconds": 9.779883773007896
+}

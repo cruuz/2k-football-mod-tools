@@ -1,0 +1,12 @@
+{
+  "command": [
+    "python3",
+    "tools/b71_t5_validate.py",
+    "tests-core4",
+    "test_b70_t1_build_speed",
+    "test_nfl2k5_equipment_texture_chain"
+  ],
+  "started": "2026-09-17T00:00:50.112921+00:00",
+  "exit_code": 0,
+  "seconds": 19.39365029198234
+}

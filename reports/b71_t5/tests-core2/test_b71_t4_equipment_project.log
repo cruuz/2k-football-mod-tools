@@ -1,0 +1,15 @@
+.......F...f7d6fc07:mod_editor/core/nfl2k5_uniform_equipment_writer.py:1077: ImportWarning: can't resolve package from __spec__ or __package__, falling back on __name__ and __path__
+3c98d433:mod_editor/core/nfl2k5_uniform_equipment_writer.py:1262: ImportWarning: can't resolve package from __spec__ or __package__, falling back on __name__ and __path__
+.
+======================================================================
+FAIL: test_loader_keeps_every_edit_and_build_names_only_failing_variant (__main__.ProjectRecoveryTests.test_loader_keeps_every_edit_and_build_names_only_failing_variant)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b71_t4_equipment_project.py", line 58, in test_loader_keeps_every_edit_and_build_names_only_failing_variant
+    self.assertIn('needs refit: Equipment art cannot fit', labels[self.normal.asset_id])
+AssertionError: 'needs refit: Equipment art cannot fit' not found in 'needs refit: Equipment artwork cannot fit while retaining the complete mip chain and edge coverage. Use Refit equipment to reduce colours, then size.'
+
+----------------------------------------------------------------------
+Ran 12 tests in 59.071s
+
+FAILED (failures=1)

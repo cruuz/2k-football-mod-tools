@@ -1,0 +1,16 @@
+{
+  "command": [
+    "python3",
+    "tools/b71_t5_validate.py",
+    "tests-gui-final",
+    "test_studio_session",
+    "test_2k5_build_is_explainable",
+    "test_studio_shell_layout_qt",
+    "test_project_document_workflow",
+    "test_b71_t5_project_open",
+    "test_build_panel_qt"
+  ],
+  "started": "2026-09-17T00:04:32.241305+00:00",
+  "exit_code": 1,
+  "seconds": 41.88059771800181
+}

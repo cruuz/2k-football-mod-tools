@@ -1,0 +1,34 @@
+.....600 replacement open: 0.569298 seconds
+.E...
+======================================================================
+ERROR: test_atomic_save_order_and_failed_replace_preserves_old_archive (__main__.ProjectTests.test_atomic_save_order_and_failed_replace_preserves_old_archive)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/studio/project_archive.py", line 686, in save_project_archive
+    _publish_archive(
+  File "/usr/lib/python3.12/unittest/mock.py", line 1134, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/unittest/mock.py", line 1138, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/unittest/mock.py", line 1199, in _execute_mock_call
+    result = effect(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b71_t5_project_open.py", line 85, in fail
+    raise OSError('injected interruption before atomic rename')
+OSError: injected interruption before atomic rename
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b71_t5_project_open.py", line 88, in test_atomic_save_order_and_failed_replace_preserves_old_archive
+    archive.save_project_archive(catalog=corpus.catalog,asset_io=corpus.io(),edits=corpus.edits,
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/studio/project_archive.py", line 695, in save_project_archive
+    raise ValidationError(f"Could not save the Mod Studio project: {exc}") from exc
+mod_editor.core.errors.ValidationError: Could not save the Mod Studio project: injected interruption before atomic rename
+
+----------------------------------------------------------------------
+Ran 10 tests in 1.826s
+
+FAILED (errors=1)

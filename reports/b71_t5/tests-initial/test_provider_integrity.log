@@ -1,0 +1,59 @@
+FE...EE.
+======================================================================
+ERROR: test_colour_defaults_load_inside_the_isolated_provider_bundle (__main__.ProviderIntegrityTests.test_colour_defaults_load_inside_the_isolated_provider_bundle)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_provider_integrity.py", line 190, in test_colour_defaults_load_inside_the_isolated_provider_bundle
+    with _pinned_execution_bundle(self.provider_workspace, {**provider.module_pins, **provider.data_pins},
+  File "/usr/lib/python3.12/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 465, in _pinned_execution_bundle
+    relative: _read_pinned_payload(
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 307, in _read_pinned_payload
+    raise ProviderError(f"Allowlisted {label} hash changed")
+mod_editor.core.providers.ProviderError: Allowlisted colour settings file mod_editor/core/nfl2k5_uniform_equipment_writer.py hash changed
+
+======================================================================
+ERROR: test_unified_bundle_is_init_free_and_executes_help_and_visual_validate (__main__.ProviderIntegrityTests.test_unified_bundle_is_init_free_and_executes_help_and_visual_validate)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_provider_integrity.py", line 325, in test_unified_bundle_is_init_free_and_executes_help_and_visual_validate
+    with _pinned_execution_bundle(
+  File "/usr/lib/python3.12/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 465, in _pinned_execution_bundle
+    relative: _read_pinned_payload(
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 307, in _read_pinned_payload
+    raise ProviderError(f"Allowlisted {label} hash changed")
+mod_editor.core.providers.ProviderError: Allowlisted NFL unified visual backend file mod_editor/core/nfl2k5_uniform_equipment_writer.py hash changed
+
+======================================================================
+ERROR: test_unified_registry_authorization_is_an_exact_contract (__main__.ProviderIntegrityTests.test_unified_registry_authorization_is_an_exact_contract)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_provider_integrity.py", line 376, in test_unified_registry_authorization_is_an_exact_contract
+    provider._validate_capability(job, capability)
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 1083, in _validate_capability
+    _validate_pin_set(self.workspace, self.module_pins, "NFL unified visual backend")
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 319, in _validate_pin_set
+    _read_pinned_payload(workspace, relative, expected, f"{label} file {relative}")
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 307, in _read_pinned_payload
+    raise ProviderError(f"Allowlisted {label} hash changed")
+mod_editor.core.providers.ProviderError: Allowlisted NFL unified visual backend file mod_editor/core/nfl2k5_uniform_equipment_writer.py hash changed
+
+======================================================================
+FAIL: test_all_external_writer_and_verifier_import_closures_are_exactly_pinned (__main__.ProviderIntegrityTests.test_all_external_writer_and_verifier_import_closures_are_exactly_pinned)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_provider_integrity.py", line 277, in test_all_external_writer_and_verifier_import_closures_are_exactly_pinned
+    self.assertEqual(len(provider.module_pins), len(expected_closure))
+AssertionError: 295 != 296
+
+----------------------------------------------------------------------
+Ran 8 tests in 6.574s
+
+FAILED (failures=1, errors=3)

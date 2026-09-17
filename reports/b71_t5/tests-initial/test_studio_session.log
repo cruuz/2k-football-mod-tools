@@ -1,0 +1,13 @@
+..............F...
+======================================================================
+FAIL: test_stadium_texture_composes_through_project_build_revert_and_undo (__main__.StudioSessionTests.test_stadium_texture_composes_through_project_build_revert_and_undo)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_studio_session.py", line 937, in test_stadium_texture_composes_through_project_build_revert_and_undo
+    self.assertEqual(
+AssertionError: b'STADIUM-USER' != b'STADIUM-PREVIEW:STADIUM-USER-RGBA'
+
+----------------------------------------------------------------------
+Ran 18 tests in 0.505s
+
+FAILED (failures=1)

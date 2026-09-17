@@ -1,0 +1,18 @@
+.E
+======================================================================
+ERROR: test_project_rows_take_returned_preflight_measurements_without_recompiling (__main__.WiringTests.test_project_rows_take_returned_preflight_measurements_without_recompiling)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b70_t2_wiring.py", line 38, in test_project_rows_take_returned_preflight_measurements_without_recompiling
+    staging._remember_fit(session,rows)
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/equipment_staging.py", line 99, in _remember_fit
+    remember(session, rows)
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/nfl2k5_project_fit.py", line 60, in remember
+    keys = equipment_keys(session.cache.pack0, session.iter_edits(), source_hash(session))
+                          ^^^^^^^^^^^^^
+AttributeError: 'types.SimpleNamespace' object has no attribute 'cache'
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.091s
+
+FAILED (errors=1)

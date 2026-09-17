@@ -1,0 +1,10 @@
+{
+  "preflight_seconds": 2.747899782989407,
+  "preset": "softdrink_advanced",
+  "first_pass_seconds": 5.500478455011034,
+  "before_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+  "after_sha256": "cbe26bcf6602357d1138b2c3c2fb44fa855d3b1f3ef51dc056ca7a33b8bf269f",
+  "changed_bytes": 11728,
+  "output_written": false,
+  "later_disc_passes": "UNWITNESSED"
+}

@@ -1,0 +1,21 @@
+{
+  "outcome": "refused",
+  "error": "The project changed outside Mod Studio while it was opening: modified_ns, changed_ns.\nBefore: path /tmp/b71-t5-probe-iviw8ph9/many.2k5mod; size 32417; mtime_ns 1789603733703200033; SHA-256 52d1f380f95b272cf5f1eb5caa5d55efd00ca3c79c1af1a612dfd1b5ce8cdd61; file ID 66306:5379569; ctime_ns 1789603733705200048\nAfter: path /tmp/b71-t5-probe-iviw8ph9/many.2k5mod; size 32417; mtime_ns 1789603733713200033; SHA-256 52d1f380f95b272cf5f1eb5caa5d55efd00ca3c79c1af1a612dfd1b5ce8cdd61; file ID 66306:5379569; ctime_ns 1789603733739200300. The current workspace was kept. Finish saving or syncing the named file, then open it again; if another app is replacing it, save a separate .2k5mod copy and open that copy.",
+  "revision": "after",
+  "seconds": 0.03315735899377614,
+  "phases": {
+    "load_project_archive": {
+      "calls": 1,
+      "seconds": 0.024840138998115435
+    },
+    "_stage_compiler_key": {
+      "calls": 1,
+      "seconds": 0.0003964969946537167
+    }
+  },
+  "source_unchanged": true,
+  "replacements": 30,
+  "fixture": "synthetic TSETs, real PNGs/codecs/loader; no retail package I/O",
+  "injected_external_mtime_change": true,
+  "active_session_kept": true
+}

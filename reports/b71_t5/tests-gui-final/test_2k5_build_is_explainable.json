@@ -1,0 +1,9 @@
+{
+  "command": [
+    "/usr/bin/python3",
+    "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_2k5_build_is_explainable.py"
+  ],
+  "started": "2026-09-17T00:04:32.272484+00:00",
+  "exit_code": 0,
+  "seconds": 0.7152242400043178
+}

@@ -1,13 +1,11 @@
-Delivered Beta 71.1 APF-7 on `astra/b71-apf7-overlay-books`, based on `02bbadd1`.
+Implemented on astra/b71-t5-project-open using .scratch/t5.git.
 
-- Field opacity and sibling lists stay readable; before/after offscreen captures cover 1280×720 and 1920×1080.
-- Automatic own-book allocation remains 24 disc teams per side (48 books). Manual allocation access is restored for all 40 roster slots; the retail label pool is 36 offense / 33 defense.
-- Formation ratings sit beside the situation table, with per-situation weight previews, automatic Confirm checks, Pending edits and Undo. The stored short/medium/long ratings affect multiple situations; independent per-bucket numeric overrides are not claimed.
-- All 199 suite files pass: 1,885 reported tests, 11 explicit skips. Provider integrity, catalog, phase1 packaging, strict validation, staged release/runtime checks and repin pass.
+600 replacements open in 0.65 seconds with no encoding. Fits run during cancellable builds; cached receipts persist on explicit Save. Saves remain atomic, Open can be cancelled by closing, and plain projects can make verified unchanged copies.
 
-Report and evidence: `ASTRA_REPORT.md`, `reports/b71_apf7/`.
-Bundle: `.scratch/astra-b71-apf7.bundle`.
-Private git: `.scratch/git`; final commit and bundle verification: `.scratch/astra-b71-apf7-delivery.json`.
-No push or emulator. All in-game results remain UNWITNESSED.
+All 55 latest standalone suites pass (625 cases, three skips); strict validation and repinning pass. ASTRA_REPORT.md records source locations, timings, commands and evidence limits.
+
+The original three-hour failure/corruption and a complete retail Advanced disc remain UNWITNESSED. No emulator or push.
+
+Bundle: .scratch/astra-b71-t5.bundle
 
 ASTRA_DONE

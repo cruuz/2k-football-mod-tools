@@ -1,0 +1,7 @@
+...........f7d6fc07:mod_editor/core/nfl2k5_uniform_equipment_writer.py:1077: ImportWarning: can't resolve package from __spec__ or __package__, falling back on __name__ and __path__
+3c98d433:mod_editor/core/nfl2k5_uniform_equipment_writer.py:1262: ImportWarning: can't resolve package from __spec__ or __package__, falling back on __name__ and __path__
+.
+----------------------------------------------------------------------
+Ran 12 tests in 55.362s
+
+OK
