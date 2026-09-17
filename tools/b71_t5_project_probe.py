@@ -90,7 +90,7 @@ class Corpus:
         return session
 
 
-def run(revision, count=600):
+def run(revision, count=600, late_change=False):
     with tempfile.TemporaryDirectory(prefix='b71-t5-probe-') as folder, ExitStack() as stack:
         corpus = Corpus(Path(folder),count)
         if revision == 'after':
@@ -120,18 +120,48 @@ def run(revision, count=600):
                 try:return _fn(*a,**kw)
                 finally:row['seconds']+=time.monotonic()-start
             stack.enter_context(patch.object(owner,name,side_effect=measured))
-        opened = corpus.session(session)
+        from uuid import uuid4
+        opened = corpus.session(session, name=str(uuid4()) if late_change else 'opened')
+        action = lambda: opened.load_shareable_project(corpus.project)
+        if late_change:
+            import os
+            import threading
+            from mod_editor.studio.facade import Nfl2k5StudioFacade
+            facade = object.__new__(Nfl2k5StudioFacade)
+            facade._lock = threading.RLock()
+            facade._cache = corpus.cache
+            active = object()
+            facade._session = active
+            facade._text_catalog = facade._audio_service = None
+            facade._crib_catalog = facade._crib_io = None
+            facade._stadium_cache_result = None
+            facade._uniform_catalog = corpus.catalog
+            facade._attach_visual_catalog = lambda candidate: None
+            facade._require_playbook_inspector = lambda: None
+            load = opened.load_shareable_project
+            def changed_after_fit(source, **kwargs):
+                result = load(source, **kwargs)
+                info = source.stat()
+                os.utime(source, ns=(info.st_atime_ns, info.st_mtime_ns+10_000_000))
+                return result
+            opened.load_shareable_project = changed_after_fit
+            facade.session_factory = lambda cache, catalog: opened
+            action = lambda: facade.load_project(corpus.project, lambda *args: None)
         before=hashlib.sha256(corpus.project.read_bytes()).hexdigest()
         start=time.monotonic()
         try:
-            outcome=dict(count=opened.load_shareable_project(corpus.project),outcome='opened')
+            outcome=dict(count=action(),outcome='opened')
         except Exception as exc:
             outcome=dict(outcome='refused',error=str(exc))
         outcome.update(revision=revision,seconds=time.monotonic()-start,phases=phase,
             source_unchanged=before==hashlib.sha256(corpus.project.read_bytes()).hexdigest(),
             replacements=count,fixture='synthetic TSETs, real PNGs/codecs/loader; no retail package I/O')
+        if late_change:
+            outcome['injected_external_mtime_change'] = True
+            outcome['active_session_kept'] = facade._session is active
         print(json.dumps(outcome,indent=2),flush=True)
         return outcome
 
 if __name__ == '__main__':
-    run(sys.argv[1] if len(sys.argv)>1 else 'after',int(sys.argv[2]) if len(sys.argv)>2 else 600)
+    run(sys.argv[1] if len(sys.argv)>1 else 'after',int(sys.argv[2]) if len(sys.argv)>2 else 600,
+        late_change='--late-change' in sys.argv)

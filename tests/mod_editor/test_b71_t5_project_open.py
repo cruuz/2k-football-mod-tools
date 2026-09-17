@@ -127,6 +127,21 @@ with patch.object(a, '_publish_archive', side_effect=lambda *a,**k: os._exit(23)
 
 
 class BuildTests(unittest.TestCase):
+    def test_completed_fit_enables_explicit_save_without_saving_in_background(self):
+        from mod_editor.gui.studio_qt import StudioMainWindow
+        session = SimpleNamespace(_project_fit_receipts={})
+        changed = []
+        owner = SimpleNamespace(facade=SimpleNamespace(_session=session),
+            _embedded_operation_state_changed=lambda *args:None,
+            _mark_workspace_changed=lambda:changed.append(True))
+        StudioMainWindow._build_operation_state_changed(owner, True)
+        session._project_fit_receipts = {'a'*64: [dict(asset_id='sock',fit_status='fits')]}
+        StudioMainWindow._build_operation_state_changed(owner, False)
+        self.assertEqual(changed, [True])
+        StudioMainWindow._build_operation_state_changed(owner, True)
+        StudioMainWindow._build_operation_state_changed(owner, False)
+        self.assertEqual(changed, [True])
+
     def test_build_receipts_for_uniform_art_bind_source_span_and_siblings(self):
         from mod_editor.core.nfl2k5_project_fit import remember_art, restore_art, art_fit_labels
         with tempfile.TemporaryDirectory() as folder:
@@ -248,6 +263,20 @@ class BuildTests(unittest.TestCase):
             with self.assertRaises(lz.EquipmentSearchTimeout):
                 lz.compress_equipment_optimal(data,stream_tag=1,offset_bits=12,max_encoded_size=1024*1024,timeout=.001)
             self.assertEqual(helper.call_count,1)
+
+    def test_failed_fit_survives_memory_cache_clear_without_another_optimal(self):
+        from test_b69_j1_fit import tight_fixture
+        with tempfile.TemporaryDirectory() as folder:
+            fixture, rgba = tight_fixture(Path(folder))
+            edit = fixture.png(rgba=rgba)
+            with self.assertRaises(writer.EquipmentFitError) as first:
+                fixture.build([edit])
+            writer._STAGED_CACHE.clear()
+            writer._PARSE_CACHE.clear()
+            with patch.object(writer, '_compile_group', side_effect=AssertionError('failed fit recompressed')):
+                with self.assertRaises(writer.EquipmentFitError) as second:
+                    fixture.build([edit])
+            self.assertEqual(str(second.exception), str(first.exception))
 
 
 if __name__ == '__main__':

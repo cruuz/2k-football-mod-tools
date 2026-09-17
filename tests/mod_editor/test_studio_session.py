@@ -943,7 +943,7 @@ class StudioSessionTests(unittest.TestCase):
         self.assertEqual(loaded.undo(), "Revert Stadium texture")
         self.assertEqual(
             loaded.current_stadium_png(texture).read_bytes(),
-            b"STADIUM-USER",
+            b"STADIUM-PREVIEW:STADIUM-USER-RGBA",  # An explicit Undo validates its restored edit.
         )
         self.assertEqual(loaded.revert_all(), 2)
         self.assertEqual(loaded.undo(), "Revert all assets")

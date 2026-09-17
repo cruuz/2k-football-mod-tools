@@ -277,13 +277,8 @@ def friendly_fix_hint(message: str) -> str | None:
 def _build_blocker_message(*, ready: bool, edit_count: int, busy: bool) -> str:
     """Explain why Build is unavailable, or describe it when it is.
 
-    Build is disabled until a disc is loaded and at least one edit exists, which
-    is correct -- but a disabled button with a fixed tooltip explains nothing, and
-    pressing it produces no dialog and no status change.  A modder reported being
-    unable to rebuild the XISO at all; the builder itself is fine (a real 6.3 GB
-    source rebuilds and independently verifies), so the failure being reported is
-    this silence.  Ordered most-blocking first, because that is the one the user
-    has to clear next.
+    A loaded disc can also make a verified unchanged copy. Name the most
+    immediate blocker, or make that empty selection explicit.
     """
 
     if busy:
@@ -295,8 +290,8 @@ def _build_blocker_message(*, ready: bool, edit_count: int, busy: bool) -> str:
         return "Open your game disc first (top right). Make disc from project needs a disc to copy."
     if edit_count <= 0:
         return (
-            "Add at least one project edit: Replace a PNG, edit a string, or pick "
-            "a colour. For gameplay patches, use ★ Build & Share."
+            "Make a verified unchanged copy of your game disc. "
+            "Choose changes on ★ Build & Share to customize it."
         )
     return BUILD_READY_MESSAGE
 
@@ -1991,8 +1986,17 @@ class StudioMainWindow(QMainWindow):
         self.navigation.setFocus(Qt.ShortcutFocusReason)
 
     def _build_operation_state_changed(self, busy):
+        session = getattr(self.facade, '_session', None)
+        if busy:
+            self._fit_receipts_before_build = (session, dict(getattr(session, '_project_fit_receipts', {})))
         self._embedded_build_busy = bool(busy)
         self._embedded_operation_state_changed("Build", busy)
+        if not busy:
+            previous_session, previous = getattr(self, '_fit_receipts_before_build', (None, {}))
+            if session is previous_session and previous != getattr(session, '_project_fit_receipts', {}):
+                # Measurements are user-saveable metadata. Never write the
+                # named .2k5mod from the build worker or the open check.
+                self._mark_workspace_changed()
 
     def _music_operation_state_changed(self, busy):
         self._embedded_music_busy = bool(busy)
@@ -7992,7 +7996,7 @@ class StudioMainWindow(QMainWindow):
 
     def _choose_build_output(self) -> None:
         panel = getattr(self, "_build_panel", None)
-        if panel is not None and panel.has_work():
+        if panel is not None:
             blocker = panel.blocker()
             if blocker:
                 self._set_status(blocker)
@@ -8901,7 +8905,7 @@ class StudioMainWindow(QMainWindow):
         )
         build_panel = getattr(self, "_build_panel", None)
         selected_build = bool(build_panel and build_panel.has_work())
-        self.build_button.setEnabled(ready and (count > 0 or selected_build) and not global_busy)
+        self.build_button.setEnabled(ready and (count > 0 or build_panel is not None) and not global_busy)
         # A disabled button that gives no reason reads as a broken one.  A modder
         # reported being unable to rebuild the XISO, and loading a disc then
         # pressing Build before making an edit does exactly nothing: no dialog, no

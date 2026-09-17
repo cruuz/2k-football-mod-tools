@@ -500,7 +500,7 @@ class ActiveProjectWindowTests(unittest.TestCase):
             self.assertTrue(self.window.save_project_button.isEnabled())
             self.assertTrue(self.window._save_project_action.isEnabled())
             self.assertTrue(self.window._save_project_as_action.isEnabled())
-            self.assertFalse(self.window.build_button.isEnabled())
+            self.assertTrue(self.window.build_button.isEnabled())  # A verified unchanged copy is supported.
 
             self.window._save_project()
             self.assertFalse(self.window._workspace_dirty)

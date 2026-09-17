@@ -56,16 +56,10 @@ class BuildButtonExplainsItselfTests(unittest.TestCase):
         self.assertIn("Open your game disc", message)
         self.assertNotEqual(message, BUILD_READY_MESSAGE)
 
-    def test_no_edits_says_to_make_one_and_how(self) -> None:
-        """The case a modder actually hit: loaded, pressed Build, nothing."""
-
+    def test_no_edits_names_the_unchanged_copy_and_where_to_choose_changes(self) -> None:
         message = _build_blocker_message(ready=True, edit_count=0, busy=False)
-        self.assertIn("at least one project edit", message)
-        # Naming a way to make an edit matters more than naming the rule.
-        self.assertTrue(
-            any(hint in message for hint in ("Replace a PNG", "edit a string")),
-            f"the message should say how to make an edit: {message!r}",
-        )
+        self.assertIn("verified unchanged copy", message)
+        self.assertIn("Build & Share", message)
 
     def test_a_running_operation_says_to_wait(self) -> None:
         message = _build_blocker_message(ready=True, edit_count=4, busy=True)
