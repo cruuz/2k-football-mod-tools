@@ -1,0 +1,14 @@
+test_all_teams_and_possession_remain_live_without_runtime_and_clear_three_digit_scores (__main__.NativeFixTests.test_all_teams_and_possession_remain_live_without_runtime_and_clear_three_digit_scores) ... ok
+test_calibrated_projection_matches_independent_witness_ink_within_two_pixels (__main__.NativeFixTests.test_calibrated_projection_matches_independent_witness_ink_within_two_pixels) ... ok
+test_native_event_transition_reverses_without_disabling_bound_nodes (__main__.NativeFixTests.test_native_event_transition_reverses_without_disabling_bound_nodes) ... ok
+test_native_retail_visibility_requests_separate_down_and_ball_on_and_keep_event_text_clear (__main__.NativeFixTests.test_native_retail_visibility_requests_separate_down_and_ball_on_and_keep_event_text_clear) ... ok
+test_play_clock_color_isolated_and_static_composes_in_both_orders (__main__.NativeFixTests.test_play_clock_color_isolated_and_static_composes_in_both_orders) ... ok
+test_quarter_clocks_and_long_down_fit_separate_cells_both_modes_and_aspects (__main__.NativeFixTests.test_quarter_clocks_and_long_down_fit_separate_cells_both_modes_and_aspects) ... ok
+test_runtime_event_row_composes_with_private_fonts_in_all_placements (__main__.NativeFixTests.test_runtime_event_row_composes_with_private_fonts_in_all_placements) ... ok
+test_scoped_capitalization_keeps_shared_strings_overtime_and_callee_saved_registers (__main__.NativeFixTests.test_scoped_capitalization_keeps_shared_strings_overtime_and_callee_saved_registers) ... ok
+test_v1_is_a_pinned_negative_control_and_requires_rebuild (__main__.NativeFixTests.test_v1_is_a_pinned_negative_control_and_requires_rebuild) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 127.700s
+
+OK

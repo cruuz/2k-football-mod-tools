@@ -1,0 +1,145 @@
+   126	    """What kind of install this process runs from, and how to start it again."""
+   127	    root = Path(root or ROOT).resolve()
+   128	    platform = platform or sys.platform
+   129	    executable = executable or sys.executable
+   130	    spec = PRODUCTS[product]
+   131	    args = tuple(str(a) for a in spec["args"])  # type: ignore[index]
+   132	    if (root / ".git").exists() or (root.parent / ".git").exists():
+   133	        return InstallKind("checkout", root, (executable, *args), "a git checkout updates with git pull")
+   134	    # GitHub's source ZIP contains the launchers too. It is not a portable
+   135	    # release and must never be swapped out as though it were one.
+   136	    if (root / ".github").is_dir() or (root / "tests").is_dir():
+   137	        return InstallKind("unknown", root, (executable, *args), UNSUPPORTED_LAYOUT_MESSAGE)
+   138	    runtime = root.parent / "runtime"
+   139	    pythonw = runtime / "pythonw.exe"
+   140	    if root.name.lower() == "app" and pythonw.is_file() and platform.startswith("win"):
+   141	        return InstallKind("windows-installer", root, (str(pythonw), *args), str(root.parent))
+   142	    if (root / str(spec["launcher_sh"])).is_file() or (root / str(spec["launcher_bat"])).is_file():
+   143	        if platform.startswith("win") and root.name.lower() == "app" and not pythonw.is_file():
+   144	            return InstallKind("unknown", root, (executable, *args), UNSUPPORTED_LAYOUT_MESSAGE)
+   145	        return InstallKind("tarball", root, (executable, *args), str(root))
+   146	    if (root / "mod_editor" / "__main__.py").exists():
+   147	        return InstallKind("unknown", root, (executable, *args), "the folder carries no launcher this updater knows")
+   148	    return InstallKind("unknown", root, (executable, *args), "not an installed studio")
+   149	
+   150	
+   151	# ------------------------------------------------------------------ what to fetch
+   152	
+   153	def release_assets(document: Mapping[str, object]) -> list[ReleaseAsset]:
+   154	    out: list[ReleaseAsset] = []
+   320	def unpack_tarball(tarball: Path, parent: Path, *, progress: ProgressSink | None = None) -> Path:
+   321	    """Unpack ``<top>/...`` from the archive into ``parent/<top>.new``; returns that folder."""
+   322	    progress = progress or (lambda *_a: None)
+   323	    with tarfile.open(tarball, "r:gz") as archive:
+   324	        first = archive.next()
+   325	        if first is None:
+   326	            raise SelfUpdateError("the archive is empty")
+   327	        top = first.name.split("/")[0]
+   328	        members = _safe_members(archive, top)
+   329	        staging = parent / f"{top}.new"
+   330	        if staging.exists():
+   331	            shutil.rmtree(staging)
+   332	        staging.mkdir(parents=True)
+   333	        for index, member in enumerate(members):
+   334	            relative = Path(member.name).relative_to(top) if member.name != top else Path(".")
+   335	            target = staging / relative
+   336	            if member.isdir():
+   337	                target.mkdir(parents=True, exist_ok=True)
+   338	            elif member.isfile():
+   339	                target.parent.mkdir(parents=True, exist_ok=True)
+   340	                source = archive.extractfile(member)
+   341	                assert source is not None
+   342	                with open(target, "wb") as handle:
+   343	                    shutil.copyfileobj(source, handle)
+   344	                if member.mode & 0o111:
+   345	                    target.chmod(target.stat().st_mode | 0o111)
+   346	            if index % 50 == 0:
+   347	                progress("Unpacking", index, len(members))
+   348	        progress("Unpacking", len(members), len(members))
+   349	    if not (staging / "mod_editor" / "__main__.py").exists():
+   350	        shutil.rmtree(staging, ignore_errors=True)
+   351	        raise SelfUpdateError("the archive does not contain the studio")
+   352	    return staging
+   353	
+   354	
+   355	def swap_install(current: Path, staging: Path) -> Path:
+   356	    """Replace ``current`` with ``staging``; the old folder stays as ``<current>.previous``."""
+   357	    previous = current.with_name(current.name + ".previous")
+   358	    if previous.exists():
+   359	        shutil.rmtree(previous)
+   360	    os.rename(current, previous)
+   361	    try:
+   362	        os.rename(staging, current)
+   363	    except OSError:
+   364	        os.rename(previous, current)
+   365	        raise
+   366	    return previous
+   367	
+   390	        # a process whose working directory is inside the folder would block the rename (Windows refuses it)
+   391	        try:
+   392	            os.chdir(parent)
+   393	        except OSError:
+   394	            pass
+   395	    new_root = root
+   396	    try:
+   397	        swap_install(root, staging)
+   398	        plan.notes.append(f"installed over {root}; the previous version is kept beside it as {root.name}.previous")
+   399	    except OSError as exc:
+   400	        fallback = parent / staging.name[: -len(".new")]
+   401	        if fallback.exists():
+   402	            fallback = parent / f"{fallback.name}-{plan.tag}"
+   403	        try:
+   404	            os.rename(staging, fallback)
+   405	        except OSError as inner:
+   406	            raise SelfUpdateError(f"The new version was unpacked to {staging} but could not be moved into place "
+   407	                                  f"({inner}). Start it from there.") from inner
+   408	        new_root = fallback
+   409	        plan.notes.append(f"{root} could not be replaced while it was in use ({exc}); "
+   410	                          f"the new version is in {fallback}. Start it from there from now on; the old folder can be deleted.")
+   411	    progress("Switching to the new version", 1, 1)
+   412	    command = list(plan.install.relaunch)
+   413	    if spawn is None:
+   414	        env = dict(os.environ)
+   415	        env["PYTHONPATH"] = str(new_root)
+   416	        subprocess.Popen(command, cwd=str(new_root), env=env, close_fds=True,
+   417	                         start_new_session=not sys.platform.startswith("win"),
+   418	                         creationflags=getattr(subprocess, "DETACHED_PROCESS", 0) | getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0),
+   419	                         stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+   420	    else:
+   421	        spawn(command, new_root)
+    42	            info.uname = info.gname = ""
+    43	            # Normalise the mode: 0o755 for directories and anything the source
+    44	            # marked executable, 0o644 for every other regular file.
+    45	            if info.isdir():
+    46	                info.mode = 0o755
+    47	            else:
+    48	                info.mode = 0o755 if (info.mode & 0o111) else 0o644
+    49	            if info.isfile():
+    50	                with open(path, "rb") as handle:
+    51	                    tar.addfile(info, handle)
+    52	            else:
+    53	                tar.addfile(info)
+    54	    payload = raw.getvalue()
+    55	    with open(out, "wb") as handle:
+    56	        # mtime=0 and no filename in the gzip header, so the container adds no
+    57	        # nondeterminism of its own.
+    58	        with gzip.GzipFile(
+    59	            filename="", mode="wb", fileobj=handle, compresslevel=9, mtime=0
+    60	        ) as gz:
+    61	            gz.write(payload)
+    62	    digest = hashlib.sha256(out.read_bytes()).hexdigest()
+    63	    sidecar = out.with_name(out.name + ".sha256")
+reports/b71_u1/b70-self_update.py.txt:133:        return InstallKind("checkout", root, (executable, *args), "a git checkout updates with git pull")
+reports/b71_u1/b70-self_update.py.txt:137:        return InstallKind("unknown", root, (executable, *args), UNSUPPORTED_LAYOUT_MESSAGE)
+reports/b71_u1/b70-self_update.py.txt:141:        return InstallKind("windows-installer", root, (str(pythonw), *args), str(root.parent))
+reports/b71_u1/b70-self_update.py.txt:144:            return InstallKind("unknown", root, (executable, *args), UNSUPPORTED_LAYOUT_MESSAGE)
+reports/b71_u1/b70-self_update.py.txt:145:        return InstallKind("tarball", root, (executable, *args), str(root))
+reports/b71_u1/b70-self_update.py.txt:147:        return InstallKind("unknown", root, (executable, *args), "the folder carries no launcher this updater knows")
+reports/b71_u1/b70-self_update.py.txt:148:    return InstallKind("unknown", root, (executable, *args), "not an installed studio")
+mod_editor/gui/update_ui.py:110:        except Exception:  # noqa: BLE001 - a failed check is never fatal
+mod_editor/gui/update_ui.py:165:        except Exception as exc:  # noqa: BLE001 - never raise into Qt
+mod_editor/gui/update_ui.py:333:            self.message.setText(self._update_failure(exc))
+mod_editor/gui/update_ui.py:349:    def _update_failure(self, error: object) -> str:
+mod_editor/gui/update_ui.py:363:    def _on_done(self, plan, error: str) -> None:
+mod_editor/gui/update_ui.py:367:            self.message.setText(self._update_failure(error))
+2.5M	.scratch

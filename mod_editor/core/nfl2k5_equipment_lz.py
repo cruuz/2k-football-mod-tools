@@ -18,12 +18,20 @@ import platform
 import stat
 import subprocess
 import sys
+import time
+
+OPTIMAL_SECONDS = 5.0
+
 
 TOOLS = Path(__file__).resolve().parents[2] / "tools"
 if str(TOOLS) not in sys.path:
     sys.path.insert(0, str(TOOLS))
 
 from nfl_txtr import TxtrError, decompress_vc_lz
+
+
+class EquipmentSearchTimeout(TxtrError):
+    """The optional lossless search exhausted its per-item wall-clock budget."""
 
 
 # Reviewed Linux x86-64 build of tools/nfl2k5_equipment_optimal.c. Other
@@ -72,7 +80,15 @@ def minimum_equipment_size(count: int, offset_bits: int = 10) -> int:
 
 def compress_equipment_optimal(source: bytes, *, stream_tag: int, offset_bits: int,
                                max_encoded_size: int,
-                               max_candidate_comparisons: int = 50_000_000) -> bytes:
+                               max_candidate_comparisons: int = 50_000_000,
+                               timeout: float = OPTIMAL_SECONDS) -> bytes:
+    deadline = time.monotonic() + timeout
+    def check_time():
+        if time.monotonic() >= deadline:
+            raise EquipmentSearchTimeout(
+                f'Equipment optimal fit reached its {timeout:g}-second limit. '
+                'Use Refit equipment to reduce colours or size, or revert this item.')
+    check_time()
     if not 0 < len(source) <= 2 * 1024 * 1024 or not 10 <= offset_bits <= 13:
         raise TxtrError("Equipment optimal compression exceeds its size/geometry bounds")
     if not 0 <= stream_tag <= 0xFFFFFFFF or max_encoded_size < 10 or max_candidate_comparisons < 1:
@@ -86,18 +102,30 @@ def compress_equipment_optimal(source: bytes, *, stream_tag: int, offset_bits: i
         try:
             completed = subprocess.run(
                 [str(helper), str(len(source)), str(stream_tag), str(offset_bits),
-                 str(max_encoded_size), str(max_candidate_comparisons)],
+                 str(4 * 1024 * 1024), str(max_candidate_comparisons)],
                 input=source, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                timeout=30, check=False,
+                timeout=max(0.001, deadline - time.monotonic()), check=False,
                 **({"creationflags": subprocess.CREATE_NO_WINDOW} if os.name == "nt" else {}))
             result = completed.stdout
-            if completed.returncode == 0 and 9 <= len(result) <= max_encoded_size:
+            if completed.returncode == 0 and 9 <= len(result) <= 4 * 1024 * 1024:
                 decoded, info = decompress_vc_lz(result, len(source))
                 if (decoded == source and info.consumed_bytes == len(result)
                         and result[:9] == struct.pack("<IIB", len(source), stream_tag, offset_bits)):
+                    check_time()
+                    if len(result) > max_encoded_size:
+                        raise EquipmentSizeOverflow(len(result), max_encoded_size, exact=True)
                     return result
-        except (OSError, subprocess.SubprocessError, ValueError):
+            raise EquipmentSearchTimeout('Equipment optimal fit reached its search limit or returned invalid bytes. '
+                                         'Use Refit equipment to reduce colours or size, or revert this item.')
+        except subprocess.TimeoutExpired as exc:
+            raise EquipmentSearchTimeout(
+                f'Equipment optimal fit reached its {timeout:g}-second limit. '
+                'Use Refit equipment to reduce colours or size, or revert this item.') from exc
+        except (EquipmentSizeOverflow, EquipmentSearchTimeout):
+            raise
+        except (OSError, subprocess.SubprocessError):
             pass
+    check_time()
     count = len(source)
     maximum_distance = (1 << offset_bits) - 1
     maximum_length = (1 << (16 - offset_bits)) + 2
@@ -108,6 +136,8 @@ def compress_equipment_optimal(source: bytes, *, stream_tag: int, offset_bits: i
     ranks = array("I", [0]) * count
     heads: dict[bytes, int] = {}
     for position in range(count - 2):
+        if position % 256 == 0:
+            check_time()
         key = source[position:position + 3]
         prior = heads.get(key, -1)
         previous[position] = prior
@@ -124,6 +154,8 @@ def compress_equipment_optimal(source: bytes, *, stream_tag: int, offset_bits: i
     choices = array("B", [1]) * count
     comparisons = 0
     for position in range(count - 1, -1, -1):
+        if position % 256 == 0:
+            check_time()
         best, distance = 2, 0
         upper = min(maximum_length, count - position)
         prior = previous[position]
@@ -139,6 +171,8 @@ def compress_equipment_optimal(source: bytes, *, stream_tag: int, offset_bits: i
             match_at = prior
             prior = previous[prior]
             comparisons += 1
+            if comparisons % 4096 == 0:
+                check_time()
             if comparisons > max_candidate_comparisons:
                 raise TxtrError("Equipment compression search limit exceeded; simplify the image")
             gap = position - match_at
@@ -191,6 +225,7 @@ def compress_equipment_optimal(source: bytes, *, stream_tag: int, offset_bits: i
     encoded = bytearray(struct.pack("<IIB", count, stream_tag, offset_bits))
     position = 0
     while position < count:
+        check_time()
         flag_position = len(encoded)
         encoded.append(0)
         for bit in range(8):
@@ -205,6 +240,7 @@ def compress_equipment_optimal(source: bytes, *, stream_tag: int, offset_bits: i
             position += length
     result = bytes(encoded)
     decoded, info = decompress_vc_lz(result, count)
+    check_time()
     if len(result) != required or decoded != source or info.consumed_bytes != len(result):
         raise TxtrError("Equipment optimal stream failed independent decode")
     return result

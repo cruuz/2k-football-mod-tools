@@ -1,0 +1,11 @@
+{
+  "name": "native-sequence",
+  "argv": [
+    "python3",
+    "reports/b71_s10/prove_sequence.py"
+  ],
+  "start_utc": "2026-09-17T00:14:02.040102+00:00",
+  "end_utc": "2026-09-17T00:14:28.101943+00:00",
+  "seconds": 26.062,
+  "exit_code": 1
+}

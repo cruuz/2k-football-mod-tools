@@ -131,5 +131,9 @@ layout=dict(schema='nfl2k5_scorebug_sprite/v1',frame=[1920,1080],atlas=[256,512]
  plate_tints={'KC':'#D70E48'},
  reference_boxes={'bar':[437,942,1478,1052],'away_score':[736,965,776,1018],'home_score':[1140,965,1180,1018],'down':[898,955,1021,978],'clock':[920,1006,1000,1033],'quarter':[850,1009,892,1028],'play_clock':[1042,1009,1057,1028]},
  provenance=dict(font='Noto Sans Display Bold, condensed raster fit',license='SIL Open Font License 1.1',font_sha256=hashlib.sha256(FONT.read_bytes()).hexdigest(),author='tools/scorebug_sprite/author_default.py',rendered_once=True,font_distributed=False,brand='brand cells are coverage masks lifted from broadcast stills; each brand row records its source frames, method, opacity and colour'))
+# Logical layers are submitted back to front; GPU vertices share one depth.
+layout['layer_order']='increasing-z'
+for group in ('static','fields','brand','events'):
+ for row in layout[group]:row['z']=-20-row.get('z',0)
 OUT.mkdir(parents=True,exist_ok=True);sheet.save(OUT/'template.png');(OUT/'layout.json').write_text(json.dumps(layout,indent=2)+'\n')
 print('authored',cursor,OUT)

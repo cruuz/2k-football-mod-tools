@@ -348,6 +348,11 @@ class _ProjectAssetIORouter:
             return self.session._require_crib_io().validate_replacement(asset, path)
         return self.session.asset_io.validate_replacement(asset, path)
 
+    def validate_project_replacement(self, asset: Any, path: Path) -> tuple[bytes, bytes]:
+        if isinstance(asset, _ProjectStadiumAsset):
+            return self.session._require_supported_stadium_texture(asset.texture).read_validated_png(path, asset.texture)
+        return self.validate_replacement(asset, path)
+
     def ensure_original(self, asset: Any) -> Path:
         if isinstance(asset, _ProjectStadiumAsset):
             return asset.texture.png_path
@@ -4143,6 +4148,7 @@ class StudioSession:
             audio_edits=archive_audio_edits,
             audio_annotations=self.audio_annotations,
             build_settings=self.build_settings,
+            fit_receipts=getattr(self, '_project_fit_receipts', {}),
             uniform_colors=(
                 {
                     "selector": selector,
@@ -4165,7 +4171,7 @@ class StudioSession:
             ),
         )
 
-    def load_shareable_project(self, source: Path) -> int:
+    def load_shareable_project(self, source: Path, *, progress=None) -> int:
         """Load a completely validated project into a new, empty session."""
 
         if self.modified_count or self._audio_annotations or self._build_settings:
@@ -4177,14 +4183,9 @@ class StudioSession:
             catalog=self._project_catalog_router,
             asset_io=self._project_io_router,
             private_root=self.root,
+            progress=progress,
         )
         try:
-            from mod_editor.core.nfl2k5_uniform_equipment_writer import preflight_project_equipment
-            equipment_fit_rows = preflight_project_equipment(self.cache.pack0, [
-                (None, row.asset.asset_id, row.staged_path)
-                for row in loaded.edits
-                if getattr(row.asset, "kind", None) == "uniform_equipment_texture"
-            ])
             new_play_routes: dict[str, PlayRouteCloneRequest] = {}
             if loaded.play_route_edits:
                 inspector = self.playbook_inspector
@@ -4343,9 +4344,7 @@ class StudioSession:
                 if isinstance(asset, _ProjectStadiumAsset):
                     texture = asset.texture
                     writer = self._require_supported_stadium_texture(texture)
-                    payload, rgba, compiled = writer.validated_replacement(
-                        texture, row.staged_path
-                    )
+                    payload, rgba = writer.read_validated_png(row.staged_path, texture)
                     if (
                         sha256_bytes(payload) != row.png_sha256
                         or sha256_bytes(rgba) != row.rgba_sha256
@@ -4363,12 +4362,12 @@ class StudioSession:
                         row.png_sha256,
                         row.rgba_sha256,
                         preview,
-                        sha256_bytes(compiled.quantized_preview_png),
+                        sha256_bytes(payload),
                     )
                     new_stadium[asset_id] = edit
                     stadium_moves.append((
                         row.staged_path, authored, preview,
-                        compiled.quantized_preview_png,
+                        payload,
                     ))
                     destinations = (authored, preview)
                 else:
@@ -4540,8 +4539,8 @@ class StudioSession:
                         f"{original_error}"
                     ) from original_error
                 raise
-            from mod_editor.core.equipment_staging import _remember_fit
-            _remember_fit(self, equipment_fit_rows)
+            from mod_editor.core.nfl2k5_project_fit import restore
+            restore(self, loaded.fit_receipts or {})
             return len(loaded.edits) + (
                 new_text.modified_count if new_text is not None else 0
             ) + len(new_audio) + len(new_annotations) + len(new_unif_colors) \

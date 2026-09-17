@@ -1,0 +1,34 @@
+SHAPE 0x740 instance 0x160 shape pointer 0x740
+shape fields [('0x50', '0x1d'), ('0x54', '0xb'), ('0x70', '0x406c730'), ('0x80', '0x1'), ('0x90', '0x140')]
+material 0 {'name': 'bscore_buga1', 'address': '0x406ac40', 'tint': '0xffffffff', 'flags': '0x80000001', 'visible': False, 'texture': '0x404a638'} shader 0xd30e3557 next 0x0 flags60 0x245f0008 flags70 0x2060203
+material 1 {'name': 'bscore_buga2', 'address': '0x406acc0', 'tint': '0xffffffff', 'flags': '0x80000001', 'visible': False, 'texture': '0x404a638'} shader 0xd30e3557 next 0x0 flags60 0x245f0008 flags70 0x2060203
+material 2 {'name': 'cscore_buga', 'address': '0x406ad40', 'tint': '0xffffffff', 'flags': '0x80000000', 'visible': True, 'texture': '0x404a638'} shader 0xd30e3557 next 0x0 flags60 0x245f0008 flags70 0x2060203
+material 3 {'name': 'hscore_buga', 'address': '0x406adc0', 'tint': '0xffffffff', 'flags': '0x80000000', 'visible': True, 'texture': '0x40349b8'} shader 0xd30e3557 next 0x0 flags60 0x245f0008 flags70 0x2060203
+material 4 {'name': 'dscore_buga', 'address': '0x406ae40', 'tint': '0xffffffff', 'flags': '0x80000000', 'visible': True, 'texture': '0x404a638'} shader 0xd30e3557 next 0x0 flags60 0x245f0008 flags70 0x2060203
+material 5 {'name': 'bscore_buga', 'address': '0x406aec0', 'tint': '0xffffffff', 'flags': '0x80000001', 'visible': False, 'texture': '0x404a638'} shader 0xd30e3557 next 0x0 flags60 0x245f0008 flags70 0x2060203
+material 6 {'name': 'score_buga', 'address': '0x406af40', 'tint': '0xffffffff', 'flags': '0x80000000', 'visible': True, 'texture': '0x404a638'} shader 0xd30e3557 next 0x0 flags60 0x245f0008 flags70 0x2060203
+material 7 {'name': 'yscore_buga1', 'address': '0x406afc0', 'tint': '0xffffffff', 'flags': '0x80000000', 'visible': True, 'texture': '0x404a638'} shader 0xd30e3557 next 0x0 flags60 0x245f0008 flags70 0x2060203
+material 8 {'name': 'zz_ESPN_bug1', 'address': '0x406b040', 'tint': '0xffffffff', 'flags': '0x80000001', 'visible': False, 'texture': '0x404a638'} shader 0xd30e3557 next 0x0 flags60 0x245f0008 flags70 0x2060203
+material 9 {'name': 'yscore_buga', 'address': '0x406b0c0', 'tint': '0xffffffff', 'flags': '0x80000000', 'visible': True, 'texture': '0x404a638'} shader 0xd30e3557 next 0x0 flags60 0x245f0008 flags70 0x2060203
+material 10 {'name': 'zscore_buga', 'address': '0x406b140', 'tint': '0xffffffff', 'flags': '0x80000000', 'visible': True, 'texture': '0x402ba38'} shader 0xd30e3557 next 0x0 flags60 0x245f0008 flags70 0x2060203
+draw_descriptor 0 offset 0x1cb0 material 5 commands 0x2230 words 17
+draw_descriptor 1 offset 0x1d30 material 0 commands 0x2274 words 17
+draw_descriptor 2 offset 0x1db0 material 1 commands 0x22b8 words 17
+draw_descriptor 3 offset 0x1e30 material 2 commands 0x22fc words 20
+draw_descriptor 4 offset 0x1eb0 material 4 commands 0x234c words 17
+draw_descriptor 5 offset 0x1f30 material 3 commands 0x2390 words 17
+draw_descriptor 6 offset 0x1fb0 material 9 commands 0x23d4 words 53
+draw_descriptor 7 offset 0x2030 material 7 commands 0x24a8 words 50
+draw_descriptor 8 offset 0x20b0 material 10 commands 0x2570 words 28
+draw_descriptor 9 offset 0x2130 material 6 commands 0x25e0 words 16
+draw_descriptor 10 offset 0x21b0 material 8 commands 0x2620 words 16
+quad plate material 4 vertex 20 z -3 rgba 0xffd70e48 uv (-32511, -27775)
+quad down:0 material 7 vertex 140 z -5 rgba 0xffffffff uv (27391, 11008)
+quad down:1 material 7 vertex 144 z -5 rgba 0xffffffff uv (-12544, 22271)
+quad down:2 material 7 vertex 148 z -5 rgba 0x0 uv (-4608, 27391)
+quad down:3 material 7 vertex 152 z -5 rgba 0xffffffff uv (27391, 7808)
+quad down:4 material 7 vertex 156 z -5 rgba 0x0 uv (-4608, 27391)
+quad down:5 material 7 vertex 160 z -5 rgba 0xffffffff uv (27391, 11008)
+quad down:6 material 7 vertex 164 z -5 rgba 0xffffffff uv (-256, -2176)
+quad down:7 material 7 vertex 168 z -5 rgba 0x0 uv (0, 0)
+volume 323808

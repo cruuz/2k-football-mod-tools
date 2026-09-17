@@ -132,7 +132,7 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS = {
     "def compile_modification(",
 ),
     "mod_editor/apf_studio/__init__.py": (
-        '__version__ = "0.1.0-alpha.92"',
+        '__version__ = "0.1.0-alpha.93"',
     ),
     "mod_editor/apf_studio/audio_annotations.py": (
         'AUDIO_ANNOTATIONS_SCHEMA = "apf2k8_audio_annotations/v1"',
@@ -282,7 +282,7 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS = {
         "confirmation_token",
     ),
     "APF2K8-README.md": (
-        "0.1.0-alpha.92",
+        "0.1.0-alpha.93",
         "Normal logo — convert to APF regions (recommended)",
         "APF region mask (advanced)",
         "Your cue label & notes",
@@ -307,7 +307,7 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS = {
         "normalized original import plus the last transform",
     ),
     "docs/mod_editor/apf2k8_mod_studio_getting_started.md": (
-        "0.1.0-alpha.92",
+        "0.1.0-alpha.93",
         "Your cue label & notes",
         "Labeled only",
         "audio-annotations.json",
@@ -327,7 +327,7 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS = {
         "normalized original import and last transform",
     ),
     "docs/mod_editor/apf2k8_mod_studio_changelog.md": (
-        "0.1.0-alpha.92",
+        "0.1.0-alpha.93",
         "project_metadata_only_stable_logical_cue_id",
         "audio-annotations.json",
         "selected_exact_slot_xma1_or_conformed_audio",
@@ -345,7 +345,7 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS = {
         "original import plus its last transform",
     ),
     "docs/mod_editor/APF2K8_STATUS.md": (
-        "0.1.0-alpha.92",
+        "0.1.0-alpha.93",
         "0.1.0-alpha.51 candidate boundary",
         "project_metadata_only_stable_logical_cue_id",
         "47,775 playable cues",
@@ -806,7 +806,9 @@ def _validate_install_surface(relative: str, text: str, info: os.stat_result) ->
         ),
         "tools/launch_apf2k8_mod_studio.sh": (
             "PYTHONNOUSERSITE=1",
-            "python3 -m mod_editor.apf_studio",
+            '"$studio_python" -m mod_editor.apf_studio',
+            ".studio-python",
+            "--update-check",
             "XDG_STATE_HOME",
             "last-launch.log",
         ),

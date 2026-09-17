@@ -1,0 +1,12 @@
+{
+  "name": "down-gate-transitions-final",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_nfl2k5_scorebug_down_visibility.py",
+    "-v"
+  ],
+  "start_utc": "2026-09-17T00:23:04.933530+00:00",
+  "end_utc": "2026-09-17T00:23:44.660232+00:00",
+  "seconds": 39.727,
+  "exit_code": 0
+}

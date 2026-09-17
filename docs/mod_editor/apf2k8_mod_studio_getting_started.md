@@ -4,9 +4,31 @@ APF 2K8 Mod Studio works from your own legally dumped USA copy of *All-Pro
 Football 2K8* for Xbox 360. The app ships no game images, textures, audio,
 screenshots, extracted archives, or other retail game data.
 
-This guide is for **0.1.0-alpha.92, beta 69**. On Windows, install from the release
+This guide is for **0.1.0-alpha.93, beta 71.1**. On Windows, install from the release
 Setup.exe. The studio reads your original game and writes a separate modded folder.
 Share the project, which contains your edits; keep game files and private caches local.
+
+
+## Python packages for portable installs
+
+Windows Setup includes its own Python 3.12.10 and NumPy 1.26.4 with the other
+Studio packages. Update now installs the complete new Windows runtime too.
+If a bundled package is missing, reinstall the latest Setup.
+
+The Linux tarball contains application files and no Python runtime. Use Python
+3.11 or 3.12 with `packaging/requirements-studio.txt`, which pins NumPy 1.26.4 to
+the same version as CI. From the extracted application folder:
+
+```sh
+python3 -m venv .venv
+.venv/bin/python3 -m pip install -r packaging/requirements-studio.txt
+```
+
+The launcher selects this `.venv`, or the interpreter set by `MOD_STUDIO_PYTHON`.
+Install packages into that same interpreter. A missing NumPy package leaves the
+studio usable; actions requiring it explain the package and install command.
+Portable updates retain the selected local runtime and all its site-packages,
+including NumPy. An external interpreter remains your responsibility.
 
 ## First game: load, edit, build, play
 
@@ -88,8 +110,9 @@ shortcut changed outside the installer is reported and preserved, not erased.
   previews and exports. **Build writes into the folder you pick** — choose the
   directory Xenia already loads and confirm replace. The studio no longer
   creates an `APF2K8-Mod-TIMESTAMP` child inside an empty folder.
-- Python 3, PyQt5, and Pillow. The launcher reports each missing dependency in
-  plain language before trying to open the application.
+- Python 3.11 or 3.12 and the packages in `packaging/requirements-studio.txt`,
+  including NumPy 1.26.4. The launcher checks PyQt5 and Pillow before opening;
+  optional acceleration remains usable through its fallback when NumPy is absent.
 - Xenia Canary for playing the result. Xemu is an original-Xbox emulator and is
   not the correct emulator for APF 2K8. On Xbox and Xenia, **title update 1.1**
   is required; it never shipped for PS3. Use **Title Update 1.1…** so Launch

@@ -1,5 +1,13 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.93 — beta 71.1: the reports after beta 71 — 2026-09-16
+
+- Portable install instructions now declare NumPy 1.26.4 alongside the other Studio packages. Windows Setup includes it, updates retain local packages, and release checks audit third-party imports inside callbacks as well as startup imports.
+
+- Field Art gives Field overlay opacity its own full-height tab. Material names and percentage values stay readable, the list grows with the window and scrolls to every row. The art editor scrolls instead of squeezing its controls; the other Field lists retain a minimum readable height.
+- CPU Play Calling explains the existing own-book scope: 24 disc teams can each have an offensive and defensive copy, for 48 independent books. This is the action's scope, not an archive capacity limit. The pool has 36 offensive and 33 defensive labels, initially sharing content; the automatic action preserves the 16 saved-team slots and their USER assignments. Manual book allocation restores access to Book Identity's broader built-folder utility, with all 40 roster slots and unused labels.
+- Formation fine-tuning sits beside the situation candidates. Change the short, medium and long ratings, preview personnel and formation weights across situations, then Confirm or add the edit to Pending edits. Confirm runs the existing checks and supports Undo and saved projects. Ratings are shared yardage anchors, so their effects can span several situations; preview weights are not guaranteed call percentages. Gameplay remains UNWITNESSED.
+
 ## 0.1.0-alpha.92 — beta 71: CPU play calling situations and the play-calling page (in progress, 2026-09-15)
 
 - CPU Play Calling keeps source books and validated staged edits in memory, so a single edit updates its affected book. Confirm runs the existing checks automatically, with optional review details and inline fixes for blockers. Pending edits collects personnel, formations, Never call, retirement with run/pass share, tendencies, audibles, requested rows and situation masks; Confirm all checks their interactions and stages the clean set in one Undo step. Blocked rows stay available to clear. MASTER personnel still affects every book.

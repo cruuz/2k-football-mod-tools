@@ -1,0 +1,19 @@
+verified cached input pillow-11.3.0-cp312-cp312-win_amd64.whl /home/noah/.cache/pip/http-v2/1/1/c/0/a/11c0a04408ce50576c0566536ac8adbb536a5482a6b98a711c8fb9ce.body
+verified cached input numpy-1.26.4-cp312-cp312-win_amd64.whl /home/noah/.cache/pip/http-v2/1/4/d/7/7/14d774ab9c342b6617155b1e2f907ae8b34387045d8a780be725c92d.body
+verified cached input PyQt5-5.15.11-cp38-abi3-win_amd64.whl /home/noah/.cache/pip/http-v2/4/b/b/d/0/4bbd0e64a1725b8342692d75f2b4fc75fd4b89ee14159ee743de6a41.body
+verified cached input PyQt5_Qt5-5.15.2-py3-none-win_amd64.whl /home/noah/.cache/pip/http-v2/e/5/9/1/e/e591ecddfd34cdff4b35a3aeaf9e7c73a1ca346dfe64a338c83c67d7.body
+verified cached input pyqt5_sip-12.18.0-cp312-cp312-win_amd64.whl /home/noah/.cache/pip/http-v2/2/f/b/4/5/2fb45f9d1978c458068cec3ee8872159b4702ea1a4d619763e6af768.body
+verified cached input capstone-5.0.7-py3-none-win_amd64.whl /home/noah/.cache/pip/http-v2/2/8/3/0/e/2830e52e26c1de2cdc130216efbc74527244af70f268d91b6edde550.body
+verified cached input unicorn-2.1.4-cp37-abi3-win_amd64.whl /home/noah/.cache/pip/http-v2/7/2/a/7/c/72a7c2a51926ab0b07912a58ed6d11fece79c650b08924210fdb4d2a.body
+missing ['python-embed.zip']
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-p1/.scratch/cache_runtime.py", line 39, in <module>
+    runtime=mod.build_runtime(dest.parent,dest)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-p1/packaging/windows/build_windows_installer.py", line 132, in build_runtime
+    embed = fetch(PYTHON_EMBED_URL, downloads / "python-embed.zip", PYTHON_EMBED_SHA256)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-p1/.scratch/cache_runtime.py", line 36, in cached_fetch
+    if not path.is_file(): raise RuntimeError('Offline runtime build lacks the pinned input: '+path.name)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Offline runtime build lacks the pinned input: python-embed.zip

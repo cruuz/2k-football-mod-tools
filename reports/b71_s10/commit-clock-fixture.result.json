@@ -1,0 +1,17 @@
+{
+  "name": "commit-clock-fixture",
+  "argv": [
+    "git",
+    "--git-dir=.scratch/astra-b71-s10.git",
+    "--work-tree=.",
+    "commit",
+    "-m",
+    "Use the witnessed five-minute period in the native sequence fixture",
+    "--",
+    "tests/mod_editor/test_nfl2k5_scorebug_down_visibility.py"
+  ],
+  "start_utc": "2026-09-17T00:31:20.274157+00:00",
+  "end_utc": "2026-09-17T00:31:20.317056+00:00",
+  "seconds": 0.043,
+  "exit_code": 0
+}

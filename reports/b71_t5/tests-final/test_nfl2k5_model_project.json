@@ -1,0 +1,9 @@
+{
+  "command": [
+    "/usr/bin/python3",
+    "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_model_project.py"
+  ],
+  "started": "2026-09-17T00:03:24.393134+00:00",
+  "exit_code": 0,
+  "seconds": 35.671741391008254
+}

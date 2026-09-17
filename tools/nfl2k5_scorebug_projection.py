@@ -725,13 +725,50 @@ def containment_failures(geometry, rails=None, tolerance=2):
     return failures
 
 
+def submission_batches(decoded, scene_base=0):
+    """Read the SHAP descriptors traversed by retail 243D0, then their indices.
+
+    Accept both serialized field-relative pointers and relocated CPU captures.
+    The SCNE material array is a lookup table, not a draw-order list.
+    """
+    from nfl_static_gltf import decode_batches
+    def pointer(at):
+        raw = struct.unpack_from('<I', decoded, at)[0]
+        relative = at + struct.unpack_from('<i', decoded, at)[0] - 1
+        if 0 <= relative < len(decoded):
+            return relative
+        absolute = raw-scene_base
+        if scene_base and 0 <= absolute < len(decoded):
+            return absolute
+        raise ValueError('SHAP draw pointer is outside the captured scene')
+    shape = r.layout.SHAPE
+    count = struct.unpack_from('<H', decoded, shape+0x54)[0]
+    if count != len(r.layout.SUBMESH_COMMANDS):
+        raise ValueError('unexpected scorebug submesh count')
+    table = pointer(shape+0x70)
+    for slot in range(count):
+        at = table+slot*128
+        material = struct.unpack_from('<H', decoded, at)[0]
+        if material >= 11:
+            raise ValueError('scorebug material index is outside the scene')
+        commands = pointer(at+0x78)
+        words = struct.unpack_from('<H', decoded, at+0x7c)[0]
+        if commands+words*4 > len(decoded):
+            raise ValueError('scorebug push buffer is outside the scene')
+        for mode, indices in decode_batches(decoded, commands, words):
+            if mode != 6:
+                raise ValueError('scorebug raster requires triangle strips')
+            yield material, indices
+
+
 def render_native(decoded, texture_span, fonts, geometry, path, *, cull_positive=False,
                   texture_spans=None, background=None, calibration=None):
     """Software diagnostic of captured inputs; GPU blend/cull policy is explicit.
 
     Native FONT quads, UVs and colours replace all fabricated preview strings.
     Scene UVs use SHAP's real scale/bias and each vertex's D3DCOLOR. The simple
-    depth/alpha sampler is a model, not an NV2A rasterizer. Optional culling is
+    alpha sampler is a model, not an NV2A rasterizer. Sprite scenes use descriptor
+    and push-buffer order, with no software depth correction. Optional culling is
     a hypothesis image, never silently treated as a proved hardware state.
     """
     import math
@@ -753,6 +790,7 @@ def render_native(decoded, texture_span, fonts, geometry, path, *, cull_positive
         for x in range(0, 640, 80):
             draw.line((x, 0, x + 95, 480), fill=(224, 235, 215, 255), width=2)
     depth = [float('inf')] * (width * height)
+    sprite_scene = struct.unpack_from('<I', decoded, 0x60)[0] == 0x35525053
     pixels = im.load()
     chunk, body, _ = r.decode(texture_span)
     tex = r.tx.parse_texture(body, chunk)
@@ -790,7 +828,7 @@ def render_native(decoded, texture_span, fonts, geometry, path, *, cull_positive
                     continue
                 z = sum(w * v for w, v in zip(weights, zs))
                 at = y * width + x
-                if z > depth[at] + .001:
+                if not sprite_scene and z > depth[at] + .001:
                     continue
                 uv = [sum(weights[i] * uvs[i][k] for i in range(3)) for k in range(2)]
                 tx, ty = uv[0] * texture.width - .5, uv[1] * texture.height - .5
@@ -827,9 +865,11 @@ def render_native(decoded, texture_span, fonts, geometry, path, *, cull_positive
         if missing:
             raise ValueError('runtime raster is missing native texture descriptors: ' + ', '.join(sorted(missing)))
     winding = {}
-    for k, indices in r.layout.strips(decoded):
-        name = r.layout.SUBMESHES[k][2]
-        name = geometry.get('material_aliases', {}).get(name, name)
+    scene_base = int(geometry['materials'][0]['address'],16)-0x1c0
+    submission = []
+    for material, indices in submission_batches(decoded, scene_base):
+        name = geometry['materials'][material]['name']
+        submission.append(dict(material=material,name=name,indices=len(indices)))
         if name not in visible:
             continue
         winding[name] = dict(positive=0, negative=0)
@@ -870,7 +910,10 @@ def render_native(decoded, texture_span, fonts, geometry, path, *, cull_positive
                 rendered_materials={name: dict(descriptor=bound[name],
                     **texture_receipts.get(bound[name], dict(name='score_buga',
                        span_sha256=r.digest(texture_span), dimensions=[64, 64]))) for name in sorted(visible)},
-                raster_policy=dict(depth='less-equal model', blend='vertex * texture, source alpha model',
+                submission=submission,
+                raster_policy=dict(order='SHAP descriptor order, then push-buffer order',
+                                   depth='none (sprite submission order)' if sprite_scene else 'less-equal historical model',
+                                   blend='vertex * texture, source alpha model',
                                    cull_positive=cull_positive, gpu_state_proved=False,
                                    calibration=calibration))
 

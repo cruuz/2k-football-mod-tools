@@ -1,0 +1,94 @@
+{
+  "rows": [
+    {
+      "descriptor": "0x1cb0",
+      "material": 2,
+      "name": "cscore_buga",
+      "visible": true,
+      "commands": "0x22fc",
+      "words": 20
+    },
+    {
+      "descriptor": "0x1d30",
+      "material": 4,
+      "name": "dscore_buga",
+      "visible": true,
+      "commands": "0x234c",
+      "words": 17
+    },
+    {
+      "descriptor": "0x1db0",
+      "material": 7,
+      "name": "yscore_buga1",
+      "visible": true,
+      "commands": "0x24a8",
+      "words": 50
+    },
+    {
+      "descriptor": "0x1e30",
+      "material": 5,
+      "name": "bscore_buga",
+      "visible": false,
+      "commands": "0x2230",
+      "words": 17
+    },
+    {
+      "descriptor": "0x1eb0",
+      "material": 0,
+      "name": "bscore_buga1",
+      "visible": false,
+      "commands": "0x2274",
+      "words": 17
+    },
+    {
+      "descriptor": "0x1f30",
+      "material": 1,
+      "name": "bscore_buga2",
+      "visible": false,
+      "commands": "0x22b8",
+      "words": 17
+    },
+    {
+      "descriptor": "0x1fb0",
+      "material": 6,
+      "name": "score_buga",
+      "visible": true,
+      "commands": "0x25e0",
+      "words": 16
+    },
+    {
+      "descriptor": "0x2030",
+      "material": 3,
+      "name": "hscore_buga",
+      "visible": true,
+      "commands": "0x2390",
+      "words": 17
+    },
+    {
+      "descriptor": "0x20b0",
+      "material": 9,
+      "name": "yscore_buga",
+      "visible": true,
+      "commands": "0x23d4",
+      "words": 53
+    },
+    {
+      "descriptor": "0x2130",
+      "material": 10,
+      "name": "zscore_buga",
+      "visible": true,
+      "commands": "0x2570",
+      "words": 28
+    },
+    {
+      "descriptor": "0x21b0",
+      "material": 8,
+      "name": "zz_ESPN_bug1",
+      "visible": false,
+      "commands": "0x2620",
+      "words": 16
+    }
+  ],
+  "words_written": 208
+}
+render_state_words ['0x40354', '0x203', '0x40380', '0x8', '0x402a4', '0x0', '0x80358', '0x1010101', '0x1', '0x40320', '0x0', '0x40324', '0x0', '0x4032c', '0x0', '0x1c0360', '0xff', '0x200', '0x0', '0xff', '0x1e00', '0x1e00', '0x1e00', '0x40308', '0x1', '0x4039c', '0x404', '0x4038c', '0x1b02']

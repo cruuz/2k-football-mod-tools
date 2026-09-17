@@ -1,0 +1,18 @@
+mod_editor/apf_studio/gui.py:20066:            f"{release_label} • {update_check.BUILD_RELEASE_TAG} • retail-free"
+mod_editor/apf_studio/gui.py:20072:            f"{update_check.BUILD_RELEASE_TAG}. Both come from this install; "
+mod_editor/apf_studio/gui.py:20193:            update_check.BUILD_RELEASE_TAG, self._manual_update_result
+mod_editor/apf_studio/gui.py:20211:        update_ui.start_check(update_check.BUILD_RELEASE_TAG, banner.show_status)
+tests/mod_editor/test_self_update_linux.py:72:        document = {"tag_name": "beta-71.1", "assets": [
+tests/mod_editor/test_self_update_linux.py:259:        releases = [{"tag_name": tag} for tag in ("beta-71", "beta-70", "beta-71.1")]
+tests/mod_editor/test_self_update_linux.py:261:            for current in ("beta-69", "beta-70", "beta-71"):
+tests/mod_editor/test_self_update_linux.py:264:                self.assertEqual(result.latest_tag, "beta-71.1")
+tests/mod_editor/test_self_update_linux.py:265:            self.assertFalse(update_check.check("beta-71.1").available)
+tests/mod_editor/test_self_update_linux.py:267:        self.assertEqual(update_check._beta_number("beta-71"), (71, 0))
+tests/mod_editor/test_self_update_linux.py:268:        self.assertEqual(update_check._beta_number("beta-71.1"), (71, 1))
+tests/mod_editor/test_self_update_linux.py:269:        self.assertIsNone(update_check._beta_number("beta-71.1.1"))
+tests/mod_editor/test_update_check.py:90:        tag = update_check.BUILD_RELEASE_TAG
+tests/mod_editor/test_update_check.py:226:        self.assertTrue(update_check._TAG.match(update_check.BUILD_RELEASE_TAG))
+tests/mod_editor/test_update_check.py:229:        self.assertEqual(update_check.BUILD_RELEASE_TAG, "beta-71")
+tests/mod_editor/test_update_check.py:236:        self.assertTrue(update_check._is_newer("beta-71", "beta-69"))
+mod_editor/gui/studio_qt.py:1951:            update_check.BUILD_RELEASE_TAG, self._manual_update_result
+mod_editor/gui/studio_qt.py:1967:            update_check.BUILD_RELEASE_TAG, self._update_banner.show_status

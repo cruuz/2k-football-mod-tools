@@ -1,6 +1,6 @@
 """EXPERIMENTAL / UNWITNESSED 2026 Monday Night Football scorebug owner in owned RX/RW pages.
 
-Beta 71 revision 9 selects the sprite engine for an appended SPR5 scene.
+Beta 71 revision 10 selects the sprite engine for an appended SPR5 scene.
 The PNG/JSON compiler supplies every quad and glyph; production resources
 contain no appended FONT. Historical resource probes retain their ABI fallback.
 The larger RX owner is promoted by the allocator; all mutable state remains RW.
@@ -23,7 +23,7 @@ CODE_SIZE, DATA_SIZE = 4096, 128
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
 HOOKS = {"setup": (0xFCE56, bytes.fromhex("e845f3ffff")),
          "update": (0xFCFA2, bytes.fromhex("e819faffff"))}
-REVISION = 9
+REVISION = 10
 # State (128 bytes): scene, populated, two wing materials, the plate material,
 # two wing textures, two scores, two flash timers, down, possession, ball/line,
 # phase, red cell, wing colours and plate colours. All state stays in the owned RW page.

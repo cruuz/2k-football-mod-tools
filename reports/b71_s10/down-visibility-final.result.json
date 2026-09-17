@@ -1,0 +1,12 @@
+{
+  "name": "down-visibility-final",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_nfl2k5_scorebug_down_visibility.py",
+    "-v"
+  ],
+  "start_utc": "2026-09-17T00:16:34.022129+00:00",
+  "end_utc": "2026-09-17T00:17:12.333765+00:00",
+  "seconds": 38.312,
+  "exit_code": 0
+}

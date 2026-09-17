@@ -1,0 +1,16 @@
+{
+  "command": [
+    "python3",
+    "tools/b71_t5_validate.py",
+    "tests-core3",
+    "test_b71_t5_project_open",
+    "test_b70_t1_build_speed",
+    "test_b71_t4_equipment_project",
+    "test_mod_build_performance",
+    "test_build_panel_qt",
+    "test_nfl2k5_equipment_texture_chain"
+  ],
+  "started": "2026-09-16T23:59:11.061800+00:00",
+  "exit_code": 1,
+  "seconds": 59.10221916399314
+}

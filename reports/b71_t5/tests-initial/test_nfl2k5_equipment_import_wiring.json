@@ -1,0 +1,9 @@
+{
+  "command": [
+    "/usr/bin/python3",
+    "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_equipment_import_wiring.py"
+  ],
+  "started": "2026-09-16T23:40:44.144267+00:00",
+  "exit_code": 0,
+  "seconds": 0.8653365260106511
+}

@@ -1,0 +1,9 @@
+{
+  "command": [
+    "/tmp/astra-b711-p1-python/bin/python3",
+    "tests/mod_editor/test_self_update_linux.py"
+  ],
+  "start": "2026-09-17T02:44:39.058024+00:00",
+  "seconds": 2.523,
+  "exit_code": 0
+}

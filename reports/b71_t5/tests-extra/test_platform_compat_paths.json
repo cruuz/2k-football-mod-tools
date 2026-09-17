@@ -1,0 +1,9 @@
+{
+  "command": [
+    "/usr/bin/python3",
+    "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_platform_compat_paths.py"
+  ],
+  "started": "2026-09-17T00:03:07.100463+00:00",
+  "exit_code": 0,
+  "seconds": 0.41491021899855696
+}

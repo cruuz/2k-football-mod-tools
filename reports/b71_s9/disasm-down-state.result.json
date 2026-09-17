@@ -1,0 +1,13 @@
+{
+  "name": "disasm-down-state",
+  "argv": [
+    "python3",
+    "reports/b71_s9/disassemble.py",
+    "fc7d0:fc9c0",
+    "fc9c0:fccd0"
+  ],
+  "start_utc": "2026-09-16T23:10:11.916121+00:00",
+  "end_utc": "2026-09-16T23:10:12.146254+00:00",
+  "seconds": 0.23,
+  "exit_code": 0
+}

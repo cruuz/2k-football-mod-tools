@@ -1,0 +1,21 @@
+{
+  "outcome": "refused",
+  "error": "Project open failed and its disposable private workspace could not be removed: Refusing to discard a non-canonical private session directory.",
+  "revision": "after",
+  "seconds": 0.03230661997804418,
+  "phases": {
+    "load_project_archive": {
+      "calls": 1,
+      "seconds": 0.024992728984216228
+    },
+    "_stage_compiler_key": {
+      "calls": 1,
+      "seconds": 0.0003932599793188274
+    }
+  },
+  "source_unchanged": true,
+  "replacements": 30,
+  "fixture": "synthetic TSETs, real PNGs/codecs/loader; no retail package I/O",
+  "injected_external_mtime_change": true,
+  "active_session_kept": true
+}

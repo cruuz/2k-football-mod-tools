@@ -26,6 +26,20 @@ class BuildPanelTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.app = QApplication.instance() or QApplication([])
 
+    def test_plain_project_allows_verified_copy_with_explicit_no_changes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / 'default.xbe'
+            source.write_bytes(_build_synthetic_xbe())
+            panel = BuildPanel()
+            try:
+                panel.apply_state(mod_build.inspect(source))
+                panel.target_field.setText(str(Path(tmp) / 'plain.xbe'))
+                self.assertEqual(panel.blocker(), '')
+                self.assertTrue(panel.build_button.isEnabled())
+                self.assertIn('Changes: none', panel.confirmation_text(panel.plan()))
+            finally:
+                panel.deleteLater()
+
     def test_final_archive_state_is_read_by_build_operation_and_consumed_without_gui_io(self):
         from unittest.mock import patch
         from PyQt5.QtWidgets import QMessageBox

@@ -1,0 +1,13 @@
+...F.........
+======================================================================
+FAIL: test_revert_all_after_named_save_is_dirty_and_can_save_empty (__main__.ActiveProjectWindowTests.test_revert_all_after_named_save_is_dirty_and_can_save_empty)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_project_document_workflow.py", line 503, in test_revert_all_after_named_save_is_dirty_and_can_save_empty
+    self.assertFalse(self.window.build_button.isEnabled())
+AssertionError: True is not false
+
+----------------------------------------------------------------------
+Ran 13 tests in 14.609s
+
+FAILED (failures=1)

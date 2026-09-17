@@ -1,0 +1,9 @@
+{
+  "command": [
+    "python3",
+    "tests/mod_editor/test_project_document_workflow.py"
+  ],
+  "started": "2026-09-17T00:07:12.280044+00:00",
+  "exit_code": 0,
+  "seconds": 15.642141204007203
+}

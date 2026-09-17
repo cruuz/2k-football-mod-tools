@@ -1,0 +1,12 @@
+{
+  "name": "owner-size",
+  "argv": [
+    "python3",
+    "-c",
+    "from mod_editor.core import nfl2k5_scorebug_runtime as r, nfl2k5_scorebug_sprite_code as e; c,l=r.code_for(0,0); print(dict(allocation=len(c),data=r.DATA_SIZE,engine=len(e.CODE),last_entry=l[\"update\"],revision=r.REVISION))"
+  ],
+  "start_utc": "2026-09-17T00:23:06.207628+00:00",
+  "end_utc": "2026-09-17T00:23:06.428776+00:00",
+  "seconds": 0.221,
+  "exit_code": 0
+}

@@ -1,0 +1,12 @@
+{
+  "name": "repin-before-code-commit",
+  "argv": [
+    "python3",
+    "packaging/repin.py",
+    "--apply"
+  ],
+  "start_utc": "2026-09-17T00:17:41.905320+00:00",
+  "end_utc": "2026-09-17T00:17:52.908964+00:00",
+  "seconds": 11.004,
+  "exit_code": 0
+}

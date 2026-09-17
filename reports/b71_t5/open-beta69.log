@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t5/tools/b71_t5_project_probe.py", line 133, in <module>
+    run(sys.argv[1] if len(sys.argv)>1 else 'after',int(sys.argv[2]) if len(sys.argv)>2 else 600)
+  File "/home/noah/2k-worktrees/astra-b71-t5/tools/b71_t5_project_probe.py", line 94, in run
+    corpus = Corpus(Path(folder),count)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-t5/tools/b71_t5_project_probe.py", line 63, in __init__
+    path.write_bytes(with_import_mode(encode_rgba_png(32,32,rgba), row.asset_id, rgba, independent=True))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/nfl2k5_equipment_import_intent.py", line 127, in with_import_mode
+    raise ValidationError("Only the reviewed socks, gloves and shoes can own a texture.")
+mod_editor.core.errors.ValidationError: Only the reviewed socks, gloves and shoes can own a texture.

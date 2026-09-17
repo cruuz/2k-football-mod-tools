@@ -1,0 +1,24 @@
+F.......
+======================================================================
+FAIL: test_all_external_writer_and_verifier_import_closures_are_exactly_pinned (__main__.ProviderIntegrityTests.test_all_external_writer_and_verifier_import_closures_are_exactly_pinned)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_provider_integrity.py", line 209, in test_all_external_writer_and_verifier_import_closures_are_exactly_pinned
+    self.assertEqual(
+AssertionError: Lists differ: [297, 10, 8, 9, 8, 9] != [296, 10, 8, 9, 8, 9]
+
+First differing element 0:
+297
+296
+
+- [297, 10, 8, 9, 8, 9]
+?    ^
+
++ [296, 10, 8, 9, 8, 9]
+?    ^
+
+
+----------------------------------------------------------------------
+Ran 8 tests in 3.369s
+
+FAILED (failures=1)

@@ -6385,7 +6385,6 @@
       },
       "runtime": {
         "evidence": [
-          "ASTRA_REPORT.md",
           "docs/research/nfl2k5_accelerated_clock_research.md",
           "tests/mod_editor/test_nfl2k5_accelerated_clock.py",
           "tests/mod_editor/test_nfl2k5_accelerated_clock_manifest.py"
@@ -8977,7 +8976,6 @@
         "tests/mod_editor/test_nfl2k5_music_acceptance.py",
         "tests/mod_editor/test_nfl2k5_jukebox_list.py",
         "docs/mod_editor/nfl2k5_beta66_d2_validation.json",
-        "ASTRA_REPORT.md",
         "tests/mod_editor/test_nfl2k5_music_resample.py",
         "tests/mod_editor/test_nfl2k5_music_conform_integration.py",
         "tests/mod_editor/test_nfl2k5_music_queue.py"
@@ -9007,9 +9005,7 @@
         "tooling": "source-and-schemas-only"
       },
       "runtime": {
-        "evidence": [
-          "ASTRA_REPORT.md"
-        ],
+        "evidence": [],
         "scope": "Mud's beta-69 video confirms that imports appear in My songs and The Crib loads without a crash. He also reports poor audio; its cause is unresolved. Beta 70 warns before import about 22,050 Hz playback, uses stricter SoXR low-pass filtering and final TPDF PCM16 dither. Synthetic sweep and bounded queue checks are PROVED; listening quality and every beta-70 in-game outcome remain UNWITNESSED. Five identical visible queue titles alone do not prove duplicate automatic enqueueing.",
         "status": "not-tested"
       },
@@ -9129,8 +9125,7 @@
         "tests/mod_editor/test_nfl2k5_music_playlist_library.py",
         "tests/mod_editor/test_music_playlist_project.py",
         "tests/mod_editor/test_music_all_modes_wiring.py",
-        "tests/mod_editor/test_nfl2k5_music_queue.py",
-        "ASTRA_REPORT.md"
+        "tests/mod_editor/test_nfl2k5_music_queue.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -12052,7 +12047,6 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "ASTRA_REPORT.md",
         "tests/mod_editor/test_nfl2k5_uniform_choice.py",
         "tests/mod_editor/test_nfl2k5_uniform_choice_screens.py"
       ],

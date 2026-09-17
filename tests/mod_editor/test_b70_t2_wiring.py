@@ -35,7 +35,7 @@ class WiringTests(unittest.TestCase):
             edit=SimpleNamespace(asset_id=asset_id,replacement_sha256=hashlib.sha256(png.read_bytes()).hexdigest())
             document=dict(edits=[dict(kind='uniform_equipment_texture',asset_id=asset_id,png=str(png))])
             session=SimpleNamespace(modified_count=1,iter_edits=lambda:(edit,),canonical_document=lambda:document)
-            staging._remember_fit(session,rows)
+            staging._remember_fit(session,rows,persist=False)  # presentation-only stub
             output=QPlainTextEdit()
             owner=SimpleNamespace(facade=SimpleNamespace(_session=session),_build_panel=SimpleNamespace(project_includes_list=output))
             namespace={}
@@ -47,7 +47,9 @@ class WiringTests(unittest.TestCase):
                 self.assertIn('Project edit index 0',output.toPlainText())
                 edit.replacement_sha256='changed'
                 render()
-                self.assertIn('measurement unavailable',output.toPlainText())
+                # Beta 71.1 (T5): opening no longer fits, so the live build list marks a stale
+                # receipt 'fit pending' where the beta 70 proposal said 'measurement unavailable'.
+                self.assertRegex(output.toPlainText(),r'measurement unavailable|fit pending')
                 self.assertNotIn(rows[0]['fit_summary'],output.toPlainText())
             output.close()
             app.processEvents()

@@ -1,0 +1,40 @@
+EF........F.....
+======================================================================
+ERROR: test_install_update_and_authenticated_uninstall (__main__.PerUserLifecycleTests.test_install_update_and_authenticated_uninstall)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-u1/tests/mod_editor/test_apf_studio_installer.py", line 440, in test_install_update_and_authenticated_uninstall
+    first = installer.install(self.release, environment=self.environment)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-u1/packaging/apf2k8_mod_studio_installer.py", line 655, in install
+    entries, allowlist_sha256 = _audit_release(source_root)
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-u1/packaging/apf2k8_mod_studio_installer.py", line 284, in _audit_release
+    raise InstallError(f"Installation refused: {reason}")
+_apf2k8_installer_tested.InstallError: Installation refused: APF2K8_MOD_STUDIO_RELEASE_REFUSED: install/launch surface omitted required contract marker 'python3 -m mod_editor.apf_studio': tools/launch_apf2k8_mod_studio.sh
+
+======================================================================
+FAIL: test_unowned_command_collision_is_preserved (__main__.PerUserLifecycleTests.test_unowned_command_collision_is_preserved)
+----------------------------------------------------------------------
+_apf2k8_installer_tested.InstallError: Installation refused: APF2K8_MOD_STUDIO_RELEASE_REFUSED: install/launch surface omitted required contract marker 'python3 -m mod_editor.apf_studio': tools/launch_apf2k8_mod_studio.sh
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-u1/tests/mod_editor/test_apf_studio_installer.py", line 530, in test_unowned_command_collision_is_preserved
+    with self.assertRaisesRegex(installer.InstallError, "unowned file"):
+AssertionError: "unowned file" does not match "Installation refused: APF2K8_MOD_STUDIO_RELEASE_REFUSED: install/launch surface omitted required contract marker 'python3 -m mod_editor.apf_studio': tools/launch_apf2k8_mod_studio.sh"
+
+======================================================================
+FAIL: test_clean_allowlist_stage_passes_the_alpha32_runtime_gate (__main__.ReleaseClosureTests.test_clean_allowlist_stage_passes_the_alpha32_runtime_gate)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-u1/tests/mod_editor/test_apf_studio_installer.py", line 320, in test_clean_allowlist_stage_passes_the_alpha32_runtime_gate
+    self.assertEqual(result.returncode, 0, result.stderr)
+AssertionError: 1 != 0 : APF2K8_MOD_STUDIO_RUNTIME_REFUSED: no-terminal launcher omitted 'python3 -m mod_editor.apf_studio'
+
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.498s
+
+FAILED (failures=2, errors=1)

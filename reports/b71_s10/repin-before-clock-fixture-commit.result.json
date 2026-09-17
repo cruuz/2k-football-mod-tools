@@ -1,0 +1,12 @@
+{
+  "name": "repin-before-clock-fixture-commit",
+  "argv": [
+    "python3",
+    "packaging/repin.py",
+    "--apply"
+  ],
+  "start_utc": "2026-09-17T00:31:09.440215+00:00",
+  "end_utc": "2026-09-17T00:31:20.243441+00:00",
+  "seconds": 10.803,
+  "exit_code": 0
+}

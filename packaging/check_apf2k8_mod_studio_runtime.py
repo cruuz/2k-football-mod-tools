@@ -25,7 +25,7 @@ sys.dont_write_bytecode = True
 
 ROOT = Path(__file__).resolve().parents[1]
 TOOLS = ROOT / "tools"
-EXPECTED_PRODUCT_VERSION = "0.1.0-alpha.92"
+EXPECTED_PRODUCT_VERSION = "0.1.0-alpha.93"
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 if str(TOOLS) not in sys.path:
@@ -348,13 +348,15 @@ def _check_desktop_contract() -> None:
     for marker in (
         "PYTHONDONTWRITEBYTECODE=1",
         "PYTHONNOUSERSITE=1",
-        "python3 -m mod_editor.apf_studio",
+        '"$studio_python" -m mod_editor.apf_studio',
+        ".studio-python",
+        "--update-check",
         "zenity --error",
         "kdialog",
         "XDG_STATE_HOME",
         "mktemp -d",
-        "python3-pyqt5",
-        "python3-pil",
+        "PyQt5 is missing from the selected Python runtime",
+        "Pillow is missing from the selected Python runtime",
         "last-launch.log",
     ):
         require(marker in script, f"no-terminal launcher omitted {marker!r}")
@@ -2711,6 +2713,10 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         _check_clean_stage()
+        # Embeddable Python and -I do not add the script directory.
+        sys.path.insert(0, str(ROOT / "packaging"))
+        from runtime_dependencies import check_runtime_dependencies
+        check_runtime_dependencies(ROOT)
         _check_extractor()
         _check_h7a_encoder()
         _check_desktop_contract()

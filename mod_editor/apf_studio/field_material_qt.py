@@ -1,7 +1,8 @@
 """Field Art opacity controls; the scalar recipe is staged through the facade."""
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox,
-                            QFormLayout, QCheckBox, QDoubleSpinBox, QPushButton)
+                            QFormLayout, QCheckBox, QDoubleSpinBox, QPushButton,
+                            QScrollArea, QLayout)
 from mod_editor.core.apf_field_material_writer import ENTRY_NAME_IDS, MATERIALS
 
 
@@ -19,7 +20,15 @@ class FieldMaterialOpacityPanel(QWidget):
             self.entry.addItem(f'Field scene {outer}', outer)
         layout.addWidget(self.entry)
         self.controls = {}
-        form = QFormLayout()
+        self.material_scroll = QScrollArea()
+        self.material_scroll.setAccessibleName('Field overlay opacity values')
+        self.material_scroll.setWidgetResizable(True)
+        self.material_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.material_scroll.setMinimumHeight(160)
+        rows = QWidget()
+        form = QFormLayout(rows)
+        form.setSizeConstraint(QLayout.SetMinimumSize)
+        form.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
         for name in MATERIALS:
             row = QHBoxLayout()
             enabled = QCheckBox(name.replace('_', ' ').capitalize())
@@ -29,13 +38,19 @@ class FieldMaterialOpacityPanel(QWidget):
             value.setRange(0, 100)
             value.setDecimals(2)
             value.setSuffix('%')
+            enabled.setMinimumHeight(32)
+            value.setMinimumHeight(32)
+            value.setAccessibleName(enabled.text() + ' opacity percent')
+            value.setToolTip('Opacity weight from 0% (transparent) to 100% (opaque).')
+            value.setAccessibleDescription(value.toolTip())
             value.setEnabled(False)
             enabled.toggled.connect(value.setEnabled)
             row.addWidget(enabled)
             row.addWidget(value)
             form.addRow(row)
             self.controls[name] = enabled, value
-        layout.addLayout(form)
+        self.material_scroll.setWidget(rows)
+        layout.addWidget(self.material_scroll, 1)
         self.note = QLabel('Select only the materials to change. Lower values make overlays more transparent. In-game appearance is unwitnessed.')
         self.note.setWordWrap(True)
         layout.addWidget(self.note)

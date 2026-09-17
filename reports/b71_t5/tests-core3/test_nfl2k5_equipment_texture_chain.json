@@ -1,0 +1,9 @@
+{
+  "command": [
+    "/usr/bin/python3",
+    "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_equipment_texture_chain.py"
+  ],
+  "started": "2026-09-16T23:59:39.979780+00:00",
+  "exit_code": 1,
+  "seconds": 4.32010872499086
+}

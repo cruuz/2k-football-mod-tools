@@ -1,0 +1,260 @@
+[
+  {
+    "frame": 45,
+    "requests": [
+      1,
+      1,
+      0,
+      0,
+      1,
+      0
+    ],
+    "slides": [
+      30.0,
+      30.0,
+      0.0,
+      0.0,
+      45.0,
+      0.0
+    ],
+    "bindings": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "latch": 0,
+    "colors": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "visible_glyphs": 0,
+    "aspect": false,
+    "native_draw_elements": [
+      0,
+      1,
+      4
+    ],
+    "history": "different +0x20 team values",
+    "draws": [
+      {
+        "callback": "0x14d9580",
+        "text": ""
+      },
+      {
+        "callback": "0x14d9580",
+        "text": ""
+      },
+      {
+        "callback": "0xfbeb0",
+        "text": "Ball at Midfield"
+      },
+      {
+        "callback": "0x14d9580",
+        "text": ""
+      },
+      {
+        "callback": "0x14d9580",
+        "text": ""
+      },
+      {
+        "callback": "0x14d9580",
+        "text": ""
+      },
+      {
+        "callback": "0x14d9580",
+        "text": ""
+      },
+      {
+        "callback": "0x14d9580",
+        "text": ""
+      },
+      {
+        "callback": "0x14d9580",
+        "text": ""
+      },
+      {
+        "callback": "0x14d9580",
+        "text": ""
+      }
+    ]
+  },
+  {
+    "frame": 90,
+    "requests": [
+      1,
+      1,
+      0,
+      0,
+      0,
+      0
+    ],
+    "slides": [
+      30.0,
+      30.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "bindings": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "latch": 0,
+    "colors": [
+      4294967295,
+      4294967295,
+      0,
+      4294967295,
+      0,
+      4294967295,
+      4294967295,
+      0
+    ],
+    "visible_glyphs": 5,
+    "aspect": false,
+    "history": "equal +0x20 team values"
+  },
+  {
+    "frame": 45,
+    "requests": [
+      1,
+      1,
+      0,
+      0,
+      1,
+      0
+    ],
+    "slides": [
+      30.0,
+      30.0,
+      0.0,
+      0.0,
+      45.0,
+      0.0
+    ],
+    "bindings": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "latch": 0,
+    "colors": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "visible_glyphs": 0,
+    "aspect": true,
+    "native_draw_elements": [
+      0,
+      1,
+      4
+    ],
+    "history": "different +0x20 team values",
+    "draws": [
+      {
+        "callback": "0x14d9580",
+        "text": ""
+      },
+      {
+        "callback": "0x14d9580",
+        "text": ""
+      },
+      {
+        "callback": "0xfbeb0",
+        "text": "Ball at Midfield"
+      },
+      {
+        "callback": "0x14d9580",
+        "text": ""
+      },
+      {
+        "callback": "0x14d9580",
+        "text": ""
+      },
+      {
+        "callback": "0x14d9580",
+        "text": ""
+      },
+      {
+        "callback": "0x14d9580",
+        "text": ""
+      },
+      {
+        "callback": "0x14d9580",
+        "text": ""
+      },
+      {
+        "callback": "0x14d9580",
+        "text": ""
+      },
+      {
+        "callback": "0x14d9580",
+        "text": ""
+      }
+    ]
+  },
+  {
+    "frame": 90,
+    "requests": [
+      1,
+      1,
+      0,
+      0,
+      0,
+      0
+    ],
+    "slides": [
+      30.0,
+      30.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "bindings": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "latch": 0,
+    "colors": [
+      4294967295,
+      4294967295,
+      0,
+      4294967295,
+      0,
+      4294967295,
+      4294967295,
+      0
+    ],
+    "visible_glyphs": 5,
+    "aspect": true,
+    "history": "equal +0x20 team values"
+  }
+]

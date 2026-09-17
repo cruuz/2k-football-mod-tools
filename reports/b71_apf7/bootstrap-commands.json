@@ -1,0 +1,38 @@
+[
+  {
+    "cmd": "pwd && rg --files -g 'AGENTS.md' -g 'ASTRA_CONTEXT.md' -g 'BETA71_TRIAGE.md' -g '*APF*' -g '*apf*REPORT*' -g 'ASTRA_REPORT.md' -g 'repin.py' -g '*strict*' -g '*phase1*' -g '*provider*' -g '*catalog*' -g '*CHANGELOG*' -g 'pyproject.toml' -g 'pytest.ini' -g 'requirements*' -g 'setup.cfg'",
+    "exit_code": 0,
+    "wall_time_seconds": 0.000003407
+  },
+  {
+    "cmd": "cat ASTRA_CONTEXT.md BETA71_TRIAGE.md",
+    "exit_code": 0,
+    "wall_time_seconds": 0.000004759
+  },
+  {
+    "cmd": "rg --files -g 'AGENTS.md' -g '!reports/**' -g '!external/**' /home/noah 2>/dev/null | head -70",
+    "exit_code": 0,
+    "wall_time_seconds": 0.076085516
+  },
+  {
+    "cmd": "cat /home/noah/AGENTS.md && git status --short && git rev-parse HEAD --git-common-dir && ls -ld .scratch reports/assets && rg --files mod_editor/apf_studio tests/mod_editor | rg '(field|playcall|book|studio.*qt)'",
+    "exit_code": 2,
+    "wall_time_seconds": 0.569428399
+  },
+  {
+    "cmd": "cat ASTRA_B70_APF1_REPORT.md ASTRA_B661_APF2_REPORT.md ASTRA_B71_APF4_REPORT.md ASTRA_B71_APF6_REPORT.md",
+    "exit_code": 0,
+    "wall_time_seconds": 0.000003486
+  },
+  {
+    "cmd": "cat /home/noah/PROJECTS.md /home/noah/projects.json ASTRA_BRIEF.md; rg --files mod_editor/apf_studio tests/mod_editor | rg '(field|playcall|book|studio.*qt)'; rg --files beta71_evidence | head -20; rg --files '/home/noah/Desktop/2K5-8 Editors' | rg '(1655|1811|B71_APF2|B71_APF1)'",
+    "exit_code": 0,
+    "wall_time_seconds": 0.000004419
+  },
+  {
+    "cmd": "sed -n '1,210p' ASTRA_B71_APF6_REPORT.md; sed -n '1,160p' ASTRA_B71_APF4_REPORT.md; rg -n '24|36|clone|unique|formation|situation|weight' ASTRA_B661_APF2_REPORT.md ASTRA_APF_BOOK_UNLOCK_REPORT.md ASTRA_REPORT.md | head -65",
+    "exit_code": 0,
+    "wall_time_seconds": null,
+    "note": "Initial tool output truncated; UTC and accurate complete elapsed time were not persisted."
+  }
+]

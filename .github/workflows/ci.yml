@@ -402,10 +402,14 @@ jobs:
             libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 \
             libxcb-render-util0 libxcb-shape0 libxcb-xfixes0 libxcb-xinerama0 libxcb-cursor0
 
-      - name: Install Python dependencies (PyQt5, Pillow, numpy)
+      - name: Install Python dependencies (PyQt5, Pillow, numpy, capstone, unicorn)
         run: |
           python -m pip install --upgrade pip
-          python -m pip install PyQt5 Pillow capstone==5.0.7 numpy==1.26.4
+          # The runtime closure resolves every third-party import the staged product can
+          # reach, in isolated mode. mod_editor/core/nfl2k5_scorebug_sprite.py declares
+          # LAZY_RUNTIME_IMPORTS = ('unicorn', 'capstone') for the native preview, so both
+          # must be installed here, matching packaging/requirements-studio.txt.
+          python -m pip install PyQt5 Pillow capstone==5.0.7 numpy==1.26.4 unicorn==2.1.4
 
       - name: Stage and run BOTH retail-free release gates
         shell: bash

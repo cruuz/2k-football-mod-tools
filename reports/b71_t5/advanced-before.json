@@ -1,0 +1,10 @@
+{
+  "command": [
+    "python3",
+    "-c",
+    "from mod_editor.core import mod_build as m; p=m.apply_preset(m.BuildPlan(source='/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso',target='/tmp/t5-unused.iso'),'softdrink_advanced'); print(m.validate_plan(p),flush=True); print(m.preflight_plan(p,lambda *x: print(x,flush=True)),flush=True)"
+  ],
+  "started": "2026-09-16T23:26:38.897552+00:00",
+  "exit_code": 0,
+  "seconds": 3.470166874001734
+}

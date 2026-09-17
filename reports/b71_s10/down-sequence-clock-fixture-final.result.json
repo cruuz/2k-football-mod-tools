@@ -1,0 +1,12 @@
+{
+  "name": "down-sequence-clock-fixture-final",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_nfl2k5_scorebug_down_visibility.py",
+    "-v"
+  ],
+  "start_utc": "2026-09-17T00:30:29.690892+00:00",
+  "end_utc": "2026-09-17T00:31:09.410876+00:00",
+  "seconds": 39.72,
+  "exit_code": 0
+}

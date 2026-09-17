@@ -1,0 +1,9 @@
+{
+  "command": [
+    "/tmp/astra-b711-p1-python/bin/python3",
+    "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_local_windows_ci.py"
+  ],
+  "start": "2026-09-17T02:45:43.207166+00:00",
+  "seconds": 2.457,
+  "exit_code": 0
+}

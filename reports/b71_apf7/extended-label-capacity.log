@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "<stdin>", line 14, in <module>
+  File "/home/noah/2k-worktrees/astra-b71-apf7/mod_editor/core/apf2k8_book_clone.py", line 415, in compile_unlock
+    roster_after, binding = bind_roster(roster_before, requests)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-apf7/mod_editor/core/apf2k8_book_clone.py", line 113, in bind_roster
+    raise ValidationError('Offensive and defensive clones must have distinct resource names')
+mod_editor.core.errors.ValidationError: Offensive and defensive clones must have distinct resource names

@@ -1,0 +1,16 @@
+E.....
+======================================================================
+ERROR: test_bad_or_missing_helper_falls_back_and_bounds_still_apply (__main__.NativeLzTests.test_bad_or_missing_helper_falls_back_and_bounds_still_apply)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b68_t1_build.py", line 184, in test_bad_or_missing_helper_falls_back_and_bounds_still_apply
+    actual = lz.compress_equipment_optimal(b"abc" * 80, stream_tag=1, offset_bits=12, max_encoded_size=400)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/nfl2k5_equipment_lz.py", line 118, in compress_equipment_optimal
+    raise EquipmentSearchTimeout('Equipment optimal fit could not finish within its search bound. '
+mod_editor.core.nfl2k5_equipment_lz.EquipmentSearchTimeout: Equipment optimal fit could not finish within its search bound. Use Refit equipment to reduce colours or size, or revert this item.
+
+----------------------------------------------------------------------
+Ran 6 tests in 5.331s
+
+FAILED (errors=1)

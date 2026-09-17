@@ -1,0 +1,14 @@
+{
+  "name": "disasm-scene",
+  "argv": [
+    "python3",
+    "reports/b71_s9/disassemble.py",
+    "21860:218ff",
+    "2ac80:2ae80",
+    "21000:21860"
+  ],
+  "start_utc": "2026-09-16T23:08:23.482813+00:00",
+  "end_utc": "2026-09-16T23:08:23.709627+00:00",
+  "seconds": 0.227,
+  "exit_code": 0
+}

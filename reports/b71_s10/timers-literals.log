@@ -1,0 +1,63 @@
+All six native timed requests cleared at FCf19 without calling the draw loop.
+[
+  {
+    "phase": 0,
+    "period": 1,
+    "text": "Pregame"
+  },
+  {
+    "phase": 0,
+    "period": 5,
+    "text": "Overtime"
+  },
+  {
+    "phase": 1,
+    "period": 1,
+    "text": "Safety Kick"
+  },
+  {
+    "phase": 1,
+    "period": 5,
+    "text": "Safety Kick"
+  },
+  {
+    "phase": 2,
+    "period": 1,
+    "text": "Kickoff"
+  },
+  {
+    "phase": 2,
+    "period": 5,
+    "text": "Kickoff"
+  },
+  {
+    "phase": 3,
+    "period": 1,
+    "text": "Point After"
+  },
+  {
+    "phase": 3,
+    "period": 5,
+    "text": "Point After"
+  },
+  {
+    "phase": 4,
+    "period": 1,
+    "text": "1st & 10"
+  },
+  {
+    "phase": 4,
+    "period": 5,
+    "text": "1st & 10"
+  },
+  {
+    "phase": 5,
+    "period": 1,
+    "text": ""
+  },
+  {
+    "phase": 5,
+    "period": 5,
+    "text": ""
+  }
+]

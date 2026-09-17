@@ -1,0 +1,137 @@
+.............E....EEE......FEEE..
+======================================================================
+ERROR: test_crib_capability_authorizes_canonical_team_photo_project (__main__.ProviderTests.test_crib_capability_authorizes_canonical_team_photo_project)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_providers.py", line 1503, in test_crib_capability_authorizes_canonical_team_photo_project
+    provider._validate_capability(job, capability)
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 1083, in _validate_capability
+    _validate_pin_set(self.workspace, self.module_pins, "NFL unified visual backend")
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 319, in _validate_pin_set
+    _read_pinned_payload(workspace, relative, expected, f"{label} file {relative}")
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 307, in _read_pinned_payload
+    raise ProviderError(f"Allowlisted {label} hash changed")
+mod_editor.core.providers.ProviderError: Allowlisted NFL unified visual backend file mod_editor/core/nfl2k5_uniform_equipment_writer.py hash changed
+
+======================================================================
+ERROR: test_provider_tracks_corrected_registry_kind_allowlist_and_rejects_unknown (__main__.ProviderTests.test_provider_tracks_corrected_registry_kind_allowlist_and_rejects_unknown)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_providers.py", line 1369, in test_provider_tracks_corrected_registry_kind_allowlist_and_rejects_unknown
+    provider.preflight(job, capability, lambda event: None)
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 903, in preflight
+    self._validate_capability(request, capability)
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 1083, in _validate_capability
+    _validate_pin_set(self.workspace, self.module_pins, "NFL unified visual backend")
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 319, in _validate_pin_set
+    _read_pinned_payload(workspace, relative, expected, f"{label} file {relative}")
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 307, in _read_pinned_payload
+    raise ProviderError(f"Allowlisted {label} hash changed")
+mod_editor.core.providers.ProviderError: Allowlisted NFL unified visual backend file mod_editor/core/nfl2k5_uniform_equipment_writer.py hash changed
+
+======================================================================
+ERROR: test_real_preflight_refuses_existing_output_and_noncanonical_project (__main__.ProviderTests.test_real_preflight_refuses_existing_output_and_noncanonical_project)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_providers.py", line 675, in test_real_preflight_refuses_existing_output_and_noncanonical_project
+    provider.preflight(job, capability, lambda event: None)
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 903, in preflight
+    self._validate_capability(request, capability)
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 1083, in _validate_capability
+    _validate_pin_set(self.workspace, self.module_pins, "NFL unified visual backend")
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 319, in _validate_pin_set
+    _read_pinned_payload(workspace, relative, expected, f"{label} file {relative}")
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 307, in _read_pinned_payload
+    raise ProviderError(f"Allowlisted {label} hash changed")
+mod_editor.core.providers.ProviderError: Allowlisted NFL unified visual backend file mod_editor/core/nfl2k5_uniform_equipment_writer.py hash changed
+
+======================================================================
+ERROR: test_real_provider_constructs_fixed_argv_and_three_stages (__main__.ProviderTests.test_real_provider_constructs_fixed_argv_and_three_stages)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_providers.py", line 644, in test_real_provider_constructs_fixed_argv_and_three_stages
+    result = orchestrator.build_and_verify(job)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 2447, in build_and_verify
+    provider, capability = self._begin(request, callback)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 2480, in _begin
+    provider.preflight(request, capability, emit)
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 903, in preflight
+    self._validate_capability(request, capability)
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 1083, in _validate_capability
+    _validate_pin_set(self.workspace, self.module_pins, "NFL unified visual backend")
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 319, in _validate_pin_set
+    _read_pinned_payload(workspace, relative, expected, f"{label} file {relative}")
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 307, in _read_pinned_payload
+    raise ProviderError(f"Allowlisted {label} hash changed")
+mod_editor.core.providers.ProviderError: Allowlisted NFL unified visual backend file mod_editor/core/nfl2k5_uniform_equipment_writer.py hash changed
+
+======================================================================
+ERROR: test_unified_provider_accepts_a_legal_noncanonical_disc_container (__main__.ProviderTests.test_unified_provider_accepts_a_legal_noncanonical_disc_container)
+The executable identity, not ripper-specific padding, is the game.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_providers.py", line 705, in test_unified_provider_accepts_a_legal_noncanonical_disc_container
+    provider.preflight(job, capability, lambda event: None)
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 903, in preflight
+    self._validate_capability(request, capability)
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 1083, in _validate_capability
+    _validate_pin_set(self.workspace, self.module_pins, "NFL unified visual backend")
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 319, in _validate_pin_set
+    _read_pinned_payload(workspace, relative, expected, f"{label} file {relative}")
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 307, in _read_pinned_payload
+    raise ProviderError(f"Allowlisted {label} hash changed")
+mod_editor.core.providers.ProviderError: Allowlisted NFL unified visual backend file mod_editor/core/nfl2k5_uniform_equipment_writer.py hash changed
+
+======================================================================
+ERROR: test_unified_provider_pins_and_composes_exact_stadium_texture_kind (__main__.ProviderTests.test_unified_provider_pins_and_composes_exact_stadium_texture_kind)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_providers.py", line 1472, in test_unified_provider_pins_and_composes_exact_stadium_texture_kind
+    provider._validate_capability(job, capability)
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 1083, in _validate_capability
+    _validate_pin_set(self.workspace, self.module_pins, "NFL unified visual backend")
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 319, in _validate_pin_set
+    _read_pinned_payload(workspace, relative, expected, f"{label} file {relative}")
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 307, in _read_pinned_payload
+    raise ProviderError(f"Allowlisted {label} hash changed")
+mod_editor.core.providers.ProviderError: Allowlisted NFL unified visual backend file mod_editor/core/nfl2k5_uniform_equipment_writer.py hash changed
+
+======================================================================
+ERROR: test_unified_visual_build_does_not_receive_private_audio_paths (__main__.ProviderTests.test_unified_visual_build_does_not_receive_private_audio_paths)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_providers.py", line 1442, in test_unified_visual_build_does_not_receive_private_audio_paths
+    provider.build(job, capability, lambda event: None)
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 995, in build
+    result = self._run("build", request, ProviderStage.BUILD, emit)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 1015, in _run
+    with _pinned_execution_bundle(
+  File "/usr/lib/python3.12/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 465, in _pinned_execution_bundle
+    relative: _read_pinned_payload(
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-t5/mod_editor/core/providers.py", line 307, in _read_pinned_payload
+    raise ProviderError(f"Allowlisted {label} hash changed")
+mod_editor.core.providers.ProviderError: Allowlisted NFL unified visual backend file mod_editor/core/nfl2k5_uniform_equipment_writer.py hash changed
+
+======================================================================
+FAIL: test_unified_ausb_preflight_requires_and_forwards_private_audio_inputs (__main__.ProviderTests.test_unified_ausb_preflight_requires_and_forwards_private_audio_inputs)
+----------------------------------------------------------------------
+mod_editor.core.providers.ProviderError: Allowlisted NFL unified visual backend file mod_editor/core/nfl2k5_uniform_equipment_writer.py hash changed
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_providers.py", line 1404, in test_unified_ausb_preflight_requires_and_forwards_private_audio_inputs
+    with self.assertRaisesRegex(
+AssertionError: "three private safety inputs" does not match "Allowlisted NFL unified visual backend file mod_editor/core/nfl2k5_uniform_equipment_writer.py hash changed"
+
+----------------------------------------------------------------------
+Ran 33 tests in 0.834s
+
+FAILED (failures=1, errors=7)

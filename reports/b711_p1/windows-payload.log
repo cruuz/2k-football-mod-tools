@@ -1,0 +1,8 @@
+PUBLISHED PACKAGES [('PyQt5', '5.15.11'), ('PyQt5-Qt5', '5.15.2'), ('PyQt5_sip', '12.18.0'), ('capstone', '5.0.7'), ('numpy', '1.26.4'), ('pillow', '11.3.0'), ('unicorn', '2.1.4')]
+WARNING: The directory '/home/noah/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
+      verified 7 pinned wheels
+REASSEMBLED PACKAGES [('PyQt5', '5.15.11'), ('PyQt5-Qt5', '5.15.2'), ('PyQt5_sip', '12.18.0'), ('capstone', '5.0.7'), ('numpy', '1.26.4'), ('pillow', '11.3.0'), ('unicorn', '2.1.4')]
+WINDOWS CLOSURE 2k5 ['PIL', 'PIL.Image', 'PyQt5', 'PyQt5.QtCore', 'PyQt5.QtGui', 'PyQt5.QtWidgets', 'capstone', 'capstone.x86', 'numpy', 'unicorn']
+WINDOWS CLOSURE apf2k8 ['PIL', 'PyQt5.QtCore', 'PyQt5.QtGui', 'PyQt5.QtWidgets', 'capstone', 'numpy']
+REMOVED NUMPY REJECTED 2k5 Staged runtime is missing third-party dependencies: numpy (used at mod_editor/core/nfl2k5_audio_source_scan.py:399, mod_editor/core/nfl2k5_audo_fixed_slots.py:512, mod_editor/core/runtime_dependencies.py:12, mod_editor/core/runtime_dependencies.py:34)
+REMOVED NUMPY REJECTED apf2k8 Staged runtime is missing third-party dependencies: numpy (used at mod_editor/apf_studio/ps3_texture_probe_fast.py:19, mod_editor/core/runtime_dependencies.py:12, mod_editor/core/runtime_dependencies.py:34)

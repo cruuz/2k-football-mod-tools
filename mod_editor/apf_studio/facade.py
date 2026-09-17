@@ -190,6 +190,11 @@ class ApfStudioFacade:
         with self._session_lock:
             return self._playcalling.situations(context, side)
 
+    def preview_playcalling_ratings(self, context, side, formation, ratings, pending=()):
+        with self._session_lock:
+            return self._playcalling.preview_ratings(
+                self.require_session(), context, side, formation, ratings, pending)
+
     def playcalling_plan(self, side, team=None, donor=None, progress: Progress = _noop):
         with self._session_lock:
             return self._playcalling.plan(self.require_session(), side, team, donor)

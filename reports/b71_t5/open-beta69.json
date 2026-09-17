@@ -1,0 +1,10 @@
+{
+  "command": [
+    "python3",
+    "tools/b71_t5_project_probe.py",
+    "f7d6fc07"
+  ],
+  "started": "2026-09-16T23:31:23.459498+00:00",
+  "exit_code": 1,
+  "seconds": 0.7653242200030945
+}

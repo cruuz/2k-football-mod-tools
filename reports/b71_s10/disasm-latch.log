@@ -1,0 +1,23 @@
+
+ROUTINE 0xfc330 0xfc360
+000fc330  mov       dword ptr [0xba2f14], 1
+000fc33a  ret
+000fc33b  nop
+000fc33c  nop
+000fc33d  nop
+000fc33e  nop
+000fc33f  nop
+000fc340  mov       dword ptr [0xba2f14], 0
+000fc34a  ret
+000fc34b  nop
+000fc34c  nop
+000fc34d  nop
+000fc34e  nop
+000fc34f  nop
+000fc350  mov       dword ptr [0xa95520], 0
+000fc35a  ret
+000fc35b  nop
+000fc35c  nop
+000fc35d  nop
+000fc35e  nop
+000fc35f  nop

@@ -1,0 +1,11 @@
+{
+  "name": "baseline-sequence-pinned",
+  "argv": [
+    "python3",
+    "reports/b71_s10/probe_sequence.py"
+  ],
+  "start_utc": "2026-09-17T00:33:07.571794+00:00",
+  "end_utc": "2026-09-17T00:33:39.054609+00:00",
+  "seconds": 31.483,
+  "exit_code": 0
+}

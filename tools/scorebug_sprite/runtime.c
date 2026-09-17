@@ -82,13 +82,26 @@ static u32 text(struct Field *f,u16 *out) {
  return 1;
 }
 
+/* Record origin is the parent-index word (A959C8 + index * 0x70).
+ * This is FC360's binding/current-slide decision, including unordered x87. */
+static u32 element_visible(u32 record) {
+ return V(record+0x58) && !(*(volatile float*)(record+0x3c)<=*(volatile float*)(record+0x2c));
+}
+
 static void field(u8 *b,struct Field *f) {
  struct Glyph *tokens[16];u16 buffer[96];u32 count=0;int total=0;
  for(u32 j=0;j<f->capacity;j++)color(b,f->vertex+j*4,0);
  if(f->capacity>16 || f->vertex+f->capacity*4>286 || f->count>128)return;
  if(f->visibility && !V(f->visibility))return;
- /* Retail event slabs share the down plate; their own text wins that space. */
- if(f->source==7 && (V(0xa95ae0)||V(0xa95b50)||V(0xa95bc0)||V(0xa95c30)))return;
+ /* Requests describe the next update, not the draw. In the compact layout
+  * the retail events occupy the same plate as down-and-distance; suppress
+  * underlying glyphs only while those elements actually draw (the plates
+  * have translucent pixels). No request word participates in this decision. */
+ if(f->source==7) {
+  if(!element_visible(0xa959c8))return;
+  for(u32 record=0xa95aa8;record<0xa95c68;record+=0x70)
+   if(element_visible(record))return;
+ }
  if(!text(f,buffer))return;
  u16 *at=buffer;
  while(*at && at<buffer+80) {

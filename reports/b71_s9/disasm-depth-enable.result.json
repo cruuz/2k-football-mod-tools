@@ -1,0 +1,14 @@
+{
+  "name": "disasm-depth-enable",
+  "argv": [
+    "python3",
+    "reports/b71_s9/disassemble.py",
+    "285e0:28710",
+    "29040:29140",
+    "22520:225c0"
+  ],
+  "start_utc": "2026-09-16T23:12:01.660505+00:00",
+  "end_utc": "2026-09-16T23:12:01.883702+00:00",
+  "seconds": 0.223,
+  "exit_code": 0
+}

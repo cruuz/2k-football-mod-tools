@@ -1,0 +1,25 @@
+capstone /home/noah/.local/lib/python3.12/site-packages/capstone/__init__.py
+unicorn /home/noah/.local/lib/python3.12/site-packages/unicorn/__init__.py
+numpy /home/noah/.local/lib/python3.12/site-packages/numpy/__init__.py
+PyQt5 /usr/lib/python3/dist-packages/PyQt5/__init__.py
+['/usr/local/lib/python3.12/dist-packages', '/usr/lib/python3/dist-packages', '/usr/lib/python3.12/dist-packages']
+/home/noah/.local/lib/python3.12/site-packages
+782:        name: read_pinned_file(path.resolve(strict=True))[0]
+1582:    parser.add_argument("--registry", type=Path, default=DEFAULT_REGISTRY)
+1583:    parser.add_argument("--timeout-seconds", type=float, default=900.0)
+1584:    parser.add_argument("--report", type=Path)
+1585:    parser.add_argument("--list", action="store_true", dest="list_only")
+packaging/check_apf2k8_mod_studio_runtime.py:121:    "capstone",
+packaging/check_apf2k8_mod_studio_runtime.py:208:    "apf_roster_composite_patch",
+packaging/check_apf2k8_mod_studio_runtime.py:350:        "PYTHONNOUSERSITE=1",
+packaging/check_apf2k8_mod_studio_runtime.py:378:    environment["PYTHONNOUSERSITE"] = "1"
+packaging/check_apf2k8_mod_studio_runtime.py:587:            or modules["capstone"].__version__ != "5.0.7"):
+packaging/check_apf2k8_mod_studio_runtime.py:1878:    roster_composite = importlib.import_module("apf_roster_composite_patch")
+packaging/check_apf2k8_mod_studio_runtime.py:1934:        and roster_composite.SCHEMA == "apf2k8_roster_composite_patch/v1"
+packaging/check_apf2k8_mod_studio_runtime.py:1935:        and callable(getattr(roster_composite, "compose_results", None))
+packaging/check_apf2k8_mod_studio_runtime.py:1936:        and callable(getattr(roster_composite, "compose_components", None))
+packaging/check_apf2k8_mod_studio_runtime.py:1938:            getattr(build.ApfBuildService, "_compile_roster_composite_groups", None)
+tests/mod_editor/test_apf_studio_installer.py:49:    Pytest is often installed in an isolated virtual environment that does not
+tests/mod_editor/test_apf_studio_installer.py:216:                "tools/apf_roster_composite_patch.py",
+tests/mod_editor/test_apf_studio_installer.py:303:                    "PYTHONNOUSERSITE": "1",
+tests/mod_editor/test_apf_studio_installer.py:465:                "PYTHONNOUSERSITE": "1",

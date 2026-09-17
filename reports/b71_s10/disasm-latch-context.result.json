@@ -1,0 +1,12 @@
+{
+  "name": "disasm-latch-context",
+  "argv": [
+    "python3",
+    "reports/b71_s9/disassemble.py",
+    "9f200:9f410"
+  ],
+  "start_utc": "2026-09-17T00:08:32.029530+00:00",
+  "end_utc": "2026-09-17T00:08:32.262609+00:00",
+  "seconds": 0.233,
+  "exit_code": 0
+}

@@ -1,0 +1,10 @@
+test_atomic_clone_scheme_undo_and_saved_recipe_replay (__main__.SchemeSessionTests.test_atomic_clone_scheme_undo_and_saved_recipe_replay) ... ok
+test_shared_book_bypass_and_tampered_review_refused (__main__.SchemeSessionTests.test_shared_book_bypass_and_tampered_review_refused) ... ok
+test_csv_buckets_use_model_and_distinguish_intent_from_result (__main__.SchemeTests.test_csv_buckets_use_model_and_distinguish_intent_from_result) ... ok
+test_eight_schemes_write_only_owned_ratings_and_team_fields (__main__.SchemeTests.test_eight_schemes_write_only_owned_ratings_and_team_fields) ... ok
+test_shared_tendency_pointer_refused_and_rows_saturate (__main__.SchemeTests.test_shared_tendency_pointer_refused_and_rows_saturate) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 36.017s
+
+OK

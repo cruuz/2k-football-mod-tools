@@ -1,0 +1,13 @@
+interpreter /usr/bin/python3
+/tmp/claude-1000/-home-noah-Desktop-2K5-8-Editors/7d06c350-f66f-4c4d-acf4-cdbdbedff1da/scratchpad/b70/ship/assets70/2K5-Mod-Studio-v1.0-RC95-20260915.tar.gz 15900836 2f8e104f1c07769e5b93dda93b26c61bba1521985971e9d44225f56d265592ec
+members 924 bytes 139920438 tops {'2K5-Mod-Studio-v1.0-RC95-20260915'}
+caches/venv/runtime/links []
+mod_editor/core/self_update.py 0o644 same as HEAD True
+mod_editor/core/update_check.py 0o644 same as HEAD False
+tools/launch_2k5_mod_studio.sh 0o755 same as HEAD True
+/tmp/claude-1000/-home-noah-Desktop-2K5-8-Editors/7d06c350-f66f-4c4d-acf4-cdbdbedff1da/scratchpad/b71/ship/assets71/2K5-Mod-Studio-v1.0-RC96-20260916.tar.gz 16067243 aeb245db395605d62485e3b87700d0d10782b6c22bff9cc82ba6944f0e380b1a
+members 962 bytes 140440946 tops {'2K5-Mod-Studio-v1.0-RC96-20260916'}
+caches/venv/runtime/links []
+mod_editor/core/self_update.py 0o644 same as HEAD True
+mod_editor/core/update_check.py 0o644 same as HEAD True
+tools/launch_2k5_mod_studio.sh 0o755 same as HEAD True

@@ -58,6 +58,9 @@ class AppliedWiringTests(unittest.TestCase):
         fixture.stage()
         archive = fixture.root / 'reopen.2k5mod'
         fixture.a.save_shareable_project(archive)
+        with patch.object(writer, 'build_unified_uniform_equipment_imports',
+                          side_effect=AssertionError('Captions must not compile')):
+            expected_labels = equipment_reporting.project_fit_labels(fixture.a)
         reopened = fixture.session('reopened')
         measured = []
         preflight = writer.preflight_project_equipment
@@ -67,14 +70,15 @@ class AppliedWiringTests(unittest.TestCase):
             measured.extend(rows)
             return rows
 
+        # Beta 71.1 (T5): opening a project no longer fits anything at all. The saved receipts
+        # carry the measurements, so preflight must not be called even once on reopen.
         with fixture.f.context(), patch.object(writer, 'preflight_project_equipment', side_effect=capture) as checked:
             self.assertEqual(reopened.load_shareable_project(archive), 1)
-        checked.assert_called_once()
-        self.assertTrue(measured)
+        checked.assert_not_called()
+        self.assertFalse(measured)
         with patch.object(writer, 'build_unified_uniform_equipment_imports',
                           side_effect=AssertionError('Captions must not compile')):
-            self.assertEqual(equipment_reporting.project_fit_labels(reopened),
-                             {row['asset_id']: equipment_reporting.fit_caption(row) for row in measured})
+            self.assertEqual(equipment_reporting.project_fit_labels(reopened), expected_labels)
 
     def test_arm_dialog_runs_before_fitting_and_cancel_keeps_the_project(self):
         fixture_type = gui_fixtures.EquipmentWiringTests

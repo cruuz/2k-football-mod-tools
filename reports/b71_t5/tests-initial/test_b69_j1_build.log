@@ -1,0 +1,14 @@
+F....
+======================================================================
+FAIL: test_invalid_legacy_own_art_is_refused_during_project_load (__main__.BuildDiagnosticsTests.test_invalid_legacy_own_art_is_refused_during_project_load)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b69_j1_build.py", line 144, in test_invalid_legacy_own_art_is_refused_during_project_load
+    with patch.object(tool, 'validate_source', side_effect=AssertionError('started disc validation')), \
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 5 tests in 2.514s
+
+FAILED (failures=1)
+Could not make the disc copy. While compiling project edits: Project edit index 0: Equipment / Shoes / team or uniform set SYNTHETIC / texture tset:0:8:0:shoes01: PNG must be exactly 32x32

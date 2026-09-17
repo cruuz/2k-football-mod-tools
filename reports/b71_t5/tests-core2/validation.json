@@ -1,0 +1,74 @@
+[
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b71_t5_project_open.py"
+    ],
+    "started": "2026-09-16T23:44:25.676108+00:00",
+    "exit_code": 0,
+    "seconds": 2.318472336017294
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b69_j1_fit.py"
+    ],
+    "started": "2026-09-16T23:44:25.676637+00:00",
+    "exit_code": 0,
+    "seconds": 5.074374309013365
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b70_t1_build_speed.py"
+    ],
+    "started": "2026-09-16T23:44:27.994945+00:00",
+    "exit_code": 1,
+    "seconds": 16.79029030998936
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b70_t2_equipment.py"
+    ],
+    "started": "2026-09-16T23:44:30.751272+00:00",
+    "exit_code": 0,
+    "seconds": 1.316532108001411
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b68_t1_build.py"
+    ],
+    "started": "2026-09-16T23:44:32.068190+00:00",
+    "exit_code": 0,
+    "seconds": 5.373938157019438
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b69_j1_build.py"
+    ],
+    "started": "2026-09-16T23:44:37.442427+00:00",
+    "exit_code": 0,
+    "seconds": 2.3180573470017407
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b69_j1_wiring.py"
+    ],
+    "started": "2026-09-16T23:44:39.760864+00:00",
+    "exit_code": 0,
+    "seconds": 1.4170187189884018
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b71_t4_equipment_project.py"
+    ],
+    "started": "2026-09-16T23:44:41.178235+00:00",
+    "exit_code": 1,
+    "seconds": 59.60895463000634
+  }
+]

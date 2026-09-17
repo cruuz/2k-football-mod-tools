@@ -1,0 +1,17 @@
+test_bad_documents_and_folders_refuse_with_plain_messages (__main__.DocumentTests.test_bad_documents_and_folders_refuse_with_plain_messages) ... ok
+test_colour_limit_reduces_blends_jointly_without_touching_exact_pictures (__main__.DocumentTests.test_colour_limit_reduces_blends_jointly_without_touching_exact_pictures) ... ok
+test_command_line_lists_exports_previews_and_validates (__main__.DocumentTests.test_command_line_lists_exports_previews_and_validates) ... ok
+test_every_preset_exports_compiles_fits_and_reopens_equal (__main__.DocumentTests.test_every_preset_exports_compiles_fits_and_reopens_equal) ... ok
+test_imported_pictures_are_fitted_in_on_screen_proportions_then_reduced_to_the_tile (__main__.DocumentTests.test_imported_pictures_are_fitted_in_on_screen_proportions_then_reduced_to_the_tile) ... ok
+test_preview_sizes_states_widescreen_contraction_and_team_colours (__main__.DocumentTests.test_preview_sizes_states_widescreen_contraction_and_team_colours) ... ok
+test_product_path_imports_no_numpy_qt_or_emulator (__main__.DocumentTests.test_product_path_imports_no_numpy_qt_or_emulator) ... ok
+test_reference_round_trip_is_byte_identical_and_compiles_the_same_atlas (__main__.DocumentTests.test_reference_round_trip_is_byte_identical_and_compiles_the_same_atlas) ... ok
+test_rendering_and_saving_are_deterministic (__main__.DocumentTests.test_rendering_and_saving_are_deterministic) ... ok
+test_retail_like_says_it_is_an_approximation_and_the_registry_needs_no_code_for_a_folder (__main__.DocumentTests.test_retail_like_says_it_is_an_approximation_and_the_registry_needs_no_code_for_a_folder) ... ok
+test_warnings_name_dark_clock_strips_and_light_text_cells (__main__.DocumentTests.test_warnings_name_dark_clock_strips_and_light_text_cells) ... ok
+test_estimate_agrees_with_the_exact_fixed_span_encoder (__main__.SlotEstimateAgainstRetailTests.test_estimate_agrees_with_the_exact_fixed_span_encoder) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 6.171s
+
+OK

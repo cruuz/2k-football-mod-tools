@@ -1,0 +1,256 @@
+{
+  "suites": 35,
+  "tests": 362,
+  "skips": 10,
+  "final_anchor_regressions": 5,
+  "native_label_states": 808,
+  "contact_states": 50,
+  "strict_registry": "MOD_CAPABILITY_REGISTRY_VALIDATION_PASS schema=vc_mod_capability_registry/v1 games=3 surfaces=21 capabilities=176",
+  "results": [
+    {
+      "name": "final-test_apf_scorebug_workspace_qt",
+      "tests": 11,
+      "skips": 0,
+      "seconds": 1.366,
+      "exit_code": 0
+    },
+    {
+      "name": "final-test_build_panel_qt",
+      "tests": 13,
+      "skips": 0,
+      "seconds": 3.338,
+      "exit_code": 0
+    },
+    {
+      "name": "final-test_mod_build",
+      "tests": 13,
+      "skips": 0,
+      "seconds": 2.201,
+      "exit_code": 0
+    },
+    {
+      "name": "final-test_nfl2k5_allocator_scaleout",
+      "tests": 23,
+      "skips": 0,
+      "seconds": 813.008,
+      "exit_code": 0
+    },
+    {
+      "name": "final-test_nfl2k5_scorebar_rim",
+      "tests": 8,
+      "skips": 0,
+      "seconds": 13.25,
+      "exit_code": 0
+    },
+    {
+      "name": "final-test_nfl2k5_scorebar_v3",
+      "tests": 9,
+      "skips": 0,
+      "seconds": 97.703,
+      "exit_code": 0
+    },
+    {
+      "name": "final-test_nfl2k5_scorebug_assets",
+      "tests": 8,
+      "skips": 1,
+      "seconds": 145.502,
+      "exit_code": 0
+    },
+    {
+      "name": "final-test_nfl2k5_scorebug_author",
+      "tests": 12,
+      "skips": 0,
+      "seconds": 6.294,
+      "exit_code": 0
+    },
+    {
+      "name": "final-test_nfl2k5_scorebug_draw_order",
+      "tests": 4,
+      "skips": 0,
+      "seconds": 25.566,
+      "exit_code": 0
+    },
+    {
+      "name": "final-test_nfl2k5_scorebug_exact",
+      "tests": 8,
+      "skips": 0,
+      "seconds": 84.113,
+      "exit_code": 0
+    },
+    {
+      "name": "final-test_nfl2k5_scorebug_fonts",
+      "tests": 10,
+      "skips": 5,
+      "seconds": 8.482,
+      "exit_code": 0
+    },
+    {
+      "name": "final-test_nfl2k5_scorebug_freeze",
+      "tests": 7,
+      "skips": 0,
+      "seconds": 242.154,
+      "exit_code": 0
+    },
+    {
+      "name": "final-test_nfl2k5_scorebug_freeze_v2",
+      "tests": 7,
+      "skips": 0,
+      "seconds": 331.136,
+      "exit_code": 0
+    },
+    {
+      "name": "final-test_nfl2k5_scorebug_ingame",
+      "tests": 11,
+      "skips": 0,
+      "seconds": 14.753,
+      "exit_code": 0
+    },
+    {
+      "name": "final-test_nfl2k5_scorebug_ingame_fix",
+      "tests": 9,
+      "skips": 0,
+      "seconds": 127.992,
+      "exit_code": 0
+    },
+    {
+      "name": "final-test_nfl2k5_scorebug_mnf",
+      "tests": 10,
+      "skips": 0,
+      "seconds": 12.416,
+      "exit_code": 0
+    },
+    {
+      "name": "final-test_nfl2k5_scorebug_mnf_v3",
+      "tests": 7,
+      "skips": 0,
+      "seconds": 49.566,
+      "exit_code": 0
+    },
+    {
+      "name": "final-test_nfl2k5_scorebug_native",
+      "tests": 4,
+      "skips": 0,
+      "seconds": 132.712,
+      "exit_code": 0
+    },
+    {
+      "name": "final-test_nfl2k5_scorebug_projection",
+      "tests": 14,
+      "skips": 0,
+      "seconds": 56.324,
+      "exit_code": 0
+    },
+    {
+      "name": "final-test_nfl2k5_scorebug_resources",
+      "tests": 6,
+      "skips": 0,
+      "seconds": 298.817,
+      "exit_code": 0
+    },
+    {
+      "name": "final-test_nfl2k5_scorebug_runtime",
+      "tests": 12,
+      "skips": 0,
+      "seconds": 123.309,
+      "exit_code": 0
+    },
+    {
+      "name": "final-test_nfl2k5_scorebug_source_art",
+      "tests": 13,
+      "skips": 3,
+      "seconds": 0.495,
+      "exit_code": 0
+    },
+    {
+      "name": "final-test_nfl2k5_scorebug_sprite",
+      "tests": 19,
+      "skips": 0,
+      "seconds": 95.957,
+      "exit_code": 0
+    },
+    {
+      "name": "final-test_nfl2k5_scorebug_template",
+      "tests": 19,
+      "skips": 0,
+      "seconds": 9.699,
+      "exit_code": 0
+    },
+    {
+      "name": "final-test_nfl2k5_scorebug_template_release",
+      "tests": 5,
+      "skips": 0,
+      "seconds": 0.552,
+      "exit_code": 0
+    },
+    {
+      "name": "final-test_nfl2k5_scorebug_unified_adapter",
+      "tests": 5,
+      "skips": 0,
+      "seconds": 0.17,
+      "exit_code": 0
+    },
+    {
+      "name": "final-test_nfl2k5_scorebug_v10_ingame",
+      "tests": 11,
+      "skips": 0,
+      "seconds": 9.004,
+      "exit_code": 0
+    },
+    {
+      "name": "final-test_nfl2k5_scorebug_v10_projection",
+      "tests": 14,
+      "skips": 0,
+      "seconds": 28.978,
+      "exit_code": 0
+    },
+    {
+      "name": "final-test_nfl2k5_scorebug_versions",
+      "tests": 4,
+      "skips": 0,
+      "seconds": 9.595,
+      "exit_code": 0
+    },
+    {
+      "name": "final-test_nfl2k5_xbe_space",
+      "tests": 13,
+      "skips": 1,
+      "seconds": 35.0,
+      "exit_code": 0
+    },
+    {
+      "name": "final-test_phase1_packaging",
+      "tests": 23,
+      "skips": 0,
+      "seconds": 2.128,
+      "exit_code": 0
+    },
+    {
+      "name": "final-test_product_catalog",
+      "tests": 9,
+      "skips": 0,
+      "seconds": 0.153,
+      "exit_code": 0
+    },
+    {
+      "name": "final-test_provider_integrity",
+      "tests": 8,
+      "skips": 0,
+      "seconds": 10.127,
+      "exit_code": 0
+    },
+    {
+      "name": "final-test_scorebug_sprite_preview_qt",
+      "tests": 2,
+      "skips": 0,
+      "seconds": 22.107,
+      "exit_code": 0
+    },
+    {
+      "name": "final-test_scorebug_studio_panel_qt",
+      "tests": 11,
+      "skips": 0,
+      "seconds": 7.305,
+      "exit_code": 0
+    }
+  ]
+}

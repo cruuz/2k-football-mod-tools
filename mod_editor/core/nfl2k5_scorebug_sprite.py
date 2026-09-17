@@ -15,8 +15,14 @@ import struct
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_FOLDER = ROOT / 'data/nfl2k5_scorebug_sprite'
 VERSION = 'scorebug-sprite-v1'
+# Native preview imports these through the projection tool on demand.
+LAZY_RUNTIME_IMPORTS = ('unicorn', 'capstone')
 MAGIC, MARKER_OFFSET, TABLE_OFFSET = 0x35525053, 0x60, 16512
 MAX_APPEND = 400_000
+# Raw SCNE material records stay in place: the owner binds them by name/index.
+# The SHAP descriptors, not the material array, determine submission order.
+SUBMESH_TABLE = 0x1cb0
+ATLAS_MATERIALS = (3, 4, 6, 7, 9)
 # Display model, measured on the emulator at both aspects (reports/b71_s8): the game
 # presents its 640x448 HUD target scaled to the whole picture. At 4:3 a HUD pixel is
 # 640/1440 of the width for 448/1080 of the height; with the widescreen patch HUD x is
@@ -89,6 +95,7 @@ def load_layout(folder=None):
     spec=json.loads(data)
     require(spec.get('schema')=='nfl2k5_scorebug_sprite/v1' and spec.get('frame')==[1920,1080], 'Use a sprite v1 layout on a 1920×1080 frame.')
     require(spec.get('template')=='template.png', 'The scorebug image must be template.png in the layout folder.')
+    require(spec.get('layer_order', 'decreasing-z') in ('increasing-z', 'decreasing-z'), 'Unknown scorebug layer order.')
     path=folder/'template.png'
     require(path.stat().st_size<=4*1024*1024, 'The scorebug PNG exceeds 4 MB.')
     with Image.open(path) as image:
@@ -155,6 +162,87 @@ class Compiled:
     quads: list
     table: bytes
     widescreen: bool = False
+    material_order: tuple = tuple(range(11))
+
+
+def _allocate_layers(layers, spec):
+    """Fit atomic fields and static layers without reversing an overlap.
+
+    Material numbers in JSON are preferences for the interchangeable, always
+    visible atlas batches. Logos/events retain their native texture/visibility
+    bindings. Reserve fields first so a full label batch displaces a plate,
+    rather than splitting a field or stealing an event/logo material.
+    """
+    from . import nfl2k5_scorebug_ingame as scene
+    capacities = [(words-4)//3 for _, words in scene.layout.SUBMESH_COMMANDS]
+    direction = 1 if spec.get('layer_order') == 'increasing-z' else -1
+    ordered = sorted(range(len(layers)), key=lambda i: (direction*layers[i].get('z', 0), i))
+    def footprint(row):
+        if 'slots' not in row:
+            return row['box']
+        # Runtime placement uses the anchor, not the declared box's origin.
+        # Include raised glyphs and the full compressed field width so custom
+        # anchors cannot introduce an overlap absent from the allocation graph.
+        x,y = row['anchor']; width = row['box'][2]-row['box'][0]
+        left = x-width*(0.5 if row['alignment']=='center' else 1 if row['alignment']=='right' else 0)
+        glyphs = spec['glyph_sets'][row['glyph_set']]
+        factor = row['size']/glyphs['cap_height']
+        top = min(-g.get('raise',0)*factor for g in glyphs['glyphs'].values())
+        bottom = max((g['size'][1]-g.get('raise',0))*factor for g in glyphs['glyphs'].values())
+        return left,y+top,left+width,y+bottom
+    boxes = [footprint(row) for row in layers]
+    overlaps = []
+    for at, i in enumerate(ordered):
+        a = boxes[i]
+        for j in ordered[at+1:]:
+            b = boxes[j]
+            if max(a[0], b[0]) < min(a[2], b[2]) and max(a[1], b[1]) < min(a[3], b[3]):
+                overlaps.append((i, j))
+    costs = [r.get('slots', 1) for r in layers]
+    choices = [(r['material'],) if r['material'] not in ATLAS_MATERIALS or r.get('cell') == 'logo'
+               else (r['material'],)+tuple(k for k in ATLAS_MATERIALS if k != r['material']) for r in layers]
+    pending = sorted(range(len(layers)), key=lambda i: (len(choices[i]) != 1, 'slots' not in layers[i], -costs[i], ordered.index(i)))
+    assigned = {}; used = [0]*11; attempts = 0
+
+    def submission_order():
+        edges = {k: set() for k in range(11)}
+        for i, j in overlaps:
+            if i in assigned and j in assigned and assigned[i] != assigned[j]:
+                edges[assigned[j]].add(assigned[i])
+        result = []
+        while edges:
+            ready = next((k for k in edges if not edges[k]), None)
+            if ready is None:
+                return None
+            result.append(ready); del edges[ready]
+            for parents in edges.values():
+                parents.discard(ready)
+        return tuple(result)
+
+    def place(at):
+        nonlocal attempts
+        attempts += 1
+        if attempts > 20000:
+            return None
+        if at == len(pending):
+            return submission_order()
+        i = pending[at]
+        for material in choices[i]:
+            if used[material]+costs[i] > capacities[material]:
+                continue
+            assigned[i] = material; used[material] += costs[i]
+            result = place(at+1) if submission_order() is not None else None
+            if result is not None:
+                return result
+            used[material] -= costs[i]; del assigned[i]
+        return None
+
+    order = place(0)
+    require(order is not None, 'Scorebug layers cannot fit the material capacities in draw order; reduce or rearrange overlapping layers.')
+    for rank, i in enumerate(ordered):
+        layers[i]['material'] = assigned[i]
+        layers[i]['layer_rank'] = rank
+    return order
 
 
 def _pack(images, size):
@@ -209,16 +297,19 @@ def compile_folder(folder=None,widescreen=False):
         cell=image.crop(spec['cells'][row['cell']]['box']);opacity=row.get('opacity',1)
         cell.putalpha(cell.getchannel('A').point(lambda v:round(v*opacity)));images[row['cell']]=cell
     atlas,cells=_pack(images,spec['atlas'])
+    statics=[dict(r,box=placed_box(r,widescreen),layout_box=r['box']) for r in spec['static']+brand]
+    fields=[dict(r) for r in spec['fields']]
+    events=[dict(r) for r in spec.get('events',[])]
+    material_order=_allocate_layers(statics+fields+events,spec)
     quads=[];groups={i:[] for i in range(11)}
     def add(row,dynamic=False):
         row=dict(row,vertex=len(quads)*4,dynamic=dynamic);quads.append(row);groups[row['material']].append(row['vertex']);return row
-    statics=[add(dict(r,box=placed_box(r,widescreen),layout_box=r['box'])) for r in spec['static']+brand]
-    fields=[]
-    for row in spec['fields']:
+    statics=[add(r) for r in statics]
+    for row in fields:
         first=len(quads)*4
         for i in range(row['slots']):add(dict(row,name=row['name']+':'+str(i)),True)
-        fields.append(dict(row,vertex=first))
-    for row in spec.get('events',[]):add(row)
+        row['vertex']=first
+    for row in events:add(row)
     from . import nfl2k5_scorebug_ingame as scene
     require(len(quads)*4<=scene.layout.VCOUNT, 'The scene allows at most 71 quads.')
     for k,rows in groups.items():
@@ -236,15 +327,18 @@ def compile_folder(folder=None,widescreen=False):
             table+=GLYPH.pack(*map(ord,units),round(w*scale_x/420*32767),round(h*448/1080/420*32767),round(adv*scale_x/420*32767),round(rise*448/1080/420*32767),*quantized_uv(cells[glyph['cell']],spec['atlas']))
         glyph_sets[(name,cap)]=(offset,len(gset['glyphs']))
     for i,row in enumerate(fields):
-        source=SOURCES.index(row['source']);x,y,z=quantized_position(*row['anchor'],row.get('z',-5),widescreen)
+        # Logical z controls submission only. Equal GPU depth makes the retail
+        # LEQUAL state agree with painter order even when a depth buffer is bound.
+        source=SOURCES.index(row['source']);x,y,z=quantized_position(*row['anchor'],0,widescreen)
         width=round((row['box'][2]-row['box'][0])*scale_x/420*32767)
         align=('left','center','right').index(row['alignment'])
         flags=int(row.get('strip_zero',False))
-        visibility=0xa95a70 if source==6 else 0xa95a00 if source==7 else 0
+        # Down follows FC360's binding/slide gate, not the pending request.
+        visibility=0xa95a70 if source==6 else 0xa95a20 if source==7 else 0
         FIELD.pack_into(table,HEADER.size+i*FIELD.size,source,row['vertex'],row['slots'],*glyph_sets[(row['glyph_set'],row['size'])],0xff000000|int(row['colour'][1:],16),flags,visibility,x,y,z,width,align,0)
     for i,row in enumerate(statics):STATIC.pack_into(table,HEADER.size+len(fields)*FIELD.size+i*STATIC.size,row['vertex'],TINTS.index(row['tint']),row['material'],0)
     HEADER.pack_into(table,0,MAGIC,1,len(fields),TABLE_OFFSET+HEADER.size,len(statics),TABLE_OFFSET+HEADER.size+len(fields)*FIELD.size,len(table),len(quads))
-    return Compiled(spec,atlas,cells,quads,bytes(table),bool(widescreen))
+    return Compiled(spec,atlas,cells,quads,bytes(table),bool(widescreen),material_order)
 
 
 def scene_bytes(retail, compiled=None):
@@ -258,7 +352,7 @@ def scene_bytes(retail, compiled=None):
     for row in c.quads:
         if row['dynamic']:continue
         x0,y0,x1,y1=row['box'];v=row['vertex'];mat=row['material']
-        z=row.get('z',0)
+        z=0
         cell=(0,0,64,64) if row['cell']=='logo' else c.cells[row['cell']]
         uv=quantized_uv(cell,(64,64) if row['cell']=='logo' else c.spec['atlas'],row.get('flip_x',False))
         a,b,cc,d=scene_box(row['box'],c.widescreen)
@@ -267,7 +361,7 @@ def scene_bytes(retail, compiled=None):
             m.pos[v+j]=[x,y,z];m.uv_edit[v+j]=tuple(u/32767 for u in uv[j*2:j*2+2])
             struct.pack_into('<I',m.buf,scene.layout.S1+(v+j)*10,0xffffffff)
     groups={i:[] for i in range(11)}
-    for row in c.quads:groups[row['material']].append(row['vertex'])
+    for row in sorted(c.quads,key=lambda r:r['layer_rank']):groups[row['material']].append(row['vertex'])
     for k,vertices in groups.items():
         indices=[]
         for v in vertices:
@@ -279,6 +373,13 @@ def scene_bytes(retail, compiled=None):
         at,capacity=scene.layout.SUBMESH_COMMANDS[k]
         require(len(words)<=capacity,'Sprite push-buffer overflow')
         struct.pack_into('<'+str(capacity)+'I',m.buf,at,*(words+[0]*(capacity-len(words))))
+    descriptors=[bytes(m.buf[SUBMESH_TABLE+k*128:SUBMESH_TABLE+(k+1)*128]) for k in range(11)]
+    for slot,k in enumerate(c.material_order):
+        at=SUBMESH_TABLE+slot*128
+        m.buf[at:at+128]=descriptors[k]
+        # +78 is a one-based, field-relative pointer. Moving its descriptor
+        # requires rebasing it; command storage and all other fields stay put.
+        struct.pack_into('<i',m.buf,at+0x78,scene.layout.SUBMESH_COMMANDS[k][0]-(at+0x78)+1)
     for k in range(11):struct.pack_into('<I',m.buf,0x1c0+k*128+0x18,0xffffffff)
     result=bytearray(scene.serialize(m));require(result[MARKER_OFFSET:MARKER_OFFSET+8]==bytes(8),'Scene metadata header is not spare')
     struct.pack_into('<II',result,MARKER_OFFSET,MAGIC,TABLE_OFFSET)
@@ -310,9 +411,14 @@ def appendix(pack,folder=None,widescreen=False):
 
 def probe_sizes(folder=None):
     from . import nfl2k5_scorebug_resources as art
-    c=compile_folder(folder)
-    scene_size=(TABLE_OFFSET+len(c.table)+127)//128*128+32
-    appended=32*5280+2208+c.atlas.width*c.atlas.height+1184+scene_size
+    # Inspection needs dimensions and table lengths, never compiled pixels.
+    spec, _image = load_layout(folder)
+    fields = spec['fields']
+    table_size = HEADER.size + len(fields)*FIELD.size + (len(spec['static'])+len(spec.get('brand', [])))*STATIC.size
+    table_size += sum(len(spec['glyph_sets'][name]['glyphs'])*GLYPH.size
+                      for name, _cap in {(r['glyph_set'], r['size']) for r in fields})
+    scene_size=(TABLE_OFFSET+table_size+127)//128*128+32
+    appended=32*5280+2208+math.prod(spec['atlas'])+1184+scene_size
     require(appended<MAX_APPEND,'The scorebug exceeds the 0.4 MB resource limit.')
     growth=((art.HUD_SIZE+appended+2047)//2048-(art.HUD_SIZE+2047)//2048)*2048
     return 34,appended,growth
@@ -483,7 +589,9 @@ class NativePreview:
     def _display_image(self,capture,geometry,mode,source,widescreen,path):
         """The raster in display pixels: the 640x448 viewport scaled to the modelled picture over the screenshot."""
         from PIL import Image
-        import numpy as np, tempfile
+        import tempfile
+        from .runtime_dependencies import require_numpy
+        np = require_numpy("Sprite scorebug preview")
         import nfl2k5_scorebug_projection as projection
         d=DISPLAY[bool(widescreen)]
         with tempfile.TemporaryDirectory() as directory:

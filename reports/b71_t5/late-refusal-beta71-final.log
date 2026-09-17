@@ -1,0 +1,41 @@
+{
+  "outcome": "refused",
+  "error": "The project changed outside Mod Studio while it was opening: modified_ns, changed_ns.\nBefore: path /tmp/b71-t5-probe-duu35jae/many.2k5mod; size 32417; mtime_ns 1789603732533191373; SHA-256 52d1f380f95b272cf5f1eb5caa5d55efd00ca3c79c1af1a612dfd1b5ce8cdd61; file ID 66306:5379492; ctime_ns 1789603732534191381\nAfter: path /tmp/b71-t5-probe-duu35jae/many.2k5mod; size 32417; mtime_ns 1789603732543191373; SHA-256 52d1f380f95b272cf5f1eb5caa5d55efd00ca3c79c1af1a612dfd1b5ce8cdd61; file ID 66306:5379492; ctime_ns 1789603751820333703. The current workspace was kept. Finish saving or syncing the named file, then open it again; if another app is replacing it, save a separate .2k5mod copy and open that copy.",
+  "revision": "02bbadd1",
+  "seconds": 19.20956788197509,
+  "phases": {
+    "load_project_archive": {
+      "calls": 1,
+      "seconds": 0.026128875993890688
+    },
+    "_read_png": {
+      "calls": 30,
+      "seconds": 0.0313985479879193
+    },
+    "_stage_compiler_key": {
+      "calls": 10,
+      "seconds": 0.0003883490280713886
+    },
+    "_compile_group": {
+      "calls": 10,
+      "seconds": 18.80302653493709
+    },
+    "_quantize_art": {
+      "calls": 30,
+      "seconds": 17.774679682945134
+    },
+    "compress_vc_lz": {
+      "calls": 20,
+      "seconds": 0.30507906994898804
+    },
+    "compress_equipment_optimal": {
+      "calls": 10,
+      "seconds": 0.2737556259671692
+    }
+  },
+  "source_unchanged": true,
+  "replacements": 30,
+  "fixture": "synthetic TSETs, real PNGs/codecs/loader; no retail package I/O",
+  "injected_external_mtime_change": true,
+  "active_session_kept": true
+}

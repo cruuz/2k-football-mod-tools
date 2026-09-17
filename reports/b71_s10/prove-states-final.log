@@ -1,0 +1,67 @@
+sweep 43 down 1 goal False states 100
+sweep 43 down 2 goal False states 200
+sweep 43 down 3 goal False states 300
+sweep 43 down 4 goal False states 400
+sweep 43 down 1 goal True states 401
+sweep 43 down 2 goal True states 402
+sweep 43 down 3 goal True states 403
+sweep 43 down 4 goal True states 404
+contact standard 43
+contact no_at_den 43
+contact score_0 43
+contact score_28 43
+contact score_100 43
+contact clock_007 43
+contact play_12 43
+contact play_3 43
+contact down_1 43
+contact down_2 43
+contact down_3 43
+contact down_4 43
+contact overtime 43
+contact inches 43
+contact goal 43
+contact timeouts_0 43
+contact timeouts_1 43
+contact timeouts_2 43
+contact timeouts_3 43
+contact flag 43
+contact fumble 43
+contact hang_time 43
+contact ball_on 43
+contact score_slabs 43
+contact hidden_play_clock 43
+sweep 169 down 1 goal False states 504
+sweep 169 down 2 goal False states 604
+sweep 169 down 3 goal False states 704
+sweep 169 down 4 goal False states 804
+sweep 169 down 1 goal True states 805
+sweep 169 down 2 goal True states 806
+sweep 169 down 3 goal True states 807
+sweep 169 down 4 goal True states 808
+contact standard 169
+contact no_at_den 169
+contact score_0 169
+contact score_28 169
+contact score_100 169
+contact clock_007 169
+contact play_12 169
+contact play_3 169
+contact down_1 169
+contact down_2 169
+contact down_3 169
+contact down_4 169
+contact overtime 169
+contact inches 169
+contact goal 169
+contact timeouts_0 169
+contact timeouts_1 169
+contact timeouts_2 169
+contact timeouts_3 169
+contact flag 169
+contact fumble 169
+contact hang_time 169
+contact ball_on 169
+contact score_slabs 169
+contact hidden_play_clock 169
+PROVED 808 native label states; 50 contact states; FLAG both aspects; UNWITNESSED in game

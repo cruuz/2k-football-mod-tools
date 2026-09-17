@@ -1,0 +1,14 @@
+{
+  "command": [
+    "python3",
+    "tools/b71_t5_validate.py",
+    "tests-gates-final",
+    "test_provider_integrity",
+    "test_providers",
+    "test_product_catalog",
+    "test_phase1_packaging"
+  ],
+  "started": "2026-09-17T00:08:53.939785+00:00",
+  "exit_code": 0,
+  "seconds": 9.780682451993925
+}

@@ -1,0 +1,631 @@
+[
+  {
+    "command": "pwd && rg --files -g 'AGENTS.md' -g 'ASTRA_CONTEXT.md' -g 'BETA71_TRIAGE.md' -g '*runtime*.py' -g '*release*' -g '*repin*' -g '*validator*' -g '*phase1*' -g '*catalog*' -g '*provider*' -g '*CHANGELOG*' -g '*GETTING*' -g '*requirements*' -g 'pyproject.toml' -g 'pytest.ini' -g 'setup.cfg'",
+    "recorded_utc": "not recorded (initial reconnaissance)",
+    "tool_seconds": 0.000006171,
+    "exit_code": 0
+  },
+  {
+    "command": "cat ASTRA_CONTEXT.md && cat BETA71_TRIAGE.md",
+    "recorded_utc": "not recorded (initial reconnaissance)",
+    "tool_seconds": 0.000003978,
+    "exit_code": 0
+  },
+  {
+    "command": "rg --files -g AGENTS.md -g '!reports/**' -g '!external/**' -g '!vendor/**' && git status --short && git log -1 --oneline",
+    "recorded_utc": "not recorded (initial reconnaissance)",
+    "tool_seconds": 0.000002044,
+    "exit_code": 1
+  },
+  {
+    "command": "rg --files packaging && rg -n -i 'could not read build options|import numpy|from numpy' mod_editor && rg -n 'numpy|pip install' .github/workflows",
+    "recorded_utc": "not recorded (initial reconnaissance)",
+    "tool_seconds": 0.000003156,
+    "exit_code": 0
+  },
+  {
+    "command": "for p in /AGENTS.md /home/AGENTS.md /home/noah/AGENTS.md /home/noah/2k-worktrees/AGENTS.md AGENTS.md; do if [ -f \"$p\" ]; then cat \"$p\"; fi; done\ngit status --short\ngit log -1 --oneline\nls -ld .scratch .venv /tmp /home/noah/2k-worktrees/astra-b71-p1/reports/assets 2>/dev/null\ncat .git",
+    "recorded_utc": "2026-09-17T02:33:43.090Z",
+    "tool_seconds": 0.179175259,
+    "exit_code": 0
+  },
+  {
+    "command": "cat packaging/windows/build_windows_installer.py",
+    "recorded_utc": "2026-09-17T02:33:43.094Z",
+    "tool_seconds": 0.000002405,
+    "exit_code": 0
+  },
+  {
+    "command": "cat packaging/check_2k5_mod_studio_runtime.py",
+    "recorded_utc": "2026-09-17T02:33:43.094Z",
+    "tool_seconds": 0.000003907,
+    "exit_code": 0
+  },
+  {
+    "command": "cat packaging/check_apf2k8_mod_studio_runtime.py && cat packaging/README.md",
+    "recorded_utc": "2026-09-17T02:33:43.094Z",
+    "tool_seconds": 0.000002144,
+    "exit_code": 0
+  },
+  {
+    "command": "cat /home/noah/PROJECTS.md /home/noah/projects.json ASTRA_BRIEF.md\nsed -n '8170,8310p' mod_editor/gui/studio_qt.py\nrg -n 'numpy|scorebug_sprite|modern_color|texture.*convert|def .*options' mod_editor/core/mod_build.py tools/nfl2k5_scorebug_sprite* tools/*color* tools/*texture* mod_editor/gui/build_panel_qt.py",
+    "recorded_utc": "2026-09-17T02:34:00.717Z",
+    "tool_seconds": 0.000002474,
+    "exit_code": 2
+  },
+  {
+    "command": "rg -n '^(def |class |import |from )|subprocess|argparse|parse_args|runtime|python' packaging/check_2k5_mod_studio_runtime.py | head -100\nrg -n '^(def |class |import |from )|subprocess|argparse|parse_args' packaging/check_apf2k8_mod_studio_runtime.py\nrg -n '^(def |class )|runtime|numpy|requirements|pip' mod_editor/core/self_update.py\nrg --files -g '*requirements*' -g '*getting*' -g '!reports/**'\nrg -n 'numpy|import_module' tools/nfl2k5_scorebug_sprite_compiler.py",
+    "recorded_utc": "2026-09-17T02:34:00.717Z",
+    "tool_seconds": 0.000004028,
+    "exit_code": 2
+  },
+  {
+    "command": "git log -6 --oneline\n git log -6 --oneline -- packaging/windows/build_windows_installer.py\nls /home/noah/.cache/2k-football-mod-tools/winci/dl /home/noah/.cache/2k-football-mod-tools/winci 2>/dev/null\nrg --files tests/mod_editor | rg 'studio|packag|release|self_update|windows|stage|launcher|runtime'\nhead -90 packaging/stage_release.py\nhead -80 packaging/check_2k5_mod_studio_release.py",
+    "recorded_utc": "2026-09-17T02:34:00.717Z",
+    "tool_seconds": 0.000002124,
+    "exit_code": 0
+  },
+  {
+    "command": "cat ASTRA_BRIEF.md\ncat mod_editor/core/studio_inspection.py\nrg -n 'import numpy|from numpy' tools --glob '*.py'\nsed -n '678,727p' packaging/check_apf2k8_mod_studio_runtime.py\nsed -n '1700,1725p' packaging/check_2k5_mod_studio_runtime.py\nsed -n '2700,2755p' packaging/check_apf2k8_mod_studio_runtime.py\nsed -n '400,476p' mod_editor/core/self_update.py",
+    "recorded_utc": "2026-09-17T02:34:10.773Z",
+    "tool_seconds": 0.000003717,
+    "exit_code": 0
+  },
+  {
+    "command": "rg -n 'scorebug|color|convert|def inspect' mod_editor/core/mod_build.py\nhead -100 tools/scorebug_sprite/compiler.py\nrg -n 'numpy|author_default|compiler|blend|alpha' tools/scorebug_sprite/*.py mod_editor/core/nfl2k5_modern_color.py tools/nfl_texture_png_import.py\nrg -n 'numpy|requirements|Python|pip' docs/mod_editor/*getting_started.md tools/launch_*studio*",
+    "recorded_utc": "2026-09-17T02:34:24.073Z",
+    "tool_seconds": 0.000004419,
+    "exit_code": 0
+  },
+  {
+    "command": "git tag -l '*71*'\ngit show 2d22413c:packaging/windows/build_windows_installer.py | head -100\nrg --files /tmp /home/noah/.cache -g '*numpy*whl' -g 'python-embed.zip' -g '*PyQt5*whl' -g '*Setup.exe' -g '*beta-71*' -g '!node_modules/**' 2>/dev/null | head -80\ncommand -v python3 wine uv\ndf -h . /tmp\nhead -80 tests/mod_editor/test_studio_inspection.py\nhead -65 tests/mod_editor/test_beta69_studios_offscreen.py",
+    "recorded_utc": "2026-09-17T02:34:24.073Z",
+    "tool_seconds": 0.509133955,
+    "exit_code": 0
+  },
+  {
+    "command": "mkdir -p .scratch reports/b711_p1\npython3 - <<'PY'\nfrom pathlib import Path\nimport subprocess\nroot=Path.cwd(); private=root/'.scratch/private.git'\nbase=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()\ncommon=Path(subprocess.check_output(['git','rev-parse','--git-common-dir'],text=True).strip()).resolve()\nsubprocess.run(['git','init','--bare',str(private)],check=True,stdout=subprocess.DEVNULL)\n(private/'objects/info/alternates').write_text(str(common/'objects')+'\\n')\ng=['git',f'--git-dir={private}',f'--work-tree={root}']\nfor args in [('config','core.bare','false'),('config','core.worktree',str(root)),('config','user.name','Astra'),('config','user.email','astra@local'),('update-ref','refs/heads/astra/b71-p1-numpy',base),('symbolic-ref','HEAD','refs/heads/astra/b71-p1-numpy'),('read-tree',base)]: subprocess.run(g+list(args),check=True)\n(root/'.scratch/base').write_text(base+'\\n')\nprint('Private branch',base,private)\nPY",
+    "recorded_utc": "2026-09-17T02:34:45.737Z",
+    "tool_seconds": 0.000004188,
+    "exit_code": 0
+  },
+  {
+    "command": "head -90 mod_editor/core/nfl2k5_scorebug_sprite.py\nsed -n '290,315p' mod_editor/core/nfl2k5_modern_color.py\nrg -n 'numpy|np\\.|scorebug_sprite|rgba' tools/nfl_txtr_import.py mod_editor/core/nfl2k5_scorebug_ingame.py\nsed -n '578,665p' mod_editor/core/mod_build.py\nls -la /tmp/claude-1000/-home-noah-Desktop-2K5-8-Editors/7d06c350-f66f-4c4d-acf4-cdbdbedff1da/scratchpad/b71/ship\npython3 - <<'PY'\nimport sys, importlib.util\nprint(sys.version)\nfor m in ['PyQt5','PIL','numpy','capstone','unicorn']: print(m,importlib.util.find_spec(m))\nPY",
+    "recorded_utc": "2026-09-17T02:35:01.076Z",
+    "tool_seconds": 0.000002334,
+    "exit_code": 0
+  },
+  {
+    "command": "rg -n 'numpy|import_module|__import__' mod_editor/core/nfl2k5_scorebug_sprite.py mod_editor/core/nfl2k5_modern_color.py tools/texture* tools/scorebug_sprite/* --glob '*.py'\nsed -n '30,58p' mod_editor/core/mod_build.py\nhead -65 packaging/check_2k5_mod_studio_runtime.py\nhead -35 packaging/check_apf2k8_mod_studio_runtime.py\nrg -n 'strict|runtime.py|stage_release|build_windows' .github/workflows/ci.yml\nls /tmp/claude-1000/-home-noah-Desktop-2K5-8-Editors/7d06c350-f66f-4c4d-acf4-cdbdbedff1da/scratchpad/b71/ship/assets71",
+    "recorded_utc": "2026-09-17T02:35:01.076Z",
+    "tool_seconds": 0.000003656,
+    "exit_code": 0
+  },
+  {
+    "command": "git log -12 --oneline -- mod_editor/core/nfl2k5_modern_color.py mod_editor/core/nfl2k5_scorebug_sprite.py\nrg -n 'numpy|P1|runtime' ASTRA_B711*REPORT.md ASTRA_B71*REPORT.md 2>/dev/null | head -70\ncat /tmp/claude-1000/-home-noah-Desktop-2K5-8-Editors/7d06c350-f66f-4c4d-acf4-cdbdbedff1da/scratchpad/b71/ship/assets71.sh\ncommand -v 7z 7zz bsdtar\nls /tmp/claude-1000/-home-noah-Desktop-2K5-8-Editors/7d06c350-f66f-4c4d-acf4-cdbdbedff1da/scratchpad/b71/ship/stage2k5",
+    "recorded_utc": "2026-09-17T02:35:17.896Z",
+    "tool_seconds": 0.000001103,
+    "exit_code": 0
+  },
+  {
+    "command": "git show beta-71:mod_editor/core/nfl2k5_scorebug_sprite.py | head -25\ngit show beta-71:mod_editor/core/nfl2k5_modern_color.py | sed -n '290,315p'\nrg -n '__import__.*numpy|import_module.*numpy|import numpy' mod_editor tools --glob '*.py' | tail -30\nls /home/noah/.cache\nhead -40 docs/mod_editor/2k5_mod_studio_getting_started.md\nhead -35 docs/mod_editor/2k5_mod_studio_changelog.md",
+    "recorded_utc": "2026-09-17T02:35:17.896Z",
+    "tool_seconds": 0.000004068,
+    "exit_code": 0
+  },
+  {
+    "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport ast, collections, sys\nroot=Path.cwd()\nfor product,alist in [('2k5','release-allowlist.txt'),('apf','apf2k8-release-allowlist.txt')]:\n paths=[root/p for p in (root/'packaging'/alist).read_text().splitlines() if p and not p.startswith('#') and p.endswith('.py') and p.startswith(('mod_editor/','tools/'))]\n local={p.stem for p in paths}|{'mod_editor','tools','packaging'}\n imports=collections.defaultdict(list)\n for p in paths:\n  if not p.exists():continue\n  for n in ast.walk(ast.parse(p.read_text())):\n   names=[x.name for x in n.names] if isinstance(n,ast.Import) else [n.module] if isinstance(n,ast.ImportFrom) and n.level==0 and n.module else []\n   for name in names:\n    base=name.split('.')[0]\n    if base not in sys.stdlib_module_names and base not in local:imports[base].append(f'{p.relative_to(root)}:{n.lineno} ({name})')\n print(product,dict(imports))\nPY\n7z l /tmp/claude-1000/-home-noah-Desktop-2K5-8-Editors/7d06c350-f66f-4c4d-acf4-cdbdbedff1da/scratchpad/b71/ship/assets71/2K5-Mod-Studio-1.0.0rc96-Setup.exe | rg 'numpy|METADATA|python312|python.exe' | head -35\nrg --files --hidden /home/noah/.cache/2k-football-mod-tools /home/noah/.cache/2k-mod-tools /tmp -g '*embed*.zip' -g '*win_amd64.whl' -g '*win_amd64*.body' 2>/dev/null | head -35",
+    "recorded_utc": "2026-09-17T02:35:43.513Z",
+    "tool_seconds": 5.648453613,
+    "exit_code": 0
+  },
+  {
+    "command": "sed -n '95,180p' mod_editor/core/nfl2k5_scorebug_assets.py\nsed -n '230,310p' mod_editor/core/nfl2k5_scorebug_sprite.py\nsed -n '820,858p' mod_editor/core/nfl2k5_scorebug_ingame.py\nrg -n 'def runtime_image_status|def .*status' mod_editor/core/nfl2k5_scorebug_ingame.py\nrg -n 'np\\.|import numpy|rgba_to' mod_editor/core/nfl2k5_scorebug_assets.py\nrg -n 'validate_all' ASTRA_B711_U1_REPORT.md | tail -5\nls -la /home/noah/.cache/2k-football-mod-tools\nrg --files --hidden /home/noah/.cache/pip /home/noah/.cache/uv -g '*.body' -g '*.zip' -g '*.whl' | head -10",
+    "recorded_utc": "2026-09-17T02:35:59.002Z",
+    "tool_seconds": 0.000005009,
+    "exit_code": 0
+  },
+  {
+    "command": "sed -n '874,922p' mod_editor/core/nfl2k5_scorebug_ingame.py\nrg -n 'def probe_sizes|compile_folder|_sprite' mod_editor/core/nfl2k5_scorebug_resources.py\nsed -n '120,185p' mod_editor/core/nfl2k5_scorebug_resources.py\nsed -n '200,245p' mod_editor/core/nfl2k5_scorebug_assets.py\nrg -n 'np|numpy|tkinter|OpenGL|soundfile' tools/nfl_scene_probe.py\nrg -n '^def |add_argument' tools/validate_all_mod_editor_capabilities.py | tail -16\nrg -n 'requirements|install_requires' install.sh README.md pyproject.toml setup.py 2>/dev/null",
+    "recorded_utc": "2026-09-17T02:36:12.322Z",
+    "tool_seconds": 0.000004799,
+    "exit_code": 2
+  },
+  {
+    "command": "rg -n 'def probe_sizes|def pack_status|def compile_collection' mod_editor/core/nfl2k5_scorebug_sprite.py\nsed -n '428,557p' mod_editor/core/nfl2k5_scorebug_sprite.py\nsed -n '790,810p' mod_editor/core/nfl2k5_scorebug_resources.py\nrg -n -- '--strict' tools/*valid*py mod_editor/capabilities/*.py | head -20\nsed -n '490,520p' mod_editor/core/nfl2k5_audo_fixed_slots.py\nsed -n '160,181p' tools/nfl_scene_probe.py",
+    "recorded_utc": "2026-09-17T02:36:22.960Z",
+    "tool_seconds": 0.000003416,
+    "exit_code": 0
+  },
+  {
+    "command": "sed -n '386,438p' mod_editor/core/nfl2k5_scorebug_sprite.py\nsed -n '80,125p' mod_editor/core/nfl2k5_scorebug_sprite.py\nsed -n '425,445p' .github/workflows/ci.yml\nrg -n 'strict' mod_editor/capabilities tools/validate* | head -20",
+    "recorded_utc": "2026-09-17T02:36:37.086Z",
+    "tool_seconds": 0.000003747,
+    "exit_code": 0
+  },
+  {
+    "command": "sed -n '310,355p' mod_editor/core/nfl2k5_scorebug_sprite.py\nsed -n '910,927p' mod_editor/core/nfl2k5_scorebug_resources.py\nrg -n 'scorebug_runtime_resources|reading_failed' mod_editor/gui/build_panel_qt.py\nrg -n 'strict' tools/mod*py mod_editor/capabilities/*py 2>/dev/null\nls -l /media/noah/Storage/'for codex 1.0'/'ESPN NFL 2K5 (USA).xiso.iso'\nrg -n 'numpy' /tmp/claude-1000/-home-noah-Desktop-2K5-8-Editors/7d06c350-f66f-4c4d-acf4-cdbdbedff1da/scratchpad/b71/ship/installer2k5_71.log",
+    "recorded_utc": "2026-09-17T02:36:55.702Z",
+    "tool_seconds": 0.000004018,
+    "exit_code": 1
+  },
+  {
+    "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport subprocess\nfor name in ('baseline','artifacts'):\n out=open(f'reports/b711_p1/{name}.launch.log','w')\n p=subprocess.Popen(['python3','.scratch/run.py',name,'python3',f'.scratch/{name}.py'],stdout=out,stderr=subprocess.STDOUT,start_new_session=True)\n print(name,p.pid)\nPY",
+    "recorded_utc": "2026-09-17T02:37:37.261Z",
+    "tool_seconds": 0.000003987,
+    "exit_code": 0
+  },
+  {
+    "command": "cat reports/b711_p1/baseline.log reports/b711_p1/baseline.json\nrg --files --hidden /tmp /home/noah/.cache /home/noah/Downloads -g '*.zip' 2>/dev/null | rg -i 'python|embed|winci' | head -25\npython3 - <<'PY'\nfrom pathlib import Path\nimport ast\nfor name in ['release-allowlist.txt','apf2k8-release-allowlist.txt']:\n paths=[Path(p) for p in (Path('packaging')/name).read_text().splitlines() if p.endswith('.py') and p.startswith(('tools/','mod_editor/'))]\n import sys\n local={p.stem for p in paths}|{'tools','mod_editor','packaging'}\n unknown=set()\n for p in paths:\n  if not p.exists():continue\n  for n in ast.walk(ast.parse(p.read_text())):\n   imports=[a.name for a in n.names] if isinstance(n,ast.Import) else [n.module] if isinstance(n,ast.ImportFrom) and not n.level and n.module else []\n   unknown.update(x for x in imports if x.split('.')[0] not in local|sys.stdlib_module_names)\n print(name,sorted(unknown))\nPY",
+    "recorded_utc": "2026-09-17T02:38:03.177Z",
+    "tool_seconds": 6.46967784,
+    "exit_code": 0
+  },
+  {
+    "command": "setsid python3 .scratch/run.py baseline python3 .scratch/baseline.py > reports/b711_p1/baseline.launch.log 2>&1 & wait $!",
+    "recorded_utc": "2026-09-17T02:38:12.926Z",
+    "tool_seconds": 1.001771548,
+    "exit_code": 0,
+    "session_id": 23043
+  },
+  {
+    "command": "setsid python3 .scratch/run.py artifacts python3 .scratch/artifacts.py > reports/b711_p1/artifacts.launch.log 2>&1 & wait $!",
+    "recorded_utc": "2026-09-17T02:38:12.926Z",
+    "tool_seconds": 0.703255391,
+    "exit_code": 0
+  },
+  {
+    "command": "rg -n 'import bpy|from bpy|import vosk|from vosk' mod_editor tools --glob '*.py'\ncat reports/b711_p1/baseline.log\nrg -n 'strict' tools/validate_mod_editor* tools/*registry* 2>/dev/null\nrg -n 'import numpy|from numpy' tools/xbox_ima_encoder.py\nrg -n 'try:|except.*Import|def' mod_editor/core/nfl2k5_scorebug_mnf_font.py | head -22\nrg -n 'tkinter|PySide' mod_editor --glob '*.py' | head -10",
+    "recorded_utc": "2026-09-17T02:38:27.190Z",
+    "tool_seconds": 0.000003908,
+    "exit_code": 0
+  },
+  {
+    "command": "sed -n '785,835p' tools/nfl2k5_commentary_swap.py\nhead -65 tools/blender/nfl2k5_stadium.py\nrg -n 'commentary_swap|transcrib|vosk' mod_editor/core/nfl2k5_commentary* mod_editor/gui/commentary_panel_qt.py\nrg --files tools mod_editor | rg 'validat.*(cap|reg)|(cap|reg).*validat'\nhead -65 tests/mod_editor/test_self_update_linux.py",
+    "recorded_utc": "2026-09-17T02:38:37.419Z",
+    "tool_seconds": 0.000003556,
+    "exit_code": 0
+  },
+  {
+    "command": "python3 - <<'PY'\nfrom pathlib import Path\nfor name in ('nfl2k5_scorebug_assets','nfl2k5_scorebug_mnf_font','nfl2k5_scorebug_exact'):\n p=Path('mod_editor/core')/(name+'.py'); s=p.read_text()\n s=s.replace('    import numpy as np', '    from .runtime_dependencies import require_numpy\\n    np = require_numpy(\"Scorebug texture conversion\")')\n p.write_text(s)\np=Path('mod_editor/core/nfl2k5_scorebug_sprite.py');s=p.read_text()\ns=s.replace('        import numpy as np, tempfile','        import tempfile\\n        from .runtime_dependencies import require_numpy\\n        np = require_numpy(\"Sprite scorebug preview\")')\ns=s.replace(\"VERSION = 'scorebug-sprite-v1'\", \"VERSION = 'scorebug-sprite-v1'\\n# Native preview imports these through the projection tool on demand.\\nLAZY_RUNTIME_IMPORTS = ('unicorn', 'capstone')\")\ns=s.replace('    c=compile_folder(folder)\\n    scene_size=(TABLE_OFFSET+len(c.table)+127)//128*128+32\\n    appended=32*5280+2208+c.atlas.width*c.atlas.height+1184+scene_size', '''    # Inspection needs dimensions and table lengths, never compiled pixels.\n    spec, _image = load_layout(folder)\n    fields = spec['fields']\n    table_size = HEADER.size + len(fields)*FIELD.size + (len(spec['static'])+len(spec.get('brand', [])))*STATIC.size\n    table_size += sum(len(spec['glyph_sets'][name]['glyphs'])*GLYPH.size\n                      for name, _cap in {(r['glyph_set'], r['size']) for r in fields})\n    scene_size=(TABLE_OFFSET+table_size+127)//128*128+32\n    appended=32*5280+2208+math.prod(spec['atlas'])+1184+scene_size''')\np.write_text(s)\n# An already modified sprite must recompile to verify its bytes. Keep that\n# unavailable feature honest without aborting all other build-option status.\np=Path('mod_editor/core/nfl2k5_scorebug_ingame.py');s=p.read_text()\ns=s.replace('    except (OSError, ValueError, KeyError, IndexError, struct.error, SystemExit):\\n        return \"foreign\"\\n\\n\\ndef runtime_apply_in_place', '    except MissingDependency as exc:\\n        return str(exc)\\n    except (OSError, ValueError, KeyError, IndexError, struct.error, SystemExit):\\n        return \"foreign\"\\n\\n\\ndef runtime_apply_in_place')\ns=s.replace('    \"\"\"Recognize the complete owned HUD and XBE, resolving current archive offsets.\"\"\"\\n', '    \"\"\"Recognize the complete owned HUD and XBE, resolving current archive offsets.\"\"\"\\n    from .runtime_dependencies import MissingDependency\\n')\np.write_text(s)\nPY",
+    "recorded_utc": "2026-09-17T02:39:31.837Z",
+    "tool_seconds": 0.000003807,
+    "exit_code": 0
+  },
+  {
+    "command": "python3 - <<'PY'\nfrom pathlib import Path\nfor name in ('release-allowlist.txt','apf2k8-release-allowlist.txt'):\n p=Path('packaging')/name\n with p.open('a') as out:\n  out.write('\\n# Runtime dependency audit and portable Python requirements.\\nmod_editor/core/runtime_dependencies.py\\npackaging/runtime_dependencies.py\\npackaging/requirements-studio.txt\\n')\nfor product in ('2k5','apf2k8'):\n p=Path(f'packaging/check_{product}_mod_studio_runtime.py');s=p.read_text()\n needle='def main() -> int:\\n' if product=='2k5' else '        _check_clean_stage()\\n'\n insert='    from runtime_dependencies import check_runtime_dependencies\\n    check_runtime_dependencies(ROOT)\\n' if product=='2k5' else '        from runtime_dependencies import check_runtime_dependencies\\n        check_runtime_dependencies(ROOT)\\n'\n s=s.replace(needle, needle+insert);p.write_text(s)\np=Path('packaging/windows/build_windows_installer.py');s=p.read_text().replace('site-packages  PyQt5, Pillow','site-packages  PyQt5, Pillow, NumPy, Capstone, Unicorn').replace('\"\"\"Unpack a private CPython and install the two GUI dependencies into it.\"\"\"','\"\"\"Unpack private CPython and install every hash-pinned runtime dependency.\"\"\"')\ns=s.replace('    shutil.copytree(stage, app)\\n','    shutil.copytree(stage, app)\\n\\n    # Audit the actual assembled runtime before an installer can be published.\\n    sys.path.insert(0, str(repo / \"packaging\"))\\n    from runtime_dependencies import check_runtime_dependencies\\n    check_runtime_dependencies(app, work / \"runtime\")\\n')\ns=s.replace('[1/4] private CPython + PyQt5/Pillow','[1/4] private CPython + pinned Studio dependencies');p.write_text(s)\nPY",
+    "recorded_utc": "2026-09-17T02:40:57.286Z",
+    "tool_seconds": 0.000003567,
+    "exit_code": 0
+  },
+  {
+    "command": "setsid python3 .scratch/run.py runtime-rebuild python3 .scratch/cache_runtime.py > reports/b711_p1/runtime-rebuild.launch.log 2>&1 & wait $!",
+    "recorded_utc": "2026-09-17T02:41:35.227Z",
+    "tool_seconds": 0.88307101,
+    "exit_code": 1
+  },
+  {
+    "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport subprocess, shutil\nbase=Path('/tmp/astra-b711-p1-python')\nsubprocess.run(['python3','-m','venv','--system-site-packages',str(base)],check=True)\nsite=next((base/'lib').glob('python*/site-packages'))\nfor pattern in ('numpy','numpy.libs','numpy-*.dist-info','capstone','capstone-*.dist-info','unicorn','unicorn-*.dist-info'):\n for p in Path('/home/noah/.local/lib/python3.12/site-packages').glob(pattern):\n  q=site/p.name\n  if not q.exists():q.symlink_to(p,target_is_directory=p.is_dir())\nprint(base/'bin/python3')\nPY",
+    "recorded_utc": "2026-09-17T02:41:35.227Z",
+    "tool_seconds": 1.001595046,
+    "exit_code": 0,
+    "session_id": 24784
+  },
+  {
+    "command": "cat reports/b711_p1/runtime-rebuild.log\ncat reports/b711_p1/artifacts.json\nhead -18 reports/b711_p1/artifacts.log\nrg -n 'strict|add_argument' mod_editor/capabilities/validate_registry.py | tail -15\nsed -n '1,85p' tests/mod_editor/test_nfl2k5_scorebug_assets.py\nsed -n '65,130p' tests/mod_editor/test_self_update_linux.py",
+    "recorded_utc": "2026-09-17T02:41:58.639Z",
+    "tool_seconds": 0.000004248,
+    "exit_code": 0
+  },
+  {
+    "command": "rg -n 'def .*xiso|def .*image|def .*disc' tests/nfl2k5_throw_tuning_test.py tests/mod_editor/test_nfl2k5_scorebug_runtime.py tests/mod_editor/test_nfl2k5_scorebug_sprite.py | head -30\nsed -n '1,100p' tests/mod_editor/test_nfl2k5_scorebug_sprite.py\nsed -n '1175,1195p' mod_editor/core/mod_build.py\nrg -n -- '--strict' mod_editor/capabilities/validate_registry.py\nls /tmp/astra-b711-p1-python/bin/python3",
+    "recorded_utc": "2026-09-17T02:42:23.737Z",
+    "tool_seconds": 0.000003086,
+    "exit_code": 0
+  },
+  {
+    "command": "python3 - <<'PY'\nfrom pathlib import Path\np=Path('mod_editor/core/mod_build.py');s=p.read_text();needle='    if plan.scorebug_folder:\\n'\ns=s.replace(needle,'    if plan.scorebug or plan.scorebug_runtime:\\n        from .runtime_dependencies import require_numpy\\n        require_numpy(\"Scorebug build\")\\n'+needle,1);p.write_text(s)\nfor slug in ('2k5','apf2k8'):\n p=Path(f'docs/mod_editor/{slug}_mod_studio_getting_started.md');s=p.read_text();i=s.index('\\n## ')\n section='''\n## Python packages for portable installs\n\nWindows Setup includes its own Python 3.12.10 and NumPy 1.26.4 with the other\nStudio packages. Update now installs the complete new Windows runtime too.\nIf a bundled package is missing, reinstall the latest Setup.\n\nThe Linux tarball contains application files and no Python runtime. Use Python\n3.11 or 3.12 with `packaging/requirements-studio.txt`, which pins NumPy 1.26.4 to\nthe same version as CI. From the extracted application folder:\n\n```sh\npython3 -m venv .venv\n.venv/bin/python3 -m pip install -r packaging/requirements-studio.txt\n```\n\nThe launcher selects this `.venv`, or the interpreter set by `MOD_STUDIO_PYTHON`.\nInstall packages into that same interpreter. A missing NumPy package leaves the\nstudio usable; actions requiring it explain the package and install command.\nPortable updates retain the selected local runtime and all its site-packages,\nincluding NumPy. An external interpreter remains your responsibility.\n'''\n s=s[:i]+ '\\n'+section+s[i:];p.write_text(s)\n p=Path(f'docs/mod_editor/{slug}_mod_studio_changelog.md');s=p.read_text();i=s.index('\\n- ')\n bullet='\\n- Missing NumPy no longer prevents reading build options. Scorebug texture actions name the required package and install command. Windows Setup includes pinned NumPy 1.26.4; portable install instructions declare it, updates retain local packages, and release checks audit lazy third-party imports.\\n' if slug=='2k5' else '\\n- Portable install instructions now declare NumPy 1.26.4 alongside the other Studio packages. Windows Setup includes it, updates retain local packages, and release checks audit third-party imports inside callbacks as well as startup imports.\\n'\n s=s[:i]+bullet+s[i:];p.write_text(s)\np=Path('packaging/README.md');s=p.read_text();s=s.replace('The application package depends on Python 3, PyQt5, and Pillow. Sprite Preview also requires NumPy, Unicorn and Capstone;', 'Install the pinned application packages with `python3 -m pip install -r packaging/requirements-studio.txt` in the selected runtime. These include NumPy 1.26.4, PyQt5, Pillow, Unicorn and Capstone;')\ns+='''\n### Third-party dependency closure\n\nBoth runtime checks statically scan every Python file under the staged\n`mod_editor` product package, including imports inside callbacks. Literal\n`import_module` calls and `LAZY_RUNTIME_IMPORTS` tuples are included. Mark any\nthird-party import delegated to a tool in the calling product module's tuple;\nexternal applications such as Blender use their own interpreter. Optional\nacceleration imports are still required in releases.\n\nThe probe imports each dependency in the selected interpreter with `-I`, so\nuser-site packages or PYTHONPATH cannot hide an incomplete runtime. Run the\nchecks with the tarball's selected `.venv/bin/python3`. The Windows builder\nalso calls the same scan against `runtime/Lib/site-packages` after copying the\napplication, including NumPy's native extension and supporting DLLs. It cannot\nsatisfy a missing Windows package with a Linux build-host install. Run the full\nruntime checks on the target platform for binary loading and GUI validation.\n''';p.write_text(s)\nPY",
+    "recorded_utc": "2026-09-17T02:43:59.911Z",
+    "tool_seconds": 0.000003748,
+    "exit_code": 0
+  },
+  {
+    "command": "python3 - <<'PY'\nfrom pathlib import Path\np=Path('tests/mod_editor/test_self_update_linux.py');s=p.read_text();needle='    def test_failed_import_never_renames_current_or_calls_relaunch(self):\\n';addition='''    def test_update_preserves_real_numpy_and_native_libraries(self):\n        try:\n            import numpy\n        except ImportError:\n            self.skipTest(\"numpy required for the runtime preservation regression\")\n        runtime = self.root / \".venv\"\n        venv.EnvBuilder(with_pip=False).create(runtime)\n        python = runtime / \"bin/python3\"\n        site = Path(subprocess.check_output([str(python), \"-c\", \"import sysconfig; print(sysconfig.get_path('purelib'))\"], text=True).strip())\n        package = Path(numpy.__file__).parent\n        copied = []\n        for source in (package, package.with_name(\"numpy.libs\")):\n            if source.exists():\n                shutil.copytree(source, site / source.name, ignore=shutil.ignore_patterns(\"__pycache__\"))\n                copied.extend(path for path in (site / source.name).rglob(\"*\") if path.is_file())\n        pins = {path.relative_to(runtime): hashlib.sha256(path.read_bytes()).hexdigest() for path in copied}\n        self.install = U.detect_install(self.root, executable=str(python))\n        self.update(self.confirmed)\n        for relative, digest in pins.items():\n            self.assertEqual(hashlib.sha256((runtime / relative).read_bytes()).hexdigest(), digest)\n        result = subprocess.check_output([str(python), \"-I\", \"-B\", \"-c\", \"import numpy as np; print(np.__version__, np.arange(4).sum())\"], text=True)\n        self.assertEqual(result.strip(), numpy.__version__ + \" 6\")\n        self.assertTrue((self.root.with_name(self.root.name + \".previous\") / \".venv\").is_dir())\n\n'''\ns=s.replace(needle,addition+needle);p.write_text(s)\np=Path('packaging/runtime_dependencies.py');s=p.read_text().replace('import importlib.machinery\\n','');p.write_text(s)\nPY\npython3 .scratch/run.py repin-implementation python3 packaging/repin.py --apply",
+    "recorded_utc": "2026-09-17T02:44:38.961Z",
+    "tool_seconds": 1.001139841,
+    "exit_code": 0,
+    "session_id": 19365
+  },
+  {
+    "command": "setsid python3 .scratch/run.py test_numpy_optional /tmp/astra-b711-p1-python/bin/python3 tests/mod_editor/test_numpy_optional.py > reports/b711_p1/test_numpy_optional.launch.log 2>&1 & wait $!",
+    "recorded_utc": "2026-09-17T02:44:38.968Z",
+    "tool_seconds": 1.001051447,
+    "exit_code": 1,
+    "session_id": 27398
+  },
+  {
+    "command": "setsid python3 .scratch/run.py test_runtime_dependencies /tmp/astra-b711-p1-python/bin/python3 tests/mod_editor/test_runtime_dependencies.py > reports/b711_p1/test_runtime_dependencies.launch.log 2>&1 & wait $!",
+    "recorded_utc": "2026-09-17T02:44:38.968Z",
+    "tool_seconds": 0.032004239,
+    "exit_code": 0
+  },
+  {
+    "command": "setsid python3 .scratch/run.py test_self_update_linux /tmp/astra-b711-p1-python/bin/python3 tests/mod_editor/test_self_update_linux.py > reports/b711_p1/test_self_update_linux.launch.log 2>&1 & wait $!",
+    "recorded_utc": "2026-09-17T02:44:38.968Z",
+    "tool_seconds": 1.000812617,
+    "exit_code": 0,
+    "session_id": 48256
+  },
+  {
+    "command": "cat reports/b711_p1/test_numpy_optional.log\ncat reports/b711_p1/test_self_update_linux.log\ncat reports/b711_p1/repin-implementation.log | tail -8\nrg -n 'parser|strict' mod_editor/capabilities/validate_registry.py | tail -15\nrg --files tests/mod_editor | rg 'test_(mod_build|nfl2k5_scorebug_(assets|mnf_font|exact|ingame)|.*packag|.*installer|.*archive|.*release|.*launcher|app_icons)'\ngit --git-dir=.scratch/private.git --work-tree=. diff --stat",
+    "recorded_utc": "2026-09-17T02:45:01.464Z",
+    "tool_seconds": 6.304385524,
+    "exit_code": 0
+  },
+  {
+    "command": "python3 - <<'PY'\nfrom mod_editor.core.nfl2k5_scorebug_sprite import probe_sizes,compile_folder,TABLE_OFFSET\nfrom mod_editor.core.nfl2k5_scorebug_resources import HUD_SIZE\nc=compile_folder();scene_size=(TABLE_OFFSET+len(c.table)+127)//128*128+32\nappended=32*5280+2208+c.atlas.width*c.atlas.height+1184+scene_size\nprint(probe_sizes(),appended,((HUD_SIZE+appended+2047)//2048-(HUD_SIZE+2047)//2048)*2048)\nPY\ncat mod_editor/capabilities/validate.sh | head -50\nrg -n 'STRICT|strict' mod_editor/capabilities/validate_registry.py | head -10",
+    "recorded_utc": "2026-09-17T02:45:12.789Z",
+    "tool_seconds": 0.760948233,
+    "exit_code": 0
+  },
+  {
+    "command": "python3 - <<'PY'\nfrom pathlib import Path\np=Path('tests/mod_editor/test_numpy_optional.py');p.write_text(p.read_text().replace('(34, 323808, 325632)', '(34, 323808, 323584)'))\nPY",
+    "recorded_utc": "2026-09-17T02:45:38.927Z",
+    "tool_seconds": 0.000003828,
+    "exit_code": 0
+  },
+  {
+    "command": "setsid /tmp/astra-b711-p1-python/bin/python3 .scratch/suites.py > reports/b711_p1/suites.launch.log 2>&1 & wait $!",
+    "recorded_utc": "2026-09-17T02:45:40.255Z",
+    "tool_seconds": 1.000506539,
+    "exit_code": 1,
+    "session_id": 42814
+  },
+  {
+    "command": "setsid /tmp/astra-b711-p1-python/bin/python3 .scratch/release.py > reports/b711_p1/release.launch.log 2>&1 & wait $!",
+    "recorded_utc": "2026-09-17T02:46:14.222Z",
+    "tool_seconds": 1.000744422,
+    "exit_code": 1,
+    "session_id": 48367
+  },
+  {
+    "command": "setsid python3 .scratch/run.py fixed-retail-inspection /tmp/astra-b711-p1-python/bin/python3 .scratch/fixed_inspection.py > reports/b711_p1/fixed-retail-inspection.launch.log 2>&1 & wait $!",
+    "recorded_utc": "2026-09-17T02:46:15.564Z",
+    "tool_seconds": 1.001228585,
+    "exit_code": 0,
+    "session_id": 3046
+  },
+  {
+    "command": "tail -18 reports/b711_p1/release.launch.log\ncat reports/b711_p1/fixed-retail-inspection.log\nrg -n 'FAILED|ERROR|FAILURES|FAIL:' reports/b711_p1/suite-*.log | head -25\nrg -n 'requirements|runtime entries|sidecar=' reports/b711_p1/artifacts.log\nsed -n '130,190p' packaging/windows/build_windows_installer.py",
+    "recorded_utc": "2026-09-17T02:46:35.725Z",
+    "tool_seconds": 0.000004168,
+    "exit_code": 0
+  },
+  {
+    "command": "cat reports/b711_p1/suite-test_apf_studio_installer.log\nrg -n 'build_runtime|WHEELS|numpy|requirements' tests/mod_editor/test_local_windows_ci.py tests/mod_editor/test_phase1_packaging.py\nrg -n 'EXPECTED|rows|runtime' tests/mod_editor/test_apf_studio_installer.py | tail -22\nrg -n 'mod_editor/core/providers|pin' packaging/repin.py | head -25",
+    "recorded_utc": "2026-09-17T02:46:50.874Z",
+    "tool_seconds": 0.000004969,
+    "exit_code": 0
+  },
+  {
+    "command": "sed -n '292,321p' tests/mod_editor/test_apf_studio_installer.py\nsed -n '445,490p' tests/mod_editor/test_apf_studio_installer.py\nsed -n '360,392p' tests/mod_editor/test_apf_studio_installer.py\nrg -n 'sys.executable|Path.*resolve|python3' tests/mod_editor/test_apf_studio_installer.py | head -20\ncat reports/b711_p1/release.launch.log | tail -8\ncat reports/b711_p1/suite-test_numpy_optional.log",
+    "recorded_utc": "2026-09-17T02:46:58.746Z",
+    "tool_seconds": 0.000002876,
+    "exit_code": 1
+  },
+  {
+    "command": "tail -7 reports/b711_p1/runtime-apf2k8.log\ncat reports/b711_p1/suite-test_mod_build.log 2>/dev/null | tail -10\nrg -n 'FAIL:|ERROR:|FAILED' reports/b711_p1/suite-*.log | tail -20",
+    "recorded_utc": "2026-09-17T02:47:22.617Z",
+    "tool_seconds": 0.000003316,
+    "exit_code": 0
+  },
+  {
+    "command": "python3 - <<'PY'\nfrom pathlib import Path\np=Path('packaging/windows/build_windows_installer.py');s=p.read_text()\nstart=s.index('    # Windows wheels, fetched on whatever platform this build runs on.')\nend=s.index('    # The embeddable build ignores site-packages',start)\nbody=s[start:end]\ns=s[:start]+'    install_wheels(site_packages, downloads)\\n\\n'+s[end:]\npos=s.index('\\ndef build_icon(')\ns=s[:pos]+'\\ndef install_wheels(site_packages: pathlib.Path, downloads: pathlib.Path) -> None:\\n    \"\"\"Install the exact reviewed wheels, independent of the cross-build host.\"\"\"\\n'+body.replace('pinned wheels + the interpreter','pinned wheels')+'\\n'+s[pos:]\np.write_text(s)\nPY",
+    "recorded_utc": "2026-09-17T02:47:22.950Z",
+    "tool_seconds": 0.000004028,
+    "exit_code": 0
+  },
+  {
+    "command": "setsid /tmp/astra-b711-p1-python/bin/python3 .scratch/run.py windows-payload /tmp/astra-b711-p1-python/bin/python3 .scratch/windows_payload.py > reports/b711_p1/windows-payload.launch.log 2>&1 & wait $!",
+    "recorded_utc": "2026-09-17T02:48:05.793Z",
+    "tool_seconds": 1.001669693,
+    "exit_code": 0,
+    "session_id": 84026
+  },
+  {
+    "command": "setsid /tmp/astra-b711-p1-python/bin/python3 .scratch/run.py retry-apf-installer /tmp/astra-b711-p1-python/bin/python3 tests/mod_editor/test_apf_studio_installer.py > reports/b711_p1/retry-apf-installer.launch.log 2>&1 & wait $!",
+    "recorded_utc": "2026-09-17T02:48:05.793Z",
+    "tool_seconds": 1.000837608,
+    "exit_code": 1,
+    "session_id": 70524
+  },
+  {
+    "command": "rg -n '^def ' mod_editor/core/mod_build.py | head -30\ncat reports/b711_p1/retry-apf-installer.log | tail -10\ncat reports/b711_p1/windows-payload.log | head -20\nrg -n 'FAIL:|ERROR:|FAILED' reports/b711_p1/suite-*.log | tail -18\ntail -10 reports/b711_p1/suites.launch.log\nls -lh reports/b711_p1 | tail -3",
+    "recorded_utc": "2026-09-17T02:48:20.238Z",
+    "tool_seconds": 0.000003997,
+    "exit_code": 0
+  },
+  {
+    "command": "sed -n '1157,1176p' mod_editor/core/mod_build.py\nsed -n '968,989p' mod_editor/core/mod_build.py\nhead -35 tests/mod_editor/test_mod_build_beta62_integration.py\nhead -35 tests/mod_editor/test_mod_build_beta62_integration3.py\ncat reports/b711_p1/suite-test_mod_build_beta62_integration.log | tail -8\ncat reports/b711_p1/suite-test_mod_build_beta62_integration3.log | tail -8\nhead -40 tests/mod_editor/test_nfl2k5_scorebug_mnf.py\nls -l /tmp/astra-b711-p1-runtime/published/runtime/python.exe",
+    "recorded_utc": "2026-09-17T02:48:35.578Z",
+    "tool_seconds": 0.000004869,
+    "exit_code": 0
+  },
+  {
+    "command": "setsid /tmp/astra-b711-p1-python/bin/python3 .scratch/run.py numpy-final /tmp/astra-b711-p1-python/bin/python3 tests/mod_editor/test_numpy_optional.py > reports/b711_p1/numpy-final.launch.log 2>&1 & wait $!",
+    "recorded_utc": "2026-09-17T02:48:57.276Z",
+    "tool_seconds": 1.000939039,
+    "exit_code": 0,
+    "session_id": 20505
+  },
+  {
+    "command": "setsid /tmp/astra-b711-p1-python/bin/python3 .scratch/run.py windows-native env DISPLAY= WINEDEBUG=-all WINEPREFIX=/tmp/astra-b711-p1-wine QT_QPA_PLATFORM=offscreen timeout 55 wine /tmp/astra-b711-p1-runtime/published/runtime/python.exe -I -B -c 'import sys, numpy, capstone, unicorn; from PyQt5.QtWidgets import QApplication; from PIL import Image; app=QApplication([]); print(sys.version); print(numpy.__version__, numpy.arange(4).sum()); print(capstone.__version__, unicorn.__version__, Image.__version__)' > reports/b711_p1/windows-native.launch.log 2>&1 & wait $!",
+    "recorded_utc": "2026-09-17T02:48:57.276Z",
+    "tool_seconds": 0.06962218,
+    "exit_code": 225
+  },
+  {
+    "command": "cat reports/b711_p1/numpy-final.log\ncat reports/b711_p1/windows-native.log\ncat reports/b711_p1/retry-apf-installer.log | tail -6\ntail -6 reports/b711_p1/suites.launch.log\nrg -n 'ERROR:|FAIL:|FAILED' reports/b711_p1/suite-*.log | tail -18\ncat reports/b711_p1/windows-payload.json",
+    "recorded_utc": "2026-09-17T02:49:21.565Z",
+    "tool_seconds": 0.000004288,
+    "exit_code": 0
+  },
+  {
+    "command": "cat reports/b711_p1/retry-apf-installer.log\nsed -n '661,678p' packaging/check_apf2k8_mod_studio_runtime.py\nsed -n '35,62p' tests/mod_editor/test_apf_studio_installer.py\nrg -n 'PYTHONPATH' tests/mod_editor/test_apf_studio_installer.py\nls -la .scratch | head -15\nrg --files . -g 'core' -g 'core.*' -g '*.dmp' -g '!reports/**' | head",
+    "recorded_utc": "2026-09-17T02:49:35.590Z",
+    "tool_seconds": 0.000003246,
+    "exit_code": 0
+  },
+  {
+    "command": "python3 .scratch/run.py repin-before-source-commit python3 packaging/repin.py --apply",
+    "recorded_utc": "2026-09-17T02:50:07.440Z",
+    "tool_seconds": 1.001041602,
+    "exit_code": 0,
+    "session_id": 93640
+  },
+  {
+    "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport subprocess\nroot=Path.cwd();g=['git','--git-dir='+str(root/'.scratch/private.git'),'--work-tree='+str(root)]\npaths=['mod_editor/core/runtime_dependencies.py','mod_editor/core/mod_build.py','mod_editor/core/nfl2k5_scorebug_assets.py','mod_editor/core/nfl2k5_scorebug_exact.py','mod_editor/core/nfl2k5_scorebug_ingame.py','mod_editor/core/nfl2k5_scorebug_mnf_font.py','mod_editor/core/nfl2k5_scorebug_sprite.py','mod_editor/core/providers.py','packaging/runtime_dependencies.py','packaging/requirements-studio.txt','packaging/windows/build_windows_installer.py','packaging/check_2k5_mod_studio_runtime.py','packaging/check_apf2k8_mod_studio_runtime.py','packaging/release-allowlist.txt','packaging/apf2k8-release-allowlist.txt','packaging/README.md','docs/mod_editor/2k5_mod_studio_changelog.md','docs/mod_editor/apf2k8_mod_studio_changelog.md','docs/mod_editor/2k5_mod_studio_getting_started.md','docs/mod_editor/apf2k8_mod_studio_getting_started.md','tests/mod_editor/test_numpy_optional.py','tests/mod_editor/test_runtime_dependencies.py','tests/mod_editor/test_self_update_linux.py','tests/mod_editor/test_apf_studio_installer.py']\nsubprocess.run(g+['add','--']+paths,check=True)\nsubprocess.run(g+['commit','-m','Keep build inspection independent of NumPy and audit staged runtime dependencies','--']+paths,check=True)\n(root/'.scratch/source-paths.json').write_text(__import__('json').dumps(paths,indent=2))\nPY",
+    "recorded_utc": "2026-09-17T02:50:33.330Z",
+    "tool_seconds": 0.067096664,
+    "exit_code": 0
+  },
+  {
+    "command": "setsid /tmp/astra-b711-p1-python/bin/python3 .scratch/run.py final-apf-installer /tmp/astra-b711-p1-python/bin/python3 tests/mod_editor/test_apf_studio_installer.py > reports/b711_p1/final-apf-installer.launch.log 2>&1 & wait $!",
+    "recorded_utc": "2026-09-17T02:50:33.335Z",
+    "tool_seconds": 1.001253663,
+    "exit_code": 0,
+    "session_id": 67718
+  },
+  {
+    "command": "/tmp/astra-b711-p1-python/bin/python3 .scratch/run.py closure-final /tmp/astra-b711-p1-python/bin/python3 tests/mod_editor/test_runtime_dependencies.py",
+    "recorded_utc": "2026-09-17T02:50:33.335Z",
+    "tool_seconds": 0.012522122,
+    "exit_code": 0
+  },
+  {
+    "command": "setsid /tmp/astra-b711-p1-python/bin/python3 .scratch/release.py > reports/b711_p1/release-final.launch.log 2>&1 & wait $!",
+    "recorded_utc": "2026-09-17T02:50:33.335Z",
+    "tool_seconds": 1.001094293,
+    "exit_code": 0,
+    "session_id": 26585
+  },
+  {
+    "command": "tail -16 reports/b711_p1/suites.launch.log\nrg -n 'FAIL:|ERROR:|FAILED' reports/b711_p1/suite-*.log | tail -25\ncat reports/b711_p1/strict-registry.log 2>/dev/null | tail -3\ncat reports/b711_p1/final-apf-installer.log | tail -5\ncat reports/b711_p1/release-final.launch.log | tail -6\ncat reports/b711_p1/repin-before-source-commit.json\nps -eo pid,ppid,etime,args | rg 'astra-b711-p1|test_nfl2k5_scorebug|suites.py' | head -18",
+    "recorded_utc": "2026-09-17T02:50:57.942Z",
+    "tool_seconds": 0.000005521,
+    "exit_code": 0
+  },
+  {
+    "command": "cat reports/b711_p1/suite-test_provider_integrity.log\nrg -n 'nfl2k5_scorebug_assets.py|nfl2k5_scorebug_sprite.py|_EXTERNAL.*PIN|EXPECTED.*SHA|PINNED' mod_editor/core/providers.py | head -30\nsed -n '70,132p' tests/mod_editor/test_provider_integrity.py\ncat reports/b711_p1/release-final.launch.log | tail -4",
+    "recorded_utc": "2026-09-17T02:51:09.268Z",
+    "tool_seconds": 0.000003767,
+    "exit_code": 0
+  },
+  {
+    "command": "sed -n '668,709p' mod_editor/core/providers.py\nsed -n '250,293p' tests/mod_editor/test_provider_integrity.py\nrg -n '296|297' mod_editor/core/providers.py tests/mod_editor/test_providers.py tests/mod_editor/test_phase1_packaging.py packaging/check_2k5_mod_studio_runtime.py\ncat reports/b711_p1/suite-test_nfl2k5_scorebug_sprite.log | tail -5",
+    "recorded_utc": "2026-09-17T02:51:18.960Z",
+    "tool_seconds": 0.00000516,
+    "exit_code": 0
+  },
+  {
+    "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport hashlib\np=Path('mod_editor/core/providers.py');s=p.read_text();needle='        \"mod_editor/core/nfl2k5_scorebug_assets.py\":'\npos=s.index(needle)\ns=s[:pos]+'        \"mod_editor/core/runtime_dependencies.py\": \"'+hashlib.sha256(Path('mod_editor/core/runtime_dependencies.py').read_bytes()).hexdigest()+'\",\\n'+s[pos:];p.write_text(s)\nPY\npython3 .scratch/run.py repin-provider-closure python3 packaging/repin.py --apply",
+    "recorded_utc": "2026-09-17T02:51:35.389Z",
+    "tool_seconds": 1.001349878,
+    "exit_code": 0,
+    "session_id": 70323
+  },
+  {
+    "command": "setsid /tmp/astra-b711-p1-python/bin/python3 .scratch/run.py provider-final /tmp/astra-b711-p1-python/bin/python3 tests/mod_editor/test_provider_integrity.py > reports/b711_p1/provider-final.launch.log 2>&1 & wait $!",
+    "recorded_utc": "2026-09-17T02:51:35.393Z",
+    "tool_seconds": 1.001281821,
+    "exit_code": 1,
+    "session_id": 25193
+  },
+  {
+    "command": "setsid /tmp/astra-b711-p1-python/bin/python3 .scratch/run.py catalog-final /tmp/astra-b711-p1-python/bin/python3 tests/mod_editor/test_product_catalog.py > reports/b711_p1/catalog-final.launch.log 2>&1 & wait $!",
+    "recorded_utc": "2026-09-17T02:51:35.393Z",
+    "tool_seconds": 0.099908901,
+    "exit_code": 0
+  },
+  {
+    "command": "cat reports/b711_p1/provider-final.log | tail -14\ncat reports/b711_p1/suites.launch.log | tail -8\ncat reports/b711_p1/release-final.launch.log | tail -5\ncat reports/b711_p1/strict-registry.log 2>/dev/null | tail -5\ngit --git-dir=.scratch/private.git --work-tree=. diff --stat\nrg --files tests/mod_editor | rg '(packaging|installer|windows|icons|archive|launch)' | tail -15",
+    "recorded_utc": "2026-09-17T02:52:02.040Z",
+    "tool_seconds": 0.000003457,
+    "exit_code": 0
+  },
+  {
+    "command": "cat reports/b711_p1/provider-final.log\nrg -n '\\b296\\b' tests/mod_editor packaging mod_editor/core/providers.py\nrg -n 'test_nfl2k5_scorebug_mnf|test_nfl2k5_scorebug_exact|test_nfl2k5_scorebug_assets' reports/b711_p1/suites.launch.log\nsed -n '300,320p' tests/mod_editor/test_provider_integrity.py\nsed -n '1,65p' tests/mod_editor/test_caller_windows_pins.py",
+    "recorded_utc": "2026-09-17T02:52:10.079Z",
+    "tool_seconds": 0.000003416,
+    "exit_code": 0
+  },
+  {
+    "command": "rg --files tests | rg '(windows_installer|build_archive|launcher|packaging|install.*test|icons.*test|test.*icons)'\npython3 - <<'PY'\nfrom pathlib import Path\np=Path('tests/mod_editor/test_provider_integrity.py');s=p.read_text().replace('[296, 10, 8, 9, 8, 9]  #', '[297, 10, 8, 9, 8, 9]  # P1: + lazy runtime dependency helper;');p.write_text(s)\nPY",
+    "recorded_utc": "2026-09-17T02:52:44.402Z",
+    "tool_seconds": 0.000003616,
+    "exit_code": 0
+  },
+  {
+    "command": "setsid /tmp/astra-b711-p1-python/bin/python3 .scratch/run.py provider-final-verified /tmp/astra-b711-p1-python/bin/python3 tests/mod_editor/test_provider_integrity.py > reports/b711_p1/provider-final-verified.launch.log 2>&1 & wait $!",
+    "recorded_utc": "2026-09-17T02:52:44.407Z",
+    "tool_seconds": 1.001061421,
+    "exit_code": 0,
+    "session_id": 91183
+  },
+  {
+    "command": "setsid /tmp/astra-b711-p1-python/bin/python3 .scratch/run.py phase1-final /tmp/astra-b711-p1-python/bin/python3 tests/mod_editor/test_phase1_packaging.py > reports/b711_p1/phase1-final.launch.log 2>&1 & wait $!",
+    "recorded_utc": "2026-09-17T02:52:44.407Z",
+    "tool_seconds": 1.001021746,
+    "exit_code": 0,
+    "session_id": 57195
+  },
+  {
+    "command": "setsid /tmp/astra-b711-p1-python/bin/python3 .scratch/run.py providers-final /tmp/astra-b711-p1-python/bin/python3 tests/mod_editor/test_providers.py > reports/b711_p1/providers-final.launch.log 2>&1 & wait $!",
+    "recorded_utc": "2026-09-17T02:52:44.407Z",
+    "tool_seconds": 1.000968456,
+    "exit_code": 0,
+    "session_id": 71434
+  },
+  {
+    "command": "git --git-dir=.scratch/private.git --work-tree=. diff --check\ncat reports/b711_p1/provider-final-verified.log | tail -5\ncat reports/b711_p1/phase1-final.log | tail -5\ncat reports/b711_p1/providers-final.log | tail -5\npython3 - <<'PY'\nfrom pathlib import Path\nimport json,re\nroot=Path('reports/b711_p1')\nrows=[]\nfor p in sorted(root.glob('suite-*.json')):\n d=json.loads(p.read_text());t=p.with_suffix('.log').read_text();m=re.search(r'Ran (\\d+) tests?',t)\n rows.append((p.stem,d['exit_code'],int(m.group(1)) if m else 0))\nprint('SUITES',len(rows),'TESTS',sum(x[2] for x in rows),'FAILURES',[(n,c) for n,c,_ in rows if c])\nfor n in ['numpy-final','closure-final','test_self_update_linux','final-apf-installer','provider-final-verified','phase1-final','providers-final']:\n p=root/(n+'.json');print(n,json.loads(p.read_text())['exit_code'] if p.exists() else 'RUNNING')\nPY",
+    "recorded_utc": "2026-09-17T02:53:13.391Z",
+    "tool_seconds": 0.000003717,
+    "exit_code": 0
+  },
+  {
+    "command": "setsid /tmp/astra-b711-p1-python/bin/python3 .scratch/run.py missing-release-runtime /tmp/astra-b711-p1-python/bin/python3 .scratch/missing_release.py > reports/b711_p1/missing-release-runtime.launch.log 2>&1 & wait $!",
+    "recorded_utc": "2026-09-17T02:54:02.397Z",
+    "tool_seconds": 0.057020611,
+    "exit_code": 1
+  },
+  {
+    "command": "setsid /tmp/astra-b711-p1-python/bin/python3 .scratch/release.py verified > reports/b711_p1/release-verified.launch.log 2>&1 & wait $!",
+    "recorded_utc": "2026-09-17T02:54:02.397Z",
+    "tool_seconds": 1.000140121,
+    "exit_code": 0,
+    "session_id": 99053
+  },
+  {
+    "command": "cat reports/b711_p1/missing-release-runtime.log\npython3 -I -c 'import numpy; print(numpy.__file__,numpy.__version__)'\nrg -n 'skip|skipped' reports/b711_p1/suite-*.log | head -15\nrg -n '^def |import numpy|compile_folder|table_size|MissingDependency|LAZY_RUNTIME_IMPORTS|require_numpy' mod_editor/core/runtime_dependencies.py mod_editor/core/nfl2k5_scorebug_sprite.py mod_editor/core/nfl2k5_scorebug_assets.py mod_editor/core/nfl2k5_scorebug_ingame.py packaging/runtime_dependencies.py | tail -50",
+    "recorded_utc": "2026-09-17T02:54:12.772Z",
+    "tool_seconds": 0.018666477,
+    "exit_code": 0
+  },
+  {
+    "command": "python3 - <<'PY'\nfrom pathlib import Path\np=Path('.scratch/missing_release.py');s=p.read_text().replace('import os\\n','import os\\nimport importlib.util\\n')\ns=s.replace('venv.EnvBuilder(with_pip=False,system_site_packages=True).create(base)','''venv.EnvBuilder(with_pip=False,system_site_packages=False,clear=True).create(base)\nsite=next((base/'lib').glob('python*/site-packages'))\nfor name in ('PyQt5','PIL','capstone','unicorn'):\n    source=Path(importlib.util.find_spec(name).origin).parent\n    (site/name).symlink_to(source,target_is_directory=True)''')\np.write_text(s)\nPY\ncat reports/b711_p1/release-verified.launch.log | tail -3\npython3 .scratch/run.py repin-second-commit python3 packaging/repin.py --apply",
+    "recorded_utc": "2026-09-17T02:54:29.554Z",
+    "tool_seconds": 1.001237739,
+    "exit_code": 0,
+    "session_id": 67464
+  },
+  {
+    "command": "setsid /tmp/astra-b711-p1-python/bin/python3 .scratch/run.py missing-release-verified /tmp/astra-b711-p1-python/bin/python3 .scratch/missing_release.py > reports/b711_p1/missing-release-verified.launch.log 2>&1 & wait $!",
+    "recorded_utc": "2026-09-17T02:55:24.891Z",
+    "tool_seconds": 0.121482451,
+    "exit_code": 1
+  },
+  {
+    "command": "setsid /tmp/astra-b711-p1-python/bin/python3 .scratch/run.py numpy-verified /tmp/astra-b711-p1-python/bin/python3 tests/mod_editor/test_numpy_optional.py > reports/b711_p1/numpy-verified.launch.log 2>&1 & wait $!",
+    "recorded_utc": "2026-09-17T02:55:26.271Z",
+    "tool_seconds": 1.001158226,
+    "exit_code": 0,
+    "session_id": 60377
+  },
+  {
+    "command": "cat reports/b711_p1/missing-release-verified.log\ncat reports/b711_p1/numpy-verified.log\ncat reports/b711_p1/verified-runtime-apf2k8.log | tail -1\ncat reports/b711_p1/repin-second-commit.log | head -3\nrg -n 'probe_sizes|compile_folder|alpha_bleed|needs.*numpy|require_numpy' mod_editor/core/nfl2k5_scorebug_sprite.py mod_editor/core/mod_build.py mod_editor/core/runtime_dependencies.py",
+    "recorded_utc": "2026-09-17T02:55:33.730Z",
+    "tool_seconds": 0.000003527,
+    "exit_code": 0
+  },
+  {
+    "command": "python3 - <<'PY'\nfrom pathlib import Path\nfor slug in ('2k5','apf2k8'):\n p=Path(f'packaging/check_{slug}_mod_studio_runtime.py');s=p.read_text()\n indent='    ' if slug=='2k5' else '        '\n s=s.replace(indent+'from runtime_dependencies import check_runtime_dependencies\\n',indent+'# Embeddable Python and -I do not add the script directory.\\n'+indent+'sys.path.insert(0, str(ROOT / \"packaging\"))\\n'+indent+'from runtime_dependencies import check_runtime_dependencies\\n')\n p.write_text(s)\nPY",
+    "recorded_utc": "2026-09-17T02:55:54.120Z",
+    "tool_seconds": 0.000003166,
+    "exit_code": 0
+  },
+  {
+    "command": "setsid /tmp/astra-b711-p1-python/bin/python3 .scratch/release.py isolated-fix > reports/b711_p1/release-isolated-fix.launch.log 2>&1 & wait $!",
+    "recorded_utc": "2026-09-17T02:55:55.297Z",
+    "tool_seconds": 1.001499521,
+    "exit_code": 0,
+    "session_id": 91940
+  },
+  {
+    "command": "cat reports/b711_p1/numpy-verified.log\ncat reports/b711_p1/release-isolated-fix.launch.log | tail -3\ngit show beta-71:mod_editor/gui/studio_qt.py | rg -n 'Could not read build options|mod_build.inspect|def inspect_source'\nnl -ba mod_editor/core/studio_inspection.py | tail -14\nnl -ba packaging/windows/build_windows_installer.py | sed -n '121,156p'\nrg -n 'check_runtime_dependencies|def install_wheels|copytree.stage|File /r' packaging/windows/build_windows_installer.py packaging/check_*runtime.py\nrg -n 'shutil.copytree|def _stage_python|def apply_windows_installer|def windows_install_command' mod_editor/core/self_update.py\nrg -n 'Python 3|PyQt5|Pillow|python3 -m' tools/launch_2k5_mod_studio.sh tools/launch_apf2k8_mod_studio.sh | tail -10",
+    "recorded_utc": "2026-09-17T02:56:36.395Z",
+    "tool_seconds": 0.000003907,
+    "exit_code": 0
+  },
+  {
+    "command": "setsid /tmp/astra-b711-p1-python/bin/python3 .scratch/run.py missing-release-proved /tmp/astra-b711-p1-python/bin/python3 .scratch/missing_release.py > reports/b711_p1/missing-release-proved.launch.log 2>&1 & wait $!",
+    "recorded_utc": "2026-09-17T02:56:49.232Z",
+    "tool_seconds": 1.001462422,
+    "exit_code": 0,
+    "session_id": 37570
+  },
+  {
+    "command": "setsid /tmp/astra-b711-p1-python/bin/python3 .scratch/run.py isolated-apf-runtime env PYTHONPATH= /tmp/astra-b711-p1-python/bin/python3 -I -B /tmp/astra-b711-p1-stages/apf2k8/packaging/check_apf2k8_mod_studio_runtime.py > reports/b711_p1/isolated-apf-runtime.launch.log 2>&1 & wait $!",
+    "recorded_utc": "2026-09-17T02:56:50.415Z",
+    "tool_seconds": 1.001256625,
+    "exit_code": 0,
+    "session_id": 58508
+  },
+  {
+    "command": "git --git-dir=.scratch/private.git --work-tree=. diff --check\ncat reports/b711_p1/missing-release-proved.log | tail -4\ncat reports/b711_p1/isolated-apf-runtime.log | tail -1\nrg -n '^class|def test_' tests/mod_editor/test_numpy_optional.py tests/mod_editor/test_runtime_dependencies.py | tail -16\ncat reports/b711_p1/isolated-fix-release-after-2k5.log | tail -1\ncat reports/b711_p1/isolated-fix-release-after-apf2k8.log | tail -1",
+    "recorded_utc": "2026-09-17T02:57:13.680Z",
+    "tool_seconds": 0.000005039,
+    "exit_code": 0
+  },
+  {
+    "command": "sed -n '105,118p' docs/mod_editor/apf2k8_mod_studio_getting_started.md\nrg -n 'pip|Pillow|PyQt5|dependencies' install.sh packaging/apf2k8_mod_studio_installer.py | head -20\nrg -n 'sys.path.insert|WHEELS =|numpy==' packaging/windows/build_windows_installer.py\ncat reports/b711_p1/suite-test_nfl2k5_scorebug_fonts.log\ncat reports/b711_p1/suite-test_nfl2k5_scorebug_assets.log",
+    "recorded_utc": "2026-09-17T03:02:54.813Z",
+    "tool_seconds": 0.000004439,
+    "exit_code": 0
+  },
+  {
+    "command": "rg -n 'Python 3, PyQt5, and Pillow' packaging tests/mod_editor/test_apf_studio_installer.py\npython3 - <<'PY'\nfrom pathlib import Path\np=Path('docs/mod_editor/apf2k8_mod_studio_getting_started.md');s=p.read_text().replace('- Python 3, PyQt5, and Pillow. The launcher reports each missing dependency in\\n  plain language before trying to open the application.', '- Python 3.11 or 3.12 and the packages in `packaging/requirements-studio.txt`,\\n  including NumPy 1.26.4. The launcher checks PyQt5 and Pillow before opening;\\n  optional acceleration remains usable through its fallback when NumPy is absent.');p.write_text(s)\nPY",
+    "recorded_utc": "2026-09-17T03:03:07.785Z",
+    "tool_seconds": 0.000003718,
+    "exit_code": 0
+  },
+  {
+    "command": "setsid python3 .scratch/run.py repin-before-closure-commit python3 packaging/repin.py --apply > reports/b711_p1/repin-before-closure-commit.launch.log 2>&1 & wait $!",
+    "recorded_utc": "2026-09-17T03:05:35.685Z",
+    "tool_seconds": 1.000945795,
+    "exit_code": 0,
+    "session_id": 65912
+  },
+  {
+    "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport shutil\nsource=Path('docs/mod_editor/apf2k8_mod_studio_getting_started.md')\nshutil.copyfile(source,Path('/tmp/astra-b711-p1-stages/apf2k8')/source)\nPY\n/tmp/astra-b711-p1-python/bin/python3 .scratch/run.py final-doc-apf-release /tmp/astra-b711-p1-python/bin/python3 packaging/check_apf2k8_mod_studio_release.py /tmp/astra-b711-p1-stages/apf2k8\ncat reports/b711_p1/repin-before-closure-commit.log | head -3\ngit --git-dir=.scratch/private.git --work-tree=. diff --stat",
+    "recorded_utc": "2026-09-17T03:06:26.569Z",
+    "tool_seconds": 0.355389918,
+    "exit_code": 0
+  },
+  {
+    "command": "git --git-dir=.scratch/private.git --work-tree=. add -- mod_editor/core/providers.py tests/mod_editor/test_provider_integrity.py tests/mod_editor/test_numpy_optional.py packaging/check_2k5_mod_studio_runtime.py packaging/check_apf2k8_mod_studio_runtime.py docs/mod_editor/apf2k8_mod_studio_getting_started.md\ngit --git-dir=.scratch/private.git --work-tree=. commit -m 'Pin the dependency helper and support isolated runtime audits' -- mod_editor/core/providers.py tests/mod_editor/test_provider_integrity.py tests/mod_editor/test_numpy_optional.py packaging/check_2k5_mod_studio_runtime.py packaging/check_apf2k8_mod_studio_runtime.py docs/mod_editor/apf2k8_mod_studio_getting_started.md",
+    "recorded_utc": "2026-09-17T03:06:26Z",
+    "tool_seconds": 0.000004819,
+    "exit_code": 0
+  },
+  {
+    "command": "setsid python3 .scratch/run.py repin-final python3 packaging/repin.py --apply > reports/b711_p1/repin-final.launch.log 2>&1 & wait $!",
+    "recorded_utc": "2026-09-17T03:09:26.712Z",
+    "tool_seconds": 1.001008777,
+    "exit_code": 0,
+    "session_id": 14596
+  },
+  {
+    "command": "setsid /tmp/astra-b711-p1-python/bin/python3 .scratch/run.py numpy-portable-fixture /tmp/astra-b711-p1-python/bin/python3 tests/mod_editor/test_numpy_optional.py > reports/b711_p1/numpy-portable-fixture.launch.log 2>&1 & wait $!",
+    "recorded_utc": "2026-09-17T03:10:14.233Z",
+    "tool_seconds": 1.001412993,
+    "exit_code": 0,
+    "session_id": 31665
+  },
+  {
+    "command": "git --git-dir=.scratch/private.git --work-tree=. diff --check\ncat reports/b711_p1/repin-final.log\ncat reports/b711_p1/numpy-portable-fixture.log | tail -5\npython3 - <<'PY'\nfrom pathlib import Path\nimport json\nrequired=['numpy-portable-fixture','closure-final','test_self_update_linux','final-apf-installer','provider-final-verified','catalog-final','providers-final','phase1-final','strict-registry','isolated-fix-runtime-2k5','isolated-fix-runtime-apf2k8','isolated-fix-release-after-2k5','final-doc-apf-release','missing-release-proved','windows-payload','repin-final']\nfor name in required:\n value=json.loads((Path('reports/b711_p1')/(name+'.json')).read_text())\n assert value['exit_code']==0,(name,value)\nprint('FINAL_REQUIRED_CHECKS',len(required),'PASS')\nPY",
+    "recorded_utc": "2026-09-17T03:10:42.195Z",
+    "tool_seconds": 0.000003557,
+    "exit_code": 0
+  }
+]
+

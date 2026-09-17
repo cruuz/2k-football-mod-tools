@@ -1076,8 +1076,11 @@ def build_with_project(plan, service, cache, session, progress=None):
     validate_build_plan(plan, session)
     models = plan_rows(session)
     report = progress or (lambda *_: None)
+    def project_progress(event):
+        report(event.message, event.completed, event.total)
+    project_progress.cancelled = getattr(progress, 'cancelled', None)
     receipt = build(plan, progress, _project_builder=lambda output: service.build(
-        cache, session, output, lambda event: report(event.message, event.completed, event.total)))
+        cache, session, output, project_progress))
     if models:
         receipt["project_models"] = models
     return receipt
@@ -1232,6 +1235,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if not isinstance(plan.scorebug_folder, str):
         raise ValueError("The scorebar artwork folder must be text")
     plan = replace(plan, scorebug_folder=plan.scorebug_folder.strip())
+    if plan.scorebug or plan.scorebug_runtime:
+        from .runtime_dependencies import require_numpy
+        require_numpy("Scorebug build")
     if plan.scorebug_folder:
         if not plan.scorebug:
             raise ValueError("A scorebar artwork folder needs the ESPN scorebar option")

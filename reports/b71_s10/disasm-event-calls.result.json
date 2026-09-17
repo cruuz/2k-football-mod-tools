@@ -1,0 +1,14 @@
+{
+  "name": "disasm-event-calls",
+  "argv": [
+    "python3",
+    "reports/b71_s9/disassemble.py",
+    "9f410:9f4d0",
+    "a0980:a0a10",
+    "fc700:fc760"
+  ],
+  "start_utc": "2026-09-17T00:07:54.893855+00:00",
+  "end_utc": "2026-09-17T00:07:55.124778+00:00",
+  "seconds": 0.231,
+  "exit_code": 0
+}

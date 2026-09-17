@@ -1,0 +1,18 @@
+...F.
+======================================================================
+FAIL: test_read_options_in_real_child_without_numpy (__main__.MissingNumpyTests.test_read_options_in_real_child_without_numpy)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_numpy_optional.py", line 48, in test_read_options_in_real_child_without_numpy
+    self.child('''
+  File "/home/noah/2k-worktrees/astra-b71-p1/tests/mod_editor/test_numpy_optional.py", line 39, in child
+    self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+AssertionError: 1 != 0 : Traceback (most recent call last):
+  File "<string>", line 8, in <module>
+AssertionError
+
+
+----------------------------------------------------------------------
+Ran 5 tests in 12.889s
+
+FAILED (failures=1)

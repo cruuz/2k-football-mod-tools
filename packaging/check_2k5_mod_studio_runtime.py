@@ -99,23 +99,23 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "dd3529836c4ebdc5ddf344de19edca38191f918ca341248953cb289b56c5e42e",
     "mod_editor/gui/studio_qt.py":
-        "7ce27b130eb1bf4e3f459fccab1de4017e9e1d45803cc06cc217fcee06ebc1a1",
+        "2a414e40ec1b7a365c74b5edfad9ba0d49b3d3fb04c02dc0b1b7a33cfe5913b1",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
         "68b6887e0778391916a6465a722b062d1c09afe3a376c318026e9db8bd7ed23a",
     "mod_editor/studio/facade.py":
-        "5be36e941e043aff1a4add1c7b556ab854e9620175d80e29051c3e8e20916c50",
+        "db65f7ef97c2504d5a78364834da566f2c2764a4bfed28788f02a018663e90c2",
     "mod_editor/studio/project_archive.py":
-        "3556062a7cf178ef416706543e71270783d04439494420810fb7a10ca7f01479",
+        "389dec1f29974168d4b0c7cdf9c68bd451b0a13822c9631dd5a1fc203b8e1eab",
     "mod_editor/studio/session.py":
-        "95d654407e3bf191d86c7817e9d380ce65e025439a83df52a00dea97cc1a413a",
+        "b352c450ff04647f1b507679dd9b9e85fdc4758686e8bde505a5e26cb48ed75e",
 }
 
 B69_GAME_RUNTIME_PINS = {
     "mod_editor/core/nfl2k5_weather.py": "6540d7ffc8d441898f5a89988752efd6aa0238c87b4a0941c1962b7b3feba380",
     "mod_editor/core/nfl2k5_weather_haze.py": "3d045e099f1585658b899ab6e7d3560e92edb24529ca8d6f224e901dc7712ff9",
-    "mod_editor/gui/build_panel_qt.py": "ae5e28fe4f55e3df5b62038183c32608ea70e232eb2c3f9a5f885e840d00e0c4",
+    "mod_editor/gui/build_panel_qt.py": "f69eadf82fbb925c3f3f600a57296224b75c1f51c952ffec8e760cd35d9e78c0",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "6377a6089d0c01233b810e0ec82f962dfbc40cdea6d80cb8dbf092b2f83b8839",
     "mod_editor/gui/my_career_panel_qt.py": "8a27ccdc2a649d122d6c21f9a646e47539b55c00653afc789e9b018fb581c823",
     "mod_editor/gui/gameplay_project_ui.py": "d91d604b99606c9fe701163b1f559b12df66cc8d1c8fce427f6b9695c1a2d08c",
@@ -1701,6 +1701,10 @@ def _exercise_texture_master(texture_master: object) -> None:
 
 
 def main() -> int:
+    # Embeddable Python and -I do not add the script directory.
+    sys.path.insert(0, str(ROOT / "packaging"))
+    from runtime_dependencies import check_runtime_dependencies
+    check_runtime_dependencies(ROOT)
     require(REPORTS.is_dir() and not REPORTS.is_symlink(),
             "reviewed target metadata directory is missing")
     actual_reports = {

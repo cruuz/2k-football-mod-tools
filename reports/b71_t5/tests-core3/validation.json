@@ -1,0 +1,56 @@
+[
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b71_t5_project_open.py"
+    ],
+    "started": "2026-09-16T23:59:11.092002+00:00",
+    "exit_code": 0,
+    "seconds": 3.1693443880067207
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b70_t1_build_speed.py"
+    ],
+    "started": "2026-09-16T23:59:11.092395+00:00",
+    "exit_code": 1,
+    "seconds": 18.893314761982765
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b71_t4_equipment_project.py"
+    ],
+    "started": "2026-09-16T23:59:14.261707+00:00",
+    "exit_code": 0,
+    "seconds": 55.85227312101051
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_mod_build_performance.py"
+    ],
+    "started": "2026-09-16T23:59:29.986053+00:00",
+    "exit_code": 0,
+    "seconds": 7.174994233995676
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_build_panel_qt.py"
+    ],
+    "started": "2026-09-16T23:59:37.161312+00:00",
+    "exit_code": 0,
+    "seconds": 2.8181648919999134
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_equipment_texture_chain.py"
+    ],
+    "started": "2026-09-16T23:59:39.979780+00:00",
+    "exit_code": 1,
+    "seconds": 4.32010872499086
+  }
+]

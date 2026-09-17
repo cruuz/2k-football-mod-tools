@@ -1,0 +1,60 @@
+
+ROUTINE 0xfc100 0xfc190
+000fc100  sub       esp, 8
+000fc103  push      esi
+000fc104  mov       esi, ecx
+000fc106  call      0xfbab0
+000fc10b  cmp       eax, 0x258
+000fc110  jge       0xfc138
+000fc112  cdq
+000fc113  mov       ecx, 0x3c
+000fc118  idiv      ecx
+000fc11a  mov       ecx, esi
+000fc11c  mov       dword ptr [esp + 8], edx
+000fc120  lea       edx, [esp + 4]
+000fc124  push      edx
+000fc125  mov       edx, 0xe6c4f0
+000fc12a  mov       dword ptr [esp + 8], eax
+000fc12e  call      0x4a400
+000fc133  pop       esi
+000fc134  add       esp, 8
+000fc137  ret
+000fc138  mov       word ptr [esi], 0
+000fc13d  pop       esi
+000fc13e  add       esp, 8
+000fc141  ret
+000fc142  nop
+000fc143  nop
+000fc144  nop
+000fc145  nop
+000fc146  nop
+000fc147  nop
+000fc148  nop
+000fc149  nop
+000fc14a  nop
+000fc14b  nop
+000fc14c  nop
+000fc14d  nop
+000fc14e  nop
+000fc14f  nop
+000fc150  sub       esp, 8
+000fc153  push      esi
+000fc154  mov       esi, ecx
+000fc156  call      0xfbab0
+000fc15b  cmp       eax, 0x258
+000fc160  jl        0xfc188
+000fc162  cdq
+000fc163  mov       ecx, 0x3c
+000fc168  idiv      ecx
+000fc16a  mov       ecx, esi
+000fc16c  mov       dword ptr [esp + 8], edx
+000fc170  lea       edx, [esp + 4]
+000fc174  push      edx
+000fc175  mov       edx, 0xe6c4f0
+000fc17a  mov       dword ptr [esp + 8], eax
+000fc17e  call      0x4a400
+000fc183  pop       esi
+000fc184  add       esp, 8
+000fc187  ret
+000fc188  mov       word ptr [esi], 0
+000fc18d  pop       esi

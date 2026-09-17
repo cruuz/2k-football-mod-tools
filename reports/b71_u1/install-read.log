@@ -1,0 +1,320 @@
+#!/usr/bin/env bash
+set -u
+
+script_path=${BASH_SOURCE[0]}
+if command -v readlink >/dev/null 2>&1; then
+    resolved_script=$(readlink -f -- "$script_path" 2>/dev/null || true)
+    if [[ -n "$resolved_script" ]]; then
+        script_path=$resolved_script
+    fi
+fi
+release_root=$(CDPATH= cd -- "$(dirname -- "$script_path")" && pwd -P)
+installer="$release_root/packaging/apf2k8_mod_studio_installer.py"
+
+if ! command -v python3 >/dev/null 2>&1; then
+    printf '%s\n' \
+        'APF 2K8 Mod Studio cannot be installed because Python 3 is missing.' \
+        'On Linux Mint/Ubuntu: sudo apt install python3 python3-pyqt5 python3-pil' >&2
+    exit 1
+fi
+if [[ ! -f "$installer" || -L "$installer" ]]; then
+    printf 'APF 2K8 Mod Studio installer component is missing: %s\n' "$installer" >&2
+    exit 1
+fi
+
+# Importing the installer loads the packaged compatibility module before the
+# release audit runs.  Keep that bootstrap read-only so it cannot create a
+# __pycache__ entry that the fail-closed audit would correctly reject.
+export PYTHONDONTWRITEBYTECODE=1
+exec python3 "$installer" install --source-root "$release_root" "$@"
+"""Build a deterministic, byte-for-byte reproducible release tarball.
+
+Everything that would otherwise vary between builds is pinned: entries are
+sorted, mtimes are fixed to the release date, uid/gid/uname/gname are zeroed,
+modes are normalised, and the gzip member carries no embedded timestamp or
+filename. Two builds of the same staged tree therefore produce identical bytes,
+which is what makes a published SHA-256 meaningful rather than decorative.
+
+The published ``beta-2`` assets were built with this script; ``STATUS.md``
+records their exact sizes, hashes and the epoch used, so anyone can reproduce
+those bytes and compare rather than trust them.
+
+Usage: build_archive.py <staged-dir> <top-level-name> <output.tar.gz> <epoch>
+
+  e.g.  python3 packaging/build_archive.py stage/apf \\
+            apf2k8-mod-studio-0.1.0-alpha.39 \\
+            apf2k8-mod-studio-0.1.0-alpha.39.tar.gz $(date -u -d 2026-07-25 +%s)
+"""
+
+from __future__ import annotations
+
+import gzip
+import hashlib
+import io
+import pathlib
+import sys
+import tarfile
+
+
+def build(staged: pathlib.Path, top: str, out: pathlib.Path, epoch: int) -> str:
+    paths = sorted(
+        (p for p in staged.rglob("*") if p.is_file() or p.is_dir()),
+        key=lambda p: p.relative_to(staged).as_posix(),
+    )
+    raw = io.BytesIO()
+    with tarfile.open(fileobj=raw, mode="w", format=tarfile.PAX_FORMAT) as tar:
+        for path in paths:
+            rel = path.relative_to(staged).as_posix()
+            info = tar.gettarinfo(str(path), arcname=f"{top}/{rel}")
+            info.mtime = epoch
+            info.uid = info.gid = 0
+            info.uname = info.gname = ""
+            # Normalise the mode: 0o755 for directories and anything the source
+            # marked executable, 0o644 for every other regular file.
+            if info.isdir():
+                info.mode = 0o755
+            else:
+                info.mode = 0o755 if (info.mode & 0o111) else 0o644
+            if info.isfile():
+                with open(path, "rb") as handle:
+                    tar.addfile(info, handle)
+            else:
+                tar.addfile(info)
+    payload = raw.getvalue()
+    with open(out, "wb") as handle:
+        # mtime=0 and no filename in the gzip header, so the container adds no
+        # nondeterminism of its own.
+        with gzip.GzipFile(
+            filename="", mode="wb", fileobj=handle, compresslevel=9, mtime=0
+        ) as gz:
+            gz.write(payload)
+    digest = hashlib.sha256(out.read_bytes()).hexdigest()
+    sidecar = out.with_name(out.name + ".sha256")
+    sidecar.write_text(f"{digest}  {out.name}\n", encoding="utf-8", newline="\n")
+    print(f"{out.name}  {out.stat().st_size} bytes  sha256={digest}")
+    return digest
+
+
+if __name__ == "__main__":
+    build(
+        pathlib.Path(sys.argv[1]),
+        sys.argv[2],
+        pathlib.Path(sys.argv[3]),
+        int(sys.argv[4]),
+    )
+# 2K5 Mod Studio Linux packaging
+
+These files provide the v1 zero-terminal launch surface. The desktop
+entry invokes `2k5-mod-studio`, which is the installed name of
+`tools/launch_2k5_mod_studio.sh`. The launcher finds a portable application
+root through its own real path, checks Python/PyQt5/Pillow without opening a
+terminal, starts `python3 -m mod_editor --studio`, and shows a desktop error
+dialog if startup fails. Its diagnostic log is stored under the user's XDG
+state directory.
+
+Installers should place these files as follows:
+
+| Source | Installed destination |
+| --- | --- |
+| `tools/launch_2k5_mod_studio.sh` | `/usr/bin/2k5-mod-studio` |
+| `packaging/2k5-mod-studio.desktop` | `/usr/share/applications/2k5-mod-studio.desktop` |
+| `packaging/2k5-mod-studio.svg` | `/usr/share/icons/hicolor/scalable/apps/2k5-mod-studio.svg` |
+
+The application package depends on Python 3, PyQt5, and Pillow. Sprite Preview also requires NumPy, Unicorn and Capstone; see `docs/mod_editor/sprite_scorebug.md`. On Debian/Linux
+Mint those package names are normally `python3`, `python3-pyqt5`, and
+`python3-pil`. A portable development build can instead symlink the launcher
+into a directory on `PATH`; the launcher resolves that symlink back to the
+application root.
+
+## Local Windows CI
+
+On Linux with Wine, run the Windows test-file matrix using the same SHA-256
+pinned CPython 3.12.10, PyQt5 and Pillow as the installer:
+
+```bash
+python3 packaging/windows/local_windows_ci.py --os-check
+python3 packaging/windows/local_windows_ci.py
+python3 packaging/windows/local_windows_ci.py --only test_modpack.py
+python3 packaging/windows/local_windows_ci.py --only 'test_apf_*' --only test_modpack.py -j 2
+python3 packaging/windows/local_windows_ci.py --changed
+python3 packaging/windows/local_windows_ci.py --hydrate-from ~/2k-football-mod-tools -j 2
+python3 packaging/windows/local_windows_ci.py --hydrate-release -j 2
+```
+
+The first run calls the installer's unchanged `build_runtime`, downloading its
+pinned interpreter and four wheels, then creates a dedicated headless Wine
+prefix. The default cache is `~/.cache/2k-football-mod-tools/winci/`; use
+`--work /tmp/winci` to move it. Building from already downloaded inputs measured
+1.557 seconds here; download and first-prefix costs remain unmeasured. Cached
+runs reuse the runtime and prefix. Host Python needs pip; curl, wine, wineboot
+and winepath must be on PATH. An offline build can use cached files in `WORK/dl`
+with `PIP_NO_INDEX=1 PIP_FIND_LINKS=/absolute/path/to/WORK/dl`.
+
+`--repo DIR` tests another checkout. `--changed` uses the local merge-base with
+`origin/main`, including committed, staged, unstaged and untracked changes;
+it selects changed tests and tests whose source mentions a changed Python
+module's filename stem. It never fetches. Combine it with `--only` to intersect
+the selections. Unmatched `--only` patterns are errors. This is a text-based
+selection heuristic, so run the full matrix before relying on coverage.
+
+Lean checkouts need the gitignored catalog inputs. `--hydrate-from DIR` copies
+regular files from `reports/`, `mod_editor/assets/`, `tools/vendor/` and
+`docs/research/` in a separate sibling checkout. It fills only absent paths,
+preserving existing files, tracked deletions and symlinks; source symlinks are
+not followed. Every copied path and each tree's copied count are printed,
+along with omission counts for existing/tracked files, links, obstructions
+and VCS metadata. Missing source trees are reported. The beta-53 worktree's
+evidence directories are symlinks; select the real source checkout instead.
+
+Alternatively, `--hydrate-release` uses `gh release download` for CI's exact
+two beta-50 archives from `cruuz/2k-football-mod-tools`, verifies both SHA-256
+pins before copying, and fills absent archive paths with the same top-level
+directory stripping as CI. It also protects tracked deletions and refuses
+unsafe paths/nonregular archive members. Downloads are temporary; `gh` must
+already be authenticated. The two hydration options are mutually exclusive.
+For a snapshot without `.git`, existing paths are protected but there is no
+index of tracked deletions. Neither option changes the source checkout.
+
+The runner evaluates CI's exact `reports/assets/nfl2k5_all_txtr_inventory_v2.json`
+file sentinel once, after hydration, on `--repo`. `WORK/logs/checkout.log`
+records that decision and whether the inventory was already present. Release
+hydration preserves existing inputs: it cannot make a previously hydrated
+checkout lean. Use a fresh snapshot for CI-equivalent inputs and selection;
+the exact command sequence is in [Follow-up 2](../ASTRA_WIN_LOCAL_CI_REPORT.md#follow-up-2).
+
+Each file has a 420-second timeout (`--timeout SECS` overrides it), a full log
+at `WORK/logs/test_name.py.log`, and the same PASS/FAIL and SUMMARY accounting
+as CI. All selected files run even after failures; `--keep-going` explicitly
+requests this default. File skips follow CI's exact lean-checkout evidence
+rule and the observed Wine gaps documented in the report. Wine skips happen
+after execution: every failure must match its reviewed filename, test case,
+statement and exception signature. Logs with additional failures, missing
+catalogs or timeouts remain failed. Skips print `SKIP name (Wine gap: reason)`
+and count as skipped files, with their original logs retained. Setup failures
+exit 2 without a success summary; test failures exit 1.
+Timeouts print `TIMED OUT`, target the recorded Windows PID and descendants
+with `taskkill /T /F`, and kill the Unix launcher's process group. The runner
+flushes partial output chunks immediately and applies the same deadline when
+a descendant retains stdout after the launcher exits. The runner
+never kills a shared Wine server. A prefix must be empty or owned by this
+runner; `--prefix DIR` chooses a separate one. Cache/prefix locks prevent
+overlapping invocations from corrupting state or logs.
+
+The default is `-j 1`. The beta-60 lean matrix completed at `-j 2` in
+**20.3 minutes for 301 files**: 216 passed, 73 failed and 12 skipped (3,376
+tests), versus GitHub's approximately 20–30 minutes per job. No failure log
+shows cross-file prefix contention, so no speculative serialization was added.
+The report classifies all 73 failures and records the limits of this comparison.
+Qt windows
+run offscreen, without DISPLAY or desktop/audio integration. `--os-check`
+checks the actual Qt platform, prints Windows interpreter facts and the
+pre-normalization CRT environment values, and proves normal versus isolated
+child imports. The runner uses a private runtime copy for Python path setup;
+the cached installer runtime and installer build output are unchanged.
+The runner supplies `TEMP`, `TMP` and `TMPDIR` as `LOCALAPPDATA/Temp/winci`.
+Wine resets `TEMP`/`TMP` from its registry; CPython honors the inherited
+`TMPDIR`, placing test caches under the expected private profile root.
+
+The later hydrated matrix measured 246 passed, 14 failed and 41 skipped in
+28.0 minutes. Replaying its logs with the updated signatures and CI's lean
+selection yields 242 passed, 3 failed and 56 skipped. Audio cleanup, an
+unreported core failure before CopyFile2, and scorebug byte differences need
+the test-side follow-up documented in the report. Conditional on resolving
+those and unchanged other outcomes, the clean projection is 243 passed,
+0 failed and 58 skipped for 301 files; this branch adds one runner test file.
+These are replay/forecast numbers, not a new Wine acceptance run.
+
+Wine can expose Windows CPython branches, binary I/O and Windows handle
+sharing behavior. It does not certify native Windows filesystem, GUI, shell,
+installer or driver behavior, nor the CI Python 3.11 matrix. The hosted job
+also installs current dependencies, whereas this runner intentionally uses the
+installer pins, whose embeddable runtime lacks Tkinter. Claude's external
+acceptance run confirmed Windows imports and Qt offscreen, reproduced the
+beta-60 WinError 5 on RED, and passed GREEN. This follow-up was validated with
+pure tests and the supplied logs because Wine cannot run in its sandbox. See
+[`ASTRA_WIN_LOCAL_CI_REPORT.md`](../ASTRA_WIN_LOCAL_CI_REPORT.md) for exact
+acceptance results, the per-file classification and remaining validation.
+
+## Application icons
+
+`tools/make_app_icons.py` generates every icon both editors use, from geometry
+rather than from an art file, and is deterministic: re-running it rewrites the
+committed assets with the bytes they already had. Run it after changing any of
+its constants, never edit its output by hand, and use `--check` to prove the
+committed assets are current.
+
+| Output | Used by |
+| --- | --- |
+| `packaging/<slug>.svg` | the Linux hicolor theme's scalable slot |
+| `packaging/icons/<slug>.ico` | the window/taskbar icon at runtime, the NSIS installer chrome, and the Windows shortcuts |
+| `packaging/icons/<slug>-<size>.png` | reference renders; not staged into a release |
+
+16, 24 and 32 px are drawn separately rather than downscaled, and 16 px drops
+the `K` because three glyphs cannot resolve in that width. The `.ico` carries
+all of them, which is why it is what the app loads first.
+
+The `.ico` is the only image either release ships. Both release gates pin it by
+exact size and SHA-256 and re-check its image magic on every run, so regenerate
+the pins from `tools/make_app_icons.py --print-pins` whenever the icon changes.
+
+
+## Retail-free release gate
+
+Never stage a release by copying the workspace. Create a new staging directory
+from the explicit paths in `release-allowlist.txt`, then run:
+64:        """Every beta here is a pre-release, and /releases/latest skips those.
+67:        /releases returns the betas, so using the wrong endpoint means the check
+77:        with _serve([_release("beta-23")]):
+78:            status = update_check.check("beta-22")
+80:        self.assertEqual(status.latest_tag, "beta-23")
+81:        self.assertIn("beta-23", status.headline)
+84:        with _serve([_release("beta-22")]):
+85:            status = update_check.check("beta-22")
+90:        tag = update_check.BUILD_RELEASE_TAG
+100:        with _serve([_release("beta-29"), _release("beta-33")]):
+101:            status = update_check.check("beta-33")
+103:        self.assertEqual(status.latest_tag, "beta-33")
+106:    def test_the_highest_beta_wins_over_github_ordering(self) -> None:
+108:        # it first. The highest beta number is still the newest release.
+109:        with _serve([_release("beta-29"), _release("beta-30")]):
+110:            status = update_check.check("beta-29")
+112:        self.assertEqual(status.latest_tag, "beta-30")
+116:            status = update_check.check("beta-33")
+122:            _release("beta-99", draft=True),
+123:            _release("beta-23"),
+124:            _release("beta-22"),
+126:            status = update_check.check("beta-22")
+127:        self.assertEqual(status.latest_tag, "beta-23")
+130:        with _serve([_release("beta-23", prerelease=True)]):
+131:            status = update_check.check("beta-22")
+143:            status = update_check.check("beta-22")
+152:            status = update_check.check("beta-22")
+157:            status = update_check.check("beta-22")
+167:            status = update_check.check("beta-22")
+172:            status = update_check.check("beta-22")
+179:            status = update_check.check("beta-22", enabled=False)
+185:        task = update_ui._CheckTask("beta-22")
+196:                current_tag="beta-22",
+208:        release = _release("beta-23")
+211:            status = update_check.check("beta-22")
+215:        with _serve([_release("beta-23")]):
+216:            status = update_check.check("beta-22")
+226:        self.assertTrue(update_check._TAG.match(update_check.BUILD_RELEASE_TAG))
+228:    def test_the_build_tag_matches_beta_37(self) -> None:
+229:        self.assertEqual(update_check.BUILD_RELEASE_TAG, "beta-71")
+231:    def test_hotfix_tags_order_after_their_beta_and_before_the_next(self) -> None:
+232:        """beta-62.1 is newer than beta-62, older than beta-63, and beta-62 is never offered to a 62.1 build."""
+233:        self.assertTrue(update_check._is_newer("beta-62.1", "beta-62"))
+234:        self.assertTrue(update_check._is_newer("beta-63", "beta-62.1"))
+235:        self.assertTrue(update_check._is_newer("beta-63.1", "beta-63"))
+236:        self.assertTrue(update_check._is_newer("beta-71", "beta-69"))
+237:        self.assertFalse(update_check._is_newer("beta-63", "beta-63.1"))
+238:        self.assertEqual(update_check._beta_number("beta-63.1"), (63, 1))
+239:        self.assertTrue(update_check._is_newer("beta-62.2", "beta-62.1"))
+240:        self.assertFalse(update_check._is_newer("beta-62", "beta-62.1"))
+241:        self.assertFalse(update_check._is_newer("beta-61", "beta-62.1"))
+242:        self.assertFalse(update_check._is_newer("beta-62.1", "beta-62.1"))
+243:        self.assertEqual(update_check._beta_number("beta-62.1"), (62, 1))
+244:        self.assertEqual(update_check._beta_number("beta-62"), (62, 0))
+beta-69
+dependencies available

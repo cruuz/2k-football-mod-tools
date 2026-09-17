@@ -1,0 +1,12 @@
+{
+  "name": "verified-test_nfl2k5_scorebug_author",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_nfl2k5_scorebug_author.py",
+    "-v"
+  ],
+  "start_utc": "2026-09-17T00:20:53.519617+00:00",
+  "end_utc": "2026-09-17T00:20:59.812526+00:00",
+  "seconds": 6.293,
+  "exit_code": 0
+}

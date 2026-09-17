@@ -1,0 +1,15 @@
+{
+  "name": "diff-check",
+  "argv": [
+    "git",
+    "--git-dir=.scratch/astra-b71-s9.git",
+    "--work-tree=.",
+    "diff",
+    "02bbadd1",
+    "--check"
+  ],
+  "start_utc": "2026-09-16T23:46:59.305770+00:00",
+  "end_utc": "2026-09-16T23:46:59.328513+00:00",
+  "seconds": 0.023,
+  "exit_code": 0
+}

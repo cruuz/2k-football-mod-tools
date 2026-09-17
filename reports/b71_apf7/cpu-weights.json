@@ -1,0 +1,32 @@
+[
+  {
+    "size": [
+      1280,
+      720
+    ],
+    "book": "O-ManBlock",
+    "formation": 9,
+    "ratings": [
+      1,
+      2,
+      7
+    ],
+    "preview_rows": 23,
+    "modifications": 0
+  },
+  {
+    "size": [
+      1920,
+      1080
+    ],
+    "book": "O-ManBlock",
+    "formation": 9,
+    "ratings": [
+      1,
+      2,
+      7
+    ],
+    "preview_rows": 23,
+    "modifications": 0
+  }
+]

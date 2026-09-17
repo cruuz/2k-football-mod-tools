@@ -1,0 +1,12 @@
+sweep 43 down 1 goal False states 100
+sweep 43 down 2 goal False states 200
+sweep 43 down 3 goal False states 300
+sweep 43 down 4 goal False states 400
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-s9/reports/b71_s9/prove_states.py", line 99, in <module>
+    (OUT/'label_sweep.json').write_text(json.dumps(dict(count=len(receipts),minimum_white_pixels=min(r['white_pixels'] for r in receipts),states=receipts,runtime_witnessed=False),indent=2)+'\n')
+                           ^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-s9/reports/b71_s9/prove_states.py", line 62, in main
+    assert ''.join(actual)==expected,(wide,down,distance,goal,actual,expected)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: (False, 1, 10, True, ['1', 'st', '&', 'GOAL'], '1st&Goal')

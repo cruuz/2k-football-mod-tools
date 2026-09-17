@@ -1,0 +1,35 @@
+[1] mod_editor/core/providers.py: mod_editor/core/nfl2k5_project_fit.py
+    8547d8ed03c491e5f851b0bd524878eb6f5a94a05da483b56629a856b45c4c51
+ -> b844ab66c1d9e26b2c61460498c59db62e390af32a8df6da52f18dac458a6a64
+[1] mod_editor/core/providers.py: mod_editor/core/equipment_reporting.py
+    cd1b6299ab18b9a51db85fe284123361de2d5f78b3cf9dc0ca1662dd916265f6
+ -> 28a32c57c6f96e4023e12fc6f6f6feccb39a70d1fa97678c0b1022a33c74f6ac
+[1] mod_editor/core/providers.py: mod_editor/core/nfl2k5_build_service.py
+    4d3a46003617b71e032c40cdf09ac09dbb59eafb99c9350ca1eab352f3f631e1
+ -> 96a2c99519e6b8c6fb444dd674cff5504075081c836644f559b71a69b17e253d
+[1] mod_editor/core/providers.py: mod_editor/core/nfl2k5_equipment_lz.py
+    bf39c57d0cbe6df98e130a82d1ed7a052697598254dc645e65024221395c8507
+ -> 338d91170bf37a05b988a832245cbc84edc53f48bde7ee70b05c9916ab8407fb
+[1] mod_editor/core/providers.py: mod_editor/core/nfl2k5_uniform_equipment_writer.py
+    5ff4cbe18b5612984cd93a9b278f282861e43f815e5d8b230daa0f228960dc99
+ -> 0def6e09a9fbe8b884cb0ce2c038e4b3f3a590a7c5e96b8c13bbb98c48ad1d90
+[1] mod_editor/core/providers.py: mod_editor/studio/project_archive.py
+    2e510dadcf67ee94d44580b144f319ad6946d495c1681549db0a96c5c14bda7c
+ -> 389dec1f29974168d4b0c7cdf9c68bd451b0a13822c9631dd5a1fc203b8e1eab
+[1] mod_editor/core/providers.py: tools/nfl2k5_visual_mod_project.py
+    2b0717fab82e6641bf10dff2da1cc78e59bf5721534d55f773acf31400da4e4f
+ -> 769328e5d415d94002b8d0921b69d456ad5604204086c0059f7e51ca049b5d62
+[1] mod_editor/core/providers.py: backend_module_sha256 -> tools/nfl2k5_visual_mod_project.py
+    2b0717fab82e6641bf10dff2da1cc78e59bf5721534d55f773acf31400da4e4f
+ -> 769328e5d415d94002b8d0921b69d456ad5604204086c0059f7e51ca049b5d62
+[1] packaging/check_2k5_mod_studio_runtime.py: mod_editor/gui/studio_qt.py
+    bce2486fa6c2cb126abb30391e406b89ed4c3eaf6bbdec164dee0503eaba21af
+ -> c1e9bcbcf0c60538f4776543e881e6a972b3585d88ffe3639a1b4b40869d5c3d
+[1] packaging/check_2k5_mod_studio_runtime.py: mod_editor/studio/project_archive.py
+    2e510dadcf67ee94d44580b144f319ad6946d495c1681549db0a96c5c14bda7c
+ -> 389dec1f29974168d4b0c7cdf9c68bd451b0a13822c9631dd5a1fc203b8e1eab
+[1] packaging/check_2k5_mod_studio_runtime.py: mod_editor/gui/build_panel_qt.py
+    185cd929e11774f881ecf07bdd19d39e317d9f805e8e60272ce40c4955791a85
+ -> f69eadf82fbb925c3f3f600a57296224b75c1f51c952ffec8e760cd35d9e78c0
+
+applied 11 pin update(s)

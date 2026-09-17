@@ -1,0 +1,456 @@
+"""Stage one product's release tree from its retail-free allowlist.
+
+This is the same copy step ``.github/workflows/ci.yml`` performs before it runs
+the release gates, factored out so a release can be built the same way by hand.
+Only allowlisted regular files are copied.  The complete manifest is preflighted
+before the destination is created, and an existing destination is never merged
+or overwritten.
+
+Usage: stage_release.py <allowlist> <destination> [repo-root]
+"""
+
+from __future__ import annotations
+
+import argparse
+import os
+from pathlib import Path, PurePosixPath
+import shutil
+import stat
+import sys
+from typing import Sequence
+
+
+class StageError(ValueError):
+    """The requested release stage is incomplete or unsafe."""
+
+
+def _lexists(path: Path) -> bool:
+    return os.path.lexists(os.fspath(path))
+
+
+def _reject_symlinked_destination_parent(dest: Path) -> None:
+    current = dest.absolute().parent
+    while True:
+        if _lexists(current) and current.is_symlink():
+            # macOS intentionally exposes these fixed system aliases. They are
+            # outside the caller-controlled suffix and resolve to equally fixed
+            # /private roots; rejecting /var made every tempfile destination on
+            # hosted macOS fail before the allowlist was even read. Any other
+            # symlink in the lexical destination chain remains a hard refusal.
+            macos_aliases = {
+                Path("/etc"): Path("/private/etc"),
+                Path("/tmp"): Path("/private/tmp"),
+                Path("/var"): Path("/private/var"),
+            }
+            expected = macos_aliases.get(current) if sys.platform == "darwin" else None
+            if expected is None or current.resolve(strict=True) != expected:
+                raise StageError(f"destination has a symlinked parent: {current}")
+        parent = current.parent
+        if parent == current:
+            return
+        current = parent
+
+
+def _regular_file_without_symlink(path: Path, root: Path, label: str) -> None:
+    try:
+        mode = path.lstat().st_mode
+    except FileNotFoundError as exc:
+        raise StageError(f"{label} is missing: {path}") from exc
+    if stat.S_ISLNK(mode):
+        raise StageError(f"{label} is a symlink: {path}")
+    if not stat.S_ISREG(mode):
+        raise StageError(f"{label} is not a regular file: {path}")
+
+    current = path.parent
+    while current != root:
+        if current.is_symlink():
+            raise StageError(f"{label} has a symlinked parent: {current}")
+        parent = current.parent
+        if parent == current:
+            raise StageError(f"{label} escapes the repository root: {path}")
+        current = parent
+
+
+def _manifest_entries(allowlist: Path) -> tuple[str, ...]:
+    try:
+        mode = allowlist.lstat().st_mode
+    except FileNotFoundError as exc:
+        raise StageError(f"allowlist is missing: {allowlist}") from exc
+    if stat.S_ISLNK(mode):
+        raise StageError(f"allowlist is a symlink: {allowlist}")
+    if not stat.S_ISREG(mode):
+        raise StageError(f"allowlist is not a regular file: {allowlist}")
+
+    entries: list[str] = []
+    seen: set[str] = set()
+    for number, raw in enumerate(
+        allowlist.read_text(encoding="utf-8").splitlines(), 1
+    ):
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        posix = PurePosixPath(line)
+        if (
+            posix.is_absolute()
+            or ".." in posix.parts
+            or "\\" in line
+            or str(posix) != line
+        ):
+            raise StageError(
+                f"allowlist line {number} is not a canonical relative path: {line}"
+            )
+        if line in seen:
+            raise StageError(f"allowlist line {number} is duplicated: {line}")
+        seen.add(line)
+        entries.append(line)
+    if not entries:
+        raise StageError("allowlist has no file entries")
+    return tuple(entries)
+
+
+def _preflight(
+    allowlist: Path, dest: Path, root: Path
+) -> tuple[Path, tuple[tuple[str, Path], ...]]:
+    if _lexists(dest):
+        raise StageError(f"destination already exists: {dest}")
+    _reject_symlinked_destination_parent(dest)
+    try:
+        root = root.resolve(strict=True)
+    except FileNotFoundError as exc:
+        raise StageError(f"repository root is missing: {root}") from exc
+    if not root.is_dir():
+        raise StageError(f"repository root is not a directory: {root}")
+
+    entries = _manifest_entries(allowlist)
+    declared: list[tuple[str, Path]] = []
+    failures: list[str] = []
+    for relative in entries:
+        source = root.joinpath(*PurePosixPath(relative).parts)
+        try:
+            _regular_file_without_symlink(source, root, "declared input")
+        except StageError as exc:
+            failures.append(str(exc))
+        else:
+            declared.append((relative, source))
+    if failures:
+        raise StageError("; ".join(failures))
+    return root, tuple(declared)
+
+
+def stage(allowlist: Path, dest: Path, root: Path) -> int:
+    _root, declared = _preflight(allowlist, dest, root)
+    dest.mkdir(parents=True, exist_ok=False)
+    for relative, source in declared:
+        output = dest.joinpath(*PurePosixPath(relative).parts)
+        output.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, output, follow_symlinks=False)
+        # copy2 preserves a worktree's umask-derived group-write bits (0775
+        # under umask 002). Reviewed native helpers intentionally reject those.
+        # Match build_archive / the installer, not the source's write mask.
+        source_mode = source.stat().st_mode
+        os.chmod(output, 0o755 if source_mode & 0o111 else 0o644)
+    print(f"staged {len(declared)} files; 0 declared inputs absent")
+    return len(declared)
+
+
+def _parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("allowlist", type=Path)
+    parser.add_argument("destination", type=Path)
+    parser.add_argument(
+        "repo_root",
+        nargs="?",
+        type=Path,
+        default=Path(__file__).resolve().parent.parent,
+    )
+    return parser
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    args = _parser().parse_args(argv)
+    try:
+        stage(args.allowlist, args.destination, args.repo_root)
+    except (StageError, OSError, UnicodeError) as exc:
+        print(f"RELEASE_STAGE_REFUSED: {exc}", file=sys.stderr)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
+# These roots contain local research, extracted retail data, runtime captures,
+# or generated outputs. A release-stage tree must never contain them, even if a
+# future allowlist accidentally names a file below one.
+FORBIDDEN_COMPONENTS = frozenset(
+    {
+        ".cache",
+        ".codex-tmp",
+        ".geometry-proof",
+        ".git",
+        "__pycache__",
+        "assets",
+        "build",
+        "cache",
+        "derived",
+        "dist",
+        "evidence",
+        "exports",
+        "extracted",
+        "fixtures",
+        "ghidra_projects",
+        "originals",
+        "projects",
+        "reports",
+        "runtime",
+    }
+)
+FORBIDDEN_PREFIXES = ("build-", "vc_53450030")
+FORBIDDEN_SUFFIXES = frozenset(
+    {
+        ".0a",
+        ".7z",
+        ".arc",
+        ".bin",
+        ".chd",
+        ".cso",
+        ".dat",
+        ".deb",
+        ".dll",
+        ".dol",
+        ".elf",
+        ".exe",
+        ".gz",
+        ".glb",
+        ".gltf",
+        ".iff",
+        ".img",
+        ".iso",
+        ".jpg",
+        ".jpeg",
+        ".ogg",
+        ".pak",
+        ".png",
+        ".qcow2",
+        ".rar",
+        ".raw",
+        ".rom",
+        ".rvz",
+        ".sav",
+        ".so",
+        ".tar",
+        ".vhd",
+        ".vhdx",
+        ".wad",
+        ".wav",
+        ".xbe",
+        ".xex",
+        ".xex2",
+        ".xiso",
+        ".xma",
+        ".zip",
+    }
+)
+ALLOWED_SUFFIXES = frozenset(
+    {
+        ".2k5book",   # data/playbooks/*.2k5book: a community playbook recipe -- UTF-8 JSON, zero retail bytes
+        ".bat",
+        ".cfg",
+        ".command",
+        ".css",
+        ".csv",        # data/nfl2k5_retail_team_history.csv, data/nfl2k5_modern_names.csv (nflverse, CC-BY-4.0; text, reviewed)
+        ".desktop",
+        ".html",
+        ".ini",
+        ".json",
+        ".md",
+        ".py",
+        ".sh",
+        ".svg",
+        ".toml",
+        ".txt",
+    }
+)
+# Double-click launchers that must carry the owner-executable bit or they will
+# silently fail to start (a macOS .command, a Unix .sh). A Windows .bat is not
+# executed through a Unix mode bit, so it is deliberately excluded here.
+EXECUTABLE_LAUNCHER_SUFFIXES = frozenset({".command", ".sh"})
+ALLOWED_SUFFIXLESS_NAMES = frozenset({"copying", "license", "notice"})
+
+# Renaming a known retail file to a text-looking extension must not bypass the
+# path and suffix checks. Hashes are metadata only; none of the payloads ship.
+KNOWN_RETAIL_SHA256 = frozenset(
+    {
+        # NFL 2K5 USA retail XISO.
+        "7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9",
+        # NFL 2K5 USA default.xbe.
+        "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+        # NFL 2K5 extracted vc_53450030/0 retail archive.
+        "34e5665bc53c393ef978b505e0f1d28d457915ba193f96c3a6113ff4b08b8b3d",
+    }
+)
+RETAIL_MAGIC = (
+    b"MICROSOFT*XBOX*MEDIA",
+    b"XBEH",
+#!/usr/bin/env bash
+set -u
+
+umask 077
+
+studio_name="APF 2K8 Mod Studio"
+
+show_studio_error() {
+    local message=$1
+    if [[ -n "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ]] && command -v zenity >/dev/null 2>&1; then
+        zenity --error --title="$studio_name" --width=540 --text="$message"
+    elif [[ -n "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ]] && command -v kdialog >/dev/null 2>&1; then
+        kdialog --title "$studio_name" --error "$message"
+    else
+        printf '%s: %s\n' "$studio_name" "$message" >&2
+    fi
+}
+
+if ! command -v python3 >/dev/null 2>&1; then
+    show_studio_error "Python 3 is not installed. On Linux Mint/Ubuntu, install it with: sudo apt install python3 python3-pyqt5 python3-pil"
+    exit 1
+fi
+
+launcher_path=${BASH_SOURCE[0]}
+if command -v readlink >/dev/null 2>&1; then
+    resolved_launcher=$(readlink -f -- "$launcher_path" 2>/dev/null || true)
+    if [[ -n "$resolved_launcher" ]]; then
+        launcher_path=$resolved_launcher
+    fi
+fi
+launcher_dir=$(CDPATH= cd -- "$(dirname -- "$launcher_path")" && pwd -P)
+portable_root=$(dirname -- "$launcher_dir")
+
+if [[ ! -f "$portable_root/mod_editor/apf_studio/__main__.py" || -L "$portable_root/mod_editor/apf_studio/__main__.py" ]]; then
+    show_studio_error "A required application file is missing. Keep the portable folder together, or run install.sh again. Missing: $portable_root/mod_editor/apf_studio/__main__.py"
+    exit 1
+fi
+cd -- "$portable_root" || {
+    show_studio_error "The application folder could not be opened: $portable_root"
+    exit 1
+}
+
+studio_state_base=${XDG_STATE_HOME:-}
+if [[ -z "$studio_state_base" ]]; then
+    if [[ -n "${HOME:-}" && "$HOME" = /* ]]; then
+        studio_state_base="$HOME/.local/state"
+    else
+        studio_state_base=""
+    fi
+fi
+if [[ -n "$studio_state_base" && "$studio_state_base" != /* ]]; then
+    show_studio_error "XDG_STATE_HOME must be an absolute path. Fix that environment setting and reopen the app."
+    exit 1
+fi
+studio_state_dir="$studio_state_base/apf2k8-mod-studio"
+if [[ -z "$studio_state_base" || -L "$studio_state_dir" ]] || ! mkdir -p -- "$studio_state_dir" 2>/dev/null; then
+    studio_state_dir=$(mktemp -d "/tmp/apf2k8-mod-studio-launch-${UID:-user}.XXXXXX" 2>/dev/null || true)
+fi
+if [[ -z "$studio_state_dir" || ! -d "$studio_state_dir" || -L "$studio_state_dir" ]]; then
+    show_studio_error "A private diagnostic folder could not be created. Check permissions for your user state directory."
+    exit 1
+fi
+studio_log="$studio_state_dir/last-launch.log"
+if [[ -L "$studio_log" ]]; then
+    studio_log="$studio_state_dir/launch-$$.log"
+fi
+if ! : >"$studio_log" 2>/dev/null; then
+    show_studio_error "The diagnostic log could not be created: $studio_log"
+    exit 1
+fi
+chmod 600 -- "$studio_log" 2>/dev/null || true
+
+export PYTHONDONTWRITEBYTECODE=1
+export PYTHONNOUSERSITE=1
+export PYTHONPATH="$portable_root"
+# Keep diagnostics, recent-file metadata, and the replacement-only recovery
+# project in the exact same private directory.  This also makes the guarded
+# mktemp fallback coherent when HOME/XDG state is unavailable.
+export APF2K8_MOD_STUDIO_STATE_DIR="$studio_state_dir"
+
+if ! python3 -c 'from PyQt5 import QtWidgets' >>"$studio_log" 2>&1; then
+    printf -v studio_message '%s\n\nDetails: %s' \
+        'PyQt5 is missing from the system Python installation. On Linux Mint/Ubuntu, run: sudo apt install python3-pyqt5' \
+        "$studio_log"
+    show_studio_error "$studio_message"
+    exit 1
+fi
+if ! python3 -c 'import PIL' >>"$studio_log" 2>&1; then
+    printf -v studio_message '%s\n\nDetails: %s' \
+        'Pillow is missing from the system Python installation. On Linux Mint/Ubuntu, run: sudo apt install python3-pil' \
+        "$studio_log"
+    show_studio_error "$studio_message"
+    exit 1
+fi
+if ! python3 -c 'import mod_editor.apf_studio.gui' >>"$studio_log" 2>&1; then
+    printf -v studio_message '%s\n\nDetails: %s' \
+        'An APF 2K8 Mod Studio program file is missing or damaged. Run install.sh again, or re-extract the portable release.' \
+        "$studio_log"
+    show_studio_error "$studio_message"
+    exit 1
+fi
+
+if [[ "${1:-}" == "--version" || "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+    exec python3 -m mod_editor.apf_studio "$@"
+fi
+
+if python3 -m mod_editor.apf_studio "$@" >>"$studio_log" 2>&1; then
+    exit 0
+else
+    studio_status=$?
+fi
+
+studio_details=$(tail -n 12 -- "$studio_log" 2>/dev/null || true)
+if [[ -z "$studio_details" ]]; then
+    studio_details="No diagnostic message was produced."
+fi
+printf -v studio_message 'APF 2K8 Mod Studio could not start.\n\n%s\n\nFull details: %s' \
+    "$studio_details" "$studio_log"
+show_studio_error "$studio_message"
+exit "$studio_status"
+packaging/repin.py:24:import argparse
+packaging/repin.py:178:    parser = argparse.ArgumentParser()
+mod_editor/capabilities/validate_registry.py:6:import argparse
+mod_editor/capabilities/validate_registry.py:319:    parser = argparse.ArgumentParser(description=__doc__)
+packaging/2k5-mod-studio.desktop
+packaging/2k5-mod-studio.svg
+packaging/README.md
+packaging/apf2k8-mod-studio.desktop
+packaging/apf2k8-mod-studio.svg
+packaging/apf2k8-release-allowlist.txt
+packaging/apf2k8_mod_studio_installer.py
+packaging/build_archive.py
+packaging/build_ps2_save_toolkit.py
+packaging/check_2k5_mod_studio_release.py
+packaging/check_2k5_mod_studio_runtime.py
+packaging/check_apf2k8_mod_studio_release.py
+packaging/check_apf2k8_mod_studio_runtime.py
+packaging/icons/2k5-mod-studio-128.png
+packaging/icons/2k5-mod-studio-16.png
+packaging/icons/2k5-mod-studio-24.png
+packaging/icons/2k5-mod-studio-256.png
+packaging/icons/2k5-mod-studio-32.png
+packaging/icons/2k5-mod-studio-48.png
+packaging/icons/2k5-mod-studio-512.png
+packaging/icons/2k5-mod-studio-64.png
+packaging/icons/2k5-mod-studio.ico
+packaging/icons/apf2k8-mod-studio-128.png
+packaging/icons/apf2k8-mod-studio-16.png
+packaging/icons/apf2k8-mod-studio-24.png
+packaging/icons/apf2k8-mod-studio-256.png
+packaging/icons/apf2k8-mod-studio-32.png
+packaging/icons/apf2k8-mod-studio-48.png
+packaging/icons/apf2k8-mod-studio-512.png
+packaging/icons/apf2k8-mod-studio-64.png
+packaging/icons/apf2k8-mod-studio.ico
+packaging/nfl2k5_scorebug_template_pngs.json
+packaging/release-allowlist.txt
+packaging/repin.py
+packaging/stage_release.py
+packaging/windows/UNSIGNED-NOTICE.txt
+packaging/windows/build_windows_installer.py
+packaging/windows/local_windows_ci.py
+packaging/windows/local_windows_ci_failures.json

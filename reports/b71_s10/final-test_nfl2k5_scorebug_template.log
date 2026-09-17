@@ -1,0 +1,24 @@
+test_alpha_counts_as_a_palette_colour (__main__.AuthoringTests.test_alpha_counts_as_a_palette_colour) ... ok
+test_default_has_no_retail_art_dependency_and_atlas_matches_shipped_preview (__main__.AuthoringTests.test_default_has_no_retail_art_dependency_and_atlas_matches_shipped_preview) ... ok
+test_layout_and_live_timeout_edits_refuse_before_image_install (__main__.AuthoringTests.test_layout_and_live_timeout_edits_refuse_before_image_install) ... ok
+test_missing_broken_and_overlarge_sources_have_plain_errors (__main__.AuthoringTests.test_missing_broken_and_overlarge_sources_have_plain_errors) ... ok
+test_off_palette_layer_and_cross_layer_palette_overflow_refuse (__main__.AuthoringTests.test_off_palette_layer_and_cross_layer_palette_overflow_refuse) ... ok
+test_repainting_one_layer_changes_only_its_atlas_rectangle (__main__.AuthoringTests.test_repainting_one_layer_changes_only_its_atlas_rectangle) ... ok
+test_source_receipt_pins_every_installed_layer_and_separates_staged_glyphs (__main__.AuthoringTests.test_source_receipt_pins_every_installed_layer_and_separates_staged_glyphs) ... ok
+test_two_x_uses_the_selected_files_and_preserves_exact_palette (__main__.AuthoringTests.test_two_x_uses_the_selected_files_and_preserves_exact_palette) ... ok
+test_validate_cli_produces_reviewable_receipt_without_game_inputs (__main__.AuthoringTests.test_validate_cli_produces_reviewable_receipt_without_game_inputs) ... ok
+test_wrong_size_refuses_with_filename_and_expected_dimensions (__main__.AuthoringTests.test_wrong_size_refuses_with_filename_and_expected_dimensions) ... ok
+test_all_32_team_variants_stage_both_sides_without_changing_other_cells (__main__.RetailTemplateTests.test_all_32_team_variants_stage_both_sides_without_changing_other_cells) ... ok
+test_compression_failure_refuses_instead_of_quantizing_or_growing (__main__.RetailTemplateTests.test_compression_failure_refuses_instead_of_quantizing_or_growing) ... ok
+test_custom_atlas_is_lossless_and_exactly_replayable (__main__.RetailTemplateTests.test_custom_atlas_is_lossless_and_exactly_replayable) ... ok
+test_custom_folder_install_replay_and_foreign_template_preflight (__main__.RetailTemplateTests.test_custom_folder_install_replay_and_foreign_template_preflight) ... ok
+test_custom_resource_corruption_and_wrong_template_refuse (__main__.RetailTemplateTests.test_custom_resource_corruption_and_wrong_template_refuse) ... ok
+test_invalid_folder_leaves_all_resource_and_executable_bytes_untouched (__main__.RetailTemplateTests.test_invalid_folder_leaves_all_resource_and_executable_bytes_untouched) ... ok
+test_larger_score_font_uses_two_existing_fields_and_keeps_font_resources_retail (__main__.RetailTemplateTests.test_larger_score_font_uses_two_existing_fields_and_keeps_font_resources_retail) ... ok
+test_readback_failure_rolls_back_every_touched_range (__main__.RetailTemplateTests.test_readback_failure_rolls_back_every_touched_range) ... ok
+test_source_folder_is_snapshotted_once_for_transaction_and_receipt (__main__.RetailTemplateTests.test_source_folder_is_snapshotted_once_for_transaction_and_receipt) ... ok
+
+----------------------------------------------------------------------
+Ran 19 tests in 9.585s
+
+OK

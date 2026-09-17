@@ -3631,7 +3631,9 @@ class Nfl2k5StudioFacade:
         stadium_prepared = stadium_result is not None
         for _attempt in range(3):
             try:
-                count = candidate.load_shareable_project(source)
+                count = (candidate.load_shareable_project(source, progress=progress)
+                         if isinstance(candidate, StudioSession)
+                         else candidate.load_shareable_project(source))
                 break
             except AudioProjectPreparationRequired:
                 if audio_prepared or audio_service is None:
@@ -3741,11 +3743,11 @@ class Nfl2k5StudioFacade:
             session = self._require_session()
         if cache is None:
             raise ValidationError("Load your NFL 2K5 XISO before building.")
-        from mod_editor.core.equipment_staging import require_equipment_fit
-        require_equipment_fit(session)
 
         def build_progress(event: BuildEvent) -> None:
             progress(event.message, event.completed, event.total)
+
+        build_progress.cancelled = getattr(progress, 'cancelled', None)
 
         result = self.build_service.build(cache, session, destination, build_progress)
         with self._lock:

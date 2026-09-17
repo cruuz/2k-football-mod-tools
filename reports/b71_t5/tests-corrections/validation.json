@@ -1,0 +1,56 @@
+[
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b71_t5_project_open.py"
+    ],
+    "started": "2026-09-17T00:06:39.134645+00:00",
+    "exit_code": 0,
+    "seconds": 6.724790209991625
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_project_document_workflow.py"
+    ],
+    "started": "2026-09-17T00:06:39.135079+00:00",
+    "exit_code": 1,
+    "seconds": 0.11452797899255529
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_studio_shell_layout_qt.py"
+    ],
+    "started": "2026-09-17T00:06:39.249982+00:00",
+    "exit_code": 0,
+    "seconds": 40.578795352979796
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_provider_integrity.py"
+    ],
+    "started": "2026-09-17T00:06:45.859793+00:00",
+    "exit_code": 0,
+    "seconds": 9.881096591998357
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b70_t1_diagnostics.py"
+    ],
+    "started": "2026-09-17T00:06:55.741175+00:00",
+    "exit_code": 0,
+    "seconds": 0.6151901109842584
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_2k5_build_is_explainable.py"
+    ],
+    "started": "2026-09-17T00:06:56.356661+00:00",
+    "exit_code": 0,
+    "seconds": 0.6151940979762003
+  }
+]

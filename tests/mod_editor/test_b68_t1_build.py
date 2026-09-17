@@ -178,11 +178,18 @@ class NativeLzTests(unittest.TestCase):
                 self.assertEqual(actual, expected)
                 self.assertEqual(decompress_vc_lz(actual)[0], source)
 
-    def test_bad_or_missing_helper_falls_back_and_bounds_still_apply(self):
+    def test_bad_helper_is_not_retried_and_bounds_still_apply(self):
         from types import SimpleNamespace
-        with patch.object(lz.subprocess, "run", return_value=SimpleNamespace(returncode=0, stdout=b"bad")):
+        # The reviewed native helper is Linux x86-64 only; everywhere else _optimal_helper()
+        # returns None, the Python fallback runs without shelling out, and there are no helper
+        # bytes to reject. The bounds below still apply on every platform.
+        if lz._optimal_helper() is not None:
+            with patch.object(lz.subprocess, "run", return_value=SimpleNamespace(returncode=0, stdout=b"bad")), \
+                 self.assertRaisesRegex(lz.EquipmentSearchTimeout, 'invalid bytes'):
+                lz.compress_equipment_optimal(b"abc" * 80, stream_tag=1, offset_bits=12, max_encoded_size=400)
+        with patch.object(lz, '_optimal_helper', return_value=None):
             actual = lz.compress_equipment_optimal(b"abc" * 80, stream_tag=1, offset_bits=12, max_encoded_size=400)
-        self.assertEqual(decompress_vc_lz(actual)[0], b"abc" * 80)
+            self.assertEqual(decompress_vc_lz(actual)[0], b"abc" * 80)
         with self.assertRaisesRegex(lz.TxtrError, "search limit"):
             lz.compress_equipment_optimal(b"abc" * 80, stream_tag=1, offset_bits=12,
                                          max_encoded_size=400, max_candidate_comparisons=1)

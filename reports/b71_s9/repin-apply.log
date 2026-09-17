@@ -1,0 +1,8 @@
+[1] mod_editor/core/providers.py: mod_editor/core/nfl2k5_scorebug_sprite.py
+    536b893475cdbcd3b67394db5cc0198553739781d139ed1c396b7dabfb525b30
+ -> 81f02a7e3216225ecfa12a90714ace90d68f8fc78ff98a1bc2eda5ec720a6a4e
+[1] mod_editor/core/providers.py: tools/nfl2k5_scorebug_projection.py
+    f3d1c0e1a9c5d51bf7713f0e3a5eb2775799b3b56fe88fb348189fcbc475e032
+ -> eb8aa363908f049515ee79cb30ea92fa516a4dfe70a0a446a1b704925f831fa7
+
+applied 2 pin update(s)

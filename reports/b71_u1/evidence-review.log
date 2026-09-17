@@ -1,0 +1,5 @@
+journal 46 commands; failed labels [('shipped-reproduction', 1), ('apf-installer-tests', 1), ('apf-installer-tests-fixed', 1), ('apf-installer-runtime-complete', 1)]
+evidence scripts compile; completion marker present
+ ASTRA_LAST_MESSAGE.md |  30 +--
+ ASTRA_REPORT.md       | 599 ++++++++++++++++++++++----------------------------
+ 2 files changed, 269 insertions(+), 360 deletions(-)

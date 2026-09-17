@@ -1,0 +1,12 @@
+{
+  "name": "final-test_nfl2k5_scorebug_sprite",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_nfl2k5_scorebug_sprite.py",
+    "-v"
+  ],
+  "start_utc": "2026-09-17T00:20:59.897774+00:00",
+  "end_utc": "2026-09-17T00:22:35.404465+00:00",
+  "seconds": 95.507,
+  "exit_code": 0
+}

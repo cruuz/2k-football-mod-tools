@@ -1,0 +1,9 @@
+{
+  "command": [
+    "/usr/bin/python3",
+    "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_music_playlist_project.py"
+  ],
+  "started": "2026-09-17T00:03:03.994303+00:00",
+  "exit_code": 0,
+  "seconds": 1.1157388650171924
+}

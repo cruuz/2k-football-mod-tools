@@ -1,0 +1,11 @@
+{
+  "name": "writers-final",
+  "argv": [
+    "python3",
+    "reports/b71_s10/scan_writers.py"
+  ],
+  "start_utc": "2026-09-17T00:32:11.096851+00:00",
+  "end_utc": "2026-09-17T00:32:23.813738+00:00",
+  "seconds": 12.717,
+  "exit_code": 0
+}

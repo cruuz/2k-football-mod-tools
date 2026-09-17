@@ -936,14 +936,14 @@ class StudioSessionTests(unittest.TestCase):
         self.assertEqual(loaded.modified_count, 2)
         self.assertEqual(
             loaded.current_stadium_png(texture).read_bytes(),
-            b"STADIUM-PREVIEW:STADIUM-USER-RGBA",
+            b"STADIUM-USER",  # Open displays authored art; quantization waits for Build.
         )
         self.assertTrue(loaded.revert_stadium_texture(texture))
         self.assertEqual(loaded.current_stadium_png(texture), stock)
         self.assertEqual(loaded.undo(), "Revert Stadium texture")
         self.assertEqual(
             loaded.current_stadium_png(texture).read_bytes(),
-            b"STADIUM-PREVIEW:STADIUM-USER-RGBA",
+            b"STADIUM-PREVIEW:STADIUM-USER-RGBA",  # An explicit Undo validates its restored edit.
         )
         self.assertEqual(loaded.revert_all(), 2)
         self.assertEqual(loaded.undo(), "Revert all assets")

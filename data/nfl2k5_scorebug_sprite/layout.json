@@ -1377,7 +1377,7 @@
    "cell": "body_left",
    "material": 3,
    "tint": "none",
-   "z": 0
+   "z": -20
   },
   {
    "name": "body",
@@ -1390,7 +1390,7 @@
    "cell": "body_middle",
    "material": 3,
    "tint": "none",
-   "z": 0
+   "z": -20
   },
   {
    "name": "body_right",
@@ -1403,7 +1403,7 @@
    "cell": "body_right",
    "material": 3,
    "tint": "none",
-   "z": 0
+   "z": -20
   },
   {
    "name": "housing",
@@ -1416,7 +1416,7 @@
    "cell": "housing",
    "material": 3,
    "tint": "none",
-   "z": 0
+   "z": -20
   },
   {
    "name": "capsule",
@@ -1429,7 +1429,7 @@
    "cell": "capsule",
    "material": 3,
    "tint": "none",
-   "z": 0
+   "z": -20
   },
   {
    "name": "plate",
@@ -1442,7 +1442,7 @@
    "cell": "plate",
    "material": 4,
    "tint": "possessing team",
-   "z": -3
+   "z": -17
   },
   {
    "name": "pointer",
@@ -1455,7 +1455,7 @@
    "cell": "pointer",
    "material": 4,
    "tint": "none",
-   "z": -3
+   "z": -17
   },
   {
    "name": "away_wing",
@@ -1468,7 +1468,7 @@
    "cell": "wing",
    "material": 9,
    "tint": "away team",
-   "z": -1
+   "z": -19
   },
   {
    "name": "home_wing",
@@ -1482,7 +1482,7 @@
    "material": 9,
    "tint": "home team",
    "flip_x": true,
-   "z": -1
+   "z": -19
   },
   {
    "name": "red",
@@ -1495,7 +1495,7 @@
    "cell": "red",
    "material": 9,
    "tint": "none",
-   "z": -3
+   "z": -17
   },
   {
    "name": "away_logo",
@@ -1508,7 +1508,7 @@
    "cell": "logo",
    "material": 8,
    "tint": "none",
-   "z": -2
+   "z": -18
   },
   {
    "name": "home_logo",
@@ -1521,7 +1521,7 @@
    "cell": "logo",
    "material": 5,
    "tint": "none",
-   "z": -2
+   "z": -18
   }
  ],
  "fields": [
@@ -1544,7 +1544,7 @@
     965
    ],
    "size": 53,
-   "z": -5
+   "z": -15
   },
   {
    "name": "home_score",
@@ -1565,7 +1565,7 @@
     965
    ],
    "size": 53,
-   "z": -5
+   "z": -15
   },
   {
    "name": "clock",
@@ -1586,7 +1586,7 @@
     1006
    ],
    "size": 27,
-   "z": -5
+   "z": -15
   },
   {
    "name": "play_clock",
@@ -1608,7 +1608,7 @@
    ],
    "size": 19,
    "strip_zero": true,
-   "z": -5
+   "z": -15
   },
   {
    "name": "quarter",
@@ -1629,7 +1629,7 @@
     1009
    ],
    "size": 19,
-   "z": -5
+   "z": -15
   },
   {
    "name": "away_timeouts",
@@ -1651,7 +1651,7 @@
    ],
    "size": 6,
    "timeout": true,
-   "z": -5
+   "z": -15
   },
   {
    "name": "home_timeouts",
@@ -1673,7 +1673,7 @@
    ],
    "size": 6,
    "timeout": true,
-   "z": -5
+   "z": -15
   },
   {
    "name": "down",
@@ -1694,7 +1694,7 @@
     955
    ],
    "size": 23,
-   "z": -5
+   "z": -15
   }
  ],
  "brand": [
@@ -1711,7 +1711,7 @@
    "tint": "none",
    "pin": "top-right",
    "opacity": 0.714,
-   "z": 0,
+   "z": -20,
    "source": {
     "frames": "Broncos-vs-Chiefs-Week1-Highlights/frames, every 30th frame from frame_000101 (999 candidates, 944 with the mark present)",
     "method": "per-pixel temporal minimum of luminance over frames that carry the mark lifts the static semi-transparent overlay off its darkest background; alpha=(min-black)/(255-black); coverage=alpha/p95(alpha)",
@@ -1736,7 +1736,7 @@
     983
    ],
    "cell": "event",
-   "z": -7
+   "z": -13
   },
   {
    "name": "ball on",
@@ -1748,7 +1748,7 @@
     983
    ],
    "cell": "event",
-   "z": -7
+   "z": -13
   },
   {
    "name": "FLAG",
@@ -1760,7 +1760,7 @@
     983
    ],
    "cell": "flag",
-   "z": -7
+   "z": -13
   },
   {
    "name": "hang time",
@@ -1772,7 +1772,7 @@
     983
    ],
    "cell": "event",
-   "z": -7
+   "z": -13
   }
  ],
  "plate_tints": {
@@ -1846,5 +1846,6 @@
   "rendered_once": true,
   "font_distributed": false,
   "brand": "brand cells are coverage masks lifted from broadcast stills; each brand row records its source frames, method, opacity and colour"
- }
+ },
+ "layer_order": "increasing-z"
 }

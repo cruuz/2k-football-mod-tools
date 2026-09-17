@@ -1,0 +1,38 @@
+[
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_provider_integrity.py"
+    ],
+    "started": "2026-09-17T00:08:53.970102+00:00",
+    "exit_code": 0,
+    "seconds": 9.73148078500526
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_providers.py"
+    ],
+    "started": "2026-09-17T00:08:53.970627+00:00",
+    "exit_code": 0,
+    "seconds": 3.620159472018713
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_product_catalog.py"
+    ],
+    "started": "2026-09-17T00:08:57.591165+00:00",
+    "exit_code": 0,
+    "seconds": 0.16455987401423045
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_phase1_packaging.py"
+    ],
+    "started": "2026-09-17T00:08:57.756045+00:00",
+    "exit_code": 0,
+    "seconds": 2.1176741019880865
+  }
+]

@@ -1,0 +1,56 @@
+[
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_studio_session.py"
+    ],
+    "started": "2026-09-17T00:04:32.272066+00:00",
+    "exit_code": 0,
+    "seconds": 0.9158030709950253
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_2k5_build_is_explainable.py"
+    ],
+    "started": "2026-09-17T00:04:32.272484+00:00",
+    "exit_code": 0,
+    "seconds": 0.7152242400043178
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_studio_shell_layout_qt.py"
+    ],
+    "started": "2026-09-17T00:04:32.988108+00:00",
+    "exit_code": 0,
+    "seconds": 41.08261226300965
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_project_document_workflow.py"
+    ],
+    "started": "2026-09-17T00:04:33.188099+00:00",
+    "exit_code": 1,
+    "seconds": 15.74124387698248
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b71_t5_project_open.py"
+    ],
+    "started": "2026-09-17T00:04:48.929715+00:00",
+    "exit_code": 0,
+    "seconds": 3.0690499850024935
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_build_panel_qt.py"
+    ],
+    "started": "2026-09-17T00:04:51.999130+00:00",
+    "exit_code": 0,
+    "seconds": 2.869284154003253
+  }
+]

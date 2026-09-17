@@ -1,0 +1,9 @@
+beta-69 git tag c1b712e3fd7e3948ed5fd5a5ac7c9d1d05a13a03eff0d3329ab909e1b58f0a87 BUILD beta-69 _BETA ^beta-(\d{1,6})(?:\.(\d{1,3}))?$ _TAG ^[A-Za-z0-9._-]{1,64}$
+UpdateStatus(available=True, current_tag='beta-69', latest_tag='beta-71.1', url='https://github.com/cruuz/2k-football-mod-tools/releases', title='', checked=True, detail='', assets=())
+beta-71.1.1: None
+beta-70 shipped tarball d9c29697388d465f4fefef9c6562a52fc81316655bc25d1a694c066fd10892a2 BUILD beta-70 _BETA ^beta-(\d{1,6})(?:\.(\d{1,3}))?$ _TAG ^[A-Za-z0-9._-]{1,64}$
+UpdateStatus(available=True, current_tag='beta-70', latest_tag='beta-71.1', url='https://github.com/cruuz/2k-football-mod-tools/releases', title='', checked=True, detail='', assets=())
+beta-71.1.1: None
+beta-71 shipped tarball d19f9585dce0052a6e1003df35bbc8affaaa4587723b18d8d9063a53b8824cbc BUILD beta-71 _BETA ^beta-(\d{1,6})(?:\.(\d{1,3}))?$ _TAG ^[A-Za-z0-9._-]{1,64}$
+UpdateStatus(available=True, current_tag='beta-71', latest_tag='beta-71.1', url='https://github.com/cruuz/2k-football-mod-tools/releases', title='', checked=True, detail='', assets=())
+beta-71.1.1: None

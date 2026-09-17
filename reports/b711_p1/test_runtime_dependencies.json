@@ -1,0 +1,9 @@
+{
+  "command": [
+    "/tmp/astra-b711-p1-python/bin/python3",
+    "tests/mod_editor/test_runtime_dependencies.py"
+  ],
+  "start": "2026-09-17T02:44:39.092706+00:00",
+  "seconds": 0.079,
+  "exit_code": 0
+}

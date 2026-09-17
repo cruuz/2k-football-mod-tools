@@ -64,7 +64,8 @@ def _sources():
 def _donor_glyphs(decoded, width):
     """Retail glyph masks by character (used for characters not sampled from the broadcast)."""
     from PIL import Image
-    import numpy as np
+    from .runtime_dependencies import require_numpy
+    np = require_numpy("Scorebug texture conversion")
     from . import nfl2k5_scorebug_ingame as r
     system = struct.unpack_from("<I", decoded, 8)[0]
     plane = np.frombuffer(r.tx.unswizzle_2d(decoded[system:system + width * width], width, width, 1),
@@ -104,7 +105,8 @@ def espn_font_chunk(donor_span: bytes, spec: FontSpec) -> tuple[bytes, dict]:
     height, so any string the game prints with this font stays legible.
     """
     from PIL import Image
-    import numpy as np
+    from .runtime_dependencies import require_numpy
+    np = require_numpy("Scorebug texture conversion")
     from . import nfl2k5_scorebug_ingame as r
     chunk, decoded, _ = r.decode(donor_span)
     require(chunk.kind == "FONT", "font donor must be a FONT chunk")
@@ -220,7 +222,8 @@ def alpha_bleed(image, pixels=6):
     edge even though it contributes no coverage. Keep this RGB after resizing
     and after placing a mark on its transparent canvas.
     """
-    import numpy as np
+    from .runtime_dependencies import require_numpy
+    np = require_numpy("Scorebug texture conversion")
     from PIL import Image
     a = np.asarray(image.convert("RGBA")).copy()
     known = a[:, :, 3] > 0
@@ -255,7 +258,8 @@ def resample_logo(image, size):
     # Keep fractional coverage only in the one-texel silhouette boundary band.
     # Anisotropic logo fitting can otherwise stretch a source feather to two
     # texels, leaving a few faint islands even after the ringing tail is removed.
-    import numpy as np
+    from .runtime_dependencies import require_numpy
+    np = require_numpy("Scorebug texture conversion")
     alpha = np.asarray(image.getchannel("A")).copy()
     solid = alpha >= 128
     padded = np.pad(solid, 1, mode="edge")
@@ -275,7 +279,8 @@ def quantize_alpha_aware(image, maximum=256):
     Historical texture authors keep their original quantizer unless opted in.
     """
     from collections import Counter
-    import numpy as np
+    from .runtime_dependencies import require_numpy
+    np = require_numpy("Scorebug texture conversion")
     import nfl_tset_png_import as palettes
     require(32 <= maximum <= 256, "alpha-aware P8 needs 32..256 entries")
     a = np.asarray(image.convert("RGBA")).copy()

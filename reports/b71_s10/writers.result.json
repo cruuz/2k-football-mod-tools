@@ -1,0 +1,11 @@
+{
+  "name": "writers",
+  "argv": [
+    "python3",
+    "reports/b71_s10/scan_writers.py"
+  ],
+  "start_utc": "2026-09-17T00:06:23.817257+00:00",
+  "end_utc": "2026-09-17T00:06:37.239599+00:00",
+  "seconds": 13.422,
+  "exit_code": 0
+}

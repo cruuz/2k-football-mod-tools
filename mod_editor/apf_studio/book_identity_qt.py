@@ -165,8 +165,17 @@ class BookIdentityPanel(QWidget):
             pointer = QLabel('Use <a href="cpu-playcalling">CPU Play Calling</a> to pick books, edit formations and personnel, preview, and build.')
             pointer.setWordWrap(True)
             pointer.linkActivated.connect(lambda _: self.cpuPlayCallingRequested.emit())
-            outer_layout.addWidget(pointer)
-            outer_layout.addStretch()
+            outer_layout.insertWidget(0, pointer)
+            self.manual_allocation = QPushButton("Show manual book allocation (all 40 roster slots)")
+            self.manual_allocation.setCheckable(True)
+            self.manual_allocation.setToolTip("Build current project edits first, then choose that folder to allocate unused labels to disc or saved-team slots.")
+            self.manual_allocation.toggled.connect(scroll.setVisible)
+            outer_layout.insertWidget(1, self.manual_allocation)
+            outer_layout.setStretchFactor(scroll, 1)
+
+    def show_manual_allocation(self):
+        if hasattr(self, 'manual_allocation'):
+            self.manual_allocation.setChecked(True)
 
     def open_walkthrough(self):
         path = Path(__file__).resolve().parents[2] / "docs/mod_editor/apf2k8_book_identity_walkthrough.md"

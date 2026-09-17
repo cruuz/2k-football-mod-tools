@@ -879,6 +879,7 @@ def runtime_image_plan(fd: int, *, with_kickoff: bool = False, extra_requests=()
 
 def runtime_image_status(path, *, probe="sprite", scorebug_folder=None):
     """Recognize the complete owned HUD and XBE, resolving current archive offsets."""
+    from .runtime_dependencies import MissingDependency
     from . import nfl2k5_scorebug_runtime as runtime, nfl2k5_scorebug_resources as resources
     from . import nfl2k5_xbe_space as space, platform_compat as io
     try:
@@ -911,6 +912,8 @@ def runtime_image_status(path, *, probe="sprite", scorebug_folder=None):
                         and digest(hud[resources.HUD_SIZE:]) == resources.RUNTIME_PINS["appendix"]):
                     resource_state = "applied"
         return resource_state if resource_state == xbe_state else "foreign"
+    except MissingDependency as exc:
+        return str(exc)
     except (OSError, ValueError, KeyError, IndexError, struct.error, SystemExit):
         return "foreign"
 

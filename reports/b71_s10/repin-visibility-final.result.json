@@ -1,0 +1,12 @@
+{
+  "name": "repin-visibility-final",
+  "argv": [
+    "python3",
+    "packaging/repin.py",
+    "--apply"
+  ],
+  "start_utc": "2026-09-17T00:15:48.388411+00:00",
+  "end_utc": "2026-09-17T00:16:09.534775+00:00",
+  "seconds": 21.146,
+  "exit_code": 0
+}

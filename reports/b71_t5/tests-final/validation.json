@@ -1,0 +1,398 @@
+[
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b71_t5_project_open.py"
+    ],
+    "started": "2026-09-17T00:02:10.887560+00:00",
+    "exit_code": 0,
+    "seconds": 3.1193486799893435
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b71_t4_equipment_project.py"
+    ],
+    "started": "2026-09-17T00:02:10.888132+00:00",
+    "exit_code": 0,
+    "seconds": 56.25166691100458
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b69_j1_fit.py"
+    ],
+    "started": "2026-09-17T00:02:14.007347+00:00",
+    "exit_code": 0,
+    "seconds": 4.521655529999407
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b69_j1_build.py"
+    ],
+    "started": "2026-09-17T00:02:18.529308+00:00",
+    "exit_code": 0,
+    "seconds": 2.317529141000705
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b69_j1_wiring.py"
+    ],
+    "started": "2026-09-17T00:02:20.847057+00:00",
+    "exit_code": 0,
+    "seconds": 1.3660216440039221
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b70_t1_build_speed.py"
+    ],
+    "started": "2026-09-17T00:02:22.213298+00:00",
+    "exit_code": 0,
+    "seconds": 19.042539068992482
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b70_t1_diagnostics.py"
+    ],
+    "started": "2026-09-17T00:02:41.256185+00:00",
+    "exit_code": 0,
+    "seconds": 0.6151781720109284
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b70_t2_equipment.py"
+    ],
+    "started": "2026-09-17T00:02:41.871655+00:00",
+    "exit_code": 0,
+    "seconds": 1.3161930379865225
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b70_t2_reporting.py"
+    ],
+    "started": "2026-09-17T00:02:43.188062+00:00",
+    "exit_code": 0,
+    "seconds": 0.2643398199870717
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b70_t2_wiring.py"
+    ],
+    "started": "2026-09-17T00:02:43.452623+00:00",
+    "exit_code": 0,
+    "seconds": 0.7151390979997814
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b68_t1_build.py"
+    ],
+    "started": "2026-09-17T00:02:44.168110+00:00",
+    "exit_code": 0,
+    "seconds": 5.27281819700147
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_mod_build.py"
+    ],
+    "started": "2026-09-17T00:02:49.441210+00:00",
+    "exit_code": 0,
+    "seconds": 1.7672867740038782
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_mod_build_performance.py"
+    ],
+    "started": "2026-09-17T00:02:51.208838+00:00",
+    "exit_code": 0,
+    "seconds": 7.1760612160142045
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_build_panel_qt.py"
+    ],
+    "started": "2026-09-17T00:02:58.385154+00:00",
+    "exit_code": 0,
+    "seconds": 2.8186121130129322
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_build_service.py"
+    ],
+    "started": "2026-09-17T00:03:01.204082+00:00",
+    "exit_code": 0,
+    "seconds": 0.3148726520012133
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_2k5_build_is_explainable.py"
+    ],
+    "started": "2026-09-17T00:03:01.519280+00:00",
+    "exit_code": 0,
+    "seconds": 0.6151215730060358
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_facade_external_build.py"
+    ],
+    "started": "2026-09-17T00:03:02.134726+00:00",
+    "exit_code": 0,
+    "seconds": 0.3648094860254787
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_project_document_workflow.py"
+    ],
+    "started": "2026-09-17T00:03:02.499875+00:00",
+    "exit_code": 0,
+    "seconds": 15.489261231996352
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_studio_session.py"
+    ],
+    "started": "2026-09-17T00:03:07.140184+00:00",
+    "exit_code": 1,
+    "seconds": 1.06628732898389
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_studio_facade.py"
+    ],
+    "started": "2026-09-17T00:03:08.206948+00:00",
+    "exit_code": 0,
+    "seconds": 0.3649633140012156
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_studio_shell_layout_qt.py"
+    ],
+    "started": "2026-09-17T00:03:08.572249+00:00",
+    "exit_code": 0,
+    "seconds": 40.32653650298016
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_studio_qt_models.py"
+    ],
+    "started": "2026-09-17T00:03:17.989483+00:00",
+    "exit_code": 0,
+    "seconds": 0.815585664997343
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_studio_visual_asset_routing.py"
+    ],
+    "started": "2026-09-17T00:03:18.805381+00:00",
+    "exit_code": 0,
+    "seconds": 3.0690764510072768
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_uniform_bundle_cross_project.py"
+    ],
+    "started": "2026-09-17T00:03:21.874819+00:00",
+    "exit_code": 0,
+    "seconds": 2.517976275004912
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_model_project.py"
+    ],
+    "started": "2026-09-17T00:03:24.393134+00:00",
+    "exit_code": 0,
+    "seconds": 35.671741391008254
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_models_project_wiring.py"
+    ],
+    "started": "2026-09-17T00:03:48.899167+00:00",
+    "exit_code": 0,
+    "seconds": 8.878263927996159
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_provider_integrity.py"
+    ],
+    "started": "2026-09-17T00:03:57.777781+00:00",
+    "exit_code": 1,
+    "seconds": 3.46976217199699
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_providers.py"
+    ],
+    "started": "2026-09-17T00:04:00.065234+00:00",
+    "exit_code": 0,
+    "seconds": 3.9706101059855428
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_product_catalog.py"
+    ],
+    "started": "2026-09-17T00:04:01.248073+00:00",
+    "exit_code": 0,
+    "seconds": 0.16453658300451934
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_phase1_packaging.py"
+    ],
+    "started": "2026-09-17T00:04:01.412916+00:00",
+    "exit_code": 0,
+    "seconds": 2.0174577629950363
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_equipment_import.py"
+    ],
+    "started": "2026-09-17T00:04:03.430731+00:00",
+    "exit_code": 0,
+    "seconds": 2.0678433110006154
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_equipment_consumers.py"
+    ],
+    "started": "2026-09-17T00:04:04.036231+00:00",
+    "exit_code": 0,
+    "seconds": 28.211365016002674
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_equipment_import_wiring.py"
+    ],
+    "started": "2026-09-17T00:04:05.498948+00:00",
+    "exit_code": 0,
+    "seconds": 0.7653989779937547
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_equipment_scope_wiring.py"
+    ],
+    "started": "2026-09-17T00:04:06.264660+00:00",
+    "exit_code": 0,
+    "seconds": 1.7669280119880568
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_equipment_texture_chain.py"
+    ],
+    "started": "2026-09-17T00:04:08.031939+00:00",
+    "exit_code": 0,
+    "seconds": 4.2716998039977625
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_equipment_texture_native.py"
+    ],
+    "started": "2026-09-17T00:04:12.304091+00:00",
+    "exit_code": 0,
+    "seconds": 0.26478741099708714
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_equipment_retail_roundtrip.py"
+    ],
+    "started": "2026-09-17T00:04:12.569224+00:00",
+    "exit_code": 0,
+    "seconds": 15.489141091995407
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_uniform_catalog.py"
+    ],
+    "started": "2026-09-17T00:04:28.058717+00:00",
+    "exit_code": 0,
+    "seconds": 0.41493205801816657
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_uniform_choice.py"
+    ],
+    "started": "2026-09-17T00:04:28.474058+00:00",
+    "exit_code": 0,
+    "seconds": 7.9278768900258
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_uniform_choice_screens.py"
+    ],
+    "started": "2026-09-17T00:04:32.247975+00:00",
+    "exit_code": 0,
+    "seconds": 0.5651150349876843
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_2k5_uniform_equipment_export.py"
+    ],
+    "started": "2026-09-17T00:04:32.813282+00:00",
+    "exit_code": 0,
+    "seconds": 32.66828511402127
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_audio_annotation_project_archive.py"
+    ],
+    "started": "2026-09-17T00:04:36.402305+00:00",
+    "exit_code": 0,
+    "seconds": 0.5652875409869011
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_stadium_editor_roundtrip.py"
+    ],
+    "started": "2026-09-17T00:04:36.967887+00:00",
+    "exit_code": 0,
+    "seconds": 0.6153019680059515
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_simulated_windows_build.py"
+    ],
+    "started": "2026-09-17T00:04:37.583548+00:00",
+    "exit_code": 0,
+    "seconds": 215.76151555101387
+  }
+]

@@ -1,0 +1,13 @@
+test_atlas_chunk_is_a_256x512_p8_texture_named_score_buga (__main__.ChunkBuilderTests.test_atlas_chunk_is_a_256x512_p8_texture_named_score_buga) ... ok
+test_grown_pack_keeps_every_retail_byte_and_moves_only_later_sectors (__main__.ChunkBuilderTests.test_grown_pack_keeps_every_retail_byte_and_moves_only_later_sectors) ... ok
+test_slot9_font_chunk_layout_parses_with_the_repo_font_parser (__main__.ChunkBuilderTests.test_slot9_font_chunk_layout_parses_with_the_repo_font_parser) ... ok
+test_apply_in_place_grows_pack0_and_switches_the_node (__main__.DiscTransactionTests.test_apply_in_place_grows_pack0_and_switches_the_node) ... skipped "disposable disc scratch is not writable: /media/noah/Storage/.b70-fable-assets: [Errno 30] Read-only file system: '/media/noah/Storage/.b70-fable-assets/scorebug-access-bxpclnob'"
+test_boot_loop_binds_slot3_to_an_appended_font4_replacement (__main__.NativeReplacementTests.test_boot_loop_binds_slot3_to_an_appended_font4_replacement) ... ok
+test_boot_loop_binds_slot9_to_the_appended_font (__main__.NativeReplacementTests.test_boot_loop_binds_slot9_to_the_appended_font) ... ok
+test_hud_lookup_returns_the_appended_256x512_atlas (__main__.NativeReplacementTests.test_hud_lookup_returns_the_appended_256x512_atlas) ... ok
+test_registry_returns_the_most_recent_resource_of_a_name (__main__.NativeReplacementTests.test_registry_returns_the_most_recent_resource_of_a_name) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 124.085s
+
+OK (skipped=1)

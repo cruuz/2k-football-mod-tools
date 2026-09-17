@@ -1,0 +1,213 @@
+{
+  "False": {
+    "old_append_sha256": "27174d06bfd563c0367c862ad1a5853e050929236ec3e480af6b8eae32523619",
+    "new_append_sha256": "cfe9f5d9ff5e4cf434828408afb8b6ad789021f6d2167d9c3f5e858664d35d17",
+    "old_scene_sha256": "065464a54b94b8e18c359ef3897980a6c722304b9593a9fe96ffb4ed7c9388a6",
+    "new_scene_sha256": "1af67e1783759e6c1a5a2ebd1a4d3b8c4b4fcdb930de1f1f9507852973c5f27b",
+    "appended_bytes": 323808,
+    "unchanged_texture_chunks": 34,
+    "raw_material_records_unchanged": true,
+    "scene_changed_byte_count": 1,
+    "scene_changed_ranges": [
+      [
+        "0x4244",
+        "0x4245"
+      ]
+    ],
+    "material_order": [
+      3,
+      4,
+      7,
+      0,
+      1,
+      2,
+      9,
+      5,
+      6,
+      8,
+      10
+    ]
+  },
+  "decoded_label_alpha": {
+    "0": {
+      "max_alpha": 255,
+      "opaque_pixels": 83,
+      "nonzero_pixels": 323
+    },
+    "1": {
+      "max_alpha": 255,
+      "opaque_pixels": 105,
+      "nonzero_pixels": 253
+    },
+    "2": {
+      "max_alpha": 255,
+      "opaque_pixels": 91,
+      "nonzero_pixels": 285
+    },
+    "3": {
+      "max_alpha": 255,
+      "opaque_pixels": 74,
+      "nonzero_pixels": 294
+    },
+    "4": {
+      "max_alpha": 255,
+      "opaque_pixels": 87,
+      "nonzero_pixels": 279
+    },
+    "5": {
+      "max_alpha": 255,
+      "opaque_pixels": 105,
+      "nonzero_pixels": 303
+    },
+    "6": {
+      "max_alpha": 255,
+      "opaque_pixels": 83,
+      "nonzero_pixels": 313
+    },
+    "7": {
+      "max_alpha": 255,
+      "opaque_pixels": 74,
+      "nonzero_pixels": 245
+    },
+    "8": {
+      "max_alpha": 255,
+      "opaque_pixels": 80,
+      "nonzero_pixels": 326
+    },
+    "9": {
+      "max_alpha": 255,
+      "opaque_pixels": 84,
+      "nonzero_pixels": 313
+    },
+    "st": {
+      "max_alpha": 255,
+      "opaque_pixels": 124,
+      "nonzero_pixels": 462
+    },
+    "nd": {
+      "max_alpha": 255,
+      "opaque_pixels": 122,
+      "nonzero_pixels": 432
+    },
+    "rd": {
+      "max_alpha": 255,
+      "opaque_pixels": 113,
+      "nonzero_pixels": 418
+    },
+    "th": {
+      "max_alpha": 255,
+      "opaque_pixels": 125,
+      "nonzero_pixels": 455
+    },
+    "&": {
+      "max_alpha": 255,
+      "opaque_pixels": 86,
+      "nonzero_pixels": 352
+    },
+    "Goal": {
+      "max_alpha": 255,
+      "opaque_pixels": 237,
+      "nonzero_pixels": 847
+    },
+    "GOAL": {
+      "max_alpha": 255,
+      "opaque_pixels": 249,
+      "nonzero_pixels": 923
+    },
+    "and": {
+      "max_alpha": 255,
+      "opaque_pixels": 176,
+      "nonzero_pixels": 617
+    },
+    "OT": {
+      "max_alpha": 255,
+      "opaque_pixels": 122,
+      "nonzero_pixels": 470
+    },
+    "ST": {
+      "max_alpha": 255,
+      "opaque_pixels": 111,
+      "nonzero_pixels": 443
+    },
+    "ND": {
+      "max_alpha": 255,
+      "opaque_pixels": 156,
+      "nonzero_pixels": 509
+    },
+    "RD": {
+      "max_alpha": 255,
+      "opaque_pixels": 165,
+      "nonzero_pixels": 509
+    },
+    "TH": {
+      "max_alpha": 255,
+      "opaque_pixels": 108,
+      "nonzero_pixels": 473
+    },
+    "Inch": {
+      "max_alpha": 255,
+      "opaque_pixels": 221,
+      "nonzero_pixels": 820
+    },
+    "es": {
+      "max_alpha": 255,
+      "opaque_pixels": 144,
+      "nonzero_pixels": 501
+    },
+    "~": {
+      "max_alpha": 255,
+      "opaque_pixels": 120,
+      "nonzero_pixels": 120
+    }
+  },
+  "True": {
+    "old_append_sha256": "0bc8d33d48e065b4a4ce4f3ed8196fbd749c758b9ca888eeb2d82bc66c3fed04",
+    "new_append_sha256": "7e609eeab18fdc1ebd8f413fd7ee7c68fce7d264579883729871b5f45dd2233f",
+    "old_scene_sha256": "0b40e8c0a68ad7c02347683cc74cfaff0d5c17b74577a62afbd36ca93242bec7",
+    "new_scene_sha256": "da2cbc1d68afa4eb73d8fbe60e293fdcb605bdf615b7ae7f400ba7fc2fdca5bb",
+    "appended_bytes": 323808,
+    "unchanged_texture_chunks": 34,
+    "raw_material_records_unchanged": true,
+    "scene_changed_byte_count": 1,
+    "scene_changed_ranges": [
+      [
+        "0x4244",
+        "0x4245"
+      ]
+    ],
+    "material_order": [
+      3,
+      4,
+      7,
+      0,
+      1,
+      2,
+      9,
+      5,
+      6,
+      8,
+      10
+    ]
+  },
+  "manifest_source_fingerprints_changed": {
+    "mod_editor/core/nfl2k5_scorebug_runtime.py": {
+      "before": "d783f7d0e4a50bcebbc099a204bb0e64c3936ed5ed17a8ee615275e612262890",
+      "after": "5562c5d903a8356b6f89fe13b2a8f871bea2348254d112467cd5f61940f51c78"
+    },
+    "mod_editor/core/nfl2k5_scorebug_sprite.py": {
+      "before": "dd55a124f4835375055a1029aad5fb3e0b4a3afce6bf850eca2d507038171028",
+      "after": "65605430ad9a5fa3394d4b8bdf3c4a088b324547133ad2324ece0d477f988899"
+    },
+    "mod_editor/core/nfl2k5_scorebug_sprite_code.py": {
+      "before": "df3ee27bca7d94abaccadc79a00e7ca8ac2d877b52585a12cf9d1a271f9c9283",
+      "after": "95eb04592aa282318bf885f28906f23fe2c0801f762e688d1f6fca15eb87e0cc"
+    }
+  },
+  "owner": {
+    "before": "3ac2cc0192032ad2b3b295e97ce0ad7a7c00a89807b2b95eb50ba71c6e8025f4",
+    "after": "d879c88b5c9f26a8d9613392124250c86e36a656fa8351224cca480dd78af62c",
+    "changed_bytes": 1057,
+    "allocation_bytes": 4096,
+    "data_allocation_bytes": 128
+  }
+}

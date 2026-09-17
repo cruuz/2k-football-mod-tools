@@ -16,11 +16,46 @@ Installers should place these files as follows:
 | `packaging/2k5-mod-studio.desktop` | `/usr/share/applications/2k5-mod-studio.desktop` |
 | `packaging/2k5-mod-studio.svg` | `/usr/share/icons/hicolor/scalable/apps/2k5-mod-studio.svg` |
 
-The application package depends on Python 3, PyQt5, and Pillow. Sprite Preview also requires NumPy, Unicorn and Capstone; see `docs/mod_editor/sprite_scorebug.md`. On Debian/Linux
+Install the pinned application packages with `python3 -m pip install -r packaging/requirements-studio.txt` in the selected runtime. These include NumPy 1.26.4, PyQt5, Pillow, Unicorn and Capstone; see `docs/mod_editor/sprite_scorebug.md`. On Debian/Linux
 Mint those package names are normally `python3`, `python3-pyqt5`, and
 `python3-pil`. A portable development build can instead symlink the launcher
 into a directory on `PATH`; the launcher resolves that symlink back to the
 application root.
+
+### Portable updates and SteamOS
+
+The Linux tarball contains application code, not a bundled Python distribution.
+On a system with no Python, first supply a working Python runtime with the app's
+dependencies in the user's home directory. No write to the system partition is
+needed. The launchers recognize `.venv/bin/python3`, `venv/bin/python3`, and
+`runtime/bin/python3`, or an explicit `MOD_STUDIO_PYTHON` executable path.
+
+The updater copies an active runtime inside the install into a fresh sibling
+alongside the new application. It records the chosen executable in
+`.studio-python` (relative for a local runtime), imports the new app and GUI and
+prints the version before switching. The old install is renamed to `.previous`
+or a unique `.previous-*` sibling if that backup already exists. A second check
+at the final path and a startup acknowledgement from the new GUI gate success.
+Check failure keeps the old folder in place; startup failure restores it and
+keeps the failed tree and `.update-launch.log` beside it. The running window
+reports the recovery paths and stays open. No backup is automatically deleted.
+`tools/launch_2k5_mod_studio.sh --update-check` and the APF equivalent run the
+import/version check without opening a window.
+
+Publish this hotfix as `beta-71.1`: beta 69, 70 and 71 already compare
+`beta-N` and `beta-N.M` numerically. Their parser accepts one to six major digits
+and one to three optional hotfix digits, not a second dotted suffix. Release
+discovery and safely applying a release are separate: an older updater does
+not acquire the fixed transaction until the hotfix is installed. For a local
+runtime install, extract the hotfix separately and retain/copy the runtime, or
+restore the existing `.previous` folder before installing manually. The shipped
+beta 70/71 tarballs also contain allowlisted tests that their old detector
+mistakes for a source ZIP, hiding Update now; the fixed detector accepts them.
+
+The startup acknowledgement proves the main window reached its event loop,
+not that every later operation works. A power loss between the two renames or a
+filesystem that refuses rollback can require restoring the retained backup by
+hand. Windows Setup's NSIS wait/relaunch path is unchanged.
 
 ## Local Windows CI
 
@@ -260,3 +295,20 @@ The runtime checker disables bytecode publication before importing product or
 tool modules. The final repeated release check is still mandatory: it proves
 the probe did not leave a cache, temporary output, private source artifact, or
 any other undeclared file in the stage.
+
+### Third-party dependency closure
+
+Both runtime checks statically scan every Python file under the staged
+`mod_editor` product package, including imports inside callbacks. Literal
+`import_module` calls and `LAZY_RUNTIME_IMPORTS` tuples are included. Mark any
+third-party import delegated to a tool in the calling product module's tuple;
+external applications such as Blender use their own interpreter. Optional
+acceleration imports are still required in releases.
+
+The probe imports each dependency in the selected interpreter with `-I`, so
+user-site packages or PYTHONPATH cannot hide an incomplete runtime. Run the
+checks with the tarball's selected `.venv/bin/python3`. The Windows builder
+also calls the same scan against `runtime/Lib/site-packages` after copying the
+application, including NumPy's native extension and supporting DLLs. It cannot
+satisfy a missing Windows package with a Linux build-host install. Run the full
+runtime checks on the target platform for binary loading and GUI validation.

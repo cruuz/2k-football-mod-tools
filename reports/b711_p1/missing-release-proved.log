@@ -1,0 +1,7 @@
+COMMAND ['/tmp/astra-b711-p1-removed/bin/python3', '-I', '-B', '/tmp/astra-b711-p1-stages/2k5/packaging/check_2k5_mod_studio_runtime.py'] EXIT 1
+2K5_MOD_STUDIO_RUNTIME_CLOSURE_REFUSED: Staged runtime is missing third-party dependencies: numpy (used at mod_editor/core/nfl2k5_audio_source_scan.py:399, mod_editor/core/nfl2k5_audo_fixed_slots.py:512, mod_editor/core/runtime_dependencies.py:12, mod_editor/core/runtime_dependencies.py:34)
+
+COMMAND ['/tmp/astra-b711-p1-removed/bin/python3', '-I', '-B', '/tmp/astra-b711-p1-stages/apf2k8/packaging/check_apf2k8_mod_studio_runtime.py'] EXIT 1
+APF2K8_MOD_STUDIO_RUNTIME_REFUSED: Staged runtime is missing third-party dependencies: numpy (used at mod_editor/apf_studio/ps3_texture_probe_fast.py:19, mod_editor/core/runtime_dependencies.py:12, mod_editor/core/runtime_dependencies.py:34)
+
+BOTH_RELEASE_RUNTIME_GATES_REJECT_MISSING_NUMPY

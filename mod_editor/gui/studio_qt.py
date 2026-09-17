@@ -21,6 +21,7 @@ import json
 from pathlib import Path
 import tempfile
 import time
+import threading
 from typing import Any, Callable, Iterable, Mapping, Protocol, Sequence, runtime_checkable
 from uuid import uuid4
 import weakref
@@ -276,13 +277,8 @@ def friendly_fix_hint(message: str) -> str | None:
 def _build_blocker_message(*, ready: bool, edit_count: int, busy: bool) -> str:
     """Explain why Build is unavailable, or describe it when it is.
 
-    Build is disabled until a disc is loaded and at least one edit exists, which
-    is correct -- but a disabled button with a fixed tooltip explains nothing, and
-    pressing it produces no dialog and no status change.  A modder reported being
-    unable to rebuild the XISO at all; the builder itself is fine (a real 6.3 GB
-    source rebuilds and independently verifies), so the failure being reported is
-    this silence.  Ordered most-blocking first, because that is the one the user
-    has to clear next.
+    A loaded disc can also make a verified unchanged copy. Name the most
+    immediate blocker, or make that empty selection explicit.
     """
 
     if busy:
@@ -294,8 +290,8 @@ def _build_blocker_message(*, ready: bool, edit_count: int, busy: bool) -> str:
         return "Open your game disc first (top right). Make disc from project needs a disc to copy."
     if edit_count <= 0:
         return (
-            "Add at least one project edit: Replace a PNG, edit a string, or pick "
-            "a colour. For gameplay patches, use ★ Build & Share."
+            "Make a verified unchanged copy of your game disc. "
+            "Choose changes on ★ Build & Share to customize it."
         )
     return BUILD_READY_MESSAGE
 
@@ -1476,12 +1472,15 @@ class _BackgroundTask(QRunnable):
         super().__init__()
         self.operation = operation
         self.signals = _TaskSignals()
+        self.cancelled = threading.Event()
         self.setAutoDelete(False)
 
     def run(self) -> None:
         try:
             last = [0.0, None]
             def progress(stage, completed, total):
+                if self.cancelled.is_set():
+                    raise ValidationError('Project open cancelled; the saved project is unchanged.')
                 now = time.monotonic()
                 if stage != last[1] or now - last[0] >= 0.1 or (total and completed == total):
                     last[:] = [now, stage]
@@ -1987,8 +1986,17 @@ class StudioMainWindow(QMainWindow):
         self.navigation.setFocus(Qt.ShortcutFocusReason)
 
     def _build_operation_state_changed(self, busy):
+        session = getattr(self.facade, '_session', None)
+        if busy:
+            self._fit_receipts_before_build = (session, dict(getattr(session, '_project_fit_receipts', {})))
         self._embedded_build_busy = bool(busy)
         self._embedded_operation_state_changed("Build", busy)
+        if not busy:
+            previous_session, previous = getattr(self, '_fit_receipts_before_build', (None, {}))
+            if session is previous_session and previous != getattr(session, '_project_fit_receipts', {}):
+                # Measurements are user-saveable metadata. Never write the
+                # named .2k5mod from the build worker or the open check.
+                self._mark_workspace_changed()
 
     def _music_operation_state_changed(self, busy):
         self._embedded_music_busy = bool(busy)
@@ -7988,7 +7996,7 @@ class StudioMainWindow(QMainWindow):
 
     def _choose_build_output(self) -> None:
         panel = getattr(self, "_build_panel", None)
-        if panel is not None and panel.has_work():
+        if panel is not None:
             blocker = panel.blocker()
             if blocker:
                 self._set_status(blocker)
@@ -8111,6 +8119,8 @@ class StudioMainWindow(QMainWindow):
             self._set_status("Finish the current operation before starting another.")
             return
         worker = _BackgroundTask(operation)
+        if label == 'Opening and validating the project':
+            self._project_open_worker = worker
         self._workers.add(worker)
         if blocking:
             self._set_busy(True, label)
@@ -8146,15 +8156,23 @@ class StudioMainWindow(QMainWindow):
             if blocking:
                 self._set_busy(False)
                 self._drain_post_blocking_continuations()
+            if getattr(self, '_project_open_worker', None) is worker:
+                self._project_open_worker = None
+                if getattr(self, '_close_after_project_check', False):
+                    self._close_after_project_check = False
+                    QTimer.singleShot(0, self.close)
 
         worker.signals.finished.connect(bound(self, finished))
         self.thread_pool.start(worker)
 
     def _task_progress(self, stage: str, completed: int, total: int) -> None:
+        from mod_editor.core.nfl2k5_project_fit import progress_text
         self._operation_stage = stage or "Working…"
+        self._operation_counts = (completed, total)
         if total > 0 and "copy" in self._operation_stage.casefold():
             self._operation_stage += f" • {completed / total:.0%}"
-        self.operation_status.setText(self._operation_stage)
+        self.operation_status.setText(progress_text(self._operation_stage, completed, total,
+                                                   self._operation_started))
         self.progress_bar.show()
         if total > 0:
             self.progress_bar.setRange(0, 1000)
@@ -8168,6 +8186,7 @@ class StudioMainWindow(QMainWindow):
         if busy:
             self._operation_started = time.monotonic()
             self._operation_stage = label
+            self._operation_counts = (0, 0)
             self._heartbeat_timer.start()
             self.operation_status.setText(label)
             self.progress_bar.setRange(0, 0)
@@ -8179,8 +8198,10 @@ class StudioMainWindow(QMainWindow):
         self._refresh_action_states()
 
     def _busy_heartbeat(self):
-        self.operation_status.setText(
-            f"{self._operation_stage} • {int(time.monotonic() - self._operation_started)} s")
+        from mod_editor.core.nfl2k5_project_fit import progress_text
+        done, total = getattr(self, '_operation_counts', (0, 0))
+        self.operation_status.setText(progress_text(self._operation_stage, done, total,
+                                                   self._operation_started))
 
     def _set_status(self, message: str) -> None:
         # Pages are built before the footer that owns this label, and a page
@@ -8566,6 +8587,13 @@ class StudioMainWindow(QMainWindow):
         self.close()
 
     def closeEvent(self, event: QCloseEvent) -> None:  # type: ignore[override]
+        opening = getattr(self, '_project_open_worker', None)
+        if opening is not None:
+            opening.cancelled.set()
+            self._close_after_project_check = True
+            self._set_status('Stopping the project check; the saved project is unchanged.')
+            event.ignore()
+            return
         if self._music_panel is not None:
             self._music_panel.stop_preview()
             if self._music_panel.operation_in_progress:
@@ -8660,15 +8688,17 @@ class StudioMainWindow(QMainWindow):
         try:
             document = session.canonical_document() if session and session.modified_count else {"edits": []}
             rows = self._build_includes_timeline.observe(document, baseline=baseline)
-            fits = project_fit_labels(session) if session and any(
-                e.get("kind") == "uniform_equipment_texture" for e in document["edits"]
-            ) else {}
+            fits = project_fit_labels(session) if session else {}
+            paths = {str(e.replacement_path): e.asset_id for e in session.iter_project_png_edits()} \
+                if session and hasattr(session, 'iter_project_png_edits') else {}
             labels = []
             for row in rows:
                 edit = document["edits"][row["project_edit_index"]]
                 label = row["label"]
                 if edit.get("kind") == "uniform_equipment_texture":
-                    label += "; " + fits.get(edit["asset_id"], "fit measurement unavailable; reimport to check")
+                    label += "; " + fits.get(edit["asset_id"], "fit pending; checked when you build")
+                elif paths.get(edit.get('png', edit.get('clean_png'))) in fits:
+                    label += '; ' + fits[paths[edit.get('png', edit.get('clean_png'))]]
                 labels.append(label)
             text = "\n".join(labels)
         except Exception as exc:
@@ -8875,7 +8905,7 @@ class StudioMainWindow(QMainWindow):
         )
         build_panel = getattr(self, "_build_panel", None)
         selected_build = bool(build_panel and build_panel.has_work())
-        self.build_button.setEnabled(ready and (count > 0 or selected_build) and not global_busy)
+        self.build_button.setEnabled(ready and (count > 0 or build_panel is not None) and not global_busy)
         # A disabled button that gives no reason reads as a broken one.  A modder
         # reported being unable to rebuild the XISO, and loading a disc then
         # pressing Build before making an edit does exactly nothing: no dialog, no
@@ -9868,6 +9898,8 @@ def launch_studio(
     window.show()
     # Keep a Python reference when embedded in an existing QApplication.
     setattr(app, "_2k5_mod_studio_window", window)
+    from mod_editor.core.self_update import notify_update_ready
+    notify_update_ready()
     return app.exec_()
 
 

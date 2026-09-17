@@ -1,0 +1,25 @@
+E.
+======================================================================
+ERROR: test_pending_preview_is_read_only_and_rejects_invalid_ratings (__main__.WeightPreviewTests.test_pending_preview_is_read_only_and_rejects_invalid_ratings)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-apf7/tests/mod_editor/test_apf_b711_weight_preview.py", line 49, in test_pending_preview_is_read_only_and_rejects_invalid_ratings
+    self.facade.preview_playcalling_ratings(context, 'offense', form, ratings)
+  File "/home/noah/2k-worktrees/astra-b71-apf7/mod_editor/apf_studio/facade.py", line 195, in preview_playcalling_ratings
+    return self._playcalling.preview_ratings(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-apf7/mod_editor/apf_studio/playcalling_service.py", line 909, in preview_ratings
+    state, _ = self.apply(state, request, session.source.index_0a)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b71-apf7/mod_editor/apf_studio/playcalling_service.py", line 515, in apply
+    validate_request(request)
+  File "/home/noah/2k-worktrees/astra-b71-apf7/mod_editor/apf_studio/playcalling_service.py", line 156, in validate_request
+    _integer(value, 0, maximum)
+  File "/home/noah/2k-worktrees/astra-b71-apf7/mod_editor/apf_studio/playcalling_service.py", line 111, in _integer
+    raise ValidationError(f"Choose a whole number from {low} to {high}")
+mod_editor.core.errors.ValidationError: Choose a whole number from 0 to 7
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.315s
+
+FAILED (errors=1)

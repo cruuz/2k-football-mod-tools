@@ -1,0 +1,11 @@
+{
+  "name": "disasm-shipped-visibility",
+  "argv": [
+    "python3",
+    "reports/b71_s10/disassemble_shipped_visibility.py"
+  ],
+  "start_utc": "2026-09-17T00:22:13.497617+00:00",
+  "end_utc": "2026-09-17T00:22:13.651264+00:00",
+  "seconds": 0.154,
+  "exit_code": 0
+}

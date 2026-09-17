@@ -1,0 +1,729 @@
+
+ROUTINE 0xa73b0 0xa7940
+000a73b0  fld       dword ptr [eax + 0x10]
+000a73b3  ret
+000a73b4  nop
+000a73b5  nop
+000a73b6  nop
+000a73b7  nop
+000a73b8  nop
+000a73b9  nop
+000a73ba  nop
+000a73bb  nop
+000a73bc  nop
+000a73bd  nop
+000a73be  nop
+000a73bf  nop
+000a73c0  mov       eax, dword ptr [esp + 4]
+000a73c4  mov       dword ptr [ecx + 0x10], eax
+000a73c7  ret       4
+000a73ca  nop
+000a73cb  nop
+000a73cc  nop
+000a73cd  nop
+000a73ce  nop
+000a73cf  nop
+000a73d0  or        dword ptr [eax + 0x18], 8
+000a73d4  ret
+000a73d5  nop
+000a73d6  nop
+000a73d7  nop
+000a73d8  nop
+000a73d9  nop
+000a73da  nop
+000a73db  nop
+000a73dc  nop
+000a73dd  nop
+000a73de  nop
+000a73df  nop
+000a73e0  mov       eax, dword ptr [eax]
+000a73e2  ret
+000a73e3  nop
+000a73e4  nop
+000a73e5  nop
+000a73e6  nop
+000a73e7  nop
+000a73e8  nop
+000a73e9  nop
+000a73ea  nop
+000a73eb  nop
+000a73ec  nop
+000a73ed  nop
+000a73ee  nop
+000a73ef  nop
+000a73f0  mov       edx, dword ptr [ecx]
+000a73f2  xor       eax, eax
+000a73f4  cmp       edx, -1
+000a73f7  sete      al
+000a73fa  ret
+000a73fb  nop
+000a73fc  nop
+000a73fd  nop
+000a73fe  nop
+000a73ff  nop
+000a7400  mov       eax, dword ptr [eax + 0x30]
+000a7403  ret
+000a7404  nop
+000a7405  nop
+000a7406  nop
+000a7407  nop
+000a7408  nop
+000a7409  nop
+000a740a  nop
+000a740b  nop
+000a740c  nop
+000a740d  nop
+000a740e  nop
+000a740f  nop
+000a7410  cmp       edx, 2
+000a7413  jge       0xa741a
+000a7415  mov       dword ptr [ecx + edx*4 + 8], eax
+000a7419  ret
+000a741a  mov       dword ptr [ecx + 0xc], eax
+000a741d  mov       dword ptr [ecx + 8], eax
+000a7420  ret
+000a7421  nop
+000a7422  nop
+000a7423  nop
+000a7424  nop
+000a7425  nop
+000a7426  nop
+000a7427  nop
+000a7428  nop
+000a7429  nop
+000a742a  nop
+000a742b  nop
+000a742c  nop
+000a742d  nop
+000a742e  nop
+000a742f  nop
+000a7430  mov       eax, dword ptr [0xe53804]
+000a7435  ret
+000a7436  nop
+000a7437  nop
+000a7438  nop
+000a7439  nop
+000a743a  nop
+000a743b  nop
+000a743c  nop
+000a743d  nop
+000a743e  nop
+000a743f  nop
+000a7440  movaps    xmm0, xmmword ptr [eax + 0x30]
+000a7444  movaps    xmmword ptr [ecx], xmm0
+000a7447  ret
+000a7448  nop
+000a7449  nop
+000a744a  nop
+000a744b  nop
+000a744c  nop
+000a744d  nop
+000a744e  nop
+000a744f  nop
+000a7450  mov       eax, dword ptr [0xe60280]
+000a7455  ret
+000a7456  nop
+000a7457  nop
+000a7458  nop
+000a7459  nop
+000a745a  nop
+000a745b  nop
+000a745c  nop
+000a745d  nop
+000a745e  nop
+000a745f  nop
+000a7460  mov       eax, dword ptr [0xe60284]
+000a7465  ret
+000a7466  nop
+000a7467  nop
+000a7468  nop
+000a7469  nop
+000a746a  nop
+000a746b  nop
+000a746c  nop
+000a746d  nop
+000a746e  nop
+000a746f  nop
+000a7470  mov       eax, dword ptr [0xe6028c]
+000a7475  ret
+000a7476  nop
+000a7477  nop
+000a7478  nop
+000a7479  nop
+000a747a  nop
+000a747b  nop
+000a747c  nop
+000a747d  nop
+000a747e  nop
+000a747f  nop
+000a7480  mov       eax, dword ptr [0xe602c4]
+000a7485  ret
+000a7486  nop
+000a7487  nop
+000a7488  nop
+000a7489  nop
+000a748a  nop
+000a748b  nop
+000a748c  nop
+000a748d  nop
+000a748e  nop
+000a748f  nop
+000a7490  mov       eax, dword ptr [0xe602ec]
+000a7495  ret
+000a7496  nop
+000a7497  nop
+000a7498  nop
+000a7499  nop
+000a749a  nop
+000a749b  nop
+000a749c  nop
+000a749d  nop
+000a749e  nop
+000a749f  nop
+000a74a0  mov       eax, dword ptr [eax]
+000a74a2  ret
+000a74a3  nop
+000a74a4  nop
+000a74a5  nop
+000a74a6  nop
+000a74a7  nop
+000a74a8  nop
+000a74a9  nop
+000a74aa  nop
+000a74ab  nop
+000a74ac  nop
+000a74ad  nop
+000a74ae  nop
+000a74af  nop
+000a74b0  push      ecx
+000a74b1  mov       ecx, dword ptr [eax + 0xc]
+000a74b4  fld       dword ptr [ecx + 4]
+000a74b7  mov       dword ptr [esp], 1
+000a74bf  fcomp     dword ptr [0x4e4180]
+000a74c5  fnstsw    ax
+000a74c7  test      ah, 0x41
+000a74ca  je        0xa74d4
+000a74cc  mov       dword ptr [esp], 0xffffffff
+000a74d4  fild      dword ptr [esp]
+000a74d8  fstp      dword ptr [esp]
+000a74dc  fld       dword ptr [esp]
+000a74e0  pop       ecx
+000a74e1  ret
+000a74e2  nop
+000a74e3  nop
+000a74e4  nop
+000a74e5  nop
+000a74e6  nop
+000a74e7  nop
+000a74e8  nop
+000a74e9  nop
+000a74ea  nop
+000a74eb  nop
+000a74ec  nop
+000a74ed  nop
+000a74ee  nop
+000a74ef  nop
+000a74f0  mov       eax, dword ptr [0xe602b4]
+000a74f5  ret
+000a74f6  nop
+000a74f7  nop
+000a74f8  nop
+000a74f9  nop
+000a74fa  nop
+000a74fb  nop
+000a74fc  nop
+000a74fd  nop
+000a74fe  nop
+000a74ff  nop
+000a7500  mov       eax, dword ptr [0xe602bc]
+000a7505  ret
+000a7506  nop
+000a7507  nop
+000a7508  nop
+000a7509  nop
+000a750a  nop
+000a750b  nop
+000a750c  nop
+000a750d  nop
+000a750e  nop
+000a750f  nop
+000a7510  sub       eax, dword ptr [0xb6e7e4]
+000a7516  test      eax, eax
+000a7518  jle       0xa7528
+000a751a  mov       ecx, dword ptr [0xb6e7e8]
+000a7520  sub       eax, 0x200
+000a7525  add       eax, ecx
+000a7527  ret
+000a7528  mov       edx, dword ptr [0xb6e7e8]
+000a752e  add       eax, edx
+000a7530  ret
+000a7531  nop
+000a7532  nop
+000a7533  nop
+000a7534  nop
+000a7535  nop
+000a7536  nop
+000a7537  nop
+000a7538  nop
+000a7539  nop
+000a753a  nop
+000a753b  nop
+000a753c  nop
+000a753d  nop
+000a753e  nop
+000a753f  nop
+000a7540  mov       eax, dword ptr [eax + 0xc]
+000a7543  ret
+000a7544  nop
+000a7545  nop
+000a7546  nop
+000a7547  nop
+000a7548  nop
+000a7549  nop
+000a754a  nop
+000a754b  nop
+000a754c  nop
+000a754d  nop
+000a754e  nop
+000a754f  nop
+000a7550  mov       eax, dword ptr [eax + 0xc]
+000a7553  ret
+000a7554  nop
+000a7555  nop
+000a7556  nop
+000a7557  nop
+000a7558  nop
+000a7559  nop
+000a755a  nop
+000a755b  nop
+000a755c  nop
+000a755d  nop
+000a755e  nop
+000a755f  nop
+000a7560  mov       eax, dword ptr [eax + 0x18]
+000a7563  ret
+000a7564  nop
+000a7565  nop
+000a7566  nop
+000a7567  nop
+000a7568  nop
+000a7569  nop
+000a756a  nop
+000a756b  nop
+000a756c  nop
+000a756d  nop
+000a756e  nop
+000a756f  nop
+000a7570  mov       eax, dword ptr [eax + 0x18]
+000a7573  ret
+000a7574  nop
+000a7575  nop
+000a7576  nop
+000a7577  nop
+000a7578  nop
+000a7579  nop
+000a757a  nop
+000a757b  nop
+000a757c  nop
+000a757d  nop
+000a757e  nop
+000a757f  nop
+000a7580  mov       eax, dword ptr [eax + 0x14]
+000a7583  ret
+000a7584  nop
+000a7585  nop
+000a7586  nop
+000a7587  nop
+000a7588  nop
+000a7589  nop
+000a758a  nop
+000a758b  nop
+000a758c  nop
+000a758d  nop
+000a758e  nop
+000a758f  nop
+000a7590  mov       eax, dword ptr [0xe5fc00]
+000a7595  mov       ecx, dword ptr [eax + 0x14]
+000a7598  movaps    xmm0, xmmword ptr [ecx]
+000a759b  movaps    xmmword ptr [edx], xmm0
+000a759e  ret
+000a759f  nop
+000a75a0  push      ecx
+000a75a1  mov       eax, dword ptr [0xe60280]
+000a75a6  mov       ecx, dword ptr [eax + 8]
+000a75a9  mov       edx, dword ptr [ecx + 0xc]
+000a75ac  fld       dword ptr [edx + 4]
+000a75af  mov       dword ptr [esp], 1
+000a75b7  fcomp     dword ptr [0x4e4180]
+000a75bd  fnstsw    ax
+000a75bf  test      ah, 0x41
+000a75c2  je        0xa75cc
+000a75c4  mov       dword ptr [esp], 0xffffffff
+000a75cc  fild      dword ptr [esp]
+000a75d0  fstp      dword ptr [esp]
+000a75d4  fld       dword ptr [esp]
+000a75d8  pop       ecx
+000a75d9  ret
+000a75da  nop
+000a75db  nop
+000a75dc  nop
+000a75dd  nop
+000a75de  nop
+000a75df  nop
+000a75e0  mov       eax, dword ptr [0xe602ec]
+000a75e5  mov       eax, dword ptr [eax + 4]
+000a75e8  ret
+000a75e9  nop
+000a75ea  nop
+000a75eb  nop
+000a75ec  nop
+000a75ed  nop
+000a75ee  nop
+000a75ef  nop
+000a75f0  mov       eax, dword ptr [0xe602ec]
+000a75f5  movaps    xmm0, xmmword ptr [eax + 0x10]
+000a75f9  movaps    xmmword ptr [ecx], xmm0
+000a75fc  ret
+000a75fd  nop
+000a75fe  nop
+000a75ff  nop
+000a7600  mov       eax, dword ptr [0xe602ec]
+000a7605  movaps    xmm0, xmmword ptr [eax + 0x20]
+000a7609  movaps    xmmword ptr [ecx], xmm0
+000a760c  ret
+000a760d  nop
+000a760e  nop
+000a760f  nop
+000a7610  mov       eax, dword ptr [0xe602ec]
+000a7615  movaps    xmm0, xmmword ptr [eax + 0x30]
+000a7619  movaps    xmmword ptr [ecx], xmm0
+000a761c  ret
+000a761d  nop
+000a761e  nop
+000a761f  nop
+000a7620  mov       eax, dword ptr [0xb6e7e0]
+000a7625  push      esi
+000a7626  mov       esi, dword ptr [0xb6e7e4]
+000a762c  mov       ecx, eax
+000a762e  sub       ecx, esi
+000a7630  test      ecx, ecx
+000a7632  jle       0xa763a
+000a7634  sub       ecx, 0x200
+000a763a  mov       esi, dword ptr [0xb6e7e8]
+000a7640  add       ecx, esi
+000a7642  cmp       edx, esi
+000a7644  pop       esi
+000a7645  jge       0xa765e
+000a7647  cmp       edx, ecx
+000a7649  jl        0xa765e
+000a764b  sub       eax, ecx
+000a764d  add       eax, edx
+000a764f  and       eax, 0x800001ff
+000a7654  jns       0xa7661
+000a7656  dec       eax
+000a7657  or        eax, 0xfffffe00
+000a765c  inc       eax
+000a765d  ret
+000a765e  or        eax, 0xffffffff
+000a7661  ret
+000a7662  nop
+000a7663  nop
+000a7664  nop
+000a7665  nop
+000a7666  nop
+000a7667  nop
+000a7668  nop
+000a7669  nop
+000a766a  nop
+000a766b  nop
+000a766c  nop
+000a766d  nop
+000a766e  nop
+000a766f  nop
+000a7670  push      esi
+000a7671  mov       esi, dword ptr [0xb6ff88]
+000a7677  test      esi, esi
+000a7679  je        0xa768d
+000a767b  jmp       0xa7680
+000a767d  lea       ecx, [ecx]
+000a7680  mov       edx, edi
+000a7682  mov       ecx, ebx
+000a7684  call      dword ptr [esi]
+000a7686  mov       esi, dword ptr [esi + 4]
+000a7689  test      esi, esi
+000a768b  jne       0xa7680
+000a768d  pop       esi
+000a768e  ret
+000a768f  nop
+000a7690  test      ecx, ecx
+000a7692  push      esi
+000a7693  mov       esi, dword ptr [esp + 8]
+000a7697  mov       dword ptr [eax], esi
+000a7699  mov       esi, dword ptr [esp + 0xc]
+000a769d  mov       dword ptr [eax + 4], esi
+000a76a0  mov       esi, dword ptr [esp + 0x10]
+000a76a4  mov       dword ptr [eax + 0x34], esi
+000a76a7  mov       esi, dword ptr [esp + 0x14]
+000a76ab  movaps    xmm0, xmmword ptr [esi]
+000a76ae  mov       esi, dword ptr [esp + 0x18]
+000a76b2  mov       dword ptr [eax + 0x30], esi
+000a76b5  movaps    xmmword ptr [eax + 0x10], xmm0
+000a76b9  mov       dword ptr [eax + 0x20], ecx
+000a76bc  mov       dword ptr [eax + 0x24], edx
+000a76bf  pop       esi
+000a76c0  je        0xa76db
+000a76c2  mov       ecx, dword ptr [ecx + 0x30]
+000a76c5  mov       ecx, dword ptr [ecx + 0x10]
+000a76c8  test      ecx, ecx
+000a76ca  je        0xa76db
+000a76cc  mov       ecx, dword ptr [ecx + 0xc]
+000a76cf  mov       ecx, dword ptr [ecx]
+000a76d1  cmp       ecx, -1
+000a76d4  jne       0xa76d8
+000a76d6  or        ecx, ecx
+000a76d8  mov       byte ptr [eax + 0x28], cl
+000a76db  test      edx, edx
+000a76dd  je        0xa76f8
+000a76df  mov       edx, dword ptr [edx + 0x30]
+000a76e2  mov       ecx, dword ptr [edx + 0x10]
+000a76e5  test      ecx, ecx
+000a76e7  je        0xa76f8
+000a76e9  mov       ecx, dword ptr [ecx + 0xc]
+000a76ec  mov       ecx, dword ptr [ecx]
+000a76ee  cmp       ecx, -1
+000a76f1  jne       0xa76f5
+000a76f3  or        ecx, ecx
+000a76f5  mov       byte ptr [eax + 0x29], cl
+000a76f8  ret       0x14
+000a76fb  nop
+000a76fc  nop
+000a76fd  nop
+000a76fe  nop
+000a76ff  nop
+000a7700  mov       eax, dword ptr [0xb6e7e0]
+000a7705  sub       eax, dword ptr [0xb6e7e4]
+000a770b  test      eax, eax
+000a770d  jle       0xa771d
+000a770f  mov       ecx, dword ptr [0xb6e7e8]
+000a7715  sub       eax, 0x200
+000a771a  add       eax, ecx
+000a771c  ret
+000a771d  mov       edx, dword ptr [0xb6e7e8]
+000a7723  add       eax, edx
+000a7725  ret
+000a7726  nop
+000a7727  nop
+000a7728  nop
+000a7729  nop
+000a772a  nop
+000a772b  nop
+000a772c  nop
+000a772d  nop
+000a772e  nop
+000a772f  nop
+000a7730  mov       eax, dword ptr [0xb6e7e8]
+000a7735  dec       eax
+000a7736  ret
+000a7737  nop
+000a7738  nop
+000a7739  nop
+000a773a  nop
+000a773b  nop
+000a773c  nop
+000a773d  nop
+000a773e  nop
+000a773f  nop
+000a7740  push      esi
+000a7741  mov       eax, edx
+000a7743  mov       edx, ecx
+000a7745  mov       ecx, dword ptr [0xb6e7e0]
+000a774b  push      edi
+000a774c  mov       edi, dword ptr [0xb6e7e4]
+000a7752  mov       esi, ecx
+000a7754  sub       esi, edi
+000a7756  test      esi, esi
+000a7758  jle       0xa7760
+000a775a  sub       esi, 0x200
+000a7760  mov       edi, dword ptr [0xb6e7e8]
+000a7766  add       esi, edi
+000a7768  cmp       edx, edi
+000a776a  jge       0xa7789
+000a776c  cmp       edx, esi
+000a776e  jl        0xa7789
+000a7770  sub       ecx, esi
+000a7772  add       ecx, edx
+000a7774  and       ecx, 0x800001ff
+000a777a  jns       0xa7784
+000a777c  dec       ecx
+000a777d  or        ecx, 0xfffffe00
+000a7783  inc       ecx
+000a7784  cmp       ecx, -1
+000a7787  jne       0xa7797
+000a7789  pop       edi
+000a778a  mov       dword ptr [eax], 0
+000a7790  mov       eax, 0xfffffffc
+000a7795  pop       esi
+000a7796  ret
+000a7797  shl       ecx, 6
+000a779a  lea       edx, [ecx + 0xb667e0]
+000a77a0  lea       ecx, [eax + 0x30]
+000a77a3  cmp       eax, ecx
+000a77a5  jae       0xa77be
+000a77a7  sub       edx, eax
+000a77a9  lea       esp, [esp]
+000a77b0  movaps    xmm0, xmmword ptr [edx + eax]
+000a77b4  movaps    xmmword ptr [eax], xmm0
+000a77b7  add       eax, 0x10
+000a77ba  cmp       eax, ecx
+000a77bc  jb        0xa77b0
+000a77be  pop       edi
+000a77bf  xor       eax, eax
+000a77c1  pop       esi
+000a77c2  ret
+000a77c3  nop
+000a77c4  nop
+000a77c5  nop
+000a77c6  nop
+000a77c7  nop
+000a77c8  nop
+000a77c9  nop
+000a77ca  nop
+000a77cb  nop
+000a77cc  nop
+000a77cd  nop
+000a77ce  nop
+000a77cf  nop
+000a77d0  mov       ecx, 0x4f0d8c
+000a77d5  jmp       0x218760
+000a77da  nop
+000a77db  nop
+000a77dc  nop
+000a77dd  nop
+000a77de  nop
+000a77df  nop
+000a77e0  jmp       0x218770
+000a77e5  nop
+000a77e6  nop
+000a77e7  nop
+000a77e8  nop
+000a77e9  nop
+000a77ea  nop
+000a77eb  nop
+000a77ec  nop
+000a77ed  nop
+000a77ee  nop
+000a77ef  nop
+000a77f0  mov       ecx, dword ptr [esi]
+000a77f2  call      0xde2f0
+000a77f7  mov       dword ptr [esi], eax
+000a77f9  ret
+000a77fa  nop
+000a77fb  nop
+000a77fc  nop
+000a77fd  nop
+000a77fe  nop
+000a77ff  nop
+000a7800  mov       ecx, dword ptr [esi]
+000a7802  call      0xde360
+000a7807  mov       dword ptr [esi], eax
+000a7809  ret
+000a780a  nop
+000a780b  nop
+000a780c  nop
+000a780d  nop
+000a780e  nop
+000a780f  nop
+000a7810  mov       eax, dword ptr [esi]
+000a7812  test      eax, eax
+000a7814  je        0xa7821
+000a7816  mov       ecx, dword ptr [eax + 0x1c]
+000a7819  call      0xde420
+000a781e  mov       dword ptr [esi], eax
+000a7820  ret
+000a7821  xor       ecx, ecx
+000a7823  call      0xde420
+000a7828  mov       dword ptr [esi], eax
+000a782a  ret
+000a782b  nop
+000a782c  nop
+000a782d  nop
+000a782e  nop
+000a782f  nop
+000a7830  mov       ecx, dword ptr [esi]
+000a7832  push      edi
+000a7833  call      0xde440
+000a7838  mov       edi, eax
+000a783a  mov       dword ptr [esi], 0
+000a7840  call      0x61c50
+000a7845  cmp       edi, eax
+000a7847  jne       0xa784f
+000a7849  mov       dword ptr [esi], 0xe5fc20
+000a784f  call      0x61c60
+000a7854  cmp       edi, eax
+000a7856  pop       edi
+000a7857  jne       0xa785f
+000a7859  mov       dword ptr [esi], 0xe5fc60
+000a785f  ret
+000a7860  push      esi
+000a7861  xor       esi, esi
+000a7863  mov       ecx, 0xb6ff6c
+000a7868  mov       dword ptr [0xb6ff64], 0xffffffff
+000a7872  mov       dword ptr [0xb6ff68], esi
+000a7878  call      0xaf400
+000a787d  xor       edx, edx
+000a787f  mov       ecx, 0xb6ff6c
+000a7884  call      0xaf2f0
+000a7889  mov       eax, dword ptr [0xb6ff84]
+000a788e  or        eax, 8
+000a7891  mov       ecx, 0xb6ff6c
+000a7896  mov       dword ptr [0xb6ff84], eax
+000a789b  call      0xaf510
+000a78a0  mov       dword ptr [0xb6ff7c], esi
+000a78a6  mov       dword ptr [0xb6e7e4], 1
+000a78b0  mov       dword ptr [0xb6e7e0], esi
+000a78b6  mov       dword ptr [0xb667e0], esi
+000a78bc  mov       dword ptr [0xb6e7e8], 2
+000a78c6  mov       eax, 0xb6ec94
+000a78cb  jmp       0xa78d0
+000a78cd  lea       ecx, [ecx]
+000a78d0  mov       dword ptr [eax - 4], esi
+000a78d3  mov       dword ptr [eax], esi
+000a78d5  add       eax, 0x4b0
+000a78da  cmp       eax, 0xb70404
+000a78df  jl        0xa78d0
+000a78e1  call      0xa77d0
+000a78e6  call      0xec200
+000a78eb  test      eax, eax
+000a78ed  jne       0xa78f6
+000a78ef  call      0xcce00
+000a78f4  jmp       0xa7900
+000a78f6  mov       dword ptr [0xe53808], 1
+000a7900  call      0x1bb190
+000a7905  mov       dword ptr [0xb6ff60], esi
+000a790b  mov       dword ptr [0xb667d0], 1
+000a7915  pop       esi
+000a7916  ret
+000a7917  nop
+000a7918  nop
+000a7919  nop
+000a791a  nop
+000a791b  nop
+000a791c  nop
+000a791d  nop
+000a791e  nop
+000a791f  nop
+000a7920  call      0xa77e0
+000a7925  mov       dword ptr [0xb667d0], 0
+000a792f  ret
+000a7930  jmp       0x1e91f0
+000a7935  nop
+000a7936  nop
+000a7937  nop
+000a7938  nop
+000a7939  nop
+000a793a  nop
+000a793b  nop
+000a793c  nop
+000a793d  nop
+000a793e  nop
+000a793f  nop

@@ -1,0 +1,24 @@
+{
+  "name": "commit-code",
+  "argv": [
+    "git",
+    "--git-dir=.scratch/astra-b71-s10.git",
+    "--work-tree=.",
+    "commit",
+    "-m",
+    "Gate sprite down glyphs on native element visibility",
+    "--",
+    "tools/scorebug_sprite/runtime.c",
+    "mod_editor/core/nfl2k5_scorebug_runtime.py",
+    "mod_editor/core/nfl2k5_scorebug_sprite.py",
+    "mod_editor/core/nfl2k5_scorebug_sprite_code.py",
+    "mod_editor/core/providers.py",
+    "tests/mod_editor/test_nfl2k5_scorebug_down_visibility.py",
+    "docs/mod_editor/sprite_scorebug.md",
+    "docs/mod_editor/2k5_mod_studio_changelog.md"
+  ],
+  "start_utc": "2026-09-17T00:17:52.941604+00:00",
+  "end_utc": "2026-09-17T00:17:53.015103+00:00",
+  "seconds": 0.073,
+  "exit_code": 0
+}

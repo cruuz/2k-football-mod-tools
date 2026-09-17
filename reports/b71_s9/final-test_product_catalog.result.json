@@ -1,0 +1,12 @@
+{
+  "name": "final-test_product_catalog",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_product_catalog.py",
+    "-v"
+  ],
+  "start_utc": "2026-09-16T23:41:46.822495+00:00",
+  "end_utc": "2026-09-16T23:41:46.975462+00:00",
+  "seconds": 0.153,
+  "exit_code": 0
+}

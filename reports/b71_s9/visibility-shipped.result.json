@@ -1,0 +1,11 @@
+{
+  "name": "visibility-shipped",
+  "argv": [
+    "python3",
+    "reports/b71_s9/probe_visibility.py"
+  ],
+  "start_utc": "2026-09-16T23:11:05.721132+00:00",
+  "end_utc": "2026-09-16T23:11:33.723496+00:00",
+  "seconds": 28.002,
+  "exit_code": 0
+}

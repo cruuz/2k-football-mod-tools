@@ -1,0 +1,2540 @@
+[
+  {
+    "command": "sed -n '150,220p' mod_editor/studio/project_archive.py; rg -n 'class Loaded|def save_project|def load_project|manifest|fsync' mod_editor/studio/project_archive.py | tail -55; sed -n '3470,3635p' mod_editor/studio/facade.py; sed -n '1,140p' mod_editor/core/equipment_staging.py; sed -n '540,700p' mod_editor/core/nfl2k5_uniform_equipment_writer.py; sed -n '1650,1790p' mod_editor/core/nfl2k5_uniform_equipment_writer.py",
+    "started": "2026-09-16T23:22:54.111Z",
+    "exit_code": 0,
+    "seconds": 0.11,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "sed -n '3625,3745p' mod_editor/studio/facade.py; sed -n '4310,4520p' mod_editor/studio/session.py; sed -n '60,108p' mod_editor/gui/build_panel_qt.py; sed -n '2470,2628p' mod_editor/gui/build_panel_qt.py; rg -n 'require_equipment_fit|def build_iso|def build_with|equipment_fit' mod_editor/studio/facade.py; rg -n 'def read_project|preflight_project_equipment|write_text|write_bytes|def .*project|cancel|ThreadPool|ProcessPool' tools/nfl2k5_visual_mod_project.py | tail -75; rg -n 'progress|elapsed|seconds| s\"| s\\}' mod_editor/gui/studio_qt.py | tail -55; sed -n '1,200p' tests/mod_editor/b70_equipment_fixture.py",
+    "started": "2026-09-16T23:23:03.063Z",
+    "exit_code": 0,
+    "seconds": 0.11,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "sed -n '940,1025p' mod_editor/studio/project_archive.py; sed -n '1,220p' mod_editor/core/nfl2k5_equipment_lz.py; sed -n '1272,1290p' tools/nfl2k5_visual_mod_project.py; sed -n '4000,4105p' tools/nfl2k5_visual_mod_project.py; rg -n 'require_equipment|def build_with_project|def build\\(|read_project\\(|cancel' mod_editor/core/mod_build.py mod_editor/core/nfl2k5_build_service.py; rg -n 'validate_replacement|_Project.*Router' mod_editor/studio/session.py; rg -n 'def _compile_group|def build_unified|def _cache|def staged|compile_cache' mod_editor/core/nfl2k5_uniform_equipment_writer.py | tail -40; sed -n '3380,3479p' tools/nfl2k5_visual_mod_project.py; git log --oneline -12; git tag -l '*beta*' | tail -15",
+    "started": "2026-09-16T23:23:14.664Z",
+    "exit_code": 0,
+    "seconds": 0.115,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "sed -n '1025,1118p' mod_editor/studio/project_archive.py; sed -n '334,425p' mod_editor/studio/project_archive.py; sed -n '620,663p' mod_editor/studio/project_archive.py; sed -n '950,1018p' mod_editor/core/nfl2k5_uniform_equipment_writer.py; sed -n '1368,1558p' mod_editor/core/nfl2k5_uniform_equipment_writer.py; sed -n '979,1135p' mod_editor/core/mod_build.py; sed -n '1303,1398p' mod_editor/core/nfl2k5_build_service.py; sed -n '1,155p' tools/b71_t4_equipment_probe.py",
+    "started": "2026-09-16T23:23:27.161Z",
+    "exit_code": 0,
+    "seconds": 0.103,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "sed -n '1018,1260p' mod_editor/core/nfl2k5_uniform_equipment_writer.py; sed -n '3481,3615p' tools/nfl2k5_visual_mod_project.py; rg -n 'parallel|phase\\(|progress' tools/nfl2k5_visual_mod_project.py | tail -65; sed -n '315,357p' mod_editor/studio/session.py; sed -n '8100,8190p' mod_editor/gui/studio_qt.py; sed -n '1,150p' tests/mod_editor/test_b71_t4_equipment_project.py; rg -n 'def _run_build_command|class .*Runner|run_progress|terminate' mod_editor/core/nfl2k5_build_service.py",
+    "started": "2026-09-16T23:24:01.364Z",
+    "exit_code": 0,
+    "seconds": 0.11,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "sed -n '1474,1533p' mod_editor/core/nfl2k5_build_service.py; sed -n '570,680p' mod_editor/core/nfl2k5_build_service.py; sed -n '3680,3740p' tools/nfl2k5_visual_mod_project.py; sed -n '988,1017p' mod_editor/core/mod_build.py; cat mod_editor/core/equipment_reporting.py; sed -n '60,145p' tests/mod_editor/test_nfl2k5_equipment_import.py; cat reports/b71_t4/reproduction/measurements.json | head -25; du -sh mod_editor tools reports/assets; rg -n 'advanced|preflight_plan' tests/mod_editor/test_mod_build*; rg -n 'def _project_open_change' -A35 mod_editor/studio/facade.py; rg -n 'closeEvent|_blocking|recovery' mod_editor/gui/studio_qt.py | tail -35",
+    "started": "2026-09-16T23:24:12.164Z",
+    "exit_code": 0,
+    "seconds": 0.13,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "sed -n '1,67p' tests/mod_editor/test_nfl2k5_equipment_import.py; sed -n '340,400p' mod_editor/core/nfl2k5_uniform_equipment_writer.py; sed -n '1460,1528p' mod_editor/core/nfl2k5_uniform_equipment_writer.py; sed -n '6200,6250p' tools/nfl2k5_visual_mod_project.py; sed -n '182,213p' mod_editor/core/nfl2k5_build_service.py; sed -n '980,990p' mod_editor/core/mod_build.py; sed -n '8568,8615p' mod_editor/gui/studio_qt.py; sed -n '1,70p' /home/noah/PROJECTS.md; head -25 /home/noah/projects.json; rg --files tests/mod_editor -g '*studio*qt*' -g '*project*' -g '*build*' | head -70",
+    "started": "2026-09-16T23:24:37.740Z",
+    "exit_code": 0,
+    "seconds": 0.11,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "python3 - <<'PY'\nimport subprocess\np=subprocess.Popen(['python3','tools/b71_t5_run.py','--name','advanced-before','--','python3','-c',\"from mod_editor.core import mod_build as m; from pathlib import Path; import time; p=m.apply_preset(m.BuildPlan(source='/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso',target='/tmp/t5-unused.iso'),'softdrink_advanced'); print(m.validate_plan(p),flush=True); print(m.preflight_plan(p,lambda *x: print(x,flush=True)),flush=True)\"],stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,start_new_session=True)\nprint(p.pid)\nPY",
+    "started": "2026-09-16T23:25:17.045Z",
+    "exit_code": 0,
+    "seconds": 0.11,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "sed -n '210,230p' mod_editor/studio/project_archive.py; sed -n '720,738p' mod_editor/studio/project_archive.py; sed -n '4520,4555p' mod_editor/studio/session.py; sed -n '4720,4745p' mod_editor/studio/session.py; rg -n 'def _validate_stadium_project_png' -A15 mod_editor/studio/session.py; cat reports/b71_t5/advanced-before.log | tail -14; sed -n '1,110p' mod_editor/core/build_io.py; sed -n '1300,1370p' mod_editor/gui/build_panel_qt.py | head -3",
+    "started": "2026-09-16T23:26:10.081Z",
+    "exit_code": 0,
+    "seconds": 0.105,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "python3",
+      "-c",
+      "from mod_editor.core import mod_build as m; p=m.apply_preset(m.BuildPlan(source='/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso',target='/tmp/t5-unused.iso'),'softdrink_advanced'); print(m.validate_plan(p),flush=True); print(m.preflight_plan(p,lambda *x: print(x,flush=True)),flush=True)"
+    ],
+    "started": "2026-09-16T23:26:38.897552+00:00",
+    "exit_code": 0,
+    "seconds": 3.470166874001734,
+    "record": "reports/b71_t5/advanced-before.json"
+  },
+  {
+    "command": "sed -n '665,680p' mod_editor/studio/project_archive.py; rg -n 'for number, row in enumerate\\(rows\\)|for row in rows' mod_editor/studio/project_archive.py; rg -n 'preflight.*project|read_project\\(' mod_editor/core/nfl2k5_project* 2>/dev/null; tail -15 reports/b71_t5/advanced-before.log",
+    "started": "2026-09-16T23:27:21.201Z",
+    "exit_code": 0,
+    "seconds": 0.095,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "rg -n 'def context' -A25 tests/mod_editor/test_nfl2k5_equipment_texture_chain.py; sed -n '370,445p' mod_editor/studio/session.py; rg -n 'equipment|Uniform' mod_editor/studio/session.py | head -12; sed -n '5440,5465p' tools/nfl2k5_visual_mod_project.py; rg -n 'def _last_message|NFL2K5_BUILD_PHASE' mod_editor/core/nfl2k5_build_service.py; sed -n '147,193p' tests/mod_editor/test_mod_build.py; sed -n '8700,8718p' mod_editor/gui/studio_qt.py; sed -n '135,180p' mod_editor/core/nfl2k5_uniform_equipment_writer.py",
+    "started": "2026-09-16T23:28:10.726Z",
+    "exit_code": 0,
+    "seconds": 0.11,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "rg -n 'class _BackgroundTask' -A33 mod_editor/gui/studio_qt.py; sed -n '7730,7768p' mod_editor/gui/studio_qt.py; sed -n '1398,1472p' mod_editor/core/nfl2k5_build_service.py; sed -n '8650,8678p' mod_editor/gui/studio_qt.py; sed -n '905,930p' mod_editor/core/nfl2k5_build_service.py; rg -n 'parallel_imports|_parallel_uniform' tests/mod_editor/test_b68_t1_build.py",
+    "started": "2026-09-16T23:28:21.637Z",
+    "exit_code": 0,
+    "seconds": 0.102,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "tail -55 tools/nfl2k5_equipment_optimal.c; sed -n '15,50p' mod_editor/core/nfl2k5_uniform_equipment_writer.py; rg -n 'def _rebuild_fixed_span' -A25 mod_editor/core/nfl2k5_uniform_equipment_writer.py",
+    "started": "2026-09-16T23:29:18.519Z",
+    "exit_code": 0,
+    "seconds": 0.09,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "sed -n '1590,1673p' mod_editor/core/nfl2k5_uniform_equipment_writer.py; sed -n '2700,2775p' tools/nfl2k5_visual_mod_project.py; sed -n '4105,4137p' tools/nfl2k5_visual_mod_project.py; sed -n '1,60p' tests/mod_editor/test_b68_t1_build.py; rg -n 'progress_bar.setRange|_Signals' mod_editor/gui/build_panel_qt.py | tail -15",
+    "started": "2026-09-16T23:30:17.222Z",
+    "exit_code": 0,
+    "seconds": 0.099,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "python3",
+      "tools/b71_t5_project_probe.py",
+      "f7d6fc07"
+    ],
+    "started": "2026-09-16T23:31:23.459498+00:00",
+    "exit_code": 1,
+    "seconds": 0.7653242200030945,
+    "record": "reports/b71_t5/open-beta69.json"
+  },
+  {
+    "command": "cat reports/b71_t5/open-beta69.log; sed -n '106,127p' tests/mod_editor/test_b69_j1_build.py; rg -n 'def _fsync|fsync_directory' mod_editor/core/platform_compat.py; sed -n '103,127p' tests/mod_editor/test_b68_t1_build.py",
+    "started": "2026-09-16T23:31:32.197Z",
+    "exit_code": 0,
+    "seconds": 0.099,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "rg -n 'def supports_own_texture' -A20 mod_editor/core/nfl2k5_equipment_import_intent.py; sed -n '669,685p' mod_editor/studio/project_archive.py; sed -n '670,693p' mod_editor/core/nfl2k5_build_service.py; rg -n 'def _include_session_project|def has_work|def blocker' mod_editor/gui/build_panel_qt.py",
+    "started": "2026-09-16T23:31:58.753Z",
+    "exit_code": 0,
+    "seconds": 0.102,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "python3",
+      "tools/b71_t5_project_probe.py",
+      "f7d6fc07"
+    ],
+    "started": "2026-09-16T23:31:59.811093+00:00",
+    "exit_code": 1,
+    "seconds": 1.1161993109853938,
+    "record": "reports/b71_t5/open-beta69-run2.json"
+  },
+  {
+    "command": [
+      "python3",
+      "tools/b71_t5_project_probe.py",
+      "3c98d433"
+    ],
+    "started": "2026-09-16T23:32:13.207884+00:00",
+    "exit_code": 1,
+    "seconds": 1.115965828008484,
+    "record": "reports/b71_t5/open-beta70.json"
+  },
+  {
+    "command": [
+      "python3",
+      "tools/b71_t5_project_probe.py",
+      "02bbadd1"
+    ],
+    "started": "2026-09-16T23:32:13.224868+00:00",
+    "exit_code": 1,
+    "seconds": 1.1663562410103623,
+    "record": "reports/b71_t5/open-beta71.json"
+  },
+  {
+    "command": [
+      "python3",
+      "tools/b71_t5_project_probe.py",
+      "after"
+    ],
+    "started": "2026-09-16T23:32:13.236823+00:00",
+    "exit_code": 0,
+    "seconds": 1.6169093020143919,
+    "record": "reports/b71_t5/open-after.json"
+  },
+  {
+    "command": "sed -n '3736,3778p' mod_editor/studio/facade.py; sed -n '1073,1090p' mod_editor/core/mod_build.py; sed -n '2628,2656p' mod_editor/gui/build_panel_qt.py; cat reports/b71_t5/open-after.log; tail -15 reports/b71_t5/open-beta69-run2.log; head -30 mod_editor/core/nfl2k5_build_service.py; sed -n '3410,3455p' tools/nfl2k5_visual_mod_project.py",
+    "started": "2026-09-16T23:33:19.727Z",
+    "exit_code": 0,
+    "seconds": 0.108,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "python3",
+      "tools/b71_t5_project_probe.py",
+      "3c98d433"
+    ],
+    "started": "2026-09-16T23:33:52.698212+00:00",
+    "exit_code": 0,
+    "seconds": 433.73097849599435,
+    "record": "reports/b71_t5/open-beta70-run3.json"
+  },
+  {
+    "command": [
+      "python3",
+      "tools/b71_t5_project_probe.py",
+      "f7d6fc07"
+    ],
+    "started": "2026-09-16T23:33:52.719193+00:00",
+    "exit_code": 0,
+    "seconds": 408.95264415600104,
+    "record": "reports/b71_t5/open-beta69-run3.json"
+  },
+  {
+    "command": [
+      "python3",
+      "tools/b71_t5_project_probe.py",
+      "02bbadd1"
+    ],
+    "started": "2026-09-16T23:33:52.727815+00:00",
+    "exit_code": 0,
+    "seconds": 431.4434921939974,
+    "record": "reports/b71_t5/open-beta71-run3.json"
+  },
+  {
+    "command": "rg -n 'dataclasses import|class InputPin|class PinnedInput|def resolve_asset' tools/nfl2k5_visual_mod_project.py; tail -25 reports/b71_t5/open-beta69-run3.log; tail -15 reports/b71_t5/open-beta70-run3.log; tail -15 reports/b71_t5/open-beta71-run3.log; rg -n 'StudioSession' mod_editor/studio/facade.py | head -5; rg --files beta71_evidence -g '*1821*'; rg -n 'def read_validated_png' mod_editor/core/nfl2k5_stadium_texture_writer.py",
+    "started": "2026-09-16T23:34:57.538Z",
+    "exit_code": 0,
+    "seconds": 0.099,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "ps -eo pid,etime,pcpu,args | rg 'b71_t5|t5_project|advanced-before'; sed -n '639,650p' tools/nfl2k5_visual_mod_project.py; sed -n '1452,1473p' mod_editor/core/nfl2k5_stadium_texture_writer.py; rg -n 'fit_receipts|def _fit_receipts' mod_editor/studio/project_archive.py; sed -n '2660,2680p' tools/nfl2k5_visual_mod_project.py; rg --files /home/noah/Desktop -g '*1821*' 2>/dev/null | head -5",
+    "started": "2026-09-16T23:35:07.597Z",
+    "exit_code": 0,
+    "seconds": 0.193,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_b71_t5_project_open.py"
+    ],
+    "started": "2026-09-16T23:37:37.761900+00:00",
+    "exit_code": 1,
+    "seconds": 2.3177458140125964,
+    "record": "reports/b71_t5/tests-t5-initial.json"
+  },
+  {
+    "command": "ls -l reports/b71_t5; tail -20 reports/b71_t5/open-beta70-run3.log; rg -n 'bounded.*read|def validate_replacement' mod_editor/core/nfl2k5_product_visual.py; sed -n '264,300p' mod_editor/gui/studio_qt.py",
+    "started": "2026-09-16T23:37:38.844Z",
+    "exit_code": 0,
+    "seconds": 0.099,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "cat reports/b71_t5/tests-t5-initial.log; stat -c '%h %s %a' tools/nfl2k5_equipment_optimal; rg -n 'def _project_png_asset' -A18 mod_editor/studio/session.py; sed -n '1716,1758p' mod_editor/gui/build_panel_qt.py; sed -n '1645,1667p' mod_editor/gui/build_panel_qt.py; head -20 packaging/repin.py; rg -n 'strict|argparse' mod_editor/capabilities/validate_registry.py | tail -10",
+    "started": "2026-09-16T23:37:49.502Z",
+    "exit_code": 0,
+    "seconds": 0.104,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "python3",
+      "packaging/repin.py",
+      "--apply"
+    ],
+    "started": "2026-09-16T23:38:06.911151+00:00",
+    "exit_code": 0,
+    "seconds": 22.651413157989737,
+    "record": "reports/b71_t5/repin-dev1.json"
+  },
+  {
+    "command": "rg -n -- '--strict' packaging mod_editor/capabilities tools/validate* | head -30; cat reports/b71_t5/repin-dev1.log | tail -5; rg -n 'def test_.*(open|load)|preflight|changed' tests/mod_editor/test_b70_t1_build_speed.py | tail -35; cat packaging/release-allowlist.txt | rg 'equipment_staging|equipment_reporting|nfl2k5_project' ",
+    "started": "2026-09-16T23:38:20.315Z",
+    "exit_code": 0,
+    "seconds": 0.136,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "python3",
+      "tools/b71_t5_validate.py",
+      "tests-initial"
+    ],
+    "started": "2026-09-16T23:38:52.710965+00:00",
+    "exit_code": 1,
+    "seconds": 365.499689845019,
+    "record": "reports/b71_t5/initial-suites.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b71_t5_project_open.py"
+    ],
+    "started": "2026-09-16T23:38:52.743130+00:00",
+    "exit_code": 0,
+    "seconds": 2.9204094570013694,
+    "record": "reports/b71_t5/tests-initial/test_b71_t5_project_open.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b71_t4_equipment_project.py"
+    ],
+    "started": "2026-09-16T23:38:52.743521+00:00",
+    "exit_code": 1,
+    "seconds": 42.64347131300019,
+    "record": "reports/b71_t5/tests-initial/test_b71_t4_equipment_project.json"
+  },
+  {
+    "command": "rg --files tools packaging | rg 'validat|catalog|integrity'; git --git-dir=.scratch/t5.git status --short | head -45; cat reports/b71_t5/repin-dev1.json",
+    "started": "2026-09-16T23:38:53.787Z",
+    "exit_code": 0,
+    "seconds": 4.613,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b69_j1_fit.py"
+    ],
+    "started": "2026-09-16T23:38:55.663969+00:00",
+    "exit_code": 1,
+    "seconds": 5.524442416994134,
+    "record": "reports/b71_t5/tests-initial/test_b69_j1_fit.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b69_j1_build.py"
+    ],
+    "started": "2026-09-16T23:39:01.188733+00:00",
+    "exit_code": 1,
+    "seconds": 2.8197686450148467,
+    "record": "reports/b71_t5/tests-initial/test_b69_j1_build.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b69_j1_wiring.py"
+    ],
+    "started": "2026-09-16T23:39:04.008822+00:00",
+    "exit_code": 1,
+    "seconds": 1.8172593140043318,
+    "record": "reports/b71_t5/tests-initial/test_b69_j1_wiring.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b70_t1_build_speed.py"
+    ],
+    "started": "2026-09-16T23:39:05.826347+00:00",
+    "exit_code": 1,
+    "seconds": 17.190488874999573,
+    "record": "reports/b71_t5/tests-initial/test_b70_t1_build_speed.json"
+  },
+  {
+    "command": "sed -n '1670,1716p' mod_editor/core/nfl2k5_uniform_equipment_writer.py; sed -n '4190,4225p' tools/nfl2k5_visual_mod_project.py; sed -n '315,345p' mod_editor/capabilities/validate_registry.py; rg -n 'strict|argparse' tools/validate_all_mod_editor_capabilities.py | tail -12; tail -15 reports/b71_t5/initial-suites.log; tail -18 reports/b71_t5/tests-initial/test_b71_t4_equipment_project.log; sed -n '310,345p' mod_editor/studio/facade.py",
+    "started": "2026-09-16T23:39:10.982Z",
+    "exit_code": 0,
+    "seconds": 0.104,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "cat reports/b71_t5/tests-initial/test_b69_j1_fit.log; cat reports/b71_t5/tests-initial/test_b69_j1_build.log; cat reports/b71_t5/tests-initial/test_b69_j1_wiring.log; sed -n '1580,1615p' tools/validate_all_mod_editor_capabilities.py; rg --files -g '*validat*.py' | rg -v 'reports/|tools/' | head -20; sed -n '1480,1497p' mod_editor/gui/studio_qt.py",
+    "started": "2026-09-16T23:39:17.902Z",
+    "exit_code": 0,
+    "seconds": 0.123,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b70_t1_diagnostics.py"
+    ],
+    "started": "2026-09-16T23:39:23.017133+00:00",
+    "exit_code": 0,
+    "seconds": 0.665113900002325,
+    "record": "reports/b71_t5/tests-initial/test_b70_t1_diagnostics.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b70_t2_equipment.py"
+    ],
+    "started": "2026-09-16T23:39:23.682524+00:00",
+    "exit_code": 1,
+    "seconds": 1.1158017929992639,
+    "record": "reports/b71_t5/tests-initial/test_b70_t2_equipment.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b70_t2_reporting.py"
+    ],
+    "started": "2026-09-16T23:39:24.798782+00:00",
+    "exit_code": 0,
+    "seconds": 0.2648689470079262,
+    "record": "reports/b71_t5/tests-initial/test_b70_t2_reporting.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b70_t2_wiring.py"
+    ],
+    "started": "2026-09-16T23:39:25.063992+00:00",
+    "exit_code": 1,
+    "seconds": 0.26442689102259465,
+    "record": "reports/b71_t5/tests-initial/test_b70_t2_wiring.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b68_t1_build.py"
+    ],
+    "started": "2026-09-16T23:39:25.328713+00:00",
+    "exit_code": 1,
+    "seconds": 5.523072178999428,
+    "record": "reports/b71_t5/tests-initial/test_b68_t1_build.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_mod_build.py"
+    ],
+    "started": "2026-09-16T23:39:30.852087+00:00",
+    "exit_code": 0,
+    "seconds": 2.11788739298936,
+    "record": "reports/b71_t5/tests-initial/test_mod_build.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_mod_build_performance.py"
+    ],
+    "started": "2026-09-16T23:39:32.970283+00:00",
+    "exit_code": 0,
+    "seconds": 7.326373721007258,
+    "record": "reports/b71_t5/tests-initial/test_mod_build_performance.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_build_panel_qt.py"
+    ],
+    "started": "2026-09-16T23:39:35.387372+00:00",
+    "exit_code": 0,
+    "seconds": 2.969204961991636,
+    "record": "reports/b71_t5/tests-initial/test_build_panel_qt.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_build_service.py"
+    ],
+    "started": "2026-09-16T23:39:38.356881+00:00",
+    "exit_code": 0,
+    "seconds": 0.3146359249949455,
+    "record": "reports/b71_t5/tests-initial/test_nfl2k5_build_service.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_2k5_build_is_explainable.py"
+    ],
+    "started": "2026-09-16T23:39:38.671881+00:00",
+    "exit_code": 0,
+    "seconds": 0.665244428004371,
+    "record": "reports/b71_t5/tests-initial/test_2k5_build_is_explainable.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_facade_external_build.py"
+    ],
+    "started": "2026-09-16T23:39:39.337417+00:00",
+    "exit_code": 0,
+    "seconds": 0.3646706219878979,
+    "record": "reports/b71_t5/tests-initial/test_facade_external_build.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_project_document_workflow.py"
+    ],
+    "started": "2026-09-16T23:39:39.702324+00:00",
+    "exit_code": 0,
+    "seconds": 16.99403786601033,
+    "record": "reports/b71_t5/tests-initial/test_project_document_workflow.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_studio_session.py"
+    ],
+    "started": "2026-09-16T23:39:40.296928+00:00",
+    "exit_code": 1,
+    "seconds": 0.9155696550151333,
+    "record": "reports/b71_t5/tests-initial/test_studio_session.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_studio_facade.py"
+    ],
+    "started": "2026-09-16T23:39:41.212863+00:00",
+    "exit_code": 0,
+    "seconds": 0.41465038401656784,
+    "record": "reports/b71_t5/tests-initial/test_studio_facade.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_studio_shell_layout_qt.py"
+    ],
+    "started": "2026-09-16T23:39:41.627778+00:00",
+    "exit_code": 0,
+    "seconds": 44.34191061698948,
+    "record": "reports/b71_t5/tests-initial/test_studio_shell_layout_qt.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_studio_qt_models.py"
+    ],
+    "started": "2026-09-16T23:39:56.696693+00:00",
+    "exit_code": 0,
+    "seconds": 0.9157600800099317,
+    "record": "reports/b71_t5/tests-initial/test_studio_qt_models.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_studio_visual_asset_routing.py"
+    ],
+    "started": "2026-09-16T23:39:57.612731+00:00",
+    "exit_code": 0,
+    "seconds": 3.469365154975094,
+    "record": "reports/b71_t5/tests-initial/test_studio_visual_asset_routing.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_uniform_bundle_cross_project.py"
+    ],
+    "started": "2026-09-16T23:40:01.082350+00:00",
+    "exit_code": 0,
+    "seconds": 2.919671682990156,
+    "record": "reports/b71_t5/tests-initial/test_uniform_bundle_cross_project.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_model_project.py"
+    ],
+    "started": "2026-09-16T23:40:04.002322+00:00",
+    "exit_code": 1,
+    "seconds": 36.77282282599481,
+    "record": "reports/b71_t5/tests-initial/test_nfl2k5_model_project.json"
+  },
+  {
+    "command": "rg -n '^import threading|ValidationError' mod_editor/gui/studio_qt.py | head -5; tail -15 reports/b71_t5/initial-suites.log; tail -10 reports/b71_t5/tests-initial/test_b70_t1_build_speed.log; cat reports/b71_t5/tests-initial/test_b71_t4_equipment_project.log | tail -70; ls reports/b71_t5/open*json",
+    "started": "2026-09-16T23:40:25.167Z",
+    "exit_code": 0,
+    "seconds": 0.111,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_models_project_wiring.py"
+    ],
+    "started": "2026-09-16T23:40:25.970067+00:00",
+    "exit_code": 0,
+    "seconds": 9.329164730006596,
+    "record": "reports/b71_t5/tests-initial/test_models_project_wiring.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_provider_integrity.py"
+    ],
+    "started": "2026-09-16T23:40:35.299551+00:00",
+    "exit_code": 1,
+    "seconds": 6.7248574850091245,
+    "record": "reports/b71_t5/tests-initial/test_provider_integrity.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_providers.py"
+    ],
+    "started": "2026-09-16T23:40:40.775421+00:00",
+    "exit_code": 1,
+    "seconds": 1.0155588569759857,
+    "record": "reports/b71_t5/tests-initial/test_providers.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_product_catalog.py"
+    ],
+    "started": "2026-09-16T23:40:41.791509+00:00",
+    "exit_code": 0,
+    "seconds": 0.16454031600733288,
+    "record": "reports/b71_t5/tests-initial/test_product_catalog.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_phase1_packaging.py"
+    ],
+    "started": "2026-09-16T23:40:41.956345+00:00",
+    "exit_code": 0,
+    "seconds": 2.167402969993418,
+    "record": "reports/b71_t5/tests-initial/test_phase1_packaging.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_equipment_import.py"
+    ],
+    "started": "2026-09-16T23:40:42.024600+00:00",
+    "exit_code": 0,
+    "seconds": 2.1194997639977373,
+    "record": "reports/b71_t5/tests-initial/test_nfl2k5_equipment_import.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_equipment_consumers.py"
+    ],
+    "started": "2026-09-16T23:40:44.124089+00:00",
+    "exit_code": 0,
+    "seconds": 31.51451755099697,
+    "record": "reports/b71_t5/tests-initial/test_nfl2k5_equipment_consumers.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_equipment_import_wiring.py"
+    ],
+    "started": "2026-09-16T23:40:44.144267+00:00",
+    "exit_code": 0,
+    "seconds": 0.8653365260106511,
+    "record": "reports/b71_t5/tests-initial/test_nfl2k5_equipment_import_wiring.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_equipment_scope_wiring.py"
+    ],
+    "started": "2026-09-16T23:40:45.009923+00:00",
+    "exit_code": 0,
+    "seconds": 2.017142217984656,
+    "record": "reports/b71_t5/tests-initial/test_nfl2k5_equipment_scope_wiring.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_equipment_texture_chain.py"
+    ],
+    "started": "2026-09-16T23:40:47.027380+00:00",
+    "exit_code": 1,
+    "seconds": 4.420808749011485,
+    "record": "reports/b71_t5/tests-initial/test_nfl2k5_equipment_texture_chain.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_equipment_texture_native.py"
+    ],
+    "started": "2026-09-16T23:40:51.448624+00:00",
+    "exit_code": 0,
+    "seconds": 0.2649441350076813,
+    "record": "reports/b71_t5/tests-initial/test_nfl2k5_equipment_texture_native.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_equipment_retail_roundtrip.py"
+    ],
+    "started": "2026-09-16T23:40:51.713905+00:00",
+    "exit_code": 0,
+    "seconds": 16.591096756979823,
+    "record": "reports/b71_t5/tests-initial/test_nfl2k5_equipment_retail_roundtrip.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_uniform_catalog.py"
+    ],
+    "started": "2026-09-16T23:41:08.305365+00:00",
+    "exit_code": 0,
+    "seconds": 0.41489867100608535,
+    "record": "reports/b71_t5/tests-initial/test_nfl2k5_uniform_catalog.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_uniform_choice.py"
+    ],
+    "started": "2026-09-16T23:41:08.720579+00:00",
+    "exit_code": 0,
+    "seconds": 8.077072259009583,
+    "record": "reports/b71_t5/tests-initial/test_nfl2k5_uniform_choice.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_uniform_choice_screens.py"
+    ],
+    "started": "2026-09-16T23:41:15.639029+00:00",
+    "exit_code": 0,
+    "seconds": 0.565378249011701,
+    "record": "reports/b71_t5/tests-initial/test_nfl2k5_uniform_choice_screens.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_2k5_uniform_equipment_export.py"
+    ],
+    "started": "2026-09-16T23:41:16.204775+00:00",
+    "exit_code": 0,
+    "seconds": 33.21583526697941,
+    "record": "reports/b71_t5/tests-initial/test_2k5_uniform_equipment_export.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_audio_annotation_project_archive.py"
+    ],
+    "started": "2026-09-16T23:41:16.798155+00:00",
+    "exit_code": 0,
+    "seconds": 0.5652637050079647,
+    "record": "reports/b71_t5/tests-initial/test_audio_annotation_project_archive.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_stadium_editor_roundtrip.py"
+    ],
+    "started": "2026-09-16T23:41:17.363791+00:00",
+    "exit_code": 0,
+    "seconds": 0.6152221060183365,
+    "record": "reports/b71_t5/tests-initial/test_nfl2k5_stadium_editor_roundtrip.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_simulated_windows_build.py"
+    ],
+    "started": "2026-09-16T23:41:17.979410+00:00",
+    "exit_code": 0,
+    "seconds": 220.1740378329996,
+    "record": "reports/b71_t5/tests-initial/test_nfl2k5_simulated_windows_build.json"
+  },
+  {
+    "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport json\nfor p in sorted(Path('reports/b71_t5/tests-initial').glob('*.json')):\n r=json.loads(p.read_text())\n if r.get('exit_code'):\n  log=p.with_suffix('.log').read_text(); print(p.stem, '\\n',log[log.find('======================================================================'):][-5000:])\nPY",
+    "started": "2026-09-16T23:41:21.205Z",
+    "exit_code": 0,
+    "seconds": 0.13,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "rg -n 'def load_shareable_project' -A70 mod_editor/core/nfl2k5_model_project.py; sed -n '168,195p' tests/mod_editor/test_b68_t1_build.py; sed -n '96,133p' tests/mod_editor/test_b69_j1_wiring.py; sed -n '120,157p' tests/mod_editor/test_b69_j1_build.py; sed -n '20,43p' tests/mod_editor/test_b70_t2_equipment.py; sed -n '925,945p' tests/mod_editor/test_studio_session.py; sed -n '160,202p' tests/mod_editor/test_b71_t4_equipment_project.py; head -45 tests/mod_editor/test_b70_t2_wiring.py",
+    "started": "2026-09-16T23:41:31.603Z",
+    "exit_code": 0,
+    "seconds": 0.102,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "rg -n 'class ModelProjectSession|def load_shareable_project' mod_editor/studio/model* mod_editor/studio/session.py mod_editor/core/nfl2k5_model*; sed -n '946,952p' tests/mod_editor/test_studio_session.py; sed -n '95,128p' tests/mod_editor/test_b70_t1_build_speed.py; rg -n '90000|90_000|cache' tests/mod_editor/test_b70_t2_equipment.py tests/mod_editor/test_nfl2k5_equipment_consumers.py | head -20; rg -n 'nfl2k5_build_service.py|equipment_staging.py|build_io.py' mod_editor/core/providers.py | head -18; cat ASTRA_BRIEF.md | head -30",
+    "started": "2026-09-16T23:41:42.676Z",
+    "exit_code": 0,
+    "seconds": 0.106,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "rg -n -- '--strict' mod_editor packaging scripts .github | head -30; sed -n '193,235p' mod_editor/core/nfl2k5_model_project_session.py; rg -n '90000|90_000' tests/mod_editor/test_b70_t2_equipment.py -C3; sed -n '512,535p' mod_editor/core/providers.py; sed -n '139,166p' tests/mod_editor/test_b71_t4_equipment_project.py",
+    "started": "2026-09-16T23:41:48.898Z",
+    "exit_code": 0,
+    "seconds": 0.108,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "rg -n -m2 'strict' --glob '*validat*' --glob '*.sh' --glob '*.md' packaging mod_editor/capabilities ASTRA_*REPORT.md | tail -20; rg --files -g '*validate*' -g '*check*' | rg -v 'reports/|tools/|tests/' | tail -40; sed -n '1,72p' mod_editor/core/nfl2k5_model_project_session.py; git diff --stat",
+    "started": "2026-09-16T23:41:56.682Z",
+    "exit_code": 0,
+    "seconds": 0.835,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "sed -n '1290,1353p' tools/nfl2k5_visual_mod_project.py; sed -n '203,232p' mod_editor/core/nfl2k5_model_project_session.py; sed -n '61,79p' tests/mod_editor/test_b69_j1_fit.py; head -15 reports/b71_t5/open-beta69-run3.log; tail -6 reports/b71_t5/initial-suites.log; head -20 docs/mod_editor/2k5_mod_studio_changelog.md",
+    "started": "2026-09-16T23:42:21.314Z",
+    "exit_code": 0,
+    "seconds": 0.099,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "cat reports/b71_t5/open-beta69-run3.log; cat reports/b71_t5/open-beta70-run3.log; cat reports/b71_t5/open-beta71-run3.log; rg -n 'ValidationError' tools/nfl2k5_visual_mod_project.py | head -5; tail -8 reports/b71_t5/initial-suites.log",
+    "started": "2026-09-16T23:42:48.940Z",
+    "exit_code": 0,
+    "seconds": 0.098,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "python3 - <<'PY'\nfrom pathlib import Path\np=Path('tests/mod_editor/test_b69_j1_wiring.py')\ns=p.read_text();a=s.index('    def test_load_hook_refuses_corrupt_art_and_cleans_before_session_mutation(self):');b=s.index('\\n\\n',s.index('            self.assertIs(owner._edits,sentinel)',a))\ns=s[:a]+'''    def test_load_hook_refuses_corrupt_art_and_cleans_before_session_mutation(self):\n        from b71_t5_project_probe import Corpus\n        with tempfile.TemporaryDirectory() as folder:\n            root = Path(folder).resolve()\n            corpus = Corpus(root, 3)\n            session = corpus.session()\n            before = corpus.project.read_bytes()\n            with corpus.context(), patch.object(corpus.io, 'validate_replacement',\n                    side_effect=ValueError('corrupt PNG')), self.assertRaisesRegex(ValueError, 'corrupt PNG'):\n                session.load_shareable_project(corpus.project)\n            self.assertEqual(session.modified_count, 0)\n            self.assertEqual(list(session.replacements.iterdir()), [])\n            self.assertEqual(corpus.project.read_bytes(), before)\n''' +s[b:];p.write_text(s)\np=Path('mod_editor/core/providers.py');s=p.read_text();needle='    module_pins: Mapping[str, str] = {\\n';a=s.index(needle,s.index('class Nfl2k5VisualModProjectProvider')) if 'class Nfl2k5VisualModProjectProvider' in s else s.index(needle)\nimport hashlib\nentry='        \"mod_editor/core/nfl2k5_project_fit.py\": \"'+hashlib.sha256(Path('mod_editor/core/nfl2k5_project_fit.py').read_bytes()).hexdigest()+'\",\\n'\ns=s[:a+len(needle)]+entry+s[a+len(needle):];p.write_text(s)\nPY\nhead -5 docs/mod_editor/2k5_mod_studio_changelog.md; sed -n '100,145p' tests/mod_editor/test_b69_j1_wiring.py; rg -n 'nfl2k5_project_fit.py' mod_editor/core/providers.py",
+    "started": "2026-09-16T23:44:25.425Z",
+    "exit_code": 0,
+    "seconds": 0.127,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "python3",
+      "tools/b71_t5_validate.py",
+      "tests-core2",
+      "test_b71_t5_project_open",
+      "test_b69_j1_fit",
+      "test_b70_t1_build_speed",
+      "test_b70_t2_equipment",
+      "test_b68_t1_build",
+      "test_b69_j1_build",
+      "test_b69_j1_wiring",
+      "test_b71_t4_equipment_project"
+    ],
+    "started": "2026-09-16T23:44:25.643272+00:00",
+    "exit_code": 1,
+    "seconds": 75.19381661899388,
+    "record": "reports/b71_t5/current-core-tests.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b71_t5_project_open.py"
+    ],
+    "started": "2026-09-16T23:44:25.676108+00:00",
+    "exit_code": 0,
+    "seconds": 2.318472336017294,
+    "record": "reports/b71_t5/tests-core2/test_b71_t5_project_open.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b69_j1_fit.py"
+    ],
+    "started": "2026-09-16T23:44:25.676637+00:00",
+    "exit_code": 0,
+    "seconds": 5.074374309013365,
+    "record": "reports/b71_t5/tests-core2/test_b69_j1_fit.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b70_t1_build_speed.py"
+    ],
+    "started": "2026-09-16T23:44:27.994945+00:00",
+    "exit_code": 1,
+    "seconds": 16.79029030998936,
+    "record": "reports/b71_t5/tests-core2/test_b70_t1_build_speed.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b70_t2_equipment.py"
+    ],
+    "started": "2026-09-16T23:44:30.751272+00:00",
+    "exit_code": 0,
+    "seconds": 1.316532108001411,
+    "record": "reports/b71_t5/tests-core2/test_b70_t2_equipment.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b68_t1_build.py"
+    ],
+    "started": "2026-09-16T23:44:32.068190+00:00",
+    "exit_code": 0,
+    "seconds": 5.373938157019438,
+    "record": "reports/b71_t5/tests-core2/test_b68_t1_build.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b69_j1_build.py"
+    ],
+    "started": "2026-09-16T23:44:37.442427+00:00",
+    "exit_code": 0,
+    "seconds": 2.3180573470017407,
+    "record": "reports/b71_t5/tests-core2/test_b69_j1_build.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b69_j1_wiring.py"
+    ],
+    "started": "2026-09-16T23:44:39.760864+00:00",
+    "exit_code": 0,
+    "seconds": 1.4170187189884018,
+    "record": "reports/b71_t5/tests-core2/test_b69_j1_wiring.json"
+  },
+  {
+    "command": "rg -n 'asset_id|provider_edit' mod_editor/core/nfl2k5_uniform_catalog.py | head -32; rg -n 'def provider_edit' mod_editor/core/product_catalog.py mod_editor/core/*visual* 2>/dev/null; rg -n 'def validate_plan|no changes|no edits|nothing|No changes' mod_editor/core/mod_build.py mod_editor/gui/build_panel_qt.py | head -30; tail -10 reports/b71_t5/current-core-tests.log; cat reports/b71_t5/tests-core2/test_b69_j1_fit.log | tail -35; sed -n '1370,1397p' mod_editor/studio/session.py; rg -n 'def apply.*xbe|def patch.*xbe' mod_editor/core/nfl2k5_throw_tuning.py | head -20",
+    "started": "2026-09-16T23:44:41.087Z",
+    "exit_code": 0,
+    "seconds": 0.116,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b71_t4_equipment_project.py"
+    ],
+    "started": "2026-09-16T23:44:41.178235+00:00",
+    "exit_code": 1,
+    "seconds": 59.60895463000634,
+    "record": "reports/b71_t5/tests-core2/test_b71_t4_equipment_project.json"
+  },
+  {
+    "command": "python3 - <<'PY'\nfrom mod_editor.core import mod_build as m\nprint(m.PRESETS.keys())\nPY\nrg -n 'def .*patch|def .*apply|def .*build' mod_editor/core/nfl2k5_throw_tuning.py | tail -30; cat reports/b71_t5/tests-core2/test_b70_t1_build_speed.log | tail -25; tail -10 reports/b71_t5/current-core-tests.log; sed -n '335,357p' mod_editor/core/nfl2k5_uniform_equipment_writer.py",
+    "started": "2026-09-16T23:45:52.916Z",
+    "exit_code": 0,
+    "seconds": 0.343,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "tail -55 reports/b71_t5/tests-core2/test_b71_t4_equipment_project.log; sed -n '96,150p' mod_editor/core/nfl2k5_uniform_catalog.py; sed -n '1566,1593p' mod_editor/core/nfl2k5_throw_tuning.py; sed -n '174,186p' mod_editor/core/nfl2k5_model_project_session.py",
+    "started": "2026-09-16T23:46:15.522Z",
+    "exit_code": 0,
+    "seconds": 0.096,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "python3",
+      "tools/b71_t5_build_probe.py"
+    ],
+    "started": "2026-09-16T23:49:51.506660+00:00",
+    "exit_code": 0,
+    "seconds": 3.1694202110229526,
+    "record": "reports/b71_t5/parallel-retail.json"
+  },
+  {
+    "command": "rg -n '_apply_all|wanted =|tt\\.patch|tt\\.build|throw_profile' mod_editor/core/mod_build.py | tail -25; sed -n '1530,1618p' mod_editor/core/mod_build.py; sed -n '1588,1635p' mod_editor/core/nfl2k5_throw_tuning.py; tail -20 reports/b71_t5/parallel-retail.log; sed -n '180,203p' mod_editor/core/nfl2k5_model_project_session.py",
+    "started": "2026-09-16T23:50:01.723Z",
+    "exit_code": 0,
+    "seconds": 0.104,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "sed -n '1935,1978p' mod_editor/gui/build_panel_qt.py; sed -n '80,130p' tests/mod_editor/test_mod_build.py; rg -n 'write_copy|_apply_all|synthetic' tests/mod_editor/test_mod_build_performance.py | head -25; rg -n 'def .*plan|TuningSettings|wanted' mod_editor/core/nfl2k5_throw_tuning.py | tail -18; sed -n '1705,1768p' mod_editor/core/mod_build.py; sed -n '1,85p' tests/mod_editor/test_build_panel_qt.py",
+    "started": "2026-09-16T23:51:03.724Z",
+    "exit_code": 0,
+    "seconds": 0.107,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "sed -n '1770,1805p' mod_editor/gui/build_panel_qt.py; rg -n 'has_work\\(' mod_editor/gui/build_panel_qt.py; sed -n '45,73p' tests/mod_editor/test_mod_build_performance.py; sed -n '1960,1990p' mod_editor/core/mod_build.py; sed -n '190,226p' tests/mod_editor/test_build_panel_qt.py",
+    "started": "2026-09-16T23:51:10.842Z",
+    "exit_code": 0,
+    "seconds": 0.103,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "sed -n '2416,2455p' mod_editor/gui/build_panel_qt.py; rg -n 'Tick at least|has_work|nothing' tests/mod_editor/test_build_panel_qt.py tests/mod_editor/test_2k5_build_is_explainable.py; sed -n '1,72p' tests/mod_editor/test_mod_build_performance.py",
+    "started": "2026-09-16T23:51:26.950Z",
+    "exit_code": 0,
+    "seconds": 0.101,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "cat mod_editor/core/build_feedback.py | head -92; rg -n '^    def test_|QMessageBox' tests/mod_editor/test_build_panel_qt.py | tail -8; sed -n '968,979p' mod_editor/core/mod_build.py; sed -n '160,202p' tests/mod_editor/test_b70_t1_build_speed.py; rg -n '^class ' mod_editor/core/nfl2k5_uniform_equipment_writer.py | head -15",
+    "started": "2026-09-16T23:51:54.968Z",
+    "exit_code": 0,
+    "seconds": 0.107,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "rg -n 'def read_bounded_regular_file' -A10 mod_editor/core/json_stream.py; rg -n 'read_bounded_regular_file\\(' mod_editor/studio/project_archive.py | head -4; sed -n '13,31p' mod_editor/core/nfl2k5_equipment_lz.py; sed -n '184,226p' mod_editor/core/nfl2k5_uniform_equipment_writer.py; sed -n '490,520p' mod_editor/core/providers.py",
+    "started": "2026-09-16T23:52:26.685Z",
+    "exit_code": 0,
+    "seconds": 0.103,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "git --git-dir=.scratch/t5.git status --short",
+    "started": "2026-09-16T23:58:06.861Z",
+    "exit_code": 0,
+    "seconds": 0.131,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "sed -n '1,150p' tests/mod_editor/test_mod_build_performance.py",
+    "started": "2026-09-16T23:58:06.997Z",
+    "exit_code": 0,
+    "seconds": 0.094,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "sed -n '1,280p' mod_editor/core/nfl2k5_project_fit.py",
+    "started": "2026-09-16T23:58:17.523Z",
+    "exit_code": 0,
+    "seconds": 0.099,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "rg -n 'fit_failure|def _one_optimal_fit' mod_editor/core/nfl2k5_uniform_equipment_writer.py; rg -n 'read_bounded_regular_file' mod_editor/core/json_stream.py mod_editor/studio/project_archive.py; cat reports/b71_t5/tests-initial/validation.json",
+    "started": "2026-09-16T23:58:17.627Z",
+    "exit_code": 0,
+    "seconds": 0.105,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "sed -n '42,70p' mod_editor/core/json_stream.py; sed -n '1535,1578p' mod_editor/core/nfl2k5_uniform_equipment_writer.py; sed -n '1,270p' tests/mod_editor/test_b71_t5_project_open.py",
+    "started": "2026-09-16T23:58:24.202Z",
+    "exit_code": 0,
+    "seconds": 0.097,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "cat reports/b71_t5/tests-initial/test_nfl2k5_equipment_texture_chain.log; sed -n '1,100p' tests/mod_editor/test_build_panel_qt.py; cat ASTRA_CONTEXT.md",
+    "started": "2026-09-16T23:58:24.305Z",
+    "exit_code": 0,
+    "seconds": 0.099,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "rg -n 'def _build|def _refresh|Changes:|No changes|blockers|def _build_operation' mod_editor/gui/build_panel_qt.py; sed -n '270,470p' tools/b71_t5_project_probe.py; sed -n '1,160p' tools/b71_t5_validate.py",
+    "started": "2026-09-16T23:58:45.142Z",
+    "exit_code": 0,
+    "seconds": 0.101,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "sed -n '1690,1768p' mod_editor/gui/build_panel_qt.py; sed -n '2510,2638p' mod_editor/gui/build_panel_qt.py; sed -n '1,280p' tools/b71_t5_project_probe.py; sed -n '1560,1650p' mod_editor/core/mod_build.py",
+    "started": "2026-09-16T23:58:50.748Z",
+    "exit_code": 0,
+    "seconds": 0.103,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "python3",
+      "tools/b71_t5_validate.py",
+      "tests-core3",
+      "test_b71_t5_project_open",
+      "test_b70_t1_build_speed",
+      "test_b71_t4_equipment_project",
+      "test_mod_build_performance",
+      "test_build_panel_qt",
+      "test_nfl2k5_equipment_texture_chain"
+    ],
+    "started": "2026-09-16T23:59:11.061800+00:00",
+    "exit_code": 1,
+    "seconds": 59.10221916399314,
+    "record": "reports/b71_t5/core3.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b71_t5_project_open.py"
+    ],
+    "started": "2026-09-16T23:59:11.092002+00:00",
+    "exit_code": 0,
+    "seconds": 3.1693443880067207,
+    "record": "reports/b71_t5/tests-core3/test_b71_t5_project_open.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b70_t1_build_speed.py"
+    ],
+    "started": "2026-09-16T23:59:11.092395+00:00",
+    "exit_code": 1,
+    "seconds": 18.893314761982765,
+    "record": "reports/b71_t5/tests-core3/test_b70_t1_build_speed.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b71_t4_equipment_project.py"
+    ],
+    "started": "2026-09-16T23:59:14.261707+00:00",
+    "exit_code": 0,
+    "seconds": 55.85227312101051,
+    "record": "reports/b71_t5/tests-core3/test_b71_t4_equipment_project.json"
+  },
+  {
+    "command": "rg -n 'def _parallel_equipment|def _equipment_fit_worker|def _parallel_uniform|def prepare_project|NFL2K5_ART_FIT|NFL2K5_FIT_RECEIPT' tools/nfl2k5_visual_mod_project.py; sed -n '2230,2410p' tools/nfl2k5_visual_mod_project.py; rg -n 'def _run_build_command|def _remember_fits|def _failure|stdout|stderr' mod_editor/core/nfl2k5_build_service.py | tail -45; sed -n '35,110p' mod_editor/core/build_feedback.py",
+    "started": "2026-09-16T23:59:20.810Z",
+    "exit_code": 0,
+    "seconds": 0.097,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "rg -n 'def _apply_all|def _resolve_wanted|def _xbe_bytes|def write_copy' mod_editor/core/nfl2k5_throw_tuning.py; du -sh .scratch reports/b71_t5; cat reports/b71_t5/advanced-before.json",
+    "started": "2026-09-16T23:59:20.914Z",
+    "exit_code": 0,
+    "seconds": 0.102,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_mod_build_performance.py"
+    ],
+    "started": "2026-09-16T23:59:29.986053+00:00",
+    "exit_code": 0,
+    "seconds": 7.174994233995676,
+    "record": "reports/b71_t5/tests-core3/test_mod_build_performance.json"
+  },
+  {
+    "command": "sed -n '3405,3558p' tools/nfl2k5_visual_mod_project.py; sed -n '1510,1608p' mod_editor/core/nfl2k5_build_service.py; sed -n '953,970p' mod_editor/core/nfl2k5_throw_tuning.py; sed -n '1566,1580p' mod_editor/core/nfl2k5_throw_tuning.py; rg -n 'def _xbe_bytes|_xbe_bytes\\(' mod_editor/core/mod_build.py; sed -n '3558,3635p' tools/nfl2k5_visual_mod_project.py; cat reports/b71_t5/core3.log",
+    "started": "2026-09-16T23:59:30.220Z",
+    "exit_code": 0,
+    "seconds": 0.108,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "cat reports/b71_t5/tests-core3/test_b70_t1_build_speed.log; sed -n '609,690p' mod_editor/core/nfl2k5_uniform_equipment_writer.py; sed -n '3635,3720p' tools/nfl2k5_visual_mod_project.py; rg -n 'def _preflight|suggest_fit|suggestion' mod_editor/core/nfl2k5_uniform_equipment_writer.py | tail -25; sed -n '190,245p' tests/mod_editor/test_b70_t1_build_speed.py",
+    "started": "2026-09-16T23:59:36.272Z",
+    "exit_code": 0,
+    "seconds": 0.099,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_build_panel_qt.py"
+    ],
+    "started": "2026-09-16T23:59:37.161312+00:00",
+    "exit_code": 0,
+    "seconds": 2.8181648919999134,
+    "record": "reports/b71_t5/tests-core3/test_build_panel_qt.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_equipment_texture_chain.py"
+    ],
+    "started": "2026-09-16T23:59:39.979780+00:00",
+    "exit_code": 1,
+    "seconds": 4.32010872499086,
+    "record": "reports/b71_t5/tests-core3/test_nfl2k5_equipment_texture_chain.json"
+  },
+  {
+    "command": "tail -34 reports/b71_t5/tests-core3/test_b70_t1_build_speed.log; sed -n '609,662p' mod_editor/core/nfl2k5_uniform_equipment_writer.py; sed -n '87,142p' tests/mod_editor/test_b70_t1_build_speed.py; cat reports/b71_t5/core3.log; sed -n '1580,1600p' mod_editor/core/nfl2k5_throw_tuning.py",
+    "started": "2026-09-16T23:59:43.742Z",
+    "exit_code": 0,
+    "seconds": 0.096,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "sed -n '665,741p' mod_editor/core/nfl2k5_uniform_equipment_writer.py; rg -n '_defer_runtime|arc_table.*settings|_apply_all\\(' mod_editor/core/nfl2k5_throw_tuning.py | tail -12; sed -n '3728,3790p' tools/nfl2k5_visual_mod_project.py; sed -n '930,965p' mod_editor/core/nfl2k5_build_service.py",
+    "started": "2026-09-16T23:59:50.299Z",
+    "exit_code": 0,
+    "seconds": 0.103,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "python3",
+      "packaging/repin.py",
+      "--apply"
+    ],
+    "started": "2026-09-17T00:00:11.306027+00:00",
+    "exit_code": 0,
+    "seconds": 20.59591093400377,
+    "record": "reports/b71_t5/repin-final1.json"
+  },
+  {
+    "command": "sed -n '180,203p' mod_editor/core/nfl2k5_uniform_equipment_writer.py; sed -n '1,125p' tools/b71_t5_build_probe.py; rg -n 'hash|changed|source' reports/b71_t5/tests-core3/test_b71_t4_equipment_project.log | tail -5",
+    "started": "2026-09-17T00:00:12.389Z",
+    "exit_code": 0,
+    "seconds": 0.096,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "rg -n '^def .*quant|^def .*palette|^def .*png|^def _stage|^def .*mip|^def .*identity' mod_editor/core/nfl2k5_uniform_equipment_writer.py; rg -n 'ensure_loaded_project_identity|no longer matches|changed while|Checking your project' mod_editor/studio/project_archive.py mod_editor/studio/session.py mod_editor/gui/studio_qt.py; cat reports/b71_t5/core3.log; cat reports/b71_t5/tests-initial/test_nfl2k5_model_project.log | tail -18",
+    "started": "2026-09-17T00:00:21.079Z",
+    "exit_code": 0,
+    "seconds": 0.101,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "cat reports/b71_t5/tests-core3/test_nfl2k5_equipment_texture_chain.log; rg -n 'search bound|search limit|could not finish' mod_editor/core/nfl2k5_equipment_lz.py; sed -n '242,263p' tests/mod_editor/test_nfl2k5_equipment_texture_chain.py",
+    "started": "2026-09-17T00:00:26.755Z",
+    "exit_code": 0,
+    "seconds": 0.095,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "python3",
+      "tools/b71_t5_project_probe.py",
+      "02bbadd1",
+      "30"
+    ],
+    "started": "2026-09-17T00:00:48.941164+00:00",
+    "exit_code": 0,
+    "seconds": 19.89359261500067,
+    "record": "reports/b71_t5/phase-beta71.json"
+  },
+  {
+    "command": [
+      "python3",
+      "tools/b71_t5_validate.py",
+      "tests-core4",
+      "test_b70_t1_build_speed",
+      "test_nfl2k5_equipment_texture_chain"
+    ],
+    "started": "2026-09-17T00:00:50.112921+00:00",
+    "exit_code": 0,
+    "seconds": 19.39365029198234,
+    "record": "reports/b71_t5/core4.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b70_t1_build_speed.py"
+    ],
+    "started": "2026-09-17T00:00:50.143374+00:00",
+    "exit_code": 0,
+    "seconds": 19.345054161007283,
+    "record": "reports/b71_t5/tests-core4/test_b70_t1_build_speed.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_equipment_texture_chain.py"
+    ],
+    "started": "2026-09-17T00:00:50.143936+00:00",
+    "exit_code": 0,
+    "seconds": 4.321132982004201,
+    "record": "reports/b71_t5/tests-core4/test_nfl2k5_equipment_texture_chain.json"
+  },
+  {
+    "command": [
+      "python3",
+      "tools/b71_t5_advanced_probe.py"
+    ],
+    "started": "2026-09-17T00:01:17.910239+00:00",
+    "exit_code": 0,
+    "seconds": 10.232117092004046,
+    "record": "reports/b71_t5/advanced-first-pass.json"
+  },
+  {
+    "command": "rg -n '^def _build\\(' mod_editor/core/mod_build.py; cat reports/b71_t5/repin-final1.log | tail -5; sed -n '1,60p' tools/b71_t5_run.py",
+    "started": "2026-09-17T00:01:18.993Z",
+    "exit_code": 0,
+    "seconds": 0.1,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "python3",
+      "packaging/repin.py",
+      "--apply"
+    ],
+    "started": "2026-09-17T00:01:30.139848+00:00",
+    "exit_code": 0,
+    "seconds": 20.799156129010953,
+    "record": "reports/b71_t5/repin-final2.json"
+  },
+  {
+    "command": "cat reports/b71_t5/core4.log; cat reports/b71_t5/advanced-first-pass.log; cat reports/b71_t5/phase-beta71.log; git --git-dir=.scratch/t5.git diff --stat",
+    "started": "2026-09-17T00:01:31.220Z",
+    "exit_code": 0,
+    "seconds": 0.143,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "cat reports/b71_t5/repin-final2.json; rg -n 'project_fit' mod_editor/core/providers.py packaging/release-allowlist.txt; sed -n '1,165p' mod_editor/studio/project_archive.py; git --git-dir=.scratch/t5.git diff --check",
+    "started": "2026-09-17T00:01:46.545Z",
+    "exit_code": 0,
+    "seconds": 0.148,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "rg -n 'def validate_project_replacement|def validate_replacement' mod_editor/studio/session.py mod_editor/core/nfl2k5*io* mod_editor/studio/asset_io.py; sed -n '240,330p' mod_editor/studio/session.py; rg -n '^class Nfl2k5ProductVisualIO|def validate_replacement' mod_editor/core/nfl2k5_product*; cat reports/b71_t5/repin-final2.log | tail -4",
+    "started": "2026-09-17T00:01:57.898Z",
+    "exit_code": 0,
+    "seconds": 0.103,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "python3",
+      "tools/b71_t5_validate.py",
+      "tests-final"
+    ],
+    "started": "2026-09-17T00:02:10.856443+00:00",
+    "exit_code": 1,
+    "seconds": 362.53826913199737,
+    "record": "reports/b71_t5/final-suites.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b71_t5_project_open.py"
+    ],
+    "started": "2026-09-17T00:02:10.887560+00:00",
+    "exit_code": 0,
+    "seconds": 3.1193486799893435,
+    "record": "reports/b71_t5/tests-final/test_b71_t5_project_open.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b71_t4_equipment_project.py"
+    ],
+    "started": "2026-09-17T00:02:10.888132+00:00",
+    "exit_code": 0,
+    "seconds": 56.25166691100458,
+    "record": "reports/b71_t5/tests-final/test_b71_t4_equipment_project.json"
+  },
+  {
+    "command": [
+      "python3",
+      "tools/test_nfl2k5_visual_mod_project.py"
+    ],
+    "started": "2026-09-17T00:02:12.024318+00:00",
+    "exit_code": 0,
+    "seconds": 2.918918979994487,
+    "record": "reports/b71_t5/visual-backend-final.json"
+  },
+  {
+    "command": [
+      "python3",
+      "-m",
+      "mod_editor.capabilities.validate_registry"
+    ],
+    "started": "2026-09-17T00:02:13.202383+00:00",
+    "exit_code": 0,
+    "seconds": 0.1644814160245005,
+    "record": "reports/b71_t5/strict-final.json"
+  },
+  {
+    "command": "sed -n '336,366p' mod_editor/studio/session.py; sed -n '555,588p' mod_editor/core/nfl2k5_extended_visual_io.py; sed -n '274,310p' mod_editor/core/nfl2k5_asset_io.py; sed -n '236,274p' mod_editor/core/nfl2k5_extended_visual_io.py",
+    "started": "2026-09-17T00:02:13.382Z",
+    "exit_code": 0,
+    "seconds": 0.104,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b69_j1_fit.py"
+    ],
+    "started": "2026-09-17T00:02:14.007347+00:00",
+    "exit_code": 0,
+    "seconds": 4.521655529999407,
+    "record": "reports/b71_t5/tests-final/test_b69_j1_fit.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b69_j1_build.py"
+    ],
+    "started": "2026-09-17T00:02:18.529308+00:00",
+    "exit_code": 0,
+    "seconds": 2.317529141000705,
+    "record": "reports/b71_t5/tests-final/test_b69_j1_build.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b69_j1_wiring.py"
+    ],
+    "started": "2026-09-17T00:02:20.847057+00:00",
+    "exit_code": 0,
+    "seconds": 1.3660216440039221,
+    "record": "reports/b71_t5/tests-final/test_b69_j1_wiring.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b70_t1_build_speed.py"
+    ],
+    "started": "2026-09-17T00:02:22.213298+00:00",
+    "exit_code": 0,
+    "seconds": 19.042539068992482,
+    "record": "reports/b71_t5/tests-final/test_b70_t1_build_speed.json"
+  },
+  {
+    "command": "git --git-dir=.scratch/t5.git add -- docs/mod_editor/2k5_mod_studio_changelog.md mod_editor/core/build_io.py mod_editor/core/equipment_reporting.py mod_editor/core/equipment_staging.py mod_editor/core/mod_build.py mod_editor/core/nfl2k5_build_service.py mod_editor/core/nfl2k5_equipment_lz.py mod_editor/core/nfl2k5_model_project_session.py mod_editor/core/nfl2k5_project_fit.py mod_editor/core/nfl2k5_uniform_equipment_writer.py mod_editor/core/providers.py mod_editor/gui/build_panel_qt.py mod_editor/gui/studio_qt.py mod_editor/studio/facade.py mod_editor/studio/project_archive.py mod_editor/studio/session.py packaging/check_2k5_mod_studio_runtime.py packaging/release-allowlist.txt tests/mod_editor/test_b68_t1_build.py tests/mod_editor/test_b69_j1_wiring.py tests/mod_editor/test_b70_t2_equipment.py tests/mod_editor/test_b70_t2_wiring.py tests/mod_editor/test_b71_t4_equipment_project.py tests/mod_editor/test_b71_t5_project_open.py tests/mod_editor/test_build_panel_qt.py tests/mod_editor/test_mod_build_performance.py tests/mod_editor/test_studio_session.py tools/nfl2k5_visual_mod_project.py tools/b71_t5_build_probe.py tools/b71_t5_project_probe.py tools/b71_t5_advanced_probe.py tools/b71_t5_run.py tools/b71_t5_validate.py",
+    "started": "2026-09-17T00:02:29.979Z",
+    "exit_code": 0,
+    "seconds": 0.157,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "git --git-dir=.scratch/t5.git -c user.name='Codex' -c user.email='codex@local' commit -m 'Defer project fits to cancellable builds and persist bounded fit receipts' -- docs/mod_editor/2k5_mod_studio_changelog.md mod_editor/core/build_io.py mod_editor/core/equipment_reporting.py mod_editor/core/equipment_staging.py mod_editor/core/mod_build.py mod_editor/core/nfl2k5_build_service.py mod_editor/core/nfl2k5_equipment_lz.py mod_editor/core/nfl2k5_model_project_session.py mod_editor/core/nfl2k5_project_fit.py mod_editor/core/nfl2k5_uniform_equipment_writer.py mod_editor/core/providers.py mod_editor/gui/build_panel_qt.py mod_editor/gui/studio_qt.py mod_editor/studio/facade.py mod_editor/studio/project_archive.py mod_editor/studio/session.py packaging/check_2k5_mod_studio_runtime.py packaging/release-allowlist.txt tests/mod_editor/test_b68_t1_build.py tests/mod_editor/test_b69_j1_wiring.py tests/mod_editor/test_b70_t2_equipment.py tests/mod_editor/test_b70_t2_wiring.py tests/mod_editor/test_b71_t4_equipment_project.py tests/mod_editor/test_b71_t5_project_open.py tests/mod_editor/test_build_panel_qt.py tests/mod_editor/test_mod_build_performance.py tests/mod_editor/test_studio_session.py tools/nfl2k5_visual_mod_project.py tools/b71_t5_build_probe.py tools/b71_t5_project_probe.py tools/b71_t5_advanced_probe.py tools/b71_t5_run.py tools/b71_t5_validate.py",
+    "started": "2026-09-17T00:02:30.144Z",
+    "exit_code": 0,
+    "seconds": 0.185,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "sed -n '1539,1582p' mod_editor/core/nfl2k5_build_service.py; sed -n '4640,4810p' mod_editor/studio/session.py; cat reports/b71_t5/final-suites.log; cat reports/b71_t5/strict-final.log",
+    "started": "2026-09-17T00:02:36.296Z",
+    "exit_code": 0,
+    "seconds": 0.099,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b70_t1_diagnostics.py"
+    ],
+    "started": "2026-09-17T00:02:41.256185+00:00",
+    "exit_code": 0,
+    "seconds": 0.6151781720109284,
+    "record": "reports/b71_t5/tests-final/test_b70_t1_diagnostics.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b70_t2_equipment.py"
+    ],
+    "started": "2026-09-17T00:02:41.871655+00:00",
+    "exit_code": 0,
+    "seconds": 1.3161930379865225,
+    "record": "reports/b71_t5/tests-final/test_b70_t2_equipment.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b70_t2_reporting.py"
+    ],
+    "started": "2026-09-17T00:02:43.188062+00:00",
+    "exit_code": 0,
+    "seconds": 0.2643398199870717,
+    "record": "reports/b71_t5/tests-final/test_b70_t2_reporting.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b70_t2_wiring.py"
+    ],
+    "started": "2026-09-17T00:02:43.452623+00:00",
+    "exit_code": 0,
+    "seconds": 0.7151390979997814,
+    "record": "reports/b71_t5/tests-final/test_b70_t2_wiring.json"
+  },
+  {
+    "command": "sed -n '550,658p' mod_editor/core/nfl2k5_build_service.py; sed -n '90,157p' mod_editor/gui/build_panel_qt.py; sed -n '4400,4555p' mod_editor/studio/session.py; rg -n 'fit pending|hotfix' docs/mod_editor/2k5_mod_studio_changelog.md | head -3",
+    "started": "2026-09-17T00:02:43.713Z",
+    "exit_code": 0,
+    "seconds": 0.104,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b68_t1_build.py"
+    ],
+    "started": "2026-09-17T00:02:44.168110+00:00",
+    "exit_code": 0,
+    "seconds": 5.27281819700147,
+    "record": "reports/b71_t5/tests-final/test_b68_t1_build.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_mod_build.py"
+    ],
+    "started": "2026-09-17T00:02:49.441210+00:00",
+    "exit_code": 0,
+    "seconds": 1.7672867740038782,
+    "record": "reports/b71_t5/tests-final/test_mod_build.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_mod_build_performance.py"
+    ],
+    "started": "2026-09-17T00:02:51.208838+00:00",
+    "exit_code": 0,
+    "seconds": 7.1760612160142045,
+    "record": "reports/b71_t5/tests-final/test_mod_build_performance.json"
+  },
+  {
+    "command": "rg --files tests/mod_editor | rg 'test_.*(studio|project|facade|uniform|equipment).*\\.py$' | sort",
+    "started": "2026-09-17T00:02:51.726Z",
+    "exit_code": 0,
+    "seconds": 0.096,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "rg --files tests/mod_editor | rg '(build_io|archive|process_group|compile_cache|platform_compat|mod_build)'",
+    "started": "2026-09-17T00:02:51.831Z",
+    "exit_code": 0,
+    "seconds": 0.097,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "cat reports/b71_t5/final-suites.log; tail -8 reports/b71_t5/visual-backend-final.log",
+    "started": "2026-09-17T00:02:51.940Z",
+    "exit_code": 0,
+    "seconds": 0.102,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_build_panel_qt.py"
+    ],
+    "started": "2026-09-17T00:02:58.385154+00:00",
+    "exit_code": 0,
+    "seconds": 2.8186121130129322,
+    "record": "reports/b71_t5/tests-final/test_build_panel_qt.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_build_service.py"
+    ],
+    "started": "2026-09-17T00:03:01.204082+00:00",
+    "exit_code": 0,
+    "seconds": 0.3148726520012133,
+    "record": "reports/b71_t5/tests-final/test_nfl2k5_build_service.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_2k5_build_is_explainable.py"
+    ],
+    "started": "2026-09-17T00:03:01.519280+00:00",
+    "exit_code": 0,
+    "seconds": 0.6151215730060358,
+    "record": "reports/b71_t5/tests-final/test_2k5_build_is_explainable.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_facade_external_build.py"
+    ],
+    "started": "2026-09-17T00:03:02.134726+00:00",
+    "exit_code": 0,
+    "seconds": 0.3648094860254787,
+    "record": "reports/b71_t5/tests-final/test_facade_external_build.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_project_document_workflow.py"
+    ],
+    "started": "2026-09-17T00:03:02.499875+00:00",
+    "exit_code": 0,
+    "seconds": 15.489261231996352,
+    "record": "reports/b71_t5/tests-final/test_project_document_workflow.json"
+  },
+  {
+    "command": [
+      "python3",
+      "tools/b71_t5_validate.py",
+      "tests-extra",
+      "test_beta69_studios_offscreen",
+      "test_music_playlist_project",
+      "test_nfl2k5_stadium_studio",
+      "test_studio_inspection",
+      "test_texture_master_facades",
+      "test_uniform_sharing",
+      "test_platform_compat",
+      "test_platform_compat_durability",
+      "test_platform_compat_paths",
+      "test_platform_compat_ownership"
+    ],
+    "started": "2026-09-17T00:03:03.961778+00:00",
+    "exit_code": 0,
+    "seconds": 9.779883773007896,
+    "record": "reports/b71_t5/extra-suites.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_beta69_studios_offscreen.py"
+    ],
+    "started": "2026-09-17T00:03:03.993942+00:00",
+    "exit_code": 0,
+    "seconds": 9.730186711007264,
+    "record": "reports/b71_t5/tests-extra/test_beta69_studios_offscreen.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_music_playlist_project.py"
+    ],
+    "started": "2026-09-17T00:03:03.994303+00:00",
+    "exit_code": 0,
+    "seconds": 1.1157388650171924,
+    "record": "reports/b71_t5/tests-extra/test_music_playlist_project.json"
+  },
+  {
+    "command": "git --git-dir=.scratch/t5.git show 02bbadd1:mod_editor/studio/session.py | nl -ba | sed -n '4345,4370p'; git --git-dir=.scratch/t5.git show 02bbadd1:mod_editor/studio/facade.py | nl -ba | sed -n '3620,3655p'; git --git-dir=.scratch/t5.git show 02bbadd1:mod_editor/gui/studio_qt.py | nl -ba | sed -n '6595,6625p'; rg -n 'def closeEvent|Checking your project|_project_open_worker|_task_heartbeat' mod_editor/gui/studio_qt.py",
+    "started": "2026-09-17T00:03:05.036Z",
+    "exit_code": 0,
+    "seconds": 0.117,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_stadium_studio.py"
+    ],
+    "started": "2026-09-17T00:03:05.110312+00:00",
+    "exit_code": 0,
+    "seconds": 0.1641755659948103,
+    "record": "reports/b71_t5/tests-extra/test_nfl2k5_stadium_studio.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_studio_inspection.py"
+    ],
+    "started": "2026-09-17T00:03:05.274822+00:00",
+    "exit_code": 0,
+    "seconds": 0.5651685769844335,
+    "record": "reports/b71_t5/tests-extra/test_studio_inspection.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_texture_master_facades.py"
+    ],
+    "started": "2026-09-17T00:03:05.840346+00:00",
+    "exit_code": 0,
+    "seconds": 0.5652088210044894,
+    "record": "reports/b71_t5/tests-extra/test_texture_master_facades.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_uniform_sharing.py"
+    ],
+    "started": "2026-09-17T00:03:06.405898+00:00",
+    "exit_code": 0,
+    "seconds": 0.1644244740018621,
+    "record": "reports/b71_t5/tests-extra/test_uniform_sharing.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_platform_compat.py"
+    ],
+    "started": "2026-09-17T00:03:06.570650+00:00",
+    "exit_code": 0,
+    "seconds": 0.3648019550018944,
+    "record": "reports/b71_t5/tests-extra/test_platform_compat.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_platform_compat_durability.py"
+    ],
+    "started": "2026-09-17T00:03:06.936010+00:00",
+    "exit_code": 0,
+    "seconds": 0.16409197699977085,
+    "record": "reports/b71_t5/tests-extra/test_platform_compat_durability.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_platform_compat_paths.py"
+    ],
+    "started": "2026-09-17T00:03:07.100463+00:00",
+    "exit_code": 0,
+    "seconds": 0.41491021899855696,
+    "record": "reports/b71_t5/tests-extra/test_platform_compat_paths.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_studio_session.py"
+    ],
+    "started": "2026-09-17T00:03:07.140184+00:00",
+    "exit_code": 1,
+    "seconds": 1.06628732898389,
+    "record": "reports/b71_t5/tests-final/test_studio_session.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_platform_compat_ownership.py"
+    ],
+    "started": "2026-09-17T00:03:07.515652+00:00",
+    "exit_code": 0,
+    "seconds": 0.26467008001054637,
+    "record": "reports/b71_t5/tests-extra/test_platform_compat_ownership.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_studio_facade.py"
+    ],
+    "started": "2026-09-17T00:03:08.206948+00:00",
+    "exit_code": 0,
+    "seconds": 0.3649633140012156,
+    "record": "reports/b71_t5/tests-final/test_studio_facade.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_studio_shell_layout_qt.py"
+    ],
+    "started": "2026-09-17T00:03:08.572249+00:00",
+    "exit_code": 0,
+    "seconds": 40.32653650298016,
+    "record": "reports/b71_t5/tests-final/test_studio_shell_layout_qt.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_studio_qt_models.py"
+    ],
+    "started": "2026-09-17T00:03:17.989483+00:00",
+    "exit_code": 0,
+    "seconds": 0.815585664997343,
+    "record": "reports/b71_t5/tests-final/test_studio_qt_models.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_studio_visual_asset_routing.py"
+    ],
+    "started": "2026-09-17T00:03:18.805381+00:00",
+    "exit_code": 0,
+    "seconds": 3.0690764510072768,
+    "record": "reports/b71_t5/tests-final/test_studio_visual_asset_routing.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_uniform_bundle_cross_project.py"
+    ],
+    "started": "2026-09-17T00:03:21.874819+00:00",
+    "exit_code": 0,
+    "seconds": 2.517976275004912,
+    "record": "reports/b71_t5/tests-final/test_uniform_bundle_cross_project.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_model_project.py"
+    ],
+    "started": "2026-09-17T00:03:24.393134+00:00",
+    "exit_code": 0,
+    "seconds": 35.671741391008254,
+    "record": "reports/b71_t5/tests-final/test_nfl2k5_model_project.json"
+  },
+  {
+    "command": "git --git-dir=.scratch/t5.git show 02bbadd1:mod_editor/studio/session.py | rg -n 'preflight_project_equipment|_remember_fit|preflight.*equipment|validate.*project|load_project_archive'; git --git-dir=.scratch/t5.git show 02bbadd1:mod_editor/core/nfl2k5_uniform_equipment_writer.py | rg -n 'def _cached_parse|compress_equipment_optimal|def _compile_group|def preflight_project_equipment|def _quantize_art|def _stage_compiler_key|def _compile_staged'; git --git-dir=.scratch/t5.git show 02bbadd1:mod_editor/studio/project_archive.py | rg -n 'ensure_original|validate_replacement|_publish_archive|fsync|replace\\(|temporary|def project_identity|active project.*changed'; git --git-dir=.scratch/t5.git show 02bbadd1:mod_editor/gui/studio_qt.py | rg -n 'def closeEvent|busy|elapsed|Checking your project replacement|heartbeat'; git --git-dir=.scratch/t5.git show 02bbadd1:mod_editor/gui/build_panel_qt.py | rg -n 'Tick at least|ValueError.*cancel|def progress'; git --git-dir=.scratch/t5.git show 02bbadd1:mod_editor/core/nfl2k5_build_service.py | rg -n 'def _emit|communicate\\(\\)|except Exception|def _run_build_command'",
+    "started": "2026-09-17T00:03:28.577Z",
+    "exit_code": 0,
+    "seconds": 0.122,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "rg -n 'def remember|def restore|def equipment_keys|def progress_text|def check_cancelled' mod_editor/core/nfl2k5_project_fit.py; rg -n 'OPTIMAL_SECONDS|check_deadline|deadline|def compress_equipment_optimal' mod_editor/core/nfl2k5_equipment_lz.py; rg -n '_remember_fits|_parallel_equipment_fits|_parallel_uniform_imports|def _publish_archive|fit_receipts|project_fit import restore|def closeEvent|def blocker' mod_editor/core/nfl2k5_build_service.py tools/nfl2k5_visual_mod_project.py mod_editor/studio/project_archive.py mod_editor/studio/session.py mod_editor/gui/studio_qt.py mod_editor/gui/build_panel_qt.py",
+    "started": "2026-09-17T00:03:28.707Z",
+    "exit_code": 0,
+    "seconds": 0.096,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "sed -n '276,302p' mod_editor/gui/studio_qt.py; sed -n '8000,8060p' mod_editor/gui/studio_qt.py; sed -n '8880,8920p' mod_editor/gui/studio_qt.py; rg -n 'def _build_iso|def build_iso|No.*edit|no.*edit|has no' mod_editor/studio/facade.py mod_editor/core/nfl2k5_build_service.py | tail -18",
+    "started": "2026-09-17T00:03:37.921Z",
+    "exit_code": 0,
+    "seconds": 0.107,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "sed -n '7970,8008p' mod_editor/gui/studio_qt.py; rg -n 'build_button.isEnabled|_build_blocker_message|Add at least one project edit' tests/mod_editor/test_studio* tests/mod_editor/test_beta69_studios_offscreen.py tests/mod_editor/test_2k5_build_is_explainable.py",
+    "started": "2026-09-17T00:03:47.800Z",
+    "exit_code": 0,
+    "seconds": 0.101,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_models_project_wiring.py"
+    ],
+    "started": "2026-09-17T00:03:48.899167+00:00",
+    "exit_code": 0,
+    "seconds": 8.878263927996159,
+    "record": "reports/b71_t5/tests-final/test_models_project_wiring.json"
+  },
+  {
+    "command": "sed -n '50,114p' tests/mod_editor/test_2k5_build_is_explainable.py; sed -n '109,124p' tests/mod_editor/test_beta69_studios_offscreen.py; cat reports/b71_t5/final-suites.log | tail -12",
+    "started": "2026-09-17T00:03:53.398Z",
+    "exit_code": 0,
+    "seconds": 0.098,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "tail -32 reports/b71_t5/tests-final/test_studio_session.log; cat reports/b71_t5/extra-suites.log",
+    "started": "2026-09-17T00:03:56.882Z",
+    "exit_code": 0,
+    "seconds": 0.094,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_provider_integrity.py"
+    ],
+    "started": "2026-09-17T00:03:57.777781+00:00",
+    "exit_code": 1,
+    "seconds": 3.46976217199699,
+    "record": "reports/b71_t5/tests-final/test_provider_integrity.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_providers.py"
+    ],
+    "started": "2026-09-17T00:04:00.065234+00:00",
+    "exit_code": 0,
+    "seconds": 3.9706101059855428,
+    "record": "reports/b71_t5/tests-final/test_providers.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_product_catalog.py"
+    ],
+    "started": "2026-09-17T00:04:01.248073+00:00",
+    "exit_code": 0,
+    "seconds": 0.16453658300451934,
+    "record": "reports/b71_t5/tests-final/test_product_catalog.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_phase1_packaging.py"
+    ],
+    "started": "2026-09-17T00:04:01.412916+00:00",
+    "exit_code": 0,
+    "seconds": 2.0174577629950363,
+    "record": "reports/b71_t5/tests-final/test_phase1_packaging.json"
+  },
+  {
+    "command": "sed -n '925,1035p' tests/mod_editor/test_studio_session.py; sed -n '8600,8635p' mod_editor/gui/studio_qt.py; sed -n '3740,3782p' mod_editor/studio/facade.py",
+    "started": "2026-09-17T00:04:02.004Z",
+    "exit_code": 0,
+    "seconds": 0.099,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_equipment_import.py"
+    ],
+    "started": "2026-09-17T00:04:03.430731+00:00",
+    "exit_code": 0,
+    "seconds": 2.0678433110006154,
+    "record": "reports/b71_t5/tests-final/test_nfl2k5_equipment_import.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_equipment_consumers.py"
+    ],
+    "started": "2026-09-17T00:04:04.036231+00:00",
+    "exit_code": 0,
+    "seconds": 28.211365016002674,
+    "record": "reports/b71_t5/tests-final/test_nfl2k5_equipment_consumers.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_equipment_import_wiring.py"
+    ],
+    "started": "2026-09-17T00:04:05.498948+00:00",
+    "exit_code": 0,
+    "seconds": 0.7653989779937547,
+    "record": "reports/b71_t5/tests-final/test_nfl2k5_equipment_import_wiring.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_equipment_scope_wiring.py"
+    ],
+    "started": "2026-09-17T00:04:06.264660+00:00",
+    "exit_code": 0,
+    "seconds": 1.7669280119880568,
+    "record": "reports/b71_t5/tests-final/test_nfl2k5_equipment_scope_wiring.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_equipment_texture_chain.py"
+    ],
+    "started": "2026-09-17T00:04:08.031939+00:00",
+    "exit_code": 0,
+    "seconds": 4.2716998039977625,
+    "record": "reports/b71_t5/tests-final/test_nfl2k5_equipment_texture_chain.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_equipment_texture_native.py"
+    ],
+    "started": "2026-09-17T00:04:12.304091+00:00",
+    "exit_code": 0,
+    "seconds": 0.26478741099708714,
+    "record": "reports/b71_t5/tests-final/test_nfl2k5_equipment_texture_native.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_equipment_retail_roundtrip.py"
+    ],
+    "started": "2026-09-17T00:04:12.569224+00:00",
+    "exit_code": 0,
+    "seconds": 15.489141091995407,
+    "record": "reports/b71_t5/tests-final/test_nfl2k5_equipment_retail_roundtrip.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_uniform_catalog.py"
+    ],
+    "started": "2026-09-17T00:04:28.058717+00:00",
+    "exit_code": 0,
+    "seconds": 0.41493205801816657,
+    "record": "reports/b71_t5/tests-final/test_nfl2k5_uniform_catalog.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_uniform_choice.py"
+    ],
+    "started": "2026-09-17T00:04:28.474058+00:00",
+    "exit_code": 0,
+    "seconds": 7.9278768900258,
+    "record": "reports/b71_t5/tests-final/test_nfl2k5_uniform_choice.json"
+  },
+  {
+    "command": [
+      "python3",
+      "tools/b71_t5_validate.py",
+      "tests-gui-final",
+      "test_studio_session",
+      "test_2k5_build_is_explainable",
+      "test_studio_shell_layout_qt",
+      "test_project_document_workflow",
+      "test_b71_t5_project_open",
+      "test_build_panel_qt"
+    ],
+    "started": "2026-09-17T00:04:32.241305+00:00",
+    "exit_code": 1,
+    "seconds": 41.88059771800181,
+    "record": "reports/b71_t5/gui-final.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_uniform_choice_screens.py"
+    ],
+    "started": "2026-09-17T00:04:32.247975+00:00",
+    "exit_code": 0,
+    "seconds": 0.5651150349876843,
+    "record": "reports/b71_t5/tests-final/test_nfl2k5_uniform_choice_screens.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_studio_session.py"
+    ],
+    "started": "2026-09-17T00:04:32.272066+00:00",
+    "exit_code": 0,
+    "seconds": 0.9158030709950253,
+    "record": "reports/b71_t5/tests-gui-final/test_studio_session.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_2k5_build_is_explainable.py"
+    ],
+    "started": "2026-09-17T00:04:32.272484+00:00",
+    "exit_code": 0,
+    "seconds": 0.7152242400043178,
+    "record": "reports/b71_t5/tests-gui-final/test_2k5_build_is_explainable.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_2k5_uniform_equipment_export.py"
+    ],
+    "started": "2026-09-17T00:04:32.813282+00:00",
+    "exit_code": 0,
+    "seconds": 32.66828511402127,
+    "record": "reports/b71_t5/tests-final/test_2k5_uniform_equipment_export.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_studio_shell_layout_qt.py"
+    ],
+    "started": "2026-09-17T00:04:32.988108+00:00",
+    "exit_code": 0,
+    "seconds": 41.08261226300965,
+    "record": "reports/b71_t5/tests-gui-final/test_studio_shell_layout_qt.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_project_document_workflow.py"
+    ],
+    "started": "2026-09-17T00:04:33.188099+00:00",
+    "exit_code": 1,
+    "seconds": 15.74124387698248,
+    "record": "reports/b71_t5/tests-gui-final/test_project_document_workflow.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_audio_annotation_project_archive.py"
+    ],
+    "started": "2026-09-17T00:04:36.402305+00:00",
+    "exit_code": 0,
+    "seconds": 0.5652875409869011,
+    "record": "reports/b71_t5/tests-final/test_audio_annotation_project_archive.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_stadium_editor_roundtrip.py"
+    ],
+    "started": "2026-09-17T00:04:36.967887+00:00",
+    "exit_code": 0,
+    "seconds": 0.6153019680059515,
+    "record": "reports/b71_t5/tests-final/test_nfl2k5_stadium_editor_roundtrip.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_nfl2k5_simulated_windows_build.py"
+    ],
+    "started": "2026-09-17T00:04:37.583548+00:00",
+    "exit_code": 0,
+    "seconds": 215.76151555101387,
+    "record": "reports/b71_t5/tests-final/test_nfl2k5_simulated_windows_build.json"
+  },
+  {
+    "command": "cat reports/b71_t5/open-beta69-run3.json reports/b71_t5/open-beta70-run3.json reports/b71_t5/open-beta71-run3.json reports/b71_t5/open-after.json; cat reports/b71_t5/final-suites.log | tail -18; cat reports/b71_t5/gui-final.log",
+    "started": "2026-09-17T00:04:47.086Z",
+    "exit_code": 0,
+    "seconds": 0.1,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b71_t5_project_open.py"
+    ],
+    "started": "2026-09-17T00:04:48.929715+00:00",
+    "exit_code": 0,
+    "seconds": 3.0690499850024935,
+    "record": "reports/b71_t5/tests-gui-final/test_b71_t5_project_open.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_build_panel_qt.py"
+    ],
+    "started": "2026-09-17T00:04:51.999130+00:00",
+    "exit_code": 0,
+    "seconds": 2.869284154003253,
+    "record": "reports/b71_t5/tests-gui-final/test_build_panel_qt.json"
+  },
+  {
+    "command": "cat reports/b71_t5/tests-final/test_provider_integrity.log; sed -n '1,185p' tests/mod_editor/test_provider_integrity.py; rg -n 'changed while|project_identity|hash.*walk' ASTRA_B70_T1_REPORT.md ASTRA_B71_T4_REPORT.md 2>/dev/null | head -10; git --git-dir=.scratch/t5.git show 02bbadd1:mod_editor/studio/facade.py | nl -ba | sed -n '3675,3713p'",
+    "started": "2026-09-17T00:04:56.156Z",
+    "exit_code": 0,
+    "seconds": 0.11,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "sed -n '204,214p' tests/mod_editor/test_provider_integrity.py; cat reports/b71_t5/gui-final.log; cat reports/b71_t5/final-suites.log | tail -8; rg -n 'def _project_open_change' -A25 mod_editor/studio/facade.py",
+    "started": "2026-09-17T00:05:05.431Z",
+    "exit_code": 0,
+    "seconds": 0.102,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "sed -n '214,228p' tests/mod_editor/test_provider_integrity.py; tail -32 reports/b71_t5/tests-gui-final/test_project_document_workflow.log; tail -14 reports/b71_t5/tests-gui-final/test_studio_shell_layout_qt.log",
+    "started": "2026-09-17T00:05:10.303Z",
+    "exit_code": 0,
+    "seconds": 0.1,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "python3",
+      "packaging/repin.py",
+      "--apply"
+    ],
+    "started": "2026-09-17T00:05:31.431761+00:00",
+    "exit_code": 0,
+    "seconds": 20.646750732994406,
+    "record": "reports/b71_t5/repin-final3.json"
+  },
+  {
+    "command": "cat reports/b71_t5/gui-final.log; rg -n 'def test.*(mutat|changed|race|replace|outside)|hash|_project_open_change' tests/mod_editor/test_b70_t1_diagnostics.py; git --git-dir=.scratch/t5.git status --short",
+    "started": "2026-09-17T00:05:32.516Z",
+    "exit_code": 0,
+    "seconds": 0.122,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "rg -n '^def clear|class EquipmentCompileCache|def _stage_disk_cache' mod_editor/core/nfl2k5_uniform_equipment_writer.py; sed -n '145,180p' mod_editor/core/nfl2k5_uniform_equipment_writer.py; sed -n '1034,1065p' mod_editor/core/nfl2k5_uniform_equipment_writer.py; sed -n '1,86p' tests/mod_editor/test_b70_t1_diagnostics.py; sed -n '1,85p' tests/mod_editor/test_b69_j1_fit.py; cat reports/b71_t5/final-suites.json 2>/dev/null",
+    "started": "2026-09-17T00:05:40.437Z",
+    "exit_code": 1,
+    "seconds": 0.102,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "rg -n 'def build\\(' -A12 tests/mod_editor/test_nfl2k5_equipment_texture_chain.py; rg -n 'compile_cache =|_STAGED_CACHE' mod_editor/core/nfl2k5_uniform_equipment_writer.py | tail -8; cat reports/b71_t5/repin-final3.log | tail -4; cat reports/b71_t5/gui-final.json 2>/dev/null",
+    "started": "2026-09-17T00:05:52.077Z",
+    "exit_code": 0,
+    "seconds": 0.114,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "rg -n 'built.connect|def _.*built|_build_completed|_workspace_dirty|_mark_workspace' mod_editor/gui/studio_qt.py | head -40; sed -n '1980,2010p' mod_editor/gui/studio_qt.py; rg -n '_remember_fit\\(' mod_editor/core/equipment_staging.py",
+    "started": "2026-09-17T00:06:03.126Z",
+    "exit_code": 0,
+    "seconds": 0.097,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "python3",
+      "tools/b71_t5_validate.py",
+      "tests-corrections",
+      "test_b71_t5_project_open",
+      "test_project_document_workflow",
+      "test_studio_shell_layout_qt",
+      "test_provider_integrity",
+      "test_b70_t1_diagnostics",
+      "test_2k5_build_is_explainable"
+    ],
+    "started": "2026-09-17T00:06:39.103257+00:00",
+    "exit_code": 1,
+    "seconds": 40.78268288701656,
+    "record": "reports/b71_t5/final-corrections.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b71_t5_project_open.py"
+    ],
+    "started": "2026-09-17T00:06:39.134645+00:00",
+    "exit_code": 0,
+    "seconds": 6.724790209991625,
+    "record": "reports/b71_t5/tests-corrections/test_b71_t5_project_open.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_project_document_workflow.py"
+    ],
+    "started": "2026-09-17T00:06:39.135079+00:00",
+    "exit_code": 1,
+    "seconds": 0.11452797899255529,
+    "record": "reports/b71_t5/tests-corrections/test_project_document_workflow.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_studio_shell_layout_qt.py"
+    ],
+    "started": "2026-09-17T00:06:39.249982+00:00",
+    "exit_code": 0,
+    "seconds": 40.578795352979796,
+    "record": "reports/b71_t5/tests-corrections/test_studio_shell_layout_qt.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_provider_integrity.py"
+    ],
+    "started": "2026-09-17T00:06:45.859793+00:00",
+    "exit_code": 0,
+    "seconds": 9.881096591998357,
+    "record": "reports/b71_t5/tests-corrections/test_provider_integrity.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_b70_t1_diagnostics.py"
+    ],
+    "started": "2026-09-17T00:06:55.741175+00:00",
+    "exit_code": 0,
+    "seconds": 0.6151901109842584,
+    "record": "reports/b71_t5/tests-corrections/test_b70_t1_diagnostics.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_2k5_build_is_explainable.py"
+    ],
+    "started": "2026-09-17T00:06:56.356661+00:00",
+    "exit_code": 0,
+    "seconds": 0.6151940979762003,
+    "record": "reports/b71_t5/tests-corrections/test_2k5_build_is_explainable.json"
+  },
+  {
+    "command": "sed -n '25,67p' tests/mod_editor/test_b70_t1_diagnostics.py; cat reports/b71_t5/final-suites.json; cat reports/b71_t5/final-corrections.log; sed -n '1800,1840p' mod_editor/core/nfl2k5_uniform_equipment_writer.py; git --git-dir=.scratch/t5.git show 02bbadd1:mod_editor/core/nfl2k5_uniform_equipment_writer.py | nl -ba | sed -n '1680,1727p'",
+    "started": "2026-09-17T00:06:57.735Z",
+    "exit_code": 0,
+    "seconds": 0.106,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "cat reports/b71_t5/tests-corrections/test_project_document_workflow.log; sed -n '491,507p' tests/mod_editor/test_project_document_workflow.py; tail -8 reports/b71_t5/tests-final/test_nfl2k5_simulated_windows_build.log",
+    "started": "2026-09-17T00:07:02.230Z",
+    "exit_code": 0,
+    "seconds": 0.098,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/mod_editor/test_project_document_workflow.py"
+    ],
+    "started": "2026-09-17T00:07:12.280044+00:00",
+    "exit_code": 0,
+    "seconds": 15.642141204007203,
+    "record": "reports/b71_t5/project-document-final.json"
+  },
+  {
+    "command": [
+      "python3",
+      "packaging/repin.py",
+      "--apply"
+    ],
+    "started": "2026-09-17T00:07:13.450370+00:00",
+    "exit_code": 0,
+    "seconds": 20.947766008990584,
+    "record": "reports/b71_t5/repin-final4.json"
+  },
+  {
+    "command": [
+      "python3",
+      "tools/b71_t5_project_probe.py",
+      "02bbadd1",
+      "30",
+      "--late-change"
+    ],
+    "started": "2026-09-17T00:07:51.612814+00:00",
+    "exit_code": 0,
+    "seconds": 0.7158292809908744,
+    "record": "reports/b71_t5/late-refusal-beta71.json"
+  },
+  {
+    "command": [
+      "python3",
+      "tools/b71_t5_project_probe.py",
+      "after",
+      "30",
+      "--late-change"
+    ],
+    "started": "2026-09-17T00:07:52.437247+00:00",
+    "exit_code": 0,
+    "seconds": 0.5651564059953671,
+    "record": "reports/b71_t5/late-refusal-after.json"
+  },
+  {
+    "command": "cat reports/b71_t5/late-refusal-beta71.log reports/b71_t5/late-refusal-after.log; cat reports/b71_t5/project-document-final.json; cat reports/b71_t5/final-corrections.log; cat reports/b71_t5/repin-final4.json; tail -6 reports/b71_t5/final-suites.log",
+    "started": "2026-09-17T00:08:02.398Z",
+    "exit_code": 0,
+    "seconds": 0.097,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "python3",
+      "tools/b71_t5_project_probe.py",
+      "02bbadd1",
+      "30",
+      "--late-change"
+    ],
+    "started": "2026-09-17T00:08:22.579601+00:00",
+    "exit_code": 0,
+    "seconds": 19.894217438995838,
+    "record": "reports/b71_t5/late-refusal-beta71-v2.json"
+  },
+  {
+    "command": [
+      "python3",
+      "tools/b71_t5_project_probe.py",
+      "after",
+      "30",
+      "--late-change"
+    ],
+    "started": "2026-09-17T00:08:23.753284+00:00",
+    "exit_code": 0,
+    "seconds": 0.6153305509942584,
+    "record": "reports/b71_t5/late-refusal-after-v2.json"
+  },
+  {
+    "command": "cat reports/b71_t5/late-refusal-after-v2.log; cat reports/b71_t5/late-refusal-beta71-v2.log; git --git-dir=.scratch/t5.git diff --check; tail -5 reports/b71_t5/tests-final/test_nfl2k5_simulated_windows_build.log",
+    "started": "2026-09-17T00:08:24.386Z",
+    "exit_code": 0,
+    "seconds": 0.115,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "rg -n 'discard.*session|candidate.discard|discard_un' mod_editor/studio/facade.py mod_editor/studio/session.py; cat reports/b71_t5/final-suites.json; cat reports/b71_t5/late-refusal-beta71-v2.log | head -10; git --git-dir=.scratch/t5.git diff --stat",
+    "started": "2026-09-17T00:08:32.047Z",
+    "exit_code": 0,
+    "seconds": 0.123,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "sed -n '3522,3588p' mod_editor/studio/facade.py; sed -n '463,486p' mod_editor/studio/session.py; sed -n '3650,3680p' mod_editor/studio/facade.py; cat reports/b71_t5/late-refusal-beta71-v2.log | head -8",
+    "started": "2026-09-17T00:08:37.527Z",
+    "exit_code": 0,
+    "seconds": 0.1,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "python3",
+      "tools/b71_t5_project_probe.py",
+      "02bbadd1",
+      "30",
+      "--late-change"
+    ],
+    "started": "2026-09-17T00:08:52.059097+00:00",
+    "exit_code": 0,
+    "seconds": 19.895335231005447,
+    "record": "reports/b71_t5/late-refusal-beta71-final.json"
+  },
+  {
+    "command": [
+      "python3",
+      "tools/b71_t5_project_probe.py",
+      "after",
+      "30",
+      "--late-change"
+    ],
+    "started": "2026-09-17T00:08:53.227358+00:00",
+    "exit_code": 0,
+    "seconds": 0.615662088006502,
+    "record": "reports/b71_t5/late-refusal-after-final.json"
+  },
+  {
+    "command": [
+      "python3",
+      "tools/b71_t5_validate.py",
+      "tests-gates-final",
+      "test_provider_integrity",
+      "test_providers",
+      "test_product_catalog",
+      "test_phase1_packaging"
+    ],
+    "started": "2026-09-17T00:08:53.939785+00:00",
+    "exit_code": 0,
+    "seconds": 9.780682451993925,
+    "record": "reports/b71_t5/gates-final.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_provider_integrity.py"
+    ],
+    "started": "2026-09-17T00:08:53.970102+00:00",
+    "exit_code": 0,
+    "seconds": 9.73148078500526,
+    "record": "reports/b71_t5/tests-gates-final/test_provider_integrity.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_providers.py"
+    ],
+    "started": "2026-09-17T00:08:53.970627+00:00",
+    "exit_code": 0,
+    "seconds": 3.620159472018713,
+    "record": "reports/b71_t5/tests-gates-final/test_providers.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_product_catalog.py"
+    ],
+    "started": "2026-09-17T00:08:57.591165+00:00",
+    "exit_code": 0,
+    "seconds": 0.16455987401423045,
+    "record": "reports/b71_t5/tests-gates-final/test_product_catalog.json"
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "/home/noah/2k-worktrees/astra-b71-t5/tests/mod_editor/test_phase1_packaging.py"
+    ],
+    "started": "2026-09-17T00:08:57.756045+00:00",
+    "exit_code": 0,
+    "seconds": 2.1176741019880865,
+    "record": "reports/b71_t5/tests-gates-final/test_phase1_packaging.json"
+  },
+  {
+    "command": "cat reports/b71_t5/late-refusal-after-final.log; head -8 reports/b71_t5/tests-final/test_b71_t4_equipment_project.log; rg -n 'one_byte|f7d|3c98|1.byte|beta_70' tools/b71_t4_equipment_probe.py tests/mod_editor/test_b71_t4_equipment_project.py; rg -n 'def _start_task|def _busy_heartbeat|Checking.*remaining|fit pending' mod_editor/gui/studio_qt.py mod_editor/core/equipment_reporting.py; git --git-dir=.scratch/t5.git diff --check",
+    "started": "2026-09-17T00:09:03.252Z",
+    "exit_code": 0,
+    "seconds": 0.13,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "cat reports/b71_t5/late-refusal-beta71-final.log; cat reports/b71_t5/gates-final.log; cat reports/b71_t5/parallel-retail.log | tail -3; sed -n '8200,8225p' mod_editor/gui/studio_qt.py; sed -n '69,124p' mod_editor/core/nfl2k5_equipment_lz.py; sed -n '198,233p' mod_editor/studio/project_archive.py",
+    "started": "2026-09-17T00:09:25.888Z",
+    "exit_code": 0,
+    "seconds": 0.107,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "head -3 reports/b71_t5/tests-corrections/test_b71_t5_project_open.log; cat reports/b71_t5/final-suites.json; sed -n '80,115p' tools/b71_t4_equipment_probe.py; git --git-dir=.scratch/t5.git log -1 --oneline; rg -n 'class _BackgroundTask|def _progress' mod_editor/gui/studio_qt.py | head -6; cat reports/b71_t5/strict-final.json",
+    "started": "2026-09-17T00:09:33.342Z",
+    "exit_code": 0,
+    "seconds": 0.11,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "rg -n 'load_targets|Cannot load equipment' -A9 -B3 tools/nfl2k5_visual_mod_project.py | head -35; sed -n '4170,4195p' mod_editor/studio/session.py; git --git-dir=.scratch/t5.git show 02bbadd1:mod_editor/studio/session.py | sed -n '4176,4192p'; rg -n 'Project edit index|Cannot load equipment' reports/b71_t5/tests-final/test_b69_j1_build.log; rg -n 'mip|mud' mod_editor/core/equipment_staging.py | head -20",
+    "started": "2026-09-17T00:09:57.360Z",
+    "exit_code": 0,
+    "seconds": 0.113,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "python3 tools/b71_t5_report_commands.py",
+    "started": "2026-09-17T00:10:33.851Z",
+    "exit_code": 0,
+    "seconds": 0.152,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "python3",
+      "packaging/repin.py",
+      "--apply"
+    ],
+    "started": "2026-09-17T00:10:57.014456+00:00",
+    "exit_code": 0,
+    "seconds": 10.530121841991786,
+    "record": "reports/b71_t5/repin-reviewed.json"
+  },
+  {
+    "command": "python3 - <<'PY'\nimport json,re\nfrom pathlib import Path\nrows=json.loads(Path('reports/b71_t5/latest-suites.json').read_text())\ncount=0\nfor row in rows.values():\n p=Path(row['record']).with_suffix('.log')\n text=p.read_text() if p.exists() else ''\n m=re.search(r'Ran (\\d+) tests?',text)\n if m: count+=int(m[1])\nprint('Standalone suites:',len(rows),'unittest test cases:',count)\nprint('Tests with skips:')\nfor name,row in rows.items():\n text=Path(row['record']).with_suffix('.log').read_text()\n if 'skipped=' in text: print(name,re.findall(r'OK \\(skipped=\\d+\\)',text))\nPY",
+    "started": "2026-09-17T00:10:58.097Z",
+    "exit_code": 0,
+    "seconds": 0.127,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "git --git-dir=.scratch/t5.git show 02bbadd1:mod_editor/core/nfl2k5_uniform_equipment_writer.py | nl -ba | sed -n '1023,1040p'; git --git-dir=.scratch/t5.git show 02bbadd1:mod_editor/gui/studio_qt.py | nl -ba | sed -n '8180,8192p'; rg -n 'def _write_manifest|def _copy_archive|temporary_sibling|fsync' mod_editor/core/nfl2k5_model_project_session.py mod_editor/studio/project_archive.py | tail -10",
+    "started": "2026-09-17T00:10:58.233Z",
+    "exit_code": 0,
+    "seconds": 0.109,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "rg --files -g '*T1*REPORT*' -g '*T2*REPORT*' -g '*T4*REPORT*'; sed -n '58,95p' tests/mod_editor/test_b71_t4_equipment_project.py; sed -n '1,65p' reports/b71_t5/open-beta71-run3.log; tail -4 reports/b71_t5/repin-reviewed.log",
+    "started": "2026-09-17T00:11:10.909Z",
+    "exit_code": 0,
+    "seconds": 0.113,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "sed -n '960,996p' mod_editor/core/nfl2k5_uniform_equipment_writer.py; sed -n '590,610p' mod_editor/core/nfl2k5_uniform_equipment_writer.py; sed -n '1195,1218p' mod_editor/core/nfl2k5_uniform_equipment_writer.py; sed -n '45,84p' reports/b71_t5/tests-final/test_b70_t1_diagnostics.log",
+    "started": "2026-09-17T00:11:23.033Z",
+    "exit_code": 0,
+    "seconds": 0.107,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "cat reports/b71_t5/repin-reviewed.json; git --git-dir=.scratch/t5.git diff --check",
+    "started": "2026-09-17T00:11:42.984Z",
+    "exit_code": 0,
+    "seconds": 0.127,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "git --git-dir=.scratch/t5.git add -- mod_editor/gui/studio_qt.py packaging/check_2k5_mod_studio_runtime.py tests/mod_editor/test_2k5_build_is_explainable.py tests/mod_editor/test_b71_t5_project_open.py tests/mod_editor/test_project_document_workflow.py tests/mod_editor/test_provider_integrity.py tests/mod_editor/test_studio_session.py tools/b71_t5_project_probe.py tools/b71_t5_report_commands.py",
+    "started": "2026-09-17T00:11:43.120Z",
+    "exit_code": 0,
+    "seconds": 0.121,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "git --git-dir=.scratch/t5.git -c user.name='Codex' -c user.email='codex@local' commit -m 'Finish empty-project build routing and validate durable fit metadata' -- mod_editor/gui/studio_qt.py packaging/check_2k5_mod_studio_runtime.py tests/mod_editor/test_2k5_build_is_explainable.py tests/mod_editor/test_b71_t5_project_open.py tests/mod_editor/test_project_document_workflow.py tests/mod_editor/test_provider_integrity.py tests/mod_editor/test_studio_session.py tools/b71_t5_project_probe.py tools/b71_t5_report_commands.py",
+    "started": "2026-09-17T00:11:43.255Z",
+    "exit_code": 0,
+    "seconds": 0.155,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "python3 -m mod_editor.capabilities.validate_registry",
+    "started": "2026-09-17T00:14:41.879Z",
+    "exit_code": 0,
+    "seconds": 0.228,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "git --git-dir=.scratch/t5.git diff --check; du -sh .scratch reports/b71_t5; git --git-dir=.scratch/t5.git status --short",
+    "started": "2026-09-17T00:14:42.118Z",
+    "exit_code": 0,
+    "seconds": 0.124,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": [
+      "python3",
+      "packaging/repin.py",
+      "--apply"
+    ],
+    "started": "2026-09-17T00:14:42.344220+00:00",
+    "exit_code": 0,
+    "seconds": 10.682220840011723,
+    "record": "reports/b71_t5/repin-delivery.json"
+  },
+  {
+    "command": "git --git-dir=.scratch/t5.git diff --check",
+    "started": "2026-09-17T00:14:55.823Z",
+    "exit_code": 0,
+    "seconds": 0.104,
+    "record": "reports/b71_t5/inspection-commands.json"
+  },
+  {
+    "command": "find reports/b71_t5 -type f -size +100k -printf '%p %s bytes\\n'",
+    "started": "2026-09-17T00:14:55.940Z",
+    "exit_code": 0,
+    "seconds": 0.095,
+    "record": "reports/b71_t5/inspection-commands.json"
+  }
+]

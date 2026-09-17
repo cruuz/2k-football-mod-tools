@@ -1,0 +1,10 @@
+{
+  "command": [
+    "python3",
+    "tools/b71_t5_validate.py",
+    "tests-final"
+  ],
+  "started": "2026-09-17T00:02:10.856443+00:00",
+  "exit_code": 1,
+  "seconds": 362.53826913199737
+}

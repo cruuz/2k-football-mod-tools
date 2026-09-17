@@ -1,0 +1,10 @@
+test_48_clones_assets_and_reopen_by_filename (__main__.CloneBatchTests.test_48_clones_assets_and_reopen_by_filename) ... PROVED synthetic archive: 48 clones; crest/field allocations preserved; every original asset reopened by name hash; unrelated bytes compared
+ok
+test_owned_48_book_plan_fits_real_directory_without_copying_game (__main__.CloneBatchTests.test_owned_48_book_plan_fits_real_directory_without_copying_game) ... PROVED read-only retail compile: 48 clones fit the existing directory and ROST label strings
+ok
+test_owned_donor_overlay_survives_preset_and_clone (__main__.CloneBatchTests.test_owned_donor_overlay_survives_preset_and_clone) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 38.396s
+
+OK

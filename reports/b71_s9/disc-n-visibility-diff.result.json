@@ -1,0 +1,11 @@
+{
+  "name": "disc-n-visibility-diff",
+  "argv": [
+    "python3",
+    "reports/b71_s9/inspect_disc_n.py"
+  ],
+  "start_utc": "2026-09-16T23:15:57.814057+00:00",
+  "end_utc": "2026-09-16T23:15:58.114823+00:00",
+  "seconds": 0.301,
+  "exit_code": 0
+}

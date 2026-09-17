@@ -1,0 +1,12 @@
+{
+  "name": "draw-order-anchor-final",
+  "argv": [
+    "python3",
+    "tests/mod_editor/test_nfl2k5_scorebug_draw_order.py",
+    "-v"
+  ],
+  "start_utc": "2026-09-16T23:38:33.966077+00:00",
+  "end_utc": "2026-09-16T23:39:01.322459+00:00",
+  "seconds": 27.356,
+  "exit_code": 0
+}
