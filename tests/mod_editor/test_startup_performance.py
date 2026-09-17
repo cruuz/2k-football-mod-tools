@@ -141,7 +141,10 @@ class StartupTests(unittest.TestCase):
         task.signals.progress.connect(messages.append)
         task.run()
         self.assertLess(len(messages),10)
-        self.assertIn('100%',task.latest_progress)
+        # Build progress is now named with a count and an estimate rather than a percentage
+        # (nfl2k5_project_fit.progress_text). What this pins is that coalescing never leaves
+        # the label on a stale update: the newest count is always the one shown.
+        self.assertIn('9999 of 10000',task.latest_progress)
 
 
 class MetadataCacheTests(unittest.TestCase):
