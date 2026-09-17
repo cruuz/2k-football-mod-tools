@@ -40,7 +40,12 @@ class ProjectTests(unittest.TestCase):
             self.assertEqual(session.load_shareable_project(corpus.project, progress=lambda *args: events.append(args)), 600)
             elapsed = time.monotonic() - start
         print(f'600 replacement open: {elapsed:.6f} seconds', flush=True)
-        self.assertLess(elapsed, 10)
+        # The regression this guards is the old open, which encoded every group: 407.8 s at beta 69,
+        # 431.6 at beta 70 and 429.3 at beta 71 for this same corpus. It measures 0.65 s here and
+        # 25 s on the slowest hosted Windows runner, so the ceiling is set where a slow shared
+        # machine still passes and a return to encoding on open cannot. The patched encoders above
+        # are what actually prove no encoding happened; this is the wall-clock backstop.
+        self.assertLess(elapsed, 120)
         self.assertEqual(corpus.project.read_bytes(), before)
         self.assertEqual(events[-1][1:], (600, 600))
         self.assertTrue(all(r['fit_status'] == 'fit pending' for r in staging.cached_equipment_fit_rows(session)))
