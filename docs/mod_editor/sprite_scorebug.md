@@ -60,6 +60,15 @@ draw descriptors and sorts quads inside each buffer. It refuses layouts that
 cannot fit without reversing an overlap. Preview reads those actual descriptors
 and buffers without using depth to correct their order.
 
+Down glyph visibility follows the native element draw loop's binding and current
+slide position. An event request is an input to an update, not a draw decision;
+retail can request ball-on and down-and-distance together. The owner therefore
+does not use event request words to erase the down glyphs. Events suppress them only while their own binding and slide gate is visible,
+including fade-out, so translucent event pixels do not reveal underlying text.
+Native transition tests verify this
+behavior, but do not establish the cause of the persistent blank label reported
+in a played game.
+
 The default scene contains 47 quads: 12 static/logo quads, a watermark,
 30 glyph/tick slots and four retail event backgrounds. It uses 188 of 286
 retail vertices. A 512×512 atlas is accepted only if the complete append

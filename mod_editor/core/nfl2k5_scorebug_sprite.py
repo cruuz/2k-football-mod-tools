@@ -331,7 +331,8 @@ def compile_folder(folder=None,widescreen=False):
         width=round((row['box'][2]-row['box'][0])*scale_x/420*32767)
         align=('left','center','right').index(row['alignment'])
         flags=int(row.get('strip_zero',False))
-        visibility=0xa95a70 if source==6 else 0xa95a00 if source==7 else 0
+        # Down follows FC360's binding/slide gate, not the pending request.
+        visibility=0xa95a70 if source==6 else 0xa95a20 if source==7 else 0
         FIELD.pack_into(table,HEADER.size+i*FIELD.size,source,row['vertex'],row['slots'],*glyph_sets[(row['glyph_set'],row['size'])],0xff000000|int(row['colour'][1:],16),flags,visibility,x,y,z,width,align,0)
     for i,row in enumerate(statics):STATIC.pack_into(table,HEADER.size+len(fields)*FIELD.size+i*STATIC.size,row['vertex'],TINTS.index(row['tint']),row['material'],0)
     HEADER.pack_into(table,0,MAGIC,1,len(fields),TABLE_OFFSET+HEADER.size,len(statics),TABLE_OFFSET+HEADER.size+len(fields)*FIELD.size,len(table),len(quads))
