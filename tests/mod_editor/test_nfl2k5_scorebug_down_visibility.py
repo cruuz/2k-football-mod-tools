@@ -32,7 +32,7 @@ class Sequence:
             preview.payload, self.mode['scene'], fonts=preview.fonts,
             texture_span=self.mode['atlas'], runtime_textures=self.mode['textures'],
             capture=self.capture, widescreen=wide, identity=dict(home='KC', away='DAL'),
-            possession='away', visibility_state='kickoff', visible_elements=())
+            possession='away', game_seconds=300, visibility_state='kickoff', visible_elements=())
         self.machine = self.capture['machine']
         self.rows = [q for q in self.mode['compiled'].quads if q['name'].startswith('down:')]
         self.frame = 0
