@@ -21,6 +21,7 @@ import json
 from pathlib import Path
 import tempfile
 import time
+import threading
 from typing import Any, Callable, Iterable, Mapping, Protocol, Sequence, runtime_checkable
 from uuid import uuid4
 import weakref
@@ -1476,12 +1477,15 @@ class _BackgroundTask(QRunnable):
         super().__init__()
         self.operation = operation
         self.signals = _TaskSignals()
+        self.cancelled = threading.Event()
         self.setAutoDelete(False)
 
     def run(self) -> None:
         try:
             last = [0.0, None]
             def progress(stage, completed, total):
+                if self.cancelled.is_set():
+                    raise ValidationError('Project open cancelled; the saved project is unchanged.')
                 now = time.monotonic()
                 if stage != last[1] or now - last[0] >= 0.1 or (total and completed == total):
                     last[:] = [now, stage]
@@ -8111,6 +8115,8 @@ class StudioMainWindow(QMainWindow):
             self._set_status("Finish the current operation before starting another.")
             return
         worker = _BackgroundTask(operation)
+        if label == 'Opening and validating the project':
+            self._project_open_worker = worker
         self._workers.add(worker)
         if blocking:
             self._set_busy(True, label)
@@ -8146,15 +8152,23 @@ class StudioMainWindow(QMainWindow):
             if blocking:
                 self._set_busy(False)
                 self._drain_post_blocking_continuations()
+            if getattr(self, '_project_open_worker', None) is worker:
+                self._project_open_worker = None
+                if getattr(self, '_close_after_project_check', False):
+                    self._close_after_project_check = False
+                    QTimer.singleShot(0, self.close)
 
         worker.signals.finished.connect(bound(self, finished))
         self.thread_pool.start(worker)
 
     def _task_progress(self, stage: str, completed: int, total: int) -> None:
+        from mod_editor.core.nfl2k5_project_fit import progress_text
         self._operation_stage = stage or "Working…"
+        self._operation_counts = (completed, total)
         if total > 0 and "copy" in self._operation_stage.casefold():
             self._operation_stage += f" • {completed / total:.0%}"
-        self.operation_status.setText(self._operation_stage)
+        self.operation_status.setText(progress_text(self._operation_stage, completed, total,
+                                                   self._operation_started))
         self.progress_bar.show()
         if total > 0:
             self.progress_bar.setRange(0, 1000)
@@ -8168,6 +8182,7 @@ class StudioMainWindow(QMainWindow):
         if busy:
             self._operation_started = time.monotonic()
             self._operation_stage = label
+            self._operation_counts = (0, 0)
             self._heartbeat_timer.start()
             self.operation_status.setText(label)
             self.progress_bar.setRange(0, 0)
@@ -8179,8 +8194,10 @@ class StudioMainWindow(QMainWindow):
         self._refresh_action_states()
 
     def _busy_heartbeat(self):
-        self.operation_status.setText(
-            f"{self._operation_stage} • {int(time.monotonic() - self._operation_started)} s")
+        from mod_editor.core.nfl2k5_project_fit import progress_text
+        done, total = getattr(self, '_operation_counts', (0, 0))
+        self.operation_status.setText(progress_text(self._operation_stage, done, total,
+                                                   self._operation_started))
 
     def _set_status(self, message: str) -> None:
         # Pages are built before the footer that owns this label, and a page
@@ -8566,6 +8583,13 @@ class StudioMainWindow(QMainWindow):
         self.close()
 
     def closeEvent(self, event: QCloseEvent) -> None:  # type: ignore[override]
+        opening = getattr(self, '_project_open_worker', None)
+        if opening is not None:
+            opening.cancelled.set()
+            self._close_after_project_check = True
+            self._set_status('Stopping the project check; the saved project is unchanged.')
+            event.ignore()
+            return
         if self._music_panel is not None:
             self._music_panel.stop_preview()
             if self._music_panel.operation_in_progress:
@@ -8660,15 +8684,17 @@ class StudioMainWindow(QMainWindow):
         try:
             document = session.canonical_document() if session and session.modified_count else {"edits": []}
             rows = self._build_includes_timeline.observe(document, baseline=baseline)
-            fits = project_fit_labels(session) if session and any(
-                e.get("kind") == "uniform_equipment_texture" for e in document["edits"]
-            ) else {}
+            fits = project_fit_labels(session) if session else {}
+            paths = {str(e.replacement_path): e.asset_id for e in session.iter_project_png_edits()} \
+                if session and hasattr(session, 'iter_project_png_edits') else {}
             labels = []
             for row in rows:
                 edit = document["edits"][row["project_edit_index"]]
                 label = row["label"]
                 if edit.get("kind") == "uniform_equipment_texture":
-                    label += "; " + fits.get(edit["asset_id"], "fit measurement unavailable; reimport to check")
+                    label += "; " + fits.get(edit["asset_id"], "fit pending; checked when you build")
+                elif paths.get(edit.get('png', edit.get('clean_png'))) in fits:
+                    label += '; ' + fits[paths[edit.get('png', edit.get('clean_png'))]]
                 labels.append(label)
             text = "\n".join(labels)
         except Exception as exc:

@@ -67,6 +67,7 @@ PRESET_NOTE = "Review the selected changes below. Unavailable or already-install
 
 class _Signals(QObject):
     progress = pyqtSignal(str)
+    counts = pyqtSignal(int, int)
     finished = pyqtSignal(object)
     failed = pyqtSignal(str)
 
@@ -85,15 +86,21 @@ class _Task(QRunnable):
     def run(self) -> None:
         try:
             def progress(message, done, total):
-                if self.cancelled.is_set():
-                    raise ValueError("Build cancelled; no output was published")
-                if total > 0 and "copy" in message.casefold():
-                    message += f" • {done / total:.0%}"
+                if self.cancelled.is_set() and not getattr(progress, 'published', False):
+                    from mod_editor.core.nfl2k5_project_fit import BuildCancelled
+                    raise BuildCancelled("Build cancelled; no output was published. Your project is unchanged.")
+                from mod_editor.core.nfl2k5_project_fit import progress_text
+                message = progress_text(message, done, total, self.started)
                 self.latest_progress = message
+                if total > 2**31 - 1:  # Qt's int signal is signed 32-bit; discs are larger.
+                    self.signals.counts.emit(round(done * 1000 / total), 1000)
+                else:
+                    self.signals.counts.emit(done, total)
                 now = time.monotonic()
                 if now - self._last_emit >= 0.1:
                     self._last_emit = now
                     self.signals.progress.emit(message)
+            progress.cancelled = self.cancelled
             result = self._operation(progress)
         except BaseException as exc:  # worker failures must always reach Qt
             self.signals.failed.emit(plain_error(exc))
@@ -1761,8 +1768,6 @@ class BuildPanel(QWidget):
             problem = self._weather_plan_problem()
             if problem:
                 return problem
-        if not self.has_work():
-            return "Tick at least one change, or press a preset."
         target = self.target_field.text().strip()
         if not target:
             return "Choose where to save the disc."
@@ -2532,6 +2537,7 @@ class BuildPanel(QWidget):
         # the existing final source-state refresh, on this worker rather than
         # in the completion dialog's GUI callback. A courtesy refresh failure
         # does not turn an already verified/published build into a failed build.
+        progress.published = True
         progress("Reading the finished disc's settings", 0, 0)
         receipt["_build_panel_state"] = None
         try:
@@ -2542,13 +2548,13 @@ class BuildPanel(QWidget):
 
     def _heartbeat(self):
         if self._task is not None:
-            message = f"{self._task.latest_progress} • {int(time.monotonic() - self._task.started)} s"
+            message = self._task.latest_progress
             self.progress_label.setText(message)
             self.progress_text_changed.emit(message)
 
     def _build(self) -> None:
         plan = self.plan()
-        if not self.has_work() or self.blocker():
+        if self.blocker():
             return
         answer = QMessageBox.question(self, "Make my disc?", self.confirmation_text(plan),
                                       QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
@@ -2561,6 +2567,7 @@ class BuildPanel(QWidget):
         include_session = self._include_session_project()
         task = _Task(lambda progress: self._build_operation(plan, progress, include_session))
         task.signals.progress.connect(self.progress_label.setText)
+        task.signals.counts.connect(self._progress_counts)
         task.signals.finished.connect(self._done)
         task.signals.failed.connect(self._failed)
         self._task = task
@@ -2570,6 +2577,11 @@ class BuildPanel(QWidget):
         self.progress_bar.show()
         self._refresh()
         self._pool.start(task)
+
+    def _progress_counts(self, done, total):
+        self.progress_bar.setRange(0, total if total > 0 else 0)
+        if total > 0:
+            self.progress_bar.setValue(done)
 
     def _done(self, receipt: object) -> None:
         self._heartbeat_timer.stop()

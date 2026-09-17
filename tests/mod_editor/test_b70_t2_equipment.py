@@ -19,6 +19,7 @@ from mod_editor.core.nfl2k5_digit_texture import make_digit_mips
 
 class SiblingTests(unittest.TestCase):
     def setUp(self):
+        writer.staged_equipment_cache().clear()  # isolate injected cached misses
         self.fixture = fixture.ConsumerFanoutSessionTests()
         old = fixture._MultiPackageArchive
         with patch.object(fixture, '_MultiPackageArchive',

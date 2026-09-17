@@ -86,6 +86,50 @@ def _canonical_json(value: object) -> bytes:
     return (json.dumps(value, indent=2, sort_keys=True) + "\n").encode("utf-8")
 
 
+def _fit_receipts(value):
+    """Bound advisory metadata; malformed/older measurements become pending."""
+    if not isinstance(value, dict) or len(value) > MAX_PROJECT_EDITS:
+        return {}
+    fields = {'asset_id', 'set_selector', 'fit_status', 'fit_error', 'budget',
+              'required', 'required_is_lower_bound', 'attempts', 'suggestion',
+              'encoded_dimensions', 'used_palette_entries', 'encoded_bytes'}
+    result = {}
+    for key, rows in value.items():
+        if not isinstance(key, str) or not re.fullmatch('[0-9a-f]{64}', key):
+            continue
+        if not isinstance(rows, (list, tuple)) or len(rows) > MAX_PROJECT_EDITS:
+            continue
+        clean = []
+        for row in rows:
+            if not isinstance(row, dict) or not isinstance(row.get('asset_id'), str):
+                continue
+            if row.get('fit_status') not in {'fits', 'needs refit'}:
+                continue
+            if row.get('kind') == 'project_art':
+                if (set(row) != {'kind', 'source', 'inputs', 'targets', 'asset_id', 'fit_status'}
+                        or row['fit_status'] != 'fits' or not isinstance(row['source'], str)
+                        or not isinstance(row['inputs'], dict) or not row['inputs']
+                        or not isinstance(row['targets'], list) or not row['targets']):
+                    continue
+                if not all(isinstance(k, str) and isinstance(v, str) for k, v in row['inputs'].items()):
+                    continue
+                if not all(isinstance(t, dict) and set(t) == {'pack', 'offset', 'size', 'sha256'}
+                           and isinstance(t['pack'], str) and isinstance(t['sha256'], str)
+                           and type(t['offset']) is int and type(t['size']) is int for t in row['targets']):
+                    continue
+                clean.append(dict(row))
+                continue
+            from mod_editor.core.equipment_reporting import fit_caption
+            try:
+                fit_caption(row)
+            except (ValueError, TypeError, KeyError, ValidationError):
+                continue
+            clean.append({k: v for k, v in row.items() if k in fields})
+        if clean:
+            result[key] = clean
+    return result
+
+
 def _canonical_audio_annotations_json(value: object) -> bytes:
     """Serialize validated user text without ``ensure_ascii`` size inflation."""
 
@@ -176,9 +220,11 @@ def _publish_archive(
         if not stat.S_ISREG(current.st_mode) or stat.S_ISLNK(current.st_mode):
             raise ValidationError("Project destination must be a regular file, not a link.")
         os.replace(temporary, destination)
+        platform_compat.fsync_directory(destination.parent)
         return
     try:
         platform_compat.publish_no_replace(temporary, destination)
+        platform_compat.fsync_directory(destination.parent)
     except FileExistsError as exc:
         raise ValidationError(f"A file appeared at the project destination: {destination}") from exc
 
@@ -220,6 +266,7 @@ class LoadedProject:
     play_creates: tuple[Mapping[str, object], ...] = ()
     formation_links: tuple[Mapping[str, object], ...] = ()
     build_settings: Mapping[str, object] | None = None
+    fit_receipts: Mapping[str, object] | None = None
 
     def cleanup(self) -> None:
         shutil.rmtree(self.staging_root, ignore_errors=True)
@@ -349,6 +396,7 @@ def save_project_archive(
     play_creates: Iterable[Mapping[str, object]] = (),
     formation_links: Iterable[Mapping[str, object]] = (),
     build_settings: Mapping[str, object] | None = None,
+    fit_receipts: Mapping[str, object] | None = None,
 ) -> Path:
     """Atomically save only user-authored replacements and annotation metadata."""
 
@@ -599,6 +647,8 @@ def save_project_archive(
         manifest["playbook_creates"] = create_rows
     if link_rows:
         manifest["playbook_links"] = link_rows
+    if fit_receipts:
+        manifest['fit_receipts'] = _fit_receipts(fit_receipts)
     manifest_payload = _canonical_json(manifest)
     replacement_bytes = sum(len(payload) for _row, payload in rows) + sum(
         len(payload) for _row, payload in audio_rows
@@ -663,7 +713,7 @@ def save_project_archive(
 
 
 def load_project_archive(
-    *, source: Path, catalog: Any, asset_io: Any, private_root: Path,
+    *, source: Path, catalog: Any, asset_io: Any, private_root: Path, progress=None,
 ) -> LoadedProject:
     """Validate every archive member and stage replacements in private storage."""
 
@@ -723,7 +773,7 @@ def load_project_archive(
                 raise ValidationError(f"Project manifest is not valid JSON: {exc}") from exc
             base_fields = {"edits", "game", "payload_policy", "schema"}
             optional_fields = {
-                "build_settings",
+                "build_settings", "fit_receipts",
                 "text_replacements", "audio_edits", "audio_annotations",
                 "uniform_colors", "empty_project",
                 "play_route_edits", "playbook_creates", "playbook_links",
@@ -1025,7 +1075,7 @@ def load_project_archive(
                     "Project empty-document marker conflicts with authored content."
                 )
             seen_assets: set[str] = set()
-            for row in rows:
+            for number, row in enumerate(rows):
                 base_edit_fields = {
                     "asset_id", "file", "png_sha256", "rgba_sha256",
                 }
@@ -1077,20 +1127,18 @@ def load_project_archive(
                     output.write(payload)
                     output.flush()
                     os.fsync(output.fileno())
-                checked_payload, rgba = asset_io.validate_replacement(asset, staged)
+                validate = getattr(asset_io, 'validate_project_replacement', asset_io.validate_replacement)
+                checked_payload, rgba = validate(asset, staged)
                 if checked_payload != payload or _sha256(rgba) != row.get("rgba_sha256"):
                     raise ValidationError(f"Replacement pixels failed validation for {asset_id}.")
-                original = asset_io.ensure_original(asset)
-                _original_payload, original_rgba = asset_io.validate_replacement(asset, original)
-                from mod_editor.core.nfl2k5_equipment_import_intent import same_visual_import
-
-                if same_visual_import(asset, payload, rgba, _original_payload, original_rgba):
-                    raise ValidationError(
-                        f"{asset.label} matches the retail original; the project is not replacement-only."
-                    )
+                # Loading checks the authored bytes, not their compressed fit.
+                # The save/build boundaries retain the retail no-op checks.
+                # Exporting originals here decoded and encoded every retail PNG.
                 loaded.append(LoadedProjectEdit(
                     asset, staged, row["png_sha256"], row["rgba_sha256"],
                 ))
+                if progress is not None:
+                    progress(f'Checking your project replacement: {asset.label}', number + 1, len(rows))
             if set(by_name) != expected_members:
                 raise ValidationError("Project contains undeclared files.")
     except (OSError, zipfile.BadZipFile) as exc:
@@ -1115,6 +1163,7 @@ def load_project_archive(
         ),
         formation_links=tuple(loaded_links),
         build_settings=loaded_build_settings,
+        fit_receipts=_fit_receipts(document.get('fit_receipts', {})),
     )
 
 

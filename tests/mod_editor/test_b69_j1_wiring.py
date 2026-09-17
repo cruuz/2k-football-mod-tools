@@ -109,26 +109,19 @@ class WiringTests(unittest.TestCase):
         self.assertIn('Uniforms / torso',output.toPlainText())
 
     def test_load_hook_refuses_corrupt_art_and_cleans_before_session_mutation(self):
-        from mod_editor.studio import session as session_module
-        from test_b69_j1_fit import tight_fixture
-        source=self.load_method_source(session_module)
+        from b71_t5_project_probe import Corpus
         with tempfile.TemporaryDirectory() as folder:
-            root=Path(folder).resolve();fixture,rgba=tight_fixture(root)
-            asset,png=fixture.png(rgba=rgba)
-            png.write_bytes(b'corrupt PNG')
-            cleanup=Mock()
-            loaded=SimpleNamespace(edits=[SimpleNamespace(
-                asset=SimpleNamespace(kind='uniform_equipment_texture',asset_id=asset),staged_path=png)],
-                cleanup=cleanup)
-            namespace=dict(vars(session_module),load_project_archive=lambda **kwargs:loaded)
-            exec('from __future__ import annotations\n'+source,namespace)
-            sentinel={};owner=SimpleNamespace(modified_count=0,_audio_annotations={},_build_settings={},
-                _project_catalog_router=None,_project_io_router=None,root=root,
-                cache=SimpleNamespace(pack0=root/'0'),_edits=sentinel)
-            with fixture.context(), self.assertRaisesRegex(ValueError,'Cannot load equipment edits:.*shoes01'):
-                namespace['load_shareable_project'](owner,root/'old.2k5mod')
-            cleanup.assert_called_once_with()
-            self.assertIs(owner._edits,sentinel)
+            root = Path(folder).resolve()
+            corpus = Corpus(root, 3)
+            session = corpus.session()
+            before = corpus.project.read_bytes()
+            with corpus.context(), patch.object(corpus.io, 'validate_replacement',
+                    side_effect=ValueError('corrupt PNG')), self.assertRaisesRegex(ValueError, 'corrupt PNG'):
+                session.load_shareable_project(corpus.project)
+            self.assertEqual(session.modified_count, 0)
+            self.assertEqual(list(session.replacements.iterdir()), [])
+            self.assertEqual(corpus.project.read_bytes(), before)
+
 
 
 class AppliedWiringTests(WiringTests):

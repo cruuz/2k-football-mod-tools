@@ -1076,8 +1076,11 @@ def build_with_project(plan, service, cache, session, progress=None):
     validate_build_plan(plan, session)
     models = plan_rows(session)
     report = progress or (lambda *_: None)
+    def project_progress(event):
+        report(event.message, event.completed, event.total)
+    project_progress.cancelled = getattr(progress, 'cancelled', None)
     receipt = build(plan, progress, _project_builder=lambda output: service.build(
-        cache, session, output, lambda event: report(event.message, event.completed, event.total)))
+        cache, session, output, project_progress))
     if models:
         receipt["project_models"] = models
     return receipt

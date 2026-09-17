@@ -28,6 +28,7 @@ import subprocess
 import sys
 import tempfile
 import time
+from .nfl2k5_project_fit import BuildCancelled
 import threading
 import warnings
 from typing import Callable, Iterable, Protocol, Sequence
@@ -578,7 +579,7 @@ class SubprocessBuildCommandRunner:
         "PYTHONNOUSERSITE": "1",
     }
 
-    def run(self, argv: Sequence[str], cwd: Path) -> CommandResult:
+    def run(self, argv: Sequence[str], cwd: Path, *, poll=None, line_sink=None) -> CommandResult:
         fixed = tuple(os.fspath(value) for value in argv)
         suspended = use_suspended_launch()
         try:
@@ -607,7 +608,36 @@ class SubprocessBuildCommandRunner:
             ) from exc
         group = adopt_process_group(process, was_suspended=suspended)
         try:
-            stdout, stderr = process.communicate()
+            # Drain both pipes while the owning worker polls cancellation.
+            # The old heartbeat noticed Cancel but communicate() kept waiting.
+            import queue
+            lines = queue.Queue()
+            outputs = [[], []]
+            def drain(stream, number):
+                for line in stream:
+                    outputs[number].append(line)
+                    if number == 0:
+                        lines.put(line)
+            readers = [threading.Thread(target=drain, args=(stream, n), daemon=True)
+                       for n, stream in enumerate((process.stdout, process.stderr))]
+            for reader in readers:
+                reader.start()
+            while process.poll() is None or any(reader.is_alive() for reader in readers):
+                if poll is not None:
+                    poll()
+                try:
+                    line = lines.get(timeout=0.05)
+                except queue.Empty:
+                    continue
+                if line_sink is not None:
+                    line_sink(line)
+            for reader in readers:
+                reader.join()
+            while not lines.empty():
+                line = lines.get_nowait()
+                if line_sink is not None:
+                    line_sink(line)
+            stdout, stderr = ''.join(outputs[0]), ''.join(outputs[1])
         except BaseException:
             # The backend owns only paths below our staging directory.  Stop its
             # whole process group before that directory is removed.
@@ -657,6 +687,8 @@ def _emit(progress: BuildProgress | None, stage: BuildStage,
         return
     try:
         progress(BuildEvent(stage, completed, total, message))
+    except BuildCancelled:
+        raise
     except Exception:
         # Progress is an observer, never part of the safety transaction.
         pass
@@ -1351,6 +1383,7 @@ class Nfl2k5BuildService:
             built = self._run_build_command(build_command, staged_xiso, source.stat().st_size, progress)
             timings["builder"] = time.monotonic() - started
             if built.returncode != 0:
+                self._remember_fits(project, built.stdout)
                 raise Nfl2k5BuildError(
                     "Could not make the disc copy. " + _last_message(built)
                 )
@@ -1371,7 +1404,7 @@ class Nfl2k5BuildService:
                 check_message = "Checking the finished XISO before it is published"
             _emit(progress, BuildStage.VERIFYING, 2, 4, check_message)
             started = time.monotonic()
-            verified = self.runner.run(verify_command, ROOT)
+            verified = self._run_build_command(verify_command, staged_xiso, source.stat().st_size, progress)
             timings["verify"] = time.monotonic() - started
             if verified.returncode != 0 or not any(
                 line.startswith(EXPECTED_VERIFY_PREFIX)
@@ -1457,7 +1490,11 @@ class Nfl2k5BuildService:
                 source_sha256=result.source_sha256,
                 stage_seconds={**timings, "publish": time.monotonic() - started},
             )
-            _emit(progress, BuildStage.COMPLETE, 4, 4, "Modded XISO ready")
+            self._remember_fits(project, built.stdout)
+            try:
+                _emit(progress, BuildStage.COMPLETE, 4, 4, "Modded XISO ready")
+            except BuildCancelled:
+                pass  # Publication already committed; report the actual result.
             return final
         except (Nfl2k5BuildError, OutputRefusedError, ValidationError):
             raise
@@ -1471,10 +1508,56 @@ class Nfl2k5BuildService:
             if stage.exists():
                 shutil.rmtree(stage)
 
+    @staticmethod
+    def _remember_fits(project, output):
+        if not hasattr(project, 'iter_edits'):
+            return
+        rows = {}
+        try:
+            from mod_editor.studio.project_archive import _fit_receipts
+            from .equipment_staging import _remember_fit, cached_equipment_fit_rows
+            from .nfl2k5_project_fit import remember_art
+            art_rows = []
+            for row in cached_equipment_fit_rows(project):
+                rows[row['asset_id']] = row
+            for line in output.splitlines():
+                if line.startswith('NFL2K5_ART_FIT '):
+                    art_rows.append(json.loads(line.split(' ', 1)[1]))
+                if line.startswith('NFL2K5_FIT_RECEIPT '):
+                    supplied = json.loads(line.split(' ', 1)[1])
+                    for row in _fit_receipts({'0' * 64: supplied}).get('0' * 64, ()):
+                        rows[row['asset_id']] = row
+            if rows:
+                _remember_fit(project, list(rows.values()))
+            if art_rows:
+                remember_art(project, art_rows)
+        except (ValueError, KeyError, TypeError, OSError, ValidationError):
+            # Metadata cannot turn a verified published disc into a failure.
+            # A source/art change invalidates the advisory receipt instead.
+            return
+
     def _run_build_command(self, command, staged, size, progress):
         """Report a quiet subprocess, including copy bytes, without pipe flooding."""
         if progress is None:
             return self.runner.run(command, ROOT)
+        if isinstance(self.runner, SubprocessBuildCommandRunner):
+            last = [0.0]
+            def report_line(line):
+                if line.startswith('NFL2K5_BUILD_ITEM '):
+                    try:
+                        row = json.loads(line.split(' ', 1)[1])
+                        _emit(progress, BuildStage.BUILDING, row['done'], row['total'], row['message'])
+                    except (KeyError, TypeError, ValueError):
+                        pass
+            def poll():
+                from .nfl2k5_project_fit import check_cancelled
+                check_cancelled(progress)
+                if time.monotonic() - last[0] >= 0.25:
+                    last[0] = time.monotonic()
+                    copied = staged.stat().st_size if staged.exists() else 0
+                    if 0 < copied < size:
+                        _emit(progress, BuildStage.BUILDING, copied, size, 'Copying disc image')
+            return self.runner.run(command, ROOT, poll=poll, line_sink=report_line)
         stopped = threading.Event()
         failures = []
         def heartbeat():

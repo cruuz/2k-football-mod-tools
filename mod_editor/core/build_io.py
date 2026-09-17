@@ -60,6 +60,7 @@ class StageProgress:
     """Record elapsed time per reported stage without changing progress messages."""
     def __init__(self, sink=None):
         self.sink = sink
+        self.cancelled = getattr(sink, 'cancelled', None)
         self.started = time.monotonic()
         self.stage = "preflight"
         self.seconds = {}

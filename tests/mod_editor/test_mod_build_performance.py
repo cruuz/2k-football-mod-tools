@@ -65,6 +65,12 @@ class CombinedBuildTests(unittest.TestCase):
         self.original = self.source.read_bytes()
         self.service = SyntheticProject(self.source)
 
+    def test_plain_project_build_publishes_verified_identical_disc(self):
+        target = self.root / 'unchanged.iso'
+        receipt = mod_build.build(mod_build.BuildPlan(str(self.source), str(target)))
+        self.assertEqual(target.read_bytes(), self.original)
+        self.assertEqual(receipt['outcome']['source']['sha256'], receipt['outcome']['output']['sha256'])
+
     def test_single_copy_matches_historical_two_copy_composition(self):
         staged = self.root / 'old-stage.iso'
         old_target, new_target = self.root / 'old.iso', self.root / 'source.iso'

@@ -84,7 +84,7 @@ def _fit_identity(session):
                         if e.asset_id.startswith("tset:")))
 
 
-def _remember_fit(session, rows):
+def _remember_fit(session, rows, *, persist=True):
     from collections import OrderedDict
     cache = getattr(session, "_equipment_fit_receipts", None)
     if cache is None:
@@ -94,6 +94,9 @@ def _remember_fit(session, rows):
     cache.move_to_end(key)
     while len(cache) > 8:
         cache.popitem(last=False)
+    if persist:
+        from .nfl2k5_project_fit import remember
+        remember(session, rows)
 
 
 def cached_equipment_fit_rows(session):

@@ -51,8 +51,12 @@ class ProjectRecoveryTests(unittest.TestCase):
     def test_loader_keeps_every_edit_and_build_names_only_failing_variant(self):
         session = self.reopen()
         self.assertEqual({e.asset_id: e.replacement_path.read_bytes() for e in session.iter_edits()}, self.originals)
+        self.assertTrue(all('fit pending' in text for text in project_fit_labels(session).values()))
+        with self.f.context():
+            staging.equipment_fit_rows(session)
         labels = project_fit_labels(session)
-        self.assertIn('needs refit: Equipment art cannot fit', labels[self.normal.asset_id])
+        self.assertIn('needs refit:', labels[self.normal.asset_id])
+        self.assertIn('cannot fit', labels[self.normal.asset_id])
         self.assertIn('fitted at', labels[self.mud.asset_id])
         with self.f.context(), self.assertRaises(ValidationError) as caught:
             staging.require_equipment_fit(session)
@@ -74,6 +78,10 @@ class ProjectRecoveryTests(unittest.TestCase):
             return actual(index, edits, **kwargs)
         with patch.object(writer, 'build_unified_uniform_equipment_imports', side_effect=fail_normal):
             session = self.reopen()
+            with self.f.context():
+                staging.equipment_fit_rows(session)
+                session.save_shareable_project(self.project, replace=True)
+        session = self.reopen('with-receipts')
         row = next(r for r in staging.cached_equipment_fit_rows(session) if r['asset_id'] == self.normal.asset_id)
         self.assertEqual(row['fit_error'], str(error))
         self.assertIn('6,785 bytes required', row['fit_error'])
@@ -86,6 +94,10 @@ class ProjectRecoveryTests(unittest.TestCase):
         facade = Nfl2k5StudioFacade.__new__(Nfl2k5StudioFacade)
         facade._lock, facade._session, facade._cache = threading.RLock(), self.h.a, self.h.cache
         facade._require_playbook_inspector = lambda: None
+        identity = project_target_identity(self.project)
+        with self.f.context():
+            staging.equipment_fit_rows(self.h.a)
+            self.h.a.save_shareable_project(self.project, replace=True)
         identity = project_target_identity(self.project)
         with self.f.context():
             result = facade._load_project_candidate(source=self.project, progress=lambda *args: None,
@@ -158,6 +170,8 @@ class ProjectRecoveryTests(unittest.TestCase):
         with patch.object(writer, 'build_unified_uniform_equipment_imports',
                           side_effect=writer.EquipmentRefitError('Cannot retain edge coverage')):
             session = self.reopen()
+            with self.f.context():
+                staging.equipment_fit_rows(session)
         self.assertTrue(all(r['fit_status'] == 'needs refit' for r in staging.cached_equipment_fit_rows(session)))
 
     def test_studio_button_uses_selected_item_and_worker(self):
@@ -166,6 +180,8 @@ class ProjectRecoveryTests(unittest.TestCase):
         app = QApplication.instance() or QApplication([])
         session = self.reopen()
         panel = QWidget()
+        with self.f.context():
+            staging.equipment_fit_rows(session)
         layout = QVBoxLayout(panel)
         panel.project_includes_list = QPlainTextEdit(panel)
         layout.addWidget(panel.project_includes_list)

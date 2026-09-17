@@ -22,7 +22,7 @@ MEMBER = "model-edits.json"
 
 
 def _copy_archive(source, target, document, model_payload=None):
-    with zipfile.ZipFile(source) as old, zipfile.ZipFile(target, "w", compression=zipfile.ZIP_DEFLATED) as new:
+    with zipfile.ZipFile(source) as old, zipfile.ZipFile(target, "x", compression=zipfile.ZIP_DEFLATED) as new:
         for info in old.infolist():
             if info.filename in {"project.json", MEMBER}:
                 continue
@@ -189,25 +189,29 @@ class ModelProjectSession(StudioSession):
         payload = P.canonical(list(self.model_records))
         P.require(len(payload) <= P.MAX_BYTES, "Model project changes exceed 64 MiB.")
         with tempfile.TemporaryDirectory(prefix=".model-project-", dir=destination.parent) as folder:
-            base, staged = Path(folder)/"base.2k5mod", Path(folder)/"complete.2k5mod"
+            base = Path(folder)/"base.2k5mod"
+            staged = archive.platform_compat.temporary_sibling(destination)
             super().save_shareable_project(base, allow_empty=True)
             with zipfile.ZipFile(base) as zipped:
                 document = json.loads(zipped.read("project.json"))
             document.pop("empty_project", None)
             document["model_edits"] = {"file": MEMBER, "size": len(payload), "sha256": P.sha(payload),
                                        "count": len(self._model_records)}
-            _copy_archive(base, staged, document, payload)
-            archive._publish_archive(staged, destination, replace=replace, expected_target=expected_target)
+            try:
+                _copy_archive(base, staged, document, payload)
+                archive._publish_archive(staged, destination, replace=replace, expected_target=expected_target)
+            finally:
+                staged.unlink(missing_ok=True)
         return destination
 
-    def load_shareable_project(self, source):
+    def load_shareable_project(self, source, *, progress=None):
         P.require(not self.modified_count, "Load model edits into a fresh project session.")
         try:
             document, records = _read_models(source)
         except (OSError, ValueError, KeyError, zipfile.BadZipFile) as exc:
             raise P.ValidationError(f"Cannot read compiled model project {source}: {exc}") from exc
         if not records:
-            return super().load_shareable_project(source)
+            return super().load_shareable_project(source, progress=progress)
         model_source = M.ModelSource(self.cache.pack0, self.cache.inventory)
         warnings = []
         for record in records:
@@ -223,7 +227,7 @@ class ModelProjectSession(StudioSession):
             # artwork loaded and models absent from the manifest on failure.
             self._model_restore_pending = pending
             try:
-                count = super().load_shareable_project(base)
+                count = super().load_shareable_project(base, progress=progress)
             finally:
                 self._model_restore_pending = None
         self._model_records = pending

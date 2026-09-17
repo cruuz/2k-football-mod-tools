@@ -1279,10 +1279,19 @@ def read_project(path: Path, *, equipment_index: Path | None = None) -> ProjectF
     project = ProjectFile(resolved, payload, normalized, identity)
     if equipment_index is not None:
         equipment_cache = uniform_equipment_adapter.staged_equipment_cache()
-        uniform_equipment_adapter.preflight_project_equipment(equipment_index, [
-            (i, edit["asset_id"], project.path.parent / edit["png"])
-            for i, edit in enumerate(edits) if edit["kind"] == UNIFORM_EQUIPMENT_KIND
-        ], compile_cache=equipment_cache)
+        targets, _ = uniform_equipment_adapter.load_targets()
+        for i, edit in enumerate(edits):
+            if edit['kind'] != UNIFORM_EQUIPMENT_KIND:
+                continue
+            asset_id = edit['asset_id']
+            target = targets.get(asset_id)
+            require(target is not None, f'Unknown equipment target: {asset_id}')
+            try:
+                _, payload, _ = read_regular_bounded(project.path.parent / edit['png'], 32 * 1024 * 1024, 'equipment PNG')
+                _, _, rgba = uniform_equipment_adapter.palette_tools.decode_rgba_png(payload, (target.width, target.height))
+                uniform_equipment_adapter.import_settings(payload, asset_id, rgba)
+            except (ValueError, uniform_equipment_adapter.ValidationError) as exc:
+                raise ProjectError(f'Cannot load equipment edits: Project edit index {i}: {asset_id}: {exc}') from exc
         project = replace(project, equipment_compile_cache=equipment_cache)
     return project
 
@@ -3413,7 +3422,7 @@ def _parallel_uniform_import(arguments):
 
 
 def _parallel_uniform_imports(edits, project, pins, reports, index, inventory, parent, workers,
-                              cache=None, key_for=None):
+                              cache=None, key_for=None, orders=None):
     """Bound in-flight misses, consume in order, and never schedule cache hits."""
     from collections import deque
     from concurrent.futures import ProcessPoolExecutor
@@ -3429,7 +3438,7 @@ def _parallel_uniform_imports(edits, project, pins, reports, index, inventory, p
                 cache.put(key, ([result], edit, None, edit["kind"]))
             return result
         try:
-            for order, edit in enumerate(edits):
+            for order, edit in zip(range(len(edits)) if orders is None else orders, edits):
                 key = key_for(order, [order]) if key_for is not None and cache.root is not None else None
                 cached = cache.get(key) if key is not None else None
                 future = None if cached is not None else pool.submit(_parallel_uniform_import,
@@ -3443,6 +3452,74 @@ def _parallel_uniform_imports(edits, project, pins, reports, index, inventory, p
             for _, _, future, _ in pending:
                 if future is not None:
                     future.cancel()
+
+
+def _equipment_fit_worker(arguments):
+    """One physical group; the parent alone publishes game data or receipts."""
+    index, edits = arguments
+    writer = uniform_equipment_adapter
+    cache = writer.EquipmentCompileCache()
+    try:
+        rows = writer.preflight_project_equipment(index,
+            [(None, asset_id, path) for asset_id, path in edits], compile_cache=cache)
+        records = []
+        for key, compiled in cache.compiled.items():
+            record = asdict(compiled)
+            record['independent'] = sorted(compiled.independent)
+            records.append((key, record))
+        return rows, records
+    except Exception as exc:
+        # Custom codec exceptions need more arguments than Exception's pickle
+        # protocol supplies. Return text, then name the group in the parent.
+        return str(exc), []
+
+
+def _parallel_equipment_fits(groups, project, pins, index, cache, workers):
+    from concurrent.futures import ProcessPoolExecutor
+    from collections import deque
+    import multiprocessing
+    pending = deque()
+    completed = 0
+    total = sum(len(rows) for rows in groups.values())
+    def finish(item):
+        nonlocal completed
+        rows, future = item
+        labels = ', '.join(row['asset_id'] for row in rows)
+        _item_progress('Checking fit: ' + labels, completed, total)
+        fits, records = future.result()
+        if isinstance(fits, str):
+            raise ProjectError(f'Cannot build {labels}: {fits}')
+        for key, record in records:
+            restored = uniform_equipment_adapter._restore_staged(record, record['rebuilt_span'])
+            require(restored is not None, f'Equipment worker returned an invalid fit: {labels}')
+            cache.compiled[key] = restored
+        # Advisory metadata only. It is saved with the project by an explicit
+        # Save; encoded spans stay in the private compiler cache.
+        print('NFL2K5_FIT_RECEIPT ' + json.dumps(fits), flush=True)
+        failed = [r for r in fits if r.get('fit_status') == 'needs refit']
+        if failed:
+            raise ProjectError('\n'.join(
+                f"Equipment / uniform set {r['set_selector']} / {r['asset_id']}: "
+                f"needs refit: {r['fit_error']} Use Refit equipment in Build, or revert this item."
+                for r in failed))
+        completed += len(rows)
+        _item_progress('Fit checked: ' + labels, completed, total)
+    with ProcessPoolExecutor(max_workers=workers, mp_context=multiprocessing.get_context('spawn')) as pool:
+        try:
+            for rows in groups.values():
+                edits = [(row['asset_id'], resolve_asset(project, row['png'], pins).path) for row in rows]
+                pending.append((rows, pool.submit(_equipment_fit_worker, (index, edits))))
+                if len(pending) >= workers:
+                    finish(pending.popleft())
+            while pending:
+                finish(pending.popleft())
+        finally:
+            for _, future in pending:
+                future.cancel()
+
+
+def _item_progress(message, done, total):
+    print('NFL2K5_BUILD_ITEM ' + json.dumps(dict(message=message, done=done, total=total)), flush=True)
 
 
 def compile_dependencies(index: int, edits: list[dict[str, Any]]) -> list[int]:
@@ -3690,13 +3767,17 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
         unif_color_pack_hashes: dict[str, str] = {}
         independent_kinds = {"torso", "sleeve", "pants", "live_helmet", "team_select"}
         workers = _encode_worker_count() if parallelism is None else max(1, parallelism)
-        if (workers > 1 and len(project.value["edits"]) >= 4
-                and historical_import_reports is None
-                and all(row["kind"] in independent_kinds for row in project.value["edits"])):
-            parallel_imports = _parallel_uniform_imports(project.value["edits"], project,
-                input_pins, report_paths, index_pin.path, inventory_pin.path, output_parent, workers, cache, key_for)
+        uniform_orders = [n for n, row in enumerate(project.value['edits']) if row['kind'] in independent_kinds]
+        if workers > 1 and len(equipment_groups) >= 2 and historical_import_reports is None:
+            _parallel_equipment_fits(equipment_groups, project, input_pins, index_pin.path,
+                                     equipment_compile_cache, workers)
+        if workers > 1 and len(uniform_orders) >= 4 and historical_import_reports is None:
+            parallel_imports = _parallel_uniform_imports([project.value['edits'][n] for n in uniform_orders], project,
+                input_pins, report_paths, index_pin.path, inventory_pin.path, output_parent, workers, cache, key_for,
+                orders=uniform_orders)
         model_edits = [e for e in project.value["edits"] if e["kind"] == model_project.KIND]
         for edit_index, edit in enumerate(project.value["edits"]):
+            _item_progress('Preparing ' + project_edit_label(edit, edit_index), edit_index, len(project.value['edits']))
             with _naming_project_edits(project, compile_dependencies(edit_index, project.value["edits"]) or [edit_index]):
                 kind = edit["kind"]
                 if kind == model_project.KIND:
@@ -3710,8 +3791,8 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                 dependencies = compile_dependencies(edit_index, project.value["edits"])
                 cache_key = None
                 cached = None
-                if dependencies and cache.root is not None and parallel_imports is None:
-                    cache_key = key_for(len(prepared), dependencies)
+                if dependencies and cache.root is not None and not (parallel_imports is not None and kind in independent_kinds):
+                    cache_key = key_for(edit_index, dependencies)
                     cached = cache.get(cache_key)
                 if isinstance(cached, dict) and set(cached) == {"kept_retail"}:
                     kept_retail.append(cached["kept_retail"])
@@ -4072,6 +4153,7 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                             fits = uniform_equipment_adapter.preflight_project_equipment(
                                 index_pin.path, [(None, asset_id, path) for asset_id, path in staged_equipment],
                                 compile_cache=equipment_compile_cache)
+                            print('NFL2K5_FIT_RECEIPT ' + json.dumps(fits), flush=True)
                             raise ProjectError('\n'.join(
                                 f"Equipment / uniform set {row['set_selector']} / {row['asset_id']}: "
                                 f"needs refit: {row['fit_error']} Use Refit equipment in Build, or revert this item."
@@ -4107,7 +4189,7 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                         staged_before = len(temp_files)
                         try:
                             with _naming_the_failing_edit(edit):
-                                built = [next(parallel_imports) if parallel_imports is not None else build_one_import(
+                                built = [next(parallel_imports) if parallel_imports is not None and kind in independent_kinds else build_one_import(
                                     len(prepared), edit, project, input_pins, report_paths,
                                     index_pin.path, inventory_pin.path, temp_root, temp_files,
                                     source_fd, historical_import)]
@@ -4141,6 +4223,11 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                 if dependencies:
                     cached_handled.update(dependencies)
                 for replacement, previews, report, selector, target in built:
+                    if kind == UNIFORM_EQUIPMENT_KIND:
+                        print('NFL2K5_FIT_RECEIPT ' + json.dumps([
+                            dict(row, fit_status='fits',
+                                 encoded_bytes=report['bounded_palette_fit']['selected_encoded_bytes'])
+                            for row in report['edits']]), flush=True)
                     order = len(prepared)
                     key = (kind, selector)
                     require(key not in selectors,
@@ -4148,6 +4235,13 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                     selectors.add(key)
                     (pack_path, pack_sector, pack_size, pack_sha, pack_offset,
                      absolute, retail_sha) = target_proof(kind, target)
+                    if kind != UNIFORM_EQUIPMENT_KIND:
+                        paths = [str(path.resolve()) for path in project_asset_paths(
+                            replace(project, value={**project.value,
+                                'edits': [project.value['edits'][n] for n in dependencies or [edit_index]]}))]
+                        print('NFL2K5_ART_FIT ' + json.dumps(dict(paths=paths, targets=[dict(
+                            pack=pack_path.rsplit('/', 1)[-1], offset=pack_offset,
+                            size=len(replacement), sha256=retail_sha)])), flush=True)
                     # Bound to retail bytes before any XISO copy.
                     runs: list[list[int]] = []
                     span_path = temporary / f"{order:05d}_replacement.bin"

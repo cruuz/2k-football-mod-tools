@@ -27,6 +27,8 @@ import struct
 import sys
 from typing import Any, Iterable
 from functools import lru_cache
+from contextvars import ContextVar
+from functools import wraps
 from mod_editor.core.nfl2k5_equipment_lz import EquipmentSizeOverflow, minimum_equipment_size
 
 from mod_editor.core.errors import ValidationError
@@ -158,6 +160,7 @@ class EquipmentCompileCache:
         self.artwork_limit = artwork_limit
         self.hits = 0
         self.misses = 0
+        self.failures = OrderedDict()
 
     def statistics(self) -> dict[str, int]:
         return {"hits": self.hits, "misses": self.misses, "entries": len(self.compiled),
@@ -167,6 +170,7 @@ class EquipmentCompileCache:
         self.compiled.clear()
         self.artwork.clear()
         self.hits = self.misses = 0
+        self.failures.clear()
 
 
 class UniformEquipmentWriterError(ValueError):
@@ -599,6 +603,53 @@ def _chain_pins() -> dict[tuple[int, int], str]:
 # memory grows with the distinct encoded results requested during this process.
 _PARSE_CACHE: OrderedDict = OrderedDict()
 _STAGED_CACHE = EquipmentCompileCache()
+_FIT_SEARCH = ContextVar('equipment_fit_search', default=None)
+
+
+def _one_optimal_fit(function):
+    """Greedy sweep, one best lossless candidate, then reuse that result.
+
+    A fit item is a complete physical TSET including its staged siblings.
+    Suggestions share the attempt allowance. Changed art/size is a new item.
+    """
+    @wraps(function)
+    def fit(*args, **kwargs):
+        if _FIT_SEARCH.get() is not None:
+            search = _FIT_SEARCH.get()
+            search['depth'] += 1
+            try:
+                return function(*args, **kwargs)
+            finally:
+                search['depth'] -= 1
+        search = {'collect': True, 'best': None, 'depth': 0}
+        token = _FIT_SEARCH.set(search)
+        try:
+            result, failure = None, None
+            try:
+                result = function(*args, **{**kwargs, 'suggest_fit': False})
+            except EquipmentRefitError as exc:
+                failure = exc
+            best = search['best']
+            if best is not None:
+                _, candidate, tag, bits, budget = best
+                search['collect'] = False
+                search['selected'] = (_digest(candidate), tag, bits)
+                # The retry reuses all greedy parses. Only selected may invoke
+                # optimal, and its success, miss or timeout is cached below.
+                try:
+                    return function(*args, **kwargs)
+                except EquipmentRefitError:
+                    if result is None:
+                        raise
+            if result is not None:
+                return result
+            if best is None and isinstance(failure, EquipmentFitError) and kwargs.get('suggest_fit', True):
+                search['collect'] = False
+                return function(*args, **kwargs)
+            raise failure
+        finally:
+            _FIT_SEARCH.reset(token)
+    return fit
 
 
 def _greedy_ceiling(budget: int) -> int:
@@ -633,6 +684,21 @@ def _cached_parse(candidate: bytes, stream_tag: int, offset_bits: int, budget: i
     # optimal encoder before declaring this candidate too large.
     if greedy is not None and len(greedy) <= budget:
         return greedy, "retail_greedy"
+    search = _FIT_SEARCH.get()
+    if search is not None:
+        if search['collect']:
+            # Prefer the smallest greedy miss; avoid retaining every candidate.
+            size = len(greedy) if greedy is not None else ceiling + 1
+            if search['depth'] == 0 and (search['best'] is None or size < search['best'][0]):
+                search['best'] = (size, candidate, stream_tag, offset_bits, budget)
+        measured = any(name in record for name in ('optimal', 'optimal_miss', 'optimal_error'))
+        if search['collect'] or (search.get('selected') != key and not measured):
+            deferred = EquipmentSizeOverflow(len(greedy) if greedy is not None else ceiling + 1,
+                                             budget, exact=False)
+            deferred.unmeasured = True
+            raise deferred
+    if 'optimal_error' in record:
+        raise EquipmentRefitError(record['optimal_error'])
     optimal = record.get("optimal")
     # 512 bytes preserves exact measurements near the boundary, while a
     # far miss can leave the reverse search before visiting every position.
@@ -648,6 +714,9 @@ def _cached_parse(candidate: bytes, stream_tag: int, offset_bits: int, budget: i
         except EquipmentSizeOverflow as exc:
             record["optimal_miss"] = (exc.required, exc.exact)
             raise
+        except TxtrError as exc:
+            record['optimal_error'] = str(exc)
+            raise EquipmentRefitError(str(exc)) from exc
     if len(optimal) > budget:
         raise EquipmentSizeOverflow(len(optimal), budget, exact=True)
     return optimal, "optimal_token_parse"
@@ -680,9 +749,9 @@ def _rebuild_grown_video(template_span: bytes, candidate: bytes):
         except EquipmentSizeOverflow as exc:
             misses.append(exc)
     else:
-        smallest = min(misses, key=lambda exc: exc.required)
-        raise EquipmentSizeOverflow(smallest.required, chunk.stored_size,
-                                    exact=any(exc.exact and exc.required == smallest.required for exc in misses))
+        measured = [exc for exc in misses if not getattr(exc, 'unmeasured', False)]
+        smallest = min(measured or misses, key=lambda exc: exc.required)
+        raise smallest
     padding = chunk.stored_size - len(encoded)
     minimum = minimum_vc_lz_overlap_scratch(encoded, chunk.stored_size, len(candidate))
     scratch = chunk.overlap_scratch_bytes
@@ -953,7 +1022,7 @@ def _stage_compiler_key():
              "mod_editor/core/nfl2k5_equipment_import_intent.py",
              "mod_editor/core/nfl2k5_digit_texture.py", "tools/nfl_txtr.py",
              "tools/nfl_tset_png_import.py", "tools/nfl_all_texture_xiso_workflow.py",
-             "tools/nfl_vc_lz_fill.py")
+             "tools/nfl_vc_lz_fill.py", "tools/nfl2k5_equipment_optimal")
     return tuple((path, _digest((ROOT / path).read_bytes())) for path in paths)
 
 
@@ -1015,6 +1084,7 @@ def _rows_signature(rows: tuple[EquipmentTarget, ...]) -> tuple[tuple[Any, ...],
     )
 
 
+@_one_optimal_fit
 def _compile_group(
     template_span: bytes,
     chunk: Any,
@@ -1135,7 +1205,8 @@ def _compile_group(
                 "maximum_palette_entries": maximum,
                 "palette_entries": entries,
                 "result": "vc_lz_overflow",
-                "required_bytes": int(message.split()[3]) if message.startswith("VC-LZ stream is ") else None,
+                "required_bytes": (int(message.split()[3]) if message.startswith("VC-LZ stream is ")
+                                   and not getattr(exc, 'unmeasured', False) else None),
                 "required_is_lower_bound": not getattr(exc, "exact", True),
             })
             continue
@@ -1467,8 +1538,11 @@ def build_unified_uniform_equipment_imports(
     key = (template_sha256, chunk_index, chunk.stored_size, chunk.system_bytes, chunk.video_bytes,
            chunk.overlap_scratch_bytes, _rows_signature(rows), tuple(sorted(signature)))
     compiled = compile_cache.compiled.get(key) if compile_cache is not None else None
+    failure = compile_cache.failures.get(key)
+    if failure is not None:
+        raise failure
     disk = None
-    if compiled is None and compile_cache is _STAGED_CACHE:
+    if compiled is None:
         try:
             disk, disk_key = _stage_disk_cache(index, key)
         except OSError:
@@ -1476,7 +1550,19 @@ def build_unified_uniform_equipment_imports(
             # disk cache; they must not prevent an independently checked import.
             disk = None
         if disk is not None:
-            compiled = _restore_staged(disk.get(disk_key), template_span)
+            stored = disk.get(disk_key)
+            if isinstance(stored, dict) and stored.get('fit_failure') == 1:
+                details = stored.get('details')
+                try:
+                    failure = (EquipmentFitError(**details) if isinstance(details, dict)
+                               else EquipmentRefitError(stored['message']))
+                except (TypeError, KeyError, ValueError):
+                    failure = None  # A damaged optional cache is simply a miss.
+                if failure is not None:
+                    compile_cache.failures[key] = failure
+                    raise failure
+                stored = None
+            compiled = _restore_staged(stored, template_span)
             if compiled is not None:
                 compile_cache.compiled[key] = compiled
     if compiled is None:
@@ -1513,8 +1599,19 @@ def build_unified_uniform_equipment_imports(
                          "Retail equipment export selector or dimensions are not reviewed")
                 retail[reference] = _retail_artwork(archive, source, groups, rgba)
         preferred = by_id.get(fit_asset_id) if fit_asset_id is not None else None
-        compiled = _compile_group(template_span, chunk, decoded, decode_info, rows, authored, independent, retail,
-                                  fit_reference=preferred.reference_index if preferred is not None else None)
+        try:
+            compiled = _compile_group(template_span, chunk, decoded, decode_info, rows, authored, independent, retail,
+                                      fit_reference=preferred.reference_index if preferred is not None else None)
+        except EquipmentRefitError as exc:
+            compile_cache.failures[key] = exc
+            while len(compile_cache.failures) > compile_cache.compiled_limit:
+                compile_cache.failures.popitem(last=False)
+            if disk is not None:
+                details = (dict(budget=exc.budget, required=exc.required, attempts=exc.attempts,
+                    suggestion=exc.suggestion, required_is_lower_bound=exc.required_is_lower_bound)
+                    if isinstance(exc, EquipmentFitError) else None)
+                disk.put(disk_key, dict(fit_failure=1, message=str(exc), details=details))
+            raise
         if disk is not None:
             record = asdict(compiled)
             record["independent"] = sorted(compiled.independent)

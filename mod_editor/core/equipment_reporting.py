@@ -7,6 +7,8 @@ from .errors import ValidationError
 
 
 def fit_caption(row):
+    if row.get('fit_status') == 'fit pending':
+        return 'fit pending; checked when you build'
     if row.get('fit_status') == 'needs refit':
         return 'needs refit: ' + row['fit_error']
     dimensions = row.get('encoded_dimensions')
@@ -21,7 +23,9 @@ def fit_caption(row):
 def project_fit_labels(session):
     """Read only import/worker measurements; safe on the GUI thread."""
     from .equipment_staging import cached_equipment_fit_rows
-    return {r['asset_id']: fit_caption(r) for r in cached_equipment_fit_rows(session)}
+    from .nfl2k5_project_fit import art_fit_labels
+    return {**art_fit_labels(session),
+            **{r['asset_id']: fit_caption(r) for r in cached_equipment_fit_rows(session)}}
 
 
 def verified_build_texture_lines(manifest):
