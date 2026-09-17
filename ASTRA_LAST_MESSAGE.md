@@ -1,9 +1,13 @@
-Implemented and committed the sprite submission-order candidate on `astra/b71-s9-down-label` in `.scratch/astra-b71-s9.git`.
+Delivered Beta 71.1 APF-7 on `astra/b71-apf7-overlay-books`, based on `02bbadd1`.
 
-The shipped plate already precedes the label; the proposed overdraw cause is disproved in the bounded trace. The witnessed in-game disappearance remains unexplained and the candidate remains UNWITNESSED in game.
+- Field opacity and sibling lists stay readable; before/after offscreen captures cover 1280×720 and 1920×1080.
+- Automatic own-book allocation remains 24 disc teams per side (48 books). Manual allocation access is restored for all 40 roster slots; the retail label pool is 36 offense / 33 defense.
+- Formation ratings sit beside the situation table, with per-situation weight previews, automatic Confirm checks, Pending edits and Undo. The stored short/medium/long ratings affect multiple situations; independent per-bucket numeric overrides are not claimed.
+- All 199 suite files pass: 1,885 reported tests, 11 explicit skips. Provider integrity, catalog, phase1 packaging, strict validation, staged release/runtime checks and repin pass.
 
-Deliverables: `.scratch/astra-b71-s9.bundle`, `ASTRA_REPORT.md`, native command/UV/alpha proofs and the 50-state contact sheet in `reports/b71_s9/`. All final requested suites and strict validation pass; 808 native label states pass at both aspects. Append stays 323,808 bytes. The test-disc p builder is prepared only. No push, emulator or disc build.
-
-Integration must refresh the cave manifest's changed source fingerprints and rerun the combined XBE gates. Owner machine code is unchanged.
+Report and evidence: `ASTRA_REPORT.md`, `reports/b71_apf7/`.
+Bundle: `.scratch/astra-b71-apf7.bundle`.
+Private git: `.scratch/git`; final commit and bundle verification: `.scratch/astra-b71-apf7-delivery.json`.
+No push or emulator. All in-game results remain UNWITNESSED.
 
 ASTRA_DONE

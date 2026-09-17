@@ -1,0 +1,20 @@
+.E.....
+======================================================================
+ERROR: test_consolidated_manual_utility_retains_all_40_slots_and_review (__main__.PanelTests.test_consolidated_manual_utility_retains_all_40_slots_and_review)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b71-apf7/tests/mod_editor/test_apf_book_identity_qt.py", line 138, in test_consolidated_manual_utility_retains_all_40_slots_and_review
+    panel.review_selection()
+  File "/home/noah/2k-worktrees/astra-b71-apf7/mod_editor/apf_studio/book_identity_qt.py", line 382, in review_selection
+    self.run_task("Reviewing book change", work, reviewed, True)
+  File "/home/noah/2k-worktrees/astra-b71-apf7/tests/mod_editor/test_apf_book_identity_qt.py", line 23, in runner
+    callback(operation(lambda *_args: None))
+  File "/home/noah/2k-worktrees/astra-b71-apf7/mod_editor/apf_studio/book_identity_qt.py", line 377, in reviewed
+    self._show_identity(result[2]["book_identity"])
+                        ~~~~~~~~~^^^^^^^^^^^^^^^^^
+KeyError: 'book_identity'
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.058s
+
+FAILED (errors=1)

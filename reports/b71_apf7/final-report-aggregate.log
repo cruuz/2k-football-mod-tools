@@ -1,0 +1,36 @@
+{
+  "suite_files": 199,
+  "passed_files": 198,
+  "tests": 1878,
+  "skipped": 11
+}
+[
+  {
+    "suite": "tests/mod_editor/test_apf_book_identity_qt.py",
+    "command": [
+      "git",
+      "--git-dir=.scratch/git",
+      "--work-tree=.",
+      "commit",
+      "-m",
+      "Restore manual allocation access and document the real book pool",
+      "--",
+      "mod_editor/apf_studio/book_identity_qt.py",
+      "mod_editor/apf_studio/gui.py",
+      "mod_editor/apf_studio/playcalling_editor_qt.py",
+      "mod_editor/apf_studio/playcalling_service.py",
+      "docs/mod_editor/apf2k8_book_identity_walkthrough.md",
+      "docs/mod_editor/apf2k8_mod_studio_changelog.md",
+      "tests/mod_editor/test_apf_b711_book_scope.py",
+      "tests/mod_editor/test_apf_b711_overlay_books_qt.py",
+      "tests/mod_editor/test_apf_book_identity_qt.py"
+    ],
+    "elapsed_seconds": 0.093,
+    "exit_code": 0,
+    "log": "reports/b71_apf7/commit-manual-access.log",
+    "started_utc": "2026-09-16T23:59:38.106809+00:00",
+    "tests": 0,
+    "skipped": 0,
+    "status": "FAIL"
+  }
+]

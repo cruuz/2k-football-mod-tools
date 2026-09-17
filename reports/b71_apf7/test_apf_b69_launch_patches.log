@@ -1,0 +1,10 @@
+test_both_managed_patches_reach_storage_root_and_removal_propagates (__main__.LaunchPatchTests.test_both_managed_patches_reach_storage_root_and_removal_propagates) ... ok
+test_consent_install_enable_reload_launch_remove (__main__.LaunchPatchTests.test_consent_install_enable_reload_launch_remove) ... ok
+test_disabled_and_invalid_config_report_and_no_partial_install (__main__.LaunchPatchTests.test_disabled_and_invalid_config_report_and_no_partial_install) ... ok
+test_foreign_managed_destination_refuses_before_process_start (__main__.LaunchPatchTests.test_foreign_managed_destination_refuses_before_process_start) ... ok
+test_wrong_patch_refused_and_failed_config_write_rolls_back_patch (__main__.LaunchPatchTests.test_wrong_patch_refused_and_failed_config_write_rolls_back_patch) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.227s
+
+OK

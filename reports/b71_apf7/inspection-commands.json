@@ -1,0 +1,1085 @@
+{
+  "note": "Shell commands issued through the tool-side recorder. wall_time_seconds is the tool's observed wait, not a claim of complete process duration after a yield; completed_utc is the observation time. Exact acceptance durations are in commands.jsonl. Initial inspections are separately preserved in bootstrap-commands.json. apply_patch/view_image tool operations are not shell commands. Final seal operations are in the external delivery receipt.",
+  "commands": [
+    {
+      "cmd": "cat ASTRA_BRIEF.md; rg --files mod_editor/apf_studio tests/mod_editor | rg '(field|playcall|book|studio.*qt)'; rg --files '/home/noah/Desktop/2K5-8 Editors' | rg '(1655|1811|B71_APF2|B71_APF1)'",
+      "start": "2026-09-16T23:24:37.674Z",
+      "chunk_id": "60c436",
+      "wall_time_seconds": 0.000003286,
+      "exit_code": 0,
+      "original_token_count": 1557
+    },
+    {
+      "cmd": "sed -n '1,110p' ASTRA_B71_APF6_REPORT.md; sed -n '1,100p' ASTRA_B71_APF4_REPORT.md",
+      "start": "2026-09-16T23:24:37.783Z",
+      "chunk_id": "e227a2",
+      "wall_time_seconds": 0.000004599,
+      "exit_code": 0,
+      "original_token_count": 5567
+    },
+    {
+      "cmd": "sed -n '1,240p' mod_editor/apf_studio/field_material_qt.py; rg -n 'Field Art|overlay.*opacity|field_material|field_art' mod_editor/apf_studio/gui.py; rg -n '24|36|own book|clone|formation_rating|situation|weight' mod_editor/apf_studio/book_identity_qt.py mod_editor/apf_studio/playcalling_editor_qt.py mod_editor/apf_studio/playcalling_service.py",
+      "start": "2026-09-16T23:24:48.434Z",
+      "chunk_id": "23ce14",
+      "wall_time_seconds": 0.000003928,
+      "exit_code": 0,
+      "original_token_count": 7723
+    },
+    {
+      "cmd": "mkdir -p .scratch reports/b71_apf7 && git init --bare .scratch/git && git --git-dir=.scratch/git config core.bare false && git --git-dir=.scratch/git config core.worktree /home/noah/2k-worktrees/astra-b71-apf7 && git --git-dir=.scratch/git config user.name 'Codex' && git --git-dir=.scratch/git config user.email 'codex@localhost' && python3 - <<'PY'\nfrom pathlib import Path\nimport subprocess\ncommon = subprocess.check_output(['git','rev-parse','--git-common-dir'],text=True).strip()\nPath('.scratch/git/objects/info/alternates').write_text(str(Path(common)/'objects')+'\\n')\nPY\n git --git-dir=.scratch/git update-ref refs/heads/astra/b71-apf7-overlay-books 02bbadd184e85498a441d3be71e70f8de94b9b0a && git --git-dir=.scratch/git symbolic-ref HEAD refs/heads/astra/b71-apf7-overlay-books && git --git-dir=.scratch/git read-tree HEAD",
+      "start": "2026-09-16T23:25:19.038Z",
+      "chunk_id": "9f4435",
+      "wall_time_seconds": 0.000003416,
+      "exit_code": 0,
+      "original_token_count": 23
+    },
+    {
+      "cmd": "sed -n '7830,7890p' mod_editor/apf_studio/gui.py; sed -n '1,100p' mod_editor/apf_studio/playcalling_service.py; sed -n '235,306p' mod_editor/apf_studio/playcalling_editor_qt.py; sed -n '550,710p' mod_editor/apf_studio/playcalling_editor_qt.py; rg -n 'own_book_plan|24|36|range\\(' mod_editor/core/apf2k8_book_clone.py; cat tests/mod_editor/test_apf_b71_editor_workflow_qt.py",
+      "start": "2026-09-16T23:25:19.191Z",
+      "chunk_id": "4c6a90",
+      "wall_time_seconds": 0.000004398,
+      "exit_code": 0,
+      "original_token_count": 7973
+    },
+    {
+      "cmd": "sed -n '175,230p' mod_editor/core/apf2k8_book_clone.py; sed -n '1,230p' tests/mod_editor/test_apf_b67_clone.py; sed -n '1,220p' tests/mod_editor/test_apf_field_art_gui.py; sed -n '1,100p' tests/mod_editor/test_apf_playcalling_editor_facade.py; cat reports/b71_apf3/prepare_test_python.py",
+      "start": "2026-09-16T23:25:33.994Z",
+      "chunk_id": "d04c91",
+      "wall_time_seconds": 0.000003346,
+      "exit_code": 0,
+      "original_token_count": 5577
+    },
+    {
+      "cmd": "sed -n '45,115p' mod_editor/apf_studio/playcalling_editor_qt.py; sed -n '385,480p' mod_editor/apf_studio/playcalling_editor_qt.py; sed -n '710,850p' mod_editor/apf_studio/playcalling_editor_qt.py; rg -n 'weight|rating|situation_candidates' mod_editor/core/apf2k8_playcall_model.py; rg -n '36|24|USER|pool|label' docs/mod_editor/apf_b67_play_calling.md docs/mod_editor/apf2k8_book_identity_walkthrough.md ASTRA_B67_P3_REPORT.md; rg --files -g '*APF2*' -g '*APF-2*'; sed -n '1,100p' reports/b71_apf6/suites.py",
+      "start": "2026-09-16T23:25:33.994Z",
+      "chunk_id": "a101eb",
+      "wall_time_seconds": 0.000002695,
+      "exit_code": 0,
+      "original_token_count": 5663
+    },
+    {
+      "cmd": "cat reports/b71_apf3/prepare_test_python.py; cat reports/b71_apf6/run.py; sed -n '1,70p' mod_editor/apf_studio/playcalling_editor_qt.py; sed -n '100,175p' mod_editor/apf_studio/playcalling_editor_qt.py; sed -n '1,115p' tests/mod_editor/test_apf_theme_layout_qt.py; sed -n '190,222p' mod_editor/core/apf2k8_playcall_model.py; sed -n '110,160p' ASTRA_B71_APF6_REPORT.md; head -60 ASTRA_B661_APF2_REPORT.md",
+      "start": "2026-09-16T23:25:45.560Z",
+      "chunk_id": "64c094",
+      "wall_time_seconds": 0.000004088,
+      "exit_code": 0,
+      "original_token_count": 6645
+    },
+    {
+      "cmd": "python3 - <<'PY'\nimport importlib\nfor name in ['PyQt5','PIL','unicorn','capstone']:\n try:\n  m=importlib.import_module(name); print(name,getattr(m,'__version__','installed'),m.__file__)\n except Exception as e: print(name,e)\nPY\n git log --all --format='%h %s' --grep='APF-2' -8; rg --files reports/b71_apf2 | head -20; rg -n '^##|^#|36|24|USER' ASTRA_B70_APF1_REPORT.md ASTRA_APF_BOOK_UNLOCK_REPORT.md | head -35",
+      "start": "2026-09-16T23:25:45.663Z",
+      "chunk_id": "149c4e",
+      "wall_time_seconds": 0.001839976,
+      "exit_code": 0,
+      "original_token_count": 1094
+    },
+    {
+      "cmd": "sed -n '7890,7995p' mod_editor/apf_studio/gui.py; sed -n '1,160p' tools/apf_ui_snapshots.py; sed -n '100,165p' mod_editor/apf_studio/playcalling_service.py; sed -n '875,896p' mod_editor/apf_studio/playcalling_service.py; rg -n 'playcalling_situations|playcalling_context|review_playcalling' mod_editor/apf_studio/facade.py; rg -n 'visible|scheme_group|levers|preview_group|situation_group' mod_editor/apf_studio/playcalling_editor_qt.py; git show 7d954937:ASTRA_REPORT.md | head -100",
+      "start": "2026-09-16T23:25:58.958Z",
+      "chunk_id": "367966",
+      "wall_time_seconds": 0.000002946,
+      "exit_code": 0,
+      "original_token_count": 9799
+    },
+    {
+      "cmd": "sed -n '60,98p' ASTRA_APF_BOOK_UNLOCK_REPORT.md; sed -n '235,275p' mod_editor/apf_studio/book_identity_qt.py; sed -n '1,80p' docs/mod_editor/apf2k8_mod_studio_changelog.md; sed -n '1,170p' mod_editor/core/apf2k8_book_identity.py",
+      "start": "2026-09-16T23:25:59.068Z",
+      "chunk_id": "9cc7ea",
+      "wall_time_seconds": 0.00000518,
+      "exit_code": 0,
+      "original_token_count": 9346
+    },
+    {
+      "cmd": "python3 - <<'PY'\nfrom pathlib import Path\np=Path('reports/b71_apf7')\ns=Path('reports/b71_apf6/run.py').read_text().replace('b71_apf6','b71_apf7')\n(p/'run.py').write_text(s)\n(p/'suites.py').write_text(Path('reports/b71_apf6/suites.py').read_text())\nPY\npython3 reports/b71_apf7/run.py prepare-python python3 reports/b71_apf3/prepare_test_python.py",
+      "start": "2026-09-16T23:26:35.904Z",
+      "chunk_id": "23500b",
+      "wall_time_seconds": 0.21013346,
+      "exit_code": 0,
+      "original_token_count": 1444
+    },
+    {
+      "cmd": "git show 7d954937:ASTRA_REPORT.md | sed -n '1,78p'; sed -n '175,235p' mod_editor/apf_studio/book_identity_qt.py; sed -n '875,890p' mod_editor/apf_studio/playcalling_service.py; sed -n '570,606p' mod_editor/apf_studio/facade.py; head -12 docs/mod_editor/apf2k8_mod_studio_changelog.md",
+      "start": "2026-09-16T23:26:36.290Z",
+      "chunk_id": "a37f8e",
+      "wall_time_seconds": 0.000004638,
+      "exit_code": 0,
+      "original_token_count": 5932
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py screenshots-before python3 reports/b71_apf7/screenshots.py before",
+      "start": "2026-09-16T23:26:36.550Z",
+      "chunk_id": "0021e5",
+      "wall_time_seconds": 1.000112398,
+      "session_id": 92569,
+      "original_token_count": 0,
+      "exit_code": 1,
+      "completion_observation": "Final exit observed in write_stdin output before persistent poll recorder was installed."
+    },
+    {
+      "cmd": "rg -n 'def set_context|unused|self.team.add|self.label.add' mod_editor/apf_studio/book_identity_qt.py; rg -n 'playcalling_situations|playcalling_predict' mod_editor/apf_studio/facade.py; sed -n '197,215p' mod_editor/core/apf2k8_playcall_model.py; rg -n 'setMinimumHeight|setMaximumHeight|QScrollArea|table' mod_editor/apf_studio/apf_theme.py | head -60; git show 7d954937:ASTRA_REPORT.md | sed -n '78,96p'",
+      "start": "2026-09-16T23:26:52.087Z",
+      "chunk_id": "df7892",
+      "wall_time_seconds": 0.000004629,
+      "exit_code": 0,
+      "original_token_count": 1483
+    },
+    {
+      "cmd": "sed -n '296,354p' mod_editor/apf_studio/apf_theme.py; sed -n '165,204p' mod_editor/apf_studio/facade.py; sed -n '244,265p' mod_editor/apf_studio/book_identity_qt.py; sed -n '310,342p' mod_editor/apf_studio/book_identity_qt.py; rg -n 'ratings|situation_candidates' tests/mod_editor/test_apf_playcalling_editor_facade.py | head -16",
+      "start": "2026-09-16T23:27:16.164Z",
+      "chunk_id": "62b533",
+      "wall_time_seconds": 0.000003407,
+      "exit_code": 0,
+      "original_token_count": 2142
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py screenshots-before python3 reports/b71_apf7/screenshots.py before",
+      "start": "2026-09-16T23:27:16.465Z",
+      "chunk_id": "ada912",
+      "wall_time_seconds": 1.001102823,
+      "session_id": 43282,
+      "original_token_count": 0,
+      "exit_code": 0,
+      "completion_observation": "Final exit observed in write_stdin output before persistent poll recorder was installed."
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py book-census python3 - <<'PY'\nimport json, hashlib\nfrom collections import Counter\nfrom mod_editor.core import apf2k8_book_identity as identity, apf2k8_book_clone as clone\nfrom tests.mod_editor.test_apf_playcall_research_native import INDEX\nrost=identity.read_disc_roster(INDEX); parsed=identity.parse_roster_identity(rost)\nresult={'index':str(INDEX), 'roster_sha256':hashlib.sha256(rost).hexdigest(),'teams':len(parsed.teams),'sides':{}}\nfor side in ('offense','defense'):\n labels=[l for l in parsed.labels if l.side==side]; plan=clone.own_book_plan(INDEX,rost,side)\n result['sides'][side]={'labels':len(labels),'distinct_label_types':dict(Counter(l.kind for l in labels)),'disc_teams':len(plan),'saved_slots':[t.index for t in parsed.teams[24:]],'saved_label_ids':sorted({getattr(t,side) for t in parsed.teams[24:]}),'plan':[vars(p) for p in plan]}\nfrom pathlib import Path\nPath('reports/b71_apf7/book-census.json').write_text(json.dumps(result,indent=2)+'\\n')\nprint(json.dumps({**result,'sides':{k:{a:b for a,b in v.items() if a!='plan'} for k,v in result['sides'].items()}},indent=2))\nPY",
+      "start": "2026-09-16T23:27:56.636Z",
+      "chunk_id": "9a1850",
+      "wall_time_seconds": 1.001499705,
+      "session_id": 21499,
+      "original_token_count": 0,
+      "exit_code": 0,
+      "completion_observation": "Final exit observed in write_stdin output before persistent poll recorder was installed."
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py screenshots-after python3 reports/b71_apf7/screenshots.py after",
+      "start": "2026-09-16T23:27:58.282Z",
+      "chunk_id": "e8b5dd",
+      "wall_time_seconds": 1.000576041,
+      "session_id": 80423,
+      "original_token_count": 0,
+      "exit_code": 0,
+      "completion_observation": "Final exit observed in write_stdin output before persistent poll recorder was installed."
+    },
+    {
+      "cmd": "sed -n '500,525p' mod_editor/apf_studio/playcalling_service.py; sed -n '655,708p' mod_editor/apf_studio/playcalling_service.py; sed -n '70,110p' tests/mod_editor/test_apf_playcalling_editor_facade.py; rg -n 'class .*Fixture|self.backend|self.engine' tests/mod_editor/test_apf_b71_situations.py tests/mod_editor/test_apf_playcalling_editor_build.py; sed -n '1,105p' tests/mod_editor/test_apf_b71_situations.py; rg -n 'def stage_ratings' -A5 mod_editor/apf_studio/playcalling_editor_qt.py",
+      "start": "2026-09-16T23:28:27.404Z",
+      "chunk_id": "363bf0",
+      "wall_time_seconds": 0.000003176,
+      "exit_code": 0,
+      "original_token_count": 4196
+    },
+    {
+      "cmd": "python3 - <<'PY'\nfrom pathlib import Path\np=Path('mod_editor/apf_studio/playcalling_editor_qt.py')\ns=p.read_text()\ns=s.replace('        team_root.addLayout(row)\\n        self.plan_table', '        team_root.addLayout(row)\\n        self.capacity_note = note(team_root, service.BOOK_CAPACITY_EXPLANATION)\\n        self.plan_table',1)\ns=s.replace('        situation_root.addWidget(self.candidate_table)', '''        self.candidate_table.setMinimumHeight(180)\n        candidate_row = QHBoxLayout()\n        candidate_row.addWidget(self.candidate_table, 3)\n        self.rating_editor = QGroupBox(\"Fine-tune formation weights\")\n        rating_root = QVBoxLayout(self.rating_editor)\n        candidate_row.addWidget(self.rating_editor, 2)\n        situation_root.addLayout(candidate_row)''',1)\nstart=s.index('        self.formation_picker = explain(')\nend=s.index('        self.play_picker = explain(',start)\nblock=s[start:end].replace('lever_root','rating_root')\nblock=block.replace('        note(rating_root, service.RATING_MAPPING)\\n','')\nblock += '''        self.rating_preview_button = button(rating_root, \"Preview formation weights\",\n            \"Compare personnel and formation weights in every situation before confirming. Includes pending edits; nothing is staged.\",\n            self.preview_ratings)\n        self.rating_preview_note = note(situation_root,\n            \"Select a formation here, change its short / medium / long raw ratings, then preview or Confirm. \"\n            \"These shared ratings affect every situation that interpolates them; personnel and formation weights \"\n            \"are calculated together, not independent percentages.\")\n        self.rating_preview_table = table((\"Situation / personnel\", \"Personnel before\", \"Personnel after\",\n            \"Formation before\", \"Formation after\"), \"Draft formation weights across situations\")\n        self.rating_preview_table.setMinimumHeight(180)\n        self.rating_preview_table.setMaximumHeight(280)\n        self.rating_preview_table.hide()\n        situation_root.insertWidget(4, self.rating_preview_note)\n        situation_root.insertWidget(5, self.rating_preview_table)\n        for slider in self.ratings:\n            slider.valueChanged.connect(self._clear_rating_preview)\n'''\ns=s[:start]+block+s[end:]\npos=s.index('    def stage_ratings(self):')\ns=s[:pos]+'''    def _clear_rating_preview(self, *_):\n        self.rating_preview_table.hide()\n\n    def preview_ratings(self):\n        if not self._context or self.formation_picker.currentData() is None:\n            return\n        from copy import deepcopy\n        context, side = self._context, self.side_picker.currentData()\n        formation = self.formation_picker.currentData()\n        ratings = [s.value() for s in self.ratings]\n        pending = deepcopy(self._pending)\n        def done(result):\n            rows = []\n            selected = self.situation_picker.currentText()\n            selected_row = 0\n            for before, after in zip(result[\"before\"], result[\"after\"]):\n                old = {c[\"category\"]: c for c in before[\"candidates\"] if c[\"formation\"] == formation}\n                for candidate in after[\"candidates\"]:\n                    if candidate[\"formation\"] != formation:\n                        continue\n                    prior = old.get(candidate[\"category\"], {})\n                    if after[\"name\"] == selected:\n                        selected_row = len(rows)\n                    rows.append((after[\"name\"] + \" / \" + candidate[\"personnel\"],\n                        f\"{prior.get('category_weight', 0):.4g}\", f\"{candidate['category_weight']:.4g}\",\n                        f\"{prior.get('formation_weight', 0):.4g}\", f\"{candidate['formation_weight']:.4g}\"))\n            fill(self.rating_preview_table, rows)\n            self.rating_preview_table.show()\n            self.rating_preview_table.selectRow(selected_row)\n            self.rating_preview_table.scrollToItem(self.rating_preview_table.item(selected_row, 0))\n            self.rating_preview_note.setText(\n                f\"Draft preview for {context['book']}, {self.formation_picker.currentText()}, raw ratings {ratings}. \"\n                f\"Includes {len(pending)} pending edits. All affected situations are shown; nothing staged. \"\n                \"Confirm runs the checks again. Weights are neutral model inputs, not call percentages; gameplay UNWITNESSED.\")\n        self._task(\"Preview formation weights\", lambda p: self.facade.preview_playcalling_ratings(\n            context, side, formation, ratings, pending), done)\n\n'''+s[pos:]\ns=s.replace('    def _situation_changed(self, *_):\\n', '    def _situation_changed(self, *_):\\n        self._clear_rating_preview()\\n')\ns=s.replace('    def _formation_changed(self, *_):\\n', '    def _formation_changed(self, *_):\\n        self._clear_rating_preview()\\n')\ns=s.replace('    def _render_pending(self):\\n', '    def _render_pending(self):\\n        self._clear_rating_preview()\\n')\np.write_text(s)\nPY\npython3 reports/b71_apf7/run.py targeted-workflow-qt python3 tests/mod_editor/test_apf_b71_editor_workflow_qt.py",
+      "start": "2026-09-16T23:29:45.644Z",
+      "chunk_id": "74d482",
+      "wall_time_seconds": 1.001309201,
+      "session_id": 34127,
+      "original_token_count": 0,
+      "exit_code": 0,
+      "completion_observation": "Final exit observed in write_stdin output before persistent poll recorder was installed."
+    },
+    {
+      "cmd": "sed -n '1,180p' tests/mod_editor/test_apf_playcalling_editor_build.py; rg -n 'setUp|class .*Fixture' tests/mod_editor/test_apf_playcalling_editor_facade.py; sed -n '1,170p' tests/mod_editor/test_apf_b67_books_qt.py",
+      "start": "2026-09-16T23:29:59.298Z",
+      "chunk_id": "1665db",
+      "wall_time_seconds": 0.000003096,
+      "exit_code": 0,
+      "original_token_count": 3086
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py strict-before python3 -m mod_editor.capabilities.validate_registry",
+      "start": "2026-09-16T23:29:59.298Z",
+      "chunk_id": "7ce5f5",
+      "wall_time_seconds": 0.088279388,
+      "exit_code": 0,
+      "original_token_count": 83
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py screenshots-after python3 reports/b71_apf7/screenshots.py after",
+      "start": "2026-09-16T23:29:59.298Z",
+      "chunk_id": "9a1066",
+      "wall_time_seconds": 1.000907579,
+      "session_id": 60754,
+      "original_token_count": 0,
+      "exit_code": 0,
+      "completion_observation": "Final exit observed in write_stdin output before persistent poll recorder was installed."
+    },
+    {
+      "cmd": "sed -n '1,105p' tests/mod_editor/test_apf_b71_editor_workflow.py; sed -n '183,204p' tests/mod_editor/test_apf_playcalling_editor_facade.py; sed -n '180,260p' tests/mod_editor/test_apf_playcalling_editor_qt.py; rg -n 'master_bytes|def master|fixture|State\\(' tests/mod_editor/test_apf_b67_writers.py tests/mod_editor/test_apf_b69_formation_calling.py; cat reports/b71_apf6/profile.py | head -120",
+      "start": "2026-09-16T23:30:11.520Z",
+      "chunk_id": "031d01",
+      "wall_time_seconds": 0.000004689,
+      "exit_code": 0,
+      "original_token_count": 4285
+    },
+    {
+      "cmd": "sed -n '1,100p' tests/mod_editor/test_apf_b69_schemes.py; sed -n '2260,2380p' mod_editor/apf_studio/gui.py; sed -n '635,660p' mod_editor/apf_studio/playcalling_service.py; sed -n '1,100p' reports/b71_apf2/hydrate_tools.py; sed -n '1,80p' reports/b71_apf4/hydrate.py",
+      "start": "2026-09-16T23:31:28.328Z",
+      "chunk_id": "b3de8e",
+      "wall_time_seconds": 0.000003817,
+      "exit_code": 0,
+      "original_token_count": 3502
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py focused-qt python3 tests/mod_editor/test_apf_b711_overlay_books_qt.py",
+      "start": "2026-09-16T23:31:28.583Z",
+      "chunk_id": "0174eb",
+      "wall_time_seconds": 1.001272397,
+      "session_id": 16714,
+      "original_token_count": 0,
+      "exit_code": 0,
+      "completion_observation": "Final exit observed in write_stdin output before persistent poll recorder was installed."
+    },
+    {
+      "cmd": "sed -n '97,129p' tests/mod_editor/test_apf_b69_schemes.py; rg -n 'workspace_tabs|Field Art Editor|Ownership Map|All Field Art' tests/mod_editor/test_apf_field_art_gui.py; sed -n '550,588p' mod_editor/apf_studio/playcalling_service.py; rg -n 'setMinimumHeight|setMinimumSize' mod_editor/apf_studio/gui.py | head -25; ls tools/vendor/extract-xiso",
+      "start": "2026-09-16T23:32:07.972Z",
+      "chunk_id": "019807",
+      "wall_time_seconds": 0.000003597,
+      "exit_code": 0,
+      "original_token_count": 1407
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py focused-preview python3 tests/mod_editor/test_apf_b711_weight_preview.py",
+      "start": "2026-09-16T23:32:08.240Z",
+      "chunk_id": "8be5e2",
+      "wall_time_seconds": 0.591112846,
+      "exit_code": 1,
+      "original_token_count": 489
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py hydrate-tools python3 reports/b71_apf2/hydrate_tools.py",
+      "start": "2026-09-16T23:33:03.589Z",
+      "chunk_id": "ff90ae",
+      "wall_time_seconds": 0.000003216,
+      "exit_code": 0,
+      "original_token_count": 168
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py focused-preview python3 tests/mod_editor/test_apf_b711_weight_preview.py && python3 reports/b71_apf7/run.py focused-books python3 tests/mod_editor/test_apf_b711_book_scope.py",
+      "start": "2026-09-16T23:33:03.758Z",
+      "chunk_id": "6fd40a",
+      "wall_time_seconds": 1.001507596,
+      "session_id": 4139,
+      "original_token_count": 80,
+      "exit_code": 0,
+      "completion_observation": "Final exit observed in write_stdin output before persistent poll recorder was installed."
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py focused-qt python3 tests/mod_editor/test_apf_b711_overlay_books_qt.py",
+      "start": "2026-09-16T23:33:04.938Z",
+      "chunk_id": "b6a5d9",
+      "wall_time_seconds": 1.001616703,
+      "session_id": 38943,
+      "original_token_count": 0,
+      "exit_code": 0,
+      "completion_observation": "Final exit observed in write_stdin output before persistent poll recorder was installed."
+    },
+    {
+      "cmd": "cat docs/mod_editor/apf2k8_book_identity_walkthrough.md; git --git-dir=.scratch/git diff --stat; git --git-dir=.scratch/git diff --check; sed -n '20685,20738p' mod_editor/apf_studio/gui.py",
+      "start": "2026-09-16T23:33:24.847Z",
+      "chunk_id": "ae5a10",
+      "wall_time_seconds": 1.000866568,
+      "session_id": 33302,
+      "original_token_count": 908,
+      "exit_code": 0,
+      "completion_observation": "Final exit observed in write_stdin output before persistent poll recorder was installed."
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py repin-implementation python3 packaging/repin.py --apply",
+      "start": "2026-09-16T23:33:58.975Z",
+      "chunk_id": "0ca1b5",
+      "wall_time_seconds": 1.001102115,
+      "session_id": 40445,
+      "original_token_count": 0,
+      "exit_code": 0,
+      "completion_observation": "Final exit observed in write_stdin output before persistent poll recorder was installed."
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py all-suites .scratch/test-python/bin/python3 reports/b71_apf7/suites.py",
+      "start": "2026-09-16T23:34:11.297Z",
+      "chunk_id": "cf7622",
+      "wall_time_seconds": 1.001637751,
+      "session_id": 55320,
+      "original_token_count": 0,
+      "exit_code": 0,
+      "completed_utc": "2026-09-16T23:59:37.996Z"
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py field-screenshots-final python3 reports/b71_apf7/screenshots.py after",
+      "start": "2026-09-16T23:34:12.478Z",
+      "chunk_id": "5d564b",
+      "wall_time_seconds": 1.000910271,
+      "session_id": 59641,
+      "original_token_count": 0,
+      "exit_code": 0,
+      "completion_observation": "Final exit observed in write_stdin output before persistent poll recorder was installed."
+    },
+    {
+      "cmd": "git --git-dir=.scratch/git diff --check && git --git-dir=.scratch/git diff --stat && df -h . /tmp && du -sh .scratch",
+      "start": "2026-09-16T23:34:13.662Z",
+      "chunk_id": "78b0c0",
+      "wall_time_seconds": 0.000004609,
+      "exit_code": 0,
+      "original_token_count": 174
+    },
+    {
+      "cmd": "git --git-dir=.scratch/git add -- mod_editor/apf_studio/facade.py mod_editor/apf_studio/field_material_qt.py mod_editor/apf_studio/gui.py mod_editor/apf_studio/playcalling_editor_qt.py mod_editor/apf_studio/playcalling_service.py docs/mod_editor/apf2k8_book_identity_walkthrough.md docs/mod_editor/apf2k8_mod_studio_changelog.md tests/mod_editor/test_apf_b711_overlay_books_qt.py tests/mod_editor/test_apf_b711_weight_preview.py tests/mod_editor/test_apf_b711_book_scope.py && python3 reports/b71_apf7/run.py repin-checkpoint python3 packaging/repin.py --apply && git --git-dir=.scratch/git commit -m 'Fix Field opacity layout and expose formation weight fine-tuning' -- mod_editor/apf_studio/facade.py mod_editor/apf_studio/field_material_qt.py mod_editor/apf_studio/gui.py mod_editor/apf_studio/playcalling_editor_qt.py mod_editor/apf_studio/playcalling_service.py docs/mod_editor/apf2k8_book_identity_walkthrough.md docs/mod_editor/apf2k8_mod_studio_changelog.md tests/mod_editor/test_apf_b711_overlay_books_qt.py tests/mod_editor/test_apf_b711_weight_preview.py tests/mod_editor/test_apf_b711_book_scope.py",
+      "start": "2026-09-16T23:35:21.864Z",
+      "chunk_id": "50b84e",
+      "wall_time_seconds": 1.000906882,
+      "session_id": 65834,
+      "original_token_count": 0,
+      "exit_code": 0,
+      "completion_observation": "Final exit observed in write_stdin output before persistent poll recorder was installed."
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py cpu-screenshots python3 reports/b71_apf7/cpu_screenshots.py",
+      "start": "2026-09-16T23:35:23.206Z",
+      "chunk_id": "318932",
+      "wall_time_seconds": 1.001481412,
+      "session_id": 98381,
+      "original_token_count": 0,
+      "exit_code": 0,
+      "completion_observation": "Final exit observed in write_stdin output before persistent poll recorder was installed."
+    },
+    {
+      "cmd": "python3 - <<'PY'\nfrom pathlib import Path\nimport json\nrows=[json.loads(s) for s in Path('reports/b71_apf7/commands.jsonl').read_text().splitlines()]\ntests=[r for r in rows if '/test_' in ' '.join(r['command'])]\nprint('Completed suite commands:',len(tests)); print('Failures:',[(r['log'],r['exit_code']) for r in tests if r['exit_code']])\nPY",
+      "start": "2026-09-16T23:35:24.384Z",
+      "chunk_id": "0cc41b",
+      "wall_time_seconds": 0.000003316,
+      "exit_code": 0,
+      "original_token_count": 22
+    },
+    {
+      "cmd": "sed -n '7985,8370p' mod_editor/apf_studio/gui.py | rg -n 'setCurrent|workspace_tabs|browser|editor'; git --git-dir=.scratch/git diff HEAD~1 HEAD -- mod_editor/apf_studio/playcalling_editor_qt.py; sed -n '1,90p' mod_editor/apf_studio/page_layout.py; sed -n '1,115p' mod_editor/core/apf2k8_book_clone.py",
+      "start": "2026-09-16T23:35:34.762Z",
+      "chunk_id": "95ed43",
+      "wall_time_seconds": 0.000003497,
+      "exit_code": 0,
+      "original_token_count": 4675
+    },
+    {
+      "cmd": "sed -n '8189,8214p' mod_editor/apf_studio/gui.py; rg -n 'focus_workspace_route|field_page|FIELD_ART|workspace_tabs' tests/mod_editor/test_apf_browser_workspace_handoff.py; rg -n 'RATING_MAPPING|0/0/0|category 3' tests/mod_editor/test_apf*; python3 - <<'PY'\nfrom pathlib import Path\nimport json\nrows=[json.loads(s) for s in Path('reports/b71_apf7/commands.jsonl').read_text().splitlines()]\ntests=[r for r in rows if r['log'].split('/')[-1].startswith('test_')]\nprint(len(tests)); print([(r['log'],r['exit_code']) for r in tests if r['exit_code']])\nPY",
+      "start": "2026-09-16T23:35:45.527Z",
+      "chunk_id": "69a13a",
+      "wall_time_seconds": 0.000004068,
+      "exit_code": 0,
+      "original_token_count": 549
+    },
+    {
+      "cmd": "sed -n '268,290p' mod_editor/apf_studio/apf_theme.py; sed -n '127,150p' tests/mod_editor/test_apf_playcalling_editor_qt.py; sed -n '440,475p' tests/mod_editor/test_apf_browser_workspace_handoff.py; sed -n '74,90p' mod_editor/apf_studio/playcalling_editor_qt.py; sed -n '100,125p' mod_editor/apf_studio/playcalling_editor_qt.py",
+      "start": "2026-09-16T23:36:10.615Z",
+      "chunk_id": "f5f0a1",
+      "wall_time_seconds": 0.000003788,
+      "exit_code": 0,
+      "original_token_count": 1580
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py refined-qt python3 tests/mod_editor/test_apf_b711_overlay_books_qt.py && python3 reports/b71_apf7/run.py refined-existing-qt python3 tests/mod_editor/test_apf_playcalling_editor_qt.py",
+      "start": "2026-09-16T23:36:11.340Z",
+      "chunk_id": "5a1bc9",
+      "wall_time_seconds": 1.001105269,
+      "session_id": 1778,
+      "original_token_count": 0,
+      "exit_code": 0,
+      "completed_utc": "2026-09-16T23:37:00.216Z"
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py provider-integrity python3 tests/mod_editor/test_provider_integrity.py && python3 reports/b71_apf7/run.py product-catalog python3 tests/mod_editor/test_product_catalog.py && python3 reports/b71_apf7/run.py phase1-packaging python3 tests/mod_editor/test_phase1_packaging.py && python3 reports/b71_apf7/run.py strict-final python3 -m mod_editor.capabilities.validate_registry",
+      "start": "2026-09-16T23:36:57.437Z",
+      "chunk_id": "c6adf8",
+      "wall_time_seconds": 1.001869735,
+      "session_id": 13366,
+      "original_token_count": 0,
+      "exit_code": 0,
+      "completed_utc": "2026-09-16T23:37:19.276Z"
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py cpu-screenshots-final python3 reports/b71_apf7/cpu_screenshots.py",
+      "start": "2026-09-16T23:36:59.027Z",
+      "chunk_id": "5c1d2c",
+      "wall_time_seconds": 1.001014534,
+      "session_id": 27350,
+      "original_token_count": 0,
+      "exit_code": 0,
+      "completed_utc": "2026-09-16T23:37:19.285Z"
+    },
+    {
+      "cmd": "rg -n 'FieldMaterialOpacityPanel|field_opacity|field_material_context' tests/mod_editor/test_apf_field_material* tests/mod_editor/test_apf_field_art*; sed -n '1,95p' mod_editor/core/apf_field_material_writer.py; sed -n '270,287p' mod_editor/core/apf2k8_playcall_model.py; git --git-dir=.scratch/git status --short; python3 - <<'PY'\nfrom pathlib import Path\nimport json\nrows=[json.loads(s) for s in Path('reports/b71_apf7/commands.jsonl').read_text().splitlines()]\ntests=[r for r in rows if r['log'].split('/')[-1].startswith('test_')]\nprint('Completed',len(tests));print('Failures',[(r['log'],r['exit_code']) for r in tests if r['exit_code']])\nPY",
+      "start": "2026-09-16T23:37:19.114Z",
+      "chunk_id": "8aeb07",
+      "wall_time_seconds": 0.000003788,
+      "exit_code": 0,
+      "original_token_count": 1430
+    },
+    {
+      "cmd": "ps -eo pid,etimes,args | rg 'tests/mod_editor/test_apf|b71_apf7/suites.py' | head -16; git --git-dir=.scratch/git show 02bbadd1:mod_editor/core/apf2k8_book_clone.py | sha256sum; git --git-dir=.scratch/git show 7d954937:mod_editor/core/apf2k8_book_clone.py | sed -n '184,204p'; rg -n 'if .*side|special|category ==|category =' mod_editor/core/apf2k8_playcall_model.py | head -15",
+      "start": "2026-09-16T23:37:48.964Z",
+      "chunk_id": "53cfbd",
+      "wall_time_seconds": 0.000002926,
+      "exit_code": 0,
+      "original_token_count": 4812
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py cpu-screenshots-final python3 reports/b71_apf7/cpu_screenshots.py",
+      "start": "2026-09-16T23:37:49.288Z",
+      "chunk_id": "5899cd",
+      "wall_time_seconds": 1.001054392,
+      "session_id": 44901,
+      "original_token_count": 0,
+      "exit_code": 0,
+      "completed_utc": "2026-09-16T23:38:19.697Z"
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py field-handoff-final python3 tests/mod_editor/test_apf_browser_workspace_handoff.py && python3 reports/b71_apf7/run.py field-layout-final python3 tests/mod_editor/test_apf_b711_overlay_books_qt.py",
+      "start": "2026-09-16T23:38:16.158Z",
+      "chunk_id": "198bb1",
+      "wall_time_seconds": 1.000818382,
+      "session_id": 47811,
+      "original_token_count": 87,
+      "exit_code": 0,
+      "completed_utc": "2026-09-16T23:38:46.494Z"
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py studio-qt-models python3 tests/mod_editor/test_studio_qt_models.py && python3 reports/b71_apf7/run.py studio-qt-shell python3 tests/mod_editor/test_studio_shell_layout_qt.py",
+      "start": "2026-09-16T23:38:17.332Z",
+      "chunk_id": "20546f",
+      "wall_time_seconds": 1.001290546,
+      "session_id": 87807,
+      "original_token_count": 0,
+      "exit_code": 0,
+      "completed_utc": "2026-09-16T23:39:28.288Z"
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py apf-theme-final python3 tests/mod_editor/test_apf_theme_layout_qt.py && python3 reports/b71_apf7/run.py apf-accessibility-final python3 tests/mod_editor/test_apf_shell_search_accessibility_qt.py",
+      "start": "2026-09-16T23:38:18.511Z",
+      "chunk_id": "1e5382",
+      "wall_time_seconds": 1.001429449,
+      "session_id": 64911,
+      "original_token_count": 0,
+      "exit_code": 0,
+      "completed_utc": "2026-09-16T23:38:51.518Z"
+    },
+    {
+      "cmd": "nl -ba mod_editor/apf_studio/field_material_qt.py | head -90; nl -ba mod_editor/apf_studio/playcalling_service.py | sed -n '29,57p;891,918p'; nl -ba mod_editor/apf_studio/gui.py | sed -n '7840,7876p;7934,7944p;8195,8207p'; nl -ba mod_editor/apf_studio/playcalling_editor_qt.py | sed -n '174,202p;245,291p;908,958p'; python3 - <<'PY'\nfrom pathlib import Path\nimport json\nrows=[json.loads(s) for s in Path('reports/b71_apf7/commands.jsonl').read_text().splitlines()]\ntests=[r for r in rows if r['log'].split('/')[-1].startswith('test_')]\nprint('Completed:',len(tests),'Failures:',[(r['log'],r['exit_code']) for r in tests if r['exit_code']])\nprint('Latest:',[(r['log'],r['elapsed_seconds']) for r in tests[-8:]])\nPY",
+      "start": "2026-09-16T23:38:46.332Z",
+      "chunk_id": "a5ffb3",
+      "wall_time_seconds": 0.000004839,
+      "exit_code": 0,
+      "original_token_count": 5685
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py cpu-qt-final python3 tests/mod_editor/test_apf_b711_overlay_books_qt.py && python3 reports/b71_apf7/run.py cpu-workflow-final python3 tests/mod_editor/test_apf_b71_editor_workflow_qt.py && python3 reports/b71_apf7/run.py cpu-editor-final python3 tests/mod_editor/test_apf_playcalling_editor_qt.py",
+      "start": "2026-09-16T23:39:27.102Z",
+      "chunk_id": "7a90e9",
+      "wall_time_seconds": 1.000654192,
+      "session_id": 56150,
+      "original_token_count": 0,
+      "exit_code": 0,
+      "completed_utc": "2026-09-16T23:41:42.874Z"
+    },
+    {
+      "cmd": "python3 - <<'PY'\nfrom pathlib import Path\nimport json\nrows=[json.loads(s) for s in Path('reports/b71_apf7/commands.jsonl').read_text().splitlines()]\ntests=[r for r in rows if r['log'].split('/')[-1].startswith('test_')]\nprint('Completed:',len(tests),'of',len(Path('reports/b71_apf7/suite_paths.txt').read_text().splitlines()))\nprint('Failures:',[(r['log'],r['exit_code']) for r in tests if r['exit_code']])\nPY",
+      "start": "2026-09-16T23:39:28.295Z",
+      "chunk_id": "6ade67",
+      "wall_time_seconds": 0.000004729,
+      "exit_code": 0,
+      "original_token_count": 9
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py delivery-diff-check git --git-dir=.scratch/git diff --check && python3 reports/b71_apf7/run.py repin-ui-final python3 packaging/repin.py --apply && git --git-dir=.scratch/git commit -m 'Keep Field handoffs and situation selection aligned with the new layout' -- mod_editor/apf_studio/gui.py mod_editor/apf_studio/playcalling_editor_qt.py tests/mod_editor/test_apf_b711_overlay_books_qt.py",
+      "start": "2026-09-16T23:39:47.988Z",
+      "chunk_id": "817f6e",
+      "wall_time_seconds": 1.000917353,
+      "session_id": 88811,
+      "original_token_count": 53,
+      "exit_code": 0,
+      "completed_utc": "2026-09-16T23:41:42.883Z"
+    },
+    {
+      "cmd": "rg -n 'master_inventory|def load|def context|def plan|describe_request|def confirm|def _confirmed' mod_editor/apf_studio/playcalling_service.py mod_editor/apf_studio/playcalling_editor_qt.py; rg -n '48|saved|24' tests/mod_editor/test_apf_b711_book_scope.py; rg -n 'test_' tests/mod_editor/test_apf_b711_overlay_books_qt.py tests/mod_editor/test_apf_b711_weight_preview.py; stat -c '%a %n' tools/apf_h7a_optimal; git --git-dir=.scratch/git diff --name-only 02bbadd1",
+      "start": "2026-09-16T23:39:49.169Z",
+      "chunk_id": "ce9b6e",
+      "wall_time_seconds": 0.000004899,
+      "exit_code": 0,
+      "original_token_count": 858
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py release-stage python3 packaging/stage_release.py packaging/apf2k8-release-allowlist.txt .scratch/apf-release && python3 reports/b71_apf7/run.py release-check env PYTHONDONTWRITEBYTECODE=1 python3 packaging/check_apf2k8_mod_studio_release.py .scratch/apf-release && python3 reports/b71_apf7/run.py release-runtime env PYTHONDONTWRITEBYTECODE=1 PYTHONNOUSERSITE=1 PYTHONPATH=/home/noah/2k-worktrees/astra-b71-apf7/.scratch/apf-release .scratch/test-python/bin/python3 .scratch/apf-release/packaging/check_apf2k8_mod_studio_runtime.py",
+      "start": "2026-09-16T23:41:41.690Z",
+      "chunk_id": "07a3a3",
+      "wall_time_seconds": 1.001573617,
+      "session_id": 97939,
+      "original_token_count": 189,
+      "exit_code": 0,
+      "completed_utc": "2026-09-16T23:42:28.081Z"
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py field-baseline-repro python3 reports/b71_apf7/screenshots.py before && python3 reports/b71_apf7/run.py field-all-tabs-final python3 reports/b71_apf7/screenshots.py after",
+      "start": "2026-09-16T23:42:26.752Z",
+      "chunk_id": "dfc3c7",
+      "wall_time_seconds": 1.001139657,
+      "session_id": 31060,
+      "original_token_count": 0,
+      "exit_code": 0,
+      "completed_utc": "2026-09-16T23:43:22.243Z"
+    },
+    {
+      "cmd": "python3 - <<'PY'\nfrom pathlib import Path\np=Path('reports/b71_apf7/report_body.md')\ns=p.read_text().replace('**Field overlay opacity**+in','**Field overlay opacity**\\nin')\ns=s.replace('The Field captures use the real application shell/theme', 'Sibling Field Art Editor, Ownership Map and All Field Art captures are retained\\nas `art-*`, `ownership-*` and `inventory-*` images at both sizes, before and after.\\nThe baseline script reloads only the two exact release UI modules from `02bbadd1`\\nin its own process; it does not switch or edit the worktree.\\n\\nThe Field captures use the real application shell/theme')\np.write_text(s)\nPY",
+      "start": "2026-09-16T23:42:27.936Z",
+      "chunk_id": "5f0347",
+      "wall_time_seconds": 0.000003637,
+      "exit_code": 0,
+      "original_token_count": 0
+    },
+    {
+      "cmd": "python3 - <<'PY'\nfrom pathlib import Path\nimport json\nrows=[json.loads(s) for s in Path('reports/b71_apf7/commands.jsonl').read_text().splitlines()]\ntests=[r for r in rows if r['log'].split('/')[-1].startswith('test_')]\nprint('Completed',len(tests)); print('Failures',[(r['log'],r['exit_code']) for r in tests if r['exit_code']])\nprint('Last completed',[(r['log'],r['elapsed_seconds']) for r in tests[-5:]])\nPY",
+      "start": "2026-09-16T23:42:28.086Z",
+      "chunk_id": "55a004",
+      "wall_time_seconds": 0.000004499,
+      "exit_code": 0,
+      "original_token_count": 91
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py aggregate-progress python3 reports/b71_apf7/make_report.py",
+      "start": "2026-09-16T23:43:22.078Z",
+      "chunk_id": "733be0",
+      "wall_time_seconds": 0.000004298,
+      "exit_code": 0,
+      "original_token_count": 71
+    },
+    {
+      "cmd": "python3 - <<'PY'\nfrom pathlib import Path\nimport json\nrows=[json.loads(s) for s in Path('reports/b71_apf7/commands.jsonl').read_text().splitlines()]\ntests=[r for r in rows if r['log'].split('/')[-1].startswith('test_')]\nprint('Completed:',len(tests),'Failures:',[(r['log'],r['exit_code']) for r in tests if r['exit_code']])\nprint('Latest:',[(r['log'],r['elapsed_seconds']) for r in tests[-6:]])\nPY\n git --git-dir=.scratch/git diff --check && git --git-dir=.scratch/git log --oneline -3 && du -sh .scratch reports/b71_apf7",
+      "start": "2026-09-16T23:43:48.744Z",
+      "chunk_id": "c5c383",
+      "wall_time_seconds": 0.000002905,
+      "exit_code": 0,
+      "original_token_count": 188
+    },
+    {
+      "cmd": "rg -n 'Load your APF game to browse this list|class .*Empty|empty' mod_editor/apf_studio/page_layout.py | tail -30; sed -n '340,465p' mod_editor/apf_studio/page_layout.py; cat reports/b71_apf7/suite_paths.txt | tail -12; git --git-dir=.scratch/git diff --check",
+      "start": "2026-09-16T23:44:01.744Z",
+      "chunk_id": "832b37",
+      "wall_time_seconds": 0.000003867,
+      "exit_code": 0,
+      "original_token_count": 253
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py field-baseline-tabs python3 reports/b71_apf7/screenshots.py before && python3 reports/b71_apf7/run.py field-final-tabs python3 reports/b71_apf7/screenshots.py after",
+      "start": "2026-09-16T23:44:54.867Z",
+      "chunk_id": "575ce2",
+      "wall_time_seconds": 1.001070851,
+      "session_id": 54521,
+      "original_token_count": 0,
+      "exit_code": 0,
+      "completed_utc": "2026-09-16T23:45:36.279Z"
+    },
+    {
+      "cmd": "python3 - <<'PY'\nfrom pathlib import Path\np=Path('reports/b71_apf7/report_body.md');s=p.read_text().replace('The baseline script reloads only', 'The sibling list captures contain clearly synthetic rows and suppress their\\nno-source empty guidance so row geometry can be inspected. No production behavior\\nis bypassed in the layout assertions. The baseline script reloads only');p.write_text(s)\nPY",
+      "start": "2026-09-16T23:44:56.046Z",
+      "chunk_id": "2f62b3",
+      "wall_time_seconds": 0.000004088,
+      "exit_code": 0,
+      "original_token_count": 0
+    },
+    {
+      "cmd": "python3 - <<'PY'\nfrom pathlib import Path\nimport json\nrows=[json.loads(s) for s in Path('reports/b71_apf7/commands.jsonl').read_text().splitlines()]\ntests=[r for r in rows if r['log'].split('/')[-1].startswith('test_')]\nprint('Completed:',len(tests),'Failures:',[(r['log'],r['exit_code']) for r in tests if r['exit_code']]);print('Latest:',[(r['log'],r['elapsed_seconds']) for r in tests[-5:]])\nPY",
+      "start": "2026-09-16T23:45:36.144Z",
+      "chunk_id": "e56b73",
+      "wall_time_seconds": 0.000006652,
+      "exit_code": 0,
+      "original_token_count": 85
+    },
+    {
+      "cmd": "python3 - <<'PY'\nfrom pathlib import Path\nimport hashlib,json\nfrom PIL import Image\nroot=Path('/home/noah/Desktop/2K5-8 Editors/beta71_evidence')\nrows=[]\nfor name in ('2k8-bugs_1655_Aszemple.png','2k8-help_1811_Aszemple.png'):\n p=root/name\n with Image.open(p) as im: size=im.size\n rows.append({'path':str(p),'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'dimensions':size,'read_only':True})\nPath('reports/b71_apf7/input_evidence.json').write_text(json.dumps(rows,indent=2)+'\\n')\nprint('Two exact source images inspected read-only; hashes recorded.')\nPY",
+      "start": "2026-09-16T23:46:31.260Z",
+      "chunk_id": "7b1551",
+      "wall_time_seconds": 0.000003386,
+      "exit_code": 0,
+      "original_token_count": 16
+    },
+    {
+      "cmd": "python3 - <<'PY'\nfrom pathlib import Path\nimport json\nrows=[json.loads(s) for s in Path('reports/b71_apf7/commands.jsonl').read_text().splitlines()]\ntests=[r for r in rows if r['log'].split('/')[-1].startswith('test_')]\nprint('Completed:',len(tests),'Failures:',[(r['log'],r['exit_code']) for r in tests if r['exit_code']]);print('Latest:',[(r['log'],r['elapsed_seconds']) for r in tests[-5:]])\nPY",
+      "start": "2026-09-16T23:46:59.477Z",
+      "chunk_id": "baf39f",
+      "wall_time_seconds": 0.000003457,
+      "exit_code": 0,
+      "original_token_count": 94
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py legacy-label-census python3 - <<'PY'\nfrom pathlib import Path\nimport json\nfrom mod_editor.core import apf2k8_book_identity as identity\nfrom tests.mod_editor.test_apf_playcall_research_native import INDEX\np=identity.parse_roster_identity(identity.read_disc_roster(INDEX))\nresult={}\nfor side in ('offense','defense'):\n labels=[l for l in p.labels if l.side==side]; used={getattr(t,side) for t in p.teams}\n result[side]={'total_labels':len(labels),'used_label_ids':sorted(used),'unused_label_ids':[l.index for l in labels if l.index not in used]}\nPath('reports/b71_apf7/legacy-label-census.json').write_text(json.dumps(result,indent=2)+'\\n')\nprint(json.dumps(result,indent=2))\nPY",
+      "start": "2026-09-16T23:47:34.583Z",
+      "chunk_id": "03b70a",
+      "wall_time_seconds": 0.327849884,
+      "exit_code": 0,
+      "original_token_count": 267
+    },
+    {
+      "cmd": "sed -n '110,174p' mod_editor/core/apf2k8_book_clone.py; sed -n '410,470p' mod_editor/apf_studio/playcalling_service.py; sed -n '225,258p' mod_editor/apf_studio/playcalling_service.py; sed -n '819,850p' mod_editor/apf_studio/playcalling_service.py; sed -n '265,312p' mod_editor/apf_studio/book_identity_qt.py; sed -n '145,177p' mod_editor/apf_studio/book_identity_qt.py",
+      "start": "2026-09-16T23:48:44.567Z",
+      "chunk_id": "707f87",
+      "wall_time_seconds": 0.000004529,
+      "exit_code": 0,
+      "original_token_count": 3976
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py extended-label-capacity python3 - <<'PY'\nfrom pathlib import Path\nfrom collections import Counter\nimport json\nfrom mod_editor.core import apf2k8_book_identity as identity, apf2k8_book_clone as clone\nfrom tests.mod_editor.test_apf_playcall_research_native import INDEX\nrost=identity.read_disc_roster(INDEX); p=identity.parse_roster_identity(rost)\nplans=[];result={}\nfor side in ('offense','defense'):\n reserved={getattr(t,side) for t in p.teams[24:]}\n labels=[l for l in p.labels if l.side==side and l.index not in reserved]\n requests=[clone.CloneRequest(label.index,team.index,p.labels[getattr(team,side)].kind) for team,label in zip(p.teams,labels)]\n plans+=requests\n result[side]={'clones':len(requests),'plus_shared_USER':1,'independent_team_assignments':len(requests),'labels_reserved':sorted(reserved)}\ncompiled=clone.compile_unlock(INDEX,plans)\nparsed=identity.parse_roster_identity(compiled.roster_body)\nresult['compiled_clones']=len(compiled.clones)\nresult['assigned_distinct_types']={side:len({parsed.labels[getattr(t,side)].kind for t in parsed.teams}) for side in ('offense','defense')}\nPath('reports/b71_apf7/extended-label-capacity.json').write_text(json.dumps(result,indent=2)+'\\n');print(json.dumps(result,indent=2))\nPY",
+      "start": "2026-09-16T23:48:44.674Z",
+      "chunk_id": "5c1eb6",
+      "wall_time_seconds": 0.611758833,
+      "exit_code": 1,
+      "original_token_count": 202
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py extended-label-names python3 - <<'PY'\nfrom mod_editor.core import apf2k8_book_identity as i\nfrom tests.mod_editor.test_apf_playcall_research_native import INDEX\np=i.parse_roster_identity(i.read_disc_roster(INDEX))\nfor side in ('offense','defense'):\n print(side,[(l.index,l.name,l.kind) for l in p.labels if l.side==side])\nprint('Team names',[(t.index,t.name) for t in p.teams])\nPY",
+      "start": "2026-09-16T23:48:54.872Z",
+      "chunk_id": "d39ec0",
+      "wall_time_seconds": 0.325077571,
+      "exit_code": 0,
+      "original_token_count": 777
+    },
+    {
+      "cmd": "tail -80 reports/b71_apf7/extended-label-names.log",
+      "start": "2026-09-16T23:51:24.798Z",
+      "chunk_id": "d15f0b",
+      "wall_time_seconds": 0.000003817,
+      "exit_code": 0,
+      "original_token_count": 733
+    },
+    {
+      "cmd": "python3 - <<'PY'\nimport json\nfrom pathlib import Path\nr=[json.loads(x) for x in Path('reports/b71_apf7/commands.jsonl').read_text().splitlines()]\nt=[x for x in r if x.get('label','').startswith('test_')]\nprint('files completed:',len(t),'failures:',[(x['label'],x['exit_code']) for x in t if x['exit_code']])\nprint(r[-1])\nPY",
+      "start": "2026-09-16T23:51:24.897Z",
+      "chunk_id": "c85884",
+      "wall_time_seconds": 0.000006041,
+      "exit_code": 0,
+      "original_token_count": 78
+    },
+    {
+      "cmd": "sed -n '1,260p' reports/b71_apf7/report_body.md",
+      "start": "2026-09-16T23:51:41.946Z",
+      "chunk_id": "7c51a7",
+      "wall_time_seconds": 0.00000501,
+      "exit_code": 0,
+      "original_token_count": 2943
+    },
+    {
+      "cmd": "cat reports/b71_apf7/extended-label-capacity.log && sed -n '1,180p' reports/b71_apf7/make_report.py",
+      "start": "2026-09-16T23:51:42.046Z",
+      "chunk_id": "b2871a",
+      "wall_time_seconds": 0.000005922,
+      "exit_code": 0,
+      "original_token_count": 1009
+    },
+    {
+      "cmd": "sed -n '1,210p' tests/mod_editor/test_apf_b711_book_scope.py && sed -n '130,205p' mod_editor/apf_studio/book_identity_qt.py",
+      "start": "2026-09-16T23:51:42.145Z",
+      "chunk_id": "b98cf1",
+      "wall_time_seconds": 0.000004448,
+      "exit_code": 0,
+      "original_token_count": 1596
+    },
+    {
+      "cmd": "sed -n '35,70p' mod_editor/apf_studio/playcalling_service.py && sed -n '130,310p' mod_editor/apf_studio/playcalling_editor_qt.py && sed -n '1,180p' reports/b71_apf7/suites.py",
+      "start": "2026-09-16T23:51:51.503Z",
+      "chunk_id": "180da9",
+      "wall_time_seconds": 0.000003717,
+      "exit_code": 0,
+      "original_token_count": 4734
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/make_report.py",
+      "start": "2026-09-16T23:51:51.610Z",
+      "chunk_id": "e581c7",
+      "wall_time_seconds": 0.000004699,
+      "exit_code": 0,
+      "original_token_count": 20
+    },
+    {
+      "cmd": "sed -n '1,150p' mod_editor/core/apf2k8_book_clone.py && sed -n '390,500p' mod_editor/core/apf2k8_book_clone.py && sed -n '1,160p' tests/mod_editor/test_apf_b67_clone.py",
+      "start": "2026-09-16T23:52:04.467Z",
+      "chunk_id": "6930f5",
+      "wall_time_seconds": 0.000004058,
+      "exit_code": 0,
+      "original_token_count": 5220
+    },
+    {
+      "cmd": "rg -n '24|36|ratings|situat' docs/mod_editor/apf2k8_book_identity_walkthrough.md ASTRA_B71_APF6_REPORT.md ASTRA_B70_APF1_REPORT.md | head -70",
+      "start": "2026-09-16T23:52:04.575Z",
+      "chunk_id": "f316a1",
+      "wall_time_seconds": 0.000003858,
+      "exit_code": 0,
+      "original_token_count": 3993
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py per-side-label-capacity python3 - <<'PY'\nfrom pathlib import Path\nimport json\nfrom mod_editor.core import apf2k8_book_identity as identity, apf2k8_book_clone as clone\nfrom tests.mod_editor.test_apf_playcall_research_native import INDEX\nrost=identity.read_disc_roster(INDEX); p=identity.parse_roster_identity(rost)\nresult={'scope':'Two separate read-only compilations from the release source; no output game folder.'}\nfor side in ('offense','defense'):\n reserved={getattr(t,side) for t in p.teams[24:]}\n labels=[l for l in p.labels if l.side==side and l.index not in reserved]\n requests=[clone.CloneRequest(label.index,team.index,p.labels[getattr(team,side)].kind) for team,label in zip(p.teams,labels)]\n compiled=clone.compile_unlock(INDEX,requests)\n parsed=identity.parse_roster_identity(compiled.roster_body)\n assert len(compiled.clones)==len(labels)\n assert len({parsed.labels[getattr(t,side)].kind for t in parsed.teams})==len(labels)+1\n result[side]={'compiled_clones':len(compiled.clones),'shared_USER_resources_retained':1,'assigned_distinct_types':len({parsed.labels[getattr(t,side)].kind for t in parsed.teams}),'labels_reserved':sorted(reserved),'saved_slots_changed':len(labels)-24,'directory':compiled.report['directory']}\n print(side, result[side],flush=True)\nPath('reports/b71_apf7/per-side-label-capacity.json').write_text(json.dumps(result,indent=2)+'\\n')\nPY",
+      "start": "2026-09-16T23:52:20.201Z",
+      "chunk_id": "0992e6",
+      "wall_time_seconds": 1.001729603,
+      "session_id": 12355,
+      "original_token_count": 0,
+      "exit_code": 0,
+      "completed_utc": "2026-09-16T23:52:33.331Z"
+    },
+    {
+      "cmd": "git --git-dir=.scratch/git --work-tree=. diff 02bbadd1 HEAD -- mod_editor/apf_studio/playcalling_service.py mod_editor/apf_studio/playcalling_editor_qt.py mod_editor/apf_studio/facade.py",
+      "start": "2026-09-16T23:52:26.626Z",
+      "chunk_id": "83066d",
+      "wall_time_seconds": 0.000004158,
+      "exit_code": 0,
+      "original_token_count": 3770
+    },
+    {
+      "cmd": "git --git-dir=.scratch/git --work-tree=. status --short",
+      "start": "2026-09-16T23:52:26.733Z",
+      "chunk_id": "63ded6",
+      "wall_time_seconds": 0.000004579,
+      "exit_code": 0,
+      "original_token_count": 37
+    },
+    {
+      "cmd": "rg -n 'def _task|def apply\\(|def situations|def state\\(' mod_editor/apf_studio/playcalling_editor_qt.py mod_editor/apf_studio/playcalling_service.py && sed -n '400,458p' mod_editor/apf_studio/playcalling_editor_qt.py && sed -n '850,897p' mod_editor/apf_studio/playcalling_service.py && cat tests/mod_editor/test_apf_b711_weight_preview.py",
+      "start": "2026-09-16T23:52:33.214Z",
+      "chunk_id": "6bfb9a",
+      "wall_time_seconds": 0.000004569,
+      "exit_code": 0,
+      "original_token_count": 2467
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py final-book-capacity python3 tests/mod_editor/test_apf_b711_book_scope.py",
+      "start": "2026-09-16T23:53:25.260Z",
+      "chunk_id": "09eca6",
+      "wall_time_seconds": 1.000977955,
+      "session_id": 31705,
+      "original_token_count": 0,
+      "exit_code": 0,
+      "completed_utc": "2026-09-16T23:54:09.317Z"
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py final-overlay-and-weights python3 tests/mod_editor/test_apf_b711_overlay_books_qt.py",
+      "start": "2026-09-16T23:53:26.440Z",
+      "chunk_id": "7a6519",
+      "wall_time_seconds": 1.001112953,
+      "session_id": 7560,
+      "original_token_count": 0,
+      "exit_code": 0,
+      "completed_utc": "2026-09-16T23:54:09.329Z"
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/make_report.py",
+      "start": "2026-09-16T23:53:27.624Z",
+      "chunk_id": "312fce",
+      "wall_time_seconds": 0.000003747,
+      "exit_code": 0,
+      "original_token_count": 20
+    },
+    {
+      "cmd": "sed -n '470,535p' mod_editor/apf_studio/playcalling_editor_qt.py && sed -n '1,100p' docs/mod_editor/apf2k8_mod_studio_changelog.md && sed -n '1,230p' tests/mod_editor/test_apf_b711_overlay_books_qt.py && sed -n '1,190p' reports/b71_apf7/deliver.py",
+      "start": "2026-09-16T23:53:38.704Z",
+      "chunk_id": "677ac6",
+      "wall_time_seconds": 0.000003838,
+      "exit_code": 0,
+      "original_token_count": 11029
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py final-cpu-screenshots python3 reports/b71_apf7/cpu_screenshots.py",
+      "start": "2026-09-16T23:54:25.215Z",
+      "chunk_id": "160216",
+      "wall_time_seconds": 1.001676734,
+      "session_id": 80577,
+      "original_token_count": 0,
+      "exit_code": 0,
+      "completed_utc": "2026-09-16T23:56:40.924Z"
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py repin-capacity python3 packaging/repin.py --apply",
+      "start": "2026-09-16T23:54:26.397Z",
+      "chunk_id": "3a43a6",
+      "wall_time_seconds": 1.001351112,
+      "session_id": 11391,
+      "original_token_count": 0,
+      "exit_code": 0,
+      "completed_utc": "2026-09-16T23:56:40.944Z"
+    },
+    {
+      "cmd": "sed -n '455,475p' mod_editor/apf_studio/playcalling_editor_qt.py && python3 reports/b71_apf7/make_report.py",
+      "start": "2026-09-16T23:54:27.581Z",
+      "chunk_id": "f40c27",
+      "wall_time_seconds": 0.000003917,
+      "exit_code": 0,
+      "original_token_count": 347
+    },
+    {
+      "cmd": "sed -n '1,140p' ASTRA_CONTEXT.md && sed -n '1,110p' ASTRA_BRIEF.md",
+      "start": "2026-09-16T23:54:27.716Z",
+      "chunk_id": "8374d6",
+      "wall_time_seconds": 0.000004258,
+      "exit_code": 0,
+      "original_token_count": 4116
+    },
+    {
+      "cmd": "sed -n '1,85p' mod_editor/apf_studio/book_identity_qt.py && sed -n '245,340p' mod_editor/apf_studio/book_identity_qt.py && rg -n 'BookIdentityPanel|book_identity' mod_editor/apf_studio/gui.py | head -20 && sed -n '1,70p' mod_editor/apf_studio/playcalling_editor_qt.py",
+      "start": "2026-09-16T23:54:48.495Z",
+      "chunk_id": "1e8ba3",
+      "wall_time_seconds": 0.0000049,
+      "exit_code": 0,
+      "original_token_count": 2986
+    },
+    {
+      "cmd": "sed -n '70,112p' mod_editor/apf_studio/playcalling_editor_qt.py && sed -n '19432,19474p' mod_editor/apf_studio/gui.py && sed -n '12,32p' docs/mod_editor/apf2k8_book_identity_walkthrough.md && cat tests/mod_editor/test_apf_book_identity_qt.py",
+      "start": "2026-09-16T23:55:12.166Z",
+      "chunk_id": "23fd5f",
+      "wall_time_seconds": 0.000003647,
+      "exit_code": 0,
+      "original_token_count": 3060
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py manual-books-qt python3 tests/mod_editor/test_apf_book_identity_qt.py",
+      "start": "2026-09-16T23:56:28.888Z",
+      "chunk_id": "5dadaa",
+      "wall_time_seconds": 0.19006018,
+      "exit_code": 1,
+      "original_token_count": 366
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py manual-handoff-qt python3 tests/mod_editor/test_apf_b711_overlay_books_qt.py",
+      "start": "2026-09-16T23:56:29.268Z",
+      "chunk_id": "55c249",
+      "wall_time_seconds": 1.001152141,
+      "session_id": 68729,
+      "original_token_count": 0,
+      "exit_code": 0,
+      "completed_utc": "2026-09-16T23:56:40.900Z"
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py final-manual-books-qt python3 tests/mod_editor/test_apf_book_identity_qt.py",
+      "start": "2026-09-16T23:56:40.480Z",
+      "chunk_id": "e8ee89",
+      "wall_time_seconds": 0.220075884,
+      "exit_code": 0,
+      "original_token_count": 82
+    },
+    {
+      "cmd": "cat reports/b71_apf7/cpu_screenshots.py && cat reports/b71_apf7/field-after.json | head -40 && python3 reports/b71_apf7/make_report.py",
+      "start": "2026-09-16T23:56:52.869Z",
+      "chunk_id": "c8946c",
+      "wall_time_seconds": 0.0000054,
+      "exit_code": 0,
+      "original_token_count": 929
+    },
+    {
+      "cmd": "rg -n 'stage_apf|release-check|release-runtime|validate_registry|strict' reports/b71_apf7/commands.jsonl | tail -10",
+      "start": "2026-09-16T23:56:53.010Z",
+      "chunk_id": "92e264",
+      "wall_time_seconds": 0.000004799,
+      "exit_code": 0,
+      "original_token_count": 276
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py final-cpu-and-books-screenshots python3 reports/b71_apf7/cpu_screenshots.py",
+      "start": "2026-09-16T23:57:21.607Z",
+      "chunk_id": "2f116e",
+      "wall_time_seconds": 1.001699164,
+      "session_id": 92570,
+      "original_token_count": 0,
+      "exit_code": 0,
+      "completed_utc": "2026-09-16T23:58:54.401Z"
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py final-manual-screenshots python3 reports/b71_apf7/manual_screenshots.py",
+      "start": "2026-09-16T23:57:21.607Z",
+      "chunk_id": "5bfe53",
+      "wall_time_seconds": 1.000456841,
+      "session_id": 79646,
+      "original_token_count": 0,
+      "exit_code": 0,
+      "completed_utc": "2026-09-16T23:58:54.414Z"
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py final-manual-shell-layout python3 tests/mod_editor/test_studio_shell_layout_qt.py",
+      "start": "2026-09-16T23:57:21.607Z",
+      "chunk_id": "aa6d2d",
+      "wall_time_seconds": 1.001309749,
+      "session_id": 80176,
+      "original_token_count": 0,
+      "exit_code": 0,
+      "completed_utc": "2026-09-16T23:58:54.427Z"
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py final-cpu-manual-workflow python3 tests/mod_editor/test_apf_playcalling_editor_qt.py",
+      "start": "2026-09-16T23:57:21.607Z",
+      "chunk_id": "ef87e2",
+      "wall_time_seconds": 1.001110984,
+      "session_id": 98309,
+      "original_token_count": 0,
+      "exit_code": 0,
+      "completed_utc": "2026-09-16T23:58:54.441Z"
+    },
+    {
+      "cmd": "git --git-dir=.scratch/git --work-tree=. diff --stat && rg -n 'BOOK_CAPACITY|def preview_ratings|Fine-tune formation weights|def show_manual|manual_allocation =|for team in parsed.teams|def _fill_labels|def open_manual_books|def test_' mod_editor/apf_studio/{playcalling_service.py,playcalling_editor_qt.py,book_identity_qt.py,gui.py} tests/mod_editor/test_apf_b711*.py tests/mod_editor/test_apf_book_identity_qt.py",
+      "start": "2026-09-16T23:57:32.290Z",
+      "chunk_id": "852751",
+      "wall_time_seconds": 0.000003817,
+      "exit_code": 0,
+      "original_token_count": 990
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/make_report.py",
+      "start": "2026-09-16T23:57:32.441Z",
+      "chunk_id": "666437",
+      "wall_time_seconds": 0.000004899,
+      "exit_code": 0,
+      "original_token_count": 21
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py strict-manual-access python3 -m mod_editor.capabilities.validate_registry",
+      "start": "2026-09-16T23:59:27.463Z",
+      "chunk_id": "53c31b",
+      "wall_time_seconds": 0.074475736,
+      "exit_code": 0,
+      "original_token_count": 84
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py final-manual-workflow-qt python3 tests/mod_editor/test_apf_b71_editor_workflow_qt.py",
+      "start": "2026-09-16T23:59:27.463Z",
+      "chunk_id": "ccd0ae",
+      "wall_time_seconds": 1.000536481,
+      "session_id": 35541,
+      "original_token_count": 0,
+      "exit_code": 0,
+      "completed_utc": "2026-09-16T23:59:38.010Z"
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py repin-manual-access python3 packaging/repin.py --apply",
+      "start": "2026-09-16T23:59:27.463Z",
+      "chunk_id": "6784c7",
+      "wall_time_seconds": 1.001308816,
+      "session_id": 72641,
+      "original_token_count": 0,
+      "exit_code": 0,
+      "completed_utc": "2026-09-16T23:59:38.022Z"
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/make_report.py && du -sh .scratch reports/b71_apf7",
+      "start": "2026-09-16T23:59:28.654Z",
+      "chunk_id": "f1e5f6",
+      "wall_time_seconds": 0.000003427,
+      "exit_code": 0,
+      "original_token_count": 30
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py commit-manual-access git --git-dir=.scratch/git --work-tree=. commit -m 'Restore manual allocation access and document the real book pool' -- mod_editor/apf_studio/book_identity_qt.py mod_editor/apf_studio/gui.py mod_editor/apf_studio/playcalling_editor_qt.py mod_editor/apf_studio/playcalling_service.py docs/mod_editor/apf2k8_book_identity_walkthrough.md docs/mod_editor/apf2k8_mod_studio_changelog.md tests/mod_editor/test_apf_b711_book_scope.py tests/mod_editor/test_apf_b711_overlay_books_qt.py tests/mod_editor/test_apf_book_identity_qt.py",
+      "start": "2026-09-16T23:59:38.028Z",
+      "chunk_id": "02c7f8",
+      "wall_time_seconds": 0.013162215,
+      "exit_code": 0,
+      "original_token_count": 222
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py release-stage-final python3 packaging/stage_release.py packaging/apf2k8-release-allowlist.txt .scratch/apf-release-final",
+      "start": "2026-09-16T23:59:51.039Z",
+      "chunk_id": "5f91b4",
+      "wall_time_seconds": 0.008778268,
+      "exit_code": 0,
+      "original_token_count": 79
+    },
+    {
+      "cmd": "rg -n 'def confirm|def preview_ratings|field_scroll =|Field overlay opacity|group_table.setMinimum|def focus_workspace_route' mod_editor/apf_studio/playcalling_service.py mod_editor/apf_studio/gui.py && git --git-dir=.scratch/git --work-tree=. diff --check && git --git-dir=.scratch/git --work-tree=. log -3 --format='%h %s'",
+      "start": "2026-09-16T23:59:51.230Z",
+      "chunk_id": "6180d7",
+      "wall_time_seconds": 0.000003086,
+      "exit_code": 0,
+      "original_token_count": 365
+    },
+    {
+      "cmd": "python3 - <<'PY'\nimport json\nfrom pathlib import Path\ns=json.loads(Path('reports/b71_apf7/suite_results.json').read_text())\nfor r in s['results']:\n if r.get('skipped'): print(r['suite'], r['skipped'], r['log'])\nPY",
+      "start": "2026-09-16T23:59:51.355Z",
+      "chunk_id": "a0ac78",
+      "wall_time_seconds": 0.000004769,
+      "exit_code": 0,
+      "original_token_count": 243
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py release-check-final env PYTHONDONTWRITEBYTECODE=1 python3 packaging/check_apf2k8_mod_studio_release.py .scratch/apf-release-final",
+      "start": "2026-09-17T00:00:19.135Z",
+      "chunk_id": "a23845",
+      "wall_time_seconds": 0.308369921,
+      "exit_code": 0,
+      "original_token_count": 116
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py release-runtime-final env PYTHONDONTWRITEBYTECODE=1 PYTHONNOUSERSITE=1 PYTHONPATH=/home/noah/2k-worktrees/astra-b71-apf7/.scratch/apf-release-final .scratch/test-python/bin/python3 .scratch/apf-release-final/packaging/check_apf2k8_mod_studio_runtime.py",
+      "start": "2026-09-17T00:00:19.135Z",
+      "chunk_id": "6dba0e",
+      "wall_time_seconds": 1.001434515,
+      "session_id": 58204,
+      "original_token_count": 0,
+      "exit_code": 0,
+      "completed_utc": "2026-09-17T00:00:39.653Z"
+    },
+    {
+      "cmd": "python3 - <<'PY'\nimport json,re\nfrom pathlib import Path\ns=json.loads(Path('reports/b71_apf7/suite_results.json').read_text())\nfor row in s['results']:\n if row.get('skipped'):\n  print(row['suite'])\n  text=Path(row['log']).read_text()\n  for line in text.splitlines():\n   if 'skip' in line.lower():print('  '+line)\n  for n,line in enumerate(Path(row['suite']).read_text().splitlines(),1):\n   if 'skipTest' in line or '@unittest.skip' in line: print(f'  {n}: {line.strip()}')\nPY",
+      "start": "2026-09-17T00:00:20.337Z",
+      "chunk_id": "8037ac",
+      "wall_time_seconds": 0.000004879,
+      "exit_code": 0,
+      "original_token_count": 757
+    },
+    {
+      "cmd": "cat reports/b71_apf7/run.py && sed -n '1,120p' reports/b71_apf4/hydrate.py && sed -n '1,100p' tests/mod_editor/test_apf_book_unlock_retail.py && sed -n '30,80p' tests/mod_editor/test_apf_b661_ladder.py",
+      "start": "2026-09-17T00:00:28.901Z",
+      "chunk_id": "7f421e",
+      "wall_time_seconds": 0.000005009,
+      "exit_code": 0,
+      "original_token_count": 2707
+    },
+    {
+      "cmd": "rg --files reports/assets | head -30 && rg -n 'APF_RETAIL_PE|APF_RETAIL_TU_PE|APF_BOOK_FLAT|APF_BOOK_RAW_SAVE|IMAGE =|PE =' tests/mod_editor/test_apf_{b67_static_audit,b661_ladder,b69_control_audit,defense_research_native,splb_tag_reassignment,playcall_research_native}.py && rg -n 'flat|reextracted|\\.pe|RAW_SAVE|PE_SHA' reports/b71_apf3/hydration.json reports/b71_apf4/hydrate.py tests/mod_editor/test_apf_playcall_research_native.py | head -35",
+      "start": "2026-09-17T00:00:39.531Z",
+      "chunk_id": "340bf2",
+      "wall_time_seconds": 0.000003256,
+      "exit_code": 0,
+      "original_token_count": 926
+    },
+    {
+      "cmd": "sed -n '120,220p' reports/b71_apf7/report_body.md && sed -n '1,80p' reports/b71_apf7/bootstrap-commands.json && git rev-parse HEAD && git --git-dir=.scratch/git --work-tree=. diff --name-only && stat -c '%a %n' tools/apf_h7a_optimal",
+      "start": "2026-09-17T00:01:08.685Z",
+      "chunk_id": "f1425a",
+      "wall_time_seconds": 0.000002975,
+      "exit_code": 0,
+      "original_token_count": 2063
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py final-report-aggregate python3 reports/b71_apf7/make_report.py --require-pass",
+      "start": "2026-09-17T00:01:42.342Z",
+      "chunk_id": "237966",
+      "wall_time_seconds": 0.000005661,
+      "exit_code": 1,
+      "original_token_count": 322
+    },
+    {
+      "cmd": "python3 - <<'PY'\nfrom pathlib import Path\nimport json\nfrom PIL import Image\nroot=Path('reports/b71_apf7')\nfor p in sorted(root.glob('*.png')):\n size=Image.open(p).size\n assert size in ((1280,720),(1920,1080)), (p,size)\nprint('Verified',len(list(root.glob('*.png'))),'offscreen evidence images at the two requested sizes')\nprint('Scratch bytes:',sum(p.stat().st_size for p in Path('.scratch').rglob('*') if p.is_file()))\nprint('Last message sentinel:',Path('ASTRA_LAST_MESSAGE.md').read_text().rstrip().splitlines()[-1])\nPY",
+      "start": "2026-09-17T00:01:42.512Z",
+      "chunk_id": "088eb9",
+      "wall_time_seconds": 0.000004999,
+      "exit_code": 0,
+      "original_token_count": 31
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/run.py final-report-aggregate-checked python3 reports/b71_apf7/make_report.py --require-pass",
+      "start": "2026-09-17T00:02:02.263Z",
+      "chunk_id": "343e20",
+      "wall_time_seconds": 0.000003596,
+      "exit_code": 0,
+      "original_token_count": 79
+    },
+    {
+      "cmd": "python3 reports/b71_apf7/make_report.py --require-pass && git --git-dir=.scratch/git --work-tree=. diff --check && git --git-dir=.scratch/git --work-tree=. diff --name-only && du -sh .scratch",
+      "start": "2026-09-17T00:02:32.593Z",
+      "chunk_id": "be2ba1",
+      "wall_time_seconds": 0.000003476,
+      "exit_code": 0,
+      "original_token_count": 34
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "index": "/media/noah/Storage/for codex 1.0/extracted/All-Pro Football 2K8 (USA)/0A",
+  "roster_sha256": "e959d3067ebcdbeb4f08979fa74d9fa61cf90fd91b90793863e6a3313be7f7ff",
+  "teams": 40,
+  "sides": {
+    "offense": {
+      "labels": 36,
+      "distinct_label_types": {
+        "O-ZoneBlock": 8,
+        "O-WestCoast": 2,
+        "O-ManBlock": 4,
+        "O-Singleback3WR": 3,
+        "O-SinglebackAce": 4,
+        "O-Shotgun": 3,
+        "O-TwoBack": 1,
+        "USER-o": 11
+      },
+      "disc_teams": 24,
+      "saved_slots": [
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39
+      ],
+      "saved_label_ids": [
+        25
+      ]
+    },
+    "defense": {
+      "labels": 33,
+      "distinct_label_types": {
+        "X-34Base": 4,
+        "X-43Cover2": 8,
+        "X-43Blitz": 6,
+        "X-34ZoneBlitz": 6,
+        "USER-d": 9
+      },
+      "disc_teams": 24,
+      "saved_slots": [
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39
+      ],
+      "saved_label_ids": [
+        56
+      ]
+    }
+  }
+}

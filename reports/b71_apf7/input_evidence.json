@@ -1,0 +1,22 @@
+[
+  {
+    "path": "/home/noah/Desktop/2K5-8 Editors/beta71_evidence/2k8-bugs_1655_Aszemple.png",
+    "bytes": 62141,
+    "sha256": "cbcf05252145070583f4167331c7a7178e7095f2acdffcc7479c07d428cf8cb1",
+    "dimensions": [
+      640,
+      371
+    ],
+    "read_only": true
+  },
+  {
+    "path": "/home/noah/Desktop/2K5-8 Editors/beta71_evidence/2k8-help_1811_Aszemple.png",
+    "bytes": 90939,
+    "sha256": "c5238cf8b49a6dc885e2975aed1bce40220418c75eee6fbe80a3d0543c84cec0",
+    "dimensions": [
+      640,
+      326
+    ],
+    "read_only": true
+  }
+]

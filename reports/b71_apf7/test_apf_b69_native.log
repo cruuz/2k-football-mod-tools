@@ -1,0 +1,26 @@
+test_added_and_cloned_heavy_membership_matches_native (__main__.NativeTests.test_added_and_cloned_heavy_membership_matches_native) ... PROVED native added/clone GL O-Shotgun [(0, 0.9100000858306885), (1, 0.9100000858306885), (2, 0.7029999494552612), (3, 0.6693750023841858), (5, 0.3124999403953552), (6, 0.1512499898672104), (7, 0.02500000037252903), (8, 0.02749999798834324), (9, 0.026666665449738503)]
+PROVED native added/clone GL O-Singleback3WR [(0, 1.0), (1, 1.0), (2, 1.162857174873352), (5, 0.5642856955528259), (8, 0.048269230872392654)]
+PROVED native added/clone GL J9 Heavy [(0, 1.0), (1, 1.0), (2, 1.162857174873352), (5, 0.5642856955528259), (8, 0.048269230872392654)]
+ok
+test_all_eight_scheme_writers_against_native_category_weights (__main__.NativeTests.test_all_eight_scheme_writers_against_native_category_weights) ... PROVED eight schemes x three native category vectors
+ok
+test_defense_52_row13_selected_after_real_request (__main__.NativeTests.test_defense_52_row13_selected_after_real_request) ... PROVED 5-2 MASTER row 12 offense row3 -> requested13 {141: 128}
+PROVED 5-2 MASTER row 13 offense row3 -> requested13 {141: 65, 150: 63}
+ok
+test_ordinary_clear_mask_10240_native_tuples (__main__.NativeTests.test_ordinary_clear_mask_10240_native_tuples) ... B=0 native tuple states 5 /40
+B=0 native tuple states 10 /40
+B=0 native tuple states 15 /40
+B=0 native tuple states 20 /40
+B=0 native tuple states 25 /40
+B=0 native tuple states 30 /40
+B=0 native tuple states 35 /40
+B=0 native tuple states 40 /40
+PROVED B=0 form68 absent from 10240 native-vector tuples and 40 full drivers {72: 850, 73: 800, 78: 1185, 91: 1150, 94: 595, 101: 605, 104: 310, 98: 285, 100: 285, 71: 100, 70: 245, 74: 300, 77: 300, 79: 285, 89: 300, 92: 300, 93: 300, 95: 285, 99: 300, 102: 300, 103: 355, 105: 470, 88: 35, 90: 100, 69: 200} play kinds {'run': 10040, 'pass': 200}
+ok
+test_special_cached_path_bypasses_zero_membership (__main__.NativeTests.test_special_cached_path_bypasses_zero_membership) ... PROVED cached Hail Mary151 and play survive B=0/ratings7 on native special branch; predicate supplied
+ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 822.119s
+
+OK

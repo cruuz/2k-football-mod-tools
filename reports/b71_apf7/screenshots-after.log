@@ -1,0 +1,178 @@
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+[
+  {
+    "image": "field-after-1280x720.png",
+    "window": [
+      1280,
+      720
+    ],
+    "panel_height": 540,
+    "rows": {
+      "field_grass": {
+        "label_height": 32,
+        "value_height": 34,
+        "value": "100.00%"
+      },
+      "endzone_grass": {
+        "label_height": 32,
+        "value_height": 34,
+        "value": "95.00%"
+      },
+      "ticks": {
+        "label_height": 32,
+        "value_height": 34,
+        "value": "90.00%"
+      },
+      "chalk_lines": {
+        "label_height": 32,
+        "value_height": 34,
+        "value": "85.00%"
+      },
+      "graphic_overlay_4": {
+        "label_height": 32,
+        "value_height": 34,
+        "value": "80.00%"
+      },
+      "graphic_overlay_5": {
+        "label_height": 32,
+        "value_height": 34,
+        "value": "75.00%"
+      },
+      "graphic_overlay_7": {
+        "label_height": 32,
+        "value_height": 34,
+        "value": "70.00%"
+      },
+      "graphic_overlay_8": {
+        "label_height": 32,
+        "value_height": 34,
+        "value": "65.00%"
+      },
+      "graphic_overlay_9": {
+        "label_height": 32,
+        "value_height": 34,
+        "value": "60.00%"
+      },
+      "outside_grass_10": {
+        "label_height": 32,
+        "value_height": 34,
+        "value": "55.00%"
+      },
+      "outside_grass_11": {
+        "label_height": 32,
+        "value_height": 34,
+        "value": "50.00%"
+      }
+    },
+    "scroll_viewport_height": 360,
+    "scroll_maximum": 92
+  },
+  {
+    "image": "field-after-1920x1080.png",
+    "window": [
+      1920,
+      1080
+    ],
+    "panel_height": 540,
+    "rows": {
+      "field_grass": {
+        "label_height": 32,
+        "value_height": 34,
+        "value": "100.00%"
+      },
+      "endzone_grass": {
+        "label_height": 32,
+        "value_height": 34,
+        "value": "95.00%"
+      },
+      "ticks": {
+        "label_height": 32,
+        "value_height": 34,
+        "value": "90.00%"
+      },
+      "chalk_lines": {
+        "label_height": 32,
+        "value_height": 34,
+        "value": "85.00%"
+      },
+      "graphic_overlay_4": {
+        "label_height": 32,
+        "value_height": 34,
+        "value": "80.00%"
+      },
+      "graphic_overlay_5": {
+        "label_height": 32,
+        "value_height": 34,
+        "value": "75.00%"
+      },
+      "graphic_overlay_7": {
+        "label_height": 32,
+        "value_height": 34,
+        "value": "70.00%"
+      },
+      "graphic_overlay_8": {
+        "label_height": 32,
+        "value_height": 34,
+        "value": "65.00%"
+      },
+      "graphic_overlay_9": {
+        "label_height": 32,
+        "value_height": 34,
+        "value": "60.00%"
+      },
+      "outside_grass_10": {
+        "label_height": 32,
+        "value_height": 34,
+        "value": "55.00%"
+      },
+      "outside_grass_11": {
+        "label_height": 32,
+        "value_height": 34,
+        "value": "50.00%"
+      }
+    },
+    "scroll_viewport_height": 360,
+    "scroll_maximum": 92
+  }
+]

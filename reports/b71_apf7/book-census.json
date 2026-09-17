@@ -1,0 +1,414 @@
+{
+  "index": "/media/noah/Storage/for codex 1.0/extracted/All-Pro Football 2K8 (USA)/0A",
+  "roster_sha256": "e959d3067ebcdbeb4f08979fa74d9fa61cf90fd91b90793863e6a3313be7f7ff",
+  "teams": 40,
+  "sides": {
+    "offense": {
+      "labels": 36,
+      "distinct_label_types": {
+        "O-ZoneBlock": 8,
+        "O-WestCoast": 2,
+        "O-ManBlock": 4,
+        "O-Singleback3WR": 3,
+        "O-SinglebackAce": 4,
+        "O-Shotgun": 3,
+        "O-TwoBack": 1,
+        "USER-o": 11
+      },
+      "disc_teams": 24,
+      "saved_slots": [
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39
+      ],
+      "saved_label_ids": [
+        25
+      ],
+      "plan": [
+        {
+          "team_index": 0,
+          "team_name": "Americans",
+          "label_id": 0,
+          "donor_name": "O-TwoBack",
+          "clone_name": "Americans"
+        },
+        {
+          "team_index": 1,
+          "team_name": "Assassins",
+          "label_id": 1,
+          "donor_name": "O-WestCoast",
+          "clone_name": "Assassins"
+        },
+        {
+          "team_index": 2,
+          "team_name": "Beasts",
+          "label_id": 2,
+          "donor_name": "O-ManBlock",
+          "clone_name": "Beasts"
+        },
+        {
+          "team_index": 3,
+          "team_name": "Cobras",
+          "label_id": 3,
+          "donor_name": "O-Singleback3WR",
+          "clone_name": "Cobras"
+        },
+        {
+          "team_index": 4,
+          "team_name": "Cougars",
+          "label_id": 4,
+          "donor_name": "O-TwoBack",
+          "clone_name": "Cougars"
+        },
+        {
+          "team_index": 5,
+          "team_name": "Cyclones",
+          "label_id": 5,
+          "donor_name": "O-ZoneBlock",
+          "clone_name": "Cyclones"
+        },
+        {
+          "team_index": 6,
+          "team_name": "Federals",
+          "label_id": 6,
+          "donor_name": "O-ZoneBlock",
+          "clone_name": "Federals"
+        },
+        {
+          "team_index": 7,
+          "team_name": "Firebirds",
+          "label_id": 7,
+          "donor_name": "O-Singleback3WR",
+          "clone_name": "Firebirds"
+        },
+        {
+          "team_index": 8,
+          "team_name": "Gunslingers",
+          "label_id": 8,
+          "donor_name": "O-Shotgun",
+          "clone_name": "Gunslingers"
+        },
+        {
+          "team_index": 9,
+          "team_name": "Indians",
+          "label_id": 9,
+          "donor_name": "O-TwoBack",
+          "clone_name": "Indians"
+        },
+        {
+          "team_index": 10,
+          "team_name": "Iron Men",
+          "label_id": 10,
+          "donor_name": "O-Shotgun",
+          "clone_name": "Iron Men"
+        },
+        {
+          "team_index": 11,
+          "team_name": "Knights",
+          "label_id": 11,
+          "donor_name": "O-SinglebackAce",
+          "clone_name": "Knights"
+        },
+        {
+          "team_index": 12,
+          "team_name": "Legends",
+          "label_id": 12,
+          "donor_name": "O-ZoneBlock",
+          "clone_name": "Legends"
+        },
+        {
+          "team_index": 13,
+          "team_name": "Minutemen",
+          "label_id": 13,
+          "donor_name": "O-SinglebackAce",
+          "clone_name": "Minutemen"
+        },
+        {
+          "team_index": 14,
+          "team_name": "Red Dogs",
+          "label_id": 14,
+          "donor_name": "O-ZoneBlock",
+          "clone_name": "Red Dogs"
+        },
+        {
+          "team_index": 15,
+          "team_name": "Rhinos",
+          "label_id": 15,
+          "donor_name": "O-ZoneBlock",
+          "clone_name": "Rhinos"
+        },
+        {
+          "team_index": 16,
+          "team_name": "Rollers",
+          "label_id": 16,
+          "donor_name": "O-ManBlock",
+          "clone_name": "Rollers"
+        },
+        {
+          "team_index": 17,
+          "team_name": "Rustlers",
+          "label_id": 17,
+          "donor_name": "O-TwoBack",
+          "clone_name": "Rustlers"
+        },
+        {
+          "team_index": 18,
+          "team_name": "Sailors",
+          "label_id": 18,
+          "donor_name": "O-TwoBack",
+          "clone_name": "Sailors"
+        },
+        {
+          "team_index": 19,
+          "team_name": "Scorpions",
+          "label_id": 19,
+          "donor_name": "O-Singleback3WR",
+          "clone_name": "Scorpions"
+        },
+        {
+          "team_index": 20,
+          "team_name": "Sharks",
+          "label_id": 20,
+          "donor_name": "O-WestCoast",
+          "clone_name": "Sharks"
+        },
+        {
+          "team_index": 21,
+          "team_name": "Top Guns",
+          "label_id": 21,
+          "donor_name": "O-ManBlock",
+          "clone_name": "Top Guns"
+        },
+        {
+          "team_index": 22,
+          "team_name": "Wasps",
+          "label_id": 22,
+          "donor_name": "O-ManBlock",
+          "clone_name": "Wasps"
+        },
+        {
+          "team_index": 23,
+          "team_name": "Werewolves",
+          "label_id": 23,
+          "donor_name": "O-ZoneBlock",
+          "clone_name": "Werewolves"
+        }
+      ]
+    },
+    "defense": {
+      "labels": 33,
+      "distinct_label_types": {
+        "X-34Base": 4,
+        "X-43Cover2": 8,
+        "X-43Blitz": 6,
+        "X-34ZoneBlitz": 6,
+        "USER-d": 9
+      },
+      "disc_teams": 24,
+      "saved_slots": [
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39
+      ],
+      "saved_label_ids": [
+        56
+      ],
+      "plan": [
+        {
+          "team_index": 0,
+          "team_name": "Americans",
+          "label_id": 32,
+          "donor_name": "X-34Base",
+          "clone_name": "49ers"
+        },
+        {
+          "team_index": 1,
+          "team_name": "Assassins",
+          "label_id": 33,
+          "donor_name": "X-34Base",
+          "clone_name": "Bears"
+        },
+        {
+          "team_index": 2,
+          "team_name": "Beasts",
+          "label_id": 34,
+          "donor_name": "X-43Blitz",
+          "clone_name": "Bengals"
+        },
+        {
+          "team_index": 3,
+          "team_name": "Cobras",
+          "label_id": 35,
+          "donor_name": "X-34ZoneBlitz",
+          "clone_name": "Bills"
+        },
+        {
+          "team_index": 4,
+          "team_name": "Cougars",
+          "label_id": 36,
+          "donor_name": "X-43Blitz",
+          "clone_name": "Broncos"
+        },
+        {
+          "team_index": 5,
+          "team_name": "Cyclones",
+          "label_id": 37,
+          "donor_name": "X-34ZoneBlitz",
+          "clone_name": "Browns"
+        },
+        {
+          "team_index": 6,
+          "team_name": "Federals",
+          "label_id": 38,
+          "donor_name": "X-43Cover2",
+          "clone_name": "Buccaneers"
+        },
+        {
+          "team_index": 7,
+          "team_name": "Firebirds",
+          "label_id": 39,
+          "donor_name": "X-34ZoneBlitz",
+          "clone_name": "Cardinals"
+        },
+        {
+          "team_index": 8,
+          "team_name": "Gunslingers",
+          "label_id": 40,
+          "donor_name": "X-43Cover2",
+          "clone_name": "Chargers"
+        },
+        {
+          "team_index": 9,
+          "team_name": "Indians",
+          "label_id": 41,
+          "donor_name": "X-43Cover2",
+          "clone_name": "Chiefs"
+        },
+        {
+          "team_index": 10,
+          "team_name": "Iron Men",
+          "label_id": 42,
+          "donor_name": "X-43Cover2",
+          "clone_name": "Colts"
+        },
+        {
+          "team_index": 11,
+          "team_name": "Knights",
+          "label_id": 43,
+          "donor_name": "X-34Base",
+          "clone_name": "Cowboys"
+        },
+        {
+          "team_index": 12,
+          "team_name": "Legends",
+          "label_id": 44,
+          "donor_name": "X-43Blitz",
+          "clone_name": "Dolphins"
+        },
+        {
+          "team_index": 13,
+          "team_name": "Minutemen",
+          "label_id": 45,
+          "donor_name": "X-34ZoneBlitz",
+          "clone_name": "Eagles"
+        },
+        {
+          "team_index": 14,
+          "team_name": "Red Dogs",
+          "label_id": 46,
+          "donor_name": "X-43Blitz",
+          "clone_name": "Falcons"
+        },
+        {
+          "team_index": 15,
+          "team_name": "Rhinos",
+          "label_id": 47,
+          "donor_name": "X-34ZoneBlitz",
+          "clone_name": "Giants"
+        },
+        {
+          "team_index": 16,
+          "team_name": "Rollers",
+          "label_id": 48,
+          "donor_name": "X-43Cover2",
+          "clone_name": "Jaguars"
+        },
+        {
+          "team_index": 17,
+          "team_name": "Rustlers",
+          "label_id": 49,
+          "donor_name": "X-43Blitz",
+          "clone_name": "Jets"
+        },
+        {
+          "team_index": 18,
+          "team_name": "Sailors",
+          "label_id": 50,
+          "donor_name": "X-34Base",
+          "clone_name": "Lions"
+        },
+        {
+          "team_index": 19,
+          "team_name": "Scorpions",
+          "label_id": 51,
+          "donor_name": "X-43Cover2",
+          "clone_name": "Packers"
+        },
+        {
+          "team_index": 20,
+          "team_name": "Sharks",
+          "label_id": 52,
+          "donor_name": "X-34Base",
+          "clone_name": "Panthers"
+        },
+        {
+          "team_index": 21,
+          "team_name": "Top Guns",
+          "label_id": 53,
+          "donor_name": "X-43Cover2",
+          "clone_name": "Patriots"
+        },
+        {
+          "team_index": 22,
+          "team_name": "Wasps",
+          "label_id": 54,
+          "donor_name": "X-34ZoneBlitz",
+          "clone_name": "Raiders"
+        },
+        {
+          "team_index": 23,
+          "team_name": "Werewolves",
+          "label_id": 55,
+          "donor_name": "X-34ZoneBlitz",
+          "clone_name": "Rams"
+        }
+      ]
+    }
+  }
+}
