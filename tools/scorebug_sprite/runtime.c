@@ -13,7 +13,8 @@ typedef void (FAST *Formatter)(u16 *);
 typedef u32 (FAST *Lookup)(u32,u32,const u16 *);
 struct Glyph {u16 token[4];int width,height,advance,rise;s16 uv[8];};
 struct Field {u32 source,vertex,capacity,glyphs,count,color,flags,visibility;int x,y,z,width,align,unused;};
-struct Static {u32 vertex,tint,material,unused;};
+struct Static {u32 vertex,tint,material,brand;};
+struct Brand {u32 mode;s16 uv[16];}; /* NFL then MNF, one existing quad */
 struct Header {u32 magic,revision,fields,field_offset,statics,static_offset,size,quads;};
 struct State {u32 scene,active,home,away,home_wing,away_wing,home_plate,away_plate;};
 
@@ -32,6 +33,17 @@ static u32 material(u8 *b,u32 k) {
 }
 static void color(u8 *b,u32 first,u32 c) {
  for(u32 j=0;j<4;j++) V(b+0x2d20+(first+j)*10)=c;
+}
+static u32 monday_night(void) {
+ if(V(0xe576a0)!=2 || V(0xe60184)!=2)return 0;
+ u32 week=V(0xe576b4),slot=V(0xe576bc);
+ if(week>=22 || slot>=17)return 0;
+ u8 *record=(u8*)(0xe57c40+(week*17+slot)*8);
+ if(record[3]<1 || record[3]>12 || record[4]<1 || record[4]>31)return 0;
+ /* D22AC is the current-record weekday SITE. The calendar owner detours it.
+  * Both implementations take record in ECX and add 3 for month/day/year.
+  * Calling 1C18B0 directly would bypass the extended calendar. */
+ return ((u32 (FAST *)(const u8 *))0xd22ac)(record)==0;
 }
 static u32 logo(u32 context) {
  u16 name[8];
@@ -144,7 +156,20 @@ NOINLINE void sprite_update(struct State *s) {
  struct Static *statics=(struct Static*)(b+h->static_offset);
  for(u32 i=0;i<h->statics;i++){
   u32 source=statics[i].tint;
-  if(source)color(b,statics[i].vertex,source==1?s->home_wing:source==2?s->away_wing:tint);
+  if(source) {
+   u32 c=source==1 || source==4?s->home_wing:source==2 || source==5?s->away_wing:tint;
+   if(source>=4)c=0xff000000|(((c&0xfefefe)>>1)+0x7f7f7f);
+   color(b,statics[i].vertex,c);
+  }
+  if(statics[i].brand) {
+   struct Brand *mark=(struct Brand*)(b+statics[i].brand);
+   color(b,statics[i].vertex,mark->mode==2?0:0xffffffff);
+   u32 variant=mark->mode==1 || (mark->mode==0 && monday_night());
+   for(u32 j=0;j<4;j++) {
+    s16 *uv=(s16*)(b+0x2d20+(statics[i].vertex+j)*10+4);
+    uv[0]=mark->uv[variant*8+j*2];uv[1]=mark->uv[variant*8+j*2+1];
+   }
+  }
  }
  struct Field *fields=(struct Field*)(b+h->field_offset);
  for(u32 i=0;i<h->fields;i++)field(b,fields+i);

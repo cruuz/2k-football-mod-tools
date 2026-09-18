@@ -343,7 +343,7 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
                     score_values=(0, 0), previous_scores=(0, 0), baseline_v9=False,
                     runtime_textures=None, identity=None, timeouts=(3, 3), scorebug_folder=None, runtime_fonts=(),
                     possession='home', game_seconds=790, play_seconds=12, quarter=1,
-                    ball_yards=50, visibility_state=None, down=1, distance_yards=10, goal_to_go=False):
+                    ball_yards=50, visibility_state=None, down=1, distance_yards=10, goal_to_go=False, broadcast="play_now"):
     """Run the actual scene relocator, setup, frame driver and camera activation.
 
     Startup animation selection, optional font IDs, per-frame game predicates
@@ -380,6 +380,15 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
         from mod_editor.core import nfl2k5_scorebug_runtime as runtime
         payload = _runtime_payload(payload, runtime.code_for(0, 0)[0])
     m = StaticMachine(payload)
+    if sprite:
+        # Real date helper executes on synthetic, bounded schedule records.
+        # 2026-09-14 is Monday; 2026-09-13 is Sunday.
+        if broadcast not in ('play_now','monday_night','sunday_night','monday_afternoon'):
+            m.close();raise ValueError('unknown broadcast slot')
+        m.put(0xe576a0,0 if broadcast=='play_now' else 2)
+        m.put(0xe60184,1 if broadcast=='monday_afternoon' else 2)
+        m.put(0xe576b4,0);m.put(0xe576bc,0)
+        m.uc.mem_write(0xe57c40,bytes([1,0,1,9,13 if broadcast=='sunday_night' else 14,26,8,0]))
     if sprite:
         m.uc.mem_write(0xfc760, (b'\xe9'+struct.pack('<i',0xfbd50-0xfc765)) if goal_to_go else bytes.fromhex('d9eec3'))  # explicit field-boundary query
     if possession not in ('home','away'):
@@ -761,6 +770,16 @@ def submission_batches(decoded, scene_base=0):
             yield material, indices
 
 
+@lru_cache(maxsize=40)
+def _raster_texture(span):
+    """Immutable TXTR inputs share decoding across repeated diagnostic draws."""
+    from PIL import Image
+    chunk, body, _ = r.decode(span)
+    tex = r.tx.parse_texture(body, chunk)
+    atlas = Image.frombytes('RGBA', (tex.width, tex.height), r.tx.texture_to_rgba(body, chunk, tex))
+    return atlas, dict(name=tex.name, span_sha256=r.digest(span), dimensions=[tex.width, tex.height])
+
+
 def render_native(decoded, texture_span, fonts, geometry, path, *, cull_positive=False,
                   texture_spans=None, background=None, calibration=None):
     """Software diagnostic of captured inputs; GPU blend/cull policy is explicit.
@@ -792,18 +811,11 @@ def render_native(decoded, texture_span, fonts, geometry, path, *, cull_positive
     depth = [float('inf')] * (width * height)
     sprite_scene = struct.unpack_from('<I', decoded, 0x60)[0] == 0x35525053
     pixels = im.load()
-    chunk, body, _ = r.decode(texture_span)
-    tex = r.tx.parse_texture(body, chunk)
-    atlas = Image.frombytes('RGBA', (tex.width, tex.height), r.tx.texture_to_rgba(body, chunk, tex))
+    atlas, _atlas_receipt = _raster_texture(bytes(texture_span))
     material_atlases = {}
     texture_receipts = {}
     for descriptor, span in (texture_spans or {}).items():
-        chunk, body, _ = r.decode(span)
-        tex = r.tx.parse_texture(body, chunk)
-        material_atlases[descriptor] = Image.frombytes('RGBA', (tex.width, tex.height),
-                                                      r.tx.texture_to_rgba(body, chunk, tex))
-        texture_receipts[descriptor] = dict(name=tex.name, span_sha256=r.digest(span),
-                                            dimensions=[tex.width, tex.height])
+        material_atlases[descriptor], texture_receipts[descriptor] = _raster_texture(bytes(span))
     font_atlases = {font.name: Image.frombytes('RGBA', (font.width, font.height), rgba_from_font(font))
                     for font in fonts}
     def color(word):

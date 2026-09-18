@@ -270,7 +270,7 @@ def resample_logo(image, size):
     return alpha_bleed(image)
 
 
-def quantize_alpha_aware(image, maximum=256):
+def quantize_alpha_aware(image, maximum=256, *, reserved=()):
     """P8 with exact alpha endpoints and a dedicated white-mask alpha ramp.
 
     Never average transparent, opaque and feather texels into the same palette
@@ -284,6 +284,14 @@ def quantize_alpha_aware(image, maximum=256):
     import nfl_tset_png_import as palettes
     require(32 <= maximum <= 256, "alpha-aware P8 needs 32..256 entries")
     a = np.asarray(image.convert("RGBA")).copy()
+    if reserved:
+        fixed=sorted(set(tuple(map(int,c)) for c in reserved))
+        require(len(fixed)<=32 and maximum-len(fixed)>=32, "too many reserved atlas colours")
+        palette,indices=quantize_alpha_aware(image,maximum-len(fixed))
+        indices=np.frombuffer(indices,dtype=np.uint8).copy()+len(fixed)
+        flat=a.reshape(-1,4)
+        for i,colour in enumerate(fixed):indices[(flat==colour).all(axis=1)]=i
+        return fixed+palette,indices.tobytes()
     # Sub-3% filter ringing is outside the one-texel feather, not new detail.
     a[:, :, 3][(a[:, :, 3] < 8) & (a[:, :, :3].min(axis=2) < 250)] = 0
     colors, inverse, counts = np.unique(a.reshape(-1, 4), axis=0, return_inverse=True, return_counts=True)
@@ -322,7 +330,7 @@ def quantize_alpha_aware(image, maximum=256):
     return palette, mapping[inverse].tobytes()
 
 
-def texture_chunk(name: str, image, template: bytes, *, colours: int = 256, alpha_aware: bool = False) -> tuple[bytes, dict]:
+def texture_chunk(name: str, image, template: bytes, *, colours: int = 256, alpha_aware: bool = False, reserved_colours=()) -> tuple[bytes, dict]:
     """An uncompressed P8 TXTR chunk of any power-of-two size (32..512 per side).
 
     ``template`` is a retail P8 TXTR span (score_buga); its 128-byte system
@@ -346,7 +354,7 @@ def texture_chunk(name: str, image, template: bytes, *, colours: int = 256, alph
     struct.pack_into("<I", system, descriptor + 16, 0)                          # dimensions from the format word
     rgba = image.convert("RGBA")
     if alpha_aware:
-        palette, indices = quantize_alpha_aware(rgba, colours)
+        palette, indices = quantize_alpha_aware(rgba, colours, reserved=reserved_colours)
         levels = [indices]
     else:
         palette, levels, _ = palettes.quantize_levels([palettes.MipLevel(0, w, h, rgba.tobytes())], colours)

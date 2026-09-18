@@ -626,7 +626,7 @@ def logo_fit_for(team, logo_fit=None):
     return fit
 
 
-def mnf_panel_span(template, team, side, *, plate_tints=None, logo_fit=None):
+def mnf_panel_span(template, team, side, *, plate_tints=None, logo_fit=None, wing_tints=None):
     """Shared native logo TXTR with plate/wing ARGB in unused name padding."""
     from . import nfl2k5_scorebug_exact as exact
     code = "--" if team is None else TEAM_LOGOS[team]["asset_code"]
@@ -638,6 +638,7 @@ def mnf_panel_span(template, team, side, *, plate_tints=None, logo_fit=None):
     if team in (plate_tints or {}):
         plate=0xff000000 | int(plate_tints[team][1:],16)
     wing=0xff4a4e58 if team is None else exact.wing_table()[int(code)]
+    if team in (wing_tints or {}):wing=0xff000000 | int(wing_tints[team][1:],16)
     import struct
     struct.pack_into("<II",span,32+48,plate,wing)
     return bytes(span)
@@ -805,7 +806,7 @@ def probe_sizes(probe, *, sprite_folder=None):
     return count, appendix, growth
 
 
-def compile_runtime_collection(pack, *, probe="full", sprite_folder=None, widescreen=False):
+def compile_runtime_collection(pack, *, probe="full", sprite_folder=None, widescreen=False, watermark="auto"):
     """Pure bounded pack-0 compiler, retaining all unrelated bytes and entries.
 
     Insert at the end of outer 346, expand its existing index entry and pack 0,
@@ -814,7 +815,7 @@ def compile_runtime_collection(pack, *, probe="full", sprite_folder=None, widesc
     """
     if probe == "sprite":
         from .nfl2k5_scorebug_sprite import compile_collection
-        return compile_collection(pack,sprite_folder,widescreen)
+        return compile_collection(pack,sprite_folder,widescreen,watermark)
     import struct
     from . import nfl2k5_scorebug_ingame as r
     import nfl_outer as outer

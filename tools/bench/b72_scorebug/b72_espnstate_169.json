@@ -1,0 +1,784 @@
+{
+  "state": {
+    "away": "DEN",
+    "home": "KC",
+    "away_score": 7,
+    "home_score": 7,
+    "away_timeouts": 3,
+    "home_timeouts": 3,
+    "quarter": 2,
+    "clock": 273,
+    "play_clock": 4,
+    "down": 3,
+    "distance": 10,
+    "possession": "home",
+    "event": "standard",
+    "goal_to_go": false
+  },
+  "widescreen": true,
+  "quads": {
+    "body_left": [
+      145.6634521484375,
+      406.7618408203125,
+      149.00518417358398,
+      452.37890625
+    ],
+    "body": [
+      149.00518417358398,
+      406.7618408203125,
+      489.3376097679138,
+      452.37890625
+    ],
+    "body_right": [
+      489.3376097679138,
+      406.7618408203125,
+      492.6686429977417,
+      452.37890625
+    ],
+    "housing": [
+      278.9974784851074,
+      423.7576904296875,
+      360.996045589447,
+      449.482177734375
+    ],
+    "capsule": [
+      279.6679878234863,
+      430.3970947265625,
+      339.6688725948334,
+      446.99560546875
+    ],
+    "plate": [
+      278.9974784851074,
+      408.825439453125,
+      360.996045589447,
+      423.7576904296875
+    ],
+    "pointer": [
+      317.0006412938237,
+      406.7618408203125,
+      321.66190518811345,
+      408.825439453125
+    ],
+    "away_wing": [
+      145.6634521484375,
+      406.7618408203125,
+      216.66173934936523,
+      452.37890625
+    ],
+    "home_wing": [
+      421.6681864261627,
+      406.7618408203125,
+      492.6686429977417,
+      452.37890625
+    ],
+    "red": [
+      339.6688725948334,
+      430.3970947265625,
+      360.671599149704,
+      447.40576171875
+    ],
+    "away_logo": [
+      150.9950828552246,
+      407.1719970703125,
+      217.6675033569336,
+      451.55859375
+    ],
+    "home_logo": [
+      422.66315507888794,
+      407.1719970703125,
+      489.3376097679138,
+      451.55859375
+    ],
+    "watermark": [
+      514.6663446426392,
+      30.52423095703125,
+      586.0020751953125,
+      42.547332763671875
+    ],
+    "away_score:0": [
+      245.34223556518555,
+      416.2979736328125,
+      258.67671966552734,
+      438.27978515625
+    ],
+    "home_score:0": [
+      380.00880908966064,
+      416.2979736328125,
+      393.34370517730713,
+      438.27978515625
+    ],
+    "clock:0": [
+      306.6615038514137,
+      433.306640625,
+      314.3185220658779,
+      444.509033203125
+    ],
+    "clock:1": [
+      314.9890511184931,
+      434.9600830078125,
+      316.6545612961054,
+      442.4326171875
+    ],
+    "clock:2": [
+      317.32509034872055,
+      433.306640625,
+      324.9929240345955,
+      444.509033203125
+    ],
+    "clock:3": [
+      325.66345469653606,
+      433.306640625,
+      333.33128556609154,
+      444.509033203125
+    ],
+    "play_clock:0": [
+      347.3367062807083,
+      434.5499267578125,
+      352.3332335948944,
+      442.4326171875
+    ],
+    "quarter:0": [
+      283.3341598510742,
+      434.5499267578125,
+      288.3197212219238,
+      442.4326171875
+    ],
+    "quarter:1": [
+      288.99023056030273,
+      434.5499267578125,
+      297.3283386230469,
+      439.946044921875
+    ],
+    "away_timeouts:0": [
+      239.00484085083008,
+      444.0860595703125,
+      245.66667556762695,
+      446.5726318359375
+    ],
+    "away_timeouts:1": [
+      249.00840759277344,
+      444.0860595703125,
+      255.6702423095703,
+      446.5726318359375
+    ],
+    "away_timeouts:2": [
+      259.0119743347168,
+      444.0860595703125,
+      265.6738090515137,
+      446.5726318359375
+    ],
+    "home_timeouts:0": [
+      373.335960149765,
+      444.0860595703125,
+      379.9979944229126,
+      446.5726318359375
+    ],
+    "home_timeouts:1": [
+      383.3398358821869,
+      444.0860595703125,
+      390.0018701553345,
+      446.5726318359375
+    ],
+    "home_timeouts:2": [
+      393.34370517730713,
+      444.0860595703125,
+      400.0057394504547,
+      446.5726318359375
+    ],
+    "down:0": [
+      299.5020866394043,
+      412.1451416015625,
+      304.8337688446045,
+      421.6812744140625
+    ],
+    "down:1": [
+      305.5042991042137,
+      412.1451416015625,
+      314.16711190342903,
+      421.6812744140625
+    ],
+    "down:3": [
+      318.50392603874207,
+      412.1451416015625,
+      324.84151346981525,
+      421.6812744140625
+    ],
+    "down:5": [
+      329.1675125360489,
+      412.1451416015625,
+      334.4993073940277,
+      421.6812744140625
+    ],
+    "down:6": [
+      335.1698344349861,
+      412.1451416015625,
+      340.50162929296494,
+      421.6812744140625
+    ],
+    "FUMBLE": [
+      278.9974784851074,
+      408.825439453125,
+      360.996045589447,
+      423.7576904296875
+    ],
+    "ball on": [
+      278.9974784851074,
+      408.825439453125,
+      360.996045589447,
+      423.7576904296875
+    ],
+    "FLAG": [
+      278.9974784851074,
+      408.825439453125,
+      360.996045589447,
+      423.7576904296875
+    ],
+    "hang time": [
+      278.9974784851074,
+      408.825439453125,
+      360.996045589447,
+      423.7576904296875
+    ]
+  },
+  "volume": {
+    "version": "scorebug-sprite-v1",
+    "display": "16:9",
+    "components": [
+      {
+        "kind": "TXTR",
+        "name": "sb--h0",
+        "size": 2208,
+        "sha256": "1280a70924e9640e185cd31740caf66e59fce858dcb3849736526692e3695257"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb00h0",
+        "size": 5280,
+        "sha256": "e534ffc03bf9d34905b82a0f8f07a1236befdb9400537b8d495a784dd046a132"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb01h0",
+        "size": 5280,
+        "sha256": "90252912bf4c0e3147f2f49b27b9607f7eb7397dd7fa2b56b5d28aabfe81c1af"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb02h0",
+        "size": 5280,
+        "sha256": "14d4865e4cfdf5af83fcdbf78cf1521d321daa9ef555b0676200fff619ca6613"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb03h0",
+        "size": 5280,
+        "sha256": "0c12cfc8b906b6e92863b65cd5267b14deea07afdef6099d7138197edd51be45"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb04h0",
+        "size": 5280,
+        "sha256": "0abcbd0b8adcbecf654378118001e2843181d797159118c1c208aba464534dfb"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb05h0",
+        "size": 5280,
+        "sha256": "e82726d3c45c19e4aa36a14cb054c0b214949892905603748e4fd54e51e1f933"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb06h0",
+        "size": 5280,
+        "sha256": "e270cb3f08f03a194855333f1f85bd08fceba8d4959560e3a78fbcc9a6c56cbc"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb30h0",
+        "size": 5280,
+        "sha256": "d88aef7e9e0f2928390ddeb27829b73ecf4e336c7b0241b481833373ed02e061"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb07h0",
+        "size": 5280,
+        "sha256": "e9d3ad1c4039a39638e48b8bb37b4975e6c5f1e9c5f8012ed698839aaccf1746"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb08h0",
+        "size": 5280,
+        "sha256": "9a3e0a4f828091c3db42423c1e2198a640e49f158885a9fdac54811e27e02b21"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb09h0",
+        "size": 5280,
+        "sha256": "76f9bb97363fc6be977e2fc9c8648dc13bbd8c3c54067aafacf7e3c895ef641e"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb10h0",
+        "size": 5280,
+        "sha256": "1975bac7ef897fb4e28fe86b871246f6054cd862a34e5da808b1906528414bf9"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb37h0",
+        "size": 5280,
+        "sha256": "f3e8fd5a534198028796fddbe7ac1e764aa7d7492b36a160c01f40799bcbd4f8"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb11h0",
+        "size": 5280,
+        "sha256": "76a7a435e7da9fac64aede58dd1cc1d71caa33d4ab880653bc2a7fc606f15875"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb12h0",
+        "size": 5280,
+        "sha256": "9b33cc424cbe771d02b52c1dbb7672c60921253a256b8d7e66b2857e4e8cfc8d"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb13h0",
+        "size": 5280,
+        "sha256": "3d59aaae861fa3d7db41e4839d96d8ee73511a570700a15113a78ed55902db15"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb24h0",
+        "size": 5280,
+        "sha256": "661bd587073606dec5e5bd1a0969097b54e238685ac1087f5ce10120f278fca7"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb23h0",
+        "size": 5280,
+        "sha256": "ee9ef6fd1d8a0e343ffede7151b66faee05a4d6e818d654e7ca834d110c14f4b"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb20h0",
+        "size": 5280,
+        "sha256": "670e2a117ea29bab619bf08da310c937351ca7f0cb98956f52a8598aa33458b1"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb14h0",
+        "size": 5280,
+        "sha256": "33a684a81fe2069af50127b7b51cc20827852efa4c36c112bd0a5d86185ace06"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb15h0",
+        "size": 5280,
+        "sha256": "760cbabc32a364cf60c17f9d8b4ebd9c6e079694e8b84c22aac1540bb4f7092a"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb16h0",
+        "size": 5280,
+        "sha256": "bfcacf1382c474365f67f8252309959115763bb3866dd9b2624e0442090f2f9a"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb17h0",
+        "size": 5280,
+        "sha256": "46a39af2d769ead1b5e58f19d058f9cd5c26575efc80c4d07e9cd32789f8be40"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb18h0",
+        "size": 5280,
+        "sha256": "7199602a06b28ccf50598f691d9056a901f4d8c1e792ddb960ab1bd29bf122a4"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb19h0",
+        "size": 5280,
+        "sha256": "6386d730f1cf199618ca94839904ab3b8d11d72502edbf707c571f459502fdc4"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb21h0",
+        "size": 5280,
+        "sha256": "1926ba2418e4e88b94db49358992a0d98e913ff3a214116d288907821c626108"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb22h0",
+        "size": 5280,
+        "sha256": "21b5f6235c02cab707e9f4ae79ffad3883d86c4099811a51b72c9c34d6674391"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb26h0",
+        "size": 5280,
+        "sha256": "835ea988f8ba55515b7a9cc0938d81fff35bd334a7c4fc278df907b002f37544"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb25h0",
+        "size": 5280,
+        "sha256": "a80a792cb4c37aef0d2fdce044400b9a6c3d4e92ffbb136ebc26d9bf3bb1556c"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb27h0",
+        "size": 5280,
+        "sha256": "f47451182ec7adb81c910ea8a1601094a90f1dbafcbf0cca252715e7ed461250"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb28h0",
+        "size": 5280,
+        "sha256": "babe2330597948c6bb9dffc6ae526467b38d53c31e3b1c954ca6329e5686958c"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb29h0",
+        "size": 5280,
+        "sha256": "65b2086c94289f838850d4a5963ff9c2f24dd7febdcf7172ef539f14d782fc78"
+      },
+      {
+        "kind": "TXTR",
+        "name": "score_buga",
+        "size": 132256,
+        "sha256": "38960a54cef073f5f90cd93eba5ae2102aafa46ecc149ec76da0f1f33b86b834"
+      },
+      {
+        "kind": "SCNE",
+        "name": "score_bug",
+        "size": 20384,
+        "sha256": "e572520dbf0e8b1de66392ea8ba2c04163590e0ea00ffc33d1fed43a65089934"
+      }
+    ],
+    "appended_bytes": 323808,
+    "font_count": 0,
+    "texture_count": 34,
+    "scene_count": 1,
+    "quads": 47,
+    "native_heap_bytes": 327168
+  },
+  "display": {
+    "aspect": "16:9",
+    "size": [
+      1920,
+      1080
+    ],
+    "path": "/tmp/claude-1000/-home-noah-Desktop-2K5-8-Editors/db909074-2fcd-484b-bae4-c8c664621524/scratchpad/prev/b72_espnstate_169_display.png",
+    "quads": {
+      "body_left": [
+        437.00000000000006,
+        941.9999999999999,
+        447.0,
+        1052.0
+      ],
+      "body": [
+        447.0,
+        941.9999999999999,
+        1468.0,
+        1052.0
+      ],
+      "body_right": [
+        1468.0,
+        941.9999999999999,
+        1478.0000000000002,
+        1052.0
+      ],
+      "housing": [
+        837.0,
+        982.9999999999999,
+        1083.0,
+        1045.0
+      ],
+      "capsule": [
+        838.9999999999999,
+        998.9999999999999,
+        1019.0,
+        1039.0
+      ],
+      "plate": [
+        837.0,
+        946.9999999999999,
+        1083.0,
+        982.9999999999999
+      ],
+      "pointer": [
+        951.0,
+        941.9999999999999,
+        964.9999999999999,
+        946.9999999999999
+      ],
+      "away_wing": [
+        437.00000000000006,
+        941.9999999999999,
+        650.0,
+        1052.0
+      ],
+      "home_wing": [
+        1265.0,
+        941.9999999999999,
+        1478.0000000000002,
+        1052.0
+      ],
+      "red": [
+        1019.0,
+        998.9999999999999,
+        1082.0,
+        1040.0
+      ],
+      "away_logo": [
+        453.0000000000001,
+        943.0,
+        653.0,
+        1050.0
+      ],
+      "home_logo": [
+        1268.0,
+        943.0,
+        1468.0,
+        1050.0
+      ],
+      "watermark": [
+        1544.0,
+        35.0,
+        1758.0,
+        63.999999999999986
+      ],
+      "FUMBLE": [
+        837.0,
+        946.9999999999999,
+        1083.0,
+        982.9999999999999
+      ],
+      "ball on": [
+        837.0,
+        946.9999999999999,
+        1083.0,
+        982.9999999999999
+      ],
+      "FLAG": [
+        837.0,
+        946.9999999999999,
+        1083.0,
+        982.9999999999999
+      ],
+      "hang time": [
+        837.0,
+        946.9999999999999,
+        1083.0,
+        982.9999999999999
+      ]
+    }
+  },
+  "draws": [
+    {
+      "text": "",
+      "glyph_quads": 0
+    },
+    {
+      "text": "",
+      "glyph_quads": 0
+    },
+    {
+      "text": "",
+      "glyph_quads": 0
+    },
+    {
+      "text": "",
+      "glyph_quads": 0
+    },
+    {
+      "text": "",
+      "glyph_quads": 0
+    },
+    {
+      "text": "",
+      "glyph_quads": 0
+    },
+    {
+      "text": "",
+      "glyph_quads": 0
+    },
+    {
+      "text": "",
+      "glyph_quads": 0
+    },
+    {
+      "text": "",
+      "glyph_quads": 0
+    }
+  ],
+  "raster": {
+    "uv_transform": [
+      0.5,
+      0.5,
+      0.5,
+      0.5
+    ],
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 8
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      }
+    },
+    "rendered_materials": {
+      "cscore_buga": {
+        "descriptor": "0x404a638",
+        "name": "score_buga",
+        "span_sha256": "38960a54cef073f5f90cd93eba5ae2102aafa46ecc149ec76da0f1f33b86b834",
+        "dimensions": [
+          256,
+          512
+        ]
+      },
+      "dscore_buga": {
+        "descriptor": "0x404a638",
+        "name": "score_buga",
+        "span_sha256": "38960a54cef073f5f90cd93eba5ae2102aafa46ecc149ec76da0f1f33b86b834",
+        "dimensions": [
+          256,
+          512
+        ]
+      },
+      "hscore_buga": {
+        "descriptor": "0x40349b8",
+        "name": "sb13h0",
+        "span_sha256": "3d59aaae861fa3d7db41e4839d96d8ee73511a570700a15113a78ed55902db15",
+        "dimensions": [
+          64,
+          64
+        ]
+      },
+      "score_buga": {
+        "descriptor": "0x404a638",
+        "name": "score_buga",
+        "span_sha256": "38960a54cef073f5f90cd93eba5ae2102aafa46ecc149ec76da0f1f33b86b834",
+        "dimensions": [
+          256,
+          512
+        ]
+      },
+      "yscore_buga": {
+        "descriptor": "0x404a638",
+        "name": "score_buga",
+        "span_sha256": "38960a54cef073f5f90cd93eba5ae2102aafa46ecc149ec76da0f1f33b86b834",
+        "dimensions": [
+          256,
+          512
+        ]
+      },
+      "yscore_buga1": {
+        "descriptor": "0x404a638",
+        "name": "score_buga",
+        "span_sha256": "38960a54cef073f5f90cd93eba5ae2102aafa46ecc149ec76da0f1f33b86b834",
+        "dimensions": [
+          256,
+          512
+        ]
+      },
+      "zscore_buga": {
+        "descriptor": "0x402ceb8",
+        "name": "sb08h0",
+        "span_sha256": "9a3e0a4f828091c3db42423c1e2198a640e49f158885a9fdac54811e27e02b21",
+        "dimensions": [
+          64,
+          64
+        ]
+      }
+    },
+    "submission": [
+      {
+        "material": 2,
+        "name": "cscore_buga",
+        "indices": 28
+      },
+      {
+        "material": 4,
+        "name": "dscore_buga",
+        "indices": 10
+      },
+      {
+        "material": 7,
+        "name": "yscore_buga1",
+        "indices": 82
+      },
+      {
+        "material": 5,
+        "name": "bscore_buga",
+        "indices": 4
+      },
+      {
+        "material": 0,
+        "name": "bscore_buga1",
+        "indices": 4
+      },
+      {
+        "material": 1,
+        "name": "bscore_buga2",
+        "indices": 4
+      },
+      {
+        "material": 6,
+        "name": "score_buga",
+        "indices": 22
+      },
+      {
+        "material": 3,
+        "name": "hscore_buga",
+        "indices": 4
+      },
+      {
+        "material": 9,
+        "name": "yscore_buga",
+        "indices": 94
+      },
+      {
+        "material": 10,
+        "name": "zscore_buga",
+        "indices": 4
+      },
+      {
+        "material": 8,
+        "name": "zz_ESPN_bug1",
+        "indices": 4
+      }
+    ],
+    "raster_policy": {
+      "order": "SHAP descriptor order, then push-buffer order",
+      "depth": "none (sprite submission order)",
+      "blend": "vertex * texture, source alpha model",
+      "cull_positive": false,
+      "gpu_state_proved": false,
+      "calibration": null
+    }
+  },
+  "runtime_witnessed": false
+}

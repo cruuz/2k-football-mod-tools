@@ -895,6 +895,10 @@ class BuildPanel(QWidget):
             pl, "scorebug_runtime", "Sprite scorebug (experimental)",
             r62_ui.SCOREBUG_RUNTIME_HELP, needs_image=True, badge=NOT_TESTED,
             details=r62_ui.SCOREBUG_RUNTIME_HELP)
+        from .scorebug_sprite_preview_qt import watermark_combo
+        self.scorebug_watermark_combo=watermark_combo(self)
+        self.scorebug_watermark_combo.currentIndexChanged.connect(self._refresh)
+        watermark_row=QHBoxLayout();watermark_row.addWidget(QLabel('ESPN watermark'));watermark_row.addWidget(self.scorebug_watermark_combo);pl.addLayout(watermark_row)
         self.music_policy_check = self._option(pl, "music_policy", "Use jukebox songs in menus", "Retail: menus use the menu bank. Patch: menus use the 59 jukebox recordings in the game's random order. The 7 menu tracks are not included yet. Twelve jukebox tracks are spoken outtakes.", badge=NOT_TESTED)
         self.music_unlock_check = self._option(pl, "music_unlock", "Make every music collection available",
             "Every collection is available without spending credits. Experimental, not yet tested in game.", badge=NOT_TESTED)
@@ -1430,6 +1434,7 @@ class BuildPanel(QWidget):
             self.accelerated_clock_minimum.findData(values.get("accelerated_clock_minimum_seconds", 20)))
         self.accelerated_clock_minimum.blockSignals(False)
         for widget, key, default in (
+            (self.scorebug_watermark_combo, "scorebug_watermark", "auto"),
             (self.decided_clock_margin, "decided_clock_margin", 17),
             (self.decided_clock_seconds, "decided_clock_seconds", 60),
             (self.cpu_scrambles_level, "cpu_scrambles", "retail"),
@@ -1612,6 +1617,7 @@ class BuildPanel(QWidget):
             modern_arrowhead=self._modern_arrowhead_changed(),
             screen_timing=(self.screen_timing_combo.currentText() if self.screen_timing_check.isChecked() else None),
             scorebug_runtime=self.scorebug_runtime_check.isChecked(),
+            scorebug_watermark=self.scorebug_watermark_combo.currentData(),
             music_policy="jukebox_menus" if self.music_policy_check.isChecked() else "retail",
             music_unlock=self.music_unlock_check.isChecked(), music_userlist=self.music_userlist_check.isChecked(),
             music_project=(self.music_project_field.text().strip() or None) if self.music_project_check.isChecked() else None,

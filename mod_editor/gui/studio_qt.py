@@ -3135,8 +3135,11 @@ class StudioMainWindow(QMainWindow):
     def _build_scorebar_page(self):
         self._scorebar_panel = ScorebugStudioPanel(defer_preview=True)
         self._scorebar_panel.sprite_source_provider = lambda: getattr(self.facade, "source_path", None)
+        self._scorebar_panel.sprite_watermark_provider = lambda: (
+            self._build_panel.scorebug_watermark_combo.currentData() if getattr(self, '_build_panel', None) is not None else 'auto')
         self._scorebar_panel.folder_chosen.connect(self._scorebar_folder_chosen)
         self._scorebar_panel.sprite_folder_chosen.connect(self._sprite_scorebar_folder_chosen)
+        self._scorebar_panel.sprite_watermark_changed.connect(self._sprite_watermark_changed)
         return self._scorebar_panel
 
     def _sync_constructed_page(self):
@@ -9037,6 +9040,13 @@ class StudioMainWindow(QMainWindow):
             self._build_panel.set_senior_bowl_options(options)
             self._capture_music_build_settings()
             self._mark_workspace_changed()
+
+    def _sprite_watermark_changed(self, value: str) -> None:
+        self._ensure_workspace(self.navigation.count() - 1)
+        combo=self._build_panel.scorebug_watermark_combo
+        combo.setCurrentIndex(combo.findData(value))
+        self._capture_music_build_settings()
+        self._mark_workspace_changed()
 
     def _sprite_scorebar_folder_chosen(self, folder: str) -> None:
         self._scorebar_folder_chosen(folder)

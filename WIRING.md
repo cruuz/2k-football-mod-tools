@@ -1,38 +1,32 @@
-# Beta 71 A7 integration wiring
+# b72-s1 integration
 
-All protected files are granted for this job. S4 has no newly authored deferred wiring: `git diff 464423f0 7b54e354 -- WIRING.md` is empty. Its inherited beta-70 T1 instructions are archived anonymously in `WIRING_B71_S4.md`.
+The requested Studio/Build option is wired in this branch, including the supporting Build panel, project settings and Studio shell connections. No GUI insertion is left to the integrator. The existing scorebug capability remains EXPERIMENTAL; no registry row is added and the registry count stays unchanged.
 
-- The inherited completion-dialog hooks are already active at `mod_editor/gui/studio_qt.py:8023` and `mod_editor/core/build_feedback.py:53`.
-- The inherited Windows-helper and digit-fit proposals are historical follow-ups, not S4 changes. This merge does not add an unreviewed executable or a digit writer.
-- S4's runtime registry metadata is merged by capability ID; all 176 unique rows remain.
-- The release allowlist retains the colour controls and documentation and adds the scorebug assets module and both label assets.
-- The authored label PNG has an exact path/size/dimensions/SHA-256 catalog entry and a refreshed catalog hash in the release checker. The binary-asset validator is unchanged.
-- Provider/runtime seals are regenerated with `packaging/repin.py --apply`; the combined closure is 288 modules (A6 287 plus S4's painted-atlas assets dependency), with 176 registry capabilities.
-- The cave reservation manifest is regenerated last as the complete forward bounded XBE projection. Production regeneration remains required. External command: `bash reports/b71_a7/manifest_regen.sh`.
+The protected capability registry needs this update to the existing row `nfl2k5.scorebug_presentation.runtime` in `mod_editor/capabilities/registry.v1.json`. This is a concrete replacement for its summary and an additional selector entry:
 
-Exact file:line locations, measurements and final command receipts are in `ASTRA_REPORT.md` and `reports/b71_a7/`.
+```json
+{
+  "summary": "The SD sprite cut provides a larger readable down label and quarter/play clock, cells pre-filtered to their 16:9 HUD footprint, team-coloured rims, measured wing ramps and logo placement, a glossy possession plate, white scores, a separator and a dark pointer. ESPN NFL is the default watermark, with MNF only for franchise Monday night; always MNF and off are available. One quad swaps UVs through the calendar-aware weekday site. The 47-quad, 35-resource design still appends 323,808 bytes. Native CPU execution and software raster proofs cover both aspects; in-game appearance remains UNWITNESSED and the sprite feature stays off in every preset.",
+  "selector_to_append": {
+    "name": "scorebug_watermark",
+    "allowed": "auto (default): NFL with MNF on franchise Monday night; mnf: always MNF; off: no watermark",
+    "required": false
+  },
+  "evidence_to_append": [
+    "reports/b72_s1/residuals.json",
+    "reports/b72_s1/label_sweep.json",
+    "reports/b72_s1/native_sequence.json",
+    "reports/b72_s1/watermark_native.json",
+    "tests/mod_editor/test_nfl2k5_scorebug_sd.py",
+    "tests/mod_editor/test_nfl2k5_scorebug_watermark.py"
+  ]
+}
+```
 
-# U1 direct integration
+Remove the obsolete “light notch” and “standard glyph ink within one HUD pixel” statements in that row's proof scope. The larger SD cap intentionally differs from broadcast proportions. Preserve the `not-tested` witness status.
 
-The U1 brief authorizes the updater, Linux packaging and launch checks. The
-following integration edits are already applied; no deferred wiring is needed.
+Regenerate `data/nfl2k5_cave_reservations.json` after integration, as required by ASTRA_CONTEXT.md. The owner still reserves exactly 4,096 RX bytes and does not move allocation boundaries. Its internal instructions and source fingerprints changed. This protected manifest was not rewritten from stale observations. The full disposable-disc manifest build belongs on the integration scratch volume; this sandbox permits writes only in the worktree and temporary directory.
 
-- `mod_editor/gui/studio_qt.py`, `launch_studio`, immediately before `app.exec_()`:
-  `from mod_editor.core.self_update import notify_update_ready` followed by
-  `notify_update_ready()`. This schedules the first-event-loop acknowledgement
-  only when an updater supplied its private readiness path.
-- `mod_editor/apf_studio/gui.py`, `launch_studio`, immediately before
-  `application.exec_()`: the identical two lines, for the shared tarball updater.
-- `mod_editor/gui/update_ui.py`, `_confirm_dialog` and `_on_done`: describe the
-  preflight/automatic restore and show the actual retained backup path.
-- `packaging/check_apf2k8_mod_studio_{release,runtime}.py`: require the selected
-  interpreter invocation, `.studio-python`, `--update-check`, and runtime-specific
-  dependency advice in the launcher contract. No audit is removed.
-- `packaging/check_2k5_mod_studio_runtime.py`: `repin.py --apply` updates the
-  existing `studio_qt.py` source digest for its two-line acknowledgement hook.
+`packaging/repin.py --apply` refreshes source fingerprints, including `mod_editor/core/providers.py` and existing packaging pins. No release version constants were changed. The measurement and authoring tools need not be added to the release allowlist; builds use only the shipped PNG/JSON and existing compiler/runtime modules.
 
-The existing beta-tag parser already supports `beta-71.1`; its grammar is
-unchanged. `update_check.BUILD_RELEASE_TAG` and its test are stamped `beta-71.1`
-so the hotfix will not advertise itself again. Product RC versions are unchanged.
-All NSIS code and the Windows installer
-handoff functions are unchanged. No registry rows or cave reservations change.
+The shared Git metadata is read-only. Commits and branch `b72-s1` therefore live in `.scratch/b72-s1.git`, using the original object database read-only. Fetch the verified `.scratch/astra-b72-s1.bundle`; it contains the delivery branch based on 088e3f41.

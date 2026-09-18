@@ -1,5 +1,10 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC98, beta 72
+
+- **Readable sprite down and distance.** The report was “the scorebug still doesn't appear to have readable 1st and 10.” The SD cut increases the down-label cap to 30 source pixels and the quarter/play clock to 26. Cells are area-filtered before packing, including the maximum score/clock compression. Team-coloured rims, brighter wing ramps, larger and repositioned logos, a glossy plate, brighter housing, white scores, a capsule separator and a dark pointer follow the measured ESPN reference. Native CPU and software-raster evidence cover both aspects; a played retest is still required.
+- **ESPN watermark.** The sprite option defaults to ESPN NFL, selecting MNF only for a franchise Monday night game. Play Now and Monday afternoon use NFL. Studio offers “NFL (MNF on Monday night)”, “Always MNF” and “Off”; Preview displays both cells and uses the display-aspect image. The calendar-aware test swaps UVs on one quad. The sprite feature remains EXPERIMENTAL and off in every preset. No in-game result is claimed.
+
 ## v1.0 RC97, beta 71.1: the reports after beta 71 (2026-09-16)
 
 - Missing NumPy no longer prevents reading build options. Scorebug texture actions name the required package and install command. Windows Setup includes pinned NumPy 1.26.4; portable install instructions declare it, updates retain local packages, and release checks audit lazy third-party imports.

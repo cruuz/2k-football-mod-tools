@@ -1,0 +1,440 @@
+{
+ "coordinate_spaces": {
+  "y_scale_hud_per_source": 0.4148148148148148,
+  "x_scale_hud_per_source": {
+   "4:3": 0.4444444444444444,
+   "16:9": 0.3950617283950617
+  },
+  "x_raster_hud_per_source_after_widescreen_patch": {
+   "4:3": 0.4444444444444444,
+   "16:9": 0.3333333333333333
+  }
+ },
+ "glyph_sets": {
+  "score": {
+   "cell_texels": [
+    40,
+    53
+   ],
+   "cap_height_source_px": 53,
+   "stem_width_texels_median": 14.0,
+   "field": "away_score",
+   "colour": "#E1E1E1",
+   "4:3": {
+    "glyph_hud_px": [
+     17.78,
+     21.99
+    ],
+    "cap_height_hud_px": 21.99,
+    "cap_height_display_px": 53.0,
+    "minification_x": 2.25,
+    "minification_y": 2.41,
+    "stem_width_hud_px": 6.22,
+    "texel_columns_sampled": 0.9,
+    "texel_rows_sampled": 0.83,
+    "bilinear_vs_area_mean_abs_alpha_error": 0.0299,
+    "bilinear_vs_area_max_abs_alpha_error": 0.274,
+    "bilinear_peak_alpha": 1.0,
+    "area_peak_alpha": 1.0
+   },
+   "16:9": {
+    "glyph_hud_px": [
+     13.33,
+     21.99
+    ],
+    "cap_height_hud_px": 21.99,
+    "cap_height_display_px": 53.0,
+    "minification_x": 3.0,
+    "minification_y": 2.41,
+    "stem_width_hud_px": 4.67,
+    "texel_columns_sampled": 0.65,
+    "texel_rows_sampled": 0.83,
+    "bilinear_vs_area_mean_abs_alpha_error": 0.0373,
+    "bilinear_vs_area_max_abs_alpha_error": 0.2604,
+    "bilinear_peak_alpha": 1.0,
+    "area_peak_alpha": 1.0
+   }
+  },
+  "clock": {
+   "cell_texels": [
+    23,
+    27
+   ],
+   "cap_height_source_px": 27,
+   "stem_width_texels_median": 8.0,
+   "field": "clock",
+   "colour": "#000000",
+   "4:3": {
+    "glyph_hud_px": [
+     10.22,
+     11.2
+    ],
+    "cap_height_hud_px": 11.2,
+    "cap_height_display_px": 27.0,
+    "minification_x": 2.25,
+    "minification_y": 2.41,
+    "stem_width_hud_px": 3.56,
+    "texel_columns_sampled": 0.87,
+    "texel_rows_sampled": 0.815,
+    "bilinear_vs_area_mean_abs_alpha_error": 0.0359,
+    "bilinear_vs_area_max_abs_alpha_error": 0.2511,
+    "bilinear_peak_alpha": 1.0,
+    "area_peak_alpha": 1.0
+   },
+   "16:9": {
+    "glyph_hud_px": [
+     7.67,
+     11.2
+    ],
+    "cap_height_hud_px": 11.2,
+    "cap_height_display_px": 27.0,
+    "minification_x": 3.0,
+    "minification_y": 2.41,
+    "stem_width_hud_px": 2.67,
+    "texel_columns_sampled": 0.652,
+    "texel_rows_sampled": 0.815,
+    "bilinear_vs_area_mean_abs_alpha_error": 0.0663,
+    "bilinear_vs_area_max_abs_alpha_error": 0.2735,
+    "bilinear_peak_alpha": 1.0,
+    "area_peak_alpha": 1.0
+   }
+  },
+  "small": {
+   "cell_texels": [
+    15,
+    19
+   ],
+   "cap_height_source_px": 19,
+   "stem_width_texels_median": 5.0,
+   "field": "play_clock",
+   "colour": "#FFFFFF",
+   "4:3": {
+    "glyph_hud_px": [
+     6.67,
+     7.88
+    ],
+    "cap_height_hud_px": 7.88,
+    "cap_height_display_px": 19.0,
+    "minification_x": 2.25,
+    "minification_y": 2.41,
+    "stem_width_hud_px": 2.22,
+    "texel_columns_sampled": 0.867,
+    "texel_rows_sampled": 0.842,
+    "bilinear_vs_area_mean_abs_alpha_error": 0.0814,
+    "bilinear_vs_area_max_abs_alpha_error": 0.3052,
+    "bilinear_peak_alpha": 0.998,
+    "area_peak_alpha": 0.996
+   },
+   "16:9": {
+    "glyph_hud_px": [
+     5.0,
+     7.88
+    ],
+    "cap_height_hud_px": 7.88,
+    "cap_height_display_px": 19.0,
+    "minification_x": 3.0,
+    "minification_y": 2.41,
+    "stem_width_hud_px": 1.67,
+    "texel_columns_sampled": 0.667,
+    "texel_rows_sampled": 0.842,
+    "bilinear_vs_area_mean_abs_alpha_error": 0.1246,
+    "bilinear_vs_area_max_abs_alpha_error": 0.3007,
+    "bilinear_peak_alpha": 1.0,
+    "area_peak_alpha": 0.984
+   }
+  },
+  "label": {
+   "cell_texels": [
+    16,
+    23
+   ],
+   "cap_height_source_px": 23,
+   "stem_width_texels_median": 6.0,
+   "field": "down",
+   "colour": "#FFFFFF",
+   "4:3": {
+    "glyph_hud_px": [
+     7.11,
+     9.54
+    ],
+    "cap_height_hud_px": 9.54,
+    "cap_height_display_px": 23.0,
+    "minification_x": 2.25,
+    "minification_y": 2.41,
+    "stem_width_hud_px": 2.67,
+    "texel_columns_sampled": 0.875,
+    "texel_rows_sampled": 0.826,
+    "bilinear_vs_area_mean_abs_alpha_error": 0.0575,
+    "bilinear_vs_area_max_abs_alpha_error": 0.2724,
+    "bilinear_peak_alpha": 0.997,
+    "area_peak_alpha": 0.996
+   },
+   "16:9": {
+    "glyph_hud_px": [
+     5.33,
+     9.54
+    ],
+    "cap_height_hud_px": 9.54,
+    "cap_height_display_px": 23.0,
+    "minification_x": 3.0,
+    "minification_y": 2.41,
+    "stem_width_hud_px": 2.0,
+    "texel_columns_sampled": 0.625,
+    "texel_rows_sampled": 0.826,
+    "bilinear_vs_area_mean_abs_alpha_error": 0.0629,
+    "bilinear_vs_area_max_abs_alpha_error": 0.2294,
+    "bilinear_peak_alpha": 1.0,
+    "area_peak_alpha": 0.992
+   }
+  }
+ },
+ "down_label_1st_and_10": {
+  "tokens": [
+   "1",
+   "st",
+   " ",
+   "&",
+   " ",
+   "1",
+   "0"
+  ],
+  "glyph_quads_used": 5,
+  "quad_capacity": 8,
+  "string_width_source_px": 123,
+  "field_width_limit_source_px": 220,
+  "compressed": false,
+  "espn_reference_ink_source_px": [
+   123,
+   23
+  ],
+  "4:3": {
+   "string_width_hud_px": 54.67,
+   "string_width_display_px": 123.0,
+   "cap_height_hud_px": 9.54
+  },
+  "16:9": {
+   "string_width_hud_px": 41.0,
+   "string_width_display_px": 123.0,
+   "cap_height_hud_px": 9.54
+  }
+ },
+ "espn_reference_frame_012001": {
+  "ink_box_source": [
+   898,
+   955,
+   1021,
+   978
+  ],
+  "measured_ink_rows": [
+   6,
+   28
+  ],
+  "measured_cap_height_px": 23,
+  "measured_ink_width_px": 124,
+  "stem_width_px_median": 5.0,
+  "stem_width_px_p25_p75": [
+   5.0,
+   7.0
+  ],
+  "plate_rgb_above_ink": [
+   115.5,
+   22.8,
+   45.4
+  ],
+  "ink_rgb_mean": [
+   244.6,
+   227.5,
+   230.1
+  ],
+  "dark_shadow_pixel_fraction_in_crop": 0.581,
+  "ink_vs_plate_luminance_ratio": 3.82,
+  "clock": {
+   "box": [
+    920,
+    1006,
+    1000,
+    1033
+   ],
+   "cap_height_px": 27,
+   "ink_width_px": 80,
+   "stem_width_px_median": 8.0
+  },
+  "quarter": {
+   "box": [
+    850,
+    1009,
+    892,
+    1028
+   ],
+   "cap_height_px": 19,
+   "ink_width_px": 42,
+   "stem_width_px_median": 3.0
+  },
+  "play_clock": {
+   "box": [
+    1042,
+    1009,
+    1057,
+    1028
+   ],
+   "cap_height_px": 19,
+   "ink_width_px": 15,
+   "stem_width_px_median": 6.0
+  }
+ },
+ "atlas_p8_palette": {
+  "palette_entries_used": 256,
+  "palette_capacity": 256,
+  "label_palette_entries": 66,
+  "label_distinct_alpha_levels": 66,
+  "label_alpha_levels": [
+   0,
+   3,
+   8,
+   13,
+   17,
+   21,
+   25,
+   29,
+   31,
+   35,
+   37,
+   42,
+   46,
+   50,
+   54,
+   56,
+   60,
+   63,
+   67,
+   71,
+   74,
+   78,
+   84,
+   89,
+   94,
+   97,
+   101,
+   104,
+   108,
+   114,
+   119,
+   123,
+   127,
+   133,
+   138,
+   141,
+   145,
+   149,
+   154,
+   159,
+   163,
+   167,
+   172,
+   176,
+   180,
+   183,
+   186,
+   190,
+   195,
+   200,
+   203,
+   207,
+   211,
+   216,
+   220,
+   224,
+   228,
+   234,
+   237,
+   240,
+   245,
+   248,
+   250,
+   251,
+   253,
+   255
+  ],
+  "small_palette_entries": 66,
+  "small_distinct_alpha_levels": 66,
+  "small_alpha_levels": [
+   0,
+   3,
+   8,
+   13,
+   17,
+   21,
+   25,
+   29,
+   31,
+   35,
+   37,
+   42,
+   46,
+   50,
+   54,
+   56,
+   60,
+   63,
+   67,
+   71,
+   74,
+   78,
+   84,
+   89,
+   94,
+   97,
+   101,
+   104,
+   108,
+   114,
+   119,
+   123,
+   127,
+   133,
+   138,
+   141,
+   145,
+   149,
+   154,
+   159,
+   163,
+   167,
+   172,
+   176,
+   180,
+   183,
+   186,
+   190,
+   195,
+   200,
+   203,
+   207,
+   211,
+   216,
+   220,
+   224,
+   228,
+   234,
+   237,
+   240,
+   245,
+   248,
+   250,
+   251,
+   253,
+   255
+  ],
+  "clock_palette_entries": 66,
+  "score_palette_entries": 66,
+  "body/plate/wing_palette_entries": 212
+ },
+ "atlas": {
+  "size": [
+   256,
+   512
+  ],
+  "mip_levels": 1,
+  "note": "mod_editor/core/nfl2k5_scorebug_assets.py:350 packs one level only"
+ }
+}
