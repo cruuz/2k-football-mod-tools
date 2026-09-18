@@ -1,0 +1,14 @@
+B72 IMPORT {"case": "sock256_stripes", "helper": true, "width": 256, "distinct_colours": 3, "span_budget_bytes": 14176, "outcome": "fit", "seconds": 2.8690757949989347, "repeat_seconds": 0.006229258000530535}
+B72 IMPORT {"case": "sock256_stripes", "helper": false, "width": 256, "distinct_colours": 3, "span_budget_bytes": 14176, "outcome": "fit", "seconds": 2.822568773999592, "repeat_seconds": 0.006100354999944102}
+B72 IMPORT {"case": "sock256_sheet", "helper": true, "width": 256, "distinct_colours": 1688, "span_budget_bytes": 14176, "outcome": "fit", "seconds": 13.890043145000163, "repeat_seconds": 0.011254134000409977}
+B72 IMPORT {"case": "sock256_sheet", "helper": false, "width": 256, "distinct_colours": 1688, "span_budget_bytes": 14176, "outcome": "fit", "seconds": 17.695202155000516, "repeat_seconds": 0.011275795999608818}
+B72 IMPORT {"case": "sock256_photo", "helper": true, "width": 256, "distinct_colours": 63729, "span_budget_bytes": 14176, "outcome": "fit", "seconds": 180.34284721599943, "repeat_seconds": 0.01940860799913935}
+B72 IMPORT {"case": "sock256_photo", "helper": false, "width": 256, "distinct_colours": 63729, "span_budget_bytes": 14176, "outcome": "fit", "seconds": 184.04765769599908, "repeat_seconds": 0.019694925998919643}
+B72 IMPORT {"case": "shoe64_stripes", "helper": true, "width": 64, "distinct_colours": 3, "span_budget_bytes": 3760, "outcome": "fit", "seconds": 0.11781426400011696, "repeat_seconds": 0.0021644529988407157}
+B72 IMPORT {"case": "shoe64_stripes", "helper": false, "width": 64, "distinct_colours": 3, "span_budget_bytes": 3760, "outcome": "fit", "seconds": 0.11803282299842976, "repeat_seconds": 0.002155415999368415}
+B72 IMPORT {"case": "shoe64_sheet", "helper": true, "width": 64, "distinct_colours": 445, "span_budget_bytes": 3760, "outcome": "fit", "seconds": 2.654080485999657, "repeat_seconds": 0.002695536999453907}
+B72 IMPORT {"case": "shoe64_sheet", "helper": false, "width": 64, "distinct_colours": 445, "span_budget_bytes": 3760, "outcome": "fit", "seconds": 3.4445234240010905, "repeat_seconds": 0.002720092999879853}
+B72 IMPORT {"case": "shoe64_photo", "helper": true, "width": 64, "distinct_colours": 4087, "span_budget_bytes": 3760, "outcome": "fit", "seconds": 11.13196014999994, "repeat_seconds": 0.0035360130004846724}
+B72 IMPORT {"case": "shoe64_photo", "helper": false, "width": 64, "distinct_colours": 4087, "span_budget_bytes": 3760, "outcome": "fit", "seconds": 11.491690644999835, "repeat_seconds": 0.0028569009991770145}
+B72 IMPORT {"case": "shoe128_photo", "helper": true, "width": 128, "distinct_colours": 16256, "span_budget_bytes": 6048, "outcome": "fit", "seconds": 45.77284056799908, "repeat_seconds": 0.006635726000240538}
+B72 IMPORT {"case": "shoe128_photo", "helper": false, "width": 128, "distinct_colours": 16256, "span_budget_bytes": 6048, "outcome": "fit", "seconds": 49.73739884300085, "repeat_seconds": 0.00672475899955316}

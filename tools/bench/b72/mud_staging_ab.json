@@ -1,0 +1,29 @@
+[
+ {
+  "design": "photo",
+  "helper": true,
+  "scale": 1,
+  "set_selector": "00H0",
+  "targets": [
+   "socks00 64x64"
+  ],
+  "outcome": "refused",
+  "budget_bytes": 6928,
+  "required_bytes": 6937,
+  "seconds": 13.852827400000024
+ },
+ {
+  "design": "photo",
+  "helper": true,
+  "scale": 1,
+  "set_selector": "00H0",
+  "targets": [
+   "socks00 64x64",
+   "socks00_mud 64x64"
+  ],
+  "outcome": "fit",
+  "encoded_bytes": 6928,
+  "budget_bytes": 6928,
+  "seconds": 23.635820614001204
+ }
+]

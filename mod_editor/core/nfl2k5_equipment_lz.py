@@ -135,10 +135,14 @@ def compress_equipment_optimal(source: bytes, *, stream_tag: int, offset_bits: i
     previous = array("i", [-1]) * count
     ranks = array("I", [0]) * count
     heads: dict[bytes, int] = {}
+    window_counts = {}
+    within = array("I", [0]) * count
     for position in range(count - 2):
         if position % 256 == 0:
             check_time()
         key = source[position:position + 3]
+        within[position] = window_counts.get(key, 0)
+        window_counts[key] = within[position] + 1
         prior = heads.get(key, -1)
         previous[position] = prior
         ranks[position] = ranks[prior] + 1 if prior >= 0 else 0
@@ -146,6 +150,9 @@ def compress_equipment_optimal(source: bytes, *, stream_tag: int, offset_bits: i
         expired = position - maximum_distance
         if expired >= 0:
             old_key = source[expired:expired + 3]
+            window_counts[old_key] -= 1
+            if not window_counts[old_key]:
+                del window_counts[old_key]
             if heads.get(old_key) == expired:
                 del heads[old_key]
 
@@ -167,36 +174,21 @@ def compress_equipment_optimal(source: bytes, *, stream_tag: int, offset_bits: i
             comparisons += ranks[position] - ranks[full_match]
             best, distance = upper, position - full_match
             prior = -1
-        while prior >= 0 and prior >= cutoff:
-            match_at = prior
-            prior = previous[prior]
-            comparisons += 1
-            if comparisons % 4096 == 0:
-                check_time()
-            if comparisons > max_candidate_comparisons:
-                raise TxtrError("Equipment compression search limit exceeded; simplify the image")
-            gap = position - match_at
-            limit = min(upper, gap)
-            if limit <= best or not source.startswith(prefix, match_at):
-                continue
-            # Most equipment runs match the whole limit. Compare in C, then
-            # bisect a partial match rather than walking its bytes in Python.
-            fragment = source[position:position + limit]
-            if source.startswith(fragment, match_at):
-                length = limit
-            else:
-                low, high = best + 1, limit
-                while low + 1 < high:
-                    middle = (low + high) // 2
-                    if source.startswith(fragment[:middle], match_at):
-                        low = middle
-                    else:
-                        high = middle
-                length = low
-            best, distance = length, gap
-            if best == upper:
-                break
-            prefix = source[position:position + best + 1]
+        elif upper >= 3:
+            # No full-length match exists, so the original nearest-first scan
+            # visits every three-byte candidate. C substring searches find the
+            # same longest match and nearest tie without walking that chain.
+            comparisons += within[position]
+            low, high = 2, upper
+            fragment = source[position:position + upper]
+            while low + 1 < high:
+                middle = (low + high) // 2
+                match_at = source.rfind(fragment[:middle], max(0, cutoff), position)
+                if match_at >= 0:
+                    low, distance = middle, position - match_at
+                else:
+                    high = middle
+            best = low
         if comparisons > max_candidate_comparisons:
             raise TxtrError("Equipment compression search limit exceeded; simplify the image")
         cost, choice = 9 + costs[position + 1], 1

@@ -1,0 +1,31 @@
+         346359141 function calls (346295380 primitive calls) in 90.536 seconds
+
+   Ordered by: cumulative time
+   List reduced from 147 to 22 due to restriction <22>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.112    0.112   95.037   95.037 /home/noah/2k-worktrees/opus-b72-speed/mod_editor/core/nfl2k5_uniform_equipment_writer.py:964(_quantize_art)
+   212980   10.858    0.000   80.815    0.000 {built-in method builtins.min}
+ 37348608   17.260    0.000   55.721    0.000 /home/noah/2k-worktrees/opus-b72-speed/mod_editor/core/equipment_palette.py:7(distance)
+        1    0.000    0.000   54.963   54.963 /home/noah/2k-worktrees/opus-b72-speed/mod_editor/core/nfl2k5_uniform_equipment_writer.py:976(medoids)
+ 37446513   18.398    0.000   42.078    0.000 {built-in method builtins.sum}
+ 21033984    4.932    0.000   35.979    0.000 /home/noah/2k-worktrees/opus-b72-speed/mod_editor/core/nfl2k5_uniform_equipment_writer.py:990(<lambda>)
+      257    0.000    0.000   32.675    0.127 /home/noah/2k-worktrees/opus-b72-speed/mod_editor/core/nfl2k5_uniform_equipment_writer.py:979(<genexpr>)
+ 16314624    5.323    0.000   29.997    0.000 /home/noah/2k-worktrees/opus-b72-speed/mod_editor/core/nfl2k5_uniform_equipment_writer.py:979(<lambda>)
+        1    0.129    0.129   22.288   22.288 /home/noah/2k-worktrees/opus-b72-speed/tools/nfl_tset_png_import.py:430(median_cut_palette)
+149394432   21.300    0.000   21.300    0.000 /home/noah/2k-worktrees/opus-b72-speed/mod_editor/core/equipment_palette.py:9(<genexpr>)
+   163200    0.088    0.000   18.314    0.000 /home/noah/2k-worktrees/opus-b72-speed/tools/nfl_tset_png_import.py:442(<genexpr>)
+259828/196099    5.008    0.000    9.568    0.000 {built-in method builtins.max}
+ 65134140    3.980    0.000    3.980    0.000 /home/noah/2k-worktrees/opus-b72-speed/tools/nfl_tset_png_import.py:443(<genexpr>)
+ 16283535    2.219    0.000    2.219    0.000 /home/noah/2k-worktrees/opus-b72-speed/tools/nfl_tset_png_import.py:446(<genexpr>)
+        1    0.183    0.183    0.615    0.615 /home/noah/2k-worktrees/opus-b72-speed/mod_editor/core/equipment_palette.py:71(quality)
+      259    0.225    0.001    0.293    0.001 {built-in method builtins.sorted}
+    63730    0.028    0.000    0.128    0.000 /home/noah/2k-worktrees/opus-b72-speed/mod_editor/core/equipment_palette.py:76(<genexpr>)
+        3    0.000    0.000    0.094    0.031 /usr/lib/python3.12/collections/__init__.py:595(__init__)
+        3    0.000    0.000    0.094    0.031 /usr/lib/python3.12/collections/__init__.py:669(update)
+        3    0.035    0.012    0.094    0.031 {built-in method _collections._count_elements}
+    63729    0.076    0.000    0.076    0.000 /home/noah/2k-worktrees/opus-b72-speed/mod_editor/core/equipment_palette.py:60(_lab)
+   501264    0.074    0.000    0.074    0.000 /home/noah/2k-worktrees/opus-b72-speed/tools/nfl_tset_png_import.py:453(<genexpr>)
+
+
+

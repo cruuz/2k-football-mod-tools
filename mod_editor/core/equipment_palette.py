@@ -2,6 +2,70 @@
 from collections import Counter
 from functools import lru_cache
 from math import sqrt
+import numpy as np
+
+
+def _visible(colors):
+    values = np.asarray(colors, dtype=np.int64).reshape(-1, 4)
+    return np.column_stack((values[:, :3] * values[:, 3:4], values[:, 3] * 255))
+
+
+def nearest(colors, palette):
+    """Exact integer distances; argmin retains the first equal candidate.
+
+    int64 is necessary: opaque RGB distances can exceed uint32. Bound the
+    temporary matrix independently of image size and avoid floating BLAS.
+    """
+    left, right = _visible(colors), _visible(palette)
+    result = np.empty(len(left), dtype=np.intp)
+    squared = (right * right).sum(axis=1)
+    batch = max(1, min(1024, 1048576 // max(1, len(right))))
+    for start in range(0, len(left), batch):
+        part = left[start:start + batch]
+        distances = (part * part).sum(axis=1)[:, None] + squared - 2 * (part @ right.T)
+        result[start:start + len(part)] = distances.argmin(axis=1)
+    return result
+
+
+def median_cut(histogram, maximum):
+    """The existing weighted median cut with cached, vectorized box statistics."""
+    colors = sorted(histogram)
+    if len(colors) <= maximum:
+        return colors
+    rgba = np.asarray(colors, dtype=np.int64)
+    counts = np.asarray([histogram[c] for c in colors], dtype=np.int64)
+
+    def box(ids):
+        values = rgba[ids]
+        ranges = np.ptp(values, axis=0)
+        channel = int(ranges.argmax())
+        population = int(counts[ids].sum())
+        return ids, (int(ranges[channel]), population, len(ids)), channel
+
+    boxes = [box(np.arange(len(colors)))]
+    while len(boxes) < maximum:
+        candidates = [(score + (-i,), i) for i, (ids, score, _) in enumerate(boxes) if len(ids) > 1]
+        if not candidates:
+            break
+        _, index = max(candidates)
+        ids, score, channel = boxes[index]
+        # Global IDs are lexicographic RGBA order, the secondary sort key.
+        ids = ids[np.lexsort((ids, rgba[ids, channel]))]
+        split = min(len(ids) - 1, int(np.searchsorted(
+            np.cumsum(counts[ids]), (score[1] + 1) // 2)) + 1)
+        boxes[index:index + 1] = [box(ids[:split]), box(ids[split:])]
+    return sorted(set(tuple(map(int, ((rgba[ids] * counts[ids, None]).sum(axis=0)
+                                     + score[1] // 2) // score[1]))
+                      for ids, score, _ in boxes))
+
+
+def medoids(histogram, maximum):
+    if len(histogram) <= maximum:
+        return sorted(histogram)
+    # Original min key: (distance, -frequency, RGBA).
+    colors = sorted(histogram, key=lambda c: (-histogram[c], c))
+    centers = median_cut(histogram, maximum)
+    return sorted(set(colors[i] for i in nearest(centers, colors)))
 
 
 def distance(left, right):
@@ -24,14 +88,14 @@ def representatives(histogram, maximum):
             palette.append(max((c for c in histogram if c not in palette),
                                key=lambda c: (sqrt(histogram[c]) * min(distance(c, p) for p in palette), c)))
         return sorted(palette)
-    from nfl_tset_png_import import median_cut_palette
     # Explicitly retain the most common colours. Remaining regions choose an
     # authored colour nearest their centroid, never the desaturated centroid.
     anchors = sorted(histogram, key=lambda c: (-histogram[c], c))[:max(1, maximum // 4)]
     remaining = Counter({c: n for c, n in histogram.items() if c not in anchors})
     palette = list(anchors)
-    for centroid in median_cut_palette(remaining, maximum - len(anchors)):
-        color = min(remaining, key=lambda c: (distance(c, centroid), -remaining[c], c))
+    colors = sorted(remaining, key=lambda c: (-remaining[c], c))
+    for index in nearest(median_cut(remaining, maximum - len(anchors)), colors):
+        color = colors[index]
         if color not in palette:
             palette.append(color)
     return sorted(palette)
@@ -51,7 +115,9 @@ def quantize(levels, maximum):
     else:
         palette = representatives(hist, maximum)
     exact = {c: i for i, c in enumerate(palette)}
-    mapping = {c: exact[c] if c in exact else min(range(len(palette)), key=lambda i: (distance(c, palette[i]), i)) for c in hist}
+    colors = list(hist)
+    mapping = dict(zip(colors, nearest(colors, palette).tolist()))
+    mapping.update(exact)
     indices = [bytes(mapping[c] for c in row) for row in pixels]
     actual = b"".join(bytes(palette[i]) for i in indices[0])
     return palette, indices, quality(levels[0].rgba, actual)

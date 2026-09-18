@@ -1,0 +1,9 @@
+Phase A preserves the rc97 quantizer, palette ordering, integer distances and tie breaks. NumPy performs median-cut box statistics, medoid comparisons, nearest-colour mapping and stripe detection. Equal pixel chains share quantization across normal/mud. Each group generates its palette candidates once; the selected optimal parse reuses those candidates. Size suggestions keep their own pixel chains because quantizing a filtered mip is not equivalent to filtering quantized indices.
+
+The capacity screen solves an optimistic token-cost problem over unchanged source regions. It grants arbitrary changed bytes, overlapping matches and hash collisions, so its result is a lower bound, not an entropy heuristic. The retail shoe needs at least 55,802 bytes in its 55,280-byte span before considering photographic detail. A separately encoded reduced suggestion is checked through the ordinary round-trip and sibling guards.
+
+Measured locally, helper disabled: shoe64 photographic import 11.697 s before, 0.890 s during Phase A; retail photographic sock plus mud 23.832 s before, 1.022 s after; retail photographic shoe 233+ s baseline (see retail_before.json), 3.999 s after to needs refit. Final cold-cache measurements and exact baseline numbers follow in the final report.
+
+53 tests and 11 subtests pass, including unchanged six complete-span goldens and the unchanged retail round-trip test. New tests compare six quantizer fixtures across all eight palette limits, scalar distance ties, greedy bytes/statistics/search bounds, shared normal/mud quantization, one generated ladder, and conservative capacity bounds.
+
+The greedy codec uses NumPy for exact three-byte keys and C substring searches for long candidate chains. Optimal parsing uses the same substring approach. Both preserve nearest ties and original comparison charges; no helper is required. No in-game result is claimed.
