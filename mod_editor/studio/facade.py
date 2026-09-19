@@ -3478,6 +3478,14 @@ class Nfl2k5StudioFacade:
             f"Reverted {count} project change{'s' if count != 1 else ''}."
         )
 
+    def project_my_career_events(self):
+        with self._lock:
+            return self._require_session().my_career_events
+
+    def set_project_my_career_events(self, value, *, new_player=False):
+        with self._lock:
+            self._require_session().set_my_career_events(value, new_player=new_player)
+
     def project_build_settings(self):
         """A detached map for restoring the Build and Music pages."""
         with self._lock:

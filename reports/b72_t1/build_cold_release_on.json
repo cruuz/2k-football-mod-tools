@@ -1,0 +1,32 @@
+[
+ {
+  "workers": 1,
+  "groups": 32,
+  "replacements": 64,
+  "seconds": 1.861433363001197,
+  "seconds_per_group": 0.058169792593787406,
+  "cached_groups": 15,
+  "cache_limit": null,
+  "serial_seconds": 0.06748134900044533,
+  "serial_compiles": 0,
+  "cache_bytes": 67108864,
+  "helper_enabled": true,
+  "persistent_disk_cache": false,
+  "output_disc_written": false
+ },
+ {
+  "workers": 8,
+  "groups": 32,
+  "replacements": 64,
+  "seconds": 2.238791701000082,
+  "seconds_per_group": 0.06996224065625256,
+  "cached_groups": 15,
+  "cache_limit": null,
+  "serial_seconds": 0.0847646040001564,
+  "serial_compiles": 0,
+  "cache_bytes": 67108864,
+  "helper_enabled": true,
+  "persistent_disk_cache": false,
+  "output_disc_written": false
+ }
+]

@@ -17,7 +17,8 @@ from .apf2k8_playcall_patch import (
     IMAGE_BASE, PROFILES, _Assembler, _branch, _d, _x, _rl, check_image,
 )
 
-SCHEMA = 'apf2k8_situation_mask/v1'
+SCHEMA = 'apf2k8_situation_mask/v2'
+ROW_HOOKS = {'base': 0x8486B090, 'tu_1_1': 0x8486BD90}
 CLASSIFICATION = 'EXPERIMENTAL'
 DATA_START, DATA_LIMIT = 0x8462CA00, 0x84630000
 CODE_START, CODE_LIMIT = 0x84D0E300, 0x84D0F000
@@ -76,9 +77,46 @@ def canonical_policies(policies):
     return result
 
 
-def encode_data(policies):
+def canonical_personnel_rows(policies):
+    """Book -> twelve maps of category ID strings to ordinary comparison rows."""
+    if not isinstance(policies, dict):
+        raise ValidationError('Personnel rows need named books and twelve buckets')
+    result = {}
+    for name, rows in policies.items():
+        canonical_policies({name: [[] for _ in range(KEY_COUNT)]})
+        if not isinstance(rows, (list, tuple)) or len(rows) != KEY_COUNT:
+            raise ValidationError('Supply all twelve personnel-row buckets')
+        checked = []
+        for row in rows:
+            if not isinstance(row, dict):
+                raise ValidationError('Personnel overrides need category IDs and rows')
+            values = {}
+            for category, value in row.items():
+                if not isinstance(category, str) or category not in {str(i) for i in range(28)}:
+                    raise ValidationError('Personnel category must be an ID from 0 to 27')
+                if value is None:
+                    continue
+                if type(value) is not int or not 0 <= value <= 10:
+                    raise ValidationError('An ordinary personnel comparison row is 0 through 10')
+                values[category] = value
+            checked.append(dict(sorted(values.items(), key=lambda pair: int(pair[0]))))
+        if any(checked):
+            result[name] = checked
+    if len(result) > MAX_BOOKS:
+        raise ValidationError(f'Choose at most {MAX_BOOKS} named books')
+    return dict(sorted(result.items()))
+
+
+def encode_data(policies, personnel_rows=None):
+    # Omitted second argument retains the canonical v1 export for old projects.
+    version = 1 if personnel_rows is None else 2
     policies = canonical_policies(policies)
-    data = bytearray(struct.pack('>4I', 0x41504634, 1, len(policies), ENTRY_SIZE))
+    overrides = canonical_personnel_rows(personnel_rows or {})
+    names = sorted(policies.keys() | overrides.keys())
+    if len(names) > MAX_BOOKS:
+        raise ValidationError(f'Choose at most {MAX_BOOKS} named books')
+    policies = {name: policies.get(name, [[] for _ in range(KEY_COUNT)]) for name in names}
+    data = bytearray(struct.pack('>4I', 0x41504634, version, len(policies), ENTRY_SIZE))
     for name, rows in policies.items():
         data.extend(name.encode('ascii').ljust(28, b'\0'))
         for row in rows:
@@ -86,15 +124,24 @@ def encode_data(policies):
             for formation in row:
                 words[formation // 32] |= 1 << (formation % 32)
             data.extend(struct.pack('>5I', *words))
+    if version == 2:
+        entries = [(names.index(name), key, int(category), value)
+                   for name, rows in overrides.items() for key, row in enumerate(rows)
+                   for category, value in row.items()]
+        data.extend(struct.pack('>I', len(entries)))
+        for entry in entries:
+            data.extend(bytes(entry))
+    if len(data) > DATA_LIMIT - DATA_START:
+        raise ValidationError('Situation patch storage is full; remove unused book policies or row overrides')
     return bytes(data).ljust(DATA_LIMIT - DATA_START, b'\0')
 
 
-def decode_data(data):
+def decode_data(data, *, include_personnel_rows=False):
     if len(data) != DATA_LIMIT - DATA_START:
         raise ValidationError('Situation data allocation has the wrong size')
     magic, version, count, stride = struct.unpack_from('>4I', data)
-    if (magic, version, stride) != (0x41504634, 1, ENTRY_SIZE) or count > MAX_BOOKS:
-        raise ValidationError('Situation data header differs from version 1')
+    if magic != 0x41504634 or version not in (1, 2) or stride != ENTRY_SIZE or count > MAX_BOOKS:
+        raise ValidationError('Situation data header differs from versions 1 and 2')
     result = {}
     try:
         for i in range(count):
@@ -108,11 +155,31 @@ def decode_data(data):
                 words = struct.unpack_from('>5I', data, at + 28 + key * MASK_BYTES)
                 rows.append([f for f in range(160) if words[f//32] & (1 << (f%32))])
             result[name] = rows
-        if encode_data(result) != data:
+        overrides = {}
+        if version == 2:
+            at = 16 + ENTRY_SIZE * count
+            size, = struct.unpack_from('>I', data, at)
+            if size > (len(data) - at - 4) // 4:
+                raise ValueError('Personnel rows exceed allocation')
+            names = list(result)
+            for offset in range(at + 4, at + 4 + 4 * size, 4):
+                book, key, category, row = data[offset:offset+4]
+                if book >= count or key >= KEY_COUNT or category >= 28 or row > 10:
+                    raise ValueError('Personnel row address or value is invalid')
+                buckets = overrides.setdefault(names[book], [{} for _ in range(KEY_COUNT)])
+                if str(category) in buckets[key]:
+                    raise ValueError('Duplicate personnel row')
+                buckets[key][str(category)] = row
+        result = canonical_policies(result)
+        if encode_data(result, overrides if version == 2 else None) != data:
             raise ValueError('Noncanonical names, order, masks or padding')
     except (UnicodeError, ValueError, struct.error) as exc:
         raise ValidationError(f'Invalid situation data: {exc}') from exc
-    return result
+    return (result, overrides) if include_personnel_rows else result
+
+
+def decode_personnel_rows(data):
+    return decode_data(data, include_personnel_rows=True)[1]
 
 
 class Assembler(_Assembler):
@@ -131,7 +198,7 @@ class Assembler(_Assembler):
     def bits(self, source, dest, shift, mb, me): self.emit(_rl(source, dest, shift, mb, me))
 
 
-def _leaf(start, hook, profile, category):
+def _leaf(start, hook, profile, category, version=1):
     a = Assembler(start)
     e = a.emit
     count, book_reg = (24, 28) if category else (27, 29)
@@ -176,7 +243,7 @@ def _leaf(start, hook, profile, category):
     for offset, value in ((0x34, 163), (0x38, 586), (0x3C, 28)):
         a.lwz(3, 15, offset); a.cmpi(3, value); a.jump('restore', 'ne')
     a.addr(16, DATA_START)
-    for offset, value in ((0, 0x41504634), (4, 1), (12, ENTRY_SIZE)):
+    for offset, value in ((0, 0x41504634), (4, version), (12, ENTRY_SIZE)):
         a.lwz(3, 16, offset); a.addr(4, value); a.cmp(3, 4); a.jump('restore', 'ne')
     a.lwz(18, 16, 8); a.cmpi(18, MAX_BOOKS); a.jump('restore', 'gt')
     a.cmpi(18, 0); a.jump('restore', 'eq')
@@ -290,28 +357,107 @@ def _leaf(start, hook, profile, category):
     return a.finish()
 
 
-def assemble(profile):
+def _row_leaf(start, hook, profile):
+    """Replace only the local row register before retail curve arithmetic.
+
+    No MASTER/book writes, floating arithmetic changes, helper calls or RNG.
+    r11 receives the displaced clrlwi result even on every bypass path.
+    """
+    a = Assembler(start)
+    a.bits(11, 11, 0, 26, 31)
+    saved = (0, *range(3, 19))
+    slots = {r: 8 + 8*i for i, r in enumerate(saved)}
+    frame = 0x100
+    a.d(62, 1, 1, -frame | 1)
+    for r, offset in slots.items(): a.d(62, r, 1, offset)
+    a.emit(_x(0, 0, 0, 19)); a.stw(0, 1, 0x90)
+    a.d(54, 0, 1, 0x98); a.d(54, 13, 1, 0xA0)
+    a.emit(0xFDA0048E); a.d(54, 13, 1, 0xA8)
+    a.cmpi(11, 10); a.jump('restore', 'gt')
+    a.cmpi(26, 10); a.jump('restore', 'gt')
+    a.cmpi(21, 0); a.jump('restore', 'ne')
+    a.addr(3, GAME[profile.name]); a.lwz(4, 3, 0x34)
+    a.cmpi(4, 4); a.jump('restore', 'ne')
+    a.lwz(3, 3, 0x6C); a.cmpi(3, 0); a.jump('restore', 'eq')
+    a.lwz(4, 3, 4); a.cmpi(4, 1); a.jump('restore', 'lt')
+    a.cmpi(4, 4); a.jump('restore', 'gt')
+    a.addi(4, 4, -1); a.d(7, 17, 4, 3)
+    a.d(48, 0, 3, 0x28); a.d(48, 13, 3, 0x18)
+    a.emit(0xEC006828); a.emit(0xFC000210)
+    a.d(52, 0, 1, 0xB0); a.lwz(4, 1, 0xB0)
+    a.addr(3, 0x7F800000); a.cmp(4, 3); a.jump('restore', 'ge')
+    for i, value in enumerate((182.88, 640.08)):
+        a.addr(3, struct.unpack('>I', struct.pack('>f', value))[0])
+        a.cmp(4, 3); a.jump(f'distance{i}', 'gt'); a.jump('distance_done')
+        a.label(f'distance{i}'); a.addi(17, 17, 1)
+    a.label('distance_done')
+    a.lwz(3, 28, 0x7E0C); a.addi(3, 3, 0x44)
+    a.emit(_x(18, 3, 29, 40)); a.bits(18, 18, 28, 4, 31)
+    a.cmpi(18, 28); a.jump('restore', 'ge')
+    a.addr(16, DATA_START)
+    for offset, value in ((0, 0x41504634), (4, 2), (12, ENTRY_SIZE)):
+        a.lwz(3, 16, offset); a.addr(4, value); a.cmp(3, 4); a.jump('restore', 'ne')
+    a.lwz(15, 16, 8); a.cmpi(15, MAX_BOOKS); a.jump('restore', 'gt')
+    a.d(7, 3, 15, ENTRY_SIZE); a.add(14, 16, 3); a.addi(14, 14, 16)
+    a.lwz(12, 14, 0); a.addi(14, 14, 4)
+    # Bound the sparse appendix before any reads, including a corrupt count.
+    a.cmpi(12, (DATA_LIMIT-DATA_START)//4); a.jump('restore', 'gt')
+    a.bits(12, 3, 2, 0, 29); a.add(3, 14, 3); a.addr(4, DATA_LIMIT)
+    a.cmp(3, 4); a.jump('restore', 'gt')
+    a.label('entry')
+    a.cmpi(12, 0); a.jump('restore', 'eq')
+    a.d(34, 3, 14, 1); a.cmp(3, 17); a.jump('next', 'ne')
+    a.d(34, 3, 14, 2); a.cmp(3, 18); a.jump('next', 'ne')
+    a.d(34, 3, 14, 0); a.cmp(3, 15); a.jump('next', 'ge')
+    a.d(7, 3, 3, ENTRY_SIZE); a.add(4, 16, 3); a.addi(4, 4, 16)
+    a.addi(3, 28, 0x30); a.li(5, 28)
+    a.label('name')
+    a.d(40, 6, 3, 0); a.d(34, 7, 4, 0); a.cmp(6, 7); a.jump('next', 'ne')
+    a.cmpi(7, 0); a.jump('found', 'eq')
+    a.addi(3, 3, 2); a.addi(4, 4, 1); a.addi(5, 5, -1)
+    a.cmpi(5, 0); a.jump('name', 'ne'); a.jump('restore')
+    a.label('next'); a.addi(14, 14, 4); a.addi(12, 12, -1); a.jump('entry')
+    a.label('found')
+    a.d(34, 3, 14, 3); a.cmpi(3, 10); a.jump('restore', 'gt')
+    a.li(4, 0); a.stw(4, 1, slots[11]); a.stw(3, 1, slots[11]+4)
+    a.label('restore')
+    a.d(50, 13, 1, 0xA8); a.emit(0xFDFE6D8E)
+    a.d(50, 0, 1, 0x98); a.d(50, 13, 1, 0xA0)
+    a.lwz(0, 1, 0x90); a.emit(0x7C0FF120)
+    for r, offset in slots.items(): a.d(58, r, 1, offset)
+    a.d(58, 1, 1, 0)
+    a.emit(_branch(start + len(a.words)*4, hook+4))
+    return a.finish()
+
+
+def assemble(profile, version=1):
     if profile not in PROFILES:
         raise ValidationError('Choose the pinned BASE or TU 1.1 profile')
     category_hook, formation_hook = HOOKS[profile.name]
-    first = _leaf(CODE_START, category_hook, profile, True)
+    first = _leaf(CODE_START, category_hook, profile, True, version)
     second_start = CODE_START + len(first)
-    second = _leaf(second_start, formation_hook, profile, False)
+    second = _leaf(second_start, formation_hook, profile, False, version)
     code = first + second
+    hooks = ((category_hook, CODE_START), (formation_hook, second_start))
+    if version == 2:
+        row_start = CODE_START + len(code)
+        code += _row_leaf(row_start, ROW_HOOKS[profile.name], profile)
+        hooks += ((ROW_HOOKS[profile.name], row_start),)
     if len(code) > CODE_LIMIT - CODE_START:
         raise ValidationError('Situation hooks exceed their executable reservation')
-    return code, ((category_hook, CODE_START), (formation_hook, second_start))
+    return code, hooks
 
 
-def verify_code(profile, code):
+def verify_code(profile, code, version=1):
     from capstone import Cs, CS_ARCH_PPC, CS_MODE_64, CS_MODE_BIG_ENDIAN
-    canonical, hooks = assemble(profile)
+    canonical, hooks = assemble(profile, version)
     if code != canonical:
         raise ValidationError('Situation code differs from the reviewed generator')
     instructions = list(Cs(CS_ARCH_PPC, CS_MODE_64 | CS_MODE_BIG_ENDIAN).disasm(code, CODE_START))
     if len(instructions)*4 != len(code):
         raise ValidationError('Situation code contains an undecodable instruction')
-    leaves = ((hooks[0][1], hooks[1][1], hooks[0][0]), (hooks[1][1], CODE_START+len(code), hooks[1][0]))
+    leaves = tuple((entry, hooks[i+1][1] if i+1 < len(hooks) else CODE_START+len(code), hook)
+                   for i, (hook, entry) in enumerate(hooks))
     branches = 0
     for insn in instructions:
         word = int.from_bytes(insn.bytes, 'big'); op = word >> 26
@@ -336,10 +482,14 @@ class SituationPatch:
     data: bytes
 
     @property
+    def version(self):
+        return struct.unpack_from('>I', self.data, 4)[0]
+
+    @property
     def words(self):
         decode_data(self.data)
-        code, hooks = assemble(self.profile)
-        verify_code(self.profile, code)
+        code, hooks = assemble(self.profile, self.version)
+        verify_code(self.profile, code, self.version)
         writes = [(site, _branch(site, target)) for site, target in hooks]
         for start, payload in ((CODE_START, code), (DATA_START, self.data),
                                (RECEIPT_START, bytes(RECEIPT_LIMIT-RECEIPT_START))):
@@ -348,12 +498,12 @@ class SituationPatch:
 
     @property
     def receipt(self):
-        code, hooks = assemble(self.profile)
-        return {'schema': SCHEMA, 'classification': CLASSIFICATION, 'runtime_status': 'UNWITNESSED',
+        code, hooks = assemble(self.profile, self.version)
+        return {'schema': f'apf2k8_situation_mask/v{self.version}', 'classification': CLASSIFICATION, 'runtime_status': 'UNWITNESSED',
                 'profile': self.profile.name, 'image_sha256': self.profile.sha256,
                 'key': 'actual down 1..4 x absolute f32 longitudinal distance <=182.88 / <=640.08 / >640.08',
-                'policies': decode_data(self.data), 'data_sha256': hashlib.sha256(self.data).hexdigest(),
-                'hooks': hooks, 'code': verify_code(self.profile, code),
+                'policies': decode_data(self.data), 'personnel_rows': decode_personnel_rows(self.data), 'data_sha256': hashlib.sha256(self.data).hexdigest(),
+                'hooks': hooks, 'code': verify_code(self.profile, code, self.version),
                 'fallback': 'An empty filtered draw uses the original complete draw; last-draw receipts at 0x852D6500 and 0x852D6518',
                 'limits': 'Ordinary automatic offense calls in scrimmage phase 4 only; cached specials, explicit play/formation paths and kick/try phases bypass the filter.'}
 
@@ -363,15 +513,20 @@ class SituationPatch:
                  '    name = "Per-book situation exclusions (unwitnessed)"',
                  '    desc = "Twelve live down/distance buckets; empty-draw fallback; EXPERIMENTAL."',
                  '    author = "2K Football Mod Tools"', '    is_enabled = true']
+        if self.version == 2:
+            lines[5] = '    name = "Per-book situation exclusions and personnel rows (unwitnessed)"'
         for address, value in self.words:
             lines += ['', '    [[patch.be32]]', f'        address = 0x{address:08X}', f'        value = 0x{value:08X}']
         return '\n'.join(lines)+'\n'
 
 
-def compile_patch(image, policies):
+def compile_patch(image, policies, personnel_rows=None):
     profile = check_image(image)
-    patch = SituationPatch(profile, encode_data(policies))
-    for address, word in zip(HOOKS[profile.name], (0x38A00003, 0x38A00001)):
+    patch = SituationPatch(profile, encode_data(policies, personnel_rows))
+    expected_hooks = list(zip(HOOKS[profile.name], (0x38A00003, 0x38A00001)))
+    if patch.version == 2:
+        expected_hooks.append((ROW_HOOKS[profile.name], _rl(11, 11, 0, 26, 31)))
+    for address, word in expected_hooks:
         if image[address-IMAGE_BASE:address-IMAGE_BASE+4] != struct.pack('>I', word):
             raise ValidationError('The situation hook instruction changed')
     for start, end in ((DATA_START, DATA_LIMIT), (CODE_START, CODE_LIMIT), (RECEIPT_START, RECEIPT_LIMIT)):

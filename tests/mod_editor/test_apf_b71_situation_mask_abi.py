@@ -6,9 +6,10 @@ from tests.mod_editor.test_apf_playcall_patch import SyntheticMachine,MASK64
 from mod_editor.core import apf2k8_situation_mask as m
 
 class MaskMachine(SyntheticMachine):
-    def __init__(self,profile,category,excluded,phase=4):
+    def __init__(self,profile,category,excluded,phase=4,*,version=1,overrides=None,row_hook=False):
         super().__init__()
         self.profile,self.category=profile,category
+        self.version,self.row_hook=version,row_hook
         self.f={0:0xFFF0010203040506,13:0x4001234501020304}
         self.fpscr=0x9F83A12B
         self.original_f=self.f.copy();self.original_fpscr=self.fpscr
@@ -23,7 +24,7 @@ class MaskMachine(SyntheticMachine):
         self.put(state+0x28,int.from_bytes(struct.pack('>f',731.52),'big'),4)
         self.add(m.RECEIPT_START,bytes(m.RECEIPT_LIMIT-m.RECEIPT_START))
         policies={'O-ManBlock':[[] for _ in range(12)]};policies['O-ManBlock'][8]=excluded
-        self.add(m.DATA_START,m.encode_data(policies))
+        self.add(m.DATA_START,m.encode_data(policies,overrides or {} if version==2 else None))
         for i,value in enumerate('O-ManBlock'.encode('utf-16-be')):self.put(self.book+0x30+i,value,1)
         for i,(form,cat) in enumerate(((2,6),(14,6),(24,6),(30,3))):self.record(i,[0],cat,form)
         self.put(self.master+0x44+6*16+4,10,1)
@@ -36,13 +37,16 @@ class MaskMachine(SyntheticMachine):
         for i,identifier in enumerate(ids):
             self.put(self.r[1]+po+4*i,self.master+base+identifier*stride,4)
             self.put(self.r[1]+wo+4*i,int.from_bytes(struct.pack('>f',i+.5),'big'),4)
+        if row_hook:
+            self.r[29]=self.master+0x44+6*16
+            self.r[11]=0xFEDCBA98000000C6
         self.original_buffer=bytes(self.get(self.r[1]+wo+i,1) for i in range(160))
     def get(self,address,size):return super().get(address&0xFFFFFFFF,size)
     def put(self,address,value,size):return super().put(address&0xFFFFFFFF,value,size)
     def run(self):
-        code,hooks=m.assemble(self.profile)
+        code,hooks=m.assemble(self.profile,self.version)
         words={m.CODE_START+i:int.from_bytes(code[i:i+4], 'big') for i in range(0,len(code),4)}
-        hook,entry=hooks[0 if self.category else 1]
+        hook,entry=hooks[2 if self.row_hook else 0 if self.category else 1]
         self.hook=hook
         self.before = self.r.copy(); original_cr = self.cr
         outside = {a:v for a,v in self.mem.items() if not 0x10000 <= a < 0x11000}
@@ -133,10 +137,11 @@ class MaskMachine(SyntheticMachine):
         assert (self.lr,self.ctr)==self.original_control
         count_reg=24 if self.category else 27
         for r in range(32):
-            if r not in (5,count_reg):assert self.r[r]==self.before[r],(r,hex(self.r[r]),hex(self.before[r]))
-        assert self.r[5]==(3 if self.category else 1)
+            if r not in ((11,) if self.row_hook else (5,count_reg)):assert self.r[r]==self.before[r],(r,hex(self.r[r]),hex(self.before[r]))
+        if not self.row_hook:assert self.r[5]==(3 if self.category else 1)
         writable=((0x10000,0x11000),(m.RECEIPT_START,m.RECEIPT_LIMIT))
         assert all(self.mem[a]==v for a,v in outside.items() if not any(lo<=a<hi for lo,hi in writable))
+        if self.row_hook:return self.r[11]
         pointer=self.before[1]+(0x110 if self.category else 0xF0)
         base,stride=(0x44,16) if self.category else (0x244,184)
         return [(self.get(pointer+4*i,4)-self.master-base)//stride for i in range(self.r[count_reg])]
@@ -156,6 +161,19 @@ class AbiTests(unittest.TestCase):
                     if excluded:
                         self.assertEqual(machine.get(receipt,4),8)
                     if len(excluded)==4:self.assertEqual(machine.get(receipt+16,4),1)
+    def test_v2_row_hook_full_width_abi_and_bypass(self):
+        from tests.mod_editor.test_apf_b72_personnel_rows import rows
+        for profile in m.PROFILES:
+            for overrides,expected in (({},6),(rows(),10),(rows('OtherBook'),6),(rows(key=7),6)):
+                machine=MaskMachine(profile,True,[],version=2,overrides=overrides,row_hook=True)
+                self.assertEqual(machine.run(),expected)
+            for phase in (0,1,2,3,5):
+                machine=MaskMachine(profile,True,[],phase,version=2,overrides=rows(),row_hook=True)
+                self.assertEqual(machine.run(),6)
+            machine=MaskMachine(profile,True,[],version=2,overrides=rows(),row_hook=True)
+            machine.put(m.DATA_START+4,99,4)
+            self.assertEqual(machine.run(),6)
+
     def test_unrelated_mask_keeps_original_empty_category(self):
         for profile in m.PROFILES:
             machine=MaskMachine(profile,True,[14])

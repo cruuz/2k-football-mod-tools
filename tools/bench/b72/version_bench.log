@@ -1,0 +1,5 @@
+B72 VERSION {"version": "beta-68 / rc93", "revision": "b48a07b9", "design": "photo", "targets": ["socks00 64x64", "socks00_mud 64x64"], "outcome": "KeyError", "message": "'replacement'", "seconds": 19.455802317001144}
+B72 VERSION {"version": "beta-69 / rc94", "revision": "42a0e609", "design": "photo", "targets": ["socks00 64x64", "socks00_mud 64x64"], "outcome": "fit", "encoded_bytes": 6912, "seconds": 12.311357251999652}
+B72 VERSION {"version": "beta-70 / rc95", "revision": "b7eccf8e", "design": "photo", "targets": ["socks00 64x64", "socks00_mud 64x64"], "outcome": "fit", "encoded_bytes": 6928, "seconds": 15.632843633000448}
+B72 VERSION {"version": "beta-71 / rc96", "revision": "02bbadd1", "design": "photo", "targets": ["socks00 64x64", "socks00_mud 64x64"], "outcome": "fit", "encoded_bytes": 6928, "seconds": 15.961840182000742}
+B72 VERSION {"version": "beta-71.1 / rc97", "revision": "088e3f41", "design": "photo", "targets": ["socks00 64x64", "socks00_mud 64x64"], "outcome": "fit", "encoded_bytes": 6928, "seconds": 23.28393676000087}

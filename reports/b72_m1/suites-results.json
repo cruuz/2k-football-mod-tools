@@ -1,0 +1,232 @@
+[
+  {
+    "test": "test_nfl2k5_my_career_host",
+    "returncode": 0,
+    "seconds": 396.63
+  },
+  {
+    "test": "test_nfl2k5_my_career",
+    "returncode": 1,
+    "seconds": 20.192
+  },
+  {
+    "test": "test_nfl2k5_my_career_b69_wiring",
+    "returncode": 0,
+    "seconds": 0.429
+  },
+  {
+    "test": "test_nfl2k5_my_career_completion",
+    "returncode": 0,
+    "seconds": 29.999
+  },
+  {
+    "test": "test_nfl2k5_my_career_control",
+    "returncode": 0,
+    "seconds": 14.461
+  },
+  {
+    "test": "test_nfl2k5_my_career_cpu_choice",
+    "returncode": 0,
+    "seconds": 18.409
+  },
+  {
+    "test": "test_nfl2k5_my_career_cpu_frame",
+    "returncode": 0,
+    "seconds": 56.755
+  },
+  {
+    "test": "test_nfl2k5_my_career_cpu_injury",
+    "returncode": 0,
+    "seconds": 23.0
+  },
+  {
+    "test": "test_nfl2k5_my_career_cpu_period",
+    "returncode": 0,
+    "seconds": 34.485
+  },
+  {
+    "test": "test_nfl2k5_my_career_cpu_timeout",
+    "returncode": 0,
+    "seconds": 18.261
+  },
+  {
+    "test": "test_nfl2k5_my_career_cpu_turnover",
+    "returncode": 0,
+    "seconds": 61.125
+  },
+  {
+    "test": "test_nfl2k5_my_career_creation_boundary",
+    "returncode": 0,
+    "seconds": 2.158
+  },
+  {
+    "test": "test_nfl2k5_my_career_draft",
+    "returncode": 0,
+    "seconds": 1078.411
+  },
+  {
+    "test": "test_nfl2k5_my_career_events",
+    "returncode": 0,
+    "seconds": 1.229
+  },
+  {
+    "test": "test_nfl2k5_my_career_frontend",
+    "returncode": 0,
+    "seconds": 51.957
+  },
+  {
+    "test": "test_nfl2k5_my_career_generic_build",
+    "returncode": 0,
+    "seconds": 17.451
+  },
+  {
+    "test": "test_nfl2k5_my_career_inline",
+    "returncode": 0,
+    "seconds": 12.955
+  },
+  {
+    "test": "test_nfl2k5_my_career_m3_budget",
+    "returncode": 0,
+    "seconds": 4.473
+  },
+  {
+    "test": "test_nfl2k5_my_career_m3_menus",
+    "returncode": 0,
+    "seconds": 37.609
+  },
+  {
+    "test": "test_nfl2k5_my_career_manifest",
+    "returncode": 0,
+    "seconds": 8.366
+  },
+  {
+    "test": "test_nfl2k5_my_career_mode4",
+    "returncode": 0,
+    "seconds": 441.393
+  },
+  {
+    "test": "test_nfl2k5_my_career_mode5",
+    "returncode": 0,
+    "seconds": 277.276
+  },
+  {
+    "test": "test_nfl2k5_my_career_mode_audit",
+    "returncode": 0,
+    "seconds": 0.185
+  },
+  {
+    "test": "test_nfl2k5_my_career_mode_routes",
+    "returncode": 0,
+    "seconds": 2.782
+  },
+  {
+    "test": "test_nfl2k5_my_career_panel",
+    "returncode": 0,
+    "seconds": 0.716
+  },
+  {
+    "test": "test_nfl2k5_my_career_playcalling",
+    "returncode": 0,
+    "seconds": 711.731
+  },
+  {
+    "test": "test_nfl2k5_my_career_played",
+    "returncode": 0,
+    "seconds": 55.763
+  },
+  {
+    "test": "test_nfl2k5_my_career_position_inputs",
+    "returncode": 0,
+    "seconds": 17.549
+  },
+  {
+    "test": "test_nfl2k5_my_career_prospects",
+    "returncode": 0,
+    "seconds": 265.793
+  },
+  {
+    "test": "test_nfl2k5_my_career_season",
+    "returncode": 0,
+    "seconds": 155.523
+  },
+  {
+    "test": "test_nfl2k5_my_career_settings",
+    "returncode": 0,
+    "seconds": 29.379
+  },
+  {
+    "test": "test_nfl2k5_my_career_signing",
+    "returncode": 0,
+    "seconds": 47.607
+  },
+  {
+    "test": "test_nfl2k5_my_career_unicorn",
+    "returncode": 0,
+    "seconds": 12.116
+  },
+  {
+    "test": "test_nfl2k5_my_career_upgrades",
+    "returncode": 0,
+    "seconds": 249.686
+  },
+  {
+    "test": "test_nfl2k5_my_career_week",
+    "returncode": 0,
+    "seconds": 328.007
+  },
+  {
+    "test": "test_mycareer_art",
+    "returncode": 0,
+    "seconds": 1.532
+  },
+  {
+    "test": "test_b69_j1_fit",
+    "returncode": 0,
+    "seconds": 4.739
+  },
+  {
+    "test": "test_b69_j1_wiring",
+    "returncode": 0,
+    "seconds": 1.468
+  },
+  {
+    "test": "test_b69_j1_native",
+    "returncode": 0,
+    "seconds": 1.49
+  },
+  {
+    "test": "test_b69_j1_build",
+    "returncode": 0,
+    "seconds": 2.471
+  },
+  {
+    "test": "test_studio_session",
+    "returncode": 0,
+    "seconds": 0.866
+  },
+  {
+    "test": "test_music_playlist_project",
+    "returncode": 0,
+    "seconds": 1.045
+  },
+  {
+    "test": "test_audio_annotation_project_archive",
+    "returncode": 0,
+    "seconds": 0.48
+  },
+  {
+    "test": "test_project_document_workflow",
+    "returncode": 0,
+    "seconds": 15.521
+  },
+  {
+    "test": "test_models_project_wiring",
+    "returncode": 0,
+    "seconds": 8.755
+  },
+  {
+    "test": "test_b71_t5_project_open",
+    "returncode": 0,
+    "seconds": 6.842
+  }
+]

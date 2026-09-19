@@ -1,0 +1,26 @@
+[
+  {
+    "helper": false,
+    "items": 24,
+    "seconds": 1.7833943300011015,
+    "preflight_rows": [
+      24,
+      3
+    ],
+    "full_project_preflights": 1,
+    "outcome": "fit",
+    "message": "Equipment 00H0 / socks00 fitted at 32 x 32, 256 colours; 4,089 bytes encoded. Fine detail and shades may change. Undo restores the original artwork."
+  },
+  {
+    "helper": true,
+    "items": 24,
+    "seconds": 1.60790260199974,
+    "preflight_rows": [
+      24,
+      3
+    ],
+    "full_project_preflights": 1,
+    "outcome": "fit",
+    "message": "Equipment 00H0 / socks00 fitted at 32 x 32, 256 colours; 4,089 bytes encoded. Fine detail and shades may change. Undo restores the original artwork."
+  }
+]

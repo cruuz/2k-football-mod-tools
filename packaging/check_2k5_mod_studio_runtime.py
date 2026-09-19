@@ -99,26 +99,26 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "dd3529836c4ebdc5ddf344de19edca38191f918ca341248953cb289b56c5e42e",
     "mod_editor/gui/studio_qt.py":
-        "2a414e40ec1b7a365c74b5edfad9ba0d49b3d3fb04c02dc0b1b7a33cfe5913b1",
+        "b83c51bc8ddd1a62936f2d03777e493d85e941b770ab9781b7562ec2eb14154b",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
         "68b6887e0778391916a6465a722b062d1c09afe3a376c318026e9db8bd7ed23a",
     "mod_editor/studio/facade.py":
-        "db65f7ef97c2504d5a78364834da566f2c2764a4bfed28788f02a018663e90c2",
+        "8e359ef418f6088262b97b619880cb06109f532eaf888616dbe66193e2568a02",
     "mod_editor/studio/project_archive.py":
-        "389dec1f29974168d4b0c7cdf9c68bd451b0a13822c9631dd5a1fc203b8e1eab",
+        "1a1fd667dc70bebec8e31b70c9c229a1aa665526cc915f781398dfd91d037f67",
     "mod_editor/studio/session.py":
-        "b352c450ff04647f1b507679dd9b9e85fdc4758686e8bde505a5e26cb48ed75e",
+        "4427cf7e61c082760d15e65f621e5c1393368cd2bd92c1eb54b962aae0c9e95b",
 }
 
 B69_GAME_RUNTIME_PINS = {
     "mod_editor/core/nfl2k5_weather.py": "6540d7ffc8d441898f5a89988752efd6aa0238c87b4a0941c1962b7b3feba380",
     "mod_editor/core/nfl2k5_weather_haze.py": "3d045e099f1585658b899ab6e7d3560e92edb24529ca8d6f224e901dc7712ff9",
-    "mod_editor/gui/build_panel_qt.py": "f69eadf82fbb925c3f3f600a57296224b75c1f51c952ffec8e760cd35d9e78c0",
+    "mod_editor/gui/build_panel_qt.py": "c36108cd59dd8486278fe1aefaa4386954bf13820e9bdea4ef86c450aba3f658",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "6377a6089d0c01233b810e0ec82f962dfbc40cdea6d80cb8dbf092b2f83b8839",
-    "mod_editor/gui/my_career_panel_qt.py": "8a27ccdc2a649d122d6c21f9a646e47539b55c00653afc789e9b018fb581c823",
-    "mod_editor/gui/gameplay_project_ui.py": "d91d604b99606c9fe701163b1f559b12df66cc8d1c8fce427f6b9695c1a2d08c",
+    "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
+    "mod_editor/gui/gameplay_project_ui.py": "17e2abf5ba748a945406c20668c3d5a7347794947a02c2cf0d70951d2062ff73",
     "mod_editor/gui/beta62_options.py": "9c7a883a43026f8fbfd7e97a9a5557decb632315a98f7deda4ba58d01ba501d3",
     "tools/nfl2k5_weather_editor.py": "65b45c3b25d47dc9cc672bd46a4719264ce4033aeca76632aaf44e9023b6cbfd",
     "tools/nfl2k5_weather_time_of_day.py": "37b2bd10f686db9fa99ba9034f9a7f68daa00bff516250ac0f67678880b98b47",

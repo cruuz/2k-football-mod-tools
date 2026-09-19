@@ -134,6 +134,7 @@ class ScorebugStudioPanel(QWidget):
 
     folder_chosen = pyqtSignal(str)
     sprite_folder_chosen = pyqtSignal(str)
+    sprite_watermark_changed = pyqtSignal(str)
     document_changed = pyqtSignal()
 
     def __init__(self, parent=None, *, registry=None, defer_preview=False):
@@ -159,6 +160,11 @@ class ScorebugStudioPanel(QWidget):
 
     def showEvent(self, event):
         super().showEvent(event)
+        provider=getattr(self,'sprite_watermark_provider',None)
+        if callable(provider):
+            value=provider();self.sprite_watermark.blockSignals(True)
+            self.sprite_watermark.setCurrentIndex(max(0,self.sprite_watermark.findData(value)))
+            self.sprite_watermark.blockSignals(False)
         if self._deferred_preview:
             self._deferred_preview = False
             QTimer.singleShot(0, self.refresh_preview)
@@ -177,7 +183,12 @@ class ScorebugStudioPanel(QWidget):
         self.sprite_preview_button.setAccessibleName("Preview the sprite scorebug over a screenshot")
         self.sprite_preview_button.setToolTip("Choose a game state and see the compiled sprite design over your screenshot")
         self.sprite_preview_button.clicked.connect(self._show_sprite_preview)
-        root.addWidget(self.sprite_preview_button)
+        sprite_row=QHBoxLayout();sprite_row.addWidget(self.sprite_preview_button)
+        from .scorebug_sprite_preview_qt import watermark_combo
+        sprite_row.addWidget(QLabel('ESPN watermark'))
+        self.sprite_watermark=watermark_combo(self);sprite_row.addWidget(self.sprite_watermark)
+        self.sprite_watermark.currentIndexChanged.connect(lambda _index:self.sprite_watermark_changed.emit(self.sprite_watermark.currentData()))
+        root.addLayout(sprite_row)
         columns = QHBoxLayout()
         root.addLayout(columns, 1)
         columns.addLayout(self._build_left(), 0)
@@ -916,7 +927,8 @@ class ScorebugStudioPanel(QWidget):
     def _show_sprite_preview(self):
         from .scorebug_sprite_preview_qt import SpritePreviewDialog
         source = self.sprite_source_provider() if callable(getattr(self, 'sprite_source_provider', None)) else None
-        self._sprite_preview_dialog = SpritePreviewDialog(self, source=source)
+        self._sprite_preview_dialog = SpritePreviewDialog(self, source=source, watermark=self.sprite_watermark.currentData())
+        self._sprite_preview_dialog.watermark_chosen.connect(lambda value:self.sprite_watermark.setCurrentIndex(self.sprite_watermark.findData(value)))
         self._sprite_preview_dialog.design_chosen.connect(self.sprite_folder_chosen.emit)
         self._sprite_preview_dialog.show()
 

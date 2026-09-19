@@ -1,0 +1,13 @@
+...F....
+======================================================================
+FAIL: test_coverage_roundtrip_undo_revert_and_composed_preview (__main__.RetailIntegrationTests.test_coverage_roundtrip_undo_revert_and_composed_preview)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b72-a2/tests/mod_editor/test_apf_wave_integration.py", line 100, in test_coverage_roundtrip_undo_revert_and_composed_preview
+    self.assertEqual(next(r for r in defaults if r["node_index"] == 3223)["lateral_extent_yards"], 6)
+AssertionError: 8 != 6
+
+----------------------------------------------------------------------
+Ran 8 tests in 9.973s
+
+FAILED (failures=1)

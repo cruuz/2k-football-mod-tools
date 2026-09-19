@@ -67,10 +67,12 @@ def placed_box(row,widescreen=False):
         width=box[2]-box[0];right=drawable_right(widescreen)-PIN_MARGIN;box[0],box[2]=right-width,right
     return box
 SOURCES = ('home score', 'away score', 'home timeouts', 'away timeouts', 'quarter', 'clock', 'play clock', 'down and distance')
-TINTS = ('none', 'home team', 'away team', 'possessing team')
+TINTS = ('none', 'home team', 'away team', 'possessing team', 'home rim', 'away rim')
 FIELD = struct.Struct('<8I6i')  # source, first vertex, capacity, glyph offset/count, colour, flags, visibility, anchor x/y/z, width, align, advance
 GLYPH = struct.Struct('<4H4i8h')  # UTF16 token (up to four units), width/height/advance/raise, four packed UV pairs
-STATIC = struct.Struct('<4I')  # first vertex, tint source, material, reserved
+STATIC = struct.Struct('<4I')  # first vertex, tint source, material, optional brand-table offset
+BRAND = struct.Struct('<I16h')  # policy, NFL UVs, MNF UVs
+WATERMARK_MODES = ('auto', 'mnf', 'off')
 HEADER = struct.Struct('<8I')
 
 class SpriteError(ValueError):
@@ -107,7 +109,8 @@ def load_layout(folder=None):
         require(_box(row.get('box'),image.size) and all(type(v)==int for v in row['box']), 'Invalid PNG cell: '+name)
     require(len(spec.get('static',[]))<=24 and len(spec.get('fields',[]))<=16, 'Too many scorebug layers or fields.')
     require(isinstance(spec.get('plate_tints', {}), dict), 'Possession plate tints must be an object.')
-    for team, colour in spec.get('plate_tints', {}).items():
+    require(isinstance(spec.get('wing_tints', {}), dict), 'Wing tints must be an object.')
+    for team, colour in {**spec.get('plate_tints', {}), **spec.get('wing_tints', {})}.items():
         from .nfl2k5_scorebug_resources import TEAM_LOGOS
         require(team in TEAM_LOGOS and isinstance(colour, str) and len(colour)==7 and colour[0]=='#', 'Invalid possession plate tint.')
         int(colour[1:],16)
@@ -137,6 +140,10 @@ def load_layout(folder=None):
         require(row.get('pin') in (None,'top-right') and _number(row.get('opacity',1)) and 0<row.get('opacity',1)<=1, 'Invalid brand layer pin or opacity.')
         require(isinstance(row.get('source',{}),dict), 'Brand provenance must be an object.')
         shared.add(row['cell'])
+    variants=[r for r in spec.get('brand',[]) if r.get('variant')]
+    if variants:
+        require(len(variants)==2 and {r['variant'] for r in variants}=={'nfl','mnf'}, 'The watermark needs NFL and MNF variants.')
+        require(all(r.get(k)==variants[0].get(k) for r in variants for k in ('box','pin','opacity','material','z')), 'Watermark variants must share one quad and placement.')
     for row in spec['fields']:
         require(row['source'] in SOURCES and row['glyph_set'] in spec['glyph_sets'], 'Unknown scorebug data source or glyph set.')
         require(type(row['slots'])==int and 1<=row['slots']<=16, 'Each field needs 1–16 quads.')
@@ -287,7 +294,8 @@ def quantized_uv(box,size,flip=False):
     if flip:x0,x1=x1,x0
     return tuple(round(v*32767) for x,y in ((x0,y0),(x1,y0),(x0,y1),(x1,y1)) for v in (2*x/size[0]-1,2*y/size[1]-1))
 
-def compile_folder(folder=None,widescreen=False):
+def compile_folder(folder=None,widescreen=False,watermark="auto"):
+    require(watermark in WATERMARK_MODES, "Choose watermark auto, mnf or off.")
     spec,image=load_layout(folder);scale_x=x_scale(widescreen)
     brand=[dict(r,tint='none',brand=True) for r in spec.get('brand',[])]
     used={r['cell'] for r in spec['static']+spec.get('events',[]) if r['cell']!='logo'}
@@ -297,7 +305,13 @@ def compile_folder(folder=None,widescreen=False):
         cell=image.crop(spec['cells'][row['cell']]['box']);opacity=row.get('opacity',1)
         cell.putalpha(cell.getchannel('A').point(lambda v:round(v*opacity)));images[row['cell']]=cell
     atlas,cells=_pack(images,spec['atlas'])
-    statics=[dict(r,box=placed_box(r,widescreen),layout_box=r['box']) for r in spec['static']+brand]
+    visible_brand=[r for r in brand if r.get('variant')!='nfl']
+    variants={r.get('variant'):r for r in brand if r.get('variant')}
+    for row in visible_brand:
+        if row.get('variant')=='mnf':
+            row['initial_cell']=variants['mnf' if watermark=='mnf' else 'nfl']['cell']
+            row['initial_colour']=0 if watermark=='off' else 0xffffffff
+    statics=[dict(r,box=placed_box(r,widescreen),layout_box=r['box']) for r in spec['static']+visible_brand]
     fields=[dict(r) for r in spec['fields']]
     events=[dict(r) for r in spec.get('events',[])]
     material_order=_allocate_layers(statics+fields+events,spec)
@@ -336,7 +350,13 @@ def compile_folder(folder=None,widescreen=False):
         # Down follows FC360's binding/slide gate, not the pending request.
         visibility=0xa95a70 if source==6 else 0xa95a20 if source==7 else 0
         FIELD.pack_into(table,HEADER.size+i*FIELD.size,source,row['vertex'],row['slots'],*glyph_sets[(row['glyph_set'],row['size'])],0xff000000|int(row['colour'][1:],16),flags,visibility,x,y,z,width,align,0)
-    for i,row in enumerate(statics):STATIC.pack_into(table,HEADER.size+len(fields)*FIELD.size+i*STATIC.size,row['vertex'],TINTS.index(row['tint']),row['material'],0)
+    for i,row in enumerate(statics):
+        brand_offset=0
+        if row.get('variant')=='mnf':
+            variants={r['variant']:r for r in brand if r.get('variant')}
+            brand_offset=TABLE_OFFSET+len(table)
+            table+=BRAND.pack(WATERMARK_MODES.index(watermark),*(u for v in ('nfl','mnf') for u in quantized_uv(cells[variants[v]['cell']],spec['atlas'])))
+        STATIC.pack_into(table,HEADER.size+len(fields)*FIELD.size+i*STATIC.size,row['vertex'],TINTS.index(row['tint']),row['material'],brand_offset)
     HEADER.pack_into(table,0,MAGIC,1,len(fields),TABLE_OFFSET+HEADER.size,len(statics),TABLE_OFFSET+HEADER.size+len(fields)*FIELD.size,len(table),len(quads))
     return Compiled(spec,atlas,cells,quads,bytes(table),bool(widescreen),material_order)
 
@@ -353,13 +373,13 @@ def scene_bytes(retail, compiled=None):
         if row['dynamic']:continue
         x0,y0,x1,y1=row['box'];v=row['vertex'];mat=row['material']
         z=0
-        cell=(0,0,64,64) if row['cell']=='logo' else c.cells[row['cell']]
+        cell=(0,0,64,64) if row['cell']=='logo' else c.cells[row.get('initial_cell',row['cell'])]
         uv=quantized_uv(cell,(64,64) if row['cell']=='logo' else c.spec['atlas'],row.get('flip_x',False))
         a,b,cc,d=scene_box(row['box'],c.widescreen)
         for j,(x,y) in enumerate(((a,d),(cc,d),(a,b),(cc,b))):
             # scene_box is y-up: d is the top, b is the bottom.
             m.pos[v+j]=[x,y,z];m.uv_edit[v+j]=tuple(u/32767 for u in uv[j*2:j*2+2])
-            struct.pack_into('<I',m.buf,scene.layout.S1+(v+j)*10,0xffffffff)
+            struct.pack_into('<I',m.buf,scene.layout.S1+(v+j)*10,row.get('initial_colour',0xffffffff))
     groups={i:[] for i in range(11)}
     for row in sorted(c.quads,key=lambda r:r['layer_rank']):groups[row['material']].append(row['vertex'])
     for k,vertices in groups.items():
@@ -393,20 +413,46 @@ def scene_span(retail,compiled=None):
     return struct.pack('<4s7I',b'SCNE',len(data),len(data),0,0,0,0,0)+data
 
 
-def appendix(pack,folder=None,widescreen=False):
+def reserved_colours(compiled):
+    """Keep the tiny pointer and plate's gloss bands out of median-cut merging."""
+    from collections import Counter
+    result=[]
+    for name,limit in (('pointer',12),('plate',20)):
+        if name not in compiled.cells:continue
+        cell=compiled.atlas.crop(compiled.cells[name])
+        colours=(list(cell.getdata()) if name=='pointer' else
+                 [cell.getpixel((cell.width//2,y)) for y in range(cell.height)])
+        result.extend(colour for colour,_count in Counter(colours).most_common(limit))
+    # Retain the centre wash and thin lower rim when palette pressure changes.
+    # These occupy only a few texels; otherwise median cut can merge their hue
+    # with a much larger neighbouring region. Bound custom designs to 32 pins.
+    result=list(dict.fromkeys(result))
+    for name in ('away_rim','home_rim'):
+        if name not in compiled.cells:continue
+        cell=compiled.atlas.crop(compiled.cells[name]);w,h=cell.size
+        points=([(min(w-1,int(w*.975)),y) for y in range(min(3,h))] if name=='away_rim' else
+                [(min(w-1,int(w*.86)+x),max(0,h-2+y)) for x in range(2) for y in range(2)])
+        for point in points:
+            colour=cell.getpixel(point)
+            if colour not in result and len(result)<32:result.append(colour)
+    return tuple(result)
+
+
+def appendix(pack,folder=None,widescreen=False,watermark="auto"):
     from . import nfl2k5_scorebug_resources as art, nfl2k5_scorebug_ingame as scene
     from .nfl2k5_scorebug_assets import texture_chunk
-    c=compile_folder(folder,widescreen)
+    c=compile_folder(folder,widescreen,watermark)
     sources={n:pack[r['pack_offset']:r['pack_offset']+r['span_size']] for n,r in art.RESOURCES.items()}
     template=sources['score_buga'];scene.pinned(template,art.RESOURCES['score_buga'])
     chunks=[('TXTR','sb--h0',art.mnf_panel_span(template,None,'home'))]
-    for team,rec in sorted(art.TEAM_LOGOS.items()):chunks.append(('TXTR','sb'+rec['asset_code']+'h0',art.mnf_panel_span(template,team,'home',plate_tints=c.spec.get('plate_tints'),logo_fit=c.spec.get('logo_fit'))))
-    chunks.append(('TXTR','score_buga',texture_chunk('score_buga',c.atlas,template,alpha_aware=True)[0]))
+    for team,rec in sorted(art.TEAM_LOGOS.items()):chunks.append(('TXTR','sb'+rec['asset_code']+'h0',art.mnf_panel_span(template,team,'home',plate_tints=c.spec.get('plate_tints'),logo_fit=c.spec.get('logo_fit'),wing_tints=c.spec.get('wing_tints'))))
+    chunks.append(('TXTR','score_buga',texture_chunk('score_buga',c.atlas,template,alpha_aware=True,
+        reserved_colours=reserved_colours(c))[0]))
     chunks.append(('SCNE','score_bug',scene_span(scene.pinned(sources['score_bug'],art.RESOURCES['score_bug']),c)))
     receipts=[dict(kind=k,name=n,size=len(b),sha256=hashlib.sha256(b).hexdigest()) for k,n,b in chunks]
     data=b''.join(b for _,_,b in chunks)
     require(len(data)<MAX_APPEND,'The scorebug exceeds the 0.4 MB resource limit; reduce the atlas or scene.')
-    return data,dict(version=VERSION,display=DISPLAY[bool(widescreen)]['name'],components=receipts,appended_bytes=len(data),font_count=0,texture_count=34,scene_count=1,quads=len(c.quads),native_heap_bytes=sum((len(b)+127)//128*128 for _,_,b in chunks))
+    return data,dict(version=VERSION,watermark=watermark,display=DISPLAY[bool(widescreen)]['name'],components=receipts,appended_bytes=len(data),font_count=0,texture_count=34,scene_count=1,quads=len(c.quads),native_heap_bytes=sum((len(b)+127)//128*128 for _,_,b in chunks))
 
 
 def probe_sizes(folder=None):
@@ -414,7 +460,8 @@ def probe_sizes(folder=None):
     # Inspection needs dimensions and table lengths, never compiled pixels.
     spec, _image = load_layout(folder)
     fields = spec['fields']
-    table_size = HEADER.size + len(fields)*FIELD.size + (len(spec['static'])+len(spec.get('brand', [])))*STATIC.size
+    table_size = HEADER.size + len(fields)*FIELD.size + (len(spec['static'])+sum(r.get('variant')!='nfl' for r in spec.get('brand', [])))*STATIC.size
+    table_size += BRAND.size if any(r.get('variant')=='mnf' for r in spec.get('brand', [])) else 0
     table_size += sum(len(spec['glyph_sets'][name]['glyphs'])*GLYPH.size
                       for name, _cap in {(r['glyph_set'], r['size']) for r in fields})
     scene_size=(TABLE_OFFSET+table_size+127)//128*128+32
@@ -424,7 +471,7 @@ def probe_sizes(folder=None):
     return 34,appended,growth
 
 
-def pack_status(pack,folder=None,widescreen=None):
+def pack_status(pack,folder=None,widescreen=None,watermark=None):
     """'retail', 'applied' or 'foreign'; widescreen=None accepts a collection built for either display."""
     from . import nfl2k5_scorebug_resources as art,nfl2k5_scorebug_ingame as scene
     import nfl_outer as outer
@@ -447,28 +494,28 @@ def pack_status(pack,folder=None,widescreen=None):
         if grown:
             start=art.HUD_START+art.HUD_SIZE;have=bytes(pack[start:start+added])
             modes=(False,True) if widescreen is None else (bool(widescreen),)
-            if not any(have==appendix(pack,folder,w)[0] for w in modes) or any(pack[start+added:outer.align_up(start+added)]):return 'foreign'
+            if not any(have==appendix(pack,folder,w,mark)[0] for w in modes for mark in (WATERMARK_MODES if watermark is None else (watermark,))) or any(pack[start+added:outer.align_up(start+added)]):return 'foreign'
         return 'applied' if grown else 'retail'
     except (ValueError,KeyError,IndexError,struct.error,OSError):return 'foreign'
 
 
-def compile_collection(pack,folder=None,widescreen=False):
+def compile_collection(pack,folder=None,widescreen=False,watermark="auto"):
     from . import nfl2k5_scorebug_resources as art,nfl2k5_scorebug_assets as assets
-    state=pack_status(pack,folder,widescreen)
+    state=pack_status(pack,folder,widescreen,watermark)
     require(state!='foreign','Foreign or mixed sprite scorebug resources; rebuild from the supported base.')
     if state=='applied':return pack,dict(status='already_applied',changed_bytes=0,growth=0)
-    data,receipt=appendix(pack,folder,widescreen)
+    data,receipt=appendix(pack,folder,widescreen,watermark)
     read=lambda count,offset:bytes(pack[offset:offset+count])
     parts,growth=assets.grow_pack(read,len(pack),{art.HUD_OUTER_INDEX:[data]})
     result=art.join_views([(source if isinstance(source,bytes) else pack,offset,size) for source,offset,size in parts])
-    require(pack_status(result,folder,widescreen)=='applied','Sprite collection read-back failed.')
+    require(pack_status(result,folder,widescreen,watermark)=='applied','Sprite collection read-back failed.')
     return result,dict(receipt,resources=receipt['components'],probe='sprite',fonts=[],outer_index=art.HUD_OUTER_INDEX,outer_size_before=art.HUD_SIZE,outer_size_after=art.HUD_SIZE+len(data),status='applied',growth=len(result)-len(pack),sha256_before=art.pack_digest(pack),sha256_after=art.pack_digest(result),runtime_witnessed=False,experimental=True)
 
 
 STANDARD_STATE = dict(away='DEN', home='KC', away_score=7, home_score=7,
                       away_timeouts=3, home_timeouts=3, quarter=2,
                       clock=273, play_clock=4, down=3, distance=10,
-                      possession='home', event='standard', goal_to_go=False)
+                      possession='home', event='standard', goal_to_go=False, broadcast='play_now')
 
 
 def normalize_state(state=None):
@@ -480,12 +527,14 @@ def normalize_state(state=None):
     require(type(state['goal_to_go'])==bool,'Goal to go must be true or false.')
     require(state['possession'] in ('home','away'),'Possession must be home or away.')
     require(state['event'] in ('standard','FLAG','FUMBLE','hang time','ball on','score slabs','hidden play clock'),'Unknown retail event state.')
+    require(state['broadcast'] in ('play_now','monday_night','sunday_night','monday_afternoon'),'Unknown broadcast slot.')
     return state
 
 
 class NativePreview:
     """Read-only native execution using the user's pinned game resources."""
-    def __init__(self, pack=None, xbe=None, folder=None, source=None):
+    def __init__(self, pack=None, xbe=None, folder=None, source=None, watermark="auto"):
+        self.watermark=watermark
         from . import nfl2k5_scorebug_resources as art,nfl2k5_scorebug_ingame as scene
         import sys
         tools=str(ROOT/'tools')
@@ -517,13 +566,13 @@ class NativePreview:
         from . import nfl2k5_scorebug_ingame as scene
         from nfl_main_menu_font import FONT_NAMES, EXPECTED_FONTS, parse_font
         from nfl_scene_probe import ResourceRecord
-        data,self.volume=appendix(view,folder)
+        data,self.volume=appendix(view,folder,watermark=self.watermark)
         self.chunks=[data[c.offset:c.end_offset] for c in scene.tx.parse_chunks(data)]
         self.modes={}
         for wide in (False,True):
-            mode_data,volume=appendix(view,folder,wide)
+            mode_data,volume=appendix(view,folder,wide,self.watermark)
             chunks=[mode_data[c.offset:c.end_offset] for c in scene.tx.parse_chunks(mode_data)]
-            self.modes[wide]=dict(compiled=compile_folder(folder,wide),scene=scene.decode(chunks[-1])[1],atlas=chunks[-2],textures=chunks[:-1],volume=volume)
+            self.modes[wide]=dict(compiled=compile_folder(folder,wide,self.watermark),scene=scene.decode(chunks[-1])[1],atlas=chunks[-2],textures=chunks[:-1],volume=volume)
         # Read only the native global font outer for retained retail events.
         # The outer header has a fixed volume-table size, exposed by its parser.
         from nfl_outer import HEADER_SIZE
@@ -549,7 +598,7 @@ class NativePreview:
             score_phase=.2 if s['event']=='score slabs' else 0,
             timeouts=(s['home_timeouts'],s['away_timeouts']),quarter=s['quarter'],
             game_seconds=s['clock'],play_seconds=s['play_clock'],down=s['down'],distance_yards=s['distance'],goal_to_go=s['goal_to_go'],
-            possession=s['possession'],visible_elements=events[s['event']],visibility_state=visibility)
+            broadcast=s['broadcast'],possession=s['possession'],visible_elements=events[s['event']],visibility_state=visibility)
         # Retail text remains only for event overlays; the bar callbacks are blank.
         # The down formatter's field query is the same explicit boundary used
         # by the existing text raster audit.
@@ -616,8 +665,9 @@ def main(argv=None):
     preview.add_argument('--state',default='{}');preview.add_argument('--aspect',choices=('4:3','16:9','both'),default='both')
     preview.add_argument('--output',type=Path,default=Path('scorebug_sprite_preview.png'))
     preview.add_argument('--source',type=Path);preview.add_argument('--folder',type=Path);preview.add_argument('--pack',type=Path);preview.add_argument('--xbe',type=Path)
+    preview.add_argument('--watermark',choices=WATERMARK_MODES,default='auto')
     args=parser.parse_args(argv)
-    engine=NativePreview(args.pack,args.xbe,args.folder,args.source);state=json.loads(args.state)
+    engine=NativePreview(args.pack,args.xbe,args.folder,args.source,args.watermark);state=json.loads(args.state)
     for wide in ((False,True) if args.aspect=='both' else (args.aspect=='16:9',)):
         path=args.output.with_name(args.output.stem+('_169' if wide else '_43')+args.output.suffix) if args.aspect=='both' else args.output
         result=engine.render(path,screenshot=args.screenshot,state=state,widescreen=wide)

@@ -101,34 +101,35 @@ def expand_tokens(tokens: list, decoded: bytes) -> list:
 
 
 def fill_stream(stream: bytes, decoded: bytes, stored_size: int, *, slack: int) -> tuple[bytes, int]:
-    """Expand trailing matches into literals until len(stream) >= stored_size - slack (and <= stored)."""
+    """Expand the same earliest fitting matches, calculating token sizes once.
 
+    Each literal costs one payload byte, each match two, and every eight
+    tokens share a flag byte. Expanding a match of length L adds L-1 tokens
+    and L-2 payload bytes. This reproduces the old trial-serialization choice
+    exactly without repeatedly serializing the entire shoe span.
+    """
     output_size, tag, offset_bits, tokens = parse_tokens(stream)
-    toks = expand_tokens(tokens, decoded)
-    expanded = 0
-    current = serialize(output_size, tag, offset_bits, [tk[:3] if tk[0] == "M" else tk[:2] for tk in toks])
-    if len(current) > stored_size:
-        raise t.TxtrError("compressed stream already exceeds the stored body")
-    # Expand from the START of the stream: every later token then sits further into the stored body,
-    # which loosens the forward in-place constraint (output endpoint below the next unread byte)
-    # for the whole tail.  Expanding at the end would tighten it exactly where it is tightest.
-    idx = 0
-    while len(current) < stored_size - slack and idx < len(toks):
-        tk = toks[idx]
-        if tk[0] == "M":
-            _m, _d, ln, pos = tk
-            literals = [("L", decoded[pos + k], pos + k) for k in range(ln)]
-            trial = toks[:idx] + literals + toks[idx + 1:]
-            trial_bytes = serialize(output_size, tag, offset_bits, [x[:3] if x[0] == "M" else x[:2] for x in trial])
-            if len(trial_bytes) <= stored_size:
-                toks = trial
-                current = trial_bytes
+    token_count = len(tokens)
+    payload_size = sum(2 if token[0] == 'M' else 1 for token in tokens)
+    current_size = 9 + (token_count + 7) // 8 + payload_size
+    if current_size > stored_size:
+        raise t.TxtrError('compressed stream already exceeds the stored body')
+    expanded, position, result = 0, 0, []
+    for token in tokens:
+        length = token[2] if token[0] == 'M' else 1
+        if token[0] == 'M' and current_size < stored_size - slack:
+            trial_count = token_count + length - 1
+            trial_payload = payload_size + length - 2
+            trial_size = 9 + (trial_count + 7) // 8 + trial_payload
+            if trial_size <= stored_size:
+                result.extend(('L', value) for value in decoded[position:position + length])
+                token_count, payload_size, current_size = trial_count, trial_payload, trial_size
                 expanded += 1
-                idx += ln          # skip the literals just inserted
+                position += length
                 continue
-            # too long to expand within the span: leave it and look further on
-        idx += 1
-    return current, expanded
+        result.append(token)
+        position += length
+    return serialize(output_size, tag, offset_bits, result), expanded
 
 
 def compress_optimal(decoded: bytes, *, stream_tag: int, offset_bits: int, chain_limit: int = 256) -> bytes:

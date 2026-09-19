@@ -1,0 +1,2 @@
+{'command': ['python3', 'reports/b72_s1/observe_gate_manifest.py'], 'exit_code': 0, 'seconds': 318.77, 'log': 'final_observe_gate_manifest.log'}
+{'command': ['python3', 'tests/mod_editor/test_nfl2k5_cave_oracle.py'], 'exit_code': 1, 'seconds': 337.61, 'log': 'final_test_nfl2k5_cave_oracle.log'}

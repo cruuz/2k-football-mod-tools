@@ -1,0 +1,11 @@
+Pending integration pin only: SCOREBUG_TEMPLATE_PNG_CATALOG_SHA256 = '8c69221862b16a928172048f9043588b356738dd1c0b26cee1a98f50ca96cc39'
+test_all_template_files_pass_staging_with_exact_reviewed_png_count (b72_release_tests.TemplateReleaseTests.test_all_template_files_pass_staging_with_exact_reviewed_png_count) ... ok
+test_arbitrary_png_cannot_use_the_template_directory_or_a_renamed_reviewed_file (b72_release_tests.TemplateReleaseTests.test_arbitrary_png_cannot_use_the_template_directory_or_a_renamed_reviewed_file) ... ok
+test_catalog_tampering_and_missing_catalog_do_not_create_an_exception (b72_release_tests.TemplateReleaseTests.test_catalog_tampering_and_missing_catalog_do_not_create_an_exception) ... ok
+test_changed_reviewed_png_refuses_even_when_filename_is_allowlisted (b72_release_tests.TemplateReleaseTests.test_changed_reviewed_png_refuses_even_when_filename_is_allowlisted) ... ok
+test_staged_compiler_finds_default_art_without_repository_or_legacy_exports (b72_release_tests.TemplateReleaseTests.test_staged_compiler_finds_default_art_without_repository_or_legacy_exports) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.473s
+
+OK

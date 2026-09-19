@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QFormLayout, QGr
 
 from mod_editor.core import nfl2k5_my_career as career
 from mod_editor.core import nfl2k5_my_career_prospects as prospects
+from mod_editor.core import nfl2k5_my_career_advisory as advisory
 from mod_editor.core import nfl2k5_my_career_save as career_save
 from mod_editor.core import nfl2k5_crib_reclaim as crib
 from mod_editor.core import nfl2k5_roster_records as roster
@@ -38,6 +39,7 @@ class MyCareerPanel(QWidget):
     Long archive work runs in a worker. No action starts merely by opening a disc.
     """
     setup_ready = pyqtSignal(str)
+    earned_events_ready = pyqtSignal(object)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -83,6 +85,23 @@ class MyCareerPanel(QWidget):
         self.last.setMaxLength(30)
         form.addRow("First name", self.first)
         form.addRow("Last name", self.last)
+        for field, label in (("jersey", "Jersey number"), ("height", "Height (inches)"), ("weight", "Weight (lb)")):
+            control = QSpinBox()
+            low, high = roster.NUMERIC_LIMITS[field]
+            control.setRange(low - 1, high)
+            control.setSpecialValueText("Keep prospect value")
+            control.setValue(low - 1)
+            setattr(self, field, control)
+            form.addRow(label, control)
+        self.college = QComboBox()
+        self.college.addItem("Keep prospect college", None)
+        self.college_load = QPushButton("Load colleges from draft save")
+        self.college_load.clicked.connect(self._load_colleges)
+        college_row = QHBoxLayout()
+        college_row.addWidget(self.college)
+        college_row.addWidget(self.college_load)
+        form.addRow("College", college_row)
+        self.save.textChanged.connect(self._reset_colleges)
         self.position = QComboBox()
         for code, short, long_name in career.position_choices(self._position_scheme):
             self.position.addItem(f"{short} ({long_name})", code)
@@ -97,8 +116,8 @@ class MyCareerPanel(QWidget):
         prospect_help = QLabel(
             "1st Day: backup, Slot WR or Nickel CB. 2nd Day: third string or fourth WR/CB. "
             "3rd Day: third string or fifth WR/CB. Undrafted: bottom of the depth chart. "
-            "The career keeps the tier's goal label. Senior Bowl play, Combine drills and Pro Day are planned. "
-            "Gunslinger QB uses the existing Pocket QB ratings.")
+            "The career keeps the tier's goal label. Playable pre-draft events are planned. "
+            "Gunslinger QB has distinct studio ratings. Earned ratings are host-side bookkeeping only.")
         prospect_help.setWordWrap(True)
         form.addRow(prospect_help)
         self.contract = QLabel()
@@ -128,6 +147,26 @@ class MyCareerPanel(QWidget):
         self.create_button.clicked.connect(self._create)
         form.addRow(self.create_button)
         layout.addWidget(group)
+
+        preview = QGroupBox("Draft Advisory and 53-man cut risk")
+        preview_form = QFormLayout(preview)
+        self.advisory_setup = QLineEdit()
+        self.advisory_setup.setPlaceholderText("Prepared MyCareer.json")
+        self.advisory_choose = QPushButton("Choose prepared setup")
+        self.advisory_choose.clicked.connect(self._choose_advisory)
+        preview_row = QHBoxLayout()
+        preview_row.addWidget(self.advisory_setup)
+        preview_row.addWidget(self.advisory_choose)
+        preview_form.addRow("Prepared save", preview_row)
+        self.advisory_button = QPushButton("Review estimates from save")
+        self.advisory_button.clicked.connect(self._review_advisory)
+        preview_form.addRow(self.advisory_button)
+        self.advisory_result = QLabel("Estimates only. Review a prepared save to see club needs and cut risk.")
+        self.advisory_result.setWordWrap(True)
+        self.advisory_result.setTextFormat(Qt.PlainText)
+        preview_form.addRow(self.advisory_result)
+        self.advisory_setup.textChanged.connect(self._invalidate_advisory)
+        layout.addWidget(preview)
 
         # Beta 66 (Supersim job): the saved Supersim choice of an in-game career.
         settings = QGroupBox("MyCareer Settings")
@@ -205,13 +244,14 @@ class MyCareerPanel(QWidget):
         self.image.setText(str(source or ""))
 
     def set_position_pools(self, enabled):
-        """Switch the picker between the retail 17 positions and the EDGE/LB pools."""
+        """Switch the design picker between eleven retail and ten one-pool rows."""
         scheme = "one_pool" if enabled else "retail"
         if scheme == self._position_scheme:
             return
         old_code = self.position.currentData()
         old_variant = self.template.currentData()
         self._position_scheme = scheme
+        self._invalidate_advisory()
         code = roster.replacement_position_code(old_code or 0, scheme)
         self.position.blockSignals(True)
         try:
@@ -295,6 +335,63 @@ class MyCareerPanel(QWidget):
         self._run(lambda: career_save.write_settings(
             source, target, supersim=choice, playcall=caller), exported)
 
+    def _reset_colleges(self):
+        self.college.clear()
+        self.college.addItem("Keep prospect college", None)
+
+    def _load_colleges(self):
+        source = self.save.text().strip()
+        if not source:
+            self.result.setText("Choose a draft save before loading its colleges.")
+            return
+
+        def read():
+            payload = roster.SaveContainer.load(source).savegame
+            doc = roster.RosterDocument(payload, base=roster.find_block_base(payload))
+            return doc.colleges
+
+        def done(colleges):
+            if source != self.save.text().strip():
+                self.result.setText("The draft save changed. Load its colleges again.")
+                return
+            self._reset_colleges()
+            for name in colleges:
+                self.college.addItem(name, name)
+            self.result.setText("Colleges loaded from the draft save.")
+
+        self._run(read, done)
+
+    def _invalidate_advisory(self):
+        self.advisory_result.setText("Estimates need a fresh review of the prepared save and roster mode.")
+
+    def _choose_advisory(self):
+        path, _ = QFileDialog.getOpenFileName(self, "Choose prepared MyCareer setup", "", "MyCareer setup (*.json)")
+        if path:
+            self.advisory_setup.setText(path)
+
+    def _review_advisory(self):
+        source, scheme = self.advisory_setup.text().strip(), self._position_scheme
+        self._invalidate_advisory()
+        if not source:
+            self.result.setText("Create MyPlayer or choose a prepared MyCareer.json before reviewing estimates.")
+            return
+
+        def done(report):
+            if source != self.advisory_setup.text().strip() or scheme != self._position_scheme:
+                self._invalidate_advisory()
+                return
+            rows = [report['label'], report['note']]
+            for club in report['clubs'][:6]:
+                rows.append(f"{club['club']}: {club['position_count']} at position, target {club['target']}, "
+                            f"maximum {club['maximum']}; need {club['shortfall']}. "
+                            f"53-man cut risk: {club['cut_risk']} (estimated position rank "
+                            f"{club['projected_position_rank']}, roster {club['projected_roster']}).")
+            rows.append("Equal ratings favor incumbents. Risk reflects position capacity and the 53-man limit.")
+            self.advisory_result.setText("\n".join(rows))
+            self.result.setText("Draft Advisory refreshed from the prepared save. Estimates only.")
+
+        self._run(lambda: advisory.review_prepared(source, scheme=scheme), done)
+
     def _choose_save(self):
         path, _ = QFileDialog.getOpenFileName(self, "Choose a Franchise draft save", "",
                                              "Xbox saves (*.zip SAVEGAME.DAT);;All files (*)")
@@ -319,6 +416,8 @@ class MyCareerPanel(QWidget):
         self.career_supersim.setEnabled(False)
         self.career_playcall.setEnabled(False)
         self.create_button.setEnabled(False)
+        self.college_load.setEnabled(False)
+        self.advisory_button.setEnabled(False)
         self.review_button.setEnabled(False)
         self.rebuild_button.setEnabled(False)
         self.result.setText("Working. The source stays available while this copy is prepared.")
@@ -332,6 +431,8 @@ class MyCareerPanel(QWidget):
             self.career_supersim.setEnabled(bool(self._career_settings_source))
             self.career_playcall.setEnabled(bool(self._career_settings_source))
             self.create_button.setEnabled(True)
+            self.college_load.setEnabled(True)
+            self.advisory_button.setEnabled(True)
             self.review_button.setEnabled(True)
             self.rebuild_button.setEnabled(self._plan is not None)
             if error:
@@ -351,11 +452,17 @@ class MyCareerPanel(QWidget):
                        position=self.position.currentData(), template=self.template.currentData(),
                        port=self.port.value() - 1, camera=self.camera.currentIndex(),
                        starter_lock=self.starter.isChecked(), scheme=self._position_scheme,
-                       prospect_tier=self.prospect.currentData())
+                       prospect_tier=self.prospect.currentData(), college=self.college.currentData())
+        for field in ("jersey", "height", "weight"):
+            control = getattr(self, field)
+            options[field] = control.value() if control.value() > control.minimum() else None
 
         def done(receipt):
             self.setup_path = str(Path(receipt["output"]) / "MyCareer.json")
+            self.advisory_setup.setText(self.setup_path)
             self.setup_ready.emit(self.setup_path)
+            if "earned_events" in receipt:
+                self.earned_events_ready.emit(receipt["earned_events"])
             self.result.setText(f"Created {receipt['myplayer']} ({receipt.get('position', '?')}). Import MyCareer.zip as a "
                                 "save, then enable MyCareer in Build with the matching MyCareer.json setup. The normal "
                                 "draft chooses the team; choose MyCareer from Game Modes in the built game.")

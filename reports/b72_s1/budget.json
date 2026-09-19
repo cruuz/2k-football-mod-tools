@@ -1,0 +1,17 @@
+{
+  "code_reserved": 4096,
+  "code_used": 3798,
+  "rw_reserved": 128,
+  "quads": 47,
+  "size_probe": [
+    34,
+    323808,
+    323584
+  ],
+  "appended_bytes_before": 323808,
+  "appended_bytes_after": 323808,
+  "delta": 0,
+  "ceiling": 400000,
+  "retail_bytes_saved": false,
+  "in_game_witnessed": false
+}

@@ -50,6 +50,9 @@ from mod_editor.studio.audio_annotations import (
 )
 
 
+from mod_editor.core.nfl2k5_my_career_events import validated_ledger
+
+
 PROJECT_SCHEMA = "2k5_mod_studio_project/v1"
 PROJECT_GAME = "espn_nfl_2k5_xbox"
 PROJECT_EXTENSION = ".2k5mod"
@@ -266,6 +269,7 @@ class LoadedProject:
     play_creates: tuple[Mapping[str, object], ...] = ()
     formation_links: tuple[Mapping[str, object], ...] = ()
     build_settings: Mapping[str, object] | None = None
+    my_career_events: Mapping[str, object] | None = None
     fit_receipts: Mapping[str, object] | None = None
 
     def cleanup(self) -> None:
@@ -396,12 +400,14 @@ def save_project_archive(
     play_creates: Iterable[Mapping[str, object]] = (),
     formation_links: Iterable[Mapping[str, object]] = (),
     build_settings: Mapping[str, object] | None = None,
+    my_career_events: Mapping[str, object] | None = None,
     fit_receipts: Mapping[str, object] | None = None,
 ) -> Path:
     """Atomically save only user-authored replacements and annotation metadata."""
 
     output = _destination(destination)
     try:
+        saved_events = validated_ledger(my_career_events)
         saved_build_settings = music_build_settings({} if build_settings is None else build_settings)
     except ValueError as exc:
         raise ValidationError(str(exc)) from exc
@@ -599,6 +605,7 @@ def save_project_archive(
     empty_project = (
         not rows
         and not saved_build_settings
+        and saved_events is None
         and text_payload is None
         and not audio_rows
         and annotations_payload is None
@@ -618,6 +625,8 @@ def save_project_archive(
         "payload_policy": "user-replacements-only",
         "schema": PROJECT_SCHEMA,
     }
+    if saved_events is not None:
+        manifest["my_career_events"] = saved_events
     if saved_build_settings:
         manifest["build_settings"] = saved_build_settings
     if empty_project:
@@ -773,7 +782,7 @@ def load_project_archive(
                 raise ValidationError(f"Project manifest is not valid JSON: {exc}") from exc
             base_fields = {"edits", "game", "payload_policy", "schema"}
             optional_fields = {
-                "build_settings", "fit_receipts",
+                "build_settings", "fit_receipts", "my_career_events",
                 "text_replacements", "audio_edits", "audio_annotations",
                 "uniform_colors", "empty_project",
                 "play_route_edits", "playbook_creates", "playbook_links",
@@ -789,6 +798,7 @@ def load_project_archive(
             ):
                 raise ValidationError("Project was not created for NFL 2K5 Mod Studio.")
             try:
+                loaded_events = validated_ledger(document.get("my_career_events"))
                 loaded_build_settings = music_build_settings(document.get("build_settings", {}))
             except ValueError as exc:
                 raise ValidationError(str(exc)) from exc
@@ -1065,6 +1075,7 @@ def load_project_archive(
                 and not loaded_creates
                 and not loaded_links
                 and not loaded_build_settings
+                and loaded_events is None
             ):
                 if empty_marker is not True:
                     raise ValidationError(
@@ -1163,6 +1174,7 @@ def load_project_archive(
         ),
         formation_links=tuple(loaded_links),
         build_settings=loaded_build_settings,
+        my_career_events=loaded_events,
         fit_receipts=_fit_receipts(document.get('fit_receipts', {})),
     )
 

@@ -3454,16 +3454,26 @@ def _parallel_uniform_imports(edits, project, pins, reports, index, inventory, p
                     future.cancel()
 
 
+_EQUIPMENT_WORKER_CACHE = None
+
+
 def _equipment_fit_worker(arguments):
     """One physical group; the parent alone publishes game data or receipts."""
     index, edits = arguments
     writer = uniform_equipment_adapter
-    cache = writer.EquipmentCompileCache()
+    global _EQUIPMENT_WORKER_CACHE
+    if _EQUIPMENT_WORKER_CACHE is None:
+        _EQUIPMENT_WORKER_CACHE = writer.EquipmentCompileCache()
+    cache = _EQUIPMENT_WORKER_CACHE
+    cache.used_keys.clear()
     try:
         rows = writer.preflight_project_equipment(index,
             [(None, asset_id, path) for asset_id, path in edits], compile_cache=cache)
         records = []
-        for key, compiled in cache.compiled.items():
+        for key in cache.used_keys:
+            compiled = cache.compiled.get(key)
+            if compiled is None:
+                continue
             record = asdict(compiled)
             record['independent'] = sorted(compiled.independent)
             records.append((key, record))
@@ -3481,6 +3491,8 @@ def _parallel_equipment_fits(groups, project, pins, index, cache, workers):
     pending = deque()
     completed = 0
     total = sum(len(rows) for rows in groups.values())
+    cache.size_for_project(total)
+    cache.enable_handoff()
     def finish(item):
         nonlocal completed
         rows, future = item
@@ -3493,6 +3505,7 @@ def _parallel_equipment_fits(groups, project, pins, index, cache, workers):
             restored = uniform_equipment_adapter._restore_staged(record, record['rebuilt_span'])
             require(restored is not None, f'Equipment worker returned an invalid fit: {labels}')
             cache.compiled[key] = restored
+            cache.preflight_keys.add(key)
         # Advisory metadata only. It is saved with the project by an explicit
         # Save; encoded spans stay in the private compiler cache.
         print('NFL2K5_FIT_RECEIPT ' + json.dumps(fits), flush=True)
@@ -3504,6 +3517,18 @@ def _parallel_equipment_fits(groups, project, pins, index, cache, workers):
                 for r in failed))
         completed += len(rows)
         _item_progress('Fit checked: ' + labels, completed, total)
+    if workers == 1:
+        # The laptop case avoids spawn, IPC and a fresh cache for every group.
+        from concurrent.futures import Future
+        for rows in groups.values():
+            edits = [(None, row['asset_id'], resolve_asset(project, row['png'], pins).path) for row in rows]
+            cache.used_keys.clear()
+            fits = uniform_equipment_adapter.preflight_project_equipment(index, edits, compile_cache=cache)
+            cache.preflight_keys.update(cache.used_keys)
+            future = Future()
+            future.set_result((fits, []))
+            finish((rows, future))
+        return
     with ProcessPoolExecutor(max_workers=workers, mp_context=multiprocessing.get_context('spawn')) as pool:
         try:
             for rows in groups.values():
@@ -3762,13 +3787,14 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
         equipment_pack_hashes: dict[str, str] = {}
         # A global shoe/glove/pad variant is staged in every uniform package the
         # game can sample it from; identical retail spans compile once per build.
-        equipment_compile_cache = project.equipment_compile_cache or uniform_equipment_adapter.EquipmentCompileCache()
+        equipment_compile_cache = project.equipment_compile_cache or uniform_equipment_adapter.EquipmentCompileCache(
+            project_items=sum(len(rows) for rows in equipment_groups.values()))
         ausb_pack_hashes: dict[str, str] = {}
         unif_color_pack_hashes: dict[str, str] = {}
         independent_kinds = {"torso", "sleeve", "pants", "live_helmet", "team_select"}
         workers = _encode_worker_count() if parallelism is None else max(1, parallelism)
         uniform_orders = [n for n, row in enumerate(project.value['edits']) if row['kind'] in independent_kinds]
-        if workers > 1 and len(equipment_groups) >= 2 and historical_import_reports is None:
+        if len(equipment_groups) >= 2 and historical_import_reports is None:
             _parallel_equipment_fits(equipment_groups, project, input_pins, index_pin.path,
                                      equipment_compile_cache, workers)
         if workers > 1 and len(uniform_orders) >= 4 and historical_import_reports is None:

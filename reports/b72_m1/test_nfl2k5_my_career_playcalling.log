@@ -1,0 +1,19 @@
+
+B69_PLAYCALL_RECEIPT {"cadence": {"complete_updates": 44, "match_rng_draws": 1414, "polls": 10, "presents": 10, "updates": 44}, "handbacks": [{"controller_port": 0, "drive": 2, "menu": false, "next_fast_forward_updates": 8, "policy": 1, "position": 7, "pre_snap_state": 13, "selected": true, "snap_state": 14}], "postgame_policy": 1, "postgame_supersim": 2, "saved_bits": 40}
+..
+B69_PLAYCALL_RECEIPT {"cadence": {"complete_updates": 86, "match_rng_draws": 2995, "polls": 25, "presents": 25, "updates": 86}, "handbacks": [{"controller_port": 0, "drive": 2, "menu": true, "next_fast_forward_updates": 8, "policy": 0, "position": 0, "pre_snap_state": 13, "selected": true, "snap_state": 14}, {"controller_port": 0, "drive": 4, "menu": true, "next_fast_forward_updates": 8, "policy": 0, "position": 0, "pre_snap_state": 13, "selected": true, "snap_state": 14}], "postgame_policy": 0, "postgame_supersim": 2, "saved_bits": 8}
+
+B69_PLAYCALL_RECEIPT {"cadence": {"complete_updates": 86, "match_rng_draws": 2995, "polls": 25, "presents": 25, "updates": 86}, "handbacks": [{"controller_port": 0, "drive": 2, "menu": true, "next_fast_forward_updates": 8, "policy": 1, "position": 0, "pre_snap_state": 13, "selected": true, "snap_state": 14}, {"controller_port": 0, "drive": 4, "menu": true, "next_fast_forward_updates": 8, "policy": 1, "position": 0, "pre_snap_state": 13, "selected": true, "snap_state": 14}], "postgame_policy": 1, "postgame_supersim": 2, "saved_bits": 40}
+
+B69_PLAYCALL_RECEIPT {"cadence": {"complete_updates": 78, "match_rng_draws": 2368, "polls": 17, "presents": 17, "updates": 78}, "handbacks": [{"controller_port": 0, "drive": 2, "menu": false, "next_fast_forward_updates": 8, "policy": 2, "position": 0, "pre_snap_state": 13, "selected": true, "snap_state": 14}, {"controller_port": 0, "drive": 4, "menu": false, "next_fast_forward_updates": 8, "policy": 2, "position": 0, "pre_snap_state": 13, "selected": true, "snap_state": 14}], "postgame_policy": 2, "postgame_supersim": 2, "saved_bits": 72}
+
+B69_PLAYCALL_RECEIPT {"cadence": {"complete_updates": 86, "match_rng_draws": 2972, "polls": 25, "presents": 25, "updates": 86}, "handbacks": [{"controller_port": 0, "drive": 2, "menu": true, "next_fast_forward_updates": 8, "policy": 0, "position": 11, "pre_snap_state": 13, "selected": true, "snap_state": 14}, {"controller_port": 0, "drive": 4, "menu": true, "next_fast_forward_updates": 8, "policy": 0, "position": 11, "pre_snap_state": 13, "selected": true, "snap_state": 14}], "postgame_policy": 0, "postgame_supersim": 2, "saved_bits": 8}
+
+B69_PLAYCALL_RECEIPT {"cadence": {"complete_updates": 86, "match_rng_draws": 2972, "polls": 25, "presents": 25, "updates": 86}, "handbacks": [{"controller_port": 0, "drive": 2, "menu": true, "next_fast_forward_updates": 8, "policy": 1, "position": 11, "pre_snap_state": 13, "selected": true, "snap_state": 14}, {"controller_port": 0, "drive": 4, "menu": true, "next_fast_forward_updates": 8, "policy": 1, "position": 11, "pre_snap_state": 13, "selected": true, "snap_state": 14}], "postgame_policy": 1, "postgame_supersim": 2, "saved_bits": 40}
+
+B69_PLAYCALL_RECEIPT {"cadence": {"complete_updates": 78, "match_rng_draws": 2368, "polls": 17, "presents": 17, "updates": 78}, "handbacks": [{"controller_port": 0, "drive": 2, "menu": false, "next_fast_forward_updates": 8, "policy": 2, "position": 11, "pre_snap_state": 13, "selected": true, "snap_state": 14}, {"controller_port": 0, "drive": 4, "menu": false, "next_fast_forward_updates": 8, "policy": 2, "position": 11, "pre_snap_state": 13, "selected": true, "snap_state": 14}], "postgame_policy": 2, "postgame_supersim": 2, "saved_bits": 72}
+.
+----------------------------------------------------------------------
+Ran 3 tests in 711.569s
+
+OK

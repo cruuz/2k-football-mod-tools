@@ -393,6 +393,12 @@ def compress_vc_lz(
     if max_candidate_comparisons <= 0:
         raise TxtrError("VC-LZ candidate-comparison bound must be positive")
 
+    # Vectorize the exact three-byte keys once. All token decisions remain
+    # nearest-first and integer-only, including comparison-bound accounting.
+    import numpy as np
+    from bisect import bisect_left, bisect_right
+    pixels = np.frombuffer(source, dtype=np.uint8).astype(np.uint32)
+    keys = (pixels[:-2] | (pixels[1:-1] << 8) | (pixels[2:] << 16)).tolist()
     length_bits = 16 - offset_bits
     maximum_distance = (1 << offset_bits) - 1
     maximum_length = ((1 << length_bits) - 1) + 3
@@ -409,11 +415,7 @@ def compress_vc_lz(
     candidate_comparisons = 0
 
     def key_at(offset: int) -> int:
-        return (
-            source[offset]
-            | (source[offset + 1] << 8)
-            | (source[offset + 2] << 16)
-        )
+        return keys[offset]
 
     def add_position(offset: int) -> None:
         if offset + minimum_match <= len(source):
@@ -452,7 +454,36 @@ def compress_vc_lz(
                 cutoff = position - maximum_distance
                 while candidates and candidates[0] < cutoff:
                     candidates.popleft()
-                for candidate in reversed(candidates):
+                # Search the same window in C when the hash chain is long.
+                # Binary search finds the longest legal non-overlapping match;
+                # rfind retains the nearest tie. Charge the original traversal's
+                # full comparison count, including skipped short candidates.
+                searched = len(candidates) > 16
+                if searched:
+                    upper = min(maximum_length, remaining)
+                    low, high, nearest = 2, upper + 1, -1
+                    fragment = source[position:position + upper]
+                    full = source.rfind(fragment, max(0, cutoff), position)
+                    if full >= 0:
+                        low, nearest = upper, full
+                    else:
+                        high = upper
+                        while low + 1 < high:
+                            middle = (low + high) // 2
+                            found = source.rfind(fragment[:middle], max(0, cutoff), position)
+                            if found >= 0:
+                                low, nearest = middle, found
+                            else:
+                                high = middle
+                    charged = bisect_right(candidates, position - minimum_match)
+                    if low == maximum_length:
+                        charged -= bisect_left(candidates, nearest)
+                    candidate_comparisons += charged
+                    if candidate_comparisons > max_candidate_comparisons:
+                        raise TxtrError("VC-LZ candidate-comparison bound exceeded")
+                    if low >= minimum_match:
+                        best_length, best_distance = low, position - nearest
+                for candidate in (() if searched else reversed(candidates)):
                     distance = position - candidate
                     if distance < minimum_match:
                         # A minimum three-byte non-overlapping match is
@@ -464,12 +495,18 @@ def compress_vc_lz(
                             "VC-LZ candidate-comparison bound exceeded"
                         )
                     limit = min(maximum_length, remaining, distance)
-                    length = minimum_match
-                    while (
-                        length < limit
-                        and source[candidate + length] == source[position + length]
-                    ):
-                        length += 1
+                    fragment = source[position:position + limit]
+                    if source.startswith(fragment, candidate):
+                        length = limit
+                    else:
+                        low, high = minimum_match, limit
+                        while low + 1 < high:
+                            middle = (low + high) // 2
+                            if source.startswith(fragment[:middle], candidate):
+                                low = middle
+                            else:
+                                high = middle
+                        length = low
                     if length > best_length:
                         best_length = length
                         best_distance = distance

@@ -2765,6 +2765,7 @@ class StudioMainWindow(QMainWindow):
         self.pages.addWidget(self._page_scroll_host(self._create_play_tabs))
         self._my_career_panel = MyCareerPanel()
         self._my_career_panel.setup_ready.connect(self._my_career_setup_ready)
+        self._my_career_panel.earned_events_ready.connect(self._my_career_events_ready)
         self._sync_mycareer_position_scheme()
         self.pages.addWidget(self._page_scroll_host(self._my_career_panel))
         self._add_lazy_page("scorebar", self._build_scorebar_page)
@@ -3135,8 +3136,11 @@ class StudioMainWindow(QMainWindow):
     def _build_scorebar_page(self):
         self._scorebar_panel = ScorebugStudioPanel(defer_preview=True)
         self._scorebar_panel.sprite_source_provider = lambda: getattr(self.facade, "source_path", None)
+        self._scorebar_panel.sprite_watermark_provider = lambda: (
+            self._build_panel.scorebug_watermark_combo.currentData() if getattr(self, '_build_panel', None) is not None else 'auto')
         self._scorebar_panel.folder_chosen.connect(self._scorebar_folder_chosen)
         self._scorebar_panel.sprite_folder_chosen.connect(self._sprite_scorebar_folder_chosen)
+        self._scorebar_panel.sprite_watermark_changed.connect(self._sprite_watermark_changed)
         return self._scorebar_panel
 
     def _sync_constructed_page(self):
@@ -9038,6 +9042,13 @@ class StudioMainWindow(QMainWindow):
             self._capture_music_build_settings()
             self._mark_workspace_changed()
 
+    def _sprite_watermark_changed(self, value: str) -> None:
+        self._ensure_workspace(self.navigation.count() - 1)
+        combo=self._build_panel.scorebug_watermark_combo
+        combo.setCurrentIndex(combo.findData(value))
+        self._capture_music_build_settings()
+        self._mark_workspace_changed()
+
     def _sprite_scorebar_folder_chosen(self, folder: str) -> None:
         self._scorebar_folder_chosen(folder)
         self._build_panel.scorebug_check.setChecked(True)
@@ -9078,6 +9089,18 @@ class StudioMainWindow(QMainWindow):
 
         panel.position_pools_enabled = enabled
         panel.set_position_pools(enabled())
+
+    def _my_career_events_ready(self, ledger):
+        if self.facade.source_ready:
+            try:
+                self.facade.set_project_my_career_events(ledger, new_player=True)
+            except Exception as exc:
+                self._set_status(
+                    "MyPlayer was prepared, but the project could not store its earned-rating journal. "
+                    "MyCareer-events.json remains in the output folder. Check the project location "
+                    f"and free space before retrying: {exc}")
+                return
+            self._mark_workspace_changed()
 
     def _my_career_setup_ready(self, path):
         self._ensure_workspace(self.navigation.count() - 1)

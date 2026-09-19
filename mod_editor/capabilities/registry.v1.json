@@ -2636,14 +2636,17 @@
         "tests/mod_editor/test_apf_b71_situation_mask_abi.py",
         "tests/mod_editor/test_apf_b71_situation_mask_install.py",
         "tests/mod_editor/test_apf_b71_editor_workflow.py",
-        "tests/mod_editor/test_apf_b71_editor_workflow_qt.py"
+        "tests/mod_editor/test_apf_b71_editor_workflow_qt.py",
+        "docs/research/apf_b72_personnel_rows.md",
+        "tests/mod_editor/test_apf_b72_personnel_rows.py",
+        "tests/mod_editor/test_apf_b72_personnel_rows_native.py"
       ],
       "game": "apf2k8_xbox360",
       "gui": {
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "Named-book preview, per-situation exclusions and stored personnel-row editing use explicit undoable project edits. No preset enables or stages masks. Install the matching authored XEX patch separately."
+        "reason": "Named-book preview, exclusions and per-book/per-bucket personnel comparison rows use explicit undoable project edits. No preset enables these policies. Install the matching v2 situation patch separately; the page checks whether the installed patch matches the project. Gameplay UNWITNESSED."
       },
       "id": "apf2k8.playbooks.cpu_playcalling",
       "input_constraints": [
@@ -2652,7 +2655,10 @@
         "MASTER and curve changes affect every book; personnel retirement with uncovered rows is refused while lineup caller reachability remains unclassified.",
         "Twelve independent live buckets use actual down 1..4 and absolute longitudinal distance up to 2, over 2 through 7, or over 7 yards. The older 23 labels remain representative queries. The patch filters ordinary CPU offense draws only; special phases and explicit calls bypass it.",
         "Computed personnel requests are read-only; stored MASTER comparison rows remain editable with an explicit all-books scope. An empty TE depth list substitutes an FB.",
-        "At most 48 named mask profiles; only ordinary formations 0..150. Empty filtered draws fall back to their complete original candidates and record native counters. Exported builds contain separate BASE/TU patches and the canonical data block."
+        "At most 48 named mask profiles; only ordinary formations 0..150. Empty filtered draws fall back to their complete original candidates and record native counters. Exported builds contain separate BASE/TU patches and the canonical data block.",
+        "Local comparison rows 0..10 are keyed by resolved book name, one of twelve live buckets and ordinary personnel category. Unknown or absent overrides retain retail behavior. No SPLB or MASTER bytes change for local row edits.",
+        "Version 2 retains the existing fixed allocation and up to 48 named books; sparse row capacity depends on book count. Full data is refused before staging.",
+        "Preview exposes curve term, ratings mean, product, rank, retail weight and effective row. These are read-only factors, not independent weight sliders."
       ],
       "portme": [
         "Witness installed BASE/TU patches, actual book identity through save/USER lifecycle and final on-field personnel in game."
@@ -10625,9 +10631,15 @@
           "reports/b71_s6/states.json",
           "reports/b71_s6/volume.json",
           "reports/b71_s7/plate_contrast.json",
-          "reports/b71_s7/plate_contact_sheet.png"
+          "reports/b71_s7/plate_contact_sheet.png",
+          "reports/b72_s1/residuals.json",
+          "reports/b72_s1/label_sweep.json",
+          "reports/b72_s1/native_sequence.json",
+          "reports/b72_s1/watermark_native.json",
+          "tests/mod_editor/test_nfl2k5_scorebug_sd.py",
+          "tests/mod_editor/test_nfl2k5_scorebug_watermark.py"
         ],
-        "scope": "Native collection loading proves the enlarged same-name SCNE and atlas win HUD lookup. The owner calls retail getters and writes preallocated glyph quads, tints wings and possession plate with team colours lifted as lit on air (a lightness floor, with the white label checked at 4.5:1 or better on the shaded plate for all 32 teams), and retains retail FLAG, FUMBLE, hang time and ball-on callbacks. Rotating score slabs conflict with the new scores and are suppressed. Standard geometry and glyph ink are within one HUD pixel at both aspects. Bounded register/FPU, idempotence, ownership, foreign-byte and volume checks do not prove a played intro or GPU appearance.",
+        "scope": "Native collection loading and read-back verify the enlarged scene and atlas. Native retail getters, the down binding/slide gate and retained event callbacks execute in bounded fixtures. All measured static colours and geometry pass at 6 RGB units and 1 HUD pixel. The deliberately larger SD text is documented as incompatible with exact broadcast cap and digit dimensions. The 16:9 label has 12 ink scanlines, 2.654-pixel effective stems and no skipped digit texel columns. Auto watermark tests execute the weekday site with and without the extended calendar. Native CPU execution and software rasterization do not prove GPU or played-game appearance.",
         "status": "not-tested"
       },
       "selectors": {
@@ -10636,6 +10648,11 @@
             "allowed": "false in every preset; manual true implies scorebug and xbe_space and selects the sprite profile",
             "name": "scorebug_runtime",
             "required": true
+          },
+          {
+            "allowed": "auto (default), mnf, off",
+            "name": "scorebug_watermark",
+            "required": false
           }
         ],
         "notes": "Implies scorebug and xbe_space. Relocated kickoff is independent and requires its existing alignment prerequisites."
@@ -10650,7 +10667,7 @@
         "resource": "owned RX/RW hook allocations plus HUD outer 346 and its archive index",
         "retail_file": "user-owned default.xbe and vc_53450030/0 in an NFL 2K5 USA disc"
       },
-      "summary": "One PNG and JSON design compiles to 47 atlas quads, 33 logo textures and an enlarged same-name scene, laid out for the display the disc is built for (4:3, or the widescreen option's 27/32-contracted 16:9 picture) so the bar keeps the measured broadcast proportions. Scores, clocks, labels and timeout ticks use sprites; no FONT resource is appended. Clean logo edges, shaded possession plate, light notch, rounded capsule ends, smooth wing ramps, a yellow FLAG plate with a dark label and a brand layer group (the ESPN MNF watermark lifted from broadcast stills at its measured opacity) retain a 323,808-byte append. Native CPU execution and both-aspect software previews with display-space images are proved; played-game appearance remains UNWITNESSED and the option is off in every preset.",
+      "summary": "The SD sprite cut provides a larger down label, quarter and play clock, team-coloured wash and rims, measured wing ramps and logo placement, a glossy plate, white scores, a separator and a dark pointer. ESPN NFL is the default watermark, with MNF only for franchise Monday night. Always MNF and off are available. One quad swaps UVs through the calendar-aware weekday site. The 47-quad, 35-resource design appends 323,808 bytes. Native CPU execution and software raster proofs cover both aspects; in-game appearance remains UNWITNESSED and the feature stays off in every preset.",
       "surface": "scorebug_presentation",
       "title": "Sprite scorebug (experimental)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_scorebug_sprite"

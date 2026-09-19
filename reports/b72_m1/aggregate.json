@@ -1,0 +1,442 @@
+{
+  "status": "passed",
+  "standalone_suites": 51,
+  "tests": 1072,
+  "skipped": 4,
+  "gates": [
+    "test_xbe_patch_memory_writes",
+    "test_xbe_patch_cave_references",
+    "test_nfl2k5_cave_oracle",
+    "test_nfl2k5_owner_pairwise_composition"
+  ],
+  "results": [
+    {
+      "test": "test_nfl2k5_my_career_host",
+      "log": "test_nfl2k5_my_career_host.log",
+      "tests": 7,
+      "seconds": 396.503,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_my_career",
+      "log": "test_nfl2k5_my_career-final.log",
+      "tests": 13,
+      "seconds": 21.457,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_my_career_b69_wiring",
+      "log": "test_nfl2k5_my_career_b69_wiring.log",
+      "tests": 3,
+      "seconds": 0.323,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_my_career_completion",
+      "log": "test_nfl2k5_my_career_completion.log",
+      "tests": 6,
+      "seconds": 29.861,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_my_career_control",
+      "log": "test_nfl2k5_my_career_control.log",
+      "tests": 2,
+      "seconds": 14.31,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_my_career_cpu_choice",
+      "log": "test_nfl2k5_my_career_cpu_choice.log",
+      "tests": 1,
+      "seconds": 18.266,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_my_career_cpu_frame",
+      "log": "test_nfl2k5_my_career_cpu_frame.log",
+      "tests": 1,
+      "seconds": 56.602,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_my_career_cpu_injury",
+      "log": "test_nfl2k5_my_career_cpu_injury.log",
+      "tests": 1,
+      "seconds": 22.865,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_my_career_cpu_period",
+      "log": "test_nfl2k5_my_career_cpu_period.log",
+      "tests": 2,
+      "seconds": 34.345,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_my_career_cpu_timeout",
+      "log": "test_nfl2k5_my_career_cpu_timeout.log",
+      "tests": 1,
+      "seconds": 18.126,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_my_career_cpu_turnover",
+      "log": "test_nfl2k5_my_career_cpu_turnover.log",
+      "tests": 3,
+      "seconds": 60.989,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_my_career_creation_boundary",
+      "log": "test_nfl2k5_my_career_creation_boundary.log",
+      "tests": 4,
+      "seconds": 2.02,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_my_career_draft",
+      "log": "test_nfl2k5_my_career_draft.log",
+      "tests": 6,
+      "seconds": 1078.245,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_my_career_events",
+      "log": "test_nfl2k5_my_career_events.log",
+      "tests": 14,
+      "seconds": 1.047,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_my_career_frontend",
+      "log": "test_nfl2k5_my_career_frontend.log",
+      "tests": 7,
+      "seconds": 51.788,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_my_career_generic_build",
+      "log": "test_nfl2k5_my_career_generic_build.log",
+      "tests": 5,
+      "seconds": 17.264,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_my_career_inline",
+      "log": "test_nfl2k5_my_career_inline.log",
+      "tests": 8,
+      "seconds": 12.769,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_my_career_m3_budget",
+      "log": "test_nfl2k5_my_career_m3_budget.log",
+      "tests": 5,
+      "seconds": 4.221,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_my_career_m3_menus",
+      "log": "test_nfl2k5_my_career_m3_menus.log",
+      "tests": 4,
+      "seconds": 37.442,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_my_career_manifest",
+      "log": "test_nfl2k5_my_career_manifest.log",
+      "tests": 3,
+      "seconds": 8.111,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_my_career_mode4",
+      "log": "test_nfl2k5_my_career_mode4.log",
+      "tests": 8,
+      "seconds": 441.223,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_my_career_mode5",
+      "log": "test_nfl2k5_my_career_mode5.log",
+      "tests": 4,
+      "seconds": 277.096,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_my_career_mode_audit",
+      "log": "test_nfl2k5_my_career_mode_audit.log",
+      "tests": 6,
+      "seconds": 0.06,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_my_career_mode_routes",
+      "log": "test_nfl2k5_my_career_mode_routes.log",
+      "tests": 7,
+      "seconds": 2.64,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_my_career_panel",
+      "log": "test_nfl2k5_my_career_panel.log",
+      "tests": 7,
+      "seconds": 0.586,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_my_career_playcalling",
+      "log": "test_nfl2k5_my_career_playcalling.log",
+      "tests": 3,
+      "seconds": 711.569,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_my_career_played",
+      "log": "test_nfl2k5_my_career_played.log",
+      "tests": 4,
+      "seconds": 55.594,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_my_career_position_inputs",
+      "log": "test_nfl2k5_my_career_position_inputs.log",
+      "tests": 9,
+      "seconds": 17.395,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_my_career_prospects",
+      "log": "test_nfl2k5_my_career_prospects.log",
+      "tests": 5,
+      "seconds": 265.643,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_my_career_season",
+      "log": "test_nfl2k5_my_career_season.log",
+      "tests": 1,
+      "seconds": 155.362,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_my_career_settings",
+      "log": "test_nfl2k5_my_career_settings.log",
+      "tests": 10,
+      "seconds": 29.171,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_my_career_signing",
+      "log": "test_nfl2k5_my_career_signing.log",
+      "tests": 6,
+      "seconds": 47.453,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_my_career_unicorn",
+      "log": "test_nfl2k5_my_career_unicorn.log",
+      "tests": 18,
+      "seconds": 11.972,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_my_career_upgrades",
+      "log": "test_nfl2k5_my_career_upgrades.log",
+      "tests": 4,
+      "seconds": 249.516,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_my_career_week",
+      "log": "test_nfl2k5_my_career_week.log",
+      "tests": 1,
+      "seconds": 327.875,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_mycareer_art",
+      "log": "test_mycareer_art.log",
+      "tests": 10,
+      "seconds": 1.351,
+      "skipped": 4,
+      "status": "passed"
+    },
+    {
+      "test": "test_b69_j1_fit",
+      "log": "test_b69_j1_fit.log",
+      "tests": 5,
+      "seconds": 4.565,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_b69_j1_wiring",
+      "log": "test_b69_j1_wiring.log",
+      "tests": 7,
+      "seconds": 1.208,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_b69_j1_native",
+      "log": "test_b69_j1_native.log",
+      "tests": 1,
+      "seconds": 1.328,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_b69_j1_build",
+      "log": "test_b69_j1_build.log",
+      "tests": 5,
+      "seconds": 2.289,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_studio_session",
+      "log": "test_studio_session.log",
+      "tests": 18,
+      "seconds": 0.496,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_music_playlist_project",
+      "log": "test_music_playlist_project.log",
+      "tests": 4,
+      "seconds": 0.613,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_audio_annotation_project_archive",
+      "log": "test_audio_annotation_project_archive.log",
+      "tests": 6,
+      "seconds": 0.126,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_project_document_workflow",
+      "log": "test_project_document_workflow.log",
+      "tests": 13,
+      "seconds": 14.403,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_models_project_wiring",
+      "log": "test_models_project_wiring.log",
+      "tests": 2,
+      "seconds": 8.117,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_b71_t5_project_open",
+      "log": "test_b71_t5_project_open.log",
+      "tests": 16,
+      "seconds": 6.411,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_xbe_patch_memory_writes",
+      "log": "test_xbe_patch_memory_writes.log",
+      "tests": 119,
+      "seconds": 1571.583,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_xbe_patch_cave_references",
+      "log": "test_xbe_patch_cave_references.log",
+      "tests": 131,
+      "seconds": 1759.865,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_cave_oracle",
+      "log": "test_nfl2k5_cave_oracle.log",
+      "tests": 29,
+      "seconds": 359.593,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_owner_pairwise_composition",
+      "log": "test_nfl2k5_owner_pairwise_composition.log",
+      "tests": 506,
+      "seconds": 2921.277,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "test_nfl2k5_position_choices",
+      "log": "test_nfl2k5_position_choices.log",
+      "tests": 11,
+      "seconds": 12.369,
+      "skipped": 0,
+      "status": "passed"
+    }
+  ],
+  "additional_checks": [
+    {
+      "test": "final event module",
+      "log": "events-final.log",
+      "tests": 14,
+      "seconds": 1.012,
+      "skipped": 0,
+      "status": "passed"
+    },
+    {
+      "test": "final advisory module",
+      "log": "advisory-final.log",
+      "tests": 4,
+      "seconds": 3.446,
+      "skipped": 0,
+      "status": "passed"
+    }
+  ],
+  "initial_failure": "Creation test assumed QB had only three templates; assertion updated and full suite rerun.",
+  "native_outcomes_witnessed": false
+}

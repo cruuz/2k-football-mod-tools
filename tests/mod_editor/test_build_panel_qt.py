@@ -26,6 +26,18 @@ class BuildPanelTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.app = QApplication.instance() or QApplication([])
 
+    def test_watermark_choice_survives_project_restore(self):
+        panel=BuildPanel()
+        try:
+            self.assertEqual(panel.plan().scorebug_watermark,'auto')
+            panel.scorebug_watermark_combo.setCurrentIndex(2)
+            settings=panel.project_build_settings()
+            self.assertEqual(settings['scorebug_watermark'],'off')
+            panel.scorebug_watermark_combo.setCurrentIndex(0)
+            panel.restore_project_build_settings(settings)
+            self.assertEqual(panel.plan().scorebug_watermark,'off')
+        finally:panel.deleteLater()
+
     def test_plain_project_allows_verified_copy_with_explicit_no_changes(self):
         with tempfile.TemporaryDirectory() as tmp:
             source = Path(tmp) / 'default.xbe'

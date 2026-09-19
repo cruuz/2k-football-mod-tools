@@ -1,0 +1,68 @@
+Native CPU + submission-order software raster; in-game UNWITNESSED.
+Tolerances: 1 HUD px, 6 RGB units. Minimum gates have zero tolerance.
+
+| Aspect | Feature | Actual | Target | Residual | Result |
+| --- | --- | --- | --- | --- | --- |
+| 4:3 | body | [37.0, 37.0, 37.0] | [37.833, 37.833, 37.833] | 0.833 RGB | PASS |
+| 4:3 | away_wash | [57.75, 76.344, 104.875] | [62.875, 83.906, 126.906] | 22.031 RGB | FAIL |
+| 4:3 | home_wash | [142.812, 50.75, 72.75] | [152.688, 64.594, 88.5] | 15.75 RGB | FAIL |
+| 4:3 | centre_wash | [48.667, 58.667, 56.667] | [54.167, 41.25, 48.167] | 17.417 RGB | FAIL |
+| 4:3 | away_wing | [74.333, 111.083, 179.083] | [62.25, 101.75, 170.0] | 12.083 RGB | FAIL |
+| 4:3 | home_wing | [235.167, 41.25, 91.583] | [227.0, 37.833, 84.917] | 8.167 RGB | FAIL |
+| 4:3 | away_bottom_rim | [65.25, 92.25, 132.875] | [79.375, 104.438, 153.625] | 20.75 RGB | FAIL |
+| 4:3 | home_bottom_rim | [154.188, 54.0, 79.0] | [172.938, 64.75, 93.875] | 18.75 RGB | FAIL |
+| 4:3 | centre_bottom_rim | [50.612, 48.038, 55.3] | [43.912, 43.188, 45.575] | 9.725 RGB | FAIL |
+| 4:3 | plate_lip | [209.333, 10.0, 67.0] | [184.5, 21.167, 65.067] | 24.833 RGB | FAIL |
+| 4:3 | plate_dip | [173.667, 11.333, 58.333] | [170.433, 21.333, 63.733] | 10.0 RGB | FAIL |
+| 4:3 | plate_sheen | [183.0, 12.0, 61.0] | [186.4, 11.68, 59.7] | 3.4 RGB | PASS |
+| 4:3 | plate_bottom | [165.667, 11.333, 55.333] | [161.467, 20.5, 59.5] | 9.167 RGB | FAIL |
+| 4:3 | housing | [42.363, 42.715, 43.37] | [37.177, 35.633, 37.032] | 7.082 RGB | FAIL |
+| 4:3 | capsule | [247.738, 247.738, 249.738] | [248.177, 248.177, 249.215] | 0.523 RGB | PASS |
+| 4:3 | capsule_rim | [203.15, 203.175, 202.138] | [194.312, 194.612, 194.712] | 8.838 RGB | FAIL |
+| 4:3 | red | [214.995, 0.0, 50.995] | [213.869, 0.0, 50.066] | 1.126 RGB | PASS |
+| 4:3 | pointer | [57.933, 67.433, 66.167] | [55.1, 43.333, 50.033] | 24.1 RGB | FAIL |
+| 4:3 | away_logo_box | [210.222, 403.615, 280.444, 429.748] | [212.0, 403.615, 281.778, 429.748] | 1.778 HUD px | FAIL |
+| 4:3 | home_logo_box | [569.778, 391.17, 657.778, 435.556] | [569.778, 391.585, 657.778, 435.141] | 0.415 HUD px | PASS |
+| 4:3 | away_score_box | [327.111, 400.296, 344.444, 421.867] | [327.111, 399.881, 344.889, 422.281] | 0.444 HUD px | PASS |
+| 4:3 | home_score_box | [506.667, 400.296, 524.444, 421.867] | [506.222, 400.296, 524.0, 422.696] | 0.83 HUD px | PASS |
+| 4:3 | down_cap | 11.615 | 9.541 | 2.074 HUD px | IMPOSSIBLE | The broadcast cap is below the SD readability floor; the requested larger SD type deliberately exceeds the 1080-line reference.
+| 4:3 | quarter_cap | 13.689 | 13.689 | 0.0 HUD px | PASS |
+| 4:3 | play_clock_cap | 10.37 | 7.881 | 2.489 HUD px | IMPOSSIBLE | The broadcast cap is below the SD readability floor; the requested larger SD type deliberately exceeds the 1080-line reference.
+| 4:3 | score_white | [252.0, 252.0, 252.0] | [253.0, 253.0, 253.0] | 1.0 RGB | PASS |
+| 4:3 | separator_x | 399.378 | 400.0 | 0.622 HUD px | PASS |
+| 4:3 | label_minimum_cap | 12.446 | 12 | 0.0 HUD px | PASS |
+| 4:3 | label_minimum_stem | 3.552 | 2.5 | 0.0 HUD px | PASS |
+| 4:3 | label_skipped_columns | 8 | 8 | 0.0 count | PASS |
+| 4:3 | label_digit_width | 10.664 | 7.111 | 3.553 HUD px | IMPOSSIBLE | The requested 2.5 HUD pixel stems and retail-scale digits require a wider SD cut than the 16 source pixel broadcast digit.
+| 16:9 | body | [37.033, 37.0, 37.0] | [37.8, 37.8, 37.8] | 0.8 RGB | PASS |
+| 16:9 | away_wash | [57.812, 76.344, 104.812] | [62.781, 84.031, 126.938] | 22.125 RGB | FAIL |
+| 16:9 | home_wash | [142.75, 50.75, 72.75] | [152.594, 64.5, 88.688] | 15.938 RGB | FAIL |
+| 16:9 | centre_wash | [48.417, 58.417, 56.5] | [54.167, 41.083, 48.0] | 17.333 RGB | FAIL |
+| 16:9 | away_wing | [74.333, 111.333, 179.0] | [61.833, 101.5, 169.667] | 12.5 RGB | FAIL |
+| 16:9 | home_wing | [236.333, 41.333, 91.5] | [228.5, 36.833, 84.75] | 7.833 RGB | FAIL |
+| 16:9 | away_bottom_rim | [65.062, 91.812, 132.25] | [78.938, 103.625, 152.5] | 20.25 RGB | FAIL |
+| 16:9 | home_bottom_rim | [154.062, 54.0, 79.0] | [173.0, 64.75, 92.938] | 18.938 RGB | FAIL |
+| 16:9 | centre_bottom_rim | [50.888, 48.112, 55.262] | [43.825, 43.0, 45.5] | 9.763 RGB | FAIL |
+| 16:9 | plate_lip | [209.333, 10.0, 67.0] | [184.867, 20.967, 64.9] | 24.467 RGB | FAIL |
+| 16:9 | plate_dip | [173.667, 11.333, 58.333] | [170.5, 21.1, 63.6] | 9.767 RGB | FAIL |
+| 16:9 | plate_sheen | [183.0, 12.0, 61.0] | [186.72, 12.2, 59.92] | 3.72 RGB | PASS |
+| 16:9 | plate_bottom | [165.667, 11.333, 55.333] | [161.467, 20.567, 59.2] | 9.233 RGB | FAIL |
+| 16:9 | housing | [42.365, 42.678, 43.342] | [37.102, 35.56, 36.957] | 7.118 RGB | FAIL |
+| 16:9 | capsule | [248.292, 248.285, 250.054] | [248.115, 248.115, 249.277] | 0.777 RGB | PASS |
+| 16:9 | capsule_rim | [203.15, 203.175, 202.15] | [194.05, 194.45, 194.538] | 9.1 RGB | FAIL |
+| 16:9 | red | [214.955, 0.525, 51.399] | [213.455, 0.066, 50.051] | 1.5 RGB | PASS |
+| 16:9 | pointer | [58.567, 67.633, 66.133] | [55.2, 43.267, 49.9] | 24.367 RGB | FAIL |
+| 16:9 | away_logo_box | [157.667, 403.615, 210.333, 429.748] | [159.0, 403.615, 211.333, 429.748] | 1.333 HUD px | FAIL |
+| 16:9 | home_logo_box | [427.0, 391.17, 493.333, 435.556] | [427.333, 391.585, 493.333, 435.141] | 0.415 HUD px | PASS |
+| 16:9 | away_score_box | [245.333, 400.296, 258.667, 421.867] | [245.333, 399.881, 258.667, 422.281] | 0.415 HUD px | PASS |
+| 16:9 | home_score_box | [380.0, 400.296, 393.0, 421.867] | [379.667, 400.296, 393.0, 422.696] | 0.83 HUD px | PASS |
+| 16:9 | down_cap | 11.615 | 9.541 | 2.074 HUD px | IMPOSSIBLE | The broadcast cap is below the SD readability floor; the requested larger SD type deliberately exceeds the 1080-line reference.
+| 16:9 | quarter_cap | 13.689 | 13.689 | 0.0 HUD px | PASS |
+| 16:9 | play_clock_cap | 10.37 | 7.881 | 2.489 HUD px | IMPOSSIBLE | The broadcast cap is below the SD readability floor; the requested larger SD type deliberately exceeds the 1080-line reference.
+| 16:9 | score_white | [253.0, 253.0, 253.0] | [253.0, 253.0, 253.0] | 0.0 RGB | PASS |
+| 16:9 | separator_x | 299.722 | 300.0 | 0.278 HUD px | PASS |
+| 16:9 | label_minimum_cap | 12.446 | 12 | 0.0 HUD px | PASS |
+| 16:9 | label_minimum_stem | 2.666 | 2.5 | 0.0 HUD px | PASS |
+| 16:9 | label_skipped_columns | 8 | 8 | 0.0 count | PASS |
+| 16:9 | label_digit_width | 8.003 | 5.333 | 2.67 HUD px | IMPOSSIBLE | The requested 2.5 HUD pixel stems and retail-scale digits require a wider SD cut than the 16 source pixel broadcast digit.
+

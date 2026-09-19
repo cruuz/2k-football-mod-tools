@@ -1,0 +1,156 @@
+[
+ {
+  "design": "photo",
+  "helper": true,
+  "scale": 1,
+  "set_selector": "00H0",
+  "targets": [
+   "socks00 64x64",
+   "socks00_mud 64x64"
+  ],
+  "outcome": "fit",
+  "encoded_bytes": 6928,
+  "budget_bytes": 6928,
+  "seconds": 24.292846543999985
+ },
+ {
+  "design": "photo",
+  "helper": false,
+  "scale": 1,
+  "set_selector": "00H0",
+  "targets": [
+   "socks00 64x64",
+   "socks00_mud 64x64"
+  ],
+  "outcome": "fit",
+  "encoded_bytes": 6928,
+  "budget_bytes": 6928,
+  "seconds": 23.83202595700095
+ },
+ {
+  "design": "sheet",
+  "helper": true,
+  "scale": 1,
+  "set_selector": "00H0",
+  "targets": [
+   "socks00 64x64",
+   "socks00_mud 64x64"
+  ],
+  "outcome": "refit_error",
+  "message": "Equipment artwork cannot fit while retaining the complete mip chain and edge coverage. Use Refit equipment to reduce colours, then size.",
+  "seconds": 8.395814260000407
+ },
+ {
+  "design": "sheet",
+  "helper": false,
+  "scale": 1,
+  "set_selector": "00H0",
+  "targets": [
+   "socks00 64x64",
+   "socks00_mud 64x64"
+  ],
+  "outcome": "refit_error",
+  "message": "Equipment artwork cannot fit while retaining the complete mip chain and edge coverage. Use Refit equipment to reduce colours, then size.",
+  "seconds": 10.017535183000291
+ },
+ {
+  "design": "stripes",
+  "helper": true,
+  "scale": 1,
+  "set_selector": "00H0",
+  "targets": [
+   "socks00 64x64",
+   "socks00_mud 64x64"
+  ],
+  "outcome": "fit",
+  "encoded_bytes": 6925,
+  "budget_bytes": 6928,
+  "seconds": 0.48687358099959965
+ },
+ {
+  "design": "stripes",
+  "helper": false,
+  "scale": 1,
+  "set_selector": "00H0",
+  "targets": [
+   "socks00 64x64",
+   "socks00_mud 64x64"
+  ],
+  "outcome": "fit",
+  "encoded_bytes": 6925,
+  "budget_bytes": 6928,
+  "seconds": 0.4471005689993035
+ },
+ {
+  "design": "photo",
+  "helper": true,
+  "scale": 1,
+  "set_selector": "00H0",
+  "targets": [
+   "shoes01 256x256"
+  ],
+  "outcome": "refit_error",
+  "message": "Equipment artwork cannot fit while retaining the complete mip chain and edge coverage. Use Refit equipment to reduce colours, then size.",
+  "seconds": 226.45448619299896
+ },
+ {
+  "design": "photo",
+  "helper": false,
+  "scale": 1,
+  "set_selector": "00H0",
+  "targets": [
+   "shoes01 256x256"
+  ],
+  "outcome": "refit_error",
+  "message": "Equipment artwork cannot fit while retaining the complete mip chain and edge coverage. Use Refit equipment to reduce colours, then size.",
+  "seconds": 235.89323015500122
+ },
+ {
+  "design": "sheet",
+  "helper": true,
+  "scale": 1,
+  "set_selector": "00H0",
+  "targets": [
+   "shoes01 256x256"
+  ],
+  "outcome": "refit_error",
+  "message": "Equipment artwork cannot fit while retaining the complete mip chain and edge coverage. Use Refit equipment to reduce colours, then size.",
+  "seconds": 35.168961153000055
+ },
+ {
+  "design": "sheet",
+  "helper": false,
+  "scale": 1,
+  "set_selector": "00H0",
+  "targets": [
+   "shoes01 256x256"
+  ],
+  "outcome": "refit_error",
+  "message": "Equipment optimal fit reached its 5-second limit. Use Refit equipment to reduce colours or size, or revert this item.",
+  "seconds": 29.367154883000694
+ },
+ {
+  "design": "stripes",
+  "helper": true,
+  "scale": 1,
+  "set_selector": "00H0",
+  "targets": [
+   "shoes01 256x256"
+  ],
+  "outcome": "refit_error",
+  "message": "Equipment artwork cannot fit while retaining the complete mip chain and edge coverage. Use Refit equipment to reduce colours, then size.",
+  "seconds": 11.868565634998959
+ },
+ {
+  "design": "stripes",
+  "helper": false,
+  "scale": 1,
+  "set_selector": "00H0",
+  "targets": [
+   "shoes01 256x256"
+  ],
+  "outcome": "refit_error",
+  "message": "Equipment artwork cannot fit while retaining the complete mip chain and edge coverage. Use Refit equipment to reduce colours, then size.",
+  "seconds": 16.335811643999477
+ }
+]

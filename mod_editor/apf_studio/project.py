@@ -268,6 +268,7 @@ class WorkspaceState:
     recovery_source_sha256: str | None = None
     recovery_project_path: str | None = None
     ui_state: dict[str, object] | None = None
+    project_sources: dict[str, str] | None = None
 
     @property
     def has_recovery_metadata(self) -> bool:
@@ -361,7 +362,7 @@ class WorkspaceStateStore:
         if (
             not isinstance(document, dict)
             or not {"recent_projects", "recent_sources", "recovery", "schema"} <= set(document)
-            or not set(document) <= {"recent_projects", "recent_sources", "recovery", "schema", "ui"}
+            or not set(document) <= {"recent_projects", "recent_sources", "recovery", "schema", "ui", "project_sources"}
             or document.get("schema") != WORKSPACE_STATE_SCHEMA
         ):
             raise ProjectError("APF Mod Studio workspace state has an unknown format")
@@ -378,8 +379,14 @@ class WorkspaceStateStore:
             or any(not isinstance(value, str) or not value for value in recent_projects)
         ):
             raise ProjectError("APF workspace recent-file metadata is malformed")
+        project_sources = document.get("project_sources", {})
+        if (not isinstance(project_sources, dict)
+                or any(key not in recent_projects or not isinstance(value, str) or not value
+                       for key, value in project_sources.items())):
+            raise ProjectError("APF workspace project source metadata is malformed")
         if recovery is None:
-            return WorkspaceState(tuple(recent_sources), tuple(recent_projects), ui_state=ui_state)
+            return WorkspaceState(tuple(recent_sources), tuple(recent_projects),
+                                  ui_state=ui_state, project_sources=project_sources)
         if (
             not isinstance(recovery, dict)
             or set(recovery) != {"project_path", "source_path", "source_sha256"}
@@ -397,6 +404,7 @@ class WorkspaceStateStore:
             _workspace_sha256(str(recovery["source_sha256"])),
             str(recovery["project_path"]),
             ui_state,
+            project_sources,
         )
 
     @staticmethod
@@ -443,7 +451,7 @@ class WorkspaceStateStore:
             state.recovery_project_path,
         ))
 
-    def record_project(self, path: Path) -> None:
+    def record_project(self, path: Path, *, source_path: Path | None = None) -> None:
         if _workspace_supplied_path(path).is_symlink():
             raise ProjectError(
                 f"A recent project must be a regular non-linked {PROJECT_EXTENSION} file"
@@ -460,13 +468,13 @@ class WorkspaceStateStore:
                 f"A recent project must be a regular non-linked {PROJECT_EXTENSION} file"
             )
         state = self.read()
-        self._write(WorkspaceState(
-            state.recent_sources,
-            _workspace_recent(state.recent_projects, os.fspath(selected)),
-            state.recovery_source_path,
-            state.recovery_source_sha256,
-            state.recovery_project_path,
-        ))
+        recent = _workspace_recent(state.recent_projects, os.fspath(selected))
+        bindings = dict(state.project_sources or {})
+        source = source_path or (Path(state.recent_sources[0]) if state.recent_sources else None)
+        if source is not None:
+            bindings[os.fspath(selected)] = os.fspath(
+                _canonical_workspace_path(source, must_exist=False))
+        self._write(replace(state, recent_projects=recent, project_sources=bindings))
 
     def register_recovery(
         self,
@@ -605,7 +613,12 @@ class WorkspaceStateStore:
                 "source_path": state.recovery_source_path,
                 "source_sha256": state.recovery_source_sha256,
             }
+        bindings = state.project_sources
+        if bindings is None and self.state_path.exists():
+            bindings = self.read().project_sources
         document = {
+            "project_sources": {key: value for key, value in (bindings or {}).items()
+                                if key in state.recent_projects},
             "recent_projects": list(state.recent_projects),
             "recent_sources": list(state.recent_sources),
             "recovery": recovery,

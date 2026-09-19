@@ -318,7 +318,12 @@ class ApfStudioFacade:
         if not self.source_ready:
             return STOCK_BOOKS
         from .book_content import book_catalog
-        return {outer: book.name for outer, book in book_catalog(self.source.index_0a).items()}
+        with self._session_lock:
+            session = self.require_session()
+            if not session._splb_catalog_loaded:
+                session._splb_books.update(book_catalog(self.source.index_0a))
+                session._splb_catalog_loaded = True
+            return {outer: book.name for outer, book in session._splb_books.items()}
 
     def play_design_context(self, progress: Progress = _noop):
         from mod_editor.core.apf2k8_splb_writer import STOCK_BOOKS, read_book
@@ -1405,6 +1410,49 @@ class ApfStudioFacade:
             progress("Both relayed APF assignment routes verified", 2, 2)
             self.last_build = None
             return result
+
+    def source_splb_book(self, outer_index):
+        with self._session_lock:
+            return self.require_session().source_splb_book(outer_index)
+
+    def compiled_splb_book(self, outer_index, changes):
+        with self._session_lock:
+            return self.require_session().compiled_splb_book(outer_index, changes)
+
+    def master_inventory(self):
+        with self._session_lock:
+            return self.require_session().master_inventory()
+
+    def master_formations(self):
+        from mod_editor.core.apf2k8_package_map_writer import list_apf_formations
+        with self._session_lock:
+            return list_apf_formations(self.require_session()._master_play_source())
+
+    def confirm_splb_pending(self, batches, progress=_noop):
+        with self._session_lock:
+            session = self.require_session()
+            with session.atomic_edit():
+                count = sum(session.apply_splb_membership_batch(
+                    changes, replace_outer=outer, playcalling_engine=self._playcalling)
+                    for outer, changes in batches)
+            self.last_build = None
+            return count
+
+    def confirm_route_pending(self, actions, progress=_noop):
+        with self._session_lock:
+            session = self.require_session()
+            with session.atomic_edit():
+                for kind, coordinates in actions:
+                    if kind == "copy":
+                        session.replace_play_assignment_route(*coordinates)
+                    elif kind == "swap":
+                        session.swap_play_assignment_routes(*coordinates)
+                    elif kind == "relay":
+                        session.copy_play_assignment_route_via_relay(*coordinates)
+                    else:
+                        raise ValueError("Unknown pending route action")
+            self.last_build = None
+            return len(actions)
 
     def stage_splb_membership(
         self,

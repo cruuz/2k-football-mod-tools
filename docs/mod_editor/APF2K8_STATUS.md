@@ -1,6 +1,6 @@
 # APF 2K8 Mod Studio — Status
 
-> **Product identity (source/UI): `0.1.0-alpha.93`.** Historical sealed packages below retain prior alpha numbers.
+> **Product identity (source/UI): `0.1.0-alpha.94`.** Historical sealed packages below retain prior alpha numbers.
 
 ## Unreleased APF wave — 2026-09-09
 

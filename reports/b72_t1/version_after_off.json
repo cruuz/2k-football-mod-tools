@@ -1,0 +1,80 @@
+[
+ {
+  "version": "beta-68 / rc93",
+  "revision": "b48a07b9",
+  "design": "photo",
+  "targets": [
+   "socks00 64x64",
+   "socks00_mud 64x64"
+  ],
+  "helper_enabled": false,
+  "outcome": "KeyError",
+  "message": "'replacement'",
+  "seconds": 7.9174521770000865
+ },
+ {
+  "version": "beta-69 / rc94",
+  "revision": "42a0e609",
+  "design": "photo",
+  "targets": [
+   "socks00 64x64",
+   "socks00_mud 64x64"
+  ],
+  "helper_enabled": false,
+  "outcome": "fit",
+  "encoded_bytes": 6912,
+  "seconds": 7.549620385001617
+ },
+ {
+  "version": "beta-70 / rc95",
+  "revision": "b7eccf8e",
+  "design": "photo",
+  "targets": [
+   "socks00 64x64",
+   "socks00_mud 64x64"
+  ],
+  "helper_enabled": false,
+  "outcome": "fit",
+  "encoded_bytes": 6928,
+  "seconds": 16.29578950799987
+ },
+ {
+  "version": "beta-71 / rc96",
+  "revision": "02bbadd1",
+  "design": "photo",
+  "targets": [
+   "socks00 64x64",
+   "socks00_mud 64x64"
+  ],
+  "helper_enabled": false,
+  "outcome": "fit",
+  "encoded_bytes": 6928,
+  "seconds": 16.539564697999595
+ },
+ {
+  "version": "beta-71.1 / rc97",
+  "revision": "088e3f41",
+  "design": "photo",
+  "targets": [
+   "socks00 64x64",
+   "socks00_mud 64x64"
+  ],
+  "helper_enabled": false,
+  "outcome": "fit",
+  "encoded_bytes": 6928,
+  "seconds": 23.87944705099835
+ },
+ {
+  "version": "beta-72 / rc98 candidate",
+  "revision": null,
+  "design": "photo",
+  "targets": [
+   "socks00 64x64",
+   "socks00_mud 64x64"
+  ],
+  "helper_enabled": false,
+  "outcome": "fit",
+  "encoded_bytes": 6928,
+  "seconds": 0.9237929700011591
+ }
+]

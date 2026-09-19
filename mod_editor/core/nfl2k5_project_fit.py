@@ -15,7 +15,7 @@ def digest(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
 
 
-def equipment_keys(index, edits, source_hash):
+def equipment_keys(index, edits, source_hash, *, session=None):
     from . import nfl2k5_uniform_equipment_writer as writer
     from .json_stream import read_bounded_regular_file
     groups = {}
@@ -29,28 +29,50 @@ def equipment_keys(index, edits, source_hash):
     compiler = writer._stage_compiler_key()
     archive = writer.parse_archive(index)
     result = {}
+    span_cache = {}
+    if session is not None:
+        # Any pack modification invalidates source receipts. Path stats are
+        # portable and cheap; content hashes remain the persisted identity.
+        source_stamp = tuple((str(pack.path), _path_identity(pack.path)) for pack in archive.packs)
+        cached = getattr(session, '_equipment_source_spans', None)
+        if cached is None or cached[0] != source_stamp:
+            session._equipment_source_spans = (source_stamp, {})
+        span_cache = session._equipment_source_spans[1]
     # One package read per uniform set. No decode, mip generation or pack walk.
     for outer in sorted({group[0] for group in groups}):
-        package = writer.read_entry_bytes(archive, archive.entries[outer])
-        chunks = {c.index: c for c in writer.parse_chunks(package, allow_trailing=True)}
+        missing = [group for group in groups if group[0] == outer and group not in span_cache]
+        if missing:
+            package = writer.read_entry_bytes(archive, archive.entries[outer])
+            chunks = {c.index: c for c in writer.parse_chunks(package, allow_trailing=True)}
+            for group in missing:
+                chunk = chunks[group[1]]
+                span_cache[group] = hashlib.sha256(package[chunk.offset:chunk.end_offset]).hexdigest()
         for group in sorted(g for g in groups if g[0] == outer):
-            chunk = chunks[group[1]]
             rows = groups[group]
             inputs = []
             for row in rows:
-                _, payload = read_bounded_regular_file(row.replacement_path,
-                    'Equipment replacement', maximum=32 * 1024 * 1024)
-                actual = hashlib.sha256(payload).hexdigest()
+                if session is None:
+                    _, payload = read_bounded_regular_file(row.replacement_path,
+                        'Equipment replacement', maximum=32 * 1024 * 1024)
+                    actual = hashlib.sha256(payload).hexdigest()
+                else:
+                    from .equipment_staging import _validate_staged
+                    actual = _validate_staged(row, session)
                 if actual != row.replacement_sha256:
                     from .errors import ValidationError
                     raise ValidationError(f'{row.asset_id}: staged PNG changed. Import it again.')
                 inputs.append((row.asset_id, actual))
             key = digest(dict(source=source_hash, compiler=compiler,
-                span=hashlib.sha256(package[chunk.offset:chunk.end_offset]).hexdigest(),
+                span=span_cache[group],
                 target=writer._rows_signature(targets[group]), inputs=sorted(inputs)))
             for row in rows:
                 result[row.asset_id] = key
     return result
+
+
+def _path_identity(path):
+    info = path.stat()
+    return info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_ctime_ns
 
 
 def source_hash(session):
@@ -59,7 +81,7 @@ def source_hash(session):
 
 def remember(session, rows):
     """Called after a completed fit transaction, never by a background open."""
-    keys = equipment_keys(session.cache.pack0, session.iter_edits(), source_hash(session))
+    keys = equipment_keys(session.cache.pack0, session.iter_edits(), source_hash(session), session=session)
     receipts = dict(getattr(session, '_project_fit_receipts', {}))
     grouped = {}
     for row in rows:
@@ -73,7 +95,7 @@ def remember(session, rows):
 def restore(session, receipts):
     from .equipment_staging import _remember_fit
     from .nfl2k5_uniform_equipment_writer import load_targets
-    keys = equipment_keys(session.cache.pack0, session.iter_edits(), source_hash(session))
+    keys = equipment_keys(session.cache.pack0, session.iter_edits(), source_hash(session), session=session)
     targets, _ = load_targets() if keys else ({}, {})
     rows = []
     for asset_id, key in keys.items():

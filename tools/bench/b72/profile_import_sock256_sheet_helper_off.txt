@@ -1,0 +1,39 @@
+===== sock256_sheet helper=False =====
+         68406065 function calls (68320708 primitive calls) in 26.938 seconds
+
+   Ordered by: cumulative time
+   List reduced from 651 to 28 due to restriction <28>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000   27.350   27.350 /home/noah/2k-worktrees/opus-b72-speed/mod_editor/core/equipment_staging.py:123(stage_equipment_import)
+        1    0.000    0.000   27.335   27.335 /home/noah/2k-worktrees/opus-b72-speed/mod_editor/core/equipment_staging.py:33(_checked_rows)
+        1    0.000    0.000   27.335   27.335 /home/noah/2k-worktrees/opus-b72-speed/mod_editor/core/nfl2k5_uniform_equipment_writer.py:1758(preflight_project_equipment)
+        1    0.000    0.000   27.335   27.335 /home/noah/2k-worktrees/opus-b72-speed/mod_editor/core/nfl2k5_uniform_equipment_writer.py:1780(compile_rows)
+        1    0.000    0.000   27.335   27.335 /home/noah/2k-worktrees/opus-b72-speed/mod_editor/core/nfl2k5_uniform_equipment_writer.py:1439(build_unified_uniform_equipment_imports)
+        1    0.000    0.000   26.995   26.995 /home/noah/2k-worktrees/opus-b72-speed/mod_editor/core/nfl2k5_uniform_equipment_writer.py:615(fit)
+        2    0.019    0.010   26.995   13.498 /home/noah/2k-worktrees/opus-b72-speed/mod_editor/core/nfl2k5_uniform_equipment_writer.py:1087(_compile_group)
+        5    0.000    0.000   14.614    2.923 /home/noah/2k-worktrees/opus-b72-speed/mod_editor/core/nfl2k5_uniform_equipment_writer.py:808(_rebuild_fixed_span)
+        5    0.000    0.000   14.550    2.910 /home/noah/2k-worktrees/opus-b72-speed/mod_editor/core/nfl2k5_uniform_equipment_writer.py:725(_rebuild_grown_video)
+       13    0.012    0.001   14.459    1.112 /home/noah/2k-worktrees/opus-b72-speed/mod_editor/core/nfl2k5_uniform_equipment_writer.py:667(_cached_parse)
+        5    0.156    0.031   10.831    2.166 /home/noah/2k-worktrees/opus-b72-speed/mod_editor/core/nfl2k5_uniform_equipment_writer.py:964(_quantize_art)
+ 12513427    3.265    0.000   10.304    0.000 {built-in method builtins.min}
+        8    6.619    0.827    9.443    1.180 /home/noah/2k-worktrees/opus-b72-speed/tools/nfl_txtr.py:360(compress_vc_lz)
+  3813152    1.746    0.000    5.653    0.000 /home/noah/2k-worktrees/opus-b72-speed/mod_editor/core/equipment_palette.py:7(distance)
+        5    0.000    0.000    5.563    1.113 /home/noah/2k-worktrees/opus-b72-speed/mod_editor/core/nfl2k5_uniform_equipment_writer.py:976(medoids)
+        1    2.572    2.572    5.002    5.002 /home/noah/2k-worktrees/opus-b72-speed/mod_editor/core/nfl2k5_equipment_lz.py:81(compress_equipment_optimal)
+3918537/3910371    2.040    0.000    4.527    0.000 {built-in method builtins.sum}
+  2408736    0.572    0.000    4.141    0.000 /home/noah/2k-worktrees/opus-b72-speed/mod_editor/core/nfl2k5_uniform_equipment_writer.py:990(<lambda>)
+        5    0.213    0.043    2.826    0.565 /home/noah/2k-worktrees/opus-b72-speed/tools/nfl_tset_png_import.py:430(median_cut_palette)
+      837    0.000    0.000    2.737    0.003 /home/noah/2k-worktrees/opus-b72-speed/mod_editor/core/nfl2k5_uniform_equipment_writer.py:979(<genexpr>)
+  1404416    0.431    0.000    2.514    0.000 /home/noah/2k-worktrees/opus-b72-speed/mod_editor/core/nfl2k5_uniform_equipment_writer.py:979(<lambda>)
+ 15252608    2.154    0.000    2.154    0.000 /home/noah/2k-worktrees/opus-b72-speed/mod_editor/core/equipment_palette.py:9(<genexpr>)
+   410415    0.209    0.000    2.102    0.000 /home/noah/2k-worktrees/opus-b72-speed/tools/nfl_tset_png_import.py:442(<genexpr>)
+  1393123    0.722    0.000    1.299    0.000 /home/noah/2k-worktrees/opus-b72-speed/tools/nfl_txtr.py:418(add_position)
+1268620/1258492    0.811    0.000    1.260    0.000 {built-in method builtins.max}
+  6542487    1.254    0.000    1.254    0.000 {method 'startswith' of 'bytes' objects}
+       19    0.393    0.021    0.667    0.035 /home/noah/2k-worktrees/opus-b72-speed/tools/nfl_txtr.py:836(texture_to_rgba)
+       16    0.000    0.000    0.418    0.026 /usr/lib/python3.12/collections/__init__.py:595(__init__)
+
+
+
+B72 IMPORT {"case": "sock256_sheet", "helper": false, "width": 256, "distinct_colours": 1688, "span_budget_bytes": 14176, "outcome": "fit", "seconds": 27.350388133001616, "repeat_seconds": 0.011944764000872965}
