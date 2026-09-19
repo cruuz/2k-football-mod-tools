@@ -1,0 +1,931 @@
+{
+ "reconstructed_glyphs": [
+  {
+   "glyph": "score_5",
+   "status": "RECONSTRUCTED",
+   "source": "clock_5",
+   "reason": "Digit absent from settled score readouts; same broadcast heavy face scaled to score cap."
+  },
+  {
+   "glyph": "score_8",
+   "status": "RECONSTRUCTED",
+   "source": "clock_8",
+   "reason": "Digit absent from settled score readouts; same broadcast heavy face scaled to score cap."
+  },
+  {
+   "glyph": "score_9",
+   "status": "RECONSTRUCTED",
+   "source": "clock_9",
+   "reason": "Digit absent from settled score readouts; same broadcast heavy face scaled to score cap."
+  },
+  {
+   "glyph": "and",
+   "status": "RECONSTRUCTED",
+   "source": "observed broadcast strokes and previous broadcast glyph harvest",
+   "reason": "No matching live token. These rare retail words are not claimed 1:1."
+  },
+  {
+   "glyph": "OT",
+   "status": "RECONSTRUCTED",
+   "source": "observed broadcast strokes and previous broadcast glyph harvest",
+   "reason": "No matching live token. These rare retail words are not claimed 1:1."
+  },
+  {
+   "glyph": "Inch",
+   "status": "RECONSTRUCTED",
+   "source": "observed broadcast strokes and previous broadcast glyph harvest",
+   "reason": "No matching live token. These rare retail words are not claimed 1:1."
+  },
+  {
+   "glyph": "es",
+   "status": "RECONSTRUCTED",
+   "source": "observed broadcast strokes and previous broadcast glyph harvest",
+   "reason": "No matching live token. These rare retail words are not claimed 1:1."
+  },
+  {
+   "glyph": "and",
+   "status": "RECONSTRUCTED",
+   "source": "observed broadcast strokes and previous broadcast glyph harvest",
+   "reason": "No matching live token. These rare retail words are not claimed 1:1."
+  },
+  {
+   "glyph": "OT",
+   "status": "RECONSTRUCTED",
+   "source": "observed broadcast strokes and previous broadcast glyph harvest",
+   "reason": "No matching live token. These rare retail words are not claimed 1:1."
+  },
+  {
+   "glyph": "Inch",
+   "status": "RECONSTRUCTED",
+   "source": "observed broadcast strokes and previous broadcast glyph harvest",
+   "reason": "No matching live token. These rare retail words are not claimed 1:1."
+  },
+  {
+   "glyph": "es",
+   "status": "RECONSTRUCTED",
+   "source": "observed broadcast strokes and previous broadcast glyph harvest",
+   "reason": "No matching live token. These rare retail words are not claimed 1:1."
+  },
+  {
+   "glyph": "OT",
+   "status": "RECONSTRUCTED",
+   "source": "observed broadcast strokes and previous broadcast glyph harvest",
+   "reason": "No matching live token. These rare retail words are not claimed 1:1."
+  }
+ ],
+ "accent_review": [
+  {
+   "team": "BUF",
+   "role": "wing",
+   "choice": "colour0_base",
+   "jev": {
+    "type": "choice",
+    "choice": "colour0_lighter",
+    "confidence": 0.88,
+    "probabilities": {
+     "colour1_lighter": 0,
+     "colour0_dark": 0,
+     "colour3_lighter": 0,
+     "colour1_dark": 0,
+     "colour0_light": 0,
+     "colour2_base": 0,
+     "colour0_base": 0.01,
+     "colour2_light": 0,
+     "keep": 0.09999999999999999,
+     "colour0_darker": 0,
+     "colour1_darker": 0,
+     "colour3_darker": 0,
+     "colour1_light": 0,
+     "colour3_base": 0,
+     "colour2_lighter": 0,
+     "colour2_darker": 0,
+     "colour1_base": 0,
+     "colour2_dark": 0,
+     "colour0_lighter": 0.89,
+     "colour3_light": 0,
+     "colour3_dark": 0
+    }
+   },
+   "reason": "Manual reference review: nearest valid family from live evidence; low-confidence or competing Jev choice not auto-applied"
+  },
+  {
+   "team": "BUF",
+   "role": "rim",
+   "choice": "colour0_base",
+   "jev": {
+    "type": "choice",
+    "choice": "colour0_lighter",
+    "confidence": 0.87,
+    "probabilities": {
+     "colour1_lighter": 0,
+     "colour3_lighter": 0,
+     "colour0_dark": 0,
+     "colour1_dark": 0,
+     "colour0_light": 0,
+     "colour2_base": 0,
+     "colour0_base": 0.01,
+     "colour2_light": 0,
+     "keep": 0.1,
+     "colour0_darker": 0,
+     "colour1_darker": 0,
+     "colour3_darker": 0,
+     "colour1_light": 0,
+     "colour3_base": 0,
+     "colour2_lighter": 0,
+     "colour2_darker": 0,
+     "colour1_base": 0,
+     "colour2_dark": 0,
+     "colour0_lighter": 0.89,
+     "colour3_light": 0,
+     "colour3_dark": 0
+    }
+   },
+   "reason": "Manual reference review: nearest valid family from live evidence; low-confidence or competing Jev choice not auto-applied"
+  },
+  {
+   "team": "BUF",
+   "role": "plate",
+   "choice": "colour0_base",
+   "jev": {
+    "type": "choice",
+    "choice": "colour0_lighter",
+    "confidence": 0.65,
+    "probabilities": {
+     "colour1_lighter": 0,
+     "colour3_lighter": 0.01,
+     "colour0_dark": 0,
+     "colour1_dark": 0,
+     "colour0_light": 0.01,
+     "colour2_base": 0,
+     "keep": 0.24000000000000002,
+     "colour2_light": 0,
+     "colour0_base": 0,
+     "colour0_darker": 0.05,
+     "colour1_darker": 0,
+     "colour3_base": 0,
+     "colour1_light": 0,
+     "colour3_darker": 0.01,
+     "colour2_lighter": 0,
+     "colour2_darker": 0,
+     "colour1_base": 0,
+     "colour2_dark": 0,
+     "colour0_lighter": 0.67,
+     "colour3_light": 0,
+     "colour3_dark": 0
+    }
+   },
+   "reason": "Manual reference review: nearest valid family from live evidence; low-confidence or competing Jev choice not auto-applied"
+  },
+  {
+   "team": "DEN",
+   "role": "wing",
+   "choice": "colour1_lighter",
+   "jev": {
+    "type": "choice",
+    "choice": "colour1_lighter",
+    "confidence": 0.91,
+    "probabilities": {
+     "colour2_darker": 0,
+     "colour1_darker": 0,
+     "colour1_base": 0,
+     "colour1_lighter": 0.92,
+     "colour0_base": 0,
+     "keep": 0.06,
+     "colour0_light": 0,
+     "colour3_darker": 0,
+     "colour0_dark": 0.01,
+     "colour2_dark": 0,
+     "colour0_darker": 0,
+     "colour3_lighter": 0,
+     "colour2_light": 0,
+     "colour2_base": 0,
+     "colour2_lighter": 0,
+     "colour3_light": 0,
+     "colour3_base": 0,
+     "colour0_lighter": 0,
+     "colour1_dark": 0,
+     "colour3_dark": 0,
+     "colour1_light": 0.01
+    }
+   },
+   "reason": "Jev choice accepted"
+  },
+  {
+   "team": "DEN",
+   "role": "rim",
+   "choice": "colour1_lighter",
+   "jev": {
+    "type": "choice",
+    "choice": "colour1_lighter",
+    "confidence": 0.93,
+    "probabilities": {
+     "colour2_darker": 0,
+     "colour1_darker": 0,
+     "colour1_base": 0,
+     "colour0_dark": 0.01,
+     "colour0_base": 0,
+     "keep": 0.04,
+     "colour0_light": 0,
+     "colour3_darker": 0,
+     "colour2_dark": 0,
+     "colour1_lighter": 0.9400000000000001,
+     "colour0_darker": 0,
+     "colour3_lighter": 0,
+     "colour2_light": 0,
+     "colour2_base": 0,
+     "colour2_lighter": 0,
+     "colour3_light": 0,
+     "colour3_base": 0,
+     "colour0_lighter": 0,
+     "colour1_dark": 0,
+     "colour3_dark": 0,
+     "colour1_light": 0
+    }
+   },
+   "reason": "Jev choice accepted"
+  },
+  {
+   "team": "DEN",
+   "role": "plate",
+   "choice": "colour1_lighter",
+   "jev": {
+    "type": "choice",
+    "choice": "colour1_lighter",
+    "confidence": 0.9,
+    "probabilities": {
+     "colour2_darker": 0,
+     "colour1_darker": 0,
+     "colour1_base": 0,
+     "colour0_dark": 0.01,
+     "colour0_base": 0,
+     "keep": 0.06999999999999999,
+     "colour2_dark": 0,
+     "colour0_light": 0,
+     "colour3_darker": 0,
+     "colour1_lighter": 0.92,
+     "colour0_darker": 0,
+     "colour3_lighter": 0,
+     "colour2_light": 0,
+     "colour2_base": 0,
+     "colour2_lighter": 0,
+     "colour3_light": 0,
+     "colour3_base": 0,
+     "colour0_lighter": 0,
+     "colour1_dark": 0,
+     "colour3_dark": 0,
+     "colour1_light": 0
+    }
+   },
+   "reason": "Jev choice accepted"
+  },
+  {
+   "team": "KC",
+   "role": "wing",
+   "choice": "colour0_base",
+   "jev": {
+    "type": "choice",
+    "choice": "colour0_base",
+    "confidence": 0.76,
+    "probabilities": {
+     "colour3_lighter": 0,
+     "colour1_base": 0,
+     "colour0_light": 0,
+     "colour0_base": 0.78,
+     "colour2_base": 0,
+     "colour3_base": 0,
+     "colour2_lighter": 0,
+     "colour1_light": 0,
+     "colour2_darker": 0,
+     "colour0_dark": 0.08,
+     "colour0_lighter": 0,
+     "colour0_darker": 0,
+     "colour1_dark": 0,
+     "colour2_dark": 0,
+     "colour3_light": 0,
+     "keep": 0.13,
+     "colour1_lighter": 0,
+     "colour1_darker": 0.01,
+     "colour2_light": 0,
+     "colour3_darker": 0,
+     "colour3_dark": 0
+    }
+   },
+   "reason": "Manual reference review: nearest valid family from live evidence; low-confidence or competing Jev choice not auto-applied"
+  },
+  {
+   "team": "KC",
+   "role": "rim",
+   "choice": "colour0_base",
+   "jev": {
+    "type": "choice",
+    "choice": "colour0_base",
+    "confidence": 0.7,
+    "probabilities": {
+     "colour3_darker": 0,
+     "colour1_base": 0,
+     "colour0_light": 0,
+     "colour2_base": 0,
+     "colour0_base": 0.73,
+     "colour3_base": 0,
+     "colour2_lighter": 0,
+     "colour1_light": 0,
+     "colour2_darker": 0,
+     "colour0_dark": 0.13,
+     "colour0_lighter": 0,
+     "colour0_darker": 0,
+     "colour1_dark": 0,
+     "colour2_dark": 0,
+     "colour3_light": 0,
+     "keep": 0.13,
+     "colour1_lighter": 0,
+     "colour1_darker": 0.01,
+     "colour3_lighter": 0,
+     "colour2_light": 0,
+     "colour3_dark": 0
+    }
+   },
+   "reason": "Manual reference review: nearest valid family from live evidence; low-confidence or competing Jev choice not auto-applied"
+  },
+  {
+   "team": "KC",
+   "role": "plate",
+   "choice": "colour0_base",
+   "jev": {
+    "type": "choice",
+    "choice": "colour0_base",
+    "confidence": 0.77,
+    "probabilities": {
+     "colour3_darker": 0,
+     "colour0_light": 0,
+     "colour1_base": 0,
+     "colour2_base": 0,
+     "colour0_base": 0.79,
+     "colour3_base": 0,
+     "colour2_lighter": 0,
+     "colour1_light": 0,
+     "colour2_darker": 0,
+     "colour0_dark": 0.07,
+     "colour0_lighter": 0,
+     "colour0_darker": 0,
+     "colour1_dark": 0,
+     "colour2_dark": 0,
+     "colour3_light": 0,
+     "keep": 0.13,
+     "colour1_lighter": 0,
+     "colour1_darker": 0.01,
+     "colour3_lighter": 0,
+     "colour2_light": 0,
+     "colour3_dark": 0
+    }
+   },
+   "reason": "Manual reference review: nearest valid family from live evidence; low-confidence or competing Jev choice not auto-applied"
+  },
+  {
+   "team": "LV",
+   "role": "wing",
+   "choice": "colour0_darker",
+   "jev": {
+    "type": "choice",
+    "choice": "colour0_darker",
+    "confidence": 0.62,
+    "probabilities": {
+     "colour3_darker": 0,
+     "colour2_base": 0,
+     "colour3_light": 0,
+     "colour0_dark": 0.06999999999999999,
+     "colour2_light": 0,
+     "colour1_light": 0,
+     "colour1_darker": 0,
+     "colour3_lighter": 0,
+     "colour2_darker": 0,
+     "colour3_base": 0,
+     "colour3_dark": 0,
+     "colour0_light": 0.01,
+     "colour2_dark": 0,
+     "colour2_lighter": 0,
+     "colour0_base": 0,
+     "keep": 0.2,
+     "colour0_darker": 0.65,
+     "colour0_lighter": 0.04,
+     "colour1_dark": 0,
+     "colour1_base": 0,
+     "colour1_lighter": 0.03
+    }
+   },
+   "reason": "Manual reference review: nearest valid family from live evidence; low-confidence or competing Jev choice not auto-applied"
+  },
+  {
+   "team": "LV",
+   "role": "rim",
+   "choice": "colour0_darker",
+   "jev": {
+    "type": "choice",
+    "choice": "colour0_darker",
+    "confidence": 0.5,
+    "probabilities": {
+     "colour3_darker": 0,
+     "colour2_base": 0,
+     "colour3_light": 0,
+     "colour1_light": 0,
+     "colour2_darker": 0,
+     "colour0_dark": 0.1,
+     "colour1_darker": 0,
+     "colour3_lighter": 0,
+     "colour2_light": 0,
+     "colour3_base": 0,
+     "colour3_dark": 0,
+     "colour0_light": 0.01,
+     "colour2_dark": 0,
+     "colour2_lighter": 0,
+     "colour0_base": 0,
+     "keep": 0.23,
+     "colour0_darker": 0.54,
+     "colour0_lighter": 0.06,
+     "colour1_dark": 0,
+     "colour1_base": 0,
+     "colour1_lighter": 0.06
+    }
+   },
+   "reason": "Manual reference review: nearest valid family from live evidence; low-confidence or competing Jev choice not auto-applied"
+  },
+  {
+   "team": "LV",
+   "role": "plate",
+   "choice": "colour0_darker",
+   "jev": {
+    "type": "choice",
+    "choice": "colour0_darker",
+    "confidence": 0.42,
+    "probabilities": {
+     "colour2_base": 0,
+     "colour3_darker": 0,
+     "colour3_light": 0,
+     "colour0_dark": 0.09,
+     "colour2_light": 0,
+     "colour1_light": 0.01,
+     "colour1_darker": 0,
+     "colour3_lighter": 0,
+     "colour2_darker": 0,
+     "colour3_base": 0,
+     "colour0_light": 0.02,
+     "colour3_dark": 0,
+     "colour2_dark": 0,
+     "colour0_darker": 0.46,
+     "colour0_base": 0,
+     "keep": 0.29000000000000004,
+     "colour2_lighter": 0,
+     "colour0_lighter": 0.05,
+     "colour1_dark": 0,
+     "colour1_base": 0.03,
+     "colour1_lighter": 0.04
+    }
+   },
+   "reason": "Manual reference review: nearest valid family from live evidence; low-confidence or competing Jev choice not auto-applied"
+  },
+  {
+   "team": "HOU",
+   "role": "wing",
+   "choice": "colour1_base",
+   "jev": {
+    "type": "choice",
+    "choice": "colour1_base",
+    "confidence": 0.85,
+    "probabilities": {
+     "colour2_darker": 0,
+     "colour2_base": 0,
+     "colour2_light": 0,
+     "colour0_base": 0,
+     "colour2_dark": 0,
+     "colour3_darker": 0,
+     "colour3_light": 0,
+     "colour1_darker": 0,
+     "colour3_dark": 0,
+     "colour1_lighter": 0.01,
+     "colour1_dark": 0,
+     "colour0_darker": 0,
+     "colour0_lighter": 0.02,
+     "colour2_lighter": 0,
+     "keep": 0.09999999999999999,
+     "colour3_base": 0,
+     "colour3_lighter": 0,
+     "colour1_base": 0.87,
+     "colour0_light": 0,
+     "colour1_light": 0,
+     "colour0_dark": 0
+    }
+   },
+   "reason": "Jev choice accepted"
+  },
+  {
+   "team": "HOU",
+   "role": "rim",
+   "choice": "colour1_base",
+   "jev": {
+    "type": "choice",
+    "choice": "colour1_base",
+    "confidence": 0.91,
+    "probabilities": {
+     "colour2_darker": 0,
+     "colour2_dark": 0,
+     "colour2_base": 0,
+     "colour0_base": 0,
+     "colour2_light": 0,
+     "colour3_darker": 0,
+     "colour3_light": 0,
+     "colour1_darker": 0,
+     "colour3_dark": 0,
+     "colour1_lighter": 0.01,
+     "colour1_dark": 0,
+     "colour0_darker": 0,
+     "colour0_lighter": 0.01,
+     "colour2_lighter": 0,
+     "keep": 0.06,
+     "colour3_base": 0,
+     "colour3_lighter": 0,
+     "colour1_base": 0.92,
+     "colour0_dark": 0,
+     "colour1_light": 0,
+     "colour0_light": 0
+    }
+   },
+   "reason": "Jev choice accepted"
+  },
+  {
+   "team": "HOU",
+   "role": "plate",
+   "choice": "colour1_base",
+   "jev": {
+    "type": "choice",
+    "choice": "colour1_base",
+    "confidence": 0.77,
+    "probabilities": {
+     "colour2_darker": 0,
+     "colour2_base": 0,
+     "colour2_light": 0,
+     "colour0_base": 0,
+     "colour2_dark": 0,
+     "colour3_darker": 0,
+     "colour3_light": 0,
+     "colour1_darker": 0,
+     "colour3_dark": 0,
+     "colour1_lighter": 0.01,
+     "colour1_dark": 0,
+     "colour0_darker": 0,
+     "colour0_lighter": 0.03,
+     "colour2_lighter": 0,
+     "colour1_base": 0.79,
+     "colour3_base": 0,
+     "colour3_lighter": 0,
+     "keep": 0.16,
+     "colour0_light": 0.01,
+     "colour1_light": 0,
+     "colour0_dark": 0
+    }
+   },
+   "reason": "Manual reference review: nearest valid family from live evidence; low-confidence or competing Jev choice not auto-applied"
+  }
+ ],
+ "logo_fits": {
+  "ARI": {
+   "parameters": {
+    "fill_x": 1.0,
+    "height": 0.94,
+    "zoom": 1.0,
+    "shift_x": 0.0,
+    "shift_y": 0.0
+   },
+   "status": "inferred; no live team reference"
+  },
+  "ATL": {
+   "parameters": {
+    "fill_x": 1.0,
+    "height": 0.94,
+    "zoom": 1.0,
+    "shift_x": 0.0,
+    "shift_y": 0.0
+   },
+   "status": "inferred; no live team reference"
+  },
+  "BAL": {
+   "parameters": {
+    "fill_x": 1.08,
+    "height": 0.94,
+    "zoom": 1.0,
+    "shift_x": 0.0,
+    "shift_y": 0.0
+   },
+   "status": "inferred; no live team reference"
+  },
+  "BUF": {
+   "parameters": {
+    "fill_x": 1.14,
+    "height": 0.93,
+    "zoom": 1.05,
+    "shift_x": 0.0,
+    "shift_y": 0.0
+   },
+   "status": "inferred; no live team reference"
+  },
+  "CAR": {
+   "parameters": {
+    "fill_x": 1.08,
+    "height": 0.94,
+    "zoom": 1.0,
+    "shift_x": 0.0,
+    "shift_y": 0.0
+   },
+   "status": "inferred; no live team reference"
+  },
+  "CHI": {
+   "parameters": {
+    "fill_x": 1.0,
+    "height": 0.94,
+    "zoom": 1.0,
+    "shift_x": 0.0,
+    "shift_y": 0.0
+   },
+   "status": "inferred; no live team reference"
+  },
+  "CIN": {
+   "parameters": {
+    "fill_x": 1.0,
+    "height": 0.94,
+    "zoom": 1.0,
+    "shift_x": 0.0,
+    "shift_y": 0.0
+   },
+   "status": "inferred; no live team reference"
+  },
+  "DAL": {
+   "parameters": {
+    "fill_x": 1.0,
+    "height": 0.94,
+    "zoom": 1.0,
+    "shift_x": 0.0,
+    "shift_y": 0.0
+   },
+   "status": "inferred; no live team reference"
+  },
+  "DEN": {
+   "parameters": {
+    "fill_x": 1.29,
+    "height": 0.9,
+    "zoom": 1.0,
+    "shift_x": 0.0,
+    "shift_y": -0.015
+   },
+   "status": "fitted against live reference; residuals remain"
+  },
+  "DET": {
+   "parameters": {
+    "fill_x": 1.0,
+    "height": 0.94,
+    "zoom": 1.0,
+    "shift_x": 0.0,
+    "shift_y": 0.0
+   },
+   "status": "inferred; no live team reference"
+  },
+  "GB": {
+   "parameters": {
+    "fill_x": 1.08,
+    "height": 0.94,
+    "zoom": 1.0,
+    "shift_x": 0.0,
+    "shift_y": 0.0
+   },
+   "status": "inferred; no live team reference"
+  },
+  "IND": {
+   "parameters": {
+    "fill_x": 1.0,
+    "height": 0.94,
+    "zoom": 1.0,
+    "shift_x": 0.0,
+    "shift_y": 0.0
+   },
+   "status": "inferred; no live team reference"
+  },
+  "JAX": {
+   "parameters": {
+    "fill_x": 1.0,
+    "height": 0.94,
+    "zoom": 1.0,
+    "shift_x": 0.0,
+    "shift_y": 0.0
+   },
+   "status": "inferred; no live team reference"
+  },
+  "KC": {
+   "parameters": {
+    "fill_x": 1.3,
+    "height": 1.0,
+    "zoom": 1.0,
+    "shift_x": 0.0,
+    "shift_y": 0.0
+   },
+   "status": "fitted against live reference; residuals remain"
+  },
+  "MIA": {
+   "parameters": {
+    "fill_x": 1.0,
+    "height": 0.94,
+    "zoom": 1.0,
+    "shift_x": 0.0,
+    "shift_y": 0.0
+   },
+   "status": "inferred; no live team reference"
+  },
+  "MIN": {
+   "parameters": {
+    "fill_x": 1.0,
+    "height": 0.94,
+    "zoom": 1.0,
+    "shift_x": 0.0,
+    "shift_y": 0.0
+   },
+   "status": "inferred; no live team reference"
+  },
+  "NE": {
+   "parameters": {
+    "fill_x": 1.08,
+    "height": 0.94,
+    "zoom": 1.0,
+    "shift_x": 0.0,
+    "shift_y": 0.0
+   },
+   "status": "inferred; no live team reference"
+  },
+  "NO": {
+   "parameters": {
+    "fill_x": 1.0,
+    "height": 0.94,
+    "zoom": 1.0,
+    "shift_x": 0.0,
+    "shift_y": 0.0
+   },
+   "status": "inferred; no live team reference"
+  },
+  "NYG": {
+   "parameters": {
+    "fill_x": 1.0,
+    "height": 0.94,
+    "zoom": 1.0,
+    "shift_x": 0.0,
+    "shift_y": 0.0
+   },
+   "status": "inferred; no live team reference"
+  },
+  "NYJ": {
+   "parameters": {
+    "fill_x": 1.08,
+    "height": 0.94,
+    "zoom": 1.0,
+    "shift_x": 0.0,
+    "shift_y": 0.0
+   },
+   "status": "inferred; no live team reference"
+  },
+  "LV": {
+   "parameters": {
+    "fill_x": 1.3,
+    "height": 1.0,
+    "zoom": 1.1,
+    "shift_x": 0.0,
+    "shift_y": -0.01
+   },
+   "status": "fitted against live reference; residuals remain"
+  },
+  "PHI": {
+   "parameters": {
+    "fill_x": 1.0,
+    "height": 0.94,
+    "zoom": 1.0,
+    "shift_x": 0.0,
+    "shift_y": 0.0
+   },
+   "status": "inferred; no live team reference"
+  },
+  "PIT": {
+   "parameters": {
+    "fill_x": 1.0,
+    "height": 0.94,
+    "zoom": 1.0,
+    "shift_x": 0.0,
+    "shift_y": 0.0
+   },
+   "status": "inferred; no live team reference"
+  },
+  "LAR": {
+   "parameters": {
+    "fill_x": 1.0,
+    "height": 0.94,
+    "zoom": 1.0,
+    "shift_x": 0.0,
+    "shift_y": 0.0
+   },
+   "status": "inferred; no live team reference"
+  },
+  "LAC": {
+   "parameters": {
+    "fill_x": 1.08,
+    "height": 0.94,
+    "zoom": 1.0,
+    "shift_x": 0.0,
+    "shift_y": 0.0
+   },
+   "status": "inferred; no live team reference"
+  },
+  "SF": {
+   "parameters": {
+    "fill_x": 1.08,
+    "height": 0.94,
+    "zoom": 1.0,
+    "shift_x": 0.0,
+    "shift_y": 0.0
+   },
+   "status": "inferred; no live team reference"
+  },
+  "SEA": {
+   "parameters": {
+    "fill_x": 1.08,
+    "height": 0.94,
+    "zoom": 1.0,
+    "shift_x": 0.0,
+    "shift_y": 0.0
+   },
+   "status": "inferred; no live team reference"
+  },
+  "TB": {
+   "parameters": {
+    "fill_x": 1.0,
+    "height": 0.94,
+    "zoom": 1.0,
+    "shift_x": 0.0,
+    "shift_y": 0.0
+   },
+   "status": "inferred; no live team reference"
+  },
+  "TEN": {
+   "parameters": {
+    "fill_x": 1.0,
+    "height": 0.94,
+    "zoom": 1.0,
+    "shift_x": 0.0,
+    "shift_y": 0.0
+   },
+   "status": "inferred; no live team reference"
+  },
+  "WAS": {
+   "parameters": {
+    "fill_x": 1.08,
+    "height": 0.94,
+    "zoom": 1.0,
+    "shift_x": 0.0,
+    "shift_y": 0.0
+   },
+   "status": "inferred; no live team reference"
+  },
+  "CLE": {
+   "parameters": {
+    "fill_x": 1.0,
+    "height": 0.94,
+    "zoom": 1.0,
+    "shift_x": 0.0,
+    "shift_y": 0.0
+   },
+   "status": "inferred; no live team reference"
+  },
+  "HOU": {
+   "parameters": {
+    "fill_x": 1.07,
+    "height": 1.0,
+    "zoom": 1.19,
+    "shift_x": 0.0,
+    "shift_y": 0.0
+   },
+   "status": "fitted against live reference; residuals remain"
+  }
+ },
+ "readability_exceptions": [
+  {
+   "element": "down label",
+   "broadcast_cap": 23,
+   "hud_cap": 12.444444444444445,
+   "authored_cap": 30,
+   "reason": "s3 readability floor"
+  },
+  {
+   "element": "quarter",
+   "broadcast_cap": 19,
+   "authored_cap": 22,
+   "reason": "whole-token hinting at nine SD scanlines"
+  },
+  {
+   "element": "quarter suffix",
+   "broadcast_cap": 13,
+   "authored_cap": 14,
+   "reason": "six SD scanlines within the hinted quarter token"
+  }
+ ]
+}

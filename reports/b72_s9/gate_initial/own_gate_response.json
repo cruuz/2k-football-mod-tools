@@ -1,0 +1,526 @@
+{
+  "answers": [
+    {
+      "ctime_compare": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "posix_only": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "pinned_value": {
+        "type": "noul",
+        "noul": 0.63
+      },
+      "slow_test": {
+        "type": "noul",
+        "noul": 0.02
+      },
+      "weakens_safety": {
+        "type": "noul",
+        "noul": 0.17
+      },
+      "inventory_mismatch": {
+        "type": "noul",
+        "noul": 0.08
+      }
+    },
+    {
+      "ctime_compare": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "posix_only": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "pinned_value": {
+        "type": "noul",
+        "noul": 0.64
+      },
+      "slow_test": {
+        "type": "noul",
+        "noul": 0.02
+      },
+      "weakens_safety": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "inventory_mismatch": {
+        "type": "noul",
+        "noul": 0.06
+      }
+    },
+    {
+      "ctime_compare": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "posix_only": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "pinned_value": {
+        "type": "noul",
+        "noul": 0.33
+      },
+      "slow_test": {
+        "type": "noul",
+        "noul": 0.02
+      },
+      "weakens_safety": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "inventory_mismatch": {
+        "type": "noul",
+        "noul": 0.05
+      }
+    },
+    {
+      "ctime_compare": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "posix_only": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "pinned_value": {
+        "type": "noul",
+        "noul": 0.41
+      },
+      "slow_test": {
+        "type": "noul",
+        "noul": 0.02
+      },
+      "weakens_safety": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "inventory_mismatch": {
+        "type": "noul",
+        "noul": 0.06
+      }
+    },
+    {
+      "ctime_compare": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "posix_only": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "pinned_value": {
+        "type": "noul",
+        "noul": 0.07
+      },
+      "slow_test": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "weakens_safety": {
+        "type": "noul",
+        "noul": 0.1
+      },
+      "inventory_mismatch": {
+        "type": "noul",
+        "noul": 0.08
+      }
+    },
+    {
+      "ctime_compare": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "posix_only": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "pinned_value": {
+        "type": "noul",
+        "noul": 0.06
+      },
+      "slow_test": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "weakens_safety": {
+        "type": "noul",
+        "noul": 0.35
+      },
+      "inventory_mismatch": {
+        "type": "noul",
+        "noul": 0.1
+      }
+    },
+    {
+      "ctime_compare": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "posix_only": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "pinned_value": {
+        "type": "noul",
+        "noul": 0.73
+      },
+      "slow_test": {
+        "type": "noul",
+        "noul": 0.02
+      },
+      "weakens_safety": {
+        "type": "noul",
+        "noul": 0.07
+      },
+      "inventory_mismatch": {
+        "type": "noul",
+        "noul": 0.07
+      }
+    },
+    {
+      "ctime_compare": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "posix_only": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "pinned_value": {
+        "type": "noul",
+        "noul": 0.74
+      },
+      "slow_test": {
+        "type": "noul",
+        "noul": 0.02
+      },
+      "weakens_safety": {
+        "type": "noul",
+        "noul": 0.11
+      },
+      "inventory_mismatch": {
+        "type": "noul",
+        "noul": 0.1
+      }
+    },
+    {
+      "ctime_compare": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "posix_only": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "pinned_value": {
+        "type": "noul",
+        "noul": 0.97
+      },
+      "slow_test": {
+        "type": "noul",
+        "noul": 0.02
+      },
+      "weakens_safety": {
+        "type": "noul",
+        "noul": 0.11
+      },
+      "inventory_mismatch": {
+        "type": "noul",
+        "noul": 0.1
+      }
+    },
+    {
+      "ctime_compare": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "posix_only": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "pinned_value": {
+        "type": "noul",
+        "noul": 0.98
+      },
+      "slow_test": {
+        "type": "noul",
+        "noul": 0.02
+      },
+      "weakens_safety": {
+        "type": "noul",
+        "noul": 0.16
+      },
+      "inventory_mismatch": {
+        "type": "noul",
+        "noul": 0.13
+      }
+    },
+    {
+      "ctime_compare": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "posix_only": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "pinned_value": {
+        "type": "noul",
+        "noul": 0.97
+      },
+      "slow_test": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "weakens_safety": {
+        "type": "noul",
+        "noul": 0.12
+      },
+      "inventory_mismatch": {
+        "type": "noul",
+        "noul": 0.18
+      }
+    },
+    {
+      "ctime_compare": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "posix_only": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "pinned_value": {
+        "type": "noul",
+        "noul": 0.97
+      },
+      "slow_test": {
+        "type": "noul",
+        "noul": 0.02
+      },
+      "weakens_safety": {
+        "type": "noul",
+        "noul": 0.09
+      },
+      "inventory_mismatch": {
+        "type": "noul",
+        "noul": 0.26
+      }
+    },
+    {
+      "ctime_compare": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "posix_only": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "pinned_value": {
+        "type": "noul",
+        "noul": 0.1
+      },
+      "slow_test": {
+        "type": "noul",
+        "noul": 0.05
+      },
+      "weakens_safety": {
+        "type": "noul",
+        "noul": 0.07
+      },
+      "inventory_mismatch": {
+        "type": "noul",
+        "noul": 0.06
+      }
+    },
+    {
+      "ctime_compare": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "posix_only": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "pinned_value": {
+        "type": "noul",
+        "noul": 0.74
+      },
+      "slow_test": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "weakens_safety": {
+        "type": "noul",
+        "noul": 0.46
+      },
+      "inventory_mismatch": {
+        "type": "noul",
+        "noul": 0.06
+      }
+    },
+    {
+      "ctime_compare": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "posix_only": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "pinned_value": {
+        "type": "noul",
+        "noul": 0.9
+      },
+      "slow_test": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "weakens_safety": {
+        "type": "noul",
+        "noul": 0.31
+      },
+      "inventory_mismatch": {
+        "type": "noul",
+        "noul": 0.09
+      }
+    },
+    {
+      "ctime_compare": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "posix_only": {
+        "type": "noul",
+        "noul": 0.05
+      },
+      "pinned_value": {
+        "type": "noul",
+        "noul": 0.07
+      },
+      "slow_test": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "weakens_safety": {
+        "type": "noul",
+        "noul": 0.06
+      },
+      "inventory_mismatch": {
+        "type": "noul",
+        "noul": 0.07
+      }
+    },
+    {
+      "ctime_compare": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "posix_only": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "pinned_value": {
+        "type": "noul",
+        "noul": 0.91
+      },
+      "slow_test": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "weakens_safety": {
+        "type": "noul",
+        "noul": 0.74
+      },
+      "inventory_mismatch": {
+        "type": "noul",
+        "noul": 0.07
+      }
+    },
+    {
+      "ctime_compare": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "posix_only": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "pinned_value": {
+        "type": "noul",
+        "noul": 0.96
+      },
+      "slow_test": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "weakens_safety": {
+        "type": "noul",
+        "noul": 0.11
+      },
+      "inventory_mismatch": {
+        "type": "noul",
+        "noul": 0.06
+      }
+    },
+    {
+      "ctime_compare": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "posix_only": {
+        "type": "noul",
+        "noul": 0.05
+      },
+      "pinned_value": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "slow_test": {
+        "type": "noul",
+        "noul": 0.15
+      },
+      "weakens_safety": {
+        "type": "noul",
+        "noul": 0.06
+      },
+      "inventory_mismatch": {
+        "type": "noul",
+        "noul": 0.09
+      }
+    },
+    {
+      "ctime_compare": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "posix_only": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "pinned_value": {
+        "type": "noul",
+        "noul": 0.25
+      },
+      "slow_test": {
+        "type": "noul",
+        "noul": 0.02
+      },
+      "weakens_safety": {
+        "type": "noul",
+        "noul": 0.29
+      },
+      "inventory_mismatch": {
+        "type": "noul",
+        "noul": 0.07
+      }
+    }
+  ],
+  "errors": 0,
+  "cost_usd": 0.00168622
+}

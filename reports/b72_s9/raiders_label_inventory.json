@@ -1,0 +1,22 @@
+{
+  "rows": 903,
+  "states": {
+    "no_scorebug": 195,
+    "first_and_ten": 232,
+    "normal": 203,
+    "short_yardage": 41,
+    "third_and_long": 46,
+    "touchdown": 15,
+    "commercial_or_studio": 9,
+    "other": 7,
+    "kickoff": 1,
+    "replay_or_review": 28,
+    "flag": 5,
+    "fourth_down": 27,
+    "field_goal": 32,
+    "timeout": 24,
+    "goal_to_go": 21,
+    "extra_point": 17
+  },
+  "source_sha256": "0e0c24421e6204b1d1d4c241c317cb61e287c0f53aae8224810b64e223476197"
+}

@@ -1,0 +1,1563 @@
+{
+  "request": {
+    "states": [
+      {
+        "fields": [
+          {
+            "field": "away_score",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "home_score",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "clock",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "quarter",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "play_clock",
+            "residual": "near",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "down",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "plate",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "away_wing",
+            "residual": "far",
+            "actual_ink": true,
+            "preview_ink": false,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "home_wing",
+            "residual": "far",
+            "actual_ink": true,
+            "preview_ink": false,
+            "actual_hue": "pink",
+            "preview_hue": "pink"
+          },
+          {
+            "field": "away_rim",
+            "residual": "far",
+            "actual_ink": true,
+            "preview_ink": false,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "home_rim",
+            "residual": "within",
+            "actual_ink": false,
+            "preview_ink": false,
+            "actual_hue": "pink",
+            "preview_hue": "pink"
+          },
+          {
+            "field": "away_timeouts",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "home_timeouts",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "network",
+            "residual": "far",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          }
+        ],
+        "native_evidence": {
+          "evidence": "Offline native CPU/GPU model, not live game. No screenshot calibration.",
+          "known_limits": "Network mark is pinned inward by HUD clipping. Own-palette gray is darker than Raiders broadcast. Label cap raised for readability. Fixed ROIs can contain logos.",
+          "play_clock": "Dark normal ink on white pill, explicitly measured by adapter."
+        },
+        "case": "LV_HOU_169"
+      },
+      {
+        "fields": [
+          {
+            "field": "away_score",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "home_score",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "clock",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "quarter",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "play_clock",
+            "residual": "near",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "down",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "plate",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "away_wing",
+            "residual": "far",
+            "actual_ink": true,
+            "preview_ink": false,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "home_wing",
+            "residual": "near",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "pink",
+            "preview_hue": "pink"
+          },
+          {
+            "field": "away_rim",
+            "residual": "far",
+            "actual_ink": true,
+            "preview_ink": false,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "home_rim",
+            "residual": "within",
+            "actual_ink": false,
+            "preview_ink": false,
+            "actual_hue": "pink",
+            "preview_hue": "pink"
+          },
+          {
+            "field": "away_timeouts",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "home_timeouts",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "network",
+            "residual": "far",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          }
+        ],
+        "native_evidence": {
+          "evidence": "Offline native CPU/GPU model, not live game. No screenshot calibration.",
+          "known_limits": "Network mark is pinned inward by HUD clipping. Own-palette gray is darker than Raiders broadcast. Label cap raised for readability. Fixed ROIs can contain logos.",
+          "play_clock": "Dark normal ink on white pill, explicitly measured by adapter."
+        },
+        "case": "LV_HOU_43"
+      },
+      {
+        "fields": [
+          {
+            "field": "away_score",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "home_score",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "clock",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "quarter",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "play_clock",
+            "residual": "near",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "down",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "cyan",
+            "preview_hue": "cyan"
+          },
+          {
+            "field": "plate",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "cyan",
+            "preview_hue": "cyan"
+          },
+          {
+            "field": "away_wing",
+            "residual": "far",
+            "actual_ink": false,
+            "preview_ink": true,
+            "actual_hue": "cyan",
+            "preview_hue": "cyan"
+          },
+          {
+            "field": "home_wing",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "pink",
+            "preview_hue": "pink"
+          },
+          {
+            "field": "away_rim",
+            "residual": "far",
+            "actual_ink": true,
+            "preview_ink": false,
+            "actual_hue": "cyan",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "home_rim",
+            "residual": "within",
+            "actual_ink": false,
+            "preview_ink": false,
+            "actual_hue": "pink",
+            "preview_hue": "red"
+          },
+          {
+            "field": "away_timeouts",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "home_timeouts",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "network",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          }
+        ],
+        "native_evidence": {
+          "evidence": "Offline native CPU/GPU model, not live game. No screenshot calibration.",
+          "known_limits": "Network mark is pinned inward by HUD clipping. Own-palette gray is darker than Raiders broadcast. Label cap raised for readability. Fixed ROIs can contain logos.",
+          "play_clock": "Dark normal ink on white pill, explicitly measured by adapter."
+        },
+        "case": "DEN_KC_169"
+      },
+      {
+        "fields": [
+          {
+            "field": "away_score",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "home_score",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "clock",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "quarter",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "play_clock",
+            "residual": "near",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "down",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "cyan",
+            "preview_hue": "cyan"
+          },
+          {
+            "field": "plate",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "cyan",
+            "preview_hue": "cyan"
+          },
+          {
+            "field": "away_wing",
+            "residual": "far",
+            "actual_ink": false,
+            "preview_ink": true,
+            "actual_hue": "cyan",
+            "preview_hue": "cyan"
+          },
+          {
+            "field": "home_wing",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "pink",
+            "preview_hue": "pink"
+          },
+          {
+            "field": "away_rim",
+            "residual": "far",
+            "actual_ink": true,
+            "preview_ink": false,
+            "actual_hue": "cyan",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "home_rim",
+            "residual": "within",
+            "actual_ink": false,
+            "preview_ink": false,
+            "actual_hue": "pink",
+            "preview_hue": "red"
+          },
+          {
+            "field": "away_timeouts",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "home_timeouts",
+            "residual": "within",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          },
+          {
+            "field": "network",
+            "residual": "near",
+            "actual_ink": true,
+            "preview_ink": true,
+            "actual_hue": "neutral",
+            "preview_hue": "neutral"
+          }
+        ],
+        "native_evidence": {
+          "evidence": "Offline native CPU/GPU model, not live game. No screenshot calibration.",
+          "known_limits": "Network mark is pinned inward by HUD clipping. Own-palette gray is darker than Raiders broadcast. Label cap raised for readability. Fixed ROIs can contain logos.",
+          "play_clock": "Dark normal ink on white pill, explicitly measured by adapter."
+        },
+        "case": "DEN_KC_43"
+      }
+    ],
+    "questions": {
+      "away_score": {
+        "type": "choice",
+        "instructions": "Classify the measured visible mismatch, not an unproved engine cause. Missing bright ink is missing_element unless independent evidence proves occlusion, scale or blur. Do not infer plate_over_label from dim ink alone.",
+        "criteria": {
+          "plate_over_label": null,
+          "wrong_tint": null,
+          "glyph_too_small": null,
+          "blur_or_mip": null,
+          "misplaced": null,
+          "missing_element": null,
+          "extra_element": null,
+          "none": null
+        }
+      },
+      "home_score": {
+        "type": "choice",
+        "instructions": "Classify the measured visible mismatch, not an unproved engine cause. Missing bright ink is missing_element unless independent evidence proves occlusion, scale or blur. Do not infer plate_over_label from dim ink alone.",
+        "criteria": {
+          "plate_over_label": null,
+          "wrong_tint": null,
+          "glyph_too_small": null,
+          "blur_or_mip": null,
+          "misplaced": null,
+          "missing_element": null,
+          "extra_element": null,
+          "none": null
+        }
+      },
+      "clock": {
+        "type": "choice",
+        "instructions": "Classify the measured visible mismatch, not an unproved engine cause. Missing bright ink is missing_element unless independent evidence proves occlusion, scale or blur. Do not infer plate_over_label from dim ink alone.",
+        "criteria": {
+          "plate_over_label": null,
+          "wrong_tint": null,
+          "glyph_too_small": null,
+          "blur_or_mip": null,
+          "misplaced": null,
+          "missing_element": null,
+          "extra_element": null,
+          "none": null
+        }
+      },
+      "quarter": {
+        "type": "choice",
+        "instructions": "Classify the measured visible mismatch, not an unproved engine cause. Missing bright ink is missing_element unless independent evidence proves occlusion, scale or blur. Do not infer plate_over_label from dim ink alone.",
+        "criteria": {
+          "plate_over_label": null,
+          "wrong_tint": null,
+          "glyph_too_small": null,
+          "blur_or_mip": null,
+          "misplaced": null,
+          "missing_element": null,
+          "extra_element": null,
+          "none": null
+        }
+      },
+      "play_clock": {
+        "type": "choice",
+        "instructions": "Classify the measured visible mismatch, not an unproved engine cause. Missing bright ink is missing_element unless independent evidence proves occlusion, scale or blur. Do not infer plate_over_label from dim ink alone.",
+        "criteria": {
+          "plate_over_label": null,
+          "wrong_tint": null,
+          "glyph_too_small": null,
+          "blur_or_mip": null,
+          "misplaced": null,
+          "missing_element": null,
+          "extra_element": null,
+          "none": null
+        }
+      },
+      "down": {
+        "type": "choice",
+        "instructions": "Classify the measured visible mismatch, not an unproved engine cause. Missing bright ink is missing_element unless independent evidence proves occlusion, scale or blur. Do not infer plate_over_label from dim ink alone.",
+        "criteria": {
+          "plate_over_label": null,
+          "wrong_tint": null,
+          "glyph_too_small": null,
+          "blur_or_mip": null,
+          "misplaced": null,
+          "missing_element": null,
+          "extra_element": null,
+          "none": null
+        }
+      },
+      "plate": {
+        "type": "choice",
+        "instructions": "Classify the measured visible mismatch, not an unproved engine cause. Missing bright ink is missing_element unless independent evidence proves occlusion, scale or blur. Do not infer plate_over_label from dim ink alone.",
+        "criteria": {
+          "plate_over_label": null,
+          "wrong_tint": null,
+          "glyph_too_small": null,
+          "blur_or_mip": null,
+          "misplaced": null,
+          "missing_element": null,
+          "extra_element": null,
+          "none": null
+        }
+      },
+      "away_wing": {
+        "type": "choice",
+        "instructions": "Classify the measured visible mismatch, not an unproved engine cause. Missing bright ink is missing_element unless independent evidence proves occlusion, scale or blur. Do not infer plate_over_label from dim ink alone.",
+        "criteria": {
+          "plate_over_label": null,
+          "wrong_tint": null,
+          "glyph_too_small": null,
+          "blur_or_mip": null,
+          "misplaced": null,
+          "missing_element": null,
+          "extra_element": null,
+          "none": null
+        }
+      },
+      "home_wing": {
+        "type": "choice",
+        "instructions": "Classify the measured visible mismatch, not an unproved engine cause. Missing bright ink is missing_element unless independent evidence proves occlusion, scale or blur. Do not infer plate_over_label from dim ink alone.",
+        "criteria": {
+          "plate_over_label": null,
+          "wrong_tint": null,
+          "glyph_too_small": null,
+          "blur_or_mip": null,
+          "misplaced": null,
+          "missing_element": null,
+          "extra_element": null,
+          "none": null
+        }
+      },
+      "away_rim": {
+        "type": "choice",
+        "instructions": "Classify the measured visible mismatch, not an unproved engine cause. Missing bright ink is missing_element unless independent evidence proves occlusion, scale or blur. Do not infer plate_over_label from dim ink alone.",
+        "criteria": {
+          "plate_over_label": null,
+          "wrong_tint": null,
+          "glyph_too_small": null,
+          "blur_or_mip": null,
+          "misplaced": null,
+          "missing_element": null,
+          "extra_element": null,
+          "none": null
+        }
+      },
+      "home_rim": {
+        "type": "choice",
+        "instructions": "Classify the measured visible mismatch, not an unproved engine cause. Missing bright ink is missing_element unless independent evidence proves occlusion, scale or blur. Do not infer plate_over_label from dim ink alone.",
+        "criteria": {
+          "plate_over_label": null,
+          "wrong_tint": null,
+          "glyph_too_small": null,
+          "blur_or_mip": null,
+          "misplaced": null,
+          "missing_element": null,
+          "extra_element": null,
+          "none": null
+        }
+      },
+      "away_timeouts": {
+        "type": "choice",
+        "instructions": "Classify the measured visible mismatch, not an unproved engine cause. Missing bright ink is missing_element unless independent evidence proves occlusion, scale or blur. Do not infer plate_over_label from dim ink alone.",
+        "criteria": {
+          "plate_over_label": null,
+          "wrong_tint": null,
+          "glyph_too_small": null,
+          "blur_or_mip": null,
+          "misplaced": null,
+          "missing_element": null,
+          "extra_element": null,
+          "none": null
+        }
+      },
+      "home_timeouts": {
+        "type": "choice",
+        "instructions": "Classify the measured visible mismatch, not an unproved engine cause. Missing bright ink is missing_element unless independent evidence proves occlusion, scale or blur. Do not infer plate_over_label from dim ink alone.",
+        "criteria": {
+          "plate_over_label": null,
+          "wrong_tint": null,
+          "glyph_too_small": null,
+          "blur_or_mip": null,
+          "misplaced": null,
+          "missing_element": null,
+          "extra_element": null,
+          "none": null
+        }
+      },
+      "network": {
+        "type": "choice",
+        "instructions": "Classify the measured visible mismatch, not an unproved engine cause. Missing bright ink is missing_element unless independent evidence proves occlusion, scale or blur. Do not infer plate_over_label from dim ink alone.",
+        "criteria": {
+          "plate_over_label": null,
+          "wrong_tint": null,
+          "glyph_too_small": null,
+          "blur_or_mip": null,
+          "misplaced": null,
+          "missing_element": null,
+          "extra_element": null,
+          "none": null
+        }
+      }
+    }
+  },
+  "response": {
+    "results": [
+      {
+        "index": 0,
+        "answers": {
+          "away_score": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.81,
+            "probabilities": {
+              "blur_or_mip": 0,
+              "wrong_tint": 0.01,
+              "missing_element": 0.84,
+              "plate_over_label": 0,
+              "extra_element": 0,
+              "none": 0.08,
+              "misplaced": 0.07,
+              "glyph_too_small": 0
+            }
+          },
+          "home_score": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.85,
+            "probabilities": {
+              "blur_or_mip": 0,
+              "wrong_tint": 0.01,
+              "missing_element": 0.87,
+              "plate_over_label": 0,
+              "extra_element": 0,
+              "glyph_too_small": 0,
+              "misplaced": 0.05,
+              "none": 0.07
+            }
+          },
+          "clock": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.84,
+            "probabilities": {
+              "blur_or_mip": 0,
+              "wrong_tint": 0.01,
+              "missing_element": 0.87,
+              "plate_over_label": 0,
+              "extra_element": 0,
+              "glyph_too_small": 0,
+              "misplaced": 0.06,
+              "none": 0.06
+            }
+          },
+          "quarter": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.84,
+            "probabilities": {
+              "blur_or_mip": 0,
+              "wrong_tint": 0.01,
+              "missing_element": 0.87,
+              "plate_over_label": 0,
+              "extra_element": 0,
+              "glyph_too_small": 0,
+              "misplaced": 0.06,
+              "none": 0.06
+            }
+          },
+          "play_clock": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.85,
+            "probabilities": {
+              "blur_or_mip": 0,
+              "wrong_tint": 0.01,
+              "missing_element": 0.87,
+              "plate_over_label": 0,
+              "extra_element": 0,
+              "glyph_too_small": 0,
+              "misplaced": 0.05,
+              "none": 0.07
+            }
+          },
+          "down": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.84,
+            "probabilities": {
+              "blur_or_mip": 0,
+              "wrong_tint": 0.01,
+              "missing_element": 0.87,
+              "plate_over_label": 0,
+              "extra_element": 0,
+              "glyph_too_small": 0,
+              "misplaced": 0.06,
+              "none": 0.06
+            }
+          },
+          "plate": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.84,
+            "probabilities": {
+              "blur_or_mip": 0,
+              "wrong_tint": 0.01,
+              "missing_element": 0.87,
+              "plate_over_label": 0,
+              "extra_element": 0,
+              "glyph_too_small": 0,
+              "misplaced": 0.06,
+              "none": 0.06
+            }
+          },
+          "away_wing": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.83,
+            "probabilities": {
+              "blur_or_mip": 0,
+              "wrong_tint": 0.01,
+              "missing_element": 0.86,
+              "plate_over_label": 0,
+              "extra_element": 0,
+              "glyph_too_small": 0,
+              "misplaced": 0.06,
+              "none": 0.07
+            }
+          },
+          "home_wing": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.86,
+            "probabilities": {
+              "blur_or_mip": 0,
+              "wrong_tint": 0,
+              "missing_element": 0.89,
+              "plate_over_label": 0,
+              "extra_element": 0,
+              "glyph_too_small": 0,
+              "misplaced": 0.05,
+              "none": 0.06
+            }
+          },
+          "away_rim": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.83,
+            "probabilities": {
+              "blur_or_mip": 0,
+              "wrong_tint": 0.01,
+              "missing_element": 0.86,
+              "plate_over_label": 0,
+              "extra_element": 0,
+              "glyph_too_small": 0,
+              "misplaced": 0.06,
+              "none": 0.07
+            }
+          },
+          "home_rim": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.82,
+            "probabilities": {
+              "blur_or_mip": 0.01,
+              "wrong_tint": 0.01,
+              "missing_element": 0.84,
+              "plate_over_label": 0,
+              "extra_element": 0,
+              "glyph_too_small": 0,
+              "misplaced": 0.06,
+              "none": 0.08
+            }
+          },
+          "away_timeouts": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.83,
+            "probabilities": {
+              "blur_or_mip": 0,
+              "wrong_tint": 0.01,
+              "missing_element": 0.86,
+              "plate_over_label": 0,
+              "extra_element": 0,
+              "glyph_too_small": 0,
+              "misplaced": 0.06,
+              "none": 0.07
+            }
+          },
+          "home_timeouts": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.8,
+            "probabilities": {
+              "blur_or_mip": 0,
+              "wrong_tint": 0.01,
+              "missing_element": 0.84,
+              "plate_over_label": 0,
+              "extra_element": 0,
+              "glyph_too_small": 0,
+              "misplaced": 0.07,
+              "none": 0.08
+            }
+          },
+          "network": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.83,
+            "probabilities": {
+              "blur_or_mip": 0,
+              "wrong_tint": 0.01,
+              "missing_element": 0.86,
+              "plate_over_label": 0,
+              "extra_element": 0,
+              "glyph_too_small": 0,
+              "misplaced": 0.06,
+              "none": 0.07
+            }
+          }
+        }
+      },
+      {
+        "index": 1,
+        "answers": {
+          "away_score": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.87,
+            "probabilities": {
+              "missing_element": 0.89,
+              "extra_element": 0,
+              "glyph_too_small": 0,
+              "blur_or_mip": 0,
+              "misplaced": 0.04,
+              "wrong_tint": 0,
+              "none": 0.06999999999999999,
+              "plate_over_label": 0
+            }
+          },
+          "home_score": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.88,
+            "probabilities": {
+              "missing_element": 0.9,
+              "extra_element": 0,
+              "glyph_too_small": 0,
+              "blur_or_mip": 0,
+              "misplaced": 0.03,
+              "wrong_tint": 0,
+              "none": 0.07,
+              "plate_over_label": 0
+            }
+          },
+          "clock": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.87,
+            "probabilities": {
+              "missing_element": 0.9,
+              "extra_element": 0,
+              "glyph_too_small": 0,
+              "blur_or_mip": 0,
+              "misplaced": 0.03,
+              "wrong_tint": 0,
+              "plate_over_label": 0,
+              "none": 0.07
+            }
+          },
+          "quarter": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.88,
+            "probabilities": {
+              "missing_element": 0.91,
+              "extra_element": 0,
+              "glyph_too_small": 0,
+              "blur_or_mip": 0,
+              "misplaced": 0.03,
+              "wrong_tint": 0,
+              "plate_over_label": 0,
+              "none": 0.06
+            }
+          },
+          "play_clock": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.86,
+            "probabilities": {
+              "missing_element": 0.88,
+              "extra_element": 0,
+              "glyph_too_small": 0,
+              "blur_or_mip": 0,
+              "misplaced": 0.03,
+              "wrong_tint": 0,
+              "plate_over_label": 0,
+              "none": 0.09
+            }
+          },
+          "down": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.88,
+            "probabilities": {
+              "missing_element": 0.91,
+              "extra_element": 0,
+              "glyph_too_small": 0,
+              "blur_or_mip": 0,
+              "misplaced": 0.03,
+              "wrong_tint": 0,
+              "none": 0.06,
+              "plate_over_label": 0
+            }
+          },
+          "plate": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.87,
+            "probabilities": {
+              "missing_element": 0.9,
+              "extra_element": 0,
+              "glyph_too_small": 0,
+              "blur_or_mip": 0,
+              "misplaced": 0.04,
+              "wrong_tint": 0,
+              "plate_over_label": 0,
+              "none": 0.06
+            }
+          },
+          "away_wing": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.87,
+            "probabilities": {
+              "missing_element": 0.9,
+              "extra_element": 0,
+              "glyph_too_small": 0,
+              "blur_or_mip": 0,
+              "misplaced": 0.04,
+              "wrong_tint": 0,
+              "none": 0.06,
+              "plate_over_label": 0
+            }
+          },
+          "home_wing": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.87,
+            "probabilities": {
+              "missing_element": 0.89,
+              "extra_element": 0,
+              "glyph_too_small": 0,
+              "blur_or_mip": 0,
+              "misplaced": 0.03,
+              "wrong_tint": 0,
+              "plate_over_label": 0,
+              "none": 0.08
+            }
+          },
+          "away_rim": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.88,
+            "probabilities": {
+              "missing_element": 0.91,
+              "extra_element": 0,
+              "glyph_too_small": 0,
+              "blur_or_mip": 0,
+              "misplaced": 0.03,
+              "wrong_tint": 0,
+              "plate_over_label": 0,
+              "none": 0.06
+            }
+          },
+          "home_rim": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.89,
+            "probabilities": {
+              "missing_element": 0.91,
+              "extra_element": 0,
+              "glyph_too_small": 0,
+              "blur_or_mip": 0,
+              "misplaced": 0.03,
+              "wrong_tint": 0,
+              "none": 0.06,
+              "plate_over_label": 0
+            }
+          },
+          "away_timeouts": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.88,
+            "probabilities": {
+              "missing_element": 0.91,
+              "extra_element": 0,
+              "glyph_too_small": 0,
+              "blur_or_mip": 0,
+              "misplaced": 0.03,
+              "wrong_tint": 0,
+              "none": 0.06,
+              "plate_over_label": 0
+            }
+          },
+          "home_timeouts": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.9,
+            "probabilities": {
+              "missing_element": 0.92,
+              "extra_element": 0,
+              "glyph_too_small": 0,
+              "blur_or_mip": 0,
+              "misplaced": 0.03,
+              "wrong_tint": 0,
+              "none": 0.05,
+              "plate_over_label": 0
+            }
+          },
+          "network": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.86,
+            "probabilities": {
+              "missing_element": 0.89,
+              "extra_element": 0,
+              "glyph_too_small": 0,
+              "blur_or_mip": 0,
+              "misplaced": 0.04,
+              "wrong_tint": 0,
+              "plate_over_label": 0,
+              "none": 0.07
+            }
+          }
+        }
+      },
+      {
+        "index": 2,
+        "answers": {
+          "away_score": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.87,
+            "probabilities": {
+              "missing_element": 0.9,
+              "misplaced": 0.01,
+              "none": 0.06999999999999999,
+              "blur_or_mip": 0,
+              "plate_over_label": 0,
+              "extra_element": 0.02,
+              "wrong_tint": 0,
+              "glyph_too_small": 0
+            }
+          },
+          "home_score": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.87,
+            "probabilities": {
+              "none": 0.07,
+              "misplaced": 0.01,
+              "missing_element": 0.89,
+              "blur_or_mip": 0,
+              "plate_over_label": 0,
+              "extra_element": 0.02,
+              "glyph_too_small": 0,
+              "wrong_tint": 0.01
+            }
+          },
+          "clock": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.88,
+            "probabilities": {
+              "missing_element": 0.9,
+              "misplaced": 0.01,
+              "none": 0.06,
+              "blur_or_mip": 0,
+              "plate_over_label": 0,
+              "extra_element": 0.02,
+              "wrong_tint": 0.01,
+              "glyph_too_small": 0
+            }
+          },
+          "quarter": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.88,
+            "probabilities": {
+              "missing_element": 0.9,
+              "misplaced": 0.01,
+              "none": 0.06,
+              "blur_or_mip": 0,
+              "plate_over_label": 0,
+              "extra_element": 0.02,
+              "wrong_tint": 0.01,
+              "glyph_too_small": 0
+            }
+          },
+          "play_clock": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.88,
+            "probabilities": {
+              "none": 0.06,
+              "misplaced": 0.01,
+              "missing_element": 0.91,
+              "blur_or_mip": 0,
+              "plate_over_label": 0,
+              "extra_element": 0.02,
+              "wrong_tint": 0,
+              "glyph_too_small": 0
+            }
+          },
+          "down": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.88,
+            "probabilities": {
+              "missing_element": 0.91,
+              "misplaced": 0.01,
+              "none": 0.06,
+              "blur_or_mip": 0,
+              "plate_over_label": 0,
+              "extra_element": 0.02,
+              "wrong_tint": 0,
+              "glyph_too_small": 0
+            }
+          },
+          "plate": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.88,
+            "probabilities": {
+              "none": 0.07,
+              "misplaced": 0.01,
+              "missing_element": 0.89,
+              "blur_or_mip": 0,
+              "plate_over_label": 0,
+              "extra_element": 0.02,
+              "wrong_tint": 0.01,
+              "glyph_too_small": 0
+            }
+          },
+          "away_wing": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.89,
+            "probabilities": {
+              "none": 0.06,
+              "misplaced": 0.01,
+              "missing_element": 0.91,
+              "blur_or_mip": 0,
+              "plate_over_label": 0,
+              "extra_element": 0.02,
+              "glyph_too_small": 0,
+              "wrong_tint": 0
+            }
+          },
+          "home_wing": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.88,
+            "probabilities": {
+              "none": 0.06,
+              "misplaced": 0.01,
+              "missing_element": 0.91,
+              "blur_or_mip": 0,
+              "plate_over_label": 0,
+              "extra_element": 0.02,
+              "wrong_tint": 0,
+              "glyph_too_small": 0
+            }
+          },
+          "away_rim": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.88,
+            "probabilities": {
+              "missing_element": 0.9,
+              "misplaced": 0.01,
+              "none": 0.06,
+              "blur_or_mip": 0,
+              "plate_over_label": 0,
+              "extra_element": 0.02,
+              "wrong_tint": 0.01,
+              "glyph_too_small": 0
+            }
+          },
+          "home_rim": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.87,
+            "probabilities": {
+              "missing_element": 0.88,
+              "misplaced": 0.02,
+              "none": 0.07,
+              "blur_or_mip": 0,
+              "plate_over_label": 0,
+              "extra_element": 0.02,
+              "wrong_tint": 0.01,
+              "glyph_too_small": 0
+            }
+          },
+          "away_timeouts": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.88,
+            "probabilities": {
+              "none": 0.07,
+              "misplaced": 0.01,
+              "missing_element": 0.9,
+              "blur_or_mip": 0,
+              "plate_over_label": 0,
+              "extra_element": 0.02,
+              "glyph_too_small": 0,
+              "wrong_tint": 0
+            }
+          },
+          "home_timeouts": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.87,
+            "probabilities": {
+              "none": 0.07,
+              "misplaced": 0.01,
+              "missing_element": 0.9,
+              "blur_or_mip": 0,
+              "plate_over_label": 0,
+              "extra_element": 0.02,
+              "wrong_tint": 0,
+              "glyph_too_small": 0
+            }
+          },
+          "network": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.88,
+            "probabilities": {
+              "none": 0.06999999999999999,
+              "misplaced": 0.01,
+              "missing_element": 0.91,
+              "blur_or_mip": 0,
+              "plate_over_label": 0,
+              "extra_element": 0.01,
+              "wrong_tint": 0,
+              "glyph_too_small": 0
+            }
+          }
+        }
+      },
+      {
+        "index": 3,
+        "answers": {
+          "away_score": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.86,
+            "probabilities": {
+              "plate_over_label": 0,
+              "none": 0.06,
+              "missing_element": 0.89,
+              "glyph_too_small": 0,
+              "misplaced": 0.02,
+              "wrong_tint": 0,
+              "extra_element": 0.03,
+              "blur_or_mip": 0
+            }
+          },
+          "home_score": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.83,
+            "probabilities": {
+              "plate_over_label": 0,
+              "none": 0.08,
+              "missing_element": 0.85,
+              "glyph_too_small": 0,
+              "misplaced": 0.02,
+              "wrong_tint": 0.01,
+              "extra_element": 0.04,
+              "blur_or_mip": 0
+            }
+          },
+          "clock": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.85,
+            "probabilities": {
+              "plate_over_label": 0,
+              "none": 0.07,
+              "missing_element": 0.88,
+              "glyph_too_small": 0,
+              "misplaced": 0.02,
+              "wrong_tint": 0,
+              "extra_element": 0.03,
+              "blur_or_mip": 0
+            }
+          },
+          "quarter": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.84,
+            "probabilities": {
+              "plate_over_label": 0,
+              "none": 0.07,
+              "missing_element": 0.87,
+              "glyph_too_small": 0,
+              "misplaced": 0.02,
+              "wrong_tint": 0,
+              "extra_element": 0.04,
+              "blur_or_mip": 0
+            }
+          },
+          "play_clock": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.86,
+            "probabilities": {
+              "plate_over_label": 0,
+              "none": 0.06,
+              "missing_element": 0.88,
+              "glyph_too_small": 0,
+              "misplaced": 0.02,
+              "wrong_tint": 0,
+              "extra_element": 0.04,
+              "blur_or_mip": 0
+            }
+          },
+          "down": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.86,
+            "probabilities": {
+              "plate_over_label": 0,
+              "none": 0.06,
+              "missing_element": 0.88,
+              "glyph_too_small": 0,
+              "misplaced": 0.02,
+              "wrong_tint": 0.01,
+              "extra_element": 0.03,
+              "blur_or_mip": 0
+            }
+          },
+          "plate": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.86,
+            "probabilities": {
+              "plate_over_label": 0,
+              "none": 0.06,
+              "missing_element": 0.87,
+              "glyph_too_small": 0,
+              "misplaced": 0.02,
+              "wrong_tint": 0.01,
+              "extra_element": 0.04,
+              "blur_or_mip": 0
+            }
+          },
+          "away_wing": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.83,
+            "probabilities": {
+              "plate_over_label": 0,
+              "none": 0.08,
+              "missing_element": 0.86,
+              "glyph_too_small": 0,
+              "misplaced": 0.02,
+              "wrong_tint": 0,
+              "extra_element": 0.04,
+              "blur_or_mip": 0
+            }
+          },
+          "home_wing": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.85,
+            "probabilities": {
+              "plate_over_label": 0,
+              "none": 0.06,
+              "missing_element": 0.88,
+              "glyph_too_small": 0,
+              "misplaced": 0.02,
+              "wrong_tint": 0,
+              "extra_element": 0.04,
+              "blur_or_mip": 0
+            }
+          },
+          "away_rim": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.85,
+            "probabilities": {
+              "plate_over_label": 0,
+              "none": 0.06999999999999999,
+              "missing_element": 0.88,
+              "glyph_too_small": 0,
+              "misplaced": 0.02,
+              "wrong_tint": 0,
+              "extra_element": 0.03,
+              "blur_or_mip": 0
+            }
+          },
+          "home_rim": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.86,
+            "probabilities": {
+              "plate_over_label": 0,
+              "none": 0.06999999999999999,
+              "missing_element": 0.88,
+              "glyph_too_small": 0,
+              "misplaced": 0.02,
+              "wrong_tint": 0,
+              "extra_element": 0.03,
+              "blur_or_mip": 0
+            }
+          },
+          "away_timeouts": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.83,
+            "probabilities": {
+              "plate_over_label": 0,
+              "none": 0.08,
+              "missing_element": 0.86,
+              "glyph_too_small": 0,
+              "misplaced": 0.02,
+              "wrong_tint": 0,
+              "extra_element": 0.04,
+              "blur_or_mip": 0
+            }
+          },
+          "home_timeouts": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.82,
+            "probabilities": {
+              "plate_over_label": 0,
+              "none": 0.09,
+              "missing_element": 0.85,
+              "glyph_too_small": 0,
+              "misplaced": 0.02,
+              "wrong_tint": 0,
+              "extra_element": 0.04,
+              "blur_or_mip": 0
+            }
+          },
+          "network": {
+            "type": "choice",
+            "choice": "missing_element",
+            "confidence": 0.85,
+            "probabilities": {
+              "plate_over_label": 0,
+              "none": 0.07,
+              "missing_element": 0.87,
+              "glyph_too_small": 0,
+              "misplaced": 0.02,
+              "wrong_tint": 0.01,
+              "extra_element": 0.03,
+              "blur_or_mip": 0
+            }
+          }
+        }
+      }
+    ],
+    "totals": {
+      "input_tokens": 11234,
+      "output_tokens": 4832,
+      "cost_usd": 0.00047184,
+      "errors": 0,
+      "wall_ms": 483.5
+    }
+  }
+}

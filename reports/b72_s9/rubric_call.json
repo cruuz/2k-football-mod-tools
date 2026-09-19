@@ -1,0 +1,190 @@
+{
+  "request": {
+    "states": [
+      {
+        "readable": {
+          "away_score": true,
+          "home_score": true,
+          "clock": true,
+          "quarter": true,
+          "play_clock": true,
+          "down": true
+        },
+        "score_hierarchy": true,
+        "overlap": "verified_clear",
+        "identity": "verified_team_specific",
+        "calibration": "unresolved",
+        "case": "LV_HOU_169",
+        "limitations": "Identity uses official palette, not exact broadcast RGB. All results offline."
+      },
+      {
+        "readable": {
+          "away_score": true,
+          "home_score": true,
+          "clock": true,
+          "quarter": true,
+          "play_clock": true,
+          "down": true
+        },
+        "score_hierarchy": true,
+        "overlap": "verified_clear",
+        "identity": "verified_team_specific",
+        "calibration": "unresolved",
+        "case": "LV_HOU_43",
+        "limitations": "Identity uses official palette, not exact broadcast RGB. All results offline."
+      },
+      {
+        "readable": {
+          "away_score": true,
+          "home_score": true,
+          "clock": true,
+          "quarter": true,
+          "play_clock": true,
+          "down": true
+        },
+        "score_hierarchy": true,
+        "overlap": "verified_clear",
+        "identity": "verified_team_specific",
+        "calibration": "unresolved",
+        "case": "DEN_KC_169",
+        "limitations": "Identity uses official palette, not exact broadcast RGB. All results offline."
+      },
+      {
+        "readable": {
+          "away_score": true,
+          "home_score": true,
+          "clock": true,
+          "quarter": true,
+          "play_clock": true,
+          "down": true
+        },
+        "score_hierarchy": true,
+        "overlap": "verified_clear",
+        "identity": "verified_team_specific",
+        "calibration": "unresolved",
+        "case": "DEN_KC_43",
+        "limitations": "Identity uses official palette, not exact broadcast RGB. All results offline."
+      }
+    ],
+    "questions": {
+      "design": {
+        "type": "score",
+        "instructions": "Judge ESPN scorebug design from these measured facts only. Scores should lead, then clock, then label. Unknown calibration prevents the top level. Missing bright label ink is critical. Do not calculate or infer unprovided facts.",
+        "criteria": [
+          "Critical failure: label absent/dim, overlap, or false calibration claim.",
+          "Major issue: one or more fields unreadable or team identity incorrect.",
+          "Readable fields, but hierarchy, spacing or team identity remains uncertain.",
+          "Readable fields with clear hierarchy and identity; calibration unresolved.",
+          "Every field readable, no overlaps, team identity clear, calibrated comparison passes."
+        ]
+      }
+    }
+  },
+  "response": {
+    "results": [
+      {
+        "index": 0,
+        "answers": {
+          "design": {
+            "type": "score",
+            "score": 2.42,
+            "confidence": 0.51,
+            "legend": {
+              "0": "Critical failure: label absent/dim, overlap, or false calibration claim.",
+              "1": "Major issue: one or more fields unreadable or team identity incorrect.",
+              "2": "Readable fields, but hierarchy, spacing or team identity remains uncertain.",
+              "3": "Readable fields with clear hierarchy and identity; calibration unresolved.",
+              "4": "Every field readable, no overlaps, team identity clear, calibrated comparison passes."
+            },
+            "probabilities": {
+              "0": 0.18,
+              "1": 0.01,
+              "2": 0.03,
+              "3": 0.78,
+              "4": 0
+            }
+          }
+        }
+      },
+      {
+        "index": 1,
+        "answers": {
+          "design": {
+            "type": "score",
+            "score": 2.65,
+            "confidence": 0.71,
+            "legend": {
+              "0": "Critical failure: label absent/dim, overlap, or false calibration claim.",
+              "1": "Major issue: one or more fields unreadable or team identity incorrect.",
+              "2": "Readable fields, but hierarchy, spacing or team identity remains uncertain.",
+              "3": "Readable fields with clear hierarchy and identity; calibration unresolved.",
+              "4": "Every field readable, no overlaps, team identity clear, calibrated comparison passes."
+            },
+            "probabilities": {
+              "0": 0.1,
+              "1": 0.01,
+              "2": 0.03,
+              "3": 0.86,
+              "4": 0
+            }
+          }
+        }
+      },
+      {
+        "index": 2,
+        "answers": {
+          "design": {
+            "type": "score",
+            "score": 2.59,
+            "confidence": 0.65,
+            "legend": {
+              "0": "Critical failure: label absent/dim, overlap, or false calibration claim.",
+              "1": "Major issue: one or more fields unreadable or team identity incorrect.",
+              "2": "Readable fields, but hierarchy, spacing or team identity remains uncertain.",
+              "3": "Readable fields with clear hierarchy and identity; calibration unresolved.",
+              "4": "Every field readable, no overlaps, team identity clear, calibrated comparison passes."
+            },
+            "probabilities": {
+              "0": 0.13,
+              "1": 0.01,
+              "2": 0.03,
+              "3": 0.83,
+              "4": 0
+            }
+          }
+        }
+      },
+      {
+        "index": 3,
+        "answers": {
+          "design": {
+            "type": "score",
+            "score": 2.6,
+            "confidence": 0.66,
+            "legend": {
+              "0": "Critical failure: label absent/dim, overlap, or false calibration claim.",
+              "1": "Major issue: one or more fields unreadable or team identity incorrect.",
+              "2": "Readable fields, but hierarchy, spacing or team identity remains uncertain.",
+              "3": "Readable fields with clear hierarchy and identity; calibration unresolved.",
+              "4": "Every field readable, no overlaps, team identity clear, calibrated comparison passes."
+            },
+            "probabilities": {
+              "0": 0.12,
+              "1": 0.01,
+              "2": 0.04,
+              "3": 0.83,
+              "4": 0
+            }
+          }
+        }
+      }
+    ],
+    "totals": {
+      "input_tokens": 2134,
+      "output_tokens": 68,
+      "cost_usd": 0.00008964,
+      "errors": 0,
+      "wall_ms": 415.8
+    }
+  }
+}
