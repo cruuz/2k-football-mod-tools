@@ -10644,8 +10644,8 @@
             "required": true
           },
           {
-            "name": "scorebug_watermark",
             "allowed": "auto (default), mnf, off",
+            "name": "scorebug_watermark",
             "required": false
           }
         ],
