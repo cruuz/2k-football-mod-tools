@@ -9,6 +9,7 @@ from typing import Callable
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import (
+    QCheckBox, QListWidget,
     QComboBox,
     QFrame,
     QGridLayout,
@@ -41,6 +42,8 @@ class PlayAssignmentRoutePanel(QWidget):
 
     def __init__(self, facade: object, run_task: TaskRunner):
         super().__init__()
+        self._pending = []
+        self._pending_session = getattr(facade, "session", None)
         self.facade = facade
         self.run_task = run_task
         self._plays: tuple[tuple[int, str], ...] = ()
@@ -109,6 +112,20 @@ class PlayAssignmentRoutePanel(QWidget):
         buttons.addStretch(1)
         grid.addLayout(buttons, 4, 0, 1, 2)
         root.addWidget(picker)
+        pending_actions = QHBoxLayout()
+        self.queue_edits = QCheckBox("Keep edits pending")
+        self.confirm_pending_button = QPushButton("Confirm all pending")
+        self.confirm_pending_button.clicked.connect(self._confirm_pending)
+        self.clear_pending_button = QPushButton("Clear pending")
+        self.clear_pending_button.clicked.connect(self.clear_pending)
+        pending_actions.addWidget(self.queue_edits)
+        pending_actions.addWidget(self.confirm_pending_button)
+        pending_actions.addWidget(self.clear_pending_button)
+        root.addLayout(pending_actions)
+        self.pending_list = QListWidget()
+        self.pending_list.setAccessibleName("Pending route edits")
+        self.pending_list.setMaximumHeight(110)
+        root.addWidget(self.pending_list)
 
         staged_heading = QHBoxLayout()
         staged_heading.addWidget(QLabel("Staged assignment routes"))
@@ -190,6 +207,8 @@ class PlayAssignmentRoutePanel(QWidget):
         if coordinates[:2] == coordinates[2:]:
             QMessageBox.information(self, "Choose a donor", "Target and donor must differ.")
             return
+        if self._queue("copy", coordinates):
+            return
         self.run_task(
             "Copying stock APF assignment route",
             lambda progress: self.facade.replace_play_assignment_route(
@@ -268,6 +287,8 @@ class PlayAssignmentRoutePanel(QWidget):
 
     def _relay_copy(self, coordinates, relay) -> None:
         relay_play, relay_slot = relay
+        if self._queue("relay", (*coordinates, relay_play, relay_slot)):
+            return
         self.run_task(
             "Copying stock APF assignment route via relay",
             lambda progress: self.facade.copy_play_assignment_route_via_relay(
@@ -295,6 +316,8 @@ class PlayAssignmentRoutePanel(QWidget):
             return
         if coordinates[:2] == coordinates[2:]:
             QMessageBox.information(self, "Choose two assignments", "The assignments must differ.")
+            return
+        if self._queue("swap", coordinates):
             return
         self.run_task(
             "Swapping stock APF assignment routes",
@@ -332,10 +355,38 @@ class PlayAssignmentRoutePanel(QWidget):
             True,
         )
 
+    def pending_count(self):
+        return len(self._pending)
+
+    def _queue(self, kind, coordinates):
+        if not self.queue_edits.isChecked() and not self._pending:
+            return False
+        self._pending.append((kind, coordinates))
+        self.pending_list.addItem(f"{kind.title()}: {self._play_name(coordinates[0])} slot {coordinates[1] + 1} from {self._play_name(coordinates[2])} slot {coordinates[3] + 1}")
+        return True
+
+    def clear_pending(self):
+        self._pending.clear()
+        self.pending_list.clear()
+
+    def _confirm_pending(self):
+        if not self._pending:
+            return
+        actions = tuple(self._pending)
+        def done(_result):
+            self.clear_pending()
+            self._mutation_complete("Pending routes confirmed and verified.")
+        self.run_task("Confirming pending assignment routes",
+                      lambda progress: self.facade.confirm_route_pending(actions, progress), done, True)
+
     def _play_name(self, index: int) -> str:
         return next((name for value, name in self._plays if value == index), f"Play {index}")
 
     def refresh(self) -> None:
+        session = getattr(self.facade, "session", None)
+        if session is not self._pending_session:
+            self.clear_pending()
+            self._pending_session = session
         source_ready = bool(getattr(self.facade, "source_ready", False))
         session = getattr(self.facade, "session", None)
         modifications = getattr(session, "modifications", ()) if session else ()

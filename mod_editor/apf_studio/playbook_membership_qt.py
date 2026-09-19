@@ -208,6 +208,7 @@ from typing import Callable
 
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import (
+    QCheckBox,
     QAbstractItemView,
     QComboBox,
     QDialog,
@@ -660,6 +661,8 @@ class ApfPlaybookMembershipPanel(QFrame):
         self.facade = facade
         self.run_task = run_task
         self.setObjectName("panel")
+        self._pending_books = {}
+        self._pending_session = getattr(facade, "session", None)
         self._book: splb.SplbBook | None = None
         #: Which volume ``_book`` was read from, so a repeated refresh for the
         #: same game and book does not re-read the MASTER play catalog.
@@ -829,6 +832,16 @@ class ApfPlaybookMembershipPanel(QFrame):
         self.build_button.setObjectName("primaryButton")
         self.revert_button.clicked.connect(self._revert)
         self.build_button.clicked.connect(self._build)
+        self.queue_edits = QCheckBox("Keep edits pending")
+        self.pending_status = QLabel("No pending edits")
+        self.confirm_pending_button = QPushButton("Confirm all pending")
+        self.confirm_pending_button.clicked.connect(self._confirm_pending)
+        self.clear_pending_button = QPushButton("Clear pending")
+        self.clear_pending_button.clicked.connect(self.clear_pending)
+        actions.addWidget(self.queue_edits)
+        actions.addWidget(self.pending_status)
+        actions.addWidget(self.confirm_pending_button)
+        actions.addWidget(self.clear_pending_button)
         actions.addStretch(1)
         actions.addWidget(self.revert_button)
         actions.addWidget(self.build_button)
@@ -871,6 +884,11 @@ class ApfPlaybookMembershipPanel(QFrame):
         return None
 
     def set_context(self) -> None:
+        session = getattr(self.facade, "session", None)
+        if session is not self._pending_session:
+            self._pending_books.clear()
+            self._pending_session = session
+            self._loaded_index = None
         if not bool(getattr(self.facade, "source_ready", False)):
             self._load_generation += 1
             self._book = None
@@ -949,7 +967,8 @@ class ApfPlaybookMembershipPanel(QFrame):
             import playbook_inventory  # type: ignore
 
             progress("Reading the stock playbook", 0, 3)
-            book = splb.read_book(index_0a, int(outer))
+            reader = getattr(self.facade, "source_splb_book", None)
+            book = reader(int(outer)) if reader else splb.read_book(index_0a, int(outer))
             progress("Reading MASTER play names", 1, 3)
             inventory_reader = getattr(self.facade, "master_inventory", None)
             master = (inventory_reader() if inventory_reader else
@@ -1597,11 +1616,21 @@ class ApfPlaybookMembershipPanel(QFrame):
             QMessageBox.information(self, "Could not add the formation", failure_body(exc))
 
     def _after_stage(self) -> None:
+        if self._book is not None and (self.queue_edits.isChecked() or self._pending_books):
+            self._pending_books[self._book.outer_index] = self.staged_changes()
+            self._refresh_pending()
+            self.ladder_status.setText("Pending edits. Full book checks run on Confirm all pending.")
+            self._refresh_formations()
+            self._refresh_plays()
+            self._refresh_actions()
+            return
         self._commit_to_project()
         self.ladder_status.clear()
         if self._book is not None and self.staged_changes():
             try:
-                compiled = splb.compile_book(self._book, self.staged_changes())
+                reader = getattr(self.facade, "compiled_splb_book", None)
+                compiled = (reader(self._book.outer_index, self.staged_changes()) if reader
+                            else splb.compile_book(self._book, self.staged_changes()))
                 self.ladder_status.setText(". ".join(compiled.report["personnel_ladder"]["messages"]))
             except ValidationError as exc:
                 self.ladder_status.setText(str(exc))
@@ -1609,6 +1638,31 @@ class ApfPlaybookMembershipPanel(QFrame):
         self._refresh_plays()
         self._refresh_actions()
         self.modifiedChanged.emit()
+
+    def pending_count(self):
+        return len(self._pending_books)
+
+    def _refresh_pending(self):
+        self.pending_status.setText(f"{sum(len(changes) for changes in self._pending_books.values())} pending edits in {len(self._pending_books)} books")
+        self.confirm_pending_button.setEnabled(bool(self._pending_books))
+        self.clear_pending_button.setEnabled(bool(self._pending_books))
+
+    def clear_pending(self):
+        self._pending_books.clear()
+        self._restore_from_project()
+        self._refresh_pending()
+        self._refresh_formations()
+        self._refresh_actions()
+
+    def _confirm_pending(self):
+        if not self._pending_books:
+            return
+        batches = tuple(sorted(self._pending_books.items()))
+        def done(_result):
+            self.clear_pending()
+            self.modifiedChanged.emit()
+        self.run_task("Confirming pending playbook edits",
+                      lambda progress: self.facade.confirm_splb_pending(batches, progress), done, True)
 
     # --------------------------------------------------------- project storage
 
@@ -1650,7 +1704,9 @@ class ApfPlaybookMembershipPanel(QFrame):
         if reader is None:
             return
         try:
-            changes = reader()
+            changes = self._pending_books.get(self._book.outer_index)
+            if changes is None:
+                changes = reader()
         except Exception:
             return
         for change in changes:
@@ -2085,6 +2141,9 @@ class ApfPlaybookMembershipPanel(QFrame):
         self._after_stage()
 
     def _build(self) -> None:
+        if self._pending_books:
+            QMessageBox.information(self, "Confirm pending edits", "Click Confirm all pending before building.")
+            return
         reason = str(self.build_button.property("disableReason") or "").strip()
         if reason:
             QMessageBox.information(self, "Cannot build the playbook yet", reason)

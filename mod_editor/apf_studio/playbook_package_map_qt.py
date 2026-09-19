@@ -9,6 +9,7 @@ from typing import Callable
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import (
+    QCheckBox,
     QAbstractItemView,
     QComboBox,
     QHBoxLayout,
@@ -49,6 +50,7 @@ class ApfPackageMapPanel(QWidget):
 
     def __init__(self, facade: object, run_task: TaskRunner):
         super().__init__()
+        self._loaded_source_key = None
         self.facade = facade
         self.run_task = run_task
         self._source_rows: tuple[tuple[int, str, tuple[int, ...]], ...] = ()
@@ -165,10 +167,15 @@ class ApfPackageMapPanel(QWidget):
         self.revert_button.clicked.connect(self._revert_one)
         self.revert_all_button.clicked.connect(self._revert_all)
         self.stage_button.clicked.connect(self._stage)
+        self.queue_edits = QCheckBox("Keep edits pending")
+        commit.addWidget(self.queue_edits)
         commit.addStretch(1)
         commit.addWidget(self.revert_button)
         commit.addWidget(self.revert_all_button)
         commit.addWidget(self.stage_button)
+        self.confirm_pending_button = QPushButton("Confirm all pending maps")
+        self.confirm_pending_button.clicked.connect(lambda: self._commit_draft())
+        commit.addWidget(self.confirm_pending_button)
         right.addLayout(commit)
         columns.addLayout(right, 3)
         root.addLayout(columns, 1)
@@ -185,6 +192,7 @@ class ApfPackageMapPanel(QWidget):
 
     def set_context(self) -> None:
         if not bool(getattr(self.facade, "source_ready", False)):
+            self._loaded_source_key = None
             self._source_rows = ()
             self._draft = {}
             self._staged = {}
@@ -201,9 +209,14 @@ class ApfPackageMapPanel(QWidget):
         if index_0a is None:
             self.status.setText("Load a game to read the formation maps.")
             return
+        source_key = (getattr(self.facade, "session", None), index_0a)
+        if self._loaded_source_key == source_key and self._source_rows:
+            self.refresh()
+            return
         try:
-            body = read_master_play_body(index_0a)
-            self._source_rows = list_apf_formations(body)
+            reader = getattr(self.facade, "master_formations", None)
+            self._source_rows = (reader() if reader else
+                                 list_apf_formations(read_master_play_body(index_0a)))
         except Exception as exc:
             self._source_rows = ()
             self._draft = {}
@@ -215,6 +228,7 @@ class ApfPackageMapPanel(QWidget):
             return
         # A source (re)load is authoritative: the formation table itself just
         # changed, so an older draft keyed by formation index cannot survive.
+        self._loaded_source_key = source_key
         self._restore_draft()
         self._reload_formation_list()
         self._refresh_map()
@@ -222,6 +236,7 @@ class ApfPackageMapPanel(QWidget):
 
     def _set_commit_enabled(self, enabled: bool) -> None:
         self.stage_button.setEnabled(enabled)
+        self.confirm_pending_button.setEnabled(enabled)
         self.revert_button.setEnabled(enabled)
         self.revert_all_button.setEnabled(enabled)
 
@@ -343,9 +358,10 @@ class ApfPackageMapPanel(QWidget):
         # panel until the user found "Stage this map", so a build ran with
         # nothing selected and reported "Applied 0 edits" while the list
         # still showed the formation marked edited.
-        self._commit_draft(
-            self._staged_message(), "Those maps were already staged; nothing changed."
-        )
+        if not self.queue_edits.isChecked():
+            self._commit_draft(
+                self._staged_message(), "Those maps were already staged; nothing changed."
+            )
 
     def _put_role(self, role: int) -> None:
         formation_index = self._selected_index()
@@ -523,12 +539,13 @@ class ApfPackageMapPanel(QWidget):
             self.status.setText("Load a game to read the formation maps.")
             return
         pending = len(self.unstaged_maps())
+        self.confirm_pending_button.setEnabled(bool(pending))
         staged = len(self._staged)
         if pending:
             self.status.setText(
                 f"{pending} formation map{'s' if pending != 1 else ''} changed on "
                 "screen but NOT staged, so Build would skip "
-                f"{'them' if pending != 1 else 'it'}. Click Stage this map."
+                f"{'them' if pending != 1 else 'it'}. Click Stage this map or Confirm all pending maps."
             )
         elif staged:
             self.status.setText(

@@ -222,6 +222,11 @@ class ApfSession:
             int, apf_uniform_equipment_color_patch.UniformEquipmentColorInspection
         ] | None = None
         self._master_play_source_body: bytes | None = None
+        self._master_play_cache = None
+        self._master_inventory_cache = None
+        self._splb_books = {}
+        self._splb_catalog_loaded = False
+        self._splb_compiled = {}
         self._audo_source_fingerprints: (
             apf_audo_exact_slot.SourceAudioFingerprints | None
         ) = None
@@ -2311,7 +2316,7 @@ class ApfSession:
         self._set(modification.asset_id, modification)
         return modification
 
-    def _master_play_body(self) -> bytes:
+    def _master_play_source(self) -> bytes:
         if self._master_play_source_body is None:
             try:
                 self._master_play_source_body = read_master_play_body(
@@ -2320,6 +2325,34 @@ class ApfSession:
             except ValidationError as exc:
                 raise SessionError(str(exc)) from exc
         return self._master_play_source_body
+
+    def _master_play_body(self) -> bytes:
+        """The same cumulative staged body validated by the MASTER writer."""
+        return self._compile_master_play()
+
+    def master_inventory(self, *, staged=False):
+        from mod_editor.core.apf2k8_playbook_route_writer import _parse
+        body = self._master_play_body() if staged else self._master_play_source()
+        key = hashlib.sha256(body).digest()
+        if self._master_inventory_cache is None or self._master_inventory_cache[0] != key:
+            self._master_inventory_cache = (key, _parse(body))
+        return self._master_inventory_cache[1]
+
+    def source_splb_book(self, outer_index):
+        # A session owns one immutable loaded source. Reload creates a new session.
+        if outer_index not in self._splb_books:
+            self._splb_books[outer_index] = read_splb_book(self.source.index_0a, outer_index)
+        return self._splb_books[outer_index]
+
+    def compiled_splb_book(self, outer_index, changes):
+        book = self.source_splb_book(outer_index)
+        changes = tuple(sorted(changes, key=lambda change: change.selector))
+        key = (hashlib.sha256(book.body).digest(), changes)
+        cached = self._splb_compiled.get(outer_index)
+        if cached is None or cached[0] != key:
+            compiled = compile_splb_book(book, changes)
+            self._splb_compiled[outer_index] = (key, compiled)
+        return self._splb_compiled[outer_index][1]
 
     def _active_package_maps(
         self, modifications: Mapping[str, Modification] | None = None
@@ -2393,7 +2426,7 @@ class ApfSession:
 
     def _compile_master_play(
         self, modifications: Mapping[str, Modification] | None = None
-    ) -> None:
+    ) -> bytes:
         selected = self._modifications if modifications is None else modifications
         play_design.check_composition(selected.values())
         maps = self._active_package_maps(selected)
@@ -2401,15 +2434,20 @@ class ApfSession:
         profiles = [m for m in selected.values() if m.kind == coverage.PROVIDER_KIND]
         if len(profiles) > 1:
             raise ValidationError("Only one Coverage Geometry profile may be staged")
+        geometry = tuple(coverage_service.read_profile(profiles[0])) if profiles else ()
+        source = self._master_play_source()
+        key = (hashlib.sha256(source).digest(), maps, routes, geometry)
+        if self._master_play_cache is not None and self._master_play_cache[0] == key:
+            return self._master_play_cache[1]
         if profiles:
-            coverage.compose_geometry(self._master_play_body(), coverage_service.read_profile(profiles[0]),
-                                      package_maps=maps, routes=routes)
-            return
-        if not maps and not routes:
-            return
-        compile_master_play_edits(
-            self._master_play_body(), package_maps=maps, routes=routes
-        )
+            body, _ = coverage.compose_geometry(source, geometry, package_maps=maps, routes=routes)
+        elif maps or routes:
+            body = compile_master_play_edits(source, package_maps=maps, routes=routes)
+        else:
+            body = source
+        # Only successful validation is cached. Failed edits leave the last good view intact.
+        self._master_play_cache = (key, body)
+        return body
 
     def apply_package_map_batch(
         self, changes: Iterable[PackageMapChange]
@@ -2632,7 +2670,7 @@ class ApfSession:
 
         try:
             return relay_candidates(
-                self._master_play_body(),
+                self.master_inventory(staged=True),
                 target_play_index,
                 target_slot_index,
                 donor_play_index,
@@ -2678,6 +2716,13 @@ class ApfSession:
                 "whose route at least one other assignment also uses."
             )
         first, second = build_relayed_copy_requests(target, donor, relay)
+        # The relay carries the target's current route. Persist its original
+        # stock coordinate, so the build replays the exact same staged view.
+        previous = next((r for r in self._active_route_requests()
+                         if (r.target_play_index, r.target_slot_index) == target), None)
+        if previous is not None:
+            second = replace(second, donor_play_index=previous.donor_play_index,
+                             donor_slot_index=previous.donor_slot_index)
         self.apply_play_assignment_route_batch((first, second))
         return (
             self._modifications[first.selector],
@@ -2768,9 +2813,7 @@ class ApfSession:
         for change in active:
             groups.setdefault(change.outer_index, []).append(change)
         for outer_index, group in sorted(groups.items()):
-            compile_splb_book(
-                read_splb_book(self.source.index_0a, outer_index), tuple(group)
-            )
+            self.compiled_splb_book(outer_index, group)
 
     def apply_splb_membership_batch(
         self,

@@ -57,6 +57,36 @@ def button(layout, text, sentence, slot):
     return result
 
 
+# Original model row stays attached to each item while Qt changes display order.
+MODEL_ROW_ROLE = Qt.UserRole + 1
+
+
+class SortableItem(QTableWidgetItem):
+    def __lt__(self, other):
+        def key(item):
+            try:
+                value = float(item.text())
+                if value == value:  # NaN must not make ordering inconsistent.
+                    return (0, value)
+            except ValueError:
+                pass
+            return (1, item.text().casefold())
+        left, right = key(self), key(other)
+        if left == right:
+            return self.data(MODEL_ROW_ROLE) < other.data(MODEL_ROW_ROLE)
+        return left < right
+
+
+def model_row(widget):
+    item = widget.item(widget.currentRow(), 0)
+    return int(item.data(MODEL_ROW_ROLE)) if item is not None else -1
+
+
+def view_row(widget, original):
+    return next((row for row in range(widget.rowCount())
+                 if widget.item(row, 0).data(MODEL_ROW_ROLE) == original), -1)
+
+
 def table(headers, name):
     result = QTableWidget(0, len(headers))
     result.setHorizontalHeaderLabels(headers)
@@ -65,16 +95,29 @@ def table(headers, name):
     result.setEditTriggers(QAbstractItemView.NoEditTriggers)
     result.setAlternatingRowColors(True)
     result.setWordWrap(True)
+    result.horizontalHeader().setSortIndicator(-1, Qt.AscendingOrder)
+    result.setSortingEnabled(True)
     return result
 
 
 def fill(widget, rows):
-    widget.setRowCount(len(rows))
-    for i, values in enumerate(rows):
-        for j, value in enumerate(values):
-            item = QTableWidgetItem(str(value))
-            item.setToolTip(str(value))
-            widget.setItem(i, j, item)
+    selected = model_row(widget)
+    blocked = widget.blockSignals(True)
+    sorting = widget.isSortingEnabled()
+    widget.setSortingEnabled(False)
+    try:
+        widget.setRowCount(len(rows))
+        for i, values in enumerate(rows):
+            for j, value in enumerate(values):
+                item = SortableItem(str(value))
+                item.setData(MODEL_ROW_ROLE, i)
+                item.setToolTip(str(value))
+                widget.setItem(i, j, item)
+    finally:
+        widget.setSortingEnabled(sorting)
+        if selected >= 0:
+            widget.setCurrentCell(view_row(widget, selected), 0)
+        widget.blockSignals(blocked)
     widget.resizeColumnsToContents()
     widget.resizeRowsToContents()
 
@@ -625,7 +668,8 @@ class ApfPlayCallingEditor(QWidget):
             control.clear()
             for role, name in sorted(self._role_names.items()):
                 control.addItem(name, role)
-        self.master_table.selectRow(0)
+        if self.master_table.currentRow() < 0:
+            self.master_table.selectRow(0)
         names = {r.id: r.name for r in c["categories"]}
         fill(self.receipt_table, [(e["request"]["kind"].replace("_", " "), e["request"].get("book", e["request"].get("team", "Every book / ownership")),
                                   e["before"], e["after"], ", ".join(names[i] for i in e["retired"])) for e in c["events"]])
@@ -654,7 +698,7 @@ class ApfPlayCallingEditor(QWidget):
         selected = next((i for i, c in enumerate(row["candidates"]) if c["formation"] == self.formation_picker.currentData()), None)
         self.situation_remove.setEnabled(selected is not None)
         if selected is not None:
-            self.candidate_table.selectRow(selected)
+            self.candidate_table.selectRow(view_row(self.candidate_table, selected))
         self._filter_candidates()
 
     def _filter_candidates(self):
@@ -670,14 +714,14 @@ class ApfPlayCallingEditor(QWidget):
     def _candidate_changed(self):
         if self._updating or not self._context:
             return
-        index = self.candidate_table.currentRow()
+        index = model_row(self.candidate_table)
         if index >= 0:
             candidate = self._situations[self.situation_picker.currentIndex()]["candidates"][index]
             self.formation_picker.setCurrentIndex(self.formation_picker.findData(candidate["formation"]))
             self.situation_remove.setEnabled(candidate["formation"] < 151)
 
     def remove_candidate(self):
-        index = self.candidate_table.currentRow()
+        index = model_row(self.candidate_table)
         if self._context and index >= 0:
             candidate = self._situations[self.situation_picker.currentIndex()]["candidates"][index]
             self.review_request(self._book_request("remove", formation=candidate["formation"]), True)
@@ -713,11 +757,11 @@ class ApfPlayCallingEditor(QWidget):
             return
         if self.situation_picker.currentIndex() >= 0:
             candidates = self._situations[self.situation_picker.currentIndex()]["candidates"]
-            current = self.candidate_table.currentRow()
+            current = model_row(self.candidate_table)
             if not 0 <= current < len(candidates) or candidates[current]["formation"] != form["id"]:
                 selected = next((i for i, c in enumerate(candidates) if c["formation"] == form["id"]), -1)
                 self.candidate_table.blockSignals(True)
-                self.candidate_table.setCurrentCell(selected, 0 if selected >= 0 else -1)
+                self.candidate_table.setCurrentCell(view_row(self.candidate_table, selected), 0 if selected >= 0 else -1)
                 self.candidate_table.blockSignals(False)
         self.never_call.setChecked(form.get("never_call", False))
         self.never_call.setEnabled(form["id"] < 151)
@@ -741,7 +785,7 @@ class ApfPlayCallingEditor(QWidget):
     def _master_changed(self):
         if self._updating or not self._context or self.master_table.currentRow() < 0:
             return
-        category = self._context["categories"][self.master_table.currentRow()]
+        category = self._context["categories"][model_row(self.master_table)]
         self.master_row.setValue(category.row)
         for i, control in enumerate(self.roles):
             role = self._context["state"].master[0x49 + category.id * 16 + i] & 31
@@ -766,7 +810,7 @@ class ApfPlayCallingEditor(QWidget):
         for i in range(len(self._pending)):
             clear = explain(QPushButton("Undo / clear"), "Remove only this pending edit; staged edits stay in the project.")
             clear.clicked.connect(lambda checked=False, row=i: self.clear_pending(row))
-            self.pending_table.setCellWidget(i, 3, clear)
+            self.pending_table.setCellWidget(view_row(self.pending_table, i), 3, clear)
         header = self.pending_table.horizontalHeader()
         header.setStretchLastSection(False)
         header.setSectionResizeMode(QHeaderView.Fixed)
@@ -951,6 +995,7 @@ class ApfPlayCallingEditor(QWidget):
                         f"{prior.get('formation_weight', 0):.4g}", f"{candidate['formation_weight']:.4g}"))
             fill(self.rating_preview_table, rows)
             self.rating_preview_table.show()
+            selected_row = view_row(self.rating_preview_table, selected_row)
             self.rating_preview_table.selectRow(selected_row)
             self.rating_preview_table.scrollToItem(self.rating_preview_table.item(selected_row, 0))
             self.rating_preview_note.setText(
@@ -995,7 +1040,7 @@ class ApfPlayCallingEditor(QWidget):
         self.review_request(self._book_request("audibles"))
 
     def _category_id(self):
-        row = self.master_table.currentRow()
+        row = model_row(self.master_table)
         return self._context["categories"][row].id if row >= 0 and self._context else None
 
     def stage_master_row(self):
