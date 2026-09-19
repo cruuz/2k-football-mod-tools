@@ -877,7 +877,7 @@ class ApfPlaybookMembershipPanel(QFrame):
 
         outers = self._project_outers()
         current = self.book_picker.currentData()
-        if current is not None and int(current) in outers:
+        if current is not None and (int(current) in outers or int(current) in self._pending_books):
             return None
         if len(outers) == 1:
             return outers[0]

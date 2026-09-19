@@ -21462,15 +21462,20 @@ class ApfStudioMainWindow(QMainWindow):
         )
         if not selected:
             return
-        self._request_project_load(Path(selected))
+        self._request_project_load(Path(selected), use_recorded_source=False)
 
-    def _request_project_load(self, path: Path) -> None:
+    def _request_project_load(self, path: Path, *, use_recorded_source=True) -> None:
+        loader = self._load_project_with_source if use_recorded_source else self._load_project_path
         self._continue_after_unsaved(
             "Opening another project",
-            lambda discarded: self._load_project_with_source(
+            lambda discarded: loader(
                 path, clear_previous_recovery=discarded
             ),
         )
+
+    def _recent_project_error(self, message: str) -> None:
+        self._last_detail = message
+        self.operation_status.setText(message)
 
     def _load_project_with_source(self, path: Path, *, clear_previous_recovery=False) -> None:
         state = self._workspace_state()
@@ -21480,11 +21485,11 @@ class ApfStudioMainWindow(QMainWindow):
             if self.facade.source_ready:
                 self._load_project_path(path, clear_previous_recovery=clear_previous_recovery)
             else:
-                self._show_error("This older recent project has no recorded game path. Load its APF game once, then open the project.")
+                self._recent_project_error("This older recent project has no recorded game path. Load its APF game once, then use Open Project.")
             return
         source_path = Path(recorded)
         if not self._valid_recent_source(source_path):
-            self._show_error(f"The game's recorded source path is missing or unavailable: {source_path}. Load its APF game, then open the project again.")
+            self._recent_project_error(f"The game's recorded source path is missing or unavailable: {source_path}. Load its APF game, then use Open Project to update the recorded path.")
             return
         if self.facade.source_ready and self._active_source_path == source_path:
             self._load_project_path(path, clear_previous_recovery=clear_previous_recovery)
@@ -21503,7 +21508,8 @@ class ApfStudioMainWindow(QMainWindow):
             self._run_when_idle(lambda: self._load_project_path(path))
 
         self._run_task("Opening the project's recorded APF game",
-                       lambda progress: self.facade.load_source(source_path, progress), loaded, True)
+                       lambda progress: self.facade.load_source(source_path, progress), loaded, True,
+                       show_errors=False, on_error=self._recent_project_error)
 
     def _load_project_path(
         self,

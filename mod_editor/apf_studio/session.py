@@ -2327,12 +2327,16 @@ class ApfSession:
         return self._master_play_source_body
 
     def _master_play_body(self) -> bytes:
+        """Untouched bytes for callers that compose their own preview or defaults."""
+        return self._master_play_source()
+
+    def _staged_master_play_body(self) -> bytes:
         """The same cumulative staged body validated by the MASTER writer."""
         return self._compile_master_play()
 
     def master_inventory(self, *, staged=False):
         from mod_editor.core.apf2k8_playbook_route_writer import _parse
-        body = self._master_play_body() if staged else self._master_play_source()
+        body = self._staged_master_play_body() if staged else self._master_play_source()
         key = hashlib.sha256(body).digest()
         if self._master_inventory_cache is None or self._master_inventory_cache[0] != key:
             self._master_inventory_cache = (key, _parse(body))

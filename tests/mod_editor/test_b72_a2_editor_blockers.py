@@ -11,7 +11,8 @@ import unittest
 from unittest.mock import patch, PropertyMock
 
 os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
-from PyQt5.QtCore import Qt, QCoreApplication, QEvent
+from PyQt5.QtCore import Qt, QCoreApplication, QEvent, QPoint
+from PyQt5.QtTest import QTest
 from PyQt5.QtWidgets import QApplication, QTableWidget, QMessageBox
 from mod_editor.apf_studio.session import ApfSession, SessionError
 from mod_editor.apf_studio.facade import ApfStudioFacade
@@ -64,6 +65,7 @@ class SortingTests(QtCase):
         self.addCleanup(self.panel.deleteLater)
 
     def test_all_nine_tables_sort_numbers_and_keep_model_rows_on_refill(self):
+        self.panel.master_group.setChecked(True)
         tables = self.panel.findChildren(QTableWidget)
         sortable = [widget for widget in tables if widget.isSortingEnabled()]
         self.assertEqual(len(sortable), 9)
@@ -73,7 +75,12 @@ class SortingTests(QtCase):
             with self.subTest(table=widget.accessibleName()):
                 rows = [(str(n), *([str(n)] * (widget.columnCount()-1))) for n in (10, 2, 100, 2)]
                 fill(widget, rows)
-                widget.sortItems(0, Qt.AscendingOrder)
+                header = widget.horizontalHeader()
+                header.setSortIndicator(-1, Qt.AscendingOrder)
+                QTest.mouseClick(header.viewport(), Qt.LeftButton, pos=QPoint(10, 5))
+                if header.sortIndicatorOrder() != Qt.AscendingOrder:
+                    QTest.mouseClick(header.viewport(), Qt.LeftButton, pos=QPoint(10, 5))
+                self.assertEqual(header.sortIndicatorSection(), 0)
                 self.assertEqual([widget.item(i, 0).text() for i in range(4)], ['2', '2', '10', '100'])
                 self.assertEqual([widget.item(i, 0).data(Qt.UserRole+1) for i in range(2)], [1, 3])
                 widget.selectRow(view_row(widget, 0))
@@ -104,6 +111,21 @@ class SortingTests(QtCase):
         self.panel.pending_table.cellWidget(view_row(self.panel.pending_table, 0), 3).click()
         self.assertEqual(len(self.panel._pending), 1)
         self.assertEqual(self.panel._pending[0]['formation'], expected_form)
+
+    def test_sorted_category_confirmation_and_undo_roundtrip(self):
+        self.panel.master_table.sortItems(0, Qt.DescendingOrder)
+        self.panel.master_table.selectRow(view_row(self.panel.master_table, 10))
+        self.panel.queue_edits.setChecked(True)
+        self.panel.master_row.setValue(9)
+        self.panel.stage_master_row()
+        self.panel.confirm_button.click()
+        categories = self.facade.playcalling_context()["categories"]
+        self.assertEqual(next(c.row for c in categories if c.id == 10), 9)
+        self.assertEqual(self.panel._category_id(), 10)
+        self.facade.undo()
+        self.panel.refresh()
+        self.assertEqual(self.panel._category_id(), 10)
+        self.assertEqual(self.panel.master_row.value(), 10)
 
 
 class RecentAndBuildTests(QtCase):
@@ -148,9 +170,9 @@ class RecentAndBuildTests(QtCase):
         self.assertEqual(self.store.read().project_sources[str(project)], str(source))
         source.rmdir()
         self.facade.source_ready = False
-        with patch.object(self.window, '_show_error') as error:
+        with patch.object(self.window, '_show_error', side_effect=AssertionError('source load errors must be inline')):
             self.window._request_project_load(project)
-        self.assertIn('missing or unavailable', error.call_args.args[0])
+        self.assertIn('missing or unavailable', self.window.operation_status.text())
         self.assertEqual(len(calls), 2)
 
     def test_empty_build_folder_does_not_prompt_nonempty_does_and_source_refuses(self):
@@ -240,15 +262,15 @@ class CacheAndPendingTests(QtCase):
         body = _synthetic_master()
         with patch.object(session_module, 'read_master_play_body', return_value=body) as read, patch.object(session_module, 'compile_master_play_edits', wraps=session_module.compile_master_play_edits) as compile:
             self.session.replace_play_assignment_route(0, 0, 1, 0)
-            first = self.session._master_play_body()
-            self.assertEqual(self.session._master_play_body(), first)
+            first = self.session._staged_master_play_body()
+            self.assertEqual(self.session._staged_master_play_body(), first)
             self.assertEqual(compile.call_count, 1)
             self.session.undo()
-            self.assertEqual(self.session._master_play_body(), body)
+            self.assertEqual(self.session._staged_master_play_body(), body)
             self.session.replace_play_assignment_route(0, 0, 1, 0)
             self.assertEqual(compile.call_count, 2)
             replacement = ApfSession(self.source, NS(), cache_root=self.root/'reload')
-            self.assertEqual(replacement._master_play_body(), body)
+            self.assertEqual(replacement._staged_master_play_body(), body)
             self.assertEqual(read.call_count, 2)
 
     def test_fine_tune_pending_ticks_do_not_encode_or_compile_and_confirm_once(self):
@@ -306,9 +328,12 @@ class CacheAndPendingTests(QtCase):
             self.assertEqual(self.session.modified_count, 1)
             self.assertFalse(panel.pending_count())
             self.session.undo()
+            panel._queue('copy', (0, 0, 1, 0))
+            panel._queue('copy', (0, 1, 99, 0))
             with self.assertRaises(SessionError):
-                self.facade.confirm_route_pending((('copy', (0, 0, 1, 0)), ('copy', (0, 1, 99, 0))))
+                panel._confirm_pending()
             self.assertEqual(self.session.modified_count, 0)
+            self.assertEqual(panel.pending_count(), 2)
 
 
 @unittest.skipUnless(INDEX.is_file(), 'Local APF retail fixture unavailable')
@@ -344,7 +369,7 @@ class RetailRegressionTests(QtCase):
         with self.assertRaisesRegex(SessionError, "relay slot's current route"):
             self.session.copy_play_assignment_route_via_relay(lead, 1, 0, 1, strong, 1)
         self.session.replace_play_assignment_route(lead, 1, 0, 1)
-        final = _parse(self.session._master_play_body())
+        final = _parse(self.session._staged_master_play_body())
         starts = lambda parsed: {slot['route_node_index'] for play in parsed['plays'] for slot in play['slots']}
         self.assertEqual(starts(final), starts(self.inventory))
         for target in (strong, lead):
@@ -361,6 +386,12 @@ class RetailRegressionTests(QtCase):
         for panel in (fine, maps, routes):
             self.addCleanup(panel.deleteLater)
         self.assertEqual(fine._book.name, 'O-ManBlock')
+        record = fine._book.records[0]
+        missing = next(i for i in range(586) if i not in {e.play_index for e in record.entries})
+        self.session.apply_splb_membership_batch((splb.MembershipChange(130, 0, missing, True),))
+        first_map = list_apf_formations(self.body)[0]
+        self.session.apply_package_map_batch((PackageMapChange(first_map[0], swap_te_and_wr(first_map[2])),))
+        self.session.swap_play_assignment_routes(0, 0, 1, 0)
         self.app.processEvents()  # Finish first-load layout and deferred deletion before warm timing.
         samples = {}
         for name, refresh in [('Fine-tune Plays', fine.set_context), ('Who lines up', maps.refresh), ('Assignment Routes', routes.refresh)]:
