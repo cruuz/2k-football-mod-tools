@@ -17,12 +17,12 @@ from tests.nfl2k5_my_career_fixture import XBE, HAVE_UC, prepared
 
 
 class PickerApiTests(unittest.TestCase):
-    def test_option_off_has_all_retail_codes_and_on_has_one_edge_one_lb(self):
-        self.assertEqual([x[0] for x in career.position_choices()], list(range(17)))
+    def test_design_picker_off_has_eleven_rows_and_on_has_one_edge_one_lb(self):
+        self.assertEqual([x[0] for x in career.position_choices()], [0, 7, 3, 9, 16, 15, 10, 11, 5, 6, 4])
         choices = career.position_choices('one_pool')
-        self.assertEqual([x[0] for x in choices], [x for x in range(17) if x != 10])
+        self.assertEqual([x[0] for x in choices], [0, 7, 3, 9, 16, 15, 11, 5, 6, 4])
         self.assertEqual([x for x in choices if x[1] in ('EDGE', 'LB')],
-                         [(11, 'LB', 'Linebacker'), (16, 'EDGE', 'Edge Rusher')])
+                         [(16, 'EDGE', 'Edge Rusher'), (11, 'LB', 'Linebacker')])
         self.assertFalse(any(x[1] in ('DE', 'OLB', 'ILB') for x in choices))
         self.assertEqual([t.label for t in career.templates_for(16, scheme='one_pool')],
                          ['Power EDGE', 'Speed EDGE', 'Balanced EDGE'])

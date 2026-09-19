@@ -1,0 +1,4 @@
+{"test": "test_xbe_patch_memory_writes", "returncode": 0, "seconds": 1571.719}
+{"test": "test_xbe_patch_cave_references", "returncode": 0, "seconds": 1760.352}
+{"test": "test_nfl2k5_cave_oracle", "returncode": 0, "seconds": 364.496}
+{"test": "test_nfl2k5_owner_pairwise_composition", "returncode": 0, "seconds": 2921.569}

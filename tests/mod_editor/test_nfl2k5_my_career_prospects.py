@@ -42,14 +42,14 @@ class ProspectTests(unittest.TestCase):
                     self.assertEqual(save.from_runtime(save.to_runtime(block)), block)
                     self.assertEqual(len(output), len(source))
 
-    def test_original_and_invalid_tiers_and_prototype_aliases(self):
+    def test_original_and_invalid_tiers_and_distinct_prototypes(self):
         source = draft_save()
         options = dict(first='Same', last='Player', token='12345678-1234-5678-1234-567812345678')
         self.assertEqual(career.prepare(source, **options), career.prepare(source, prospect_tier=0, **options))
         for value in (-1, 5, True, 'Unknown'):
             with self.assertRaises(ValueError): subject.tier_id(value)
         self.assertEqual(subject.prototypes(0), (('Scrambling QB', 1),
-            ('Gunslinger QB (Pocket template)', 0), ('Balanced QB', 2), ('Pocket QB', 0)))
+            ('Gunslinger QB', 3), ('Balanced QB', 2), ('Pocket QB', 0)))
         self.assertEqual(subject.prototypes(16, scheme='one_pool'),
                          (('Power EDGE', 0), ('Speed EDGE', 1), ('Balanced EDGE', 2)))
         for count in (1, 2, 5, 8, 10):

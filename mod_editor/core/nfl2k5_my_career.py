@@ -253,7 +253,8 @@ def read_setup(source):
     require(isinstance(source, dict) and source.get("mode") == "MyCareer", "unsupported MyCareer setup")
     require(source.get("schema") != "nfl2k5_my_career/v1",
             "this MyCareer.json predates position choice; create MyPlayer again on the MyCareer page")
-    require(set(source) == {"schema", "mode", "myplayer", "position", "state", "save_sha256"}
+    required = {"schema", "mode", "myplayer", "position", "state", "save_sha256"}
+    require(required <= set(source) <= required | {"prospect"}
             and source["schema"] == SCHEMA, "unsupported MyCareer setup")
     require(isinstance(source["state"], str) and len(source["state"]) == STATE_SIZE * 2,
             "invalid MyCareer setup bytes")
@@ -264,26 +265,28 @@ def read_setup(source):
 
 
 def position_choices(scheme="retail"):
-    """Live position codes and labels for a picker; aliases never add rows."""
+    """Design positions in design order; the one-pool roster retires OLB."""
     from . import nfl2k5_roster_records as rr
-    return tuple((code, rr.position_name(code, scheme), rr.position_long_name(code, scheme))
-                 for code in rr.live_position_codes(scheme))
+    return tuple((code, "EDGE" if code == 16 else rr.position_name(code, scheme),
+                  "Edge Rusher" if code == 16 else rr.position_long_name(code, scheme))
+                 for code in (0, 7, 3, 9, 16, 15, 10, 11, 5, 6, 4)
+                 if code in rr.live_position_codes(scheme))
 
 
 def templates_for(position, *, scheme="retail"):
-    """All 51 native templates; pooled EDGE variants share the XBE writer's data."""
-    from . import nfl2k5_roster_records as rr
-    return rr.templates_for_position(position, scheme=scheme)
+    """Native templates plus the distinct host-side Gunslinger QB row."""
+    from . import nfl2k5_my_career_prospects as prospects
+    return prospects.templates_for(position, scheme=scheme)
 
 
 def prepare(payload, *, first, last, position=0, template=0, port=0, camera=0, starter_lock=True, token=None,
-            scheme="retail", prospect_tier=0):
+            scheme="retail", prospect_tier=0, jersey=None, height=None, weight=None, college=None):
     """Prepare one existing prospect at the chosen position in a genuine draft save.
 
     Returns fixed-length save bytes, setup JSON and an exact receipt. Publication
     and EXTRA signing belong to prepare_save/SaveContainer. No team assignment.
-    Every position takes one of three native templates or None to keep the
-    generated ratings. The one_pool scheme hides OLB and uses EDGE templates.
+    Every position takes three native templates or None to keep the
+    generated ratings; QB also has a distinct authored Gunslinger row. The one_pool scheme hides OLB and uses EDGE templates.
     """
     from . import nfl2k5_roster_records as rr, nfl2k5_franchise_save as fs
     from . import nfl2k5_my_career_prospects as prospects
@@ -297,7 +300,7 @@ def prepare(payload, *, first, last, position=0, template=0, port=0, camera=0, s
     rr.check_position_code(code, scheme)
     choices = templates_for(code, scheme=scheme)
     require(template is None or (type(template) is int and 0 <= template < len(choices)),
-            f"{rr.position_name(code)} offers {len(choices)} retail templates; choose one of them or None")
+            f"{rr.position_name(code)} offers {len(choices)} templates; choose one of them or None")
     require(type(port) is int and 0 <= port < 8 and type(camera) is int and camera in (0, 1)
             and type(starter_lock) is bool, "choose port 1..8, Standard/Far and a boolean starter lock")
     doc = rr.RosterDocument(payload, base=rr.find_block_base(payload))
@@ -312,6 +315,17 @@ def prepare(payload, *, first, last, position=0, template=0, port=0, camera=0, s
     doc.set_name(player, "last", last)
     if template is not None:
         rr.apply_template(player.record, choices[template])
+    for field, value in (("jersey", jersey), ("height", height), ("weight", weight)):
+        if value is not None:
+            low, high = rr.NUMERIC_LIMITS[field]
+            require(type(value) is int and low <= value <= high, f"{field} must be {low}..{high}")
+            player.record.set(field, value)
+    if college is not None:
+        if isinstance(college, str):
+            require(college in doc.colleges, "Choose a college from this save's college list")
+            college = doc.colleges.index(college)
+        require(type(college) is int and 0 <= college < len(doc.colleges), "Choose a valid college from this save")
+        doc.set_college(player, college)
     if tier:
         prospects.apply_tier(player.record, tier)
         # The draft selects the destination. Rank seven is the bounded last
@@ -368,7 +382,10 @@ def prepare(payload, *, first, last, position=0, template=0, port=0, camera=0, s
                "contract": dict(zip(("proved", "hypothesis"), POSITION_CONTRACT[position_group(code)])),
                "token": str(uuid.UUID(bytes=creation)),
                "template": None if template is None else choices[template].label,
-               "ratings": ("merged EDGE template" if template is not None and code == 16 and
+               "identity": {"jersey": chosen.record.get("jersey"), "height": chosen.record.get("height"),
+                            "weight": chosen.record.get("weight"), "college": chosen.college},
+               "ratings": ("authored host Gunslinger template" if code == 0 and template == 3 else
+                           "merged EDGE template" if template is not None and code == 16 and
                            rr.normalise_scheme(scheme) == "one_pool" else
                            "retail create-a-player template" if template is not None else "generated prospect ratings kept"),
                "record_offset": player.offset, "record_before": before.hex(),
@@ -379,6 +396,8 @@ def prepare(payload, *, first, last, position=0, template=0, port=0, camera=0, s
                "class_count_before": sum(bool(p.record.get("player_type") & 0x10) for p in doc.players),
                "class_count_after": sum(bool(p.record.get("player_type") & 0x10) for p in reopened.players),
                "team_assignment": "normal draft", "witness_list": list(WITNESS_LIST)}
+    from . import nfl2k5_my_career_advisory as advisory
+    receipt["class_fingerprint"] = advisory.class_fingerprint(reopened, scheme)
     if tier:
         require(prospects.native_overall(chosen.record) == prospects.TIERS[tier][1],
                 "prospect overall read-back differs")
@@ -406,17 +425,21 @@ def prepare_save(source, output, **options):
         folder = source if source.is_dir() else source.parent
         require(sum(p.stat().st_size for p in folder.rglob("*") if p.is_file()) <= 16 * 1024**2,
                 "save folder exceeds 16 MiB; choose the individual signed save folder")
+    from . import nfl2k5_my_career_events as events
     container = rr.SaveContainer.load(source)
     payload, setup, receipt = prepare(container.savegame, **options)
     with tempfile.TemporaryDirectory(prefix=".mycareer-", dir=output.parent) as temp:
         directory = Path(temp).resolve() / "result"
         directory.mkdir()
         signed = container.write(directory / "MyCareer.zip", payload)
+        record = rr.PlayerRecord.decode(bytes.fromhex(receipt["record_after"]))
+        ledger = events.new_ledger(record, prospect_tier=options.get("prospect_tier", 0))
+        events.save_project(directory / "MyCareer-events.json", record, ledger)
         (directory / "MyCareer.json").write_text(json.dumps(setup, indent=2) + "\n", encoding="utf-8", newline="\n")
         (directory / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8", newline="\n")
         require(read_setup(directory / "MyCareer.json") == read_setup(setup), "MyCareer setup readback failed")
         os.replace(directory, output)
-    return {**receipt, "output": str(output), "signed": signed["signed"]}
+    return {**receipt, "output": str(output), "signed": signed["signed"], "earned_events": ledger}
 
 
 # Whole displaced instructions, pinned to the USA executable. All handlers are

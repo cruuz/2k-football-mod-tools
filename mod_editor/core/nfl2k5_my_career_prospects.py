@@ -141,10 +141,32 @@ def apply_tier(record, tier):
         raise ValueError('This player cannot reach the prospect overall. Choose another template or Original creation.')
 
 
-def prototypes(position, *, scheme='retail'):
-    """Design labels alias existing native templates, without a fourth slot."""
+
+class HostTemplate:
+    """An authored fourth QB row, only for preparing a save in Studio.
+
+    Gunslinger uses a stronger arm (95), lower accuracy (78) and lower reads
+    (72) than Pocket, with all other Pocket values retained. This is a distinct
+    rating vector, not a label alias or a change to the native 51-row table.
+    """
+    position_code = 0
+    variant = 3
+    index = None
+    label = 'Gunslinger QB'
+
+    def ratings(self):
+        ratings = roster.templates_for_position(0)[0].ratings()
+        ratings.update(pass_arm_strength=95, pass_accuracy=78, pass_read_coverage=72)
+        return ratings
+
+
+def templates_for(position, *, scheme='retail'):
     choices = roster.templates_for_position(position, scheme=scheme)
-    if position == 0:
-        return (('Scrambling QB', 1), ('Gunslinger QB (Pocket template)', 0),
-                ('Balanced QB', 2), ('Pocket QB', 0))
-    return tuple((t.label, t.variant) for t in choices)
+    return choices + (HostTemplate(),) if position == 0 else choices
+
+
+def prototypes(position, *, scheme='retail'):
+    """One label per real rating template; only QB has an authored fourth row."""
+    choices = templates_for(position, scheme=scheme)
+    order = (1, 3, 2, 0) if position == 0 else range(len(choices))
+    return tuple((choices[i].label, choices[i].variant) for i in order)

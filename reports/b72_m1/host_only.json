@@ -1,0 +1,17 @@
+{
+  "base": "088e3f41",
+  "mycareer_xbe_byte_identical": true,
+  "mode_xbe_byte_identical": true,
+  "mycareer_xbe_sha256": "f22244ea9bf38adcb365b49e85c64fd6dd8e434e98ba72c9020d87b29803e1fe",
+  "mode_xbe_sha256": "1b44fa969ad242b9146bed47c6a0dbe1d94ec600e42a1e24d2b4703f657ad436",
+  "b69_budget_byte_identical": true,
+  "b69_budget_sha256": "738619010952184b76b7a0bf5e811f352f353013119e7cd597c7d0c982d0dd73",
+  "parent_manifest_sha256": "8a53dc4806796d31d2a6ee937435bbf15fe1a70b78dd73209157b2b74f5e1eab",
+  "source_pin_changes": {
+    "mod_editor/core/nfl2k5_my_career.py": {
+      "before": "c6d6f9d958f4287532f041b3e71ddbb573d823b281e037ea2a57e0d5b1ce7696",
+      "after": "b30477d18aa7aba3c669d4a06e4215f3a5924af8367d2327e411307f18611196"
+    }
+  },
+  "reservation_spans_unchanged": true
+}

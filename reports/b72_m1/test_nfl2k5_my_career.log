@@ -1,0 +1,17 @@
+....F........
+======================================================================
+FAIL: test_template_position_and_starter_refusals (__main__.AnyPositionTests.test_template_position_and_starter_refusals)
+----------------------------------------------------------------------
+mod_editor.core.nfl2k5_my_career.MyCareerError: DE offers 3 templates; choose one of them or None
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b72-m1/tests/mod_editor/test_nfl2k5_my_career.py", line 150, in test_template_position_and_starter_refusals
+    with self.assertRaisesRegex(c.MyCareerError, "3 retail templates"):
+AssertionError: "3 retail templates" does not match "DE offers 3 templates; choose one of them or None"
+
+----------------------------------------------------------------------
+Ran 13 tests in 20.052s
+
+FAILED (failures=1)
