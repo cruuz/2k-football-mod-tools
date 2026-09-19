@@ -33,6 +33,11 @@ class ReplicationTests(unittest.TestCase):
         for role in ('wing','rim','plate'):
             r,g,b=accents.rgb(data['teams']['LV'][role]);self.assertLessEqual(max(r,g,b)-min(r,g,b),2)
 
+    def test_every_native_team_roundtrips_through_matchup_arguments(self):
+        from tools.scorebug_sprite.render import team,TEAM_LOGOS
+        for name in TEAM_LOGOS:self.assertEqual(team(name),name)
+        self.assertEqual(team('COMMANDERS'),'WAS')
+
     def test_jev_cannot_inject_a_foreign_colour(self):
         team=dict(slot=22,asset_code='20',source='test',official=['#101010','#D1D2D3'],logo_fit=dict(fill_x=1,height=1))
         teams,_=accents.prepare(dict(teams={'LV':team}))

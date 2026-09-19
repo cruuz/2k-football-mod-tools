@@ -28,7 +28,7 @@ STATES={
 
 def team(value):
     value=value.upper().replace(' ','_')
-    aliases={'OAK':'LV','RAIDERS':'LV','LIONS':'DET','CHIEFS':'KC','BRONCOS':'DEN','SD':'LAC','STL':'LAR','WAS':'WSH'}
+    aliases={'OAK':'LV','RAIDERS':'LV','LIONS':'DET','CHIEFS':'KC','BRONCOS':'DEN','SD':'LAC','STL':'LAR','WSH':'WAS','COMMANDERS':'WAS'}
     names=json.loads((ROOT/'data/nfl2k5_team_names_2026.json').read_text())
     codes={r['asset_code']:k for k,r in TEAM_LOGOS.items()}
     aliases.update({r['retail']['nickname'].upper():codes[r['retail']['asset_code']] for r in names['teams']})
@@ -67,13 +67,18 @@ def render(preview,state,aspect,path):
 
 def contact_sheet(preview,path,aspect='16:9'):
     from PIL import Image,ImageDraw
+    path=Path(path);path.parent.mkdir(parents=True,exist_ok=True)
     names=sorted(TEAM_LOGOS);sheet=Image.new('RGB',(800,64*len(names)//2),'#202020');draw=ImageDraw.Draw(sheet)
+    rows=[]
     with tempfile.TemporaryDirectory(prefix='sprite-teams-') as directory:
         for i,name in enumerate(names):
-            image,_=render(preview,state_for('1st_and_10',name,name,'home'),aspect,Path(directory)/(name+'.png'))
+            image,receipt=render(preview,state_for('1st_and_10',name,name,'home'),aspect,Path(directory)/(name+'.png'))
+            rows.append(dict(team=name,down=receipt['descriptor']['fields']['down'],plate=receipt['descriptor']['fields']['plate']))
             offset=(image.width-1920)//2;bar=image.crop((425+offset,938,1490+offset,1057)).resize((395,44))
             x=(i%2)*400;y=(i//2)*64;sheet.paste(bar,(x,y+18));draw.text((x+5,y+2),name,fill='white')
     sheet.save(path)
+    path.with_suffix('.json').write_text(json.dumps(dict(aspect=aspect,teams=rows,calibration_passed=False,
+        limitation='Current 32 NFL runtime inputs only; extra roster slots are not bound. These are diagnostic baseline renders.'),indent=2)+'\n',encoding='utf-8',newline='\n')
 
 
 def main():

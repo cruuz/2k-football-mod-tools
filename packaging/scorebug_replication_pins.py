@@ -12,5 +12,5 @@ PINS = {
     "tools/scorebug_sprite/jev/rubric.py": "85b416f553b0faf8f5ebd0ec21d2c03eb93a7363802b5c2d027ef2c0c94bcb31",
     "tools/scorebug_sprite/jev/session.py": "d1353c8901cd8d80aac7a229adcc4c614ea1c3da1f07c46ac2449b31e44c280f",
     "tools/scorebug_sprite/native.py": "037309281a358e13599de6986812d4d42b1a8c5001a44d00fbb55cb85c565e72",
-    "tools/scorebug_sprite/render.py": "75221fce35e132d1251b1a89dfbe6e9de3f6d318f6f54abcd6761835365691e8",
+    "tools/scorebug_sprite/render.py": "ea3f59d3f0c0e5a0772f1269c8f6be3b1e8546fcf75e2326d345cc04be878144",
 }
