@@ -1,0 +1,712 @@
+{
+  "cases": [
+    {
+      "aspect": "4:3",
+      "calendar": false,
+      "policy": "auto",
+      "scenario": "play_now",
+      "selected": "nfl",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": false,
+      "policy": "auto",
+      "scenario": "monday_night",
+      "selected": "mnf",
+      "site_called": true,
+      "raw_retail_called": true
+    },
+    {
+      "aspect": "4:3",
+      "calendar": false,
+      "policy": "auto",
+      "scenario": "sunday_night",
+      "selected": "nfl",
+      "site_called": true,
+      "raw_retail_called": true
+    },
+    {
+      "aspect": "4:3",
+      "calendar": false,
+      "policy": "auto",
+      "scenario": "monday_afternoon",
+      "selected": "nfl",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": false,
+      "policy": "auto",
+      "scenario": "invalid_month",
+      "selected": "nfl",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": false,
+      "policy": "auto",
+      "scenario": "invalid_day",
+      "selected": "nfl",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": false,
+      "policy": "mnf",
+      "scenario": "play_now",
+      "selected": "mnf",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": false,
+      "policy": "mnf",
+      "scenario": "monday_night",
+      "selected": "mnf",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": false,
+      "policy": "mnf",
+      "scenario": "sunday_night",
+      "selected": "mnf",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": false,
+      "policy": "mnf",
+      "scenario": "monday_afternoon",
+      "selected": "mnf",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": false,
+      "policy": "mnf",
+      "scenario": "invalid_month",
+      "selected": "mnf",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": false,
+      "policy": "mnf",
+      "scenario": "invalid_day",
+      "selected": "mnf",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": false,
+      "policy": "off",
+      "scenario": "play_now",
+      "selected": "off",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": false,
+      "policy": "off",
+      "scenario": "monday_night",
+      "selected": "off",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": false,
+      "policy": "off",
+      "scenario": "sunday_night",
+      "selected": "off",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": false,
+      "policy": "off",
+      "scenario": "monday_afternoon",
+      "selected": "off",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": false,
+      "policy": "off",
+      "scenario": "invalid_month",
+      "selected": "off",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": false,
+      "policy": "off",
+      "scenario": "invalid_day",
+      "selected": "off",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": false,
+      "policy": "auto",
+      "scenario": "play_now",
+      "selected": "nfl",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": false,
+      "policy": "auto",
+      "scenario": "monday_night",
+      "selected": "mnf",
+      "site_called": true,
+      "raw_retail_called": true
+    },
+    {
+      "aspect": "16:9",
+      "calendar": false,
+      "policy": "auto",
+      "scenario": "sunday_night",
+      "selected": "nfl",
+      "site_called": true,
+      "raw_retail_called": true
+    },
+    {
+      "aspect": "16:9",
+      "calendar": false,
+      "policy": "auto",
+      "scenario": "monday_afternoon",
+      "selected": "nfl",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": false,
+      "policy": "auto",
+      "scenario": "invalid_month",
+      "selected": "nfl",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": false,
+      "policy": "auto",
+      "scenario": "invalid_day",
+      "selected": "nfl",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": false,
+      "policy": "mnf",
+      "scenario": "play_now",
+      "selected": "mnf",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": false,
+      "policy": "mnf",
+      "scenario": "monday_night",
+      "selected": "mnf",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": false,
+      "policy": "mnf",
+      "scenario": "sunday_night",
+      "selected": "mnf",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": false,
+      "policy": "mnf",
+      "scenario": "monday_afternoon",
+      "selected": "mnf",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": false,
+      "policy": "mnf",
+      "scenario": "invalid_month",
+      "selected": "mnf",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": false,
+      "policy": "mnf",
+      "scenario": "invalid_day",
+      "selected": "mnf",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": false,
+      "policy": "off",
+      "scenario": "play_now",
+      "selected": "off",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": false,
+      "policy": "off",
+      "scenario": "monday_night",
+      "selected": "off",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": false,
+      "policy": "off",
+      "scenario": "sunday_night",
+      "selected": "off",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": false,
+      "policy": "off",
+      "scenario": "monday_afternoon",
+      "selected": "off",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": false,
+      "policy": "off",
+      "scenario": "invalid_month",
+      "selected": "off",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": false,
+      "policy": "off",
+      "scenario": "invalid_day",
+      "selected": "off",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": true,
+      "policy": "auto",
+      "scenario": "play_now",
+      "selected": "nfl",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": true,
+      "policy": "auto",
+      "scenario": "monday_night",
+      "selected": "mnf",
+      "site_called": true,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": true,
+      "policy": "auto",
+      "scenario": "sunday_night",
+      "selected": "nfl",
+      "site_called": true,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": true,
+      "policy": "auto",
+      "scenario": "monday_afternoon",
+      "selected": "nfl",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": true,
+      "policy": "auto",
+      "scenario": "invalid_month",
+      "selected": "nfl",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": true,
+      "policy": "auto",
+      "scenario": "invalid_day",
+      "selected": "nfl",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": true,
+      "policy": "auto",
+      "scenario": "extended_2100_monday",
+      "selected": "mnf",
+      "site_called": true,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": true,
+      "policy": "mnf",
+      "scenario": "play_now",
+      "selected": "mnf",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": true,
+      "policy": "mnf",
+      "scenario": "monday_night",
+      "selected": "mnf",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": true,
+      "policy": "mnf",
+      "scenario": "sunday_night",
+      "selected": "mnf",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": true,
+      "policy": "mnf",
+      "scenario": "monday_afternoon",
+      "selected": "mnf",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": true,
+      "policy": "mnf",
+      "scenario": "invalid_month",
+      "selected": "mnf",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": true,
+      "policy": "mnf",
+      "scenario": "invalid_day",
+      "selected": "mnf",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": true,
+      "policy": "mnf",
+      "scenario": "extended_2100_monday",
+      "selected": "mnf",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": true,
+      "policy": "off",
+      "scenario": "play_now",
+      "selected": "off",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": true,
+      "policy": "off",
+      "scenario": "monday_night",
+      "selected": "off",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": true,
+      "policy": "off",
+      "scenario": "sunday_night",
+      "selected": "off",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": true,
+      "policy": "off",
+      "scenario": "monday_afternoon",
+      "selected": "off",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": true,
+      "policy": "off",
+      "scenario": "invalid_month",
+      "selected": "off",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": true,
+      "policy": "off",
+      "scenario": "invalid_day",
+      "selected": "off",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "4:3",
+      "calendar": true,
+      "policy": "off",
+      "scenario": "extended_2100_monday",
+      "selected": "off",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": true,
+      "policy": "auto",
+      "scenario": "play_now",
+      "selected": "nfl",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": true,
+      "policy": "auto",
+      "scenario": "monday_night",
+      "selected": "mnf",
+      "site_called": true,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": true,
+      "policy": "auto",
+      "scenario": "sunday_night",
+      "selected": "nfl",
+      "site_called": true,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": true,
+      "policy": "auto",
+      "scenario": "monday_afternoon",
+      "selected": "nfl",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": true,
+      "policy": "auto",
+      "scenario": "invalid_month",
+      "selected": "nfl",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": true,
+      "policy": "auto",
+      "scenario": "invalid_day",
+      "selected": "nfl",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": true,
+      "policy": "auto",
+      "scenario": "extended_2100_monday",
+      "selected": "mnf",
+      "site_called": true,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": true,
+      "policy": "mnf",
+      "scenario": "play_now",
+      "selected": "mnf",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": true,
+      "policy": "mnf",
+      "scenario": "monday_night",
+      "selected": "mnf",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": true,
+      "policy": "mnf",
+      "scenario": "sunday_night",
+      "selected": "mnf",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": true,
+      "policy": "mnf",
+      "scenario": "monday_afternoon",
+      "selected": "mnf",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": true,
+      "policy": "mnf",
+      "scenario": "invalid_month",
+      "selected": "mnf",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": true,
+      "policy": "mnf",
+      "scenario": "invalid_day",
+      "selected": "mnf",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": true,
+      "policy": "mnf",
+      "scenario": "extended_2100_monday",
+      "selected": "mnf",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": true,
+      "policy": "off",
+      "scenario": "play_now",
+      "selected": "off",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": true,
+      "policy": "off",
+      "scenario": "monday_night",
+      "selected": "off",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": true,
+      "policy": "off",
+      "scenario": "sunday_night",
+      "selected": "off",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": true,
+      "policy": "off",
+      "scenario": "monday_afternoon",
+      "selected": "off",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": true,
+      "policy": "off",
+      "scenario": "invalid_month",
+      "selected": "off",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": true,
+      "policy": "off",
+      "scenario": "invalid_day",
+      "selected": "off",
+      "site_called": false,
+      "raw_retail_called": false
+    },
+    {
+      "aspect": "16:9",
+      "calendar": true,
+      "policy": "off",
+      "scenario": "extended_2100_monday",
+      "selected": "off",
+      "site_called": false,
+      "raw_retail_called": false
+    }
+  ],
+  "count": 78,
+  "runtime_witnessed": false,
+  "boundaries": [
+    "Synthetic schedule records in the current grid; native weekday site and installed calendar detour execute.",
+    "Only the existing brand quad UVs and colours change; no new material or quad."
+  ]
+}

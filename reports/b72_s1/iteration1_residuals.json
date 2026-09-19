@@ -1,0 +1,2198 @@
+{
+  "tolerances": {
+    "hud_px": 1,
+    "rgb": 6
+  },
+  "rows": [
+    {
+      "aspect": "4:3",
+      "feature": "body",
+      "actual": [
+        37.033,
+        37.0,
+        37.0
+      ],
+      "target": [
+        37.772,
+        37.772,
+        37.772
+      ],
+      "residual": 0.772,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "aspect": "4:3",
+      "feature": "away_wash",
+      "actual": [
+        70.0,
+        93.75,
+        138.75
+      ],
+      "target": [
+        61.031,
+        83.031,
+        126.875
+      ],
+      "residual": 11.875,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "FAIL",
+      "reason": null
+    },
+    {
+      "aspect": "4:3",
+      "feature": "home_wash",
+      "actual": [
+        178.5,
+        48.75,
+        82.0
+      ],
+      "target": [
+        152.562,
+        62.375,
+        87.812
+      ],
+      "residual": 25.938,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "FAIL",
+      "reason": null
+    },
+    {
+      "aspect": "4:3",
+      "feature": "centre_wash",
+      "actual": [
+        56.333,
+        69.917,
+        72.167
+      ],
+      "target": [
+        65.75,
+        64.417,
+        68.0
+      ],
+      "residual": 9.417,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "FAIL",
+      "reason": null
+    },
+    {
+      "aspect": "4:3",
+      "feature": "away_wing",
+      "actual": [
+        71.0,
+        108.0,
+        177.75
+      ],
+      "target": [
+        51.5,
+        82.583,
+        134.867
+      ],
+      "residual": 42.883,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "FAIL",
+      "reason": null
+    },
+    {
+      "aspect": "4:3",
+      "feature": "home_wing",
+      "actual": [
+        231.467,
+        86.433,
+        124.183
+      ],
+      "target": [
+        221.367,
+        35.15,
+        80.4
+      ],
+      "residual": 51.283,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "FAIL",
+      "reason": null
+    },
+    {
+      "aspect": "4:3",
+      "feature": "away_bottom_rim",
+      "actual": [
+        65.5,
+        96.312,
+        154.5
+      ],
+      "target": [
+        90.25,
+        116.125,
+        164.625
+      ],
+      "residual": 24.75,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "FAIL",
+      "reason": null
+    },
+    {
+      "aspect": "4:3",
+      "feature": "home_bottom_rim",
+      "actual": [
+        162.062,
+        37.812,
+        69.625
+      ],
+      "target": [
+        184.688,
+        76.25,
+        103.812
+      ],
+      "residual": 38.438,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "FAIL",
+      "reason": null
+    },
+    {
+      "aspect": "4:3",
+      "feature": "centre_bottom_rim",
+      "actual": [
+        39.125,
+        38.0,
+        38.125
+      ],
+      "target": [
+        46.125,
+        45.438,
+        47.512
+      ],
+      "residual": 9.388,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "FAIL",
+      "reason": null
+    },
+    {
+      "aspect": "4:3",
+      "feature": "plate_lip",
+      "actual": [
+        207.667,
+        9.333,
+        64.4
+      ],
+      "target": [
+        53.3,
+        86.267,
+        137.9
+      ],
+      "residual": 154.367,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "FAIL",
+      "reason": null
+    },
+    {
+      "aspect": "4:3",
+      "feature": "plate_dip",
+      "actual": [
+        173.667,
+        11.0,
+        57.667
+      ],
+      "target": [
+        37.433,
+        75.167,
+        128.567
+      ],
+      "residual": 136.233,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "FAIL",
+      "reason": null
+    },
+    {
+      "aspect": "4:3",
+      "feature": "plate_sheen",
+      "actual": [
+        183.8,
+        12.0,
+        61.6
+      ],
+      "target": [
+        33.68,
+        82.88,
+        141.1
+      ],
+      "residual": 150.12,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "FAIL",
+      "reason": null
+    },
+    {
+      "aspect": "4:3",
+      "feature": "plate_bottom",
+      "actual": [
+        165.667,
+        11.333,
+        55.333
+      ],
+      "target": [
+        47.2,
+        80.167,
+        130.5
+      ],
+      "residual": 118.467,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "FAIL",
+      "reason": null
+    },
+    {
+      "aspect": "4:3",
+      "feature": "housing",
+      "actual": [
+        35.428,
+        36.72,
+        37.27
+      ],
+      "target": [
+        44.493,
+        44.295,
+        45.297
+      ],
+      "residual": 9.065,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "FAIL",
+      "reason": null
+    },
+    {
+      "aspect": "4:3",
+      "feature": "capsule",
+      "actual": [
+        247.962,
+        247.962,
+        249.962
+      ],
+      "target": [
+        248.1,
+        248.054,
+        249.931
+      ],
+      "residual": 0.138,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "aspect": "4:3",
+      "feature": "capsule_rim",
+      "actual": [
+        187.175,
+        188.55,
+        189.638
+      ],
+      "target": [
+        222.625,
+        222.675,
+        223.588
+      ],
+      "residual": 35.45,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "FAIL",
+      "reason": null
+    },
+    {
+      "aspect": "4:3",
+      "feature": "red",
+      "actual": [
+        214.975,
+        0.015,
+        50.99
+      ],
+      "target": [
+        236.601,
+        228.359,
+        229.859
+      ],
+      "residual": 228.343,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "FAIL",
+      "reason": null
+    },
+    {
+      "aspect": "4:3",
+      "feature": "pointer",
+      "actual": [
+        53.0,
+        58.3,
+        58.8
+      ],
+      "target": [
+        68.067,
+        66.433,
+        69.567
+      ],
+      "residual": 15.067,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "FAIL",
+      "reason": null
+    },
+    {
+      "aspect": "4:3",
+      "feature": "away_logo_box",
+      "actual": [
+        211.556,
+        406.519,
+        290.667,
+        432.237
+      ],
+      "target": [
+        212.0,
+        403.615,
+        281.778,
+        429.748
+      ],
+      "residual": 8.889,
+      "unit": "HUD px",
+      "tolerance": 1,
+      "status": "FAIL",
+      "reason": null
+    },
+    {
+      "aspect": "4:3",
+      "feature": "home_logo_box",
+      "actual": [
+        569.778,
+        391.17,
+        657.778,
+        435.556
+      ],
+      "target": [
+        569.778,
+        391.585,
+        657.778,
+        435.141
+      ],
+      "residual": 0.415,
+      "unit": "HUD px",
+      "tolerance": 1,
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "aspect": "4:3",
+      "feature": "away_score_box",
+      "actual": [
+        327.111,
+        400.296,
+        344.444,
+        421.867
+      ],
+      "target": [
+        327.111,
+        399.881,
+        344.889,
+        422.281
+      ],
+      "residual": 0.444,
+      "unit": "HUD px",
+      "tolerance": 1,
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "aspect": "4:3",
+      "feature": "home_score_box",
+      "actual": [
+        506.667,
+        400.296,
+        524.444,
+        421.867
+      ],
+      "target": [
+        506.222,
+        400.296,
+        524.0,
+        422.696
+      ],
+      "residual": 0.83,
+      "unit": "HUD px",
+      "tolerance": 1,
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "aspect": "4:3",
+      "feature": "down_cap",
+      "actual": 11.615,
+      "target": 9.541,
+      "residual": 2.074,
+      "unit": "HUD px",
+      "tolerance": 1,
+      "status": "IMPOSSIBLE",
+      "reason": "The broadcast cap is below the SD readability floor; the requested larger SD type deliberately exceeds the 1080-line reference."
+    },
+    {
+      "aspect": "4:3",
+      "feature": "quarter_cap",
+      "actual": 13.689,
+      "target": 13.689,
+      "residual": 0.0,
+      "unit": "HUD px",
+      "tolerance": 1,
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "aspect": "4:3",
+      "feature": "play_clock_cap",
+      "actual": 10.37,
+      "target": 7.881,
+      "residual": 2.489,
+      "unit": "HUD px",
+      "tolerance": 1,
+      "status": "IMPOSSIBLE",
+      "reason": "The broadcast cap is below the SD readability floor; the requested larger SD type deliberately exceeds the 1080-line reference."
+    },
+    {
+      "aspect": "4:3",
+      "feature": "score_white",
+      "actual": [
+        252.0,
+        252.0,
+        252.0
+      ],
+      "target": [
+        253.0,
+        253.0,
+        253.0
+      ],
+      "residual": 1.0,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "aspect": "4:3",
+      "feature": "separator_x",
+      "actual": 400.0,
+      "target": 400.0,
+      "residual": 0.0,
+      "unit": "HUD px",
+      "tolerance": 1,
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "aspect": "4:3",
+      "feature": "label_minimum_cap",
+      "actual": 12.446,
+      "target": 12,
+      "residual": 0.0,
+      "unit": "HUD px",
+      "tolerance": 0,
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "aspect": "4:3",
+      "feature": "label_minimum_stem",
+      "actual": 3.552,
+      "target": 2.5,
+      "residual": 0.0,
+      "unit": "HUD px",
+      "tolerance": 0,
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "aspect": "4:3",
+      "feature": "label_skipped_columns",
+      "actual": 8,
+      "target": 8,
+      "residual": 0.0,
+      "unit": "count",
+      "tolerance": 0,
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "aspect": "4:3",
+      "feature": "label_digit_width",
+      "actual": 10.664,
+      "target": 7.111,
+      "residual": 3.553,
+      "unit": "HUD px",
+      "tolerance": 1,
+      "status": "IMPOSSIBLE",
+      "reason": "The requested 2.5 HUD pixel stems and retail-scale digits require a wider SD cut than the 16 source pixel broadcast digit."
+    },
+    {
+      "aspect": "16:9",
+      "feature": "body",
+      "actual": [
+        37.033,
+        37.0,
+        37.0
+      ],
+      "target": [
+        37.772,
+        37.772,
+        37.772
+      ],
+      "residual": 0.772,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "aspect": "16:9",
+      "feature": "away_wash",
+      "actual": [
+        70.0,
+        93.75,
+        138.75
+      ],
+      "target": [
+        61.031,
+        83.031,
+        126.875
+      ],
+      "residual": 11.875,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "FAIL",
+      "reason": null
+    },
+    {
+      "aspect": "16:9",
+      "feature": "home_wash",
+      "actual": [
+        178.5,
+        48.75,
+        82.0
+      ],
+      "target": [
+        152.562,
+        62.375,
+        87.812
+      ],
+      "residual": 25.938,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "FAIL",
+      "reason": null
+    },
+    {
+      "aspect": "16:9",
+      "feature": "centre_wash",
+      "actual": [
+        56.333,
+        69.75,
+        72.583
+      ],
+      "target": [
+        65.75,
+        64.417,
+        68.0
+      ],
+      "residual": 9.417,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "FAIL",
+      "reason": null
+    },
+    {
+      "aspect": "16:9",
+      "feature": "away_wing",
+      "actual": [
+        71.0,
+        108.0,
+        178.0
+      ],
+      "target": [
+        51.5,
+        82.583,
+        134.867
+      ],
+      "residual": 43.133,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "FAIL",
+      "reason": null
+    },
+    {
+      "aspect": "16:9",
+      "feature": "home_wing",
+      "actual": [
+        234.967,
+        87.183,
+        125.417
+      ],
+      "target": [
+        221.367,
+        35.15,
+        80.4
+      ],
+      "residual": 52.033,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "FAIL",
+      "reason": null
+    },
+    {
+      "aspect": "16:9",
+      "feature": "away_bottom_rim",
+      "actual": [
+        65.562,
+        96.0,
+        153.875
+      ],
+      "target": [
+        90.25,
+        116.125,
+        164.625
+      ],
+      "residual": 24.688,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "FAIL",
+      "reason": null
+    },
+    {
+      "aspect": "16:9",
+      "feature": "home_bottom_rim",
+      "actual": [
+        162.25,
+        37.875,
+        69.375
+      ],
+      "target": [
+        184.688,
+        76.25,
+        103.812
+      ],
+      "residual": 38.375,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "FAIL",
+      "reason": null
+    },
+    {
+      "aspect": "16:9",
+      "feature": "centre_bottom_rim",
+      "actual": [
+        39.075,
+        38.0,
+        38.15
+      ],
+      "target": [
+        46.125,
+        45.438,
+        47.512
+      ],
+      "residual": 9.363,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "FAIL",
+      "reason": null
+    },
+    {
+      "aspect": "16:9",
+      "feature": "plate_lip",
+      "actual": [
+        207.667,
+        9.333,
+        64.433
+      ],
+      "target": [
+        53.3,
+        86.267,
+        137.9
+      ],
+      "residual": 154.367,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "FAIL",
+      "reason": null
+    },
+    {
+      "aspect": "16:9",
+      "feature": "plate_dip",
+      "actual": [
+        173.667,
+        11.0,
+        57.667
+      ],
+      "target": [
+        37.433,
+        75.167,
+        128.567
+      ],
+      "residual": 136.233,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "FAIL",
+      "reason": null
+    },
+    {
+      "aspect": "16:9",
+      "feature": "plate_sheen",
+      "actual": [
+        183.8,
+        12.0,
+        61.6
+      ],
+      "target": [
+        33.68,
+        82.88,
+        141.1
+      ],
+      "residual": 150.12,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "FAIL",
+      "reason": null
+    },
+    {
+      "aspect": "16:9",
+      "feature": "plate_bottom",
+      "actual": [
+        165.667,
+        11.333,
+        55.333
+      ],
+      "target": [
+        47.2,
+        80.167,
+        130.5
+      ],
+      "residual": 118.467,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "FAIL",
+      "reason": null
+    },
+    {
+      "aspect": "16:9",
+      "feature": "housing",
+      "actual": [
+        35.425,
+        36.69,
+        37.253
+      ],
+      "target": [
+        44.493,
+        44.295,
+        45.297
+      ],
+      "residual": 9.068,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "FAIL",
+      "reason": null
+    },
+    {
+      "aspect": "16:9",
+      "feature": "capsule",
+      "actual": [
+        247.492,
+        247.492,
+        249.492
+      ],
+      "target": [
+        248.1,
+        248.054,
+        249.931
+      ],
+      "residual": 0.608,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "aspect": "16:9",
+      "feature": "capsule_rim",
+      "actual": [
+        187.175,
+        188.55,
+        189.65
+      ],
+      "target": [
+        222.625,
+        222.675,
+        223.588
+      ],
+      "residual": 35.45,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "FAIL",
+      "reason": null
+    },
+    {
+      "aspect": "16:9",
+      "feature": "red",
+      "actual": [
+        214.823,
+        0.495,
+        51.354
+      ],
+      "target": [
+        236.601,
+        228.359,
+        229.859
+      ],
+      "residual": 227.864,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "FAIL",
+      "reason": null
+    },
+    {
+      "aspect": "16:9",
+      "feature": "pointer",
+      "actual": [
+        53.367,
+        58.333,
+        58.767
+      ],
+      "target": [
+        68.067,
+        66.433,
+        69.567
+      ],
+      "residual": 14.7,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "FAIL",
+      "reason": null
+    },
+    {
+      "aspect": "16:9",
+      "feature": "away_logo_box",
+      "actual": [
+        158.667,
+        406.519,
+        218.0,
+        432.237
+      ],
+      "target": [
+        159.0,
+        403.615,
+        211.333,
+        429.748
+      ],
+      "residual": 6.667,
+      "unit": "HUD px",
+      "tolerance": 1,
+      "status": "FAIL",
+      "reason": null
+    },
+    {
+      "aspect": "16:9",
+      "feature": "home_logo_box",
+      "actual": [
+        427.0,
+        391.17,
+        493.333,
+        435.556
+      ],
+      "target": [
+        427.333,
+        391.585,
+        493.333,
+        435.141
+      ],
+      "residual": 0.415,
+      "unit": "HUD px",
+      "tolerance": 1,
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "aspect": "16:9",
+      "feature": "away_score_box",
+      "actual": [
+        245.333,
+        400.296,
+        258.667,
+        421.867
+      ],
+      "target": [
+        245.333,
+        399.881,
+        258.667,
+        422.281
+      ],
+      "residual": 0.415,
+      "unit": "HUD px",
+      "tolerance": 1,
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "aspect": "16:9",
+      "feature": "home_score_box",
+      "actual": [
+        380.0,
+        400.296,
+        393.0,
+        421.867
+      ],
+      "target": [
+        379.667,
+        400.296,
+        393.0,
+        422.696
+      ],
+      "residual": 0.83,
+      "unit": "HUD px",
+      "tolerance": 1,
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "aspect": "16:9",
+      "feature": "down_cap",
+      "actual": 11.615,
+      "target": 9.541,
+      "residual": 2.074,
+      "unit": "HUD px",
+      "tolerance": 1,
+      "status": "IMPOSSIBLE",
+      "reason": "The broadcast cap is below the SD readability floor; the requested larger SD type deliberately exceeds the 1080-line reference."
+    },
+    {
+      "aspect": "16:9",
+      "feature": "quarter_cap",
+      "actual": 13.689,
+      "target": 13.689,
+      "residual": 0.0,
+      "unit": "HUD px",
+      "tolerance": 1,
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "aspect": "16:9",
+      "feature": "play_clock_cap",
+      "actual": 10.37,
+      "target": 7.881,
+      "residual": 2.489,
+      "unit": "HUD px",
+      "tolerance": 1,
+      "status": "IMPOSSIBLE",
+      "reason": "The broadcast cap is below the SD readability floor; the requested larger SD type deliberately exceeds the 1080-line reference."
+    },
+    {
+      "aspect": "16:9",
+      "feature": "score_white",
+      "actual": [
+        253.0,
+        253.0,
+        253.0
+      ],
+      "target": [
+        253.0,
+        253.0,
+        253.0
+      ],
+      "residual": 0.0,
+      "unit": "RGB",
+      "tolerance": 6,
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "aspect": "16:9",
+      "feature": "separator_x",
+      "actual": 300.167,
+      "target": 300.0,
+      "residual": 0.167,
+      "unit": "HUD px",
+      "tolerance": 1,
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "aspect": "16:9",
+      "feature": "label_minimum_cap",
+      "actual": 12.446,
+      "target": 12,
+      "residual": 0.0,
+      "unit": "HUD px",
+      "tolerance": 0,
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "aspect": "16:9",
+      "feature": "label_minimum_stem",
+      "actual": 2.666,
+      "target": 2.5,
+      "residual": 0.0,
+      "unit": "HUD px",
+      "tolerance": 0,
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "aspect": "16:9",
+      "feature": "label_skipped_columns",
+      "actual": 8,
+      "target": 8,
+      "residual": 0.0,
+      "unit": "count",
+      "tolerance": 0,
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "aspect": "16:9",
+      "feature": "label_digit_width",
+      "actual": 8.003,
+      "target": 5.333,
+      "residual": 2.67,
+      "unit": "HUD px",
+      "tolerance": 1,
+      "status": "IMPOSSIBLE",
+      "reason": "The requested 2.5 HUD pixel stems and retail-scale digits require a wider SD cut than the 16 source pixel broadcast digit."
+    }
+  ],
+  "glyph_proof": {
+    "4:3": [
+      {
+        "cell": "label_1",
+        "cap": 12.4456787109375,
+        "width": 10.6640625,
+        "stem": 0.0052274816176470585,
+        "texels": [
+          8,
+          12
+        ],
+        "minification": [
+          0.7501831501831502,
+          0.9641900838605267
+        ],
+        "columns_sampled": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "rows_sampled": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ]
+      },
+      {
+        "cell": "label_st",
+        "cap": 12.4456787109375,
+        "width": 15.11203384399414,
+        "stem": 4.2346019969267,
+        "texels": [
+          11,
+          12
+        ],
+        "minification": [
+          0.7278967287630609,
+          0.9641900838605267
+        ],
+        "columns_sampled": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "rows_sampled": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ]
+      },
+      {
+        "cell": "label_&",
+        "cap": 12.4456787109375,
+        "width": 10.664389371871948,
+        "stem": 3.8867517146994084,
+        "texels": [
+          8,
+          12
+        ],
+        "minification": [
+          0.7501601564830841,
+          0.9641900838605267
+        ],
+        "columns_sampled": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "rows_sampled": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ]
+      },
+      {
+        "cell": "label_1",
+        "cap": 12.4456787109375,
+        "width": 10.664388656616211,
+        "stem": 0.00522764149834128,
+        "texels": [
+          8,
+          12
+        ],
+        "minification": [
+          0.7501602067959875,
+          0.9641900838605267
+        ],
+        "columns_sampled": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "rows_sampled": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ]
+      },
+      {
+        "cell": "label_0",
+        "cap": 12.4456787109375,
+        "width": 10.664388656616211,
+        "stem": 3.5521823981228993,
+        "texels": [
+          8,
+          12
+        ],
+        "minification": [
+          0.7501602067959875,
+          0.9641900838605267
+        ],
+        "columns_sampled": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "rows_sampled": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ]
+      }
+    ],
+    "16:9": [
+      {
+        "cell": "label_1",
+        "cap": 12.4456787109375,
+        "width": 8.002853393554688,
+        "stem": 0.003922967349781709,
+        "texels": [
+          8,
+          12
+        ],
+        "minification": [
+          0.9996434529767864,
+          0.9641900838605267
+        ],
+        "columns_sampled": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "rows_sampled": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ]
+      },
+      {
+        "cell": "label_st",
+        "cap": 12.4456787109375,
+        "width": 11.334082156419754,
+        "stem": 3.175967406397835,
+        "texels": [
+          11,
+          12
+        ],
+        "minification": [
+          0.9705241102182653,
+          0.9641900838605267
+        ],
+        "columns_sampled": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "rows_sampled": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ]
+      },
+      {
+        "cell": "label_&",
+        "cap": 12.4456787109375,
+        "width": 8.003099016845226,
+        "stem": 2.916815744619816,
+        "texels": [
+          8,
+          12
+        ],
+        "minification": [
+          0.999612772897261,
+          0.9641900838605267
+        ],
+        "columns_sampled": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "rows_sampled": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ]
+      },
+      {
+        "cell": "label_1",
+        "cap": 12.4456787109375,
+        "width": 8.003096401691437,
+        "stem": 0.0039230864714173705,
+        "texels": [
+          8,
+          12
+        ],
+        "minification": [
+          0.9996130995384759,
+          0.9641900838605267
+        ],
+        "columns_sampled": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "rows_sampled": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ]
+      },
+      {
+        "cell": "label_0",
+        "cap": 12.4456787109375,
+        "width": 8.003096401691437,
+        "stem": 2.6657372573281033,
+        "texels": [
+          8,
+          12
+        ],
+        "minification": [
+          0.9996130995384759,
+          0.9641900838605267
+        ],
+        "columns_sampled": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "rows_sampled": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ]
+      }
+    ]
+  },
+  "reference_frames": [
+    {
+      "frame": "frame_012001.jpg",
+      "sha256": "01622a78b6778f089e4b242c8deda42833b10ae123150ed5bc8989dc483929d7",
+      "features": {
+        "away_logo_box": [
+          477.0,
+          973.0,
+          634.0,
+          1036.0
+        ],
+        "home_logo_box": [
+          1282.0,
+          944.0,
+          1480.0,
+          1049.0
+        ],
+        "away_score_box": [
+          736.0,
+          964.0,
+          776.0,
+          1018.0
+        ],
+        "home_score_box": [
+          1139.0,
+          965.0,
+          1179.0,
+          1019.0
+        ],
+        "down_cap": 23.0,
+        "quarter_cap": 33.0,
+        "play_clock_cap": 19.0,
+        "score_white": [
+          253.0,
+          253.0,
+          253.0
+        ],
+        "separator_x": 0.0
+      }
+    },
+    {
+      "frame": "frame_001500.jpg",
+      "sha256": "b6fae167e77c3ff9f0f8bf6ba149716ee4bde1c799d0e4609d35e13ca900f5c1",
+      "features": {
+        "away_logo_box": [
+          478.0,
+          973.0,
+          634.0,
+          1036.0
+        ],
+        "home_logo_box": [
+          1282.0,
+          944.0,
+          1480.0,
+          1049.0
+        ],
+        "away_score_box": [
+          731.0,
+          964.0,
+          781.0,
+          1019.0
+        ],
+        "home_score_box": [
+          1134.0,
+          964.0,
+          1184.0,
+          1019.0
+        ],
+        "down_cap": 28.0,
+        "quarter_cap": 33.0,
+        "play_clock_cap": 33.0,
+        "score_white": [
+          253.0,
+          253.0,
+          253.0
+        ],
+        "separator_x": 0.0
+      }
+    },
+    {
+      "frame": "frame_004500.jpg",
+      "sha256": "d79b78f0ba4810d1506d9f6eaef40f0415bbb83105dc1b498547cc6ef197805e",
+      "features": {
+        "away_logo_box": [
+          478.0,
+          973.0,
+          634.0,
+          1036.0
+        ],
+        "home_logo_box": [
+          1283.0,
+          944.0,
+          1480.0,
+          1048.0
+        ],
+        "away_score_box": [
+          731.0,
+          964.0,
+          781.0,
+          1019.0
+        ],
+        "home_score_box": [
+          1134.0,
+          964.0,
+          1184.0,
+          1019.0
+        ],
+        "down_cap": 23.0,
+        "quarter_cap": 33.0,
+        "play_clock_cap": 33.0,
+        "score_white": [
+          252.0,
+          252.0,
+          252.0
+        ],
+        "separator_x": 0.0
+      }
+    },
+    {
+      "frame": "frame_005200.jpg",
+      "sha256": "e2a4ecea6ef1f8c22df18021c88d8877cc2af93737386bb485a1d8c40892c7b4",
+      "features": {
+        "away_logo_box": [
+          477.0,
+          973.0,
+          634.0,
+          1036.0
+        ],
+        "home_logo_box": [
+          1282.0,
+          944.0,
+          1480.0,
+          1048.0
+        ],
+        "away_score_box": [
+          731.0,
+          964.0,
+          781.0,
+          1019.0
+        ],
+        "home_score_box": [
+          1134.0,
+          964.0,
+          1184.0,
+          1019.0
+        ],
+        "down_cap": 23.0,
+        "quarter_cap": 33.0,
+        "play_clock_cap": 33.0,
+        "score_white": [
+          253.0,
+          253.0,
+          253.0
+        ],
+        "separator_x": 900.0
+      }
+    },
+    {
+      "frame": "frame_010500.jpg",
+      "sha256": "325acae5131b2f6930c8dd3b1ff932e03c2cbcfaf3e74b1df7af9f10f8bf54bf",
+      "features": {
+        "away_logo_box": [
+          477.0,
+          973.0,
+          634.0,
+          1036.0
+        ],
+        "home_logo_box": [
+          1282.0,
+          944.0,
+          1480.0,
+          1049.0
+        ],
+        "away_score_box": [
+          736.0,
+          965.0,
+          776.0,
+          1019.0
+        ],
+        "home_score_box": [
+          1139.0,
+          964.0,
+          1179.0,
+          1019.0
+        ],
+        "down_cap": 23.0,
+        "quarter_cap": 33.0,
+        "play_clock_cap": 33.0,
+        "score_white": [
+          253.0,
+          253.0,
+          253.0
+        ],
+        "separator_x": 900.0
+      }
+    },
+    {
+      "frame": "frame_012000.jpg",
+      "sha256": "eb48e6707118431d918d8607de33be493dd2f9898b6aac8da7bf85ddc7355cf2",
+      "features": {
+        "away_logo_box": [
+          477.0,
+          973.0,
+          634.0,
+          1036.0
+        ],
+        "home_logo_box": [
+          1282.0,
+          944.0,
+          1480.0,
+          1049.0
+        ],
+        "away_score_box": [
+          736.0,
+          964.0,
+          776.0,
+          1018.0
+        ],
+        "home_score_box": [
+          1139.0,
+          965.0,
+          1179.0,
+          1019.0
+        ],
+        "down_cap": 23.0,
+        "quarter_cap": 33.0,
+        "play_clock_cap": 19.0,
+        "score_white": [
+          253.0,
+          253.0,
+          253.0
+        ],
+        "separator_x": 0.0
+      }
+    },
+    {
+      "frame": "frame_003000.jpg",
+      "sha256": "33e3768eceae98eaa160365e9e3a5e597434033b187f4dbbe11fe4b15169dc9c",
+      "features": {
+        "away_logo_box": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "home_logo_box": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "away_score_box": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "home_score_box": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "down_cap": 0.0,
+        "quarter_cap": 33.0,
+        "play_clock_cap": 0.0,
+        "score_white": [
+          84.0,
+          99.0,
+          44.0
+        ],
+        "separator_x": 900.0
+      }
+    },
+    {
+      "frame": "frame_020200.jpg",
+      "sha256": "12319417695ce4cdb04328f0337773a4f4922f4dd504c70cd785d1a225f74662",
+      "features": {
+        "away_logo_box": [
+          477.0,
+          973.0,
+          634.0,
+          1036.0
+        ],
+        "home_logo_box": [
+          1282.0,
+          945.0,
+          1480.0,
+          1048.0
+        ],
+        "away_score_box": [
+          713.0,
+          969.0,
+          784.0,
+          1014.0
+        ],
+        "home_score_box": [
+          1121.0,
+          964.0,
+          1195.0,
+          1018.0
+        ],
+        "down_cap": 24.0,
+        "quarter_cap": 33.0,
+        "play_clock_cap": 33.0,
+        "score_white": [
+          255.0,
+          255.0,
+          255.0
+        ],
+        "separator_x": 900.0
+      }
+    },
+    {
+      "frame": "frame_016500.jpg",
+      "sha256": "9c2fb0cd0182ab3d0045013433d29a1cb5f287ea80a90a81f39399d998c0ed68",
+      "features": {
+        "away_logo_box": [
+          477.0,
+          973.0,
+          634.0,
+          1036.0
+        ],
+        "home_logo_box": [
+          1282.0,
+          945.0,
+          1480.0,
+          1048.0
+        ],
+        "away_score_box": [
+          736.0,
+          964.0,
+          776.0,
+          1019.0
+        ],
+        "home_score_box": [
+          1121.0,
+          964.0,
+          1195.0,
+          1018.0
+        ],
+        "down_cap": 23.0,
+        "quarter_cap": 33.0,
+        "play_clock_cap": 33.0,
+        "score_white": [
+          252.0,
+          252.0,
+          253.0
+        ],
+        "separator_x": 900.0
+      }
+    },
+    {
+      "frame": "frame_018000.jpg",
+      "sha256": "3b7e280c10b9e18965582fc03ee6975365a3ff15c2e1571e2a786b939802b2f7",
+      "features": {
+        "away_logo_box": [
+          477.0,
+          973.0,
+          634.0,
+          1036.0
+        ],
+        "home_logo_box": [
+          1282.0,
+          945.0,
+          1480.0,
+          1048.0
+        ],
+        "away_score_box": [
+          736.0,
+          965.0,
+          776.0,
+          1018.0
+        ],
+        "home_score_box": [
+          1121.0,
+          964.0,
+          1195.0,
+          1019.0
+        ],
+        "down_cap": 23.0,
+        "quarter_cap": 33.0,
+        "play_clock_cap": 33.0,
+        "score_white": [
+          252.0,
+          252.0,
+          252.0
+        ],
+        "separator_x": 900.0
+      }
+    },
+    {
+      "frame": "frame_019500.jpg",
+      "sha256": "237e11d2c64b96016d223adc2d0350a234ece7fe232cdb8116806cfb1b206463",
+      "features": {
+        "away_logo_box": [
+          478.0,
+          973.0,
+          634.0,
+          1036.0
+        ],
+        "home_logo_box": [
+          1260.0,
+          944.0,
+          1480.0,
+          1049.0
+        ],
+        "away_score_box": [
+          736.0,
+          965.0,
+          776.0,
+          1019.0
+        ],
+        "home_score_box": [
+          1121.0,
+          964.0,
+          1195.0,
+          1019.0
+        ],
+        "down_cap": 23.0,
+        "quarter_cap": 33.0,
+        "play_clock_cap": 19.0,
+        "score_white": [
+          253.0,
+          253.0,
+          253.0
+        ],
+        "separator_x": 900.0
+      }
+    },
+    {
+      "frame": "frame_017200.jpg",
+      "sha256": "cbf6cba7b9b25bf9507dc92d34accbcd84820b3c2aa203b490bd6bee32c4c794",
+      "features": {
+        "away_logo_box": [
+          477.0,
+          973.0,
+          634.0,
+          1036.0
+        ],
+        "home_logo_box": [
+          1282.0,
+          945.0,
+          1480.0,
+          1048.0
+        ],
+        "away_score_box": [
+          736.0,
+          964.0,
+          776.0,
+          1018.0
+        ],
+        "home_score_box": [
+          1121.0,
+          964.0,
+          1195.0,
+          1018.0
+        ],
+        "down_cap": 24.0,
+        "quarter_cap": 33.0,
+        "play_clock_cap": 33.0,
+        "score_white": [
+          252.0,
+          252.0,
+          252.0
+        ],
+        "separator_x": 900.0
+      }
+    },
+    {
+      "frame": "frame_014200.jpg",
+      "sha256": "99e7aee9c9b0a8128c76b020532f5e5f3819d56bfddd5b9f3f2d3ecc57d3b2c7",
+      "features": {
+        "away_logo_box": [
+          477.0,
+          973.0,
+          634.0,
+          1036.0
+        ],
+        "home_logo_box": [
+          1282.0,
+          944.0,
+          1480.0,
+          1049.0
+        ],
+        "away_score_box": [
+          736.0,
+          965.0,
+          776.0,
+          1018.0
+        ],
+        "home_score_box": [
+          1118.0,
+          964.0,
+          1199.0,
+          1019.0
+        ],
+        "down_cap": 23.0,
+        "quarter_cap": 33.0,
+        "play_clock_cap": 33.0,
+        "score_white": [
+          252.0,
+          252.0,
+          252.0
+        ],
+        "separator_x": 0.0
+      }
+    },
+    {
+      "frame": "frame_026200.jpg",
+      "sha256": "c8cc096c3c5dda3fd5533ce334937e04d47a77c68b3b517682a1e40a97c7c780",
+      "features": {
+        "away_logo_box": [
+          477.0,
+          973.0,
+          634.0,
+          1036.0
+        ],
+        "home_logo_box": [
+          1282.0,
+          945.0,
+          1480.0,
+          1048.0
+        ],
+        "away_score_box": [
+          715.0,
+          964.0,
+          796.0,
+          1019.0
+        ],
+        "home_score_box": [
+          1120.0,
+          964.0,
+          1195.0,
+          1019.0
+        ],
+        "down_cap": 22.0,
+        "quarter_cap": 33.0,
+        "play_clock_cap": 33.0,
+        "score_white": [
+          255.0,
+          255.0,
+          255.0
+        ],
+        "separator_x": 0.0
+      }
+    },
+    {
+      "frame": "frame_029000.jpg",
+      "sha256": "6f7c380e27759260511994dff50f2fe77c5f8406fc79197afada7a686d419c5f",
+      "features": {
+        "away_logo_box": [
+          477.0,
+          973.0,
+          634.0,
+          1036.0
+        ],
+        "home_logo_box": [
+          1282.0,
+          945.0,
+          1480.0,
+          1048.0
+        ],
+        "away_score_box": [
+          715.0,
+          964.0,
+          796.0,
+          1019.0
+        ],
+        "home_score_box": [
+          1120.0,
+          964.0,
+          1195.0,
+          1019.0
+        ],
+        "down_cap": 23.0,
+        "quarter_cap": 33.0,
+        "play_clock_cap": 33.0,
+        "score_white": [
+          255.0,
+          255.0,
+          255.0
+        ],
+        "separator_x": 0.0
+      }
+    },
+    {
+      "frame": "frame_029700.jpg",
+      "sha256": "ef81e7b59d3ef50871c36dabb57038313bec5b44a4d677e5624938502642f773",
+      "features": {
+        "away_logo_box": [
+          478.0,
+          973.0,
+          634.0,
+          1036.0
+        ],
+        "home_logo_box": [
+          1283.0,
+          945.0,
+          1480.0,
+          1048.0
+        ],
+        "away_score_box": [
+          715.0,
+          964.0,
+          796.0,
+          1019.0
+        ],
+        "home_score_box": [
+          1120.0,
+          964.0,
+          1195.0,
+          1019.0
+        ],
+        "down_cap": 24.0,
+        "quarter_cap": 33.0,
+        "play_clock_cap": 33.0,
+        "score_white": [
+          214.0,
+          214.0,
+          214.0
+        ],
+        "separator_x": 900.0
+      }
+    },
+    {
+      "frame": "frame_029990.jpg",
+      "sha256": "694bd6f077db67175d3aef7d3b7a1d8900ac15a039146a0a51ef3763277c4c55",
+      "features": {
+        "away_logo_box": [
+          478.0,
+          973.0,
+          634.0,
+          1036.0
+        ],
+        "home_logo_box": [
+          1283.0,
+          945.0,
+          1480.0,
+          1048.0
+        ],
+        "away_score_box": [
+          715.0,
+          964.0,
+          796.0,
+          1019.0
+        ],
+        "home_score_box": [
+          1120.0,
+          964.0,
+          1195.0,
+          1019.0
+        ],
+        "down_cap": 24.0,
+        "quarter_cap": 33.0,
+        "play_clock_cap": 33.0,
+        "score_white": [
+          213.0,
+          213.0,
+          213.0
+        ],
+        "separator_x": 0.0
+      }
+    }
+  ],
+  "dossier_glyph_reference": {
+    "ink_box_source": [
+      898,
+      955,
+      1021,
+      978
+    ],
+    "measured_ink_rows": [
+      6,
+      28
+    ],
+    "measured_cap_height_px": 23,
+    "measured_ink_width_px": 124,
+    "stem_width_px_median": 5.0,
+    "stem_width_px_p25_p75": [
+      5.0,
+      7.0
+    ],
+    "plate_rgb_above_ink": [
+      115.5,
+      22.8,
+      45.4
+    ],
+    "ink_rgb_mean": [
+      244.6,
+      227.5,
+      230.1
+    ],
+    "dark_shadow_pixel_fraction_in_crop": 0.581,
+    "ink_vs_plate_luminance_ratio": 3.82,
+    "clock": {
+      "box": [
+        920,
+        1006,
+        1000,
+        1033
+      ],
+      "cap_height_px": 27,
+      "ink_width_px": 80,
+      "stem_width_px_median": 8.0
+    },
+    "quarter": {
+      "box": [
+        850,
+        1009,
+        892,
+        1028
+      ],
+      "cap_height_px": 19,
+      "ink_width_px": 42,
+      "stem_width_px_median": 3.0
+    },
+    "play_clock": {
+      "box": [
+        1042,
+        1009,
+        1057,
+        1028
+      ],
+      "cap_height_px": 19,
+      "ink_width_px": 15,
+      "stem_width_px_median": 6.0
+    }
+  },
+  "reference_method": "Static colours: supplied 500-frame temporal median. Ink boxes: canonical 012001. All 16 representative frames measured and hashed, including event states; event ink is not treated as a standard down label.",
+  "runtime_witnessed": false,
+  "render_reused": false
+}

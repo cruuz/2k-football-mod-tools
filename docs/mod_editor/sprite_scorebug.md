@@ -109,6 +109,8 @@ points to immutable NFL/MNF UVs and a policy word in the appended scene.
 The NFL face reuses the measured ESPN, N and F cells; its L is made from the
 F stem and flipped top arm. A separate ESPN NFL still was unavailable, so
 this reconstruction's provenance is recorded in the layout.
+The selector controls this paired variant group. Untagged brand rows in custom
+designs retain their existing static artwork.
 
 Preview's `broadcast` state accepts `play_now`, `monday_night`, `sunday_night`
 and `monday_afternoon`; `--watermark` selects the policy. These states populate

@@ -121,15 +121,21 @@ def glyph_proof(preview,wide,path=None):
    # UV endpoints and transparent gutters, then count ink-bearing scanlines.
    xs=range(math.ceil(left-.5),math.ceil(right-.5));ys=range(math.ceil(top-.5),math.ceil(bottom-.5))
    alpha=np.zeros((len(ys),len(xs)))
-   uvx0=(uv[0]/32767+1)*packed.width/2;uvx1=(uv[2]/32767+1)*packed.width/2
-   uvy0=(uv[1]/32767+1)*packed.height/2;uvy1=(uv[5]/32767+1)*packed.height/2
+   transform=struct.unpack_from('<4f',c['live_decoded'],scene.layout.SHAPE+0x30)
+   def texel_uv(value,axis):
+    normalized=value/(32768 if value<0 else 32767)
+    return (normalized*transform[axis]+transform[axis+2])*(packed.width if axis==0 else packed.height)
+   uvx0=texel_uv(uv[0],0);uvx1=texel_uv(uv[2],0)
+   uvy0=texel_uv(uv[1],1);uvy1=texel_uv(uv[5],1)
    for iy,yy in enumerate(ys):
     ty=uvy0+(yy+.5-top)/(bottom-top)*(uvy1-uvy0)-.5;py=math.floor(ty);fy=ty-py
     for ix,xx in enumerate(xs):
      tx=uvx0+(xx+.5-left)/(right-left)*(uvx1-uvx0)-.5;px=math.floor(tx);fx=tx-px
      alpha[iy,ix]=sum(packed.getpixel((px+dx,py+dy))[3]/255*weight for dx,dy,weight in ((0,0,(1-fx)*(1-fy)),(1,0,fx*(1-fy)),(0,1,(1-fx)*fy),(1,1,fx*fy)))
    records.append(dict(field=role,cell=glyph['cell'],cap=bottom-top,ink_scanlines=int((alpha.max(1)>.5).sum()),width=right-left,stem=stem,texels=[w,h],
-     minification=[w/(right-left),h/(bottom-top)],columns_sampled=sampled_columns(w,left,right),rows_sampled=sampled_columns(h,top,bottom)))
+     minification=[w/(right-left),h/(bottom-top)],
+     columns_sampled=sampled_columns(w,left,right,uvx0-cell[0],uvx1-cell[0]),
+     rows_sampled=sampled_columns(h,top,bottom,uvy0-cell[1],uvy1-cell[1])))
   if path:
    projection.render_native(c['live_decoded'],mode['atlas'],preview.fonts,g,path,
      texture_spans=c['texture_spans'],background=Image.new('RGB',(640,480),'#343b40'))
@@ -217,6 +223,12 @@ def main(argv=None):
   residual(aspect,'score_white',features['score_white'],dossier['espn']['score_rgb_p90'],'RGB')
   residual(aspect,'separator_x',features['separator_x']*sx,900*sx,'HUD px')
   if preview:
+   for name,target in (('body',[437,942,1478,1052]),('pointer',dossier['espn']['pointer_box'])):
+    q=next(q for q in preview.modes[wide]['compiled'].quads if q['name']==name)
+    points=g['positions'][q['vertex']:q['vertex']+4]
+    actual=[points[0][0],points[0][1],points[3][0],points[3][1]]
+    expected=sprite.contracted(sprite.hud_box(target,wide),wide)
+    residual(aspect,name+'_quad_box',actual,expected,'HUD px')
    proof[aspect]=glyph_proof(preview,wide,args.output/f'first10_{suffix}.png')
    zero=next(r for r in proof[aspect] if r['cell']=='label_0')
    for role,target in (('down',23),('quarter',19),('play_clock',19)):
@@ -225,6 +237,8 @@ def main(argv=None):
       'The broadcast cap is below the SD readability floor; the requested larger SD type deliberately exceeds the 1080-line reference.')
    residual(aspect,'label_minimum_cap',zero['ink_scanlines'],12,'HUD scanlines',minimum=True)
    residual(aspect,'label_minimum_stem',zero['stem'],2.5,'HUD px',minimum=True)
+   residual(aspect,'label_stem_width',zero['stem'],glyph_dossier['espn_reference_frame_012001']['stem_width_px_median']*sx,'HUD px',
+     'The common SD cut needs at least 2.5-pixel stems at 16:9, giving at least 3.333 pixels at 4:3; the broadcast median is 2.222 pixels at 4:3. Those requirements cannot fit the 1-pixel match tolerance together.')
    residual(aspect,'label_skipped_columns',len(zero['columns_sampled']),zero['texels'][0],'count',minimum=True)
    residual(aspect,'label_digit_width',zero['width'],16*sx,'HUD px',
      'The requested 2.5 HUD pixel stems and retail-scale digits require a wider SD cut than the 16 source pixel broadcast digit.')

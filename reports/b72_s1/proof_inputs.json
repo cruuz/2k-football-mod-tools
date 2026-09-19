@@ -1,0 +1,9 @@
+{
+  "data/nfl2k5_scorebug_sprite/template.png": "69415d48b68eb8d732ba6543a7a99031e6fe72e94acfd2676227db59a72c021d",
+  "data/nfl2k5_scorebug_sprite/layout.json": "cae4733c2f0d8f257faa85eb11b969f5758962a7b0cd48441cc32ddeddd71a0b",
+  "tools/scorebug_sprite/runtime.c": "f467d7f1aff4e2e48739405cd390ca971921c1ff9d2318cf9e21f783baf65d1e",
+  "mod_editor/core/nfl2k5_scorebug_sprite_code.py": "2d79e130d06f794b59404f5a7623d1c048e9cde66bb03d42ac4ef74850e482c4",
+  "mod_editor/core/nfl2k5_scorebug_sprite.py": "960be604263a1eca114a622048ad32a85eed728446d375ec019b47b2afbad50b",
+  "tools/nfl2k5_scorebug_projection.py": "91c4a7c753f2e677ad207914dfadce4d395a37dd0db08a8214a87282a3bcc13e",
+  "tools/scorebug_sprite/match_espn.py": "2c1104629e1fb607f76003a4e1a14c7478ecf634ba49bc521fed9b4a25a48469"
+}

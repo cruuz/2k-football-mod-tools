@@ -1,0 +1,36 @@
+[b72-s1 b83df72b] b72-s1: recut SD scorebug and select calendar-aware ESPN watermark
+ 60 files changed, 7092 insertions(+), 770 deletions(-)
+ create mode 100644 tests/mod_editor/test_nfl2k5_scorebug_sd.py
+ create mode 100644 tests/mod_editor/test_nfl2k5_scorebug_watermark.py
+ create mode 100644 tools/bench/b72_scorebug/b72_espnstate_169.json
+ create mode 100644 tools/bench/b72_scorebug/b72_espnstate_169.png
+ create mode 100644 tools/bench/b72_scorebug/b72_espnstate_169_display.png
+ create mode 100644 tools/bench/b72_scorebug/b72_espnstate_43.json
+ create mode 100644 tools/bench/b72_scorebug/b72_espnstate_43.png
+ create mode 100644 tools/bench/b72_scorebug/b72_espnstate_43_display.png
+ create mode 100644 tools/bench/b72_scorebug/b72_first10_169.json
+ create mode 100644 tools/bench/b72_scorebug/b72_first10_169.png
+ create mode 100644 tools/bench/b72_scorebug/b72_first10_169_display.png
+ create mode 100644 tools/bench/b72_scorebug/b72_first10_169_label8x.png
+ create mode 100644 tools/bench/b72_scorebug/b72_first10_43.json
+ create mode 100644 tools/bench/b72_scorebug/b72_first10_43.png
+ create mode 100644 tools/bench/b72_scorebug/b72_first10_43_display.png
+ create mode 100644 tools/bench/b72_scorebug/b72_first10_43_label8x.png
+ create mode 100644 tools/bench/b72_scorebug/bar_measurements.json
+ create mode 100644 tools/bench/b72_scorebug/espn_bar_median.png
+ create mode 100644 tools/bench/b72_scorebug/espn_bar_median_2x.png
+ create mode 100644 tools/bench/b72_scorebug/espn_bar_temporal_median.py
+ create mode 100644 tools/bench/b72_scorebug/espn_vs_b711_bar.png
+ create mode 100644 tools/bench/b72_scorebug/espn_vs_b711_details.png
+ create mode 100644 tools/bench/b72_scorebug/glyph_measurements.json
+ create mode 100644 tools/bench/b72_scorebug/label_options_contact_sheet.png
+ create mode 100644 tools/bench/b72_scorebug/label_size_proof.png
+ create mode 100644 tools/bench/b72_scorebug/make_compare.py
+ create mode 100644 tools/bench/b72_scorebug/make_detail_sheet.py
+ create mode 100644 tools/bench/b72_scorebug/make_size_proof.py
+ create mode 100644 tools/bench/b72_scorebug/measure_espn_bar.py
+ create mode 100644 tools/bench/b72_scorebug/measure_glyphs.py
+ create mode 100644 tools/bench/b72_scorebug/measure_readability.py
+ create mode 100644 tools/bench/b72_scorebug/readability_measurements.json
+ create mode 100644 tools/bench/b72_scorebug/simulate_label_options.py
+ create mode 100644 tools/scorebug_sprite/match_espn.py

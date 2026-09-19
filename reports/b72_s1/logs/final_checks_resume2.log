@@ -1,0 +1,3 @@
+{'command': ['python3', 'reports/b72_s1/normalize_gate_manifest.py'], 'exit_code': 0, 'seconds': 0.32, 'log': 'final_normalize_gate_manifest.log'}
+{'command': ['python3', 'tests/mod_editor/test_nfl2k5_cave_oracle.py'], 'exit_code': 0, 'seconds': 352.31, 'log': 'final_test_nfl2k5_cave_oracle.log'}
+{'command': ['python3', 'tools/scorebug_sprite/build_runtime.py', '--check'], 'exit_code': 0, 'seconds': 0.12, 'log': 'final_build_runtime.log'}
