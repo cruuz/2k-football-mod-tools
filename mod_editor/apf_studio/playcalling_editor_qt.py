@@ -227,7 +227,7 @@ class ApfPlayCallingEditor(QWidget):
         self.situation_note = note(situation_root, "")
         note(situation_root, "Select a candidate to fine-tune its weights beside this table; personnel controls are below. Adding, removing or changing personnel edits the shared book, "
              "so it affects every situation using that data. These 23 preview buckets are not independent stored formation lists.")
-        self.candidate_table = table(("Formation", "Personnel", "Requested\nTEs", "Personnel\nweight", "Formation\nweight"), "All ordinary situation candidates before the draw")
+        self.candidate_table = table(("Formation", "Personnel", "Requested\nTEs", "Personnel\nproduct", "Formation\nweight", "Curve\nterm", "Ratings\nmean", "Personnel\nrank", "Retail\nweight", "Row: retail /\neffective", "Draw status"), "All ordinary situation candidates before the draw")
         self.candidate_table.setMaximumHeight(260)
         self.candidate_table.setMinimumHeight(180)
         candidate_row = QHBoxLayout()
@@ -685,16 +685,21 @@ class ApfPlayCallingEditor(QWidget):
             return
         row = self._situations[self.situation_picker.currentIndex()]
         self.situation_note.setText(f"Requested personnel row {row['row']}. " + row["note"] +
-                                   " Weights are not percentages or exclusions. TE counts are requested roles; "
+                                   " Personnel weight = curve term x ratings mean. Personnel rank compares categories; the draw cubes personnel weights. "
+                                   "Formation weights belong to the following draw. Weights are not percentages. TE counts are requested roles; "
                                    "an empty TE depth list substitutes an FB.")
         names = {f["id"]: f["name"] for f in self._context["formations"]}
         self._updating = True
         fill(self.candidate_table, [(names.get(c["formation"], c["formation"]), c["personnel"], c["tight_ends"],
-                                     f"{c['category_weight']:.4g}", f"{c['formation_weight']:.4g}") for c in row["candidates"]])
+                                     f"{c['category_weight']:.7g}", f"{c['formation_weight']:.7g}",
+                                     f"{c.get('curve_term', 1.):.7g}", f"{c.get('ratings_term', c['category_weight']):.7g}",
+                                     c.get('rank', ''), f"{c.get('retail_weight', c['category_weight']):.7g}",
+                                     f"{c.get('stored_row', '')} / {c.get('effective_row', '')}",
+                                     'Fallback' if c.get('fallback') else 'Candidate' if c.get('active', True) else 'Excluded') for c in row["candidates"]])
         self._updating = False
         header = self.candidate_table.horizontalHeader()
         header.setMinimumSectionSize(60)
-        header.setSectionResizeMode(QHeaderView.Stretch)
+        header.setSectionResizeMode(QHeaderView.ResizeToContents)
         selected = next((i for i, c in enumerate(row["candidates"]) if c["formation"] == self.formation_picker.currentData()), None)
         self.situation_remove.setEnabled(selected is not None)
         if selected is not None:

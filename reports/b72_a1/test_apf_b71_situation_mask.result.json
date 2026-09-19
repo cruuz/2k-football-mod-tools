@@ -1,0 +1,8 @@
+{
+  "command": [
+    "/usr/bin/python3",
+    "tests/mod_editor/test_apf_b71_situation_mask.py"
+  ],
+  "exit_code": 0,
+  "seconds": 2.86
+}

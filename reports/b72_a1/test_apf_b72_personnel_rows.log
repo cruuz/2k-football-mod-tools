@@ -1,0 +1,9 @@
+test_sparse_capacity_and_invalid_values_fail_before_writing (__main__.DataTests.test_sparse_capacity_and_invalid_values_fail_before_writing) ... ok
+test_v2_roundtrip_both_profiles_and_v1_read_compatibility (__main__.DataTests.test_v2_roundtrip_both_profiles_and_v1_read_compatibility) ... ok
+test_all_bucket_decomposition_and_minimum_rating_sole_candidate (__main__.ModelFixtureTests.test_all_bucket_decomposition_and_minimum_rating_sole_candidate) ... ok
+test_local_override_staging_reload_undo_and_build_receipts (__main__.ProjectTests.test_local_override_staging_reload_undo_and_build_receipts) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 2.222s
+
+OK

@@ -1,3 +1,9 @@
+## 0.1.0-alpha.94 - beta 72
+
+- The report "Still unable to add personnel sets to situations" now has a local control: choose a personnel comparison row for one book and one live down/distance bucket. Confirm the edit, then install the matching v2 situation patch. The checkbox states this dependency and shows whether the installed patch matches the project. This experimental option stays off by default in every preset.
+- The call candidate preview now shows the personnel curve term, member ratings mean, their product, category rank, retail weight and effective comparison row. Formation weights remain visible for the following draw. This addresses "Can't edit base weight or per-situation weight" by showing the existing calculation and exposing only the local comparison row.
+- Offline regression coverage checks that rating 7 remains eligible when Queens is the sole allowed 3rd-and-8 personnel set. Empty exclusions still fall back to the original draw. Gameplay is UNWITNESSED; the required check is O-ManBlock, 3rd-and-8 at midfield, Queens row 10, with Pro: Strong as the only unexcluded ordinary formation and all three ratings set to 7.
+
 # APF 2K8 Mod Studio Changelog
 
 ## 0.1.0-alpha.94 - beta 72

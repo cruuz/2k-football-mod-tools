@@ -1,0 +1,116 @@
+[
+  {
+    "profile": "base",
+    "data_length": 13824,
+    "data_sha256": "137041cbe2e1066ebeba61773389a7c6a0edb9d5398df2a1af6c8a8c73e12ac2",
+    "code_bytes": 3156,
+    "receipt": {
+      "schema": "apf2k8_situation_mask/v2",
+      "classification": "EXPERIMENTAL",
+      "runtime_status": "UNWITNESSED",
+      "profile": "base",
+      "image_sha256": "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf",
+      "key": "actual down 1..4 x absolute f32 longitudinal distance <=182.88 / <=640.08 / >640.08",
+      "policies": {},
+      "personnel_rows": {
+        "O-ManBlock": [
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {
+            "6": 10
+          },
+          {},
+          {},
+          {}
+        ]
+      },
+      "data_sha256": "137041cbe2e1066ebeba61773389a7c6a0edb9d5398df2a1af6c8a8c73e12ac2",
+      "hooks": [
+        [
+          2223419800,
+          2228282112
+        ],
+        [
+          2223412928,
+          2228283500
+        ],
+        [
+          2223419536,
+          2228284592
+        ]
+      ],
+      "code": {
+        "instructions": 789,
+        "branches": 130,
+        "sha256": "036b7bd9e6505b8ae24277cb4412c9ee123efda91586ad571879b1a11c9a2529"
+      },
+      "fallback": "An empty filtered draw uses the original complete draw; last-draw receipts at 0x852D6500 and 0x852D6518",
+      "limits": "Ordinary automatic offense calls in scrimmage phase 4 only; cached specials, explicit play/formation paths and kick/try phases bypass the filter."
+    },
+    "canonical_roundtrip": true,
+    "canonical_payload": true
+  },
+  {
+    "profile": "tu_1_1",
+    "data_length": 13824,
+    "data_sha256": "137041cbe2e1066ebeba61773389a7c6a0edb9d5398df2a1af6c8a8c73e12ac2",
+    "code_bytes": 3156,
+    "receipt": {
+      "schema": "apf2k8_situation_mask/v2",
+      "classification": "EXPERIMENTAL",
+      "runtime_status": "UNWITNESSED",
+      "profile": "tu_1_1",
+      "image_sha256": "65f522ce1cdda42cf19c112e9ec07302e89c81e4148c9f22e6db5e03952f9457",
+      "key": "actual down 1..4 x absolute f32 longitudinal distance <=182.88 / <=640.08 / >640.08",
+      "policies": {},
+      "personnel_rows": {
+        "O-ManBlock": [
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {
+            "6": 10
+          },
+          {},
+          {},
+          {}
+        ]
+      },
+      "data_sha256": "137041cbe2e1066ebeba61773389a7c6a0edb9d5398df2a1af6c8a8c73e12ac2",
+      "hooks": [
+        [
+          2223423128,
+          2228282112
+        ],
+        [
+          2223416256,
+          2228283500
+        ],
+        [
+          2223422864,
+          2228284592
+        ]
+      ],
+      "code": {
+        "instructions": 789,
+        "branches": 130,
+        "sha256": "55b9446d84200cf33d851331dd6cb78b65f1e87a1c0ae7c826f75b559f4aabe7"
+      },
+      "fallback": "An empty filtered draw uses the original complete draw; last-draw receipts at 0x852D6500 and 0x852D6518",
+      "limits": "Ordinary automatic offense calls in scrimmage phase 4 only; cached specials, explicit play/formation paths and kick/try phases bypass the filter."
+    },
+    "canonical_roundtrip": true,
+    "canonical_payload": true
+  }
+]

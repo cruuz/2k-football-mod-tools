@@ -1,0 +1,9 @@
+{"command": ["/usr/bin/python3", "tests/mod_editor/test_apf_b72_personnel_rows.py"], "exit_code": 0, "seconds": 2.568}
+{"command": ["/usr/bin/python3", "tests/mod_editor/test_apf_b71_situation_mask_abi.py"], "exit_code": 0, "seconds": 6.436}
+{"command": ["/usr/bin/python3", "tests/mod_editor/test_apf_b71_situation_mask_qt.py"], "exit_code": 0, "seconds": 2.375}
+{"command": ["/usr/bin/python3", "tests/mod_editor/test_apf_playcalling_editor_qt.py"], "exit_code": 0, "seconds": 5.392}
+{"command": ["/usr/bin/python3", "tests/mod_editor/test_apf_b72_personnel_rows_native.py"], "exit_code": 0, "seconds": 129.882}
+{"command": ["/usr/bin/python3", "tests/mod_editor/test_apf_b71_editor_workflow.py"], "exit_code": 0, "seconds": 2.638}
+{"command": ["/usr/bin/python3", "tests/mod_editor/test_apf_b71_editor_workflow_qt.py"], "exit_code": 0, "seconds": 3.063}
+{"command": ["/usr/bin/python3", "tests/mod_editor/test_apf_playcall_patch.py"], "exit_code": 0, "seconds": 1.99}
+{"command": ["/usr/bin/python3", "tests/mod_editor/test_apf_b67_writers.py"], "exit_code": 0, "seconds": 0.403}
