@@ -134,7 +134,7 @@ class DisplayModelTests(unittest.TestCase):
   spec=sprite.load_layout()[0];brand=spec['brand'][0]
   self.assertEqual((brand['name'],brand['cell'],brand['material'],brand['pin']),('watermark','espn_mnf',9,'top-right'))
   self.assertEqual(brand['box'],[1655,35,1869,64]);self.assertAlmostEqual(brand['opacity'],0.714,delta=.02)
-  self.assertTrue({'frames','method','measured_opacity','colour'}<=set(brand['source']))
+  self.assertTrue({'frames','method','estimated_opacity','colour'}<=set(brand['source']))
   for wide in (False,True):
    c=sprite.compile_folder(widescreen=wide);row=next(q for q in c.quads if q['name']=='watermark')
    self.assertTrue(row['brand']);self.assertEqual(row['tint'],'none')
