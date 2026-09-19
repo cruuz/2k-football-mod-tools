@@ -5,8 +5,10 @@ outside Mod Studio while it was opening: changed_ns", with identical path, size,
 mtime_ns, SHA-256 and file ID. The open compared two fd stats of the .2k5mod
 taken on two descriptors minutes apart. On Windows, Python 3.12 os.fstat reports
 FILE_BASIC_INFO.ChangeTime as st_ctime, and backup, antivirus, indexing and sync
-software move it without touching a byte. The Build's receipt check compared the
-same field across the build and verify processes.
+software move it without touching a byte, even on a file the build holds open.
+The Build compared the same field across its own span (compile, copy, union
+pass) and across the build and verify processes. APF 2K8 Mod Studio has the same
+project open and fast save, so it is covered here too.
 
 Linux reproduces the shape with os.chmod to the mode a file already has (Windows
 with a read-only toggle), and the reported pair is also replayed through a patched
@@ -37,6 +39,13 @@ import wave
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT), str(ROOT / "tools"), str(Path(__file__).parent)]
 
+from mod_editor.apf_studio.facade import ApfStudioFacade
+from mod_editor.apf_studio.project import (
+    ProjectError as ApfProjectError,
+    ProjectTargetIdentity as ApfProjectTargetIdentity,
+    _publish_archive as apf_publish_archive,
+    project_target_identity as apf_project_target_identity,
+)
 from mod_editor.core.equipment_staging import _verified_art
 from mod_editor.core.errors import ValidationError
 from mod_editor.core import nfl2k5_music_archive as music_archive
@@ -319,10 +328,13 @@ class FastSaveChangeTimeTests(unittest.TestCase):
 
 
 # --------------------------------------------------------------------------
-# Build: the receipt check between the build and verify processes
+# Build: the build's own snapshot pair, and the receipt check between the
+# build and verify processes
 
 
-class BuildReceiptChangeTimeTests(unittest.TestCase):
+class _BuildFixture(unittest.TestCase):
+    """The real backend over the synthetic b661 source; one build takes about 0.5 s."""
+
     def setUp(self) -> None:
         import b661_build_fixture as fixture
 
@@ -341,17 +353,21 @@ class BuildReceiptChangeTimeTests(unittest.TestCase):
         self.output = root / "out.iso"
         self.manifest = root / "manifest.json"
         self.artifacts = root / "artifacts"
+
+    def build(self) -> dict:
         with redirect_stdout(io.StringIO()):
-            tool.build(self.project, self.source, self.output, self.manifest, self.artifacts,
-                       root / "0", root / "inventory.json")
-        self.receipt = tool.file_digest(self.manifest)
+            result = self.tool.build(self.project, self.source, self.output, self.manifest,
+                                     self.artifacts, self.root / "0",
+                                     self.root / "inventory.json")
+        self.receipt = self.tool.file_digest(self.manifest)
+        return result
 
     def verify(self) -> dict:
         return self.tool.verify_written(self.project, self.source, self.output,
                                         self.manifest, self.artifacts, self.receipt)
 
     def whole_file_hashes(self):
-        size = self.output.stat().st_size
+        size = self.source.stat().st_size
         calls = []
         real = self.tool.common.sha256_fd
 
@@ -361,6 +377,109 @@ class BuildReceiptChangeTimeTests(unittest.TestCase):
             return real(descriptor, offset, length)
 
         return calls, mock.patch.object(self.tool.common, "sha256_fd", side_effect=counting)
+
+    def after_union(self, action):
+        """Run ``action`` inside build(), after the union pass and before its final check."""
+
+        real = self.tool.verify_union
+
+        def union_then(*args, **kwargs):
+            result = real(*args, **kwargs)
+            action()
+            return result
+
+        return mock.patch.object(self.tool, "verify_union", side_effect=union_then)
+
+
+def fd_snapshot(path: Path) -> list[int]:
+    info = fd_stat(path)
+    return [info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_ctime_ns]
+
+
+class BuildSnapshotChangeTimeTests(_BuildFixture):
+    """The build's own snapshot pair spans compile, copy and the union pass."""
+
+    def test_build_accepts_a_change_time_move_mid_build(self) -> None:
+        calls, counting = self.whole_file_hashes()
+        moved: dict[str, list[int]] = {}
+
+        def touch_both() -> None:
+            for key, path in (("source_stat", self.source), ("output_stat", self.output)):
+                before = fd_snapshot(path)
+                bump_change_time(path)
+                moved[key] = fd_snapshot(path)
+                self.assertNotEqual(moved[key], before)
+
+        with self.after_union(touch_both), counting:
+            result = self.build()
+        self.assertEqual(len(calls), 2, "source and output are each hashed once more")
+        # The receipt carries the snapshots that were proved, so the verifier
+        # process takes its fast path with no further whole-file hash.
+        receipt = result["written_receipt"]
+        self.assertEqual({key: receipt[key] for key in moved}, moved)
+        drifted_since = sum(fd_snapshot(path) != receipt[key] for key, path in
+                            (("source_stat", self.source), ("output_stat", self.output)))
+        calls, counting = self.whole_file_hashes()
+        with counting:
+            self.assertTrue(self.verify()["written_spans_verified"])
+        self.assertEqual(len(calls), drifted_since)
+
+    def test_build_accepts_the_reported_shape_mid_build(self) -> None:
+        real = self.tool.file_snapshot
+        union_done: list[bool] = []
+        real_rows: list[list[int]] = []
+
+        def drifted(descriptor):
+            row = real(descriptor)
+            if not union_done:
+                return row
+            real_rows.append(row)
+            return [*row[:4], row[4] + REPORTED_DELTA_NS]
+
+        with self.after_union(lambda: union_done.append(True)), \
+                mock.patch.object(self.tool, "file_snapshot", side_effect=drifted):
+            result = self.build()
+        recorded = result["written_receipt"]["output_stat"]
+        self.assertEqual(recorded[:4], fd_snapshot(self.output)[:4])
+        self.assertIn(recorded[4] - REPORTED_DELTA_NS, {row[4] for row in real_rows})
+        self.assertTrue(self.output.is_file())
+
+    def assert_build_refused(self) -> None:
+        with self.assertRaisesRegex(self.tool.ProjectError,
+                                    "source or output changed before final manifest commit"):
+            self.build()
+        self.assertFalse(self.output.exists(), "a refused build publishes no output")
+        self.assertFalse(self.manifest.exists())
+
+    def test_build_refuses_new_output_bytes_with_the_old_mtime_mid_build(self) -> None:
+        with self.after_union(lambda: rewrite_same_size_keep_mtime(self.output, 128)):
+            self.assert_build_refused()
+
+    def test_build_refuses_new_source_bytes_with_the_old_mtime_mid_build(self) -> None:
+        with self.after_union(lambda: rewrite_same_size_keep_mtime(self.source, 128)):
+            self.assert_build_refused()
+
+    def test_build_refuses_a_moved_mtime_mid_build_without_rehashing(self) -> None:
+        real = self.tool.file_snapshot
+        union_done: list[bool] = []
+
+        def touched(descriptor):
+            row = real(descriptor)
+            return [*row[:3], row[3] + 1, row[4]] if union_done else row
+
+        calls, counting = self.whole_file_hashes()
+        with self.after_union(lambda: union_done.append(True)), counting, \
+                mock.patch.object(self.tool, "file_snapshot", side_effect=touched):
+            self.assert_build_refused()
+        self.assertEqual(calls, [])
+
+
+class BuildReceiptChangeTimeTests(_BuildFixture):
+    """The verifier process on new descriptors, against the build's receipt."""
+
+    def setUp(self) -> None:
+        super().setUp()
+        self.build()
 
     def test_receipt_check_rehashes_and_accepts_change_time_drift(self) -> None:
         bump_change_time(self.output)
@@ -417,6 +536,49 @@ class BuildReceiptChangeTimeTests(unittest.TestCase):
         rewrite_same_size_keep_mtime(self.source, 128)
         with self.assertRaisesRegex(self.tool.ProjectError, "changed since the full build check"):
             self.verify()
+
+    def during_verify(self, action):
+        """Run ``action`` inside verify_written, after its first check, before its last."""
+
+        real = self.tool.verify_input_pin
+
+        def pin_then(pin):
+            real(pin)
+            action()
+
+        return mock.patch.object(self.tool, "verify_input_pin", side_effect=pin_then)
+
+    def test_receipt_check_accepts_a_change_time_move_while_verifying(self) -> None:
+        def touch_both() -> None:
+            bump_change_time(self.source)
+            bump_change_time(self.output)
+
+        calls, counting = self.whole_file_hashes()
+        with self.during_verify(touch_both), counting:
+            self.assertTrue(self.verify()["written_spans_verified"])
+        self.assertEqual(len(calls), 2, "the final recheck hashes source and output once")
+
+    def test_receipt_check_still_refuses_new_bytes_while_verifying(self) -> None:
+        with self.during_verify(lambda: rewrite_same_size_keep_mtime(self.output, 128)), \
+                self.assertRaisesRegex(self.tool.ProjectError,
+                                       "build files changed during receipt verification"):
+            self.verify()
+
+    def test_receipt_check_still_refuses_a_moved_mtime_while_verifying(self) -> None:
+        real = self.tool.file_snapshot
+        pinned: list[bool] = []
+
+        def touched(descriptor):
+            row = real(descriptor)
+            return [*row[:3], row[3] + 1, row[4]] if pinned else row
+
+        calls, counting = self.whole_file_hashes()
+        with self.during_verify(lambda: pinned.append(True)), counting, \
+                mock.patch.object(self.tool, "file_snapshot", side_effect=touched), \
+                self.assertRaisesRegex(self.tool.ProjectError,
+                                       "build files changed during receipt verification"):
+            self.verify()
+        self.assertEqual(calls, [])
 
 
 class BuildProcessesChangeTimeTests(unittest.TestCase):
@@ -608,6 +770,136 @@ class MusicChangeTimeTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "authored input changed during build"):
             run(refused, edit_input)
         self.assertFalse(refused.exists())
+
+
+# --------------------------------------------------------------------------
+# APF 2K8 Mod Studio: the same project open and fast save
+
+
+class ApfProjectOpenChangeTimeTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.temporary = tempfile.TemporaryDirectory(prefix="b721-apf-open-")
+        self.addCleanup(self.temporary.cleanup)
+        self.root = Path(self.temporary.name).resolve()
+        self.project = self.root / "My APF 2K8 Mod.apf2k8mod"
+        self.project.write_bytes(b"PK\x03\x04 synthetic APF project bytes " * 64)
+        self.facade = ApfStudioFacade(cache_root=self.root / "cache")
+        self.facade.source = SimpleNamespace(source_sha256="a" * 64)
+        self.facade.catalog = object()  # type: ignore[assignment]
+        self.active = mock.Mock()
+        self.facade.session = self.active
+
+    def load(self, during_load=None, identities=None):
+        candidate = mock.Mock()
+
+        def load_project(source):
+            if during_load is not None:
+                during_load(Path(source))
+            return 2
+
+        candidate.load_project.side_effect = load_project
+        self.candidate = candidate
+        with mock.patch("mod_editor.apf_studio.facade.ApfSession", return_value=candidate):
+            if identities is None:
+                return self.facade.load_project(self.project)
+            with mock.patch("mod_editor.apf_studio.facade.project_target_identity",
+                            side_effect=identities):
+                return self.facade.load_project(self.project)
+
+    def assert_opened(self, count: int) -> None:
+        self.assertEqual(count, 2)
+        self.assertIs(self.facade.session, self.candidate)
+        self.active.close.assert_called_once()
+        self.candidate.close.assert_not_called()
+
+    def test_apf_open_accepts_a_change_time_moved_while_opening(self) -> None:
+        opened = apf_project_target_identity(self.project)
+        self.assert_opened(self.load(bump_change_time))
+        current = self.facade.last_project_identity
+        self.assertNotEqual(current.changed_ns, opened.changed_ns)
+        self.assertEqual(dataclasses.replace(current, changed_ns=opened.changed_ns), opened)
+
+    def test_apf_open_accepts_the_reported_windows_identity_pair(self) -> None:
+        opened = apf_project_target_identity(self.project)
+        before = dataclasses.replace(opened, changed_ns=REPORTED_BEFORE_CTIME_NS)
+        after = dataclasses.replace(opened, changed_ns=REPORTED_AFTER_CTIME_NS)
+        self.assert_opened(self.load(identities=(before, after)))
+        self.assertEqual(self.facade.last_project_identity, after)
+
+    def assert_refused_and_kept(self, during_load) -> None:
+        with self.assertRaisesRegex(ApfProjectError, "The current workspace was kept"):
+            self.load(during_load)
+        self.assertIs(self.facade.session, self.active)
+        self.active.close.assert_not_called()
+        self.candidate.close.assert_called_once()
+
+    def test_apf_open_still_refuses_new_bytes(self) -> None:
+        def grow(path: Path) -> None:
+            with path.open("ab") as stream:
+                stream.write(b"!")
+
+        self.assert_refused_and_kept(grow)
+
+    def test_apf_open_still_refuses_a_moved_mtime(self) -> None:
+        def touch(path: Path) -> None:
+            info = os.stat(path)
+            os.utime(path, ns=(info.st_atime_ns, info.st_mtime_ns + 1_000_000_000))
+
+        self.assert_refused_and_kept(touch)
+
+    def test_apf_open_still_refuses_a_replacement_file_with_identical_bytes(self) -> None:
+        def swap(path: Path) -> None:
+            info = os.stat(path)
+            twin = path.with_name(path.name + ".twin")
+            twin.write_bytes(path.read_bytes())
+            os.utime(twin, ns=(info.st_atime_ns, info.st_mtime_ns))
+            os.replace(twin, path)
+
+        self.assert_refused_and_kept(swap)
+
+
+class ApfFastSaveChangeTimeTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.temporary = tempfile.TemporaryDirectory(prefix="b721-apf-save-")
+        self.addCleanup(self.temporary.cleanup)
+        self.root = Path(self.temporary.name).resolve()
+        self.target = self.root / "saved.apf2k8mod"
+        self.target.write_bytes(b"APF project saved earlier")
+        self.expected = apf_project_target_identity(self.target)
+        self.pending = self.root / ".pending-save"
+        self.pending.write_bytes(b"APF project saved now")
+
+    def publish(self, expected_target) -> None:
+        apf_publish_archive(self.pending, self.target, replace=True,
+                            expected_target=expected_target)
+
+    def test_apf_fast_save_accepts_a_change_time_only_difference(self) -> None:
+        bump_change_time(self.target)
+        self.publish(self.expected)
+        self.assertEqual(self.target.read_bytes(), b"APF project saved now")
+
+    def test_apf_fast_save_accepts_the_reported_windows_pair(self) -> None:
+        drifted = dataclasses.replace(
+            self.expected, changed_ns=self.expected.changed_ns + REPORTED_DELTA_NS)
+        with mock.patch("mod_editor.apf_studio.project.project_target_identity",
+                        return_value=drifted):
+            self.publish(self.expected)
+        self.assertEqual(self.target.read_bytes(), b"APF project saved now")
+
+    def test_apf_fast_save_still_refuses_a_content_change(self) -> None:
+        time.sleep(0.02)
+        self.target.write_bytes(b"APF project saved elsewhere!")
+        with self.assertRaisesRegex(ApfProjectError, "active project changed outside Mod Studio"):
+            self.publish(self.expected)
+        self.assertEqual(self.target.read_bytes(), b"APF project saved elsewhere!")
+
+    def test_apf_fast_save_still_refuses_another_file_at_the_same_path(self) -> None:
+        other = ApfProjectTargetIdentity(
+            self.expected.path, self.expected.device, self.expected.inode + 1,
+            self.expected.size, self.expected.modified_ns, self.expected.changed_ns)
+        with self.assertRaisesRegex(ApfProjectError, "active project changed outside Mod Studio"):
+            self.publish(other)
+        self.assertEqual(self.target.read_bytes(), b"APF project saved earlier")
 
 
 if __name__ == "__main__":

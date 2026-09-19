@@ -5697,9 +5697,17 @@ def build(project_path: Path, source_path: Path, output_path: Path,
         output_snapshot = file_snapshot(output_owned.descriptor)
         union = verify_union(source_fd, output_owned.descriptor, source_size, prepared.edits)
         source_sha = union["source_sha256"]
-        require(common.path_identity(source) == source_identity and
-                file_snapshot(source_fd) == source_snapshot and
-                file_snapshot(output_owned.descriptor) == output_snapshot and
+        require(common.path_identity(source) == source_identity,
+                "source or output changed before final manifest commit")
+        # The snapshots span the whole build. A change-time-only move is
+        # settled by hashing the file again against the union pass's hash, and
+        # the receipt records the snapshot that was proved.
+        source_snapshot = snapshot_if_unchanged(
+            source_fd, source_snapshot, union["source_sha256"])
+        output_snapshot = snapshot_if_unchanged(
+            output_owned.descriptor, output_snapshot, union["output_sha256"])
+        require(source_snapshot is not None and
+                output_snapshot is not None and
                 common.owned_path_matches(output_owned),
                 "source or output changed before final manifest commit")
         phase("full_identity_check")
@@ -5954,19 +5962,21 @@ def file_snapshot(fd: int) -> list[int]:
     return [info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_ctime_ns]
 
 
-def snapshot_bound_to_receipt(fd: int, recorded: Any,
-                              whole_file_sha256: Any) -> list[int] | None:
-    """This descriptor's snapshot when it still binds the build's full check, else None.
+def snapshot_if_unchanged(fd: int, recorded: Any,
+                          whole_file_sha256: Any) -> list[int] | None:
+    """``fd``'s current snapshot when its file still holds the proved bytes, else None.
 
-    ``recorded`` was taken by the build process on its own descriptor; ``fd``
-    was opened later by this verifier process.  An identical snapshot needs
-    nothing more.  One that differs ONLY in the change time (the last field)
-    is accepted after the whole file is hashed again through ``fd`` and equals
-    the build's full-image SHA-256, with device, inode, size and mtime still
-    unchanged after that read.  On Windows Python 3.12 ``os.fstat`` reports
-    FILE_BASIC_INFO.ChangeTime as st_ctime, which antivirus, backup, indexing
-    and sync software move without touching a byte; a beta 72 tester's builds
-    stopped here on exactly that.  Every other difference refuses as before.
+    ``recorded`` is an earlier ``file_snapshot`` of the same file and
+    ``whole_file_sha256`` the full-file SHA-256 proved for it: the union pass
+    of this build, or the receipt when a verifier process checks a finished
+    build.  An identical snapshot needs nothing more.  One that differs ONLY
+    in the change time (the last field) is accepted after the whole file is
+    hashed again through ``fd`` and equals that SHA-256, with device, inode,
+    size and mtime still unchanged after the read.  On Windows Python 3.12
+    ``os.fstat`` reports FILE_BASIC_INFO.ChangeTime as st_ctime, which
+    antivirus, backup, indexing and sync software move without touching a
+    byte, even on a file this build holds open; a beta 72 tester's builds
+    stopped on exactly that.  Every other difference refuses as before.
     """
 
     current = file_snapshot(fd)
@@ -6029,7 +6039,7 @@ def verify_written(project_path: Path, source_path: Path, output_path: Path,
                     "source/output changed since the full build check")
             # Another process and another descriptor than the build's: a
             # change-time-only difference is settled by the whole-file SHA-256.
-            snapshot = snapshot_bound_to_receipt(
+            snapshot = snapshot_if_unchanged(
                 fd, receipt[snapshot_key], whole_file_sha256)
             require(snapshot is not None,
                     "source/output changed since the full build check")
@@ -6077,10 +6087,13 @@ def verify_written(project_path: Path, source_path: Path, output_path: Path,
         for pin in pins.values():
             with _naming_project_edits(project, input_indices[pin.path]):
                 verify_input_pin(pin)
-        # Same descriptors as the snapshots accepted above, so every field,
-        # the change time included, must still match.
-        require(file_snapshot(source_fd) == source_seen
-                and file_snapshot(output_fd) == output_seen
+        # Same descriptors as the snapshots accepted above. A change-time-only
+        # move while the spans and inputs were re-read is settled the same way,
+        # by the whole-file SHA-256 against the receipt.
+        require(snapshot_if_unchanged(source_fd, source_seen,
+                                      manifest["source"].get("sha256_before")) is not None
+                and snapshot_if_unchanged(output_fd, output_seen,
+                                          manifest["output"].get("xiso_sha256")) is not None
                 and common.path_identity(source_path) == common.fd_identity(source_fd)
                 and common.path_identity(output_path) == common.fd_identity(output_fd)
                 and common.path_identity(resolved) == manifest_identity
