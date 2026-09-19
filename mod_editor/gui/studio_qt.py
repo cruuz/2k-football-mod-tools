@@ -9926,6 +9926,9 @@ def launch_studio(
     setattr(app, "_2k5_mod_studio_window", window)
     from mod_editor.core.self_update import notify_update_ready
     notify_update_ready()
+    # Remove this Studio's own abandoned working-session folders (beta 72.1).
+    from mod_editor.studio.session import start_session_housekeeping
+    start_session_housekeeping()
     return app.exec_()
 
 

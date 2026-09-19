@@ -993,12 +993,20 @@ class TeamKitBundleService:
                 _current_payload, current_rgba = self.session.asset_io.validate_replacement(
                     asset, current
                 )
+                # A kit exported from an edited project carries that edit as
+                # its baseline. Into a destination still showing the source
+                # art (a fresh project), that edit IS the import; the merge
+                # rule below only protects an edit the destination has made.
+                # Beta 72 skipped every such component ("Imported: 0").
+                carries_export_edit = (
+                    origin == "user_replacement" and not self.session.is_modified(asset)
+                )
                 if supplied_digest == _sha256(current_rgba):
                     components.append(TeamKitComponentImport(
                         asset.asset_id, asset.set_selector, asset.label,
                         asset.group, "skipped_unchanged", file_name=relative,
                     ))
-                elif supplied_digest == baseline_rgba:
+                elif supplied_digest == baseline_rgba and not carries_export_edit:
                     # This is a merge: an untouched export must not erase an
                     # edit made in the destination since the export.
                     components.append(TeamKitComponentImport(
@@ -1022,7 +1030,8 @@ class TeamKitBundleService:
                         asset.asset_id, asset.set_selector, asset.label,
                         asset.group, "imported",
                         "your earlier edit" if earlier_edit else "source",
-                        earlier_edit or _sha256(current_rgba) != baseline_rgba,
+                        earlier_edit or (_sha256(current_rgba) != baseline_rgba
+                                         and supplied_digest != baseline_rgba),
                         file_name=relative,
                     ))
                     # Freeze the bytes used for this decision. An external
