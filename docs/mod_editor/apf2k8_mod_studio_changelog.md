@@ -1,13 +1,14 @@
+# APF 2K8 Mod Studio Changelog
+
+## 0.1.0-alpha.95 - beta 72.1: projects open and save on Windows when only a file's change time moved (2026-09-19)
+
+- Opening a project and fast saving it compared the whole identity of the project file, including the change time that Windows backup, sync, antivirus and indexing software move without changing a byte. An untouched project could therefore refuse to open ("The project changed outside Mod Studio while it was opening") or to fast save ("The active project changed outside Mod Studio"). Both now compare the path, file ID, size and modification time, the same rule as 2K5 Mod Studio, and still refuse a different size, a moved modification time or a different file at the same path. They no longer notice a rewrite by another program that kept the same size and put the old modification time back. The APF build already checks the source and output by SHA-256 and never compared the change time. Offline tests only; not yet run on Windows.
+
 ## 0.1.0-alpha.94 - beta 72
 
 - The report "Still unable to add personnel sets to situations" now has a local control: choose a personnel comparison row for one book and one live down/distance bucket. Confirm the edit, then install the matching v2 situation patch. The checkbox states this dependency and shows whether the installed patch matches the project. This experimental option stays off by default in every preset.
 - The call candidate preview now shows the personnel curve term, member ratings mean, their product, category rank, retail weight and effective comparison row. Formation weights remain visible for the following draw. This addresses "Can't edit base weight or per-situation weight" by showing the existing calculation and exposing only the local comparison row.
 - Offline regression coverage checks that rating 7 remains eligible when Queens is the sole allowed 3rd-and-8 personnel set. Empty exclusions still fall back to the original draw. Gameplay is UNWITNESSED; the required check is O-ManBlock, 3rd-and-8 at midfield, Queens row 10, with Pro: Strong as the only unexcluded ordinary formation and all three ratings set to 7.
-
-# APF 2K8 Mod Studio Changelog
-
-## 0.1.0-alpha.94 - beta 72
-
 - Fine-tune Plays, Who lines up and Assignment Routes reuse the loaded books and validated staged views. Each tab now offers pending edits with bulk confirmation. Ten O-ManBlock edits measured 721.4 ms before and 96.7 ms plus 23.5 ms for confirmation after, with identical compiled bytes in the offline fixture.
 - Assignment Routes checks relay availability against the current staged assignments. Copying OL tasks on H Shovel Strong and H Lead Shovel no longer offers a consumed relay that would lose a chain start.
 - All nine CPU Play Calling tables sort numeric columns numerically and retain the correct selection and pending-edit actions after sorting.
