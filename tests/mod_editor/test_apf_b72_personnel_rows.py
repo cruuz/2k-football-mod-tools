@@ -97,12 +97,16 @@ class ModelFixtureTests(unittest.TestCase):
         for fraction in (0., .001, .25, .5, .99, .999999):
             self.assertEqual(model.draw(categories, fraction, power=3), 6)
             self.assertEqual(model.draw(formations, fraction), 0)
+        self.assertTrue(all(c["effective_row"] == c["stored_row"] for c in
+                            model.category_weight_terms(self.book, self.master, 25, s, personnel_rows={"6": 10})))
         self.assertEqual(model.category_weights(self.book, self.master, 10, s),
                          model.category_weights(self.book, self.master, 10, s, personnel_rows={'6': 'unknown'}))
 
 
 class ProjectTests(FacadeFixture):
     def test_local_override_staging_reload_undo_and_build_receipts(self):
+        from mod_editor.apf_studio.playcalling_service import LINEUP_CALLERS
+        self.backend.lineup_callers = LINEUP_CALLERS
         engine, session = self.facade._playcalling, self.facade.session
         initial = engine.state(session)
         self.assertFalse(initial.situation_masks_enabled)

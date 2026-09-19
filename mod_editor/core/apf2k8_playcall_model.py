@@ -241,7 +241,7 @@ def category_weight_terms(book, master, row, situation, *, run_share=.5, urgency
         if not members or (row <= 10 and c.row > 10) or (11 <= row <= 16 and not 11 <= c.row <= 16):
             continue
         override = (personnel_rows or {}).get(str(c.id))
-        effective = override if type(override) is int and 0 <= override <= 10 and c.row <= 10 else c.row
+        effective = override if type(override) is int and 0 <= override <= 10 and row <= 10 and c.row <= 10 else c.row
         if row <= 10:
             distance = abs(effective - row) * (.5 if situation.down <= 2 and abs(urgency) < .5 else 1)
             weights = [formation_weight(r, master, situation, category=True, urgency=urgency, run_share=run_share) for r in members]

@@ -545,7 +545,6 @@ class PlayCallingService:
             rows[request["key"]][str(request["category"])] = request["value"]
             state.situation_personnel_rows = canonical_personnel_rows(state.situation_personnel_rows)
             encode_data(state.situation_masks, state.situation_personnel_rows)
-            warning = "Requires the matching v2 situation patch installed and enabled; gameplay UNWITNESSED."
         elif kind == "situation_mask":
             from mod_editor.core.apf2k8_situation_mask import canonical_policies
             name = request["book"]
