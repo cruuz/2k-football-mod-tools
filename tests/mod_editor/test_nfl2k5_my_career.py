@@ -115,7 +115,7 @@ class AnyPositionTests(unittest.TestCase):
                 if choices:
                     self.assertEqual(receipt["template"], choices[0].label)
                     self.assertEqual(choices[0].position_code, code)
-                    self.assertEqual(len(choices), 3)
+                    self.assertEqual(len(choices), 4 if code == 0 else 3)
                 else:
                     self.assertIsNone(receipt["template"])
                     self.assertIn("generated", receipt["ratings"])

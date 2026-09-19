@@ -1,5 +1,11 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC98, beta 72
+
+- MyCareer creation in Studio now accepts jersey number, height, weight and college from the selected save. Body changes precede prospect-tier calibration. The position picker follows the roster mode: eleven design positions on retail pools, ten with EDGE and LB on one-pool rosters. QB has four distinct studio prototypes, including an authored Gunslinger rating row; other positions have three. The game's native template table is unchanged.
+- Host-side pre-draft event tables implement the proposed yardage, completion and dash bands, the six-point Senior Bowl cap, the eleven-point pre-draft cap and the 21-row speed chart. Earned attribute purchases obey existing progression caps and event permissions. A replay-checked journal persists in MyCareer-events.json and Studio projects. This is bookkeeping for supplied results; playable pre-draft events are not implemented.
+- Draft Advisory and 53-man cut risk show read-only estimates for a prepared save using roster target and maximum counts. Reviews refresh club counts and refuse a changed prospect class or roster mode. Neither estimate changes the draft or cuts MyPlayer. All presets retain their defaults; in-game outcomes remain unwitnessed.
+
 ## v1.0 RC97, beta 71.1: the reports after beta 71 (2026-09-16)
 
 - Missing NumPy no longer prevents reading build options. Scorebug texture actions name the required package and install command. Windows Setup includes pinned NumPy 1.26.4; portable install instructions declare it, updates retain local packages, and release checks audit lazy third-party imports.

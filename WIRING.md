@@ -1,38 +1,65 @@
-# Beta 71 A7 integration wiring
+# b72-m1 integration wiring
 
-All protected files are granted for this job. S4 has no newly authored deferred wiring: `git diff 464423f0 7b54e354 -- WIRING.md` is empty. Its inherited beta-70 T1 instructions are archived anonymously in `WIRING_B71_S4.md`.
+The brief authorizes the MyCareer form and its Studio connection. Those edits are already implemented in `mod_editor/gui/my_career_panel_qt.py` and `mod_editor/gui/studio_qt.py`. Project persistence is wired through the facade, session and project archive. No additional GUI insertion is needed.
 
-- The inherited completion-dialog hooks are already active at `mod_editor/gui/studio_qt.py:8023` and `mod_editor/core/build_feedback.py:53`.
-- The inherited Windows-helper and digit-fit proposals are historical follow-ups, not S4 changes. This merge does not add an unreviewed executable or a digit writer.
-- S4's runtime registry metadata is merged by capability ID; all 176 unique rows remain.
-- The release allowlist retains the colour controls and documentation and adds the scorebug assets module and both label assets.
-- The authored label PNG has an exact path/size/dimensions/SHA-256 catalog entry and a refreshed catalog hash in the release checker. The binary-asset validator is unchanged.
-- Provider/runtime seals are regenerated with `packaging/repin.py --apply`; the combined closure is 288 modules (A6 287 plus S4's painted-atlas assets dependency), with 176 registry capabilities.
-- The cave reservation manifest is regenerated last as the complete forward bounded XBE projection. Production regeneration remains required. External command: `bash reports/b71_a7/manifest_regen.sh`.
+Protected release-list and registry updates below are left for integration, as required by `ASTRA_CONTEXT.md`. There are zero new capability rows, so registry-count pins do not change. `packaging/repin.py --apply` updated existing source digests only.
 
-Exact file:line locations, measurements and final command receipts are in `ASTRA_REPORT.md` and `reports/b71_a7/`.
+## Package the two new host modules
 
-# U1 direct integration
+In `packaging/release-allowlist.txt`, beside `mod_editor/core/nfl2k5_my_career_prospects.py`, insert:
 
-The U1 brief authorizes the updater, Linux packaging and launch checks. The
-following integration edits are already applied; no deferred wiring is needed.
+```text
+mod_editor/core/nfl2k5_my_career_events.py
+mod_editor/core/nfl2k5_my_career_advisory.py
+```
 
-- `mod_editor/gui/studio_qt.py`, `launch_studio`, immediately before `app.exec_()`:
-  `from mod_editor.core.self_update import notify_update_ready` followed by
-  `notify_update_ready()`. This schedules the first-event-loop acknowledgement
-  only when an updater supplied its private readiness path.
-- `mod_editor/apf_studio/gui.py`, `launch_studio`, immediately before
-  `application.exec_()`: the identical two lines, for the shared tarball updater.
-- `mod_editor/gui/update_ui.py`, `_confirm_dialog` and `_on_done`: describe the
-  preflight/automatic restore and show the actual retained backup path.
-- `packaging/check_apf2k8_mod_studio_{release,runtime}.py`: require the selected
-  interpreter invocation, `.studio-python`, `--update-check`, and runtime-specific
-  dependency advice in the launcher contract. No audit is removed.
-- `packaging/check_2k5_mod_studio_runtime.py`: `repin.py --apply` updates the
-  existing `studio_qt.py` source digest for its two-line acknowledgement hook.
+In `mod_editor/core/providers.py`, in the source-digest map that already includes `nfl2k5_my_career_prospects.py`, add these final source pins:
 
-The existing beta-tag parser already supports `beta-71.1`; its grammar is
-unchanged. `update_check.BUILD_RELEASE_TAG` and its test are stamped `beta-71.1`
-so the hotfix will not advertise itself again. Product RC versions are unchanged.
-All NSIS code and the Windows installer
-handoff functions are unchanged. No registry rows or cave reservations change.
+```python
+        "mod_editor/core/nfl2k5_my_career_events.py": "48d9377853040fbc3335088257eab9405fb1b2ad894bb959ee7eb983e8ac785e",
+        "mod_editor/core/nfl2k5_my_career_advisory.py": "d9d20c00cc24db73ebbefb172004bb16d8f7194e52c7681961d60955fc0cab86",
+```
+
+In the import-smoke module list in `packaging/check_2k5_mod_studio_runtime.py`, beside `mod_editor.core.nfl2k5_my_career_prospects`, add:
+
+```python
+        "mod_editor.core.nfl2k5_my_career_events",
+        "mod_editor.core.nfl2k5_my_career_advisory",
+```
+
+## Update the existing MyCareer capability
+
+In `mod_editor/capabilities/registry.v1.json`, locate `id == "nfl2k5.mode.my_career"`. Append these evidence entries:
+
+```json
+[
+  "tests/mod_editor/test_nfl2k5_my_career_events.py",
+  "tests/mod_editor/test_nfl2k5_my_career_host.py",
+  "docs/mod_editor/nfl2k5_my_career_events.md",
+  "reports/b72_m1/host_only.json"
+]
+```
+
+Replace `summary` with:
+
+```json
+"MyCareer retains native Franchise drafting and player control. Studio adds body and college creation, eleven design positions or ten with one-pool LB, four distinct QB prototypes and three elsewhere, replay-checked host earned-rating projects, and read-only Draft Advisory and 53-man cut-risk estimates. Playable pre-draft events and career-ending cuts are not implemented."
+```
+
+Append to `input_constraints`:
+
+```json
+[
+  "Body edits precede prospect-tier calibration; save read-back must equal 74/70/64/59. The fourth QB rating row is host-authored and does not change the native 51-row table.",
+  "Event results are supplied host-side. Replayed event buckets, unique transaction IDs, progression caps and dash ceilings constrain purchases; no played-stat authentication is claimed.",
+  "Draft Advisory and cut risk require the prepared save and matching class fingerprint and roster mode. Estimates use native target and maximum tables; neither changes the draft or cuts MyPlayer."
+]
+```
+
+Replace the old picker description in `input_constraints` with the studio eleven/ten-row rule above, retaining the native seventeen-code API compatibility note. Set `source_container.resource` to describe the existing 20,480-byte RX and 4,096-byte RW allocation, not the stale 8,192-byte size. Keep runtime status `not-tested` and preset defaults off.
+
+## Manifest and gates
+
+The protected `data/nfl2k5_cave_reservations.json` is untouched. Regenerate it during integration after all jobs land. For this job, `python3 reports/b72_m1/verify_host_only.py` verifies byte-identical MyCareer and MyCareer-mode XBE outputs against `088e3f41`, verifies the unchanged b69 budget, then creates `.scratch/b72-m1-gate-manifest.json`. It retains every parent span/allocation and updates only the changed source pin whose byte identity was proved. Run the four gates with `NFL2K5_CAVE_MANIFEST` pointing to that temporary file. No new reservation or allocator change is needed.
+
+Run `python3 packaging/repin.py --apply` after these integration edits.

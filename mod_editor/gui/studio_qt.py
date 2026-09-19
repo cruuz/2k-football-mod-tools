@@ -2765,6 +2765,7 @@ class StudioMainWindow(QMainWindow):
         self.pages.addWidget(self._page_scroll_host(self._create_play_tabs))
         self._my_career_panel = MyCareerPanel()
         self._my_career_panel.setup_ready.connect(self._my_career_setup_ready)
+        self._my_career_panel.earned_events_ready.connect(self._my_career_events_ready)
         self._sync_mycareer_position_scheme()
         self.pages.addWidget(self._page_scroll_host(self._my_career_panel))
         self._add_lazy_page("scorebar", self._build_scorebar_page)
@@ -9078,6 +9079,11 @@ class StudioMainWindow(QMainWindow):
 
         panel.position_pools_enabled = enabled
         panel.set_position_pools(enabled())
+
+    def _my_career_events_ready(self, ledger):
+        if self.facade.source_ready:
+            self.facade.set_project_my_career_events(ledger, new_player=True)
+            self._mark_workspace_changed()
 
     def _my_career_setup_ready(self, path):
         self._ensure_workspace(self.navigation.count() - 1)

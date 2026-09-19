@@ -434,6 +434,7 @@ class StudioSession:
         self._audio_undo: list[_UndoAction] = []
         self._audio_annotations: dict[str, AudioCueAnnotation] = {}
         self._build_settings: dict[str, object] = {}
+        self._my_career_events = None
         self.crib_catalog: Nfl2k5CribCatalog | None = None
         self.crib_io: Nfl2k5CribIO | None = None
         self._crib_edits: dict[str, SessionEdit] = {}
@@ -553,11 +554,31 @@ class StudioSession:
     def project_metadata_count(self) -> int:
         """Count annotations and saved Build preferences beside asset edits."""
 
-        return self.annotation_count + bool(self._build_settings)
+        return self.annotation_count + bool(self._build_settings) + (self._my_career_events is not None)
 
     @property
     def has_project_metadata(self) -> bool:
-        return bool(self._audio_annotations or self._build_settings)
+        return bool(self._audio_annotations or self._build_settings or self._my_career_events is not None)
+
+    @property
+    def my_career_events(self):
+        from mod_editor.core.nfl2k5_my_career_events import validated_ledger
+        return validated_ledger(self._my_career_events)
+
+    def set_my_career_events(self, value, *, new_player=False):
+        from mod_editor.core.nfl2k5_my_career_events import validated_ledger, require_extension
+        checked = validated_ledger(value)
+        if self._my_career_events is not None and not new_player:
+            if checked is None:
+                raise ValueError("Earned ratings cannot be cleared. Create a new MyPlayer to start a new journal.")
+            require_extension(self._my_career_events, checked)
+        previous = self._my_career_events
+        self._my_career_events = checked
+        try:
+            self._write_manifest()
+        except BaseException:
+            self._my_career_events = previous
+            raise
 
     @property
     def build_settings(self):
@@ -4148,6 +4169,7 @@ class StudioSession:
             audio_edits=archive_audio_edits,
             audio_annotations=self.audio_annotations,
             build_settings=self.build_settings,
+            my_career_events=self.my_career_events,
             fit_receipts=getattr(self, '_project_fit_receipts', {}),
             uniform_colors=(
                 {
@@ -4174,7 +4196,7 @@ class StudioSession:
     def load_shareable_project(self, source: Path, *, progress=None) -> int:
         """Load a completely validated project into a new, empty session."""
 
-        if self.modified_count or self._audio_annotations or self._build_settings:
+        if self.modified_count or self._audio_annotations or self._build_settings or self._my_career_events is not None:
             raise ValidationError(
                 "Projects load into a fresh working session; save or revert current edits first."
             )
@@ -4449,7 +4471,7 @@ class StudioSession:
             previous_state = (
                 self._edits, self.text_edits, self._audio_edits,
                 self._crib_edits, self._stadium_edits,
-                self._audio_annotations, self._unif_colors, self._build_settings,
+                self._audio_annotations, self._unif_colors, self._build_settings, self._my_career_events,
                 self._play_route_edits,
                 self._undo, self._crib_undo,
                 self._stadium_undo, self._audio_undo, self._undo_order,
@@ -4463,6 +4485,7 @@ class StudioSession:
             self._stadium_edits = new_stadium
             self._audio_annotations = new_annotations
             self._build_settings = dict(loaded.build_settings or {})
+            self._my_career_events = loaded.my_career_events
             self._unif_colors = new_unif_colors
             self._play_route_edits = new_play_routes
             try:
@@ -4471,7 +4494,7 @@ class StudioSession:
                 (
                     self._edits, self.text_edits, self._audio_edits,
                     self._crib_edits, self._stadium_edits,
-                    self._audio_annotations, self._unif_colors, self._build_settings,
+                    self._audio_annotations, self._unif_colors, self._build_settings, self._my_career_events,
                     self._play_route_edits,
                     _old_undo, _old_crib_undo, _old_stadium_undo,
                     _old_audio_undo, _old_undo_order,
@@ -4503,6 +4526,7 @@ class StudioSession:
                 self._stadium_edits = new_stadium
                 self._audio_annotations = new_annotations
                 self._build_settings = dict(loaded.build_settings or {})
+                self._my_career_events = loaded.my_career_events
                 self._unif_colors = new_unif_colors
                 self._play_route_edits = new_play_routes
                 self._undo = []
@@ -4515,7 +4539,7 @@ class StudioSession:
                 (
                     self._edits, self.text_edits, self._audio_edits,
                     self._crib_edits, self._stadium_edits,
-                    self._audio_annotations, self._unif_colors, self._build_settings,
+                    self._audio_annotations, self._unif_colors, self._build_settings, self._my_career_events,
                     self._play_route_edits,
                     self._undo, self._crib_undo,
                     self._stadium_undo, self._audio_undo, self._undo_order,
@@ -4735,6 +4759,8 @@ class StudioSession:
             "session_id": self.session_id,
             "source_sha256": self.cache.source.sha256,
         }
+        if self._my_career_events is not None:
+            document["my_career_events"] = self.my_career_events
         if self._build_settings:
             document["build_settings"] = self.build_settings
         if self.text_edits is not None:
