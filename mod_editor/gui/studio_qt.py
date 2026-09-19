@@ -8037,6 +8037,9 @@ class StudioMainWindow(QMainWindow):
             from mod_editor.core.nfl2k5_build_service import summarize_kept_retail
             kept = tuple(getattr(result, "kept_retail", ()) or ())
             extra = "\n\n" + summarize_kept_retail(kept) if kept else ""
+            refitted = tuple(getattr(result, "refitted", ()) or ())
+            if refitted:
+                extra += "\n\n" + "\n".join(refitted)
             QMessageBox.information(
                 self,
                 "Modded XISO ready",
