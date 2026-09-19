@@ -14,9 +14,11 @@ class SituationMaskPanel(QGroupBox):
         super().__init__('Live situations: exclusions and requested personnel')
         self.owner, self.context, self.loading = owner, None, False
         root=QVBoxLayout(self)
-        self.enabled=QCheckBox('Enable per-book situation exclusions (experimental)')
+        self.enabled=QCheckBox('Enable per-book situation exclusions and personnel rows (experimental)')
         self.enabled.setToolTip('Off by default. Save these choices with the project, then install the matching situation patch. No preset enables this control.')
         root.addWidget(self.enabled)
+        self.dependency=QLabel("Requires the matching v2 situation patch installed and enabled. Gameplay UNWITNESSED.")
+        self.dependency.setWordWrap(True);root.addWidget(self.dependency)
         label=QLabel('Each bucket uses actual down and distance. Clock, score and field position can change the native personnel request within a bucket. '
                      'These exclusions apply only to ordinary CPU offense calls. If exclusions empty a draw, the game uses its original draw and records the fallback. '
                      'Exported builds include BASE and TU 1.1 patches; install the matching patch to enable them in game. '
@@ -34,6 +36,12 @@ class SituationMaskPanel(QGroupBox):
         self.personnel=QComboBox();self.stored_row=QSpinBox();self.stored_row.setRange(0,27)
         self.stored_row.setAccessibleName('Stored personnel comparison row for every book')
         form=QFormLayout();form.addRow('Personnel category',self.personnel);form.addRow('Stored comparison row (all books)',self.stored_row);root.addLayout(form)
+        self.local_row=QSpinBox();self.local_row.setRange(-1,10);self.local_row.setSpecialValueText('Retail row')
+        self.local_row.setAccessibleName('Personnel comparison row for this book and bucket')
+        self.local_row.setToolTip('Retail row removes the override. A row near the requested row increases this personnel category weight only in this book and bucket. Requires the v2 situation patch.')
+        form.addRow('Comparison row (this book and bucket)',self.local_row)
+        self.write_local=QPushButton('Stage personnel row for this book and bucket')
+        self.write_local.clicked.connect(self.stage_local_row);root.addWidget(self.write_local)
         self.roles=QLabel();self.roles.setWordWrap(True);root.addWidget(self.roles)
         self.write_row=QPushButton('Stage stored personnel row for all books')
         self.write_row.clicked.connect(self.stage_row);root.addWidget(self.write_row)
@@ -50,11 +58,14 @@ class SituationMaskPanel(QGroupBox):
         root.addLayout(actions)
         self.enabled.toggled.connect(self.toggle_enabled)
         self.bucket.currentIndexChanged.connect(self.render)
+        self.profile.currentIndexChanged.connect(lambda *_:self.patch_dependency() if self.context else None)
         self.personnel.currentIndexChanged.connect(self.render_personnel)
         explanations = {
             self.enabled: 'Off by default. Stage the switch explicitly, then install the exported patch for your executable version.',
             self.bucket: 'Choose one of twelve actual down and distance buckets. Exclusions in other buckets stay independent.',
             self.personnel: 'Inspect the stored personnel category used by the native weighted draw. This definition is shared by every book.',
+            self.local_row: self.local_row.toolTip(),
+            self.write_local: 'Stage a comparison row for this personnel category in the selected book and bucket. Retail row removes this override. Install the matching v2 patch after confirming edits.',
             self.stored_row: 'Edit the stored comparison row for this personnel category in every book. The game-computed requested row remains read-only.',
             self.write_row: 'Stage this shared MASTER personnel-row edit with a receipt. Undo and project save apply to it.',
             self.preview: 'Set the existing custom call preview to the representative down and distance of this bucket, then recalculate it.',
@@ -82,6 +93,7 @@ class SituationMaskPanel(QGroupBox):
         if selected is not None:self.personnel.setCurrentIndex(max(0,self.personnel.findData(selected)))
         self.loading=False
         self.render();self.render_personnel()
+        self.patch_dependency()
 
     def sample(self):
         from .playcalling_editor_qt import situation
@@ -112,7 +124,7 @@ class SituationMaskPanel(QGroupBox):
             text='Candidate' if pairs else 'No ordinary candidate at this sample'
             if f['id'] in masks:text+='; excluded when patch is enabled'
             if f['id'] in pending:text+='; pending confirmation'
-            personnel=', '.join(dict.fromkeys(f"{c['personnel']} ({c['tight_ends']} TE)" for c in pairs)) or '—'
+            personnel=', '.join(dict.fromkeys(f"{c['personnel']} ({c['tight_ends']} TE)" for c in pairs)) or '-'
             for col,value in enumerate((f['name'],text,personnel)):
                 item=QTableWidgetItem(value);item.setFlags(item.flags()&~Qt.ItemIsEditable);self.candidates.setItem(i,col,item)
             check=QCheckBox();check.setChecked(f['id'] in masks)
@@ -123,12 +135,19 @@ class SituationMaskPanel(QGroupBox):
             check.toggled.connect(lambda value,formation=f['id']:self.exclude(formation,value))
             self.candidates.setCellWidget(i,3,check)
         self.candidates.resizeColumnsToContents()
+        self.render_personnel()
 
     def render_personnel(self,*_):
         if self.loading or not self.context:return
         c=next((c for c in self.context['categories'] if c.id==self.personnel.currentData()),None)
         if c:
             self.stored_row.setValue(c.row)
+            value=self.context['state'].situation_personnel_rows.get(self.context['book'],[{} for _ in range(12)])[self.bucket.currentIndex()].get(str(c.id))
+            for request in self.owner._pending:
+                if (request['kind']=='situation_personnel_row' and request['book']==self.context['book']
+                        and request['key']==self.bucket.currentIndex() and request['category']==c.id):
+                    value=request['value']
+            self.local_row.setValue(-1 if value is None else value)
             self.roles.setText('Requested slots: '+', '.join(c.roles)+'. Empty TE depth list: FB fallback.')
 
     def toggle_enabled(self,value):
@@ -139,6 +158,33 @@ class SituationMaskPanel(QGroupBox):
         if not self.loading and self.context:
             self.owner.review_request({'kind':'situation_mask','book':self.context['book'],
                                        'key':self.bucket.currentIndex(),'formation':formation,'exclude':value})
+
+    def stage_local_row(self):
+        if self.context and self.personnel.currentData() is not None:
+            self.owner.review_request({'kind':'situation_personnel_row','book':self.context['book'],
+                'key':self.bucket.currentIndex(),'category':self.personnel.currentData(),
+                'value':None if self.local_row.value()<0 else self.local_row.value()})
+
+    def patch_dependency(self, result=None):
+        result=result or self.owner.facade.launcher.pass_fetch_status(kind='situations')
+        matching=False
+        if self.context and result.get('installed'):
+            try:
+                from .situation_masks import prepare
+                expected=prepare(self.context['state'],self.profile.currentData())['payload']
+                matching=Path(result['patch_path']).read_bytes()==expected
+            except (OSError,ValueError,KeyError,ValidationError):
+                pass
+        if matching and result.get('enabled'):
+            text='Matching v2 situation patch installed and enabled. Restart Xenia after edits. Gameplay UNWITNESSED.'
+        else:
+            text='Requires the matching v2 situation patch installed and enabled. '
+            text+=('Installed patch differs from these choices; install this project patch. ' if result.get('installed') and not matching else result['message']+' ')
+            text+='Export or install the matching patch after confirming edits. Gameplay UNWITNESSED.'
+        self.dependency.setText(text)
+
+    def patch_result(self,result):
+        self.status.setText(result['message']);self.patch_dependency(result)
 
     def stage_row(self):
         if self.context and self.personnel.currentData() is not None:
@@ -177,11 +223,11 @@ class SituationMaskPanel(QGroupBox):
                 QMessageBox.Yes|QMessageBox.No,QMessageBox.No)
             if answer==QMessageBox.Yes:
                 self.owner._task('Install situation exclusions',lambda p:self.owner.facade.install_situation_patch(prepared,consent=True),
-                                 lambda r:self.status.setText(r['message']),True)
+                                 self.patch_result,True)
         self.owner._task('Review situation patch',lambda p:self.owner.facade.prepare_situation_patch(self.profile.currentData()),done)
 
     def check_patch(self):
-        self.owner._task('Check situation patch',lambda p:self.owner.facade.launcher.pass_fetch_status(kind='situations'),lambda r:self.status.setText(r['message']))
+        self.owner._task('Check situation patch',lambda p:self.owner.facade.launcher.pass_fetch_status(kind='situations'),self.patch_result)
 
     def remove_patch(self):
-        self.owner._task('Remove situation patch',lambda p:self.owner.facade.launcher.remove_pass_fetch_patch(kind='situations'),lambda r:self.status.setText(r['message']),True)
+        self.owner._task('Remove situation patch',lambda p:self.owner.facade.launcher.remove_pass_fetch_patch(kind='situations'),self.patch_result,True)

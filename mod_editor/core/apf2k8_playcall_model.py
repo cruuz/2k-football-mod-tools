@@ -231,7 +231,8 @@ def _records(book):
     return tuple(result)
 
 
-def category_weights(book, master, row, situation, *, run_share=.5, urgency=0., distance_curve=None):
+def category_weight_terms(book, master, row, situation, *, run_share=.5, urgency=0., distance_curve=None, personnel_rows=None):
+    """Factors used by the draw, before its cubic personnel lottery."""
     categories = category_table(master)
     records = _records(book)
     result = []
@@ -239,22 +240,36 @@ def category_weights(book, master, row, situation, *, run_share=.5, urgency=0., 
         members = [r for r in records if int.from_bytes(r.trailer[4:], 'big') & (1 << c.id)]
         if not members or (row <= 10 and c.row > 10) or (11 <= row <= 16 and not 11 <= c.row <= 16):
             continue
+        override = (personnel_rows or {}).get(str(c.id))
+        effective = override if type(override) is int and 0 <= override <= 10 and c.row <= 10 else c.row
         if row <= 10:
-            distance = abs(c.row - row) * (.5 if situation.down <= 2 and abs(urgency) < .5 else 1)
+            distance = abs(effective - row) * (.5 if situation.down <= 2 and abs(urgency) < .5 else 1)
             weights = [formation_weight(r, master, situation, category=True, urgency=urgency, run_share=run_share) for r in members]
             total = 0.
             for w in weights:
                 total = f32(total + w)
             mean = f32(total / len(weights)) if min(weights) > 0 else 0.
-            weight = f32(curve(distance, distance_curve or OFFENSE_CURVE) * mean)
+            factor = curve(distance, distance_curve or OFFENSE_CURVE)
+            retail_factor = curve(abs(c.row - row) * (.5 if situation.down <= 2 and abs(urgency) < .5 else 1), distance_curve or OFFENSE_CURVE)
+            weight = f32(factor * mean)
         elif 11 <= row <= 16:
-            weight = curve(c.row - row, distance_curve or DEFENSE_CURVE) if c.row >= row else 0.
+            factor = curve(c.row - row, distance_curve or DEFENSE_CURVE) if c.row >= row else 0.
+            mean, retail_factor, weight = 1., factor, factor
         else:
             if row != 25 and row != c.row:
                 continue
-            weight = 1.
-        result.append((c.id, weight))
-    return tuple(result)
+            factor = mean = retail_factor = weight = 1.
+        result.append(dict(category=c.id, stored_row=c.row, effective_row=effective,
+                           curve_term=factor, ratings_term=mean, category_weight=weight,
+                           retail_weight=f32(retail_factor * mean), row_override=effective != c.row))
+    ordered = sorted(result, key=lambda c: (-c["category_weight"], c["category"]))
+    ranks = {c["category"]: i + 1 for i, c in enumerate(ordered)}
+    return tuple(dict(c, rank=ranks[c["category"]]) for c in result)
+
+
+def category_weights(book, master, row, situation, **kwargs):
+    return tuple((c["category"], c["category_weight"])
+                 for c in category_weight_terms(book, master, row, situation, **kwargs))
 
 
 def formation_candidate_records(book, master, category_id):
@@ -271,7 +286,7 @@ def formation_weights(book, master, category_id, situation, *, run_share=.5, urg
     return _bounded_candidates((r.formation_index, formation_weight(r, master, situation, urgency=urgency, run_share=run_share)) for r in records)
 
 
-def situation_candidates(book, master, situation, *, requested_row=None):
+def situation_candidates(book, master, situation, *, requested_row=None, personnel_rows=None, exclusions=()):
     """Structural candidates, including low/zero weights, before RNG truncation.
 
     These are cold ordinary-selector inputs, not guaranteed full-game calls.
@@ -281,10 +296,17 @@ def situation_candidates(book, master, situation, *, requested_row=None):
     row = requested_offense_row(situation) if requested_row is None else requested_row
     categories = {c.id: c for c in category_table(master)}
     result = []
-    for category, category_weight in category_weights(book, master, row, situation):
+    terms = category_weight_terms(book, master, row, situation, personnel_rows=personnel_rows)
+    from .apf2k8_situation_mask import filter_categories, filter_formations
+    allowed, category_fallback = filter_categories(book, master, tuple((c["category"], c["category_weight"]) for c in terms), exclusions)
+    for term in terms:
+        category, category_weight = term["category"], term["category_weight"]
+        forms, formation_fallback = filter_formations(formation_weights(book, master, category, situation), exclusions)
         for record in formation_candidate_records(book, master, category):
             c = categories[category]
-            result.append({"formation": record.formation_index, "category": category,
+            result.append({**term, "formation": record.formation_index, "category": category,
+                           "active": category in dict(allowed) and record.formation_index in dict(forms),
+                           "fallback": category_fallback or formation_fallback,
                            "personnel": c.name, "tight_ends": c.tight_ends,
                            "category_weight": category_weight,
                            "formation_weight": formation_weight(record, master, situation),
@@ -508,7 +530,7 @@ def defense_play_weights(book, master, formation_id, first=None, *, lineup_featu
                                 for p in candidates), integer)
 
 
-def predict_offense(book: bytes, master: bytes, tendency_run_share: float, situation: Situation, *, seeds: int = 256, exclusions=()) -> CallDistribution:
+def predict_offense(book: bytes, master: bytes, tendency_run_share: float, situation: Situation, *, seeds: int = 256, exclusions=(), personnel_rows=None) -> CallDistribution:
     _int(seeds, 1, 65536, 'Seeds')
     if not isinstance(book, bytes):
         raise PlaycallError('Book must be immutable decoded SPLB bytes')
@@ -528,7 +550,7 @@ def predict_offense(book: bytes, master: bytes, tendency_run_share: float, situa
         run = float(rng.random() <= share)
         key = row, run
         if key not in cache:
-            cache[key] = category_weights(book, master, row, situation, run_share=run)
+            cache[key] = category_weights(book, master, row, situation, run_share=run, personnel_rows=personnel_rows)
         candidates, fallback = filter_categories(book, master, cache[key], exclusions) if exclusions else (cache[key], False)
         fallbacks["category"] += fallback
         cat = draw(candidates, rng.random(), power=3)
@@ -553,6 +575,8 @@ def predict_offense(book: bytes, master: bytes, tendency_run_share: float, situa
     def rows(counter, base, stride):
         return [(i, _name(master, base + i * stride), n / seeds) for i, n in sorted(counter.items(), key=lambda x: (-x[1], x[0]))]
     notes = DEFAULT_NOTES + tuple(f'{c.name} carries no tight end' for c in category_table(master) if c.id in counters[0] and c.tight_ends == 0)
+    if personnel_rows:
+        notes += ("Per-book personnel-row override preview assumes the matching v2 situation patch is installed and enabled. Gameplay UNWITNESSED.",)
     if exclusions:
         notes += (f"Situation mask preview: {fallbacks['category']} category and {fallbacks['formation']} formation empty-draw fallbacks in {seeds} calls; each fallback retains the complete original draw.",)
     stored = {e.play_index for r in _records(book) for e in r.entries}
