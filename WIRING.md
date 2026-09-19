@@ -56,7 +56,19 @@ Append to `input_constraints`:
 ]
 ```
 
-Replace the old picker description in `input_constraints` with the studio eleven/ten-row rule above, retaining the native seventeen-code API compatibility note. Set `source_container.resource` to describe the existing 20,480-byte RX and 4,096-byte RW allocation, not the stale 8,192-byte size. Keep runtime status `not-tested` and preset defaults off.
+Replace the `input_constraints` entry beginning `All 17 retail positions` with:
+
+```json
+"Studio offers eleven design positions with retail pools, or ten with LB and no OLB under one-pool mode. The preparation API retains all seventeen retail position codes. The native table retains three templates per position; Studio adds a distinct fourth QB prototype. Position-specific input decode and switch guards are bounded-native proofs; movement, routes, catches and block animations require a played witness."
+```
+
+Replace `source_container.resource` with:
+
+```json
+"Game Modes First Person Football row rewritten to the MyCareer action, pinned hooks; allocator-owned 20480 RX and 4096 RW bytes; fixed signed Franchise save and bounded checkpoint journal. Host preparation, earned-rating projects and advisory estimates add no XBE bytes."
+```
+
+Keep runtime status `not-tested` and preset defaults off.
 
 ## Manifest and gates
 
