@@ -1,0 +1,117 @@
+[
+  {
+    "name": "repin",
+    "command": [
+      "/home/noah/2k-worktrees/astra-b72-a1/.scratch/test-python/bin/python3",
+      "packaging/repin.py",
+      "--apply"
+    ],
+    "cwd": "/home/noah/2k-worktrees/astra-b72-a1",
+    "exit_code": 0,
+    "seconds": 11.037
+  },
+  {
+    "name": "registry",
+    "command": [
+      "/home/noah/2k-worktrees/astra-b72-a1/.scratch/test-python/bin/python3",
+      "-m",
+      "mod_editor.capabilities.validate_registry"
+    ],
+    "cwd": "/home/noah/2k-worktrees/astra-b72-a1",
+    "exit_code": 0,
+    "seconds": 0.156
+  },
+  {
+    "name": "provider-integrity",
+    "command": [
+      "/home/noah/2k-worktrees/astra-b72-a1/.scratch/test-python/bin/python3",
+      "tests/mod_editor/test_provider_integrity.py"
+    ],
+    "cwd": "/home/noah/2k-worktrees/astra-b72-a1",
+    "exit_code": 0,
+    "seconds": 10.202
+  },
+  {
+    "name": "product-catalog",
+    "command": [
+      "/home/noah/2k-worktrees/astra-b72-a1/.scratch/test-python/bin/python3",
+      "tests/mod_editor/test_product_catalog.py"
+    ],
+    "cwd": "/home/noah/2k-worktrees/astra-b72-a1",
+    "exit_code": 0,
+    "seconds": 0.159
+  },
+  {
+    "name": "phase1-packaging",
+    "command": [
+      "/home/noah/2k-worktrees/astra-b72-a1/.scratch/test-python/bin/python3",
+      "tests/mod_editor/test_phase1_packaging.py"
+    ],
+    "cwd": "/home/noah/2k-worktrees/astra-b72-a1",
+    "exit_code": 0,
+    "seconds": 2.159
+  },
+  {
+    "name": "apf-installer",
+    "command": [
+      "/home/noah/2k-worktrees/astra-b72-a1/.scratch/test-python/bin/python3",
+      "tests/mod_editor/test_apf_studio_installer.py"
+    ],
+    "cwd": "/home/noah/2k-worktrees/astra-b72-a1",
+    "exit_code": 0,
+    "seconds": 16.321
+  },
+  {
+    "name": "apf-action-parity",
+    "command": [
+      "/home/noah/2k-worktrees/astra-b72-a1/.scratch/test-python/bin/python3",
+      "tests/mod_editor/test_apf_capability_action_parity.py"
+    ],
+    "cwd": "/home/noah/2k-worktrees/astra-b72-a1",
+    "exit_code": 0,
+    "seconds": 0.505
+  },
+  {
+    "name": "apf-visual-gate",
+    "command": [
+      "/home/noah/2k-worktrees/astra-b72-a1/.scratch/test-python/bin/python3",
+      "tests/mod_editor/test_apf_full_shell_visual_gate.py"
+    ],
+    "cwd": "/home/noah/2k-worktrees/astra-b72-a1",
+    "exit_code": 0,
+    "seconds": 0.049
+  },
+  {
+    "name": "stage",
+    "command": [
+      "/home/noah/2k-worktrees/astra-b72-a1/.scratch/test-python/bin/python3",
+      "packaging/stage_release.py",
+      "packaging/apf2k8-release-allowlist.txt",
+      "/home/noah/2k-worktrees/astra-b72-a1/.scratch/apf-release"
+    ],
+    "cwd": "/home/noah/2k-worktrees/astra-b72-a1",
+    "exit_code": 0,
+    "seconds": 0.089
+  },
+  {
+    "name": "release",
+    "command": [
+      "/home/noah/2k-worktrees/astra-b72-a1/.scratch/test-python/bin/python3",
+      "/home/noah/2k-worktrees/astra-b72-a1/.scratch/apf-release/packaging/check_apf2k8_mod_studio_release.py",
+      "/home/noah/2k-worktrees/astra-b72-a1/.scratch/apf-release"
+    ],
+    "cwd": "/home/noah/2k-worktrees/astra-b72-a1/.scratch/apf-release",
+    "exit_code": 0,
+    "seconds": 0.393
+  },
+  {
+    "name": "runtime",
+    "command": [
+      "/home/noah/2k-worktrees/astra-b72-a1/.scratch/test-python/bin/python3",
+      "/home/noah/2k-worktrees/astra-b72-a1/.scratch/apf-release/packaging/check_apf2k8_mod_studio_runtime.py"
+    ],
+    "cwd": "/home/noah/2k-worktrees/astra-b72-a1/.scratch/apf-release",
+    "exit_code": 0,
+    "seconds": 12.063
+  }
+]

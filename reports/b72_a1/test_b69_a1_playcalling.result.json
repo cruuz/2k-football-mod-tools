@@ -1,0 +1,8 @@
+{
+  "command": [
+    "/usr/bin/python3",
+    "tests/mod_editor/test_b69_a1_playcalling.py"
+  ],
+  "exit_code": 0,
+  "seconds": 42.189
+}

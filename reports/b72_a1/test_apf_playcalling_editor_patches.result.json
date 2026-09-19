@@ -1,0 +1,8 @@
+{
+  "command": [
+    "/usr/bin/python3",
+    "tests/mod_editor/test_apf_playcalling_editor_patches.py"
+  ],
+  "exit_code": 0,
+  "seconds": 0.539
+}

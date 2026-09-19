@@ -1,0 +1,16 @@
+{"command": ["/usr/bin/python3", "tests/mod_editor/test_apf_b72_personnel_rows.py"], "exit_code": 0, "seconds": 2.577}
+{"command": ["/usr/bin/python3", "tests/mod_editor/test_apf_playcalling_editor_facade.py"], "exit_code": 0, "seconds": 1.337}
+{"command": ["/usr/bin/python3", "tests/mod_editor/test_apf_playcalling_editor_qt.py"], "exit_code": 0, "seconds": 5.458}
+{"command": ["/usr/bin/python3", "tests/mod_editor/test_apf_b71_situation_mask_qt.py"], "exit_code": 0, "seconds": 2.352}
+{"command": ["/usr/bin/python3", "tests/mod_editor/test_apf_playcalling_editor_build.py"], "exit_code": 0, "seconds": 95.38}
+{"command": ["/usr/bin/python3", "tests/mod_editor/test_apf_b71_editor_workflow.py"], "exit_code": 0, "seconds": 2.513}
+{"command": ["/usr/bin/python3", "tests/mod_editor/test_apf_b71_editor_workflow_qt.py"], "exit_code": 0, "seconds": 2.956}
+{"command": ["/usr/bin/python3", "tests/mod_editor/test_apf_b71_situation_mask.py"], "exit_code": 0, "seconds": 2.86}
+{"command": ["/usr/bin/python3", "tests/mod_editor/test_apf_b71_situations.py"], "exit_code": 0, "seconds": 4.238}
+{"command": ["/usr/bin/python3", "tests/mod_editor/test_b69_a1_playcalling.py"], "exit_code": 0, "seconds": 42.189}
+{"name": "repin", "command": ["/usr/bin/python3", "packaging/repin.py", "--apply"], "cwd": "/home/noah/2k-worktrees/astra-b72-a1", "exit_code": 0, "seconds": 10.521}
+{"name": "registry", "command": ["/usr/bin/python3", "-m", "mod_editor.capabilities.validate_registry"], "cwd": "/home/noah/2k-worktrees/astra-b72-a1", "exit_code": 0, "seconds": 0.148}
+{"name": "provider-integrity", "command": ["/usr/bin/python3", "tests/mod_editor/test_provider_integrity.py"], "cwd": "/home/noah/2k-worktrees/astra-b72-a1", "exit_code": 0, "seconds": 10.833}
+{"name": "product-catalog", "command": ["/usr/bin/python3", "tests/mod_editor/test_product_catalog.py"], "cwd": "/home/noah/2k-worktrees/astra-b72-a1", "exit_code": 0, "seconds": 0.149}
+{"name": "phase1-packaging", "command": ["/usr/bin/python3", "tests/mod_editor/test_phase1_packaging.py"], "cwd": "/home/noah/2k-worktrees/astra-b72-a1", "exit_code": 0, "seconds": 2.067}
+{"name": "apf-installer", "command": ["/usr/bin/python3", "tests/mod_editor/test_apf_studio_installer.py"], "cwd": "/home/noah/2k-worktrees/astra-b72-a1", "exit_code": 1, "seconds": 3.864}

@@ -1,0 +1,239 @@
+{
+  "expected_files": 21,
+  "files": 21,
+  "tests": 175,
+  "all_passed": true,
+  "results": [
+    {
+      "command": [
+        "/usr/bin/python3",
+        "tests/mod_editor/test_apf_b67_defense_model_native.py"
+      ],
+      "exit_code": 0,
+      "seconds": 153.312,
+      "tests": 4,
+      "log": "test_apf_b67_defense_model_native.log",
+      "log_sha256": "83b07d15978088c883156caddde8fed5e16705c14585d7d5c731a531b77b345f"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "tests/mod_editor/test_apf_b67_model_edges_native.py"
+      ],
+      "exit_code": 0,
+      "seconds": 94.629,
+      "tests": 1,
+      "log": "test_apf_b67_model_edges_native.log",
+      "log_sha256": "45641422739d8d77beaa67fc38481912ac120567aae004722396fc417fd04e25"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "tests/mod_editor/test_apf_b67_model_native.py"
+      ],
+      "exit_code": 0,
+      "seconds": 1243.705,
+      "tests": 4,
+      "log": "test_apf_b67_model_native.log",
+      "log_sha256": "d541e4c164b35a22981fcb65230622e5c7e9062345026d276baf1288bd0ea574"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "tests/mod_editor/test_apf_b67_writers.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.403,
+      "tests": 6,
+      "log": "test_apf_b67_writers.log",
+      "log_sha256": "9bd8344cd0abdf6eeeadd68652eee62e3c820816253999c72b113115f6bd02e2"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "tests/mod_editor/test_apf_b71_editor_workflow.py"
+      ],
+      "exit_code": 0,
+      "seconds": 2.513,
+      "tests": 13,
+      "log": "test_apf_b71_editor_workflow.log",
+      "log_sha256": "2946ab78bd26b7653b7ca3a60c31e4f16508eeafae891386625078a304c853a8"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "tests/mod_editor/test_apf_b71_editor_workflow_qt.py"
+      ],
+      "exit_code": 0,
+      "seconds": 2.956,
+      "tests": 7,
+      "log": "test_apf_b71_editor_workflow_qt.log",
+      "log_sha256": "e8c0a56c87fb7bf7f106e118df584adc2b35cb31906da92ad19351ecd0abb655"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "tests/mod_editor/test_apf_b71_situation_mask.py"
+      ],
+      "exit_code": 0,
+      "seconds": 2.86,
+      "tests": 6,
+      "log": "test_apf_b71_situation_mask.log",
+      "log_sha256": "13d36fe49db35a1f0a1928e46f49bddff2aa37439348295ff3c0acebc0c041a9"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "tests/mod_editor/test_apf_b71_situation_mask_abi.py"
+      ],
+      "exit_code": 0,
+      "seconds": 6.436,
+      "tests": 4,
+      "log": "test_apf_b71_situation_mask_abi.log",
+      "log_sha256": "56c196a2ef8538cd2213fcf10229c62ef9e08c84582cb469465ecbb5e03437e7"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "tests/mod_editor/test_apf_b71_situation_mask_install.py"
+      ],
+      "exit_code": 0,
+      "seconds": 1.342,
+      "tests": 2,
+      "log": "test_apf_b71_situation_mask_install.log",
+      "log_sha256": "98f5253bf3bea1aedf47a7829362c937a11885e520f472b1dd1ea36bf83ed838"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "tests/mod_editor/test_apf_b71_situation_mask_native.py"
+      ],
+      "exit_code": 0,
+      "seconds": 357.999,
+      "tests": 36,
+      "log": "test_apf_b71_situation_mask_native.log",
+      "log_sha256": "f3af7e36bc2c8a4cb7e05f818387d66671c794541bffdfd7d3816c0b7fdee935"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "tests/mod_editor/test_apf_b71_situation_mask_qt.py"
+      ],
+      "exit_code": 0,
+      "seconds": 2.373,
+      "tests": 3,
+      "log": "test_apf_b71_situation_mask_qt.log",
+      "log_sha256": "d078e72f73e11910487e52d7061a36c443c4c39c85357bd1b7073505032a32fb"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "tests/mod_editor/test_apf_b71_situations.py"
+      ],
+      "exit_code": 0,
+      "seconds": 4.238,
+      "tests": 10,
+      "log": "test_apf_b71_situations.log",
+      "log_sha256": "53c75a28b93531a22601c5054bf207b5da9ceb1c0c6171d9ddf5eb63225f1870"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "tests/mod_editor/test_apf_b72_personnel_rows.py"
+      ],
+      "exit_code": 0,
+      "seconds": 2.571,
+      "tests": 4,
+      "log": "test_apf_b72_personnel_rows.log",
+      "log_sha256": "ff45876c6cb03fd8b2566c04924cf42c0d99de00a5f30aa0c6a50352c59e240a"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "tests/mod_editor/test_apf_b72_personnel_rows_native.py"
+      ],
+      "exit_code": 0,
+      "seconds": 129.882,
+      "tests": 5,
+      "log": "test_apf_b72_personnel_rows_native.log",
+      "log_sha256": "a3683be5c5e2a4108f5d314de682f8a6a31d393926a01ceb6f5d7aa57f0c3efe"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "tests/mod_editor/test_apf_playcall_patch.py"
+      ],
+      "exit_code": 0,
+      "seconds": 1.99,
+      "tests": 11,
+      "log": "test_apf_playcall_patch.log",
+      "log_sha256": "45656ec7a5e2cb7f82d68c130de0b797ba8cfca1061874b7ae39dec3656d3298"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "tests/mod_editor/test_apf_playcall_research_native.py"
+      ],
+      "exit_code": 0,
+      "seconds": 218.768,
+      "tests": 30,
+      "log": "test_apf_playcall_research_native.log",
+      "log_sha256": "771477571c36f5b36bd82f42226886687fd26635ade9c608b8420c68c7b9846a"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "tests/mod_editor/test_apf_playcalling_editor_build.py"
+      ],
+      "exit_code": 0,
+      "seconds": 95.38,
+      "tests": 4,
+      "log": "test_apf_playcalling_editor_build.log",
+      "log_sha256": "48a48aeeac60820dc108e38b3da96941d7d033ba508f420bbe3d903777070e6c"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "tests/mod_editor/test_apf_playcalling_editor_facade.py"
+      ],
+      "exit_code": 0,
+      "seconds": 1.337,
+      "tests": 7,
+      "log": "test_apf_playcalling_editor_facade.log",
+      "log_sha256": "eaa92b4420c18974391ad4aadeaa2eaeb3a469c934332cf00bc5e769e6888ef1"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "tests/mod_editor/test_apf_playcalling_editor_patches.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.539,
+      "tests": 3,
+      "log": "test_apf_playcalling_editor_patches.log",
+      "log_sha256": "8ce8c3903330d15bfe40814b3443a4cdec6e7dea58cc22bc34fc38116ab1de9b"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "tests/mod_editor/test_apf_playcalling_editor_qt.py"
+      ],
+      "exit_code": 0,
+      "seconds": 5.381,
+      "tests": 13,
+      "log": "test_apf_playcalling_editor_qt.log",
+      "log_sha256": "394eb0051187bd02679b4fa849526cd47df2c864265f5451eff757dbcd523d77"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "tests/mod_editor/test_b69_a1_playcalling.py"
+      ],
+      "exit_code": 0,
+      "seconds": 42.189,
+      "tests": 2,
+      "log": "test_b69_a1_playcalling.log",
+      "log_sha256": "df72f9d047393ea3c7f7f5d0bfad2eb2ee9b61f8a1099cf7917270cb6c6b881d"
+    }
+  ]
+}

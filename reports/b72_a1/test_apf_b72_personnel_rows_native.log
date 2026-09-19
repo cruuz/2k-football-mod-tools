@@ -1,0 +1,16 @@
+PROVED MASTER native relocation/validation: result=1; instructions=7189487
+test_absent_unknown_book_bucket_and_version_preserve_retail_bytes (__main__.PersonnelNativeTests.test_absent_unknown_book_bucket_and_version_preserve_retail_bytes) ... PROVED retail-identical output/book/MASTER/team bytes, GPRs, CR and RNG consumption on 8 v2 bypass cases
+ok
+test_both_draw_hooks_and_empty_fallback_keep_the_override (__main__.PersonnelNativeTests.test_both_draw_hooks_and_empty_fallback_keep_the_override) ... ok
+test_every_bucket_native_factors_products_ranks_and_sums (__main__.PersonnelNativeTests.test_every_bucket_native_factors_products_ranks_and_sums) ... PROVED exact native personnel vectors and decomposition sums for 48 BASE/TU bucket/run combinations
+ok
+test_other_fourteen_books_have_no_policy_and_keep_identical_bytes (__main__.PersonnelNativeTests.test_other_fourteen_books_have_no_policy_and_keep_identical_bytes) ... PROVED other 14 fixture books retain exact category-weight bytes; override changes no SPLB or MASTER bytes
+ok
+test_queens_weight_and_minimum_seven_only_formation_is_called (__main__.PersonnelNativeTests.test_queens_weight_and_minimum_seven_only_formation_is_called) ... PROVED O-ManBlock 3rd-and-8 Queens row 10: {'category': 6, 'stored_row': 7, 'effective_row': 10, 'curve_term': 1.0, 'ratings_term': 1.3666666746139526, 'category_weight': 1.3666666746139526, 'retail_weight': 0.6833333373069763, 'row_override': True, 'rank': 1}
+PROVED only formation 14, ratings (7,7,7), called in 12 native BASE/TU draws and all 256 model seeds
+ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 129.439s
+
+OK
