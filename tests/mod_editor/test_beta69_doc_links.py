@@ -28,7 +28,7 @@ class DocLinkTests(unittest.TestCase):
         for doc in DOCS:
             text = doc.read_text(encoding='utf-8')
             with self.subTest(doc=doc.name):
-                self.assertIn('beta 71.1', text)
+                self.assertIn('beta 72', text)
                 self.assertNotRegex(text, r'\b[Bb]eta[ -]6[0-8]\b|\bRC8[0-9]\b')
                 self.assertNotIn('WIRING.md', text)
                 self.assertNotIn('ASTRA_REPORT.md', text)

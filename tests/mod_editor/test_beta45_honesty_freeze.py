@@ -23,7 +23,7 @@ class Beta45HonestyFreezeTests(unittest.TestCase):
 
         self.assertEqual(mod_editor.__version__, "1.0.0rc98")
         self.assertEqual(apf_version, "0.1.0-alpha.94")
-        self.assertEqual(BUILD_RELEASE_TAG, "beta-71.1")
+        self.assertEqual(BUILD_RELEASE_TAG, "beta-72")
 
     def test_the_shell_shows_both_release_identities(self) -> None:
         """Beta 34, 35 and the Beta 36 preview all shipped with
