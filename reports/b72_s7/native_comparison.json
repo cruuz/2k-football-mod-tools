@@ -1,0 +1,187 @@
+{
+  "fixture_state": {
+    "away": "SF",
+    "home": "BUF",
+    "away_score": 7,
+    "home_score": 3,
+    "clock": 300,
+    "play_clock": 17,
+    "quarter": 1,
+    "down": 1,
+    "distance": 10
+  },
+  "field_vertex_mismatches": [],
+  "all_quad_mismatches": [],
+  "live_events": [
+    {
+      "index": 0,
+      "record_va": "0xa959c8",
+      "physical": "0xb909c8",
+      "minimum": 0.0,
+      "slide": 30.0,
+      "request": 1,
+      "binding": 1,
+      "material": "0x81e75cc0",
+      "flags": "0x80000000"
+    },
+    {
+      "index": 1,
+      "record_va": "0xa95a38",
+      "physical": "0xb90a38",
+      "minimum": 0.0,
+      "slide": 30.0,
+      "request": 1,
+      "binding": 1,
+      "material": "0x81e75bc0",
+      "flags": "0x80000000"
+    },
+    {
+      "index": 2,
+      "record_va": "0xa95aa8",
+      "physical": "0xb90aa8",
+      "minimum": 0.0,
+      "slide": 0.0,
+      "request": 0,
+      "binding": 1,
+      "material": "0x81e75ec0",
+      "flags": "0x80000000"
+    },
+    {
+      "index": 3,
+      "record_va": "0xa95b18",
+      "physical": "0xb90b18",
+      "minimum": 0.0,
+      "slide": 0.0,
+      "request": 0,
+      "binding": 1,
+      "material": "0x81e75b40",
+      "flags": "0x80000001"
+    },
+    {
+      "index": 4,
+      "record_va": "0xa95b88",
+      "physical": "0xb90b88",
+      "minimum": 0.0,
+      "slide": 0.0,
+      "request": 0,
+      "binding": 1,
+      "material": "0x81e75ac0",
+      "flags": "0x80000001"
+    },
+    {
+      "index": 5,
+      "record_va": "0xa95bf8",
+      "physical": "0xb90bf8",
+      "minimum": 0.0,
+      "slide": 0.0,
+      "request": 0,
+      "binding": 1,
+      "material": "0x81e75d40",
+      "flags": "0x80000001"
+    }
+  ],
+  "fixture_materials": [
+    {
+      "name": "bscore_buga1",
+      "address": "0x406ac40",
+      "tint": "0xffffffff",
+      "flags": "0x80000001",
+      "visible": false,
+      "texture": "0x404a638"
+    },
+    {
+      "name": "bscore_buga2",
+      "address": "0x406acc0",
+      "tint": "0xffffffff",
+      "flags": "0x80000001",
+      "visible": false,
+      "texture": "0x404a638"
+    },
+    {
+      "name": "cscore_buga",
+      "address": "0x406ad40",
+      "tint": "0xffffffff",
+      "flags": "0x80000000",
+      "visible": true,
+      "texture": "0x404a638"
+    },
+    {
+      "name": "hscore_buga",
+      "address": "0x406adc0",
+      "tint": "0xffffffff",
+      "flags": "0x80000000",
+      "visible": true,
+      "texture": "0x40253b8"
+    },
+    {
+      "name": "dscore_buga",
+      "address": "0x406ae40",
+      "tint": "0xffffffff",
+      "flags": "0x80000000",
+      "visible": true,
+      "texture": "0x404a638"
+    },
+    {
+      "name": "bscore_buga",
+      "address": "0x406aec0",
+      "tint": "0xffffffff",
+      "flags": "0x80000001",
+      "visible": false,
+      "texture": "0x404a638"
+    },
+    {
+      "name": "score_buga",
+      "address": "0x406af40",
+      "tint": "0xffffffff",
+      "flags": "0x80000000",
+      "visible": true,
+      "texture": "0x404a638"
+    },
+    {
+      "name": "yscore_buga1",
+      "address": "0x406afc0",
+      "tint": "0xffffffff",
+      "flags": "0x80000000",
+      "visible": true,
+      "texture": "0x404a638"
+    },
+    {
+      "name": "zz_ESPN_bug1",
+      "address": "0x406b040",
+      "tint": "0xffffffff",
+      "flags": "0x80000001",
+      "visible": false,
+      "texture": "0x404a638"
+    },
+    {
+      "name": "yscore_buga",
+      "address": "0x406b0c0",
+      "tint": "0xffffffff",
+      "flags": "0x80000000",
+      "visible": true,
+      "texture": "0x404a638"
+    },
+    {
+      "name": "zscore_buga",
+      "address": "0x406b140",
+      "tint": "0xffffffff",
+      "flags": "0x80000000",
+      "visible": true,
+      "texture": "0x4045438"
+    }
+  ],
+  "live_frame_replay": {
+    "writes": [
+      {
+        "pc": "0xfcf8c",
+        "value": "0x80000001",
+        "size": 4
+      }
+    ],
+    "final_flags": "0x80000001",
+    "mapped_low_pages": 3841,
+    "directory_candidate": "0xf000",
+    "boundary": "FC9C0 replaced by RET 4 to retain captured request words; dt=0; synthetic stack.",
+    "limitation": "A bounded offline replay. No active CR3 register or same-frame GPU witness was captured."
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "reservation": 4096,
+  "rw_bytes": 128,
+  "changed_shipping_files": [],
+  "files": [
+    {
+      "path": "tools/scorebug_sprite/runtime.c",
+      "equal_to_base": true,
+      "sha256": "2e6b30c5b33486d45a291f006462a3ffa35ce54c7960a69d865055efdb1ca03a"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_scorebug_sprite_code.py",
+      "equal_to_base": true,
+      "sha256": "01e1288dff4fe6897b89489cbaba0072f8a8070fa12434d81f6d16fb7d29ad6b"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_scorebug_runtime.py",
+      "equal_to_base": true,
+      "sha256": "5a4fdd292b86af8b7ab0e3051d0f072606001bf0d60301d43088bd9f1f719fd5"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_scorebug_sprite.py",
+      "equal_to_base": true,
+      "sha256": "7ceee0ee98bc32b1f314d9b06bf8331d3261b81b2c850edf20ee5c178301c606"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_sprite/layout.json",
+      "equal_to_base": true,
+      "sha256": "e4f2b4a07d0d2ab73db59dc134e20ba1595eb83fa065abe687019d42eb8f1d61"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_sprite/template.png",
+      "equal_to_base": true,
+      "sha256": "d028b924fede6299d003c7c9d5c495c6b00d40dac24146ea345a9af7582f8e69"
+    },
+    {
+      "path": "data/nfl2k5_cave_reservations.json",
+      "equal_to_base": true,
+      "sha256": "4fff3467479f70680f6743d9d45fec40264bda97148e07ed324be4153b663c33"
+    },
+    {
+      "path": "packaging/release-allowlist.txt",
+      "equal_to_base": true,
+      "sha256": "14630cb84fccc713bf7c2d3a360227cd55e7df22e9cda9ea162f90fa928104bf"
+    },
+    {
+      "path": "packaging/apf2k8-release-allowlist.txt",
+      "equal_to_base": true,
+      "sha256": "4d38197bb0923f05c8e4a483b2979633616d7ba352ed5400eab31a9166332955"
+    },
+    {
+      "path": "data/nfl2k5_scorebug_sprite/team_accents.json",
+      "equal_to_base": true,
+      "sha256": "8c81fd84f3fa0a4dcb912347e92a754ede0881e0ca9a9e5204e2458f562fa978"
+    }
+  ],
+  "runtime_rx_used_bytes": 4086,
+  "runtime_rx_padded_bytes": 4096,
+  "runtime_rx_spare_bytes": 10
+}
