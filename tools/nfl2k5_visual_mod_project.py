@@ -34,6 +34,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from mod_editor.core.nfl2k5_compile_cache import CompileCache
+from mod_editor.core.nfl2k5_equipment_lz import uncapped_optimal_fit  # noqa: E402
 from mod_editor.core import nfl2k5_model_project as model_project
 from mod_editor.core import platform_compat  # noqa: E402
 from mod_editor.core.model import SourceRecord  # noqa: E402
@@ -3457,18 +3458,63 @@ def _parallel_uniform_imports(edits, project, pins, reports, index, inventory, p
 _EQUIPMENT_WORKER_CACHE = None
 
 
+def _fit_heartbeat(labels, done, total):
+    """Progress while a long fit or refit runs; Cancel stops the build."""
+    started = time.monotonic()
+    last = [started]
+    def beat(note=None):
+        now = time.monotonic()
+        if note is None and now - last[0] < 2.0:
+            return
+        last[0] = now
+        _item_progress(f'{note or "Still fitting " + labels} ({int(now - started)} s)', done, total)
+    return beat
+
+
+def _equipment_receipt_rows(rows, refits):
+    """Fit receipts describe the project's own art, never a Build refit.
+
+    A refitted item keeps its measured "needs refit" row, so the project and
+    its captions stay truthful and the next Build refits it the same way.
+    """
+    refitted = {row['asset_id']: row for row in refits}
+    result = []
+    for row in rows:
+        original = refitted.get(row['asset_id'])
+        if original is None:
+            result.append(row)
+            continue
+        reason = original['reason']
+        if isinstance(original['budget'], int) and isinstance(original['required'], int):
+            reason = (f"Equipment art needs refit: it cannot fit its {original['budget']:,}-byte span "
+                      f"({'at least ' if original['required_is_lower_bound'] else ''}"
+                      f"{original['required']:,} bytes required). Build refits it on the disc; "
+                      "use Refit equipment to keep a refit in the project.")
+        result.append(dict(asset_id=original['asset_id'], set_selector=original['set_selector'],
+                           fit_status='needs refit', fit_error=reason,
+                           budget=original['budget'], required=original['required'],
+                           required_is_lower_bound=original['required_is_lower_bound'],
+                           attempts=[], suggestion=None))
+    return result
+
+
 def _equipment_fit_worker(arguments):
     """One physical group; the parent alone publishes game data or receipts."""
-    index, edits = arguments
+    index, edits, scratch, done, total = arguments
     writer = uniform_equipment_adapter
     global _EQUIPMENT_WORKER_CACHE
     if _EQUIPMENT_WORKER_CACHE is None:
         _EQUIPMENT_WORKER_CACHE = writer.EquipmentCompileCache()
     cache = _EQUIPMENT_WORKER_CACHE
     cache.used_keys.clear()
+    labels = ', '.join(asset_id for asset_id, _ in edits)
     try:
-        rows = writer.preflight_project_equipment(index,
-            [(None, asset_id, path) for asset_id, path in edits], compile_cache=cache)
+        # Build finishes every search (no clock), then refits only what the
+        # complete measurement proves cannot fit, exactly as Refit would.
+        with tempfile.TemporaryDirectory(prefix='.equipment-refit-', dir=scratch) as folder:
+            rows, substitutes, refits = writer.auto_refit_group(
+                index, [(asset_id, Path(path)) for asset_id, path in edits], Path(folder),
+                compile_cache=cache, heartbeat=_fit_heartbeat(labels, done, total))
         records = []
         for key in cache.used_keys:
             compiled = cache.compiled.get(key)
@@ -3477,14 +3523,15 @@ def _equipment_fit_worker(arguments):
             record = asdict(compiled)
             record['independent'] = sorted(compiled.independent)
             records.append((key, record))
-        return rows, records
+        return rows, records, substitutes, refits
     except Exception as exc:
         # Custom codec exceptions need more arguments than Exception's pickle
         # protocol supplies. Return text, then name the group in the parent.
-        return str(exc), []
+        return str(exc), [], {}, []
 
 
-def _parallel_equipment_fits(groups, project, pins, index, cache, workers):
+def _parallel_equipment_fits(groups, project, pins, index, cache, workers, scratch=None):
+    """Fit every physical group; return Build refits as (substitutes, refits)."""
     from concurrent.futures import ProcessPoolExecutor
     from collections import deque
     import multiprocessing
@@ -3493,12 +3540,14 @@ def _parallel_equipment_fits(groups, project, pins, index, cache, workers):
     total = sum(len(rows) for rows in groups.values())
     cache.size_for_project(total)
     cache.enable_handoff()
+    substitutes: dict[str, bytes] = {}
+    refits: dict[tuple[int, int], list[dict[str, Any]]] = {}
     def finish(item):
         nonlocal completed
-        rows, future = item
+        group_key, rows, future = item
         labels = ', '.join(row['asset_id'] for row in rows)
         _item_progress('Checking fit: ' + labels, completed, total)
-        fits, records = future.result()
+        fits, records, group_substitutes, group_refits = future.result()
         if isinstance(fits, str):
             raise ProjectError(f'Cannot build {labels}: {fits}')
         for key, record in records:
@@ -3508,39 +3557,56 @@ def _parallel_equipment_fits(groups, project, pins, index, cache, workers):
             cache.preflight_keys.add(key)
         # Advisory metadata only. It is saved with the project by an explicit
         # Save; encoded spans stay in the private compiler cache.
-        print('NFL2K5_FIT_RECEIPT ' + json.dumps(fits), flush=True)
-        failed = [r for r in fits if r.get('fit_status') == 'needs refit']
+        print('NFL2K5_FIT_RECEIPT ' + json.dumps(_equipment_receipt_rows(fits, group_refits)), flush=True)
+        failed = [r for r in fits if r.get('fit_status') != 'fits']
         if failed:
             raise ProjectError('\n'.join(
                 f"Equipment / uniform set {r['set_selector']} / {r['asset_id']}: "
-                f"needs refit: {r['fit_error']} Use Refit equipment in Build, or revert this item."
+                f"needs refit: {r.get('fit_error', 'its fit was not measured')} "
+                "Use Refit equipment in Build, or revert this item."
                 for r in failed))
+        substitutes.update(group_substitutes)
+        refits[group_key] = list(group_refits)
+        for row in group_refits:
+            _item_progress(f"Refitted {row['set_selector']} / {row['name']}: {row['fit_summary']}",
+                           completed, total)
         completed += len(rows)
         _item_progress('Fit checked: ' + labels, completed, total)
     if workers == 1:
         # The laptop case avoids spawn, IPC and a fresh cache for every group.
         from concurrent.futures import Future
-        for rows in groups.values():
-            edits = [(None, row['asset_id'], resolve_asset(project, row['png'], pins).path) for row in rows]
+        for group_key, rows in groups.items():
+            edits = [(row['asset_id'], resolve_asset(project, row['png'], pins).path) for row in rows]
+            labels = ', '.join(asset_id for asset_id, _ in edits)
             cache.used_keys.clear()
-            fits = uniform_equipment_adapter.preflight_project_equipment(index, edits, compile_cache=cache)
+            try:
+                with tempfile.TemporaryDirectory(prefix='.equipment-refit-', dir=scratch) as folder:
+                    fits, group_substitutes, group_refits = uniform_equipment_adapter.auto_refit_group(
+                        index, edits, Path(folder), compile_cache=cache,
+                        heartbeat=_fit_heartbeat(labels, completed, total))
+            except uniform_equipment_adapter.EquipmentRefitError as exc:
+                raise ProjectError(f'Cannot build {labels}: {exc}') from exc
             cache.preflight_keys.update(cache.used_keys)
             future = Future()
-            future.set_result((fits, []))
-            finish((rows, future))
-        return
+            future.set_result((fits, [], group_substitutes, group_refits))
+            finish((group_key, rows, future))
+        return substitutes, refits
     with ProcessPoolExecutor(max_workers=workers, mp_context=multiprocessing.get_context('spawn')) as pool:
         try:
-            for rows in groups.values():
+            submitted = 0
+            for group_key, rows in groups.items():
                 edits = [(row['asset_id'], resolve_asset(project, row['png'], pins).path) for row in rows]
-                pending.append((rows, pool.submit(_equipment_fit_worker, (index, edits))))
+                pending.append((group_key, rows, pool.submit(_equipment_fit_worker,
+                    (index, edits, scratch, submitted, total))))
+                submitted += len(rows)
                 if len(pending) >= workers:
                     finish(pending.popleft())
             while pending:
                 finish(pending.popleft())
         finally:
-            for _, future in pending:
+            for _, _, future in pending:
                 future.cancel()
+    return substitutes, refits
 
 
 def _item_progress(message, done, total):
@@ -3794,9 +3860,14 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
         independent_kinds = {"torso", "sleeve", "pants", "live_helmet", "team_select"}
         workers = _encode_worker_count() if parallelism is None else max(1, parallelism)
         uniform_orders = [n for n, row in enumerate(project.value['edits']) if row['kind'] in independent_kinds]
+        # Build refits (exactly what Refit equipment would stage) replace only
+        # the compiled input; project art and its pins are never changed.
+        equipment_substitutes: dict[str, bytes] = {}
+        equipment_refits: dict[tuple[int, int], list[dict[str, Any]]] = {}
         if len(equipment_groups) >= 2 and historical_import_reports is None:
-            _parallel_equipment_fits(equipment_groups, project, input_pins, index_pin.path,
-                                     equipment_compile_cache, workers)
+            equipment_substitutes, equipment_refits = _parallel_equipment_fits(
+                equipment_groups, project, input_pins, index_pin.path,
+                equipment_compile_cache, workers, output_parent)
         if workers > 1 and len(uniform_orders) >= 4 and historical_import_reports is None:
             parallel_imports = _parallel_uniform_imports([project.value['edits'][n] for n in uniform_orders], project,
                 input_pins, report_paths, index_pin.path, inventory_pin.path, output_parent, workers, cache, key_for,
@@ -4154,38 +4225,79 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                             continue
                         handled_equipment_groups.add(group_key)
                         equipment_edits = equipment_groups[group_key]
+                        group_labels = ', '.join(str(row["asset_id"]) for row in equipment_edits)
+                        group_heartbeat = _fit_heartbeat(group_labels, edit_index, len(project.value["edits"]))
+                        group_refits = equipment_refits.get(group_key, [])
                         staged_equipment: list[tuple[str, Path]] = []
-                        for equipment_index, row in enumerate(equipment_edits):
-                            pin = resolve_asset(project, row["png"], input_pins)
-                            staged = _copy_edit_input(
-                                len(prepared),
-                                f"equipment_{equipment_index:04d}",
-                                pin,
-                                temp_root,
-                                temp_files,
-                            )
-                            staged_equipment.append((str(row["asset_id"]), staged))
+
+                        def stage_equipment(substitutes):
+                            # Project art is copied once; a Build refit is its
+                            # own file beside it, never a rewrite of that copy.
+                            first = not staged_equipment
+                            for equipment_index, row in enumerate(equipment_edits):
+                                asset_id = str(row["asset_id"])
+                                substitute = substitutes.get(asset_id)
+                                if substitute is not None:
+                                    staged = temp_root.path / (
+                                        f"{len(prepared):05d}_equipment_{equipment_index:04d}_refit.png")
+                                    if not staged.exists():
+                                        temp_files.append(exclusive_payload(staged, substitute, temp_root))
+                                elif first:
+                                    staged = _copy_edit_input(
+                                        len(prepared),
+                                        f"equipment_{equipment_index:04d}",
+                                        resolve_asset(project, row["png"], input_pins),
+                                        temp_root,
+                                        temp_files,
+                                    )
+                                else:
+                                    continue
+                                if first:
+                                    staged_equipment.append((asset_id, staged))
+                                else:
+                                    staged_equipment[equipment_index] = (asset_id, staged)
+
+                        def compile_equipment():
+                            # No size suggestion: Build refits instead, and a
+                            # suggestion never changes whether the group fits.
+                            with uncapped_optimal_fit(group_heartbeat):
+                                return (uniform_equipment_adapter
+                                        .build_unified_uniform_equipment_imports(
+                                            index_pin.path,
+                                            staged_equipment,
+                                            pack_hashes=equipment_pack_hashes,
+                                            compile_cache=equipment_compile_cache,
+                                            suggest_fit=False,
+                                        ))
+                        stage_equipment(equipment_substitutes)
                         try:
-                            equipment_built = (
-                                uniform_equipment_adapter
-                                .build_unified_uniform_equipment_imports(
-                                    index_pin.path,
-                                    staged_equipment,
-                                    pack_hashes=equipment_pack_hashes,
-                                    compile_cache=equipment_compile_cache,
-                                )
-                            )
+                            try:
+                                equipment_built = compile_equipment()
+                            except uniform_equipment_adapter.EquipmentRefitError:
+                                if group_key in equipment_refits:
+                                    raise
+                                # Not measured by the parallel pass (a single
+                                # group): finish the fit and refit here.
+                                with tempfile.TemporaryDirectory(prefix='.equipment-refit-',
+                                                                 dir=output_parent) as folder:
+                                    fits, substitutes, group_refits = uniform_equipment_adapter.auto_refit_group(
+                                        index_pin.path, list(staged_equipment), Path(folder),
+                                        compile_cache=equipment_compile_cache, heartbeat=group_heartbeat)
+                                print('NFL2K5_FIT_RECEIPT ' + json.dumps(
+                                    _equipment_receipt_rows(fits, group_refits)), flush=True)
+                                for refit in group_refits:
+                                    _item_progress(f"Refitted {refit['set_selector']} / {refit['name']}: "
+                                                   f"{refit['fit_summary']}", edit_index, len(project.value["edits"]))
+                                stage_equipment(substitutes)
+                                equipment_built = compile_equipment()
                         except uniform_equipment_adapter.EquipmentRefitError as exc:
-                            fits = uniform_equipment_adapter.preflight_project_equipment(
-                                index_pin.path, [(None, asset_id, path) for asset_id, path in staged_equipment],
-                                compile_cache=equipment_compile_cache)
-                            print('NFL2K5_FIT_RECEIPT ' + json.dumps(fits), flush=True)
-                            raise ProjectError('\n'.join(
-                                f"Equipment / uniform set {row['set_selector']} / {row['asset_id']}: "
-                                f"needs refit: {row['fit_error']} Use Refit equipment in Build, or revert this item."
-                                for row in fits if row.get('fit_status') == 'needs refit')) from exc
+                            raise ProjectError(f"Cannot build {group_labels}: {exc}") from exc
                         except uniform_equipment_adapter.UniformEquipmentWriterError as exc:
                             raise ProjectError(str(exc)) from exc
+                        if group_refits:
+                            # Hash-bound with the import report, so the final
+                            # dialog lists every item Build refitted.
+                            equipment_built[2]["auto_refit"] = [dict(row) for row in group_refits]
                         built = [equipment_built]
                         effective_edit = {
                             "kind": UNIFORM_EQUIPMENT_KIND,
@@ -4250,10 +4362,10 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                     cached_handled.update(dependencies)
                 for replacement, previews, report, selector, target in built:
                     if kind == UNIFORM_EQUIPMENT_KIND:
-                        print('NFL2K5_FIT_RECEIPT ' + json.dumps([
+                        print('NFL2K5_FIT_RECEIPT ' + json.dumps(_equipment_receipt_rows([
                             dict(row, fit_status='fits',
                                  encoded_bytes=report['bounded_palette_fit']['selected_encoded_bytes'])
-                            for row in report['edits']]), flush=True)
+                            for row in report['edits']], report.get('auto_refit', []))), flush=True)
                     order = len(prepared)
                     key = (kind, selector)
                     require(key not in selectors,

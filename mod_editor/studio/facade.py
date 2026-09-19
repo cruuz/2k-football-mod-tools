@@ -3727,7 +3727,8 @@ class Nfl2k5StudioFacade:
             )
         from mod_editor.core.equipment_staging import cached_equipment_fit_rows
         refits = [r for r in cached_equipment_fit_rows(candidate) if r.get('fit_status') == 'needs refit']
-        refit_note = ('\nEquipment needs refit. Open Build and use Refit equipment: reduce colours, then size.\n'
+        refit_note = ('\nEquipment needs refit. Open Build and use Refit equipment: reduce colours, then size. '
+            'If you build first, Build applies the same refit to the disc and lists it.\n'
             + '\n'.join(f"{r['set_selector']} / {r['asset_id']}: {r['fit_error']}" for r in refits)) if refits else ''
         return StudioOperationResult(
             "\n".join(getattr(candidate, "model_source_warnings", ()))

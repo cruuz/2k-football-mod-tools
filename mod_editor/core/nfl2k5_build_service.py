@@ -111,6 +111,9 @@ class BuildResult:
     source_sha256: str = ""
     stage_seconds: dict[str, float] = field(default_factory=dict)
     texture_summary: tuple[str, ...] = ()
+    #: One line per equipment item Build refitted because its art could not
+    #: fit its span (beta 72.1); also the first lines of ``texture_summary``.
+    refitted: tuple[str, ...] = ()
 
     @property
     def message(self) -> str:
@@ -1487,6 +1490,7 @@ class Nfl2k5BuildService:
                 changed_byte_count=result.changed_byte_count,
                 kept_retail=result.kept_retail,
                 texture_summary=result.texture_summary,
+                refitted=result.refitted,
                 source_sha256=result.source_sha256,
                 stage_seconds={**timings, "publish": time.monotonic() - started},
             )
@@ -1751,8 +1755,11 @@ class Nfl2k5BuildService:
                 "The verified build receipt did not match the staged XISO. "
                 "No output was published."
             )
-        from mod_editor.core.equipment_reporting import verified_build_texture_lines
+        from mod_editor.core.equipment_reporting import (
+            verified_build_refit_lines, verified_build_texture_lines,
+        )
         texture_summary = verified_build_texture_lines(manifest)
+        refitted = verified_build_refit_lines(manifest)
         return BuildResult(
             output_xiso=final_output,
             output_size=source_size,
@@ -1762,4 +1769,5 @@ class Nfl2k5BuildService:
             changed_byte_count=patch_row["changed_byte_count"],
             kept_retail=tuple(dict(row) for row in value.get("kept_retail", [])),
             texture_summary=texture_summary,
+            refitted=refitted,
         ), staged_identity

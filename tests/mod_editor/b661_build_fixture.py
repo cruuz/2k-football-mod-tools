@@ -8,6 +8,7 @@ from dataclasses import asdict, replace
 import hashlib
 import importlib.util
 import json
+import os
 from pathlib import Path
 import struct
 import sys
@@ -25,8 +26,9 @@ def sha(data):
     return hashlib.sha256(data).hexdigest()
 
 
-def create(root):
-    equipment = Fixture(root, family=8)
+def create(root, equipment=None):
+    # ``equipment`` may be any family-8 Fixture, e.g. a tight span (beta 72.1).
+    equipment = Fixture(root, family=8) if equipment is None else equipment
     system = bytearray(256)
     struct.pack_into("<II", system, 0, 13, 2)
     for base, name_at, desc, name, palette in ((24, 84, 128, "jersey00", 174720),
@@ -115,6 +117,11 @@ def cli():
     sys.modules[spec.name] = tool
     spec.loader.exec_module(tool)
     configure(tool, root)
+    quick_check = os.environ.get("B721_QUICK_CHECK_SECONDS")
+    if quick_check is not None:
+        # Model a slow laptop: the interactive quick check would stop at once.
+        from mod_editor.core import nfl2k5_equipment_lz as lz
+        lz._TIME_LIMIT.set(float(quick_check))
     return tool.main()
 
 

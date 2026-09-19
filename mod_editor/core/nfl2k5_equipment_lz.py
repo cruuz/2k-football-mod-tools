@@ -10,6 +10,8 @@ every match is at most its distance. No decoded byte or sibling changes.
 from __future__ import annotations
 
 from array import array
+from contextlib import contextmanager
+from contextvars import ContextVar
 from pathlib import Path
 import struct
 import os
@@ -20,7 +22,36 @@ import subprocess
 import sys
 import time
 
+# The interactive import check stops a pure-Python search after this many
+# seconds and reports the fit as pending. A wall clock is not a measurement:
+# the same art finishes on a faster or idle CPU. Build and Refit equipment
+# run inside uncapped_optimal_fit(), so they always finish the search and the
+# outcome depends only on the bytes (beta 72.1).
 OPTIMAL_SECONDS = 5.0
+_TIME_LIMIT: ContextVar = ContextVar("equipment_optimal_time_limit", default=OPTIMAL_SECONDS)
+_HEARTBEAT: ContextVar = ContextVar("equipment_optimal_heartbeat", default=None)
+_CONTEXT_LIMIT = object()
+
+
+@contextmanager
+def uncapped_optimal_fit(heartbeat=None):
+    """Finish every lossless search in this context; never stop on a wall clock.
+
+    ``heartbeat`` (optional, called with no arguments) runs about every two
+    seconds while a long search runs, so Build can show progress. Cancelling
+    a Build stops its whole process group, which ends the search.
+    """
+    limit = _TIME_LIMIT.set(None)
+    beat = _HEARTBEAT.set(heartbeat)
+    try:
+        yield
+    finally:
+        _HEARTBEAT.reset(beat)
+        _TIME_LIMIT.reset(limit)
+
+
+def optimal_fit_is_capped() -> bool:
+    return _TIME_LIMIT.get() is not None
 
 
 TOOLS = Path(__file__).resolve().parents[2] / "tools"
@@ -81,10 +112,19 @@ def minimum_equipment_size(count: int, offset_bits: int = 10) -> int:
 def compress_equipment_optimal(source: bytes, *, stream_tag: int, offset_bits: int,
                                max_encoded_size: int,
                                max_candidate_comparisons: int = 50_000_000,
-                               timeout: float = OPTIMAL_SECONDS) -> bytes:
-    deadline = time.monotonic() + timeout
+                               timeout=_CONTEXT_LIMIT) -> bytes:
+    if timeout is _CONTEXT_LIMIT:
+        timeout = _TIME_LIMIT.get()
+    started = time.monotonic()
+    deadline = None if timeout is None else started + timeout
+    heartbeat = _HEARTBEAT.get()
+    beat = [started]
     def check_time():
-        if time.monotonic() >= deadline:
+        now = time.monotonic()
+        if heartbeat is not None and now - beat[0] >= 2.0:
+            beat[0] = now
+            heartbeat()
+        if deadline is not None and now >= deadline:
             raise EquipmentSearchTimeout(
                 f'Equipment optimal fit reached its {timeout:g}-second limit. '
                 'Use Refit equipment to reduce colours or size, or revert this item.')
@@ -104,7 +144,8 @@ def compress_equipment_optimal(source: bytes, *, stream_tag: int, offset_bits: i
                 [str(helper), str(len(source)), str(stream_tag), str(offset_bits),
                  str(4 * 1024 * 1024), str(max_candidate_comparisons)],
                 input=source, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                timeout=max(0.001, deadline - time.monotonic()), check=False,
+                timeout=None if deadline is None else max(0.001, deadline - time.monotonic()),
+                check=False,
                 **({"creationflags": subprocess.CREATE_NO_WINDOW} if os.name == "nt" else {}))
             result = completed.stdout
             if completed.returncode == 0 and 9 <= len(result) <= 4 * 1024 * 1024:

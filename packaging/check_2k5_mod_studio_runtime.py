@@ -99,17 +99,17 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "dd3529836c4ebdc5ddf344de19edca38191f918ca341248953cb289b56c5e42e",
     "mod_editor/gui/studio_qt.py":
-        "b83c51bc8ddd1a62936f2d03777e493d85e941b770ab9781b7562ec2eb14154b",
+        "0c25893b34655974b1e20e490a6d35bf39cbf24946346759d86664e27f5ba4ef",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
         "68b6887e0778391916a6465a722b062d1c09afe3a376c318026e9db8bd7ed23a",
     "mod_editor/studio/facade.py":
-        "02ca5a691d0aee2ca2442ab44a6d033c41526f4c3c8a5951cde65854a087f612",
+        "8c0bbf19bb51a7472b263f9a3f4f681b9420e1f18fbf546200360e7cdcb8c01c",
     "mod_editor/studio/project_archive.py":
         "495a7c787ec09d20b0e023028cc4a4c4a532b5f97baa8b374eb89394cafafb6a",
     "mod_editor/studio/session.py":
-        "4427cf7e61c082760d15e65f621e5c1393368cd2bd92c1eb54b962aae0c9e95b",
+        "033901e7c410376940a819191fdc89eb8f882ff9d7e9c932d52cfa650de75fbb",
 }
 
 B69_GAME_RUNTIME_PINS = {
