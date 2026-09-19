@@ -691,13 +691,15 @@ class ProjectTargetIdentity:
         """Whether ``other`` still names this file with the same size and mtime.
 
         Path, file ID (device and inode), size and modification time must all
-        match; only ``changed_ns`` may differ.  The two identities come from two
-        descriptors opened at different times, and the change time is metadata,
-        not content: on Windows Python 3.12 ``os.fstat`` reports
-        ``FILE_BASIC_INFO.ChangeTime`` as ``st_ctime``, which backup, antivirus,
-        indexing and sync software move without touching a byte (a POSIX chmod
-        or xattr write does the same).  A 2K5 beta 72 tester's untouched project
-        was refused on exactly that difference.
+        match; only ``changed_ns`` may differ, because that field decides
+        nothing on its own: POSIX moves it with no byte changed (a chmod, an
+        xattr write, a restored mtime), which is what refused a 2K5 beta 72
+        tester's untouched project, and Windows never moves it for a change at
+        all, because Python reports the file's CREATION time there.  An equal
+        change time is therefore not proof either, and this project open and
+        fast save record no content hash to fall back on: what they detect is a
+        replaced file, a resized file and an ordinary rewrite, not a same-size
+        rewrite that puts the modification time back.
         """
 
         return isinstance(other, ProjectTargetIdentity) and (

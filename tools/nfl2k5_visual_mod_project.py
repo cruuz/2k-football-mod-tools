@@ -5811,9 +5811,15 @@ def build(project_path: Path, source_path: Path, output_path: Path,
         source_sha = union["source_sha256"]
         require(common.path_identity(source) == source_identity,
                 "source or output changed before final manifest commit")
-        # The snapshots span the whole build. A change-time-only move is
-        # settled by hashing the file again against the union pass's hash, and
-        # the receipt records the snapshot that was proved.
+        # The snapshots span the whole build, and this is a fail-fast gate: a
+        # change-time-only move is settled by hashing the file again against
+        # the union pass's hash, and the receipt records what the gate saw.
+        # On Windows an unmoved change time proves nothing (st_ctime is the
+        # creation time), so the binding proof is the verifier's unconditional
+        # hash of both files against this receipt, before anything is
+        # published. Hashing here as well would cost two more full reads of
+        # every build to cover only the moment between the union pass and this
+        # line; anything earlier is already inside the union's own hashes.
         source_snapshot = snapshot_if_unchanged(
             source_fd, source_snapshot, union["source_sha256"])
         output_snapshot = snapshot_if_unchanged(
@@ -6074,34 +6080,74 @@ def file_snapshot(fd: int) -> list[int]:
     return [info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_ctime_ns]
 
 
-def snapshot_if_unchanged(fd: int, recorded: Any,
-                          whole_file_sha256: Any) -> list[int] | None:
-    """``fd``'s current snapshot when its file still holds the proved bytes, else None.
+def same_file_apart_from_change_time(current: list[int], recorded: Any) -> bool:
+    """Device, inode, size and modification time equal; only st_ctime may differ.
 
-    ``recorded`` is an earlier ``file_snapshot`` of the same file and
-    ``whole_file_sha256`` the full-file SHA-256 proved for it: the union pass
-    of this build, or the receipt when a verifier process checks a finished
-    build.  An identical snapshot needs nothing more.  One that differs ONLY
-    in the change time (the last field) is accepted after the whole file is
-    hashed again through ``fd`` and equals that SHA-256, with device, inode,
-    size and mtime still unchanged after the read.  On Windows Python 3.12
-    ``os.fstat`` reports FILE_BASIC_INFO.ChangeTime as st_ctime, which
-    antivirus, backup, indexing and sync software move without touching a
-    byte, even on a file this build holds open; a beta 72 tester's builds
-    stopped on exactly that.  Every other difference refuses as before.
+    The change time is the one ``file_snapshot`` field that is neither a
+    reliable "this changed" signal nor a reliable "nothing changed" one:
+
+    * POSIX moves it with no byte changed (a chmod, an xattr write, or a
+      restored mtime), which refused a beta 72 tester's untouched project.
+    * Windows never moves it for a content or metadata change at all, because
+      Python reports the file's CREATION time in ``st_ctime`` there
+      (deprecated since 3.12 in favour of ``st_birthtime``); software that
+      rewrites or restores a file can reset it to something else entirely.
+
+    So it never decides on its own.  Where a full-file SHA-256 exists, the
+    hash decides: see :func:`snapshot_proving_sha256`.
+    """
+
+    return (isinstance(recorded, list) and len(recorded) == len(current)
+            and current[:-1] == recorded[:-1])
+
+
+def snapshot_proving_sha256(fd: int, recorded: Any,
+                            whole_file_sha256: Any) -> list[int] | None:
+    """``fd``'s snapshot when its whole file still hashes to its recorded proof.
+
+    The hash is read and compared ALWAYS, not only when a stat field moved.
+    On Windows ``st_ctime`` is the creation time, so a same-size rewrite that
+    puts the modification time back leaves every stat field identical, and a
+    stat-only check accepts the changed bytes without noticing; content, not
+    metadata, is what this boundary is allowed to trust.  Device, inode and
+    size must still match ``recorded``, and nothing may move across the read.
     """
 
     current = file_snapshot(fd)
-    if current == recorded:
-        return current
-    if not (isinstance(recorded, list) and len(recorded) == len(current)
-            and current[:-1] == recorded[:-1]
+    if not (same_file_apart_from_change_time(current, recorded)
             and isinstance(whole_file_sha256, str) and len(whole_file_sha256) == 64):
         return None
     if common.sha256_fd(fd, 0, current[2]) != whole_file_sha256:
         return None
     after = file_snapshot(fd)
-    return after if after[:-1] == current[:-1] else None
+    return after if same_file_apart_from_change_time(after, current) else None
+
+
+def snapshot_if_unchanged(fd: int, recorded: Any,
+                          whole_file_sha256: Any) -> list[int] | None:
+    """A fail-fast stat gate for one file this process holds open, else None.
+
+    An identical snapshot passes, and a difference only in the change time is
+    settled by hashing the whole file against ``whole_file_sha256`` (the union
+    pass of this build).  Any other difference refuses.
+
+    This is a gate, not a proof: on Windows an identical snapshot does not
+    establish that the bytes are unchanged (see
+    :func:`same_file_apart_from_change_time`).  The content proof every build
+    must clear before anything is published is the verifier's unconditional
+    :func:`snapshot_proving_sha256` against the receipt.
+    """
+
+    current = file_snapshot(fd)
+    if current == recorded:
+        return current
+    if not (same_file_apart_from_change_time(current, recorded)
+            and isinstance(whole_file_sha256, str) and len(whole_file_sha256) == 64):
+        return None
+    if common.sha256_fd(fd, 0, current[2]) != whole_file_sha256:
+        return None
+    after = file_snapshot(fd)
+    return after if same_file_apart_from_change_time(after, current) else None
 
 
 @_diagnose_phase("checking written edits against the build receipt")
@@ -6149,11 +6195,11 @@ def verify_written(project_path: Path, source_path: Path, output_path: Path,
             require(str(path) == record.get("path", record.get("xiso_path"))
                     and common.path_identity(path) == common.fd_identity(fd),
                     "source/output changed since the full build check")
-            # Another process and another descriptor than the build's: a
-            # change-time-only difference is settled by the whole-file SHA-256.
-            snapshot = snapshot_if_unchanged(
-                fd, receipt[snapshot_key], whole_file_sha256)
-            require(snapshot is not None,
+            # A fail-fast stat gate only. The content proof for both files is
+            # the unconditional whole-file hash at the end of this function,
+            # so a change-time-only difference passes here without a read.
+            snapshot = file_snapshot(fd)
+            require(same_file_apart_from_change_time(snapshot, receipt[snapshot_key]),
                     "source/output changed since the full build check")
             seen.append(snapshot)
         source_fd, output_fd = fds
@@ -6199,13 +6245,15 @@ def verify_written(project_path: Path, source_path: Path, output_path: Path,
         for pin in pins.values():
             with _naming_project_edits(project, input_indices[pin.path]):
                 verify_input_pin(pin)
-        # Same descriptors as the snapshots accepted above. A change-time-only
-        # move while the spans and inputs were re-read is settled the same way,
-        # by the whole-file SHA-256 against the receipt.
-        require(snapshot_if_unchanged(source_fd, source_seen,
-                                      manifest["source"].get("sha256_before")) is not None
-                and snapshot_if_unchanged(output_fd, output_seen,
-                                          manifest["output"].get("xiso_sha256")) is not None
+        # The content proof, and the last thing between this build and
+        # publication: both files are hashed in full and must equal what the
+        # build recorded, whatever their stat fields say. Nothing that reached
+        # this point on a stat comparison alone is published on the strength of
+        # it, on any platform.
+        require(snapshot_proving_sha256(source_fd, source_seen,
+                                        manifest["source"].get("sha256_before")) is not None
+                and snapshot_proving_sha256(output_fd, output_seen,
+                                            manifest["output"].get("xiso_sha256")) is not None
                 and common.path_identity(source_path) == common.fd_identity(source_fd)
                 and common.path_identity(output_path) == common.fd_identity(output_fd)
                 and common.path_identity(resolved) == manifest_identity
