@@ -2636,14 +2636,17 @@
         "tests/mod_editor/test_apf_b71_situation_mask_abi.py",
         "tests/mod_editor/test_apf_b71_situation_mask_install.py",
         "tests/mod_editor/test_apf_b71_editor_workflow.py",
-        "tests/mod_editor/test_apf_b71_editor_workflow_qt.py"
+        "tests/mod_editor/test_apf_b71_editor_workflow_qt.py",
+        "docs/research/apf_b72_personnel_rows.md",
+        "tests/mod_editor/test_apf_b72_personnel_rows.py",
+        "tests/mod_editor/test_apf_b72_personnel_rows_native.py"
       ],
       "game": "apf2k8_xbox360",
       "gui": {
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "Named-book preview, per-situation exclusions and stored personnel-row editing use explicit undoable project edits. No preset enables or stages masks. Install the matching authored XEX patch separately."
+        "reason": "Named-book preview, exclusions and per-book/per-bucket personnel comparison rows use explicit undoable project edits. No preset enables these policies. Install the matching v2 situation patch separately; the page checks whether the installed patch matches the project. Gameplay UNWITNESSED."
       },
       "id": "apf2k8.playbooks.cpu_playcalling",
       "input_constraints": [
@@ -2652,7 +2655,10 @@
         "MASTER and curve changes affect every book; personnel retirement with uncovered rows is refused while lineup caller reachability remains unclassified.",
         "Twelve independent live buckets use actual down 1..4 and absolute longitudinal distance up to 2, over 2 through 7, or over 7 yards. The older 23 labels remain representative queries. The patch filters ordinary CPU offense draws only; special phases and explicit calls bypass it.",
         "Computed personnel requests are read-only; stored MASTER comparison rows remain editable with an explicit all-books scope. An empty TE depth list substitutes an FB.",
-        "At most 48 named mask profiles; only ordinary formations 0..150. Empty filtered draws fall back to their complete original candidates and record native counters. Exported builds contain separate BASE/TU patches and the canonical data block."
+        "At most 48 named mask profiles; only ordinary formations 0..150. Empty filtered draws fall back to their complete original candidates and record native counters. Exported builds contain separate BASE/TU patches and the canonical data block.",
+        "Local comparison rows 0..10 are keyed by resolved book name, one of twelve live buckets and ordinary personnel category. Unknown or absent overrides retain retail behavior. No SPLB or MASTER bytes change for local row edits.",
+        "Version 2 retains the existing fixed allocation and up to 48 named books; sparse row capacity depends on book count. Full data is refused before staging.",
+        "Preview exposes curve term, ratings mean, product, rank, retail weight and effective row. These are read-only factors, not independent weight sliders."
       ],
       "portme": [
         "Witness installed BASE/TU patches, actual book identity through save/USER lifecycle and final on-field personnel in game."
