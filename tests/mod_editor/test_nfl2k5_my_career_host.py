@@ -1,6 +1,7 @@
 """Host-only creation identity, picker, Draft Advisory and cut-risk checks."""
 from pathlib import Path
 import hashlib
+import os
 import struct
 import sys
 import unittest
@@ -15,25 +16,53 @@ from tests.nfl2k5_my_career_fixture import draft_save, TOKEN, XBE
 from tests.mod_editor.test_nfl2k5_roster_records import synthetic_body, synthetic_save_v0, league_sample
 
 
+BODIES = ((67, 170), (74, 220), (80, 350))
+TEMPLATES = tuple((position, variant) for position in range(17) for variant in range(3))
+# The exhaustive 612 read-backs (51 templates x 3 bodies x 4 tiers) take about six minutes on a
+# fast machine, which is most of the hosted per-file timeout, so they run only when asked:
+# MOD_STUDIO_FULL_MATRIX=1, which the release gates set. The default is a fixed list, not a random
+# one: every template exactly once, with body and tier rotating on position + variant.
+FULL_MATRIX = os.environ.get('MOD_STUDIO_FULL_MATRIX') == '1'
+
+
+def creation_matrix(full):
+    """Template, body and tier cases to read back, in a fixed order."""
+    if full:
+        return [(position, variant, body, tier) for position, variant in TEMPLATES
+                for body in BODIES for tier in range(1, 5)]
+    return [(position, variant, BODIES[(position + variant) % 3], (position + variant) % 4 + 1)
+            for position, variant in TEMPLATES]
+
+
 class CreationTests(unittest.TestCase):
     def test_identity_before_tier_all_51_templates_three_bodies_four_tiers(self):
-        # Record every native template/body/tier through the actual prepare path.
-        for position in range(17):
-            source = draft_save(position)
-            for variant in range(3):
-                for height, weight in ((67, 170), (74, 220), (80, 350)):
-                    for tier in range(1, 5):
-                        with self.subTest(position=position, variant=variant, height=height, tier=tier):
-                            output, setup, receipt = career.prepare(
-                                source, first='My', last='Player', position=position, template=variant,
-                                height=height, weight=weight, jersey=17, college='Michigan',
-                                prospect_tier=tier, token=TOKEN)
-                            chosen = roster.PlayerRecord.decode(bytes.fromhex(receipt['record_after']))
-                            self.assertEqual(prospects.native_overall(chosen), (74, 70, 64, 59)[tier-1])
-                            self.assertEqual(receipt['identity'], dict(height=height, weight=weight, jersey=17, college='Michigan'))
-                            self.assertEqual(career.read_setup(setup), bytes.fromhex(setup['state']))
-                            career.validate_state(career.read_setup(setup), output)
-                            self.assertEqual(len(output), len(source))
+        # Record native templates/bodies/tiers through the actual prepare path.
+        cases = creation_matrix(FULL_MATRIX)
+        # The case list itself is part of the proof: every template, and every body with every tier.
+        self.assertEqual(len(cases), 612 if FULL_MATRIX else 51)
+        self.assertEqual({(position, variant) for position, variant, _, _ in cases}, set(TEMPLATES))
+        self.assertEqual({(body, tier) for _, _, body, tier in cases},
+                         {(body, tier) for body in BODIES for tier in range(1, 5)})
+        sources = {}
+        passed = 0
+        for position, variant, (height, weight), tier in cases:
+            if position not in sources:
+                sources[position] = draft_save(position)
+            source = sources[position]
+            with self.subTest(position=position, variant=variant, height=height, tier=tier):
+                output, setup, receipt = career.prepare(
+                    source, first='My', last='Player', position=position, template=variant,
+                    height=height, weight=weight, jersey=17, college='Michigan',
+                    prospect_tier=tier, token=TOKEN)
+                chosen = roster.PlayerRecord.decode(bytes.fromhex(receipt['record_after']))
+                self.assertEqual(prospects.native_overall(chosen), (74, 70, 64, 59)[tier-1])
+                self.assertEqual(receipt['identity'], dict(height=height, weight=weight, jersey=17, college='Michigan'))
+                self.assertEqual(career.read_setup(setup), bytes.fromhex(setup['state']))
+                career.validate_state(career.read_setup(setup), output)
+                self.assertEqual(len(output), len(source))
+                passed += 1
+        print(f"B72_M1_CREATION_MATRIX mode={'full' if FULL_MATRIX else 'sample'} "
+              f"read_backs={passed}/{len(cases)} templates={len({case[:2] for case in cases})}", flush=True)
 
     def test_identity_validation_and_no_source_mutation(self):
         source = draft_save()
