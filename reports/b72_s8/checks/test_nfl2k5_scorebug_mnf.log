@@ -1,0 +1,13 @@
+.....F....
+======================================================================
+FAIL: test_owner_fits_its_named_allocation_and_patches_its_pointers (__main__.OwnerCodeTests.test_owner_fits_its_named_allocation_and_patches_its_pointers)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b72-s8/tests/mod_editor/test_nfl2k5_scorebug_mnf.py", line 39, in test_owner_fits_its_named_allocation_and_patches_its_pointers
+    self.assertLess(used, runtime.CODE_SIZE - 8)
+AssertionError: 4096 not less than 4088
+
+----------------------------------------------------------------------
+Ran 10 tests in 11.572s
+
+FAILED (failures=1)

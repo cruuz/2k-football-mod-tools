@@ -1,0 +1,19 @@
+{
+  "python_parses": [
+    "mod_editor/core/nfl2k5_scorebug_sprite_code.py",
+    "mod_editor/core/providers.py",
+    "tests/mod_editor/test_nfl2k5_scorebug_down_visibility.py",
+    "reports/b72_s8/audit_handoff.py",
+    "reports/b72_s8/write_handoff.py",
+    "reports/b72_s8/prepare_jev_gate.py",
+    "reports/b72_s8/prove.py",
+    "reports/b72_s8/summarize.py",
+    "reports/b72_s8/scan_owner.py",
+    "reports/b72_s8/check_base_regression.py"
+  ],
+  "em_dash_files": [],
+  "summary_lines": 20,
+  "first_line": "# b72-s8: event plates fixed, offline proof complete, ready for the test disc",
+  "last_line": "ASTRA_DONE",
+  "whitespace": "PASS"
+}

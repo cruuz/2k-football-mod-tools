@@ -1,22 +1,22 @@
-# b72-s7: live vertices correct; overdraw candidate remains uncalibrated
-01. Decoded all 47 scorebug quads and all 188 owned vertices from the requested physical RAM dump.
-02. Recorded positions, UVs, diffuse, field ownership and the absence of a stored specular attribute.
-03. All five visible down-label glyphs have white 0xffffffff diffuse at all four corners.
-04. Their UVs match the intended 1, st, ampersand, 1 and 0 atlas cells.
-05. All 3804 compiled table bytes match the pre-s5 layout at ec5d68d4.
-06. All 47 live quads match the corresponding baseline native fixture byte-for-byte.
-07. The captured black clock and dark quarter colours agree with that baseline's field rows.
-08. Current s5 team accents, layout, template, runtime and shipping files remain unchanged.
-09. Enumerated all three later draws in the supplied HUD inventory and their geometry intersections.
-10. Only draw 395 overlaps the label; vertex 184 is the hang-time event plate, not the brand.
-11. Its live UVs sample an opaque RGB 37 event cell and its geometry covers the active label box.
-12. The live-data composite gives label mean 37.64 versus screenshot 19.66, error 17.98.
-13. Minimum and maximum errors are 18.55 and 17.21, so the within-15 gate fails.
-14. Removing that plate restores bright letters only in a counterfactual model, not a validated fix.
-15. RAM glyphs encode play clock 17 while the screenshot shows 19; traced state is earlier still.
-16. The dumped inactive hang-time material is visible, but bounded native frame replay hides it correctly.
-17. No erroneous visibility writer or complete screenshot cause is proved, so no speculative patch is applied.
-18. The unchanged RX owner uses 4086 of 4096 bytes, retaining ten spare bytes and 128 RW bytes.
-19. All 35 test files, both product closures, provider integrity and native team/order/visibility checks pass; repin changes zero pins.
-20. Delivery uses branch b72-s7 in an isolated writable Git store; no emulator, disc or release was produced.
+# b72-s8: event plates fixed, offline proof complete, ready for the test disc
+01. All four event plates now follow binding availability and current slide on every active owner update.
+02. Hang time, ball on, flag and fumble use one common event-record loop.
+03. The complete event material set is logical 10, 1, 2 and 0, all outside the regular bar reset.
+04. Pending requests alone do not show plates; closing slides remain visible until the native text gate closes.
+05. Null material bindings are guarded, and unrelated material flag bits are preserved.
+06. The compact native material mapping and folded missing-logo checks preserve the existing regular bar behavior.
+07. Final RX usage is 4076 of 4096 bytes, ten fewer than the base and leaving 20 spare bytes.
+08. RW remains 128 bytes; each aspect appendix remains 324832 bytes with 47 quads and no added FONT.
+09. Native sequences cover 675 retained frames per aspect, including hang time after a punt and the next snap.
+10. All plates match their records each frame; every eligible non-event pre-snap state retains five down-label glyphs.
+11. The stale-visibility regression fails against the exact base owner and passes with the final owner.
+12. The rebuilt owner on captured RAM changes only native material 8 from visible to hidden.
+13. The fixed live-data composite restores label mean luminance 120.10 and white pixels at 255, without tone fitting.
+14. Raiders and Lions possession fixtures retain bright label pixels at both aspect settings.
+15. s5 team colours, layout and template and all s6/s7 diagnostics are byte-identical to the base.
+16. All 35 required default-path test files pass below 100 seconds: 309 cases and 8 existing skips.
+17. Provider integrity, both product closures, ownership/write/space scans and all 31 scorebug composition pairs pass.
+18. The generated provider digest is repinned; shipping allowlists already cover the changed files; integrator manifest regeneration remains.
+19. Jev reviewed the final code; TEST_DISC.md records the exact Experimental test-disc configuration and three player checks.
+20. Delivery is branch b72-s8 in the verified bundle; no disc, emulator run or release is produced, and in-game confirmation is pending.
 ASTRA_DONE
