@@ -79,7 +79,7 @@ def read_tokens(mask):
     return dict(text=''.join(out),certain=bool(out) and '?' not in out and error<.32,error=round(error,4))
 
 
-def describe(image, *, aspect='16:9'):
+def describe(image, *, aspect='16:9', light_clock=False):
     import numpy as np
     from PIL import Image
     source=Image.open(image).convert('RGB') if isinstance(image,(str,Path)) else image.convert('RGB')
@@ -92,12 +92,13 @@ def describe(image, *, aspect='16:9'):
         b=[box[0]+offset,box[1],box[2]+offset,box[3]]
         a=np.asarray(scaled.crop(b),dtype=float);lum=rgb_luma(a)
         ink=(a.min(-1)>175)&(a.max(-1)-a.min(-1)<65)
-        if name in ('clock','quarter'):ink=a.max(-1)<100
+        if name in ('clock','quarter') and not light_clock:ink=a.max(-1)<100
         ys,xs=np.where(ink)
         field=dict(box=b,luma=[round(float(lum.min()),2),round(float(np.median(lum)),2),round(float(lum.max()),2)],
                    rgb=[round(float(v),2) for v in np.median(a.reshape(-1,3),axis=0)],
                    ink_pixels=int(ink.sum()),ink_box=([int(xs.min()+b[0]),int(ys.min()+b[1]),int(xs.max()+b[0]+1),int(ys.max()+b[1]+1)] if len(xs) else None),
-                   core_luma=round(float(np.percentile(lum[ink],75)),2) if len(xs) else 0.)
+                   core_luma=round(float(np.percentile(lum[ink],75)),2) if len(xs) else 0.,
+                   ink_style='dark' if name in ('clock','quarter') and not light_clock else 'light')
         if name in ('down','clock','quarter','away_score','home_score','play_clock'):
             field['ocr']=read_tokens(ink)
         fields[name]=field
@@ -127,4 +128,4 @@ def compact(d):
                 goal_word=r['goal'],banners=d['banners'],
                 fields={k:dict(visible=bool(v['ink_pixels']),core='readable' if v['core_luma']>=200 else 'dim',
                     hue=hue_name(v['rgb'])) for k,v in fields.items() if k in ('down','away_score','home_score','plate')},
-                clock=dict(visible=bool(fields['clock']['ink_pixels']),ink='dark_on_light_capsule'))
+                clock=dict(visible=bool(fields['clock']['ink_pixels']),ink=fields['clock'].get('ink_style','dark')))

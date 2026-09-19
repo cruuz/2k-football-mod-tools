@@ -58,7 +58,8 @@ class NativeOuterLoad:
         heap, pool = m.alloc(0x100), m.alloc(heap_bytes)
         m.record = False
         m.run(0x48640, (heap_bytes,), ecx=heap, edx=pool, limit=10000000)
-        m.record = True
+        # This fixture checks native resources and I/O events directly. It does
+        # not consume the full instruction/write history during collection I/O.
         m.put(0xb12034, heap)
         handlers = m.alloc(48)
         m.put(handlers, handlers + 16)
@@ -96,7 +97,8 @@ class NativeOuterLoad:
                 self.fonts.append(m.uc.reg_read(m.x.UC_X86_REG_ECX))
             elif va == 0x48fc0:
                 self.closed = True
-        m.uc.hook_add(unicorn.UC_HOOK_CODE, event)
+        for address in (0x48ff0, 0x44da0, 0x44b60, 0x48fc0):
+            m.uc.hook_add(unicorn.UC_HOOK_CODE, event, begin=address, end=address)
 
     def run(self):
         m = self.m

@@ -1,0 +1,42 @@
+[
+  {
+    "file": "tests/mod_editor/test_scorebug_gpu.py",
+    "exit_code": 0,
+    "seconds": 17.84
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_xbe_space.py",
+    "exit_code": 0,
+    "seconds": 28.86
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_cave_oracle.py",
+    "exit_code": 1,
+    "seconds": 351.49
+  },
+  {
+    "file": "tests/mod_editor/test_beta61_allocator_integration.py",
+    "exit_code": 124,
+    "seconds": 420.01
+  },
+  {
+    "file": "tests/mod_editor/test_provider_integrity.py",
+    "exit_code": 0,
+    "seconds": 10.13
+  },
+  {
+    "file": "tests/mod_editor/test_shipped_tools_are_self_sufficient.py",
+    "exit_code": 0,
+    "seconds": 11.93
+  },
+  {
+    "file": "tests/mod_editor/test_shipped_tools_posix_only.py",
+    "exit_code": 0,
+    "seconds": 11.78
+  },
+  {
+    "file": "tests/mod_editor/test_scorebug_replication.py",
+    "exit_code": 0,
+    "seconds": 0.46
+  }
+]

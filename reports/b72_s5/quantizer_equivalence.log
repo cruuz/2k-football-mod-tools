@@ -1,0 +1,1 @@
+24 exact palette comparisons against ec5d68d4 passed, including tied ranges/populations and deterministic random RGBA inputs.

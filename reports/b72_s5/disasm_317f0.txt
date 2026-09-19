@@ -1,0 +1,614 @@
+317f0 mov edx, ecx
+317f2 lea eax, [edx + 0x60]
+317f5 mov ecx, 0x1b
+317fa lea ebx, [ebx]
+31800 mov dword ptr [eax], 0x86868686
+31806 add eax, 0x10
+31809 dec ecx
+3180a jne 0x31800
+3180c push ebx
+3180d push edi
+3180e lea edi, [edx + 0x260]
+31814 lea ecx, [edi + 0x40]
+31817 cmp edi, ecx
+31819 jae 0x31829
+3181b sub ecx, edi
+3181d dec ecx
+3181e shr ecx, 2
+31821 inc ecx
+31822 mov eax, 0x86868686
+31827 rep stosd dword ptr es:[edi], eax
+31829 lea edi, [edx + 0x2a0]
+3182f lea ecx, [edi + 0x40]
+31832 cmp edi, ecx
+31834 jae 0x31844
+31836 sub ecx, edi
+31838 dec ecx
+31839 shr ecx, 2
+3183c inc ecx
+3183d mov eax, 0x86868686
+31842 rep stosd dword ptr es:[edi], eax
+31844 mov eax, dword ptr [edx + 0x1d0]
+3184a cmp eax, dword ptr [0x4e61e0]
+31850 mov edi, 0x100b80
+31855 jne 0x31881
+31857 mov ecx, dword ptr [edx + 0x1d4]
+3185d cmp ecx, dword ptr [0x4e61e4]
+31863 jne 0x31881
+31865 mov eax, dword ptr [edx + 0x1d8]
+3186b cmp eax, dword ptr [0x4e61e8]
+31871 jne 0x31881
+31873 mov ecx, dword ptr [edx + 0x1dc]
+31879 cmp ecx, dword ptr [0x4e61ec]
+3187f je 0x318c4
+31881 movaps xmm0, xmmword ptr [0x4e61e0]
+31888 movaps xmmword ptr [edx + 0x1d0], xmm0
+3188f mov eax, dword ptr [edx + 0xc]
+31892 mov dword ptr [eax], 0x41ea4
+31898 mov dword ptr [eax + 4], 0x17
+3189f mov dword ptr [eax + 8], edi
+318a2 mov dword ptr [eax + 0xc], 0x40000000
+318a9 mov dword ptr [eax + 0x10], 0x40800000
+318b0 mov dword ptr [eax + 0x14], 0x3f000000
+318b7 mov dword ptr [eax + 0x18], 0x3e800000
+318be add eax, 0x1c
+318c1 mov dword ptr [edx + 0xc], eax
+318c4 mov eax, dword ptr [edx + 0x1e0]
+318ca mov ebx, dword ptr [0x4e61d0]
+318d0 xor ecx, ecx
+318d2 cmp eax, ebx
+318d4 jne 0x31900
+318d6 mov eax, dword ptr [edx + 0x1e4]
+318dc cmp eax, dword ptr [0x4e61d4]
+318e2 jne 0x31900
+318e4 mov eax, dword ptr [edx + 0x1e8]
+318ea cmp eax, dword ptr [0x4e61d8]
+318f0 jne 0x31900
+318f2 mov eax, dword ptr [edx + 0x1ec]
+318f8 cmp eax, dword ptr [0x4e61dc]
+318fe je 0x31937
+31900 movaps xmm0, xmmword ptr [0x4e61d0]
+31907 movaps xmmword ptr [edx + 0x1e0], xmm0
+3190e mov eax, dword ptr [edx + 0xc]
+31911 mov dword ptr [eax], 0x41ea4
+31917 mov dword ptr [eax + 4], 0x18
+3191e mov dword ptr [eax + 8], edi
+31921 mov dword ptr [eax + 0xc], 0x3f800000
+31928 mov dword ptr [eax + 0x10], ecx
+3192b mov dword ptr [eax + 0x14], ecx
+3192e mov dword ptr [eax + 0x18], ecx
+31931 add eax, 0x1c
+31934 mov dword ptr [edx + 0xc], eax
+31937 mov eax, dword ptr [edx + 0x1f0]
+3193d cmp eax, dword ptr [0x4e61c0]
+31943 jne 0x3196f
+31945 mov eax, dword ptr [edx + 0x1f4]
+3194b cmp eax, dword ptr [0x4e61c4]
+31951 jne 0x3196f
+31953 mov eax, dword ptr [edx + 0x1f8]
+31959 cmp eax, dword ptr [0x4e61c8]
+3195f jne 0x3196f
+31961 mov eax, dword ptr [edx + 0x1fc]
+31967 cmp eax, dword ptr [0x4e61cc]
+3196d je 0x319a6
+3196f movaps xmm0, xmmword ptr [0x4e61c0]
+31976 movaps xmmword ptr [edx + 0x1f0], xmm0
+3197d mov eax, dword ptr [edx + 0xc]
+31980 mov dword ptr [eax], 0x41ea4
+31986 mov dword ptr [eax + 4], 0x19
+3198d mov dword ptr [eax + 8], edi
+31990 mov dword ptr [eax + 0xc], ecx
+31993 mov dword ptr [eax + 0x10], 0x3f800000
+3199a mov dword ptr [eax + 0x14], ecx
+3199d mov dword ptr [eax + 0x18], ecx
+319a0 add eax, 0x1c
+319a3 mov dword ptr [edx + 0xc], eax
+319a6 mov eax, dword ptr [edx + 0x200]
+319ac cmp eax, dword ptr [0x4e61b0]
+319b2 jne 0x319de
+319b4 mov eax, dword ptr [edx + 0x204]
+319ba cmp eax, dword ptr [0x4e61b4]
+319c0 jne 0x319de
+319c2 mov eax, dword ptr [edx + 0x208]
+319c8 cmp eax, dword ptr [0x4e61b8]
+319ce jne 0x319de
+319d0 mov eax, dword ptr [edx + 0x20c]
+319d6 cmp eax, dword ptr [0x4e61bc]
+319dc je 0x31a15
+319de movaps xmm0, xmmword ptr [0x4e61b0]
+319e5 movaps xmmword ptr [edx + 0x200], xmm0
+319ec mov eax, dword ptr [edx + 0xc]
+319ef mov dword ptr [eax], 0x41ea4
+319f5 mov dword ptr [eax + 4], 0x1a
+319fc mov dword ptr [eax + 8], edi
+319ff mov dword ptr [eax + 0xc], ecx
+31a02 mov dword ptr [eax + 0x10], ecx
+31a05 mov dword ptr [eax + 0x14], 0x3f800000
+31a0c mov dword ptr [eax + 0x18], ecx
+31a0f add eax, 0x1c
+31a12 mov dword ptr [edx + 0xc], eax
+31a15 mov eax, dword ptr [0xa6c6e8]
+31a1a cmp eax, 0xa6c6e8
+31a1f pop edi
+31a20 pop ebx
+31a21 je 0x31a30
+31a23 mov word ptr [eax + 0x12], cx
+31a27 mov eax, dword ptr [eax]
+31a29 cmp eax, 0xa6c6e8
+31a2e jne 0x31a23
+31a30 ret
+31a31 nop
+31a32 nop
+31a33 nop
+31a34 nop
+31a35 nop
+31a36 nop
+31a37 nop
+31a38 nop
+31a39 nop
+31a3a nop
+31a3b nop
+31a3c nop
+31a3d nop
+31a3e nop
+31a3f nop
+31a40 sub esp, 0x14
+31a43 push ebx
+31a44 push esi
+31a45 push edi
+31a46 mov edi, edx
+31a48 test edi, edi
+31a4a je 0x31a55
+31a4c mov dword ptr [edi], 0x417fc
+31a52 mov dword ptr [edi + 4], ecx
+31a55 mov esi, dword ptr [esp + 0x24]
+31a59 test esi, esi
+31a5b mov edx, dword ptr [esp + 0x28]
+31a5f mov ecx, 2
+31a64 jne 0x31ac6
+31a66 mov esi, dword ptr [esp + 0x2c]
+31a6a test esi, esi
+31a6c mov eax, esi
+31a6e jle 0x31d4b
+31a74 cmp eax, 0x100
+31a79 jle 0x31aa9
+31a7b test edi, edi
+31a7d je 0x31a92
+31a7f mov ebx, edx
+31a81 or ebx, 0xff000000
+31a87 mov dword ptr [edi + ecx*4], 0x41810
+31a8e mov dword ptr [edi + ecx*4 + 4], ebx
+31a92 sub eax, 0x100
+31a97 add edx, 0x100
+31a9d add ecx, 2
+31aa0 test eax, eax
+31aa2 jg 0x31a74
+31aa4 jmp 0x31d4b
+31aa9 test edi, edi
+31aab je 0x31abe
+31aad dec eax
+31aae shl eax, 0x18
+31ab1 or eax, edx
+31ab3 mov dword ptr [edi + ecx*4], 0x41810
+31aba mov dword ptr [edi + ecx*4 + 4], eax
+31abe add ecx, 2
+31ac1 jmp 0x31d4b
+31ac6 mov eax, dword ptr [esp + 0x2c]
+31aca lea ebx, [edx + eax]
+31acd cmp edx, ebx
+31acf push ebp
+31ad0 mov dword ptr [esp + 0x2c], edx
+31ad4 mov ebp, edx
+31ad6 mov dword ptr [esp + 0x18], ebx
+31ada jge 0x31c87
+31ae0 jmp 0x31ae6
+31ae2 mov ebx, dword ptr [esp + 0x18]
+31ae6 dec ebx
+31ae7 cmp edx, ebx
+31ae9 mov eax, edx
+31aeb jge 0x31b04
+31aed lea ecx, [ecx]
+31af0 mov ebx, dword ptr [esi + eax*4]
+31af3 inc ebx
+31af4 cmp ebx, dword ptr [esi + eax*4 + 4]
+31af8 jne 0x31b04
+31afa mov ebx, dword ptr [esp + 0x18]
+31afe inc eax
+31aff dec ebx
+31b00 cmp eax, ebx
+31b02 jl 0x31af0
+31b04 sub eax, edx
+31b06 inc eax
+31b07 mov ebx, edx
+31b09 sub ebx, ebp
+31b0b mov dword ptr [esp + 0x20], eax
+31b0f jne 0x31b1a
+31b11 cmp eax, 4
+31b14 jg 0x31c34
+31b1a test bl, 1
+31b1d jne 0x31db4
+31b23 cmp eax, 6
+31b26 jle 0x31db4
+31b2c cmp ebx, 0xffe
+31b32 jle 0x31bce
+31b38 lea edx, [esi + ebp*4]
+31b3b lea esi, [ebx - 0xfff]
+31b41 mov eax, 0x200401
+31b46 mov dword ptr [esp + 0x14], edx
+31b4a mul esi
+31b4c sub esi, edx
+31b4e shr esi, 1
+31b50 add esi, edx
+31b52 shr esi, 0xb
+31b55 inc esi
+31b56 mov eax, esi
+31b58 mov dword ptr [esp + 0x1c], eax
+31b5c imul eax, eax, 0xffe
+31b62 sub ebx, eax
+31b64 add ebp, eax
+31b66 mov dword ptr [esp + 0x10], ebp
+31b6a lea ebx, [ebx]
+31b70 test edi, edi
+31b72 je 0x31ba3
+31b74 mov edx, dword ptr [esp + 0x14]
+31b78 mov dword ptr [edi + ecx*4], 0x5ffc1800
+31b7f lea eax, [edi + ecx*4 + 4]
+31b83 mov ebp, 0xffe
+31b88 jmp 0x31b90
+31b8a lea ebx, [ebx]
+31b90 mov si, word ptr [edx]
+31b93 mov word ptr [eax], si
+31b96 add eax, 2
+31b99 add edx, 4
+31b9c dec ebp
+31b9d jne 0x31b90
+31b9f mov ebp, dword ptr [esp + 0x10]
+31ba3 mov esi, dword ptr [esp + 0x14]
+31ba7 mov eax, dword ptr [esp + 0x1c]
+31bab add esi, 0x3ff8
+31bb1 add ecx, 0x800
+31bb7 dec eax
+31bb8 mov dword ptr [esp + 0x14], esi
+31bbc mov dword ptr [esp + 0x1c], eax
+31bc0 jne 0x31b70
+31bc2 mov edx, dword ptr [esp + 0x2c]
+31bc6 mov esi, dword ptr [esp + 0x28]
+31bca mov eax, dword ptr [esp + 0x20]
+31bce test ebx, ebx
+31bd0 jle 0x31c34
+31bd2 test edi, edi
+31bd4 je 0x31c2e
+31bd6 mov esi, ebx
+31bd8 and esi, 0xfffffffe
+31bdb shl esi, 0x11
+31bde or esi, 0x40001800
+31be4 test ebx, ebx
+31be6 mov dword ptr [edi + ecx*4], esi
+31be9 lea esi, [edi + ecx*4 + 4]
+31bed mov dword ptr [esp + 0x1c], esi
+31bf1 mov esi, dword ptr [esp + 0x28]
+31bf5 jle 0x31c2e
+31bf7 lea ebp, [esi + ebp*4]
+31bfa mov dword ptr [esp + 0x14], ebp
+31bfe mov dword ptr [esp + 0x10], ebx
+31c02 mov bp, word ptr [ebp]
+31c06 mov esi, dword ptr [esp + 0x1c]
+31c0a mov word ptr [esi], bp
+31c0d mov ebp, dword ptr [esp + 0x14]
+31c11 add esi, 2
+31c14 mov dword ptr [esp + 0x1c], esi
+31c18 mov esi, dword ptr [esp + 0x10]
+31c1c add ebp, 4
+31c1f dec esi
+31c20 mov dword ptr [esp + 0x14], ebp
+31c24 mov dword ptr [esp + 0x10], esi
+31c28 jne 0x31c02
+31c2a mov esi, dword ptr [esp + 0x28]
+31c2e sar ebx, 1
+31c30 lea ecx, [ecx + ebx + 1]
+31c34 test eax, eax
+31c36 lea ebx, [edx + eax]
+31c39 mov dword ptr [esp + 0x10], ebx
+31c3d jle 0x31c79
+31c3f nop
+31c40 cmp eax, 0x100
+31c45 jle 0x31d88
+31c4b test edi, edi
+31c4d je 0x31c63
+31c4f mov dword ptr [edi + ecx*4], 0x41810
+31c56 mov ebx, dword ptr [esi + edx*4]
+31c59 or ebx, 0xff000000
+31c5f mov dword ptr [edi + ecx*4 + 4], ebx
+31c63 sub eax, 0x100
+31c68 add edx, 0x100
+31c6e add ecx, 2
+31c71 test eax, eax
+31c73 jg 0x31c40
+31c75 mov dword ptr [esp + 0x2c], edx
+31c79 mov ebp, dword ptr [esp + 0x10]
+31c7d cmp edx, dword ptr [esp + 0x18]
+31c81 jl 0x31ae2
+31c87 sub edx, ebp
+31c89 cmp edx, 0xffe
+31c8f mov dword ptr [esp + 0x2c], edx
+31c93 jle 0x31cf7
+31c95 lea ebx, [edx - 0xfff]
+31c9b mov eax, 0x200401
+31ca0 mul ebx
+31ca2 mov eax, dword ptr [esp + 0x2c]
+31ca6 sub ebx, edx
+31ca8 shr ebx, 1
+31caa add ebx, edx
+31cac shr ebx, 0xb
+31caf inc ebx
+31cb0 mov dword ptr [esp + 0x1c], ebx
+31cb4 imul ebx, ebx, 0xfffff002
+31cba add eax, ebx
+31cbc mov dword ptr [esp + 0x2c], eax
+31cc0 test edi, edi
+31cc2 je 0x31ce2
+31cc4 mov dword ptr [edi + ecx*4], 0x5ffc1800
+31ccb lea eax, [edi + ecx*4 + 4]
+31ccf mov edx, 0xffe
+31cd4 mov bx, word ptr [esi + ebp*4]
+31cd8 mov word ptr [eax], bx
+31cdb add eax, 2
+31cde inc ebp
+31cdf dec edx
+31ce0 jne 0x31cd4
+31ce2 mov eax, dword ptr [esp + 0x1c]
+31ce6 add ecx, 0x800
+31cec dec eax
+31ced mov dword ptr [esp + 0x1c], eax
+31cf1 jne 0x31cc0
+31cf3 mov edx, dword ptr [esp + 0x2c]
+31cf7 test edx, edx
+31cf9 jle 0x31d46
+31cfb test edi, edi
+31cfd je 0x31d3f
+31cff lea eax, [edx + 1]
+31d02 shl eax, 0x11
+31d05 and eax, 0xfffc1800
+31d0a or eax, 0x40001800
+31d0f test edx, edx
+31d11 mov dword ptr [edi + ecx*4], eax
+31d14 lea eax, [edi + ecx*4 + 4]
+31d18 jle 0x31d32
+31d1a mov ebx, edx
+31d1c lea esp, [esp]
+31d20 mov si, word ptr [esi + ebp*4]
+31d24 mov word ptr [eax], si
+31d27 mov esi, dword ptr [esp + 0x28]
+31d2b add eax, 2
+31d2e inc ebp
+31d2f dec ebx
+31d30 jne 0x31d20
+31d32 test dl, 1
+31d35 je 0x31d3f
+31d37 mov si, word ptr [esi + ebp*4 - 4]
+31d3c mov word ptr [eax], si
+31d3f inc edx
+31d40 sar edx, 1
+31d42 lea ecx, [ecx + edx + 1]
+31d46 mov esi, dword ptr [esp + 0x30]
+31d4a pop ebp
+31d4b test edi, edi
+31d4d je 0x31d5e
+31d4f mov dword ptr [edi + ecx*4], 0x417fc
+31d56 mov dword ptr [edi + ecx*4 + 4], 0
+31d5e pop edi
+31d5f add ecx, 2
+31d62 mov eax, esi
+31d64 test esi, esi
+31d66 pop esi
+31d67 pop ebx
+31d68 jle 0x31d80
+31d6a lea ebx, [ebx]
+31d70 cmp eax, 0xffe
+31d75 jle 0x31d80
+31d77 sub eax, 0xffe
+31d7c test eax, eax
+31d7e jg 0x31d70
+31d80 mov eax, ecx
+31d82 add esp, 0x14
+31d85 ret 0xc
+31d88 test edi, edi
+31d8a mov dword ptr [esp + 0x2c], edx
+31d8e je 0x31da6
+31d90 lea ebx, [eax - 1]
+31d93 mov dword ptr [edi + ecx*4], 0x41810
+31d9a mov ebp, dword ptr [esi + edx*4]
+31d9d shl ebx, 0x18
+31da0 or ebp, ebx
+31da2 mov dword ptr [edi + ecx*4 + 4], ebp
+31da6 add edx, eax
+31da8 mov dword ptr [esp + 0x2c], edx
+31dac add ecx, 2
+31daf jmp 0x31c79
+31db4 inc edx
+31db5 mov dword ptr [esp + 0x2c], edx
+31db9 jmp 0x31c7d
+31dbe nop
+31dbf nop
+31dc0 push esi
+31dc1 movzx esi, word ptr [ecx + 8]
+31dc5 push edi
+31dc6 xor eax, eax
+31dc8 jmp 0x31dd0
+31dca lea ebx, [ebx]
+31dd0 mov edi, 1
+31dd5 mov ecx, eax
+31dd7 shl edi, cl
+31dd9 test esi, edi
+31ddb je 0x31de3
+31ddd cmp byte ptr [edx + eax*4], 2
+31de1 je 0x31df1
+31de3 inc eax
+31de4 cmp eax, 0xf
+31de7 jle 0x31dd0
+31de9 pop edi
+31dea mov eax, 1
+31def pop esi
+31df0 ret
+31df1 pop edi
+31df2 xor eax, eax
+31df4 pop esi
+31df5 ret
+31df6 nop
+31df7 nop
+31df8 nop
+31df9 nop
+31dfa nop
+31dfb nop
+31dfc nop
+31dfd nop
+31dfe nop
+31dff nop
+31e00 mov eax, dword ptr [0xa6c6e0]
+31e05 inc eax
+31e06 cmp eax, 1
+31e09 mov dword ptr [0xa6c6e0], eax
+31e0e jg 0x31e9e
+31e14 mov edx, dword ptr [0xb018b0]
+31e1a mov eax, 0xa6c708
+31e1f mov dword ptr [0xa6c70c], eax
+31e24 mov dword ptr [0xa6c708], eax
+31e29 mov eax, 0xa6c6e8
+31e2e mov dword ptr [0xa6c6ec], eax
+31e33 mov dword ptr [0xa6c6e8], eax
+31e38 mov eax, dword ptr [0xa6c6e4]
+31e3d mov ecx, eax
+31e3f imul ecx, ecx, 0x1c
+31e42 add edx, 3
+31e45 and edx, 0xfffffffc
+31e48 add ecx, edx
+31e4a push esi
+31e4b mov dword ptr [0xb018b0], ecx
+31e51 push eax
+31e52 mov ecx, 0xa6c774
+31e57 mov dword ptr [0xa6c780], edx
+31e5d call 0x38bd0
+31e62 mov edx, 0xa6c774
+31e67 mov ecx, 0xa6c728
+31e6c call 0x38c30
+31e71 push 0x88
+31e76 xor edx, edx
+31e78 mov ecx, 0xa6c728
+31e7d call 0x38b50
+31e82 mov esi, 0xa6c784
+31e87 mov ecx, dword ptr [esi]
+31e89 test ecx, ecx
+31e8b je 0x31e92
+31e8d call 0x31570
+31e92 add esi, 4
+31e95 cmp esi, 0xa6c7bc
+31e9b jle 0x31e87
+31e9d pop esi
+31e9e ret
+31e9f nop
+31ea0 mov eax, dword ptr [0xa6c6e0]
+31ea5 dec eax
+31ea6 test eax, eax
+31ea8 mov dword ptr [0xa6c6e0], eax
+31ead jg 0x31ecc
+31eaf push esi
+31eb0 mov esi, 0xa6c784
+31eb5 mov ecx, dword ptr [esi]
+31eb7 test ecx, ecx
+31eb9 je 0x31ec0
+31ebb call 0x31590
+31ec0 add esi, 4
+31ec3 cmp esi, 0xa6c7bc
+31ec9 jle 0x31eb5
+31ecb pop esi
+31ecc ret
+31ecd nop
+31ece nop
+31ecf nop
+31ed0 add edx, eax
+31ed2 cmp eax, edx
+31ed4 mov ecx, eax
+31ed6 jae 0x31eee
+31ed8 push esi
+31ed9 mov esi, dword ptr [esp + 8]
+31edd push edi
+31ede sub esi, eax
+31ee0 mov edi, dword ptr [esi + ecx]
+31ee3 mov dword ptr [ecx], edi
+31ee5 add ecx, 4
+31ee8 cmp ecx, edx
+31eea jb 0x31ee0
+31eec pop edi
+31eed pop esi
+31eee ret 4
+31ef1 nop
+31ef2 nop
+31ef3 nop
+31ef4 nop
+31ef5 nop
+31ef6 nop
+31ef7 nop
+31ef8 nop
+31ef9 nop
+31efa nop
+31efb nop
+31efc nop
+31efd nop
+31efe nop
+31eff nop
+31f00 and eax, 0x3ffffff
+31f05 ret
+31f06 nop
+31f07 nop
+31f08 nop
+31f09 nop
+31f0a nop
+31f0b nop
+31f0c nop
+31f0d nop
+31f0e nop
+31f0f nop
+31f10 mov eax, dword ptr [eax + 0x14]
+31f13 and eax, 0xffff
+31f18 neg eax
+31f1a sbb eax, eax
+31f1c neg eax
+31f1e ret
+31f1f nop
+31f20 mov eax, dword ptr [eax + 0xc]
+31f23 shr eax, 2
+31f26 and eax, 1
+31f29 ret
+31f2a nop
+31f2b nop
+31f2c nop
+31f2d nop
+31f2e nop
+31f2f nop
+31f30 mov eax, dword ptr [eax + 0xc]
+31f33 shr eax, 4
+31f36 and eax, 0xf
+31f39 ret
+31f3a nop
+31f3b nop
+31f3c nop
+31f3d nop
+31f3e nop
+31f3f nop
+31f40 lea ecx, [eax + eax*4]
+31f43 mov eax, dword ptr [esp + 4]
+31f47 mov eax, dword ptr [eax + 0x118]
+31f4d shr eax, cl
+31f4f and eax, 0x1f
+31f52 ret 4
+31f55 nop
+31f56 nop
+31f57 nop
+31f58 nop
+31f59 nop
+31f5a nop
+31f5b nop
+31f5c nop
+31f5d nop
+31f5e nop
+31f5f nop

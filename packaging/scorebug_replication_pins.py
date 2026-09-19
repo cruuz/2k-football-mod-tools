@@ -1,11 +1,15 @@
 """Reviewed replication tool and metadata source identities; refreshed by repin.py."""
 PINS = {
+    "mod_editor/core/nfl2k5_scorebug_teams.py": "79dfac96ad264d6364ffb7cfd468c8a303e63d03c9796c8d47013c38086de94e",
+    "tools/scorebug_sprite/gpu.py": "cbcf8feb70dac124072b0ee6db19ea59016dcd26eb26cedf4d3c161217206b36",
+    "tools/scorebug_sprite/xemu_model.py": "d223549fd9c56e08b8efec48bbd82ee0ad4ce675f09bca428aef60fa3532998e",
+    "tools/scorebug_sprite/neutral_template.py": "fddad8bd118b3321b24eb3df67719f9f2c392ad36f6cf91811bc3af4e8dba35b",
     "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
     "data/nfl2k5_scorebug_sprite/broadcast_states.json": "16e07c2de4718bfe57066c35643a6302101c58eca72339f1e189d510b773e5a4",
-    "data/nfl2k5_scorebug_sprite/team_accents.json": "f20e75229f4eaebcfc01f106588cf3b7962c599b7a41af5d86532089a8bbffa3",
+    "data/nfl2k5_scorebug_sprite/team_accents.json": "8c81fd84f3fa0a4dcb912347e92a754ede0881e0ca9a9e5204e2458f562fa978",
     "tools/scorebug_sprite/compare_ingame.py": "f71be713be3c5466d791a3906d289d159668c3b42101758a9c1526b9469670ac",
-    "tools/scorebug_sprite/jev/accents.py": "6ec0603e87bd09e0395255bf85e12b8c3be5c3290dacd728f7f38b9ba95ee1c5",
-    "tools/scorebug_sprite/jev/descriptors.py": "2826bf71feed3f9b0489fb01361c562e675a1a0b8fa7cc106e5f498b8f803876",
+    "tools/scorebug_sprite/jev/accents.py": "42988d27dca8ea1192a96bdc47d0bf8809d12ad870a6c3a0c8ebda65a3d05ea3",
+    "tools/scorebug_sprite/jev/descriptors.py": "df9ac4ac41820390abcb941a3bc1d90df355cc09751769ece2710aa45cd22cfa",
     "tools/scorebug_sprite/jev/judge.py": "2ee0e08c268046a4b076fa14f4ed7759b9a423423c14cc2ce4e4b022f7f0814a",
     "tools/scorebug_sprite/jev/layout_search.py": "d448016f261374bcdae113efc3e32fe47e609d6c449415d1f82d588dd026af43",
     "tools/scorebug_sprite/jev/miner.py": "c9b7acfea8214b759c4c69f50d4226035dcdfeeb0adf4c30bb2d220da2886bb5",
@@ -13,5 +17,5 @@ PINS = {
     "tools/scorebug_sprite/jev/rubric.py": "85b416f553b0faf8f5ebd0ec21d2c03eb93a7363802b5c2d027ef2c0c94bcb31",
     "tools/scorebug_sprite/jev/session.py": "d1353c8901cd8d80aac7a229adcc4c614ea1c3da1f07c46ac2449b31e44c280f",
     "tools/scorebug_sprite/native.py": "037309281a358e13599de6986812d4d42b1a8c5001a44d00fbb55cb85c565e72",
-    "tools/scorebug_sprite/render.py": "ea3f59d3f0c0e5a0772f1269c8f6be3b1e8546fcf75e2326d345cc04be878144",
+    "tools/scorebug_sprite/render.py": "adee2518ce065cf50c8e69dff456a10764a3745ed1c272ba0ad31f2e68c37d74",
 }

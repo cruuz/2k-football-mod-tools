@@ -1,0 +1,1218 @@
+[
+  {
+    "team": "SF",
+    "applied": true,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.87,
+        "probabilities": {
+          "proposed": 0.92,
+          "defer": 0.0,
+          "previous": 0.08
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.82,
+        "probabilities": {
+          "proposed": 0.88,
+          "defer": 0.01,
+          "previous": 0.11
+        }
+      }
+    },
+    "reasons": []
+  },
+  {
+    "team": "CHI",
+    "applied": true,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.91,
+        "probabilities": {
+          "defer": 0.01,
+          "previous": 0.05,
+          "proposed": 0.94
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.97,
+        "probabilities": {
+          "defer": 0.01,
+          "previous": 0.01,
+          "proposed": 0.98
+        }
+      }
+    },
+    "reasons": []
+  },
+  {
+    "team": "BUF",
+    "applied": false,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.47,
+        "probabilities": {
+          "defer": 0.13,
+          "previous": 0.23,
+          "proposed": 0.64
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.4,
+        "probabilities": {
+          "defer": 0.31,
+          "previous": 0.09,
+          "proposed": 0.6
+        }
+      }
+    },
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "CLE",
+    "applied": true,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.99,
+        "probabilities": {
+          "previous": 0.01,
+          "defer": 0.0,
+          "proposed": 0.99
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.99,
+        "probabilities": {
+          "previous": 0.0,
+          "defer": 0.0,
+          "proposed": 1.0
+        }
+      }
+    },
+    "reasons": []
+  },
+  {
+    "team": "TB",
+    "applied": false,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.62,
+        "probabilities": {
+          "defer": 0.02,
+          "proposed": 0.74,
+          "previous": 0.24
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.78,
+        "probabilities": {
+          "defer": 0.03,
+          "proposed": 0.85,
+          "previous": 0.12
+        }
+      }
+    },
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "ARI",
+    "applied": false,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.62,
+        "probabilities": {
+          "proposed": 0.75,
+          "previous": 0.23,
+          "defer": 0.02
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.79,
+        "probabilities": {
+          "proposed": 0.86,
+          "previous": 0.1,
+          "defer": 0.04
+        }
+      }
+    },
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "KC",
+    "applied": false,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.58,
+        "probabilities": {
+          "defer": 0.02,
+          "previous": 0.26,
+          "proposed": 0.72
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.66,
+        "probabilities": {
+          "defer": 0.09,
+          "previous": 0.14,
+          "proposed": 0.77
+        }
+      }
+    },
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "IND",
+    "applied": false,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.68,
+        "probabilities": {
+          "proposed": 0.79,
+          "previous": 0.2,
+          "defer": 0.01
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.82,
+        "probabilities": {
+          "proposed": 0.87,
+          "previous": 0.1,
+          "defer": 0.03
+        }
+      }
+    },
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "DAL",
+    "applied": false,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.62,
+        "probabilities": {
+          "defer": 0.01,
+          "previous": 0.24,
+          "proposed": 0.75
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.86,
+        "probabilities": {
+          "defer": 0.03,
+          "previous": 0.07,
+          "proposed": 0.9
+        }
+      }
+    },
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "MIA",
+    "applied": true,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.98,
+        "probabilities": {
+          "defer": 0.0,
+          "previous": 0.01,
+          "proposed": 0.99
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 1.0,
+        "probabilities": {
+          "defer": 0.0,
+          "previous": 0.0,
+          "proposed": 1.0
+        }
+      }
+    },
+    "reasons": []
+  },
+  {
+    "team": "PHI",
+    "applied": true,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.97,
+        "probabilities": {
+          "previous": 0.01,
+          "defer": 0.0,
+          "proposed": 0.99
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.99,
+        "probabilities": {
+          "previous": 0.0,
+          "defer": 0.0,
+          "proposed": 1.0
+        }
+      }
+    },
+    "reasons": []
+  },
+  {
+    "team": "ATL",
+    "applied": true,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.87,
+        "probabilities": {
+          "previous": 0.08,
+          "defer": 0.01,
+          "proposed": 0.91
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.93,
+        "probabilities": {
+          "previous": 0.03,
+          "defer": 0.01,
+          "proposed": 0.96
+        }
+      }
+    },
+    "reasons": []
+  },
+  {
+    "team": "NYG",
+    "applied": false,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.48,
+        "probabilities": {
+          "previous": 0.33,
+          "defer": 0.02,
+          "proposed": 0.65
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.64,
+        "probabilities": {
+          "previous": 0.18,
+          "defer": 0.06,
+          "proposed": 0.76
+        }
+      }
+    },
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "JAX",
+    "applied": true,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.93,
+        "probabilities": {
+          "previous": 0.04,
+          "proposed": 0.96,
+          "defer": 0.0
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.93,
+        "probabilities": {
+          "previous": 0.03,
+          "proposed": 0.96,
+          "defer": 0.01
+        }
+      }
+    },
+    "reasons": []
+  },
+  {
+    "team": "NYJ",
+    "applied": true,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.98,
+        "probabilities": {
+          "proposed": 0.99,
+          "previous": 0.01,
+          "defer": 0.0
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.99,
+        "probabilities": {
+          "previous": 0.0,
+          "proposed": 1.0,
+          "defer": 0.0
+        }
+      }
+    },
+    "reasons": []
+  },
+  {
+    "team": "DET",
+    "applied": true,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.98,
+        "probabilities": {
+          "defer": 0.0,
+          "previous": 0.01,
+          "proposed": 0.99
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.99,
+        "probabilities": {
+          "defer": 0.0,
+          "previous": 0.0,
+          "proposed": 1.0
+        }
+      }
+    },
+    "reasons": []
+  },
+  {
+    "team": "GB",
+    "applied": false,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.82,
+        "probabilities": {
+          "defer": 0.01,
+          "proposed": 0.88,
+          "previous": 0.11
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.65,
+        "probabilities": {
+          "defer": 0.05,
+          "proposed": 0.76,
+          "previous": 0.19
+        }
+      }
+    },
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "NE",
+    "applied": false,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.66,
+        "probabilities": {
+          "defer": 0.01,
+          "proposed": 0.78,
+          "previous": 0.21
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.78,
+        "probabilities": {
+          "defer": 0.04,
+          "proposed": 0.86,
+          "previous": 0.1
+        }
+      }
+    },
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "LAR",
+    "applied": false,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.5,
+        "probabilities": {
+          "defer": 0.01,
+          "previous": 0.32,
+          "proposed": 0.67
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.69,
+        "probabilities": {
+          "defer": 0.03,
+          "previous": 0.18,
+          "proposed": 0.79
+        }
+      }
+    },
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "BAL",
+    "applied": true,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.8,
+        "probabilities": {
+          "previous": 0.12,
+          "defer": 0.01,
+          "proposed": 0.87
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.83,
+        "probabilities": {
+          "previous": 0.09,
+          "defer": 0.02,
+          "proposed": 0.89
+        }
+      }
+    },
+    "reasons": []
+  },
+  {
+    "team": "WAS",
+    "applied": true,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.82,
+        "probabilities": {
+          "proposed": 0.88,
+          "previous": 0.11,
+          "defer": 0.01
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.89,
+        "probabilities": {
+          "proposed": 0.92,
+          "previous": 0.06,
+          "defer": 0.02
+        }
+      }
+    },
+    "reasons": []
+  },
+  {
+    "team": "SEA",
+    "applied": true,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.83,
+        "probabilities": {
+          "defer": 0.01,
+          "previous": 0.1,
+          "proposed": 0.89
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.91,
+        "probabilities": {
+          "proposed": 0.94,
+          "previous": 0.04,
+          "defer": 0.02
+        }
+      }
+    },
+    "reasons": []
+  },
+  {
+    "team": "PIT",
+    "applied": false,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.88,
+        "probabilities": {
+          "previous": 0.07,
+          "defer": 0.01,
+          "proposed": 0.92
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.62,
+        "probabilities": {
+          "previous": 0.2,
+          "defer": 0.06,
+          "proposed": 0.74
+        }
+      }
+    },
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "HOU",
+    "applied": true,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.95,
+        "probabilities": {
+          "defer": 0.01,
+          "previous": 0.03,
+          "proposed": 0.96
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.98,
+        "probabilities": {
+          "defer": 0.01,
+          "previous": 0.0,
+          "proposed": 0.99
+        }
+      }
+    },
+    "reasons": []
+  },
+  {
+    "team": "MIN",
+    "applied": false,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.75,
+        "probabilities": {
+          "previous": 0.16,
+          "defer": 0.01,
+          "proposed": 0.83
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.76,
+        "probabilities": {
+          "previous": 0.13,
+          "defer": 0.02,
+          "proposed": 0.85
+        }
+      }
+    },
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "USER1",
+    "applied": true,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.85,
+        "probabilities": {
+          "previous": 0.02,
+          "defer": 0.08,
+          "proposed": 0.9
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.95,
+        "probabilities": {
+          "previous": 0.0,
+          "defer": 0.03,
+          "proposed": 0.97
+        }
+      }
+    },
+    "reasons": []
+  },
+  {
+    "team": "USER2",
+    "applied": true,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.9,
+        "probabilities": {
+          "defer": 0.05,
+          "proposed": 0.93,
+          "previous": 0.02
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.97,
+        "probabilities": {
+          "defer": 0.02,
+          "proposed": 0.98,
+          "previous": 0.0
+        }
+      }
+    },
+    "reasons": []
+  },
+  {
+    "team": "BRI",
+    "applied": false,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.51,
+        "probabilities": {
+          "defer": 0.06,
+          "previous": 0.27,
+          "proposed": 0.67
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.74,
+        "probabilities": {
+          "defer": 0.07,
+          "previous": 0.1,
+          "proposed": 0.83
+        }
+      }
+    },
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "BRP",
+    "applied": false,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.73,
+        "probabilities": {
+          "previous": 0.17,
+          "defer": 0.01,
+          "proposed": 0.82
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.82,
+        "probabilities": {
+          "previous": 0.06,
+          "defer": 0.05,
+          "proposed": 0.89
+        }
+      }
+    },
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "BWG",
+    "applied": false,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.56,
+        "probabilities": {
+          "proposed": 0.71,
+          "previous": 0.27,
+          "defer": 0.02
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.78,
+        "probabilities": {
+          "proposed": 0.85,
+          "previous": 0.09,
+          "defer": 0.06
+        }
+      }
+    },
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "CHH",
+    "applied": false,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.62,
+        "probabilities": {
+          "defer": 0.01,
+          "proposed": 0.75,
+          "previous": 0.24
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.79,
+        "probabilities": {
+          "defer": 0.08,
+          "proposed": 0.86,
+          "previous": 0.06
+        }
+      }
+    },
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "UDC",
+    "applied": true,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.94,
+        "probabilities": {
+          "proposed": 0.96,
+          "previous": 0.01,
+          "defer": 0.03
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.97,
+        "probabilities": {
+          "proposed": 0.98,
+          "previous": 0.0,
+          "defer": 0.02
+        }
+      }
+    },
+    "reasons": []
+  },
+  {
+    "team": "LAL",
+    "applied": true,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.93,
+        "probabilities": {
+          "previous": 0.01,
+          "defer": 0.04,
+          "proposed": 0.95
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.89,
+        "probabilities": {
+          "previous": 0.0,
+          "defer": 0.07,
+          "proposed": 0.93
+        }
+      }
+    },
+    "reasons": []
+  },
+  {
+    "team": "CES",
+    "applied": true,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.93,
+        "probabilities": {
+          "defer": 0.04,
+          "proposed": 0.95,
+          "previous": 0.01
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.94,
+        "probabilities": {
+          "defer": 0.04,
+          "proposed": 0.96,
+          "previous": 0.0
+        }
+      }
+    },
+    "reasons": []
+  },
+  {
+    "team": "BFM",
+    "applied": true,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.93,
+        "probabilities": {
+          "previous": 0.01,
+          "proposed": 0.96,
+          "defer": 0.03
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.96,
+        "probabilities": {
+          "previous": 0.0,
+          "proposed": 0.97,
+          "defer": 0.03
+        }
+      }
+    },
+    "reasons": []
+  },
+  {
+    "team": "LAD",
+    "applied": true,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.94,
+        "probabilities": {
+          "defer": 0.03,
+          "proposed": 0.96,
+          "previous": 0.01
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.91,
+        "probabilities": {
+          "defer": 0.06,
+          "proposed": 0.94,
+          "previous": 0.0
+        }
+      }
+    },
+    "reasons": []
+  },
+  {
+    "team": "AMW",
+    "applied": false,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.67,
+        "probabilities": {
+          "previous": 0.2,
+          "defer": 0.02,
+          "proposed": 0.78
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.84,
+        "probabilities": {
+          "previous": 0.06,
+          "defer": 0.05,
+          "proposed": 0.89
+        }
+      }
+    },
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "ANE",
+    "applied": true,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.97,
+        "probabilities": {
+          "defer": 0.0,
+          "proposed": 0.98,
+          "previous": 0.02
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.99,
+        "probabilities": {
+          "defer": 0.0,
+          "proposed": 1.0,
+          "previous": 0.0
+        }
+      }
+    },
+    "reasons": []
+  },
+  {
+    "team": "ASE",
+    "applied": true,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.83,
+        "probabilities": {
+          "defer": 0.02,
+          "previous": 0.1,
+          "proposed": 0.88
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.88,
+        "probabilities": {
+          "defer": 0.04,
+          "previous": 0.04,
+          "proposed": 0.92
+        }
+      }
+    },
+    "reasons": []
+  },
+  {
+    "team": "AFC",
+    "applied": false,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.38,
+        "probabilities": {
+          "previous": 0.35,
+          "defer": 0.06,
+          "proposed": 0.59
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.76,
+        "probabilities": {
+          "previous": 0.08,
+          "defer": 0.08,
+          "proposed": 0.84
+        }
+      }
+    },
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "NFC",
+    "applied": false,
+    "choice": "proposed",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.36,
+        "probabilities": {
+          "proposed": 0.57,
+          "previous": 0.39,
+          "defer": 0.04
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.65,
+        "probabilities": {
+          "proposed": 0.77,
+          "previous": 0.12,
+          "defer": 0.11
+        }
+      }
+    },
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "NFL",
+    "applied": false,
+    "choice": "previous",
+    "answers": {
+      "choice_a": {
+        "type": "choice",
+        "choice": "previous",
+        "confidence": 0.37,
+        "probabilities": {
+          "previous": 0.58,
+          "proposed": 0.38,
+          "defer": 0.04
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "choice": "proposed",
+        "confidence": 0.35,
+        "probabilities": {
+          "proposed": 0.56,
+          "previous": 0.26,
+          "defer": 0.18
+        }
+      }
+    },
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  }
+]

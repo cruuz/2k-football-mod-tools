@@ -1,7 +1,7 @@
 """Contrast-gated accents from supplied official colours and retail extra slots.
 
-Produces a review candidate. Applying it to the shipped layout is a separate
-step and must wait for the dark-label reproduction gate.
+Produces code-checked choices with explicit review metadata. Team accents are
+independent of the dark-label GPU calibration gate.
 """
 from pathlib import Path
 import argparse

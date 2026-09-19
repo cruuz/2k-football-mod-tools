@@ -111,6 +111,9 @@ class Trace:
 class EntryCollection(Collection):
     def __init__(self, payload, pack, receipt):
         super().__init__(payload, pack, end=art.HUD_START + receipt['outer_size_after'])
+        # Entry tests use Trace below for the calls under test. Collection I/O
+        # only needs its typed event hooks and Unicorn's instruction bounds.
+        self.m.record = False
         self.payload, self.receipt = payload, receipt
         self.boundaries, self.handles = [], []
         self.trace = None

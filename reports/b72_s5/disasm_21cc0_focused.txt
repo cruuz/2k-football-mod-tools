@@ -1,0 +1,203 @@
+21cc0 mov edx, dword ptr [esi + 0x314]
+21cc6 test edx, edx
+21cc8 je 0x21cdb
+21cca mov ecx, esi
+21ccc call 0x2b5b0
+21cd1 mov dword ptr [esi + 0x314], 0
+21cdb ret
+21cdc nop
+21cdd nop
+21cde nop
+21cdf nop
+21ce0 ret 8
+21ce3 nop
+21ce4 nop
+21ce5 nop
+21ce6 nop
+21ce7 nop
+21ce8 nop
+21ce9 nop
+21cea nop
+21ceb nop
+21cec nop
+21ced nop
+21cee nop
+21cef nop
+21cf0 mov edx, dword ptr [ecx]
+21cf2 cmp edx, dword ptr [eax]
+21cf4 jne 0x21d14
+21cf6 mov edx, dword ptr [ecx + 4]
+21cf9 cmp edx, dword ptr [eax + 4]
+21cfc jne 0x21d14
+21cfe mov edx, dword ptr [ecx + 8]
+21d01 cmp edx, dword ptr [eax + 8]
+21d04 jne 0x21d14
+21d06 mov ecx, dword ptr [ecx + 0xc]
+21d09 cmp ecx, dword ptr [eax + 0xc]
+21d0c jne 0x21d14
+21d0e mov eax, 1
+21d13 ret
+21d14 xor eax, eax
+21d16 ret
+21d17 nop
+21d18 nop
+21d19 nop
+21d1a nop
+21d1b nop
+21d1c nop
+21d1d nop
+21d1e nop
+21d1f nop
+21d20 mov eax, dword ptr [eax*4 + 0xa6c784]
+21d27 ret
+21d28 nop
+21d29 nop
+21d2a nop
+21d2b nop
+21d2c nop
+21d2d nop
+21d2e nop
+21d2f nop
+21d30 mov ecx, dword ptr [ecx + 8]
+21d33 mov eax, 1
+21d38 shl eax, cl
+21d3a movzx ecx, word ptr [edx + 0x12]
+21d3e and eax, ecx
+21d40 neg eax
+21d42 sbb eax, eax
+21d44 neg eax
+21d46 ret
+21d47 nop
+21d48 nop
+21d49 nop
+21d4a nop
+21d4b nop
+21d4c nop
+21d4d nop
+21d4e nop
+21d4f nop
+21d50 mov eax, dword ptr [eax*4 + 0xa6c7c0]
+21d57 ret
+21d58 nop
+21d59 nop
+21d5a nop
+21d5b nop
+21d5c nop
+21d5d nop
+21d5e nop
+21d5f nop
+21d60 mov eax, dword ptr [eax*4 + 0xa6d2d0]
+21d67 ret
+21d68 nop
+21d69 nop
+21d6a nop
+21d6b nop
+21d6c nop
+21d6d nop
+21d6e nop
+21d6f nop
+21d70 mov eax, dword ptr [ecx + eax*4 + 0x10]
+21d74 ret
+21d75 nop
+21d76 nop
+21d77 nop
+21d78 nop
+21d79 nop
+21d7a nop
+21d7b nop
+21d7c nop
+21d7d nop
+21d7e nop
+21d7f nop
+21d80 mov eax, dword ptr [ecx + eax*4 + 0x30]
+21d84 ret
+21d85 nop
+21d86 nop
+21d87 nop
+21d88 nop
+21d89 nop
+21d8a nop
+21d8b nop
+21d8c nop
+21d8d nop
+21d8e nop
+21d8f nop
+21d90 push ecx
+21d91 movzx ecx, word ptr [eax + 0xa]
+21d95 mov dword ptr [esp], ecx
+21d99 fild dword ptr [esp]
+21d9d fmul dword ptr [0x4e5c88]
+21da3 pop ecx
+21da4 ret
+21da5 nop
+21da6 nop
+21da7 nop
+21da8 nop
+21da9 nop
+21daa nop
+21dab nop
+21dac nop
+21dad nop
+21dae nop
+21daf nop
+21db0 mov dword ptr [0xb01820], eax
+21db5 ret
+21db6 nop
+21db7 nop
+21db8 nop
+21db9 nop
+21dba nop
+21dbb nop
+21dbc nop
+21dbd nop
+21dbe nop
+21dbf nop
+21dc0 mov dword ptr [0xb01818], eax
+21dc5 ret
+21dc6 nop
+21dc7 nop
+21dc8 nop
+21dc9 nop
+21dca nop
+21dcb nop
+21dcc nop
+21dcd nop
+21dce nop
+21dcf nop
+21dd0 mov dword ptr [0xb0181c], eax
+21dd5 ret
+21dd6 nop
+21dd7 nop
+21dd8 nop
+21dd9 nop
+21dda nop
+21ddb nop
+21ddc nop
+21ddd nop
+21dde nop
+21ddf nop
+21de0 mov eax, dword ptr [eax + 8]
+21de3 and eax, 1
+21de6 ret
+21de7 nop
+21de8 nop
+21de9 nop
+21dea nop
+21deb nop
+21dec nop
+21ded nop
+21dee nop
+21def nop
+21df0 test eax, eax
+21df2 jne 0x21df5
+21df4 ret
+21df5 mov eax, dword ptr [eax]
+21df7 ret
+21df8 nop
+21df9 nop
+21dfa nop
+21dfb nop
+21dfc nop
+21dfd nop
+21dfe nop
+21dff nop

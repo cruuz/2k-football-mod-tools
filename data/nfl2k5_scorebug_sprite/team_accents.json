@@ -1,6 +1,6 @@
 {
   "schema": "scorebug-team-accents/v1",
-  "status": "review candidate; not applied to layout",
+  "status": "active build-time accents; GPU calibration unresolved",
   "teams": {
     "SF": {
       "slot": 0,
@@ -13,13 +13,13 @@
       ],
       "wing": "#C44C4C",
       "rim": "#C44C4C",
-      "plate": "#550000",
+      "plate": "#C44C4C",
       "wash": "#C44C4C",
       "logo_fit": {
         "fill_x": 1.14,
         "height": 1.0
       },
-      "review_required": true,
+      "review_required": false,
       "candidates": {
         "colour0_base": {
           "hex": "#AA0000",
@@ -249,7 +249,8 @@
           "disputed": false,
           "dispute_severity": "none"
         }
-      ]
+      ],
+      "kind": 0
     },
     "CHI": {
       "slot": 1,
@@ -268,7 +269,7 @@
         "fill_x": 1.14,
         "height": 1.0
       },
-      "review_required": true,
+      "review_required": false,
       "candidates": {
         "colour0_base": {
           "hex": "#0B162A",
@@ -498,7 +499,8 @@
           "disputed": false,
           "dispute_severity": "none"
         }
-      ]
+      ],
+      "kind": 0
     },
     "CIN": {
       "slot": 2,
@@ -747,7 +749,8 @@
           "disputed": false,
           "dispute_severity": "none"
         }
-      ]
+      ],
+      "kind": 0
     },
     "BUF": {
       "slot": 3,
@@ -1072,7 +1075,8 @@
           "disputed": false,
           "dispute_severity": "none"
         }
-      ]
+      ],
+      "kind": 0
     },
     "DEN": {
       "slot": 4,
@@ -1321,7 +1325,8 @@
           "disputed": false,
           "dispute_severity": "none"
         }
-      ]
+      ],
+      "kind": 0
     },
     "CLE": {
       "slot": 5,
@@ -1340,7 +1345,7 @@
         "fill_x": 1.14,
         "height": 1.0
       },
-      "review_required": true,
+      "review_required": false,
       "candidates": {
         "colour0_base": {
           "hex": "#311D00",
@@ -1570,7 +1575,8 @@
           "disputed": false,
           "dispute_severity": "none"
         }
-      ]
+      ],
+      "kind": 0
     },
     "TB": {
       "slot": 6,
@@ -1971,7 +1977,8 @@
           "disputed": false,
           "dispute_severity": "none"
         }
-      ]
+      ],
+      "kind": 0
     },
     "ARI": {
       "slot": 7,
@@ -2220,7 +2227,8 @@
           "disputed": false,
           "dispute_severity": "none"
         }
-      ]
+      ],
+      "kind": 0
     },
     "LAC": {
       "slot": 8,
@@ -2545,7 +2553,8 @@
           "disputed": false,
           "dispute_severity": "none"
         }
-      ]
+      ],
+      "kind": 0
     },
     "KC": {
       "slot": 9,
@@ -2794,7 +2803,8 @@
           "disputed": false,
           "dispute_severity": "none"
         }
-      ]
+      ],
+      "kind": 0
     },
     "IND": {
       "slot": 10,
@@ -3119,7 +3129,8 @@
           "disputed": false,
           "dispute_severity": "none"
         }
-      ]
+      ],
+      "kind": 0
     },
     "DAL": {
       "slot": 11,
@@ -3520,7 +3531,8 @@
           "disputed": false,
           "dispute_severity": "none"
         }
-      ]
+      ],
+      "kind": 0
     },
     "MIA": {
       "slot": 12,
@@ -3539,7 +3551,7 @@
         "fill_x": 1.14,
         "height": 1.0
       },
-      "review_required": true,
+      "review_required": false,
       "candidates": {
         "colour0_base": {
           "hex": "#008E97",
@@ -3769,7 +3781,8 @@
           "disputed": false,
           "dispute_severity": "none"
         }
-      ]
+      ],
+      "kind": 0
     },
     "PHI": {
       "slot": 13,
@@ -3789,7 +3802,7 @@
         "fill_x": 1.14,
         "height": 1.0
       },
-      "review_required": true,
+      "review_required": false,
       "candidates": {
         "colour0_base": {
           "hex": "#004851",
@@ -4094,7 +4107,8 @@
           "disputed": false,
           "dispute_severity": "none"
         }
-      ]
+      ],
+      "kind": 0
     },
     "ATL": {
       "slot": 14,
@@ -4106,15 +4120,15 @@
         "#A5ACAF",
         "#FFFFFF"
       ],
-      "wing": "#A71930",
-      "rim": "#540C18",
-      "plate": "#540C18",
-      "wash": "#A71930",
+      "wing": "#B43C4F",
+      "rim": "#B43C4F",
+      "plate": "#B43C4F",
+      "wash": "#B43C4F",
       "logo_fit": {
         "fill_x": 1.14,
         "height": 1.0
       },
-      "review_required": true,
+      "review_required": false,
       "candidates": {
         "colour0_base": {
           "hex": "#A71930",
@@ -4419,7 +4433,8 @@
           "disputed": false,
           "dispute_severity": "none"
         }
-      ]
+      ],
+      "kind": 0
     },
     "NYG": {
       "slot": 15,
@@ -4668,7 +4683,8 @@
           "disputed": false,
           "dispute_severity": "none"
         }
-      ]
+      ],
+      "kind": 0
     },
     "JAX": {
       "slot": 16,
@@ -4681,15 +4697,15 @@
         "#9F792C",
         "#FFFFFF"
       ],
-      "wing": "#006778",
-      "rim": "#00343C",
-      "plate": "#006778",
-      "wash": "#006778",
+      "wing": "#267E8C",
+      "rim": "#267E8C",
+      "plate": "#267E8C",
+      "wash": "#267E8C",
       "logo_fit": {
         "fill_x": 1.14,
         "height": 1.0
       },
-      "review_required": true,
+      "review_required": false,
       "candidates": {
         "colour0_base": {
           "hex": "#006778",
@@ -5069,7 +5085,8 @@
           "disputed": false,
           "dispute_severity": "none"
         }
-      ]
+      ],
+      "kind": 0
     },
     "NYJ": {
       "slot": 17,
@@ -5088,7 +5105,7 @@
         "fill_x": 1.14,
         "height": 1.0
       },
-      "review_required": true,
+      "review_required": false,
       "candidates": {
         "colour0_base": {
           "hex": "#115740",
@@ -5318,7 +5335,8 @@
           "disputed": false,
           "dispute_severity": "none"
         }
-      ]
+      ],
+      "kind": 0
     },
     "DET": {
       "slot": 18,
@@ -5338,7 +5356,7 @@
         "fill_x": 1.14,
         "height": 1.0
       },
-      "review_required": true,
+      "review_required": false,
       "candidates": {
         "colour0_base": {
           "hex": "#0076B6",
@@ -5643,7 +5661,8 @@
           "disputed": false,
           "dispute_severity": "none"
         }
-      ]
+      ],
+      "kind": 0
     },
     "GB": {
       "slot": 19,
@@ -5892,7 +5911,8 @@
           "disputed": false,
           "dispute_severity": "none"
         }
-      ]
+      ],
+      "kind": 0
     },
     "CAR": {
       "slot": 20,
@@ -6141,7 +6161,8 @@
           "disputed": true,
           "dispute_severity": "noticeable"
         }
-      ]
+      ],
+      "kind": 0
     },
     "NE": {
       "slot": 21,
@@ -6466,7 +6487,8 @@
           "disputed": false,
           "dispute_severity": "none"
         }
-      ]
+      ],
+      "kind": 0
     },
     "LV": {
       "slot": 22,
@@ -6479,7 +6501,7 @@
       ],
       "wing": "#646464",
       "rim": "#646464",
-      "plate": "#646464",
+      "plate": "#000000",
       "wash": "#646464",
       "logo_fit": {
         "fill_x": 1.14,
@@ -6715,7 +6737,8 @@
           "disputed": false,
           "dispute_severity": "none"
         }
-      ]
+      ],
+      "kind": 0
     },
     "LAR": {
       "slot": 23,
@@ -6964,7 +6987,8 @@
           "disputed": false,
           "dispute_severity": "none"
         }
-      ]
+      ],
+      "kind": 0
     },
     "BAL": {
       "slot": 24,
@@ -6976,15 +7000,15 @@
         "#9A7611",
         "#FFFFFF"
       ],
-      "wing": "#24135F",
-      "rim": "#1B0E47",
-      "plate": "#1B0E47",
-      "wash": "#24135F",
+      "wing": "#665A8F",
+      "rim": "#665A8F",
+      "plate": "#665A8F",
+      "wash": "#665A8F",
       "logo_fit": {
         "fill_x": 1.14,
         "height": 1.0
       },
-      "review_required": true,
+      "review_required": false,
       "candidates": {
         "colour0_base": {
           "hex": "#24135F",
@@ -7289,7 +7313,8 @@
           "disputed": false,
           "dispute_severity": "none"
         }
-      ]
+      ],
+      "kind": 0
     },
     "WAS": {
       "slot": 25,
@@ -7301,15 +7326,15 @@
         "#000000",
         "#FFFFFF"
       ],
-      "wing": "#5A1414",
-      "rim": "#5A1414",
-      "plate": "#440F0F",
-      "wash": "#5A1414",
+      "wing": "#8C5A5A",
+      "rim": "#8C5A5A",
+      "plate": "#8C5A5A",
+      "wash": "#8C5A5A",
       "logo_fit": {
         "fill_x": 1.14,
         "height": 1.0
       },
-      "review_required": true,
+      "review_required": false,
       "candidates": {
         "colour0_base": {
           "hex": "#5A1414",
@@ -7614,7 +7639,8 @@
           "disputed": false,
           "dispute_severity": "none"
         }
-      ]
+      ],
+      "kind": 0
     },
     "NO": {
       "slot": 26,
@@ -7863,7 +7889,8 @@
           "disputed": false,
           "dispute_severity": "none"
         }
-      ]
+      ],
+      "kind": 0
     },
     "SEA": {
       "slot": 27,
@@ -7875,15 +7902,15 @@
         "#A5ACAF",
         "#FFFFFF"
       ],
-      "wing": "#264360",
-      "rim": "#264360",
-      "plate": "#264360",
-      "wash": "#264360",
+      "wing": "#4C647C",
+      "rim": "#4C647C",
+      "plate": "#4C647C",
+      "wash": "#4C647C",
       "logo_fit": {
         "fill_x": 1.14,
         "height": 1.0
       },
-      "review_required": true,
+      "review_required": false,
       "candidates": {
         "colour0_base": {
           "hex": "#002244",
@@ -8188,7 +8215,8 @@
           "disputed": false,
           "dispute_severity": "none"
         }
-      ]
+      ],
+      "kind": 0
     },
     "PIT": {
       "slot": 28,
@@ -8437,7 +8465,8 @@
           "disputed": false,
           "dispute_severity": "none"
         }
-      ]
+      ],
+      "kind": 0
     },
     "HOU": {
       "slot": 29,
@@ -8457,7 +8486,7 @@
         "fill_x": 1.14,
         "height": 1.0
       },
-      "review_required": true,
+      "review_required": false,
       "candidates": {
         "colour0_base": {
           "hex": "#021018",
@@ -8762,7 +8791,8 @@
           "disputed": false,
           "dispute_severity": "none"
         }
-      ]
+      ],
+      "kind": 0
     },
     "TEN": {
       "slot": 30,
@@ -9087,7 +9117,8 @@
           "disputed": true,
           "dispute_severity": "noticeable"
         }
-      ]
+      ],
+      "kind": 0
     },
     "MIN": {
       "slot": 31,
@@ -9336,7 +9367,8 @@
           "disputed": false,
           "dispute_severity": "none"
         }
-      ]
+      ],
+      "kind": 0
     },
     "USER1": {
       "slot": 32,
@@ -9488,7 +9520,8 @@
         }
       },
       "palette_source_sha256": null,
-      "palette_evidence": []
+      "palette_evidence": [],
+      "kind": 2
     },
     "USER2": {
       "slot": 33,
@@ -9640,7 +9673,9 @@
         }
       },
       "palette_source_sha256": null,
-      "palette_evidence": []
+      "palette_evidence": [],
+      "kind": 2,
+      "identity_shared_with": "USER1"
     },
     "BRI": {
       "slot": 34,
@@ -9792,7 +9827,8 @@
         }
       },
       "palette_source_sha256": null,
-      "palette_evidence": []
+      "palette_evidence": [],
+      "kind": 5
     },
     "BRP": {
       "slot": 35,
@@ -9944,7 +9980,8 @@
         }
       },
       "palette_source_sha256": null,
-      "palette_evidence": []
+      "palette_evidence": [],
+      "kind": 5
     },
     "BWG": {
       "slot": 36,
@@ -9956,158 +9993,6 @@
       ],
       "wing": "#2C445F",
       "rim": "#2C445F",
-      "plate": "#2C445F",
-      "wash": "#2C445F",
-      "logo_fit": {
-        "fill_x": 1.14,
-        "height": 1.0
-      },
-      "review_required": true,
-      "candidates": {
-        "colour0_base": {
-          "hex": "#072343",
-          "parent": "#072343",
-          "variant": "base",
-          "contrast_white": 15.7836,
-          "facts": {
-            "hue": "cyan",
-            "lightness": "dark",
-            "white_label": "pass",
-            "plate_separation": "unknown_until_paired",
-            "signature": true
-          }
-        },
-        "colour0_dark": {
-          "hex": "#051A32",
-          "parent": "#072343",
-          "variant": "dark",
-          "contrast_white": 17.4961,
-          "facts": {
-            "hue": "cyan",
-            "lightness": "dark",
-            "white_label": "pass",
-            "plate_separation": "unknown_until_paired",
-            "signature": true
-          }
-        },
-        "colour0_darker": {
-          "hex": "#041222",
-          "parent": "#072343",
-          "variant": "darker",
-          "contrast_white": 18.8377,
-          "facts": {
-            "hue": "cyan",
-            "lightness": "dark",
-            "white_label": "pass",
-            "plate_separation": "unknown_until_paired",
-            "signature": true
-          }
-        },
-        "colour0_light": {
-          "hex": "#2C445F",
-          "parent": "#072343",
-          "variant": "light",
-          "contrast_white": 10.0039,
-          "facts": {
-            "hue": "cyan",
-            "lightness": "mid",
-            "white_label": "pass",
-            "plate_separation": "unknown_until_paired",
-            "signature": true
-          }
-        },
-        "colour0_lighter": {
-          "hex": "#51657B",
-          "parent": "#072343",
-          "variant": "lighter",
-          "contrast_white": 6.0045,
-          "facts": {
-            "hue": "cyan",
-            "lightness": "mid",
-            "white_label": "pass",
-            "plate_separation": "unknown_until_paired",
-            "signature": true
-          }
-        },
-        "colour1_base": {
-          "hex": "#BE1642",
-          "parent": "#BE1642",
-          "variant": "base",
-          "contrast_white": 6.2078,
-          "facts": {
-            "hue": "pink",
-            "lightness": "light",
-            "white_label": "pass",
-            "plate_separation": "unknown_until_paired",
-            "signature": false
-          }
-        },
-        "colour1_dark": {
-          "hex": "#8E1032",
-          "parent": "#BE1642",
-          "variant": "dark",
-          "contrast_white": 9.2498,
-          "facts": {
-            "hue": "pink",
-            "lightness": "mid",
-            "white_label": "pass",
-            "plate_separation": "unknown_until_paired",
-            "signature": false
-          }
-        },
-        "colour1_darker": {
-          "hex": "#5F0B21",
-          "parent": "#BE1642",
-          "variant": "darker",
-          "contrast_white": 13.4926,
-          "facts": {
-            "hue": "pink",
-            "lightness": "mid",
-            "white_label": "pass",
-            "plate_separation": "unknown_until_paired",
-            "signature": false
-          }
-        },
-        "colour1_light": {
-          "hex": "#C8395E",
-          "parent": "#BE1642",
-          "variant": "light",
-          "contrast_white": 4.9967,
-          "facts": {
-            "hue": "pink",
-            "lightness": "light",
-            "white_label": "pass",
-            "plate_separation": "unknown_until_paired",
-            "signature": false
-          }
-        },
-        "colour1_lighter": {
-          "hex": "#D25C7B",
-          "parent": "#BE1642",
-          "variant": "lighter",
-          "contrast_white": 3.7789,
-          "facts": {
-            "hue": "pink",
-            "lightness": "light",
-            "white_label": "fail",
-            "plate_separation": "unknown_until_paired",
-            "signature": false
-          }
-        }
-      },
-      "palette_source_sha256": null,
-      "palette_evidence": []
-    },
-    "CHH": {
-      "slot": 37,
-      "asset_code": "46",
-      "source": "pinned retail primary/secondary table",
-      "official": [
-        "#072343",
-        "#BE1642"
-      ],
-      "wing": "#2C445F",
-      "rim": "#072343",
       "plate": "#072343",
       "wash": "#2C445F",
       "logo_fit": {
@@ -10248,7 +10133,163 @@
         }
       },
       "palette_source_sha256": null,
-      "palette_evidence": []
+      "palette_evidence": [],
+      "kind": 5,
+      "identity_shared_with": "BRP"
+    },
+    "CHH": {
+      "slot": 37,
+      "asset_code": "46",
+      "source": "pinned retail primary/secondary table",
+      "official": [
+        "#072343",
+        "#BE1642"
+      ],
+      "wing": "#2C445F",
+      "rim": "#2C445F",
+      "plate": "#072343",
+      "wash": "#2C445F",
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      },
+      "review_required": true,
+      "candidates": {
+        "colour0_base": {
+          "hex": "#072343",
+          "parent": "#072343",
+          "variant": "base",
+          "contrast_white": 15.7836,
+          "facts": {
+            "hue": "cyan",
+            "lightness": "dark",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": true
+          }
+        },
+        "colour0_dark": {
+          "hex": "#051A32",
+          "parent": "#072343",
+          "variant": "dark",
+          "contrast_white": 17.4961,
+          "facts": {
+            "hue": "cyan",
+            "lightness": "dark",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": true
+          }
+        },
+        "colour0_darker": {
+          "hex": "#041222",
+          "parent": "#072343",
+          "variant": "darker",
+          "contrast_white": 18.8377,
+          "facts": {
+            "hue": "cyan",
+            "lightness": "dark",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": true
+          }
+        },
+        "colour0_light": {
+          "hex": "#2C445F",
+          "parent": "#072343",
+          "variant": "light",
+          "contrast_white": 10.0039,
+          "facts": {
+            "hue": "cyan",
+            "lightness": "mid",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": true
+          }
+        },
+        "colour0_lighter": {
+          "hex": "#51657B",
+          "parent": "#072343",
+          "variant": "lighter",
+          "contrast_white": 6.0045,
+          "facts": {
+            "hue": "cyan",
+            "lightness": "mid",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": true
+          }
+        },
+        "colour1_base": {
+          "hex": "#BE1642",
+          "parent": "#BE1642",
+          "variant": "base",
+          "contrast_white": 6.2078,
+          "facts": {
+            "hue": "pink",
+            "lightness": "light",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          }
+        },
+        "colour1_dark": {
+          "hex": "#8E1032",
+          "parent": "#BE1642",
+          "variant": "dark",
+          "contrast_white": 9.2498,
+          "facts": {
+            "hue": "pink",
+            "lightness": "mid",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          }
+        },
+        "colour1_darker": {
+          "hex": "#5F0B21",
+          "parent": "#BE1642",
+          "variant": "darker",
+          "contrast_white": 13.4926,
+          "facts": {
+            "hue": "pink",
+            "lightness": "mid",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          }
+        },
+        "colour1_light": {
+          "hex": "#C8395E",
+          "parent": "#BE1642",
+          "variant": "light",
+          "contrast_white": 4.9967,
+          "facts": {
+            "hue": "pink",
+            "lightness": "light",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          }
+        },
+        "colour1_lighter": {
+          "hex": "#D25C7B",
+          "parent": "#BE1642",
+          "variant": "lighter",
+          "contrast_white": 3.7789,
+          "facts": {
+            "hue": "pink",
+            "lightness": "light",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          }
+        }
+      },
+      "palette_source_sha256": null,
+      "palette_evidence": [],
+      "kind": 5,
+      "identity_shared_with": "BRP"
     },
     "UDC": {
       "slot": 38,
@@ -10400,7 +10441,8 @@
         }
       },
       "palette_source_sha256": null,
-      "palette_evidence": []
+      "palette_evidence": [],
+      "kind": 5
     },
     "LAL": {
       "slot": 39,
@@ -10552,7 +10594,8 @@
         }
       },
       "palette_source_sha256": null,
-      "palette_evidence": []
+      "palette_evidence": [],
+      "kind": 5
     },
     "CES": {
       "slot": 40,
@@ -10704,7 +10747,8 @@
         }
       },
       "palette_source_sha256": null,
-      "palette_evidence": []
+      "palette_evidence": [],
+      "kind": 5
     },
     "BFM": {
       "slot": 41,
@@ -10856,7 +10900,8 @@
         }
       },
       "palette_source_sha256": null,
-      "palette_evidence": []
+      "palette_evidence": [],
+      "kind": 5
     },
     "LAD": {
       "slot": 42,
@@ -11008,7 +11053,8 @@
         }
       },
       "palette_source_sha256": null,
-      "palette_evidence": []
+      "palette_evidence": [],
+      "kind": 5
     },
     "AFW": {
       "slot": 43,
@@ -11160,7 +11206,8 @@
         }
       },
       "palette_source_sha256": null,
-      "palette_evidence": []
+      "palette_evidence": [],
+      "kind": 1
     },
     "AGP": {
       "slot": 44,
@@ -11312,7 +11359,8 @@
         }
       },
       "palette_source_sha256": null,
-      "palette_evidence": []
+      "palette_evidence": [],
+      "kind": 1
     },
     "AMW": {
       "slot": 45,
@@ -11464,7 +11512,8 @@
         }
       },
       "palette_source_sha256": null,
-      "palette_evidence": []
+      "palette_evidence": [],
+      "kind": 1
     },
     "ANE": {
       "slot": 46,
@@ -11482,7 +11531,7 @@
         "fill_x": 1.14,
         "height": 1.0
       },
-      "review_required": true,
+      "review_required": false,
       "candidates": {
         "colour0_base": {
           "hex": "#3B4C37",
@@ -11616,7 +11665,8 @@
         }
       },
       "palette_source_sha256": null,
-      "palette_evidence": []
+      "palette_evidence": [],
+      "kind": 1
     },
     "ASE": {
       "slot": 47,
@@ -11626,15 +11676,15 @@
         "#374C9A",
         "#9DA0A4"
       ],
-      "wing": "#374C9A",
-      "rim": "#374C9A",
-      "plate": "#374C9A",
-      "wash": "#374C9A",
+      "wing": "#5567A9",
+      "rim": "#5567A9",
+      "plate": "#5567A9",
+      "wash": "#5567A9",
       "logo_fit": {
         "fill_x": 1.14,
         "height": 1.0
       },
-      "review_required": true,
+      "review_required": false,
       "candidates": {
         "colour0_base": {
           "hex": "#374C9A",
@@ -11768,7 +11818,8 @@
         }
       },
       "palette_source_sha256": null,
-      "palette_evidence": []
+      "palette_evidence": [],
+      "kind": 1
     },
     "ASW": {
       "slot": 48,
@@ -11920,7 +11971,8 @@
         }
       },
       "palette_source_sha256": null,
-      "palette_evidence": []
+      "palette_evidence": [],
+      "kind": 1
     },
     "AFC": {
       "slot": 49,
@@ -12072,7 +12124,8 @@
         }
       },
       "palette_source_sha256": null,
-      "palette_evidence": []
+      "palette_evidence": [],
+      "kind": 1
     },
     "NFC": {
       "slot": 50,
@@ -12224,7 +12277,8 @@
         }
       },
       "palette_source_sha256": null,
-      "palette_evidence": []
+      "palette_evidence": [],
+      "kind": 1
     },
     "NFL": {
       "slot": 51,
@@ -12376,348 +12430,174 @@
         }
       },
       "palette_source_sha256": null,
-      "palette_evidence": []
+      "palette_evidence": [],
+      "kind": 1
     }
   },
   "review": [
     {
-      "team": "SF",
-      "reasons": [
-        "wing: confidence below 0.6",
-        "rim: phrasing disagreement",
-        "rim: confidence below 0.6",
-        "plate: phrasing disagreement",
-        "plate: confidence below 0.6"
-      ]
-    },
-    {
-      "team": "CHI",
-      "reasons": [
-        "plate: confidence below 0.6"
-      ]
-    },
-    {
       "team": "BUF",
       "reasons": [
-        "wing: confidence below 0.6",
-        "rim: confidence below 0.6",
-        "plate: phrasing disagreement",
-        "plate: confidence below 0.6"
-      ]
-    },
-    {
-      "team": "CLE",
-      "reasons": [
-        "wing: confidence below 0.6",
-        "rim: confidence below 0.6",
-        "plate: confidence below 0.6"
+        "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
       ]
     },
     {
       "team": "TB",
       "reasons": [
-        "wing: confidence below 0.6",
-        "rim: confidence below 0.6",
-        "plate: confidence below 0.6"
+        "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
       ]
     },
     {
       "team": "ARI",
       "reasons": [
-        "wing: confidence below 0.6",
-        "rim: phrasing disagreement",
-        "rim: confidence below 0.6",
-        "plate: confidence below 0.6"
+        "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
       ]
     },
     {
       "team": "KC",
       "reasons": [
-        "wing: phrasing disagreement",
-        "wing: confidence below 0.6",
-        "rim: phrasing disagreement",
-        "rim: confidence below 0.6",
-        "plate: phrasing disagreement",
-        "plate: confidence below 0.6"
+        "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
       ]
     },
     {
       "team": "IND",
       "reasons": [
-        "wing: confidence below 0.6",
-        "rim: confidence below 0.6",
-        "plate: confidence below 0.6"
+        "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
       ]
     },
     {
       "team": "DAL",
       "reasons": [
-        "wing: confidence below 0.6",
-        "rim: confidence below 0.6",
-        "plate: confidence below 0.6"
-      ]
-    },
-    {
-      "team": "MIA",
-      "reasons": [
-        "wing: confidence below 0.6",
-        "rim: confidence below 0.6",
-        "plate: confidence below 0.6"
-      ]
-    },
-    {
-      "team": "PHI",
-      "reasons": [
-        "wing: confidence below 0.6",
-        "rim: confidence below 0.6",
-        "plate: confidence below 0.6"
-      ]
-    },
-    {
-      "team": "ATL",
-      "reasons": [
-        "wing: confidence below 0.6",
-        "rim: phrasing disagreement",
-        "rim: confidence below 0.6",
-        "plate: phrasing disagreement",
-        "plate: confidence below 0.6"
+        "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
       ]
     },
     {
       "team": "NYG",
       "reasons": [
-        "wing: confidence below 0.6",
-        "rim: confidence below 0.6",
-        "plate: confidence below 0.6"
-      ]
-    },
-    {
-      "team": "JAX",
-      "reasons": [
-        "wing: confidence below 0.6",
-        "rim: phrasing disagreement",
-        "rim: confidence below 0.6",
-        "plate: confidence below 0.6"
-      ]
-    },
-    {
-      "team": "NYJ",
-      "reasons": [
-        "plate: confidence below 0.6"
-      ]
-    },
-    {
-      "team": "DET",
-      "reasons": [
-        "rim: confidence below 0.6",
-        "plate: confidence below 0.6"
+        "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
       ]
     },
     {
       "team": "GB",
       "reasons": [
-        "wing: confidence below 0.6",
-        "rim: phrasing disagreement",
-        "rim: confidence below 0.6",
-        "plate: phrasing disagreement",
-        "plate: confidence below 0.6"
+        "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
       ]
     },
     {
       "team": "NE",
       "reasons": [
-        "wing: confidence below 0.6",
-        "rim: confidence below 0.6",
-        "plate: confidence below 0.6"
+        "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
       ]
     },
     {
       "team": "LAR",
       "reasons": [
-        "wing: confidence below 0.6",
-        "rim: confidence below 0.6",
-        "plate: confidence below 0.6"
-      ]
-    },
-    {
-      "team": "BAL",
-      "reasons": [
-        "wing: confidence below 0.6",
-        "rim: phrasing disagreement",
-        "rim: confidence below 0.6",
-        "plate: phrasing disagreement",
-        "plate: confidence below 0.6"
-      ]
-    },
-    {
-      "team": "WAS",
-      "reasons": [
-        "wing: confidence below 0.6",
-        "rim: confidence below 0.6",
-        "plate: phrasing disagreement",
-        "plate: confidence below 0.6"
-      ]
-    },
-    {
-      "team": "SEA",
-      "reasons": [
-        "wing: confidence below 0.6",
-        "rim: confidence below 0.6",
-        "plate: confidence below 0.6"
+        "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
       ]
     },
     {
       "team": "PIT",
       "reasons": [
-        "wing: confidence below 0.6",
-        "rim: confidence below 0.6",
-        "plate: confidence below 0.6"
-      ]
-    },
-    {
-      "team": "HOU",
-      "reasons": [
-        "wing: confidence below 0.6",
-        "rim: confidence below 0.6",
-        "plate: confidence below 0.6"
+        "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
       ]
     },
     {
       "team": "MIN",
       "reasons": [
-        "wing: confidence below 0.6",
-        "rim: phrasing disagreement",
-        "rim: confidence below 0.6",
-        "plate: confidence below 0.6"
-      ]
-    },
-    {
-      "team": "USER1",
-      "reasons": [
-        "rim: confidence below 0.6",
-        "plate: confidence below 0.6"
-      ]
-    },
-    {
-      "team": "USER2",
-      "reasons": [
-        "wing: confidence below 0.6",
-        "plate: confidence below 0.6"
+        "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
       ]
     },
     {
       "team": "BRI",
       "reasons": [
-        "wing: confidence below 0.6",
-        "rim: confidence below 0.6"
+        "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
       ]
     },
     {
       "team": "BRP",
       "reasons": [
-        "wing: confidence below 0.6",
-        "rim: confidence below 0.6",
-        "plate: phrasing disagreement",
-        "plate: confidence below 0.6"
+        "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
       ]
     },
     {
       "team": "BWG",
       "reasons": [
-        "wing: confidence below 0.6",
-        "rim: confidence below 0.6",
-        "plate: confidence below 0.6"
+        "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
       ]
     },
     {
       "team": "CHH",
       "reasons": [
-        "wing: confidence below 0.6",
-        "rim: phrasing disagreement",
-        "rim: confidence below 0.6",
-        "plate: phrasing disagreement",
-        "plate: confidence below 0.6"
-      ]
-    },
-    {
-      "team": "UDC",
-      "reasons": [
-        "plate: confidence below 0.6"
-      ]
-    },
-    {
-      "team": "LAL",
-      "reasons": [
-        "rim: confidence below 0.6",
-        "plate: confidence below 0.6"
-      ]
-    },
-    {
-      "team": "CES",
-      "reasons": [
-        "rim: confidence below 0.6",
-        "plate: confidence below 0.6"
-      ]
-    },
-    {
-      "team": "BFM",
-      "reasons": [
-        "plate: confidence below 0.6"
-      ]
-    },
-    {
-      "team": "LAD",
-      "reasons": [
-        "wing: confidence below 0.6",
-        "rim: confidence below 0.6",
-        "plate: confidence below 0.6"
+        "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
       ]
     },
     {
       "team": "AMW",
       "reasons": [
-        "rim: confidence below 0.6"
-      ]
-    },
-    {
-      "team": "ANE",
-      "reasons": [
-        "rim: confidence below 0.6",
-        "plate: confidence below 0.6"
-      ]
-    },
-    {
-      "team": "ASE",
-      "reasons": [
-        "wing: confidence below 0.6",
-        "rim: confidence below 0.6",
-        "plate: confidence below 0.6"
+        "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
       ]
     },
     {
       "team": "AFC",
       "reasons": [
-        "wing: phrasing disagreement",
-        "wing: confidence below 0.6",
-        "rim: phrasing disagreement",
-        "rim: confidence below 0.6",
-        "plate: phrasing disagreement",
-        "plate: confidence below 0.6"
+        "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
       ]
     },
     {
       "team": "NFC",
       "reasons": [
-        "rim: confidence below 0.6"
+        "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
       ]
     },
     {
       "team": "NFL",
       "reasons": [
-        "rim: confidence below 0.6"
+        "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+      ]
+    },
+    {
+      "team": "USER1",
+      "reasons": [
+        "Custom or undocumented team uses explicit neutral fallback; supply its own palette"
+      ]
+    },
+    {
+      "team": "USER2",
+      "reasons": [
+        "Custom or undocumented team uses explicit neutral fallback; supply its own palette"
+      ]
+    },
+    {
+      "team": "UDC",
+      "reasons": [
+        "Custom or undocumented team uses explicit neutral fallback; supply its own palette"
+      ]
+    },
+    {
+      "team": "LAL",
+      "reasons": [
+        "Custom or undocumented team uses explicit neutral fallback; supply its own palette"
+      ]
+    },
+    {
+      "team": "CES",
+      "reasons": [
+        "Custom or undocumented team uses explicit neutral fallback; supply its own palette"
+      ]
+    },
+    {
+      "team": "BFM",
+      "reasons": [
+        "Custom or undocumented team uses explicit neutral fallback; supply its own palette"
+      ]
+    },
+    {
+      "team": "LAD",
+      "reasons": [
+        "Custom or undocumented team uses explicit neutral fallback; supply its own palette"
       ]
     }
   ],
   "custom_rule": "Use the configured team primary and secondary with the same variant/contrast gate. Until supplied, neutral charcoal/silver. Never borrow another team hue.",
-  "limitation": "Existing runtime binds only 32 NFL logos and a neutral fallback. Extra-slot tint binding is not implemented."
+  "limitation": "Extra slots have independent code/kind tint binding and neutral logos when no NFL asset exists."
 }

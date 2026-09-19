@@ -1,0 +1,633 @@
+{
+  "state": {
+    "away": "DET",
+    "home": "LV",
+    "away_score": 0,
+    "home_score": 7,
+    "away_timeouts": 3,
+    "home_timeouts": 3,
+    "quarter": 1,
+    "clock": 300,
+    "play_clock": 29,
+    "down": 1,
+    "distance": 10,
+    "possession": "home",
+    "event": "standard",
+    "goal_to_go": false,
+    "broadcast": "play_now"
+  },
+  "aspect": "16:9",
+  "descriptor": {
+    "schema": "scorebug-descriptor/v1",
+    "source_size": [
+      1920,
+      1080
+    ],
+    "aspect": "16:9",
+    "present": true,
+    "fields": {
+      "away_score": {
+        "box": [
+          696,
+          955,
+          816,
+          1024
+        ],
+        "luma": [
+          7.0,
+          37.0,
+          255.0
+        ],
+        "rgb": [
+          37.0,
+          37.0,
+          37.0
+        ],
+        "ink_pixels": 1213,
+        "ink_box": [
+          737,
+          965,
+          775,
+          1017
+        ],
+        "core_luma": 253.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "0",
+          "certain": true,
+          "error": 0.1923
+        }
+      },
+      "home_score": {
+        "box": [
+          1100,
+          955,
+          1220,
+          1024
+        ],
+        "luma": [
+          11.0,
+          37.0,
+          255.0
+        ],
+        "rgb": [
+          37.0,
+          37.0,
+          37.0
+        ],
+        "ink_pixels": 853,
+        "ink_box": [
+          1141,
+          965,
+          1179,
+          1017
+        ],
+        "core_luma": 253.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "7",
+          "certain": true,
+          "error": 0.1617
+        }
+      },
+      "clock": {
+        "box": [
+          915,
+          1003,
+          1009,
+          1036
+        ],
+        "luma": [
+          0.0,
+          177.61,
+          255.0
+        ],
+        "rgb": [
+          177.5,
+          177.5,
+          179.0
+        ],
+        "ink_pixels": 1016,
+        "ink_box": [
+          922,
+          1006,
+          999,
+          1033
+        ],
+        "core_luma": 67.07,
+        "ink_style": "dark",
+        "ocr": {
+          "text": "5?00",
+          "certain": false,
+          "error": 0.3308
+        }
+      },
+      "quarter": {
+        "box": [
+          844,
+          1003,
+          897,
+          1036
+        ],
+        "luma": [
+          0.0,
+          218.07,
+          255.0
+        ],
+        "rgb": [
+          218.0,
+          218.0,
+          219.0
+        ],
+        "ink_pixels": 368,
+        "ink_box": [
+          844,
+          1003,
+          897,
+          1036
+        ],
+        "core_luma": 79.02,
+        "ink_style": "dark",
+        "ocr": {
+          "text": "?351",
+          "certain": false,
+          "error": 0.6183
+        }
+      },
+      "play_clock": {
+        "box": [
+          1023,
+          1003,
+          1077,
+          1036
+        ],
+        "luma": [
+          46.11,
+          84.88,
+          255.0
+        ],
+        "rgb": [
+          222.0,
+          48.0,
+          85.5
+        ],
+        "ink_pixels": 430,
+        "ink_box": [
+          1029,
+          1007,
+          1070,
+          1031
+        ],
+        "core_luma": 246.22,
+        "ink_style": "light",
+        "ocr": {
+          "text": "29",
+          "certain": true,
+          "error": 0.305
+        }
+      },
+      "down": {
+        "box": [
+          835,
+          950,
+          1085,
+          985
+        ],
+        "luma": [
+          24.83,
+          82.43,
+          255.0
+        ],
+        "rgb": [
+          112.0,
+          73.0,
+          108.0
+        ],
+        "ink_pixels": 1796,
+        "ink_box": [
+          882,
+          952,
+          1040,
+          981
+        ],
+        "core_luma": 254.07,
+        "ink_style": "light",
+        "ocr": {
+          "text": "3st&30",
+          "certain": false,
+          "error": 0.3472
+        }
+      },
+      "plate": {
+        "box": [
+          825,
+          947,
+          1093,
+          987
+        ],
+        "luma": [
+          24.83,
+          82.42,
+          255.0
+        ],
+        "rgb": [
+          111.0,
+          73.0,
+          107.0
+        ],
+        "ink_pixels": 1796,
+        "ink_box": [
+          882,
+          952,
+          1040,
+          981
+        ],
+        "core_luma": 254.07,
+        "ink_style": "light"
+      },
+      "away_wing": {
+        "box": [
+          437,
+          950,
+          464,
+          1038
+        ],
+        "luma": [
+          61.2,
+          97.37,
+          162.76
+        ],
+        "rgb": [
+          11.0,
+          116.0,
+          173.0
+        ],
+        "ink_pixels": 0,
+        "ink_box": null,
+        "core_luma": 0.0,
+        "ink_style": "light"
+      },
+      "home_wing": {
+        "box": [
+          1450,
+          950,
+          1478,
+          1038
+        ],
+        "luma": [
+          67.35,
+          98.0,
+          127.23
+        ],
+        "rgb": [
+          99.0,
+          98.0,
+          99.0
+        ],
+        "ink_pixels": 0,
+        "ink_box": null,
+        "core_luma": 0.0,
+        "ink_style": "light"
+      },
+      "away_rim": {
+        "box": [
+          690,
+          942,
+          810,
+          951
+        ],
+        "luma": [
+          47.73,
+          63.67,
+          97.12
+        ],
+        "rgb": [
+          41.0,
+          68.0,
+          111.0
+        ],
+        "ink_pixels": 0,
+        "ink_box": null,
+        "core_luma": 0.0,
+        "ink_style": "light"
+      },
+      "home_rim": {
+        "box": [
+          1110,
+          942,
+          1235,
+          951
+        ],
+        "luma": [
+          45.3,
+          58.64,
+          97.83
+        ],
+        "rgb": [
+          84.0,
+          59.0,
+          65.0
+        ],
+        "ink_pixels": 0,
+        "ink_box": null,
+        "core_luma": 0.0,
+        "ink_style": "light"
+      },
+      "away_timeouts": {
+        "box": [
+          710,
+          1028,
+          804,
+          1042
+        ],
+        "luma": [
+          12.0,
+          37.79,
+          255.0
+        ],
+        "rgb": [
+          37.0,
+          38.0,
+          38.0
+        ],
+        "ink_pixels": 264,
+        "ink_box": [
+          717,
+          1032,
+          795,
+          1038
+        ],
+        "core_luma": 252.25,
+        "ink_style": "light"
+      },
+      "home_timeouts": {
+        "box": [
+          1114,
+          1028,
+          1208,
+          1042
+        ],
+        "luma": [
+          12.0,
+          37.0,
+          255.0
+        ],
+        "rgb": [
+          37.0,
+          37.0,
+          37.0
+        ],
+        "ink_pixels": 234,
+        "ink_box": [
+          1120,
+          1032,
+          1197,
+          1038
+        ],
+        "core_luma": 246.75,
+        "ink_style": "light"
+      },
+      "network": {
+        "box": [
+          1655,
+          35,
+          1869,
+          64
+        ],
+        "luma": [
+          34.07,
+          48.0,
+          209.06
+        ],
+        "rgb": [
+          48.0,
+          48.0,
+          48.0
+        ],
+        "ink_pixels": 498,
+        "ink_box": [
+          1655,
+          40,
+          1739,
+          59
+        ],
+        "core_luma": 192.2,
+        "ink_style": "light"
+      }
+    },
+    "readback": {
+      "text": "3st&30",
+      "down": null,
+      "distance": null,
+      "goal": false,
+      "certainty": "uncertain"
+    },
+    "banners": {
+      "flag": false,
+      "touchdown": "unresolved",
+      "field_goal": "unresolved",
+      "network": "unresolved"
+    },
+    "limitations": [
+      "Template matching can reject connected text and transitions.",
+      "Red zone needs field position evidence."
+    ]
+  },
+  "raster": {
+    "uv_transform": [
+      0.5,
+      0.5,
+      0.5,
+      0.5
+    ],
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 6
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 6
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 8
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 24
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 20
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      }
+    },
+    "rendered_materials": {
+      "cscore_buga": {
+        "descriptor": "0x404a638",
+        "name": "score_buga",
+        "dimensions": [
+          256,
+          512
+        ],
+        "span_sha256": "3486f2ffbbe87cc3d25049e2ddb6cf9dc3b2f043fae8d51c10f28a5553c2b254",
+        "decode": "xemu P8, Morton swizzle, BGRA palette"
+      },
+      "dscore_buga": {
+        "descriptor": "0x404a638",
+        "name": "score_buga",
+        "dimensions": [
+          256,
+          512
+        ],
+        "span_sha256": "3486f2ffbbe87cc3d25049e2ddb6cf9dc3b2f043fae8d51c10f28a5553c2b254",
+        "decode": "xemu P8, Morton swizzle, BGRA palette"
+      },
+      "hscore_buga": {
+        "descriptor": "0x4038738",
+        "name": "sb20h0",
+        "dimensions": [
+          64,
+          64
+        ],
+        "span_sha256": "299baa809686860614af890083498b733ddaffce2d5321a45ce7f89eb12cc7a1",
+        "decode": "xemu P8, Morton swizzle, BGRA palette"
+      },
+      "score_buga": {
+        "descriptor": "0x404a638",
+        "name": "score_buga",
+        "dimensions": [
+          256,
+          512
+        ],
+        "span_sha256": "3486f2ffbbe87cc3d25049e2ddb6cf9dc3b2f043fae8d51c10f28a5553c2b254",
+        "decode": "xemu P8, Morton swizzle, BGRA palette"
+      },
+      "yscore_buga": {
+        "descriptor": "0x404a638",
+        "name": "score_buga",
+        "dimensions": [
+          256,
+          512
+        ],
+        "span_sha256": "3486f2ffbbe87cc3d25049e2ddb6cf9dc3b2f043fae8d51c10f28a5553c2b254",
+        "decode": "xemu P8, Morton swizzle, BGRA palette"
+      },
+      "yscore_buga1": {
+        "descriptor": "0x404a638",
+        "name": "score_buga",
+        "dimensions": [
+          256,
+          512
+        ],
+        "span_sha256": "3486f2ffbbe87cc3d25049e2ddb6cf9dc3b2f043fae8d51c10f28a5553c2b254",
+        "decode": "xemu P8, Morton swizzle, BGRA palette"
+      },
+      "zscore_buga": {
+        "descriptor": "0x402e338",
+        "name": "sb09h0",
+        "dimensions": [
+          64,
+          64
+        ],
+        "span_sha256": "915dfa4d6bb6e713e70bcf9b1f51d9a8a4abb4b26f60067bc9f0300a86d787fe",
+        "decode": "xemu P8, Morton swizzle, BGRA palette"
+      }
+    },
+    "submission": [
+      {
+        "material": 2,
+        "name": "cscore_buga",
+        "indices": 16
+      },
+      {
+        "material": 6,
+        "name": "score_buga",
+        "indices": 16
+      },
+      {
+        "material": 4,
+        "name": "dscore_buga",
+        "indices": 22
+      },
+      {
+        "material": 3,
+        "name": "hscore_buga",
+        "indices": 4
+      },
+      {
+        "material": 7,
+        "name": "yscore_buga1",
+        "indices": 88
+      },
+      {
+        "material": 5,
+        "name": "bscore_buga",
+        "indices": 4
+      },
+      {
+        "material": 0,
+        "name": "bscore_buga1",
+        "indices": 4
+      },
+      {
+        "material": 1,
+        "name": "bscore_buga2",
+        "indices": 4
+      },
+      {
+        "material": 9,
+        "name": "yscore_buga",
+        "indices": 94
+      },
+      {
+        "material": 10,
+        "name": "zscore_buga",
+        "indices": 4
+      },
+      {
+        "material": 8,
+        "name": "zz_ESPN_bug1",
+        "indices": 4
+      }
+    ],
+    "raster_policy": {
+      "order": "SHAP descriptor order, then push-buffer order",
+      "depth": "none (sprite submission order)",
+      "blend": "vertex * texture, source alpha model",
+      "cull_positive": false,
+      "gpu_state_proved": false,
+      "calibration": null
+    },
+    "xemu_model": {
+      "model": "xemu f9b1403 observed HUD fragment path",
+      "gpu_state_proved": false,
+      "calibration_passed": false,
+      "assumptions": [
+        "Caller diffuse multiplier at bucket+0x2e0 = (1,1,1,1)",
+        "Owned resident vertex slots; native upload executes",
+        "22950 matrix upload replaced by already captured native geometry",
+        "No preceding game-frame FIFO/PGRAPH state supplied",
+        "Preceding logic-op, depth surface and scissor state not captured",
+        "Pixel centres and CPU-projected geometry; surface_scale=4 coverage not emulated"
+      ],
+      "equation": "P8 fetch; oD0=v3*c6; R0=clamp(2*T0*oD0); final C0.a=0 passes R0; alpha>=2; SRC_ALPHA/ONE_MINUS_SRC_ALPHA ADD",
+      "reason": "Bounded native state does not reproduce the dark screenshots; no cause-specific fix proved."
+    }
+  },
+  "appended_bytes": 323808,
+  "runtime_witnessed": false,
+  "preview_path": "xemu-model",
+  "calibration": {
+    "passed": false,
+    "reason": "Dark-label reproduction unresolved; preceding frame GPU state and surface-scale coverage are not captured."
+  }
+}

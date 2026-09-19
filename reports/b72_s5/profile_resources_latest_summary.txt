@@ -1,0 +1,48 @@
+Sat Sep 19 14:35:09 2026    /tmp/b72-s5-resources-latest.prof
+
+         159494131 function calls (159432322 primitive calls) in 130.253 seconds
+
+   Ordered by: cumulative time
+   List reduced from 3251 to 40 due to restriction <40>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+   1167/1    0.067    0.000  131.468  131.468 {built-in method builtins.exec}
+        1    0.000    0.000  131.467  131.467 <frozen runpy>:201(run_module)
+        1    0.000    0.000  131.460  131.460 <frozen runpy>:65(_run_code)
+        1    0.000    0.000  131.460  131.460 /usr/lib/python3.12/unittest/__main__.py:1(<module>)
+        1    0.000    0.000  131.460  131.460 /usr/lib/python3.12/unittest/main.py:67(__init__)
+        1    0.000    0.000  131.203  131.203 /usr/lib/python3.12/unittest/main.py:255(runTests)
+        1    0.000    0.000  131.203  131.203 /usr/lib/python3.12/unittest/runner.py:224(run)
+      4/1    0.000    0.000  131.203  131.203 /usr/lib/python3.12/unittest/suite.py:83(__call__)
+      4/1    0.000    0.000  131.203  131.203 /usr/lib/python3.12/unittest/suite.py:102(run)
+        6    0.000    0.000  112.344   18.724 /usr/lib/python3.12/unittest/case.py:689(__call__)
+        6    0.000    0.000  112.344   18.724 /usr/lib/python3.12/unittest/case.py:599(run)
+        6    0.004    0.001  112.343   18.724 /usr/lib/python3.12/unittest/case.py:588(_callTestMethod)
+       33    0.003    0.000   74.430    2.255 /home/noah/2k-worktrees/astra-b72-s5/mod_editor/core/nfl2k5_scorebug_ingame.py:870(runtime_image_plan)
+        1    0.014    0.014   71.323   71.323 /home/noah/2k-worktrees/astra-b72-s5/tests/mod_editor/test_nfl2k5_scorebug_resources.py:239(test_all_probe_sets_are_exact_idempotent_and_refuse_other_profiles)
+       25    0.021    0.001   69.206    2.768 /home/noah/2k-worktrees/astra-b72-s5/mod_editor/core/nfl2k5_scorebug_ingame.py:946(runtime_apply_in_place)
+        8    0.108    0.013   52.913    6.614 /home/noah/2k-worktrees/astra-b72-s5/tools/nfl2k5_scorebug_reference.py:25(apply_copy)
+       51    0.057    0.001   43.493    0.853 /home/noah/2k-worktrees/astra-b72-s5/mod_editor/core/nfl2k5_scorebug_resources.py:812(compile_runtime_collection)
+       28    0.102    0.004   40.961    1.463 /home/noah/2k-worktrees/astra-b72-s5/mod_editor/core/nfl2k5_scorebug_runtime.py:466(apply)
+       26    0.267    0.010   39.872    1.534 /home/noah/2k-worktrees/astra-b72-s5/mod_editor/core/nfl2k5_scorebug_ingame.py:616(apply_xbe)
+        1    0.032    0.032   39.645   39.645 /home/noah/2k-worktrees/astra-b72-s5/tests/mod_editor/test_nfl2k5_scorebug_resources.py:177(test_disc_growth_replay_and_rollback_at_pack_node_and_xbe_writes)
+     2277    3.357    0.001   37.413    0.016 /home/noah/2k-worktrees/astra-b72-s5/mod_editor/core/nfl2k5_xbe_space.py:264(_validate)
+     2016    0.048    0.000   33.170    0.016 /home/noah/2k-worktrees/astra-b72-s5/mod_editor/core/nfl2k5_xbe_space.py:343(layout)
+     1762    0.013    0.000   32.048    0.018 /home/noah/2k-worktrees/astra-b72-s5/mod_editor/core/nfl2k5_scorebug_ingame.py:582(runtime_identity_installed)
+     1846    0.015    0.000   30.272    0.016 /home/noah/2k-worktrees/astra-b72-s5/mod_editor/core/nfl2k5_scorebug_runtime.py:392(sites)
+  6968635    6.117    0.000   20.217    0.000 {built-in method builtins.sum}
+        6    0.000    0.000   18.859    3.143 /usr/lib/python3.12/unittest/suite.py:142(_handleClassSetUp)
+        1    0.000    0.000   18.859   18.859 /home/noah/2k-worktrees/astra-b72-s5/tests/mod_editor/test_nfl2k5_scorebug_resources.py:43(setUpClass)
+       67    0.018    0.000   18.139    0.271 /home/noah/2k-worktrees/astra-b72-s5/mod_editor/core/nfl2k5_scorebug_resources.py:668(_compiled_panels)
+      163    0.014    0.000   16.617    0.102 /home/noah/2k-worktrees/astra-b72-s5/mod_editor/core/nfl2k5_scorebug_resources.py:732(pack_digest)
+    60726    2.735    0.000   15.623    0.000 /home/noah/2k-worktrees/astra-b72-s5/mod_editor/core/nfl2k5_xbe_space.py:242(_digest)
+    46665   14.821    0.000   14.821    0.000 {built-in method _hashlib.openssl_sha256}
+     2277    0.146    0.000   14.228    0.006 /home/noah/2k-worktrees/astra-b72-s5/mod_editor/core/nfl2k5_cave_oracle.py:75(__init__)
+       68    0.239    0.004   13.126    0.193 /home/noah/2k-worktrees/astra-b72-s5/tools/nfl_tset_png_import.py:488(quantize_levels)
+    61395   13.050    0.000   13.050    0.000 {built-in method _hashlib.openssl_sha1}
+    29432   12.337    0.000   12.337    0.000 {method 'update' of '_hashlib.HASH' objects}
+       12    0.007    0.001   11.847    0.987 /home/noah/2k-worktrees/astra-b72-s5/mod_editor/core/nfl2k5_scorebug_sprite.py:525(compile_collection)
+  1772618    1.854    0.000   11.792    0.000 {built-in method builtins.min}
+       31    0.015    0.000   11.026    0.356 /home/noah/2k-worktrees/astra-b72-s5/mod_editor/core/nfl2k5_scorebug_sprite.py:455(appendix)
+     4206   10.297    0.002   10.297    0.002 {method 'strip' of 'bytes' objects}
+  6659108    2.657    0.000    9.686    0.000 /home/noah/2k-worktrees/astra-b72-s5/tools/nfl_tset_png_import.py:515(<lambda>)

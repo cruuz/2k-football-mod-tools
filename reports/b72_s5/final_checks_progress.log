@@ -1,0 +1,12 @@
+{"file": "tests/mod_editor/test_nfl2k5_scorebug_resources.py", "exit_code": 0, "seconds": 149.51}
+{"file": "tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py", "exit_code": 0, "seconds": 98.43}
+{"file": "tests/mod_editor/test_nfl2k5_scorebug_sprite.py", "exit_code": 0, "seconds": 41.58}
+{"file": "tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py", "exit_code": 0, "seconds": 65.77}
+{"file": "tests/mod_editor/test_nfl2k5_scorebug_freeze.py", "exit_code": 0, "seconds": 39.87}
+{"file": "tests/mod_editor/test_nfl2k5_scorebug_assets.py", "exit_code": 0, "seconds": 9.03}
+{"file": "tests/mod_editor/test_nfl2k5_scorebug_ingame.py", "exit_code": 0, "seconds": 14.14}
+{"file": "tests/mod_editor/test_nfl2k5_scorebug_down_visibility.py", "exit_code": 0, "seconds": 30.26}
+{"file": "tests/mod_editor/test_nfl2k5_scorebug_draw_order.py", "exit_code": 0, "seconds": 16.59}
+{"file": "tests/mod_editor/test_nfl2k5_scorebug_sd.py", "exit_code": 0, "seconds": 0.61}
+{"file": "tests/mod_editor/test_nfl2k5_scorebug_watermark.py", "exit_code": 0, "seconds": 38.13}
+{"file": "tests/mod_editor/test_nfl2k5_scorebug_projection.py", "exit_code": 0, "seconds": 54.7}

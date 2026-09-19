@@ -1436,7 +1436,7 @@
    ],
    "cell": "capsule",
    "material": 3,
-   "tint": "none",
+   "tint": "possessing team",
    "z": -20
   },
   {
@@ -1462,7 +1462,7 @@
    ],
    "cell": "pointer",
    "material": 4,
-   "tint": "none",
+   "tint": "possessing team",
    "z": -17
   },
   {
@@ -1502,7 +1502,7 @@
    ],
    "cell": "red",
    "material": 9,
-   "tint": "none",
+   "tint": "possessing team",
    "z": -17
   },
   {
@@ -1587,7 +1587,7 @@
    "glyph_set": "clock",
    "slots": 5,
    "material": 6,
-   "colour": "#000000",
+   "colour": "#FFFFFF",
    "alignment": "center",
    "anchor": [
     960.0,
@@ -1630,7 +1630,7 @@
    "glyph_set": "small",
    "slots": 3,
    "material": 6,
-   "colour": "#1E1E1E",
+   "colour": "#FFFFFF",
    "alignment": "center",
    "anchor": [
     873.0,
@@ -1811,13 +1811,8 @@
    "z": -13
   }
  ],
- "plate_tints": {
-  "KC": "#D72D5A"
- },
- "wing_tints": {
-  "DEN": "#3A66B2",
-  "KC": "#EF2152"
- },
+ "plate_tints": {},
+ "wing_tints": {},
  "logo_fit": {
   "default": {
    "fill_x": 1.14,
@@ -1885,8 +1880,10 @@
   "author": "tools/scorebug_sprite/author_default.py",
   "rendered_once": true,
   "font_distributed": false,
-  "brand": "brand cells are coverage masks lifted from broadcast stills; each brand row records its source frames, method, opacity and colour"
+  "brand": "brand cells are coverage masks lifted from broadcast stills; each brand row records its source frames, method, opacity and colour",
+  "team_shapes": "Neutral masks; official per-team accents from team_accents.json; wing coverage reduced to 75 percent."
  },
  "layer_order": "increasing-z",
- "sampling": "Cells area-filtered to no larger than the smallest 16:9 HUD footprint; one mip, no minification."
+ "sampling": "Cells area-filtered to no larger than the smallest 16:9 HUD footprint; one mip, no minification.",
+ "team_accents": "team_accents.json"
 }

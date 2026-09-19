@@ -1,0 +1,20 @@
+[
+  {
+    "file": "tests/mod_editor/test_nfl2k5_scorebug_assets.py",
+    "exit_code": 0,
+    "seconds": 6.27,
+    "log": "reports/b72_s5/checks_final/skip_detail_assets.log"
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_scorebug_fonts.py",
+    "exit_code": 0,
+    "seconds": 5.17,
+    "log": "reports/b72_s5/checks_final/skip_detail_fonts.log"
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_scorebug_source_art.py",
+    "exit_code": 0,
+    "seconds": 2.02,
+    "log": "reports/b72_s5/checks_final/skip_detail_source_art.log"
+  }
+]

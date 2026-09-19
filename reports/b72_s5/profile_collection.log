@@ -1,0 +1,36 @@
+         116887390 function calls (116881893 primitive calls) in 52.400 seconds
+
+   Ordered by: cumulative time
+   List reduced from 1660 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.006    0.006   54.292   54.292 nfl2k5_scorebug_resources.py:809(compile_runtime_collection)
+       66    0.020    0.000   53.485    0.810 nfl2k5_scorebug_resources.py:665(_compiled_panels)
+      330    0.001    0.000   26.517    0.080 nfl2k5_scorebug_resources.py:658(panel_states)
+      264    1.728    0.007   26.516    0.100 nfl2k5_scorebug_exact.py:379(panel)
+       67    0.239    0.004   26.170    0.391 nfl_tset_png_import.py:478(quantize_levels)
+      256    0.002    0.000   21.544    0.084 nfl2k5_scorebug_ingame.py:113(texture_image)
+      256    9.976    0.039   16.563    0.065 nfl_txtr.py:873(texture_to_rgba)
+  2042916    3.892    0.000   15.381    0.000 {built-in method builtins.min}
+       67    1.281    0.019   14.374    0.215 nfl_tset_png_import.py:430(median_cut_palette)
+  2354595    1.223    0.000   10.344    0.000 nfl_tset_png_import.py:442(<genexpr>)
+  6559012    2.644    0.000    9.647    0.000 nfl_tset_png_import.py:505(<lambda>)
+  7130410    4.168    0.000    8.677    0.000 {built-in method builtins.sum}
+      259    6.627    0.026    6.627    0.026 nfl_txtr.py:797(unswizzle_2d)
+  2902864    3.452    0.000    5.502    0.000 {built-in method builtins.max}
+     1050    0.002    0.000    5.325    0.005 nfl2k5_scorebug_ingame.py:98(decode)
+     1055    0.003    0.000    5.320    0.005 nfl_txtr.py:703(decode_chunk)
+      793    4.631    0.006    5.320    0.007 nfl_txtr.py:204(decompress_vc_lz)
+ 32795060    3.578    0.000    3.578    0.000 nfl_tset_png_import.py:506(<genexpr>)
+      521    0.002    0.000    2.815    0.005 nfl2k5_scorebug_ingame.py:104(pinned)
+ 27701772    1.841    0.000    1.841    0.000 nfl_tset_png_import.py:443(<genexpr>)
+  1121688    0.653    0.000    1.565    0.000 Image.py:1952(putpixel)
+  4325376    0.911    0.000    1.321    0.000 nfl2k5_scorebug_exact.py:400(<genexpr>)
+  6925443    0.823    0.000    0.823    0.000 nfl_tset_png_import.py:446(<genexpr>)
+      330    0.001    0.000    0.795    0.002 nfl2k5_scorebug_resources.py:675(<genexpr>)
+      264    0.004    0.000    0.792    0.003 nfl2k5_scorebug_resources.py:585(runtime_panel)
+7762444/7762324    0.642    0.000    0.642    0.000 {built-in method builtins.len}
+  1130741    0.301    0.000    0.515    0.000 Image.py:820(load)
+      268    0.489    0.002    0.489    0.002 nfl_txtr.py:834(swizzle_2d)
+  3446054    0.437    0.000    0.437    0.000 {built-in method builtins.round}
+  1121688    0.324    0.000    0.324    0.000 {method 'putpixel' of 'ImagingCore' objects}

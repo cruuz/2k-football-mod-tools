@@ -16,7 +16,8 @@ struct Field {u32 source,vertex,capacity,glyphs,count,color,flags,visibility;int
 struct Static {u32 vertex,tint,material,brand;};
 struct Brand {u32 mode;s16 uv[16];}; /* NFL then MNF, one existing quad */
 struct Header {u32 magic,revision,fields,field_offset,statics,static_offset,size,quads;};
-struct State {u32 scene,active,home,away,home_wing,away_wing,home_plate,away_plate;};
+struct State {u32 scene,active,home,away,home_wing,away_wing,home_plate,away_plate,home_rim,away_rim;};
+struct Accent {u32 code,kind,wing,rim,plate;};
 
 NOINLINE void FAST sprite_blank(u16 *out) {out[0]=0;}
 static u8 *base(void) {
@@ -59,16 +60,36 @@ static u32 logo(u32 context) {
  return found;
 }
 
+static void accents(u8 *b,u32 context,u32 *wing,u32 *rim,u32 *plate) {
+ struct Header *h=header(b);
+ if(h->revision!=2)return;
+ *wing=*rim=*plate=0xff303030;
+ u32 *tail=(u32*)((u8*)h+h->size-12);
+ if(h->size<12 || h->size>16384 || tail[0]!=0x35544e54 || tail[1]>52 ||
+    tail[2]<16512+sizeof(struct Header) || tail[2]+tail[1]*sizeof(struct Accent)!=16512+h->size-12)return;
+ u16 *code=(u16*)V(context+0x10c);
+ if(!code || !code[0] || !code[1] || code[2])return;
+ u32 key=(u32)code[0]|((u32)code[1]<<16),kind=V(context+0x128);
+ struct Accent *rows=(struct Accent*)(b+tail[2]);
+ for(u32 i=0;i<tail[1];i++)if(rows[i].code==key && rows[i].kind==kind){
+  *wing=rows[i].wing;*rim=rows[i].rim;*plate=rows[i].plate;return;
+ }
+}
+
 NOINLINE void sprite_setup(struct State *s) {
  u8 *b=base();s->active=0;if(!b)return;
  struct Header *h=header(b);
- if(h->magic!=MAGIC || h->revision!=1 || h->fields>16 || h->statics>24 || h->quads>71)return;
+ if(h->magic!=MAGIC || (h->revision!=1 && h->revision!=2) || h->fields>16 || h->statics>24 || h->quads>71)return;
  s->scene=(u32)b+256;s->active=1;
  s->home=logo(0xb30864);s->away=logo(0xb30a58);
  s->home_wing=s->home?V(s->home-4):0xff4a4e58;
  s->away_wing=s->away?V(s->away-4):0xff4a4e58;
  s->home_plate=s->home?V(s->home-8):0xff3a3f48;
  s->away_plate=s->away?V(s->away-8):0xff3a3f48;
+ s->home_rim=0xff000000|(((s->home_wing&0xfefefe)>>1)+0x7f7f7f);
+ s->away_rim=0xff000000|(((s->away_wing&0xfefefe)>>1)+0x7f7f7f);
+ accents(b,0xb30864,&s->home_wing,&s->home_rim,&s->home_plate);
+ accents(b,0xb30a58,&s->away_wing,&s->away_rim,&s->away_plate);
  V(material(b,5)+0x30)=s->home;V(material(b,8)+0x30)=s->away;
  /* Keep retail descriptor/slot words. Empty callbacks submit no bar glyphs. */
  for(u32 i=0;i<5;i++)V(0xa95884+i*40)=(u32)sprite_blank;
@@ -157,8 +178,7 @@ NOINLINE void sprite_update(struct State *s) {
  for(u32 i=0;i<h->statics;i++){
   u32 source=statics[i].tint;
   if(source) {
-   u32 c=source==1 || source==4?s->home_wing:source==2 || source==5?s->away_wing:tint;
-   if(source>=4)c=0xff000000|(((c&0xfefefe)>>1)+0x7f7f7f);
+   u32 c=source==1?s->home_wing:source==2?s->away_wing:source==4?s->home_rim:source==5?s->away_rim:tint;
    color(b,statics[i].vertex,c);
   }
   if(statics[i].brand) {

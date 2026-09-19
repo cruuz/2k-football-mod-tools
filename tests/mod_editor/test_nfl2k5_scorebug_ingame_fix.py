@@ -50,6 +50,9 @@ class NativeFixTests(unittest.TestCase):
         capture = {}
         geometry = projection.native_geometry(self.build.payload, self.decoded,
             fonts=self.build.fonts, texture_span=self.atlas, capture=capture, **kwargs)
+        # Repeated text/visibility cases assert the captured native vertices,
+        # colours and game state. They never consume an instruction/write log.
+        capture['machine'].record = False
         return geometry, capture
 
     def test_quarter_clocks_and_long_down_fit_separate_cells_both_modes_and_aspects(self):

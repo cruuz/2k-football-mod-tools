@@ -215,7 +215,7 @@ class ProviderIntegrityTests(unittest.TestCase):
             # formation/play clone writer, fixed-slot audio, the fail-closed
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
-            [299, 10, 8, 9, 8, 9]  # beta 72: + nfl2k5_my_career_advisory and nfl2k5_my_career_events (M1 MyCareer earned ratings, identity and advisory, both reached from the pinned nfl2k5_my_career); P1: + lazy runtime dependency helper; T5: + project fit receipts; A7: + painted-atlas assets dependency; beta 71: + existing colour owner for saved recipes; beta 70: + equipment staging/reporting/import, music conform and existing MNF font dependency; beta 69: + nfl2k5_model_project (J2); beta 68: + nfl2k5_compile_cache (T1 build reuse); beta 66.1: + responsive_json (H1, unified + scorebug), nfl2k5_model_skeleton (H4); beta 66: + nfl2k5_digit_art (G), build_io, metadata_cache (B), jukebox_list, helmet_finish (D2)
+            [301, 10, 8, 9, 8, 9]  # s5: + official team accents and the xemu reference fragment model.
         )
         for provider in providers:
             entries = [provider.backend_module]

@@ -1,0 +1,6 @@
+....
+----------------------------------------------------------------------
+Ran 4 tests in 44.187s
+
+OK
+native collection: {'events': 188, 'max_callback_instructions': 811219, 'registered_txtr': 44, 'registered_font': 0, 'heap_bytes': 678144} {'events': 730, 'max_callback_instructions': 811219, 'registered_txtr': 308, 'registered_font': 7, 'heap_bytes': 2435200}

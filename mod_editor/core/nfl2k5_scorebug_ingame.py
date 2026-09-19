@@ -8,6 +8,7 @@ template contract. Retail bytes supply structure, never reference pixels.
 from __future__ import annotations
 
 import hashlib
+from functools import lru_cache
 import os
 from pathlib import Path
 import struct
@@ -113,8 +114,16 @@ def texture_image(span: bytes, record: dict):
     from PIL import Image
     decoded = pinned(span, record)
     chunk = decode(span)[0]
+    size, pixels = _texture_pixels(decoded, chunk)
+    return Image.frombytes("RGBA", size, pixels)
+
+
+@lru_cache(maxsize=40)
+def _texture_pixels(decoded, chunk):
+    # Repeated timeout/side variants share immutable retail logo pixels. Keep
+    # pin validation in texture_image and return a fresh mutable image there.
     texture = tx.parse_texture(decoded, chunk)
-    return Image.frombytes("RGBA", (texture.width, texture.height), tx.texture_to_rgba(decoded, chunk, texture))
+    return (texture.width, texture.height), tx.texture_to_rgba(decoded, chunk, texture)
 
 
 def atlas_v8(inputs: dict[str, bytes]):
@@ -190,6 +199,22 @@ def template_uv(region, x, y):
 
 def encode_atlas(template: bytes, image) -> tuple[bytes, dict]:
     """Encode the retail fixed span, or the explicit appended painted atlas."""
+    from copy import deepcopy
+    if image.mode != 'RGBA':
+        return _encode_atlas_uncached(template, image)
+    result, receipt = _encode_atlas_cached(bytes(template), image.size, image.tobytes())
+    return result, deepcopy(receipt)
+
+
+@lru_cache(maxsize=8)
+def _encode_atlas_cached(template, size, pixels):
+    # Exact immutable inputs only. Repeated profile/status checks still compare
+    # their actual pack bytes; they need not repeat quantization/compression.
+    from PIL import Image
+    return _encode_atlas_uncached(template, Image.frombytes('RGBA', size, pixels))
+
+
+def _encode_atlas_uncached(template, image):
     if image.size == (256,512):
         from . import nfl2k5_scorebug_assets as assets
         return assets.texture_chunk("score_buga", image, template)
@@ -604,12 +629,14 @@ def apply_xbe(payload: bytes, *, scorebug_folder=None) -> tuple[bytes, dict]:
     buf = bytearray(result)
     edits, touched = [], set()
     sections = bs._sections(payload)
+    # The input payload is unchanged throughout this loop. Recognize and fully
+    # validate its owner once, rather than rehashing the XBE for every field.
+    overrides = {}
+    if scorebug_folder is None and runtime_identity_installed(payload):
+        from . import nfl2k5_scorebug_runtime as runtime
+        overrides = {va: new for va, _old, new, _ in runtime.override_edits()}
     for va,old,new,label in xbe_specs(scorebug_folder=scorebug_folder):
-        if scorebug_folder is None and runtime_identity_installed(payload):
-            from . import nfl2k5_scorebug_runtime as runtime
-            for ova, _old, onew, _ in runtime.override_edits():
-                if ova == va:
-                    new = onew
+        new = overrides.get(va, new)
         off = layout.sbpos.va_to_off(payload,va)
         if before == "retail":
             buf[off:off+len(new)] = new

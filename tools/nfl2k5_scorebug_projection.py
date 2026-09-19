@@ -93,9 +93,8 @@ class StaticMachine:
         self.uc.mem_map(self.STOP, 4096, uc.UC_PROT_READ | uc.UC_PROT_EXEC)
         self.cursor = self.HEAP
         self.visits, self.writes = [], []
-        self._hooks = [self.uc.hook_add(uc.UC_HOOK_CODE, lambda _u, va, _s, _d: self.visits.append(va)),
-                       self.uc.hook_add(uc.UC_HOOK_MEM_WRITE,
-                                        lambda _u, _a, va, size, value, _d: self.writes.append((va, size, value)))]
+        self._hooks = []
+        self.record = True
         context = self.alloc(128)  # Resident GAMEDATA resource lookup context.
         self.put(0xb09578, context)
         self.put(context + 8, 0xe614b8)
@@ -136,6 +135,21 @@ class StaticMachine:
 
     def close(self):
         # Break callback cycles promptly when a bounded fixture is finished.
+        self.record = False
+
+    @property
+    def record(self):
+        return bool(self._hooks)
+
+    @record.setter
+    def record(self, enabled):
+        import unicorn as uc
+        if enabled and not self._hooks:
+            self._hooks = [self.uc.hook_add(uc.UC_HOOK_CODE, lambda _u, va, _s, _d: self.visits.append(va)),
+                           self.uc.hook_add(uc.UC_HOOK_MEM_WRITE,
+                                            lambda _u, _a, va, size, value, _d: self.writes.append((va, size, value)))]
+        if enabled:
+            return
         for hook in self._hooks:
             self.uc.hook_del(hook)
         self._hooks.clear()
@@ -167,13 +181,14 @@ class StaticMachine:
             data.extend(unit)
         raise ValueError('unterminated native fixture string')
 
-    def identity(self, *, home='GB', away='OAK', home_code=None, away_code=None):
-        for context, name, code in ((0xb30864, home, home_code), (0xb30a58, away, away_code)):
+    def identity(self, *, home='GB', away='OAK', home_code=None, away_code=None, home_kind=0, away_kind=0):
+        for context, name, code, kind in ((0xb30864, home, home_code, home_kind), (0xb30a58, away, away_code, away_kind)):
             if code is None:
                 alias = {'OAK': 'LV', 'SD': 'LAC', 'STL': 'LAR'}.get(name.upper(), name.upper())
                 code = r.TEAM_LOGOS.get(alias, {}).get('asset_code', '??')
             self.put(context + 0x10c, self.string(code))
             self.put(context + 0x13c, self.string(name))
+            self.put(context + 0x128, kind)
 
     def run(self, va, args=(), limit=200000, **regs):
         sp = self.STACK + 0xf000
@@ -661,12 +676,14 @@ def native_text_draw(capture, *, shadow_offset=None):
                 p = [sum(p[j] * matrix[j * 4 + i] for j in range(4)) for i in range(4)]
             draws[-1]['vertices'].append(dict(world=p[:3], screen=capture['project'](p[:3]),
                                               uv=list(primitive['uv']), color=hex(primitive['color'])))
-    hook = m.uc.hook_add(unicorn.UC_HOOK_CODE, trace)
+    observed = callbacks | {0x47420, 0x2d2a0, 0x2cbe0, 0x2cb90, 0x2ca70}
+    hooks = [m.uc.hook_add(unicorn.UC_HOOK_CODE, trace, begin=va, end=va) for va in observed if va]
     try:
         m.run(0xfc360, limit=200000)
-        instructions = len(m.visits)
+        instructions = len(m.visits) if m.record else None
     finally:
-        m.uc.hook_del(hook)
+        for hook in hooks:
+            m.uc.hook_del(hook)
     materials = []
     scene = m.get(0xa95528)
     for i in range(m.get(scene+0x1c)):
@@ -781,7 +798,7 @@ def _raster_texture(span):
 
 
 def render_native(decoded, texture_span, fonts, geometry, path, *, cull_positive=False,
-                  texture_spans=None, background=None, calibration=None):
+                  texture_spans=None, background=None, calibration=None, gpu_pipeline=None):
     """Software diagnostic of captured inputs; GPU blend/cull policy is explicit.
 
     Native FONT quads, UVs and colours replace all fabricated preview strings.
@@ -811,16 +828,19 @@ def render_native(decoded, texture_span, fonts, geometry, path, *, cull_positive
     depth = [float('inf')] * (width * height)
     sprite_scene = struct.unpack_from('<I', decoded, 0x60)[0] == 0x35525053
     pixels = im.load()
-    atlas, _atlas_receipt = _raster_texture(bytes(texture_span))
+    decode_texture = _raster_texture
+    if gpu_pipeline is not None:
+        from tools.scorebug_sprite.xemu_model import texture as decode_texture
+    atlas, _atlas_receipt = decode_texture(bytes(texture_span))
     material_atlases = {}
     texture_receipts = {}
     for descriptor, span in (texture_spans or {}).items():
-        material_atlases[descriptor], texture_receipts[descriptor] = _raster_texture(bytes(span))
+        material_atlases[descriptor], texture_receipts[descriptor] = decode_texture(bytes(span))
     font_atlases = {font.name: Image.frombytes('RGBA', (font.width, font.height), rgba_from_font(font))
                     for font in fonts}
     def color(word):
         return ((word >> 16) & 255, (word >> 8) & 255, word & 255, word >> 24)
-    def triangle(texture, points, uvs, colors, zs, *, cull=False):
+    def triangle(texture, points, uvs, colors, zs, *, cull=False, pipeline=None):
         points = [(x * sx + offset_x, y * sy + offset_y) for x, y in points]
         (ax, ay), (bx, by), (cx, cy) = points
         area = (bx - ax) * (cy - ay) - (cx - ax) * (by - ay)
@@ -849,10 +869,17 @@ def render_native(decoded, texture_span, fonts, geometry, path, *, cull_positive
                 sample = [0.] * 4
                 for dx, dy, w in ((0, 0, (1-fx)*(1-fy)), (1, 0, fx*(1-fy)),
                                   (0, 1, (1-fx)*fy), (1, 1, fx*fy)):
-                    rgba = texels[min(texture.width-1, max(0, ix+dx)),
-                                  min(texture.height-1, max(0, iy+dy))]
+                    rgba = (pipeline.texel(texels,ix+dx,iy+dy,texture.width,texture.height) if pipeline is not None else
+                            texels[min(texture.width-1, max(0, ix+dx)), min(texture.height-1, max(0, iy+dy))])
                     for k in range(4):
                         sample[k] += rgba[k] * w
+                if pipeline is not None:
+                    vertex = [sum(weights[i]*colors[i][k] for i in range(3)) for k in range(4)]
+                    result = pipeline.fragment(sample, vertex, pixels[x,y])
+                    if result is not None:
+                        pixels[x,y] = result
+                        depth[at] = z
+                    continue
                 rgba = [sample[k] * sum(weights[i] * colors[i][k] for i in range(3)) / 255
                         for k in range(4)]
                 if rgba[3] < 1:
@@ -862,11 +889,12 @@ def render_native(decoded, texture_span, fonts, geometry, path, *, cull_positive
                 pixels[x, y] = tuple(round(rgba[k] * a + background[k] * (1-a)) for k in range(3)) + (255,)
                 depth[at] = z
     uv_transform = struct.unpack_from('<4f', decoded, r.layout.SHAPE + 0x30)
-    uv, colors = [], []
+    uv, raw_uv, colors = [], [], []
     for i in range(r.layout.VCOUNT):
         offset = r.layout.S1 + i * 10
         colors.append(color(struct.unpack_from('<I', decoded, offset)[0]))
         q = struct.unpack_from('<2h', decoded, offset + 4)
+        raw_uv.append(q)
         uv.append([v / (32768 if v < 0 else 32767) * uv_transform[k] + uv_transform[k+2]
                    for k, v in enumerate(q)])
     visible = {m['name'] for m in geometry['materials'] if m['visible']}
@@ -884,6 +912,8 @@ def render_native(decoded, texture_span, fonts, geometry, path, *, cull_positive
         submission.append(dict(material=material,name=name,indices=len(indices)))
         if name not in visible:
             continue
+        if gpu_pipeline is not None:
+            gpu_pipeline.select(name)
         winding[name] = dict(positive=0, negative=0)
         for i in range(len(indices) - 2):
             vs = indices[i:i+3]
@@ -894,9 +924,11 @@ def render_native(decoded, texture_span, fonts, geometry, path, *, cull_positive
             area = (b[0]-a[0])*(c[1]-a[1]) - (c[0]-a[0])*(b[1]-a[1])
             if abs(area) > 1e-6:
                 winding[name]['positive' if area > 0 else 'negative'] += 1
-            tinted = [tuple(c*t/255 for c,t in zip(colors[v],tints[name])) for v in vs]
-            triangle(material_atlases.get(bound[name], atlas), pts, [uv[v] for v in vs], tinted,
-                     [geometry['world_positions'][v][2] for v in vs], cull=cull_positive)
+            tinted = ([colors[v] for v in vs] if gpu_pipeline is not None else
+                      [tuple(c*t/255 for c,t in zip(colors[v],tints[name])) for v in vs])
+            triangle(material_atlases.get(bound[name], atlas), pts,
+                     [gpu_pipeline.vertex_uv(raw_uv[v]) if gpu_pipeline is not None else uv[v] for v in vs], tinted,
+                     [geometry['world_positions'][v][2] for v in vs], cull=cull_positive, pipeline=gpu_pipeline)
     for row in geometry['draws']:
         vertices = row['vertices']
         for first in range(0, len(vertices), 4):
@@ -925,9 +957,11 @@ def render_native(decoded, texture_span, fonts, geometry, path, *, cull_positive
                 submission=submission,
                 raster_policy=dict(order='SHAP descriptor order, then push-buffer order',
                                    depth='none (sprite submission order)' if sprite_scene else 'less-equal historical model',
-                                   blend='vertex * texture, source alpha model',
+                                   blend='captured xemu fragment equations' if gpu_pipeline is not None else 'vertex * texture, source alpha model',
+                                   retained_font_draws='legacy font raster; GPU state not captured' if geometry['draws'] else 'none',
                                    cull_positive=cull_positive, gpu_state_proved=False,
-                                   calibration=calibration))
+                                   calibration=calibration),
+                xemu_model=gpu_pipeline.receipt() if gpu_pipeline is not None else None)
 
 
 def v7_baseline(spans):
