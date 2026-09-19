@@ -62,16 +62,27 @@ def combiner(state, texture, diffuse, fog=(0, 0, 0, 1)):
 @lru_cache(maxsize=40)
 def texture(span):
     """Independent P8/BGRA decode with xemu's rectangular Morton ordering."""
-    import numpy as np
-    from PIL import Image
     from mod_editor.core import nfl2k5_scorebug_ingame as scene
     chunk, body, _ = scene.decode(span)
     info = scene.tx.parse_texture(body, chunk)
     if info.format_code != 11 or info.dimensions != 2 or info.mip_levels != 1:
         raise ValueError('Reference model requires the captured one-level P8 texture')
     w,h = info.width,info.height
-    if w & (w-1) or h & (h-1):
-        raise ValueError('P8 swizzle dimensions must be powers of two')
+    video = memoryview(body)[chunk.system_bytes:]
+    result = p8_texture(video[info.pixel_offset:info.pixel_offset+w*h],
+                        video[info.palette_offset:info.palette_offset+1024], w, h)
+    return result,dict(name=info.name,dimensions=[w,h],
+        span_sha256=hashlib.sha256(span).hexdigest(),decode='xemu P8, Morton swizzle, BGRA palette')
+
+
+def p8_texture(indices, palette, w, h):
+    """Decode exact physical-memory regions, refusing incomplete RAM extracts."""
+    import numpy as np
+    from PIL import Image
+    if not (1 <= w <= 4096 and 1 <= h <= 4096) or w & (w-1) or h & (h-1):
+        raise ValueError('P8 swizzle dimensions must be bounded powers of two')
+    if len(indices) != w*h or len(palette) != 1024:
+        raise ValueError('Incomplete P8 index or palette bytes')
     yy,xx = np.indices((h,w), dtype=np.uint32)
     offsets = np.zeros((h,w), dtype=np.uint32)
     bit = 1
@@ -82,12 +93,10 @@ def texture(span):
                 offsets |= ((coords & bit) != 0).astype(np.uint32)*target
                 target <<= 1
         bit <<= 1
-    video = memoryview(body)[chunk.system_bytes:]
-    indices = np.frombuffer(video[info.pixel_offset:info.pixel_offset+w*h], dtype=np.uint8)[offsets]
-    bgra = np.frombuffer(video[info.palette_offset:info.palette_offset+1024],dtype=np.uint8).reshape(256,4)
+    indices = np.frombuffer(indices, dtype=np.uint8)[offsets]
+    bgra = np.frombuffer(palette,dtype=np.uint8).reshape(256,4)
     pixels = bgra[indices][:,:,[2,1,0,3]]
-    return Image.fromarray(pixels,'RGBA'),dict(name=info.name,dimensions=[w,h],
-        span_sha256=hashlib.sha256(span).hexdigest(),decode='xemu P8, Morton swizzle, BGRA palette')
+    return Image.fromarray(pixels,'RGBA')
 
 
 class Pipeline:
@@ -104,7 +113,7 @@ class Pipeline:
         state = row['state']
         expected = {0x0300:1,0x0304:1,0x033c:0x206,0x0340:2,
                     0x0344:0x302,0x0348:0x303,0x0350:0x8006,0x0358:0x01010101,
-                    0x1b0c:0x4003ffc0,0x1b14:0x02062000,0x1e70:1,
+                    0x1b0c:0x4003ffc0,0x1e70:1,
                     0x176c:0xa40,0x1778:0xa21}
         for key,value in expected.items():
             if state.get(f'0x{key:04x}') != value:
@@ -115,6 +124,13 @@ class Pipeline:
             raise ValueError('Unsupported texture address mode')
         if (fmt & 0xffff) != 0x0b29 or (fmt >> 16 & 15) != 1 or fmt >> 28:
             raise ValueError('Unsupported texture format/LOD')
+        # The earlier live window uses bias -1 (0x1f00), the CPU fixture 0.
+        # gl/texture.c bounds GL_TEXTURE_MAX_LEVEL to levels-1; both have the
+        # same linear fetch and this validated one-level format has no other mip.
+        if state.get('0x1b14') not in (0x02062000, 0x02063f00):
+            raise ValueError('Unsupported captured HUD texture filter')
+        if row.get('vertex_program_complete') is False:
+            raise ValueError('Incomplete live vertex program')
         program = row['vertex_program']
         if hashlib.sha256(struct.pack('<'+'I'*len(program),*program)).hexdigest() != 'd2f8707d23d3e86d3d0f0e8d097292495c6701df9f51e3dc037dbae7d2d63867':
             raise ValueError('Unsupported native vertex program')

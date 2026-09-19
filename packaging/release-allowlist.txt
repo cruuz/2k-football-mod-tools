@@ -972,4 +972,5 @@ data/nfl2k5_scorebug_sprite/team_colors_official_2026.json
 mod_editor/core/nfl2k5_scorebug_teams.py
 tools/scorebug_sprite/gpu.py
 tools/scorebug_sprite/xemu_model.py
+tools/scorebug_sprite/live.py
 tools/scorebug_sprite/neutral_template.py

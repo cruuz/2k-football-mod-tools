@@ -143,6 +143,16 @@ class NativeTests(unittest.TestCase):
             self.assertEqual(pipeline.fragment((255,)*4,(255,)*4,(19,)*4),(255,)*4)
             self.assertIsNone(pipeline.fragment((255,255,255,1),(255,)*4,(19,)*4))
             self.assertFalse(pipeline.receipt()['calibration_passed'])
+            label['state']['0x1b14']=0x02063f00
+            pipeline.select('yscore_buga1')
+            self.assertEqual(pipeline.fragment((255,)*4,(255,)*4,(19,)*4),(255,)*4)
+            label['vertex_program_complete']=False
+            with self.assertRaisesRegex(ValueError,'Incomplete live'):
+                pipeline.select('yscore_buga1')
+            label['vertex_program_complete']=True
+            label['state']['0x1b14']=0x01013f00
+            with self.assertRaisesRegex(ValueError,'texture filter'):
+                pipeline.select('yscore_buga1')
         finally:c['machine'].close()
 
 

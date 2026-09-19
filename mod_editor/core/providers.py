@@ -707,7 +707,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_scorebug_resources.py": "444d24c8b1c5c0b5bb1a8458e92eec12302b379f0f4f98d1c8f63930a9efbd97",
         'mod_editor/core/nfl2k5_scorebug_sprite.py': '7ceee0ee98bc32b1f314d9b06bf8331d3261b81b2c850edf20ee5c178301c606',
         'mod_editor/core/nfl2k5_scorebug_teams.py': '79dfac96ad264d6364ffb7cfd468c8a303e63d03c9796c8d47013c38086de94e',
-        'tools/scorebug_sprite/xemu_model.py': 'd223549fd9c56e08b8efec48bbd82ee0ad4ce675f09bca428aef60fa3532998e',
+        'tools/scorebug_sprite/xemu_model.py': '1b97da7ecdf4e0fe19d6a1d7ea41ff3110810f14777da88f3ca94e18e1f110b3',
         'mod_editor/core/nfl2k5_scorebug_sprite_code.py': '01e1288dff4fe6897b89489cbaba0072f8a8070fa12434d81f6d16fb7d29ad6b',
         'tools/nfl2k5_scorebug_exact.py': '69e80b09ede53a5e0658c7561deb2e08acfd56bff82effdf6048573120af2c82',
         'tools/nfl2k5_scorebug_projection.py': 'ca69ccbb6fdeb06a762d2f26ed81ea9c321986bbfcb23c14d9ab6d0c5d76c90d',

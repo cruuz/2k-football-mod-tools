@@ -1,8 +1,9 @@
 """Reviewed replication tool and metadata source identities; refreshed by repin.py."""
 PINS = {
+    "tools/scorebug_sprite/live.py": "1891b6e792b99cc7725cd8bd630ca2ac6deadfd8c1a90590767d135e964567a4",
     "mod_editor/core/nfl2k5_scorebug_teams.py": "79dfac96ad264d6364ffb7cfd468c8a303e63d03c9796c8d47013c38086de94e",
     "tools/scorebug_sprite/gpu.py": "cbcf8feb70dac124072b0ee6db19ea59016dcd26eb26cedf4d3c161217206b36",
-    "tools/scorebug_sprite/xemu_model.py": "d223549fd9c56e08b8efec48bbd82ee0ad4ce675f09bca428aef60fa3532998e",
+    "tools/scorebug_sprite/xemu_model.py": "1b97da7ecdf4e0fe19d6a1d7ea41ff3110810f14777da88f3ca94e18e1f110b3",
     "tools/scorebug_sprite/neutral_template.py": "fddad8bd118b3321b24eb3df67719f9f2c392ad36f6cf91811bc3af4e8dba35b",
     "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
     "data/nfl2k5_scorebug_sprite/broadcast_states.json": "16e07c2de4718bfe57066c35643a6302101c58eca72339f1e189d510b773e5a4",
