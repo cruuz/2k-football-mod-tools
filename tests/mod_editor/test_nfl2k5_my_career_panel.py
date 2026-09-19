@@ -131,6 +131,21 @@ class PanelTests(unittest.TestCase):
         self.assertEqual(self.page.college.count(), 1)
         self.assertIsNone(self.page.college.currentData())
 
+    def test_studio_journal_failure_is_reported_without_losing_the_prepared_save(self):
+        from types import SimpleNamespace
+        from mod_editor.gui.studio_qt import StudioMainWindow
+        facade = SimpleNamespace(source_ready=True, set_project_my_career_events=mock.Mock())
+        window = SimpleNamespace(facade=facade, _set_status=mock.Mock(), _mark_workspace_changed=mock.Mock())
+        facade.set_project_my_career_events.side_effect = OSError('disk full')
+        StudioMainWindow._my_career_events_ready(window, {'test': 'ledger'})
+        self.assertIn('MyCareer-events.json remains', window._set_status.call_args.args[0])
+        self.assertIn('disk full', window._set_status.call_args.args[0])
+        window._mark_workspace_changed.assert_not_called()
+        facade.set_project_my_career_events.side_effect = None
+        StudioMainWindow._my_career_events_ready(window, {'test': 'ledger'})
+        window._mark_workspace_changed.assert_called_once()
+        facade.set_project_my_career_events.assert_called_with({'test': 'ledger'}, new_player=True)
+
     def test_advisory_is_read_only_refreshable_and_invalidated(self):
         report = {'label': 'Draft Advisory estimate', 'note': 'Does not change the draft.',
                   'clubs': [dict(club='Example', position_count=1, target=2, maximum=4,

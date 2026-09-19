@@ -9082,7 +9082,14 @@ class StudioMainWindow(QMainWindow):
 
     def _my_career_events_ready(self, ledger):
         if self.facade.source_ready:
-            self.facade.set_project_my_career_events(ledger, new_player=True)
+            try:
+                self.facade.set_project_my_career_events(ledger, new_player=True)
+            except Exception as exc:
+                self._set_status(
+                    "MyPlayer was prepared, but the project could not store its earned-rating journal. "
+                    "MyCareer-events.json remains in the output folder. Check the project location "
+                    f"and free space before retrying: {exc}")
+                return
             self._mark_workspace_changed()
 
     def _my_career_setup_ready(self, path):
