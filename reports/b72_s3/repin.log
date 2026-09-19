@@ -1,0 +1,8 @@
+[1] packaging/scorebug_replication_pins.py: data/nfl2k5_scorebug_sprite/team_colors_official_2026.json
+    3e2ced96d8ec3e9a574c4b18f89011b6ba92a6551f9c805fd27b8ec445148aef
+ -> e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4
+[1] packaging/scorebug_replication_pins.py: data/nfl2k5_scorebug_sprite/team_accents.json
+    a7d822aedfa872116e6b11c72270cc664f4da08a1c02198ddaea7422f25e25f5
+ -> f20e75229f4eaebcfc01f106588cf3b7962c599b7a41af5d86532089a8bbffa3
+
+applied 2 pin update(s)

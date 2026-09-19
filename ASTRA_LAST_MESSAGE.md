@@ -1,21 +1,21 @@
-b72-m1 completes the requested host-side MyCareer work.
-Delivery branch b72-m1 is based on 088e3f41.
-Senior Bowl passing and rushing bands enforce the six-point cap.
-Pre-draft dash and Pass Skeleton bands enforce the eleven-point cap.
-All 21 Max Speed rows are validated and covered by boundary tests.
-Documented rules resolve fractional gaps, ties and out-of-range times.
-Earned purchases preserve existing progression caps and attribute permissions.
-Replayed journals prevent duplicate events, duplicate purchases and overspending.
-Named and recovery Studio projects preserve and validate earned-rating journals.
-Jersey, height, weight and college are written before tier calibration.
-All 612 native-template, body and tier combinations read back at 74/70/64/59.
-The position picker offers eleven retail rows or ten with one-pool LB.
-QB has four distinct host prototypes; other visible positions have three.
-Draft Advisory uses club counts against the executable roster tables.
-The adjacent 53-man cut-risk estimate is read-only and never cuts MyPlayer.
-MyCareer and MyCareer-mode XBE outputs are byte-identical to the base.
-The b69 budget receipt is unchanged, retaining 295 spare RX bytes.
-Validation: 51 suites, 1068 passing tests, four artwork-cache skips; all four XBE gates passed.
-No in-game result is claimed; protected integration changes are specified in WIRING.md.
-Verified delivery bundle: .scratch/astra-b72-m1.bundle; full evidence: ASTRA_REPORT.md.
+01. Job b72-s3 is based on origin/main 6944f562; the bundle branch is b72-s3.
+02. This is an incomplete diagnostic handoff, not a beta 72.1 candidate.
+03. The three dark-label screenshots are not reproduced; the rendering cause remains unproved.
+04. The production template, layout, compiler, projection harness and runtime are unchanged.
+05. Bounded native execution submits the plate before the label at both aspects; GPU execution is absent.
+06. All 35 appended HUD components in the supplied disc-o patch match the compiler.
+07. Five Jev workflow modules, descriptors, budgeting, preview and comparison commands are supplied.
+08. The 200-frame pilot accepted 40 representatives across four states and rejected 160.
+09. The full every-tenth-frame replay is supplied with resume hashes and has not been run.
+10. Final candidates use the supplied official palettes for 32 NFL slots and explicit rules for 20 extra slots.
+11. Forty-two slots need review; the Raiders candidate is #646464, derived from official silver.
+12. Logo fits remain generic; the neutral template and active per-team runtime rebuild are not implemented.
+13. The screenshot judge reports missing bright label ink in all three captures, without proving a cause.
+14. Real layout search, random-control curves and after-state rubric evaluation remain blocked by calibration.
+15. All 376 Jev judgments in 186 MCP receipts are logged; local cost is $0.019917, below $3.
+16. ESPN matching remains 95 pass / 0 fail / 9 impossible; GAMEDATA stays 323,808 bytes, delta zero.
+17. Thirty-seven test files pass at 420 seconds; allocator passes only in an extended run; ten exceed 100 seconds.
+18. Both release/runtime closures, provider integrity, portability scans and 12 new regression tests pass.
+19. No release or manifest regeneration occurred; Lions/Raiders, Chiefs, dark teams and both aspects still need witnessing.
+20. See ASTRA_REPORT.md and VALIDATION.md; delivery is .scratch/astra-b72-s3.bundle.
 ASTRA_DONE

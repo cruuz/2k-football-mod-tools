@@ -1,0 +1,768 @@
+{
+  "screenshot": "/home/noah/Desktop/2K5-8 Editors/beta72_evidence/scorebug_ingame_0919/ksnip_20260919-112349.png",
+  "state": {
+    "away": "DET",
+    "home": "LV",
+    "away_score": 0,
+    "home_score": 7,
+    "away_timeouts": 3,
+    "home_timeouts": 3,
+    "quarter": 1,
+    "clock": 300,
+    "play_clock": 29,
+    "down": 1,
+    "distance": 10,
+    "possession": "home",
+    "event": "standard",
+    "goal_to_go": false,
+    "broadcast": "play_now"
+  },
+  "fields": [
+    {
+      "field": "away_score",
+      "actual_luma": [
+        19.0,
+        19.0,
+        253.0
+      ],
+      "preview_luma": [
+        7.0,
+        37.0,
+        255.0
+      ],
+      "core_delta": 0.0,
+      "placement_delta": 3,
+      "residual": "within",
+      "actual_ink": true,
+      "preview_ink": true,
+      "actual_hue": "neutral",
+      "preview_hue": "neutral"
+    },
+    {
+      "field": "home_score",
+      "actual_luma": [
+        19.0,
+        19.0,
+        253.0
+      ],
+      "preview_luma": [
+        11.0,
+        37.0,
+        255.0
+      ],
+      "core_delta": 1.0,
+      "placement_delta": 3,
+      "residual": "within",
+      "actual_ink": true,
+      "preview_ink": true,
+      "actual_hue": "neutral",
+      "preview_hue": "neutral"
+    },
+    {
+      "field": "clock",
+      "actual_luma": [
+        0.0,
+        165.61,
+        247.22
+      ],
+      "preview_luma": [
+        0.0,
+        177.61,
+        255.0
+      ],
+      "core_delta": 6.0,
+      "placement_delta": 3,
+      "residual": "within",
+      "actual_ink": true,
+      "preview_ink": true,
+      "actual_hue": "neutral",
+      "preview_hue": "neutral"
+    },
+    {
+      "field": "quarter",
+      "actual_luma": [
+        12.0,
+        214.14,
+        247.22
+      ],
+      "preview_luma": [
+        0.0,
+        218.07,
+        255.0
+      ],
+      "core_delta": 3.95,
+      "placement_delta": 0,
+      "residual": "within",
+      "actual_ink": true,
+      "preview_ink": true,
+      "actual_hue": "neutral",
+      "preview_hue": "neutral"
+    },
+    {
+      "field": "play_clock",
+      "actual_luma": [
+        27.85,
+        80.51,
+        253.21
+      ],
+      "preview_luma": [
+        46.11,
+        84.88,
+        255.0
+      ],
+      "core_delta": 12.11,
+      "placement_delta": 3,
+      "residual": "within",
+      "actual_ink": true,
+      "preview_ink": true,
+      "actual_hue": "pink",
+      "preview_hue": "pink"
+    },
+    {
+      "field": "down",
+      "actual_luma": [
+        19.0,
+        28.77,
+        64.86
+      ],
+      "preview_luma": [
+        24.83,
+        82.43,
+        255.0
+      ],
+      "core_delta": 254.07,
+      "placement_delta": null,
+      "residual": "far",
+      "actual_ink": false,
+      "preview_ink": true,
+      "actual_hue": "purple",
+      "preview_hue": "purple"
+    },
+    {
+      "field": "plate",
+      "actual_luma": [
+        19.0,
+        30.33,
+        95.47
+      ],
+      "preview_luma": [
+        24.83,
+        82.42,
+        255.0
+      ],
+      "core_delta": 254.07,
+      "placement_delta": null,
+      "residual": "far",
+      "actual_ink": false,
+      "preview_ink": true,
+      "actual_hue": "purple",
+      "preview_hue": "purple"
+    },
+    {
+      "field": "away_wing",
+      "actual_luma": [
+        71.6,
+        87.08,
+        144.1
+      ],
+      "preview_luma": [
+        61.2,
+        97.37,
+        162.76
+      ],
+      "core_delta": 0.0,
+      "placement_delta": null,
+      "residual": "within",
+      "actual_ink": false,
+      "preview_ink": false,
+      "actual_hue": "cyan",
+      "preview_hue": "cyan"
+    },
+    {
+      "field": "home_wing",
+      "actual_luma": [
+        56.98,
+        86.0,
+        151.05
+      ],
+      "preview_luma": [
+        67.35,
+        98.0,
+        127.23
+      ],
+      "core_delta": 0.0,
+      "placement_delta": null,
+      "residual": "within",
+      "actual_ink": false,
+      "preview_ink": false,
+      "actual_hue": "neutral",
+      "preview_hue": "neutral"
+    },
+    {
+      "field": "away_rim",
+      "actual_luma": [
+        13.07,
+        56.39,
+        103.35
+      ],
+      "preview_luma": [
+        47.73,
+        63.67,
+        97.12
+      ],
+      "core_delta": 0.0,
+      "placement_delta": null,
+      "residual": "within",
+      "actual_ink": false,
+      "preview_ink": false,
+      "actual_hue": "cyan",
+      "preview_hue": "cyan"
+    },
+    {
+      "field": "home_rim",
+      "actual_luma": [
+        5.07,
+        54.99,
+        120.84
+      ],
+      "preview_luma": [
+        45.3,
+        58.64,
+        97.83
+      ],
+      "core_delta": 0.0,
+      "placement_delta": null,
+      "residual": "within",
+      "actual_ink": false,
+      "preview_ink": false,
+      "actual_hue": "neutral",
+      "preview_hue": "pink"
+    },
+    {
+      "field": "away_timeouts",
+      "actual_luma": [
+        19.0,
+        19.0,
+        245.0
+      ],
+      "preview_luma": [
+        12.0,
+        37.79,
+        255.0
+      ],
+      "core_delta": 7.25,
+      "placement_delta": 4,
+      "residual": "within",
+      "actual_ink": true,
+      "preview_ink": true,
+      "actual_hue": "neutral",
+      "preview_hue": "neutral"
+    },
+    {
+      "field": "home_timeouts",
+      "actual_luma": [
+        19.0,
+        19.0,
+        245.0
+      ],
+      "preview_luma": [
+        12.0,
+        37.0,
+        255.0
+      ],
+      "core_delta": 1.75,
+      "placement_delta": 4,
+      "residual": "within",
+      "actual_ink": true,
+      "preview_ink": true,
+      "actual_hue": "neutral",
+      "preview_hue": "neutral"
+    },
+    {
+      "field": "network",
+      "actual_luma": [
+        0.0,
+        56.72,
+        228.13
+      ],
+      "preview_luma": [
+        34.07,
+        48.0,
+        209.06
+      ],
+      "core_delta": 20.4,
+      "placement_delta": 5,
+      "residual": "near",
+      "actual_ink": true,
+      "preview_ink": true,
+      "actual_hue": "neutral",
+      "preview_hue": "neutral"
+    }
+  ],
+  "calibration": {
+    "passed": false,
+    "reason": "Disc-o dark-label reproduction is unresolved; native CPU geometry and software sampling only."
+  },
+  "jev_request": {
+    "tool": "jev_ask",
+    "state": {
+      "fields": [
+        {
+          "field": "away_score",
+          "residual": "within",
+          "actual_ink": true,
+          "preview_ink": true,
+          "actual_hue": "neutral",
+          "preview_hue": "neutral"
+        },
+        {
+          "field": "home_score",
+          "residual": "within",
+          "actual_ink": true,
+          "preview_ink": true,
+          "actual_hue": "neutral",
+          "preview_hue": "neutral"
+        },
+        {
+          "field": "clock",
+          "residual": "within",
+          "actual_ink": true,
+          "preview_ink": true,
+          "actual_hue": "neutral",
+          "preview_hue": "neutral"
+        },
+        {
+          "field": "quarter",
+          "residual": "within",
+          "actual_ink": true,
+          "preview_ink": true,
+          "actual_hue": "neutral",
+          "preview_hue": "neutral"
+        },
+        {
+          "field": "play_clock",
+          "residual": "within",
+          "actual_ink": true,
+          "preview_ink": true,
+          "actual_hue": "pink",
+          "preview_hue": "pink"
+        },
+        {
+          "field": "down",
+          "residual": "far",
+          "actual_ink": false,
+          "preview_ink": true,
+          "actual_hue": "purple",
+          "preview_hue": "purple"
+        },
+        {
+          "field": "plate",
+          "residual": "far",
+          "actual_ink": false,
+          "preview_ink": true,
+          "actual_hue": "purple",
+          "preview_hue": "purple"
+        },
+        {
+          "field": "away_wing",
+          "residual": "within",
+          "actual_ink": false,
+          "preview_ink": false,
+          "actual_hue": "cyan",
+          "preview_hue": "cyan"
+        },
+        {
+          "field": "home_wing",
+          "residual": "within",
+          "actual_ink": false,
+          "preview_ink": false,
+          "actual_hue": "neutral",
+          "preview_hue": "neutral"
+        },
+        {
+          "field": "away_rim",
+          "residual": "within",
+          "actual_ink": false,
+          "preview_ink": false,
+          "actual_hue": "cyan",
+          "preview_hue": "cyan"
+        },
+        {
+          "field": "home_rim",
+          "residual": "within",
+          "actual_ink": false,
+          "preview_ink": false,
+          "actual_hue": "neutral",
+          "preview_hue": "pink"
+        },
+        {
+          "field": "away_timeouts",
+          "residual": "within",
+          "actual_ink": true,
+          "preview_ink": true,
+          "actual_hue": "neutral",
+          "preview_hue": "neutral"
+        },
+        {
+          "field": "home_timeouts",
+          "residual": "within",
+          "actual_ink": true,
+          "preview_ink": true,
+          "actual_hue": "neutral",
+          "preview_hue": "neutral"
+        },
+        {
+          "field": "network",
+          "residual": "near",
+          "actual_ink": true,
+          "preview_ink": true,
+          "actual_hue": "neutral",
+          "preview_hue": "neutral"
+        }
+      ],
+      "native_evidence": "Retail 243D0 descriptor walk submits plate before down label; owner writes white label vertices. GPU execution is not captured."
+    },
+    "questions": {
+      "away_score": {
+        "type": "choice",
+        "instructions": "Classify the measured visible mismatch, not an unproved engine cause. Missing bright ink is missing_element unless independent evidence proves occlusion, scale or blur. Do not infer plate_over_label from dim ink alone.",
+        "criteria": {
+          "plate_over_label": null,
+          "wrong_tint": null,
+          "glyph_too_small": null,
+          "blur_or_mip": null,
+          "misplaced": null,
+          "missing_element": null,
+          "extra_element": null,
+          "none": null
+        }
+      },
+      "home_score": {
+        "type": "choice",
+        "instructions": "Classify the measured visible mismatch, not an unproved engine cause. Missing bright ink is missing_element unless independent evidence proves occlusion, scale or blur. Do not infer plate_over_label from dim ink alone.",
+        "criteria": {
+          "plate_over_label": null,
+          "wrong_tint": null,
+          "glyph_too_small": null,
+          "blur_or_mip": null,
+          "misplaced": null,
+          "missing_element": null,
+          "extra_element": null,
+          "none": null
+        }
+      },
+      "clock": {
+        "type": "choice",
+        "instructions": "Classify the measured visible mismatch, not an unproved engine cause. Missing bright ink is missing_element unless independent evidence proves occlusion, scale or blur. Do not infer plate_over_label from dim ink alone.",
+        "criteria": {
+          "plate_over_label": null,
+          "wrong_tint": null,
+          "glyph_too_small": null,
+          "blur_or_mip": null,
+          "misplaced": null,
+          "missing_element": null,
+          "extra_element": null,
+          "none": null
+        }
+      },
+      "quarter": {
+        "type": "choice",
+        "instructions": "Classify the measured visible mismatch, not an unproved engine cause. Missing bright ink is missing_element unless independent evidence proves occlusion, scale or blur. Do not infer plate_over_label from dim ink alone.",
+        "criteria": {
+          "plate_over_label": null,
+          "wrong_tint": null,
+          "glyph_too_small": null,
+          "blur_or_mip": null,
+          "misplaced": null,
+          "missing_element": null,
+          "extra_element": null,
+          "none": null
+        }
+      },
+      "play_clock": {
+        "type": "choice",
+        "instructions": "Classify the measured visible mismatch, not an unproved engine cause. Missing bright ink is missing_element unless independent evidence proves occlusion, scale or blur. Do not infer plate_over_label from dim ink alone.",
+        "criteria": {
+          "plate_over_label": null,
+          "wrong_tint": null,
+          "glyph_too_small": null,
+          "blur_or_mip": null,
+          "misplaced": null,
+          "missing_element": null,
+          "extra_element": null,
+          "none": null
+        }
+      },
+      "down": {
+        "type": "choice",
+        "instructions": "Classify the measured visible mismatch, not an unproved engine cause. Missing bright ink is missing_element unless independent evidence proves occlusion, scale or blur. Do not infer plate_over_label from dim ink alone.",
+        "criteria": {
+          "plate_over_label": null,
+          "wrong_tint": null,
+          "glyph_too_small": null,
+          "blur_or_mip": null,
+          "misplaced": null,
+          "missing_element": null,
+          "extra_element": null,
+          "none": null
+        }
+      },
+      "plate": {
+        "type": "choice",
+        "instructions": "Classify the measured visible mismatch, not an unproved engine cause. Missing bright ink is missing_element unless independent evidence proves occlusion, scale or blur. Do not infer plate_over_label from dim ink alone.",
+        "criteria": {
+          "plate_over_label": null,
+          "wrong_tint": null,
+          "glyph_too_small": null,
+          "blur_or_mip": null,
+          "misplaced": null,
+          "missing_element": null,
+          "extra_element": null,
+          "none": null
+        }
+      },
+      "away_wing": {
+        "type": "choice",
+        "instructions": "Classify the measured visible mismatch, not an unproved engine cause. Missing bright ink is missing_element unless independent evidence proves occlusion, scale or blur. Do not infer plate_over_label from dim ink alone.",
+        "criteria": {
+          "plate_over_label": null,
+          "wrong_tint": null,
+          "glyph_too_small": null,
+          "blur_or_mip": null,
+          "misplaced": null,
+          "missing_element": null,
+          "extra_element": null,
+          "none": null
+        }
+      },
+      "home_wing": {
+        "type": "choice",
+        "instructions": "Classify the measured visible mismatch, not an unproved engine cause. Missing bright ink is missing_element unless independent evidence proves occlusion, scale or blur. Do not infer plate_over_label from dim ink alone.",
+        "criteria": {
+          "plate_over_label": null,
+          "wrong_tint": null,
+          "glyph_too_small": null,
+          "blur_or_mip": null,
+          "misplaced": null,
+          "missing_element": null,
+          "extra_element": null,
+          "none": null
+        }
+      },
+      "away_rim": {
+        "type": "choice",
+        "instructions": "Classify the measured visible mismatch, not an unproved engine cause. Missing bright ink is missing_element unless independent evidence proves occlusion, scale or blur. Do not infer plate_over_label from dim ink alone.",
+        "criteria": {
+          "plate_over_label": null,
+          "wrong_tint": null,
+          "glyph_too_small": null,
+          "blur_or_mip": null,
+          "misplaced": null,
+          "missing_element": null,
+          "extra_element": null,
+          "none": null
+        }
+      },
+      "home_rim": {
+        "type": "choice",
+        "instructions": "Classify the measured visible mismatch, not an unproved engine cause. Missing bright ink is missing_element unless independent evidence proves occlusion, scale or blur. Do not infer plate_over_label from dim ink alone.",
+        "criteria": {
+          "plate_over_label": null,
+          "wrong_tint": null,
+          "glyph_too_small": null,
+          "blur_or_mip": null,
+          "misplaced": null,
+          "missing_element": null,
+          "extra_element": null,
+          "none": null
+        }
+      },
+      "away_timeouts": {
+        "type": "choice",
+        "instructions": "Classify the measured visible mismatch, not an unproved engine cause. Missing bright ink is missing_element unless independent evidence proves occlusion, scale or blur. Do not infer plate_over_label from dim ink alone.",
+        "criteria": {
+          "plate_over_label": null,
+          "wrong_tint": null,
+          "glyph_too_small": null,
+          "blur_or_mip": null,
+          "misplaced": null,
+          "missing_element": null,
+          "extra_element": null,
+          "none": null
+        }
+      },
+      "home_timeouts": {
+        "type": "choice",
+        "instructions": "Classify the measured visible mismatch, not an unproved engine cause. Missing bright ink is missing_element unless independent evidence proves occlusion, scale or blur. Do not infer plate_over_label from dim ink alone.",
+        "criteria": {
+          "plate_over_label": null,
+          "wrong_tint": null,
+          "glyph_too_small": null,
+          "blur_or_mip": null,
+          "misplaced": null,
+          "missing_element": null,
+          "extra_element": null,
+          "none": null
+        }
+      },
+      "network": {
+        "type": "choice",
+        "instructions": "Classify the measured visible mismatch, not an unproved engine cause. Missing bright ink is missing_element unless independent evidence proves occlusion, scale or blur. Do not infer plate_over_label from dim ink alone.",
+        "criteria": {
+          "plate_over_label": null,
+          "wrong_tint": null,
+          "glyph_too_small": null,
+          "blur_or_mip": null,
+          "misplaced": null,
+          "missing_element": null,
+          "extra_element": null,
+          "none": null
+        }
+      }
+    }
+  },
+  "cause_proven": false,
+  "runtime_witnessed": false,
+  "jev": {
+    "away_score": {
+      "classification": "missing_element",
+      "confidence": 0.86,
+      "inspect_keys": [
+        "fields.*.source",
+        "fields.*.slots",
+        "events"
+      ],
+      "automatic_edit": false
+    },
+    "home_score": {
+      "classification": "missing_element",
+      "confidence": 0.84,
+      "inspect_keys": [
+        "fields.*.source",
+        "fields.*.slots",
+        "events"
+      ],
+      "automatic_edit": false
+    },
+    "clock": {
+      "classification": "missing_element",
+      "confidence": 0.86,
+      "inspect_keys": [
+        "fields.*.source",
+        "fields.*.slots",
+        "events"
+      ],
+      "automatic_edit": false
+    },
+    "quarter": {
+      "classification": "missing_element",
+      "confidence": 0.85,
+      "inspect_keys": [
+        "fields.*.source",
+        "fields.*.slots",
+        "events"
+      ],
+      "automatic_edit": false
+    },
+    "play_clock": {
+      "classification": "missing_element",
+      "confidence": 0.85,
+      "inspect_keys": [
+        "fields.*.source",
+        "fields.*.slots",
+        "events"
+      ],
+      "automatic_edit": false
+    },
+    "down": {
+      "classification": "missing_element",
+      "confidence": 0.83,
+      "inspect_keys": [
+        "fields.*.source",
+        "fields.*.slots",
+        "events"
+      ],
+      "automatic_edit": false
+    },
+    "plate": {
+      "classification": "missing_element",
+      "confidence": 0.82,
+      "inspect_keys": [
+        "fields.*.source",
+        "fields.*.slots",
+        "events"
+      ],
+      "automatic_edit": false
+    },
+    "away_wing": {
+      "classification": "missing_element",
+      "confidence": 0.85,
+      "inspect_keys": [
+        "fields.*.source",
+        "fields.*.slots",
+        "events"
+      ],
+      "automatic_edit": false
+    },
+    "home_wing": {
+      "classification": "missing_element",
+      "confidence": 0.85,
+      "inspect_keys": [
+        "fields.*.source",
+        "fields.*.slots",
+        "events"
+      ],
+      "automatic_edit": false
+    },
+    "away_rim": {
+      "classification": "missing_element",
+      "confidence": 0.84,
+      "inspect_keys": [
+        "fields.*.source",
+        "fields.*.slots",
+        "events"
+      ],
+      "automatic_edit": false
+    },
+    "home_rim": {
+      "classification": "missing_element",
+      "confidence": 0.83,
+      "inspect_keys": [
+        "fields.*.source",
+        "fields.*.slots",
+        "events"
+      ],
+      "automatic_edit": false
+    },
+    "away_timeouts": {
+      "classification": "missing_element",
+      "confidence": 0.84,
+      "inspect_keys": [
+        "fields.*.source",
+        "fields.*.slots",
+        "events"
+      ],
+      "automatic_edit": false
+    },
+    "home_timeouts": {
+      "classification": "missing_element",
+      "confidence": 0.84,
+      "inspect_keys": [
+        "fields.*.source",
+        "fields.*.slots",
+        "events"
+      ],
+      "automatic_edit": false
+    },
+    "network": {
+      "classification": "missing_element",
+      "confidence": 0.85,
+      "inspect_keys": [
+        "fields.*.source",
+        "fields.*.slots",
+        "events"
+      ],
+      "automatic_edit": false
+    }
+  }
+}

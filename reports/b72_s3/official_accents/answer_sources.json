@@ -1,0 +1,262 @@
+[
+  {
+    "team": "SF",
+    "slot": 0,
+    "call_source": "official_accents"
+  },
+  {
+    "team": "CHI",
+    "slot": 1,
+    "call_source": "official_accents"
+  },
+  {
+    "team": "CIN",
+    "slot": 2,
+    "call_source": "official_accents"
+  },
+  {
+    "team": "BUF",
+    "slot": 3,
+    "call_source": "official_accents"
+  },
+  {
+    "team": "DEN",
+    "slot": 4,
+    "call_source": "official_accents"
+  },
+  {
+    "team": "CLE",
+    "slot": 5,
+    "call_source": "official_accents"
+  },
+  {
+    "team": "TB",
+    "slot": 6,
+    "call_source": "official_accents"
+  },
+  {
+    "team": "ARI",
+    "slot": 7,
+    "call_source": "official_accents"
+  },
+  {
+    "team": "LAC",
+    "slot": 8,
+    "call_source": "official_accents"
+  },
+  {
+    "team": "KC",
+    "slot": 9,
+    "call_source": "official_accents"
+  },
+  {
+    "team": "IND",
+    "slot": 10,
+    "call_source": "official_accents"
+  },
+  {
+    "team": "DAL",
+    "slot": 11,
+    "call_source": "official_accents"
+  },
+  {
+    "team": "MIA",
+    "slot": 12,
+    "call_source": "official_accents"
+  },
+  {
+    "team": "PHI",
+    "slot": 13,
+    "call_source": "official_accents"
+  },
+  {
+    "team": "ATL",
+    "slot": 14,
+    "call_source": "official_accents"
+  },
+  {
+    "team": "NYG",
+    "slot": 15,
+    "call_source": "official_accents"
+  },
+  {
+    "team": "JAX",
+    "slot": 16,
+    "call_source": "official_accents"
+  },
+  {
+    "team": "NYJ",
+    "slot": 17,
+    "call_source": "official_accents"
+  },
+  {
+    "team": "DET",
+    "slot": 18,
+    "call_source": "official_accents"
+  },
+  {
+    "team": "GB",
+    "slot": 19,
+    "call_source": "official_accents"
+  },
+  {
+    "team": "CAR",
+    "slot": 20,
+    "call_source": "official_accents"
+  },
+  {
+    "team": "NE",
+    "slot": 21,
+    "call_source": "official_accents"
+  },
+  {
+    "team": "LV",
+    "slot": 22,
+    "call_source": "official_accents"
+  },
+  {
+    "team": "LAR",
+    "slot": 23,
+    "call_source": "official_accents"
+  },
+  {
+    "team": "BAL",
+    "slot": 24,
+    "call_source": "official_accents"
+  },
+  {
+    "team": "WAS",
+    "slot": 25,
+    "call_source": "official_accents"
+  },
+  {
+    "team": "NO",
+    "slot": 26,
+    "call_source": "official_accents"
+  },
+  {
+    "team": "SEA",
+    "slot": 27,
+    "call_source": "official_accents"
+  },
+  {
+    "team": "PIT",
+    "slot": 28,
+    "call_source": "official_accents"
+  },
+  {
+    "team": "HOU",
+    "slot": 29,
+    "call_source": "official_accents"
+  },
+  {
+    "team": "TEN",
+    "slot": 30,
+    "call_source": "official_accents"
+  },
+  {
+    "team": "MIN",
+    "slot": 31,
+    "call_source": "official_accents"
+  },
+  {
+    "team": "USER1",
+    "slot": 32,
+    "call_source": "accents (unchanged retail extra-slot input)"
+  },
+  {
+    "team": "USER2",
+    "slot": 33,
+    "call_source": "accents (unchanged retail extra-slot input)"
+  },
+  {
+    "team": "BRI",
+    "slot": 34,
+    "call_source": "accents (unchanged retail extra-slot input)"
+  },
+  {
+    "team": "BRP",
+    "slot": 35,
+    "call_source": "accents (unchanged retail extra-slot input)"
+  },
+  {
+    "team": "BWG",
+    "slot": 36,
+    "call_source": "accents (unchanged retail extra-slot input)"
+  },
+  {
+    "team": "CHH",
+    "slot": 37,
+    "call_source": "accents (unchanged retail extra-slot input)"
+  },
+  {
+    "team": "UDC",
+    "slot": 38,
+    "call_source": "accents (unchanged retail extra-slot input)"
+  },
+  {
+    "team": "LAL",
+    "slot": 39,
+    "call_source": "accents (unchanged retail extra-slot input)"
+  },
+  {
+    "team": "CES",
+    "slot": 40,
+    "call_source": "accents (unchanged retail extra-slot input)"
+  },
+  {
+    "team": "BFM",
+    "slot": 41,
+    "call_source": "accents (unchanged retail extra-slot input)"
+  },
+  {
+    "team": "LAD",
+    "slot": 42,
+    "call_source": "accents (unchanged retail extra-slot input)"
+  },
+  {
+    "team": "AFW",
+    "slot": 43,
+    "call_source": "accents (unchanged retail extra-slot input)"
+  },
+  {
+    "team": "AGP",
+    "slot": 44,
+    "call_source": "accents (unchanged retail extra-slot input)"
+  },
+  {
+    "team": "AMW",
+    "slot": 45,
+    "call_source": "accents (unchanged retail extra-slot input)"
+  },
+  {
+    "team": "ANE",
+    "slot": 46,
+    "call_source": "accents (unchanged retail extra-slot input)"
+  },
+  {
+    "team": "ASE",
+    "slot": 47,
+    "call_source": "accents (unchanged retail extra-slot input)"
+  },
+  {
+    "team": "ASW",
+    "slot": 48,
+    "call_source": "accents (unchanged retail extra-slot input)"
+  },
+  {
+    "team": "AFC",
+    "slot": 49,
+    "call_source": "accents (unchanged retail extra-slot input)"
+  },
+  {
+    "team": "NFC",
+    "slot": 50,
+    "call_source": "accents (unchanged retail extra-slot input)"
+  },
+  {
+    "team": "NFL",
+    "slot": 51,
+    "call_source": "accents (unchanged retail extra-slot input)"
+  }
+]

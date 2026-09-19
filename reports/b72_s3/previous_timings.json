@@ -1,0 +1,47 @@
+[
+  {
+    "file": "test_beta61_allocator_integration",
+    "previous_receipt": "/home/noah/Desktop/2K5-8 Editors/beta72_evidence/s1_reports/logs/test_beta61_allocator_integration.log",
+    "summary": [
+      "7",
+      "426.389"
+    ],
+    "passed": true
+  },
+  {
+    "file": "test_nfl2k5_roster_storage",
+    "previous_receipt": "/home/noah/Desktop/2K5-8 Editors/beta72_evidence/s1_reports/logs/test_nfl2k5_roster_storage.log",
+    "summary": [
+      "11",
+      "388.082"
+    ],
+    "passed": true
+  },
+  {
+    "file": "test_nfl2k5_scorebug_assets",
+    "previous_receipt": "/home/noah/Desktop/2K5-8 Editors/beta72_evidence/s1_reports/logs/test_nfl2k5_scorebug_assets.log",
+    "summary": [
+      "8",
+      "120.533"
+    ],
+    "passed": true
+  },
+  {
+    "file": "test_nfl2k5_scorebug_freeze",
+    "previous_receipt": "/home/noah/Desktop/2K5-8 Editors/beta72_evidence/s1_reports/logs/test_nfl2k5_scorebug_freeze.log",
+    "summary": [
+      "7",
+      "199.155"
+    ],
+    "passed": true
+  },
+  {
+    "file": "test_nfl2k5_scorebug_freeze_v2",
+    "previous_receipt": "/home/noah/Desktop/2K5-8 Editors/beta72_evidence/s1_reports/logs/test_nfl2k5_scorebug_freeze_v2.log",
+    "summary": [
+      "7",
+      "259.889"
+    ],
+    "passed": true
+  }
+]

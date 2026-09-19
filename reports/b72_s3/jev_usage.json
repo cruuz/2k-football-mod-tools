@@ -1,0 +1,16 @@
+{
+  "cap_usd": 3,
+  "local_receipts_usd": 0.0199167,
+  "conservative_shared_delta_usd": 0.7069830400000001,
+  "shared_end_usd": 2.37668173,
+  "mcp_receipts": 186,
+  "judged_states": 376,
+  "tools": {
+    "jev_choice": 1,
+    "jev_batch": 10,
+    "jev_ask": 171,
+    "jev_next_input": 1,
+    "jev_score": 3
+  },
+  "limitation": "Shared-log increase may include unrelated jobs; the entire increase is conservatively included in the cap guard."
+}

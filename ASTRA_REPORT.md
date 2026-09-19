@@ -6,6 +6,21 @@ Base: `6944f5626b17f2ec6c1b56d854c0d00ecc55cc9e`. Bundle branch: `b72-s3`.
 
 The report motivating this work says: "this 1st and 10 issue has been present for a while" and "color accents must be team specific. why is there pink on the raiders?" The screenshots contradict the previous implication that a passing preview and ESPN matcher establish in-game readability. They do not.
 
+| Acceptance gate | Final status |
+| --- | --- |
+| Dark-label reproduction within 15 | FAIL; all three software previews remain too bright |
+| Proven dark-label cause | UNRESOLVED across the named GPU boundary |
+| Neutral template, active per-team accents, extra-slot binding | NOT IMPLEMENTED because Step 1 has not passed |
+| Repaired glyph cores and contrast for every team/aspect | NOT ESTABLISHED; baseline-only measurements supplied |
+| Five Jev workflows | PARTIAL; live pilot and choices recorded, real search/baseline and after-rubric not run |
+| Candidate palette provenance and contrast | PASS for inactive 52-slot candidate data; 42 slots need review |
+| Compiled label order | PROVED in bounded native CPU execution for both aspects |
+| ESPN matcher | 95 pass / 0 fail / 9 impossible |
+| Test and timing gate | FAIL: 37/38 files pass at 420 seconds; allocator needs 466 seconds; 10 files exceed 100 seconds |
+| Staged release/runtime closures | PASS for both products |
+| GAMEDATA ceiling | PASS, unchanged 323,808 bytes |
+| In-game repair | UNWITNESSED; no candidate disc is ready |
+
 ## Step 1: measurements and bounded proof
 
 The comparison tool normalizes the screenshots to 1920 by 1080 and measures the fixed down-label region. These are whole-region min / median / max luminance values, not glyph-core measurements. The middle screenshot's exact event state is uncertain; `field_goal_setup` is an explicit diagnostic assumption.
@@ -50,7 +65,7 @@ The five Jev modules are under `tools/scorebug_sprite/jev/`, with shared descrip
 
 Every MCP result is retained in `reports/b72_s3/jev_calls.jsonl`. There are 186 MCP receipts, including 200 batch states: 376 total judged states/calls. Local receipt cost and the conservative shared-log delta are recorded separately in `reports/b72_s3/jev_usage.json`; both are below the $3 cap. Shared usage can include other jobs, so its entire delta is conservatively charged against this job's guard.
 
-Jev did not identify a verified rendering cause. Its initial routing answer favored template colors at only 0.28 confidence while splitting probability between template and native work; that was insufficient evidence and did not control the investigation. The accent phrasings disagree in several cases, so those choices are review candidates. No live accent choice required a contrast override; the malicious foreign-color rejection is a synthetic regression test, not a claim that Jev actually proposed pink. A code audit found no direct contradictions between Jev state labels and the explicitly confident down labels supplied in the pilot; this narrow check does not establish visual correctness. The pilot descriptor initially labeled the clock using a bright-ink convention even though this layout uses dark clock text. That code defect was corrected after the pilot and is explicitly a limitation of those retained pilot decisions. Do not treat those decisions as a calibrated benchmark.
+Jev did not identify a verified rendering cause. There is no independent ground-truth label set that establishes where its 200 frame judgments were right or wrong; that requested accuracy assessment remains incomplete. Its initial routing answer favored template colors at only 0.28 confidence while splitting probability between template and native work; that was insufficient evidence and did not control the investigation. The accent phrasings disagree in several cases, so those choices are review candidates. No live accent choice required a contrast override; the malicious foreign-color rejection is a synthetic regression test, not a claim that Jev actually proposed pink. A code audit found no direct contradictions between Jev state labels and the explicitly confident down labels supplied in the pilot; this narrow check does not establish visual correctness. The pilot descriptor initially labeled the clock using a bright-ink convention even though this layout uses dark clock text. That code defect was corrected after the pilot and is explicitly a limitation of those retained pilot decisions. Do not treat those decisions as a calibrated benchmark.
 
 The outside-sandbox full miner replay is shipped, with per-request hashes that refuse mismatched resume journals. It has not been run. Improve the descriptor limitations before spending on the full reel. See `tools/scorebug_sprite/jev/README.md` for commands.
 
@@ -70,7 +85,7 @@ The original template still contains KC/DEN colors, and the original layout rema
 
 `match_espn.py` was run without `--reuse`: **95 PASS / 0 FAIL / 9 IMPOSSIBLE**. It is unchanged-reference evidence, not in-game validation. Detailed residuals and images are in `reports/b72_s3/match/`.
 
-Both products were staged into temporary directories, then their release and runtime closure checks executed from the staged trees. Closure checks are rerun after making the supplied palette file's host citation repository-relative; the final receipts are in `closures.json`. The release check itself was not changed. Temporary stages were removed. Nothing was published, no installer or disc was built, and no manifest was regenerated.
+Both products were staged into temporary directories, then their release and runtime closure checks executed from the staged trees. The final six staging/audit steps passed after making the supplied palette file's host citation repository-relative; receipts are in `closures.json`. The release check itself was not changed. Temporary stages were removed. Nothing was published, no installer or disc was built, and no manifest was regenerated.
 
 New modules and metadata are declared in `packaging/release-allowlist.txt`, as explicitly authorized by this brief. `packaging/scorebug_replication_pins.py` pins them; `packaging/repin.py --apply` refreshes those pins. No protected check implementation was changed. No registry or application-panel wiring is proposed.
 
@@ -78,7 +93,7 @@ The appended GAMEDATA remains **323,808 bytes**, delta **0 bytes**, with **76,19
 
 The baseline-only 32-team, both-aspect measurement table is `reports/b72_s3/baseline_readability.md`. Every row has calibration FAIL. It must not be confused with the missing repaired-output acceptance table.
 
-Full validation receipts and timings are in `reports/b72_s3/checks/`. The command list is reproducible through `run_checks.py` and `run_closures.py` in that private report directory. `VALIDATION.md` records the final pass/failure inventory, including timeouts and paths over 100 seconds. The required test gate is not green if any such row remains. The separate allocator run with a 600-second outer limit passed all 7 tests in 466.192 seconds; that result does not override its 420-second gate failure. A 60-second faulthandler diagnostic locates the allocator delay in `nfl2k5_xbe_space.py:244` (`_digest`), through `_validate_scaleout`, while the unchanged allocator test composes its complete owner stack in `setUpClass`. See `beta61_timeout_location.log`. No allocator code was changed. Historical s1 receipts independently record 426.389 seconds for the allocator file, 388.082 for roster storage, 120.533 for scorebug assets, 199.155 for freeze, and 259.889 for freeze v2. Those earlier timings also exceed the new 100-second requirement; they do not waive this job's gate. See `previous_timings.json`.
+Final inventory: 37 of 38 test files pass within the enforced 420-second limit. The allocator file times out there and passes in its separate 466.192-second run. Ten files exceed the requested 100-second target. Provider integrity, both portability scans and all 12 new replication tests pass. Full receipts and timings are in `reports/b72_s3/checks/`. The command list is reproducible through `run_checks.py` and `run_closures.py` in that private report directory. `VALIDATION.md` records the final pass/failure inventory, including timeouts and paths over 100 seconds. The required test gate is not green if any such row remains. The separate allocator run with a 600-second outer limit passed all 7 tests in 466.192 seconds; that result does not override its 420-second gate failure. A 60-second faulthandler diagnostic locates the allocator delay in `nfl2k5_xbe_space.py:244` (`_digest`), through `_validate_scaleout`, while the unchanged allocator test composes its complete owner stack in `setUpClass`. See `beta61_timeout_location.log`. No allocator code was changed. Historical s1 receipts independently record 426.389 seconds for the allocator file, 388.082 for roster storage, 120.533 for scorebug assets, 199.155 for freeze, and 259.889 for freeze v2. Those earlier timings also exceed the new 100-second requirement; they do not waive this job's gate. See `previous_timings.json`.
 
 ## Integration and witness gate
 
