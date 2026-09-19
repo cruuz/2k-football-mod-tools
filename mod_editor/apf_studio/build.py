@@ -814,13 +814,13 @@ class ApfBuildService:
             )
         replacing = False
         if output_game.exists():
-            if not replace_existing:
-                raise FileExistsError(
-                    f"Choose a new output folder; this already exists: {output_game}"
-                )
             if not output_game.is_dir() or output_game.is_symlink():
                 raise BuildError(
                     f"Replace target must be a regular directory: {output_game}"
+                )
+            if not replace_existing and any(output_game.iterdir()):
+                raise FileExistsError(
+                    f"Choose an empty or new output folder; this already contains files: {output_game}"
                 )
             replacing = True
         output_game.parent.mkdir(parents=True, exist_ok=True)
@@ -1616,6 +1616,8 @@ class ApfBuildService:
                 stream.flush()
                 os.fsync(stream.fileno())
             if replacing:
+                if not replace_existing and any(output_game.iterdir()):
+                    raise BuildError("The empty output folder gained files during the build; choose it again to confirm replacement")
                 _replace_directory_with_staging(staging, output_game)
             else:
                 _publish_directory_noreplace(staging, output_game)

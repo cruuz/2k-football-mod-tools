@@ -1,3 +1,13 @@
+# b72-a2 integration
+
+No protected-file edits are requested. No new capability registry rows are needed: all five changes repair existing APF Studio editor actions. Registry row delta: 0.
+
+No core writer, executable patch, version constant, packaging allowlist, or pinned writer changed. The existing `tools/apf_h7a_optimal` helper remains mode 0755.
+
+The bundle exports branch `b72-a2` with parent `088e3f41`. See `ASTRA_REPORT.md` for the offline checks and source citations.
+
+---
+
 # Beta 71 A7 integration wiring
 
 All protected files are granted for this job. S4 has no newly authored deferred wiring: `git diff 464423f0 7b54e354 -- WIRING.md` is empty. Its inherited beta-70 T1 instructions are archived anonymously in `WIRING_B71_S4.md`.

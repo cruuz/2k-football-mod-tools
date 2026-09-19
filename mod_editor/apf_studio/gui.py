@@ -20369,8 +20369,7 @@ class ApfStudioMainWindow(QMainWindow):
                 action = self._recent_project_menu.addAction(path.name)
                 action.setToolTip(str(path))
                 action.setEnabled(
-                    self.facade.source_ready
-                    and self._valid_recent_project(path)
+                    self._valid_recent_project(path)
                     and not blocking
                 )
                 action.triggered.connect(
@@ -21463,15 +21462,54 @@ class ApfStudioMainWindow(QMainWindow):
         )
         if not selected:
             return
-        self._request_project_load(Path(selected))
+        self._request_project_load(Path(selected), use_recorded_source=False)
 
-    def _request_project_load(self, path: Path) -> None:
+    def _request_project_load(self, path: Path, *, use_recorded_source=True) -> None:
+        loader = self._load_project_with_source if use_recorded_source else self._load_project_path
         self._continue_after_unsaved(
             "Opening another project",
-            lambda discarded: self._load_project_path(
+            lambda discarded: loader(
                 path, clear_previous_recovery=discarded
             ),
         )
+
+    def _recent_project_error(self, message: str) -> None:
+        self._last_detail = message
+        self.operation_status.setText(message)
+
+    def _load_project_with_source(self, path: Path, *, clear_previous_recovery=False) -> None:
+        state = self._workspace_state()
+        bindings = getattr(state, "project_sources", None) or {}
+        recorded = bindings.get(str(path.resolve(strict=False)))
+        if recorded is None:
+            if self.facade.source_ready:
+                self._load_project_path(path, clear_previous_recovery=clear_previous_recovery)
+            else:
+                self._recent_project_error("This older recent project has no recorded game path. Load its APF game once, then use Open Project.")
+            return
+        source_path = Path(recorded)
+        if not self._valid_recent_source(source_path):
+            self._recent_project_error(f"The game's recorded source path is missing or unavailable: {source_path}. Load its APF game, then use Open Project to update the recorded path.")
+            return
+        if self.facade.source_ready and self._active_source_path == source_path:
+            self._load_project_path(path, clear_previous_recovery=clear_previous_recovery)
+            return
+        self._cancel_transient_audio_reads()
+        if self._workers:
+            self._run_when_idle(lambda: self._load_project_with_source(
+                path, clear_previous_recovery=clear_previous_recovery))
+            return
+        previous_path, previous_hash = self._active_source_path, self._active_source_sha256
+
+        def loaded(catalog):
+            self._source_loaded(catalog, clear_previous_recovery=clear_previous_recovery,
+                                previous_source_path=previous_path,
+                                previous_source_sha256=previous_hash)
+            self._run_when_idle(lambda: self._load_project_path(path))
+
+        self._run_task("Opening the project's recorded APF game",
+                       lambda progress: self.facade.load_source(source_path, progress), loaded, True,
+                       show_errors=False, on_error=self._recent_project_error)
 
     def _load_project_path(
         self,
@@ -21527,7 +21565,7 @@ class ApfStudioMainWindow(QMainWindow):
         )
         if self.workspace_store is not None:
             try:
-                self.workspace_store.record_project(identity.path)
+                self.workspace_store.record_project(identity.path, source_path=self._active_source_path)
                 # A successful explicit named load replaces the current edit
                 # document. Only a recovery bound to this source is cleared.
                 self.workspace_store.clear_recovery_for_source(
@@ -21670,7 +21708,7 @@ class ApfStudioMainWindow(QMainWindow):
         )
         if self.workspace_store is not None:
             try:
-                self.workspace_store.record_project(identity.path)
+                self.workspace_store.record_project(identity.path, source_path=self._active_source_path)
                 self.workspace_store.clear_recovery_for_source(
                     self._active_source_path, self._active_source_sha256
                 )
@@ -21743,6 +21781,13 @@ class ApfStudioMainWindow(QMainWindow):
     def _build_game(self) -> None:
         if not self.facade.source_ready:
             return
+        page = self._pages.get(ApfCategory.PLAYBOOKS)
+        for name in ("playbook_membership", "playbook_routes"):
+            panel = getattr(page, name, None)
+            if panel is not None and panel.pending_count():
+                QMessageBox.information(self, "Confirm pending edits",
+                                        "Click Confirm all pending in the playbook editor before building.")
+                return
         pending = self._unstaged_who_lines_up()
         if pending:
             # Building here would write a plain copy and then report "Applied

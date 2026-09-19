@@ -1,5 +1,13 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.94 - beta 72
+
+- Fine-tune Plays, Who lines up and Assignment Routes reuse the loaded books and validated staged views. Each tab now offers pending edits with bulk confirmation. Ten O-ManBlock edits measured 721.4 ms before and 96.7 ms plus 23.5 ms for confirmation after, with identical compiled bytes in the offline fixture.
+- Assignment Routes checks relay availability against the current staged assignments. Copying OL tasks on H Shovel Strong and H Lead Shovel no longer offers a consumed relay that would lose a chain start.
+- All nine CPU Play Calling tables sort numeric columns numerically and retain the correct selection and pending-edit actions after sorting.
+- Recent projects are available before loading a game. Opening one loads its recorded local source first; an unavailable source path gives a clear error. Older entries without a source binding need their game loaded once.
+- Building into an existing empty folder succeeds without a replacement prompt. Non-empty destinations still require confirmation, and the loaded source remains protected. These fixes were checked offline; no in-game result is claimed.
+
 ## 0.1.0-alpha.93 — beta 71.1: the reports after beta 71 — 2026-09-16
 
 - Portable install instructions now declare NumPy 1.26.4 alongside the other Studio packages. Windows Setup includes it, updates retain local packages, and release checks audit third-party imports inside callbacks as well as startup imports.
