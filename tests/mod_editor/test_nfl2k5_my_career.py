@@ -78,10 +78,22 @@ class SetupTests(unittest.TestCase):
                 z.writestr("53450030/0001/EXTRA", rr.sign_save(payload))
                 z.writestr("53450030/0001/SaveImage.xbx", b"unchanged thumbnail")
             digest = hashlib.sha256(source.read_bytes()).hexdigest()
-            result = c.prepare_save(source, root / "out", first="My", last="Player")
+            result = c.prepare_save(source, root / "out", first="My", last="Player",
+                                    prospect_tier=1, height=80, weight=350, jersey=18, college="Michigan")
             out = rr.SaveContainer.load(root / "out/MyCareer.zip")
             self.assertTrue(out.verified)
             self.assertTrue(result["signed"])
+            from mod_editor.core import nfl2k5_my_career_events as events
+            from mod_editor.core import nfl2k5_my_career_advisory as advisory
+            from mod_editor.core import nfl2k5_my_career_prospects as prospects
+            record, ledger = events.load_project(root / "out/MyCareer-events.json")
+            self.assertEqual(record.encode().hex(), result["record_after"])
+            self.assertEqual(prospects.native_overall(record), 74)
+            self.assertEqual(events.replay(ledger)[1]["available"], 0)
+            snapshots = {p.name: p.read_bytes() for p in (root / "out").iterdir()}
+            report = advisory.review_prepared(root / "out/MyCareer.json")
+            self.assertEqual(report["class_fingerprint"], result["class_fingerprint"])
+            self.assertEqual({p.name: p.read_bytes() for p in (root / "out").iterdir()}, snapshots)
             self.assertEqual(hashlib.sha256(source.read_bytes()).hexdigest(), digest)
             self.assertEqual(c.read_setup(root / "out/MyCareer.json"), c.read_setup(json.loads((root / "out/MyCareer.json").read_text())))
             with self.assertRaises(ValueError):
@@ -135,10 +147,10 @@ class AnyPositionTests(unittest.TestCase):
         self.assertEqual(receipt["template"], "Balanced WR")
 
     def test_template_position_and_starter_refusals(self):
-        with self.assertRaisesRegex(c.MyCareerError, "3 retail templates"):
+        with self.assertRaisesRegex(c.MyCareerError, "3 templates"):
             prepared("DE", template=3)
-        with self.assertRaisesRegex(c.MyCareerError, "3 retail templates"):
-            prepared("QB", template=3)
+        with self.assertRaisesRegex(c.MyCareerError, "4 templates"):
+            prepared("QB", template=4)
         with self.assertRaises(rr.RosterRecordError):
             prepared("XX")
         with self.assertRaisesRegex(c.MyCareerError, "no unassigned eligible WR prospect"):

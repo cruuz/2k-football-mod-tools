@@ -40,7 +40,7 @@ def roster_tables(scheme='retail', *, xbe=None):
 
 
 def class_fingerprint(document, scheme='retail'):
-    roster.normalise_scheme(scheme)
+    scheme = roster.normalise_scheme(scheme)
     rows = []
     for player in document.players:
         if player.pool == 'primary' and player.record.get('player_type') & 0x30:
@@ -58,6 +58,7 @@ def class_fingerprint(document, scheme='retail'):
 def estimate(payload, *, player_index, expected_class, scheme='retail', xbe=None):
     """Fresh estimates from a prepared save; no mutation of payload or documents."""
     from . import nfl2k5_my_career as career, nfl2k5_franchise_save as fs
+    scheme = roster.normalise_scheme(scheme)
     career.save_key(payload)
     if payload[fs.SEASON_BLOCK + fs.S_MODE] != 2 or payload[fs.SEASON_BLOCK + fs.S_STAGE] != 5:
         raise ValueError('Draft Advisory needs the prepared NFL Draft stage save.')
@@ -95,7 +96,8 @@ def estimate(payload, *, player_index, expected_class, scheme='retail', xbe=None
                      'shortfall': max(0, target - len(peers)), 'headroom': maximum - len(peers),
                      'projected_roster': projected, 'projected_position_rank': rank, 'cut_risk': risk})
     rows.sort(key=lambda row: (-row['shortfall'], -row['headroom'], row['club_index']))
-    return {'label': 'Draft Advisory and 53-man cut risk: estimates from this save',
+    label = 'EDGE' if position == 16 else roster.position_name(position, scheme)
+    return {'label': f'Draft Advisory and 53-man cut risk: {player.display} ({label}), estimates from this save',
             'note': 'Capacity estimates only. These do not change the draft or cut MyPlayer.',
             'class_fingerprint': fingerprint, 'scheme': scheme, 'clubs': rows}
 

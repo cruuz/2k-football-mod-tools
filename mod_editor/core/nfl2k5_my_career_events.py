@@ -225,16 +225,16 @@ def replay(ledger):
 
 def earn(ledger, *, event, **result):
     """Commit supplied host-side results once; points are always recomputed."""
+    _require(event in ('senior_bowl', 'pre_draft'), 'Choose a supported pre-draft event.')
     candidate = deepcopy(ledger)
+    if event == 'senior_bowl':
+        _keys(result, ('pass_yards', 'rush_yards'))
     if event == 'pre_draft':
         _keys(result, ('attempts', 'pass_yards', 'completion_percent'))
         pre_draft_points(result['attempts'], result['pass_yards'], result['completion_percent'])
-        if 'attempts' in result:
-            result['attempts'] = [str(x) for x in result['attempts']]
-        if 'completion_percent' in result:
-            result['completion_percent'] = str(result['completion_percent'])
+        result['attempts'] = [str(x) for x in result['attempts']]
+        result['completion_percent'] = str(result['completion_percent'])
     candidate['entries'].append({'kind': event, **result})
-    _require(event in ('senior_bowl', 'pre_draft'), 'Choose a supported pre-draft event.')
     _, totals = replay(candidate)
     ledger.clear()
     ledger.update(candidate)

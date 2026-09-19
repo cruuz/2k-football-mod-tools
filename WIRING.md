@@ -16,8 +16,8 @@ mod_editor/core/nfl2k5_my_career_advisory.py
 In `mod_editor/core/providers.py`, in the source-digest map that already includes `nfl2k5_my_career_prospects.py`, add these final source pins:
 
 ```python
-        "mod_editor/core/nfl2k5_my_career_events.py": "48d9377853040fbc3335088257eab9405fb1b2ad894bb959ee7eb983e8ac785e",
-        "mod_editor/core/nfl2k5_my_career_advisory.py": "d9d20c00cc24db73ebbefb172004bb16d8f7194e52c7681961d60955fc0cab86",
+        "mod_editor/core/nfl2k5_my_career_events.py": "228a0b59d43b9b9c52e10ac93cc72072e772e694cc864c8e2e037c5d7c772460",
+        "mod_editor/core/nfl2k5_my_career_advisory.py": "14aa17b6d3dc4aba6303de17eaa999c7599856110ee89ae14ccd522f0eaf00ba",
 ```
 
 In the import-smoke module list in `packaging/check_2k5_mod_studio_runtime.py`, beside `mod_editor.core.nfl2k5_my_career_prospects`, add:
