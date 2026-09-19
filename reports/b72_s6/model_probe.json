@@ -1,0 +1,282 @@
+{
+  "glyphs": [
+    {
+      "material": "yscore_buga1",
+      "vertex": 140,
+      "position_s1": [
+        -905,
+        -6780,
+        2301
+      ],
+      "vertex_bgra": [
+        "0xffffffff",
+        "0xffffffff",
+        "0xffffffff",
+        "0xffffffff"
+      ],
+      "uv_bounds": [
+        234,
+        194,
+        242,
+        206
+      ],
+      "opaque_core_texels": 16,
+      "predicted_core_luma_min": 254.99999999999997,
+      "predicted_core_luma_max": 254.99999999999997,
+      "limitation": "Texel-centre fragment probes, not framebuffer reproduction or raster-coverage prediction"
+    },
+    {
+      "material": "yscore_buga1",
+      "vertex": 144,
+      "position_s1": [
+        -104,
+        -6780,
+        2301
+      ],
+      "vertex_bgra": [
+        "0xffffffff",
+        "0xffffffff",
+        "0xffffffff",
+        "0xffffffff"
+      ],
+      "uv_bounds": [
+        208,
+        193,
+        219,
+        205
+      ],
+      "opaque_core_texels": 7,
+      "predicted_core_luma_min": 254.99999999999997,
+      "predicted_core_luma_max": 254.99999999999997,
+      "limitation": "Texel-centre fragment probes, not framebuffer reproduction or raster-coverage prediction"
+    },
+    {
+      "material": "yscore_buga1",
+      "vertex": 152,
+      "position_s1": [
+        1345,
+        -6780,
+        2301
+      ],
+      "vertex_bgra": [
+        "0xffffffff",
+        "0xffffffff",
+        "0xffffffff",
+        "0xffffffff"
+      ],
+      "uv_bounds": [
+        246,
+        170,
+        254,
+        182
+      ],
+      "opaque_core_texels": 1,
+      "predicted_core_luma_min": 254.99999999999997,
+      "predicted_core_luma_max": 254.99999999999997,
+      "limitation": "Texel-centre fragment probes, not framebuffer reproduction or raster-coverage prediction"
+    },
+    {
+      "material": "yscore_buga1",
+      "vertex": 160,
+      "position_s1": [
+        2485,
+        -6780,
+        2301
+      ],
+      "vertex_bgra": [
+        "0xffffffff",
+        "0xffffffff",
+        "0xffffffff",
+        "0xffffffff"
+      ],
+      "uv_bounds": [
+        234,
+        194,
+        242,
+        206
+      ],
+      "opaque_core_texels": 16,
+      "predicted_core_luma_min": 254.99999999999997,
+      "predicted_core_luma_max": 254.99999999999997,
+      "limitation": "Texel-centre fragment probes, not framebuffer reproduction or raster-coverage prediction"
+    },
+    {
+      "material": "yscore_buga1",
+      "vertex": 164,
+      "position_s1": [
+        3286,
+        -6780,
+        2301
+      ],
+      "vertex_bgra": [
+        "0xffffffff",
+        "0xffffffff",
+        "0xffffffff",
+        "0xffffffff"
+      ],
+      "uv_bounds": [
+        246,
+        184,
+        254,
+        196
+      ],
+      "opaque_core_texels": 13,
+      "predicted_core_luma_min": 254.99999999999997,
+      "predicted_core_luma_max": 254.99999999999997,
+      "limitation": "Texel-centre fragment probes, not framebuffer reproduction or raster-coverage prediction"
+    },
+    {
+      "material": "yscore_buga",
+      "vertex": 52,
+      "position_s1": [
+        -5343,
+        -7201,
+        2301
+      ],
+      "vertex_bgra": [
+        "0xfffdfdfd",
+        "0xfffdfdfd",
+        "0xfffdfdfd",
+        "0xfffdfdfd"
+      ],
+      "uv_bounds": [
+        183,
+        170,
+        195,
+        191
+      ],
+      "opaque_core_texels": 47,
+      "predicted_core_luma_min": 253.0,
+      "predicted_core_luma_max": 253.0,
+      "limitation": "Texel-centre fragment probes, not framebuffer reproduction or raster-coverage prediction"
+    },
+    {
+      "material": "yscore_buga",
+      "vertex": 64,
+      "position_s1": [
+        7109,
+        -7201,
+        2301
+      ],
+      "vertex_bgra": [
+        "0xfffdfdfd",
+        "0xfffdfdfd",
+        "0xfffdfdfd",
+        "0xfffdfdfd"
+      ],
+      "uv_bounds": [
+        127,
+        160,
+        139,
+        181
+      ],
+      "opaque_core_texels": 56,
+      "predicted_core_luma_min": 253.0,
+      "predicted_core_luma_max": 253.0,
+      "limitation": "Texel-centre fragment probes, not framebuffer reproduction or raster-coverage prediction"
+    }
+  ],
+  "screenshots": [
+    {
+      "filename": "shot_6_xemu_window.png",
+      "size": [
+        1280,
+        760
+      ],
+      "regions": {
+        "label": {
+          "box": [
+            555,
+            631,
+            646,
+            645
+          ],
+          "luma_min": 18.4452,
+          "luma_mean": 19.65637189952904,
+          "luma_max": 32.7874
+        },
+        "away": {
+          "box": [
+            474,
+            638,
+            499,
+            670
+          ],
+          "luma_min": 19.0,
+          "luma_mean": 109.95,
+          "luma_max": 253.0
+        },
+        "home": {
+          "box": [
+            715,
+            638,
+            741,
+            670
+          ],
+          "luma_min": 19.0,
+          "luma_mean": 129.79447115384616,
+          "luma_max": 253.0
+        }
+      }
+    },
+    {
+      "filename": "noah_screenshot_135542_49ers_at_bills.png",
+      "size": [
+        1281,
+        747
+      ],
+      "regions": {
+        "label": {
+          "box": [
+            587,
+            648,
+            678,
+            662
+          ],
+          "luma_min": 18.4452,
+          "luma_mean": 19.65637189952904,
+          "luma_max": 32.7874
+        },
+        "away": {
+          "box": [
+            506,
+            655,
+            531,
+            687
+          ],
+          "luma_min": 19.0,
+          "luma_mean": 109.95,
+          "luma_max": 253.0
+        },
+        "home": {
+          "box": [
+            747,
+            655,
+            773,
+            687
+          ],
+          "luma_min": 19.0,
+          "luma_mean": 129.79447115384616,
+          "luma_max": 253.0
+        }
+      }
+    }
+  ],
+  "calibration_passed": false,
+  "cause_proved": false,
+  "fix_applied": false,
+  "reason": "Sample has no HUD draws; earlier known fragment path still predicts bright cores. No exact raster reproduction is possible from these inputs.",
+  "pipeline": {
+    "model": "xemu f9b1403 observed HUD fragment path",
+    "gpu_state_proved": false,
+    "calibration_passed": false,
+    "assumptions": [
+      "Earlier 13:55:28 trace paired with later 13:55:49 RAM",
+      "Descriptor-to-draw correspondence inferred because stock logger omits indices",
+      "Preceding logic-op, depth-test enable, depth surface, shade mode and scissor state not captured",
+      "Pixel centres and CPU-projected geometry; surface_scale=4 coverage not emulated"
+    ],
+    "equation": "P8 fetch; oD0=v3*c6; R0=clamp(2*T0*oD0); final C0.a=0 passes R0; alpha>=2; SRC_ALPHA/ONE_MINUS_SRC_ALPHA ADD",
+    "reason": "Bounded native state does not reproduce the dark screenshots; no cause-specific fix proved."
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "build": {
+    "patch": {
+      "path": "/home/noah/2K5 Mod Studio Builds/NFL 2K5 MOD TEST 2026-09-19p (beta 72 maximum: experimental + dynamic kickoff + colour + Arrowhead + widescreen).2k5patch",
+      "bytes": 225496757,
+      "sha256": "4353ae19a395df68cbf3a69673b41810e08b22433ffa60019f8b7d4e85fd9831"
+    },
+    "payload_member": "operations/file-0000.bin",
+    "pack_origin_in_member": 12021760,
+    "appended_bytes": 323808,
+    "atlas_span_sha256": "3486f2ffbbe87cc3d25049e2ddb6cf9dc3b2f043fae8d51c10f28a5553c2b254",
+    "scene_span_sha256": "1caee849d3159244cef4bbab9c2a8569d8467abf1cd4751e7e0f00acfe437da0"
+  },
+  "regions": [
+    {
+      "name": "indices",
+      "physical_offset": "0x1e55480",
+      "bytes": 131072,
+      "ram_sha256": "964f45b1cd7f9c3516f29307c4ad456bed1b25e51f0c3fc54f2ef658571c23dd",
+      "build_sha256": "964f45b1cd7f9c3516f29307c4ad456bed1b25e51f0c3fc54f2ef658571c23dd",
+      "equal": true,
+      "changed_bytes": 0
+    },
+    {
+      "name": "palette",
+      "physical_offset": "0x1e75480",
+      "bytes": 1024,
+      "ram_sha256": "c941f988309430391a56af7603a22996eebc73062f0e580bcdc41c6e77eada3f",
+      "build_sha256": "c941f988309430391a56af7603a22996eebc73062f0e580bcdc41c6e77eada3f",
+      "equal": true,
+      "changed_bytes": 0
+    }
+  ],
+  "scene_index_batches_equal_disc_p": true
+}

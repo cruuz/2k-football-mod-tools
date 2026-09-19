@@ -38,7 +38,7 @@ Git commits and branch `b72-s6` are in the owned `.scratch/b72-s6.git` store bec
 13. Screenshot label interiors peak at 32.79; exact raster reproduction remains unavailable.
 14. The dark-label cause is unresolved and no guessed runtime fix is applied.
 15. The next capture requires same-frame indices, full state, host textures and attachment history.
-16. The capture specification requires bounded tracing, event cleanup and a complete RAM length.
+16. The capture recipe limits tracing, always disables events and checks complete RAM length.
 17. Runtime and team colours are unchanged; RX is 4086/4096 and appendix 324832/400000 bytes.
 18. All 35 required test files pass under 100 seconds; both product closures pass.
 19. Jev flagged two reviewed model extensions; stale cave-source evidence remains unregenerated.
