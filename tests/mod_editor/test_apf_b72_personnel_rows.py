@@ -91,6 +91,10 @@ class ModelFixtureTests(unittest.TestCase):
         categories, fallback = mask.filter_categories(self.book, self.master,
             model.category_weights(self.book, self.master, 10, s, personnel_rows={'6': 10}), [1])
         self.assertFalse(fallback)
+        shown = model.situation_candidates(self.book, self.master, s, personnel_rows={'6': 10}, exclusions=[1])
+        excluded = next(c for c in shown if c['formation'] == 1)
+        self.assertFalse(excluded['active'])
+        self.assertFalse(excluded['fallback'], 'A removed category never reaches the formation fallback')
         self.assertEqual(categories, ((6, model.f32(.1)),))
         formations = model.formation_weights(self.book, self.master, 6, s)
         self.assertEqual(formations, ((0, model.f32(.1)),))

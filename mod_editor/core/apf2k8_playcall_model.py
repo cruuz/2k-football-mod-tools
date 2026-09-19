@@ -299,14 +299,16 @@ def situation_candidates(book, master, situation, *, requested_row=None, personn
     terms = category_weight_terms(book, master, row, situation, personnel_rows=personnel_rows)
     from .apf2k8_situation_mask import filter_categories, filter_formations
     allowed, category_fallback = filter_categories(book, master, tuple((c["category"], c["category_weight"]) for c in terms), exclusions)
+    allowed_ids = {category for category, _ in allowed}
+    excluded_ids = set(exclusions)
     for term in terms:
         category, category_weight = term["category"], term["category_weight"]
-        forms, formation_fallback = filter_formations(formation_weights(book, master, category, situation), exclusions)
+        _, formation_fallback = filter_formations(formation_weights(book, master, category, situation), exclusions)
         for record in formation_candidate_records(book, master, category):
             c = categories[category]
             result.append({**term, "formation": record.formation_index, "category": category,
-                           "active": category in dict(allowed) and record.formation_index in dict(forms),
-                           "fallback": category_fallback or formation_fallback,
+                           "active": category in allowed_ids and (record.formation_index not in excluded_ids or formation_fallback),
+                           "fallback": category in allowed_ids and (category_fallback or formation_fallback),
                            "personnel": c.name, "tight_ends": c.tight_ends,
                            "category_weight": category_weight,
                            "formation_weight": formation_weight(record, master, situation),
