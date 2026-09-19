@@ -135,6 +135,8 @@ def _lab(color):
 
 
 def quality(requested, actual):
+    if requested == actual:
+        return dict(maximum_channel_error=0, mean_delta_e76=0.0, maximum_delta_e76=0.0, merged_colours=[])
     pairs = Counter((tuple(requested[i:i+4]), tuple(actual[i:i+4])) for i in range(0, len(requested), 4))
     merges = [{"from_rgba": list(a), "to_rgba": list(b), "pixels": n} for (a, b), n in sorted(pairs.items()) if a != b]
     total = len(requested) // 4

@@ -86,7 +86,13 @@ class CompileCache:
         self.misses += 1
         return None
 
-    def put(self, key, result):
+    def put(self, key, result, *, evict=True):
+        """Store a cache entry, or a build-owned temporary result with no eviction.
+
+        The latter is a handoff spool whose lifetime is the current build. Its
+        records are still size-bounded, hashed JSON; evicting unfinished work
+        would make the serial consumer repeat a completed compilation.
+        """
         temporary = None
         try:
             if not self._ready():
@@ -101,6 +107,8 @@ class CompileCache:
                 stream.write(raw)
             os.replace(temporary, self.root / (key + ".json"))
             temporary = None
+            if not evict:
+                return
             entries = []
             for path in self.root.glob("*.json"):
                 info = path.lstat()

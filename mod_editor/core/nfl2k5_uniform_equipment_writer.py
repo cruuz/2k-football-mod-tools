@@ -141,36 +141,149 @@ CONTEXT_FIRST_NAMES = frozenset(BINDING_TABLE_ROWS) - GLOBAL_LOOKUP_NAMES
 SHOE_STYLE_NAMES = ("shoes01", "shoes04", "shoes09", "shoes02", "shoes03", "shoes10")
 
 
+def _retained_bytes(value, seen=None):
+    """Account for retained Python objects, including large quality receipts."""
+    seen = set() if seen is None else seen
+    if id(value) in seen:
+        return 0
+    seen.add(id(value))
+    size = sys.getsizeof(value)
+    if isinstance(value, dict):
+        size += sum(_retained_bytes(k, seen) + _retained_bytes(v, seen) for k, v in value.items())
+    elif isinstance(value, (tuple, list, set, frozenset)):
+        size += sum(_retained_bytes(v, seen) for v in value)
+    elif hasattr(value, '__dict__'):
+        size += _retained_bytes(vars(value), seen)
+    return size
+
+
+class _ByteLRU(OrderedDict):
+    """A byte-bounded LRU, including keys and nested receipt metadata."""
+    def __init__(self, maximum_bytes):
+        super().__init__()
+        self.maximum_bytes = maximum_bytes
+        self.retained_bytes = 0
+        self.sizes = {}
+        self.on_evict = None
+
+    def __setitem__(self, key, value):
+        size = _retained_bytes((key, value))
+        if key in self:
+            self.__delitem__(key)
+        if size > self.maximum_bytes:
+            if self.on_evict is not None:
+                self.on_evict(key, value)
+            return
+        super().__setitem__(key, value)
+        self.sizes[key] = size
+        self.retained_bytes += size
+        while self.retained_bytes > self.maximum_bytes:
+            old_key, old_value = self.popitem(last=False)
+            if self.on_evict is not None:
+                self.on_evict(old_key, old_value)
+
+    def __delitem__(self, key):
+        super().__delitem__(key)
+        self.retained_bytes -= self.sizes.pop(key)
+
+    def get(self, key, default=None):
+        if key not in self:
+            return default
+        self.move_to_end(key)
+        return self[key]
+
+    def popitem(self, last=True):
+        key, value = super().popitem(last=last)
+        self.retained_bytes -= self.sizes.pop(key)
+        return key, value
+
+    def clear(self):
+        super().clear()
+        self.sizes.clear()
+        self.retained_bytes = 0
+
+
 class EquipmentCompileCache:
-    """Caller-owned memo for one build: decoded artwork and compiled spans.
+    """Project-sized memory budget shared by compiled spans and decoded artwork.
 
-    A global equipment variant is staged once per sampled uniform package, and
-    the retail chunk-8 shoe span of Tennessee ``28H0`` is byte-identical in 169
-    other packages. Identical retail bytes receiving identical artwork compile
-    to identical bytes, so a build that passes one cache through every
-    equipment group compiles each distinct span once. Nothing is cached
-    without an explicit cache object; callers own its lifetime and bound.
+    No fixed group/artwork count evicts a large project's small entries. Limits
+    include receipt metadata, cap at 512 MiB, and remain caller-owned. Exact
+    physical/input signatures still determine reuse across uniform packages.
     """
+    def __init__(self, *, project_items=0, maximum_bytes=None):
+        self.maximum_bytes = (maximum_bytes if maximum_bytes is not None
+                              else self.project_budget(project_items))
+        if self.maximum_bytes <= 0:
+            raise ValueError('Equipment compile cache budget must be positive')
+        self.compiled = _ByteLRU(self.maximum_bytes * 3 // 4)
+        self.artwork = _ByteLRU(self.maximum_bytes // 16)
+        self.mips = _ByteLRU(self.maximum_bytes // 16)
+        self.failures = _ByteLRU(self.maximum_bytes // 8)
+        self.compiled_limit = self.artwork_limit = None  # compatibility for benchmark receipts
+        self.hits = self.misses = 0
+        self.serial_recompiles = 0
+        self.preflight_keys = set()
+        self.used_keys = set()
+        self.handoff = None
 
-    def __init__(self, *, compiled_limit: int = 128, artwork_limit: int = 32) -> None:
-        _require(compiled_limit > 0 and artwork_limit > 0, "Equipment compile cache bounds must be positive")
-        self.compiled: "OrderedDict[tuple[Any, ...], _CompiledGroup]" = OrderedDict()
-        self.artwork: "OrderedDict[tuple[Any, ...], tuple[bytes, bytes, list[Any]]]" = OrderedDict()
-        self.compiled_limit = compiled_limit
-        self.artwork_limit = artwork_limit
-        self.hits = 0
-        self.misses = 0
-        self.failures = OrderedDict()
+    @staticmethod
+    def project_budget(items):
+        return min(512 * 1024 * 1024, max(64 * 1024 * 1024, items * 256 * 1024))
 
-    def statistics(self) -> dict[str, int]:
-        return {"hits": self.hits, "misses": self.misses, "entries": len(self.compiled),
-                "artwork_entries": len(self.artwork)}
+    def size_for_project(self, items):
+        self.maximum_bytes = max(self.maximum_bytes, self.project_budget(items))
+        self.compiled.maximum_bytes = self.maximum_bytes * 3 // 4
+        self.artwork.maximum_bytes = self.maximum_bytes // 16
+        self.mips.maximum_bytes = self.maximum_bytes // 16
+        self.failures.maximum_bytes = self.maximum_bytes // 8
 
-    def clear(self) -> None:
+    def enable_handoff(self):
+        """Spill evicted preflight results to build-owned temporary storage."""
+        if self.handoff is not None:
+            return
+        import tempfile
+        from mod_editor.core.nfl2k5_compile_cache import CompileCache
+        self._handoff_directory = tempfile.TemporaryDirectory(prefix='equipment-build-')
+        self.handoff = CompileCache(Path(self._handoff_directory.name))
+        def spill(key, compiled):
+            record = asdict(compiled)
+            record['independent'] = sorted(compiled.independent)
+            self.handoff.put(_digest(repr(key).encode()), record, evict=False)
+        self.compiled.on_evict = spill
+
+    def restore_handoff(self, key, template_span):
+        if self.handoff is None or key not in self.preflight_keys:
+            return None
+        record = self.handoff.get(_digest(repr(key).encode()))
+        return _restore_staged(record, template_span)
+
+    def statistics(self, *, detailed=False):
+        result = dict(hits=self.hits, misses=self.misses, entries=len(self.compiled),
+                      artwork_entries=len(self.artwork))
+        if detailed:
+            result.update(maximum_bytes=self.maximum_bytes,
+                retained_bytes=sum(c.retained_bytes for c in (self.compiled, self.artwork, self.mips, self.failures)),
+                serial_recompiles=self.serial_recompiles)
+        return result
+
+    def clear(self):
         self.compiled.clear()
         self.artwork.clear()
-        self.hits = self.misses = 0
+        self.mips.clear()
         self.failures.clear()
+        self.hits = self.misses = self.serial_recompiles = 0
+        self.preflight_keys.clear()
+        self.used_keys.clear()
+        if self.handoff is not None:
+            self._handoff_directory.cleanup()
+            self.handoff = None
+            self.compiled.on_evict = None
+        quantized = globals().get('_QUANTIZED_CACHE')
+        if quantized is not None:
+            quantized.clear()
+        capacity = globals().get('_capacity_bounds')
+        if capacity is not None:
+            capacity.cache_clear()
 
 
 class UniformEquipmentWriterError(ValueError):
@@ -201,6 +314,14 @@ class EquipmentFitError(EquipmentRefitError):
         else:
             message += "No fitting smaller size was established in the bounded check. Simplify the artwork and import it again."
         super().__init__(message)
+
+
+def _fit_failure_copy(failure):
+    # Cached exceptions must never retain traceback frames and their artwork.
+    if isinstance(failure, EquipmentFitError):
+        return EquipmentFitError(failure.budget, failure.required, failure.attempts, failure.suggestion,
+                                 required_is_lower_bound=failure.required_is_lower_bound)
+    return EquipmentRefitError(str(failure))
 
 
 def _require(condition: bool, message: str) -> None:
@@ -290,9 +411,16 @@ def load_targets(
     resolved = path.expanduser()
     _require(resolved.is_file() and not resolved.is_symlink(),
              f"Uniform-equipment catalog is missing: {resolved}")
+    info = resolved.stat()
+    return _load_targets_cached(resolved.resolve(), (info.st_dev, info.st_ino, info.st_size,
+        info.st_mtime_ns, info.st_ctime_ns), CATALOG_SIZE, CATALOG_SHA256)
+
+
+@lru_cache(maxsize=4)
+def _load_targets_cached(resolved, identity, expected_size, expected_digest):
     payload = resolved.read_bytes()
     _require(
-        len(payload) == CATALOG_SIZE and _digest(payload) == CATALOG_SHA256,
+        len(payload) == expected_size and _digest(payload) == expected_digest,
         "Uniform-equipment catalog identity changed",
     )
     try:
@@ -561,27 +689,26 @@ def _read_png(
         width, height, rgba = palette_tools.decode_rgba_png(
             payload, (target.width, target.height)
         )
-        if import_mode(payload, target.asset_id, rgba) == OWN_TEXTURE:
-            from mod_editor.core.nfl2k5_digit_texture import make_digit_mips
-
-            levels = make_digit_mips(rgba, width, height, target.mip_levels)
-            # Preserve even invisible RGB from an exported straight-alpha PNG.
-            # Lower mips still filter coverage without invisible colour bleed.
-            levels[0] = replace(levels[0], rgba=rgba)
-            scale = import_settings(payload, target.asset_id, rgba)[1]
-            shift = scale.bit_length() - 1
-            _require(shift < len(levels), "Equipment image size removes every mip level")
-            levels = [replace(level, level=number) for number, level in enumerate(levels[shift:])]
-        else:
-            levels = p8_writer.generate_mips(
-                rgba, width, height, target.mip_levels
-            )
+        mode, scale = import_settings(payload, target.asset_id, rgba)
+        mip_key = (_digest(rgba), width, height, target.mip_levels, mode, scale)
+        levels = cache.mips.get(mip_key) if cache is not None else None
+        if levels is None:
+            if mode == OWN_TEXTURE:
+                from mod_editor.core.nfl2k5_digit_texture import make_digit_mips
+                levels = make_digit_mips(rgba, width, height, target.mip_levels)
+                # Preserve even invisible RGB from straight-alpha exports.
+                levels[0] = replace(levels[0], rgba=rgba)
+                shift = scale.bit_length() - 1
+                _require(shift < len(levels), "Equipment image size removes every mip level")
+                levels = [replace(level, level=number) for number, level in enumerate(levels[shift:])]
+            else:
+                levels = p8_writer.generate_mips(rgba, width, height, target.mip_levels)
+            if cache is not None:
+                cache.mips[mip_key] = levels
     except (ValueError, p8_writer.TextureWorkflowError) as exc:
         raise UniformEquipmentWriterError(str(exc)) from exc
     if cache is not None:
         cache.artwork[key] = (payload, rgba, levels)
-        while len(cache.artwork) > cache.artwork_limit:
-            cache.artwork.popitem(last=False)
     return payload, rgba, levels
 
 
@@ -598,10 +725,10 @@ def _chain_pins() -> dict[tuple[int, int], str]:
 # source pixels, palette entries, mips, descriptors and untouched siblings),
 # stream tag and offset bits. Equal payloads at different palette limits share
 # a parse too. A bounded miss may be reused only for an equal/smaller budget.
-# Retain these records until process exit: evicting a failed rung would make a
-# later suggestion/import repeat its parse. Input pixels are never retained here;
-# memory grows with the distinct encoded results requested during this process.
-_PARSE_CACHE: OrderedDict = OrderedDict()
+# Bound retained streams and miss records by bytes. A working fit's candidates
+# are replayed from its own short-lived ladder; unrelated projects cannot grow
+# this process cache without limit. Input pixels are not retained in this cache.
+_PARSE_CACHE = _ByteLRU(64 * 1024 * 1024)
 _STAGED_CACHE = EquipmentCompileCache()
 _FIT_SEARCH = ContextVar('equipment_fit_search', default=None)
 
@@ -692,10 +819,18 @@ def _greedy_ceiling(budget: int) -> int:
 
 
 def _cached_parse(candidate: bytes, stream_tag: int, offset_bits: int, budget: int):
-    from mod_editor.core.nfl2k5_equipment_lz import compress_equipment_optimal
     key = (_digest(candidate), stream_tag, offset_bits)
-    record = _PARSE_CACHE.setdefault(key, {})
-    _PARSE_CACHE.move_to_end(key)
+    record = _PARSE_CACHE.get(key, {})
+    try:
+        return _parse_candidate(candidate, stream_tag, offset_bits, budget, key, record)
+    finally:
+        # Records acquire encoded streams during parsing; account for those
+        # bytes after either success or a bounded miss.
+        _PARSE_CACHE[key] = record
+
+
+def _parse_candidate(candidate, stream_tag, offset_bits, budget, key, record):
+    from mod_editor.core.nfl2k5_equipment_lz import compress_equipment_optimal
     ceiling = _greedy_ceiling(budget)
     greedy = record.get("greedy")
     if greedy is None and record.get("greedy_miss", 0) < ceiling:
@@ -950,23 +1085,18 @@ def _project_palette(
 
 def _quality(requested: bytes, actual: bytes) -> dict[str, int]:
     _require(len(requested) == len(actual), "Equipment preview size changed")
-    squared = 0
-    maximum = 0
-    differing = 0
-    for offset in range(0, len(requested), 4):
-        changed = False
-        for channel in range(4):
-            error = abs(requested[offset + channel] - actual[offset + channel])
-            squared += error * error
-            maximum = max(maximum, error)
-            changed = changed or bool(error)
-        differing += int(changed)
-    return {
-        "differing_pixel_count": differing,
-        "maximum_channel_error": maximum,
-        "total_pixel_count": len(requested) // 4,
-        "total_squared_rgba_error": squared,
-    }
+    if requested == actual:
+        differing = maximum = squared = 0
+    else:
+        import numpy as np
+        left = np.frombuffer(requested, dtype=np.uint8).astype(np.int64).reshape(-1, 4)
+        right = np.frombuffer(actual, dtype=np.uint8).astype(np.int64).reshape(-1, 4)
+        delta = np.abs(left - right)
+        differing = int(np.any(delta, axis=1).sum())
+        maximum = int(delta.max(initial=0))
+        squared = int((delta * delta).sum())
+    return dict(differing_pixel_count=differing, maximum_channel_error=maximum,
+                total_pixel_count=len(requested) // 4, total_squared_rgba_error=squared)
 
 
 def _striped_art(rgba: bytes, width: int, height: int) -> bool:
@@ -988,15 +1118,26 @@ def _striped_art(rgba: bytes, width: int, height: int) -> bool:
     return coherent(pixels) >= 2 or coherent(pixels.transpose(1, 0, 2)) >= 2
 
 
-def _quantize_art(levels, maximum):
-    # Key pixels and dimensions, never PNG metadata or normal/mud identity.
-    return _quantize_pixels(tuple((level.width, level.height, level.rgba) for level in levels), maximum)
+_QUANTIZED_CACHE = _ByteLRU(64 * 1024 * 1024)
 
 
-@lru_cache(maxsize=64)
-def _quantize_pixels(images, maximum):
-    from types import SimpleNamespace
-    levels = [SimpleNamespace(width=w, height=h, rgba=rgba) for w, h, rgba in images]
+def _quantize_art(levels, maximum, *, measure_quality=True):
+    # Hash pixels, not PNG metadata or normal/mud identity.
+    key = (tuple((level.width, level.height, _digest(level.rgba)) for level in levels), maximum)
+    cached = _QUANTIZED_CACHE.get(key)
+    if cached is None:
+        cached = _quantize_pixels(levels, maximum)
+        _QUANTIZED_CACHE[key] = cached
+    colors, indices, quality = cached
+    if measure_quality and quality is None:
+        from mod_editor.core.equipment_palette import quality as measure
+        actual = b''.join(bytes(colors[i]) for i in indices[0])
+        quality = measure(levels[0].rgba, actual)
+        _QUANTIZED_CACHE[key] = (colors, indices, quality)
+    return colors, indices, quality if quality is not None else {}
+
+
+def _quantize_pixels(levels, maximum):
     """Median cut of actual base artwork; nearest-colour mapping, no dither.
 
     Keep an already representable base exact. Filtered distance colours use
@@ -1020,8 +1161,9 @@ def _quantize_pixels(images, maximum):
     mapping = dict(zip(colors, nearest(colors, palette).tolist()))
     mapping.update(exact)
     indices = [bytes(mapping[c] for c in row) for row in pixels]
-    actual = b"".join(bytes(palette[i]) for i in indices[0])
-    return palette, indices, quality(levels[0].rgba, actual)
+    # Only the selected fit needs a quality receipt. Candidate pixels and
+    # indices stay identical; public quantizer calls still measure by default.
+    return palette, indices, None
 
 
 @dataclass(frozen=True)
@@ -1266,7 +1408,7 @@ def _compile_group(
                             start = chunk.system_bytes + texture.pixel_offset
                             candidate[start:start + len(chain)] = chain
                     elif reference in independent:
-                        colors, index_levels, quality = _quantize_art(levels, maximum)
+                        colors, index_levels, quality = _quantize_art(levels, maximum, measure_quality=False)
                         palette, actual_entries = palette_tools.palette_bytes(colors), len(colors)
                         qualities[reference] = quality
                         texture = updated_textures[reference]
@@ -1310,7 +1452,8 @@ def _compile_group(
             for reference in sorted(references, reverse=True):
                 target, payload, rgba, _levels = authored[reference]
                 current_scale = import_settings(payload, target.asset_id, rgba)[1]
-                all_levels = make_digit_mips(rgba, target.width, target.height, target.mip_levels)
+                all_levels = (list(_levels) if current_scale == 1 else
+                              make_digit_mips(rgba, target.width, target.height, target.mip_levels))
                 all_levels[0] = replace(all_levels[0], rgba=rgba)
                 for scale in ((4, 2) if floor > chunk.stored_size and target.width >= 256 else (2, 4)):
                     if scale <= current_scale:
@@ -1616,10 +1759,13 @@ def build_unified_uniform_equipment_imports(
 
     key = (template_sha256, chunk_index, chunk.stored_size, chunk.system_bytes, chunk.video_bytes,
            chunk.overlap_scratch_bytes, _rows_signature(rows), tuple(sorted(signature)))
-    compiled = compile_cache.compiled.get(key) if compile_cache is not None else None
+    compile_cache.used_keys.add(key)
+    compiled = compile_cache.compiled.get(key)
+    if compiled is None:
+        compiled = compile_cache.restore_handoff(key, template_span)
     failure = compile_cache.failures.get(key)
     if failure is not None:
-        raise failure
+        raise _fit_failure_copy(failure)
     disk = None
     if compiled is None:
         try:
@@ -1639,12 +1785,14 @@ def build_unified_uniform_equipment_imports(
                     failure = None  # A damaged optional cache is simply a miss.
                 if failure is not None:
                     compile_cache.failures[key] = failure
-                    raise failure
+                    raise _fit_failure_copy(failure)
                 stored = None
             compiled = _restore_staged(stored, template_span)
             if compiled is not None:
                 compile_cache.compiled[key] = compiled
     if compiled is None:
+        if key in compile_cache.preflight_keys:
+            compile_cache.serial_recompiles += 1
         decoded, decode_info = decode_chunk(package, chunk)
         _require(decode_info is not None, "Uniform-equipment TSET is not compressed")
         retail = {}
@@ -1682,9 +1830,7 @@ def build_unified_uniform_equipment_imports(
             compiled = _compile_group(template_span, chunk, decoded, decode_info, rows, authored, independent, retail,
                                       fit_reference=preferred.reference_index if preferred is not None else None)
         except EquipmentRefitError as exc:
-            compile_cache.failures[key] = exc
-            while len(compile_cache.failures) > compile_cache.compiled_limit:
-                compile_cache.failures.popitem(last=False)
+            compile_cache.failures[key] = _fit_failure_copy(exc)
             if disk is not None:
                 details = (dict(budget=exc.budget, required=exc.required, attempts=exc.attempts,
                     suggestion=exc.suggestion, required_is_lower_bound=exc.required_is_lower_bound)
@@ -1698,13 +1844,10 @@ def build_unified_uniform_equipment_imports(
         if compile_cache is not None:
             compile_cache.compiled[key] = compiled
             compile_cache.misses += 1
-            while len(compile_cache.compiled) > compile_cache.compiled_limit:
-                compile_cache.compiled.popitem(last=False)
     else:
-        compile_cache.compiled.move_to_end(key)
+        if key in compile_cache.compiled:
+            compile_cache.compiled.move_to_end(key)
         compile_cache.hits += 1
-        while len(compile_cache.compiled) > compile_cache.compiled_limit:
-            compile_cache.compiled.popitem(last=False)
     if preflight_only:
         return compiled
     rebuilt_span = compiled.rebuilt_span
@@ -1848,6 +1991,7 @@ def preflight_project_equipment(index_path: Path, edits: Iterable[tuple[int | No
         _require(len(parts) == 5, f"{prefix}Invalid equipment target {asset_id}. Import it again.")
         groups.setdefault((parts[1], parts[2]), []).append((number, asset_id, path))
     cache = compile_cache or _STAGED_CACHE
+    cache.size_for_project(sum(len(group) for group in groups.values()))
     hashes: dict[str, str] = {}
     by_id, _ = load_targets() if groups else ({}, {})
     fit_rows = []

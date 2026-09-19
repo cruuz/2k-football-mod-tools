@@ -24,6 +24,15 @@ from mod_editor.core.nfl2k5_equipment_import_intent import with_import_mode  # n
 from tools import nfl2k5_visual_mod_project as backend  # noqa: E402
 
 
+def _no_disk_cache(*_args):
+    raise OSError('persistent stage cache disabled for this benchmark')
+
+
+# Also executes in spawn workers. Each timed pass measures its own fit work.
+writer._stage_disk_cache = _no_disk_cache
+backend.uniform_equipment_adapter._stage_disk_cache = _no_disk_cache
+
+
 def stripes(width, height):
     return b"".join(bytes((20, 60, 140, 255) if (y // 7) % 3 == 0 else
                           (240, 245, 250, 255) if (y // 7) % 3 == 1 else (170, 35, 55, 255))
@@ -67,14 +76,30 @@ def main():
         pins = backend.pin_project_inputs(project)
         for workers in (int(w) for w in args.workers.split(",")):
             cache = writer.EquipmentCompileCache()
-            writer._STAGED_CACHE.clear()
-            writer._PARSE_CACHE.clear()
+            for owner in {writer, backend.uniform_equipment_adapter}:
+                owner._STAGED_CACHE.clear()
+                owner._PARSE_CACHE.clear()
             started = time.monotonic()
             backend._parallel_equipment_fits(groups, project, pins, Path(args.index), cache, workers)
             seconds = time.monotonic() - started
+            from unittest.mock import patch
+            serial_started = time.monotonic()
+            serial_writer = backend.uniform_equipment_adapter
+            with patch.object(serial_writer, '_compile_group', wraps=serial_writer._compile_group) as compiler:
+                for group in groups.values():
+                    serial_writer.build_unified_uniform_equipment_imports(Path(args.index),
+                        [(row['asset_id'], Path(row['png'])) for row in group],
+                        compile_cache=cache, preflight_only=True)
+                serial_compiles = compiler.call_count
+            assert serial_compiles == 0, f'serial pass repeated {serial_compiles} group compiles'
+            assert getattr(cache, 'serial_recompiles', 0) == 0
             row = dict(workers=workers, groups=len(groups), replacements=len(edits),
                        seconds=seconds, seconds_per_group=seconds / max(1, len(groups)),
                        cached_groups=len(cache.compiled), cache_limit=cache.compiled_limit,
+                       serial_seconds=time.monotonic() - serial_started,
+                       serial_compiles=serial_compiles, cache_bytes=getattr(cache, "maximum_bytes", None),
+                       helper_enabled=os.environ.get('NFL2K5_DISABLE_NATIVE_LZ') != '1',
+                       persistent_disk_cache=False,
                        output_disc_written=False)
             rows.append(row)
             print("B72 BUILDFIT " + json.dumps(row), flush=True)

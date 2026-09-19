@@ -1,0 +1,142 @@
+[
+ {
+  "case": "sock256_stripes",
+  "helper": true,
+  "width": 256,
+  "distinct_colours": 3,
+  "span_budget_bytes": 14176,
+  "outcome": "fit",
+  "seconds": 1.8120833470002253,
+  "repeat_seconds": 0.0069181230010144645
+ },
+ {
+  "case": "sock256_stripes",
+  "helper": false,
+  "width": 256,
+  "distinct_colours": 3,
+  "span_budget_bytes": 14176,
+  "outcome": "fit",
+  "seconds": 1.880022747998737,
+  "repeat_seconds": 0.005834674999277922
+ },
+ {
+  "case": "sock256_sheet",
+  "helper": true,
+  "width": 256,
+  "distinct_colours": 1688,
+  "span_budget_bytes": 14176,
+  "outcome": "fit",
+  "seconds": 2.891922386999795,
+  "repeat_seconds": 0.012090041998817469
+ },
+ {
+  "case": "sock256_sheet",
+  "helper": false,
+  "width": 256,
+  "distinct_colours": 1688,
+  "span_budget_bytes": 14176,
+  "outcome": "fit",
+  "seconds": 3.9618137209999986,
+  "repeat_seconds": 0.012533326000266243
+ },
+ {
+  "case": "sock256_photo",
+  "helper": true,
+  "width": 256,
+  "distinct_colours": 63729,
+  "span_budget_bytes": 14176,
+  "outcome": "fit",
+  "seconds": 8.913427151999713,
+  "repeat_seconds": 0.020649752999815973
+ },
+ {
+  "case": "sock256_photo",
+  "helper": false,
+  "width": 256,
+  "distinct_colours": 63729,
+  "span_budget_bytes": 14176,
+  "outcome": "fit",
+  "seconds": 10.227382409000711,
+  "repeat_seconds": 0.020918269001413137
+ },
+ {
+  "case": "shoe64_stripes",
+  "helper": true,
+  "width": 64,
+  "distinct_colours": 3,
+  "span_budget_bytes": 3760,
+  "outcome": "fit",
+  "seconds": 0.08360666000044148,
+  "repeat_seconds": 0.0032363379996240837
+ },
+ {
+  "case": "shoe64_stripes",
+  "helper": false,
+  "width": 64,
+  "distinct_colours": 3,
+  "span_budget_bytes": 3760,
+  "outcome": "fit",
+  "seconds": 0.09207226500075194,
+  "repeat_seconds": 0.0024768290004431037
+ },
+ {
+  "case": "shoe64_sheet",
+  "helper": true,
+  "width": 64,
+  "distinct_colours": 445,
+  "span_budget_bytes": 3760,
+  "outcome": "fit",
+  "seconds": 0.36858189099984884,
+  "repeat_seconds": 0.0032217900006799027
+ },
+ {
+  "case": "shoe64_sheet",
+  "helper": false,
+  "width": 64,
+  "distinct_colours": 445,
+  "span_budget_bytes": 3760,
+  "outcome": "fit",
+  "seconds": 0.6060594640002819,
+  "repeat_seconds": 0.0027688279988069553
+ },
+ {
+  "case": "shoe64_photo",
+  "helper": true,
+  "width": 64,
+  "distinct_colours": 4087,
+  "span_budget_bytes": 3760,
+  "outcome": "fit",
+  "seconds": 0.6436720969995804,
+  "repeat_seconds": 0.002837799000189989
+ },
+ {
+  "case": "shoe64_photo",
+  "helper": false,
+  "width": 64,
+  "distinct_colours": 4087,
+  "span_budget_bytes": 3760,
+  "outcome": "fit",
+  "seconds": 0.7673914730003162,
+  "repeat_seconds": 0.0042662150008254685
+ },
+ {
+  "case": "shoe128_photo",
+  "helper": true,
+  "width": 128,
+  "distinct_colours": 16256,
+  "span_budget_bytes": 6048,
+  "outcome": "fit",
+  "seconds": 2.3672036600000865,
+  "repeat_seconds": 0.006477495000581257
+ },
+ {
+  "case": "shoe128_photo",
+  "helper": false,
+  "width": 128,
+  "distinct_colours": 16256,
+  "span_budget_bytes": 6048,
+  "outcome": "fit",
+  "seconds": 2.6478434030013887,
+  "repeat_seconds": 0.006344885001453804
+ }
+]

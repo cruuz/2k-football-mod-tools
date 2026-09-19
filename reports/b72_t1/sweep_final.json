@@ -1,0 +1,5213 @@
+{
+  "excluded": [
+    "test_apf_studio_installer",
+    "test_apf_xex_image_retail",
+    "test_nfl2k5_calendar_engine_unicorn",
+    "test_nfl2k5_cave_oracle",
+    "test_nfl2k5_guardian_manifest",
+    "test_nfl2k5_guardian_unicorn",
+    "test_nfl2k5_my_career_draft",
+    "test_nfl2k5_owner_pairwise_composition",
+    "test_nfl2k5_playbook_pair_manifest",
+    "test_nfl2k5_qb_spy_runtime",
+    "test_nfl2k5_supersim_live",
+    "test_xbe_patch_cave_references",
+    "test_xbe_patch_memory_writes"
+  ],
+  "totals": {
+    "passed": 6988,
+    "skipped": 126,
+    "subtests passed": 61547,
+    "standalone tests": 127
+  },
+  "results": [
+    {
+      "file": "test_2k5_audio_operation_integration.py",
+      "status": "OK",
+      "seconds": 34.034815578001144,
+      "log": "sweep/test_2k5_audio_operation_integration.log",
+      "summary": "17 passed in 32.42s"
+    },
+    {
+      "file": "test_2k5_bounded_vclz_palette.py",
+      "status": "OK",
+      "seconds": 4.09955324800103,
+      "log": "sweep/test_2k5_bounded_vclz_palette.log",
+      "summary": "5 passed, 2 skipped, 2 subtests passed in 3.17s"
+    },
+    {
+      "file": "test_2k5_build_is_explainable.py",
+      "status": "OK",
+      "seconds": 1.878129077000267,
+      "log": "sweep/test_2k5_build_is_explainable.log",
+      "summary": "16 passed in 0.81s"
+    },
+    {
+      "file": "test_2k5_build_parse_caches.py",
+      "status": "OK",
+      "seconds": 1.6534291530006158,
+      "log": "sweep/test_2k5_build_parse_caches.log",
+      "summary": "14 passed, 5 subtests passed in 0.65s"
+    },
+    {
+      "file": "test_2k5_bump_retail_probe.py",
+      "status": "OK",
+      "seconds": 1.2888634400005685,
+      "log": "sweep/test_2k5_bump_retail_probe.log",
+      "summary": "7 passed in 0.35s"
+    },
+    {
+      "file": "test_2k5_check_my_images.py",
+      "status": "OK",
+      "seconds": 19.3861870669989,
+      "log": "sweep/test_2k5_check_my_images.log",
+      "summary": "21 passed, 3 subtests passed in 17.16s"
+    },
+    {
+      "file": "test_2k5_digit_dimensions_per_target.py",
+      "status": "OK",
+      "seconds": 6.5952655029996095,
+      "log": "sweep/test_2k5_digit_dimensions_per_target.log",
+      "summary": "10 passed, 6 subtests passed in 4.74s"
+    },
+    {
+      "file": "test_2k5_fast_ima_matches_scalar.py",
+      "status": "OK",
+      "seconds": 4.651611335999405,
+      "log": "sweep/test_2k5_fast_ima_matches_scalar.log",
+      "summary": "5 passed, 24 subtests passed in 3.66s"
+    },
+    {
+      "file": "test_2k5_import_offers_resize.py",
+      "status": "OK",
+      "seconds": 16.950659352000002,
+      "log": "sweep/test_2k5_import_offers_resize.log",
+      "summary": "11 passed, 8 subtests passed in 14.98s"
+    },
+    {
+      "file": "test_2k5_stale_original_cache.py",
+      "status": "OK",
+      "seconds": 1.4778272030016524,
+      "log": "sweep/test_2k5_stale_original_cache.log",
+      "summary": "10 passed, 2 subtests passed in 0.40s"
+    },
+    {
+      "file": "test_2k5_uniform_equipment_export.py",
+      "status": "OK",
+      "seconds": 23.14745543999925,
+      "log": "sweep/test_2k5_uniform_equipment_export.log",
+      "summary": "15 passed, 1 skipped, 13 subtests passed in 21.29s"
+    },
+    {
+      "file": "test_2k5_vclz_bounded_importers.py",
+      "status": "OK",
+      "seconds": 2.155345970999406,
+      "log": "sweep/test_2k5_vclz_bounded_importers.log",
+      "summary": "16 passed, 17 subtests passed in 1.14s"
+    },
+    {
+      "file": "test_2k5_visual_io_routing.py",
+      "status": "OK",
+      "seconds": 1.3568348949993378,
+      "log": "sweep/test_2k5_visual_io_routing.log",
+      "summary": "4 passed in 0.38s"
+    },
+    {
+      "file": "test_all_texture_lane.py",
+      "status": "OK",
+      "seconds": 15.017406790999303,
+      "log": "sweep/test_all_texture_lane.log",
+      "summary": "28 passed, 6 subtests passed in 14.03s"
+    },
+    {
+      "file": "test_all_textures_workspace.py",
+      "status": "OK",
+      "seconds": 8.54714025999965,
+      "log": "sweep/test_all_textures_workspace.log",
+      "summary": "23 passed in 7.16s"
+    },
+    {
+      "file": "test_animations_panel_qt.py",
+      "status": "OK",
+      "seconds": 1.991108746999089,
+      "log": "sweep/test_animations_panel_qt.log",
+      "summary": "12 passed in 0.97s"
+    },
+    {
+      "file": "test_apf2k8_coverage_tuning.py",
+      "status": "OK",
+      "seconds": 2.8617609180000727,
+      "log": "sweep/test_apf2k8_coverage_tuning.log",
+      "summary": "9 passed, 10 subtests passed in 1.90s"
+    },
+    {
+      "file": "test_apf2k8_playbook_route_writer.py",
+      "status": "OK",
+      "seconds": 1.7612150389995804,
+      "log": "sweep/test_apf2k8_playbook_route_writer.log",
+      "summary": "12 passed in 0.77s"
+    },
+    {
+      "file": "test_apf_all_crest_slots.py",
+      "status": "OK",
+      "seconds": 2.206106476000059,
+      "log": "sweep/test_apf_all_crest_slots.log",
+      "summary": "15 passed, 24 subtests passed in 1.14s"
+    },
+    {
+      "file": "test_apf_audio_annotation_facade.py",
+      "status": "OK",
+      "seconds": 1.5638335869989533,
+      "log": "sweep/test_apf_audio_annotation_facade.log",
+      "summary": "4 passed, 3 subtests passed in 0.54s"
+    },
+    {
+      "file": "test_apf_audio_annotations.py",
+      "status": "OK",
+      "seconds": 1.5034851139989769,
+      "log": "sweep/test_apf_audio_annotations.log",
+      "summary": "11 passed, 15 subtests passed in 0.50s"
+    },
+    {
+      "file": "test_apf_audio_batch_export.py",
+      "status": "OK",
+      "seconds": 1.4342498569985764,
+      "log": "sweep/test_apf_audio_batch_export.log",
+      "summary": "15 passed in 0.46s"
+    },
+    {
+      "file": "test_apf_audio_batch_facade.py",
+      "status": "OK",
+      "seconds": 1.578026018001765,
+      "log": "sweep/test_apf_audio_batch_facade.log",
+      "summary": "3 passed in 0.54s"
+    },
+    {
+      "file": "test_apf_audio_batch_gui.py",
+      "status": "OK",
+      "seconds": 1.973602956999457,
+      "log": "sweep/test_apf_audio_batch_gui.log",
+      "summary": "7 passed in 0.91s"
+    },
+    {
+      "file": "test_apf_audio_decode_cancellation.py",
+      "status": "OK",
+      "seconds": 3.1848764449987357,
+      "log": "sweep/test_apf_audio_decode_cancellation.log",
+      "summary": "7 passed in 2.24s"
+    },
+    {
+      "file": "test_apf_audio_drop_zone_gui.py",
+      "status": "OK",
+      "seconds": 1.8513217290001194,
+      "log": "sweep/test_apf_audio_drop_zone_gui.log",
+      "summary": "9 passed, 15 subtests passed in 0.83s"
+    },
+    {
+      "file": "test_apf_audio_encoder_gui.py",
+      "status": "OK",
+      "seconds": 1.8481481479993818,
+      "log": "sweep/test_apf_audio_encoder_gui.log",
+      "summary": "8 passed in 0.81s"
+    },
+    {
+      "file": "test_apf_audio_encoding.py",
+      "status": "OK",
+      "seconds": 12.534477186000004,
+      "log": "sweep/test_apf_audio_encoding.log",
+      "summary": "21 passed, 3 subtests passed in 11.56s"
+    },
+    {
+      "file": "test_apf_audio_import_idle_barrier.py",
+      "status": "OK",
+      "seconds": 5.305486322000434,
+      "log": "sweep/test_apf_audio_import_idle_barrier.log",
+      "summary": "1 passed in 4.16s"
+    },
+    {
+      "file": "test_apf_audio_pcm_product_backend.py",
+      "status": "OK",
+      "seconds": 2.3413532019985723,
+      "log": "sweep/test_apf_audio_pcm_product_backend.log",
+      "summary": "11 passed in 1.28s"
+    },
+    {
+      "file": "test_apf_audio_replacement_pack.py",
+      "status": "OK",
+      "seconds": 1.9680568439998751,
+      "log": "sweep/test_apf_audio_replacement_pack.log",
+      "summary": "57 passed, 26 subtests passed in 0.93s"
+    },
+    {
+      "file": "test_apf_audio_waveform_qt.py",
+      "status": "OK",
+      "seconds": 1.8751795640000637,
+      "log": "sweep/test_apf_audio_waveform_qt.log",
+      "summary": "9 passed in 0.79s"
+    },
+    {
+      "file": "test_apf_audo_exact_slot.py",
+      "status": "OK",
+      "seconds": 1.4950396149997687,
+      "log": "sweep/test_apf_audo_exact_slot.log",
+      "summary": "17 passed, 13 subtests passed in 0.50s"
+    },
+    {
+      "file": "test_apf_audo_product_backend.py",
+      "status": "OK",
+      "seconds": 1.5027243080003245,
+      "log": "sweep/test_apf_audo_product_backend.log",
+      "summary": "3 passed in 0.50s"
+    },
+    {
+      "file": "test_apf_audo_project.py",
+      "status": "OK",
+      "seconds": 1.4729804229991714,
+      "log": "sweep/test_apf_audo_project.log",
+      "summary": "3 passed in 0.41s"
+    },
+    {
+      "file": "test_apf_ausb_exact_slot.py",
+      "status": "OK",
+      "seconds": 13.918066829000963,
+      "log": "sweep/test_apf_ausb_exact_slot.log",
+      "summary": "10 passed in 12.98s"
+    },
+    {
+      "file": "test_apf_ausb_product_backend.py",
+      "status": "OK",
+      "seconds": 1.6109966539988818,
+      "log": "sweep/test_apf_ausb_product_backend.log",
+      "summary": "7 passed in 0.59s"
+    },
+    {
+      "file": "test_apf_b661_book_content.py",
+      "status": "OK",
+      "seconds": 30.015604223999617,
+      "log": "sweep/test_apf_b661_book_content.log",
+      "summary": "5 passed in 28.98s"
+    },
+    {
+      "file": "test_apf_b661_ladder.py",
+      "status": "OK",
+      "seconds": 1.5632353900000453,
+      "log": "sweep/test_apf_b661_ladder.log",
+      "summary": "5 passed, 1 skipped in 0.60s"
+    },
+    {
+      "file": "test_apf_b66_appearance.py",
+      "status": "OK",
+      "seconds": 3.996262538999872,
+      "log": "sweep/test_apf_b66_appearance.log",
+      "summary": "3 passed in 3.04s"
+    },
+    {
+      "file": "test_apf_b66_personnel.py",
+      "status": "OK",
+      "seconds": 6.920611253999596,
+      "log": "sweep/test_apf_b66_personnel.log",
+      "summary": "3 passed in 5.96s"
+    },
+    {
+      "file": "test_apf_b67_books_qt.py",
+      "status": "OK",
+      "seconds": 74.24574566099909,
+      "log": "sweep/test_apf_b67_books_qt.log",
+      "summary": "3 passed in 73.28s (0:01:13)"
+    },
+    {
+      "file": "test_apf_b67_clone.py",
+      "status": "OK",
+      "seconds": 40.90022920899901,
+      "log": "sweep/test_apf_b67_clone.log",
+      "summary": "3 passed in 39.95s"
+    },
+    {
+      "file": "test_apf_b67_defense_model_native.py",
+      "status": "OK",
+      "seconds": 156.8549123490011,
+      "log": "sweep/test_apf_b67_defense_model_native.log",
+      "summary": "4 passed in 155.82s (0:02:35)"
+    },
+    {
+      "file": "test_apf_b67_model_edges_native.py",
+      "status": "OK",
+      "seconds": 94.39508833499895,
+      "log": "sweep/test_apf_b67_model_edges_native.log",
+      "summary": "1 passed in 93.41s (0:01:33)"
+    },
+    {
+      "file": "test_apf_b67_model_native.py",
+      "status": "OK",
+      "seconds": 1232.8062749239998,
+      "log": "sweep/test_apf_b67_model_native.log",
+      "summary": "4 passed in 1231.68s (0:20:31)"
+    },
+    {
+      "file": "test_apf_b67_static_audit.py",
+      "status": "OK",
+      "seconds": 1.3258779009993304,
+      "log": "sweep/test_apf_b67_static_audit.log",
+      "summary": "1 skipped in 0.34s"
+    },
+    {
+      "file": "test_apf_b67_writers.py",
+      "status": "OK",
+      "seconds": 1.6114190440002858,
+      "log": "sweep/test_apf_b67_writers.log",
+      "summary": "6 passed in 0.63s"
+    },
+    {
+      "file": "test_apf_b67_writers_native.py",
+      "status": "OK",
+      "seconds": 326.3305824649997,
+      "log": "sweep/test_apf_b67_writers_native.log",
+      "summary": "4 passed, 1 skipped in 325.32s (0:05:25)"
+    },
+    {
+      "file": "test_apf_b67_xenia_patch.py",
+      "status": "OK",
+      "seconds": 1.4511761510002543,
+      "log": "sweep/test_apf_b67_xenia_patch.log",
+      "summary": "3 passed in 0.47s"
+    },
+    {
+      "file": "test_apf_b69_build.py",
+      "status": "OK",
+      "seconds": 31.6086102270001,
+      "log": "sweep/test_apf_b69_build.log",
+      "summary": "1 passed in 30.65s"
+    },
+    {
+      "file": "test_apf_b69_control_audit.py",
+      "status": "OK",
+      "seconds": 1.2710388369996508,
+      "log": "sweep/test_apf_b69_control_audit.log",
+      "summary": "1 skipped in 0.32s"
+    },
+    {
+      "file": "test_apf_b69_editor_qt.py",
+      "status": "OK",
+      "seconds": 82.18348465499912,
+      "log": "sweep/test_apf_b69_editor_qt.log",
+      "summary": "4 passed in 81.16s (0:01:21)"
+    },
+    {
+      "file": "test_apf_b69_formation_calling.py",
+      "status": "OK",
+      "seconds": 1.6306364190004388,
+      "log": "sweep/test_apf_b69_formation_calling.log",
+      "summary": "2 passed in 0.62s"
+    },
+    {
+      "file": "test_apf_b69_launch_patches.py",
+      "status": "OK",
+      "seconds": 1.5605971040004079,
+      "log": "sweep/test_apf_b69_launch_patches.log",
+      "summary": "5 passed in 0.59s"
+    },
+    {
+      "file": "test_apf_b69_native.py",
+      "status": "OK",
+      "seconds": 828.7437265259996,
+      "log": "sweep/test_apf_b69_native.log",
+      "summary": "5 passed in 827.56s (0:13:47)"
+    },
+    {
+      "file": "test_apf_b69_retirement_native.py",
+      "status": "OK",
+      "seconds": 151.14038406700092,
+      "log": "sweep/test_apf_b69_retirement_native.log",
+      "summary": "3 passed in 150.19s (0:02:30)"
+    },
+    {
+      "file": "test_apf_b69_schemes.py",
+      "status": "OK",
+      "seconds": 40.33449160999953,
+      "log": "sweep/test_apf_b69_schemes.log",
+      "summary": "5 passed in 39.32s"
+    },
+    {
+      "file": "test_apf_b69_wiring.py",
+      "status": "OK",
+      "seconds": 1.7034377210002276,
+      "log": "sweep/test_apf_b69_wiring.log",
+      "summary": "2 passed in 0.64s"
+    },
+    {
+      "file": "test_apf_b70_stock_recipes.py",
+      "status": "OK",
+      "seconds": 218.56012088900025,
+      "log": "sweep/test_apf_b70_stock_recipes.log",
+      "summary": "5 passed, 64 subtests passed in 217.54s (0:03:37)"
+    },
+    {
+      "file": "test_apf_b711_book_scope.py",
+      "status": "OK",
+      "seconds": 32.69337090699992,
+      "log": "sweep/test_apf_b711_book_scope.log",
+      "summary": "3 passed in 31.74s"
+    },
+    {
+      "file": "test_apf_b711_overlay_books_qt.py",
+      "status": "OK",
+      "seconds": 9.14898601599998,
+      "log": "sweep/test_apf_b711_overlay_books_qt.log",
+      "summary": "6 passed, 2 subtests passed in 7.92s"
+    },
+    {
+      "file": "test_apf_b711_weight_preview.py",
+      "status": "OK",
+      "seconds": 1.8373416449994693,
+      "log": "sweep/test_apf_b711_weight_preview.log",
+      "summary": "2 passed in 0.84s"
+    },
+    {
+      "file": "test_apf_b71_editor_workflow.py",
+      "status": "OK",
+      "seconds": 3.7697863370012783,
+      "log": "sweep/test_apf_b71_editor_workflow.log",
+      "summary": "13 passed, 15 subtests passed in 2.77s"
+    },
+    {
+      "file": "test_apf_b71_editor_workflow_qt.py",
+      "status": "OK",
+      "seconds": 4.186184714999399,
+      "log": "sweep/test_apf_b71_editor_workflow_qt.log",
+      "summary": "7 passed in 3.12s"
+    },
+    {
+      "file": "test_apf_b71_situation_mask.py",
+      "status": "OK",
+      "seconds": 4.13222295200103,
+      "log": "sweep/test_apf_b71_situation_mask.log",
+      "summary": "6 passed in 3.15s"
+    },
+    {
+      "file": "test_apf_b71_situation_mask_abi.py",
+      "status": "OK",
+      "seconds": 5.397129176000817,
+      "log": "sweep/test_apf_b71_situation_mask_abi.log",
+      "summary": "3 passed in 4.44s"
+    },
+    {
+      "file": "test_apf_b71_situation_mask_install.py",
+      "status": "OK",
+      "seconds": 2.473028675000023,
+      "log": "sweep/test_apf_b71_situation_mask_install.log",
+      "summary": "2 passed in 1.51s"
+    },
+    {
+      "file": "test_apf_b71_situation_mask_native.py",
+      "status": "OK",
+      "seconds": 361.8041194670004,
+      "log": "sweep/test_apf_b71_situation_mask_native.log",
+      "summary": "36 passed in 360.77s (0:06:00)"
+    },
+    {
+      "file": "test_apf_b71_situation_mask_qt.py",
+      "status": "OK",
+      "seconds": 2.528631908000534,
+      "log": "sweep/test_apf_b71_situation_mask_qt.log",
+      "summary": "2 passed in 1.54s"
+    },
+    {
+      "file": "test_apf_b71_situations.py",
+      "status": "OK",
+      "seconds": 5.401551652999842,
+      "log": "sweep/test_apf_b71_situations.log",
+      "summary": "10 passed in 4.42s"
+    },
+    {
+      "file": "test_apf_book_identity_qt.py",
+      "status": "OK",
+      "seconds": 1.3982173610002064,
+      "log": "sweep/test_apf_book_identity_qt.log",
+      "summary": "7 passed in 0.45s"
+    },
+    {
+      "file": "test_apf_book_unlock.py",
+      "status": "OK",
+      "seconds": 26.686743793999995,
+      "log": "sweep/test_apf_book_unlock.log",
+      "summary": "19 passed, 9 subtests passed in 25.73s"
+    },
+    {
+      "file": "test_apf_book_unlock_retail.py",
+      "status": "OK",
+      "seconds": 1.290956474000268,
+      "log": "sweep/test_apf_book_unlock_retail.log",
+      "summary": "6 skipped in 0.36s"
+    },
+    {
+      "file": "test_apf_browser_workspace_handoff.py",
+      "status": "OK",
+      "seconds": 2.0334699539998837,
+      "log": "sweep/test_apf_browser_workspace_handoff.log",
+      "summary": "20 passed, 2 subtests passed in 1.01s"
+    },
+    {
+      "file": "test_apf_build_ausb_overlays.py",
+      "status": "OK",
+      "seconds": 1.4868542709991743,
+      "log": "sweep/test_apf_build_ausb_overlays.log",
+      "summary": "5 passed in 0.51s"
+    },
+    {
+      "file": "test_apf_build_raw_span_overlays.py",
+      "status": "OK",
+      "seconds": 1.465459765999185,
+      "log": "sweep/test_apf_build_raw_span_overlays.log",
+      "summary": "7 passed in 0.50s"
+    },
+    {
+      "file": "test_apf_capability_action_parity.py",
+      "status": "OK",
+      "seconds": 1.723815174000265,
+      "log": "sweep/test_apf_capability_action_parity.log",
+      "summary": "11 passed, 120 subtests passed in 0.70s"
+    },
+    {
+      "file": "test_apf_copied_volume_metadata.py",
+      "status": "OK",
+      "seconds": 1.5087162800009537,
+      "log": "sweep/test_apf_copied_volume_metadata.log",
+      "summary": "17 passed, 28 subtests passed in 0.54s"
+    },
+    {
+      "file": "test_apf_coverage_research_tools.py",
+      "status": "OK",
+      "seconds": 1.2138491019995854,
+      "log": "sweep/test_apf_coverage_research_tools.log",
+      "summary": "7 passed, 4 subtests passed in 0.31s"
+    },
+    {
+      "file": "test_apf_cpu_audibles.py",
+      "status": "OK",
+      "seconds": 4.159849067000323,
+      "log": "sweep/test_apf_cpu_audibles.log",
+      "summary": "18 passed in 3.20s"
+    },
+    {
+      "file": "test_apf_crest_budget_import.py",
+      "status": "OK",
+      "seconds": 2.0840243799993914,
+      "log": "sweep/test_apf_crest_budget_import.log",
+      "summary": "12 passed in 1.04s"
+    },
+    {
+      "file": "test_apf_crest_fit.py",
+      "status": "OK",
+      "seconds": 29.591565524000544,
+      "log": "sweep/test_apf_crest_fit.log",
+      "summary": "10 passed, 4 subtests passed in 28.62s"
+    },
+    {
+      "file": "test_apf_cross_domain_audio_safety.py",
+      "status": "OK",
+      "seconds": 1.5149084830009087,
+      "log": "sweep/test_apf_cross_domain_audio_safety.log",
+      "summary": "4 passed in 0.53s"
+    },
+    {
+      "file": "test_apf_cubemap_face0_preview.py",
+      "status": "OK",
+      "seconds": 22.918995396001264,
+      "log": "sweep/test_apf_cubemap_face0_preview.log",
+      "summary": "4 passed in 21.81s"
+    },
+    {
+      "file": "test_apf_custom_team_appearance_gui.py",
+      "status": "OK",
+      "seconds": 1.4615407319997757,
+      "log": "sweep/test_apf_custom_team_appearance_gui.log",
+      "summary": "5 passed in 0.49s"
+    },
+    {
+      "file": "test_apf_custom_team_appearance_patch.py",
+      "status": "OK",
+      "seconds": 8.527369290999559,
+      "log": "sweep/test_apf_custom_team_appearance_patch.log",
+      "summary": "8 passed, 3 subtests passed in 7.50s"
+    },
+    {
+      "file": "test_apf_defense_research_identity.py",
+      "status": "OK",
+      "seconds": 1.6618804210011149,
+      "log": "sweep/test_apf_defense_research_identity.log",
+      "summary": "1 passed in 0.73s"
+    },
+    {
+      "file": "test_apf_defense_research_native.py",
+      "status": "OK",
+      "seconds": 141.13958971899956,
+      "log": "sweep/test_apf_defense_research_native.log",
+      "summary": "2 passed, 1 skipped in 140.18s (0:02:20)"
+    },
+    {
+      "file": "test_apf_digital_font.py",
+      "status": "OK",
+      "seconds": 1.5065006330005417,
+      "log": "sweep/test_apf_digital_font.log",
+      "summary": "14 passed, 11 subtests passed in 0.56s"
+    },
+    {
+      "file": "test_apf_dxn_base_only_namefont.py",
+      "status": "OK",
+      "seconds": 16.851559882999936,
+      "log": "sweep/test_apf_dxn_base_only_namefont.log",
+      "summary": "4 passed in 15.71s"
+    },
+    {
+      "file": "test_apf_dxt5a_general_preview.py",
+      "status": "OK",
+      "seconds": 23.032573557999058,
+      "log": "sweep/test_apf_dxt5a_general_preview.log",
+      "summary": "3 passed in 21.87s"
+    },
+    {
+      "file": "test_apf_endzone_dxt5a.py",
+      "status": "OK",
+      "seconds": 40.07349302900002,
+      "log": "sweep/test_apf_endzone_dxt5a.log",
+      "summary": "9 passed, 1 skipped, 45 subtests passed in 38.98s"
+    },
+    {
+      "file": "test_apf_export.py",
+      "status": "OK",
+      "seconds": 1.2802123469991784,
+      "log": "sweep/test_apf_export.log",
+      "initial_status": "FAIL",
+      "summary": "2 passed, 5 subtests passed in 0.34s"
+    },
+    {
+      "file": "test_apf_external_audio_bank_bundle.py",
+      "status": "OK",
+      "seconds": 1.5515119610008696,
+      "log": "sweep/test_apf_external_audio_bank_bundle.log",
+      "initial_status": "FAIL",
+      "summary": "8 passed in 0.55s"
+    },
+    {
+      "file": "test_apf_field_art.py",
+      "status": "OK",
+      "seconds": 1.3896763470002043,
+      "log": "sweep/test_apf_field_art.log",
+      "initial_status": "FAIL",
+      "summary": "6 passed in 0.41s"
+    },
+    {
+      "file": "test_apf_field_art_gui.py",
+      "status": "OK",
+      "seconds": 2.2077234289990884,
+      "log": "sweep/test_apf_field_art_gui.log",
+      "initial_status": "FAIL",
+      "summary": "17 passed in 1.09s"
+    },
+    {
+      "file": "test_apf_field_art_patch.py",
+      "status": "OK",
+      "seconds": 301.82876291699904,
+      "log": "sweep/test_apf_field_art_patch.log",
+      "initial_status": "FAIL",
+      "summary": "24 passed, 2 skipped in 300.86s (0:05:00)"
+    },
+    {
+      "file": "test_apf_field_art_stock_label.py",
+      "status": "OK",
+      "seconds": 1.6695788020006148,
+      "log": "sweep/test_apf_field_art_stock_label.log",
+      "initial_status": "FAIL",
+      "summary": "13 passed, 319 subtests passed in 0.64s"
+    },
+    {
+      "file": "test_apf_field_extra_roundtrip.py",
+      "status": "OK",
+      "seconds": 213.25725109800078,
+      "log": "sweep/test_apf_field_extra_roundtrip.log",
+      "initial_status": "FAIL",
+      "summary": "5 passed in 211.99s (0:03:31)"
+    },
+    {
+      "file": "test_apf_field_material_project.py",
+      "status": "OK",
+      "seconds": 1.6858638710000378,
+      "log": "sweep/test_apf_field_material_project.log",
+      "initial_status": "FAIL",
+      "summary": "4 passed in 0.69s"
+    },
+    {
+      "file": "test_apf_field_material_writer.py",
+      "status": "OK",
+      "seconds": 1.4649416730007943,
+      "log": "sweep/test_apf_field_material_writer.log",
+      "initial_status": "FAIL",
+      "summary": "5 passed, 15 subtests passed in 0.53s"
+    },
+    {
+      "file": "test_apf_formation_alignment_writer.py",
+      "status": "OK",
+      "seconds": 1.4955796940012078,
+      "log": "sweep/test_apf_formation_alignment_writer.log",
+      "initial_status": "FAIL",
+      "summary": "44 passed in 0.56s"
+    },
+    {
+      "file": "test_apf_fourth_down.py",
+      "status": "OK",
+      "seconds": 1.4341331739997258,
+      "log": "sweep/test_apf_fourth_down.log",
+      "initial_status": "FAIL",
+      "summary": "5 passed in 0.42s"
+    },
+    {
+      "file": "test_apf_fourth_down_native.py",
+      "status": "OK",
+      "seconds": 325.2759388609993,
+      "log": "sweep/test_apf_fourth_down_native.log",
+      "initial_status": "FAIL",
+      "summary": "36 passed in 324.30s (0:05:24)"
+    },
+    {
+      "file": "test_apf_fourth_down_qt.py",
+      "status": "OK",
+      "seconds": 1.3178479640009755,
+      "log": "sweep/test_apf_fourth_down_qt.log",
+      "initial_status": "FAIL",
+      "summary": "1 passed in 0.38s"
+    },
+    {
+      "file": "test_apf_full_shell_visual_gate.py",
+      "status": "OK",
+      "seconds": 1.331934365000052,
+      "log": "sweep/test_apf_full_shell_visual_gate.log",
+      "summary": "3 passed in 0.30s"
+    },
+    {
+      "file": "test_apf_g12_surfaces.py",
+      "status": "OK",
+      "seconds": 1.7042548730005365,
+      "log": "sweep/test_apf_g12_surfaces.log",
+      "initial_status": "FAIL",
+      "summary": "12 passed in 0.68s"
+    },
+    {
+      "file": "test_apf_helmet_crest_design_product.py",
+      "status": "OK",
+      "seconds": 2.6896466739999596,
+      "log": "sweep/test_apf_helmet_crest_design_product.log",
+      "initial_status": "FAIL",
+      "summary": "13 passed in 1.67s"
+    },
+    {
+      "file": "test_apf_helmet_logo_placement.py",
+      "status": "OK",
+      "seconds": 8.600420570999631,
+      "log": "sweep/test_apf_helmet_logo_placement.log",
+      "initial_status": "FAIL",
+      "summary": "15 passed in 7.48s"
+    },
+    {
+      "file": "test_apf_helmet_logo_regions.py",
+      "status": "OK",
+      "seconds": 5.2660098480009765,
+      "log": "sweep/test_apf_helmet_logo_regions.log",
+      "initial_status": "FAIL",
+      "summary": "12 passed in 4.30s"
+    },
+    {
+      "file": "test_apf_helmet_logo_regions_qt.py",
+      "status": "OK",
+      "seconds": 2.4256809479993535,
+      "log": "sweep/test_apf_helmet_logo_regions_qt.log",
+      "initial_status": "FAIL",
+      "summary": "2 passed in 1.43s"
+    },
+    {
+      "file": "test_apf_import_offers_resize.py",
+      "status": "OK",
+      "seconds": 1.829306532001283,
+      "log": "sweep/test_apf_import_offers_resize.log",
+      "initial_status": "FAIL",
+      "summary": "5 passed in 0.85s"
+    },
+    {
+      "file": "test_apf_iso_extraction_is_layout_tolerant.py",
+      "status": "OK",
+      "seconds": 1.36758240600102,
+      "log": "sweep/test_apf_iso_extraction_is_layout_tolerant.log",
+      "initial_status": "FAIL",
+      "summary": "10 passed, 2 subtests passed in 0.44s"
+    },
+    {
+      "file": "test_apf_linear_txtr_png.py",
+      "status": "OK",
+      "seconds": 1.2561822269999539,
+      "log": "sweep/test_apf_linear_txtr_png.log",
+      "summary": "3 passed in 0.30s"
+    },
+    {
+      "file": "test_apf_logo_patch.py",
+      "status": "OK",
+      "seconds": 15.518999492000148,
+      "log": "sweep/test_apf_logo_patch.log",
+      "initial_status": "FAIL",
+      "summary": "18 passed, 3 subtests passed in 14.57s"
+    },
+    {
+      "file": "test_apf_logo_surface_ownership.py",
+      "status": "OK",
+      "seconds": 1.3054481819999637,
+      "log": "sweep/test_apf_logo_surface_ownership.log",
+      "summary": "4 passed in 0.33s"
+    },
+    {
+      "file": "test_apf_logocache_patch.py",
+      "status": "OK",
+      "seconds": 45.2635646180006,
+      "log": "sweep/test_apf_logocache_patch.log",
+      "initial_status": "FAIL",
+      "summary": "14 passed in 44.23s"
+    },
+    {
+      "file": "test_apf_mask_preview_alpha.py",
+      "status": "OK",
+      "seconds": 1.4558973549992515,
+      "log": "sweep/test_apf_mask_preview_alpha.log",
+      "initial_status": "FAIL",
+      "summary": "7 passed in 0.41s"
+    },
+    {
+      "file": "test_apf_model_export_gui.py",
+      "status": "OK",
+      "seconds": 3.9938078919985855,
+      "log": "sweep/test_apf_model_export_gui.log",
+      "initial_status": "FAIL",
+      "summary": "5 passed, 2 subtests passed in 2.96s"
+    },
+    {
+      "file": "test_apf_model_import.py",
+      "status": "OK",
+      "seconds": 55.85775740600002,
+      "log": "sweep/test_apf_model_import.log",
+      "initial_status": "FAIL",
+      "summary": "6 passed in 54.86s"
+    },
+    {
+      "file": "test_apf_number_encode_defaults.py",
+      "status": "OK",
+      "seconds": 3.308225079999829,
+      "log": "sweep/test_apf_number_encode_defaults.log",
+      "initial_status": "FAIL",
+      "summary": "1 passed, 2 subtests passed in 2.36s"
+    },
+    {
+      "file": "test_apf_number_texture_writer.py",
+      "status": "OK",
+      "seconds": 270.76914383499934,
+      "log": "sweep/test_apf_number_texture_writer.log",
+      "initial_status": "FAIL",
+      "summary": "25 passed in 269.73s (0:04:29)"
+    },
+    {
+      "file": "test_apf_package_map_writer.py",
+      "status": "OK",
+      "seconds": 2.7185040549993573,
+      "log": "sweep/test_apf_package_map_writer.log",
+      "initial_status": "FAIL",
+      "summary": "40 passed, 5 subtests passed in 1.60s"
+    },
+    {
+      "file": "test_apf_pass_fetch_export_qt.py",
+      "status": "OK",
+      "seconds": 1.6977047540003696,
+      "log": "sweep/test_apf_pass_fetch_export_qt.log",
+      "initial_status": "FAIL",
+      "summary": "7 passed in 0.70s"
+    },
+    {
+      "file": "test_apf_play_designer.py",
+      "status": "OK",
+      "seconds": 15.019393563999984,
+      "log": "sweep/test_apf_play_designer.log",
+      "initial_status": "FAIL",
+      "summary": "28 passed, 9 subtests passed in 14.02s"
+    },
+    {
+      "file": "test_apf_play_designer_project.py",
+      "status": "OK",
+      "seconds": 1.7260211449993221,
+      "log": "sweep/test_apf_play_designer_project.log",
+      "initial_status": "FAIL",
+      "summary": "5 passed in 0.69s"
+    },
+    {
+      "file": "test_apf_play_designer_qt.py",
+      "status": "OK",
+      "seconds": 1.4873965710012271,
+      "log": "sweep/test_apf_play_designer_qt.log",
+      "initial_status": "FAIL",
+      "summary": "5 passed in 0.52s"
+    },
+    {
+      "file": "test_apf_playbook_route_gui.py",
+      "status": "OK",
+      "seconds": 1.577216595000209,
+      "log": "sweep/test_apf_playbook_route_gui.log",
+      "initial_status": "FAIL",
+      "summary": "7 passed in 0.54s"
+    },
+    {
+      "file": "test_apf_playcall_patch.py",
+      "status": "OK",
+      "seconds": 3.1167299240005377,
+      "log": "sweep/test_apf_playcall_patch.log",
+      "initial_status": "FAIL",
+      "summary": "11 passed in 2.17s"
+    },
+    {
+      "file": "test_apf_playcall_research_native.py",
+      "status": "OK",
+      "seconds": 225.6667339530013,
+      "log": "sweep/test_apf_playcall_research_native.log",
+      "initial_status": "FAIL",
+      "summary": "30 passed in 224.66s (0:03:44)"
+    },
+    {
+      "file": "test_apf_playcalling_editor_build.py",
+      "status": "OK",
+      "seconds": 95.48474867799996,
+      "log": "sweep/test_apf_playcalling_editor_build.log",
+      "initial_status": "FAIL",
+      "summary": "4 passed in 94.46s (0:01:34)"
+    },
+    {
+      "file": "test_apf_playcalling_editor_facade.py",
+      "status": "OK",
+      "seconds": 2.5191723400002957,
+      "log": "sweep/test_apf_playcalling_editor_facade.log",
+      "initial_status": "FAIL",
+      "summary": "7 passed, 2 subtests passed in 1.53s"
+    },
+    {
+      "file": "test_apf_playcalling_editor_patches.py",
+      "status": "OK",
+      "seconds": 1.7552256879989727,
+      "log": "sweep/test_apf_playcalling_editor_patches.log",
+      "initial_status": "FAIL",
+      "summary": "3 passed in 0.73s"
+    },
+    {
+      "file": "test_apf_playcalling_editor_qt.py",
+      "status": "OK",
+      "seconds": 6.656064646000232,
+      "log": "sweep/test_apf_playcalling_editor_qt.log",
+      "initial_status": "FAIL",
+      "summary": "13 passed in 5.53s"
+    },
+    {
+      "file": "test_apf_player_position_patch.py",
+      "status": "OK",
+      "seconds": 7.883094468999843,
+      "log": "sweep/test_apf_player_position_patch.log",
+      "initial_status": "FAIL",
+      "summary": "4 passed, 9 subtests passed in 6.94s"
+    },
+    {
+      "file": "test_apf_player_position_product_backend.py",
+      "status": "OK",
+      "seconds": 22.397738358000424,
+      "log": "sweep/test_apf_player_position_product_backend.log",
+      "initial_status": "FAIL",
+      "summary": "7 passed, 8 subtests passed in 21.39s"
+    },
+    {
+      "file": "test_apf_player_positions.py",
+      "status": "OK",
+      "seconds": 1.3005493189994013,
+      "log": "sweep/test_apf_player_positions.log",
+      "initial_status": "FAIL",
+      "summary": "5 passed, 5 subtests passed in 0.33s"
+    },
+    {
+      "file": "test_apf_player_rating_patch.py",
+      "status": "OK",
+      "seconds": 5.253947620998588,
+      "log": "sweep/test_apf_player_rating_patch.log",
+      "initial_status": "FAIL",
+      "summary": "12 passed, 6 subtests passed in 4.28s"
+    },
+    {
+      "file": "test_apf_player_rating_product_backend.py",
+      "status": "OK",
+      "seconds": 10.428934113999276,
+      "log": "sweep/test_apf_player_rating_product_backend.log",
+      "initial_status": "FAIL",
+      "summary": "5 passed, 5 subtests passed in 9.42s"
+    },
+    {
+      "file": "test_apf_player_rating_sheet_import.py",
+      "status": "OK",
+      "seconds": 16.75658761199884,
+      "log": "sweep/test_apf_player_rating_sheet_import.log",
+      "initial_status": "FAIL",
+      "summary": "7 passed in 15.71s"
+    },
+    {
+      "file": "test_apf_player_ratings.py",
+      "status": "OK",
+      "seconds": 1.9809431889989355,
+      "log": "sweep/test_apf_player_ratings.log",
+      "initial_status": "FAIL",
+      "summary": "11 passed in 1.03s"
+    },
+    {
+      "file": "test_apf_product_findings.py",
+      "status": "OK",
+      "seconds": 1.3529962400007207,
+      "log": "sweep/test_apf_product_findings.log",
+      "initial_status": "FAIL",
+      "summary": "7 passed in 0.39s"
+    },
+    {
+      "file": "test_apf_product_findings_gui.py",
+      "status": "OK",
+      "seconds": 1.7419465589991887,
+      "log": "sweep/test_apf_product_findings_gui.log",
+      "initial_status": "FAIL",
+      "summary": "2 passed in 0.71s"
+    },
+    {
+      "file": "test_apf_product_validation_wrappers.py",
+      "status": "OK",
+      "seconds": 1.3995140280003397,
+      "log": "sweep/test_apf_product_validation_wrappers.log",
+      "initial_status": "FAIL",
+      "summary": "5 passed, 6 subtests passed in 0.45s"
+    },
+    {
+      "file": "test_apf_project_document_workflow.py",
+      "status": "OK",
+      "seconds": 34.73285192000003,
+      "log": "sweep/test_apf_project_document_workflow.log",
+      "initial_status": "FAIL",
+      "summary": "13 passed, 5 subtests passed in 33.65s"
+    },
+    {
+      "file": "test_apf_project_streaming.py",
+      "status": "OK",
+      "seconds": 1.3977651839995815,
+      "log": "sweep/test_apf_project_streaming.log",
+      "initial_status": "FAIL",
+      "summary": "6 passed, 4 subtests passed in 0.41s"
+    },
+    {
+      "file": "test_apf_ps3_probes.py",
+      "status": "OK",
+      "seconds": 2.4229183650004416,
+      "log": "sweep/test_apf_ps3_probes.log",
+      "initial_status": "FAIL",
+      "summary": "9 passed, 72 subtests passed in 1.40s"
+    },
+    {
+      "file": "test_apf_ps3_roster_convert.py",
+      "status": "OK",
+      "seconds": 19.27688950099946,
+      "log": "sweep/test_apf_ps3_roster_convert.log",
+      "initial_status": "FAIL",
+      "summary": "13 passed in 18.26s"
+    },
+    {
+      "file": "test_apf_ps3_roster_import_qt.py",
+      "status": "OK",
+      "seconds": 2.884189034000883,
+      "log": "sweep/test_apf_ps3_roster_import_qt.log",
+      "initial_status": "FAIL",
+      "summary": "3 passed in 1.91s"
+    },
+    {
+      "file": "test_apf_ps3_speed.py",
+      "status": "OK",
+      "seconds": 5.199733035000463,
+      "log": "sweep/test_apf_ps3_speed.log",
+      "initial_status": "FAIL",
+      "summary": "15 passed in 4.08s"
+    },
+    {
+      "file": "test_apf_ps3_speed_packages.py",
+      "status": "OK",
+      "seconds": 11.39740812799937,
+      "log": "sweep/test_apf_ps3_speed_packages.log",
+      "initial_status": "FAIL",
+      "summary": "6 passed in 10.28s"
+    },
+    {
+      "file": "test_apf_ps3_texture_bundle.py",
+      "status": "OK",
+      "seconds": 31.247928623000917,
+      "log": "sweep/test_apf_ps3_texture_bundle.log",
+      "initial_status": "FAIL",
+      "summary": "28 passed, 4 subtests passed in 30.17s"
+    },
+    {
+      "file": "test_apf_ps3_texture_bundle_qt.py",
+      "status": "OK",
+      "seconds": 1.7058347029997094,
+      "log": "sweep/test_apf_ps3_texture_bundle_qt.log",
+      "initial_status": "FAIL",
+      "summary": "4 passed in 0.64s"
+    },
+    {
+      "file": "test_apf_public_docs_registry_current.py",
+      "status": "OK",
+      "seconds": 1.37084237199997,
+      "log": "sweep/test_apf_public_docs_registry_current.log",
+      "summary": "5 passed in 0.41s"
+    },
+    {
+      "file": "test_apf_rating_value_domains.py",
+      "status": "OK",
+      "seconds": 1.6478722680003557,
+      "log": "sweep/test_apf_rating_value_domains.log",
+      "initial_status": "FAIL",
+      "summary": "8 passed, 17 subtests passed in 0.48s"
+    },
+    {
+      "file": "test_apf_retail_crest_channel_audit.py",
+      "status": "OK",
+      "seconds": 1.2030214829992474,
+      "log": "sweep/test_apf_retail_crest_channel_audit.log",
+      "summary": "2 passed in 0.29s"
+    },
+    {
+      "file": "test_apf_roster_appearance_transfer.py",
+      "status": "OK",
+      "seconds": 10.171731062999243,
+      "log": "sweep/test_apf_roster_appearance_transfer.log",
+      "initial_status": "FAIL",
+      "summary": "5 passed, 2 subtests passed in 9.20s"
+    },
+    {
+      "file": "test_apf_roster_appearance_transfer_qt.py",
+      "status": "OK",
+      "seconds": 6.464521477000744,
+      "log": "sweep/test_apf_roster_appearance_transfer_qt.log",
+      "initial_status": "FAIL",
+      "summary": "3 passed in 5.46s"
+    },
+    {
+      "file": "test_apf_roster_identity.py",
+      "status": "OK",
+      "seconds": 12.90865512900018,
+      "log": "sweep/test_apf_roster_identity.log",
+      "initial_status": "FAIL",
+      "summary": "18 passed, 5 subtests passed in 11.87s"
+    },
+    {
+      "file": "test_apf_roster_identity_gui.py",
+      "status": "OK",
+      "seconds": 2.9250541260007594,
+      "log": "sweep/test_apf_roster_identity_gui.log",
+      "initial_status": "FAIL",
+      "summary": "17 passed in 1.90s"
+    },
+    {
+      "file": "test_apf_roster_workspace.py",
+      "status": "OK",
+      "seconds": 1.333314736999455,
+      "log": "sweep/test_apf_roster_workspace.log",
+      "initial_status": "FAIL",
+      "summary": "9 passed, 12 subtests passed in 0.39s"
+    },
+    {
+      "file": "test_apf_roster_workspace_gui.py",
+      "status": "OK",
+      "seconds": 1.5559821240003657,
+      "log": "sweep/test_apf_roster_workspace_gui.log",
+      "initial_status": "FAIL",
+      "summary": "1 passed in 0.54s"
+    },
+    {
+      "file": "test_apf_save_playbook_assignments_gui.py",
+      "status": "OK",
+      "seconds": 2.480652853999345,
+      "log": "sweep/test_apf_save_playbook_assignments_gui.log",
+      "initial_status": "FAIL",
+      "summary": "8 passed in 1.46s"
+    },
+    {
+      "file": "test_apf_save_roster_players.py",
+      "status": "OK",
+      "seconds": 5.978033516999858,
+      "log": "sweep/test_apf_save_roster_players.log",
+      "initial_status": "FAIL",
+      "summary": "7 passed in 5.02s"
+    },
+    {
+      "file": "test_apf_save_roster_players_gui.py",
+      "status": "OK",
+      "seconds": 2.0538326499990944,
+      "log": "sweep/test_apf_save_roster_players_gui.log",
+      "initial_status": "FAIL",
+      "summary": "4 passed in 0.97s"
+    },
+    {
+      "file": "test_apf_scorebug_workspace_qt.py",
+      "status": "OK",
+      "seconds": 1.7198718750005355,
+      "log": "sweep/test_apf_scorebug_workspace_qt.log",
+      "initial_status": "FAIL",
+      "summary": "11 passed in 0.70s"
+    },
+    {
+      "file": "test_apf_shell_search_accessibility_qt.py",
+      "status": "OK",
+      "seconds": 12.925314746998993,
+      "log": "sweep/test_apf_shell_search_accessibility_qt.log",
+      "initial_status": "FAIL",
+      "summary": "3 passed, 4 subtests passed in 11.53s"
+    },
+    {
+      "file": "test_apf_splb_add_multiple_formations.py",
+      "status": "OK",
+      "seconds": 1.7284543919995485,
+      "log": "sweep/test_apf_splb_add_multiple_formations.log",
+      "initial_status": "FAIL",
+      "summary": "14 passed in 0.77s"
+    },
+    {
+      "file": "test_apf_splb_formation_personnel.py",
+      "status": "OK",
+      "seconds": 2.2607480509996094,
+      "log": "sweep/test_apf_splb_formation_personnel.log",
+      "initial_status": "FAIL",
+      "summary": "11 passed in 1.27s"
+    },
+    {
+      "file": "test_apf_splb_tag_reassignment.py",
+      "status": "OK",
+      "seconds": 3.362126697000349,
+      "log": "sweep/test_apf_splb_tag_reassignment.log",
+      "initial_status": "FAIL",
+      "summary": "85 passed, 1 skipped, 26 subtests passed in 2.32s"
+    },
+    {
+      "file": "test_apf_splb_writer.py",
+      "status": "OK",
+      "seconds": 1.6303285490012058,
+      "log": "sweep/test_apf_splb_writer.log",
+      "initial_status": "FAIL",
+      "summary": "22 passed, 6 subtests passed in 0.62s"
+    },
+    {
+      "file": "test_apf_stadium_material_findings.py",
+      "status": "OK",
+      "seconds": 1.2534162199990533,
+      "log": "sweep/test_apf_stadium_material_findings.log",
+      "initial_status": "FAIL",
+      "summary": "6 passed in 0.33s"
+    },
+    {
+      "file": "test_apf_stadium_model_import.py",
+      "status": "OK",
+      "seconds": 1.514986513999247,
+      "log": "sweep/test_apf_stadium_model_import.log",
+      "initial_status": "FAIL",
+      "summary": "4 passed in 0.51s"
+    },
+    {
+      "file": "test_apf_stadium_studio.py",
+      "status": "OK",
+      "seconds": 1.3558367660007207,
+      "log": "sweep/test_apf_stadium_studio.log",
+      "initial_status": "FAIL",
+      "summary": "4 passed in 0.40s"
+    },
+    {
+      "file": "test_apf_stadium_studio_gui.py",
+      "status": "OK",
+      "seconds": 1.7255344499990315,
+      "log": "sweep/test_apf_stadium_studio_gui.log",
+      "initial_status": "FAIL",
+      "summary": "2 passed in 0.68s"
+    },
+    {
+      "file": "test_apf_stadium_texture.py",
+      "status": "OK",
+      "seconds": 77.22634118799942,
+      "log": "sweep/test_apf_stadium_texture.log",
+      "initial_status": "FAIL",
+      "summary": "5 passed in 76.26s (0:01:16)"
+    },
+    {
+      "file": "test_apf_stfs_roster_rehash.py",
+      "status": "OK",
+      "seconds": 1.8857288939998398,
+      "log": "sweep/test_apf_stfs_roster_rehash.log",
+      "initial_status": "FAIL",
+      "summary": "6 passed, 1 skipped, 10 subtests passed in 0.93s"
+    },
+    {
+      "file": "test_apf_studio_audio_gui.py",
+      "status": "OK",
+      "seconds": 2.324273878000895,
+      "log": "sweep/test_apf_studio_audio_gui.log",
+      "initial_status": "FAIL",
+      "summary": "32 passed in 1.30s"
+    },
+    {
+      "file": "test_apf_studio_core.py",
+      "status": "OK",
+      "seconds": 1.4571050399990781,
+      "log": "sweep/test_apf_studio_core.log",
+      "initial_status": "FAIL",
+      "summary": "9 passed, 3 subtests passed in 0.46s"
+    },
+    {
+      "file": "test_apf_studio_draft_logo.py",
+      "status": "OK",
+      "seconds": 1.7477080159987963,
+      "log": "sweep/test_apf_studio_draft_logo.log",
+      "initial_status": "FAIL",
+      "summary": "7 passed in 0.71s"
+    },
+    {
+      "file": "test_apf_studio_inspectors.py",
+      "status": "OK",
+      "seconds": 3.630365928000174,
+      "log": "sweep/test_apf_studio_inspectors.log",
+      "initial_status": "FAIL",
+      "summary": "11 passed in 2.63s"
+    },
+    {
+      "file": "test_apf_studio_safety.py",
+      "status": "OK",
+      "seconds": 1.6505494519988133,
+      "log": "sweep/test_apf_studio_safety.log",
+      "initial_status": "FAIL",
+      "summary": "27 passed in 0.64s"
+    },
+    {
+      "file": "test_apf_studio_text_edit.py",
+      "status": "OK",
+      "seconds": 1.6537997980012733,
+      "log": "sweep/test_apf_studio_text_edit.log",
+      "initial_status": "FAIL",
+      "summary": "7 passed in 0.64s"
+    },
+    {
+      "file": "test_apf_team_art.py",
+      "status": "OK",
+      "seconds": 18.1018907029993,
+      "log": "sweep/test_apf_team_art.log",
+      "initial_status": "FAIL",
+      "summary": "10 passed, 542 subtests passed in 16.85s"
+    },
+    {
+      "file": "test_apf_team_art_qt.py",
+      "status": "OK",
+      "seconds": 1.8251689730004728,
+      "log": "sweep/test_apf_team_art_qt.log",
+      "initial_status": "FAIL",
+      "summary": "6 passed in 0.76s"
+    },
+    {
+      "file": "test_apf_team_crest_selection.py",
+      "status": "OK",
+      "seconds": 1.9686510160008766,
+      "log": "sweep/test_apf_team_crest_selection.log",
+      "initial_status": "FAIL",
+      "summary": "9 passed in 0.82s"
+    },
+    {
+      "file": "test_apf_team_logo_gui.py",
+      "status": "OK",
+      "seconds": 3.308188158998746,
+      "log": "sweep/test_apf_team_logo_gui.log",
+      "initial_status": "FAIL",
+      "summary": "23 passed in 2.21s"
+    },
+    {
+      "file": "test_apf_text_sheet_gui.py",
+      "status": "OK",
+      "seconds": 1.7827191249998577,
+      "log": "sweep/test_apf_text_sheet_gui.log",
+      "initial_status": "FAIL",
+      "summary": "3 passed in 0.73s"
+    },
+    {
+      "file": "test_apf_textlogo_gui.py",
+      "status": "OK",
+      "seconds": 2.063881799000228,
+      "log": "sweep/test_apf_textlogo_gui.log",
+      "initial_status": "FAIL",
+      "summary": "5 passed in 0.92s"
+    },
+    {
+      "file": "test_apf_textlogo_writer.py",
+      "status": "OK",
+      "seconds": 61.90045643399935,
+      "log": "sweep/test_apf_textlogo_writer.log",
+      "initial_status": "FAIL",
+      "summary": "8 passed in 60.82s (0:01:00)"
+    },
+    {
+      "file": "test_apf_theme_layout_qt.py",
+      "status": "OK",
+      "seconds": 20.945918370000072,
+      "log": "sweep/test_apf_theme_layout_qt.log",
+      "initial_status": "FAIL",
+      "summary": "8 passed, 88 subtests passed in 19.69s"
+    },
+    {
+      "file": "test_apf_uniform_allocation_capacity.py",
+      "status": "OK",
+      "seconds": 2.6988886119997915,
+      "log": "sweep/test_apf_uniform_allocation_capacity.log",
+      "initial_status": "FAIL",
+      "summary": "21 passed, 29 subtests passed in 1.68s"
+    },
+    {
+      "file": "test_apf_uniform_equipment_colors.py",
+      "status": "OK",
+      "seconds": 9.449174901001243,
+      "log": "sweep/test_apf_uniform_equipment_colors.log",
+      "initial_status": "FAIL",
+      "summary": "7 passed, 3 subtests passed in 8.36s"
+    },
+    {
+      "file": "test_apf_uniform_equipment_colors_gui.py",
+      "status": "OK",
+      "seconds": 1.3983169339990127,
+      "log": "sweep/test_apf_uniform_equipment_colors_gui.log",
+      "initial_status": "FAIL",
+      "summary": "3 passed in 0.41s"
+    },
+    {
+      "file": "test_apf_uniform_independence.py",
+      "status": "OK",
+      "seconds": 2.599511825001173,
+      "log": "sweep/test_apf_uniform_independence.log",
+      "initial_status": "FAIL",
+      "summary": "22 passed, 26 subtests passed in 1.64s"
+    },
+    {
+      "file": "test_apf_uniform_inventory_gui.py",
+      "status": "OK",
+      "seconds": 3.7066895560001285,
+      "log": "sweep/test_apf_uniform_inventory_gui.log",
+      "initial_status": "FAIL",
+      "summary": "6 passed in 2.60s"
+    },
+    {
+      "file": "test_apf_wave_integration.py",
+      "status": "OK",
+      "seconds": 15.713703391000308,
+      "log": "sweep/test_apf_wave_integration.log",
+      "initial_status": "FAIL",
+      "summary": "8 passed, 8 subtests passed in 14.68s"
+    },
+    {
+      "file": "test_apf_wordmark_regions.py",
+      "status": "OK",
+      "seconds": 1.3581511430002138,
+      "log": "sweep/test_apf_wordmark_regions.log",
+      "initial_status": "FAIL",
+      "summary": "2 passed in 0.37s"
+    },
+    {
+      "file": "test_apf_workspace_recovery.py",
+      "status": "OK",
+      "seconds": 71.65620045099968,
+      "log": "sweep/test_apf_workspace_recovery.log",
+      "initial_status": "FAIL",
+      "summary": "20 passed, 17 subtests passed in 70.36s (0:01:10)"
+    },
+    {
+      "file": "test_apf_xenia_edge.py",
+      "status": "OK",
+      "seconds": 1.3174989300005109,
+      "log": "sweep/test_apf_xenia_edge.log",
+      "initial_status": "FAIL",
+      "summary": "6 passed, 10 subtests passed in 0.38s"
+    },
+    {
+      "file": "test_apf_xenos_4444_mip_layout.py",
+      "status": "OK",
+      "seconds": 3.1147839700006443,
+      "log": "sweep/test_apf_xenos_4444_mip_layout.log",
+      "initial_status": "FAIL",
+      "summary": "14 passed in 2.13s"
+    },
+    {
+      "file": "test_apf_xenos_4444_png.py",
+      "status": "OK",
+      "seconds": 1.2235917649995827,
+      "log": "sweep/test_apf_xenos_4444_png.log",
+      "summary": "3 passed in 0.30s"
+    },
+    {
+      "file": "test_apf_xenos_extra_formats_png.py",
+      "status": "OK",
+      "seconds": 1.2358190009999817,
+      "log": "sweep/test_apf_xenos_extra_formats_png.log",
+      "summary": "6 passed in 0.31s"
+    },
+    {
+      "file": "test_apf_xex_image.py",
+      "status": "OK",
+      "seconds": 2.243288482000935,
+      "log": "sweep/test_apf_xex_image.log",
+      "initial_status": "FAIL",
+      "summary": "17 passed, 12 subtests passed in 1.27s"
+    },
+    {
+      "file": "test_apf_xma1_wizard_gui.py",
+      "status": "OK",
+      "seconds": 2.9725088510003843,
+      "log": "sweep/test_apf_xma1_wizard_gui.log",
+      "initial_status": "FAIL",
+      "summary": "17 passed in 1.94s"
+    },
+    {
+      "file": "test_audio_annotation_project_archive.py",
+      "status": "OK",
+      "seconds": 1.7640364929993666,
+      "log": "sweep/test_audio_annotation_project_archive.log",
+      "initial_status": "FAIL",
+      "summary": "6 passed, 11 subtests passed in 0.72s"
+    },
+    {
+      "file": "test_audio_annotations.py",
+      "status": "OK",
+      "seconds": 1.8544352569988405,
+      "log": "sweep/test_audio_annotations.log",
+      "initial_status": "FAIL",
+      "summary": "16 passed, 42 subtests passed in 0.78s"
+    },
+    {
+      "file": "test_audio_annotations_product.py",
+      "status": "OK",
+      "seconds": 2.2322083639992343,
+      "log": "sweep/test_audio_annotations_product.log",
+      "initial_status": "FAIL",
+      "summary": "5 passed, 2 subtests passed in 1.17s"
+    },
+    {
+      "file": "test_audio_bundle.py",
+      "status": "OK",
+      "seconds": 1.6739952759999142,
+      "log": "sweep/test_audio_bundle.log",
+      "initial_status": "FAIL",
+      "summary": "8 passed, 7 subtests passed in 0.66s"
+    },
+    {
+      "file": "test_audio_conform.py",
+      "status": "OK",
+      "seconds": 2.98360681199847,
+      "log": "sweep/test_audio_conform.log",
+      "initial_status": "FAIL",
+      "summary": "17 passed, 18 subtests passed in 2.03s"
+    },
+    {
+      "file": "test_audio_panel_qt.py",
+      "status": "OK",
+      "seconds": 5.662142268000025,
+      "log": "sweep/test_audio_panel_qt.log",
+      "initial_status": "FAIL",
+      "summary": "50 passed, 10 subtests passed in 4.58s"
+    },
+    {
+      "file": "test_audio_replacement_pack.py",
+      "status": "OK",
+      "seconds": 9.117940625999836,
+      "log": "sweep/test_audio_replacement_pack.log",
+      "initial_status": "FAIL",
+      "summary": "41 passed, 23 subtests passed in 8.06s"
+    },
+    {
+      "file": "test_audio_waveform_qt.py",
+      "status": "OK",
+      "seconds": 1.84967117800079,
+      "log": "sweep/test_audio_waveform_qt.log",
+      "initial_status": "FAIL",
+      "summary": "7 passed in 0.80s"
+    },
+    {
+      "file": "test_b661_kit_build.py",
+      "status": "OK",
+      "seconds": 7.198704004998945,
+      "log": "sweep/test_b661_kit_build.log",
+      "initial_status": "FAIL",
+      "summary": "2 passed in 5.71s"
+    },
+    {
+      "file": "test_b661_workspace_qt.py",
+      "status": "OK",
+      "seconds": 4.697347854000327,
+      "log": "sweep/test_b661_workspace_qt.log",
+      "initial_status": "FAIL",
+      "summary": "7 passed, 2 subtests passed in 3.56s"
+    },
+    {
+      "file": "test_b66_coach_digits.py",
+      "status": "OK",
+      "seconds": 38.43168320100085,
+      "log": "sweep/test_b66_coach_digits.log",
+      "initial_status": "FAIL",
+      "summary": "14 passed, 60 subtests passed in 36.30s"
+    },
+    {
+      "file": "test_b66_coach_wiring.py",
+      "status": "OK",
+      "seconds": 3.675360743998681,
+      "log": "sweep/test_b66_coach_wiring.log",
+      "initial_status": "FAIL",
+      "summary": "5 passed in 2.47s"
+    },
+    {
+      "file": "test_b68_a1_audit.py",
+      "status": "OK",
+      "seconds": 7.328888736001318,
+      "log": "sweep/test_b68_a1_audit.log",
+      "initial_status": "FAIL",
+      "summary": "10 passed, 86 subtests passed in 6.25s"
+    },
+    {
+      "file": "test_b68_t1_build.py",
+      "status": "OK",
+      "seconds": 6.222393789999842,
+      "log": "sweep/test_b68_t1_build.log",
+      "initial_status": "FAIL",
+      "summary": "6 passed in 5.08s"
+    },
+    {
+      "file": "test_b68_t1_ui.py",
+      "status": "OK",
+      "seconds": 5.650697552000565,
+      "log": "sweep/test_b68_t1_ui.log",
+      "initial_status": "FAIL",
+      "summary": "2 passed in 4.18s"
+    },
+    {
+      "file": "test_b69_a1_model_session.py",
+      "status": "OK",
+      "seconds": 1.8387720040009299,
+      "log": "sweep/test_b69_a1_model_session.log",
+      "initial_status": "FAIL",
+      "summary": "3 passed in 0.81s"
+    },
+    {
+      "file": "test_b69_a1_playcalling.py",
+      "status": "OK",
+      "seconds": 39.33330731000024,
+      "log": "sweep/test_b69_a1_playcalling.log",
+      "initial_status": "FAIL",
+      "summary": "2 passed in 38.16s"
+    },
+    {
+      "file": "test_b69_a1_registry.py",
+      "status": "OK",
+      "seconds": 1.3896967239998048,
+      "log": "sweep/test_b69_a1_registry.log",
+      "initial_status": "FAIL",
+      "summary": "7 passed, 182 subtests passed in 0.39s"
+    },
+    {
+      "file": "test_b69_a1_runtime_imports.py",
+      "status": "OK",
+      "seconds": 1.3469366270001046,
+      "log": "sweep/test_b69_a1_runtime_imports.log",
+      "summary": "4 passed in 0.37s"
+    },
+    {
+      "file": "test_b69_a1_save_boundaries.py",
+      "status": "OK",
+      "seconds": 2.5406622210011847,
+      "log": "sweep/test_b69_a1_save_boundaries.log",
+      "initial_status": "FAIL",
+      "summary": "2 passed in 1.56s"
+    },
+    {
+      "file": "test_b69_a1b_game_audit.py",
+      "status": "OK",
+      "seconds": 3.0952223999993294,
+      "log": "sweep/test_b69_a1b_game_audit.log",
+      "initial_status": "FAIL",
+      "summary": "4 passed, 8 subtests passed in 1.90s"
+    },
+    {
+      "file": "test_b69_a2_wiring.py",
+      "status": "OK",
+      "seconds": 1.869945866001217,
+      "log": "sweep/test_b69_a2_wiring.log",
+      "initial_status": "FAIL",
+      "summary": "4 passed, 2 subtests passed in 0.76s"
+    },
+    {
+      "file": "test_b69_a2b_game_wiring.py",
+      "status": "OK",
+      "seconds": 96.57695078199868,
+      "log": "sweep/test_b69_a2b_game_wiring.log",
+      "initial_status": "FAIL",
+      "summary": "8 passed, 17 subtests passed in 95.38s (0:01:35)"
+    },
+    {
+      "file": "test_b69_j1_build.py",
+      "status": "OK",
+      "seconds": 3.2815783729984105,
+      "log": "sweep/test_b69_j1_build.log",
+      "initial_status": "FAIL",
+      "summary": "5 passed, 2 subtests passed in 2.11s"
+    },
+    {
+      "file": "test_b69_j1_fit.py",
+      "status": "OK",
+      "seconds": 2.3164158449999377,
+      "log": "sweep/test_b69_j1_fit.log",
+      "initial_status": "FAIL",
+      "summary": "5 passed in 1.21s"
+    },
+    {
+      "file": "test_b69_j1_native.py",
+      "status": "OK",
+      "seconds": 2.807262764999905,
+      "log": "sweep/test_b69_j1_native.log",
+      "initial_status": "FAIL",
+      "summary": "1 passed in 1.68s"
+    },
+    {
+      "file": "test_b69_j1_wiring.py",
+      "status": "OK",
+      "seconds": 2.756411828999262,
+      "log": "sweep/test_b69_j1_wiring.log",
+      "initial_status": "FAIL",
+      "summary": "7 passed in 1.44s"
+    },
+    {
+      "file": "test_b70_a2_wiring.py",
+      "status": "OK",
+      "seconds": 3.063067740000406,
+      "log": "sweep/test_b70_a2_wiring.log",
+      "initial_status": "FAIL",
+      "summary": "4 passed in 1.73s"
+    },
+    {
+      "file": "test_b70_a3_integration.py",
+      "status": "OK",
+      "seconds": 2.765766161999636,
+      "log": "sweep/test_b70_a3_integration.log",
+      "initial_status": "FAIL",
+      "summary": "6 passed, 2 subtests passed in 1.50s"
+    },
+    {
+      "file": "test_b70_t1_build_speed.py",
+      "status": "OK",
+      "seconds": 9.119447451999804,
+      "log": "sweep/test_b70_t1_build_speed.log",
+      "initial_status": "FAIL",
+      "summary": "10 passed, 7 subtests passed in 7.94s"
+    },
+    {
+      "file": "test_b70_t1_diagnostics.py",
+      "status": "OK",
+      "seconds": 1.9461833570003364,
+      "log": "sweep/test_b70_t1_diagnostics.log",
+      "initial_status": "FAIL",
+      "summary": "5 passed, 4 subtests passed in 0.80s"
+    },
+    {
+      "file": "test_b70_t2_equipment.py",
+      "status": "OK",
+      "seconds": 2.5627616490000946,
+      "log": "sweep/test_b70_t2_equipment.log",
+      "initial_status": "FAIL",
+      "summary": "8 passed in 1.37s"
+    },
+    {
+      "file": "test_b70_t2_native.py",
+      "status": "OK",
+      "seconds": 1.2890724799999589,
+      "log": "sweep/test_b70_t2_native.log",
+      "summary": "1 passed in 0.36s"
+    },
+    {
+      "file": "test_b70_t2_reporting.py",
+      "status": "OK",
+      "seconds": 1.6460803999998461,
+      "log": "sweep/test_b70_t2_reporting.log",
+      "initial_status": "FAIL",
+      "summary": "5 passed in 0.54s"
+    },
+    {
+      "file": "test_b70_t2_stadium.py",
+      "status": "OK",
+      "seconds": 1.480169611000747,
+      "log": "sweep/test_b70_t2_stadium.log",
+      "initial_status": "FAIL",
+      "summary": "1 passed, 2 skipped in 0.42s"
+    },
+    {
+      "file": "test_b70_t2_wiring.py",
+      "status": "OK",
+      "seconds": 2.3693461940001725,
+      "log": "sweep/test_b70_t2_wiring.log",
+      "initial_status": "FAIL",
+      "summary": "2 passed in 1.04s"
+    },
+    {
+      "file": "test_b71_a6_composition.py",
+      "status": "OK",
+      "seconds": 1.6267630980000831,
+      "log": "sweep/test_b71_a6_composition.log",
+      "initial_status": "FAIL",
+      "summary": "2 passed in 0.52s"
+    },
+    {
+      "file": "test_b71_t4_equipment_project.py",
+      "status": "OK",
+      "seconds": 9.947110857001462,
+      "log": "sweep/test_b71_t4_equipment_project.log",
+      "initial_status": "FAIL",
+      "summary": "12 passed in 8.44s"
+    },
+    {
+      "file": "test_b71_t5_project_open.py",
+      "status": "OK",
+      "seconds": 5.30246340299891,
+      "log": "sweep/test_b71_t5_project_open.log",
+      "initial_status": "FAIL",
+      "summary": "16 passed in 4.04s"
+    },
+    {
+      "file": "test_b72_equipment_speed.py",
+      "status": "OK",
+      "seconds": 15.407289795000906,
+      "log": "sweep/test_b72_equipment_speed.log",
+      "initial_status": "FAIL",
+      "summary": "20 passed in 14.19s"
+    },
+    {
+      "file": "test_beta45_honesty_freeze.py",
+      "status": "OK",
+      "seconds": 5.6651179710006545,
+      "log": "sweep/test_beta45_honesty_freeze.log",
+      "initial_status": "FAIL",
+      "summary": "9 passed in 4.54s"
+    },
+    {
+      "file": "test_beta61_allocator_integration.py",
+      "status": "OK",
+      "seconds": 465.1420842509997,
+      "log": "sweep/test_beta61_allocator_integration.log",
+      "initial_status": "FAIL",
+      "summary": "7 passed, 15 subtests passed in 464.05s (0:07:44)"
+    },
+    {
+      "file": "test_beta61_integration.py",
+      "status": "OK",
+      "seconds": 12.882492714001273,
+      "log": "sweep/test_beta61_integration.log",
+      "initial_status": "FAIL",
+      "summary": "5 passed, 5 subtests passed in 11.67s"
+    },
+    {
+      "file": "test_beta62_integration3_qt.py",
+      "status": "OK",
+      "seconds": 4.079157468999256,
+      "log": "sweep/test_beta62_integration3_qt.log",
+      "initial_status": "FAIL",
+      "summary": "8 passed in 2.68s"
+    },
+    {
+      "file": "test_beta66_1_adapter_imports.py",
+      "status": "OK",
+      "seconds": 2.0041040899996005,
+      "log": "sweep/test_beta66_1_adapter_imports.log",
+      "initial_status": "FAIL",
+      "summary": "3 passed in 0.85s"
+    },
+    {
+      "file": "test_beta66_d1_images.py",
+      "status": "OK",
+      "seconds": 3.010687620999306,
+      "log": "sweep/test_beta66_d1_images.log",
+      "initial_status": "FAIL",
+      "summary": "6 passed in 1.87s"
+    },
+    {
+      "file": "test_beta66_d1_panels.py",
+      "status": "OK",
+      "seconds": 2.6155362940007763,
+      "log": "sweep/test_beta66_d1_panels.log",
+      "initial_status": "FAIL",
+      "summary": "4 passed in 1.40s"
+    },
+    {
+      "file": "test_beta66_helmet_finish_wiring.py",
+      "status": "OK",
+      "seconds": 17.09584984399953,
+      "log": "sweep/test_beta66_helmet_finish_wiring.log",
+      "initial_status": "FAIL",
+      "summary": "8 passed in 15.35s"
+    },
+    {
+      "file": "test_beta66_supersim_wiring.py",
+      "status": "OK",
+      "seconds": 1.6974361759985186,
+      "log": "sweep/test_beta66_supersim_wiring.log",
+      "initial_status": "FAIL",
+      "summary": "3 passed in 0.61s"
+    },
+    {
+      "file": "test_beta69_doc_links.py",
+      "status": "OK",
+      "seconds": 1.2353460020003695,
+      "log": "sweep/test_beta69_doc_links.log",
+      "summary": "3 passed, 4 subtests passed in 0.31s"
+    },
+    {
+      "file": "test_beta69_feedback_qt.py",
+      "status": "OK",
+      "seconds": 2.6827849580004113,
+      "log": "sweep/test_beta69_feedback_qt.log",
+      "initial_status": "FAIL",
+      "summary": "5 passed in 1.42s"
+    },
+    {
+      "file": "test_beta69_string_hygiene.py",
+      "status": "OK",
+      "seconds": 4.368133935000515,
+      "log": "sweep/test_beta69_string_hygiene.log",
+      "initial_status": "FAIL",
+      "summary": "4 passed, 8 subtests passed in 3.37s"
+    },
+    {
+      "file": "test_beta69_studios_offscreen.py",
+      "status": "OK",
+      "seconds": 11.21319567899991,
+      "log": "sweep/test_beta69_studios_offscreen.log",
+      "initial_status": "FAIL",
+      "summary": "1 passed in 10.26s"
+    },
+    {
+      "file": "test_broken_play_annotations.py",
+      "status": "OK",
+      "seconds": 1.4326424729988503,
+      "log": "sweep/test_broken_play_annotations.log",
+      "initial_status": "FAIL",
+      "summary": "7 passed in 0.38s"
+    },
+    {
+      "file": "test_build_panel_qt.py",
+      "status": "OK",
+      "seconds": 4.4252019110008405,
+      "log": "sweep/test_build_panel_qt.log",
+      "initial_status": "FAIL",
+      "summary": "14 passed in 3.21s"
+    },
+    {
+      "file": "test_caller_windows_pins.py",
+      "status": "OK",
+      "seconds": 1.6806268979999004,
+      "log": "sweep/test_caller_windows_pins.log",
+      "initial_status": "FAIL",
+      "summary": "19 passed, 4 subtests passed in 0.65s"
+    },
+    {
+      "file": "test_camera_inspection.py",
+      "status": "OK",
+      "seconds": 1.3637515980008175,
+      "log": "sweep/test_camera_inspection.log",
+      "initial_status": "FAIL",
+      "summary": "17 passed, 32 subtests passed in 0.36s"
+    },
+    {
+      "file": "test_capability_registry_module_commands.py",
+      "status": "OK",
+      "seconds": 1.3455205330010358,
+      "log": "sweep/test_capability_registry_module_commands.log",
+      "initial_status": "FAIL",
+      "summary": "3 passed in 0.35s"
+    },
+    {
+      "file": "test_colour_lighting.py",
+      "status": "OK",
+      "seconds": 17.904454049999913,
+      "log": "sweep/test_colour_lighting.log",
+      "initial_status": "FAIL",
+      "summary": "12 passed, 2 subtests passed in 16.86s"
+    },
+    {
+      "file": "test_colour_lighting_qt.py",
+      "status": "OK",
+      "seconds": 3.4260303120008757,
+      "log": "sweep/test_colour_lighting_qt.log",
+      "initial_status": "FAIL",
+      "summary": "6 passed in 2.27s"
+    },
+    {
+      "file": "test_commentary_panel_qt.py",
+      "status": "OK",
+      "seconds": 7.611171728000045,
+      "log": "sweep/test_commentary_panel_qt.log",
+      "initial_status": "FAIL",
+      "summary": "3 passed in 5.86s"
+    },
+    {
+      "file": "test_core.py",
+      "status": "OK",
+      "seconds": 1.6586279870007274,
+      "log": "sweep/test_core.log",
+      "initial_status": "FAIL",
+      "summary": "11 passed in 0.63s"
+    },
+    {
+      "file": "test_crib_panel_qt.py",
+      "status": "OK",
+      "seconds": 1.4515514500017161,
+      "log": "sweep/test_crib_panel_qt.log",
+      "initial_status": "FAIL",
+      "summary": "6 passed in 0.46s"
+    },
+    {
+      "file": "test_directory_publishes_are_portable.py",
+      "status": "OK",
+      "seconds": 1.393282380000528,
+      "log": "sweep/test_directory_publishes_are_portable.log",
+      "summary": "5 passed in 0.46s"
+    },
+    {
+      "file": "test_disc_memory_budget.py",
+      "status": "OK",
+      "seconds": 334.4572939739992,
+      "log": "sweep/test_disc_memory_budget.log",
+      "initial_status": "FAIL",
+      "summary": "2 passed, 10 subtests passed in 333.47s (0:05:33)"
+    },
+    {
+      "file": "test_discord_bugs_1.py",
+      "status": "OK",
+      "seconds": 2.7287056389995996,
+      "log": "sweep/test_discord_bugs_1.log",
+      "initial_status": "FAIL",
+      "summary": "17 passed, 8 subtests passed in 1.62s"
+    },
+    {
+      "file": "test_discord_bugs_1_wiring.py",
+      "status": "OK",
+      "seconds": 5.064187482001216,
+      "log": "sweep/test_discord_bugs_1_wiring.log",
+      "initial_status": "FAIL",
+      "summary": "10 passed, 3 subtests passed in 3.63s"
+    },
+    {
+      "file": "test_discord_bugs_2.py",
+      "status": "OK",
+      "seconds": 2.8652053309997427,
+      "log": "sweep/test_discord_bugs_2.log",
+      "initial_status": "FAIL",
+      "summary": "11 passed, 4 subtests passed in 1.75s"
+    },
+    {
+      "file": "test_discord_bugs_2_research.py",
+      "status": "OK",
+      "seconds": 1.5435953319993132,
+      "log": "sweep/test_discord_bugs_2_research.log",
+      "initial_status": "FAIL",
+      "summary": "4 passed, 103 subtests passed in 0.50s"
+    },
+    {
+      "file": "test_discord_bugs_2_wiring.py",
+      "status": "OK",
+      "seconds": 2.8905225840007915,
+      "log": "sweep/test_discord_bugs_2_wiring.log",
+      "initial_status": "FAIL",
+      "summary": "4 passed, 2 skipped in 1.60s"
+    },
+    {
+      "file": "test_emulator_launch_polish.py",
+      "status": "OK",
+      "seconds": 1.8979245999998966,
+      "log": "sweep/test_emulator_launch_polish.log",
+      "initial_status": "FAIL",
+      "summary": "11 passed in 0.78s"
+    },
+    {
+      "file": "test_facade_external_build.py",
+      "status": "OK",
+      "seconds": 1.666668875999676,
+      "log": "sweep/test_facade_external_build.log",
+      "initial_status": "FAIL",
+      "summary": "2 passed in 0.58s"
+    },
+    {
+      "file": "test_franchise_panel_qt.py",
+      "status": "OK",
+      "seconds": 33.98769769499995,
+      "log": "sweep/test_franchise_panel_qt.log",
+      "initial_status": "FAIL",
+      "summary": "16 passed in 32.56s"
+    },
+    {
+      "file": "test_gameplay_inspection.py",
+      "status": "OK",
+      "seconds": 1.3551361869995162,
+      "log": "sweep/test_gameplay_inspection.log",
+      "initial_status": "FAIL",
+      "summary": "9 passed, 17 subtests passed in 0.36s"
+    },
+    {
+      "file": "test_gameplay_patches_panel_qt.py",
+      "status": "OK",
+      "seconds": 1.8804960119996394,
+      "log": "sweep/test_gameplay_patches_panel_qt.log",
+      "initial_status": "FAIL",
+      "summary": "1 passed in 0.79s"
+    },
+    {
+      "file": "test_generated_artifacts_are_lf.py",
+      "status": "OK",
+      "seconds": 6.5615822929994465,
+      "log": "sweep/test_generated_artifacts_are_lf.log",
+      "summary": "4 passed in 5.61s"
+    },
+    {
+      "file": "test_gui.py",
+      "status": "OK",
+      "seconds": 2.6616155639985664,
+      "log": "sweep/test_gui.log",
+      "initial_status": "FAIL",
+      "summary": "14 passed, 14 subtests passed in 1.63s"
+    },
+    {
+      "file": "test_gui_drop_parity.py",
+      "status": "OK",
+      "seconds": 2.631549530000484,
+      "log": "sweep/test_gui_drop_parity.log",
+      "initial_status": "FAIL",
+      "summary": "7 passed in 1.40s"
+    },
+    {
+      "file": "test_gui_refusal_wording.py",
+      "status": "OK",
+      "seconds": 2.7634764419999556,
+      "log": "sweep/test_gui_refusal_wording.log",
+      "initial_status": "FAIL",
+      "summary": "23 passed, 9 subtests passed in 1.41s"
+    },
+    {
+      "file": "test_hotfix63_digit_budget.py",
+      "status": "OK",
+      "seconds": 27.784103854999557,
+      "log": "sweep/test_hotfix63_digit_budget.log",
+      "initial_status": "FAIL",
+      "summary": "14 passed in 21.92s"
+    },
+    {
+      "file": "test_image_fit.py",
+      "status": "OK",
+      "seconds": 5.114844360999996,
+      "log": "sweep/test_image_fit.log",
+      "initial_status": "FAIL",
+      "summary": "21 passed, 8 subtests passed in 3.72s"
+    },
+    {
+      "file": "test_keyboard_search_polish.py",
+      "status": "OK",
+      "seconds": 3.6330239199996868,
+      "log": "sweep/test_keyboard_search_polish.log",
+      "initial_status": "FAIL",
+      "summary": "4 passed in 2.08s"
+    },
+    {
+      "file": "test_linear_texture_dimensions.py",
+      "status": "OK",
+      "seconds": 1.545619226000781,
+      "log": "sweep/test_linear_texture_dimensions.log",
+      "initial_status": "FAIL",
+      "summary": "7 passed in 0.46s"
+    },
+    {
+      "file": "test_local_windows_ci.py",
+      "status": "OK",
+      "seconds": 3.685596297998927,
+      "log": "sweep/test_local_windows_ci.log",
+      "summary": "50 passed, 1 skipped, 111 subtests passed in 2.75s"
+    },
+    {
+      "file": "test_menu_modes.py",
+      "status": "OK",
+      "seconds": 1.353777248001279,
+      "log": "sweep/test_menu_modes.log",
+      "initial_status": "FAIL",
+      "summary": "5 passed, 7 subtests passed in 0.36s"
+    },
+    {
+      "file": "test_mod_build.py",
+      "status": "OK",
+      "seconds": 3.2719186739996076,
+      "log": "sweep/test_mod_build.log",
+      "initial_status": "FAIL",
+      "summary": "13 passed in 2.16s"
+    },
+    {
+      "file": "test_mod_build_beta62_integration.py",
+      "status": "OK",
+      "seconds": 208.58836495200012,
+      "log": "sweep/test_mod_build_beta62_integration.log",
+      "initial_status": "FAIL",
+      "summary": "8 passed, 7 subtests passed in 207.49s (0:03:27)"
+    },
+    {
+      "file": "test_mod_build_beta62_integration3.py",
+      "status": "OK",
+      "seconds": 135.57280804199945,
+      "log": "sweep/test_mod_build_beta62_integration3.log",
+      "initial_status": "FAIL",
+      "summary": "11 passed, 26 subtests passed in 134.46s (0:02:14)"
+    },
+    {
+      "file": "test_mod_build_performance.py",
+      "status": "OK",
+      "seconds": 8.743858833000559,
+      "log": "sweep/test_mod_build_performance.log",
+      "initial_status": "FAIL",
+      "summary": "7 passed, 3 subtests passed in 7.74s"
+    },
+    {
+      "file": "test_model_import_disable_reason.py",
+      "status": "OK",
+      "seconds": 1.7455876180010819,
+      "log": "sweep/test_model_import_disable_reason.log",
+      "initial_status": "FAIL",
+      "summary": "7 passed in 0.73s"
+    },
+    {
+      "file": "test_models_panel_qt.py",
+      "status": "OK",
+      "seconds": 7.385629997999786,
+      "log": "sweep/test_models_panel_qt.log",
+      "initial_status": "FAIL",
+      "summary": "8 passed in 6.06s"
+    },
+    {
+      "file": "test_models_project_wiring.py",
+      "status": "OK",
+      "seconds": 10.00145355099994,
+      "log": "sweep/test_models_project_wiring.log",
+      "initial_status": "FAIL",
+      "summary": "2 passed in 8.54s"
+    },
+    {
+      "file": "test_models_skeleton_wiring.py",
+      "status": "OK",
+      "seconds": 1.400497519000055,
+      "log": "sweep/test_models_skeleton_wiring.log",
+      "initial_status": "FAIL",
+      "summary": "2 passed in 0.39s"
+    },
+    {
+      "file": "test_modern_naming_panel.py",
+      "status": "OK",
+      "seconds": 1.4525757249994058,
+      "log": "sweep/test_modern_naming_panel.log",
+      "initial_status": "FAIL",
+      "summary": "2 passed in 0.43s"
+    },
+    {
+      "file": "test_modpack.py",
+      "status": "OK",
+      "seconds": 10.062602125999547,
+      "log": "sweep/test_modpack.log",
+      "initial_status": "FAIL",
+      "summary": "36 passed, 2 subtests passed in 9.02s"
+    },
+    {
+      "file": "test_modpack_growth.py",
+      "status": "OK",
+      "seconds": 6.803391164999994,
+      "log": "sweep/test_modpack_growth.log",
+      "initial_status": "FAIL",
+      "summary": "11 passed, 11 subtests passed in 5.77s"
+    },
+    {
+      "file": "test_modpack_growth_acceptance.py",
+      "status": "OK",
+      "seconds": 1.5366125900000043,
+      "log": "sweep/test_modpack_growth_acceptance.log",
+      "initial_status": "FAIL",
+      "summary": "1 skipped in 0.47s"
+    },
+    {
+      "file": "test_music_all_modes_wiring.py",
+      "status": "OK",
+      "seconds": 3.2268265260008775,
+      "log": "sweep/test_music_all_modes_wiring.log",
+      "initial_status": "FAIL",
+      "summary": "4 passed in 2.02s"
+    },
+    {
+      "file": "test_music_conform.py",
+      "status": "OK",
+      "seconds": 3.094545730000391,
+      "log": "sweep/test_music_conform.log",
+      "initial_status": "FAIL",
+      "summary": "7 passed in 2.03s"
+    },
+    {
+      "file": "test_music_panel_qt.py",
+      "status": "OK",
+      "seconds": 4.1075934510008665,
+      "log": "sweep/test_music_panel_qt.log",
+      "initial_status": "FAIL",
+      "summary": "9 passed in 2.92s"
+    },
+    {
+      "file": "test_music_playlist_project.py",
+      "status": "OK",
+      "seconds": 2.5256978159995924,
+      "log": "sweep/test_music_playlist_project.log",
+      "initial_status": "FAIL",
+      "summary": "4 passed in 1.36s"
+    },
+    {
+      "file": "test_music_service.py",
+      "status": "OK",
+      "seconds": 4.42000920099963,
+      "log": "sweep/test_music_service.log",
+      "initial_status": "FAIL",
+      "summary": "10 passed in 3.23s"
+    },
+    {
+      "file": "test_music_simple.py",
+      "status": "OK",
+      "seconds": 21.495472867998615,
+      "log": "sweep/test_music_simple.log",
+      "initial_status": "FAIL",
+      "summary": "12 passed in 20.34s"
+    },
+    {
+      "file": "test_music_simple_qt.py",
+      "status": "OK",
+      "seconds": 5.678617105999365,
+      "log": "sweep/test_music_simple_qt.log",
+      "initial_status": "FAIL",
+      "summary": "9 passed in 4.48s"
+    },
+    {
+      "file": "test_music_simple_wiring.py",
+      "status": "OK",
+      "seconds": 2.355605740000101,
+      "log": "sweep/test_music_simple_wiring.log",
+      "initial_status": "FAIL",
+      "summary": "3 passed in 1.26s"
+    },
+    {
+      "file": "test_mycareer_art.py",
+      "status": "OK",
+      "seconds": 2.9248535459992127,
+      "log": "sweep/test_mycareer_art.log",
+      "initial_status": "FAIL",
+      "summary": "6 passed, 4 skipped in 1.83s"
+    },
+    {
+      "file": "test_never_silent_gray_boot.py",
+      "status": "OK",
+      "seconds": 2.205640221000067,
+      "log": "sweep/test_never_silent_gray_boot.log",
+      "initial_status": "FAIL",
+      "summary": "4 passed in 1.06s"
+    },
+    {
+      "file": "test_nfl2k3_2k4_compatibility_boundary.py",
+      "status": "OK",
+      "seconds": 1.4095784359997197,
+      "log": "sweep/test_nfl2k3_2k4_compatibility_boundary.log",
+      "initial_status": "FAIL",
+      "summary": "4 passed in 0.36s"
+    },
+    {
+      "file": "test_nfl2k5_abilities_runtime.py",
+      "status": "OK",
+      "seconds": 26.728554018000068,
+      "log": "sweep/test_nfl2k5_abilities_runtime.log",
+      "initial_status": "FAIL",
+      "summary": "12 passed, 24 subtests passed in 25.75s"
+    },
+    {
+      "file": "test_nfl2k5_abilities_unicorn.py",
+      "status": "OK",
+      "seconds": 9.52477306000037,
+      "log": "sweep/test_nfl2k5_abilities_unicorn.log",
+      "initial_status": "FAIL",
+      "summary": "12 passed, 636 subtests passed in 8.50s"
+    },
+    {
+      "file": "test_nfl2k5_abilities_v2.py",
+      "status": "OK",
+      "seconds": 36.01278461199945,
+      "log": "sweep/test_nfl2k5_abilities_v2.log",
+      "initial_status": "FAIL",
+      "summary": "15 passed in 34.88s"
+    },
+    {
+      "file": "test_nfl2k5_abilities_v2_manifest.py",
+      "status": "OK",
+      "seconds": 321.3111461850003,
+      "log": "sweep/test_nfl2k5_abilities_v2_manifest.log",
+      "initial_status": "FAIL",
+      "summary": "2 passed in 320.21s (0:05:20)"
+    },
+    {
+      "file": "test_nfl2k5_abilities_v2_qt.py",
+      "status": "OK",
+      "seconds": 2.1720180439988326,
+      "log": "sweep/test_nfl2k5_abilities_v2_qt.log",
+      "initial_status": "FAIL",
+      "summary": "5 passed in 1.11s"
+    },
+    {
+      "file": "test_nfl2k5_accelerated_clock.py",
+      "status": "OK",
+      "seconds": 43.60061902599955,
+      "log": "sweep/test_nfl2k5_accelerated_clock.log",
+      "initial_status": "FAIL",
+      "summary": "40 passed, 43 subtests passed in 42.49s"
+    },
+    {
+      "file": "test_nfl2k5_accelerated_clock_manifest.py",
+      "status": "OK",
+      "seconds": 11.979718683000101,
+      "log": "sweep/test_nfl2k5_accelerated_clock_manifest.log",
+      "initial_status": "FAIL",
+      "summary": "5 passed in 10.75s"
+    },
+    {
+      "file": "test_nfl2k5_allocator_scaleout.py",
+      "status": "OK",
+      "seconds": 836.3090647200006,
+      "log": "sweep/test_nfl2k5_allocator_scaleout.log",
+      "initial_status": "FAIL",
+      "summary": "23 passed, 136 subtests passed in 835.07s (0:13:55)"
+    },
+    {
+      "file": "test_nfl2k5_animation.py",
+      "status": "OK",
+      "seconds": 1.7405491310000798,
+      "log": "sweep/test_nfl2k5_animation.log",
+      "initial_status": "FAIL",
+      "summary": "16 passed, 14 subtests passed in 0.72s"
+    },
+    {
+      "file": "test_nfl2k5_animation_import.py",
+      "status": "OK",
+      "seconds": 1.9671558770005504,
+      "log": "sweep/test_nfl2k5_animation_import.log",
+      "initial_status": "FAIL",
+      "summary": "18 passed, 3 subtests passed in 0.98s"
+    },
+    {
+      "file": "test_nfl2k5_animation_import_retail.py",
+      "status": "OK",
+      "seconds": 15.018872470000133,
+      "log": "sweep/test_nfl2k5_animation_import_retail.log",
+      "initial_status": "FAIL",
+      "summary": "3 passed, 8 skipped in 14.03s"
+    },
+    {
+      "file": "test_nfl2k5_animation_retail.py",
+      "status": "OK",
+      "seconds": 1.3240586259998963,
+      "log": "sweep/test_nfl2k5_animation_retail.log",
+      "initial_status": "FAIL",
+      "summary": "5 skipped in 0.34s"
+    },
+    {
+      "file": "test_nfl2k5_audio_backend_origin.py",
+      "status": "OK",
+      "seconds": 1.6056759580005746,
+      "log": "sweep/test_nfl2k5_audio_backend_origin.log",
+      "initial_status": "FAIL",
+      "summary": "5 passed in 0.57s"
+    },
+    {
+      "file": "test_nfl2k5_audio_catalog.py",
+      "status": "OK",
+      "seconds": 2.103863422998984,
+      "log": "sweep/test_nfl2k5_audio_catalog.log",
+      "initial_status": "FAIL",
+      "summary": "13 passed in 1.06s"
+    },
+    {
+      "file": "test_nfl2k5_audio_containment_fingerprints.py",
+      "status": "OK",
+      "seconds": 1.6021489089998795,
+      "log": "sweep/test_nfl2k5_audio_containment_fingerprints.log",
+      "summary": "22 passed in 0.68s"
+    },
+    {
+      "file": "test_nfl2k5_audio_origin_authorization.py",
+      "status": "OK",
+      "seconds": 1.3479453229992941,
+      "log": "sweep/test_nfl2k5_audio_origin_authorization.log",
+      "summary": "12 passed, 11 subtests passed in 0.36s"
+    },
+    {
+      "file": "test_nfl2k5_audio_origin_preparation.py",
+      "status": "OK",
+      "seconds": 1.3274977809996926,
+      "log": "sweep/test_nfl2k5_audio_origin_preparation.log",
+      "summary": "7 passed in 0.39s"
+    },
+    {
+      "file": "test_nfl2k5_audio_source_containment.py",
+      "status": "OK",
+      "seconds": 1.7454002829999808,
+      "log": "sweep/test_nfl2k5_audio_source_containment.log",
+      "summary": "17 passed in 0.78s"
+    },
+    {
+      "file": "test_nfl2k5_audio_source_fingerprints.py",
+      "status": "OK",
+      "seconds": 1.3791303369998786,
+      "log": "sweep/test_nfl2k5_audio_source_fingerprints.log",
+      "summary": "17 passed, 4 subtests passed in 0.43s"
+    },
+    {
+      "file": "test_nfl2k5_audio_source_scan.py",
+      "status": "OK",
+      "seconds": 3.6703886840005,
+      "log": "sweep/test_nfl2k5_audio_source_scan.log",
+      "summary": "12 passed in 2.65s"
+    },
+    {
+      "file": "test_nfl2k5_audo_family_labels.py",
+      "status": "OK",
+      "seconds": 1.6447662040009163,
+      "log": "sweep/test_nfl2k5_audo_family_labels.log",
+      "summary": "10 passed, 4 subtests passed in 0.63s"
+    },
+    {
+      "file": "test_nfl2k5_audo_fixed_slots.py",
+      "status": "OK",
+      "seconds": 1.9700287350005965,
+      "log": "sweep/test_nfl2k5_audo_fixed_slots.log",
+      "summary": "4 passed in 0.93s"
+    },
+    {
+      "file": "test_nfl2k5_ausb_build_adapter.py",
+      "status": "OK",
+      "seconds": 1.4991483190005965,
+      "log": "sweep/test_nfl2k5_ausb_build_adapter.log",
+      "summary": "10 passed, 17 subtests passed in 0.53s"
+    },
+    {
+      "file": "test_nfl2k5_ausb_fixed_slots.py",
+      "status": "OK",
+      "seconds": 1.3782021420011006,
+      "log": "sweep/test_nfl2k5_ausb_fixed_slots.log",
+      "summary": "6 passed, 12 subtests passed in 0.44s"
+    },
+    {
+      "file": "test_nfl2k5_b661_transition.py",
+      "status": "OK",
+      "seconds": 465.3509445939999,
+      "log": "sweep/test_nfl2k5_b661_transition.log",
+      "summary": "11 passed, 38 subtests passed in 464.24s (0:07:44)"
+    },
+    {
+      "file": "test_nfl2k5_b68_game_composition.py",
+      "status": "OK",
+      "seconds": 416.08598403199903,
+      "log": "sweep/test_nfl2k5_b68_game_composition.log",
+      "summary": "3 passed, 10 subtests passed in 415.02s (0:06:55)"
+    },
+    {
+      "file": "test_nfl2k5_b69_rules.py",
+      "status": "OK",
+      "seconds": 118.66248351299873,
+      "log": "sweep/test_nfl2k5_b69_rules.log",
+      "summary": "16 passed, 23 subtests passed in 117.64s (0:01:57)"
+    },
+    {
+      "file": "test_nfl2k5_b69_rules_series.py",
+      "status": "OK",
+      "seconds": 66.66772273800052,
+      "log": "sweep/test_nfl2k5_b69_rules_series.log",
+      "summary": "1 passed, 4 subtests passed in 65.67s (0:01:05)"
+    },
+    {
+      "file": "test_nfl2k5_back_throws.py",
+      "status": "OK",
+      "seconds": 15.4389116250004,
+      "log": "sweep/test_nfl2k5_back_throws.log",
+      "summary": "16 passed, 90 subtests passed in 14.42s"
+    },
+    {
+      "file": "test_nfl2k5_boot_logo.py",
+      "status": "OK",
+      "seconds": 3.2198525740004698,
+      "log": "sweep/test_nfl2k5_boot_logo.log",
+      "summary": "7 passed in 2.26s"
+    },
+    {
+      "file": "test_nfl2k5_build_service.py",
+      "status": "OK",
+      "seconds": 1.4932427319999988,
+      "log": "sweep/test_nfl2k5_build_service.log",
+      "summary": "28 passed, 31 subtests passed in 0.54s"
+    },
+    {
+      "file": "test_nfl2k5_bump_strength.py",
+      "status": "OK",
+      "seconds": 0.12414098900080717,
+      "runner": "unittest main wrapper",
+      "log": "sweep/test_nfl2k5_bump_strength.standalone.log",
+      "initial_status": "FAIL",
+      "summary": ""
+    },
+    {
+      "file": "test_nfl2k5_bump_texture_writer.py",
+      "status": "OK",
+      "seconds": 4.065212646000873,
+      "runner": "unittest main wrapper",
+      "log": "sweep/test_nfl2k5_bump_texture_writer.standalone.log",
+      "initial_status": "FAIL",
+      "summary": ""
+    },
+    {
+      "file": "test_nfl2k5_calendar_engine.py",
+      "status": "OK",
+      "seconds": 13.333716806000666,
+      "log": "sweep/test_nfl2k5_calendar_engine.log",
+      "summary": "9 passed, 33 subtests passed in 12.37s"
+    },
+    {
+      "file": "test_nfl2k5_calendar_engine_delivery.py",
+      "status": "OK",
+      "seconds": 7.73143508999965,
+      "log": "sweep/test_nfl2k5_calendar_engine_delivery.log",
+      "summary": "6 passed in 6.76s"
+    },
+    {
+      "file": "test_nfl2k5_camera_broadcast.py",
+      "status": "OK",
+      "seconds": 30.797025366000526,
+      "log": "sweep/test_nfl2k5_camera_broadcast.log",
+      "summary": "9 passed, 2 subtests passed in 29.70s"
+    },
+    {
+      "file": "test_nfl2k5_camera_far.py",
+      "status": "OK",
+      "seconds": 91.14391902500029,
+      "log": "sweep/test_nfl2k5_camera_far.log",
+      "summary": "16 passed, 326 subtests passed in 90.05s (0:01:30)"
+    },
+    {
+      "file": "test_nfl2k5_career_stats.py",
+      "status": "OK",
+      "seconds": 11.092998660000376,
+      "log": "sweep/test_nfl2k5_career_stats.log",
+      "summary": "18 passed, 51 subtests passed in 10.00s"
+    },
+    {
+      "file": "test_nfl2k5_catch_slider_kicks.py",
+      "status": "OK",
+      "seconds": 70.8802568430001,
+      "log": "sweep/test_nfl2k5_catch_slider_kicks.log",
+      "summary": "8 passed, 28 subtests passed in 69.68s (0:01:09)"
+    },
+    {
+      "file": "test_nfl2k5_college_check.py",
+      "status": "OK",
+      "seconds": 8.381375938999554,
+      "log": "sweep/test_nfl2k5_college_check.log",
+      "summary": "17 passed, 76 subtests passed in 7.39s"
+    },
+    {
+      "file": "test_nfl2k5_college_check_page_qt.py",
+      "status": "OK",
+      "seconds": 3.3311829560007027,
+      "log": "sweep/test_nfl2k5_college_check_page_qt.log",
+      "summary": "11 passed in 2.17s"
+    },
+    {
+      "file": "test_nfl2k5_college_check_qt.py",
+      "status": "OK",
+      "seconds": 1.9932884000008926,
+      "log": "sweep/test_nfl2k5_college_check_qt.log",
+      "summary": "3 passed, 3 subtests passed in 0.93s"
+    },
+    {
+      "file": "test_nfl2k5_coverage_trail.py",
+      "status": "OK",
+      "seconds": 16.315289999000015,
+      "log": "sweep/test_nfl2k5_coverage_trail.log",
+      "summary": "12 passed, 4 subtests passed in 15.30s"
+    },
+    {
+      "file": "test_nfl2k5_coverage_trail_unicorn.py",
+      "status": "OK",
+      "seconds": 172.0968904959991,
+      "log": "sweep/test_nfl2k5_coverage_trail_unicorn.log",
+      "summary": "13 passed, 56 subtests passed in 171.08s (0:02:51)"
+    },
+    {
+      "file": "test_nfl2k5_cpu_money_downs.py",
+      "status": "OK",
+      "seconds": 16.331309380000675,
+      "log": "sweep/test_nfl2k5_cpu_money_downs.log",
+      "summary": "12 passed, 3 subtests passed in 15.29s"
+    },
+    {
+      "file": "test_nfl2k5_cpu_money_downs_manifest.py",
+      "status": "OK",
+      "seconds": 5.779967790000228,
+      "log": "sweep/test_nfl2k5_cpu_money_downs_manifest.log",
+      "summary": "3 passed in 4.75s"
+    },
+    {
+      "file": "test_nfl2k5_cpu_money_downs_unicorn.py",
+      "status": "OK",
+      "seconds": 26.553096068999366,
+      "log": "sweep/test_nfl2k5_cpu_money_downs_unicorn.log",
+      "summary": "8 passed in 25.51s"
+    },
+    {
+      "file": "test_nfl2k5_create_play_wizard_qt.py",
+      "status": "OK",
+      "seconds": 1.2379922080017423,
+      "log": "sweep/test_nfl2k5_create_play_wizard_qt.log",
+      "summary": "2 skipped in 0.29s"
+    },
+    {
+      "file": "test_nfl2k5_crib.py",
+      "status": "OK",
+      "seconds": 2.3525857269996777,
+      "log": "sweep/test_nfl2k5_crib.log",
+      "summary": "9 passed, 3 subtests passed in 1.37s"
+    },
+    {
+      "file": "test_nfl2k5_crib_geometry_writer.py",
+      "status": "OK",
+      "seconds": 1.475029502000325,
+      "log": "sweep/test_nfl2k5_crib_geometry_writer.log",
+      "summary": "1 passed, 3 skipped in 0.48s"
+    },
+    {
+      "file": "test_nfl2k5_crib_reclaim.py",
+      "status": "OK",
+      "seconds": 6.074541951000356,
+      "log": "sweep/test_nfl2k5_crib_reclaim.log",
+      "summary": "6 passed in 5.11s"
+    },
+    {
+      "file": "test_nfl2k5_crib_scene_texture_writer.py",
+      "status": "OK",
+      "seconds": 1.3567336090000026,
+      "log": "sweep/test_nfl2k5_crib_scene_texture_writer.log",
+      "summary": "1 passed, 3 skipped in 0.41s"
+    },
+    {
+      "file": "test_nfl2k5_crib_standalone_texture_writer.py",
+      "status": "OK",
+      "seconds": 1.5330946949998179,
+      "log": "sweep/test_nfl2k5_crib_standalone_texture_writer.log",
+      "summary": "2 passed, 1 skipped in 0.55s"
+    },
+    {
+      "file": "test_nfl2k5_daylight_composition.py",
+      "status": "OK",
+      "seconds": 27.096836053000516,
+      "log": "sweep/test_nfl2k5_daylight_composition.log",
+      "summary": "1 passed, 6 subtests passed in 26.14s"
+    },
+    {
+      "file": "test_nfl2k5_deep_zone.py",
+      "status": "OK",
+      "seconds": 164.23217478600054,
+      "log": "sweep/test_nfl2k5_deep_zone.log",
+      "summary": "10 passed, 47 subtests passed in 163.24s (0:02:43)"
+    },
+    {
+      "file": "test_nfl2k5_deep_zone_frames.py",
+      "status": "OK",
+      "seconds": 254.91350452400002,
+      "log": "sweep/test_nfl2k5_deep_zone_frames.log",
+      "summary": "12 passed in 253.88s (0:04:13)"
+    },
+    {
+      "file": "test_nfl2k5_defense_play.py",
+      "status": "OK",
+      "seconds": 127.69480689400007,
+      "log": "sweep/test_nfl2k5_defense_play.log",
+      "summary": "12 passed, 37 subtests passed in 126.29s (0:02:06)"
+    },
+    {
+      "file": "test_nfl2k5_defense_play_qt.py",
+      "status": "OK",
+      "seconds": 4.595282401000077,
+      "log": "sweep/test_nfl2k5_defense_play_qt.log",
+      "summary": "4 passed in 3.55s"
+    },
+    {
+      "file": "test_nfl2k5_defensive_try.py",
+      "status": "OK",
+      "seconds": 49.67343542500021,
+      "log": "sweep/test_nfl2k5_defensive_try.log",
+      "summary": "23 passed, 47 subtests passed in 48.69s"
+    },
+    {
+      "file": "test_nfl2k5_defensive_try_manifest.py",
+      "status": "OK",
+      "seconds": 5.925328736000665,
+      "log": "sweep/test_nfl2k5_defensive_try_manifest.log",
+      "summary": "3 passed in 4.83s"
+    },
+    {
+      "file": "test_nfl2k5_defensive_try_stats.py",
+      "status": "OK",
+      "seconds": 20.93985469099971,
+      "log": "sweep/test_nfl2k5_defensive_try_stats.log",
+      "summary": "21 passed in 19.85s"
+    },
+    {
+      "file": "test_nfl2k5_depth_chart_rows.py",
+      "status": "OK",
+      "seconds": 29.123762727998837,
+      "log": "sweep/test_nfl2k5_depth_chart_rows.log",
+      "summary": "20 passed, 1 skipped, 8 subtests passed in 28.09s"
+    },
+    {
+      "file": "test_nfl2k5_depth_locks.py",
+      "status": "OK",
+      "seconds": 86.78309993500079,
+      "log": "sweep/test_nfl2k5_depth_locks.log",
+      "summary": "22 passed, 391 subtests passed in 85.71s (0:01:25)"
+    },
+    {
+      "file": "test_nfl2k5_depth_roles.py",
+      "status": "OK",
+      "seconds": 44.27438773299946,
+      "log": "sweep/test_nfl2k5_depth_roles.log",
+      "summary": "22 passed, 9 subtests passed in 43.23s"
+    },
+    {
+      "file": "test_nfl2k5_digit_sheet.py",
+      "status": "OK",
+      "seconds": 1.6896492500000022,
+      "log": "sweep/test_nfl2k5_digit_sheet.log",
+      "summary": "3 passed, 2 subtests passed in 0.74s"
+    },
+    {
+      "file": "test_nfl2k5_digit_sheet_quality.py",
+      "status": "OK",
+      "seconds": 8.40477636599826,
+      "log": "sweep/test_nfl2k5_digit_sheet_quality.log",
+      "summary": "13 passed, 3 skipped, 24 subtests passed in 7.42s"
+    },
+    {
+      "file": "test_nfl2k5_disc_identity.py",
+      "status": "OK",
+      "seconds": 2.2091978270000254,
+      "log": "sweep/test_nfl2k5_disc_identity.log",
+      "summary": "29 passed, 5 subtests passed in 1.14s"
+    },
+    {
+      "file": "test_nfl2k5_draft_start.py",
+      "status": "OK",
+      "seconds": 40.035158753998985,
+      "log": "sweep/test_nfl2k5_draft_start.log",
+      "summary": "11 passed in 39.05s"
+    },
+    {
+      "file": "test_nfl2k5_dynamic_kickoff.py",
+      "status": "OK",
+      "seconds": 45.287949404000756,
+      "log": "sweep/test_nfl2k5_dynamic_kickoff.log",
+      "summary": "23 passed, 1829 subtests passed in 44.29s"
+    },
+    {
+      "file": "test_nfl2k5_equipment_consumers.py",
+      "status": "OK",
+      "seconds": 10.88593098399906,
+      "log": "sweep/test_nfl2k5_equipment_consumers.log",
+      "summary": "19 passed, 55 subtests passed in 9.72s"
+    },
+    {
+      "file": "test_nfl2k5_equipment_import.py",
+      "status": "OK",
+      "seconds": 2.8534938259999763,
+      "log": "sweep/test_nfl2k5_equipment_import.log",
+      "summary": "13 passed in 1.65s"
+    },
+    {
+      "file": "test_nfl2k5_equipment_import_wiring.py",
+      "status": "OK",
+      "seconds": 2.201849670000229,
+      "log": "sweep/test_nfl2k5_equipment_import_wiring.log",
+      "summary": "6 passed in 0.98s"
+    },
+    {
+      "file": "test_nfl2k5_equipment_retail_roundtrip.py",
+      "status": "OK",
+      "seconds": 13.749146213000131,
+      "log": "sweep/test_nfl2k5_equipment_retail_roundtrip.log",
+      "summary": "2 passed, 4 subtests passed in 12.56s"
+    },
+    {
+      "file": "test_nfl2k5_equipment_scope_wiring.py",
+      "status": "OK",
+      "seconds": 1.7727864620010223,
+      "log": "sweep/test_nfl2k5_equipment_scope_wiring.log",
+      "summary": "3 passed in 0.71s"
+    },
+    {
+      "file": "test_nfl2k5_equipment_texture_chain.py",
+      "status": "OK",
+      "seconds": 2.6671405589986534,
+      "log": "sweep/test_nfl2k5_equipment_texture_chain.log",
+      "summary": "19 passed, 4 subtests passed in 1.58s"
+    },
+    {
+      "file": "test_nfl2k5_equipment_texture_native.py",
+      "status": "OK",
+      "seconds": 1.5634611860004952,
+      "log": "sweep/test_nfl2k5_equipment_texture_native.log",
+      "summary": "7 passed, 9 subtests passed in 0.54s"
+    },
+    {
+      "file": "test_nfl2k5_espn25_exact_lineups.py",
+      "status": "OK",
+      "seconds": 1.5520589919997292,
+      "log": "sweep/test_nfl2k5_espn25_exact_lineups.log",
+      "summary": "2 passed, 4 skipped in 0.52s"
+    },
+    {
+      "file": "test_nfl2k5_espn25_in_game.py",
+      "status": "OK",
+      "seconds": 4.3978082980011095,
+      "log": "sweep/test_nfl2k5_espn25_in_game.log",
+      "summary": "4 passed, 3 skipped, 7 subtests passed in 3.33s"
+    },
+    {
+      "file": "test_nfl2k5_espn25_integration_qt.py",
+      "status": "OK",
+      "seconds": 19.194300443999964,
+      "log": "sweep/test_nfl2k5_espn25_integration_qt.log",
+      "summary": "13 passed in 17.96s"
+    },
+    {
+      "file": "test_nfl2k5_espn25_loading_wait.py",
+      "status": "OK",
+      "seconds": 24.447665947998757,
+      "log": "sweep/test_nfl2k5_espn25_loading_wait.log",
+      "summary": "4 passed, 4 subtests passed in 23.47s"
+    },
+    {
+      "file": "test_nfl2k5_espn25_native.py",
+      "status": "OK",
+      "seconds": 5.8280327820011735,
+      "log": "sweep/test_nfl2k5_espn25_native.log",
+      "summary": "7 passed in 4.86s"
+    },
+    {
+      "file": "test_nfl2k5_espn25_panel_qt.py",
+      "status": "OK",
+      "seconds": 4.72098301799997,
+      "log": "sweep/test_nfl2k5_espn25_panel_qt.log",
+      "summary": "5 passed in 3.73s"
+    },
+    {
+      "file": "test_nfl2k5_espn25_rosters.py",
+      "status": "OK",
+      "seconds": 220.58496581599866,
+      "log": "sweep/test_nfl2k5_espn25_rosters.log",
+      "summary": "22 passed, 1 skipped, 77 subtests passed in 219.41s (0:03:39)"
+    },
+    {
+      "file": "test_nfl2k5_espn25_rosters_native.py",
+      "status": "OK",
+      "seconds": 43.64734049400067,
+      "log": "sweep/test_nfl2k5_espn25_rosters_native.log",
+      "summary": "1 passed, 25 subtests passed in 42.63s"
+    },
+    {
+      "file": "test_nfl2k5_espn25_scenarios.py",
+      "status": "OK",
+      "seconds": 33.47880373299995,
+      "log": "sweep/test_nfl2k5_espn25_scenarios.log",
+      "summary": "17 passed, 31 subtests passed in 32.53s"
+    },
+    {
+      "file": "test_nfl2k5_extended_visuals.py",
+      "status": "OK",
+      "seconds": 1.5973866720014485,
+      "log": "sweep/test_nfl2k5_extended_visuals.log",
+      "summary": "9 passed in 0.57s"
+    },
+    {
+      "file": "test_nfl2k5_face_shield_registry.py",
+      "status": "OK",
+      "seconds": 1.365501165000751,
+      "log": "sweep/test_nfl2k5_face_shield_registry.log",
+      "summary": "2 passed in 0.38s"
+    },
+    {
+      "file": "test_nfl2k5_formation_play_writer.py",
+      "status": "OK",
+      "seconds": 1.320531719000428,
+      "log": "sweep/test_nfl2k5_formation_play_writer.log",
+      "summary": "8 skipped in 0.35s"
+    },
+    {
+      "file": "test_nfl2k5_franchise_2026.py",
+      "status": "OK",
+      "seconds": 7.115789776999009,
+      "log": "sweep/test_nfl2k5_franchise_2026.log",
+      "summary": "20 passed, 6 subtests passed in 6.15s"
+    },
+    {
+      "file": "test_nfl2k5_franchise_2026_runtime.py",
+      "status": "OK",
+      "seconds": 65.71293189300013,
+      "log": "sweep/test_nfl2k5_franchise_2026_runtime.log",
+      "summary": "11 passed, 46 subtests passed in 64.66s (0:01:04)"
+    },
+    {
+      "file": "test_nfl2k5_franchise_2026_unicorn.py",
+      "status": "OK",
+      "seconds": 2.3515687380004238,
+      "log": "sweep/test_nfl2k5_franchise_2026_unicorn.log",
+      "summary": "10 passed in 1.38s"
+    },
+    {
+      "file": "test_nfl2k5_franchise_autosave.py",
+      "status": "OK",
+      "seconds": 10.013573235999502,
+      "log": "sweep/test_nfl2k5_franchise_autosave.log",
+      "summary": "7 passed, 26 subtests passed in 8.98s"
+    },
+    {
+      "file": "test_nfl2k5_franchise_autosave_unicorn.py",
+      "status": "OK",
+      "seconds": 8.89436451200163,
+      "log": "sweep/test_nfl2k5_franchise_autosave_unicorn.log",
+      "summary": "15 passed, 47 subtests passed in 7.94s"
+    },
+    {
+      "file": "test_nfl2k5_franchise_edit_player.py",
+      "status": "OK",
+      "seconds": 36.01878122400012,
+      "log": "sweep/test_nfl2k5_franchise_edit_player.log",
+      "summary": "12 passed, 59 subtests passed in 34.85s"
+    },
+    {
+      "file": "test_nfl2k5_franchise_edit_player_unicorn.py",
+      "status": "OK",
+      "seconds": 277.5841608490009,
+      "log": "sweep/test_nfl2k5_franchise_edit_player_unicorn.log",
+      "summary": "8 passed, 86 subtests passed in 276.55s (0:04:36)"
+    },
+    {
+      "file": "test_nfl2k5_franchise_practice.py",
+      "status": "OK",
+      "seconds": 14.41301687899977,
+      "log": "sweep/test_nfl2k5_franchise_practice.log",
+      "summary": "22 passed in 13.36s"
+    },
+    {
+      "file": "test_nfl2k5_franchise_practice_exit.py",
+      "status": "OK",
+      "seconds": 17.17471191199911,
+      "log": "sweep/test_nfl2k5_franchise_practice_exit.log",
+      "summary": "13 passed, 12 subtests passed in 16.05s"
+    },
+    {
+      "file": "test_nfl2k5_franchise_practice_exit_v2.py",
+      "status": "OK",
+      "seconds": 7.782235561000562,
+      "log": "sweep/test_nfl2k5_franchise_practice_exit_v2.log",
+      "summary": "8 passed, 39 subtests passed in 6.62s"
+    },
+    {
+      "file": "test_nfl2k5_franchise_save.py",
+      "status": "OK",
+      "seconds": 3.080800645999261,
+      "log": "sweep/test_nfl2k5_franchise_save.log",
+      "summary": "13 passed in 2.03s"
+    },
+    {
+      "file": "test_nfl2k5_franchise_schedule_college.py",
+      "status": "OK",
+      "seconds": 3.352733708999949,
+      "log": "sweep/test_nfl2k5_franchise_schedule_college.log",
+      "summary": "8 passed, 3 subtests passed in 2.32s"
+    },
+    {
+      "file": "test_nfl2k5_gameplay_levers.py",
+      "status": "OK",
+      "seconds": 14.067162375000407,
+      "log": "sweep/test_nfl2k5_gameplay_levers.log",
+      "summary": "12 passed in 12.82s"
+    },
+    {
+      "file": "test_nfl2k5_gameplay_levers_unicorn.py",
+      "status": "OK",
+      "seconds": 10.352247335998982,
+      "log": "sweep/test_nfl2k5_gameplay_levers_unicorn.log",
+      "summary": "7 passed, 36 subtests passed in 9.27s"
+    },
+    {
+      "file": "test_nfl2k5_guardian_cap.py",
+      "status": "OK",
+      "seconds": 14.231460479999441,
+      "log": "sweep/test_nfl2k5_guardian_cap.log",
+      "summary": "18 passed, 5 subtests passed in 13.06s"
+    },
+    {
+      "file": "test_nfl2k5_guardian_overlay.py",
+      "status": "OK",
+      "seconds": 8.94892355400043,
+      "log": "sweep/test_nfl2k5_guardian_overlay.log",
+      "summary": "6 passed in 7.77s"
+    },
+    {
+      "file": "test_nfl2k5_guardian_resources.py",
+      "status": "OK",
+      "seconds": 27.23471541500112,
+      "log": "sweep/test_nfl2k5_guardian_resources.log",
+      "summary": "9 passed in 26.14s"
+    },
+    {
+      "file": "test_nfl2k5_helmet_finish.py",
+      "status": "OK",
+      "seconds": 59.55543262699939,
+      "log": "sweep/test_nfl2k5_helmet_finish.log",
+      "summary": "4 passed in 58.42s"
+    },
+    {
+      "file": "test_nfl2k5_hires_families.py",
+      "status": "OK",
+      "seconds": 2.53238153699931,
+      "log": "sweep/test_nfl2k5_hires_families.log",
+      "summary": "7 passed, 12 subtests passed in 1.31s"
+    },
+    {
+      "file": "test_nfl2k5_hires_families_retail.py",
+      "status": "OK",
+      "seconds": 604.2551719170006,
+      "log": "sweep/test_nfl2k5_hires_families_retail.log",
+      "summary": "5 passed, 11 subtests passed in 603.13s (0:10:03)"
+    },
+    {
+      "file": "test_nfl2k5_hires_pack.py",
+      "status": "OK",
+      "seconds": 2.655209365000701,
+      "log": "sweep/test_nfl2k5_hires_pack.log",
+      "summary": "15 passed, 23 subtests passed in 1.59s"
+    },
+    {
+      "file": "test_nfl2k5_hires_pack_retail.py",
+      "status": "OK",
+      "seconds": 11.348813347000032,
+      "log": "sweep/test_nfl2k5_hires_pack_retail.log",
+      "summary": "4 passed, 41 subtests passed in 10.20s"
+    },
+    {
+      "file": "test_nfl2k5_import_preflight.py",
+      "status": "OK",
+      "seconds": 17.458521552000093,
+      "log": "sweep/test_nfl2k5_import_preflight.log",
+      "summary": "17 passed, 7 subtests passed in 16.43s"
+    },
+    {
+      "file": "test_nfl2k5_jukebox_list.py",
+      "status": "OK",
+      "seconds": 32.0018452029999,
+      "log": "sweep/test_nfl2k5_jukebox_list.log",
+      "summary": "6 passed in 31.00s"
+    },
+    {
+      "file": "test_nfl2k5_kick_laces.py",
+      "status": "OK",
+      "seconds": 11.756704742998409,
+      "log": "sweep/test_nfl2k5_kick_laces.log",
+      "summary": "18 passed in 10.63s"
+    },
+    {
+      "file": "test_nfl2k5_kickoff_fixes.py",
+      "status": "OK",
+      "seconds": 14.79607141499946,
+      "log": "sweep/test_nfl2k5_kickoff_fixes.log",
+      "summary": "11 passed, 36 subtests passed in 13.73s"
+    },
+    {
+      "file": "test_nfl2k5_kickoff_v2.py",
+      "status": "OK",
+      "seconds": 32.26182594000056,
+      "log": "sweep/test_nfl2k5_kickoff_v2.log",
+      "summary": "12 passed, 156 subtests passed in 31.15s"
+    },
+    {
+      "file": "test_nfl2k5_kickoff_v3.py",
+      "status": "OK",
+      "seconds": 152.03450435299965,
+      "log": "sweep/test_nfl2k5_kickoff_v3.log",
+      "summary": "7 passed, 14 subtests passed in 150.95s (0:02:30)"
+    },
+    {
+      "file": "test_nfl2k5_kickoff_v4.py",
+      "status": "OK",
+      "seconds": 881.9289230890008,
+      "log": "sweep/test_nfl2k5_kickoff_v4.log",
+      "summary": "8 passed, 4 subtests passed in 880.87s (0:14:40)"
+    },
+    {
+      "file": "test_nfl2k5_kickoff_v5.py",
+      "status": "OK",
+      "seconds": 508.32226207799977,
+      "log": "sweep/test_nfl2k5_kickoff_v5.log",
+      "summary": "6 passed in 507.11s (0:08:27)"
+    },
+    {
+      "file": "test_nfl2k5_kickoff_v6.py",
+      "status": "OK",
+      "seconds": 138.8813395799989,
+      "log": "sweep/test_nfl2k5_kickoff_v6.log",
+      "summary": "9 passed in 137.68s (0:02:17)"
+    },
+    {
+      "file": "test_nfl2k5_match_coverage.py",
+      "status": "OK",
+      "seconds": 200.3828299550005,
+      "log": "sweep/test_nfl2k5_match_coverage.log",
+      "summary": "11 passed, 111 subtests passed in 198.71s (0:03:18)"
+    },
+    {
+      "file": "test_nfl2k5_match_coverage_qt.py",
+      "status": "OK",
+      "seconds": 7.067297567000423,
+      "log": "sweep/test_nfl2k5_match_coverage_qt.log",
+      "summary": "4 passed in 5.66s"
+    },
+    {
+      "file": "test_nfl2k5_model_project.py",
+      "status": "OK",
+      "seconds": 31.565122402998895,
+      "log": "sweep/test_nfl2k5_model_project.log",
+      "summary": "10 passed in 30.22s"
+    },
+    {
+      "file": "test_nfl2k5_model_skeleton.py",
+      "status": "OK",
+      "seconds": 1.403734997000356,
+      "log": "sweep/test_nfl2k5_model_skeleton.log",
+      "summary": "3 passed, 4 skipped in 0.41s"
+    },
+    {
+      "file": "test_nfl2k5_models.py",
+      "status": "OK",
+      "seconds": 36.765123250001125,
+      "log": "sweep/test_nfl2k5_models.log",
+      "summary": "37 passed in 35.49s"
+    },
+    {
+      "file": "test_nfl2k5_modern_arrowhead.py",
+      "status": "OK",
+      "seconds": 16.43186741199861,
+      "log": "sweep/test_nfl2k5_modern_arrowhead.log",
+      "summary": "6 passed in 15.32s"
+    },
+    {
+      "file": "test_nfl2k5_modern_color.py",
+      "status": "OK",
+      "seconds": 8.912797789998876,
+      "log": "sweep/test_nfl2k5_modern_color.log",
+      "summary": "10 passed in 7.84s"
+    },
+    {
+      "file": "test_nfl2k5_modern_naming.py",
+      "status": "OK",
+      "seconds": 10.946425219000957,
+      "log": "sweep/test_nfl2k5_modern_naming.log",
+      "summary": "14 passed, 2 subtests passed in 9.91s"
+    },
+    {
+      "file": "test_nfl2k5_momentum.py",
+      "status": "OK",
+      "seconds": 28.218789002999983,
+      "log": "sweep/test_nfl2k5_momentum.log",
+      "summary": "23 passed, 14 subtests passed in 27.22s"
+    },
+    {
+      "file": "test_nfl2k5_momentum_collisions.py",
+      "status": "OK",
+      "seconds": 36.89481613300086,
+      "log": "sweep/test_nfl2k5_momentum_collisions.log",
+      "summary": "16 passed, 100 subtests passed in 35.83s"
+    },
+    {
+      "file": "test_nfl2k5_music_acceptance.py",
+      "status": "OK",
+      "seconds": 1.4296939349987952,
+      "log": "sweep/test_nfl2k5_music_acceptance.log",
+      "summary": "1 skipped in 0.38s"
+    },
+    {
+      "file": "test_nfl2k5_music_archive_raw_layout.py",
+      "status": "OK",
+      "seconds": 1.451424158000009,
+      "log": "sweep/test_nfl2k5_music_archive_raw_layout.log",
+      "summary": "8 passed in 0.43s"
+    },
+    {
+      "file": "test_nfl2k5_music_banks.py",
+      "status": "OK",
+      "seconds": 13.461110659000042,
+      "log": "sweep/test_nfl2k5_music_banks.log",
+      "summary": "15 passed, 2 subtests passed in 12.40s"
+    },
+    {
+      "file": "test_nfl2k5_music_banks_performance.py",
+      "status": "OK",
+      "seconds": 2.1926080840003124,
+      "log": "sweep/test_nfl2k5_music_banks_performance.log",
+      "summary": "3 passed, 87 subtests passed in 1.16s"
+    },
+    {
+      "file": "test_nfl2k5_music_build.py",
+      "status": "OK",
+      "seconds": 5.1644326289988385,
+      "log": "sweep/test_nfl2k5_music_build.log",
+      "summary": "8 passed in 4.05s"
+    },
+    {
+      "file": "test_nfl2k5_music_catalog.py",
+      "status": "OK",
+      "seconds": 1.8477999789993191,
+      "log": "sweep/test_nfl2k5_music_catalog.log",
+      "summary": "4 passed in 0.71s"
+    },
+    {
+      "file": "test_nfl2k5_music_conform_integration.py",
+      "status": "OK",
+      "seconds": 22.909615593000126,
+      "runner": "unittest main wrapper",
+      "log": "sweep/test_nfl2k5_music_conform_integration.standalone.log",
+      "initial_status": "FAIL",
+      "summary": ""
+    },
+    {
+      "file": "test_nfl2k5_music_fresh_rip.py",
+      "status": "OK",
+      "seconds": 2.265829759000553,
+      "log": "sweep/test_nfl2k5_music_fresh_rip.log",
+      "summary": "2 passed, 2 subtests passed in 1.11s"
+    },
+    {
+      "file": "test_nfl2k5_music_fresh_rip_gui.py",
+      "status": "OK",
+      "seconds": 1.3415081909988658,
+      "log": "sweep/test_nfl2k5_music_fresh_rip_gui.log",
+      "summary": "1 skipped in 0.33s"
+    },
+    {
+      "file": "test_nfl2k5_music_metadata.py",
+      "status": "OK",
+      "seconds": 25.73181084799944,
+      "log": "sweep/test_nfl2k5_music_metadata.log",
+      "summary": "7 passed in 24.68s"
+    },
+    {
+      "file": "test_nfl2k5_music_playlist.py",
+      "status": "OK",
+      "seconds": 15.786408168998605,
+      "log": "sweep/test_nfl2k5_music_playlist.log",
+      "summary": "15 passed, 17 subtests passed in 14.63s"
+    },
+    {
+      "file": "test_nfl2k5_music_playlist_contexts.py",
+      "status": "OK",
+      "seconds": 12.612110941001447,
+      "log": "sweep/test_nfl2k5_music_playlist_contexts.log",
+      "summary": "7 passed, 102 subtests passed in 11.46s"
+    },
+    {
+      "file": "test_nfl2k5_music_playlist_library.py",
+      "status": "OK",
+      "seconds": 21.563351048000186,
+      "log": "sweep/test_nfl2k5_music_playlist_library.log",
+      "summary": "7 passed, 5 subtests passed in 20.48s"
+    },
+    {
+      "file": "test_nfl2k5_music_playlist_manifest.py",
+      "status": "OK",
+      "seconds": 5.272616485999606,
+      "log": "sweep/test_nfl2k5_music_playlist_manifest.log",
+      "summary": "2 passed in 4.24s"
+    },
+    {
+      "file": "test_nfl2k5_music_policy.py",
+      "status": "OK",
+      "seconds": 12.227915413999654,
+      "log": "sweep/test_nfl2k5_music_policy.log",
+      "summary": "8 passed in 11.07s"
+    },
+    {
+      "file": "test_nfl2k5_music_queue.py",
+      "status": "OK",
+      "seconds": 5.703925859999799,
+      "log": "sweep/test_nfl2k5_music_queue.log",
+      "summary": "3 passed, 2 subtests passed in 4.64s"
+    },
+    {
+      "file": "test_nfl2k5_music_resample.py",
+      "status": "OK",
+      "seconds": 3.7311711909987935,
+      "log": "sweep/test_nfl2k5_music_resample.log",
+      "summary": "4 passed in 2.58s"
+    },
+    {
+      "file": "test_nfl2k5_my_career.py",
+      "status": "OK",
+      "seconds": 22.82317968999996,
+      "log": "sweep/test_nfl2k5_my_career.log",
+      "summary": "13 passed, 17 subtests passed in 21.76s"
+    },
+    {
+      "file": "test_nfl2k5_my_career_b69_wiring.py",
+      "status": "OK",
+      "seconds": 1.6891868069997145,
+      "log": "sweep/test_nfl2k5_my_career_b69_wiring.log",
+      "summary": "3 passed, 3 subtests passed in 0.62s"
+    },
+    {
+      "file": "test_nfl2k5_my_career_completion.py",
+      "status": "OK",
+      "seconds": 33.0662840060013,
+      "log": "sweep/test_nfl2k5_my_career_completion.log",
+      "summary": "6 passed, 27 subtests passed in 32.03s"
+    },
+    {
+      "file": "test_nfl2k5_my_career_control.py",
+      "status": "OK",
+      "seconds": 16.37539801999992,
+      "log": "sweep/test_nfl2k5_my_career_control.log",
+      "summary": "2 passed, 38 subtests passed in 15.30s"
+    },
+    {
+      "file": "test_nfl2k5_my_career_cpu_choice.py",
+      "status": "OK",
+      "seconds": 19.014519113999995,
+      "log": "sweep/test_nfl2k5_my_career_cpu_choice.log",
+      "summary": "1 passed in 17.94s"
+    },
+    {
+      "file": "test_nfl2k5_my_career_cpu_frame.py",
+      "status": "OK",
+      "seconds": 59.74890434400004,
+      "log": "sweep/test_nfl2k5_my_career_cpu_frame.log",
+      "summary": "1 passed in 58.74s"
+    },
+    {
+      "file": "test_nfl2k5_my_career_cpu_injury.py",
+      "status": "OK",
+      "seconds": 23.785893332998967,
+      "log": "sweep/test_nfl2k5_my_career_cpu_injury.log",
+      "summary": "1 passed in 22.74s"
+    },
+    {
+      "file": "test_nfl2k5_my_career_cpu_period.py",
+      "status": "OK",
+      "seconds": 37.22670142199968,
+      "log": "sweep/test_nfl2k5_my_career_cpu_period.log",
+      "summary": "2 passed in 36.16s"
+    },
+    {
+      "file": "test_nfl2k5_my_career_cpu_timeout.py",
+      "status": "OK",
+      "seconds": 22.044378797001627,
+      "log": "sweep/test_nfl2k5_my_career_cpu_timeout.log",
+      "summary": "1 passed in 20.99s"
+    },
+    {
+      "file": "test_nfl2k5_my_career_cpu_turnover.py",
+      "status": "OK",
+      "seconds": 59.29022443499889,
+      "log": "sweep/test_nfl2k5_my_career_cpu_turnover.log",
+      "summary": "3 passed in 58.27s"
+    },
+    {
+      "file": "test_nfl2k5_my_career_creation_boundary.py",
+      "status": "OK",
+      "seconds": 3.4799115610003355,
+      "log": "sweep/test_nfl2k5_my_career_creation_boundary.log",
+      "summary": "4 passed in 2.46s"
+    },
+    {
+      "file": "test_nfl2k5_my_career_frontend.py",
+      "status": "OK",
+      "seconds": 51.127371168000536,
+      "log": "sweep/test_nfl2k5_my_career_frontend.log",
+      "summary": "7 passed, 22 subtests passed in 50.16s"
+    },
+    {
+      "file": "test_nfl2k5_my_career_generic_build.py",
+      "status": "OK",
+      "seconds": 17.94046864399934,
+      "log": "sweep/test_nfl2k5_my_career_generic_build.log",
+      "summary": "5 passed in 16.92s"
+    },
+    {
+      "file": "test_nfl2k5_my_career_inline.py",
+      "status": "OK",
+      "seconds": 13.989502034000907,
+      "log": "sweep/test_nfl2k5_my_career_inline.log",
+      "summary": "8 passed, 86 subtests passed in 12.98s"
+    },
+    {
+      "file": "test_nfl2k5_my_career_m3_budget.py",
+      "status": "OK",
+      "seconds": 5.61363829199945,
+      "log": "sweep/test_nfl2k5_my_career_m3_budget.log",
+      "summary": "5 passed, 38 subtests passed in 4.65s"
+    },
+    {
+      "file": "test_nfl2k5_my_career_m3_menus.py",
+      "status": "OK",
+      "seconds": 42.214824660000886,
+      "log": "sweep/test_nfl2k5_my_career_m3_menus.log",
+      "summary": "4 passed in 41.20s"
+    },
+    {
+      "file": "test_nfl2k5_my_career_manifest.py",
+      "status": "OK",
+      "seconds": 9.460272517000703,
+      "log": "sweep/test_nfl2k5_my_career_manifest.log",
+      "summary": "3 passed in 8.44s"
+    },
+    {
+      "file": "test_nfl2k5_my_career_mode4.py",
+      "status": "OK",
+      "seconds": 436.7863455879997,
+      "log": "sweep/test_nfl2k5_my_career_mode4.log",
+      "summary": "8 passed, 13 subtests passed in 435.73s (0:07:15)"
+    },
+    {
+      "file": "test_nfl2k5_my_career_mode5.py",
+      "status": "OK",
+      "seconds": 282.591875297001,
+      "log": "sweep/test_nfl2k5_my_career_mode5.log",
+      "summary": "4 passed, 23 subtests passed in 281.57s (0:04:41)"
+    },
+    {
+      "file": "test_nfl2k5_my_career_mode_audit.py",
+      "status": "OK",
+      "seconds": 1.4301156500005163,
+      "log": "sweep/test_nfl2k5_my_career_mode_audit.log",
+      "summary": "6 passed in 0.43s"
+    },
+    {
+      "file": "test_nfl2k5_my_career_mode_routes.py",
+      "status": "OK",
+      "seconds": 4.304506194999703,
+      "log": "sweep/test_nfl2k5_my_career_mode_routes.log",
+      "summary": "7 passed, 5 subtests passed in 3.27s"
+    },
+    {
+      "file": "test_nfl2k5_my_career_panel.py",
+      "status": "OK",
+      "seconds": 1.4778611729998374,
+      "log": "sweep/test_nfl2k5_my_career_panel.log",
+      "summary": "4 passed in 0.45s"
+    },
+    {
+      "file": "test_nfl2k5_my_career_playcalling.py",
+      "status": "OK",
+      "seconds": 685.7416883179994,
+      "log": "sweep/test_nfl2k5_my_career_playcalling.log",
+      "summary": "3 passed, 7 subtests passed in 684.66s (0:11:24)"
+    },
+    {
+      "file": "test_nfl2k5_my_career_played.py",
+      "status": "OK",
+      "seconds": 47.09117963999961,
+      "log": "sweep/test_nfl2k5_my_career_played.log",
+      "summary": "4 passed in 46.11s"
+    },
+    {
+      "file": "test_nfl2k5_my_career_position_inputs.py",
+      "status": "OK",
+      "seconds": 18.388605504000225,
+      "log": "sweep/test_nfl2k5_my_career_position_inputs.log",
+      "summary": "9 passed in 17.43s"
+    },
+    {
+      "file": "test_nfl2k5_my_career_prospects.py",
+      "status": "OK",
+      "seconds": 256.00407718099996,
+      "log": "sweep/test_nfl2k5_my_career_prospects.log",
+      "summary": "5 passed, 797 subtests passed in 254.99s (0:04:14)"
+    },
+    {
+      "file": "test_nfl2k5_my_career_season.py",
+      "status": "OK",
+      "seconds": 151.8027297360004,
+      "log": "sweep/test_nfl2k5_my_career_season.log",
+      "summary": "1 passed in 150.83s (0:02:30)"
+    },
+    {
+      "file": "test_nfl2k5_my_career_settings.py",
+      "status": "OK",
+      "seconds": 29.62016662899987,
+      "log": "sweep/test_nfl2k5_my_career_settings.log",
+      "summary": "10 passed, 9 subtests passed in 28.63s"
+    },
+    {
+      "file": "test_nfl2k5_my_career_signing.py",
+      "status": "OK",
+      "seconds": 51.08293695499924,
+      "log": "sweep/test_nfl2k5_my_career_signing.log",
+      "summary": "6 passed, 8 subtests passed in 50.10s"
+    },
+    {
+      "file": "test_nfl2k5_my_career_unicorn.py",
+      "status": "OK",
+      "seconds": 13.209291015000417,
+      "log": "sweep/test_nfl2k5_my_career_unicorn.log",
+      "summary": "18 passed, 5 subtests passed in 12.27s"
+    },
+    {
+      "file": "test_nfl2k5_my_career_upgrades.py",
+      "status": "OK",
+      "seconds": 256.82570170299914,
+      "log": "sweep/test_nfl2k5_my_career_upgrades.log",
+      "summary": "4 passed, 22 subtests passed in 255.82s (0:04:15)"
+    },
+    {
+      "file": "test_nfl2k5_my_career_week.py",
+      "status": "OK",
+      "seconds": 340.41328065500056,
+      "log": "sweep/test_nfl2k5_my_career_week.log",
+      "summary": "1 passed in 339.39s (0:05:39)"
+    },
+    {
+      "file": "test_nfl2k5_myplayer_hud.py",
+      "status": "OK",
+      "seconds": 40.72677224899962,
+      "log": "sweep/test_nfl2k5_myplayer_hud.log",
+      "summary": "5 passed in 39.72s"
+    },
+    {
+      "file": "test_nfl2k5_olb_row.py",
+      "status": "OK",
+      "seconds": 52.212154806999024,
+      "log": "sweep/test_nfl2k5_olb_row.log",
+      "summary": "13 passed, 64 subtests passed in 51.19s"
+    },
+    {
+      "file": "test_nfl2k5_paired_intent.py",
+      "status": "OK",
+      "seconds": 31.700830192001376,
+      "log": "sweep/test_nfl2k5_paired_intent.log",
+      "summary": "5 passed in 30.68s"
+    },
+    {
+      "file": "test_nfl2k5_penalties.py",
+      "status": "OK",
+      "seconds": 9.05500552599915,
+      "log": "sweep/test_nfl2k5_penalties.log",
+      "summary": "18 passed in 8.08s"
+    },
+    {
+      "file": "test_nfl2k5_play_author.py",
+      "status": "OK",
+      "seconds": 1.3486647179997817,
+      "log": "sweep/test_nfl2k5_play_author.log",
+      "summary": "7 passed, 6 skipped in 0.37s"
+    },
+    {
+      "file": "test_nfl2k5_play_designer_qt.py",
+      "status": "OK",
+      "seconds": 1.4527855409996846,
+      "log": "sweep/test_nfl2k5_play_designer_qt.log",
+      "summary": "4 passed in 0.43s"
+    },
+    {
+      "file": "test_nfl2k5_play_intents.py",
+      "status": "OK",
+      "seconds": 35.03470416900018,
+      "log": "sweep/test_nfl2k5_play_intents.log",
+      "summary": "20 passed, 28 subtests passed in 34.02s"
+    },
+    {
+      "file": "test_nfl2k5_play_intents_build.py",
+      "status": "OK",
+      "seconds": 22.228493304999574,
+      "log": "sweep/test_nfl2k5_play_intents_build.log",
+      "summary": "3 passed, 2 skipped in 21.22s"
+    },
+    {
+      "file": "test_nfl2k5_play_rules.py",
+      "status": "OK",
+      "seconds": 4.971963484000298,
+      "log": "sweep/test_nfl2k5_play_rules.log",
+      "summary": "12 passed, 12 subtests passed in 3.67s"
+    },
+    {
+      "file": "test_nfl2k5_play_rules_qt.py",
+      "status": "OK",
+      "seconds": 4.39514122699984,
+      "log": "sweep/test_nfl2k5_play_rules_qt.log",
+      "summary": "6 passed in 3.38s"
+    },
+    {
+      "file": "test_nfl2k5_playbook_inspector.py",
+      "status": "OK",
+      "seconds": 1.3111206150006183,
+      "log": "sweep/test_nfl2k5_playbook_inspector.log",
+      "summary": "6 passed in 0.35s"
+    },
+    {
+      "file": "test_nfl2k5_playbook_pack.py",
+      "status": "OK",
+      "seconds": 2.7786703479996504,
+      "log": "sweep/test_nfl2k5_playbook_pack.log",
+      "summary": "37 passed, 2 skipped in 1.69s"
+    },
+    {
+      "file": "test_nfl2k5_playbook_pack_ui.py",
+      "status": "OK",
+      "seconds": 1.910011346999454,
+      "log": "sweep/test_nfl2k5_playbook_pack_ui.log",
+      "summary": "13 passed in 0.83s"
+    },
+    {
+      "file": "test_nfl2k5_playbook_pair.py",
+      "status": "OK",
+      "seconds": 8.727333754999563,
+      "log": "sweep/test_nfl2k5_playbook_pair.log",
+      "summary": "7 passed, 14 subtests passed in 7.71s"
+    },
+    {
+      "file": "test_nfl2k5_playbook_pair_unicorn.py",
+      "status": "OK",
+      "seconds": 8.850427250999928,
+      "log": "sweep/test_nfl2k5_playbook_pair_unicorn.log",
+      "summary": "20 passed, 24 subtests passed in 7.87s"
+    },
+    {
+      "file": "test_nfl2k5_playbook_route_writer.py",
+      "status": "OK",
+      "seconds": 1.2933503490003204,
+      "log": "sweep/test_nfl2k5_playbook_route_writer.log",
+      "summary": "4 passed in 0.35s"
+    },
+    {
+      "file": "test_nfl2k5_player_star.py",
+      "status": "OK",
+      "seconds": 3.3452845310002886,
+      "log": "sweep/test_nfl2k5_player_star.log",
+      "summary": "14 passed in 2.26s"
+    },
+    {
+      "file": "test_nfl2k5_player_star_draw.py",
+      "status": "OK",
+      "seconds": 218.27292608899916,
+      "log": "sweep/test_nfl2k5_player_star_draw.log",
+      "summary": "19 passed, 94 subtests passed in 217.10s (0:03:37)"
+    },
+    {
+      "file": "test_nfl2k5_playoff_editor.py",
+      "status": "OK",
+      "seconds": 2.1017334300013317,
+      "log": "sweep/test_nfl2k5_playoff_editor.log",
+      "summary": "9 passed, 11 subtests passed in 1.08s"
+    },
+    {
+      "file": "test_nfl2k5_playoff_starters_research.py",
+      "status": "OK",
+      "seconds": 6.514734230999238,
+      "log": "sweep/test_nfl2k5_playoff_starters_research.log",
+      "summary": "2 passed in 5.54s"
+    },
+    {
+      "file": "test_nfl2k5_position_choices.py",
+      "status": "OK",
+      "seconds": 14.322756001000016,
+      "log": "sweep/test_nfl2k5_position_choices.log",
+      "summary": "11 passed in 13.26s"
+    },
+    {
+      "file": "test_nfl2k5_position_row_probowl.py",
+      "status": "OK",
+      "seconds": 5.0483478480000485,
+      "log": "sweep/test_nfl2k5_position_row_probowl.log",
+      "summary": "7 passed in 4.02s"
+    },
+    {
+      "file": "test_nfl2k5_practice_reserves.py",
+      "status": "OK",
+      "seconds": 21.73535827699925,
+      "log": "sweep/test_nfl2k5_practice_reserves.log",
+      "summary": "9 passed, 16 subtests passed in 20.78s"
+    },
+    {
+      "file": "test_nfl2k5_practice_squad.py",
+      "status": "OK",
+      "seconds": 24.5223845219989,
+      "log": "sweep/test_nfl2k5_practice_squad.log",
+      "summary": "27 passed, 12 subtests passed in 23.51s"
+    },
+    {
+      "file": "test_nfl2k5_practice_squad_screen.py",
+      "status": "OK",
+      "seconds": 435.7998153180015,
+      "log": "sweep/test_nfl2k5_practice_squad_screen.log",
+      "summary": "10 passed, 8 subtests passed in 434.79s (0:07:14)"
+    },
+    {
+      "file": "test_nfl2k5_practice_squad_screen_unicorn.py",
+      "status": "OK",
+      "seconds": 8.042176630999165,
+      "log": "sweep/test_nfl2k5_practice_squad_screen_unicorn.log",
+      "summary": "14 passed, 18 subtests passed in 7.01s"
+    },
+    {
+      "file": "test_nfl2k5_presentation_v6.py",
+      "status": "OK",
+      "seconds": 10.311406397999235,
+      "log": "sweep/test_nfl2k5_presentation_v6.log",
+      "summary": "5 passed in 9.26s"
+    },
+    {
+      "file": "test_nfl2k5_prospect_names.py",
+      "status": "OK",
+      "seconds": 12.066907262000313,
+      "log": "sweep/test_nfl2k5_prospect_names.log",
+      "summary": "21 passed in 11.01s"
+    },
+    {
+      "file": "test_nfl2k5_ps2_replacement_pack_audit.py",
+      "status": "OK",
+      "seconds": 1.7179314540007908,
+      "log": "sweep/test_nfl2k5_ps2_replacement_pack_audit.log",
+      "summary": "5 passed in 0.79s"
+    },
+    {
+      "file": "test_nfl2k5_qb_spy_man_rush.py",
+      "status": "OK",
+      "seconds": 401.34745897799985,
+      "log": "sweep/test_nfl2k5_qb_spy_man_rush.log",
+      "summary": "14 passed, 57 subtests passed in 400.33s (0:06:40)"
+    },
+    {
+      "file": "test_nfl2k5_qb_spy_unicorn.py",
+      "status": "OK",
+      "seconds": 7.952278479999222,
+      "log": "sweep/test_nfl2k5_qb_spy_unicorn.log",
+      "summary": "16 passed in 6.92s"
+    },
+    {
+      "file": "test_nfl2k5_read_option.py",
+      "status": "OK",
+      "seconds": 11.850207398998464,
+      "log": "sweep/test_nfl2k5_read_option.log",
+      "summary": "15 passed, 75 subtests passed in 10.53s"
+    },
+    {
+      "file": "test_nfl2k5_read_option_controls.py",
+      "status": "OK",
+      "seconds": 18.502592812999865,
+      "log": "sweep/test_nfl2k5_read_option_controls.log",
+      "summary": "9 passed, 9 subtests passed in 17.51s"
+    },
+    {
+      "file": "test_nfl2k5_read_option_diagnostic.py",
+      "status": "OK",
+      "seconds": 28.268953602999318,
+      "log": "sweep/test_nfl2k5_read_option_diagnostic.log",
+      "summary": "13 passed, 4 skipped in 27.18s"
+    },
+    {
+      "file": "test_nfl2k5_read_option_diagnostic_manifest.py",
+      "status": "OK",
+      "seconds": 1.6397013679998054,
+      "log": "sweep/test_nfl2k5_read_option_diagnostic_manifest.log",
+      "summary": "2 skipped in 0.61s"
+    },
+    {
+      "file": "test_nfl2k5_read_option_frames.py",
+      "status": "OK",
+      "seconds": 38.99812102499891,
+      "log": "sweep/test_nfl2k5_read_option_frames.log",
+      "summary": "10 passed in 37.93s"
+    },
+    {
+      "file": "test_nfl2k5_read_option_qt.py",
+      "status": "OK",
+      "seconds": 2.7428141129985306,
+      "log": "sweep/test_nfl2k5_read_option_qt.log",
+      "summary": "7 passed, 3 subtests passed in 1.61s"
+    },
+    {
+      "file": "test_nfl2k5_read_option_runtime.py",
+      "status": "OK",
+      "seconds": 48.48833497099986,
+      "log": "sweep/test_nfl2k5_read_option_runtime.log",
+      "summary": "13 passed, 11 subtests passed in 47.43s"
+    },
+    {
+      "file": "test_nfl2k5_read_option_screen_hooks_compose.py",
+      "status": "OK",
+      "seconds": 89.70411615000012,
+      "log": "sweep/test_nfl2k5_read_option_screen_hooks_compose.log",
+      "summary": "9 passed, 58 subtests passed in 88.59s (0:01:28)"
+    },
+    {
+      "file": "test_nfl2k5_read_option_unicorn.py",
+      "status": "OK",
+      "seconds": 4.4832163709997985,
+      "log": "sweep/test_nfl2k5_read_option_unicorn.log",
+      "summary": "6 passed in 3.41s"
+    },
+    {
+      "file": "test_nfl2k5_roster_arena_growth.py",
+      "status": "OK",
+      "seconds": 33.58472514599998,
+      "log": "sweep/test_nfl2k5_roster_arena_growth.log",
+      "summary": "13 passed in 32.54s"
+    },
+    {
+      "file": "test_nfl2k5_roster_arena_image.py",
+      "status": "OK",
+      "seconds": 16.678593784999975,
+      "log": "sweep/test_nfl2k5_roster_arena_image.log",
+      "summary": "4 passed in 15.56s"
+    },
+    {
+      "file": "test_nfl2k5_roster_csv.py",
+      "status": "OK",
+      "seconds": 2.6765968930012605,
+      "log": "sweep/test_nfl2k5_roster_csv.log",
+      "summary": "14 passed, 16 subtests passed in 1.56s"
+    },
+    {
+      "file": "test_nfl2k5_roster_reclassify_grown_arena.py",
+      "status": "OK",
+      "seconds": 3.35465944599855,
+      "log": "sweep/test_nfl2k5_roster_reclassify_grown_arena.log",
+      "summary": "9 passed, 2 skipped, 8 subtests passed in 2.29s"
+    },
+    {
+      "file": "test_nfl2k5_roster_records.py",
+      "status": "OK",
+      "seconds": 15.786185892000503,
+      "log": "sweep/test_nfl2k5_roster_records.log",
+      "summary": "108 passed, 6 subtests passed in 14.68s"
+    },
+    {
+      "file": "test_nfl2k5_roster_storage.py",
+      "status": "OK",
+      "seconds": 398.25716093899973,
+      "log": "sweep/test_nfl2k5_roster_storage.log",
+      "summary": "11 passed, 178 subtests passed in 397.23s (0:06:37)"
+    },
+    {
+      "file": "test_nfl2k5_roster_storage_audit.py",
+      "status": "OK",
+      "seconds": 1.2193498669985274,
+      "log": "sweep/test_nfl2k5_roster_storage_audit.log",
+      "summary": "2 passed in 0.30s"
+    },
+    {
+      "file": "test_nfl2k5_save_rost.py",
+      "status": "OK",
+      "seconds": 3.9550882230014395,
+      "log": "sweep/test_nfl2k5_save_rost.log",
+      "summary": "9 passed, 16 subtests passed in 2.94s"
+    },
+    {
+      "file": "test_nfl2k5_save_writer.py",
+      "status": "OK",
+      "seconds": 0.15826678200028255,
+      "runner": "unittest main wrapper",
+      "log": "sweep/test_nfl2k5_save_writer.standalone.log",
+      "initial_status": "FAIL",
+      "summary": ""
+    },
+    {
+      "file": "test_nfl2k5_scorebar_rim.py",
+      "status": "OK",
+      "seconds": 15.190442691999124,
+      "log": "sweep/test_nfl2k5_scorebar_rim.log",
+      "summary": "8 passed in 14.08s"
+    },
+    {
+      "file": "test_nfl2k5_scorebar_v3.py",
+      "status": "OK",
+      "seconds": 101.7736413879993,
+      "log": "sweep/test_nfl2k5_scorebar_v3.log",
+      "summary": "9 passed in 100.61s (0:01:40)"
+    },
+    {
+      "file": "test_nfl2k5_scorebug_assets.py",
+      "status": "OK",
+      "seconds": 151.85177130199918,
+      "log": "sweep/test_nfl2k5_scorebug_assets.log",
+      "summary": "7 passed, 1 skipped in 150.77s (0:02:30)"
+    },
+    {
+      "file": "test_nfl2k5_scorebug_author.py",
+      "status": "OK",
+      "seconds": 7.732280600001104,
+      "log": "sweep/test_nfl2k5_scorebug_author.log",
+      "summary": "12 passed, 9 subtests passed in 6.68s"
+    },
+    {
+      "file": "test_nfl2k5_scorebug_down_visibility.py",
+      "status": "OK",
+      "seconds": 41.887953534998815,
+      "log": "sweep/test_nfl2k5_scorebug_down_visibility.log",
+      "summary": "2 passed in 40.76s"
+    },
+    {
+      "file": "test_nfl2k5_scorebug_draw_order.py",
+      "status": "OK",
+      "seconds": 27.877157920000172,
+      "log": "sweep/test_nfl2k5_scorebug_draw_order.log",
+      "summary": "5 passed in 26.78s"
+    },
+    {
+      "file": "test_nfl2k5_scorebug_exact.py",
+      "status": "OK",
+      "seconds": 84.67713761899904,
+      "log": "sweep/test_nfl2k5_scorebug_exact.log",
+      "summary": "8 passed in 83.57s (0:01:23)"
+    },
+    {
+      "file": "test_nfl2k5_scorebug_fonts.py",
+      "status": "OK",
+      "seconds": 9.5759816890004,
+      "log": "sweep/test_nfl2k5_scorebug_fonts.log",
+      "summary": "5 passed, 5 skipped in 8.49s"
+    },
+    {
+      "file": "test_nfl2k5_scorebug_freeze.py",
+      "status": "OK",
+      "seconds": 243.0650533400003,
+      "log": "sweep/test_nfl2k5_scorebug_freeze.log",
+      "summary": "7 passed in 241.97s (0:04:01)"
+    },
+    {
+      "file": "test_nfl2k5_scorebug_freeze_v2.py",
+      "status": "OK",
+      "seconds": 331.1194806240019,
+      "log": "sweep/test_nfl2k5_scorebug_freeze_v2.log",
+      "summary": "7 passed, 17 subtests passed in 330.04s (0:05:30)"
+    },
+    {
+      "file": "test_nfl2k5_scorebug_ingame.py",
+      "status": "OK",
+      "seconds": 15.970155208999131,
+      "log": "sweep/test_nfl2k5_scorebug_ingame.log",
+      "summary": "11 passed in 14.92s"
+    },
+    {
+      "file": "test_nfl2k5_scorebug_ingame_fix.py",
+      "status": "OK",
+      "seconds": 129.8815650810011,
+      "log": "sweep/test_nfl2k5_scorebug_ingame_fix.log",
+      "summary": "9 passed in 128.80s (0:02:08)"
+    },
+    {
+      "file": "test_nfl2k5_scorebug_mnf.py",
+      "status": "OK",
+      "seconds": 12.77049908799927,
+      "log": "sweep/test_nfl2k5_scorebug_mnf.log",
+      "summary": "10 passed in 11.75s"
+    },
+    {
+      "file": "test_nfl2k5_scorebug_mnf_v3.py",
+      "status": "OK",
+      "seconds": 48.787923981999484,
+      "log": "sweep/test_nfl2k5_scorebug_mnf_v3.log",
+      "summary": "7 passed in 47.73s"
+    },
+    {
+      "file": "test_nfl2k5_scorebug_native.py",
+      "status": "OK",
+      "seconds": 134.06073891300002,
+      "log": "sweep/test_nfl2k5_scorebug_native.log",
+      "summary": "4 passed in 133.03s (0:02:13)"
+    },
+    {
+      "file": "test_nfl2k5_scorebug_projection.py",
+      "status": "OK",
+      "seconds": 59.191517142999146,
+      "log": "sweep/test_nfl2k5_scorebug_projection.log",
+      "summary": "14 passed, 24 subtests passed in 58.08s"
+    },
+    {
+      "file": "test_nfl2k5_scorebug_resources.py",
+      "status": "OK",
+      "seconds": 290.18444541700046,
+      "log": "sweep/test_nfl2k5_scorebug_resources.log",
+      "summary": "6 passed in 289.12s (0:04:49)"
+    },
+    {
+      "file": "test_nfl2k5_scorebug_runtime.py",
+      "status": "OK",
+      "seconds": 120.08824209099839,
+      "log": "sweep/test_nfl2k5_scorebug_runtime.log",
+      "summary": "12 passed in 119.08s (0:01:59)"
+    },
+    {
+      "file": "test_nfl2k5_scorebug_source_art.py",
+      "status": "OK",
+      "seconds": 1.7162353809999331,
+      "log": "sweep/test_nfl2k5_scorebug_source_art.log",
+      "summary": "10 passed, 3 skipped in 0.70s"
+    },
+    {
+      "file": "test_nfl2k5_scorebug_sprite.py",
+      "status": "OK",
+      "seconds": 95.8512694200017,
+      "log": "sweep/test_nfl2k5_scorebug_sprite.log",
+      "summary": "19 passed in 94.77s (0:01:34)"
+    },
+    {
+      "file": "test_nfl2k5_scorebug_template.py",
+      "status": "OK",
+      "seconds": 6.435034583999368,
+      "log": "sweep/test_nfl2k5_scorebug_template.log",
+      "summary": "19 passed, 64 subtests passed in 5.38s"
+    },
+    {
+      "file": "test_nfl2k5_scorebug_template_release.py",
+      "status": "OK",
+      "seconds": 1.7251871459993708,
+      "log": "sweep/test_nfl2k5_scorebug_template_release.log",
+      "summary": "5 passed in 0.81s"
+    },
+    {
+      "file": "test_nfl2k5_scorebug_unified_adapter.py",
+      "status": "OK",
+      "seconds": 1.3334242410001025,
+      "log": "sweep/test_nfl2k5_scorebug_unified_adapter.log",
+      "summary": "5 passed, 15 subtests passed in 0.39s"
+    },
+    {
+      "file": "test_nfl2k5_scorebug_v10_ingame.py",
+      "status": "OK",
+      "seconds": 9.510167442000238,
+      "log": "sweep/test_nfl2k5_scorebug_v10_ingame.log",
+      "summary": "11 passed in 8.48s"
+    },
+    {
+      "file": "test_nfl2k5_scorebug_v10_projection.py",
+      "status": "OK",
+      "seconds": 30.144244279001214,
+      "log": "sweep/test_nfl2k5_scorebug_v10_projection.log",
+      "summary": "14 passed, 24 subtests passed in 29.09s"
+    },
+    {
+      "file": "test_nfl2k5_scorebug_versions.py",
+      "status": "OK",
+      "seconds": 9.98085636200085,
+      "log": "sweep/test_nfl2k5_scorebug_versions.log",
+      "summary": "4 passed in 8.88s"
+    },
+    {
+      "file": "test_nfl2k5_screen_archive.py",
+      "status": "OK",
+      "seconds": 1.3321361799989972,
+      "log": "sweep/test_nfl2k5_screen_archive.log",
+      "summary": "7 passed in 0.35s"
+    },
+    {
+      "file": "test_nfl2k5_screen_hooks.py",
+      "status": "OK",
+      "seconds": 12.568654748998597,
+      "log": "sweep/test_nfl2k5_screen_hooks.log",
+      "summary": "10 passed, 13 subtests passed in 11.59s"
+    },
+    {
+      "file": "test_nfl2k5_screen_hooks_manifest.py",
+      "status": "OK",
+      "seconds": 5.280056997999054,
+      "log": "sweep/test_nfl2k5_screen_hooks_manifest.log",
+      "summary": "3 passed in 4.26s"
+    },
+    {
+      "file": "test_nfl2k5_screen_hooks_unicorn.py",
+      "status": "OK",
+      "seconds": 25.86609150199729,
+      "log": "sweep/test_nfl2k5_screen_hooks_unicorn.log",
+      "summary": "10 passed, 54 subtests passed in 24.87s"
+    },
+    {
+      "file": "test_nfl2k5_screen_preset_qt.py",
+      "status": "OK",
+      "seconds": 1.66953834800006,
+      "log": "sweep/test_nfl2k5_screen_preset_qt.log",
+      "summary": "4 passed in 0.59s"
+    },
+    {
+      "file": "test_nfl2k5_screen_timing.py",
+      "status": "OK",
+      "seconds": 93.49799037399862,
+      "log": "sweep/test_nfl2k5_screen_timing.log",
+      "summary": "13 passed, 156 subtests passed in 92.50s (0:01:32)"
+    },
+    {
+      "file": "test_nfl2k5_season_cap.py",
+      "status": "OK",
+      "seconds": 5.032603585001198,
+      "log": "sweep/test_nfl2k5_season_cap.log",
+      "summary": "7 passed, 350 subtests passed in 4.08s"
+    },
+    {
+      "file": "test_nfl2k5_season_cap_saves.py",
+      "status": "OK",
+      "seconds": 1.5728905759970075,
+      "log": "sweep/test_nfl2k5_season_cap_saves.log",
+      "summary": "7 passed, 256 subtests passed in 0.58s"
+    },
+    {
+      "file": "test_nfl2k5_senior_bowl.py",
+      "status": "OK",
+      "seconds": 6.141970664000837,
+      "log": "sweep/test_nfl2k5_senior_bowl.log",
+      "summary": "26 passed, 19 subtests passed in 5.11s"
+    },
+    {
+      "file": "test_nfl2k5_senior_bowl_unicorn.py",
+      "status": "OK",
+      "seconds": 3.6146534830004384,
+      "log": "sweep/test_nfl2k5_senior_bowl_unicorn.log",
+      "summary": "9 passed, 12 subtests passed in 2.66s"
+    },
+    {
+      "file": "test_nfl2k5_seven_on_seven.py",
+      "status": "OK",
+      "seconds": 4.522530210000696,
+      "log": "sweep/test_nfl2k5_seven_on_seven.log",
+      "summary": "19 passed in 3.50s"
+    },
+    {
+      "file": "test_nfl2k5_seven_on_seven_manifest.py",
+      "status": "OK",
+      "seconds": 1.9906707410009403,
+      "log": "sweep/test_nfl2k5_seven_on_seven_manifest.log",
+      "summary": "3 passed, 7 subtests passed in 0.95s"
+    },
+    {
+      "file": "test_nfl2k5_seven_on_seven_recode.py",
+      "status": "OK",
+      "seconds": 1.4633659129976877,
+      "log": "sweep/test_nfl2k5_seven_on_seven_recode.log",
+      "summary": "5 passed in 0.50s"
+    },
+    {
+      "file": "test_nfl2k5_seven_on_seven_v2.py",
+      "status": "OK",
+      "seconds": 163.393243161001,
+      "log": "sweep/test_nfl2k5_seven_on_seven_v2.log",
+      "summary": "74 passed, 367 subtests passed in 162.38s (0:02:42)"
+    },
+    {
+      "file": "test_nfl2k5_shoe_relief.py",
+      "status": "OK",
+      "seconds": 3.0740087590020266,
+      "log": "sweep/test_nfl2k5_shoe_relief.log",
+      "summary": "5 passed, 7 subtests passed in 2.09s"
+    },
+    {
+      "file": "test_nfl2k5_simulated_windows_build.py",
+      "status": "OK",
+      "seconds": 224.24133782599893,
+      "log": "sweep/test_nfl2k5_simulated_windows_build.log",
+      "summary": "1 passed in 223.21s (0:03:43)"
+    },
+    {
+      "file": "test_nfl2k5_source_cache_privacy.py",
+      "status": "OK",
+      "seconds": 1.3127969589986606,
+      "log": "sweep/test_nfl2k5_source_cache_privacy.log",
+      "summary": "7 passed in 0.35s"
+    },
+    {
+      "file": "test_nfl2k5_special_roles.py",
+      "status": "OK",
+      "seconds": 34.39236700499896,
+      "log": "sweep/test_nfl2k5_special_roles.log",
+      "summary": "8 passed in 33.37s"
+    },
+    {
+      "file": "test_nfl2k5_stadium_blender.py",
+      "status": "OK",
+      "seconds": 1.3494124309981999,
+      "log": "sweep/test_nfl2k5_stadium_blender.log",
+      "summary": "11 passed in 0.38s"
+    },
+    {
+      "file": "test_nfl2k5_stadium_blender_panel.py",
+      "status": "OK",
+      "seconds": 1.3644090090019745,
+      "log": "sweep/test_nfl2k5_stadium_blender_panel.log",
+      "summary": "2 passed in 0.36s"
+    },
+    {
+      "file": "test_nfl2k5_stadium_cache.py",
+      "status": "OK",
+      "seconds": 1.4692139239996322,
+      "log": "sweep/test_nfl2k5_stadium_cache.log",
+      "summary": "15 passed in 0.45s"
+    },
+    {
+      "file": "test_nfl2k5_stadium_community_audit.py",
+      "status": "OK",
+      "seconds": 1.253664358999231,
+      "log": "sweep/test_nfl2k5_stadium_community_audit.log",
+      "summary": "8 passed, 14 skipped in 0.32s"
+    },
+    {
+      "file": "test_nfl2k5_stadium_editor_roundtrip.py",
+      "status": "OK",
+      "seconds": 1.8415786880032101,
+      "log": "sweep/test_nfl2k5_stadium_editor_roundtrip.log",
+      "summary": "12 passed in 0.82s"
+    },
+    {
+      "file": "test_nfl2k5_stadium_geometry.py",
+      "status": "OK",
+      "seconds": 1.351866513999994,
+      "log": "sweep/test_nfl2k5_stadium_geometry.log",
+      "summary": "2 passed in 0.39s"
+    },
+    {
+      "file": "test_nfl2k5_stadium_gltf_export.py",
+      "status": "OK",
+      "seconds": 1.4765264039997419,
+      "log": "sweep/test_nfl2k5_stadium_gltf_export.log",
+      "summary": "36 passed in 0.53s"
+    },
+    {
+      "file": "test_nfl2k5_stadium_people_categories.py",
+      "status": "OK",
+      "seconds": 1.2738546979999228,
+      "log": "sweep/test_nfl2k5_stadium_people_categories.log",
+      "summary": "15 passed, 30 subtests passed in 0.35s"
+    },
+    {
+      "file": "test_nfl2k5_stadium_studio.py",
+      "status": "OK",
+      "seconds": 1.387193088998174,
+      "log": "sweep/test_nfl2k5_stadium_studio.log",
+      "summary": "6 passed in 0.39s"
+    },
+    {
+      "file": "test_nfl2k5_stadium_texture_writer.py",
+      "status": "OK",
+      "seconds": 3.245111608001025,
+      "log": "sweep/test_nfl2k5_stadium_texture_writer.log",
+      "summary": "9 passed in 2.24s"
+    },
+    {
+      "file": "test_nfl2k5_stock_midfield_logo_boundary.py",
+      "status": "OK",
+      "seconds": 1.2578932579999673,
+      "log": "sweep/test_nfl2k5_stock_midfield_logo_boundary.log",
+      "summary": "3 passed in 0.32s"
+    },
+    {
+      "file": "test_nfl2k5_streaming_audio_ui.py",
+      "status": "OK",
+      "seconds": 2.0661129520012764,
+      "log": "sweep/test_nfl2k5_streaming_audio_ui.log",
+      "summary": "9 passed, 2 subtests passed in 1.05s"
+    },
+    {
+      "file": "test_nfl2k5_supersim.py",
+      "status": "OK",
+      "seconds": 9.505927840000368,
+      "log": "sweep/test_nfl2k5_supersim.log",
+      "summary": "12 passed, 3 subtests passed in 8.54s"
+    },
+    {
+      "file": "test_nfl2k5_team_column.py",
+      "status": "OK",
+      "seconds": 7.468713990001561,
+      "log": "sweep/test_nfl2k5_team_column.log",
+      "summary": "13 passed in 6.39s"
+    },
+    {
+      "file": "test_nfl2k5_team_history.py",
+      "status": "OK",
+      "seconds": 6.295914385002106,
+      "log": "sweep/test_nfl2k5_team_history.log",
+      "summary": "19 passed in 5.11s"
+    },
+    {
+      "file": "test_nfl2k5_team_names_2026.py",
+      "status": "OK",
+      "seconds": 6.500237148000451,
+      "log": "sweep/test_nfl2k5_team_names_2026.log",
+      "summary": "9 passed in 5.48s"
+    },
+    {
+      "file": "test_nfl2k5_text_catalog.py",
+      "status": "OK",
+      "seconds": 1.4397969339988776,
+      "log": "sweep/test_nfl2k5_text_catalog.log",
+      "summary": "8 passed, 1 skipped in 0.42s"
+    },
+    {
+      "file": "test_nfl2k5_throw_arc.py",
+      "status": "OK",
+      "seconds": 5.003915661000065,
+      "log": "sweep/test_nfl2k5_throw_arc.log",
+      "summary": "10 passed in 4.03s"
+    },
+    {
+      "file": "test_nfl2k5_throw_tuning.py",
+      "status": "OK",
+      "seconds": 11.324888314999043,
+      "runner": "unittest main wrapper",
+      "log": "sweep/test_nfl2k5_throw_tuning.standalone.log",
+      "initial_status": "FAIL",
+      "summary": ""
+    },
+    {
+      "file": "test_nfl2k5_uniform_catalog.py",
+      "status": "OK",
+      "seconds": 2.5783647110001766,
+      "log": "sweep/test_nfl2k5_uniform_catalog.log",
+      "summary": "5 passed in 1.49s"
+    },
+    {
+      "file": "test_nfl2k5_uniform_choice.py",
+      "status": "OK",
+      "seconds": 9.533118007999292,
+      "log": "sweep/test_nfl2k5_uniform_choice.log",
+      "summary": "18 passed in 8.53s"
+    },
+    {
+      "file": "test_nfl2k5_uniform_choice_screens.py",
+      "status": "OK",
+      "seconds": 1.769898855000065,
+      "log": "sweep/test_nfl2k5_uniform_choice_screens.log",
+      "summary": "2 passed, 8 subtests passed in 0.77s"
+    },
+    {
+      "file": "test_nfl2k5_universal_asset_index.py",
+      "status": "OK",
+      "seconds": 1.3607607339981769,
+      "log": "sweep/test_nfl2k5_universal_asset_index.log",
+      "summary": "5 passed in 0.40s"
+    },
+    {
+      "file": "test_nfl2k5_weather.py",
+      "status": "OK",
+      "seconds": 1.618307773998822,
+      "log": "sweep/test_nfl2k5_weather.log",
+      "summary": "12 passed, 24 subtests passed in 0.57s"
+    },
+    {
+      "file": "test_nfl2k5_weather_editor.py",
+      "status": "OK",
+      "seconds": 1.4068754139989323,
+      "log": "sweep/test_nfl2k5_weather_editor.log",
+      "summary": "2 passed in 0.41s"
+    },
+    {
+      "file": "test_nfl2k5_weather_native.py",
+      "status": "OK",
+      "seconds": 19.617953052998928,
+      "log": "sweep/test_nfl2k5_weather_native.log",
+      "summary": "10 passed, 1725 subtests passed in 18.54s"
+    },
+    {
+      "file": "test_nfl2k5_weekly_prep.py",
+      "status": "OK",
+      "seconds": 14.121509214997786,
+      "log": "sweep/test_nfl2k5_weekly_prep.log",
+      "summary": "11 passed, 7 subtests passed in 13.12s"
+    },
+    {
+      "file": "test_nfl2k5_weekly_prep_unicorn.py",
+      "status": "OK",
+      "seconds": 15.87390852200042,
+      "log": "sweep/test_nfl2k5_weekly_prep_unicorn.log",
+      "summary": "17 passed in 14.85s"
+    },
+    {
+      "file": "test_nfl2k5_widescreen_polish.py",
+      "status": "OK",
+      "seconds": 9.668247367997537,
+      "log": "sweep/test_nfl2k5_widescreen_polish.log",
+      "summary": "13 passed, 76 subtests passed in 8.58s"
+    },
+    {
+      "file": "test_nfl2k5_xbe_space.py",
+      "status": "OK",
+      "seconds": 35.882467911000276,
+      "log": "sweep/test_nfl2k5_xbe_space.log",
+      "summary": "12 passed, 1 skipped, 29 subtests passed in 34.81s"
+    },
+    {
+      "file": "test_nfl2k5_zone_drop.py",
+      "status": "OK",
+      "seconds": 30.619807240000227,
+      "log": "sweep/test_nfl2k5_zone_drop.log",
+      "summary": "9 passed, 28 subtests passed in 29.57s"
+    },
+    {
+      "file": "test_nfl2k5_zone_drop_unicorn.py",
+      "status": "OK",
+      "seconds": 42.98746820799715,
+      "log": "sweep/test_nfl2k5_zone_drop_unicorn.log",
+      "summary": "5 passed, 364 subtests passed in 23.32s"
+    },
+    {
+      "file": "test_nfl2k5_zone_facing.py",
+      "status": "OK",
+      "seconds": 20.42557650100207,
+      "log": "sweep/test_nfl2k5_zone_facing.log",
+      "summary": "10 passed, 33 subtests passed in 19.35s"
+    },
+    {
+      "file": "test_nfl2k5_zone_facing_unicorn.py",
+      "status": "OK",
+      "seconds": 157.23656070799916,
+      "log": "sweep/test_nfl2k5_zone_facing_unicorn.log",
+      "summary": "6 passed, 200 subtests passed in 144.52s (0:02:24)"
+    },
+    {
+      "file": "test_nfl_audio.py",
+      "status": "OK",
+      "seconds": 1.961128186001588,
+      "log": "sweep/test_nfl_audio.log",
+      "summary": "18 passed, 26 subtests passed in 0.97s"
+    },
+    {
+      "file": "test_no_capability_is_invisible.py",
+      "status": "OK",
+      "seconds": 2.0902278879984806,
+      "log": "sweep/test_no_capability_is_invisible.log",
+      "summary": "14 passed, 36 subtests passed in 0.99s"
+    },
+    {
+      "file": "test_number_sheet_quality_wiring.py",
+      "status": "OK",
+      "seconds": 3.312759691001702,
+      "log": "sweep/test_number_sheet_quality_wiring.log",
+      "summary": "6 passed in 2.16s"
+    },
+    {
+      "file": "test_numpy_optional.py",
+      "status": "OK",
+      "seconds": 12.430529093002406,
+      "log": "sweep/test_numpy_optional.log",
+      "summary": "7 passed in 11.46s"
+    },
+    {
+      "file": "test_pack_extent_resolver.py",
+      "status": "OK",
+      "seconds": 2.4571167409994814,
+      "log": "sweep/test_pack_extent_resolver.log",
+      "summary": "6 passed, 9 subtests passed in 1.50s"
+    },
+    {
+      "file": "test_phase1_packaging.py",
+      "status": "OK",
+      "seconds": 3.250265907998255,
+      "log": "sweep/test_phase1_packaging.log",
+      "summary": "23 passed, 8 subtests passed in 2.32s"
+    },
+    {
+      "file": "test_platform_compat.py",
+      "status": "OK",
+      "seconds": 1.5950708820018917,
+      "log": "sweep/test_platform_compat.log",
+      "summary": "31 passed in 0.62s"
+    },
+    {
+      "file": "test_platform_compat_durability.py",
+      "status": "OK",
+      "seconds": 1.2662276410010236,
+      "log": "sweep/test_platform_compat_durability.log",
+      "summary": "25 passed in 0.35s"
+    },
+    {
+      "file": "test_platform_compat_ownership.py",
+      "status": "OK",
+      "seconds": 1.4748049800000445,
+      "log": "sweep/test_platform_compat_ownership.log",
+      "summary": "19 passed, 3 subtests passed in 0.50s"
+    },
+    {
+      "file": "test_platform_compat_paths.py",
+      "status": "OK",
+      "seconds": 1.5876950490019226,
+      "log": "sweep/test_platform_compat_paths.log",
+      "summary": "13 passed, 2 skipped, 22 subtests passed in 0.58s"
+    },
+    {
+      "file": "test_playbook_package_rule_spike.py",
+      "status": "OK",
+      "seconds": 2.868318024000473,
+      "log": "sweep/test_playbook_package_rule_spike.log",
+      "summary": "23 passed in 1.90s"
+    },
+    {
+      "file": "test_playbooks_link_table_export_ui.py",
+      "status": "OK",
+      "seconds": 1.7039351050007099,
+      "log": "sweep/test_playbooks_link_table_export_ui.log",
+      "summary": "3 passed in 0.64s"
+    },
+    {
+      "file": "test_playbooks_panel_qt.py",
+      "status": "OK",
+      "seconds": 1.42842701599875,
+      "log": "sweep/test_playbooks_panel_qt.log",
+      "summary": "8 passed in 0.49s"
+    },
+    {
+      "file": "test_player_assets.py",
+      "status": "OK",
+      "seconds": 1.3157708030012145,
+      "log": "sweep/test_player_assets.log",
+      "summary": "15 passed, 2 subtests passed in 0.35s"
+    },
+    {
+      "file": "test_playoff_editor_panel_qt.py",
+      "status": "OK",
+      "seconds": 14.406115001998842,
+      "log": "sweep/test_playoff_editor_panel_qt.log",
+      "summary": "6 passed, 13 subtests passed in 13.21s"
+    },
+    {
+      "file": "test_png_import_accepts_real_pngs.py",
+      "status": "OK",
+      "seconds": 1.2891940779991273,
+      "log": "sweep/test_png_import_accepts_real_pngs.log",
+      "summary": "13 passed, 12 subtests passed in 0.37s"
+    },
+    {
+      "file": "test_presentation_inspection.py",
+      "status": "OK",
+      "seconds": 1.2577159009997558,
+      "log": "sweep/test_presentation_inspection.log",
+      "summary": "3 passed in 0.32s"
+    },
+    {
+      "file": "test_presentation_panel_qt.py",
+      "status": "OK",
+      "seconds": 6.850647683000716,
+      "log": "sweep/test_presentation_panel_qt.log",
+      "summary": "2 passed in 5.35s"
+    },
+    {
+      "file": "test_product_catalog.py",
+      "status": "OK",
+      "seconds": 1.3661714540030516,
+      "log": "sweep/test_product_catalog.log",
+      "summary": "9 passed, 12 subtests passed in 0.40s"
+    },
+    {
+      "file": "test_product_inspection_panels_qt.py",
+      "status": "OK",
+      "seconds": 7.095365094999579,
+      "log": "sweep/test_product_inspection_panels_qt.log",
+      "summary": "7 passed in 5.55s"
+    },
+    {
+      "file": "test_product_shell_accessibility_qt.py",
+      "status": "OK",
+      "seconds": 74.07854401799705,
+      "log": "sweep/test_product_shell_accessibility_qt.log",
+      "summary": "6 passed, 10 subtests passed in 70.48s (0:01:10)"
+    },
+    {
+      "file": "test_project_document_workflow.py",
+      "status": "OK",
+      "seconds": 17.978399504001572,
+      "log": "sweep/test_project_document_workflow.log",
+      "summary": "13 passed, 4 subtests passed in 16.06s"
+    },
+    {
+      "file": "test_provider_integrity.py",
+      "status": "OK",
+      "seconds": 11.685612605000642,
+      "log": "sweep/test_provider_integrity.log",
+      "summary": "8 passed, 9 subtests passed in 10.69s"
+    },
+    {
+      "file": "test_providers.py",
+      "status": "OK",
+      "seconds": 5.0842235659984,
+      "log": "sweep/test_providers.log",
+      "summary": "33 passed in 4.09s"
+    },
+    {
+      "file": "test_ps2_lane.py",
+      "status": "OK",
+      "seconds": 1.421515295001882,
+      "log": "sweep/test_ps2_lane.log",
+      "summary": "16 passed in 0.45s"
+    },
+    {
+      "file": "test_ps2_save_dialog_qt.py",
+      "status": "OK",
+      "seconds": 2.02414576999945,
+      "log": "sweep/test_ps2_save_dialog_qt.log",
+      "summary": "44 passed in 1.04s"
+    },
+    {
+      "file": "test_recipes.py",
+      "status": "OK",
+      "seconds": 1.8386692500025674,
+      "log": "sweep/test_recipes.log",
+      "summary": "13 passed, 45 subtests passed in 0.87s"
+    },
+    {
+      "file": "test_responsive_json.py",
+      "status": "OK",
+      "seconds": 1.34334077099993,
+      "log": "sweep/test_responsive_json.log",
+      "summary": "3 passed, 12 subtests passed in 0.43s"
+    },
+    {
+      "file": "test_reviewed_helper_setup.py",
+      "status": "OK",
+      "seconds": 1.284956521998538,
+      "log": "sweep/test_reviewed_helper_setup.log",
+      "summary": "9 passed in 0.35s"
+    },
+    {
+      "file": "test_roster_editor_panel_franchise.py",
+      "status": "OK",
+      "seconds": 1.8665782539974316,
+      "log": "sweep/test_roster_editor_panel_franchise.log",
+      "summary": "2 passed in 0.85s"
+    },
+    {
+      "file": "test_roster_editor_panel_qt.py",
+      "status": "OK",
+      "seconds": 10.892535421000503,
+      "log": "sweep/test_roster_editor_panel_qt.log",
+      "summary": "50 passed in 8.81s"
+    },
+    {
+      "file": "test_roster_save_to_disc.py",
+      "status": "OK",
+      "seconds": 20.363222106996545,
+      "log": "sweep/test_roster_save_to_disc.log",
+      "summary": "21 passed in 19.37s"
+    },
+    {
+      "file": "test_roster_save_to_disc_wiring.py",
+      "status": "OK",
+      "seconds": 3.1159467010002118,
+      "log": "sweep/test_roster_save_to_disc_wiring.log",
+      "summary": "6 passed in 1.98s"
+    },
+    {
+      "file": "test_rosters_data.py",
+      "status": "OK",
+      "seconds": 5.718326392001472,
+      "log": "sweep/test_rosters_data.log",
+      "summary": "10 passed in 4.68s"
+    },
+    {
+      "file": "test_rosters_data_qt.py",
+      "status": "OK",
+      "seconds": 2.0276743570029794,
+      "log": "sweep/test_rosters_data_qt.log",
+      "summary": "6 passed in 0.97s"
+    },
+    {
+      "file": "test_rosters_reserves_abilities.py",
+      "status": "OK",
+      "seconds": 12.846235164000973,
+      "log": "sweep/test_rosters_reserves_abilities.log",
+      "summary": "13 passed, 2 subtests passed in 11.88s"
+    },
+    {
+      "file": "test_rosters_reserves_abilities_qt.py",
+      "status": "OK",
+      "seconds": 4.9078894710000895,
+      "log": "sweep/test_rosters_reserves_abilities_qt.log",
+      "summary": "7 passed in 3.85s"
+    },
+    {
+      "file": "test_rosters_salary_native.py",
+      "status": "OK",
+      "seconds": 1.4819318499976362,
+      "log": "sweep/test_rosters_salary_native.log",
+      "summary": "1 passed in 0.50s"
+    },
+    {
+      "file": "test_runtime_dependencies.py",
+      "status": "OK",
+      "seconds": 1.2485425310005667,
+      "log": "sweep/test_runtime_dependencies.log",
+      "summary": "6 passed in 0.32s"
+    },
+    {
+      "file": "test_save_roster_import.py",
+      "status": "OK",
+      "seconds": 1.2936971320013981,
+      "log": "sweep/test_save_roster_import.log",
+      "summary": "12 passed in 0.34s"
+    },
+    {
+      "file": "test_scorebug_sprite_preview_qt.py",
+      "status": "OK",
+      "seconds": 23.33195339699887,
+      "log": "sweep/test_scorebug_sprite_preview_qt.log",
+      "summary": "2 passed in 22.30s"
+    },
+    {
+      "file": "test_scorebug_studio_panel_qt.py",
+      "status": "OK",
+      "seconds": 9.332715926000674,
+      "log": "sweep/test_scorebug_studio_panel_qt.log",
+      "summary": "11 passed in 8.33s"
+    },
+    {
+      "file": "test_security_blockers_remediation.py",
+      "status": "OK",
+      "seconds": 1.3196359899993695,
+      "log": "sweep/test_security_blockers_remediation.log",
+      "summary": "11 passed, 3 subtests passed in 0.37s"
+    },
+    {
+      "file": "test_self_update.py",
+      "status": "OK",
+      "seconds": 2.8463730050025333,
+      "log": "sweep/test_self_update.log",
+      "summary": "26 passed in 1.88s"
+    },
+    {
+      "file": "test_self_update_linux.py",
+      "status": "OK",
+      "seconds": 3.722972003000905,
+      "log": "sweep/test_self_update_linux.log",
+      "summary": "15 passed, 2 subtests passed in 2.73s"
+    },
+    {
+      "file": "test_self_update_manual_layout.py",
+      "status": "OK",
+      "seconds": 1.3129525750009634,
+      "log": "sweep/test_self_update_manual_layout.log",
+      "summary": "1 passed, 3 subtests passed in 0.34s"
+    },
+    {
+      "file": "test_senior_bowl_panel_qt.py",
+      "status": "OK",
+      "seconds": 1.3813634389989602,
+      "log": "sweep/test_senior_bowl_panel_qt.log",
+      "summary": "5 passed in 0.39s"
+    },
+    {
+      "file": "test_share_panel_qt.py",
+      "status": "OK",
+      "seconds": 7.2806499380021705,
+      "log": "sweep/test_share_panel_qt.log",
+      "summary": "7 passed in 5.68s"
+    },
+    {
+      "file": "test_shipped_tools_are_self_sufficient.py",
+      "status": "OK",
+      "seconds": 13.426999280000018,
+      "log": "sweep/test_shipped_tools_are_self_sufficient.log",
+      "summary": "3 passed in 12.47s"
+    },
+    {
+      "file": "test_shipped_tools_posix_only.py",
+      "status": "OK",
+      "seconds": 13.481825396000204,
+      "log": "sweep/test_shipped_tools_posix_only.log",
+      "summary": "13 passed in 12.51s"
+    },
+    {
+      "file": "test_sounds_panel_qt.py",
+      "status": "OK",
+      "seconds": 8.529860895003367,
+      "log": "sweep/test_sounds_panel_qt.log",
+      "summary": "10 passed in 6.95s"
+    },
+    {
+      "file": "test_source_accepts_any_dump.py",
+      "status": "OK",
+      "seconds": 1.2994294979980623,
+      "log": "sweep/test_source_accepts_any_dump.log",
+      "summary": "13 passed, 2 skipped in 0.36s"
+    },
+    {
+      "file": "test_stadium_editable_discovery.py",
+      "status": "OK",
+      "seconds": 13.873878409001918,
+      "log": "sweep/test_stadium_editable_discovery.log",
+      "summary": "6 passed in 11.87s"
+    },
+    {
+      "file": "test_stadium_gltf_roundtrip.py",
+      "status": "OK",
+      "seconds": 1.314144028998271,
+      "log": "sweep/test_stadium_gltf_roundtrip.log",
+      "summary": "17 passed, 12 subtests passed in 0.37s"
+    },
+    {
+      "file": "test_stadium_viewer.py",
+      "status": "OK",
+      "seconds": 1.2836423629996716,
+      "log": "sweep/test_stadium_viewer.log",
+      "summary": "3 passed in 0.34s"
+    },
+    {
+      "file": "test_stage_release.py",
+      "status": "OK",
+      "seconds": 1.3798618959990563,
+      "log": "sweep/test_stage_release.log",
+      "summary": "10 passed, 20 subtests passed in 0.39s"
+    },
+    {
+      "file": "test_startup_performance.py",
+      "status": "OK",
+      "seconds": 4.085905936997733,
+      "log": "sweep/test_startup_performance.log",
+      "summary": "8 passed in 2.80s"
+    },
+    {
+      "file": "test_studio_facade.py",
+      "status": "OK",
+      "seconds": 1.7621828359988285,
+      "log": "sweep/test_studio_facade.log",
+      "summary": "11 passed in 0.71s"
+    },
+    {
+      "file": "test_studio_inspection.py",
+      "status": "OK",
+      "seconds": 1.8279996849996678,
+      "log": "sweep/test_studio_inspection.log",
+      "summary": "2 passed, 3 subtests passed in 0.80s"
+    },
+    {
+      "file": "test_studio_qt_models.py",
+      "status": "OK",
+      "seconds": 3.136539137998625,
+      "log": "sweep/test_studio_qt_models.log",
+      "summary": "9 passed in 1.96s"
+    },
+    {
+      "file": "test_studio_session.py",
+      "status": "OK",
+      "seconds": 2.0782905819978623,
+      "log": "sweep/test_studio_session.log",
+      "summary": "18 passed in 1.07s"
+    },
+    {
+      "file": "test_studio_shell_layout_qt.py",
+      "status": "OK",
+      "seconds": 45.244072008998046,
+      "log": "sweep/test_studio_shell_layout_qt.log",
+      "summary": "18 passed in 42.60s"
+    },
+    {
+      "file": "test_studio_visual_asset_routing.py",
+      "status": "OK",
+      "seconds": 5.147912248998182,
+      "log": "sweep/test_studio_visual_asset_routing.log",
+      "summary": "14 passed, 32 subtests passed in 3.77s"
+    },
+    {
+      "file": "test_task_delivery.py",
+      "status": "OK",
+      "seconds": 1.2988393970008474,
+      "log": "sweep/test_task_delivery.log",
+      "summary": "4 passed, 2 subtests passed in 0.35s"
+    },
+    {
+      "file": "test_team_kit_bundle.py",
+      "status": "OK",
+      "seconds": 5.882408093002596,
+      "log": "sweep/test_team_kit_bundle.log",
+      "summary": "8 passed in 4.47s"
+    },
+    {
+      "file": "test_team_kit_product_integration.py",
+      "status": "OK",
+      "seconds": 19.1004048169998,
+      "log": "sweep/test_team_kit_product_integration.log",
+      "summary": "7 passed in 16.78s"
+    },
+    {
+      "file": "test_teamkit_import_wiring.py",
+      "status": "OK",
+      "seconds": 1.8836174990028667,
+      "log": "sweep/test_teamkit_import_wiring.log",
+      "summary": "3 passed, 2 subtests passed in 0.81s"
+    },
+    {
+      "file": "test_text_rosters_panel.py",
+      "status": "OK",
+      "seconds": 1.555474996999692,
+      "log": "sweep/test_text_rosters_panel.log",
+      "summary": "14 passed in 0.56s"
+    },
+    {
+      "file": "test_texture_editor.py",
+      "status": "OK",
+      "seconds": 2.119863288997294,
+      "log": "sweep/test_texture_editor.log",
+      "summary": "21 passed, 12 subtests passed in 1.16s"
+    },
+    {
+      "file": "test_texture_master.py",
+      "status": "OK",
+      "seconds": 1.357612933999917,
+      "log": "sweep/test_texture_master.log",
+      "summary": "11 passed in 0.37s"
+    },
+    {
+      "file": "test_texture_master_facades.py",
+      "status": "OK",
+      "seconds": 1.8066013239986205,
+      "log": "sweep/test_texture_master_facades.log",
+      "summary": "2 passed in 0.75s"
+    },
+    {
+      "file": "test_throw_tuning_panel_qt.py",
+      "status": "OK",
+      "seconds": 3.038754445999075,
+      "log": "sweep/test_throw_tuning_panel_qt.log",
+      "summary": "13 passed in 2.05s"
+    },
+    {
+      "file": "test_unif_color_argb_parse.py",
+      "status": "OK",
+      "seconds": 1.796608839998953,
+      "log": "sweep/test_unif_color_argb_parse.log",
+      "summary": "2 passed in 0.73s"
+    },
+    {
+      "file": "test_unif_color_control.py",
+      "status": "OK",
+      "seconds": 10.422090739997657,
+      "log": "sweep/test_unif_color_control.log",
+      "summary": "13 passed, 2 skipped, 5 subtests passed in 8.70s"
+    },
+    {
+      "file": "test_unified_audio_composition.py",
+      "status": "OK",
+      "seconds": 2.0838067779986886,
+      "log": "sweep/test_unified_audio_composition.log",
+      "summary": "3 passed in 1.09s"
+    },
+    {
+      "file": "test_unified_stadium_texture_composition.py",
+      "status": "OK",
+      "seconds": 1.5215140060026897,
+      "log": "sweep/test_unified_stadium_texture_composition.log",
+      "summary": "5 passed in 0.53s"
+    },
+    {
+      "file": "test_uniform_bundle_cross_project.py",
+      "status": "OK",
+      "seconds": 4.807938724999985,
+      "log": "sweep/test_uniform_bundle_cross_project.log",
+      "summary": "8 passed, 12 subtests passed in 3.70s"
+    },
+    {
+      "file": "test_uniform_sharing.py",
+      "status": "OK",
+      "seconds": 1.2810916319976968,
+      "log": "sweep/test_uniform_sharing.log",
+      "summary": "8 passed, 16 subtests passed in 0.35s"
+    },
+    {
+      "file": "test_update_check.py",
+      "status": "OK",
+      "seconds": 1.4246346649997577,
+      "log": "sweep/test_update_check.log",
+      "summary": "21 passed in 0.35s"
+    },
+    {
+      "file": "test_ux_build_plan_coverage_qt.py",
+      "status": "OK",
+      "seconds": 3.5179000810021535,
+      "log": "sweep/test_ux_build_plan_coverage_qt.log",
+      "summary": "7 passed in 2.35s"
+    },
+    {
+      "file": "test_ux_open_disc_hook_qt.py",
+      "status": "OK",
+      "seconds": 14.680028352999216,
+      "log": "sweep/test_ux_open_disc_hook_qt.log",
+      "summary": "7 passed in 12.96s"
+    },
+    {
+      "file": "test_ux_rosters_words_qt.py",
+      "status": "OK",
+      "seconds": 1.7437718500004848,
+      "log": "sweep/test_ux_rosters_words_qt.log",
+      "summary": "4 passed in 0.67s"
+    },
+    {
+      "file": "test_validate_all_capabilities.py",
+      "status": "OK",
+      "seconds": 2.3332740260011633,
+      "log": "sweep/test_validate_all_capabilities.log",
+      "summary": "36 passed, 28 subtests passed in 1.38s"
+    },
+    {
+      "file": "test_visual_decode_cache.py",
+      "status": "OK",
+      "seconds": 1.3573575010013883,
+      "log": "sweep/test_visual_decode_cache.log",
+      "summary": "3 passed in 0.37s"
+    },
+    {
+      "file": "test_visual_export_and_preview.py",
+      "status": "OK",
+      "seconds": 10.246956499999214,
+      "log": "sweep/test_visual_export_and_preview.log",
+      "summary": "11 passed, 47249 subtests passed in 8.23s"
+    },
+    {
+      "file": "test_windows_folder_publish_retry.py",
+      "status": "OK",
+      "seconds": 1.316032973001711,
+      "log": "sweep/test_windows_folder_publish_retry.log",
+      "summary": "10 passed in 0.33s"
+    },
+    {
+      "file": "test_workspace_recovery.py",
+      "status": "OK",
+      "seconds": 1.8595045010006288,
+      "log": "sweep/test_workspace_recovery.log",
+      "summary": "7 passed in 0.78s"
+    },
+    {
+      "file": "test_xemu_settings.py",
+      "status": "OK",
+      "seconds": 1.6996439309987181,
+      "log": "sweep/test_xemu_settings.log",
+      "summary": "5 passed in 0.67s"
+    },
+    {
+      "file": "test_xiso_layout_tolerance.py",
+      "status": "OK",
+      "seconds": 1.9275635049998527,
+      "log": "sweep/test_xiso_layout_tolerance.log",
+      "summary": "9 passed, 13 subtests passed in 0.96s"
+    }
+  ]
+}

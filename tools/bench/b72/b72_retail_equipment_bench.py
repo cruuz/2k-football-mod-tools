@@ -105,6 +105,9 @@ def compile_once(index, names, design, *, helper, scale=1, profile=None):
                 row["outcome"] = "refused"
                 row["budget_bytes"] = error.budget
                 row["required_bytes"] = error.required
+                row["message"] = str(error)
+                row["suggestion"] = error.suggestion
+                row["required_is_lower_bound"] = error.required_is_lower_bound
             except writer.EquipmentRefitError as error:
                 row["outcome"] = "refit_error"
                 row["message"] = str(error)[:200]

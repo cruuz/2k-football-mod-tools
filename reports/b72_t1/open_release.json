@@ -1,0 +1,19 @@
+{
+  "count": 600,
+  "outcome": "opened",
+  "revision": "after",
+  "seconds": 0.773016703000394,
+  "phases": {
+    "load_project_archive": {
+      "calls": 1,
+      "seconds": 0.6499342189999879
+    },
+    "_stage_compiler_key": {
+      "calls": 1,
+      "seconds": 0.0007671419989492279
+    }
+  },
+  "source_unchanged": true,
+  "replacements": 600,
+  "fixture": "synthetic TSETs, real PNGs/codecs/loader; no retail package I/O"
+}

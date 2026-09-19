@@ -27,12 +27,13 @@ from types import ModuleType
 ROOT = Path(os.environ.get("B72_ROOT", Path.cwd())).resolve()
 sys.path[:0] = [str(ROOT), str(ROOT / "tools")]
 
+from mod_editor.core import nfl2k5_equipment_lz as current_lz
 from mod_editor.core import nfl2k5_uniform_equipment_writer as current  # noqa: E402
 from mod_editor.core.nfl2k5_equipment_import_intent import with_import_mode  # noqa: E402
 
 REVISIONS = [("beta-68 / rc93", "b48a07b9"), ("beta-69 / rc94", "42a0e609"),
              ("beta-70 / rc95", "b7eccf8e"), ("beta-71 / rc96", "02bbadd1"),
-             ("beta-71.1 / rc97", "088e3f41")]
+             ("beta-71.1 / rc97", "088e3f41"), ("beta-72 / rc98 candidate", None)]
 
 
 def historical(revision, path, name):
@@ -79,6 +80,7 @@ def main():
     parser.add_argument("--names", default="socks00,socks00_mud")
     parser.add_argument("--design", default="photo")
     parser.add_argument("--out", default=None)
+    parser.add_argument("--revision", default=None, help="optional commit or current for a focused replay")
     args = parser.parse_args()
 
     names = set(args.names.split(","))
@@ -98,19 +100,29 @@ def main():
                 target.asset_id, rgba, independent=True, scale=1))
             pngs.append((target.asset_id, png))
         for label, revision in REVISIONS:
-            # The LZ owner must be registered BEFORE its writer imports from it.
-            try:
-                lz = historical(revision, "mod_editor/core/nfl2k5_equipment_lz.py", f"b72_lz_{revision}")
-                sys.modules["mod_editor.core.nfl2k5_equipment_lz"] = lz
-            except subprocess.CalledProcessError:
-                sys.modules.pop("mod_editor.core.nfl2k5_equipment_lz", None)
-            writer = historical(revision, "mod_editor/core/nfl2k5_uniform_equipment_writer.py",
-                                f"b72_writer_{revision}")
+            if args.revision is not None and args.revision != (revision or 'current'):
+                continue
+            # Shared support owners remain current, as in the supplied probe.
+            if revision is None:
+                lz, writer = current_lz, current
+                sys.modules['mod_editor.core.nfl2k5_equipment_lz'] = lz
+            else:
+                try:
+                    lz = historical(revision, 'mod_editor/core/nfl2k5_equipment_lz.py', f'b72_lz_{revision}')
+                    sys.modules['mod_editor.core.nfl2k5_equipment_lz'] = lz
+                except subprocess.CalledProcessError:
+                    sys.modules.pop('mod_editor.core.nfl2k5_equipment_lz', None)
+                writer = historical(revision, 'mod_editor/core/nfl2k5_uniform_equipment_writer.py', f'b72_writer_{revision}')
+            if hasattr(writer, '_STAGED_CACHE'):
+                writer._STAGED_CACHE.clear()
+            if hasattr(writer, '_PARSE_CACHE'):
+                writer._PARSE_CACHE.clear()
             def no_disk(index, key):
                 raise OSError("disk stage cache disabled for this benchmark")
             writer._stage_disk_cache = no_disk
             row = {"version": label, "revision": revision, "design": args.design,
-                   "targets": [f"{t.name} {t.width}x{t.height}" for t in group]}
+                   "targets": [f"{t.name} {t.width}x{t.height}" for t in group],
+                   "helper_enabled": os.environ.get("NFL2K5_DISABLE_NATIVE_LZ") != "1"}
             started = time.perf_counter()
             try:
                 try:
@@ -121,7 +133,7 @@ def main():
                     # Beta 68 has no preflight_only; it returns the built tuple.
                     started = time.perf_counter()
                     built = writer.build_unified_uniform_equipment_imports(Path(args.index), pngs)
-                    encoded = built[4]["replacement"]["encoded_bytes"] if isinstance(built, tuple) else None
+                    encoded = built[2]["compression"]["recompressed_bytes"] if isinstance(built, tuple) else None
                 row["outcome"] = "fit"
                 row["encoded_bytes"] = encoded
             except Exception as error:  # noqa: BLE001

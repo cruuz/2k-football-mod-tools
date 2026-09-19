@@ -1,0 +1,22 @@
+[
+ {
+  "case": "shoe64_photo",
+  "helper": true,
+  "width": 64,
+  "distinct_colours": 4087,
+  "span_budget_bytes": 3760,
+  "outcome": "fit",
+  "seconds": 13.122579672999564,
+  "repeat_seconds": 0.0031215919989335816
+ },
+ {
+  "case": "shoe64_photo",
+  "helper": false,
+  "width": 64,
+  "distinct_colours": 4087,
+  "span_budget_bytes": 3760,
+  "outcome": "fit",
+  "seconds": 11.696602799000175,
+  "repeat_seconds": 0.002888101000280585
+ }
+]

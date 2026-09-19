@@ -31,9 +31,37 @@ def staging_targets(target, by_id):
 
 
 def _checked_rows(session, paths, by_id, *, selected=None):
-    from .nfl2k5_uniform_equipment_writer import preflight_project_equipment
-    rows = preflight_project_equipment(session.cache.pack0,
-        [(None, asset_id, path) for asset_id, path in sorted(paths.items())])
+    from types import SimpleNamespace
+    from .nfl2k5_uniform_equipment_writer import preflight_project_equipment, staged_equipment_cache
+    staged_equipment_cache().size_for_project(len(paths))
+    from .nfl2k5_project_fit import equipment_keys, source_hash
+    edits = [SimpleNamespace(asset_id=asset_id, replacement_path=path,
+                             replacement_sha256=_verified_art(session, path))
+             for asset_id, path in sorted(paths.items())]
+    keys = equipment_keys(session.cache.pack0, edits, source_hash(session), session=session)
+    groups = {}
+    for edit in edits:
+        group = tuple(map(int, edit.asset_id.split(':')[1:3]))
+        groups.setdefault(group, []).append(edit)
+    previous = getattr(session, '_equipment_checked_groups', {})
+    current, rows, changed = {}, [], []
+    for group, items in groups.items():
+        key = keys[items[0].asset_id]
+        cached = previous.get(group)
+        if cached is not None and cached[0] == key:
+            current[group] = cached
+            rows.extend(dict(row) for row in cached[1])
+        else:
+            changed.extend((None, item.asset_id, item.replacement_path) for item in items)
+    if changed:
+        checked = preflight_project_equipment(session.cache.pack0, changed)
+        rows.extend(checked)
+        for group, items in groups.items():
+            if group not in current:
+                ids = {item.asset_id for item in items}
+                current[group] = (keys[items[0].asset_id], tuple(dict(row) for row in checked if row['asset_id'] in ids))
+    session._equipment_checked_groups = current
+    rows.sort(key=lambda row: row['asset_id'])
     if selected is not None:
         row = next((r for r in rows if r['asset_id'] == selected), None)
         if row is not None and row.get('fit_status') == 'needs refit':
@@ -72,7 +100,7 @@ def equipment_fit_rows(session):
     paths = {}
     for edit in session.iter_edits():
         if edit.asset_id in by_id:
-            _validate_staged(edit)
+            _validate_staged(edit, session)
             paths[edit.asset_id] = edit.replacement_path
     rows = _checked_rows(session, paths, by_id)
     _remember_fit(session, rows)
@@ -84,7 +112,13 @@ def _fit_identity(session):
                         if e.asset_id.startswith("tset:")))
 
 
-def _remember_fit(session, rows, *, persist=True):
+def _remember_fit(session, rows, *, persist=True, staged_ids=()):
+    # replace_batch just wrote and hashed these exact validated bytes. Bind
+    # their filesystem identity now; later calls hash only a changed identity.
+    staged_ids = set(staged_ids)
+    for edit in session.iter_edits():
+        if edit.asset_id in staged_ids:
+            _verified_art(session, edit.replacement_path, trusted_digest=edit.replacement_sha256)
     from collections import OrderedDict
     cache = getattr(session, "_equipment_fit_receipts", None)
     if cache is None:
@@ -113,11 +147,33 @@ def cached_equipment_fit_rows(session):
     return tuple(dict(row) for row in rows)
 
 
-def _validate_staged(edit):
-    if not 0 < edit.replacement_path.stat().st_size <= 32 * 1024 * 1024:
-        raise ValidationError("A staged equipment PNG exceeds the import size bound.")
-    if hashlib.sha256(edit.replacement_path.read_bytes()).hexdigest() != edit.replacement_sha256:
-        raise ValidationError("A staged equipment PNG changed outside Mod Studio.")
+def _verified_art(session, path, *, expected=None, trusted_digest=None):
+    from .json_stream import require_regular_file, read_bounded_regular_file
+    path = Path(path)
+    info = require_regular_file(path, 'Staged equipment PNG')
+    if not 0 < info.st_size <= 32 * 1024 * 1024:
+        raise ValidationError('A staged equipment PNG exceeds the import size bound.')
+    identity = (info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_ctime_ns)
+    cache = getattr(session, '_equipment_art_identities', None)
+    if cache is None:
+        cache = session._equipment_art_identities = {}
+    key = str(path.absolute())
+    previous = cache.get(key)
+    if trusted_digest is not None:
+        actual = trusted_digest
+    elif previous is not None and previous[0] == identity:
+        actual = previous[1]
+    else:
+        _, payload = read_bounded_regular_file(path, 'Staged equipment PNG', maximum=32 * 1024 * 1024)
+        actual = hashlib.sha256(payload).hexdigest()
+    if expected is not None and actual != expected:
+        raise ValidationError('A staged equipment PNG changed outside Mod Studio.')
+    cache[key] = (identity, actual)
+    return actual
+
+
+def _validate_staged(edit, session):
+    return _verified_art(session, edit.replacement_path, expected=edit.replacement_sha256)
 
 
 def stage_equipment_import(session, asset, path, *, independent=None, scale=1, scope=None):
@@ -140,7 +196,7 @@ def stage_equipment_import(session, asset, path, *, independent=None, scale=1, s
     current = {}
     for edit in session.iter_edits():
         if edit.asset_id in by_id and edit.asset_id not in consumer_ids:
-            _validate_staged(edit)
+            _validate_staged(edit, session)
             current[edit.asset_id] = edit.replacement_path
     with tempfile.TemporaryDirectory(prefix="equipment-import-", dir=session.replacements) as directory:
         canonical = with_retail_source(encode_rgba_png(target.width, target.height, rgba),
@@ -159,7 +215,7 @@ def stage_equipment_import(session, asset, path, *, independent=None, scale=1, s
         # Keep each variant's fit status, including an existing unresolved sibling.
         checked = _checked_rows(session, current, by_id, selected=asset.asset_id)
         result = session.replace_batch(tuple(replacements), label="Import equipment texture")
-        _remember_fit(session, checked)
+        _remember_fit(session, checked, staged_ids=result.changed_asset_ids)
     staged = tuple(t.asset_id for t, _ in replacements)
     receipt = {"schema": "nfl2k5_equipment_staging/v1", "edits": checked,
                "consumers": _consumer_receipt(target, consumers, () if restoring else staged),
@@ -200,7 +256,7 @@ def refit_equipment(session, asset_id):
     if target is None or asset_id not in edits:
         raise ValidationError('Choose a staged equipment item to refit.')
     for edit in edits.values():
-        _validate_staged(edit)
+        _validate_staged(edit, session)
     asset = session._visual_asset(asset_id)
     payload, rgba = session.asset_io.validate_replacement(asset, edits[asset_id].replacement_path)
     mode, current_scale = import_settings(payload, asset_id, rgba)
@@ -218,7 +274,7 @@ def refit_equipment(session, asset_id):
         png = Path(directory) / 'refit.png'
         for scale in ((s for s in (1, 2, 4) if s >= current_scale) if independent else (1,)):
             for limit in writer.PALETTE_LIMITS:
-                palette, indices, _ = writer._quantize_art(levels[:1], limit)
+                palette, indices, _ = writer._quantize_art(levels[:1], limit, measure_quality=False)
                 reduced = b''.join(bytes(palette[i]) for i in indices[0])
                 candidate = with_import_mode(writer.encode_rgba_png(target.width, target.height, reduced),
                     asset_id, reduced, independent=independent, scale=scale)
@@ -238,7 +294,7 @@ def refit_equipment(session, asset_id):
                     continue
                 row = compiled.edit_templates[target.reference_index]
                 result = session.replace_batch(((asset, png),), label='Refit equipment')
-                _remember_fit(session, checked)
+                _remember_fit(session, checked, staged_ids=result.changed_asset_ids)
                 message = (f"Equipment {target.set_selector} / {target.name} {row['fit_summary']}; "
                            f"{compiled.rebuild_info.recompressed_bytes:,} bytes encoded. "
                            "Fine detail and shades may change. Undo restores the original artwork.")

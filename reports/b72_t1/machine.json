@@ -1,0 +1,8 @@
+{
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "platform": "Linux-6.8.0-139-generic-x86_64-with-glibc2.39",
+  "cpu_count": 32,
+  "numpy": "1.26.4",
+  "native_helper": "/home/noah/2k-worktrees/astra-b72-t1/tools/nfl2k5_equipment_optimal",
+  "test_scope": "Linux host, pure Python LZ forced off/on; Windows runtime not executed"
+}
