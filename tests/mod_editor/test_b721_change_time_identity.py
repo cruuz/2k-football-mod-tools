@@ -1,21 +1,30 @@
-"""Beta 72.1: a difference only in the change time is not a project or Build refusal.
+"""Beta 72.1: st_ctime decides nothing, on either platform, in either direction.
 
 A Windows 11 tester could not open his project on beta 72: "The project changed
 outside Mod Studio while it was opening: changed_ns", with identical path, size,
 mtime_ns, SHA-256 and file ID. The open compared two fd stats of the .2k5mod
-taken on two descriptors minutes apart. On Windows, Python 3.12 os.fstat reports
-FILE_BASIC_INFO.ChangeTime as st_ctime, and backup, antivirus, indexing and sync
-software move it without touching a byte, even on a file the build holds open.
-The Build compared the same field across its own span (compile, copy, union
-pass) and across the build and verify processes. APF 2K8 Mod Studio has the same
-project open and fast save, so it is covered here too.
+taken on two descriptors minutes apart, and the Build compared the same field
+across its own span and across the build and verify processes.
 
-Linux reproduces the shape with os.chmod to the mode a file already has (Windows
-with a read-only toggle), and the reported pair is also replayed through a patched
-identity reader. Every negative test proves a real content change (size, mtime,
-SHA-256 or file ID) still refuses. Synthetic inputs only; no retail bytes.
+The field cannot carry those decisions:
+
+* POSIX moves it with no byte changed (a chmod, an xattr write, a restored
+  mtime), which is what refused his untouched project.
+* Windows never moves it for a change at all. Python reports the file's
+  CREATION time in st_ctime there, so a same-size rewrite that puts the
+  modification time back leaves every stat field identical, and a stat-only
+  check accepts the changed bytes. Software that rewrites or restores a file
+  can also reset the creation time, which is the drift he saw.
+
+So a moved change time never refuses on its own, and an equal one never
+reassures: wherever a full-file SHA-256 exists it is compared always. Both
+directions are exercised on every platform here, the Windows side through
+``windows_change_time`` (one frozen st_ctime from every stat call) rather than
+by hoping a real touch is visible. APF 2K8 Mod Studio has the same project open
+and fast save, so it is covered too. Synthetic inputs only; no retail bytes.
 """
 
+import contextlib
 from contextlib import redirect_stdout
 import dataclasses
 import hashlib
@@ -75,20 +84,24 @@ def fd_stat(path: Path) -> os.stat_result:
         os.close(descriptor)
 
 
-def bump_change_time(path: Path) -> os.stat_result:
-    """Move only the change time, the way sync, backup or antivirus software does.
+def touch_metadata(path: Path) -> bool:
+    """Change metadata without touching a byte; report whether st_ctime moved.
 
-    POSIX updates st_ctime on a chmod to the mode the file already has. On
-    Windows a read-only toggle is a metadata change that moves ChangeTime, which
-    is what Python 3.12 os.fstat reports as st_ctime. The kernel file clock is
-    coarse, so the helper retries until the field has really moved.
+    The touch itself is what sync, backup and antivirus software does: a chmod
+    to the mode the file already has (a read-only toggle on Windows). POSIX
+    answers it with a new st_ctime, after the coarse file clock ticks. Windows
+    reports a creation time there and answers with nothing at all, so callers
+    assert on the return value rather than assuming the platform showed them
+    anything. Whatever the answer, no operation may refuse because of it.
     """
 
     path = Path(path)
     before = fd_stat(path)
     mode = stat.S_IMODE(os.stat(path).st_mode)
-    for _attempt in range(100):
-        time.sleep(0.011)
+    attempts = 2 if os.name == "nt" else 100
+    for attempt in range(attempts):
+        if attempt:
+            time.sleep(0.011)
         if os.name == "nt":
             os.chmod(path, stat.S_IREAD)
         os.chmod(path, mode)
@@ -96,13 +109,54 @@ def bump_change_time(path: Path) -> os.stat_result:
         if after.st_ctime_ns != before.st_ctime_ns:
             if (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns) != (
                     before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns):
-                raise AssertionError("the change-time bump changed more than the change time")
-            return after
-    raise unittest.SkipTest("this filesystem did not move the change time on a mode change")
+                raise AssertionError("the metadata touch changed more than the change time")
+            return True
+    return False
+
+
+FROZEN_CHANGE_TIME_NS = 1_600_000_000_000_000_000
+
+
+@contextlib.contextmanager
+def windows_change_time():
+    """Report one constant st_ctime_ns from every stat call, as Windows does.
+
+    Windows puts the creation time in st_ctime, so it stays put through the
+    rewrites and metadata touches a POSIX st_ctime would answer. Freezing the
+    field is that platform's semantics, and it lets the Windows cases run, and
+    fail honestly, on the machine this suite is developed on.
+    """
+
+    real = {name: getattr(os, name) for name in ("stat", "lstat", "fstat")}
+
+    def frozen(info: os.stat_result) -> os.stat_result:
+        extra = {"st_atime_ns": info.st_atime_ns, "st_mtime_ns": info.st_mtime_ns,
+                 "st_ctime_ns": FROZEN_CHANGE_TIME_NS}
+        for name in ("st_blksize", "st_blocks", "st_rdev", "st_flags", "st_gen",
+                     "st_birthtime", "st_file_attributes", "st_reparse_tag"):
+            value = getattr(info, name, None)
+            if value is not None:
+                extra[name] = value
+        return os.stat_result(tuple(info)[:10], extra)
+
+    def wrap(name):
+        inner = real[name]
+
+        def call(*args, **kwargs):
+            return frozen(inner(*args, **kwargs))
+
+        return call
+
+    with mock.patch.multiple(os, **{name: wrap(name) for name in real}):
+        yield
 
 
 def rewrite_same_size_keep_mtime(path: Path, offset: int = 0) -> None:
-    """Flip one byte and restore the old mtime: only the bytes and the change time move."""
+    """Flip one byte and restore the old mtime.
+
+    Size, mtime and file ID are unchanged afterwards, and on Windows so is
+    st_ctime, so the stat fields say nothing happened. Only the bytes moved.
+    """
 
     info = os.stat(path)
     time.sleep(0.02)
@@ -225,15 +279,18 @@ class ProjectOpenChangeTimeTests(unittest.TestCase):
         self.during_load = during_load
         return self.facade.load_project(self.project, self.progress)
 
-    def test_open_accepts_a_change_time_moved_while_the_project_was_opening(self) -> None:
+    def test_open_accepts_a_metadata_touch_while_the_project_was_opening(self) -> None:
         opened = project_target_identity(self.project)
-        result = self.load(bump_change_time)
+        moved: list[bool] = []
+        result = self.load(lambda path: moved.append(touch_metadata(path)))
         self.assertIn("Loaded 1 replacement", result.message)
         self.assertIs(self.facade._session, self.sessions[-1])
         self.assertFalse(self.sessions[-1].discarded)
         # The returned identity is the fresh one, so the next fast save compares
-        # against the change time the file has now.
-        self.assertNotEqual(result.project_identity.changed_ns, opened.changed_ns)
+        # against the change time the file has now. Windows shows no move at
+        # all, which is why the reported pair below is replayed explicitly.
+        if moved[0]:
+            self.assertNotEqual(result.project_identity.changed_ns, opened.changed_ns)
         self.assertEqual(
             dataclasses.replace(result.project_identity, changed_ns=opened.changed_ns), opened)
 
@@ -297,7 +354,7 @@ class FastSaveChangeTimeTests(unittest.TestCase):
         self.pending.write_bytes(b"project saved now")
 
     def test_fast_save_accepts_a_change_time_only_difference(self) -> None:
-        bump_change_time(self.target)
+        touch_metadata(self.target)
         _publish_archive(self.pending, self.target, replace=True, expected_target=self.expected)
         self.assertEqual(self.target.read_bytes(), b"project saved now")
 
@@ -399,30 +456,24 @@ def fd_snapshot(path: Path) -> list[int]:
 class BuildSnapshotChangeTimeTests(_BuildFixture):
     """The build's own snapshot pair spans compile, copy and the union pass."""
 
-    def test_build_accepts_a_change_time_move_mid_build(self) -> None:
+    def test_build_accepts_a_metadata_touch_mid_build(self) -> None:
         calls, counting = self.whole_file_hashes()
-        moved: dict[str, list[int]] = {}
+        seen: dict[str, list[int]] = {}
+        moved: list[bool] = []
 
         def touch_both() -> None:
             for key, path in (("source_stat", self.source), ("output_stat", self.output)):
-                before = fd_snapshot(path)
-                bump_change_time(path)
-                moved[key] = fd_snapshot(path)
-                self.assertNotEqual(moved[key], before)
+                moved.append(touch_metadata(path))
+                seen[key] = fd_snapshot(path)
 
         with self.after_union(touch_both), counting:
             result = self.build()
-        self.assertEqual(len(calls), 2, "source and output are each hashed once more")
-        # The receipt carries the snapshots that were proved, so the verifier
-        # process takes its fast path with no further whole-file hash.
-        receipt = result["written_receipt"]
-        self.assertEqual({key: receipt[key] for key in moved}, moved)
-        drifted_since = sum(fd_snapshot(path) != receipt[key] for key, path in
-                            (("source_stat", self.source), ("output_stat", self.output)))
-        calls, counting = self.whole_file_hashes()
-        with counting:
-            self.assertTrue(self.verify()["written_spans_verified"])
-        self.assertEqual(len(calls), drifted_since)
+        # POSIX shows the touch and the gate settles it by hashing; Windows
+        # reports a creation time and shows nothing, so the gate passes without
+        # a read. Neither refuses, and the receipt records what the gate saw.
+        self.assertEqual(len(calls), 2 if all(moved) else 0)
+        self.assertEqual({key: result["written_receipt"][key] for key in seen}, seen)
+        self.assertTrue(self.verify()["written_spans_verified"])
 
     def test_build_accepts_the_reported_shape_mid_build(self) -> None:
         real = self.tool.file_snapshot
@@ -451,13 +502,44 @@ class BuildSnapshotChangeTimeTests(_BuildFixture):
         self.assertFalse(self.output.exists(), "a refused build publishes no output")
         self.assertFalse(self.manifest.exists())
 
-    def test_build_refuses_new_output_bytes_with_the_old_mtime_mid_build(self) -> None:
-        with self.after_union(lambda: rewrite_same_size_keep_mtime(self.output, 128)):
-            self.assert_build_refused()
+    def test_build_refuses_new_bytes_with_the_old_mtime_where_the_change_time_moves(self) -> None:
+        # POSIX semantics: the rewrite moves st_ctime, so the build's own gate
+        # hashes the file against the union pass and refuses there.
+        for name in ("output", "source"):
+            with self.subTest(file=name):
+                self.setUp()
+                path = getattr(self, name)
+                real = self.tool.file_snapshot
+                union_done: list[bool] = []
 
-    def test_build_refuses_new_source_bytes_with_the_old_mtime_mid_build(self) -> None:
-        with self.after_union(lambda: rewrite_same_size_keep_mtime(self.source, 128)):
-            self.assert_build_refused()
+                def moved(descriptor):
+                    row = real(descriptor)
+                    return [*row[:4], row[4] + 1] if union_done else row
+
+                def tamper() -> None:
+                    union_done.append(True)
+                    rewrite_same_size_keep_mtime(path, 128)
+
+                with self.after_union(tamper), \
+                        mock.patch.object(self.tool, "file_snapshot", side_effect=moved):
+                    self.assert_build_refused()
+
+    def test_new_bytes_the_stat_cannot_see_are_refused_before_publication(self) -> None:
+        # Windows semantics: nothing in the stat moves, so the build's gate has
+        # nothing to see and the manifest is written. The verifier hashes both
+        # files against that receipt before anything is published, and refuses.
+        for name in ("output", "source"):
+            with self.subTest(file=name):
+                self.setUp()
+                path = getattr(self, name)
+                with windows_change_time():
+                    with self.after_union(lambda: rewrite_same_size_keep_mtime(path, 128)):
+                        self.build()
+                    self.assertTrue(self.output.is_file(), "the build itself sees nothing")
+                    with self.assertRaisesRegex(
+                            self.tool.ProjectError,
+                            "build files changed during receipt verification"):
+                        self.verify()
 
     def test_build_refuses_a_moved_mtime_mid_build_without_rehashing(self) -> None:
         real = self.tool.file_snapshot
@@ -481,9 +563,9 @@ class BuildReceiptChangeTimeTests(_BuildFixture):
         super().setUp()
         self.build()
 
-    def test_receipt_check_rehashes_and_accepts_change_time_drift(self) -> None:
-        bump_change_time(self.output)
-        bump_change_time(self.source)
+    def test_receipt_check_accepts_a_metadata_touch(self) -> None:
+        touch_metadata(self.output)
+        touch_metadata(self.source)
         calls, counting = self.whole_file_hashes()
         with counting:
             result = self.verify()
@@ -491,11 +573,18 @@ class BuildReceiptChangeTimeTests(_BuildFixture):
         self.assertEqual(result["output_sha256"], self.tool.file_digest(self.output))
         self.assertEqual(len(calls), 2, "source and output are each hashed once")
 
-    def test_receipt_check_without_drift_keeps_the_fast_path(self) -> None:
+    def test_receipt_check_always_proves_the_content(self) -> None:
+        # Nothing moved at all, and both files are still hashed in full: an
+        # equal stat is not proof on Windows, so it is never taken as one.
         calls, counting = self.whole_file_hashes()
         with counting:
             self.assertTrue(self.verify()["written_spans_verified"])
-        self.assertEqual(calls, [])
+        self.assertEqual(len(calls), 2)
+        with windows_change_time():
+            calls, counting = self.whole_file_hashes()
+            with counting:
+                self.assertTrue(self.verify()["written_spans_verified"])
+            self.assertEqual(len(calls), 2)
 
     def test_receipt_check_accepts_the_reported_shape(self) -> None:
         real = self.tool.file_snapshot
@@ -526,16 +615,21 @@ class BuildReceiptChangeTimeTests(_BuildFixture):
         with self.assertRaisesRegex(self.tool.ProjectError, "changed since the full build check"):
             self.verify()
 
-    def test_receipt_check_rehash_refuses_a_rewrite_that_restored_the_mtime(self) -> None:
-        # Size, mtime and file ID match the receipt; the change time differs, so
-        # the whole file is hashed and the bytes outside every span refuse.
-        rewrite_same_size_keep_mtime(self.output, 128)
-        with self.assertRaisesRegex(self.tool.ProjectError, "changed since the full build check"):
-            self.verify()
-        rewrite_same_size_keep_mtime(self.output, 128)
-        rewrite_same_size_keep_mtime(self.source, 128)
-        with self.assertRaisesRegex(self.tool.ProjectError, "changed since the full build check"):
-            self.verify()
+    def test_receipt_check_refuses_a_rewrite_that_restored_the_mtime(self) -> None:
+        # Size, mtime and file ID all still match the receipt, and on Windows
+        # so does st_ctime. The bytes are what refuses, on either platform.
+        for frozen in (False, True):
+            for name in ("output", "source"):
+                with self.subTest(windows=frozen, file=name):
+                    self.setUp()
+                    with contextlib.ExitStack() as stack:
+                        if frozen:
+                            stack.enter_context(windows_change_time())
+                        rewrite_same_size_keep_mtime(getattr(self, name), 128)
+                        with self.assertRaisesRegex(
+                                self.tool.ProjectError,
+                                "build files changed during receipt verification"):
+                            self.verify()
 
     def during_verify(self, action):
         """Run ``action`` inside verify_written, after its first check, before its last."""
@@ -550,8 +644,8 @@ class BuildReceiptChangeTimeTests(_BuildFixture):
 
     def test_receipt_check_accepts_a_change_time_move_while_verifying(self) -> None:
         def touch_both() -> None:
-            bump_change_time(self.source)
-            bump_change_time(self.output)
+            touch_metadata(self.source)
+            touch_metadata(self.output)
 
         calls, counting = self.whole_file_hashes()
         with self.during_verify(touch_both), counting:
@@ -559,10 +653,18 @@ class BuildReceiptChangeTimeTests(_BuildFixture):
         self.assertEqual(len(calls), 2, "the final recheck hashes source and output once")
 
     def test_receipt_check_still_refuses_new_bytes_while_verifying(self) -> None:
-        with self.during_verify(lambda: rewrite_same_size_keep_mtime(self.output, 128)), \
-                self.assertRaisesRegex(self.tool.ProjectError,
-                                       "build files changed during receipt verification"):
-            self.verify()
+        for frozen in (False, True):
+            with self.subTest(windows=frozen):
+                self.setUp()
+                with contextlib.ExitStack() as stack:
+                    if frozen:
+                        stack.enter_context(windows_change_time())
+                    stack.enter_context(
+                        self.during_verify(lambda: rewrite_same_size_keep_mtime(self.output, 128)))
+                    with self.assertRaisesRegex(
+                            self.tool.ProjectError,
+                            "build files changed during receipt verification"):
+                        self.verify()
 
     def test_receipt_check_still_refuses_a_moved_mtime_while_verifying(self) -> None:
         real = self.tool.file_snapshot
@@ -607,8 +709,8 @@ class BuildProcessesChangeTimeTests(unittest.TestCase):
             self.assertEqual(built.returncode, 0, built.stdout + built.stderr)
             receipt = next(token.split("=", 1)[1] for token in built.stdout.split()
                            if token.startswith("receipt_sha256="))
-            bump_change_time(output)
-            bump_change_time(root / "source.iso")
+            touch_metadata(output)
+            touch_metadata(root / "source.iso")
             verified = subprocess.run(
                 [*command, "verify", *arguments, "--receipt-sha256", receipt],
                 capture_output=True, text=True, timeout=120, cwd=ROOT)
@@ -638,21 +740,52 @@ class StagedArtChangeTimeTests(unittest.TestCase):
         self.png.write_bytes(b"\x89PNG\r\n\x1a\n staged equipment art " * 16)
         self.digest = sha256(self.png.read_bytes())
 
-    def test_staged_equipment_art_rehashes_on_change_time_drift(self) -> None:
+    def test_staged_equipment_art_survives_a_metadata_touch(self) -> None:
         session = SimpleNamespace()
         self.assertEqual(_verified_art(session, self.png, expected=self.digest), self.digest)
-        bump_change_time(self.png)
+        touch_metadata(self.png)
+        self.assertEqual(_verified_art(session, self.png, expected=self.digest), self.digest)
+        time.sleep(0.02)
+        self.png.write_bytes(b"different staged art")
+        with self.assertRaisesRegex(
+                ValidationError, "staged equipment PNG changed outside Mod Studio"):
+            _verified_art(session, self.png, expected=self.digest)
+
+    def test_staged_art_identity_cache_is_blind_to_a_restored_mtime_on_windows(self) -> None:
+        """The beta 72 speed contract, and what it costs on Windows.
+
+        test_b72_equipment_speed pins that an unchanged staged PNG is never
+        re-read, which is what made a 600-item project open in under a second
+        for the tester whose opens used to take hours. The cache key invalidates
+        on st_ctime, so POSIX still catches a same-size rewrite that restores
+        the modification time. Windows reports a creation time and cannot, and
+        re-reading every staged PNG there would take back the fix that platform
+        needed most. The bytes are still read and hashed when Build compiles
+        them, so the disc always matches the file on disk and the receipt
+        records that hash; what is lost is the studio saying so first.
+        """
+
+        session = SimpleNamespace()
         self.assertEqual(_verified_art(session, self.png, expected=self.digest), self.digest)
         rewrite_same_size_keep_mtime(self.png, 20)
-        with self.assertRaisesRegex(ValidationError, "staged equipment PNG changed outside Mod Studio"):
+        with self.assertRaisesRegex(
+                ValidationError, "staged equipment PNG changed outside Mod Studio"):
             _verified_art(session, self.png, expected=self.digest)
+
+        self.setUp()
+        with windows_change_time():
+            session = SimpleNamespace()
+            self.assertEqual(_verified_art(session, self.png, expected=self.digest), self.digest)
+            rewrite_same_size_keep_mtime(self.png, 20)
+            self.assertEqual(_verified_art(session, self.png, expected=self.digest), self.digest)
+        self.assertNotEqual(sha256(self.png.read_bytes()), self.digest)
 
     def test_build_input_pin_ignores_change_time_and_refuses_new_bytes(self) -> None:
         tool = load_backend()
         resolved, payload, identity = tool.read_regular_bounded(
             self.png, 1024 * 1024, "project media input")
         pin = tool.InputPin(resolved, payload, len(payload), tool.digest(payload), identity)
-        bump_change_time(self.png)
+        touch_metadata(self.png)
         tool.verify_input_pin(pin)
         rewrite_same_size_keep_mtime(self.png, 20)
         with self.assertRaisesRegex(tool.ProjectError, "pinned input changed during workflow"):
@@ -689,7 +822,7 @@ class MusicChangeTimeTests(unittest.TestCase):
         first = service.original_path(target)
         packs = [pack.path for pack in service.audio.archive.packs]
         for path in packs:
-            bump_change_time(path)
+            touch_metadata(path)
         self.assertEqual(service.original_path(target), first)
         time.sleep(0.02)
         with packs[0].open("ab") as stream:
@@ -710,7 +843,7 @@ class MusicChangeTimeTests(unittest.TestCase):
             return copy
 
         with mock.patch.object(music_service_module.shutil, "copyfile",
-                               side_effect=copy_then(bump_change_time)):
+                               side_effect=copy_then(touch_metadata)):
             batch = service.prepare_songs([song])
         self.addCleanup(batch.close)
         self.assertEqual(len(batch.rows), 1)
@@ -733,7 +866,7 @@ class MusicChangeTimeTests(unittest.TestCase):
                     music_build._stamp(path))
 
         before = identities()
-        bump_change_time(path)
+        touch_metadata(path)
         self.assertEqual(identities(), before)
         time.sleep(0.02)
         path.write_bytes(b"RIFF authored song bytes, edited")
@@ -757,7 +890,7 @@ class MusicChangeTimeTests(unittest.TestCase):
                 inputs=(authored,))
 
         drifted = self.root / "drifted.img"
-        result = run(drifted, lambda: (bump_change_time(source), bump_change_time(authored)))
+        result = run(drifted, lambda: (touch_metadata(source), touch_metadata(authored)))
         self.assertEqual(result, ("built", "built and checked"))
         self.assertEqual(drifted.read_bytes(), source.read_bytes())
 
@@ -812,11 +945,13 @@ class ApfProjectOpenChangeTimeTests(unittest.TestCase):
         self.active.close.assert_called_once()
         self.candidate.close.assert_not_called()
 
-    def test_apf_open_accepts_a_change_time_moved_while_opening(self) -> None:
+    def test_apf_open_accepts_a_metadata_touch_while_opening(self) -> None:
         opened = apf_project_target_identity(self.project)
-        self.assert_opened(self.load(bump_change_time))
+        moved: list[bool] = []
+        self.assert_opened(self.load(lambda path: moved.append(touch_metadata(path))))
         current = self.facade.last_project_identity
-        self.assertNotEqual(current.changed_ns, opened.changed_ns)
+        if moved[0]:
+            self.assertNotEqual(current.changed_ns, opened.changed_ns)
         self.assertEqual(dataclasses.replace(current, changed_ns=opened.changed_ns), opened)
 
     def test_apf_open_accepts_the_reported_windows_identity_pair(self) -> None:
@@ -874,7 +1009,7 @@ class ApfFastSaveChangeTimeTests(unittest.TestCase):
                             expected_target=expected_target)
 
     def test_apf_fast_save_accepts_a_change_time_only_difference(self) -> None:
-        bump_change_time(self.target)
+        touch_metadata(self.target)
         self.publish(self.expected)
         self.assertEqual(self.target.read_bytes(), b"APF project saved now")
 

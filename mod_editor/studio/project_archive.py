@@ -302,14 +302,20 @@ class ProjectTargetIdentity:
         """Whether ``other`` still names this file with the same size and mtime.
 
         Path, file ID (device and inode), size and modification time must all
-        match; only ``changed_ns`` may differ.  The two identities come from two
-        descriptors opened at different times, and the change time is metadata,
-        not content: on Windows Python 3.12 ``os.fstat`` reports
-        ``FILE_BASIC_INFO.ChangeTime`` as ``st_ctime``, which backup, antivirus,
-        indexing and sync software move without touching a byte (a POSIX chmod
-        or xattr write does the same).  A beta 72 tester's untouched project was
-        refused on exactly that difference.  Callers that can also compare the
-        content SHA-256 do so; the project open does.
+        match; only ``changed_ns`` may differ, because that field decides
+        nothing on its own:
+
+        * POSIX moves it with no byte changed (a chmod, an xattr write, a
+          restored mtime), which is what refused a beta 72 tester's untouched
+          project after backup or sync software touched it.
+        * Windows never moves it for a change at all: Python reports the file's
+          CREATION time there (deprecated since 3.12 in favour of
+          ``st_birthtime``), which software that rewrites or restores a file can
+          also reset to something else.
+
+        So an equal change time is not proof either.  Callers that can compare
+        the content SHA-256 must always do so: the project open does, on every
+        platform.  The fast save has no recorded hash and is metadata-only.
         """
 
         return isinstance(other, ProjectTargetIdentity) and (

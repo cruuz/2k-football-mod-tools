@@ -3696,8 +3696,9 @@ class Nfl2k5StudioFacade:
                 None, "unavailable", cause=str(exc))) from exc
         # The two identities come from two descriptors minutes apart. Only a
         # change-time difference is tolerated, and only because the SHA-256 of
-        # every byte matched too: backup, antivirus and sync software move that
-        # field on Windows without touching the file (beta 72 tester's refusal).
+        # every byte is compared here on every platform, always: that field
+        # moves with no byte changed on POSIX and is a creation time on
+        # Windows, so it can neither refuse nor reassure on its own.
         if (not opened_identity.matches_apart_from_change_time(current_identity)
                 or current_sha256 != opened_sha256):
             raise ValidationError(_project_open_change(opened_identity, opened_sha256,
