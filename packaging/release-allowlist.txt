@@ -949,3 +949,7 @@ tools/nfl_normshort3_positions.py
 mod_editor/core/runtime_dependencies.py
 packaging/runtime_dependencies.py
 packaging/requirements-studio.txt
+
+# Beta 72: MyCareer earned ratings, identity and advisory (m1)
+mod_editor/core/nfl2k5_my_career_advisory.py
+mod_editor/core/nfl2k5_my_career_events.py
