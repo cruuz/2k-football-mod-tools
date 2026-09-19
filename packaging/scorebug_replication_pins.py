@@ -1,9 +1,10 @@
 """Reviewed replication tool and metadata source identities; refreshed by repin.py."""
 PINS = {
+    "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
     "data/nfl2k5_scorebug_sprite/broadcast_states.json": "16e07c2de4718bfe57066c35643a6302101c58eca72339f1e189d510b773e5a4",
-    "data/nfl2k5_scorebug_sprite/team_accents.json": "afc0bf98f00a7aa4b7f2efca836c23c06f0a3def7ecafc265189dfae856fbc56",
+    "data/nfl2k5_scorebug_sprite/team_accents.json": "f20e75229f4eaebcfc01f106588cf3b7962c599b7a41af5d86532089a8bbffa3",
     "tools/scorebug_sprite/compare_ingame.py": "f71be713be3c5466d791a3906d289d159668c3b42101758a9c1526b9469670ac",
-    "tools/scorebug_sprite/jev/accents.py": "ff6182a380af4e77fa8cd227d23b94e4555e0bb29abe0b5563252e07ea2b3808",
+    "tools/scorebug_sprite/jev/accents.py": "6ec0603e87bd09e0395255bf85e12b8c3be5c3290dacd728f7f38b9ba95ee1c5",
     "tools/scorebug_sprite/jev/descriptors.py": "2826bf71feed3f9b0489fb01361c562e675a1a0b8fa7cc106e5f498b8f803876",
     "tools/scorebug_sprite/jev/judge.py": "2ee0e08c268046a4b076fa14f4ed7759b9a423423c14cc2ce4e4b022f7f0814a",
     "tools/scorebug_sprite/jev/layout_search.py": "d448016f261374bcdae113efc3e32fe47e609d6c449415d1f82d588dd026af43",

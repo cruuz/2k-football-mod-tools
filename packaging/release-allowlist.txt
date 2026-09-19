@@ -968,3 +968,4 @@ data/nfl2k5_scorebug_sprite/broadcast_states.json
 data/nfl2k5_scorebug_sprite/team_accents.json
 packaging/scorebug_replication_pins.py
 tools/scorebug_sprite/jev/README.md
+data/nfl2k5_scorebug_sprite/team_colors_official_2026.json

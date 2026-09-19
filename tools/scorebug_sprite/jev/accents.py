@@ -1,4 +1,4 @@
-"""Contrast-gated team accent proposals from the pinned retail colour table.
+"""Contrast-gated accents from supplied official colours and retail extra slots.
 
 Produces a review candidate. Applying it to the shipped layout is a separate
 step and must wait for the dark-label reproduction gate.
@@ -55,6 +55,29 @@ def game_palettes(xbe,pack):
     return dict(table_sha256=expected,table_va=hex(begin),table_end=hex(end),teams=teams)
 
 
+def official_palettes(palettes,path=None):
+    """Overlay the supplied current NFL identities, retaining explicit extra slots.
+
+    The source file resolves shade disputes. Jev never invents or changes a hex.
+    Logo-detail-only colours are excluded from large fills.
+    """
+    from copy import deepcopy
+    path=Path(path or ROOT/'data/nfl2k5_scorebug_sprite/team_colors_official_2026.json')
+    raw=path.read_bytes();source=json.loads(raw);out=deepcopy(palettes)
+    by_slot={t['nfl2k5_retail_slot']['index']:t for t in source['teams']}
+    if set(by_slot)!=set(range(32)):raise ValueError('Official source must cover exactly 32 NFL slots')
+    for name,team in out['teams'].items():
+        if team['slot']>=32:continue
+        entry=by_slot[team['slot']]
+        colors=[c for c in entry['colors'] if not c.get('logo_detail_only',False)]
+        if not colors:raise ValueError('No official fill colours for '+name)
+        team.update(official=list(dict.fromkeys(c['hex'].upper() for c in colors)),
+            source='supplied official 2026 identity palette',palette_source_sha256=hashlib.sha256(raw).hexdigest(),
+            palette_evidence=[{k:c.get(k) for k in ('name','hex','role','source','source_url','confidence','disputed','dispute_severity')} for c in colors])
+    out['official_source_sha256']=hashlib.sha256(raw).hexdigest()
+    return out
+
+
 def candidates(colors):
     out={}
     for index,color in enumerate(colors):
@@ -72,7 +95,7 @@ def prepare(palettes):
     requests=[];teams={}
     for name,team in palettes['teams'].items():
         choices=candidates(team['official']);teams[name]=dict(team,candidates=choices)
-        allowed={k:json.dumps(v['facts'],sort_keys=True) for k,v in choices.items() if v['contrast_white']>=4.5}
+        allowed={k:None for k,v in choices.items() if v['contrast_white']>=4.5}
         if not allowed:raise ValueError('No readable team candidates: '+name)
         for phrase in (0,1):
             instruction=('Choose this team accent, preserving its signature colour while keeping the white label readable.' if phrase==0 else
@@ -90,15 +113,20 @@ def choose(teams,responses):
         for role in ('wing','rim','plate'):
             one,two=a.get(role,{}),b.get(role,{})
             keys=[r.get('choice') for r in (one,two)];key=keys[0];candidate=team['candidates'].get(key)
-            if keys[0]!=keys[1]:reasons.append(role+': phrasing disagreement')
+            second=team['candidates'].get(keys[1])
+            if candidate is None or second is None or candidate['hex']!=second['hex']:
+                reasons.append(role+': phrasing disagreement')
             if min(one.get('confidence',0),two.get('confidence',0))<.6:reasons.append(role+': confidence below 0.6')
             if candidate is None or candidate['contrast_white']<4.5:
                 reasons.append(role+': code rejected invalid/low-contrast pick')
                 passing=[(k,v) for k,v in team['candidates'].items() if v['contrast_white']>=4.5]
                 key,candidate=max(passing,key=lambda kv:(kv[1]['facts']['signature'],kv[1]['contrast_white']))
+            if any(c['hex'].upper()==candidate['parent'] and c.get('confidence')=='low' for c in team.get('palette_evidence',[])):
+                reasons.append(role+': source shade has low confidence')
             picks[role]=candidate['hex']
         result[name]=dict(slot=team['slot'],asset_code=team['asset_code'],source=team['source'],official=team['official'],
-            **picks,logo_fit=team['logo_fit'],review_required=bool(reasons),candidates=team['candidates'])
+            **picks,wash=picks['wing'],logo_fit=team['logo_fit'],review_required=bool(reasons),candidates=team['candidates'],
+            palette_source_sha256=team.get('palette_source_sha256'),palette_evidence=team.get('palette_evidence',[]))
         if reasons:review.append(dict(team=name,reasons=reasons))
     return dict(schema='scorebug-team-accents/v1',status='review candidate; not applied to layout',teams=result,review=review,
         custom_rule='Use the configured team primary and secondary with the same variant/contrast gate. Until supplied, neutral charcoal/silver. Never borrow another team hue.',
@@ -117,7 +145,7 @@ def contact_sheet(result,path):
 
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--xbe',type=Path,required=True);p.add_argument('--pack',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
-    a=p.parse_args();palettes=game_palettes(a.xbe,a.pack);teams,requests=prepare(palettes)
+    a=p.parse_args();palettes=official_palettes(game_palettes(a.xbe,a.pack));teams,requests=prepare(palettes)
     write_json(a.output/'palettes.json',palettes);write_json(a.output/'teams.json',teams);write_json(a.output/'requests.json',requests)
     print(len(teams),'team slots;',len(requests),'text-only requests')
 

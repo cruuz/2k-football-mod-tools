@@ -49,13 +49,17 @@ Screenshot comparison saves a `jev_request`. Submit it through MCP, then use
 `--jev-response RESPONSE.json`, or run `--jev-live` with the SDK outside the
 sandbox. Suggested keys are inspection targets. They are never automatic edits.
 
-Accent candidates use the pinned retail colour table at `0x4E7FE0` and roster
-slot metadata. Two user slots and five teams absent from that colour table use
-an explicitly marked neutral fallback. Historical teams inherit the palette
-for their asset code. Current official shades have not been independently
-validated. Each colour is an exact source colour or a documented linear RGB
-lighter/darker variant; code requires white-text contrast of at least 4.5.
-Disagreements and low confidence go to the review list and swatch sheet.
+The 32 NFL accent candidates use the supplied authoritative
+`data/nfl2k5_scorebug_sprite/team_colors_official_2026.json`. Code excludes
+logo-detail-only colours from large fills and retains source citations and
+shade disputes. Extra roster slots use the pinned retail table at `0x4E7FE0`.
+Two user slots and five teams absent from that table use an explicitly marked
+neutral fallback. Historical teams inherit their asset-code palette. Each
+colour is an exact source colour or a documented RGB lighter/darker variant;
+code requires white-text contrast of at least 4.5. Wash uses the wing colour.
+Disagreements, low Jev confidence and low-confidence source shades go to the
+review list and swatch sheet. The source palette's shade choices are supplied
+research, not independent web verification by this tool.
 The existing runtime still supports 32 team logos and a neutral fallback.
 
 Layout search accepts an evaluator that renders a candidate and returns

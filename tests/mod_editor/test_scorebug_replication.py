@@ -24,7 +24,7 @@ class ReplicationTests(unittest.TestCase):
         data=json.loads((ROOT/'data/nfl2k5_scorebug_sprite/team_accents.json').read_text())
         self.assertEqual({t['slot'] for t in data['teams'].values()},set(range(52)))
         for name,team in data['teams'].items():
-            for role in ('wing','rim','plate'):
+            for role in ('wing','rim','plate','wash'):
                 color=team[role]
                 self.assertGreaterEqual(descriptors.contrast(accents.rgb(color)),4.5,(name,role))
                 candidates=[c for c in team['candidates'].values() if c['hex']==color]
@@ -38,12 +38,28 @@ class ReplicationTests(unittest.TestCase):
         for name in TEAM_LOGOS:self.assertEqual(team(name),name)
         self.assertEqual(team('COMMANDERS'),'WAS')
 
+    def test_current_nfl_palette_uses_supplied_shades_and_excludes_logo_details(self):
+        source=json.loads((ROOT/'data/nfl2k5_scorebug_sprite/team_colors_official_2026.json').read_text())
+        actual=json.loads((ROOT/'data/nfl2k5_scorebug_sprite/team_accents.json').read_text())['teams']
+        by_slot={t['nfl2k5_retail_slot']['index']:t for t in source['teams']}
+        for team in actual.values():
+            if team['slot']>=32:continue
+            allowed={c['hex'].upper() for c in by_slot[team['slot']]['colors'] if not c.get('logo_detail_only',False)}
+            self.assertEqual(set(team['official']),allowed)
+
     def test_jev_cannot_inject_a_foreign_colour(self):
         team=dict(slot=22,asset_code='20',source='test',official=['#101010','#D1D2D3'],logo_fit=dict(fill_x=1,height=1))
         teams,_=accents.prepare(dict(teams={'LV':team}))
         bad={role:dict(choice='#FF00AA',confidence=1) for role in ('wing','rim','plate')}
         result=accents.choose(teams,[bad,bad]);self.assertTrue(result['review'])
         self.assertIn(result['teams']['LV']['plate'],{v['hex'] for v in teams['LV']['candidates'].values()})
+
+    def test_equivalent_black_variants_are_not_a_colour_disagreement(self):
+        team=dict(slot=22,asset_code='20',source='test',official=['#000000'],logo_fit={})
+        teams,_=accents.prepare(dict(teams={'LV':team}))
+        a={r:dict(choice='colour0_base',confidence=1) for r in ('wing','rim','plate')}
+        b={r:dict(choice='colour0_dark',confidence=1) for r in ('wing','rim','plate')}
+        self.assertEqual(accents.choose(teams,[a,b])['review'],[])
 
     def test_unverified_calibration_blocks_mutations_and_baseline(self):
         called=[]
