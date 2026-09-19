@@ -1,0 +1,9 @@
+{
+  "manifest": ".scratch/b72-s1-gate-manifest.json",
+  "sha256": "a2ce6da26d18e21ba11fff4f57671fbb0cc16d327670f1454270cb69203300f2",
+  "steps": 179,
+  "spans": 13010,
+  "release_manifest_changed": false,
+  "disc_built": false,
+  "stack_xbe_sha256": "1771de8505885d3a5cad7cdbddf64d297e5115f30e68f60fe0b5030a9d8f8166"
+}

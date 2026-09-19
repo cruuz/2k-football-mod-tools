@@ -5,7 +5,13 @@ from PIL import Image,ImageDraw,ImageFont
 import numpy as np
 ROOT=Path(__file__).resolve().parents[2]
 OUT=ROOT/'data/nfl2k5_scorebug_sprite'
-FONT=Path('/usr/share/fonts/truetype/noto/NotoSansDisplay-Bold.ttf')
+import argparse
+parser=argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--font',type=Path,default=Path('/usr/share/fonts/truetype/noto/NotoSansDisplay-Bold.ttf'))
+parser.add_argument('--output',type=Path,default=OUT)
+args=parser.parse_args()
+FONT=args.font;OUT=args.output
+if not FONT.is_file():parser.error('Pass --font with NotoSansDisplay-Bold.ttf (SIL OFL 1.1).')
 # Noto Sans Display is SIL OFL 1.1. Fit its bold outlines to condensed broadcast cells.
 sheet=Image.new('RGBA',(1536,512),(255,255,255,0));cells={};cursor=[0,0,0]
 def put(name,im):
@@ -23,38 +29,74 @@ def pill(w,h,r,color,ends='both'):
  if ends=='right':d.rectangle((0,0,w*2,h*4-1),fill=color)
  return im.resize((w,h),Image.Resampling.LANCZOS)
 body=pill(1041,110,8,(37,37,37,255));a=np.asarray(body).copy()
-# Visible reflection near the top, and the dark lower rim retained in the art.
+# A neutral foundation under the team-driven rim and wash masks.
 for y in range(110):
- value=round(39+21*np.exp(-y/11)-4*y/109)
- a[y,:,:3]=[value]*3
-for y in (0,1):a[y,:,:3]=(74,80,88)
-for y in (108,109):a[y,:,:3]=(13,20,28)
+ value=np.interp(y,[0,1,3,18,105,107,109],[18,90,72,37,37,70,18])
+ a[y,:,:3]=round(value)
 body=Image.fromarray(a);put('body',body)
-# Three authored slices preserve the full-resolution silhouette at the ends.
-b=cells['body']['box'];cells['body_left']={'box':[b[0],b[1],b[0]+10,b[3]]};cells['body_middle']={'box':[b[0]+10,b[1],b[0]+11,b[3]]};cells['body_right']={'box':[b[2]-10,b[1],b[2],b[3]]}
-ramp=pill(213,110,8,(255,255,255,255),'left');a=np.asarray(ramp).copy()
-for x in range(213):a[:,x,3]=(a[:,x,3].astype(float)*(1-x/212)**1.5).round().astype('uint8')
-# Let the body rim show through the tinted wings. The horizontal mask remains monotonic.
-a[:2,:,3]=(a[:2,:,3].astype(float)*.35).round().astype('uint8');a[-2:,:,3]=0
-put('wing',Image.fromarray(a))
-# A neutral luminance mask is modulated by the possessing team's tint.
-plate=pill(246,36,6,(255,255,255,255));a=np.asarray(plate).copy()
-for y in range(36):
- for x in range(246):
-  # Soft inner edge shading, plus a restrained top lip and darker bottom lip.
-  shade=211-18*y/35-14*np.exp(-min(x,245-x)/4)-9*np.exp(-(35-y)/2)
-  if y==0:shade=211
-  a[y,x,:3]=round(shade)
+# Reuse the former end slices as two rim masks. The opaque body is now one
+# pre-filtered quad. This keeps 47 quads while giving each team a separately
+# tinted light rim; multiplying the wing primary alone cannot reach the rim RGB.
+median=Image.open(ROOT/'tools/bench/b72_scorebug/espn_bar_median.png').convert('RGB')
+for side,tint in [('away',(58,102,178)),('home',(239,33,82))]:
+ mask=Image.new('RGBA',(523,110),(255,255,255,0));a=np.asarray(mask).copy()
+ lit=(np.array(tint)+255)//2
+ for y in list(range(18))+list(range(105,110)):
+  for x in range(523):
+   source_x=437+x if side=='away' else 955+x
+   if y<18:
+    # Sample clean columns, not the transient white possession arrow or the
+    # horse crest embedded in the median's top strip.
+    inner=700 if side=='away' else 1230;outer=453 if side=='away' else 1473
+    distance=source_x-437 if side=='away' else 1478-source_x
+    edge=np.array(median.getpixel((outer-437,y)),dtype=float)
+    wash=np.array(median.getpixel((inner-437,y)),dtype=float)
+    mix=max(0,min(1,(distance-16)/217));rgb=edge*(1-mix)+wash*mix
+    if distance>383:
+     mix=min(1,(distance-383)/110)
+     rgb=rgb*(1-mix)+np.interp(y,[0,1,3,18],[18,65,72,37])*mix
+    if not 930<source_x<990:rgb*=np.array([1.15 if side=='away' else 1.105,1.10,1.15 if side=='away' else 1.20])
+    else:rgb+=np.array([8,2,8])
+   else:
+    rgb=np.array(median.getpixel((source_x-437,y)),dtype=float)
+    rgb*=(np.array([1.22,1.22,1.15]) if side=='away' else np.array([1.13,1.35,1.16])) if source_x<825 or source_x>1094 else np.array([.80,1.05,1.0])
+   a[y,x,:3]=np.clip(np.round(rgb/lit*255),0,255)
+   a[y,x,3]=255
+ put(side+'_rim',Image.fromarray(a))
+ramp=pill(233,110,8,(255,255,255,255),'left');a=np.asarray(ramp).copy()
+for x in range(233):a[:,x,3]=(a[:,x,3].astype(float)*max(0,min(1,(233-x)/217))**1.05).round().astype('uint8')
+# Rims submit over wings; interior tint is full primary at the outer 16 pixels.
+# White masks keep the dedicated 64-entry coverage ramp in P8. Encoding
+# a differently coloured feather on every row caused visible colour bands.
+for side,source_x in [('away',453),('home',1473)]:
+ b=a.copy();b[:,:,:3]=255
+ for y in range(110):
+  # Match the reference's vertical brightness with coverage over the body.
+  target=median.getpixel((source_x-437,y))[2 if side=='away' else 0]
+  peak=178 if side=='away' else 239
+  gain=max(0,min(1,(target-37)/(peak-37)))
+  b[y,:,3]=(b[y,:,3].astype(float)*gain).round().astype('uint8')
+ put('wing' if side=='away' else 'home_wing',Image.fromarray(b))
+# Gloss: wider lip, dip, broad sheen, lower edge, with no label shadow.
+plate=Image.new('RGBA',(268,40),(255,255,255,0));d=ImageDraw.Draw(plate)
+d.polygon([(0,0),(267,0),(261,4),(256,8),(256,33),(250,39),(17,39),(11,33),(11,8),(6,4)],fill='white')
+a=np.asarray(plate).copy()
+for y in range(40):
+ targets=[(182,24,71),(182,24,71),(169,22,64),(185,7,57),(170,13,58),(150,35,68)]
+ rgb=[np.interp(y,[0,2,7,21,30,39],[t[k] for t in targets]) for k in range(3)]
+ a[y,:,:3]=np.clip(np.round(np.array(rgb)/[215,45,90]*255),0,255)
 put('plate',Image.fromarray(a))
-notch=Image.new('RGBA',(56,20),(255,255,255,0));d=ImageDraw.Draw(notch)
-d.polygon([(0,0),(55,0),(28,19)],fill=(255,248,250,255))
-put('pointer',notch.resize((14,5),Image.Resampling.LANCZOS))
-put('housing',pill(246,62,18,(24,24,26,255)).resize((82,26),Image.Resampling.LANCZOS))
-# Store the round ends at the 4:3 HUD sampling footprint, so bilinear minification
-# does not skip their subpixel silhouette coverage. Source-space boxes stay exact.
-put('capsule',pill(180,40,20,(248,248,250,255),'left').resize((60,17),Image.Resampling.LANCZOS))
-put('red',pill(63,41,20,(215,0,51,255),'right').resize((21,17),Image.Resampling.LANCZOS))
-put('tick',Image.new('RGBA',(20,6),(255,255,255,255)))
+notch=Image.new('RGBA',(56,20),(63,32,40,0));d=ImageDraw.Draw(notch)
+d.polygon([(0,0),(55,0),(28,19)],fill=(63,32,40,255))
+put('pointer',notch.resize((14,5),Image.Resampling.BOX))
+put('housing',pill(246,62,18,(43,43,44,255)))
+capsule=pill(180,40,20,(248,248,250,255),'left');a=np.asarray(capsule).copy()
+a[0,:,:3]=(200,202,204)
+# Separator only at the top and bottom, leaving the clock's breathing room.
+a[1:9,60:63,:3]=80;a[31:39,60:63,:3]=80
+put('capsule',Image.fromarray(a))
+put('red',pill(63,41,20,(215,0,51,255),'right'))
+put('tick',Image.new('RGBA',(18,6),(255,255,255,255)))
 put('event',Image.new('RGBA',(2,2),(37,37,37,255)))
 sets={}
 def glyph(token,w,h):
@@ -63,22 +105,22 @@ def glyph(token,w,h):
  b=f.getbbox(token);im=Image.new('L',(b[2]-b[0],b[3]-b[1]));ImageDraw.Draw(im).text((-b[0],-b[1]),token,font=f,fill=255)
  im=im.crop(im.getbbox()).resize((w,h),Image.Resampling.LANCZOS)
  rgba=Image.new('RGBA',(w,h),'white');rgba.putalpha(im);return rgba
-for name,w,h in [('score',40,53),('clock',23,27),('small',15,19),('label',16,23)]:
+for name,w,h in [('score',40,53),('clock',23,27),('small',21,26),('label',24,30)]:
  g={}
  for t in '0123456789':
   cell=put(name+'_'+t,glyph(t,w,h));g[t]={'cell':cell,'size':[w,h],'advance':w+2}
  if name=='clock':g[':']={'cell':put('colon',glyph(':',5,18)),'size':[5,18],'advance':7,'raise':-4}
  if name in ('small','label'):
   for t in ('st','nd','rd','th','&','Goal','GOAL','and','OT','ST','ND','RD','TH','Inch','es'):
-   gh=13 if name=='small' and t in ('ST','ND','RD','TH','st','nd','rd','th') else h
+   gh=18 if name=='small' and t in ('ST','ND','RD','TH','st','nd','rd','th') else h
    width=round(len(t)*gh*.57) if t!='&' else round(gh*.72)
-   if name=='small' and t in ('ST','ND','RD','TH','st','nd','rd','th'):width=25
-   if name=='label' and t=='&':width=19
+   if name=='small' and t in ('ST','ND','RD','TH','st','nd','rd','th'):width=30
+   if name=='label' and t=='&':width=24
    cell=put(name+'_'+t,glyph(t,width,gh));g[t]={'cell':cell,'size':[width,gh],'advance':width+2,'raise':0}
  g[' ']={'cell':'tick','size':[0,0],'advance':11 if name=='label' else 6}
- if name=='label':g['~']={'cell':'tick','size':[20,6],'advance':30}
+ if name=='label':g['~']={'cell':'tick','size':[18,6],'advance':30}
  sets[name]={'cap_height':h,'glyphs':g}
-sets['ticks']={'cap_height':6,'glyphs':{'~':{'cell':'tick','size':[20,6],'advance':30}}}
+sets['ticks']={'cap_height':6,'glyphs':{'~':{'cell':'tick','size':[18,6],'advance':30}}}
 # FLAG: the plate turns broadcast yellow with a dark bold label baked into the cell.
 # The retail white FLAG text is blanked by the owner's literal edit.
 flag=pill(246,36,6,(255,204,0,255));a=np.asarray(flag).copy()
@@ -100,40 +142,84 @@ ESPN_MNF_COVERAGE_PNG_B64='iVBORw0KGgoAAAANSUhEUgAAANYAAAAdCAAAAADzp82FAAAQBUlEQ
 mark=Image.open(io.BytesIO(base64.b64decode(ESPN_MNF_COVERAGE_PNG_B64))).convert('L')
 espn_mnf=Image.new('RGBA',mark.size,(255,251,241,255));espn_mnf.putalpha(mark)
 put('espn_mnf',espn_mnf)
+# Reuse the measured face: N, F, then an L from F's stem and flipped top arm.
+nfl=Image.new('RGBA',(214,29),(255,251,241,0))
+nfl.paste(espn_mnf.crop((0,0,104,29)),(15,0))
+nfl.paste(espn_mnf.crop((150,0,182,29)),(124,0))
+fmark=espn_mnf.crop((185,0,212,29));nfl.paste(fmark,(159,0))
+letter=Image.new('RGBA',(25,29),(255,251,241,0))
+letter.paste(fmark.crop((0,0,8,29)),(0,0))
+letter.paste(fmark.crop((0,0,25,7)).transpose(Image.Transpose.FLIP_TOP_BOTTOM),(0,22))
+nfl.paste(letter,(189,0));put('espn_nfl',nfl)
 BRAND=[dict(name='watermark',cell='espn_mnf',box=[1655, 35, 1869, 64],material=9,tint='none',pin='top-right',opacity=0.714,z=0,
  source=dict(frames='Broncos-vs-Chiefs-Week1-Highlights/frames, every 30th frame from frame_000101 (999 candidates, 944 with the mark present)',method='per-pixel temporal minimum of luminance over frames that carry the mark lifts the static semi-transparent overlay off its darkest background; alpha=(min-black)/(255-black); coverage=alpha/p95(alpha)',black_level=0.0,measured_opacity=0.714,colour=[255, 251, 241]))]
+BRAND[0]['variant']='mnf'
+BRAND.append(dict(BRAND[0],name='watermark_nfl',cell='espn_nfl',variant='nfl',
+ source=dict(BRAND[0]['source'],method='Measured ESPN logotype, N and F; L assembled from F stem and vertically flipped top arm. NFL has a 15 source pixel left inset in the same quad. No ESPN NFL still is available.')))
 static=[]
 def s(name,box,cell,mat=3,tint='none',**kw):static.append(dict(name=name,box=box,cell=cell,material=mat,tint=tint,**kw))
-s('body_left',[437,942,447,1052],'body_left');s('body',[447,942,1468,1052],'body_middle');s('body_right',[1468,942,1478,1052],'body_right')
-s('housing',[837,983,1083,1045],'housing');s('capsule',[839,999,1019,1039],'capsule')
-s('plate',[837,947,1083,983],'plate',4,'possessing team')
+s('body_left',[437,942,960,1052],'away_rim',3,'away rim');s('body',[437,942,1478,1052],'body');s('body_right',[955,942,1478,1052],'home_rim',3,'home rim')
+s('housing',[837,987,1083,1049],'housing');s('capsule',[839,999,1019,1039],'capsule')
+s('plate',[825,947,1093,987],'plate',4,'possessing team')
 s('pointer',[951,942,965,947],'pointer',4)
-s('away_wing',[437,942,650,1052],'wing',9,'away team');s('home_wing',[1265,942,1478,1052],'wing',9,'home team',flip_x=True)
+s('away_wing',[437,942,670,1052],'wing',9,'away team');s('home_wing',[1245,942,1478,1052],'home_wing',9,'home team',flip_x=True)
 s('red',[1019,999,1082,1040],'red',9)
-s('away_logo',[453,943,653,1050],'logo',8);s('home_logo',[1268,943,1468,1050],'logo',5)
+s('away_logo',[456,942,639,1054],'logo',8);s('home_logo',[1282,943,1482,1050],'logo',5)
 fields=[]
 def f(name,source,box,glyphset,slots,mat,colour,anchor=None,**kw):
  fields.append(dict(name=name,source=source,box=box,glyph_set=glyphset,slots=slots,material=mat,colour=colour,alignment='center',anchor=anchor or [(box[0]+box[2])/2,box[1]],size=box[3]-box[1],**kw))
-f('away_score','away score',[696,965,816,1018],'score',3,6,'#E1E1E1')
-f('home_score','home score',[1100,965,1220,1018],'score',3,6,'#E1E1E1')
+f('away_score','away score',[696,965,816,1018],'score',3,6,'#FDFDFD')
+f('home_score','home score',[1100,965,1220,1018],'score',3,6,'#FDFDFD')
 f('clock','clock',[920,1006,1000,1033],'clock',5,6,'#000000')
-f('play_clock','play clock',[1028,1009,1073,1028],'small',2,6,'#FFFFFF',anchor=[1049.5,1009],strip_zero=True)
-f('quarter','quarter',[850,1009,892,1028],'small',3,6,'#1E1E1E')
+f('play_clock','play clock',[1023,1006,1076,1032],'small',2,6,'#FFFFFF',anchor=[1049.5,1006],strip_zero=True)
+f('quarter','quarter',[846,1006,900,1032],'small',3,6,'#1E1E1E')
 f('away_timeouts','away timeouts',[717,1032,797,1038],'ticks',3,7,'#F6F6F6',anchor=[717,1032],timeout=True)
 f('home_timeouts','home timeouts',[1120,1032,1200,1038],'ticks',3,7,'#F6F6F6',anchor=[1120,1032],timeout=True)
-f('down','down and distance',[850,955,1070,978],'label',8,7,'#FFFFFF')
+f('down','down and distance',[838,952,1082,982],'label',8,7,'#FFFFFF')
 for x in fields:
  if x.get('timeout'):x['alignment']='left'
 for row in static:row['z']=-2 if row['cell']=='logo' else -1 if 'wing' in row['name'] else -3 if row['material'] in (4,9) else 0
 for row in fields:row['z']=-5
 layout=dict(schema='nfl2k5_scorebug_sprite/v1',frame=[1920,1080],atlas=[256,512],template='template.png',cells=cells,glyph_sets=sets,static=static,fields=fields,brand=BRAND,
- events=[dict(name=n,material=m,box=[837,947,1083,983],cell='flag' if n=='FLAG' else 'event',z=-7) for n,m in [('FUMBLE',0),('ball on',1),('FLAG',2),('hang time',10)]],
- plate_tints={'KC':'#D70E48'},
+ events=[dict(name=n,material=m,box=[825,947,1093,987],cell='flag' if n=='FLAG' else 'event',z=-7) for n,m in [('FUMBLE',0),('ball on',1),('FLAG',2),('hang time',10)]],
+ plate_tints={'KC':'#D72D5A'},
+ wing_tints={'DEN':'#3A66B2','KC':'#EF2152'},
+ logo_fit={'default':{'fill_x':1.14,'height':1.0},'by_team':{'KC':{'fill_x':1.30,'height':1.0},'DEN':{'fill_x':1.29,'height':1.0}}},
  reference_boxes={'bar':[437,942,1478,1052],'away_score':[736,965,776,1018],'home_score':[1140,965,1180,1018],'down':[898,955,1021,978],'clock':[920,1006,1000,1033],'quarter':[850,1009,892,1028],'play_clock':[1042,1009,1057,1028]},
  provenance=dict(font='Noto Sans Display Bold, condensed raster fit',license='SIL Open Font License 1.1',font_sha256=hashlib.sha256(FONT.read_bytes()).hexdigest(),author='tools/scorebug_sprite/author_default.py',rendered_once=True,font_distributed=False,brand='brand cells are coverage masks lifted from broadcast stills; each brand row records its source frames, method, opacity and colour'))
 # Logical layers are submitted back to front; GPU vertices share one depth.
 layout['layer_order']='increasing-z'
 for group in ('static','fields','brand','events'):
  for row in layout[group]:row['z']=-20-row.get('z',0)
-OUT.mkdir(parents=True,exist_ok=True);sheet.save(OUT/'template.png');(OUT/'layout.json').write_text(json.dumps(layout,indent=2)+'\n')
+for row in static:
+ if row['name'] in ('body_left','body_right'):row['z']=-18.5
+# Pre-filter all used atlas cells to the smallest (16:9) raster footprint.
+# Floor, rather than round, ensures neither axis minifies at either aspect.
+# Shared glyph cells use the smallest dimensions of every reference.
+original=sheet.copy();source_cells=dict(cells);sizes={}
+def footprint(cell,w,h):
+ if w and h:
+  size=(max(1,int(w/3)),max(1,int(h*448/1080)))
+  sizes[cell]=tuple(min(a,b) for a,b in zip(sizes.get(cell,size),size))
+for row in static+BRAND+layout['events']:
+ if row['cell']!='logo':footprint(row['cell'],row['box'][2]-row['box'][0],row['box'][3]-row['box'][1])
+# The smooth full-width body needs only half its HUD columns, and fits a 256 atlas.
+sizes['body']=(173,45)
+for name,gs in sets.items():
+ # Native fields compress three-digit scores and two-digit-minute clocks.
+ factor={'score':120/124,'clock':80/105}.get(name,1)
+ for g in gs['glyphs'].values():footprint(g['cell'],g['size'][0]*factor,g['size'][1])
+sheet=Image.new('RGBA',(1536,512),(255,255,255,0));cells={};cursor[:]=[0,0,0]
+for name,size in sizes.items():
+ im=original.crop(source_cells[name]['box'])
+ # Pillow's RGBA BOX filter is alpha-aware; each cell is filtered separately.
+ fitted=im.resize((min(im.width,size[0]),min(im.height,size[1])),Image.Resampling.BOX)
+ if name.startswith('espn_'):
+  coverage=fitted.getchannel('A');fitted=Image.new('RGBA',fitted.size,(255,251,241,255));fitted.putalpha(coverage)
+ if name in ('wing','home_wing'):
+  a=np.asarray(fitted).copy();a[:,-1,3]=0;fitted=Image.fromarray(a)
+ put(name,fitted)
+layout['cells']=cells
+layout['sampling']='Cells area-filtered to no larger than the smallest 16:9 HUD footprint; one mip, no minification.'
+OUT.mkdir(parents=True,exist_ok=True);sheet.save(OUT/'template.png');(OUT/'layout.json').write_text(json.dumps(layout,indent=1)+'\n',newline='\n')
 print('authored',cursor,OUT)

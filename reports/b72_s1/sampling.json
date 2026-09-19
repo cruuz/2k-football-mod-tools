@@ -1,0 +1,3252 @@
+[
+  {
+    "aspect": "4:3",
+    "cell": "away_rim",
+    "field": "body_left",
+    "texels": [
+      174,
+      45
+    ],
+    "minimum_footprint": [
+      232.44444444444443,
+      45.629629629629626
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "body",
+    "field": "body",
+    "texels": [
+      173,
+      45
+    ],
+    "minimum_footprint": [
+      462.66666666666663,
+      45.629629629629626
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "home_rim",
+    "field": "body_right",
+    "texels": [
+      174,
+      45
+    ],
+    "minimum_footprint": [
+      232.44444444444443,
+      45.629629629629626
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "housing",
+    "field": "housing",
+    "texels": [
+      82,
+      25
+    ],
+    "minimum_footprint": [
+      109.33333333333333,
+      25.71851851851852
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "capsule",
+    "field": "capsule",
+    "texels": [
+      60,
+      16
+    ],
+    "minimum_footprint": [
+      80.0,
+      16.59259259259259
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "plate",
+    "field": "plate",
+    "texels": [
+      89,
+      16
+    ],
+    "minimum_footprint": [
+      119.1111111111111,
+      16.59259259259259
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "pointer",
+    "field": "pointer",
+    "texels": [
+      4,
+      2
+    ],
+    "minimum_footprint": [
+      6.222222222222221,
+      2.074074074074074
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "wing",
+    "field": "away_wing",
+    "texels": [
+      77,
+      45
+    ],
+    "minimum_footprint": [
+      103.55555555555554,
+      45.629629629629626
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "home_wing",
+    "field": "home_wing",
+    "texels": [
+      77,
+      45
+    ],
+    "minimum_footprint": [
+      103.55555555555554,
+      45.629629629629626
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "red",
+    "field": "red",
+    "texels": [
+      21,
+      17
+    ],
+    "minimum_footprint": [
+      28.0,
+      17.007407407407406
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "espn_mnf",
+    "field": "watermark",
+    "texels": [
+      71,
+      12
+    ],
+    "minimum_footprint": [
+      95.1111111111111,
+      12.02962962962963
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "espn_nfl",
+    "field": "watermark_nfl",
+    "texels": [
+      71,
+      12
+    ],
+    "minimum_footprint": [
+      95.1111111111111,
+      12.02962962962963
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "event",
+    "field": "FUMBLE",
+    "texels": [
+      2,
+      2
+    ],
+    "minimum_footprint": [
+      119.1111111111111,
+      16.59259259259259
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "event",
+    "field": "ball on",
+    "texels": [
+      2,
+      2
+    ],
+    "minimum_footprint": [
+      119.1111111111111,
+      16.59259259259259
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "flag",
+    "field": "FLAG",
+    "texels": [
+      89,
+      16
+    ],
+    "minimum_footprint": [
+      119.1111111111111,
+      16.59259259259259
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "event",
+    "field": "hang time",
+    "texels": [
+      2,
+      2
+    ],
+    "minimum_footprint": [
+      119.1111111111111,
+      16.59259259259259
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "score_0",
+    "field": "away_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      17.20430107526882,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "score_1",
+    "field": "away_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      17.20430107526882,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "score_2",
+    "field": "away_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      17.20430107526882,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "score_3",
+    "field": "away_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      17.20430107526882,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "score_4",
+    "field": "away_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      17.20430107526882,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "score_5",
+    "field": "away_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      17.20430107526882,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "score_6",
+    "field": "away_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      17.20430107526882,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "score_7",
+    "field": "away_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      17.20430107526882,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "score_8",
+    "field": "away_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      17.20430107526882,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "score_9",
+    "field": "away_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      17.20430107526882,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "score_0",
+    "field": "home_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      17.20430107526882,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "score_1",
+    "field": "home_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      17.20430107526882,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "score_2",
+    "field": "home_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      17.20430107526882,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "score_3",
+    "field": "home_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      17.20430107526882,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "score_4",
+    "field": "home_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      17.20430107526882,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "score_5",
+    "field": "home_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      17.20430107526882,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "score_6",
+    "field": "home_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      17.20430107526882,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "score_7",
+    "field": "home_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      17.20430107526882,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "score_8",
+    "field": "home_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      17.20430107526882,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "score_9",
+    "field": "home_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      17.20430107526882,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "clock_0",
+    "field": "clock",
+    "texels": [
+      5,
+      11
+    ],
+    "minimum_footprint": [
+      7.788359788359787,
+      11.2
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "clock_1",
+    "field": "clock",
+    "texels": [
+      5,
+      11
+    ],
+    "minimum_footprint": [
+      7.788359788359787,
+      11.2
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "clock_2",
+    "field": "clock",
+    "texels": [
+      5,
+      11
+    ],
+    "minimum_footprint": [
+      7.788359788359787,
+      11.2
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "clock_3",
+    "field": "clock",
+    "texels": [
+      5,
+      11
+    ],
+    "minimum_footprint": [
+      7.788359788359787,
+      11.2
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "clock_4",
+    "field": "clock",
+    "texels": [
+      5,
+      11
+    ],
+    "minimum_footprint": [
+      7.788359788359787,
+      11.2
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "clock_5",
+    "field": "clock",
+    "texels": [
+      5,
+      11
+    ],
+    "minimum_footprint": [
+      7.788359788359787,
+      11.2
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "clock_6",
+    "field": "clock",
+    "texels": [
+      5,
+      11
+    ],
+    "minimum_footprint": [
+      7.788359788359787,
+      11.2
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "clock_7",
+    "field": "clock",
+    "texels": [
+      5,
+      11
+    ],
+    "minimum_footprint": [
+      7.788359788359787,
+      11.2
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "clock_8",
+    "field": "clock",
+    "texels": [
+      5,
+      11
+    ],
+    "minimum_footprint": [
+      7.788359788359787,
+      11.2
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "clock_9",
+    "field": "clock",
+    "texels": [
+      5,
+      11
+    ],
+    "minimum_footprint": [
+      7.788359788359787,
+      11.2
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "colon",
+    "field": "clock",
+    "texels": [
+      1,
+      7
+    ],
+    "minimum_footprint": [
+      1.693121693121693,
+      7.466666666666667
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_0",
+    "field": "play_clock",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      9.333333333333332,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_1",
+    "field": "play_clock",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      9.333333333333332,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_2",
+    "field": "play_clock",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      9.333333333333332,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_3",
+    "field": "play_clock",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      9.333333333333332,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_4",
+    "field": "play_clock",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      9.333333333333332,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_5",
+    "field": "play_clock",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      9.333333333333332,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_6",
+    "field": "play_clock",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      9.333333333333332,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_7",
+    "field": "play_clock",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      9.333333333333332,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_8",
+    "field": "play_clock",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      9.333333333333332,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_9",
+    "field": "play_clock",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      9.333333333333332,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_st",
+    "field": "play_clock",
+    "texels": [
+      10,
+      7
+    ],
+    "minimum_footprint": [
+      13.333333333333332,
+      7.466666666666667
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_nd",
+    "field": "play_clock",
+    "texels": [
+      10,
+      7
+    ],
+    "minimum_footprint": [
+      13.333333333333332,
+      7.466666666666667
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_rd",
+    "field": "play_clock",
+    "texels": [
+      10,
+      7
+    ],
+    "minimum_footprint": [
+      13.333333333333332,
+      7.466666666666667
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_th",
+    "field": "play_clock",
+    "texels": [
+      10,
+      7
+    ],
+    "minimum_footprint": [
+      13.333333333333332,
+      7.466666666666667
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_&",
+    "field": "play_clock",
+    "texels": [
+      6,
+      10
+    ],
+    "minimum_footprint": [
+      8.444444444444445,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_Goal",
+    "field": "play_clock",
+    "texels": [
+      19,
+      10
+    ],
+    "minimum_footprint": [
+      26.22222222222222,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_GOAL",
+    "field": "play_clock",
+    "texels": [
+      19,
+      10
+    ],
+    "minimum_footprint": [
+      26.22222222222222,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_and",
+    "field": "play_clock",
+    "texels": [
+      14,
+      10
+    ],
+    "minimum_footprint": [
+      19.555555555555554,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_OT",
+    "field": "play_clock",
+    "texels": [
+      10,
+      10
+    ],
+    "minimum_footprint": [
+      13.333333333333332,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_ST",
+    "field": "play_clock",
+    "texels": [
+      10,
+      7
+    ],
+    "minimum_footprint": [
+      13.333333333333332,
+      7.466666666666667
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_ND",
+    "field": "play_clock",
+    "texels": [
+      10,
+      7
+    ],
+    "minimum_footprint": [
+      13.333333333333332,
+      7.466666666666667
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_RD",
+    "field": "play_clock",
+    "texels": [
+      10,
+      7
+    ],
+    "minimum_footprint": [
+      13.333333333333332,
+      7.466666666666667
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_TH",
+    "field": "play_clock",
+    "texels": [
+      10,
+      7
+    ],
+    "minimum_footprint": [
+      13.333333333333332,
+      7.466666666666667
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_Inch",
+    "field": "play_clock",
+    "texels": [
+      19,
+      10
+    ],
+    "minimum_footprint": [
+      26.22222222222222,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_es",
+    "field": "play_clock",
+    "texels": [
+      10,
+      10
+    ],
+    "minimum_footprint": [
+      13.333333333333332,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_0",
+    "field": "quarter",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      9.333333333333332,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_1",
+    "field": "quarter",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      9.333333333333332,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_2",
+    "field": "quarter",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      9.333333333333332,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_3",
+    "field": "quarter",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      9.333333333333332,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_4",
+    "field": "quarter",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      9.333333333333332,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_5",
+    "field": "quarter",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      9.333333333333332,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_6",
+    "field": "quarter",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      9.333333333333332,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_7",
+    "field": "quarter",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      9.333333333333332,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_8",
+    "field": "quarter",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      9.333333333333332,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_9",
+    "field": "quarter",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      9.333333333333332,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_st",
+    "field": "quarter",
+    "texels": [
+      10,
+      7
+    ],
+    "minimum_footprint": [
+      13.333333333333332,
+      7.466666666666667
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_nd",
+    "field": "quarter",
+    "texels": [
+      10,
+      7
+    ],
+    "minimum_footprint": [
+      13.333333333333332,
+      7.466666666666667
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_rd",
+    "field": "quarter",
+    "texels": [
+      10,
+      7
+    ],
+    "minimum_footprint": [
+      13.333333333333332,
+      7.466666666666667
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_th",
+    "field": "quarter",
+    "texels": [
+      10,
+      7
+    ],
+    "minimum_footprint": [
+      13.333333333333332,
+      7.466666666666667
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_&",
+    "field": "quarter",
+    "texels": [
+      6,
+      10
+    ],
+    "minimum_footprint": [
+      8.444444444444445,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_Goal",
+    "field": "quarter",
+    "texels": [
+      19,
+      10
+    ],
+    "minimum_footprint": [
+      26.22222222222222,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_GOAL",
+    "field": "quarter",
+    "texels": [
+      19,
+      10
+    ],
+    "minimum_footprint": [
+      26.22222222222222,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_and",
+    "field": "quarter",
+    "texels": [
+      14,
+      10
+    ],
+    "minimum_footprint": [
+      19.555555555555554,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_OT",
+    "field": "quarter",
+    "texels": [
+      10,
+      10
+    ],
+    "minimum_footprint": [
+      13.333333333333332,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_ST",
+    "field": "quarter",
+    "texels": [
+      10,
+      7
+    ],
+    "minimum_footprint": [
+      13.333333333333332,
+      7.466666666666667
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_ND",
+    "field": "quarter",
+    "texels": [
+      10,
+      7
+    ],
+    "minimum_footprint": [
+      13.333333333333332,
+      7.466666666666667
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_RD",
+    "field": "quarter",
+    "texels": [
+      10,
+      7
+    ],
+    "minimum_footprint": [
+      13.333333333333332,
+      7.466666666666667
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_TH",
+    "field": "quarter",
+    "texels": [
+      10,
+      7
+    ],
+    "minimum_footprint": [
+      13.333333333333332,
+      7.466666666666667
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_Inch",
+    "field": "quarter",
+    "texels": [
+      19,
+      10
+    ],
+    "minimum_footprint": [
+      26.22222222222222,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "small_es",
+    "field": "quarter",
+    "texels": [
+      10,
+      10
+    ],
+    "minimum_footprint": [
+      13.333333333333332,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "tick",
+    "field": "away_timeouts",
+    "texels": [
+      6,
+      2
+    ],
+    "minimum_footprint": [
+      8.0,
+      2.488888888888889
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "tick",
+    "field": "home_timeouts",
+    "texels": [
+      6,
+      2
+    ],
+    "minimum_footprint": [
+      8.0,
+      2.488888888888889
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "label_0",
+    "field": "down",
+    "texels": [
+      8,
+      12
+    ],
+    "minimum_footprint": [
+      10.666666666666666,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "label_1",
+    "field": "down",
+    "texels": [
+      8,
+      12
+    ],
+    "minimum_footprint": [
+      10.666666666666666,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "label_2",
+    "field": "down",
+    "texels": [
+      8,
+      12
+    ],
+    "minimum_footprint": [
+      10.666666666666666,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "label_3",
+    "field": "down",
+    "texels": [
+      8,
+      12
+    ],
+    "minimum_footprint": [
+      10.666666666666666,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "label_4",
+    "field": "down",
+    "texels": [
+      8,
+      12
+    ],
+    "minimum_footprint": [
+      10.666666666666666,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "label_5",
+    "field": "down",
+    "texels": [
+      8,
+      12
+    ],
+    "minimum_footprint": [
+      10.666666666666666,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "label_6",
+    "field": "down",
+    "texels": [
+      8,
+      12
+    ],
+    "minimum_footprint": [
+      10.666666666666666,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "label_7",
+    "field": "down",
+    "texels": [
+      8,
+      12
+    ],
+    "minimum_footprint": [
+      10.666666666666666,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "label_8",
+    "field": "down",
+    "texels": [
+      8,
+      12
+    ],
+    "minimum_footprint": [
+      10.666666666666666,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "label_9",
+    "field": "down",
+    "texels": [
+      8,
+      12
+    ],
+    "minimum_footprint": [
+      10.666666666666666,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "label_st",
+    "field": "down",
+    "texels": [
+      11,
+      12
+    ],
+    "minimum_footprint": [
+      15.11111111111111,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "label_nd",
+    "field": "down",
+    "texels": [
+      11,
+      12
+    ],
+    "minimum_footprint": [
+      15.11111111111111,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "label_rd",
+    "field": "down",
+    "texels": [
+      11,
+      12
+    ],
+    "minimum_footprint": [
+      15.11111111111111,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "label_th",
+    "field": "down",
+    "texels": [
+      11,
+      12
+    ],
+    "minimum_footprint": [
+      15.11111111111111,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "label_&",
+    "field": "down",
+    "texels": [
+      8,
+      12
+    ],
+    "minimum_footprint": [
+      10.666666666666666,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "label_Goal",
+    "field": "down",
+    "texels": [
+      22,
+      12
+    ],
+    "minimum_footprint": [
+      30.22222222222222,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "label_GOAL",
+    "field": "down",
+    "texels": [
+      22,
+      12
+    ],
+    "minimum_footprint": [
+      30.22222222222222,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "label_and",
+    "field": "down",
+    "texels": [
+      17,
+      12
+    ],
+    "minimum_footprint": [
+      22.666666666666664,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "label_OT",
+    "field": "down",
+    "texels": [
+      11,
+      12
+    ],
+    "minimum_footprint": [
+      15.11111111111111,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "label_ST",
+    "field": "down",
+    "texels": [
+      11,
+      12
+    ],
+    "minimum_footprint": [
+      15.11111111111111,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "label_ND",
+    "field": "down",
+    "texels": [
+      11,
+      12
+    ],
+    "minimum_footprint": [
+      15.11111111111111,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "label_RD",
+    "field": "down",
+    "texels": [
+      11,
+      12
+    ],
+    "minimum_footprint": [
+      15.11111111111111,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "label_TH",
+    "field": "down",
+    "texels": [
+      11,
+      12
+    ],
+    "minimum_footprint": [
+      15.11111111111111,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "label_Inch",
+    "field": "down",
+    "texels": [
+      22,
+      12
+    ],
+    "minimum_footprint": [
+      30.22222222222222,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "label_es",
+    "field": "down",
+    "texels": [
+      11,
+      12
+    ],
+    "minimum_footprint": [
+      15.11111111111111,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "cell": "tick",
+    "field": "down",
+    "texels": [
+      6,
+      2
+    ],
+    "minimum_footprint": [
+      8.0,
+      2.488888888888889
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "away_rim",
+    "field": "body_left",
+    "texels": [
+      174,
+      45
+    ],
+    "minimum_footprint": [
+      174.33333333333331,
+      45.629629629629626
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "body",
+    "field": "body",
+    "texels": [
+      173,
+      45
+    ],
+    "minimum_footprint": [
+      347.0,
+      45.629629629629626
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "home_rim",
+    "field": "body_right",
+    "texels": [
+      174,
+      45
+    ],
+    "minimum_footprint": [
+      174.33333333333331,
+      45.629629629629626
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "housing",
+    "field": "housing",
+    "texels": [
+      82,
+      25
+    ],
+    "minimum_footprint": [
+      82.0,
+      25.71851851851852
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "capsule",
+    "field": "capsule",
+    "texels": [
+      60,
+      16
+    ],
+    "minimum_footprint": [
+      60.0,
+      16.59259259259259
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "plate",
+    "field": "plate",
+    "texels": [
+      89,
+      16
+    ],
+    "minimum_footprint": [
+      89.33333333333333,
+      16.59259259259259
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "pointer",
+    "field": "pointer",
+    "texels": [
+      4,
+      2
+    ],
+    "minimum_footprint": [
+      4.666666666666666,
+      2.074074074074074
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "wing",
+    "field": "away_wing",
+    "texels": [
+      77,
+      45
+    ],
+    "minimum_footprint": [
+      77.66666666666666,
+      45.629629629629626
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "home_wing",
+    "field": "home_wing",
+    "texels": [
+      77,
+      45
+    ],
+    "minimum_footprint": [
+      77.66666666666666,
+      45.629629629629626
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "red",
+    "field": "red",
+    "texels": [
+      21,
+      17
+    ],
+    "minimum_footprint": [
+      21.0,
+      17.007407407407406
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "espn_mnf",
+    "field": "watermark",
+    "texels": [
+      71,
+      12
+    ],
+    "minimum_footprint": [
+      71.33333333333333,
+      12.02962962962963
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "espn_nfl",
+    "field": "watermark_nfl",
+    "texels": [
+      71,
+      12
+    ],
+    "minimum_footprint": [
+      71.33333333333333,
+      12.02962962962963
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "event",
+    "field": "FUMBLE",
+    "texels": [
+      2,
+      2
+    ],
+    "minimum_footprint": [
+      89.33333333333333,
+      16.59259259259259
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "event",
+    "field": "ball on",
+    "texels": [
+      2,
+      2
+    ],
+    "minimum_footprint": [
+      89.33333333333333,
+      16.59259259259259
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "flag",
+    "field": "FLAG",
+    "texels": [
+      89,
+      16
+    ],
+    "minimum_footprint": [
+      89.33333333333333,
+      16.59259259259259
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "event",
+    "field": "hang time",
+    "texels": [
+      2,
+      2
+    ],
+    "minimum_footprint": [
+      89.33333333333333,
+      16.59259259259259
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "score_0",
+    "field": "away_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      12.903225806451612,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "score_1",
+    "field": "away_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      12.903225806451612,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "score_2",
+    "field": "away_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      12.903225806451612,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "score_3",
+    "field": "away_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      12.903225806451612,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "score_4",
+    "field": "away_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      12.903225806451612,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "score_5",
+    "field": "away_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      12.903225806451612,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "score_6",
+    "field": "away_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      12.903225806451612,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "score_7",
+    "field": "away_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      12.903225806451612,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "score_8",
+    "field": "away_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      12.903225806451612,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "score_9",
+    "field": "away_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      12.903225806451612,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "score_0",
+    "field": "home_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      12.903225806451612,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "score_1",
+    "field": "home_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      12.903225806451612,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "score_2",
+    "field": "home_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      12.903225806451612,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "score_3",
+    "field": "home_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      12.903225806451612,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "score_4",
+    "field": "home_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      12.903225806451612,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "score_5",
+    "field": "home_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      12.903225806451612,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "score_6",
+    "field": "home_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      12.903225806451612,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "score_7",
+    "field": "home_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      12.903225806451612,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "score_8",
+    "field": "home_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      12.903225806451612,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "score_9",
+    "field": "home_score",
+    "texels": [
+      12,
+      21
+    ],
+    "minimum_footprint": [
+      12.903225806451612,
+      21.985185185185184
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "clock_0",
+    "field": "clock",
+    "texels": [
+      5,
+      11
+    ],
+    "minimum_footprint": [
+      5.84126984126984,
+      11.2
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "clock_1",
+    "field": "clock",
+    "texels": [
+      5,
+      11
+    ],
+    "minimum_footprint": [
+      5.84126984126984,
+      11.2
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "clock_2",
+    "field": "clock",
+    "texels": [
+      5,
+      11
+    ],
+    "minimum_footprint": [
+      5.84126984126984,
+      11.2
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "clock_3",
+    "field": "clock",
+    "texels": [
+      5,
+      11
+    ],
+    "minimum_footprint": [
+      5.84126984126984,
+      11.2
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "clock_4",
+    "field": "clock",
+    "texels": [
+      5,
+      11
+    ],
+    "minimum_footprint": [
+      5.84126984126984,
+      11.2
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "clock_5",
+    "field": "clock",
+    "texels": [
+      5,
+      11
+    ],
+    "minimum_footprint": [
+      5.84126984126984,
+      11.2
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "clock_6",
+    "field": "clock",
+    "texels": [
+      5,
+      11
+    ],
+    "minimum_footprint": [
+      5.84126984126984,
+      11.2
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "clock_7",
+    "field": "clock",
+    "texels": [
+      5,
+      11
+    ],
+    "minimum_footprint": [
+      5.84126984126984,
+      11.2
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "clock_8",
+    "field": "clock",
+    "texels": [
+      5,
+      11
+    ],
+    "minimum_footprint": [
+      5.84126984126984,
+      11.2
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "clock_9",
+    "field": "clock",
+    "texels": [
+      5,
+      11
+    ],
+    "minimum_footprint": [
+      5.84126984126984,
+      11.2
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "colon",
+    "field": "clock",
+    "texels": [
+      1,
+      7
+    ],
+    "minimum_footprint": [
+      1.2698412698412695,
+      7.466666666666667
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_0",
+    "field": "play_clock",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      7.0,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_1",
+    "field": "play_clock",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      7.0,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_2",
+    "field": "play_clock",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      7.0,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_3",
+    "field": "play_clock",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      7.0,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_4",
+    "field": "play_clock",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      7.0,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_5",
+    "field": "play_clock",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      7.0,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_6",
+    "field": "play_clock",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      7.0,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_7",
+    "field": "play_clock",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      7.0,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_8",
+    "field": "play_clock",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      7.0,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_9",
+    "field": "play_clock",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      7.0,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_st",
+    "field": "play_clock",
+    "texels": [
+      10,
+      7
+    ],
+    "minimum_footprint": [
+      10.0,
+      7.466666666666667
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_nd",
+    "field": "play_clock",
+    "texels": [
+      10,
+      7
+    ],
+    "minimum_footprint": [
+      10.0,
+      7.466666666666667
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_rd",
+    "field": "play_clock",
+    "texels": [
+      10,
+      7
+    ],
+    "minimum_footprint": [
+      10.0,
+      7.466666666666667
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_th",
+    "field": "play_clock",
+    "texels": [
+      10,
+      7
+    ],
+    "minimum_footprint": [
+      10.0,
+      7.466666666666667
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_&",
+    "field": "play_clock",
+    "texels": [
+      6,
+      10
+    ],
+    "minimum_footprint": [
+      6.333333333333333,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_Goal",
+    "field": "play_clock",
+    "texels": [
+      19,
+      10
+    ],
+    "minimum_footprint": [
+      19.666666666666664,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_GOAL",
+    "field": "play_clock",
+    "texels": [
+      19,
+      10
+    ],
+    "minimum_footprint": [
+      19.666666666666664,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_and",
+    "field": "play_clock",
+    "texels": [
+      14,
+      10
+    ],
+    "minimum_footprint": [
+      14.666666666666666,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_OT",
+    "field": "play_clock",
+    "texels": [
+      10,
+      10
+    ],
+    "minimum_footprint": [
+      10.0,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_ST",
+    "field": "play_clock",
+    "texels": [
+      10,
+      7
+    ],
+    "minimum_footprint": [
+      10.0,
+      7.466666666666667
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_ND",
+    "field": "play_clock",
+    "texels": [
+      10,
+      7
+    ],
+    "minimum_footprint": [
+      10.0,
+      7.466666666666667
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_RD",
+    "field": "play_clock",
+    "texels": [
+      10,
+      7
+    ],
+    "minimum_footprint": [
+      10.0,
+      7.466666666666667
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_TH",
+    "field": "play_clock",
+    "texels": [
+      10,
+      7
+    ],
+    "minimum_footprint": [
+      10.0,
+      7.466666666666667
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_Inch",
+    "field": "play_clock",
+    "texels": [
+      19,
+      10
+    ],
+    "minimum_footprint": [
+      19.666666666666664,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_es",
+    "field": "play_clock",
+    "texels": [
+      10,
+      10
+    ],
+    "minimum_footprint": [
+      10.0,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_0",
+    "field": "quarter",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      7.0,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_1",
+    "field": "quarter",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      7.0,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_2",
+    "field": "quarter",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      7.0,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_3",
+    "field": "quarter",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      7.0,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_4",
+    "field": "quarter",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      7.0,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_5",
+    "field": "quarter",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      7.0,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_6",
+    "field": "quarter",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      7.0,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_7",
+    "field": "quarter",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      7.0,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_8",
+    "field": "quarter",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      7.0,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_9",
+    "field": "quarter",
+    "texels": [
+      7,
+      10
+    ],
+    "minimum_footprint": [
+      7.0,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_st",
+    "field": "quarter",
+    "texels": [
+      10,
+      7
+    ],
+    "minimum_footprint": [
+      10.0,
+      7.466666666666667
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_nd",
+    "field": "quarter",
+    "texels": [
+      10,
+      7
+    ],
+    "minimum_footprint": [
+      10.0,
+      7.466666666666667
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_rd",
+    "field": "quarter",
+    "texels": [
+      10,
+      7
+    ],
+    "minimum_footprint": [
+      10.0,
+      7.466666666666667
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_th",
+    "field": "quarter",
+    "texels": [
+      10,
+      7
+    ],
+    "minimum_footprint": [
+      10.0,
+      7.466666666666667
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_&",
+    "field": "quarter",
+    "texels": [
+      6,
+      10
+    ],
+    "minimum_footprint": [
+      6.333333333333333,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_Goal",
+    "field": "quarter",
+    "texels": [
+      19,
+      10
+    ],
+    "minimum_footprint": [
+      19.666666666666664,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_GOAL",
+    "field": "quarter",
+    "texels": [
+      19,
+      10
+    ],
+    "minimum_footprint": [
+      19.666666666666664,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_and",
+    "field": "quarter",
+    "texels": [
+      14,
+      10
+    ],
+    "minimum_footprint": [
+      14.666666666666666,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_OT",
+    "field": "quarter",
+    "texels": [
+      10,
+      10
+    ],
+    "minimum_footprint": [
+      10.0,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_ST",
+    "field": "quarter",
+    "texels": [
+      10,
+      7
+    ],
+    "minimum_footprint": [
+      10.0,
+      7.466666666666667
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_ND",
+    "field": "quarter",
+    "texels": [
+      10,
+      7
+    ],
+    "minimum_footprint": [
+      10.0,
+      7.466666666666667
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_RD",
+    "field": "quarter",
+    "texels": [
+      10,
+      7
+    ],
+    "minimum_footprint": [
+      10.0,
+      7.466666666666667
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_TH",
+    "field": "quarter",
+    "texels": [
+      10,
+      7
+    ],
+    "minimum_footprint": [
+      10.0,
+      7.466666666666667
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_Inch",
+    "field": "quarter",
+    "texels": [
+      19,
+      10
+    ],
+    "minimum_footprint": [
+      19.666666666666664,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "small_es",
+    "field": "quarter",
+    "texels": [
+      10,
+      10
+    ],
+    "minimum_footprint": [
+      10.0,
+      10.785185185185185
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "tick",
+    "field": "away_timeouts",
+    "texels": [
+      6,
+      2
+    ],
+    "minimum_footprint": [
+      6.0,
+      2.488888888888889
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "tick",
+    "field": "home_timeouts",
+    "texels": [
+      6,
+      2
+    ],
+    "minimum_footprint": [
+      6.0,
+      2.488888888888889
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "label_0",
+    "field": "down",
+    "texels": [
+      8,
+      12
+    ],
+    "minimum_footprint": [
+      8.0,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "label_1",
+    "field": "down",
+    "texels": [
+      8,
+      12
+    ],
+    "minimum_footprint": [
+      8.0,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "label_2",
+    "field": "down",
+    "texels": [
+      8,
+      12
+    ],
+    "minimum_footprint": [
+      8.0,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "label_3",
+    "field": "down",
+    "texels": [
+      8,
+      12
+    ],
+    "minimum_footprint": [
+      8.0,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "label_4",
+    "field": "down",
+    "texels": [
+      8,
+      12
+    ],
+    "minimum_footprint": [
+      8.0,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "label_5",
+    "field": "down",
+    "texels": [
+      8,
+      12
+    ],
+    "minimum_footprint": [
+      8.0,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "label_6",
+    "field": "down",
+    "texels": [
+      8,
+      12
+    ],
+    "minimum_footprint": [
+      8.0,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "label_7",
+    "field": "down",
+    "texels": [
+      8,
+      12
+    ],
+    "minimum_footprint": [
+      8.0,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "label_8",
+    "field": "down",
+    "texels": [
+      8,
+      12
+    ],
+    "minimum_footprint": [
+      8.0,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "label_9",
+    "field": "down",
+    "texels": [
+      8,
+      12
+    ],
+    "minimum_footprint": [
+      8.0,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "label_st",
+    "field": "down",
+    "texels": [
+      11,
+      12
+    ],
+    "minimum_footprint": [
+      11.333333333333332,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "label_nd",
+    "field": "down",
+    "texels": [
+      11,
+      12
+    ],
+    "minimum_footprint": [
+      11.333333333333332,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "label_rd",
+    "field": "down",
+    "texels": [
+      11,
+      12
+    ],
+    "minimum_footprint": [
+      11.333333333333332,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "label_th",
+    "field": "down",
+    "texels": [
+      11,
+      12
+    ],
+    "minimum_footprint": [
+      11.333333333333332,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "label_&",
+    "field": "down",
+    "texels": [
+      8,
+      12
+    ],
+    "minimum_footprint": [
+      8.0,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "label_Goal",
+    "field": "down",
+    "texels": [
+      22,
+      12
+    ],
+    "minimum_footprint": [
+      22.666666666666664,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "label_GOAL",
+    "field": "down",
+    "texels": [
+      22,
+      12
+    ],
+    "minimum_footprint": [
+      22.666666666666664,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "label_and",
+    "field": "down",
+    "texels": [
+      17,
+      12
+    ],
+    "minimum_footprint": [
+      17.0,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "label_OT",
+    "field": "down",
+    "texels": [
+      11,
+      12
+    ],
+    "minimum_footprint": [
+      11.333333333333332,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "label_ST",
+    "field": "down",
+    "texels": [
+      11,
+      12
+    ],
+    "minimum_footprint": [
+      11.333333333333332,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "label_ND",
+    "field": "down",
+    "texels": [
+      11,
+      12
+    ],
+    "minimum_footprint": [
+      11.333333333333332,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "label_RD",
+    "field": "down",
+    "texels": [
+      11,
+      12
+    ],
+    "minimum_footprint": [
+      11.333333333333332,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "label_TH",
+    "field": "down",
+    "texels": [
+      11,
+      12
+    ],
+    "minimum_footprint": [
+      11.333333333333332,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "label_Inch",
+    "field": "down",
+    "texels": [
+      22,
+      12
+    ],
+    "minimum_footprint": [
+      22.666666666666664,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "label_es",
+    "field": "down",
+    "texels": [
+      11,
+      12
+    ],
+    "minimum_footprint": [
+      11.333333333333332,
+      12.444444444444445
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "cell": "tick",
+    "field": "down",
+    "texels": [
+      6,
+      2
+    ],
+    "minimum_footprint": [
+      6.0,
+      2.488888888888889
+    ]
+  }
+]

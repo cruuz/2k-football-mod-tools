@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b72-s1/reports/b72_s1/observe_gate_manifest.py", line 35, in <module>
+    spans=recorder.finish(final)
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b72-s1/mod_editor/core/nfl2k5_cave_manifest.py", line 213, in finish
+    raise OracleError(f"unattributed final XBE changes at {[hex(a) for a in missing[:8]]}")
+mod_editor.core.nfl2k5_cave_oracle.OracleError: unattributed final XBE changes at ['0x7fb44', '0x7fb4f', '0x7fb5a', '0xa7be74']

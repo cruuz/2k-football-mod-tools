@@ -10,9 +10,17 @@ from PyQt5.QtWidgets import (QCheckBox,QComboBox,QDialog,QFileDialog,QFormLayout
 from mod_editor.core.nfl2k5_scorebug_sprite import DEFAULT_FOLDER,STANDARD_STATE
 from mod_editor.core.nfl2k5_scorebug_resources import TEAM_LOGOS
 
+WATERMARK_OPTIONS = (('NFL (MNF on Monday night)', 'auto'), ('Always MNF', 'mnf'), ('Off', 'off'))
+
+def watermark_combo(parent=None):
+    combo=QComboBox(parent);combo.setAccessibleName('ESPN watermark')
+    for title,value in WATERMARK_OPTIONS:combo.addItem(title,value)
+    return combo
+
 class SpritePreviewDialog(QDialog):
     design_chosen = pyqtSignal(str)
-    def __init__(self,parent=None,source=None):
+    watermark_chosen = pyqtSignal(str)
+    def __init__(self,parent=None,source=None,watermark="auto"):
         super().__init__(parent)
         self.setWindowTitle('Sprite scorebug preview');self.resize(980,760)
         self.temporary=tempfile.TemporaryDirectory(prefix='scorebug-preview-')
@@ -42,6 +50,20 @@ class SpritePreviewDialog(QDialog):
         self.aspect=QComboBox();self.aspect.setAccessibleName('Preview aspect ratio');self.aspect.addItems(['4:3','16:9']);clockrow.addWidget(self.aspect)
         self.event=QComboBox();self.event.setAccessibleName('Retail event');self.event.addItems(['standard','FLAG','FUMBLE','hang time','ball on','score slabs','hidden play clock']);clockrow.addWidget(self.event)
         form.addRow('Clock and display',clockrow)
+        self.watermark=watermark_combo(self);self.watermark.setCurrentIndex(max(0,self.watermark.findData(watermark)))
+        form.addRow('ESPN watermark',self.watermark)
+        self.broadcast=QComboBox();self.broadcast.setAccessibleName('Broadcast slot')
+        for title,value in (('Play Now: ESPN NFL','play_now'),('Franchise Monday night: ESPN MNF','monday_night'),('Franchise Sunday night: ESPN NFL','sunday_night'),('Franchise Monday afternoon: ESPN NFL','monday_afternoon')):self.broadcast.addItem(title,value)
+        form.addRow('Preview broadcast',self.broadcast)
+        marks=QHBoxLayout()
+        spec=json.loads((DEFAULT_FOLDER/'layout.json').read_text())
+        template=QPixmap(str(DEFAULT_FOLDER/'template.png'))
+        for name,title in (('espn_nfl','ESPN NFL'),('espn_mnf','ESPN MNF')):
+            if name in spec['cells']:
+                x,y,r,b=spec['cells'][name]['box'];label=QLabel();label.setAccessibleName(title+' watermark cell')
+                label.setPixmap(template.copy(x,y,r-x,b-y).scaledToHeight(30,Qt.SmoothTransformation))
+                marks.addWidget(label)
+        form.addRow('Watermark cells',marks)
         self.preview_button=QPushButton('Preview');self.preview_button.setAccessibleName('Render sprite scorebug preview');self.preview_button.clicked.connect(self.preview);root.addWidget(self.preview_button)
         use=QPushButton('Use design in Build');use.setAccessibleName('Use sprite design in Build');use.clicked.connect(self._use_design);root.addWidget(use)
         self.status=QLabel('Choose a screenshot and your game source, then Preview. The design uses the sprite scorebug option.');self.status.setWordWrap(True);root.addWidget(self.status)
@@ -56,6 +78,7 @@ class SpritePreviewDialog(QDialog):
         except (OSError,ValueError) as exc:self.status.setText(str(exc));return
         except (KeyError,TypeError,AttributeError):
             self.status.setText('Invalid sprite design. Check the required fields in layout.json against the supplied template.');return
+        self.watermark_chosen.emit(self.watermark.currentData())
         self.design_chosen.emit(self.folder.text());self.status.setText('Sprite design handed to Build with the sprite scorebug option enabled.')
 
     def _choose(self,edit,kind):
@@ -70,12 +93,13 @@ class SpritePreviewDialog(QDialog):
             minute,second=map(int,self.clock.text().split(':'))
             if not 0<=second<60:raise ValueError('Use minutes:seconds for the clock, such as 4:33.')
             state={k:w.currentText() if isinstance(w,QComboBox) else w.value() for k,w in self.state.items()}
-            state.update(clock=minute*60+second,quarter=self.quarter.currentIndex()+1,event=self.event.currentText(),goal_to_go=self.goal.isChecked())
+            state.update(clock=minute*60+second,quarter=self.quarter.currentIndex()+1,event=self.event.currentText(),goal_to_go=self.goal.isChecked(),broadcast=self.broadcast.currentData())
             from mod_editor.core.nfl2k5_scorebug_sprite import normalize_state
             normalize_state(state)
         except (ValueError,OSError) as exc:self.status.setText(str(exc));return
         self.output=Path(self.temporary.name)/'preview.png'
         args=['-m','mod_editor.core.nfl2k5_scorebug_sprite','preview','--screenshot',str(shot),'--state',json.dumps(state),'--aspect',self.aspect.currentText(),'--folder',self.folder.text(),'--output',str(self.output)]
+        args+=['--watermark',self.watermark.currentData()]
         args+=['--pack' if source.name=='0' else '--source',str(source)]
         self.preview_button.setEnabled(False);self.status.setText('Rendering the selected game state…');self.process.start(sys.executable,args)
 
@@ -85,7 +109,7 @@ class SpritePreviewDialog(QDialog):
             if 'unicorn' in message:self.status.setText('Native preview support is missing from this installation. Install the native preview dependencies listed in the sprite scorebug guide, then try again.')
             else:self.status.setText('Preview failed: '+(message.strip().splitlines()[-1] if message.strip() else 'Check the selected game source and design folder.'))
             return
-        pixmap=QPixmap(str(self.output));self.picture.setPixmap(pixmap.scaledToWidth(960,Qt.SmoothTransformation));self.status.setText('Preview ready. Scores, labels and ticks use the compiled sprite quads.')
+        pixmap=QPixmap(str(self.output.with_name(self.output.stem+'_display.png')));self.picture.setPixmap(pixmap.scaledToWidth(960,Qt.SmoothTransformation));self.status.setText('Preview ready. Scores, labels and ticks use the compiled sprite quads.')
         QTimer.singleShot(0,self._show_bar)
 
     def _show_bar(self):

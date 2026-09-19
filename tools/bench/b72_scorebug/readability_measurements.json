@@ -1,0 +1,228 @@
+{
+ "43": {
+  "plate_rgb": [
+   175.0,
+   11.0,
+   58.0
+  ],
+  "final_zero": {
+   "quad_hud_px": [
+    7.11,
+    9.54
+   ],
+   "raster_px": [
+    7,
+    10
+   ],
+   "stroke_peak_ink": 173.0,
+   "counter_floor_ink": 1.7,
+   "counter_depth": 0.99,
+   "mean_ink": 106.8
+  },
+  "st_ordinal": {
+   "quad_hud_px": [
+    11.56,
+    9.54
+   ],
+   "raster_px": [
+    11,
+    10
+   ],
+   "stroke_peak_ink": 173.7,
+   "counter_floor_ink": 1.7,
+   "counter_depth": 0.99,
+   "mean_ink": 87.0
+  },
+  "ampersand": {
+   "quad_hud_px": [
+    8.45,
+    9.54
+   ],
+   "raster_px": [
+    8,
+    10
+   ],
+   "stroke_peak_ink": 173.0,
+   "counter_floor_ink": 2.3,
+   "counter_depth": 0.987,
+   "mean_ink": 98.5
+  },
+  "leading_one": {
+   "quad_hud_px": [
+    7.11,
+    9.54
+   ],
+   "raster_px": [
+    7,
+    10
+   ],
+   "stroke_peak_ink": 173.7,
+   "counter_floor_ink": 2.0,
+   "counter_depth": 0.988,
+   "mean_ink": 94.7
+  },
+  "tens_one": {
+   "quad_hud_px": [
+    7.11,
+    9.54
+   ],
+   "raster_px": [
+    7,
+    10
+   ],
+   "stroke_peak_ink": 173.7,
+   "counter_floor_ink": 1.7,
+   "counter_depth": 0.99,
+   "mean_ink": 90.0
+  },
+  "strip": {
+   "box_hud": [
+    292.7,
+    412.1,
+    347.3,
+    421.7
+   ],
+   "raster_rows": 10,
+   "peak_luminance": 255.0,
+   "plate_luminance": 81.3,
+   "michelson_contrast": 0.516,
+   "fraction_of_strip_above_half_peak": 0.441
+  }
+ },
+ "169": {
+  "plate_rgb": [
+   175.0,
+   11.0,
+   58.0
+  ],
+  "final_zero": {
+   "quad_hud_px": [
+    5.33,
+    9.54
+   ],
+   "raster_px": [
+    6,
+    10
+   ],
+   "stroke_peak_ink": 173.0,
+   "counter_floor_ink": 1.7,
+   "counter_depth": 0.99,
+   "mean_ink": 93.8
+  },
+  "st_ordinal": {
+   "quad_hud_px": [
+    8.66,
+    9.54
+   ],
+   "raster_px": [
+    8,
+    10
+   ],
+   "stroke_peak_ink": 173.7,
+   "counter_floor_ink": 1.3,
+   "counter_depth": 0.992,
+   "mean_ink": 89.6
+  },
+  "ampersand": {
+   "quad_hud_px": [
+    6.34,
+    9.54
+   ],
+   "raster_px": [
+    6,
+    10
+   ],
+   "stroke_peak_ink": 173.0,
+   "counter_floor_ink": 1.3,
+   "counter_depth": 0.992,
+   "mean_ink": 97.1
+  },
+  "leading_one": {
+   "quad_hud_px": [
+    5.33,
+    9.54
+   ],
+   "raster_px": [
+    5,
+    10
+   ],
+   "stroke_peak_ink": 173.7,
+   "counter_floor_ink": 1.7,
+   "counter_depth": 0.99,
+   "mean_ink": 102.9
+  },
+  "tens_one": {
+   "quad_hud_px": [
+    5.33,
+    9.54
+   ],
+   "raster_px": [
+    5,
+    10
+   ],
+   "stroke_peak_ink": 173.7,
+   "counter_floor_ink": 1.7,
+   "counter_depth": 0.99,
+   "mean_ink": 86.0
+  },
+  "strip": {
+   "box_hud": [
+    299.5,
+    412.1,
+    340.5,
+    421.7
+   ],
+   "raster_rows": 10,
+   "peak_luminance": 255.0,
+   "plate_luminance": 81.3,
+   "michelson_contrast": 0.516,
+   "fraction_of_strip_above_half_peak": 0.443
+  }
+ },
+ "retail_2k5_label": {
+  "source": "/home/noah/Desktop/2K5-8 Editors/beta71_evidence/day/ksnip_20260915-154929.png",
+  "window": [
+   1132,
+   670
+  ],
+  "assumed_hud_scale": [
+   1.769,
+   1.396
+  ],
+  "ink_rows_px": 16,
+  "ink_cols_px": 87,
+  "cap_height_hud_px": 11.46,
+  "string_width_hud_px": 49.19,
+  "plate_luminance": 50.0,
+  "peak_luminance": 255.0
+ },
+ "espn_at_hud_footprint": {
+  "43": {
+   "raster_px": [
+    55,
+    10
+   ],
+   "peak_luminance": 252.7,
+   "plate_luminance": 78.8,
+   "michelson_contrast": 0.524,
+   "fraction_above_half_peak": 0.482
+  },
+  "169": {
+   "raster_px": [
+    41,
+    10
+   ],
+   "peak_luminance": 252.3,
+   "plate_luminance": 78.8,
+   "michelson_contrast": 0.524,
+   "fraction_above_half_peak": 0.49
+  }
+ },
+ "espn_outline": {
+  "ink_mean_luminance": 234.1,
+  "ring_2px_mean_luminance": 75.2,
+  "plate_mean_luminance": 68.3,
+  "ring_is_darker_than_plate_by": -6.9,
+  "verdict": "no outline"
+ }
+}

@@ -82,5 +82,5 @@ if __name__ == "__main__":
         if TARGET.read_text() != result:
             raise SystemExit("Sprite scorebug runtime differs; rebuild it")
     else:
-        TARGET.write_text(result)
+        TARGET.write_text(result, newline="\n")
     print("Sprite scorebug runtime verified" if args.check else "Sprite scorebug runtime generated")

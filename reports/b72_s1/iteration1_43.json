@@ -1,0 +1,786 @@
+{
+  "state": {
+    "away": "DEN",
+    "home": "KC",
+    "away_score": 7,
+    "home_score": 7,
+    "away_timeouts": 3,
+    "home_timeouts": 3,
+    "quarter": 2,
+    "clock": 273,
+    "play_clock": 7,
+    "down": 3,
+    "distance": 10,
+    "possession": "home",
+    "event": "standard",
+    "goal_to_go": false,
+    "broadcast": "play_now"
+  },
+  "widescreen": false,
+  "quads": {
+    "body_left": [
+      87.5518798828125,
+      406.7618408203125,
+      91.99951171875,
+      452.37890625
+    ],
+    "body": [
+      91.99951171875,
+      406.7618408203125,
+      545.7808227539062,
+      452.37890625
+    ],
+    "body_right": [
+      545.7808227539062,
+      406.7618408203125,
+      550.2285766601562,
+      452.37890625
+    ],
+    "housing": [
+      265.3289794921875,
+      425.4239501953125,
+      374.6635322570801,
+      451.1356201171875
+    ],
+    "capsule": [
+      266.2261962890625,
+      430.3970947265625,
+      346.2208938598633,
+      446.99560546875
+    ],
+    "plate": [
+      259.9969482421875,
+      408.825439453125,
+      379.11130142211914,
+      425.4239501953125
+    ],
+    "pointer": [
+      315.99658203125,
+      406.7618408203125,
+      322.2260208129883,
+      408.825439453125
+    ],
+    "away_wing": [
+      87.5518798828125,
+      406.7618408203125,
+      319.9957273900509,
+      452.37890625
+    ],
+    "home_wing": [
+      317.7782528400421,
+      406.7618408203125,
+      550.2285766601562,
+      452.37890625
+    ],
+    "red": [
+      346.2208938598633,
+      430.3970947265625,
+      374.2277297973633,
+      447.40576171875
+    ],
+    "away_logo": [
+      94.66552734375,
+      409.6585693359375,
+      186.2200927734375,
+      456.12158203125
+    ],
+    "home_logo": [
+      463.1061706542969,
+      407.1719970703125,
+      551.9974365234375,
+      451.55859375
+    ],
+    "watermark": [
+      539.5513763427734,
+      30.52423095703125,
+      634.6720886230469,
+      42.547332763671875
+    ],
+    "away_score:0": [
+      220.455322265625,
+      416.2979736328125,
+      238.2330322265625,
+      438.27978515625
+    ],
+    "home_score:0": [
+      400.0042724609375,
+      416.2979736328125,
+      417.7825241088867,
+      438.27978515625
+    ],
+    "clock:0": [
+      302.21747398376465,
+      433.306640625,
+      312.43324089050293,
+      444.509033203125
+    ],
+    "clock:1": [
+      313.31766748428345,
+      434.9600830078125,
+      315.53514194488525,
+      442.4326171875
+    ],
+    "clock:2": [
+      316.43238711357117,
+      433.306640625,
+      326.6609697341919,
+      444.509033203125
+    ],
+    "clock:3": [
+      327.54539728164673,
+      433.306640625,
+      337.7739791870117,
+      444.509033203125
+    ],
+    "play_clock:0": [
+      355.11642837524414,
+      433.306640625,
+      364.4477653503418,
+      444.0860595703125
+    ],
+    "quarter:0": [
+      269.3408203125,
+      433.306640625,
+      278.31298828125,
+      444.0860595703125
+    ],
+    "quarter:1": [
+      279.1717529296875,
+      433.306640625,
+      292.001953125,
+      440.7791748046875
+    ],
+    "away_timeouts:0": [
+      211.995849609375,
+      444.0860595703125,
+      219.993896484375,
+      446.5726318359375
+    ],
+    "away_timeouts:1": [
+      225.325927734375,
+      444.0860595703125,
+      233.323974609375,
+      446.5726318359375
+    ],
+    "away_timeouts:2": [
+      238.656005859375,
+      444.0860595703125,
+      246.654052734375,
+      446.5726318359375
+    ],
+    "home_timeouts:0": [
+      391.1087341308594,
+      444.0860595703125,
+      399.1070251464844,
+      446.5726318359375
+    ],
+    "home_timeouts:1": [
+      404.43922424316406,
+      444.0860595703125,
+      412.43751525878906,
+      446.5726318359375
+    ],
+    "home_timeouts:2": [
+      417.7697067260742,
+      444.0860595703125,
+      425.76800537109375,
+      446.5726318359375
+    ],
+    "down:0": [
+      284.439697265625,
+      410.90185546875,
+      295.103759765625,
+      423.3475341796875
+    ],
+    "down:1": [
+      296.0009765625,
+      410.90185546875,
+      311.11301040649414,
+      423.3475341796875
+    ],
+    "down:3": [
+      316.8810079097748,
+      410.90185546875,
+      327.54539728164673,
+      423.3475341796875
+    ],
+    "down:5": [
+      333.3262119293213,
+      410.90185546875,
+      343.9906005859375,
+      423.3475341796875
+    ],
+    "down:6": [
+      344.887845993042,
+      410.90185546875,
+      355.5522346496582,
+      423.3475341796875
+    ],
+    "FUMBLE": [
+      259.9969482421875,
+      408.825439453125,
+      379.11130142211914,
+      425.4239501953125
+    ],
+    "ball on": [
+      259.9969482421875,
+      408.825439453125,
+      379.11130142211914,
+      425.4239501953125
+    ],
+    "FLAG": [
+      259.9969482421875,
+      408.825439453125,
+      379.11130142211914,
+      425.4239501953125
+    ],
+    "hang time": [
+      259.9969482421875,
+      408.825439453125,
+      379.11130142211914,
+      425.4239501953125
+    ]
+  },
+  "volume": {
+    "version": "scorebug-sprite-v1",
+    "watermark": "auto",
+    "display": "4:3",
+    "components": [
+      {
+        "kind": "TXTR",
+        "name": "sb--h0",
+        "size": 2208,
+        "sha256": "1280a70924e9640e185cd31740caf66e59fce858dcb3849736526692e3695257"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb00h0",
+        "size": 5280,
+        "sha256": "45d9e41af10c962a83e78f830cb17b98c41b7a4aca9c4369614097de55fad378"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb01h0",
+        "size": 5280,
+        "sha256": "61bf890a601e1665bccb6d7db3dc8c9303629a1fd266156085634795f060a254"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb02h0",
+        "size": 5280,
+        "sha256": "14d4865e4cfdf5af83fcdbf78cf1521d321daa9ef555b0676200fff619ca6613"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb03h0",
+        "size": 5280,
+        "sha256": "06fa071ed306a24e7f119fa1e91d406ce890dc49284bf6e74621aa37ecb2ffbd"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb04h0",
+        "size": 5280,
+        "sha256": "0abcbd0b8adcbecf654378118001e2843181d797159118c1c208aba464534dfb"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb05h0",
+        "size": 5280,
+        "sha256": "a14469a93c802347cb57b4e52ad5f3f1e1b3cc02317f2cd993838b9eb97053c1"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb06h0",
+        "size": 5280,
+        "sha256": "3b8e08de574736a1bbb4f68a8acb228fb2e1a6c7127962874f661c44d7ce1c1d"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb30h0",
+        "size": 5280,
+        "sha256": "87016df2b52bccde85a2fb4e9eb76203624dca299361413c2ec1198e7bb9f3e4"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb07h0",
+        "size": 5280,
+        "sha256": "fb7da184eb94b4ffa0d4dc5b59c5d0484269325241ae7576fe7c6c62670fec5a"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb08h0",
+        "size": 5280,
+        "sha256": "ccc6eb979bfea845f645a1f7779a295ff4f0c77b919313b613cbc31b50086b4e"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb09h0",
+        "size": 5280,
+        "sha256": "915dfa4d6bb6e713e70bcf9b1f51d9a8a4abb4b26f60067bc9f0300a86d787fe"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb10h0",
+        "size": 5280,
+        "sha256": "b5daeca41e12ecc08bd6665effad26041c49500788513deec872807f616e3c72"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb37h0",
+        "size": 5280,
+        "sha256": "6747297dff52db20471987040a560a886c73514b41876d3d316bc7f3b818f0bf"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb11h0",
+        "size": 5280,
+        "sha256": "65ab632fbd5bd8ebfbd71f4098ddf68277e045afc30dd1e4e17241fbc0bb9ca5"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb12h0",
+        "size": 5280,
+        "sha256": "0de1b4a6969c6e183714a5adc05fde1ccfc0d3605abffdc369dc7e82a00f26e1"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb13h0",
+        "size": 5280,
+        "sha256": "7dca7429024947c1d3bc7087a0b7d5db23cf17a1c40f20d9993d6080fb3b8535"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb24h0",
+        "size": 5280,
+        "sha256": "661bd587073606dec5e5bd1a0969097b54e238685ac1087f5ce10120f278fca7"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb23h0",
+        "size": 5280,
+        "sha256": "1f36e239a3384dd4cbb631d0be11e84c0dfa3ff2518e72a6418841c974cb52cf"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb20h0",
+        "size": 5280,
+        "sha256": "299baa809686860614af890083498b733ddaffce2d5321a45ce7f89eb12cc7a1"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb14h0",
+        "size": 5280,
+        "sha256": "793d04a4699fb3e4917b7eef837efa8d7c4f7f1a1c72bce7d522592f188bca1c"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb15h0",
+        "size": 5280,
+        "sha256": "722e0e32361cb00ffa8795f1827eafd251bd8abde4f3e9ea25be6cc0d6a79a74"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb16h0",
+        "size": 5280,
+        "sha256": "bfcacf1382c474365f67f8252309959115763bb3866dd9b2624e0442090f2f9a"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb17h0",
+        "size": 5280,
+        "sha256": "670a243efa0f4e7dd18d43972a0a7e01b060778f5aee6a9a76baba00b892d2f9"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb18h0",
+        "size": 5280,
+        "sha256": "f2f0f09de34972e75bbba473d9296060be0cdc8b16c75ab2d70da4d90ea5358c"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb19h0",
+        "size": 5280,
+        "sha256": "6386d730f1cf199618ca94839904ab3b8d11d72502edbf707c571f459502fdc4"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb21h0",
+        "size": 5280,
+        "sha256": "e86aeb622ac0217387426b219a7bbdcec53f893cccd674f04d21121e836a4c6f"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb22h0",
+        "size": 5280,
+        "sha256": "14848ffbc65e959bb634e08d812930678aa357380c299cf06018cca120936e22"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb26h0",
+        "size": 5280,
+        "sha256": "835ea988f8ba55515b7a9cc0938d81fff35bd334a7c4fc278df907b002f37544"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb25h0",
+        "size": 5280,
+        "sha256": "a80a792cb4c37aef0d2fdce044400b9a6c3d4e92ffbb136ebc26d9bf3bb1556c"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb27h0",
+        "size": 5280,
+        "sha256": "fe1610f33c5f9682445d3dffc89ee1ba2a51568c8c2b0d3025982130dbb4d83b"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb28h0",
+        "size": 5280,
+        "sha256": "d02ad391b126276f810f8de7cae82dd09fd529fcd6d547d14547b84db654b35a"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb29h0",
+        "size": 5280,
+        "sha256": "65b2086c94289f838850d4a5963ff9c2f24dd7febdcf7172ef539f14d782fc78"
+      },
+      {
+        "kind": "TXTR",
+        "name": "score_buga",
+        "size": 132256,
+        "sha256": "f3c00c2d9574c75ba02d0ea24cf7eeee91874f3e634b6ee526288ff96c5c6158"
+      },
+      {
+        "kind": "SCNE",
+        "name": "score_bug",
+        "size": 20384,
+        "sha256": "dfc81ba369e5e35d9cd44769db890d93b7eda2087541bb600be569b4a7dc4f01"
+      }
+    ],
+    "appended_bytes": 323808,
+    "font_count": 0,
+    "texture_count": 34,
+    "scene_count": 1,
+    "quads": 47,
+    "native_heap_bytes": 327168
+  },
+  "display": {
+    "aspect": "4:3",
+    "size": [
+      1440,
+      1080
+    ],
+    "path": "reports/b72_s1/iteration1_43_display.png",
+    "quads": {
+      "body_left": [
+        197.00000000000003,
+        941.9999999999999,
+        207.0,
+        1052.0
+      ],
+      "body": [
+        207.0,
+        941.9999999999999,
+        1228.0,
+        1052.0
+      ],
+      "body_right": [
+        1228.0,
+        941.9999999999999,
+        1238.0,
+        1052.0
+      ],
+      "housing": [
+        597.0,
+        986.9999999999999,
+        843.0,
+        1049.0
+      ],
+      "capsule": [
+        599.0,
+        998.9999999999999,
+        779.0,
+        1039.0
+      ],
+      "plate": [
+        585.0,
+        946.9999999999999,
+        853.0,
+        986.9999999999999
+      ],
+      "pointer": [
+        711.0,
+        941.9999999999999,
+        725.0,
+        946.9999999999999
+      ],
+      "away_wing": [
+        197.00000000000003,
+        941.9999999999999,
+        720.0,
+        1052.0
+      ],
+      "home_wing": [
+        715.0,
+        941.9999999999999,
+        1238.0,
+        1052.0
+      ],
+      "red": [
+        779.0,
+        998.9999999999999,
+        842.0,
+        1040.0
+      ],
+      "away_logo": [
+        213.00000000000006,
+        949.0,
+        419.0,
+        1061.0
+      ],
+      "home_logo": [
+        1042.0,
+        943.0,
+        1242.0,
+        1050.0
+      ],
+      "watermark": [
+        1214.0,
+        35.0,
+        1428.0,
+        63.999999999999986
+      ],
+      "FUMBLE": [
+        585.0,
+        946.9999999999999,
+        853.0,
+        986.9999999999999
+      ],
+      "ball on": [
+        585.0,
+        946.9999999999999,
+        853.0,
+        986.9999999999999
+      ],
+      "FLAG": [
+        585.0,
+        946.9999999999999,
+        853.0,
+        986.9999999999999
+      ],
+      "hang time": [
+        585.0,
+        946.9999999999999,
+        853.0,
+        986.9999999999999
+      ]
+    }
+  },
+  "draws": [
+    {
+      "text": "",
+      "glyph_quads": 0
+    },
+    {
+      "text": "",
+      "glyph_quads": 0
+    },
+    {
+      "text": "",
+      "glyph_quads": 0
+    },
+    {
+      "text": "",
+      "glyph_quads": 0
+    },
+    {
+      "text": "",
+      "glyph_quads": 0
+    },
+    {
+      "text": "",
+      "glyph_quads": 0
+    },
+    {
+      "text": "",
+      "glyph_quads": 0
+    },
+    {
+      "text": "",
+      "glyph_quads": 0
+    },
+    {
+      "text": "",
+      "glyph_quads": 0
+    }
+  ],
+  "raster": {
+    "uv_transform": [
+      0.5,
+      0.5,
+      0.5,
+      0.5
+    ],
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 8
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      }
+    },
+    "rendered_materials": {
+      "cscore_buga": {
+        "descriptor": "0x404a638",
+        "name": "score_buga",
+        "span_sha256": "f3c00c2d9574c75ba02d0ea24cf7eeee91874f3e634b6ee526288ff96c5c6158",
+        "dimensions": [
+          256,
+          512
+        ]
+      },
+      "dscore_buga": {
+        "descriptor": "0x404a638",
+        "name": "score_buga",
+        "span_sha256": "f3c00c2d9574c75ba02d0ea24cf7eeee91874f3e634b6ee526288ff96c5c6158",
+        "dimensions": [
+          256,
+          512
+        ]
+      },
+      "hscore_buga": {
+        "descriptor": "0x40349b8",
+        "name": "sb13h0",
+        "span_sha256": "7dca7429024947c1d3bc7087a0b7d5db23cf17a1c40f20d9993d6080fb3b8535",
+        "dimensions": [
+          64,
+          64
+        ]
+      },
+      "score_buga": {
+        "descriptor": "0x404a638",
+        "name": "score_buga",
+        "span_sha256": "f3c00c2d9574c75ba02d0ea24cf7eeee91874f3e634b6ee526288ff96c5c6158",
+        "dimensions": [
+          256,
+          512
+        ]
+      },
+      "yscore_buga": {
+        "descriptor": "0x404a638",
+        "name": "score_buga",
+        "span_sha256": "f3c00c2d9574c75ba02d0ea24cf7eeee91874f3e634b6ee526288ff96c5c6158",
+        "dimensions": [
+          256,
+          512
+        ]
+      },
+      "yscore_buga1": {
+        "descriptor": "0x404a638",
+        "name": "score_buga",
+        "span_sha256": "f3c00c2d9574c75ba02d0ea24cf7eeee91874f3e634b6ee526288ff96c5c6158",
+        "dimensions": [
+          256,
+          512
+        ]
+      },
+      "zscore_buga": {
+        "descriptor": "0x402ceb8",
+        "name": "sb08h0",
+        "span_sha256": "ccc6eb979bfea845f645a1f7779a295ff4f0c77b919313b613cbc31b50086b4e",
+        "dimensions": [
+          64,
+          64
+        ]
+      }
+    },
+    "submission": [
+      {
+        "material": 2,
+        "name": "cscore_buga",
+        "indices": 28
+      },
+      {
+        "material": 6,
+        "name": "score_buga",
+        "indices": 22
+      },
+      {
+        "material": 4,
+        "name": "dscore_buga",
+        "indices": 10
+      },
+      {
+        "material": 3,
+        "name": "hscore_buga",
+        "indices": 4
+      },
+      {
+        "material": 9,
+        "name": "yscore_buga",
+        "indices": 94
+      },
+      {
+        "material": 7,
+        "name": "yscore_buga1",
+        "indices": 82
+      },
+      {
+        "material": 5,
+        "name": "bscore_buga",
+        "indices": 4
+      },
+      {
+        "material": 0,
+        "name": "bscore_buga1",
+        "indices": 4
+      },
+      {
+        "material": 1,
+        "name": "bscore_buga2",
+        "indices": 4
+      },
+      {
+        "material": 10,
+        "name": "zscore_buga",
+        "indices": 4
+      },
+      {
+        "material": 8,
+        "name": "zz_ESPN_bug1",
+        "indices": 4
+      }
+    ],
+    "raster_policy": {
+      "order": "SHAP descriptor order, then push-buffer order",
+      "depth": "none (sprite submission order)",
+      "blend": "vertex * texture, source alpha model",
+      "cull_positive": false,
+      "gpu_state_proved": false,
+      "calibration": null
+    }
+  },
+  "runtime_witnessed": false
+}

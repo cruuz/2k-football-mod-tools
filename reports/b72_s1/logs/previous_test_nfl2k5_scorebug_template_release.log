@@ -1,0 +1,18 @@
+E....
+======================================================================
+ERROR: test_all_template_files_pass_staging_with_exact_reviewed_png_count (__main__.TemplateReleaseTests.test_all_template_files_pass_staging_with_exact_reviewed_png_count)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b72-s1/tests/mod_editor/test_nfl2k5_scorebug_template_release.py", line 36, in test_all_template_files_pass_staging_with_exact_reviewed_png_count
+    result=release.audit_release(self.root,self.allowlist)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b72-s1/packaging/check_2k5_mod_studio_release.py", line 630, in audit_release
+    _validate_scorebug_template_png(path, relative, info, scorebug_pngs[relative])
+  File "/home/noah/2k-worktrees/astra-b72-s1/packaging/check_2k5_mod_studio_release.py", line 325, in _validate_scorebug_template_png
+    raise ReleaseCheckError(f"reviewed scorebar PNG size changed: {relative}")
+scorebar_release_check.ReleaseCheckError: reviewed scorebar PNG size changed: data/nfl2k5_scorebug_sprite/template.png
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.472s
+
+FAILED (errors=1)

@@ -292,6 +292,7 @@ class BuildPlan:
     guardian_cap: bool = False  # helmet C resource trial, experimental and unwitnessed
     scorebug: bool = False
     scorebug_runtime: bool = False
+    scorebug_watermark: str = "auto"  # NFL, switching to MNF only for franchise Monday night; mnf / off overrides
     scorebug_folder: str = ""      # optional repaintable ESPN scorebar artwork folder (docs/scorebug_template layout); blank = shipped art
     music_policy: str = "retail"
     music_unlock: bool = False
@@ -330,7 +331,7 @@ class BuildPlan:
 PRESETS: dict[str, dict[str, Any]] = {
     # BASIC keeps the game in 2004: only the fixes a 2K5 update would have shipped.
     "softdrink_basic": {
-        "scorebug_runtime": False,
+        "scorebug_runtime": False, "scorebug_watermark": "auto",
         "momentum": 0, "momentum_contact": False, "momentum_collisions": False, "momentum_collision_level": 0,
         "read_option_runtime": False, "franchise_2026_rules": False, "senior_bowl": False,
         "guardian_overlay": False, "my_career": False, "my_career_setup": None, "crib_reclaim": False, "franchise_autosave": False,
@@ -351,7 +352,7 @@ PRESETS: dict[str, dict[str, Any]] = {
     },
     # ADVANCED = basic + everything that modernises the game (Noah's tweaks and breakthroughs).
     "softdrink_advanced": {
-        "scorebug_runtime": False,
+        "scorebug_runtime": False, "scorebug_watermark": "auto",
         "momentum": 0, "momentum_contact": False, "momentum_collisions": False, "momentum_collision_level": 0,
         "read_option_runtime": False, "franchise_2026_rules": False, "senior_bowl": False,
         "guardian_overlay": False, "my_career": False, "my_career_setup": None, "crib_reclaim": False, "franchise_autosave": True,
@@ -372,7 +373,7 @@ PRESETS: dict[str, dict[str, Any]] = {
     },
     # EXPERIMENTAL = advanced + widescreen and anything still rough (dynamic-kickoff line-up).
     "softdrink_experimental": {
-        "scorebug_runtime": False,
+        "scorebug_runtime": False, "scorebug_watermark": "auto",
         "momentum": 0, "momentum_contact": False, "momentum_collisions": False, "momentum_collision_level": 0,
         "read_option_runtime": False, "franchise_2026_rules": False, "senior_bowl": False,
         "guardian_overlay": False, "my_career": False, "my_career_setup": None, "crib_reclaim": False, "franchise_autosave": True,
@@ -1232,6 +1233,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("hires_scale must be the integer 1 or 2")
     if not isinstance(plan.hires_folder, str) or not isinstance(plan.hires_target, str):
         raise ValueError("Hi-res folder and target must be text")
+    if plan.scorebug_watermark not in ("auto", "mnf", "off"):
+        raise ValueError("ESPN watermark must be auto, mnf or off")
     if not isinstance(plan.scorebug_folder, str):
         raise ValueError("The scorebar artwork folder must be text")
     plan = replace(plan, scorebug_folder=plan.scorebug_folder.strip())
@@ -1245,7 +1248,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             sprite = _core_module("nfl2k5_scorebug_sprite")
             if sprite is None:
                 raise ValueError("The sprite scorebug compiler is missing; update this installation")
-            sprite.compile_folder(plan.scorebug_folder)
+            sprite.compile_folder(plan.scorebug_folder,watermark=plan.scorebug_watermark)
         if not tt.is_disc_image(plan.source):
             raise ValueError("A scorebar artwork folder needs a disc image source")
     if not isinstance(plan.hires_families, (tuple, list)) or any(type(x) is not str for x in plan.hires_families):
@@ -1945,7 +1948,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if plan.scorebug_runtime:
         progress("Installing team logos and scorebug effects (unwitnessed)", 0, 0)
         rec = _core_module("nfl2k5_scorebug_ingame").runtime_apply_in_place(target, with_kickoff=plan.kickoff_relocated, scorebug_folder=plan.scorebug_folder or None,
-            widescreen=bool(plan.widescreen),
+            widescreen=bool(plan.widescreen), watermark=plan.scorebug_watermark,
             extra_requests=tuple(row for row in all_requests if row[0] not in {
                 tt.scorebug_runtime_patch.OWNER, tt.kickoff_relocated_patch.OWNER}))
         receipt["steps"].append({"step": "scorebug_runtime", **rec})

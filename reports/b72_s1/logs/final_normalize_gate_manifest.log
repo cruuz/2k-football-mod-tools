@@ -1,0 +1,11 @@
+{
+  "helper_names": [
+    "nfl2k5_gameplay_lever",
+    "nfl2k5_rdata_sites",
+    "nfl2k5_rules_patch"
+  ],
+  "removed_spans": 432,
+  "every_removed_span_covered_by_concrete_owners": true,
+  "observations_retained": true,
+  "observed_manifest_sha256": "a2ce6da26d18e21ba11fff4f57671fbb0cc16d327670f1454270cb69203300f2"
+}

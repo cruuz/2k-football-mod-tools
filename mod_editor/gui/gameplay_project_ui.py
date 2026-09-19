@@ -54,7 +54,8 @@ def restore(panel, state):
         panel.arc_spin.setValue(round(choices["arc"] * 100))
         panel._momentum_last_positive = choices["momentum"] or 50
         panel._collision_last_positive = choices["momentum_collision_level"] or 50
-        for field, value in (("momentum_level", choices["momentum"]),
+        for field, value in (("scorebug_watermark_combo", choices["scorebug_watermark"]),
+                             ("momentum_level", choices["momentum"]),
                              ("momentum_collision_level", choices["momentum_collision_level"]),
                              ("cpu_money_downs_level", choices["cpu_money_downs"] or "retail"),
                              ("accelerated_clock_minimum", choices["accelerated_clock_minimum_seconds"]),

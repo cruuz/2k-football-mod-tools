@@ -1,0 +1,20 @@
+...E..
+======================================================================
+ERROR: test_disc_growth_replay_and_rollback_at_pack_node_and_xbe_writes (__main__.RetailTests.test_disc_growth_replay_and_rollback_at_pack_node_and_xbe_writes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b72-s1/tests/mod_editor/test_nfl2k5_scorebug_resources.py", line 191, in test_disc_growth_replay_and_rollback_at_pack_node_and_xbe_writes
+    rec=r.runtime_apply_in_place(path,with_kickoff=True)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b72-s1/mod_editor/core/nfl2k5_scorebug_ingame.py", line 933, in runtime_apply_in_place
+    jobs, receipt = runtime_image_plan(fd, with_kickoff=with_kickoff, extra_requests=extra_requests, probe=probe, scorebug_folder=scorebug_folder, widescreen=widescreen, watermark=watermark)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b72-s1/mod_editor/core/nfl2k5_scorebug_ingame.py", line 872, in runtime_image_plan
+    new_pack, pr = resources.compile_runtime_collection(pack, probe=probe, sprite_folder=scorebug_folder, widescreen=widescreen, watermark=watermark)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: RetailTests.test_disc_growth_replay_and_rollback_at_pack_node_and_xbe_writes.<locals>.compile() got an unexpected keyword argument 'watermark'
+
+----------------------------------------------------------------------
+Ran 6 tests in 174.201s
+
+FAILED (errors=1)

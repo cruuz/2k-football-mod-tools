@@ -1,0 +1,786 @@
+{
+  "state": {
+    "away": "DEN",
+    "home": "KC",
+    "away_score": 7,
+    "home_score": 7,
+    "away_timeouts": 3,
+    "home_timeouts": 3,
+    "quarter": 2,
+    "clock": 273,
+    "play_clock": 7,
+    "down": 3,
+    "distance": 10,
+    "possession": "home",
+    "event": "standard",
+    "goal_to_go": false,
+    "broadcast": "play_now"
+  },
+  "widescreen": true,
+  "quads": {
+    "body_left": [
+      145.6634521484375,
+      406.7618408203125,
+      149.00518417358398,
+      452.37890625
+    ],
+    "body": [
+      149.00518417358398,
+      406.7618408203125,
+      489.3376097679138,
+      452.37890625
+    ],
+    "body_right": [
+      489.3376097679138,
+      406.7618408203125,
+      492.6686429977417,
+      452.37890625
+    ],
+    "housing": [
+      278.9974784851074,
+      425.4239501953125,
+      360.996045589447,
+      451.1356201171875
+    ],
+    "capsule": [
+      279.6679878234863,
+      430.3970947265625,
+      339.6688725948334,
+      446.99560546875
+    ],
+    "plate": [
+      274.9960517883301,
+      408.825439453125,
+      364.3378838300705,
+      425.4239501953125
+    ],
+    "pointer": [
+      317.0006412938237,
+      406.7618408203125,
+      321.66190518811345,
+      408.825439453125
+    ],
+    "away_wing": [
+      145.6634521484375,
+      406.7618408203125,
+      319.99639498535544,
+      452.37890625
+    ],
+    "home_wing": [
+      318.33088614046574,
+      406.7618408203125,
+      492.6686429977417,
+      452.37890625
+    ],
+    "red": [
+      339.6688725948334,
+      430.3970947265625,
+      360.671599149704,
+      447.40576171875
+    ],
+    "away_logo": [
+      150.9950828552246,
+      409.6585693359375,
+      219.66821670532227,
+      456.12158203125
+    ],
+    "home_logo": [
+      427.3352391719818,
+      407.1719970703125,
+      493.9988856315613,
+      451.55859375
+    ],
+    "watermark": [
+      514.6663446426392,
+      30.52423095703125,
+      586.0020751953125,
+      42.547332763671875
+    ],
+    "away_score:0": [
+      245.34223556518555,
+      416.2979736328125,
+      258.67671966552734,
+      438.27978515625
+    ],
+    "home_score:0": [
+      380.00880908966064,
+      416.2979736328125,
+      393.34370517730713,
+      438.27978515625
+    ],
+    "clock:0": [
+      306.6615038514137,
+      433.306640625,
+      314.3185220658779,
+      444.509033203125
+    ],
+    "clock:1": [
+      314.9890511184931,
+      434.9600830078125,
+      316.6545612961054,
+      442.4326171875
+    ],
+    "clock:2": [
+      317.32509034872055,
+      433.306640625,
+      324.9929240345955,
+      444.509033203125
+    ],
+    "clock:3": [
+      325.66345469653606,
+      433.306640625,
+      333.33128556609154,
+      444.509033203125
+    ],
+    "play_clock:0": [
+      346.34172797203064,
+      433.306640625,
+      353.33902978897095,
+      444.0860595703125
+    ],
+    "quarter:0": [
+      282.00395584106445,
+      433.306640625,
+      288.7306785583496,
+      444.0860595703125
+    ],
+    "quarter:1": [
+      289.3795585632324,
+      433.306640625,
+      299.00461196899414,
+      440.7791748046875
+    ],
+    "away_timeouts:0": [
+      239.00484085083008,
+      444.0860595703125,
+      245.0069808959961,
+      446.5726318359375
+    ],
+    "away_timeouts:1": [
+      249.00840759277344,
+      444.0860595703125,
+      255.01054763793945,
+      446.5726318359375
+    ],
+    "away_timeouts:2": [
+      259.0119743347168,
+      444.0860595703125,
+      265.0141143798828,
+      446.5726318359375
+    ],
+    "home_timeouts:0": [
+      373.335960149765,
+      444.0860595703125,
+      379.33828043937683,
+      446.5726318359375
+    ],
+    "home_timeouts:1": [
+      383.3398358821869,
+      444.0860595703125,
+      389.3421561717987,
+      446.5726318359375
+    ],
+    "home_timeouts:2": [
+      393.34370517730713,
+      444.0860595703125,
+      399.34602546691895,
+      446.5726318359375
+    ],
+    "down:0": [
+      293.3377265930176,
+      410.90185546875,
+      301.34057998657227,
+      423.3475341796875
+    ],
+    "down:1": [
+      302.0002746582031,
+      410.90185546875,
+      313.3343568146229,
+      423.3475341796875
+    ],
+    "down:3": [
+      317.6711703464389,
+      410.90185546875,
+      325.6742693632841,
+      423.3475341796875
+    ],
+    "down:5": [
+      330.00026762485504,
+      410.90185546875,
+      338.0033640265465,
+      423.3475341796875
+    ],
+    "down:6": [
+      338.66307961940765,
+      410.90185546875,
+      346.6661760210991,
+      423.3475341796875
+    ],
+    "FUMBLE": [
+      274.9960517883301,
+      408.825439453125,
+      364.3378838300705,
+      425.4239501953125
+    ],
+    "ball on": [
+      274.9960517883301,
+      408.825439453125,
+      364.3378838300705,
+      425.4239501953125
+    ],
+    "FLAG": [
+      274.9960517883301,
+      408.825439453125,
+      364.3378838300705,
+      425.4239501953125
+    ],
+    "hang time": [
+      274.9960517883301,
+      408.825439453125,
+      364.3378838300705,
+      425.4239501953125
+    ]
+  },
+  "volume": {
+    "version": "scorebug-sprite-v1",
+    "watermark": "auto",
+    "display": "16:9",
+    "components": [
+      {
+        "kind": "TXTR",
+        "name": "sb--h0",
+        "size": 2208,
+        "sha256": "1280a70924e9640e185cd31740caf66e59fce858dcb3849736526692e3695257"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb00h0",
+        "size": 5280,
+        "sha256": "45d9e41af10c962a83e78f830cb17b98c41b7a4aca9c4369614097de55fad378"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb01h0",
+        "size": 5280,
+        "sha256": "61bf890a601e1665bccb6d7db3dc8c9303629a1fd266156085634795f060a254"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb02h0",
+        "size": 5280,
+        "sha256": "14d4865e4cfdf5af83fcdbf78cf1521d321daa9ef555b0676200fff619ca6613"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb03h0",
+        "size": 5280,
+        "sha256": "06fa071ed306a24e7f119fa1e91d406ce890dc49284bf6e74621aa37ecb2ffbd"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb04h0",
+        "size": 5280,
+        "sha256": "0abcbd0b8adcbecf654378118001e2843181d797159118c1c208aba464534dfb"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb05h0",
+        "size": 5280,
+        "sha256": "a14469a93c802347cb57b4e52ad5f3f1e1b3cc02317f2cd993838b9eb97053c1"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb06h0",
+        "size": 5280,
+        "sha256": "3b8e08de574736a1bbb4f68a8acb228fb2e1a6c7127962874f661c44d7ce1c1d"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb30h0",
+        "size": 5280,
+        "sha256": "87016df2b52bccde85a2fb4e9eb76203624dca299361413c2ec1198e7bb9f3e4"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb07h0",
+        "size": 5280,
+        "sha256": "fb7da184eb94b4ffa0d4dc5b59c5d0484269325241ae7576fe7c6c62670fec5a"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb08h0",
+        "size": 5280,
+        "sha256": "ccc6eb979bfea845f645a1f7779a295ff4f0c77b919313b613cbc31b50086b4e"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb09h0",
+        "size": 5280,
+        "sha256": "915dfa4d6bb6e713e70bcf9b1f51d9a8a4abb4b26f60067bc9f0300a86d787fe"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb10h0",
+        "size": 5280,
+        "sha256": "b5daeca41e12ecc08bd6665effad26041c49500788513deec872807f616e3c72"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb37h0",
+        "size": 5280,
+        "sha256": "6747297dff52db20471987040a560a886c73514b41876d3d316bc7f3b818f0bf"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb11h0",
+        "size": 5280,
+        "sha256": "65ab632fbd5bd8ebfbd71f4098ddf68277e045afc30dd1e4e17241fbc0bb9ca5"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb12h0",
+        "size": 5280,
+        "sha256": "0de1b4a6969c6e183714a5adc05fde1ccfc0d3605abffdc369dc7e82a00f26e1"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb13h0",
+        "size": 5280,
+        "sha256": "7dca7429024947c1d3bc7087a0b7d5db23cf17a1c40f20d9993d6080fb3b8535"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb24h0",
+        "size": 5280,
+        "sha256": "661bd587073606dec5e5bd1a0969097b54e238685ac1087f5ce10120f278fca7"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb23h0",
+        "size": 5280,
+        "sha256": "1f36e239a3384dd4cbb631d0be11e84c0dfa3ff2518e72a6418841c974cb52cf"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb20h0",
+        "size": 5280,
+        "sha256": "299baa809686860614af890083498b733ddaffce2d5321a45ce7f89eb12cc7a1"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb14h0",
+        "size": 5280,
+        "sha256": "793d04a4699fb3e4917b7eef837efa8d7c4f7f1a1c72bce7d522592f188bca1c"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb15h0",
+        "size": 5280,
+        "sha256": "722e0e32361cb00ffa8795f1827eafd251bd8abde4f3e9ea25be6cc0d6a79a74"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb16h0",
+        "size": 5280,
+        "sha256": "bfcacf1382c474365f67f8252309959115763bb3866dd9b2624e0442090f2f9a"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb17h0",
+        "size": 5280,
+        "sha256": "670a243efa0f4e7dd18d43972a0a7e01b060778f5aee6a9a76baba00b892d2f9"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb18h0",
+        "size": 5280,
+        "sha256": "f2f0f09de34972e75bbba473d9296060be0cdc8b16c75ab2d70da4d90ea5358c"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb19h0",
+        "size": 5280,
+        "sha256": "6386d730f1cf199618ca94839904ab3b8d11d72502edbf707c571f459502fdc4"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb21h0",
+        "size": 5280,
+        "sha256": "e86aeb622ac0217387426b219a7bbdcec53f893cccd674f04d21121e836a4c6f"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb22h0",
+        "size": 5280,
+        "sha256": "14848ffbc65e959bb634e08d812930678aa357380c299cf06018cca120936e22"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb26h0",
+        "size": 5280,
+        "sha256": "835ea988f8ba55515b7a9cc0938d81fff35bd334a7c4fc278df907b002f37544"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb25h0",
+        "size": 5280,
+        "sha256": "a80a792cb4c37aef0d2fdce044400b9a6c3d4e92ffbb136ebc26d9bf3bb1556c"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb27h0",
+        "size": 5280,
+        "sha256": "fe1610f33c5f9682445d3dffc89ee1ba2a51568c8c2b0d3025982130dbb4d83b"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb28h0",
+        "size": 5280,
+        "sha256": "d02ad391b126276f810f8de7cae82dd09fd529fcd6d547d14547b84db654b35a"
+      },
+      {
+        "kind": "TXTR",
+        "name": "sb29h0",
+        "size": 5280,
+        "sha256": "65b2086c94289f838850d4a5963ff9c2f24dd7febdcf7172ef539f14d782fc78"
+      },
+      {
+        "kind": "TXTR",
+        "name": "score_buga",
+        "size": 132256,
+        "sha256": "f3c00c2d9574c75ba02d0ea24cf7eeee91874f3e634b6ee526288ff96c5c6158"
+      },
+      {
+        "kind": "SCNE",
+        "name": "score_bug",
+        "size": 20384,
+        "sha256": "6ac39f99e13e48c57fde088351d9dc1494d28e7ec1eb0db9396f7896dac4bd40"
+      }
+    ],
+    "appended_bytes": 323808,
+    "font_count": 0,
+    "texture_count": 34,
+    "scene_count": 1,
+    "quads": 47,
+    "native_heap_bytes": 327168
+  },
+  "display": {
+    "aspect": "16:9",
+    "size": [
+      1920,
+      1080
+    ],
+    "path": "reports/b72_s1/iteration1_169_display.png",
+    "quads": {
+      "body_left": [
+        437.00000000000006,
+        941.9999999999999,
+        447.0,
+        1052.0
+      ],
+      "body": [
+        447.0,
+        941.9999999999999,
+        1468.0,
+        1052.0
+      ],
+      "body_right": [
+        1468.0,
+        941.9999999999999,
+        1478.0000000000002,
+        1052.0
+      ],
+      "housing": [
+        837.0,
+        986.9999999999999,
+        1083.0,
+        1049.0
+      ],
+      "capsule": [
+        838.9999999999999,
+        998.9999999999999,
+        1019.0,
+        1039.0
+      ],
+      "plate": [
+        825.0,
+        946.9999999999999,
+        1093.0,
+        986.9999999999999
+      ],
+      "pointer": [
+        951.0,
+        941.9999999999999,
+        964.9999999999999,
+        946.9999999999999
+      ],
+      "away_wing": [
+        437.00000000000006,
+        941.9999999999999,
+        960.0,
+        1052.0
+      ],
+      "home_wing": [
+        955.0000000000001,
+        941.9999999999999,
+        1478.0000000000002,
+        1052.0
+      ],
+      "red": [
+        1019.0,
+        998.9999999999999,
+        1082.0,
+        1040.0
+      ],
+      "away_logo": [
+        453.0000000000001,
+        949.0,
+        659.0,
+        1061.0
+      ],
+      "home_logo": [
+        1282.0,
+        943.0,
+        1481.9999999999998,
+        1050.0
+      ],
+      "watermark": [
+        1544.0,
+        35.0,
+        1758.0,
+        63.999999999999986
+      ],
+      "FUMBLE": [
+        825.0,
+        946.9999999999999,
+        1093.0,
+        986.9999999999999
+      ],
+      "ball on": [
+        825.0,
+        946.9999999999999,
+        1093.0,
+        986.9999999999999
+      ],
+      "FLAG": [
+        825.0,
+        946.9999999999999,
+        1093.0,
+        986.9999999999999
+      ],
+      "hang time": [
+        825.0,
+        946.9999999999999,
+        1093.0,
+        986.9999999999999
+      ]
+    }
+  },
+  "draws": [
+    {
+      "text": "",
+      "glyph_quads": 0
+    },
+    {
+      "text": "",
+      "glyph_quads": 0
+    },
+    {
+      "text": "",
+      "glyph_quads": 0
+    },
+    {
+      "text": "",
+      "glyph_quads": 0
+    },
+    {
+      "text": "",
+      "glyph_quads": 0
+    },
+    {
+      "text": "",
+      "glyph_quads": 0
+    },
+    {
+      "text": "",
+      "glyph_quads": 0
+    },
+    {
+      "text": "",
+      "glyph_quads": 0
+    },
+    {
+      "text": "",
+      "glyph_quads": 0
+    }
+  ],
+  "raster": {
+    "uv_transform": [
+      0.5,
+      0.5,
+      0.5,
+      0.5
+    ],
+    "winding": {
+      "cscore_buga": {
+        "positive": 0,
+        "negative": 10
+      },
+      "score_buga": {
+        "positive": 0,
+        "negative": 8
+      },
+      "dscore_buga": {
+        "positive": 0,
+        "negative": 4
+      },
+      "hscore_buga": {
+        "positive": 0,
+        "negative": 2
+      },
+      "yscore_buga": {
+        "positive": 0,
+        "negative": 18
+      },
+      "yscore_buga1": {
+        "positive": 0,
+        "negative": 22
+      },
+      "zscore_buga": {
+        "positive": 0,
+        "negative": 2
+      }
+    },
+    "rendered_materials": {
+      "cscore_buga": {
+        "descriptor": "0x404a638",
+        "name": "score_buga",
+        "span_sha256": "f3c00c2d9574c75ba02d0ea24cf7eeee91874f3e634b6ee526288ff96c5c6158",
+        "dimensions": [
+          256,
+          512
+        ]
+      },
+      "dscore_buga": {
+        "descriptor": "0x404a638",
+        "name": "score_buga",
+        "span_sha256": "f3c00c2d9574c75ba02d0ea24cf7eeee91874f3e634b6ee526288ff96c5c6158",
+        "dimensions": [
+          256,
+          512
+        ]
+      },
+      "hscore_buga": {
+        "descriptor": "0x40349b8",
+        "name": "sb13h0",
+        "span_sha256": "7dca7429024947c1d3bc7087a0b7d5db23cf17a1c40f20d9993d6080fb3b8535",
+        "dimensions": [
+          64,
+          64
+        ]
+      },
+      "score_buga": {
+        "descriptor": "0x404a638",
+        "name": "score_buga",
+        "span_sha256": "f3c00c2d9574c75ba02d0ea24cf7eeee91874f3e634b6ee526288ff96c5c6158",
+        "dimensions": [
+          256,
+          512
+        ]
+      },
+      "yscore_buga": {
+        "descriptor": "0x404a638",
+        "name": "score_buga",
+        "span_sha256": "f3c00c2d9574c75ba02d0ea24cf7eeee91874f3e634b6ee526288ff96c5c6158",
+        "dimensions": [
+          256,
+          512
+        ]
+      },
+      "yscore_buga1": {
+        "descriptor": "0x404a638",
+        "name": "score_buga",
+        "span_sha256": "f3c00c2d9574c75ba02d0ea24cf7eeee91874f3e634b6ee526288ff96c5c6158",
+        "dimensions": [
+          256,
+          512
+        ]
+      },
+      "zscore_buga": {
+        "descriptor": "0x402ceb8",
+        "name": "sb08h0",
+        "span_sha256": "ccc6eb979bfea845f645a1f7779a295ff4f0c77b919313b613cbc31b50086b4e",
+        "dimensions": [
+          64,
+          64
+        ]
+      }
+    },
+    "submission": [
+      {
+        "material": 2,
+        "name": "cscore_buga",
+        "indices": 28
+      },
+      {
+        "material": 6,
+        "name": "score_buga",
+        "indices": 22
+      },
+      {
+        "material": 4,
+        "name": "dscore_buga",
+        "indices": 10
+      },
+      {
+        "material": 3,
+        "name": "hscore_buga",
+        "indices": 4
+      },
+      {
+        "material": 9,
+        "name": "yscore_buga",
+        "indices": 94
+      },
+      {
+        "material": 7,
+        "name": "yscore_buga1",
+        "indices": 82
+      },
+      {
+        "material": 5,
+        "name": "bscore_buga",
+        "indices": 4
+      },
+      {
+        "material": 0,
+        "name": "bscore_buga1",
+        "indices": 4
+      },
+      {
+        "material": 1,
+        "name": "bscore_buga2",
+        "indices": 4
+      },
+      {
+        "material": 10,
+        "name": "zscore_buga",
+        "indices": 4
+      },
+      {
+        "material": 8,
+        "name": "zz_ESPN_bug1",
+        "indices": 4
+      }
+    ],
+    "raster_policy": {
+      "order": "SHAP descriptor order, then push-buffer order",
+      "depth": "none (sprite submission order)",
+      "blend": "vertex * texture, source alpha model",
+      "cull_positive": false,
+      "gpu_state_proved": false,
+      "calibration": null
+    }
+  },
+  "runtime_witnessed": false
+}

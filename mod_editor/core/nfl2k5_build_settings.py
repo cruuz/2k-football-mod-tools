@@ -23,7 +23,7 @@ FEATURE_KEYS += (
     "franchise_practice", "practice_squad", "depth_locks", "prospect_names", "player_star",
     "player_tags", "roster_edits", "espn25_plan", "espn25_rosters", "playbook_packs", "screen_timing", "depth_roles", "edge_rename",
     "hires_pack", "hires_folder", "hires_scale", "hires_target", "guardian_cap", "scorebug",
-    "scorebug_runtime", "scorebug_folder", "music_policy", "music_unlock", "music_userlist",
+    "scorebug_runtime", "scorebug_folder", "scorebug_watermark", "music_policy", "music_unlock", "music_userlist",
     "music_project", "music_library", "commentary", "name", "author", "notes",
 )
 FEATURE_KEYS += ("weather_plan", "weather_haze", "coin_defer", "decided_clock",
@@ -48,6 +48,7 @@ def build_settings(value):
     tt._require(choices["helmet_finish"] in ("glossy", "matte"), "Helmet finish must be glossy or matte")
     from . import nfl2k5_modern_color as colour
     colour.normalize_settings(choices["modern_color_settings"])
+    tt._require(choices["scorebug_watermark"] in ("auto", "mnf", "off"), "ESPN watermark must be auto, mnf or off")
     expected = defaults()
     for key in FEATURE_KEYS:
         item, default = choices[key], expected[key]

@@ -10,6 +10,13 @@ SCREENSHOT=Path('/home/noah/Desktop/2K5-8 Editors/beta71_evidence/day/ksnip_2026
 class PreviewTests(unittest.TestCase):
  @classmethod
  def setUpClass(cls):cls.app=QApplication.instance() or QApplication([])
+ def test_watermark_policy_and_broadcast_choices(self):
+  d=SpritePreviewDialog(watermark='mnf');self.addCleanup(d.close)
+  self.assertEqual(d.watermark.currentData(),'mnf')
+  self.assertEqual([d.watermark.itemData(i) for i in range(d.watermark.count())],['auto','mnf','off'])
+  self.assertEqual([d.broadcast.itemData(i) for i in range(d.broadcast.count())],['play_now','monday_night','sunday_night','monday_afternoon'])
+  chosen=[];d.watermark_chosen.connect(chosen.append);d.watermark.setCurrentIndex(2);d._use_design()
+  self.assertEqual(chosen,['off'])
  def test_invalid_inputs_are_readable_and_design_handoff_validates(self):
   d=SpritePreviewDialog();self.addCleanup(d.close);d.preview();self.assertIn('existing',d.status.text())
   received=[];d.design_chosen.connect(received.append);d._use_design();self.assertEqual(received,[d.folder.text()])
