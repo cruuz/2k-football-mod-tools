@@ -169,16 +169,18 @@ static void field(u8 *b,struct Field *f) {
 NOINLINE void sprite_update(struct State *s) {
  u8 *b=base();if(!b || !s->active || s->scene!=(u32)b+256 || !V(0xa95520))return;
  struct Header *h=header(b);
- for(u32 k=3;k<10;k++){u32 m=material(b,k);V(m+8)&=~1u;V(m+24)=0xffffffff;}
+ for(u32 k=3;k<10;k++) {
+  u32 m=material(b,k);
+  V(m+8)=(V(m+8)&~1u)|((k==5&&!s->home)||(k==8&&!s->away));
+  V(m+24)=0xffffffff;
+ }
  /* Event plates are logical 10, 2, 1, 0, outside the bar reset above.
   * Recompute every plate from the same binding/current-slide gate as text.
   * A request can end while its slide is still closing. */
  for(u32 record=0xa95aa8;record<0xa95c68;record+=0x70) {
   u32 m=V(record+0x44);
-  V(m+8)=(V(m+8)&~1u)|!element_visible(record);
+  if(m)V(m+8)=(V(m+8)&~1u)|!element_visible(record);
  }
- if(!s->home)V(material(b,5)+8)|=1;
- if(!s->away)V(material(b,8)+8)|=1;
  u32 p=V(0xe60280),tint=0xff3a3f48;
  if(p==0xe5fc20 || p==V(0xe5fc28))tint=s->home_plate;
  if(p==0xe5fc60 || p==V(0xe5fc68))tint=s->away_plate;
