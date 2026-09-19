@@ -10,7 +10,7 @@ def sampling_receipt():
  spec,image=s.load_layout();records=[]
  # Maximum supported formatted widths, including native ordinal suffixes and
  # Inches. Every digit and ordinal in each set is then tested at that bound.
- longest={'score':list('888'),'clock':list('60:00'),'small':['4','TH'],
+ longest={'score':list('888'),'clock':list('60:00'),'small':['4','TH'],'quarter':['4TH'],
           'label':['4','th',' ','&',' ','Inch','es'],'ticks':['~','~','~']}
  for wide in (False,True):
   sx=s.x_scale(wide)*(s.WIDE_CONTRACTION if wide else 1);sy=448/1080

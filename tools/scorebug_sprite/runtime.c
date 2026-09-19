@@ -108,7 +108,10 @@ static u32 text(struct Field *f,u16 *out) {
  if(source<2){p=V(source?0xe5fc68:0xe5fc28);if(!p || V(p)>999)return 0;((Formatter)(source?0xfc070:0xfc050))(out);}
  else if(source<4){p=V(source==2?0xe5fc28:0xe5fc68);if(!p)return 0;u32 n=V(p+4);if(n>3)return 0;for(u32 j=0;j<n;j++)out[j]='~';out[n]=0;}
  else if(source==4){((Formatter)0xfc090)(out);}
- else if(source==5){p=V(0xe6028c);if(!p || V(p+16)>0x45610000u)return 0;((Formatter)0xfc100)(out);}
+ /* Retail splits at ceil(seconds)==600. FC100 deliberately returns empty
+  * above 599.0; FC150 handles that complementary range. Positive IEEE bits
+  * preserve order after the finite, nonnegative range guard above. */
+ else if(source==5){p=V(0xe6028c);if(!p || V(p+16)>0x45610000u)return 0;((Formatter)(V(p+16)<=0x4415c000u?0xfc100:0xfc150))(out);}
  else if(source==6){p=V(0xe60294);if(!p || V(p+16)>0x42c60000u || (V(p+24)&6))return 0;((Formatter)0xfbe30)(out);}
  else if(source==7){if(!V(0xe602ec) || !V(0xe60280))return 0;((Formatter)0xfc7d0)(out);}
  else return 0;

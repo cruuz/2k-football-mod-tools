@@ -16,8 +16,11 @@
       "plate": "#C44C4C",
       "wash": "#C44C4C",
       "logo_fit": {
-        "fill_x": 1.14,
-        "height": 1.0
+        "fill_x": 1.08,
+        "height": 0.94,
+        "zoom": 1.0,
+        "shift_x": 0.0,
+        "shift_y": 0.0
       },
       "review_required": false,
       "candidates": {
@@ -266,8 +269,11 @@
       "plate": "#545C6A",
       "wash": "#545C6A",
       "logo_fit": {
-        "fill_x": 1.14,
-        "height": 1.0
+        "fill_x": 1.0,
+        "height": 0.94,
+        "zoom": 1.0,
+        "shift_x": 0.0,
+        "shift_y": 0.0
       },
       "review_required": false,
       "candidates": {
@@ -516,8 +522,11 @@
       "plate": "#BC3B0F",
       "wash": "#BC3B0F",
       "logo_fit": {
-        "fill_x": 1.14,
-        "height": 1.0
+        "fill_x": 1.0,
+        "height": 0.94,
+        "zoom": 1.0,
+        "shift_x": 0.0,
+        "shift_y": 0.0
       },
       "review_required": false,
       "candidates": {
@@ -764,11 +773,14 @@
       ],
       "wing": "#00338D",
       "rim": "#00338D",
-      "plate": "#001A46",
+      "plate": "#00338D",
       "wash": "#00338D",
       "logo_fit": {
         "fill_x": 1.14,
-        "height": 1.0
+        "height": 0.93,
+        "zoom": 1.05,
+        "shift_x": 0.0,
+        "shift_y": 0.0
       },
       "review_required": true,
       "candidates": {
@@ -1087,13 +1099,16 @@
         "#0A2343",
         "#FFFFFF"
       ],
-      "wing": "#BD3902",
-      "rim": "#BD3902",
-      "plate": "#BD3902",
-      "wash": "#BD3902",
+      "wing": "#54657B",
+      "rim": "#54657B",
+      "plate": "#54657B",
+      "wash": "#54657B",
       "logo_fit": {
-        "fill_x": 1.14,
-        "height": 1.0
+        "fill_x": 1.29,
+        "height": 0.9,
+        "zoom": 1.0,
+        "shift_x": 0.0,
+        "shift_y": -0.015
       },
       "review_required": false,
       "candidates": {
@@ -1342,8 +1357,11 @@
       "plate": "#6F614C",
       "wash": "#6F614C",
       "logo_fit": {
-        "fill_x": 1.14,
-        "height": 1.0
+        "fill_x": 1.0,
+        "height": 0.94,
+        "zoom": 1.0,
+        "shift_x": 0.0,
+        "shift_y": 0.0
       },
       "review_required": false,
       "candidates": {
@@ -1594,8 +1612,11 @@
       "plate": "#A71930",
       "wash": "#A71930",
       "logo_fit": {
-        "fill_x": 1.14,
-        "height": 1.0
+        "fill_x": 1.0,
+        "height": 0.94,
+        "zoom": 1.0,
+        "shift_x": 0.0,
+        "shift_y": 0.0
       },
       "review_required": true,
       "candidates": {
@@ -1994,8 +2015,11 @@
       "plate": "#97233F",
       "wash": "#97233F",
       "logo_fit": {
-        "fill_x": 1.14,
-        "height": 1.0
+        "fill_x": 1.0,
+        "height": 0.94,
+        "zoom": 1.0,
+        "shift_x": 0.0,
+        "shift_y": 0.0
       },
       "review_required": true,
       "candidates": {
@@ -2245,8 +2269,11 @@
       "plate": "#006094",
       "wash": "#006094",
       "logo_fit": {
-        "fill_x": 1.14,
-        "height": 1.0
+        "fill_x": 1.08,
+        "height": 0.94,
+        "zoom": 1.0,
+        "shift_x": 0.0,
+        "shift_y": 0.0
       },
       "review_required": false,
       "candidates": {
@@ -2565,13 +2592,16 @@
         "#FFB612",
         "#FFFFFF"
       ],
-      "wing": "#AA1229",
-      "rim": "#AA1229",
-      "plate": "#AA1229",
-      "wash": "#AA1229",
+      "wing": "#E31837",
+      "rim": "#E31837",
+      "plate": "#E31837",
+      "wash": "#E31837",
       "logo_fit": {
-        "fill_x": 1.14,
-        "height": 1.0
+        "fill_x": 1.3,
+        "height": 1.0,
+        "zoom": 1.0,
+        "shift_x": 0.0,
+        "shift_y": 0.0
       },
       "review_required": true,
       "candidates": {
@@ -2821,8 +2851,11 @@
       "plate": "#013369",
       "wash": "#013369",
       "logo_fit": {
-        "fill_x": 1.14,
-        "height": 1.0
+        "fill_x": 1.0,
+        "height": 0.94,
+        "zoom": 1.0,
+        "shift_x": 0.0,
+        "shift_y": 0.0
       },
       "review_required": true,
       "candidates": {
@@ -3148,8 +3181,11 @@
       "plate": "#264360",
       "wash": "#264360",
       "logo_fit": {
-        "fill_x": 1.14,
-        "height": 1.0
+        "fill_x": 1.0,
+        "height": 0.94,
+        "zoom": 1.0,
+        "shift_x": 0.0,
+        "shift_y": 0.0
       },
       "review_required": true,
       "candidates": {
@@ -3548,8 +3584,11 @@
       "plate": "#006A71",
       "wash": "#006A71",
       "logo_fit": {
-        "fill_x": 1.14,
-        "height": 1.0
+        "fill_x": 1.0,
+        "height": 0.94,
+        "zoom": 1.0,
+        "shift_x": 0.0,
+        "shift_y": 0.0
       },
       "review_required": false,
       "candidates": {
@@ -3799,8 +3838,11 @@
       "plate": "#26636B",
       "wash": "#26636B",
       "logo_fit": {
-        "fill_x": 1.14,
-        "height": 1.0
+        "fill_x": 1.0,
+        "height": 0.94,
+        "zoom": 1.0,
+        "shift_x": 0.0,
+        "shift_y": 0.0
       },
       "review_required": false,
       "candidates": {
@@ -4125,8 +4167,11 @@
       "plate": "#B43C4F",
       "wash": "#B43C4F",
       "logo_fit": {
-        "fill_x": 1.14,
-        "height": 1.0
+        "fill_x": 1.0,
+        "height": 0.94,
+        "zoom": 1.0,
+        "shift_x": 0.0,
+        "shift_y": 0.0
       },
       "review_required": false,
       "candidates": {
@@ -4450,8 +4495,11 @@
       "plate": "#0B2265",
       "wash": "#0B2265",
       "logo_fit": {
-        "fill_x": 1.14,
-        "height": 1.0
+        "fill_x": 1.0,
+        "height": 0.94,
+        "zoom": 1.0,
+        "shift_x": 0.0,
+        "shift_y": 0.0
       },
       "review_required": true,
       "candidates": {
@@ -4702,8 +4750,11 @@
       "plate": "#267E8C",
       "wash": "#267E8C",
       "logo_fit": {
-        "fill_x": 1.14,
-        "height": 1.0
+        "fill_x": 1.0,
+        "height": 0.94,
+        "zoom": 1.0,
+        "shift_x": 0.0,
+        "shift_y": 0.0
       },
       "review_required": false,
       "candidates": {
@@ -5102,8 +5153,11 @@
       "plate": "#35705D",
       "wash": "#35705D",
       "logo_fit": {
-        "fill_x": 1.14,
-        "height": 1.0
+        "fill_x": 1.08,
+        "height": 0.94,
+        "zoom": 1.0,
+        "shift_x": 0.0,
+        "shift_y": 0.0
       },
       "review_required": false,
       "candidates": {
@@ -5353,8 +5407,11 @@
       "plate": "#0076B6",
       "wash": "#0076B6",
       "logo_fit": {
-        "fill_x": 1.14,
-        "height": 1.0
+        "fill_x": 1.0,
+        "height": 0.94,
+        "zoom": 1.0,
+        "shift_x": 0.0,
+        "shift_y": 0.0
       },
       "review_required": false,
       "candidates": {
@@ -5678,8 +5735,11 @@
       "plate": "#63736F",
       "wash": "#203731",
       "logo_fit": {
-        "fill_x": 1.14,
-        "height": 1.0
+        "fill_x": 1.08,
+        "height": 0.94,
+        "zoom": 1.0,
+        "shift_x": 0.0,
+        "shift_y": 0.0
       },
       "review_required": true,
       "candidates": {
@@ -5928,8 +5988,11 @@
       "plate": "#00649B",
       "wash": "#00649B",
       "logo_fit": {
-        "fill_x": 1.14,
-        "height": 1.0
+        "fill_x": 1.08,
+        "height": 0.94,
+        "zoom": 1.0,
+        "shift_x": 0.0,
+        "shift_y": 0.0
       },
       "review_required": false,
       "candidates": {
@@ -6179,8 +6242,11 @@
       "plate": "#264360",
       "wash": "#264360",
       "logo_fit": {
-        "fill_x": 1.14,
-        "height": 1.0
+        "fill_x": 1.08,
+        "height": 0.94,
+        "zoom": 1.0,
+        "shift_x": 0.0,
+        "shift_y": 0.0
       },
       "review_required": true,
       "candidates": {
@@ -6501,11 +6567,14 @@
       ],
       "wing": "#646464",
       "rim": "#646464",
-      "plate": "#000000",
+      "plate": "#646464",
       "wash": "#646464",
       "logo_fit": {
-        "fill_x": 1.14,
-        "height": 1.0
+        "fill_x": 1.3,
+        "height": 1.0,
+        "zoom": 1.1,
+        "shift_x": 0.0,
+        "shift_y": -0.01
       },
       "review_required": false,
       "candidates": {
@@ -6754,8 +6823,11 @@
       "plate": "#003594",
       "wash": "#003594",
       "logo_fit": {
-        "fill_x": 1.14,
-        "height": 1.0
+        "fill_x": 1.0,
+        "height": 0.94,
+        "zoom": 1.0,
+        "shift_x": 0.0,
+        "shift_y": 0.0
       },
       "review_required": true,
       "candidates": {
@@ -7005,8 +7077,11 @@
       "plate": "#665A8F",
       "wash": "#665A8F",
       "logo_fit": {
-        "fill_x": 1.14,
-        "height": 1.0
+        "fill_x": 1.08,
+        "height": 0.94,
+        "zoom": 1.0,
+        "shift_x": 0.0,
+        "shift_y": 0.0
       },
       "review_required": false,
       "candidates": {
@@ -7331,8 +7406,11 @@
       "plate": "#8C5A5A",
       "wash": "#8C5A5A",
       "logo_fit": {
-        "fill_x": 1.14,
-        "height": 1.0
+        "fill_x": 1.08,
+        "height": 0.94,
+        "zoom": 1.0,
+        "shift_x": 0.0,
+        "shift_y": 0.0
       },
       "review_required": false,
       "candidates": {
@@ -7656,8 +7734,11 @@
       "plate": "#6A5E46",
       "wash": "#6A5E46",
       "logo_fit": {
-        "fill_x": 1.14,
-        "height": 1.0
+        "fill_x": 1.0,
+        "height": 0.94,
+        "zoom": 1.0,
+        "shift_x": 0.0,
+        "shift_y": 0.0
       },
       "review_required": false,
       "candidates": {
@@ -7907,8 +7988,11 @@
       "plate": "#4C647C",
       "wash": "#4C647C",
       "logo_fit": {
-        "fill_x": 1.14,
-        "height": 1.0
+        "fill_x": 1.08,
+        "height": 0.94,
+        "zoom": 1.0,
+        "shift_x": 0.0,
+        "shift_y": 0.0
       },
       "review_required": false,
       "candidates": {
@@ -8232,8 +8316,11 @@
       "plate": "#805B09",
       "wash": "#805B09",
       "logo_fit": {
-        "fill_x": 1.14,
-        "height": 1.0
+        "fill_x": 1.0,
+        "height": 0.94,
+        "zoom": 1.0,
+        "shift_x": 0.0,
+        "shift_y": 0.0
       },
       "review_required": true,
       "candidates": {
@@ -8478,13 +8565,16 @@
         "#FFFFFF",
         "#0080C6"
       ],
-      "wing": "#4E585D",
-      "rim": "#4E585D",
-      "plate": "#4E585D",
-      "wash": "#4E585D",
+      "wing": "#EB0028",
+      "rim": "#EB0028",
+      "plate": "#EB0028",
+      "wash": "#EB0028",
       "logo_fit": {
-        "fill_x": 1.14,
-        "height": 1.0
+        "fill_x": 1.07,
+        "height": 1.0,
+        "zoom": 1.19,
+        "shift_x": 0.0,
+        "shift_y": 0.0
       },
       "review_required": false,
       "candidates": {
@@ -8809,8 +8899,11 @@
       "plate": "#33709E",
       "wash": "#33709E",
       "logo_fit": {
-        "fill_x": 1.14,
-        "height": 1.0
+        "fill_x": 1.0,
+        "height": 0.94,
+        "zoom": 1.0,
+        "shift_x": 0.0,
+        "shift_y": 0.0
       },
       "review_required": false,
       "candidates": {
@@ -9134,8 +9227,11 @@
       "plate": "#281342",
       "wash": "#4F2683",
       "logo_fit": {
-        "fill_x": 1.14,
-        "height": 1.0
+        "fill_x": 1.0,
+        "height": 0.94,
+        "zoom": 1.0,
+        "shift_x": 0.0,
+        "shift_y": 0.0
       },
       "review_required": true,
       "candidates": {

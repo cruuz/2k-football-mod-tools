@@ -7,7 +7,7 @@ PINS = {
     "tools/scorebug_sprite/neutral_template.py": "fddad8bd118b3321b24eb3df67719f9f2c392ad36f6cf91811bc3af4e8dba35b",
     "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
     "data/nfl2k5_scorebug_sprite/broadcast_states.json": "16e07c2de4718bfe57066c35643a6302101c58eca72339f1e189d510b773e5a4",
-    "data/nfl2k5_scorebug_sprite/team_accents.json": "8c81fd84f3fa0a4dcb912347e92a754ede0881e0ca9a9e5204e2458f562fa978",
+    "data/nfl2k5_scorebug_sprite/team_accents.json": "5570ce12a77dbe8983f2b4342041ccff94678070789f6817fc7b58c6b345d31c",
     "tools/scorebug_sprite/compare_ingame.py": "f71be713be3c5466d791a3906d289d159668c3b42101758a9c1526b9469670ac",
     "tools/scorebug_sprite/jev/accents.py": "42988d27dca8ea1192a96bdc47d0bf8809d12ad870a6c3a0c8ebda65a3d05ea3",
     "tools/scorebug_sprite/jev/descriptors.py": "df9ac4ac41820390abcb941a3bc1d90df355cc09751769ece2710aa45cd22cfa",

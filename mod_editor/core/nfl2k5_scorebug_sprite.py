@@ -119,8 +119,10 @@ def load_layout(folder=None):
     for team, row in [('default', fit.get('default', {}))]+list(fit.get('by_team', {}).items()):
         from .nfl2k5_scorebug_resources import TEAM_LOGOS
         require(team=='default' or team in TEAM_LOGOS, 'Unknown logo fit team.')
-        require(isinstance(row, dict) and set(row)<= {'fill_x','height'} and all(isinstance(v,(int,float)) for v in row.values())
-                and 0.5<=row.get('fill_x',1.0)<=2.0 and 0.25<=row.get('height',1.0)<=1.0, 'Invalid logo fit for '+team)
+        require(isinstance(row, dict) and set(row)<= {'fill_x','height','zoom','shift_x','shift_y'} and all(_number(v) for v in row.values())
+                and 0.5<=row.get('fill_x',1.0)<=2.0 and 0.25<=row.get('height',1.0)<=1.0
+                and 0.5<=row.get('zoom',1.0)<=2.0
+                and all(-0.5<=row.get(k,0)<=0.5 for k in ('shift_x','shift_y')), 'Invalid logo fit for '+team)
     require(len(spec.get('brand',[]))<=8, 'Too many brand layers.')
     names=set()
     for row in spec['static']+spec['fields']+spec.get('events',[])+spec.get('brand',[]):

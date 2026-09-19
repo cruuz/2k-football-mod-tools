@@ -740,14 +740,23 @@ def mnf_panel(team, side, fit=None):
             a,b,c,d = MNF_SOURCE["home_logo"]
             fill_x = float((fit or {}).get("fill_x", 1.0))
             height = float((fit or {}).get("height", 1.0))
-            if not (0.5 <= fill_x <= 2.0 and 0.25 <= height <= 1.0):
+            zoom = float((fit or {}).get("zoom", 1.0))
+            shift_x = float((fit or {}).get("shift_x", 0.0))
+            shift_y = float((fit or {}).get("shift_y", 0.0))
+            if not (0.5 <= fill_x <= 2.0 and 0.25 <= height <= 1.0
+                    and 0.5 <= zoom <= 2.0 and -0.5 <= shift_x <= 0.5
+                    and -0.5 <= shift_y <= 0.5):
                 raise ValueError("invalid logo fit")
             scale = min((c-a)/logo.width,(d-b)*height/logo.height)
             src_w = min(c-a, logo.width*scale*fill_x)
-            w = max(1,round(src_w*64/(c-a)))
-            h = max(1,round(logo.height*scale*(l1-l0)/(d-b)))
+            w = max(1,round(src_w*64/(c-a)*zoom))
+            h = max(1,round(logo.height*scale*(l1-l0)/(d-b)*zoom))
             from .nfl2k5_scorebug_assets import resample_logo, alpha_bleed
             logo = resample_logo(logo, (w, h))
-            im.paste(logo, (((64-w)//2), l0 + (l1 - l0 - h) // 2))
+            # Clip the enlarged mark at the wing edge, as the live package
+            # does for tall shields and the Texans bull. Defaults preserve
+            # legacy callers and the 64 by 64 runtime texture contract.
+            im.paste(logo, ((64-w)//2+round(shift_x*64),
+                           l0+(l1-l0-h)//2+round(shift_y*64)))
             im = alpha_bleed(im)
     return im
