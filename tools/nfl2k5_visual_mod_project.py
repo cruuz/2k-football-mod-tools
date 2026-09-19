@@ -4258,6 +4258,8 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                                     staged_equipment[equipment_index] = (asset_id, staged)
 
                         def compile_equipment():
+                            # No size suggestion: Build refits instead, and a
+                            # suggestion never changes whether the group fits.
                             with uncapped_optimal_fit(group_heartbeat):
                                 return (uniform_equipment_adapter
                                         .build_unified_uniform_equipment_imports(
@@ -4265,6 +4267,7 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                                             staged_equipment,
                                             pack_hashes=equipment_pack_hashes,
                                             compile_cache=equipment_compile_cache,
+                                            suggest_fit=False,
                                         ))
                         stage_equipment(equipment_substitutes)
                         try:
