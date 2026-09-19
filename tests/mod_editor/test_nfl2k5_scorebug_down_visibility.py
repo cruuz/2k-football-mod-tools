@@ -143,6 +143,14 @@ class DownVisibilityTests(unittest.TestCase):
                 self.assertEqual(seq.read()['visible_glyphs'], 5 if expected else 0)
                 for event in seq.read()['events']:
                     self.assertEqual(event['visible'], bool(event_binding and event_slide > event['minimum']))
+            # An unavailable native binding may have no material pointer.
+            # The owner must not write through address zero or hide the down.
+            for record in range(0xa95aa8, 0xa95c68, 0x70):
+                m.put(record + 0x44, 0)
+                m.put(record + 0x58, 0)
+            m.run(call, limit=500000)
+            self.assertEqual(sum(bool(m.get(seq.capture['body'] + scene.layout.S1 + q['vertex'] * 10))
+                                 for q in seq.rows), 5)
 
     def test_all_event_plates_follow_records_through_punt_and_next_snap(self):
         for wide in (False, True):
@@ -172,6 +180,7 @@ class DownVisibilityTests(unittest.TestCase):
         seq = self.sequence(False)
         m = seq.machine
         mats = m.get(seq.capture['body'] + 256 + 0x20)
+        self.assertEqual({e['material'] for e in seq.mode['compiled'].spec['events']}, {0, 1, 2, 10})
         self.assertEqual(m.get(0xa95aec), mats + 8 * 128)  # logical 10
         for native in (2, 4, 3, 9, 7, 10, 6):  # logical 3..9
             m.put(mats + native * 128 + 8, 0x80000001)
