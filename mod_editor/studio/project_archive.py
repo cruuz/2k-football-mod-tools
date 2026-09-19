@@ -211,7 +211,9 @@ def _publish_archive(
                 "Fast-save target protection requires an atomic replacement."
             )
         current = project_target_identity(destination)
-        if current != expected_target:
+        # A change-time-only difference is not a refusal (see
+        # ProjectTargetIdentity.matches_apart_from_change_time).
+        if not expected_target.matches_apart_from_change_time(current):
             raise ValidationError(
                 "The active project changed outside Mod Studio. It was not "
                 "overwritten; use Save Project As or reopen it first."
@@ -283,6 +285,10 @@ class ProjectTargetIdentity:
     This is deliberately filesystem metadata, not project content.  It lets a
     document-style fast save prove that the path still names the exact regular
     file the user opened or last saved before replacing it atomically.
+
+    ``changed_ns`` is recorded for diagnostics.  Two identities taken at
+    different times are compared with :meth:`matches_apart_from_change_time`,
+    never with ``==``.
     """
 
     path: Path
@@ -291,6 +297,26 @@ class ProjectTargetIdentity:
     size: int
     modified_ns: int
     changed_ns: int
+
+    def matches_apart_from_change_time(self, other: object) -> bool:
+        """Whether ``other`` still names this file with the same size and mtime.
+
+        Path, file ID (device and inode), size and modification time must all
+        match; only ``changed_ns`` may differ.  The two identities come from two
+        descriptors opened at different times, and the change time is metadata,
+        not content: on Windows Python 3.12 ``os.fstat`` reports
+        ``FILE_BASIC_INFO.ChangeTime`` as ``st_ctime``, which backup, antivirus,
+        indexing and sync software move without touching a byte (a POSIX chmod
+        or xattr write does the same).  A beta 72 tester's untouched project was
+        refused on exactly that difference.  Callers that can also compare the
+        content SHA-256 do so; the project open does.
+        """
+
+        return isinstance(other, ProjectTargetIdentity) and (
+            self.path, self.device, self.inode, self.size, self.modified_ns,
+        ) == (
+            other.path, other.device, other.inode, other.size, other.modified_ns,
+        )
 
 
 def project_target_identity(path: Path) -> ProjectTargetIdentity:
@@ -370,10 +396,10 @@ def project_target_identity(path: Path) -> ProjectTargetIdentity:
                 "The active project changed while Mod Studio checked it. Use "
                 "Save Project As or reopen it."
             )
-        # The recorded fingerprint keeps every field, including the raw change
-        # time: both sides of the later ProjectTargetIdentity comparison come
-        # from this same fd stat, so that field stays a usable signal on every
-        # platform and is not dropped here.
+        # The recorded fingerprint keeps the raw change time for diagnostics.
+        # A later identity comes from another descriptor at another time, where
+        # the change time can move with no byte changed, so the two are compared
+        # with matches_apart_from_change_time rather than ==.
         return ProjectTargetIdentity(
             resolved, opened.st_dev, opened.st_ino, opened.st_size,
             opened.st_mtime_ns, opened.st_ctime_ns,

@@ -46,8 +46,15 @@ def file_hash(path):
 
 
 def identity(path):
+    """File ID, size and mtime: what a later path stat of the same bytes repeats.
+
+    No change time.  Callers compare a value taken before a build step with one
+    taken after it, and backup, antivirus and sync software move that field
+    without touching a byte (a POSIX chmod or xattr write; ChangeTime on Windows).
+    Content changes are still caught by size, mtime and the SHA-256 checks.
+    """
     st = Path(path).stat()
-    return (st.st_dev, st.st_ino, st.st_size, st.st_mtime_ns, st.st_ctime_ns)
+    return (st.st_dev, st.st_ino, st.st_size, st.st_mtime_ns)
 
 
 def transactional_copy(source, output, *, source_sha256, scratch_bytes,

@@ -33,8 +33,11 @@ def sha(data):
 
 
 def _stamp(path):
+    # Compared across the whole music build, next to the source SHA-256: no
+    # change time, which moves with no byte changed (see
+    # nfl2k5_music_archive.identity).
     stat = path.stat()
-    return stat.st_dev, stat.st_ino, stat.st_size, stat.st_mtime_ns, stat.st_ctime_ns
+    return stat.st_dev, stat.st_ino, stat.st_size, stat.st_mtime_ns
 
 
 @dataclass(frozen=True)

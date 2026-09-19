@@ -5954,6 +5954,34 @@ def file_snapshot(fd: int) -> list[int]:
     return [info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_ctime_ns]
 
 
+def snapshot_bound_to_receipt(fd: int, recorded: Any,
+                              whole_file_sha256: Any) -> list[int] | None:
+    """This descriptor's snapshot when it still binds the build's full check, else None.
+
+    ``recorded`` was taken by the build process on its own descriptor; ``fd``
+    was opened later by this verifier process.  An identical snapshot needs
+    nothing more.  One that differs ONLY in the change time (the last field)
+    is accepted after the whole file is hashed again through ``fd`` and equals
+    the build's full-image SHA-256, with device, inode, size and mtime still
+    unchanged after that read.  On Windows Python 3.12 ``os.fstat`` reports
+    FILE_BASIC_INFO.ChangeTime as st_ctime, which antivirus, backup, indexing
+    and sync software move without touching a byte; a beta 72 tester's builds
+    stopped here on exactly that.  Every other difference refuses as before.
+    """
+
+    current = file_snapshot(fd)
+    if current == recorded:
+        return current
+    if not (isinstance(recorded, list) and len(recorded) == len(current)
+            and current[:-1] == recorded[:-1]
+            and isinstance(whole_file_sha256, str) and len(whole_file_sha256) == 64):
+        return None
+    if common.sha256_fd(fd, 0, current[2]) != whole_file_sha256:
+        return None
+    after = file_snapshot(fd)
+    return after if after[:-1] == current[:-1] else None
+
+
 @_diagnose_phase("checking written edits against the build receipt")
 def verify_written(project_path: Path, source_path: Path, output_path: Path,
                    manifest_path: Path, artifact_dir_path: Path,
@@ -5982,9 +6010,13 @@ def verify_written(project_path: Path, source_path: Path, output_path: Path,
     artifacts, artifact_identity = verify_artifacts(
         artifact_dir_path, manifest["output"]["artifact_sha256"])
     fds = []
+    seen = []
     try:
-        for path, record, snapshot_key in ((source_path, manifest["source"], "source_stat"),
-                                           (output_path, manifest["output"], "output_stat")):
+        for path, record, snapshot_key, whole_file_sha256 in (
+                (source_path, manifest["source"], "source_stat",
+                 manifest["source"].get("sha256_before")),
+                (output_path, manifest["output"], "output_stat",
+                 manifest["output"].get("xiso_sha256"))):
             info = path.lstat()
             require(stat.S_ISREG(info.st_mode) and not stat.S_ISLNK(info.st_mode),
                     "source/output must be non-symlink regular files")
@@ -5993,10 +6025,17 @@ def verify_written(project_path: Path, source_path: Path, output_path: Path,
                          | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0))
             fds.append(fd)
             require(str(path) == record.get("path", record.get("xiso_path"))
-                    and file_snapshot(fd) == receipt[snapshot_key]
                     and common.path_identity(path) == common.fd_identity(fd),
                     "source/output changed since the full build check")
+            # Another process and another descriptor than the build's: a
+            # change-time-only difference is settled by the whole-file SHA-256.
+            snapshot = snapshot_bound_to_receipt(
+                fd, receipt[snapshot_key], whole_file_sha256)
+            require(snapshot is not None,
+                    "source/output changed since the full build check")
+            seen.append(snapshot)
         source_fd, output_fd = fds
+        source_seen, output_seen = seen
         source_entries, directory = common.parse_xdvdfs(source_fd, os.fstat(source_fd).st_size)
         output_entries, output_directory = common.parse_xdvdfs(output_fd, os.fstat(output_fd).st_size)
         require(source_entries == output_entries and directory == output_directory
@@ -6038,8 +6077,10 @@ def verify_written(project_path: Path, source_path: Path, output_path: Path,
         for pin in pins.values():
             with _naming_project_edits(project, input_indices[pin.path]):
                 verify_input_pin(pin)
-        require(file_snapshot(source_fd) == receipt["source_stat"]
-                and file_snapshot(output_fd) == receipt["output_stat"]
+        # Same descriptors as the snapshots accepted above, so every field,
+        # the change time included, must still match.
+        require(file_snapshot(source_fd) == source_seen
+                and file_snapshot(output_fd) == output_seen
                 and common.path_identity(source_path) == common.fd_identity(source_fd)
                 and common.path_identity(output_path) == common.fd_identity(output_fd)
                 and common.path_identity(resolved) == manifest_identity

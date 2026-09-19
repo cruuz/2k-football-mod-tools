@@ -3694,7 +3694,12 @@ class Nfl2k5StudioFacade:
         except (OSError, ValidationError) as exc:
             raise ValidationError(_project_open_change(opened_identity, opened_sha256,
                 None, "unavailable", cause=str(exc))) from exc
-        if current_identity != opened_identity or current_sha256 != opened_sha256:
+        # The two identities come from two descriptors minutes apart. Only a
+        # change-time difference is tolerated, and only because the SHA-256 of
+        # every byte matched too: backup, antivirus and sync software move that
+        # field on Windows without touching the file (beta 72 tester's refusal).
+        if (not opened_identity.matches_apart_from_change_time(current_identity)
+                or current_sha256 != opened_sha256):
             raise ValidationError(_project_open_change(opened_identity, opened_sha256,
                 current_identity, current_sha256))
         with self._lock:
