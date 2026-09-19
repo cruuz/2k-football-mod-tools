@@ -27,9 +27,10 @@ static u8 *base(void) {
 }
 static struct Header *header(u8 *b) {return (struct Header*)(b+16512);}
 static u32 material(u8 *b,u32 k) {
- /* Native SCNE material array order differs from push-buffer batch order. */
- if(k==0)k=5;else if(k==1)k=0;else if(k==2)k=1;else if(k==3)k=2;
- else if(k==5)k=3;else if(k==6)k=9;else if(k==8)k=10;else if(k==9)k=6;else if(k==10)k=8;
+ /* Callers use logical 3..10 -> native 2,4,3,9,7,10,6,8.
+  * Event records already carry the pointers for logical 0..2.
+  * Packed nibbles keep the event repair inside the existing RX reservation. */
+ k=(0x86a79342u>>((k-3)*4))&15;
  return V(b+256+0x20)+k*128;
 }
 static void color(u8 *b,u32 first,u32 c) {
@@ -117,7 +118,7 @@ static u32 text(struct Field *f,u16 *out) {
 
 /* Record origin is the parent-index word (A959C8 + index * 0x70).
  * This is FC360's binding/current-slide decision, including unordered x87. */
-static u32 element_visible(u32 record) {
+static u32 FAST element_visible(u32 record) {
  return V(record+0x58) && !(*(volatile float*)(record+0x3c)<=*(volatile float*)(record+0x2c));
 }
 
@@ -169,6 +170,13 @@ NOINLINE void sprite_update(struct State *s) {
  u8 *b=base();if(!b || !s->active || s->scene!=(u32)b+256 || !V(0xa95520))return;
  struct Header *h=header(b);
  for(u32 k=3;k<10;k++){u32 m=material(b,k);V(m+8)&=~1u;V(m+24)=0xffffffff;}
+ /* Event plates are logical 10, 2, 1, 0, outside the bar reset above.
+  * Recompute every plate from the same binding/current-slide gate as text.
+  * A request can end while its slide is still closing. */
+ for(u32 record=0xa95aa8;record<0xa95c68;record+=0x70) {
+  u32 m=V(record+0x44);
+  V(m+8)=(V(m+8)&~1u)|!element_visible(record);
+ }
  if(!s->home)V(material(b,5)+8)|=1;
  if(!s->away)V(material(b,8)+8)|=1;
  u32 p=V(0xe60280),tint=0xff3a3f48;
