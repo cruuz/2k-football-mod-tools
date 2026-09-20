@@ -977,6 +977,38 @@ def validate_plan(plan: BuildPlan) -> list[str]:
     return []
 
 
+def require_build_source(source: Path | str) -> Path:
+    """Name a vanished build source in words, before any build work starts.
+
+    A beta 72.1 tester built a disc, renamed the copy, and built again. The
+    Build page hands each finished copy to the next build, so the plan still
+    named the old name, and the first read of it raised the platform's own
+    file-not-found from inside the copy step: "[WinError 2] The system cannot
+    find the file specified: ...(modded).xiso.iso", a path he had not chosen in
+    that build and an error this module never turned into a sentence (the
+    refusal wrapper below catches ValueError, not OSError).
+
+    Nothing about the new output was wrong, so the refusal says which file is
+    gone and stops before the temporary directory, the preflights, the project
+    compile and any write. The earlier copy is never required or written to; a
+    build to a fresh target reads only the source named here.
+    """
+
+    source = Path(source)
+    try:
+        found = source.is_file()
+    except OSError:  # an unreadable parent, a dead network share
+        found = False
+    if found:
+        return source
+    if source.is_dir():
+        raise ValueError(f"The file to build from is a folder, not a game file: {source}")
+    raise ValueError(
+        f"The file to build from is no longer on this computer: {source}. "
+        "It was renamed, moved or deleted after it was chosen."
+    )
+
+
 def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_builder=None) -> dict[str, Any]:
     """Apply the plan to a copy; archive rebuilds publish only a complete result."""
     from .build_io import StageProgress
@@ -986,6 +1018,7 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_bui
         if blockers:
             raise ValueError("\n".join(blockers))
         r62 = _validated_r62_plan_options(plan)
+        require_build_source(plan.source)
         source, target = Path(plan.source).resolve(), Path(plan.target).absolute()
         if source == target.resolve():
             raise ValueError("target must not be the source")
@@ -1293,7 +1326,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if plan.dynamic_kickoff:
         # record the effective dependencies in the recipe: the modern spots, never the power-only variant, the line-up
         plan = replace(plan, kick_rules=True, kick_power=False, kickoff_alignment=True)
-    source, target = Path(plan.source), Path(plan.target)
+    source, target = require_build_source(plan.source), Path(plan.target)
     if target.exists() and target.resolve() == source.resolve():
         raise ValueError("target must not be the source")
     if target.exists() and not plan.overwrite:
