@@ -87,13 +87,13 @@ class _Progress:
                      "set NFL2K5_COACH_EDWARDS_GATE=1 with the retail XISO present")
 class CoachEdwardsWorkflowGate(unittest.TestCase):
     def test_import_save_load_build_and_readback_on_the_retail_disc(self):
-        from mod_editor.studio.facade import StudioFacade
+        from mod_editor.studio.facade import Nfl2k5StudioFacade
         SCRATCH.mkdir(parents=True, exist_ok=True)
         progress = _Progress()
         started = time.monotonic()
         with tempfile.TemporaryDirectory(prefix="gate-", dir=SCRATCH) as temp:
             folder = Path(temp).resolve()
-            facade = StudioFacade()
+            facade = Nfl2k5StudioFacade()
             print("indexing the retail disc", flush=True)
             facade.load_source(XISO, progress)
             print(f"  indexed in {time.monotonic() - started:.0f}s", flush=True)
