@@ -163,10 +163,10 @@ class PlanTests(unittest.TestCase):
 
     def _assets(self) -> dict[str, bytes]:
         return {
-            "2K5-Mod-Studio-1.0.0rc99-Setup.exe": b"exe",
-            "2K5-Mod-Studio-1.0.0rc99-Setup.exe.sha256": b"x",
-            "2K5-Mod-Studio-v1.0-RC99-2026-09-09.tar.gz": b"tgz",
-            "2K5-Mod-Studio-v1.0-RC99-2026-09-09.tar.gz.sha256": b"x",
+            "2K5-Mod-Studio-1.0.0rc100-Setup.exe": b"exe",
+            "2K5-Mod-Studio-1.0.0rc100-Setup.exe.sha256": b"x",
+            "2K5-Mod-Studio-v1.0-RC100-2026-09-09.tar.gz": b"tgz",
+            "2K5-Mod-Studio-v1.0-RC100-2026-09-09.tar.gz.sha256": b"x",
             "APF-2K8-Mod-Studio-0.9.0-Setup.exe": b"apf",
             "apf2k8-mod-studio-0.9.0.tar.gz": b"apf",
             "SOFTDRINK-patch-notes.md": b"...",
@@ -175,10 +175,10 @@ class PlanTests(unittest.TestCase):
     def test_each_install_kind_picks_its_own_file_and_sidecar(self) -> None:
         document = _document(self._assets())
         tar = U.plan_update(document, self.tarball)
-        self.assertEqual(tar.asset.name, "2K5-Mod-Studio-v1.0-RC99-2026-09-09.tar.gz")
+        self.assertEqual(tar.asset.name, "2K5-Mod-Studio-v1.0-RC100-2026-09-09.tar.gz")
         self.assertEqual(tar.sidecar.name, tar.asset.name + ".sha256")
         win = U.plan_update(document, self.windows)
-        self.assertEqual(win.asset.name, "2K5-Mod-Studio-1.0.0rc99-Setup.exe")
+        self.assertEqual(win.asset.name, "2K5-Mod-Studio-1.0.0rc100-Setup.exe")
         self.assertEqual(win.sidecar.name, win.asset.name + ".sha256")
         self.assertEqual(win.tag, "beta-99")
 
@@ -210,12 +210,12 @@ class PlanTests(unittest.TestCase):
         document = {
             "tag_name": "beta-99",
             "assets": [
-                {"name": "2K5-Mod-Studio-v1.0-RC99-x.tar.gz", "browser_download_url": "https://evil.invalid/a.tar.gz", "size": 3},
-                {"name": "2K5-Mod-Studio-v1.0-RC99-y.tar.gz", "browser_download_url": HOST + "y.tar.gz", "size": 3},
+                {"name": "2K5-Mod-Studio-v1.0-RC100-x.tar.gz", "browser_download_url": "https://evil.invalid/a.tar.gz", "size": 3},
+                {"name": "2K5-Mod-Studio-v1.0-RC100-y.tar.gz", "browser_download_url": HOST + "y.tar.gz", "size": 3},
             ],
         }
         rows = update_check._assets(document)
-        self.assertEqual([row["name"] for row in rows], ["2K5-Mod-Studio-v1.0-RC99-y.tar.gz"])
+        self.assertEqual([row["name"] for row in rows], ["2K5-Mod-Studio-v1.0-RC100-y.tar.gz"])
         status = update_check.UpdateStatus(True, "beta-56", "beta-99", assets=rows, checked=True)
         self.assertEqual(status.release_document()["assets"][0]["size"], 3)
 
@@ -275,8 +275,8 @@ class DownloadTests(unittest.TestCase):
 
 class TarballApplyTests(unittest.TestCase):
     def test_the_folder_is_swapped_and_the_new_copy_started(self) -> None:
-        payload = _make_tarball("2K5-Mod-Studio-v1.0-RC99-2026-09-09", RELEASE_FILES)
-        name = "2K5-Mod-Studio-v1.0-RC99-2026-09-09.tar.gz"
+        payload = _make_tarball("2K5-Mod-Studio-v1.0-RC100-2026-09-09", RELEASE_FILES)
+        name = "2K5-Mod-Studio-v1.0-RC100-2026-09-09.tar.gz"
         files = {name: payload, name + ".sha256": _sidecar(name, payload)}
         started = []
         with tempfile.TemporaryDirectory() as tmp:
@@ -309,7 +309,7 @@ class TarballApplyTests(unittest.TestCase):
             self.assertTrue((backups[0] / "2K5-Mod-Studio.bat").exists())
 
     def test_a_folder_that_cannot_be_renamed_stays_usable(self) -> None:
-        payload = _make_tarball("2K5-Mod-Studio-v1.0-RC99-2026-09-09", RELEASE_FILES)
+        payload = _make_tarball("2K5-Mod-Studio-v1.0-RC100-2026-09-09", RELEASE_FILES)
         started = []
         with tempfile.TemporaryDirectory() as tmp:
             root = _tarball_install(Path(tmp).resolve())
@@ -378,7 +378,7 @@ class WindowsApplyTests(unittest.TestCase):
             (base / "runtime" / "pythonw.exe").write_bytes(b"MZ")
             (base / "app").mkdir()
             install = U.detect_install(base / "app", platform="win32")
-            installer = Path(tmp).resolve() / "dl" / "2K5-Mod-Studio-1.0.0rc99-Setup.exe"
+            installer = Path(tmp).resolve() / "dl" / "2K5-Mod-Studio-1.0.0rc100-Setup.exe"
             installer.parent.mkdir()
             installer.write_bytes(b"MZ")
             plan = U.UpdatePlan("2k5", "beta-99", install, U.ReleaseAsset(installer.name, HOST + installer.name, 2), None)
@@ -395,7 +395,7 @@ class WindowsApplyTests(unittest.TestCase):
         import build_windows_installer as B  # noqa: E402
 
         with tempfile.TemporaryDirectory() as tmp:
-            script = B.render_nsis(B.PRODUCTS["2k5"], "1.0.0rc99", Path(tmp).resolve(), None, Path(tmp).resolve())
+            script = B.render_nsis(B.PRODUCTS["2k5"], "1.0.0rc100", Path(tmp).resolve(), None, Path(tmp).resolve())
         self.assertIn('!include "FileFunc.nsh"', script)
         self.assertIn('${GetOptions} $R0 "/WAITPID=" $R1', script)
         self.assertIn("kernel32::WaitForSingleObject", script)
@@ -439,7 +439,7 @@ class BannerTests(unittest.TestCase):
         banner = self._banner()
         banner.show_status(self._status({"SOFTDRINK-patch-notes.md": b"..."}))
         self.assertFalse(banner.update_button.isVisibleTo(banner))
-        name = "2K5-Mod-Studio-v1.0-RC99-2026-09-09.tar.gz"
+        name = "2K5-Mod-Studio-v1.0-RC100-2026-09-09.tar.gz"
         banner.show_status(self._status({name: b"x", name + ".sha256": b"y"}))
         self.assertTrue(banner.update_button.isVisibleTo(banner))
         checkout = self.update_ui.UpdateBanner()
@@ -449,8 +449,8 @@ class BannerTests(unittest.TestCase):
         checkout.deleteLater()
 
     def test_the_whole_flow_runs_off_the_gui_thread_and_asks_to_quit(self) -> None:
-        payload = _make_tarball("2K5-Mod-Studio-v1.0-RC99-2026-09-09", RELEASE_FILES)
-        name = "2K5-Mod-Studio-v1.0-RC99-2026-09-09.tar.gz"
+        payload = _make_tarball("2K5-Mod-Studio-v1.0-RC100-2026-09-09", RELEASE_FILES)
+        name = "2K5-Mod-Studio-v1.0-RC100-2026-09-09.tar.gz"
         files = {name: payload, name + ".sha256": _sidecar(name, payload)}
         banner = self._banner()
         banner.show_status(self._status(files))
@@ -485,7 +485,7 @@ class BannerTests(unittest.TestCase):
         banner.deleteLater()
 
     def test_a_failed_update_is_one_sentence_and_the_buttons_come_back(self) -> None:
-        name = "2K5-Mod-Studio-v1.0-RC99-2026-09-09.tar.gz"
+        name = "2K5-Mod-Studio-v1.0-RC100-2026-09-09.tar.gz"
         files = {name: b"evil", name + ".sha256": _sidecar(name, b"good")}
         banner = self._banner()
         banner.show_status(self._status(files))
@@ -507,7 +507,7 @@ class BannerTests(unittest.TestCase):
         banner.deleteLater()
 
     def test_declining_the_confirmation_does_nothing(self) -> None:
-        name = "2K5-Mod-Studio-v1.0-RC99-2026-09-09.tar.gz"
+        name = "2K5-Mod-Studio-v1.0-RC100-2026-09-09.tar.gz"
         banner = self._banner()
         banner.confirm = lambda plan: False
         banner.show_status(self._status({name: b"x", name + ".sha256": b"y"}))
