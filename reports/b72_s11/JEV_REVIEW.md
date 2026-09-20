@@ -1,0 +1,9 @@
+# b72-s11 Jev audit
+
+Jev reviews text and measured evidence, never pixels. It does not certify appearance or override the source-ink measurements. `jev_proof_review.json` records the proof-method review: probability 0.08 for a cropped-denominator or false gameplay/perceptual claim, and 0.05 for unrelated redesign. Neither exceeded the review threshold.
+
+The installed `jev_diff_gate.py` recipe ran against base c3b3b53a2 and implementation commit eafd053db through captured requests, real MCP inference and exact-input replay. Seven windows were judged with zero provider errors and zero deterministic findings. The recipe flagged the updated Chiefs aspect expectation as PINNED_VALUE at 0.92. It correctly identified a changed expected value. Review disposition: 1.74 described the cropped silhouette; 1.59 describes the complete mark at the unchanged quad aspect. The 0.12 tolerance and 1.4 lower bound remain. The new regression independently measures the actual paste and rejects the old cropping fits. This is a reviewed flag, not an unconditional model pass.
+
+The replication metadata digest received PINNED_VALUE 0.97, which the recipe dismissed after checking that the new digest matches HEAD bytes. No allowlist entry, provider count or dependency was added. `own_diff_gate.md`, the raw call and exact replay response retain the details.
+
+The final handoff recipe covered all 20 summary sentences and flagged three for manual review: the broad offline-fix sentence, bundle delivery metadata, and a false identification of Jev as a person. `HANDOFF_REVIEW.md` records their dispositions and the required final bundle verification. The raw request, response and flags are retained without changed thresholds. The task cap is $1.00. Every charged call is included in `JEV_USAGE.json`; no recognition or in-game score is inferred from these audits.

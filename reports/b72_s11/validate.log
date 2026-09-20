@@ -1,0 +1,4 @@
+{"check": "fit", "command": ["/usr/bin/python3", "reports/b72_s11/fit.py"], "exit_code": 0, "seconds": 4.67}
+{"check": "repin", "command": ["/usr/bin/python3", "packaging/repin.py", "--apply"], "exit_code": 0, "seconds": 23.21}
+{"check": "regression", "command": ["/usr/bin/python3", "tests/mod_editor/test_nfl2k5_scorebug_logo_retention.py"], "exit_code": 0, "seconds": 0.42}
+{"check": "sprite", "command": ["/usr/bin/python3", "tests/mod_editor/test_nfl2k5_scorebug_sprite.py"], "exit_code": 1, "seconds": 23.96}
