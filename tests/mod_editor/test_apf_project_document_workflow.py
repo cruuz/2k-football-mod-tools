@@ -154,7 +154,7 @@ class ApfProjectTargetSafetyTests(unittest.TestCase):
 class ApfProjectLoadTransactionTests(unittest.TestCase):
     @staticmethod
     def _identity(path: Path, inode: int) -> ProjectTargetIdentity:
-        return ProjectTargetIdentity(path, 1, inode, 100, 200, 300)
+        return ProjectTargetIdentity(path, 1, inode, 100, 200, 300, "a" * 64)
 
     def test_project_load_commits_only_after_stable_pre_and_post_identity(self) -> None:
         with tempfile.TemporaryDirectory(prefix="apf-load-identity-") as temporary:

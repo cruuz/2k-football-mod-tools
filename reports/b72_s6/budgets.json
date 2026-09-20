@@ -1,0 +1,17 @@
+{
+  "owner_code_bytes": 4086,
+  "owner_code_ceiling": 4096,
+  "owner_spare_bytes": 10,
+  "rw_reserved_bytes": 128,
+  "appended_bytes": 324832,
+  "appended_ceiling": 400000,
+  "unchanged_from_s5": {
+    "mod_editor/core/nfl2k5_scorebug_runtime.py": true,
+    "mod_editor/core/nfl2k5_scorebug_sprite_code.py": true,
+    "tools/scorebug_sprite/runtime.c": true,
+    "data/nfl2k5_scorebug_sprite/layout.json": true,
+    "data/nfl2k5_scorebug_sprite/template.png": true,
+    "data/nfl2k5_scorebug_sprite/team_accents.json": true,
+    "data/nfl2k5_cave_reservations.json": true
+  }
+}

@@ -100,6 +100,113 @@ def default_session_root() -> Path:
     return Path.home() / ".local" / "share" / "2k5-mod-studio" / "sessions"
 
 
+#: A working session nothing has touched for this long is abandoned: Mod
+#: Studio never reopens a session folder (projects reopen from .2k5mod files).
+SESSION_STALE_SECONDS = 14 * 24 * 60 * 60
+#: The most recently used session folders are always kept, whatever their age.
+SESSION_KEEP_NEWEST = 5
+_PRUNING_PREFIX = ".pruning-"
+_LIVE_SESSION_ROOTS: set[str] = set()
+_PRUNED_PARENTS: set[str] = set()
+
+
+def _session_activity(folder: Path) -> float:
+    """Newest change time of the session and its top-level working folders."""
+    newest = folder.lstat().st_mtime
+    for name in ("session.json", "replacements", "undo"):
+        try:
+            newest = max(newest, (folder / name).lstat().st_mtime)
+        except OSError:
+            pass
+    return newest
+
+
+def prune_stale_sessions(
+    parent: Path, *, keep: Iterable[str] = (), now: float | None = None,
+    max_age_seconds: float = SESSION_STALE_SECONDS, keep_newest: int = SESSION_KEEP_NEWEST,
+) -> tuple[str, ...]:
+    """Remove Mod Studio's own abandoned working-session folders; return their IDs.
+
+    Session folders were never removed (beta 72: one per opened disc or project,
+    with copies of every imported PNG). A folder is removed only when all hold:
+    its name is a canonical UUID; it is a real directory, not a link, directly
+    in ``parent``; its own ``session.json`` has this schema and names it; no
+    session of this process uses it; it is not one of the ``keep_newest`` most
+    recently used; and nothing touched it for ``max_age_seconds``. It is first
+    renamed aside, so a folder Windows reports as in use is skipped whole, then
+    deleted. Anything else in ``parent`` is never touched. Stale
+    folders cannot affect a new session: each session writes only its own new
+    UUID folder and nothing reads another session's folder.
+    """
+    import time
+    parent = Path(parent)
+    now = time.time() if now is None else now
+    # A UUID names one session; keep this process's sessions wherever they live.
+    kept = set(keep) | {Path(root).name for root in _LIVE_SESSION_ROOTS}
+    try:
+        entries = list(os.scandir(parent))
+    except OSError:
+        return ()
+    candidates = []
+    for entry in entries:
+        name = entry.name
+        try:
+            if name.startswith(_PRUNING_PREFIX) and entry.is_dir(follow_symlinks=False):
+                # An interrupted earlier prune; this folder was already claimed.
+                shutil.rmtree(Path(entry.path), ignore_errors=True)
+                continue
+            if name in kept or str(UUID(name)) != name:
+                continue
+            folder = Path(entry.path)
+            info = folder.lstat()
+            if not stat.S_ISDIR(info.st_mode) or stat.S_ISLNK(info.st_mode):
+                continue
+            manifest = json.loads((folder / "session.json").read_text(encoding="utf-8"))
+            if (not isinstance(manifest, dict) or manifest.get("schema") != SESSION_SCHEMA
+                    or manifest.get("session_id") != name):
+                continue
+            candidates.append((_session_activity(folder), name, folder))
+        except (OSError, ValueError, TypeError, UnicodeError):
+            continue
+    candidates.sort(reverse=True)
+    removed = []
+    for activity, name, folder in candidates[max(0, keep_newest):]:
+        if now - activity < max_age_seconds:
+            continue
+        claimed = parent / f"{_PRUNING_PREFIX}{name}"
+        try:
+            os.rename(folder, claimed)
+        except OSError:
+            continue
+        shutil.rmtree(claimed, ignore_errors=True)
+        removed.append(name)
+    return tuple(removed)
+
+
+def start_session_housekeeping(parent: Path | None = None):
+    """Prune abandoned sessions once per process, in the background.
+
+    Called by the Studio launcher only, so tools and tests that make sessions
+    never housekeep a real profile. Returns the thread, or None when this
+    folder was already handled.
+    """
+    parent = (parent or default_session_root()).expanduser()
+    key = str(parent)
+    if key in _PRUNED_PARENTS:
+        return None
+    _PRUNED_PARENTS.add(key)
+    import threading
+
+    def prune() -> None:
+        try:
+            prune_stale_sessions(parent)
+        except Exception:  # noqa: BLE001 - housekeeping never affects a session
+            pass
+    thread = threading.Thread(target=prune, name="prune-stale-sessions", daemon=True)
+    thread.start()
+    return thread
+
+
 def _asset_key(asset_id: str) -> str:
     return hashlib.sha256(asset_id.encode("utf-8")).hexdigest()
 
@@ -424,6 +531,7 @@ class StudioSession:
         self.history = self.root / "undo"
         self.replacements.mkdir(mode=0o700)
         self.history.mkdir(mode=0o700)
+        _LIVE_SESSION_ROOTS.add(str(self.root))
         self._edits: dict[str, SessionEdit] = {}
         self._undo: list[_UndoAction] = []
         self._undo_order: list[_SessionUndo] = []

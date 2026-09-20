@@ -1,0 +1,42 @@
+{
+  "affected_team_indices": [
+    5,
+    6,
+    12,
+    14,
+    15,
+    23
+  ],
+  "after_type": "49ers",
+  "all_string_bytes_preserved": true,
+  "before_type": "O-ZoneBlock",
+  "changed_byte_count": 1,
+  "changed_offsets": [
+    1913315
+  ],
+  "filename": "49ers-spb.iff",
+  "filename_id": 1222424274,
+  "label": "49ers",
+  "label_id": 0,
+  "output_sha256": "84eae373a0d64423c523db454a9ddcf8333982c06fe91967f2b252c48dcf1167",
+  "round_trip_exact": true,
+  "runtime_in_game_proved": false,
+  "runtime_status": "UNWITNESSED: load this roster with the matching built game and check the team's plays",
+  "schema": "apf2k8_save_label_type/v1",
+  "side": "offense",
+  "source_path": "/home/noah/Downloads/apfe/Roster.ROS",
+  "source_sha256": "85fdf0d82360294463ff6d7396d7bfc84ed175f0a40573cf3249ad12cc4263f1",
+  "strict_readers": {
+    "custom_team_appearance_reader": "accepted",
+    "playbook_labels": 69,
+    "player_text_allocations": 4598,
+    "players_parsed": 2254,
+    "string_allocations": 6368,
+    "string_references": 41924,
+    "team_memberships": 1386,
+    "team_strings_decoded": 160
+  },
+  "string_target_offset": 2222544,
+  "team_assignments_unchanged": true,
+  "type_pointer_offset": 1913312
+}

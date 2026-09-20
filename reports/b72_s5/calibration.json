@@ -1,0 +1,92 @@
+[
+  {
+    "state": "raiders_ball",
+    "screenshot": "ksnip_20260919-112349.png",
+    "supplied_luma": [
+      19,
+      27,
+      67
+    ],
+    "screenshot_luma": [
+      19.0,
+      28.77,
+      64.86
+    ],
+    "model_luma": [
+      24.83,
+      82.43,
+      255.0
+    ],
+    "absolute_error": [
+      5.83,
+      55.43,
+      188.0
+    ],
+    "passed": false,
+    "score_core_luma": {
+      "away_score": 253.0,
+      "home_score": 253.0
+    },
+    "runtime_witnessed": false
+  },
+  {
+    "state": "field_goal_setup",
+    "screenshot": "ksnip_20260919-112501.png",
+    "supplied_luma": [
+      19,
+      25,
+      90
+    ],
+    "screenshot_luma": [
+      19.0,
+      26.56,
+      63.35
+    ],
+    "model_luma": [
+      0.0,
+      68.23,
+      255.0
+    ],
+    "absolute_error": [
+      19.0,
+      43.23,
+      165.0
+    ],
+    "passed": false,
+    "score_core_luma": {
+      "away_score": 253.0,
+      "home_score": 253.0
+    },
+    "runtime_witnessed": false
+  },
+  {
+    "state": "lions_ball",
+    "screenshot": "ksnip_20260919-112603.png",
+    "supplied_luma": [
+      19,
+      22,
+      74
+    ],
+    "screenshot_luma": [
+      18.86,
+      22.77,
+      70.8
+    ],
+    "model_luma": [
+      7.22,
+      53.59,
+      255.0
+    ],
+    "absolute_error": [
+      11.78,
+      31.59,
+      181.0
+    ],
+    "passed": false,
+    "score_core_luma": {
+      "away_score": 253.0,
+      "home_score": 253.0
+    },
+    "runtime_witnessed": false
+  }
+]

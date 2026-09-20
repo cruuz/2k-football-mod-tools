@@ -1,0 +1,123 @@
+221e0 mov ecx, dword ptr [eax + 8]
+221e3 mov edx, 1
+221e8 shl edx, cl
+221ea movzx ecx, word ptr [esi + 0x12]
+221ee test ecx, edx
+221f0 jne 0x221fb
+221f2 mov edx, esi
+221f4 mov ecx, eax
+221f6 call 0x31430
+221fb mov edx, dword ptr [esi + 4]
+221fe mov eax, dword ptr [esi]
+22200 mov dword ptr [edx], eax
+22202 mov ecx, dword ptr [esi]
+22204 mov edx, dword ptr [esi + 4]
+22207 mov dword ptr [ecx + 4], edx
+2220a mov dword ptr [esi], 0
+22210 mov dword ptr [esi + 4], 0
+22217 mov eax, dword ptr [0xa6c6ec]
+2221c mov dword ptr [esi + 4], eax
+2221f mov dword ptr [esi], 0xa6c6e8
+22225 mov ecx, eax
+22227 mov dword ptr [ecx], esi
+22229 mov edx, dword ptr [esi]
+2222b mov dword ptr [edx + 4], esi
+2222e movzx eax, word ptr [esi + 0x10]
+22232 ret
+22233 nop
+22234 nop
+22235 nop
+22236 nop
+22237 nop
+22238 nop
+22239 nop
+2223a nop
+2223b nop
+2223c nop
+2223d nop
+2223e nop
+2223f nop
+22240 push esi
+22241 mov esi, eax
+22243 mov eax, edi
+22245 call 0x221e0
+2224a mov ecx, dword ptr [edi + 0xc]
+2224d mov dword ptr [ecx + 4], eax
+22250 mov dword ptr [ecx], 0x41ea0
+22256 mov dword ptr [ecx + 8], 0x81e94
+2225d mov dword ptr [ecx + 0xc], 6
+22264 xor eax, eax
+22266 cmp word ptr [esi + 0xc], 0x2078
+2226c pop esi
+2226d setne al
+22270 add ecx, 0x14
+22273 mov dword ptr [ecx - 4], eax
+22276 mov dword ptr [edi + 0xc], ecx
+22279 ret
+2227a nop
+2227b nop
+2227c nop
+2227d nop
+2227e nop
+2227f nop
+22280 push ebx
+22281 mov ebx, dword ptr [ecx]
+22283 push esi
+22284 mov esi, eax
+22286 lea eax, [esi + 0x66]
+22289 shl eax, 4
+2228c add eax, edx
+2228e push edi
+2228f mov edi, dword ptr [eax]
+22291 cmp edi, ebx
+22293 jne 0x222ad
+22295 mov edi, dword ptr [eax + 4]
+22298 cmp edi, dword ptr [ecx + 4]
+2229b jne 0x222ad
+2229d mov edi, dword ptr [eax + 8]
+222a0 cmp edi, dword ptr [ecx + 8]
+222a3 jne 0x222ad
+222a5 mov edi, dword ptr [eax + 0xc]
+222a8 cmp edi, dword ptr [ecx + 0xc]
+222ab je 0x222e6
+222ad movaps xmm0, xmmword ptr [ecx]
+222b0 movaps xmmword ptr [eax], xmm0
+222b3 mov eax, dword ptr [edx + 0xc]
+222b6 add esi, 0x60
+222b9 mov dword ptr [eax], 0x41ea4
+222bf mov dword ptr [eax + 4], esi
+222c2 mov dword ptr [eax + 8], 0x100b80
+222c9 mov esi, dword ptr [ecx]
+222cb mov dword ptr [eax + 0xc], esi
+222ce mov esi, dword ptr [ecx + 4]
+222d1 mov dword ptr [eax + 0x10], esi
+222d4 mov esi, dword ptr [ecx + 8]
+222d7 mov dword ptr [eax + 0x14], esi
+222da mov ecx, dword ptr [ecx + 0xc]
+222dd mov dword ptr [eax + 0x18], ecx
+222e0 add eax, 0x1c
+222e3 mov dword ptr [edx + 0xc], eax
+222e6 pop edi
+222e7 pop esi
+222e8 pop ebx
+222e9 ret
+222ea nop
+222eb nop
+222ec nop
+222ed nop
+222ee nop
+222ef nop
+222f0 mov eax, dword ptr [eax + 0x30]
+222f3 ret
+222f4 nop
+222f5 nop
+222f6 nop
+222f7 nop
+222f8 nop
+222f9 nop
+222fa nop
+222fb nop
+222fc nop
+222fd nop
+222fe nop
+222ff nop

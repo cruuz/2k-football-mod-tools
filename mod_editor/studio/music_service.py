@@ -252,8 +252,10 @@ class MusicService:
                     raise ValueError(f"{supplied.name}: choose a music file.")
                 source = audio_conform._convert_module()._open_source(supplied)
                 def stamp():
+                    # No change time: sync or antivirus software can move it
+                    # while the song is copied without touching a byte.
                     stat = source.stat()
-                    return stat.st_dev, stat.st_ino, stat.st_size, stat.st_mtime_ns, stat.st_ctime_ns
+                    return stat.st_dev, stat.st_ino, stat.st_size, stat.st_mtime_ns
                 before = stamp()
                 snapshot = directory/("source"+source.suffix.lower())
                 shutil.copyfile(source, snapshot)
@@ -370,7 +372,9 @@ class MusicService:
     def original_path(self, target, *, cancelled=None, progress=None):
         self._check(cancelled=cancelled)
         def stamp():
-            return tuple((p.name, s.st_dev, s.st_ino, s.st_size, s.st_mtime_ns, s.st_ctime_ns)
+            # Remembered across calls, so no change time: it moves with no byte
+            # changed. The decoded original is also held to its SHA-256.
+            return tuple((p.name, s.st_dev, s.st_ino, s.st_size, s.st_mtime_ns)
                          for p in self.audio.archive.packs for s in (p.path.stat(),))
         before = stamp()
         if target.asset_id in self._originals:

@@ -91,6 +91,9 @@ class WiringTests(unittest.TestCase):
             with self.subTest(tier=tier), tempfile.TemporaryDirectory() as directory:
                 state = bytearray(1280)
                 state[212:216] = int(tier or 0).to_bytes(4, 'little')
+                # Beta 72.1 names a vanished source before any build work, so
+                # this fixture's source has to exist to reach recipe capture.
+                (Path(directory) / 'source.iso').write_bytes(b'')
                 plan = module.BuildPlan(
                     source=str(Path(directory) / 'source.iso'),
                     target=str(Path(directory) / 'output.iso'), my_career=True,

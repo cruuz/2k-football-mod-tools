@@ -41,8 +41,10 @@ require = archive.require
 
 
 def _identity(path):
+    # Compared across a plan or encode step: no change time, which moves with
+    # no byte changed (see nfl2k5_music_archive.identity).
     st = Path(path).stat()
-    return (st.st_dev, st.st_ino, st.st_size, st.st_mtime_ns, st.st_ctime_ns)
+    return (st.st_dev, st.st_ino, st.st_size, st.st_mtime_ns)
 
 
 def _load(recipe):

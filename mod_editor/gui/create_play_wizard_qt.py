@@ -1116,7 +1116,7 @@ class AssignPage(QWizardPage):
         for s in range(11):
             x0, z0 = cur.positions[s]
             nodes = [codec.Node(op, 0, list(vals)) for op, vals in chains[s]]
-            segs = codec.play_art(nodes, (float(x0), float(z0)), side=1 if x0 >= 0 else -1, wide_left=x0 < 0)
+            segs = codec.play_art(nodes, (float(x0), float(z0)), side=1 if x0 >= 0 else -1)
             if self.spec.screen and self.spec.assignments[s].kind == "screen_receiver":
                 # Show the proved behind-line endpoint band; lateral movement needs gameplay.
                 _x, endpoint_z = lib.screen_endpoint(x0, x0)
@@ -1315,7 +1315,8 @@ class AssignPage(QWizardPage):
                 chain = lib.carrier_chain(lane, path)
                 desc = "BALL CARRIER, " + desc
             else:
-                chain, desc = lib.quantize_drawn_route(pts, side)
+                # Inside / outside as the game resolves it from the alignment (half-foot deadband).
+                chain, desc = lib.quantize_drawn_route(pts, codec.route_side(x0))
         except ValueError as exc:
             self.status.setText("✖ " + str(exc))
             self.status.setStyleSheet("color:#c62828;" + BIG)

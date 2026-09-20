@@ -1,0 +1,15 @@
+test_real_draw_gate_not_pending_requests (tests.mod_editor.test_nfl2k5_scorebug_down_visibility.DownVisibilityTests.test_real_draw_gate_not_pending_requests) ... FAIL
+
+======================================================================
+FAIL: test_real_draw_gate_not_pending_requests (tests.mod_editor.test_nfl2k5_scorebug_down_visibility.DownVisibilityTests.test_real_draw_gate_not_pending_requests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b72-s8/tests/mod_editor/test_nfl2k5_scorebug_down_visibility.py", line 145, in test_real_draw_gate_not_pending_requests
+    self.assertEqual(event['visible'], bool(event_binding and event_slide > event['minimum']))
+AssertionError: True != False
+
+----------------------------------------------------------------------
+Ran 1 test in 4.914s
+
+FAILED (failures=1)
+Expected base failure observed; the regression rejects the unfixed owner.

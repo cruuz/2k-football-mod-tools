@@ -1,0 +1,251 @@
+22300 mov eax, dword ptr [ecx + 0xc]
+22303 test eax, eax
+22305 jne 0x223e8
+2230b mov edx, dword ptr [0xb01820]
+22311 mov eax, 1
+22316 cmp edx, eax
+22318 jne 0x22320
+2231a mov eax, dword ptr [0xb01818]
+2231f ret
+22320 mov edx, dword ptr [ecx + 0x3c]
+22323 test edx, edx
+22325 je 0x22330
+22327 test dword ptr [ecx + 0x5c], 0x400000
+2232e je 0x22332
+22330 xor eax, eax
+22332 mov edx, dword ptr [ecx + 0x34]
+22335 test edx, edx
+22337 je 0x22349
+22339 test dword ptr [ecx + 0x54], 0x400000
+22340 jne 0x22349
+22342 mov edx, 2
+22347 jmp 0x2234b
+22349 xor edx, edx
+2234b or eax, edx
+2234d mov edx, dword ptr [ecx + 0x38]
+22350 test edx, edx
+22352 je 0x22364
+22354 test dword ptr [ecx + 0x58], 0x400000
+2235b jne 0x22364
+2235d mov edx, 4
+22362 jmp 0x22366
+22364 xor edx, edx
+22366 or eax, edx
+22368 and eax, 7
+2236b jmp dword ptr [eax*4 + 0x223ec]
+22372 mov eax, dword ptr [0xa6c7d4]
+22377 ret
+22378 mov eax, dword ptr [0xa6c7cc]
+2237d ret
+2237e mov eax, dword ptr [0xa6c7d8]
+22383 ret
+22384 mov eax, dword ptr [0xa6c7c8]
+22389 ret
+2238a mov eax, dword ptr [ecx + 8]
+2238d shr eax, 3
+22390 and eax, 0x1f
+22393 jne 0x2239c
+22395 mov edx, dword ptr [ecx + 0x1c]
+22398 test edx, edx
+2239a je 0x22384
+2239c sub eax, 0
+2239f je 0x223b7
+223a1 dec eax
+223a2 je 0x223b1
+223a4 dec eax
+223a5 jne 0x2231a
+223ab mov eax, dword ptr [0xa6c7ec]
+223b0 ret
+223b1 mov eax, dword ptr [0xa6c7e0]
+223b6 ret
+223b7 mov eax, dword ptr [0xa6c7dc]
+223bc ret
+223bd mov eax, dword ptr [0xa6c7d0]
+223c2 ret
+223c3 mov eax, dword ptr [ecx + 8]
+223c6 shr eax, 3
+223c9 and eax, 0x1f
+223cc jne 0x223d5
+223ce mov edx, dword ptr [ecx + 0x1c]
+223d1 test edx, edx
+223d3 je 0x223bd
+223d5 sub eax, 0
+223d8 je 0x223e3
+223da dec eax
+223db jne 0x223a4
+223dd mov eax, dword ptr [0xa6c7e8]
+223e2 ret
+223e3 mov eax, dword ptr [0xa6c7e4]
+223e8 ret
+223e9 lea ecx, [ecx]
+223ec sbb ah, byte ptr [ebx]
+223ee add al, byte ptr [eax]
+223f0 jb 0x22415
+223f2 add al, byte ptr [eax]
+223f4 js 0x22419
+223f6 add al, byte ptr [eax]
+223f8 jle 0x2241d
+223fa add al, byte ptr [eax]
+223fc test byte ptr [ebx], ah
+223fe add al, byte ptr [eax]
+22400 mov ah, byte ptr [ebx]
+22402 add al, byte ptr [eax]
+22404 mov ebp, 0xc3000223
+22409 and eax, dword ptr [edx]
+2240b add byte ptr [eax - 0x746f6f70], dl
+22411 inc ecx
+22412 adc byte ptr [ebp - 0x227af040], al
+22418 add byte ptr [eax], al
+2241a add byte ptr [ebx - 0x4fe7dfeb], cl
+22420 add byte ptr [eax + 1], bh
+22426 cmp edx, eax
+22428 jne 0x22430
+2242a mov eax, dword ptr [0xb0181c]
+2242f ret
+22430 mov edx, dword ptr [ecx + 0x3c]
+22433 test edx, edx
+22435 je 0x22440
+22437 test dword ptr [ecx + 0x5c], 0x400000
+2243e je 0x22442
+22440 xor eax, eax
+22442 mov edx, dword ptr [ecx + 0x34]
+22445 test edx, edx
+22447 je 0x22459
+22449 test dword ptr [ecx + 0x54], 0x400000
+22450 jne 0x22459
+22452 mov edx, 2
+22457 jmp 0x2245b
+22459 xor edx, edx
+2245b or eax, edx
+2245d mov edx, dword ptr [ecx + 0x38]
+22460 test edx, edx
+22462 je 0x22474
+22464 test dword ptr [ecx + 0x58], 0x400000
+2246b jne 0x22474
+2246d mov edx, 4
+22472 jmp 0x22476
+22474 xor edx, edx
+22476 or eax, edx
+22478 and eax, 7
+2247b jmp dword ptr [eax*4 + 0x224fc]
+22482 mov eax, dword ptr [0xa6d2e4]
+22487 ret
+22488 mov eax, dword ptr [0xa6d2dc]
+2248d ret
+2248e mov eax, dword ptr [0xa6d2e8]
+22493 ret
+22494 mov eax, dword ptr [0xa6d2d8]
+22499 ret
+2249a mov eax, dword ptr [ecx + 8]
+2249d shr eax, 3
+224a0 and eax, 0x1f
+224a3 jne 0x224ac
+224a5 mov edx, dword ptr [ecx + 0x1c]
+224a8 test edx, edx
+224aa je 0x22494
+224ac sub eax, 0
+224af je 0x224c7
+224b1 dec eax
+224b2 je 0x224c1
+224b4 dec eax
+224b5 jne 0x2242a
+224bb mov eax, dword ptr [0xa6d2fc]
+224c0 ret
+224c1 mov eax, dword ptr [0xa6d2f0]
+224c6 ret
+224c7 mov eax, dword ptr [0xa6d2ec]
+224cc ret
+224cd mov eax, dword ptr [0xa6d2e0]
+224d2 ret
+224d3 mov eax, dword ptr [ecx + 8]
+224d6 shr eax, 3
+224d9 and eax, 0x1f
+224dc jne 0x224e5
+224de mov edx, dword ptr [ecx + 0x1c]
+224e1 test edx, edx
+224e3 je 0x224cd
+224e5 sub eax, 0
+224e8 je 0x224f3
+224ea dec eax
+224eb jne 0x224b4
+224ed mov eax, dword ptr [0xa6d2f8]
+224f2 ret
+224f3 mov eax, dword ptr [0xa6d2f4]
+224f8 ret
+224f9 lea ecx, [ecx]
+224fc sub ah, byte ptr [edx + eax]
+224ff add byte ptr [edx - 0x77fffddc], al
+22505 and al, 2
+22507 add byte ptr [esi - 0x6bfffddc], cl
+2250d and al, 2
+2250f add byte ptr [edx - 0x32fffddc], bl
+22515 and al, 2
+22517 add bl, dl
+22519 and al, 2
+2251b add byte ptr [eax - 0x746f6f70], dl
+22521 inc edx
+22522 or al, 0x53
+22524 push esi
+22525 mov dword ptr [eax], 0x40300
+2252b mov esi, dword ptr [ecx]
+2252d and esi, 1
+22530 mov dword ptr [eax + 4], esi
+22533 mov dword ptr [eax + 8], 0x40304
+2253a mov esi, dword ptr [ecx]
+2253c shr esi, 1
+2253e and esi, 1
+22541 mov dword ptr [eax + 0xc], esi
+22544 mov bl, byte ptr [ecx]
+22546 add eax, 0x10
+22549 test bl, 1
+2254c je 0x22565
+2254e mov dword ptr [eax], 0x8033c
+22554 movsx esi, word ptr [ecx + 2]
+22558 mov dword ptr [eax + 4], esi
+2255b movzx esi, byte ptr [ecx + 1]
+2255f mov dword ptr [eax + 8], esi
+22562 add eax, 0xc
+22565 test byte ptr [ecx], 2
+22568 je 0x22598
+2256a mov dword ptr [eax], 0x100344
+22570 mov esi, dword ptr [ecx + 4]
+22573 and esi, 0xffff
+22579 mov dword ptr [eax + 4], esi
+2257c movzx esi, word ptr [ecx + 6]
+22580 mov dword ptr [eax + 8], esi
+22583 mov esi, dword ptr [ecx + 0xc]
+22586 mov dword ptr [eax + 0xc], esi
+22589 mov ecx, dword ptr [ecx + 8]
+2258c and ecx, 0xffff
+22592 mov dword ptr [eax + 0x10], ecx
+22595 add eax, 0x14
+22598 pop esi
+22599 mov dword ptr [edx + 0xc], eax
+2259c pop ebx
+2259d ret
+2259e nop
+2259f nop
+225a0 test eax, eax
+225a2 jne 0x225a7
+225a4 ret 4
+225a7 mov eax, dword ptr [eax]
+225a9 ret 4
+225ac nop
+225ad nop
+225ae nop
+225af nop
+225b0 test eax, eax
+225b2 je 0x225cb
+225b4 mov eax, dword ptr [eax]
+225b6 test eax, eax
+225b8 je 0x225cb
+225ba lea ebx, [ebx]
+225c0 cmp ecx, dword ptr [eax + 4]
+225c3 je 0x225cd
+225c5 mov eax, dword ptr [eax]
+225c7 test eax, eax
+225c9 jne 0x225c0
+225cb xor eax, eax
+225cd ret
+225ce nop
+225cf nop

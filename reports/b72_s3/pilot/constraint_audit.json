@@ -1,0 +1,4 @@
+{
+  "direct_contradictions": [],
+  "limitation": "Checks only explicit confident down labels. Does not establish visual truth or calibrated model accuracy."
+}

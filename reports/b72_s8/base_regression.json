@@ -1,0 +1,6 @@
+{
+  "base": "c5134e232",
+  "expected_failure": true,
+  "test": "test_real_draw_gate_not_pending_requests",
+  "reason": "Base owner leaves the seeded inactive event plate visible."
+}

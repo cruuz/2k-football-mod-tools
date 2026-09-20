@@ -1,0 +1,13 @@
+.........F............
+======================================================================
+FAIL: test_pinned_brand_watermark_stays_drawable_and_compiled_tables_differ_only_by_display (__main__.DisplayModelTests.test_pinned_brand_watermark_stays_drawable_and_compiled_tables_differ_only_by_display)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b72-s9/tests/mod_editor/test_nfl2k5_scorebug_sprite.py", line 137, in test_pinned_brand_watermark_stays_drawable_and_compiled_tables_differ_only_by_display
+    self.assertTrue({'frames','method','measured_opacity','colour'}<=set(brand['source']))
+AssertionError: False is not true
+
+----------------------------------------------------------------------
+Ran 22 tests in 21.088s
+
+FAILED (failures=1)

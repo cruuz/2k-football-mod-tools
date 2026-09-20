@@ -1,0 +1,89 @@
+31fa0 push ebx
+31fa1 push ebp
+31fa2 mov ebp, dword ptr [esp + 0x10]
+31fa6 push esi
+31fa7 push edi
+31fa8 mov esi, eax
+31faa mov edi, ecx
+31fac mov ecx, esi
+31fae call 0x34a20
+31fb3 mov edx, dword ptr [esp + 0x1c]
+31fb7 mov ecx, dword ptr [esp + 0x14]
+31fbb mov ecx, dword ptr [ecx + 0xc]
+31fbe shl edx, 6
+31fc1 and eax, 0x3ffffff
+31fc6 lea ebx, [edx + 0x81b00]
+31fcc mov dword ptr [ecx], ebx
+31fce mov dword ptr [ecx + 4], eax
+31fd1 mov eax, dword ptr [esi + 0xc]
+31fd4 mov dword ptr [ecx + 8], eax
+31fd7 mov eax, dword ptr [esi + 8]
+31fda add ecx, 0xc
+31fdd test eax, eax
+31fdf je 0x31ff7
+31fe1 lea eax, [edx + 0x41b20]
+31fe7 mov dword ptr [ecx], eax
+31fe9 mov eax, dword ptr [esi + 8]
+31fec and eax, 0x3ffffff
+31ff1 mov dword ptr [ecx + 4], eax
+31ff4 add ecx, 8
+31ff7 test dword ptr [esi + 0x14], 0xffff
+31ffe mov al, 3
+32000 je 0x32031
+32002 lea ebx, [edx + 0x41b10]
+32008 mov dword ptr [ecx], ebx
+3200a mov ebx, dword ptr [esi + 0x14]
+3200d shl ebx, 0x10
+32010 mov dword ptr [ecx + 4], ebx
+32013 lea ebx, [edx + 0x41b1c]
+32019 mov dword ptr [ecx + 8], ebx
+3201c mov ebx, dword ptr [esi + 0x10]
+3201f mov dword ptr [ecx + 0xc], ebx
+32022 add ecx, 0x10
+32025 mov byte ptr [0xa6d304], al
+3202a mov byte ptr [0xa6d305], al
+3202f jmp 0x3206b
+32031 test byte ptr [esi + 0xc], 4
+32035 je 0x32043
+32037 mov byte ptr [0xa6d304], al
+3203c mov byte ptr [0xa6d305], al
+32041 jmp 0x3206b
+32043 mov eax, dword ptr [ebp + edi*4 + 0x20]
+32047 shl eax, 0x1c
+3204a sar eax, 0x1c
+3204d mov byte ptr [0xa6d304], al
+32052 mov eax, dword ptr [ebp + edi*4 + 0x20]
+32056 shl eax, 0x18
+32059 sar eax, 0x1c
+3205c mov byte ptr [0xa6d305], al
+32061 mov eax, dword ptr [ebp + edi*4 + 0x20]
+32065 shl eax, 0x14
+32068 sar eax, 0x1c
+3206b mov byte ptr [0xa6d306], al
+32070 mov ebx, dword ptr [ebp + edi*4 + 0x20]
+32074 mov eax, dword ptr [0xa6d300]
+32079 shl ebx, 0x11
+3207c sar ebx, 0x1d
+3207f xor ebx, eax
+32081 and ebx, 3
+32084 xor eax, ebx
+32086 mov dword ptr [0xa6d300], eax
+3208b mov ebx, dword ptr [ebp + edi*4 + 0x20]
+3208f shr ebx, 0xd
+32092 xor ebx, eax
+32094 and ebx, 4
+32097 xor eax, ebx
+32099 mov dword ptr [0xa6d300], eax
+3209e mov ebx, dword ptr [ebp + edi*4 + 0x20]
+320a2 shr ebx, 0xc
+320a5 xor ebx, eax
+320a7 and ebx, 0x30
+320aa xor eax, ebx
+320ac mov dword ptr [0xa6d300], eax
+320b1 mov ebx, dword ptr [ebp + edi*4 + 0x20]
+320b5 shl ebx, 8
+320b8 xor ebx, eax
+320ba and ebx, 0x3c000000
+320c0 xor eax, ebx
+320c2 mov dword ptr [0xa6d300], eax
+320c7 lea eax, [edx + 0x81b08]

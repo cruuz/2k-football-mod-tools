@@ -28,15 +28,25 @@ def project_fit_labels(session):
             **{r['asset_id']: fit_caption(r) for r in cached_equipment_fit_rows(session)}}
 
 
-def verified_build_texture_lines(manifest):
-    """Read hash-bound per-span reports after the normal build verifier passes.
+def refit_line(row):
+    """One final-dialog line for an item Build refitted (beta 72.1)."""
+    proof = ''
+    if isinstance(row.get('budget'), int) and isinstance(row.get('required'), int):
+        proof = (f" It needs {'at least ' if row.get('required_is_lower_bound') else ''}"
+                 f"{row['required']:,} bytes and its span holds {row['budget']:,}.")
+    return (f"Build refitted equipment {row['set_selector']} / {row['name']}: {row['fit_summary']}, "
+            f"exactly as Refit equipment would.{proof} Your project still has your original art; "
+            "use Refit equipment to keep this choice in the project.")
 
-    Use before publishing/cleaning its artifact folder. No texture compilation
-    and no game-pixel reads. Old receipts without fit data remain explicit.
-    """
+
+def verified_build_refit_lines(manifest):
+    """Every equipment item Build refitted, from the hash-bound span reports."""
+    return tuple(refit_line(row) for kind, report in _verified_reports(manifest)
+                 if kind == 'uniform_equipment_texture' for row in report.get('auto_refit', []))
+
+
+def _verified_reports(manifest):
     value = json.loads(Path(manifest).read_text(encoding='utf-8'))
-    lines = []
-    fits = {}
     for edit in value.get('edits', []):
         if edit.get('kind') not in ('uniform_equipment_texture', 'stadium_texture'):
             continue
@@ -51,9 +61,25 @@ def verified_build_texture_lines(manifest):
         payload = path.read_bytes()
         if hashlib.sha256(payload).hexdigest() != reference['sha256']:
             raise ValidationError('The measured texture receipt changed after build verification.')
-        report = json.loads(payload)
-        if edit['kind'] == 'uniform_equipment_texture':
+        yield edit['kind'], json.loads(payload)
+
+
+def verified_build_texture_lines(manifest):
+    """Read hash-bound per-span reports after the normal build verifier passes.
+
+    Use before publishing/cleaning its artifact folder. No texture compilation
+    and no game-pixel reads. Old receipts without fit data remain explicit.
+    """
+    lines = []
+    refits = []
+    fits = {}
+    for kind, report in _verified_reports(manifest):
+        if kind == 'uniform_equipment_texture':
+            refitted = {row['asset_id'] for row in report.get('auto_refit', [])}
+            refits.extend(refit_line(row) for row in report.get('auto_refit', []))
             for row in report['edits']:
+                if row.get('asset_id') in refitted:
+                    continue
                 caption = (fit_caption(row) if 'used_palette_entries' in row else
                            'fit measurement unavailable in this older receipt')
                 fits.setdefault((row['name'], caption), set()).add(row['set_selector'])
@@ -69,4 +95,4 @@ def verified_build_texture_lines(manifest):
         scope = (', '.join(sorted(packages)) if len(packages) <= 6 else
                  f'{len(packages)} uniform packages; individual rows in the receipt')
         equipment.append(f'Equipment {name} ({scope}): {caption}.')
-    return tuple(equipment + lines)
+    return tuple(refits + equipment + lines)

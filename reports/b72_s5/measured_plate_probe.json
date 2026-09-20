@@ -1,0 +1,65 @@
+{
+  "samples": [
+    {
+      "plate_luma": 18,
+      "white_texel_alpha": 255,
+      "output_rgba": [
+        255,
+        255,
+        255,
+        255
+      ]
+    },
+    {
+      "plate_luma": 18,
+      "white_texel_alpha": 128,
+      "output_rgba": [
+        137,
+        137,
+        137,
+        191
+      ]
+    },
+    {
+      "plate_luma": 18,
+      "white_texel_alpha": 64,
+      "output_rgba": [
+        77,
+        77,
+        77,
+        207
+      ]
+    },
+    {
+      "plate_luma": 19,
+      "white_texel_alpha": 255,
+      "output_rgba": [
+        255,
+        255,
+        255,
+        255
+      ]
+    },
+    {
+      "plate_luma": 19,
+      "white_texel_alpha": 128,
+      "output_rgba": [
+        137,
+        137,
+        137,
+        191
+      ]
+    },
+    {
+      "plate_luma": 19,
+      "white_texel_alpha": 64,
+      "output_rgba": [
+        78,
+        78,
+        78,
+        207
+      ]
+    }
+  ],
+  "limitation": "Analytical fetch/coverage probes over measured plate luminance, not a screenshot-fitted shader; opaque core remains 255."
+}

@@ -119,8 +119,10 @@ def load_layout(folder=None):
     for team, row in [('default', fit.get('default', {}))]+list(fit.get('by_team', {}).items()):
         from .nfl2k5_scorebug_resources import TEAM_LOGOS
         require(team=='default' or team in TEAM_LOGOS, 'Unknown logo fit team.')
-        require(isinstance(row, dict) and set(row)<= {'fill_x','height'} and all(isinstance(v,(int,float)) for v in row.values())
-                and 0.5<=row.get('fill_x',1.0)<=2.0 and 0.25<=row.get('height',1.0)<=1.0, 'Invalid logo fit for '+team)
+        require(isinstance(row, dict) and set(row)<= {'fill_x','height','zoom','shift_x','shift_y'} and all(_number(v) for v in row.values())
+                and 0.5<=row.get('fill_x',1.0)<=2.0 and 0.25<=row.get('height',1.0)<=1.0
+                and 0.5<=row.get('zoom',1.0)<=2.0
+                and all(-0.5<=row.get(k,0)<=0.5 for k in ('shift_x','shift_y')), 'Invalid logo fit for '+team)
     require(len(spec.get('brand',[]))<=8, 'Too many brand layers.')
     names=set()
     for row in spec['static']+spec['fields']+spec.get('events',[])+spec.get('brand',[]):
@@ -159,6 +161,14 @@ def load_layout(folder=None):
             require(1<=len(token)<=4 and all(0<ord(c)<128 for c in token), 'Glyph tokens must have 1–4 ASCII characters.')
             require(row['cell'] in spec['cells'] and len(row['size'])==2 and all(_number(v) and 0<=v<=256 for v in row['size']), 'Invalid glyph cell or size.')
             require(_number(row['advance']) and 0<row['advance']<=256 and _number(row.get('raise',0)), 'Invalid glyph advance.')
+    if spec.get('team_accents'):
+        from . import nfl2k5_scorebug_teams as teams
+        from .nfl2k5_scorebug_resources import TEAM_LOGOS
+        require(spec['team_accents']=='team_accents.json', 'Use the validated team accent dataset.')
+        palette=teams.load()
+        # Expose effective values to inspectors without duplicating source JSON.
+        spec['plate_tints']={name:palette[name]['plate'] for name in TEAM_LOGOS}
+        spec['wing_tints']={name:palette[name]['wing'] for name in TEAM_LOGOS}
     return spec,image
 
 @dataclass
@@ -357,7 +367,13 @@ def compile_folder(folder=None,widescreen=False,watermark="auto"):
             brand_offset=TABLE_OFFSET+len(table)
             table+=BRAND.pack(WATERMARK_MODES.index(watermark),*(u for v in ('nfl','mnf') for u in quantized_uv(cells[variants[v]['cell']],spec['atlas'])))
         STATIC.pack_into(table,HEADER.size+len(fields)*FIELD.size+i*STATIC.size,row['vertex'],TINTS.index(row['tint']),row['material'],brand_offset)
-    HEADER.pack_into(table,0,MAGIC,1,len(fields),TABLE_OFFSET+HEADER.size,len(statics),TABLE_OFFSET+HEADER.size+len(fields)*FIELD.size,len(table),len(quads))
+    revision=1
+    if spec.get('team_accents'):
+        from . import nfl2k5_scorebug_teams as teams
+        require(spec['team_accents']=='team_accents.json', 'Use the validated team accent dataset.')
+        table+=teams.table(teams.load(),TABLE_OFFSET+len(table))
+        revision=2
+    HEADER.pack_into(table,0,MAGIC,revision,len(fields),TABLE_OFFSET+HEADER.size,len(statics),TABLE_OFFSET+HEADER.size+len(fields)*FIELD.size,len(table),len(quads))
     return Compiled(spec,atlas,cells,quads,bytes(table),bool(widescreen),material_order)
 
 
@@ -445,7 +461,13 @@ def appendix(pack,folder=None,widescreen=False,watermark="auto"):
     sources={n:pack[r['pack_offset']:r['pack_offset']+r['span_size']] for n,r in art.RESOURCES.items()}
     template=sources['score_buga'];scene.pinned(template,art.RESOURCES['score_buga'])
     chunks=[('TXTR','sb--h0',art.mnf_panel_span(template,None,'home'))]
-    for team,rec in sorted(art.TEAM_LOGOS.items()):chunks.append(('TXTR','sb'+rec['asset_code']+'h0',art.mnf_panel_span(template,team,'home',plate_tints=c.spec.get('plate_tints'),logo_fit=c.spec.get('logo_fit'),wing_tints=c.spec.get('wing_tints'))))
+    plate_tints=c.spec.get('plate_tints');wing_tints=c.spec.get('wing_tints')
+    if c.spec.get('team_accents'):
+        from . import nfl2k5_scorebug_teams as teams
+        palette=teams.load()
+        plate_tints={name:t['plate'] for name,t in palette.items()}
+        wing_tints={name:t['wing'] for name,t in palette.items()}
+    for team,rec in sorted(art.TEAM_LOGOS.items()):chunks.append(('TXTR','sb'+rec['asset_code']+'h0',art.mnf_panel_span(template,team,'home',plate_tints=plate_tints,logo_fit=c.spec.get('logo_fit'),wing_tints=wing_tints)))
     chunks.append(('TXTR','score_buga',texture_chunk('score_buga',c.atlas,template,alpha_aware=True,
         reserved_colours=reserved_colours(c))[0]))
     chunks.append(('SCNE','score_bug',scene_span(scene.pinned(sources['score_bug'],art.RESOURCES['score_bug']),c)))
@@ -464,6 +486,9 @@ def probe_sizes(folder=None):
     table_size += BRAND.size if any(r.get('variant')=='mnf' for r in spec.get('brand', [])) else 0
     table_size += sum(len(spec['glyph_sets'][name]['glyphs'])*GLYPH.size
                       for name, _cap in {(r['glyph_set'], r['size']) for r in fields})
+    if spec.get('team_accents'):
+        from . import nfl2k5_scorebug_teams as teams
+        table_size += len(teams.load())*teams.ENTRY.size+teams.FOOTER.size
     scene_size=(TABLE_OFFSET+table_size+127)//128*128+32
     appended=32*5280+2208+math.prod(spec['atlas'])+1184+scene_size
     require(appended<MAX_APPEND,'The scorebug exceeds the 0.4 MB resource limit.')
@@ -521,7 +546,9 @@ STANDARD_STATE = dict(away='DEN', home='KC', away_score=7, home_score=7,
 def normalize_state(state=None):
     state=dict(STANDARD_STATE,**(state or {}))
     from .nfl2k5_scorebug_resources import TEAM_LOGOS
-    require(state['away'] in TEAM_LOGOS and state['home'] in TEAM_LOGOS,'Choose two known NFL teams.')
+    from . import nfl2k5_scorebug_teams as teams
+    known=teams.load()
+    require(state['away'] in known and state['home'] in known,'Choose two known roster teams.')
     for key,low,high in (('home_score',0,999),('away_score',0,999),('home_timeouts',0,3),('away_timeouts',0,3),('quarter',1,9),('down',1,4),('clock',0,3600),('play_clock',0,99),('distance',0,99)):
         require(type(state[key])==int and low<=state[key]<=high,'Invalid preview state: '+key)
     require(type(state['goal_to_go'])==bool,'Goal to go must be true or false.')
@@ -566,12 +593,12 @@ class NativePreview:
         from . import nfl2k5_scorebug_ingame as scene
         from nfl_main_menu_font import FONT_NAMES, EXPECTED_FONTS, parse_font
         from nfl_scene_probe import ResourceRecord
-        data,self.volume=appendix(view,folder,watermark=self.watermark)
-        self.chunks=[data[c.offset:c.end_offset] for c in scene.tx.parse_chunks(data)]
         self.modes={}
         for wide in (False,True):
             mode_data,volume=appendix(view,folder,wide,self.watermark)
             chunks=[mode_data[c.offset:c.end_offset] for c in scene.tx.parse_chunks(mode_data)]
+            if not wide:
+                self.chunks,self.volume=chunks,volume
             self.modes[wide]=dict(compiled=compile_folder(folder,wide,self.watermark),scene=scene.decode(chunks[-1])[1],atlas=chunks[-2],textures=chunks[:-1],volume=volume)
         # Read only the native global font outer for retained retail events.
         # The outer header has a fixed volume-table size, exposed by its parser.
@@ -591,9 +618,15 @@ class NativePreview:
         s=normalize_state(state);capture={};mode=self.modes[bool(widescreen)]
         events={'standard':(0,1),'FLAG':(1,3),'FUMBLE':(1,5),'hang time':(1,2),'ball on':(1,4),'score slabs':(0,1),'hidden play clock':(0,)}
         visibility='flag' if s['event']=='FLAG' else 'fumble' if s['event']=='FUMBLE' else None
+        from . import nfl2k5_scorebug_teams as teams
+        palette=teams.load()
+        identity={side:s[side] for side in ('home','away')}
+        for side in ('home','away'):
+            identity[side+'_code']=palette[s[side]]['asset_code']
+            identity[side+'_kind']=palette[s[side]]['kind']
         geometry=projection.native_geometry(self.payload,mode['scene'],fonts=self.fonts,texture_span=mode['atlas'],
             runtime_textures=mode['textures'],capture=capture,widescreen=widescreen,
-            identity=dict(home=s['home'],away=s['away']),score_values=(s['home_score'],s['away_score']),
+            identity=identity,score_values=(s['home_score'],s['away_score']),
             previous_scores=(0,0) if s['event']=='score slabs' else (s['home_score'],s['away_score']),
             score_phase=.2 if s['event']=='score slabs' else 0,
             timeouts=(s['home_timeouts'],s['away_timeouts']),quarter=s['quarter'],

@@ -1,0 +1,13 @@
+F......
+======================================================================
+FAIL: test_named_budget_and_static_v3_both_orders (__main__.InstallationTests.test_named_budget_and_static_v3_both_orders)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b72-s8/tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py", line 115, in test_named_budget_and_static_v3_both_orders
+    self.assertLess(len(r.code_for(code['va'], data['va'])[0].rstrip(b'\xcc')), r.CODE_SIZE)
+AssertionError: 4096 not less than 4096
+
+----------------------------------------------------------------------
+Ran 7 tests in 31.670s
+
+FAILED (failures=1)

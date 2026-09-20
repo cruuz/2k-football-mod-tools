@@ -1,0 +1,153 @@
+{
+ "base": "c3b3b53a273ef6356546570841bcea3763b93282",
+ "head": "eafd053dbe1a148d749a1ca01fd0c5ea4b27448d",
+ "deterministic": [],
+ "notes": [
+  "packaging/scorebug_replication_pins.py:7-13: PINNED_VALUE 0.97 but every digest on its + lines matches the HEAD bytes (digests on + lines vs HEAD bytes: 1 match, 0 differ); not flagged"
+ ],
+ "diff_facts": "New files under mod_editor/ in this diff: none. Release allowlists edited in this diff: no. mod_editor/core/providers.py (module_pins) edited: no. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: no. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+ "skipped": {
+  "windows over the per-file cap (data)": 34,
+  "docs/logs/other": 1,
+  "reports/ (job evidence)": 4
+ },
+ "windows": [
+  {
+   "start": 1976,
+   "end": 2027,
+   "header": "@@ -1976,231 +1976,231 @@",
+   "text": "@@ -1976,231 +1976,231 @@\n[part 1 of 6 of a 270-line hunk]\n   \"default\": {\n    \"fill_x\": 0.92,\n    \"height\": 1.0,\n-   \"zoom\": 1.13\n+   \"zoom\": 0.96\n   },\n   \"by_team\": {\n    \"ARI\": {\n     \"fill_x\": 0.92,\n     \"height\": 1.0,\n-    \"zoom\": 1.13,\n+    \"zoom\": 0.976,\n     \"shift_x\": 0.0,\n     \"shift_y\": 0.0\n    },\n    \"ATL\": {\n     \"fill_x\": 0.92,\n     \"height\": 1.0,\n-    \"zoom\": 1.13,\n+    \"zoom\": 0.976,\n     \"shift_x\": 0.0,\n     \"shift_y\": 0.0\n    },\n    \"BAL\": {\n     \"fill_x\": 1.02,\n     \"height\": 1.0,\n-    \"zoom\": 1.07,\n+    \"zoom\": 0.976,\n     \"shift_x\": 0.0,\n     \"shift_y\": 0.0\n    },\n    \"BUF\": {\n     \"fill_x\": 1.02,\n     \"height\": 1.0,\n-    \"zoom\": 1.07,\n+    \"zoom\": 0.976,\n     \"shift_x\": 0.0,\n     \"shift_y\": 0.0\n    },\n    \"CAR\": {\n     \"fill_x\": 1.02,\n     \"height\": 1.0,\n-    \"zoom\": 1.07,\n+    \"zoom\": 0.976,\n     \"shift_x\": 0.0,\n     \"shift_y\": 0.0\n    },\n    \"CHI\": {\n     \"fill_x\": 0.92,\n     \"height\": 1.0,\n-    \"zoom\": 1.13,\n+    \"zoom\": 0.976,\n     \"shift_x\": 0.0,\n     \"shift_y\": 0.0\n    },\n    \"CIN\": {\n     \"fill_x\": 0.92,\n     \"height\": 1.0,\n-    \"zoom\": 1.13,\n+    \"zoom\": 0.976,",
+   "file": "data/nfl2k5_scorebug_sprite/layout.json",
+   "kind": "data",
+   "status": "M",
+   "scores": {
+    "ctime_compare": 0.03,
+    "posix_only": 0.03,
+    "pinned_value": 0.35,
+    "slow_test": 0.02,
+    "weakens_safety": 0.03,
+    "inventory_mismatch": 0.04
+   },
+   "flags": [],
+   "max": 0.0
+  },
+  {
+   "start": 2021,
+   "end": 2072,
+   "header": "@@ -1976,231 +1976,231 @@",
+   "text": "@@ -1976,231 +1976,231 @@\n[part 2 of 6 of a 270-line hunk]\n     \"shift_x\": 0.0,\n     \"shift_y\": 0.0\n    },\n    \"CIN\": {\n     \"fill_x\": 0.92,\n     \"height\": 1.0,\n-    \"zoom\": 1.13,\n+    \"zoom\": 0.976,\n     \"shift_x\": 0.0,\n     \"shift_y\": 0.0\n    },\n    \"DAL\": {\n     \"fill_x\": 0.92,\n     \"height\": 1.0,\n-    \"zoom\": 1.13,\n+    \"zoom\": 0.976,\n     \"shift_x\": 0.0,\n     \"shift_y\": 0.0\n    },\n    \"DEN\": {\n     \"fill_x\": 0.86,\n     \"height\": 1.0,\n-    \"zoom\": 1.0,\n+    \"zoom\": 0.976,\n     \"shift_x\": 0.0,\n-    \"shift_y\": 0.045\n+    \"shift_y\": 0.0\n    },\n    \"DET\": {\n     \"fill_x\": 0.92,\n     \"height\": 1.0,\n-    \"zoom\": 1.13,\n+    \"zoom\": 0.976,\n     \"shift_x\": 0.0,\n     \"shift_y\": 0.0\n    },\n    \"GB\": {\n     \"fill_x\": 1.02,\n     \"height\": 1.0,\n-    \"zoom\": 1.07,\n+    \"zoom\": 0.976,\n     \"shift_x\": 0.0,\n     \"shift_y\": 0.0\n    },\n    \"IND\": {\n     \"fill_x\": 0.92,\n     \"height\": 1.0,\n-    \"zoom\": 1.13,\n+    \"zoom\": 0.976,\n     \"shift_x\": 0.0,\n     \"shift_y\": 0.0\n    },\n    \"JAX\": {\n     \"fill_x\": 0.92,\n     \"height\": 1.0,\n-    \"zoom\": 1.13,\n+    \"zoom\": 0.976,\n     \"shift_x\": 0.0,\n     \"shift_y\": 0.0\n    },",
+   "file": "data/nfl2k5_scorebug_sprite/layout.json",
+   "kind": "data",
+   "status": "M",
+   "scores": {
+    "ctime_compare": 0.03,
+    "posix_only": 0.03,
+    "pinned_value": 0.43,
+    "slow_test": 0.02,
+    "weakens_safety": 0.03,
+    "inventory_mismatch": 0.04
+   },
+   "flags": [],
+   "max": 0.0
+  },
+  {
+   "start": 18,
+   "end": 24,
+   "header": "@@ -18,7 +18,7 @@",
+   "text": "@@ -18,7 +18,7 @@\n       \"logo_fit\": {\n         \"fill_x\": 1.02,\n         \"height\": 1.0,\n-        \"zoom\": 1.07,\n+        \"zoom\": 0.976,\n         \"shift_x\": 0.0,\n         \"shift_y\": 0.0\n       },",
+   "file": "data/nfl2k5_scorebug_sprite/team_accents.json",
+   "kind": "data",
+   "status": "M",
+   "scores": {
+    "ctime_compare": 0.03,
+    "posix_only": 0.03,
+    "pinned_value": 0.42,
+    "slow_test": 0.02,
+    "weakens_safety": 0.03,
+    "inventory_mismatch": 0.04
+   },
+   "flags": [],
+   "max": 0.0
+  },
+  {
+   "start": 271,
+   "end": 277,
+   "header": "@@ -271,7 +271,7 @@",
+   "text": "@@ -271,7 +271,7 @@\n       \"logo_fit\": {\n         \"fill_x\": 0.92,\n         \"height\": 1.0,\n-        \"zoom\": 1.13,\n+        \"zoom\": 0.976,\n         \"shift_x\": 0.0,\n         \"shift_y\": 0.0\n       },",
+   "file": "data/nfl2k5_scorebug_sprite/team_accents.json",
+   "kind": "data",
+   "status": "M",
+   "scores": {
+    "ctime_compare": 0.03,
+    "posix_only": 0.03,
+    "pinned_value": 0.42,
+    "slow_test": 0.02,
+    "weakens_safety": 0.03,
+    "inventory_mismatch": 0.04
+   },
+   "flags": [],
+   "max": 0.0
+  },
+  {
+   "start": 7,
+   "end": 13,
+   "header": "@@ -7,7 +7,7 @@ PINS = {",
+   "text": "@@ -7,7 +7,7 @@ PINS = {\n     \"tools/scorebug_sprite/neutral_template.py\": \"fddad8bd118b3321b24eb3df67719f9f2c392ad36f6cf91811bc3af4e8dba35b\",\n     \"data/nfl2k5_scorebug_sprite/team_colors_official_2026.json\": \"e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4\",\n     \"data/nfl2k5_scorebug_sprite/broadcast_states.json\": \"16e07c2de4718bfe57066c35643a6302101c58eca72339f1e189d510b773e5a4\",\n-    \"data/nfl2k5_scorebug_sprite/team_accents.json\": \"3e124d9efa0fb5cae254109c3b5c315930de34d78a027f6a0578464ecfa1f618\",\n+    \"data/nfl2k5_scorebug_sprite/team_accents.json\": \"c9a39d0b9b4a9cbb6e7d0dc668fa9b65d19e72fbd70995c5c3d1468837c5a4c3\",\n     \"tools/scorebug_sprite/compare_ingame.py\": \"f71be713be3c5466d791a3906d289d159668c3b42101758a9c1526b9469670ac\",\n     \"tools/scorebug_sprite/jev/accents.py\": \"42988d27dca8ea1192a96bdc47d0bf8809d12ad870a6c3a0c8ebda65a3d05ea3\",\n     \"tools/scorebug_sprite/jev/descriptors.py\": \"df9ac4ac41820390abcb941a3bc1d90df355cc09751769ece2710aa45cd22cfa\",",
+   "file": "packaging/scorebug_replication_pins.py",
+   "kind": "packaging",
+   "status": "M",
+   "scores": {
+    "ctime_compare": 0.03,
+    "posix_only": 0.03,
+    "pinned_value": 0.97,
+    "slow_test": 0.02,
+    "weakens_safety": 0.09,
+    "inventory_mismatch": 0.13
+   },
+   "flags": [],
+   "pin_note": "digests on + lines vs HEAD bytes: 1 match, 0 differ",
+   "max": 0.0
+  },
+  {
+   "start": 1,
+   "end": 69,
+   "header": "@@ -0,0 +1,69 @@",
+   "text": "@@ -0,0 +1,69 @@\n+\"\"\"The full mark must survive before its fixed-size cell clips any pixels.\"\"\"\n+from pathlib import Path\n+import json\n+import sys\n+import unittest\n+from unittest.mock import patch\n+\n+ROOT = Path(__file__).resolve().parents[2]\n+sys.path.insert(0, str(ROOT))\n+from mod_editor.core import nfl2k5_scorebug_exact as exact\n+from mod_editor.core import nfl2k5_scorebug_resources as resources\n+\n+\n+def paste_loss(team, fit):\n+    \"\"\"Intercept the actual paste: a clipped denominator would hide lost ink.\"\"\"\n+    from PIL import Image\n+    original = Image.Image.paste\n+    measurements = []\n+    def checked(canvas, source, box=None, mask=None):\n+        if canvas.size == (64, 64) and isinstance(source, Image.Image) and source.mode == 'RGBA':\n+            before = sum(source.getchannel('A').getdata())\n+            original(canvas, source, box, mask)\n+            after = sum(canvas.getchannel('A').getdata())\n+            measurements.append((before, after))\n+        else:\n+            original(canvas, source, box, mask)\n+    with patch.object(Image.Image, 'paste', checked):\n+        image = exact.mnf_panel(team, 'home', fit=fit)\n+    if len(measurements) != 1:\n+        raise AssertionError('Expected exactly one complete logo paste: '+team)\n+    return measurements[0], image\n+\n+\n+class LogoRetentionTests(unittest.TestCase):\n+    def test_every_primary_mark_retains_all_prefiltered_ink(self):\n+        spec = json.loads((ROOT/'data/nfl2k5_scorebug_sprite/layout.json').read_text())\n+        self.assertEqual(set(spec['logo_fit']['by_team']), set(resources.TEAM_LOGOS))\n+        for team in resources.TEAM_LOGOS:\n+            with self.subTest(team=team):\n+                (full, visible), image = paste_loss(team, resources.logo_fit_for(team, spec['logo_fit']))\n+                self.assertGreater(full, 0)\n+                self.assertEqual(full, visible, 'The runtime cell discarded part of the primary mark')\n+                alpha = image.getchannel('A')\n+                self.assertEqual(image.size, (64, 64))\n+                # A complete transparent border protects the bilinear sample\n+                # and the rounded wing corners in both native projections.\n+                for edge in ((0, 0, 64, 1), (0, 63, 64, 64), (0, 0, 1, 64), (63, 0, 64, 64)):\n+                    self.assertIsNone(alpha.crop(edge).getbbox())\n+\n+    def test_crop_detector_rejects_original_washington_and_other_shapes(self):\n+        for team, fit in (\n+            ('WAS', dict(fill_x=1.02, height=1., zoom=1.17, shift_x=-.04)),\n+            ('HOU', dict(fill_x=1.04, height=1., zoom=1.25, shift_x=.075)),\n+            ('LV', dict(fill_x=1., height=1., zoom=1.10)),\n+            ('PIT', dict(fill_x=.92, height=1., zoom=1.13)),\n+        ):\n+            with self.subTest(team=team):\n+                (full, visible), _ = paste_loss(team, fit)\n+                self.assertLess(visible, full)\n+\n+    def test_per_team_fit_metadata_matches_authored_layout(self):\n+        spec = json.loads((ROOT/'data/nfl2k5_scorebug_sprite/layout.json').read_text())\n+        accents = json.loads((ROOT/'data/nfl2k5_scorebug_sprite/team_accents.json').read_text())['teams']\n+        for name, fit in spec['logo_fit']['by_team'].items():\n+            self.assertEqual(accents[name]['logo_fit'], fit, name)\n+\n+\n+if __name__ == '__main__':\n+    unittest.main()",
+   "file": "tests/mod_editor/test_nfl2k5_scorebug_logo_retention.py",
+   "kind": "test",
+   "status": "A",
+   "scores": {
+    "ctime_compare": 0.04,
+    "posix_only": 0.06,
+    "pinned_value": 0.03,
+    "slow_test": 0.12,
+    "weakens_safety": 0.07,
+    "inventory_mismatch": 0.1
+   },
+   "flags": [],
+   "max": 0.0
+  },
+  {
+   "start": 84,
+   "end": 101,
+   "header": "@@ -84,18 +84,18 @@ class ContractTests(unittest.TestCase):",
+   "text": "@@ -84,18 +84,18 @@ class ContractTests(unittest.TestCase):\n    self.assertFalse(plan.scorebug_runtime)\n \n class LogoFitTests(unittest.TestCase):\n- def test_marks_are_drawn_as_the_broadcast_draws_them(self):\n+ def test_complete_wide_marks_keep_the_configured_proportions(self):\n   from mod_editor.core import nfl2k5_scorebug_exact as exact, nfl2k5_scorebug_resources as art\n   spec=sprite.load_layout()[0];fit=spec['logo_fit']\n   self.assertEqual(set(fit['by_team']),set(art.TEAM_LOGOS))\n   box=next(r['box'] for r in spec['static'] if r['name']=='home_logo')\n   display_aspect=(box[2]-box[0])/(box[3]-box[1])\n-  # The larger logo wells now crop the mark. Check the visible silhouette\n-  # at its actual quad aspect, not the old 200x107 inset texture mapping.\n-  for team,expect in (('KC',1.74),('DEN',1.68),('BUF',None)):\n+  # Check the complete silhouette at its actual quad aspect. The authored\n+  # per-team fits preserve every stroke inside the larger s10 wells.\n+  for team,expect in (('KC',1.59),('DEN',1.68),('BUF',None)):\n    im=exact.mnf_panel(team,'home',fit=art.logo_fit_for(team,fit));x0,y0,x1,y1=im.getchannel('A').getbbox()\n    aspect=(x1-x0)/(y1-y0)*display_aspect\n-   self.assertGreater(aspect,1.4,team)  # preserve these wide team silhouettes after quad resizing and crop\n+   self.assertGreater(aspect,1.4,team)\n    if expect is not None:self.assertAlmostEqual(aspect,expect,delta=0.12,msg=team)\n    self.assertEqual(im.size,(64,64))\n   with self.assertRaises(ValueError):exact.mnf_panel('KC','home',fit={'fill_x':3.0})",
+   "file": "tests/mod_editor/test_nfl2k5_scorebug_sprite.py",
+   "kind": "test",
+   "status": "M",
+   "scores": {
+    "ctime_compare": 0.04,
+    "posix_only": 0.04,
+    "pinned_value": 0.92,
+    "slow_test": 0.03,
+    "weakens_safety": 0.23,
+    "inventory_mismatch": 0.04
+   },
+   "flags": [
+    "PINNED_VALUE"
+   ],
+   "pin_note": "",
+   "max": 0.92
+  }
+ ]
+}

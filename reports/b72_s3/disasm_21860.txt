@@ -1,0 +1,141 @@
+21860 push esi
+21861 mov esi, ecx
+21863 mov eax, dword ptr [esi + 8]
+21866 test eax, eax
+21868 jne 0x2186e
+2186a xor eax, eax
+2186c pop esi
+2186d ret 
+2186e push ebx
+2186f mov ebx, dword ptr [esi + 0xc]
+21872 test bl, 0x10
+21875 je 0x2187c
+21877 pop ebx
+21878 xor eax, eax
+2187a pop esi
+2187b ret 
+2187c test bl, 4
+2187f jne 0x21893
+21881 call 0x2adb0
+21886 mov edx, eax
+21888 mov ecx, esi
+2188a call 0x215a0
+2188f test eax, eax
+21891 je 0x21877
+21893 xor eax, eax
+21895 test bl, 1
+21898 je 0x2189f
+2189a mov eax, 1
+2189f test bl, 2
+218a2 je 0x218a7
+218a4 or eax, 2
+218a7 mov ecx, dword ptr [esi + 0x18]
+218aa mov edx, dword ptr [esi + 0x14]
+218ad push eax
+218ae mov eax, dword ptr [esi + 0x1c]
+218b1 push eax
+218b2 push ecx
+218b3 mov ecx, dword ptr [esi + 8]
+218b6 call 0x243d0
+218bb pop ebx
+218bc mov eax, 1
+218c1 pop esi
+218c2 ret 
+218c3 nop 
+218c4 nop 
+218c5 nop 
+218c6 nop 
+218c7 nop 
+218c8 nop 
+218c9 nop 
+218ca nop 
+218cb nop 
+218cc nop 
+218cd nop 
+218ce nop 
+218cf nop 
+218d0 mov dword ptr [ecx + 8], edx
+218d3 ret 
+218d4 nop 
+218d5 nop 
+218d6 nop 
+218d7 nop 
+218d8 nop 
+218d9 nop 
+218da nop 
+218db nop 
+218dc nop 
+218dd nop 
+218de nop 
+218df nop 
+218e0 mov dword ptr [ecx + 0xc], edx
+218e3 ret 
+218e4 nop 
+218e5 nop 
+218e6 nop 
+218e7 nop 
+218e8 nop 
+218e9 nop 
+218ea nop 
+218eb nop 
+218ec nop 
+218ed nop 
+218ee nop 
+218ef nop 
+218f0 mov dword ptr [ecx], edx
+218f2 ret 
+218f3 nop 
+218f4 nop 
+218f5 nop 
+218f6 nop 
+218f7 nop 
+218f8 nop 
+218f9 nop 
+218fa nop 
+218fb nop 
+218fc nop 
+218fd nop 
+218fe nop 
+218ff nop 
+21900 mov dword ptr [ecx + 0x14], edx
+21903 ret 
+21904 nop 
+21905 nop 
+21906 nop 
+21907 nop 
+21908 nop 
+21909 nop 
+2190a nop 
+2190b nop 
+2190c nop 
+2190d nop 
+2190e nop 
+2190f nop 
+21910 mov dword ptr [ecx + 0x18], edx
+21913 ret 
+21914 nop 
+21915 nop 
+21916 nop 
+21917 nop 
+21918 nop 
+21919 nop 
+2191a nop 
+2191b nop 
+2191c nop 
+2191d nop 
+2191e nop 
+2191f nop 
+21920 mov dword ptr [ecx + 0x1c], edx
+21923 ret 
+21924 nop 
+21925 nop 
+21926 nop 
+21927 nop 
+21928 nop 
+21929 nop 
+2192a nop 
+2192b nop 
+2192c nop 
+2192d nop 
+2192e nop 
+2192f nop 

@@ -1,0 +1,8 @@
+[1] mod_editor/core/providers.py: tools/scorebug_sprite/xemu_model.py
+    b90bbbc86b2e53519f2fc3790d37ef4a82d66e333cf6d8416373bb8a3f92815f
+ -> 1b97da7ecdf4e0fe19d6a1d7ea41ff3110810f14777da88f3ca94e18e1f110b3
+[1] packaging/scorebug_replication_pins.py: tools/scorebug_sprite/xemu_model.py
+    b90bbbc86b2e53519f2fc3790d37ef4a82d66e333cf6d8416373bb8a3f92815f
+ -> 1b97da7ecdf4e0fe19d6a1d7ea41ff3110810f14777da88f3ca94e18e1f110b3
+
+applied 2 pin update(s)

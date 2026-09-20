@@ -1,0 +1,152 @@
+# b72-s10: player-scale proportion pass
+
+The s9 game verdict was "still not 1:1 looks about the same". This candidate changes layout geometry and artwork, not only glyph contours. It is not a certified 1:1 match and has no new in-game witness. All six comparison sheets include all four supplied disc r WAS-LAC captures as genuine before views. The after views are offline native renders, labelled as such.
+
+The immutable base is `97d2bf9b2`. Runtime event handling, material records, submission order, label visibility and the clock formatter above 9:59 remain the s9 implementation. There is no native owner code change. The artwork continues to compile through the existing sprite interface and 64x64 team textures.
+
+## Output chain and measurement
+
+The native harness executes the existing owner and captures the submitted scene and P8 textures. The existing fragment model consumes that state at 640x480. Only the 640x448 HUD viewport, rows 16 through 463, is presented. Native widescreen contraction is included before rasterization. The display images are 1138x640 for 16:9 and 853x640 for 4:3, equivalent to the existing 1920x1080/1440x1080 display model at the first disc r capture's 617-pixel bar width. Each raster is enlarged once, using a Lanczos display-filter approximation. No high-resolution render is shrunk to manufacture fine detail.
+
+Each ESPN bar is independently normalized to that same 617-pixel width using the measured housing bounds recorded in `final_measurements.json`. The first exploratory run scaled whole frames; those receipts are retained and superseded by the independently aligned bar measurements. The supplied screenshots are manually cropped captures with slightly different framing. Their original pixels are retained in every sheet. No screenshot brightness or colour correction is fitted.
+
+`GAPS.md` ranks visible feature area. White logo/score ink, colour-well coverage, plate surface, rim and white pill are measured separately. A disagreement counts only when it contains a 2x2 display-pixel core; isolated one-pixel stems and contours do not count. Pixel counts are averaged across the two broadcast matchups and both native aspects. The logo and colour ROIs overlap, so their areas must not be summed. Logo coverage is a white-ink proxy; it also sees part of the bright Raiders wing. It does not establish the exact coloured silhouette.
+
+An initial raw-RGB table over-counted differences between legal palette shades. That table remains as an explicitly secondary diagnostic. Feature occupancy is the final proportion metric. Both revisions and every Jev request remain logged. Measurements are reproducible in `player_scale.py`; no tolerance was changed to turn a failed visual comparison into a pass.
+
+## Changes and rejected trials
+
+Wing boxes grow from 233 to 340 source pixels on each side. The final neutral coverage mask uses a broad top and bottom colour continuation plus a soft horizontal centre ramp. An opaque broad wash and a slower centre decay both increased measured mismatch and were rejected. No generic blue or foreign accent is baked into the art.
+
+Logo wells grow from 200x108 inset boxes to 230x110 boxes touching the bar's ends. Individual fits compensate for the new quad aspect and control crop, zoom and offset within the unchanged texture contract. Tall shields and wide marks use different fits. WAS and LAC intentionally bleed at the edges. DEN, KC, LV and HOU are compared against the supplied broadcasts; the other 28 team fits remain silhouette-based inferences. `logo_fits.json` records every fit, coverage and clipped edge.
+
+The score cap grows from 53 to 56 source pixels, with the traced masks filtered again at the native cap. The home score shifts five source pixels to match its measured placement. A larger 57-pixel trial overshot the reference. This is a modest size and ink-area correction, not arbitrary large digits.
+
+The down plate grows from 268x40 at y=947 to 274x42 at y=945. Its label retains the 30-source-pixel readability floor. The 288x46 trial was rejected because it increased the visible shape mismatch. Event plate boxes move with the normal plate, retaining their own material indices and native visibility records. The clock housing is 252x56 instead of 246x62, with a thinner surround. A taller white pill overshot the reference, so the original 243x40 combined pill size and clock anchors are retained.
+
+Denver's old white-lift navy looked grey. The new `#1E69C9` derives exactly from its own official `#0A2343` by multiplying each RGB channel by three without clipping. The validator recomputes that transform from the trusted palette, never candidate metadata. It still enforces white contrast of at least 4.5:1 for every accent role. Historical aliases sharing the same native identity receive the same values. All other team accent colours remain unchanged. Neutral source cells cannot inject another team's hue.
+
+## Limits that remain visible
+
+The bar still differs from ESPN in logo silhouette, cropped outlines, rim relief and palette shade. Raiders grey remains darker because of the preserved white-label contrast rule. The down label is intentionally larger than the broadcast to survive the HUD. Static ramps cannot reproduce broadcast animation and specular motion. Rare unobserved s9 glyphs remain reconstructed, not exact traces.
+
+There is no supplied WAS-LAC ESPN frame and no 4:3 game witness. The WAS-LAC sheet uses DEN-KC only as a labelled style reference. The reference fragment model does not capture all NV2A state, screenshot colour processing or the emulator's complete display configuration. These limits prevent an exact GPU/display calibration claim.
+
+Jev only receives text measurements. Its recognition scores do not certify appearance, and a higher or lower score cannot override the measured feature table. The final handoff preserves its unfavourable answers as well as its rankings. The next decision belongs to the player-scale sheets and a future played test.
+
+
+# b72-s10 validation
+
+All 35 default scorebug, provider-integrity and standalone packaging test files pass: 313 cases, 305 executed and 8 existing skips. Each file ran separately with plain Python, `PYTHONPATH` set to this checkout, `QT_QPA_PLATFORM=offscreen`, one worker and an enforced 100-second timeout. The slowest final file is the resource suite at 83.15 seconds. `checks/results.json` and its named logs are the final receipts.
+
+```bash
+python3 reports/b72_s10/run_checks.py
+python3 reports/b72_s10/audit.py
+python3 reports/b72_s10/run_closures.py
+python3 reports/b72_s10/scan_owner.py
+python3 reports/b72_s10/run_aux.py
+python3 reports/b72_s10/scan.py
+python3 packaging/repin.py --apply
+```
+
+The native raster label audit passes all 104 combinations: 52 current/historical native team slots, both aspects. It checks the preserved text readability floor and contrast, layout footprint and generated resource sizes. This is an offline label result, not a played witness. `readability.json`, `logo_fits.json`, `budgets.json`, and the two all-team grids retain the details. Native long-clock tests cover 9:59, 10:00 and larger clocks.
+
+The retained Unicorn sequence run passes 675 frames per aspect, 1,350 total. Its actual captured material/event records cover pre-snap, punt/hang-time, after-play, FLAG, FUMBLE and down-label recovery. `native_sequences/sequences.json` and `retained_sequences.log` are the receipts. Existing native draw-order tests deliberately break submission order and ensure a hidden label cannot be rescued by a friendly preview. No game or emulator was launched.
+
+The focused native owner scan passes 31 composition pairs in both orders, with writable destinations, RX/RW permissions, idempotence and hook ownership checked. The source manifest freshness check separately reports the inherited stale `nfl2k5_scorebug_exact.py` fingerprint. Native owner files and the protected manifest are byte-identical to base `97d2bf9b2`; source freshness is not claimed. The integrator must regenerate the manifest on the final stack as described in `../../WIRING.md`.
+
+Broader auxiliary suites are separately bounded at 420 seconds each. A timeout is incomplete, not a pass. These suites cover the complete unrelated owner union in multiple installation orders; they are additional coverage beyond the unchanged scorebug owner and its focused 31-pair proof. Final recorded auxiliary results:
+
+| Standalone file | Result | Seconds |
+|---|---|---:|
+| `tests/mod_editor/test_xbe_patch_memory_writes.py` | INCOMPLETE: timeout | 420.03 |
+| `tests/mod_editor/test_xbe_patch_cave_references.py` | INCOMPLETE: timeout | 420.03 |
+
+Both 2K5 and APF product closures pass staging, release inventory/integrity checks and isolated runtime checks. Staging directories were removed. `run_closures.py` records the exact commands; `closures.json`, `2k5_closure_*.log` and `apf2k8_closure_*.log` retain their results. APF shipping bytes are unchanged. Existing allowlists already contain every modified shipping path; no inventory entries, dependencies, capability rows or provider-count expectations were added.
+
+The PNG catalogue records the exact final 22,990-byte PNG and SHA-256. The release checker changes only its catalogue hash constant; an AST comparison verifies all other checker logic is identical. Replication and provider pins match final source bytes. Deterministic asset regeneration is byte-identical (`author_roundtrip.json`); native runtime reproducibility passes (`runtime_reproducibility.log`). The append is 325,216 bytes at each aspect, below 400,000. RX remains 4,086 of 4,096 bytes, with 10 spare; RW remains 128 bytes. No native code was added.
+
+`scans.json` verifies existing allowlist membership, unchanged native owners, official palette and provider-count tests, no credential-pattern hits, and no added em dashes. The product closure also performs its retained-byte policy audit. Only development evidence/scripts are added under this report directory.
+
+Failed trials are retained, not erased: the initial wider source plate failed the SD footprint test, the old logo-ratio assertion used the previous well geometry, and closure attempts exposed stale PNG size/catalogue pins. The plate was prefiltered to 91x17, the logo contract now derives the actual quad aspect with unchanged tolerance, and exact catalogue pins were refreshed. `checks_before_sd_fix/`, `checks/sprite_initial.log`, and closure logs with `before_` in their names preserve those failures. Final default tests and closures pass after correction.
+
+The visual metric has no all-clear threshold. Logo, wing, housing/rim and score area decrease; plate and pill show no material closure. `GAPS.md` reports every nonzero residual. The six final comparison sheets use the final corrected SD cell and include genuine supplied disc r before captures.
+
+
+# Ranked visible-area gaps
+
+Mean display pixels at the 617-pixel player bar, two matched broadcasts and both native aspects. Nonzero gaps remain open. This is an offline measurement, not a game result.
+
+| Rank | Feature | s9 before area | s10 after area | Reduction | Status |
+|---:|---|---:|---:|---:|---|
+| 1 | logo | 2795.50 | 1931.75 | 30.9% | Reduced, residual open |
+| 2 | wing_colour | 1887.50 | 1524.00 | 19.3% | Reduced, residual open |
+| 3 | housing_rim | 975.75 | 926.00 | 5.1% | Reduced, residual open |
+| 4 | down_capsule | 669.75 | 669.50 | 0.0% | No material closure |
+| 5 | pill | 431.50 | 431.00 | 0.1% | No material closure |
+| 6 | score | 221.25 | 16.75 | 92.4% | Reduced, residual open |
+
+A visible difference must contain a 2x2 player-pixel core. White-ink, colour-coverage and surface masks are defined in `player_scale.py`; each detailed row records its area and the secondary RGB diagnostic. Areas overlap and must not be summed. The Raiders white logo proxy includes some bright wing area.
+
+The first exploratory RGB ranking was wing, housing/rim, plate, logo, pill, score. The feature-occupancy ranking above supersedes it and drove the refinement pass. Jev saw both revisions. No one-pixel stem residual is counted. The plate and pill differences are below one 2x2-pixel core on average and are not claimed as visible improvements.
+
+Rejected: the first broad flat wing wash, centre decay 85 instead of 65, the 288x46 down plate, 43-row pill and 57-row scores. Retained: wider wing boxes with a two-dimensional ramp, team-specific logo crops, 274x42 raised plate, original pill size, 56-row scores with corrected home alignment.
+
+The final down cell is prefiltered to 91x17 texels. The first 96x19 cell failed the SD footprint test and was corrected without weakening the test. All final sheets and measurements use the corrected cell.
+
+
+# b72-s10 test-disc handoff
+
+Import branch `b72-s10` from `.scratch/astra-b72-s10.bundle`, based on `refs/astra/b72-s9/b72-s9` at `97d2bf9b2`. Use the final integrated application and its bundled sprite folder. Schedule this candidate for beta 73 if integration timing permits, otherwise beta 74. No version or release marker is changed here.
+
+The supplied disc q and disc r build receipts have identical `plan` dictionaries. `test_disc_options.json` contains that complete dictionary, both source receipt hashes, and the comparison result. This is the disc q event-owner fix plus disc r's s9 long-clock/white-pill/traced-glyph base, with s10 artwork and geometry replacing the bundled sprite assets.
+
+| Setting | Exact value |
+|---|---|
+| Preset baseline | `softdrink_experimental` |
+| Scorebug | `scorebug=True` |
+| Runtime sprite | `scorebug_runtime=True` |
+| Bundled layout | `scorebug_folder=""` |
+| Watermark | `scorebug_watermark="auto"` |
+| Modern colour | `modern_color=True` |
+| Colour settings | `modern_color_settings={}`, overall strength defaults to 0.5 |
+| Modern Arrowhead | `modern_arrowhead=True` |
+| Widescreen | `widescreen=True` |
+| Other settings | Exact disc q/r values in `test_disc_options.json`, including `dynamic_kickoff=True` |
+
+To reconstruct every recorded option without depending on future preset drift:
+
+```python
+import json
+from pathlib import Path
+from mod_editor.core.mod_build import BuildPlan
+
+options = json.loads(Path("reports/b72_s10/test_disc_options.json").read_text())["options"]
+plan = BuildPlan(source=retail_iso, target=new_test_iso, **options)
+```
+
+Build from the supported retail USA disc. Do not stack resources onto disc q or disc r. The sprite resources and XBE owner must come from the same integrated checkout. For a separate 4:3 test, change only `widescreen=False`; the checked 4:3 sheets use that projection. These are integrator build instructions. This job produces no disc image and launches no emulator.
+
+The source reservation manifest inherited from s9 needs integrator regeneration against the final owner stack. This job adds no RX or RW allocation and changes no native owner bytes. Existing provider and replication pins are refreshed. No allowlist entry, dependency, capability row or preset default is added.
+
+Compare WAS at LAC at `1st & 10` and `2nd & 10` against the four supplied disc r before views. Also check LV at HOU and DEN at KC, both possessions and a light/dark team pair. Watch logo crop and bleed, colour coverage, score size, plate shape and label readability at the actual display size. Confirm the down label returns after a punt, hang-time, FLAG and FUMBLE, and confirm 9:59, 10:00 and a clock above ten minutes. Record the build identity, aspect, matchup and result. Every s10 in-game outcome remains unwitnessed.
+
+
+# b72-s10 Jev review
+
+Jev receives text descriptors and measured feature tables, never pixels. Every inference request and raw response is retained in `jev_calls.json`, `gate_initial_call.json`, `gate_final_call.json`, and the handoff call receipt when present. `JEV_USAGE.json` aggregates current usage: $0.00248056, 26 calls, against the $1.00 cap. Requests are bounded before dispatch using a conservative byte-count reserve. The initial configuration-only status probe does not perform inference.
+
+Both phrasings of each ranking ask for the largest measured visible-area gap. The initial raw-RGB order was wing, housing/rim, down capsule, logo, pill, score. Feature occupancy subsequently replaced raw RGB because palette shade differences inflated area without measuring proportion. Jev saw the revised table; measurements retained authority throughout. The final ranking is logo, wing colour, housing/rim, down capsule, pill, score. Both final next-gap calls select logo, with confidence 0.86 and 0.93, matching the measured 1,931.75-pixel residual.
+
+Both recognition phrasings use the same 0-to-4 concrete rubric. Raw-RGB baseline scores were 1.14 and 1.13. The revised occupancy baseline scores were 1.73 and 1.62. An intermediate candidate scored 1.23 and 1.47; these unfavourable answers remain logged. The final corrected SD candidate scores 1.79 and 1.86, with confidence 0.44 and 0.50. These cautious results do not certify that the bar reads as ESPN or establish a quantitative gain across differently worded contexts. They cannot overrule area measurements or a future player verdict. All six measured feature residuals remain nonzero.
+
+The installed diff-gate recipe was run via request capture, actual MCP batch execution and exact-input replay. Its final source review covers base `97d2bf9b2` through implementation commit `73273e596a`. Later changes are report evidence only. Eleven windows, zero provider errors and zero deterministic findings; two model flags remain documented in `own_diff_gate.md`:
+
+| Flag | Probability | Disposition |
+|---|---:|---|
+| PINNED_VALUE, logo-fit test | 0.91 | Reviewed. The old expected ratio used the 200x107 mapping. The test now derives the actual 230x110 quad aspect and expects the deliberately cropped KC/DEN silhouettes. The 0.12 tolerance and wide-silhouette floor remain. This is a layout contract, not proof of broadcast fidelity. |
+| PINNED_VALUE, layout cell coordinates | 0.63 | Reviewed. Coordinates belong to deterministic atlas repacking. Bounds, native sampling, SD footprint, append budgets and regeneration pass; no native table/resource format changes. |
+
+The recipe separately dismisses four hash warnings because every digest matches the HEAD bytes: provider pin, release catalogue hash, PNG identity and replication pins. No inventory-count assertion was changed. The gate returned its flagged status; this report does not present it as an unconditional model pass. The independent release closures, measured art checks and source audit support the reviewed dispositions.
+
+The handoff fact-check uses the installed recipe over the final summary and these job reports. Its receipt and any reviewed flags are recorded separately in `handoff_factcheck.md`. No model output is represented as an in-game witness.

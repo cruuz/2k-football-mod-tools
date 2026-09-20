@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "<stdin>", line 3, in <module>
+  File "/home/noah/2k-worktrees/astra-b72-s6/mod_editor/core/nfl2k5_cave_oracle.py", line 222, in load
+    return cls(json.loads(path.read_text(encoding="utf-8")), image, source_root=source_root)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/astra-b72-s6/mod_editor/core/nfl2k5_cave_oracle.py", line 217, in __init__
+    raise OracleError(f"stale reservation source: {relative}; regenerate manifest")
+mod_editor.core.nfl2k5_cave_oracle.OracleError: stale reservation source: mod_editor/core/nfl2k5_scorebug_exact.py; regenerate manifest

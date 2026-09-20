@@ -206,6 +206,18 @@ def _route(name: str, depth: float | None = None) -> Chain:
     return lib.route_chain(name, depth, 0)
 
 
+# The v2 output is pinned byte for byte (APPLIED_RESOURCE_STATES).  Up to beta 72 the
+# library's "Curl" wrote kind 7 (the game turns it back toward the sideline) and its
+# "Comeback" kind 11 (back toward the middle).  These calls keep the shipped bytes and
+# name the route each receiver actually runs.
+def _v2_curl_slot(depth: float) -> Chain:
+    return _route("Comeback", depth)
+
+
+def _v2_comeback_slot(depth: float) -> Chain:
+    return _route("Curl", depth)
+
+
 def _offense_play(routes: Mapping[int, Chain]) -> tuple[Chain, ...]:
     """Eleven chains: QB dropback, the line in its retail pass sets, the centre snaps, skill routes."""
 
@@ -234,23 +246,23 @@ def plays() -> list[tuple[str, int, int | None, tuple[Chain, ...]]]:
     out.append(("7v7 Trips Flood", OFFENSE_DONOR_PLAY, 0, _offense_play(
         {6: _route("Flat", 5), 7: _route("Go", 22), 8: _route("Out", 12), 9: _route("Post", 12), 10: _route("Drag", 8)})))
     out.append(("7v7 Trips Mesh", OFFENSE_DONOR_PLAY, 0, _offense_play(
-        {6: _route("Curl", 8), 7: _route("Comeback", 14), 8: _route("Drag", 10), 9: _route("Drag", 8), 10: _route("Wheel", 15)})))
+        {6: _v2_curl_slot(8), 7: _v2_comeback_slot(14), 8: _route("Drag", 10), 9: _route("Drag", 8), 10: _route("Wheel", 15)})))
     out.append(("7v7 Trips Verts", OFFENSE_DONOR_PLAY, 0, _offense_play(
         {6: _route("Go", 18), 7: _route("Go", 25), 8: _route("Go", 20), 9: _route("Go", 25), 10: _route("Hitch", 5)})))
     # --- 7-On-7 Spread: 6 WR1 left slot, 7 WR3 right slot, 8 WR2 right wide, 9 WR0 left wide, 10 HB
     out.append(("7v7 Spread Slants", OFFENSE_DONOR_PLAY, 1, _offense_play(
         {6: _route("Slant", 8), 7: _route("Slant", 8), 8: _route("Slant", 8), 9: _route("Slant", 8), 10: _route("Flat", 6)})))
     out.append(("7v7 Spread Curls", OFFENSE_DONOR_PLAY, 1, _offense_play(
-        {6: _route("Hitch", 6), 7: _route("Hitch", 6), 8: _route("Curl", 12), 9: _route("Curl", 12), 10: _route("Drag", 8)})))
+        {6: _route("Hitch", 6), 7: _route("Hitch", 6), 8: _v2_curl_slot(12), 9: _v2_curl_slot(12), 10: _route("Drag", 8)})))
     out.append(("7v7 Spread Four Verts", OFFENSE_DONOR_PLAY, 1, _offense_play(
         {6: _route("Go", 20), 7: _route("Go", 20), 8: _route("Go", 25), 9: _route("Go", 25), 10: _route("Flat", 6)})))
     # --- 7-On-7 Ace: 6 TE0 left tight, 7 WR1 left wide, 8 WR0 right wide, 9 TE1 right tight, 10 HB
     out.append(("7v7 Ace Smash", OFFENSE_DONOR_PLAY, 2, _offense_play(
         {6: _route("Corner", 12), 7: _route("Hitch", 6), 8: _route("Hitch", 6), 9: _route("Corner", 12), 10: _route("Drag", 8)})))
     out.append(("7v7 Ace Stick", OFFENSE_DONOR_PLAY, 2, _offense_play(
-        {6: _route("Drag", 8), 7: _route("Comeback", 14), 8: _route("Go", 20), 9: _route("Stick", 6), 10: _route("Flat", 6)})))
+        {6: _route("Drag", 8), 7: _v2_comeback_slot(14), 8: _route("Go", 20), 9: _route("Stick", 6), 10: _route("Flat", 6)})))
     out.append(("7v7 Ace Double Post", OFFENSE_DONOR_PLAY, 2, _offense_play(
-        {6: _route("Out", 8), 7: _route("Post", 12), 8: _route("Post", 12), 9: _route("Curl", 8), 10: _route("Wheel", 15)})))
+        {6: _route("Out", 8), 7: _route("Post", 12), 8: _route("Post", 12), 9: _v2_curl_slot(8), 10: _route("Wheel", 15)})))
     # --- coverages (slots: 4 right LB, 5 middle LB, 6 left LB / nickel back, 7 SS, 8 FS, 9 right CB, 10 left CB)
     out.append(("7v7 Cover 2", ZONE_DONOR_PLAY, None, _defense_play(
         {4: [DS0, Z_CURL_R], 5: [DS_MID, Z_HOOK_MID], 6: [DS0, Z_CURL_L], 7: [DS_CB_R, Z_HALF_R], 8: [DS_S, Z_HALF_L],

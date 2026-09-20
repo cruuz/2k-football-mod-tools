@@ -1,0 +1,12 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"model\": \"jev-1.13.0\",\n  \"answers\": {\n    \"claims_gpu_fix\": {\n      \"type\": \"noul\",\n      \"noul\": 0.03\n    },\n    \"claims_new_game_witness\": {\n      \"type\": \"noul\",\n      \"noul\": 0.06\n    },\n    \"hides_palette_review\": {\n      \"type\": \"noul\",\n      \"noul\": 0.09\n    }\n  },\n  \"usage\": {\n    \"input_tokens\": 6287,\n    \"output_tokens\": 62\n  },\n  \"meta\": {\n    \"ts\": \"2026-09-19T13:58:20\",\n    \"tool\": \"jev_ask\",\n    \"model\": \"jev-1.13.0\",\n    \"input_tokens\": 6287,\n    \"output_tokens\": 62,\n    \"cost_usd\": 0.00026405,\n    \"latency_ms\": 577.9,\n    \"questions\": 3\n  }\n}"
+    }
+  ],
+  "structuredContent": {
+    "result": "{\n  \"model\": \"jev-1.13.0\",\n  \"answers\": {\n    \"claims_gpu_fix\": {\n      \"type\": \"noul\",\n      \"noul\": 0.03\n    },\n    \"claims_new_game_witness\": {\n      \"type\": \"noul\",\n      \"noul\": 0.06\n    },\n    \"hides_palette_review\": {\n      \"type\": \"noul\",\n      \"noul\": 0.09\n    }\n  },\n  \"usage\": {\n    \"input_tokens\": 6287,\n    \"output_tokens\": 62\n  },\n  \"meta\": {\n    \"ts\": \"2026-09-19T13:58:20\",\n    \"tool\": \"jev_ask\",\n    \"model\": \"jev-1.13.0\",\n    \"input_tokens\": 6287,\n    \"output_tokens\": 62,\n    \"cost_usd\": 0.00026405,\n    \"latency_ms\": 577.9,\n    \"questions\": 3\n  }\n}"
+  },
+  "isError": false
+}

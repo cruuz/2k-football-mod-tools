@@ -1,0 +1,23 @@
+{
+  "interior": [
+    555,
+    631,
+    646,
+    645
+  ],
+  "measurements": {
+    "captured_visibility": {
+      "min": 37.0,
+      "mean": 37.64037080062794,
+      "max": 50.0
+    },
+    "fixed_owner_visibility": {
+      "min": 16.3146,
+      "mean": 120.09631773940345,
+      "max": 254.99999999999997
+    }
+  },
+  "runtime_witnessed": false,
+  "tone_fitting": false,
+  "limitation": "Offline live-data composite. RAM, screenshot and traced state were not synchronized. No screenshot tolerance gate is used; Noah confirms the test disc in game."
+}

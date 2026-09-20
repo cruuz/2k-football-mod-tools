@@ -1,0 +1,7 @@
+{
+  "recorded_calls": 43,
+  "local_recorded_cost_usd": 0.00148345,
+  "conservative_session_spend_usd": 1.2607269300000001,
+  "budget_usd": 3,
+  "explanation": "The conservative tracker includes the shared usage-log increase since job start; local receipts identify this job calls."
+}

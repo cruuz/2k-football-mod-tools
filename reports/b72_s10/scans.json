@@ -1,0 +1,35 @@
+{
+  "base": "97d2bf9b2",
+  "unchanged_sha256": {
+    "tools/scorebug_sprite/runtime.c": "d902d7b102d95dddd28e1ca731aea638063cbf4de7bb44354454ae67bf303565",
+    "mod_editor/core/nfl2k5_scorebug_sprite_code.py": "671ce854d227d6eb990d043cc22449a5c318315fdfc645affa521715e429a24e",
+    "mod_editor/core/nfl2k5_scorebug_runtime.py": "5a4fdd292b86af8b7ab0e3051d0f072606001bf0d60301d43088bd9f1f719fd5",
+    "mod_editor/core/nfl2k5_scorebug_sprite.py": "d7ecf5cb2fe50f06818121cca78026cc9091d4dd44d08ca4cf7cd71fcdb6a59c",
+    "mod_editor/core/nfl2k5_scorebug_exact.py": "9de7e52f9a36fd29dbadb98bdafdee71c46e9902c3a8c688fe0c22516d78ec0e",
+    "mod_editor/core/nfl2k5_scorebug_resources.py": "444d24c8b1c5c0b5bb1a8458e92eec12302b379f0f4f98d1c8f63930a9efbd97",
+    "data/nfl2k5_cave_reservations.json": "969d42cde4dd8be10e619668e8f3796003ca57293b28f5d2d6b2d35a691176cc",
+    "packaging/release-allowlist.txt": "14630cb84fccc713bf7c2d3a360227cd55e7df22e9cda9ea162f90fa928104bf",
+    "packaging/apf2k8-release-allowlist.txt": "4d38197bb0923f05c8e4a483b2979633616d7ba352ed5400eab31a9166332955",
+    "tests/mod_editor/test_provider_integrity.py": "a806df48da17654e2e7ab3a07c898c16442b840708c5eb9db9eef8528a8db992",
+    "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4"
+  },
+  "release_check_logic_unchanged": true,
+  "existing_allowlist_paths": [
+    "data/nfl2k5_scorebug_sprite/layout.json",
+    "data/nfl2k5_scorebug_sprite/template.png",
+    "data/nfl2k5_scorebug_sprite/team_accents.json",
+    "mod_editor/core/nfl2k5_scorebug_teams.py",
+    "mod_editor/core/providers.py",
+    "packaging/scorebug_replication_pins.py",
+    "packaging/check_2k5_mod_studio_release.py",
+    "packaging/nfl2k5_scorebug_template_pngs.json",
+    "docs/mod_editor/2k5_mod_studio_changelog.md"
+  ],
+  "new_release_inventory_entries": 0,
+  "new_provider_modules": 0,
+  "secret_pattern_hits": [],
+  "new_em_dashes": 0,
+  "png_catalog_matches": true,
+  "retail_byte_policy": "Only authored PNG/JSON and report evidence added; product closure performs its own retained-byte audit.",
+  "report_scripts": "Development-only, not added to product closures"
+}

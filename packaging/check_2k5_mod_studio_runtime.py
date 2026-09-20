@@ -99,23 +99,24 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "dd3529836c4ebdc5ddf344de19edca38191f918ca341248953cb289b56c5e42e",
     "mod_editor/gui/studio_qt.py":
-        "b83c51bc8ddd1a62936f2d03777e493d85e941b770ab9781b7562ec2eb14154b",
+        "0c25893b34655974b1e20e490a6d35bf39cbf24946346759d86664e27f5ba4ef",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
         "68b6887e0778391916a6465a722b062d1c09afe3a376c318026e9db8bd7ed23a",
     "mod_editor/studio/facade.py":
-        "8e359ef418f6088262b97b619880cb06109f532eaf888616dbe66193e2568a02",
+        "e43062169cb52fb37a771c77fba4aa6c41392a7cacf66df2b2ec765f6f76a7e6",
     "mod_editor/studio/project_archive.py":
-        "1a1fd667dc70bebec8e31b70c9c229a1aa665526cc915f781398dfd91d037f67",
+        "41a4c683d67cce74517cb5c6ebf8ebd68d4b882cfd8a185fd94f4a9d6f18449f",
     "mod_editor/studio/session.py":
-        "4427cf7e61c082760d15e65f621e5c1393368cd2bd92c1eb54b962aae0c9e95b",
+        "033901e7c410376940a819191fdc89eb8f882ff9d7e9c932d52cfa650de75fbb",
 }
 
 B69_GAME_RUNTIME_PINS = {
     "mod_editor/core/nfl2k5_weather.py": "6540d7ffc8d441898f5a89988752efd6aa0238c87b4a0941c1962b7b3feba380",
     "mod_editor/core/nfl2k5_weather_haze.py": "3d045e099f1585658b899ab6e7d3560e92edb24529ca8d6f224e901dc7712ff9",
-    "mod_editor/gui/build_panel_qt.py": "c36108cd59dd8486278fe1aefaa4386954bf13820e9bdea4ef86c450aba3f658",
+    "mod_editor/gui/build_panel_qt.py": "ca7676aad29d0bc5c77a37bd8d8063143f879c4597b4c8cee8234b4b7a256a12",
+    "mod_editor/gui/build_panel_qt.py": "ca7676aad29d0bc5c77a37bd8d8063143f879c4597b4c8cee8234b4b7a256a12",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "6377a6089d0c01233b810e0ec82f962dfbc40cdea6d80cb8dbf092b2f83b8839",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "17e2abf5ba748a945406c20668c3d5a7347794947a02c2cf0d70951d2062ff73",

@@ -45,6 +45,24 @@ from mod_editor.core import nfl2k5_player_star as player_star
 from mod_editor.core import nfl2k5_throw_tuning as tt
 from mod_editor.gui.ux_text import NOT_TESTED, XEMU_LINE, Details, plain_failure, show_operation_error, source_captions, suggest_copy_name, tab_title
 
+
+def _resolved_build_file(path, what: str) -> Path:
+    """``path`` resolved, or a sentence naming the file that is not there.
+
+    ``Path.resolve(strict=True)`` answers a missing file with the platform's
+    own words. On Windows those are "[WinError 2] The system cannot find the
+    file specified", which a beta 72.1 tester met after renaming the disc this
+    page had just built for him and pressing Build again: no sentence, no next
+    step, and a path he had never chosen in that build.
+    """
+
+    try:
+        return Path(path).resolve(strict=True)
+    except OSError as exc:
+        raise ValueError(f"{what} is no longer on this computer: {path}. "
+                         "It was renamed, moved or deleted after it was chosen.") from exc
+
+
 SOURCE_FILTER = "NFL 2K5 default.xbe or disc image (default.xbe *.xbe *.xiso *.iso *.img);;All files (*)"
 IMAGE_FILTER = "Xbox disc images (*.xiso *.iso *.img);;All files (*)"
 XBE_FILTER = "Xbox executables (default.xbe *.xbe);;All files (*)"
@@ -131,6 +149,12 @@ class BuildPanel(QWidget):
         self._available = mod_build.availability() if available is None else available
         self._reading = False                 # the shell is inspecting the open disc for us
         self._target_generated = False        # the target was suggested, not chosen by the user
+        # The page hands each finished copy to the next build. These remember
+        # that, and what the chain started from, so a renamed or moved copy
+        # costs a sentence rather than a build (beta 72.1 tester).
+        self._source_is_last_build = False    # the source is a copy this page wrote, not a chosen file
+        self._source_before_build: str = ""   # the file the current chain started from
+        self._state_before_build: dict[str, object] | None = None
         self.pending_preset: str | None = None  # Getting Started asked for a preset before the disc was read
         # direct inputs the option list edits (initialised before the UI so the first refresh can read them)
         self.commentary: list[mod_build.CommentarySwap] = []
@@ -811,6 +835,10 @@ class BuildPanel(QWidget):
         self.modern_arrowhead_check = self._option(
             r, "modern_arrowhead", modern_arrowhead.BUILD_CAPTION, modern_arrowhead.HELP_TEXT,
             badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        from mod_editor.core import nfl2k5_intro_videos as intro_videos
+        self.trim_intro_videos_check = self._option(
+            r, "trim_intro_videos", intro_videos.BUILD_CAPTION, intro_videos.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
         self.player_star_check = self._option(
             r, "player_star", "Show a filled star under selected players",
             "A filled white star with a dark edge under every tagged player on the field; in-game appearance unwitnessed.",
@@ -1120,6 +1148,11 @@ class BuildPanel(QWidget):
         """The shell is inspecting the open disc; say so until the state arrives."""
 
         self._reading = True
+        # A disc the modder opened themselves ends any build chain this page
+        # was carrying: the next build starts from the file they just chose.
+        self._source_is_last_build = False
+        self._source_before_build = ""
+        self._state_before_build = None
         self.source_field.setText(str(source))
         self.source_status.setText("Reading disc…")
         self._refresh()
@@ -1143,6 +1176,102 @@ class BuildPanel(QWidget):
             return
         self.target_field.setText(suggest_copy_name(source, suffix="modded"))
         self._target_generated = True
+
+    @staticmethod
+    def _still_there(path: str) -> bool:
+        try:
+            return bool(path) and Path(path).is_file()
+        except OSError:  # an unreadable parent, a dead network share
+            return False
+
+    def _recover_missing_source(self) -> None:
+        """Go back to the file this build chain started from when a copy is gone.
+
+        The page hands each finished copy to the next build, so a modder who
+        renames or moves that copy (a beta 72.1 tester renamed his, then "it
+        refuses to let me build another") left the page starting from a name
+        nothing was at any more. Build then raised the platform's own
+        file-not-found naming a file he had never chosen.
+
+        Nothing about the next disc needs the earlier one, so the page returns
+        to the disc the chain started from -- the state it already read from
+        it, with no second disc read on this thread -- and says so in the
+        source line. The confirmation dialog names the source before every
+        build, so the swap is never silent.
+        """
+
+        if not self._source_is_last_build:
+            return
+        missing = self.source_field.text().strip()
+        if self._still_there(missing):
+            return
+        origin, state = self._source_before_build, self._state_before_build
+        # Whatever happens next, the chain is over: the copy is not coming back.
+        self._source_is_last_build = False
+        self._source_before_build = ""
+        self._state_before_build = None
+        if not self._still_there(origin) or not isinstance(state, dict):
+            return
+        self.apply_state(state)
+        self._target_generated = True
+        self.target_field.setText("")
+        self.suggest_target()
+        self.source_status.setText(
+            f"The last build's copy is no longer at {Path(missing).name}. "
+            f"Building from {Path(origin).name} again.")
+
+    def _project_source_path(self) -> str:
+        """The disc the open texture project is bound to, or ``""``."""
+
+        if not self._include_session_project():
+            return ""
+        return str(getattr(self._facade, "source_path", "") or "")
+
+    def _point_at_the_next_source(self, target: str) -> None:
+        """Point the page at what the next build has to start from.
+
+        Normally that is the copy just written: stacking one more change onto
+        the last disc is what a modder does next, and the target is cleared and
+        suggested again so no build writes onto the file it is reading.
+
+        It is not when a texture project is open. That build must start from
+        the project's own source disc, which _build_operation requires, so
+        handing it the copy turned the next Build into "Choose the open
+        project's source disc to include its staged edits" until the modder
+        re-opened their disc by hand. The page stays on the project's disc, and
+        uses the state it already read from it rather than reading it again.
+        """
+
+        project = self._project_source_path()
+        keep = (bool(project) and self._still_there(project)
+                and isinstance(self._state_before_build, dict)
+                and Path(project) != Path(target))
+        if keep:
+            self.apply_state(self._state_before_build)
+        else:
+            # The copy is the modder's to rename or move, so the file this
+            # chain began at is remembered and taken back up if the copy
+            # leaves (see _recover_missing_source).
+            self._source_is_last_build = True
+        self._target_generated = True
+        self.target_field.setText("")
+        self.suggest_target()
+        self.source_status.setText(
+            (f"Built: {Path(target).name}. The next build starts from "
+             f"{Path(project).name} again, with this project's edits. " if keep
+             else f"Build source is now: {Path(target).name}. ") + self.source_status.text())
+
+    def _missing_source_reason(self, source: str) -> str:
+        """Why this source cannot be built from, in one sentence, or ``""``."""
+
+        if self._still_there(source):
+            return ""
+        self._recover_missing_source()
+        source = self.source_field.text().strip()
+        if self._still_there(source):
+            return ""
+        return (f"That file is no longer at {source}. It was renamed, moved or deleted. "
+                "Open the disc you want to build from (top right), then build again.")
 
     def apply_state(self, state: dict[str, object]) -> None:
         """Populate from mod_build.inspect output (also used by tests)."""
@@ -1242,6 +1371,7 @@ class BuildPanel(QWidget):
         for key in ("momentum", "momentum_contact", "defensive_try", "zone_drop_cap", "all_stadiums", "team_names_2026", "coverage_slider", "scramble_tuning",
                     "music_shuffle", "practice_squad_screen", "abilities", "qb_spy", *r62_ui.KEYS):
             gate(getattr(self, key + "_check"), key, needs_image=True)
+        gate(self.trim_intro_videos_check, "trim_intro_videos", needs_image=True)
         gate(self.flatter_deep_ball_check, "flatter_deep_ball")
         gate(self.chop_block_toggle_check, "chop_block_toggle")
         gate(self.draft_check, "draft_ai")
@@ -1513,6 +1643,7 @@ class BuildPanel(QWidget):
             "weather_plan": self.weather_plan_check, "weather_haze": self.weather_haze_check,
             "modern_color": self.modern_color_check,
             "modern_arrowhead": self.modern_arrowhead_check,
+            "trim_intro_videos": self.trim_intro_videos_check,
             "espn25_plan": self.espn25_plan_check, "espn25_rosters": self.espn25_rosters_check,
             "realistic_flight": self.realistic_check, "arc_by_distance": self.arc_by_distance_check,
         }
@@ -1615,6 +1746,7 @@ class BuildPanel(QWidget):
             modern_color=self.modern_color_check.isChecked(),
             modern_color_settings=self.colour_lighting.settings(),
             modern_arrowhead=self._modern_arrowhead_changed(),
+            trim_intro_videos=self.trim_intro_videos_check.isChecked(),
             screen_timing=(self.screen_timing_combo.currentText() if self.screen_timing_check.isChecked() else None),
             scorebug_runtime=self.scorebug_runtime_check.isChecked(),
             scorebug_watermark=self.scorebug_watermark_combo.currentData(),
@@ -1661,7 +1793,7 @@ class BuildPanel(QWidget):
                     or any(getattr(p, key) for key in r62_ui.KEYS if key not in r62_ui.LEVELS) or p.cpu_money_downs != "retail" or p.scorebug_runtime or p.momentum > 0 or p.defensive_try or p.zone_drop_cap or p.all_stadiums or p.coverage_slider or p.scramble_tuning or p.flatter_deep_ball or p.chop_block_toggle or p.team_names_2026 or p.music_shuffle or p.practice_squad_screen or p.abilities or p.qb_spy or p.music_policy != "retail" or p.music_unlock or p.music_userlist or p.music_project or p.music_library or p.edge_rename or p.screen_timing is not None or p.hires_pack or p.guardian_cap or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
                     or p.kickoff_alignment or p.dynamic_kickoff or p.xbe_space or p.kickoff_relocated or p.season_cap or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.franchise_practice or p.practice_squad or p.depth_locks or p.prospect_names or p.player_star or p.player_tags or p.roster_edits or p.espn25_plan
                     or p.commentary or p.playbook_packs or self._helmet_finish_changed()
-                    or p.weather_plan or self._weather_haze_changed() or self._modern_color_changed() or self._modern_arrowhead_changed() or p.cpu_scrambles == "modern")
+                    or p.weather_plan or self._weather_haze_changed() or self._modern_color_changed() or self._modern_arrowhead_changed() or p.trim_intro_videos or p.cpu_scrambles == "modern")
 
     def _helmet_finish_changed(self) -> bool:
         """True when the chosen finish differs from what the source carries (a Glossy restoration counts)."""
@@ -1749,6 +1881,12 @@ class BuildPanel(QWidget):
         source = self.source_field.text().strip()
         if not source:
             return "Open your game disc (top right), or choose a disc / default.xbe above."
+        gone = self._missing_source_reason(source)
+        if gone:
+            return gone
+        # Recovery may have gone back to the disc this chain started from, so
+        # every check below reads the file the page is actually on now.
+        source = self.source_field.text().strip()
         if self._state is None:
             return "Waiting for the disc to be read."
         for key in ("music_project", "music_library"):
@@ -2532,11 +2670,11 @@ class BuildPanel(QWidget):
         if not include_session:
             receipt = mod_build.build(plan, progress)
         else:
-            source = Path(plan.source).resolve(strict=True)
+            source = _resolved_build_file(plan.source, "The file to build from")
             facade = self._facade
             with facade._lock:
                 cache, session = facade._cache, facade._session
-                if source != Path(facade.source_path).resolve(strict=True):
+                if source != _resolved_build_file(facade.source_path, "The open project's game disc"):
                     raise ValueError("Choose the open project's source disc to include its staged edits")
             receipt = mod_build.build_with_project(plan, facade.build_service, cache, session, progress)
         # Some resource passes follow the receipt's earlier inspection. Keep
@@ -2559,15 +2697,24 @@ class BuildPanel(QWidget):
             self.progress_text_changed.emit(message)
 
     def _build(self) -> None:
-        plan = self.plan()
+        # The blocker runs first: it is what takes the page back to the disc a
+        # vanished build copy came from, and the plan must name the file the
+        # page is on afterwards, not the one it was on before.
         if self.blocker():
             return
+        plan = self.plan()
         answer = QMessageBox.question(self, "Make my disc?", self.confirmation_text(plan),
                                       QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
         if answer != QMessageBox.Ok:
             return
         self._requested_build_summary = f"2K5 Mod Studio {BUILD_RELEASE_TAG}\n" + self.confirmation_text(plan)
         self._requested_build_labels = self.selected_labels()
+        # What this build starts from, kept so a renamed or moved copy never
+        # costs the next build its source (see _recover_missing_source). A
+        # chain keeps the file it began at, not the copy before last.
+        if not self._source_is_last_build:
+            self._source_before_build = plan.source
+            self._state_before_build = dict(self._state) if isinstance(self._state, dict) else None
         self._last_build_summary = self._requested_build_summary + "\n\nBuild in progress."
         self.copy_summary_button.setEnabled(True)
         include_session = self._include_session_project()
@@ -2632,13 +2779,7 @@ class BuildPanel(QWidget):
         except Exception:  # noqa: BLE001
             pass
         else:
-            # the copy just written is now the source: the next copy needs its own name,
-            # never the same file (a build onto itself)
-            self._target_generated = True
-            self.target_field.setText("")
-            self.suggest_target()
-            self.source_status.setText(
-                f"Build source is now: {Path(str(receipt.get('target'))).name}. " + self.source_status.text())
+            self._point_at_the_next_source(target)
         self._refresh()
 
     def _copy_build_summary(self) -> None:

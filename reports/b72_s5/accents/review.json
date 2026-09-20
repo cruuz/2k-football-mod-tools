@@ -1,0 +1,164 @@
+[
+  {
+    "team": "BUF",
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "TB",
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "ARI",
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "KC",
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "IND",
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "DAL",
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "NYG",
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "GB",
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "NE",
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "LAR",
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "PIT",
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "MIN",
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "BRI",
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "BRP",
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "BWG",
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "CHH",
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "AMW",
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "AFC",
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "NFC",
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "NFL",
+    "reasons": [
+      "Jev group choice did not agree at confidence >= 0.8; retained code-valid prior group"
+    ]
+  },
+  {
+    "team": "USER1",
+    "reasons": [
+      "Custom or undocumented team uses explicit neutral fallback; supply its own palette"
+    ]
+  },
+  {
+    "team": "USER2",
+    "reasons": [
+      "Custom or undocumented team uses explicit neutral fallback; supply its own palette"
+    ]
+  },
+  {
+    "team": "UDC",
+    "reasons": [
+      "Custom or undocumented team uses explicit neutral fallback; supply its own palette"
+    ]
+  },
+  {
+    "team": "LAL",
+    "reasons": [
+      "Custom or undocumented team uses explicit neutral fallback; supply its own palette"
+    ]
+  },
+  {
+    "team": "CES",
+    "reasons": [
+      "Custom or undocumented team uses explicit neutral fallback; supply its own palette"
+    ]
+  },
+  {
+    "team": "BFM",
+    "reasons": [
+      "Custom or undocumented team uses explicit neutral fallback; supply its own palette"
+    ]
+  },
+  {
+    "team": "LAD",
+    "reasons": [
+      "Custom or undocumented team uses explicit neutral fallback; supply its own palette"
+    ]
+  }
+]

@@ -1,0 +1,258 @@
+{
+  "before": {
+    "housing": {
+      "box": [
+        837,
+        987,
+        1083,
+        1049
+      ],
+      "width": 246,
+      "height": 62,
+      "size": null,
+      "anchor": null
+    },
+    "capsule": {
+      "box": [
+        839,
+        999,
+        1019,
+        1039
+      ],
+      "width": 180,
+      "height": 40,
+      "size": null,
+      "anchor": null
+    },
+    "plate": {
+      "box": [
+        825,
+        947,
+        1093,
+        987
+      ],
+      "width": 268,
+      "height": 40,
+      "size": null,
+      "anchor": null
+    },
+    "away_wing": {
+      "box": [
+        437,
+        942,
+        670,
+        1052
+      ],
+      "width": 233,
+      "height": 110,
+      "size": null,
+      "anchor": null
+    },
+    "home_wing": {
+      "box": [
+        1245,
+        942,
+        1478,
+        1052
+      ],
+      "width": 233,
+      "height": 110,
+      "size": null,
+      "anchor": null
+    },
+    "red": {
+      "box": [
+        1019,
+        999,
+        1082,
+        1039
+      ],
+      "width": 63,
+      "height": 40,
+      "size": null,
+      "anchor": null
+    },
+    "away_logo": {
+      "box": [
+        440,
+        943,
+        640,
+        1051
+      ],
+      "width": 200,
+      "height": 108,
+      "size": null,
+      "anchor": null
+    },
+    "home_logo": {
+      "box": [
+        1276,
+        943,
+        1476,
+        1051
+      ],
+      "width": 200,
+      "height": 108,
+      "size": null,
+      "anchor": null
+    },
+    "away_score": {
+      "box": [
+        696,
+        965,
+        816,
+        1018
+      ],
+      "width": 120,
+      "height": 53,
+      "size": 53,
+      "anchor": [
+        756.0,
+        965
+      ]
+    },
+    "home_score": {
+      "box": [
+        1100,
+        965,
+        1220,
+        1018
+      ],
+      "width": 120,
+      "height": 53,
+      "size": 53,
+      "anchor": [
+        1160.0,
+        965
+      ]
+    }
+  },
+  "after": {
+    "housing": {
+      "box": [
+        834,
+        993,
+        1086,
+        1049
+      ],
+      "width": 252,
+      "height": 56,
+      "size": null,
+      "anchor": null
+    },
+    "capsule": {
+      "box": [
+        839,
+        999,
+        1019,
+        1039
+      ],
+      "width": 180,
+      "height": 40,
+      "size": null,
+      "anchor": null
+    },
+    "plate": {
+      "box": [
+        822,
+        945,
+        1096,
+        987
+      ],
+      "width": 274,
+      "height": 42,
+      "size": null,
+      "anchor": null
+    },
+    "away_wing": {
+      "box": [
+        437,
+        942,
+        777,
+        1052
+      ],
+      "width": 340,
+      "height": 110,
+      "size": null,
+      "anchor": null
+    },
+    "home_wing": {
+      "box": [
+        1138,
+        942,
+        1478,
+        1052
+      ],
+      "width": 340,
+      "height": 110,
+      "size": null,
+      "anchor": null
+    },
+    "red": {
+      "box": [
+        1019,
+        999,
+        1082,
+        1039
+      ],
+      "width": 63,
+      "height": 40,
+      "size": null,
+      "anchor": null
+    },
+    "away_logo": {
+      "box": [
+        437,
+        942,
+        667,
+        1052
+      ],
+      "width": 230,
+      "height": 110,
+      "size": null,
+      "anchor": null
+    },
+    "home_logo": {
+      "box": [
+        1248,
+        942,
+        1478,
+        1052
+      ],
+      "width": 230,
+      "height": 110,
+      "size": null,
+      "anchor": null
+    },
+    "away_score": {
+      "box": [
+        696,
+        964,
+        816,
+        1020
+      ],
+      "width": 120,
+      "height": 56,
+      "size": 56,
+      "anchor": [
+        756.0,
+        964
+      ]
+    },
+    "home_score": {
+      "box": [
+        1095,
+        964,
+        1215,
+        1020
+      ],
+      "width": 120,
+      "height": 56,
+      "size": 56,
+      "anchor": [
+        1155.0,
+        964
+      ]
+    }
+  }
+}

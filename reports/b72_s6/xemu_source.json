@@ -1,0 +1,15 @@
+{
+  "installed_commit": "fc24584ce88f0915ad7f04775bb7712c2e3f49ee",
+  "installed_version": "0.8.136",
+  "local_source_commit": "f9b14039e5bb56ae2d8f028e31e7cc19f13f7e12",
+  "files": {
+    "pgraph/pgraph.c": "d7261f812aa1f031c3d72b5f070d2a1f753f1b2d6bc4ddedfff396770184f945",
+    "pgraph/gl/texture.c": "946c5ac6bc83ad7328185d70a1941f2c18996b9ffd28e03864a145fbb7158188",
+    "pgraph/gl/draw.c": "98e8bbaa99352a2270aad4363c429a72a928786f6c947c704b10877cfee6d203",
+    "pgraph/glsl/vsh-prog.c": "dbb4b71d99d91b15a0b2fd61dd297929d4d3fb0a5f964e68dc6506debb2df01e",
+    "pgraph/glsl/psh.c": "c68f36467d100c119314e9da5b94b1b1485ffccdd4fceda360934bcc286b19bb",
+    "trace-events": "1ed5b7c5f2a023a10d5db3dd24fd57a24b11ed6daadb33e5808b9588eabd61e7"
+  },
+  "exact_version_logger_verified": "https://raw.githubusercontent.com/xemu-project/xemu/fc24584ce88f0915ad7f04775bb7712c2e3f49ee/hw/xbox/nv2a/pgraph/pgraph.c",
+  "limitation": "Exact installed logger and upload semantics checked online; full installed GL shader/cache implementation not verified byte-for-byte"
+}

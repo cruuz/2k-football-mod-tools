@@ -1,0 +1,1255 @@
+{
+  "rows": [
+    {
+      "aspect": "4:3",
+      "team": "AFC",
+      "core_luma": 254.21,
+      "plate_rgb": [
+        168.0,
+        20.0,
+        20.0
+      ],
+      "contrast": 7.5165,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "AFW",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        128.0,
+        60.0,
+        63.0
+      ],
+      "contrast": 7.8992,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "AGP",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "contrast": 20.6964,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "AMW",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        9.0,
+        72.0,
+        77.0
+      ],
+      "contrast": 10.1783,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "ANE",
+      "core_luma": 253.0,
+      "plate_rgb": [
+        73.0,
+        85.0,
+        70.0
+      ],
+      "contrast": 7.7289,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "ARI",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        125.0,
+        30.0,
+        52.0
+      ],
+      "contrast": 9.881,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "ASE",
+      "core_luma": 253.07,
+      "plate_rgb": [
+        71.0,
+        85.0,
+        140.0
+      ],
+      "contrast": 7.012,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "ASW",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "contrast": 20.6964,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "ATL",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        149.0,
+        50.0,
+        65.0
+      ],
+      "contrast": 7.4087,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "BAL",
+      "core_luma": 253.07,
+      "plate_rgb": [
+        84.0,
+        75.0,
+        118.0
+      ],
+      "contrast": 7.81,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "BFM",
+      "core_luma": 253.0,
+      "plate_rgb": [
+        91.0,
+        91.0,
+        91.0
+      ],
+      "contrast": 6.6762,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "BRI",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        120.0,
+        14.0,
+        54.0
+      ],
+      "contrast": 10.8748,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "BRP",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        9.0,
+        30.0,
+        56.0
+      ],
+      "contrast": 16.5988,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "BUF",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        1.0,
+        23.0,
+        58.0
+      ],
+      "contrast": 17.5721,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "BWG",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        9.0,
+        30.0,
+        56.0
+      ],
+      "contrast": 16.5988,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "CAR",
+      "core_luma": 254.07,
+      "plate_rgb": [
+        1.0,
+        83.0,
+        128.0
+      ],
+      "contrast": 8.1694,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "CES",
+      "core_luma": 253.0,
+      "plate_rgb": [
+        91.0,
+        91.0,
+        91.0
+      ],
+      "contrast": 6.6762,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "CHH",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        9.0,
+        30.0,
+        56.0
+      ],
+      "contrast": 16.5988,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "CHI",
+      "core_luma": 253.07,
+      "plate_rgb": [
+        70.0,
+        76.0,
+        88.0
+      ],
+      "contrast": 8.4831,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "CIN",
+      "core_luma": 254.21,
+      "plate_rgb": [
+        156.0,
+        49.0,
+        13.0
+      ],
+      "contrast": 7.2967,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "CLE",
+      "core_luma": 253.93,
+      "plate_rgb": [
+        92.0,
+        80.0,
+        63.0
+      ],
+      "contrast": 7.7813,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "DAL",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        32.0,
+        55.0,
+        79.0
+      ],
+      "contrast": 12.1003,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "DEN",
+      "core_luma": 254.21,
+      "plate_rgb": [
+        157.0,
+        47.0,
+        3.0
+      ],
+      "contrast": 7.3409,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "DET",
+      "core_luma": 254.07,
+      "plate_rgb": [
+        1.0,
+        98.0,
+        151.0
+      ],
+      "contrast": 6.5205,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "GB",
+      "core_luma": 253.0,
+      "plate_rgb": [
+        82.0,
+        95.0,
+        92.0
+      ],
+      "contrast": 6.5536,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "HOU",
+      "core_luma": 253.79,
+      "plate_rgb": [
+        65.0,
+        73.0,
+        77.0
+      ],
+      "contrast": 9.0964,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "IND",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        2.0,
+        43.0,
+        87.0
+      ],
+      "contrast": 14.0144,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "JAX",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        32.0,
+        104.0,
+        116.0
+      ],
+      "contrast": 6.3217,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "KC",
+      "core_luma": 254.21,
+      "plate_rgb": [
+        141.0,
+        16.0,
+        35.0
+      ],
+      "contrast": 9.3501,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "LAC",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        1.0,
+        79.0,
+        123.0
+      ],
+      "contrast": 8.6553,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "LAD",
+      "core_luma": 253.0,
+      "plate_rgb": [
+        91.0,
+        91.0,
+        91.0
+      ],
+      "contrast": 6.6762,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "LAL",
+      "core_luma": 253.0,
+      "plate_rgb": [
+        91.0,
+        91.0,
+        91.0
+      ],
+      "contrast": 6.6762,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "LAR",
+      "core_luma": 254.02,
+      "plate_rgb": [
+        1.0,
+        44.0,
+        123.0
+      ],
+      "contrast": 12.6401,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "LV",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "contrast": 20.3284,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "MIA",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        1.0,
+        88.0,
+        93.0
+      ],
+      "contrast": 8.1488,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "MIN",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        34.0,
+        17.0,
+        55.0
+      ],
+      "contrast": 17.3032,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "NE",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        32.0,
+        55.0,
+        79.0
+      ],
+      "contrast": 12.1003,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "NFC",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        20.0,
+        43.0,
+        98.0
+      ],
+      "contrast": 13.4192,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "NFL",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        20.0,
+        43.0,
+        98.0
+      ],
+      "contrast": 13.4192,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "NO",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        88.0,
+        78.0,
+        58.0
+      ],
+      "contrast": 8.1152,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "NYG",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        10.0,
+        29.0,
+        84.0
+      ],
+      "contrast": 15.8142,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "NYJ",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        44.0,
+        93.0,
+        77.0
+      ],
+      "contrast": 7.4899,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "PHI",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        32.0,
+        82.0,
+        88.0
+      ],
+      "contrast": 8.6425,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "PIT",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        106.0,
+        75.0,
+        8.0
+      ],
+      "contrast": 7.9389,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "SEA",
+      "core_luma": 253.89,
+      "plate_rgb": [
+        63.0,
+        83.0,
+        103.0
+      ],
+      "contrast": 7.8663,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "SF",
+      "core_luma": 253.61,
+      "plate_rgb": [
+        162.0,
+        63.0,
+        63.0
+      ],
+      "contrast": 6.2526,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "TB",
+      "core_luma": 254.21,
+      "plate_rgb": [
+        138.0,
+        22.0,
+        40.0
+      ],
+      "contrast": 9.3705,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "TEN",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        43.0,
+        93.0,
+        131.0
+      ],
+      "contrast": 6.9495,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "UDC",
+      "core_luma": 253.0,
+      "plate_rgb": [
+        91.0,
+        91.0,
+        91.0
+      ],
+      "contrast": 6.6762,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "USER1",
+      "core_luma": 253.0,
+      "plate_rgb": [
+        91.0,
+        91.0,
+        91.0
+      ],
+      "contrast": 6.6762,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "USER2",
+      "core_luma": 253.0,
+      "plate_rgb": [
+        91.0,
+        91.0,
+        91.0
+      ],
+      "contrast": 6.6762,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "4:3",
+      "team": "WAS",
+      "core_luma": 253.21,
+      "plate_rgb": [
+        116.0,
+        75.0,
+        75.0
+      ],
+      "contrast": 7.2553,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "AFC",
+      "core_luma": 255.0,
+      "plate_rgb": [
+        168.0,
+        20.0,
+        20.0
+      ],
+      "contrast": 7.5672,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "AFW",
+      "core_luma": 254.07,
+      "plate_rgb": [
+        127.0,
+        60.0,
+        63.0
+      ],
+      "contrast": 7.9505,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "AGP",
+      "core_luma": 255.0,
+      "plate_rgb": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "contrast": 20.8733,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "AMW",
+      "core_luma": 255.0,
+      "plate_rgb": [
+        9.0,
+        72.0,
+        77.0
+      ],
+      "contrast": 10.2653,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "ANE",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        73.0,
+        85.0,
+        70.0
+      ],
+      "contrast": 7.7952,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "ARI",
+      "core_luma": 254.21,
+      "plate_rgb": [
+        125.0,
+        30.0,
+        52.0
+      ],
+      "contrast": 9.8987,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "ASE",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        70.0,
+        85.0,
+        140.0
+      ],
+      "contrast": 7.0859,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "ASW",
+      "core_luma": 255.0,
+      "plate_rgb": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "contrast": 20.8733,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "ATL",
+      "core_luma": 254.21,
+      "plate_rgb": [
+        149.0,
+        50.0,
+        65.0
+      ],
+      "contrast": 7.422,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "BAL",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        84.0,
+        74.0,
+        118.0
+      ],
+      "contrast": 7.9532,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "BFM",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        91.0,
+        91.0,
+        91.0
+      ],
+      "contrast": 6.7334,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "BRI",
+      "core_luma": 255.0,
+      "plate_rgb": [
+        120.0,
+        14.0,
+        54.0
+      ],
+      "contrast": 10.9678,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "BRP",
+      "core_luma": 255.0,
+      "plate_rgb": [
+        8.0,
+        30.0,
+        55.0
+      ],
+      "contrast": 16.7839,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "BUF",
+      "core_luma": 255.0,
+      "plate_rgb": [
+        1.0,
+        22.0,
+        58.0
+      ],
+      "contrast": 17.8397,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "BWG",
+      "core_luma": 255.0,
+      "plate_rgb": [
+        8.0,
+        30.0,
+        55.0
+      ],
+      "contrast": 16.7839,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "CAR",
+      "core_luma": 255.0,
+      "plate_rgb": [
+        1.0,
+        83.0,
+        128.0
+      ],
+      "contrast": 8.2343,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "CES",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        91.0,
+        91.0,
+        91.0
+      ],
+      "contrast": 6.7334,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "CHH",
+      "core_luma": 255.0,
+      "plate_rgb": [
+        8.0,
+        30.0,
+        55.0
+      ],
+      "contrast": 16.7839,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "CHI",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        69.0,
+        76.0,
+        88.0
+      ],
+      "contrast": 8.5767,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "CIN",
+      "core_luma": 255.0,
+      "plate_rgb": [
+        156.0,
+        49.0,
+        13.0
+      ],
+      "contrast": 7.3459,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "CLE",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        92.0,
+        80.0,
+        63.0
+      ],
+      "contrast": 7.786,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "DAL",
+      "core_luma": 254.72,
+      "plate_rgb": [
+        32.0,
+        55.0,
+        79.0
+      ],
+      "contrast": 12.1747,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "DEN",
+      "core_luma": 255.0,
+      "plate_rgb": [
+        156.0,
+        47.0,
+        3.0
+      ],
+      "contrast": 7.4428,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "DET",
+      "core_luma": 255.0,
+      "plate_rgb": [
+        1.0,
+        98.0,
+        150.0
+      ],
+      "contrast": 6.5856,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "GB",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        82.0,
+        95.0,
+        92.0
+      ],
+      "contrast": 6.6098,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "HOU",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        64.0,
+        73.0,
+        77.0
+      ],
+      "contrast": 9.1398,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "IND",
+      "core_luma": 255.0,
+      "plate_rgb": [
+        2.0,
+        42.0,
+        87.0
+      ],
+      "contrast": 14.2722,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "JAX",
+      "core_luma": 254.79,
+      "plate_rgb": [
+        32.0,
+        104.0,
+        116.0
+      ],
+      "contrast": 6.3644,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "KC",
+      "core_luma": 255.0,
+      "plate_rgb": [
+        141.0,
+        15.0,
+        35.0
+      ],
+      "contrast": 9.4376,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "LAC",
+      "core_luma": 255.0,
+      "plate_rgb": [
+        1.0,
+        79.0,
+        123.0
+      ],
+      "contrast": 8.7293,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "LAD",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        91.0,
+        91.0,
+        91.0
+      ],
+      "contrast": 6.7334,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "LAL",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        91.0,
+        91.0,
+        91.0
+      ],
+      "contrast": 6.7334,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "LAR",
+      "core_luma": 255.0,
+      "plate_rgb": [
+        1.0,
+        44.0,
+        123.0
+      ],
+      "contrast": 12.746,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "LV",
+      "core_luma": 255.0,
+      "plate_rgb": [
+        3.0,
+        3.0,
+        3.0
+      ],
+      "contrast": 20.6244,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "MIA",
+      "core_luma": 255.0,
+      "plate_rgb": [
+        1.0,
+        88.0,
+        93.0
+      ],
+      "contrast": 8.2184,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "MIN",
+      "core_luma": 254.95,
+      "plate_rgb": [
+        34.0,
+        16.0,
+        55.0
+      ],
+      "contrast": 17.532,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "NE",
+      "core_luma": 254.72,
+      "plate_rgb": [
+        32.0,
+        55.0,
+        79.0
+      ],
+      "contrast": 12.1747,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "NFC",
+      "core_luma": 254.89,
+      "plate_rgb": [
+        20.0,
+        42.0,
+        98.0
+      ],
+      "contrast": 13.6476,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "NFL",
+      "core_luma": 254.89,
+      "plate_rgb": [
+        20.0,
+        42.0,
+        98.0
+      ],
+      "contrast": 13.6476,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "NO",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        88.0,
+        78.0,
+        58.0
+      ],
+      "contrast": 8.1152,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "NYG",
+      "core_luma": 255.0,
+      "plate_rgb": [
+        9.0,
+        29.0,
+        84.0
+      ],
+      "contrast": 15.965,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "NYJ",
+      "core_luma": 254.72,
+      "plate_rgb": [
+        44.0,
+        93.0,
+        77.0
+      ],
+      "contrast": 7.536,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "PHI",
+      "core_luma": 254.79,
+      "plate_rgb": [
+        32.0,
+        82.0,
+        88.0
+      ],
+      "contrast": 8.7009,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "PIT",
+      "core_luma": 255.0,
+      "plate_rgb": [
+        106.0,
+        75.0,
+        8.0
+      ],
+      "contrast": 8.0068,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "SEA",
+      "core_luma": 254.07,
+      "plate_rgb": [
+        63.0,
+        83.0,
+        103.0
+      ],
+      "contrast": 7.8784,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "SF",
+      "core_luma": 254.21,
+      "plate_rgb": [
+        162.0,
+        63.0,
+        63.0
+      ],
+      "contrast": 6.2847,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "TB",
+      "core_luma": 254.95,
+      "plate_rgb": [
+        138.0,
+        21.0,
+        40.0
+      ],
+      "contrast": 9.4616,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "TEN",
+      "core_luma": 254.79,
+      "plate_rgb": [
+        42.0,
+        93.0,
+        131.0
+      ],
+      "contrast": 7.0064,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "UDC",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        91.0,
+        91.0,
+        91.0
+      ],
+      "contrast": 6.7334,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "USER1",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        91.0,
+        91.0,
+        91.0
+      ],
+      "contrast": 6.7334,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "USER2",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        91.0,
+        91.0,
+        91.0
+      ],
+      "contrast": 6.7334,
+      "predicted_pass": true
+    },
+    {
+      "aspect": "16:9",
+      "team": "WAS",
+      "core_luma": 254.0,
+      "plate_rgb": [
+        116.0,
+        74.0,
+        74.0
+      ],
+      "contrast": 7.3811,
+      "predicted_pass": true
+    }
+  ],
+  "calibration_passed": false,
+  "runtime_witnessed": false,
+  "limitation": "Descriptor bright-core and median plate diagnostics; native tint tests cover both possession sides. These are uncalibrated model outputs."
+}

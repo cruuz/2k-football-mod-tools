@@ -1,0 +1,10 @@
+{
+  "layout.json": {
+    "byte_identical": true,
+    "sha256": "47bc60b687182684c3ce4174d8e7f0be874f415390ded82c7b5c291bb0a28f9e"
+  },
+  "team_accents.json": {
+    "byte_identical": true,
+    "sha256": "c9a39d0b9b4a9cbb6e7d0dc668fa9b65d19e72fbd70995c5c3d1468837c5a4c3"
+  }
+}

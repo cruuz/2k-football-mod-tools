@@ -1,0 +1,239 @@
+{
+ "base": "97d2bf9b2f90fefa88a7b8d98f6b50266f093e63",
+ "head": "73273e596a303c805dbaebf88038b5d7cd21ec72",
+ "deterministic": [],
+ "notes": [
+  "mod_editor/core/providers.py:706-712: PINNED_VALUE 0.97 but every digest on its + lines matches the HEAD bytes (digests on + lines vs HEAD bytes: 1 match, 0 differ); not flagged",
+  "packaging/check_2k5_mod_studio_release.py:301-307: PINNED_VALUE 0.98 but every digest on its + lines matches the HEAD bytes (digests on + lines vs HEAD bytes: 1 match, 0 differ); not flagged",
+  "packaging/nfl2k5_scorebug_template_pngs.json:296-303: PINNED_VALUE 0.97 but every digest on its + lines matches the HEAD bytes (digests on + lines vs HEAD bytes: 1 match, 0 differ); not flagged",
+  "packaging/scorebug_replication_pins.py:1-13: PINNED_VALUE 0.96 but every digest on its + lines matches the HEAD bytes (digests on + lines vs HEAD bytes: 2 match, 0 differ); not flagged"
+ ],
+ "diff_facts": "New files under mod_editor/ in this diff: none. Release allowlists edited in this diff: no. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: no. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+ "skipped": {
+  "docs/logs/other": 2,
+  "windows over the per-file cap (data)": 70,
+  "binary": 1,
+  "reports/ (job evidence)": 4
+ },
+ "windows": [
+  {
+   "start": 38,
+   "end": 84,
+   "header": "@@ -38,703 +38,703 @@",
+   "text": "@@ -38,703 +38,703 @@\n[part 1 of 18 of a 903-line hunk]\n    \"box\": [\n     527,\n     0,\n-    609,\n-    25\n+    611,\n+    23\n    ]\n   },\n   \"capsule\": {\n    \"box\": [\n-    611,\n+    613,\n     0,\n-    671,\n+    673,\n     16\n    ]\n   },\n   \"plate\": {\n    \"box\": [\n-    673,\n+    675,\n     0,\n-    762,\n-    16\n+    766,\n+    17\n    ]\n   },\n   \"pointer\": {\n    \"box\": [\n-    764,\n-    0,\n     768,\n+    0,\n+    772,\n     2\n    ]\n   },\n   \"wing\": {\n    \"box\": [\n-    770,\n+    774,\n     0,\n-    847,\n+    887,\n     45\n    ]\n   },\n   \"home_wing\": {\n    \"box\": [\n-    849,\n+    889,\n     0,\n-    926,\n+    1002,\n     45\n    ]\n   },",
+   "file": "data/nfl2k5_scorebug_sprite/layout.json",
+   "kind": "data",
+   "status": "M",
+   "scores": {
+    "ctime_compare": 0.04,
+    "posix_only": 0.04,
+    "pinned_value": 0.51,
+    "slow_test": 0.02,
+    "weakens_safety": 0.04,
+    "inventory_mismatch": 0.06
+   },
+   "flags": [],
+   "max": 0.0
+  },
+  {
+   "start": 79,
+   "end": 126,
+   "header": "@@ -38,703 +38,703 @@",
+   "text": "@@ -38,703 +38,703 @@\n[part 2 of 18 of a 903-line hunk]\n-    849,\n+    889,\n     0,\n-    926,\n+    1002,\n     45\n    ]\n   },\n   \"red\": {\n    \"box\": [\n-    928,\n+    1004,\n     0,\n-    949,\n+    1025,\n     16\n    ]\n   },\n   \"espn_mnf\": {\n    \"box\": [\n-    951,\n+    1027,\n     0,\n-    1022,\n+    1098,\n     12\n    ]\n   },\n   \"espn_nfl\": {\n    \"box\": [\n-    1024,\n+    1100,\n     0,\n-    1095,\n+    1171,\n     12\n    ]\n   },\n   \"event\": {\n    \"box\": [\n-    1097,\n+    1173,\n     0,\n-    1099,\n+    1175,\n     2\n    ]\n   },\n   \"flag\": {\n    \"box\": [\n-    1101,\n+    1177,\n     0,\n-    1190,\n+    1266,\n     16\n    ]\n   },\n   \"score_0\": {\n    \"box\": [",
+   "file": "data/nfl2k5_scorebug_sprite/layout.json",
+   "kind": "data",
+   "status": "M",
+   "scores": {
+    "ctime_compare": 0.04,
+    "posix_only": 0.04,
+    "pinned_value": 0.63,
+    "slow_test": 0.02,
+    "weakens_safety": 0.06,
+    "inventory_mismatch": 0.07
+   },
+   "flags": [
+    "PINNED_VALUE"
+   ],
+   "pin_note": "",
+   "max": 0.63
+  },
+  {
+   "start": 16,
+   "end": 24,
+   "header": "@@ -16,9 +16,9 @@",
+   "text": "@@ -16,9 +16,9 @@\n       \"plate\": \"#C44C4C\",\n       \"wash\": \"#C44C4C\",\n       \"logo_fit\": {\n-        \"fill_x\": 1.08,\n-        \"height\": 0.94,\n-        \"zoom\": 1.0,\n+        \"fill_x\": 1.02,\n+        \"height\": 1.0,\n+        \"zoom\": 1.07,\n         \"shift_x\": 0.0,\n         \"shift_y\": 0.0\n       },",
+   "file": "data/nfl2k5_scorebug_sprite/team_accents.json",
+   "kind": "data",
+   "status": "M",
+   "scores": {
+    "ctime_compare": 0.03,
+    "posix_only": 0.03,
+    "pinned_value": 0.38,
+    "slow_test": 0.02,
+    "weakens_safety": 0.03,
+    "inventory_mismatch": 0.05
+   },
+   "flags": [],
+   "max": 0.0
+  },
+  {
+   "start": 269,
+   "end": 277,
+   "header": "@@ -269,9 +269,9 @@",
+   "text": "@@ -269,9 +269,9 @@\n       \"plate\": \"#545C6A\",\n       \"wash\": \"#545C6A\",\n       \"logo_fit\": {\n-        \"fill_x\": 1.0,\n-        \"height\": 0.94,\n-        \"zoom\": 1.0,\n+        \"fill_x\": 0.92,\n+        \"height\": 1.0,\n+        \"zoom\": 1.13,\n         \"shift_x\": 0.0,\n         \"shift_y\": 0.0\n       },",
+   "file": "data/nfl2k5_scorebug_sprite/team_accents.json",
+   "kind": "data",
+   "status": "M",
+   "scores": {
+    "ctime_compare": 0.03,
+    "posix_only": 0.03,
+    "pinned_value": 0.37,
+    "slow_test": 0.02,
+    "weakens_safety": 0.03,
+    "inventory_mismatch": 0.05
+   },
+   "flags": [],
+   "max": 0.0
+  },
+  {
+   "start": 17,
+   "end": 30,
+   "header": "@@ -17,8 +17,14 @@ def rgb(value):",
+   "text": "@@ -17,8 +17,14 @@ def rgb(value):\n \n \n def variants(colours):\n-    return {'#'+''.join(f'{round(c*gain+255*lift):02X}' for c in rgb(colour))\n-            for colour in colours for gain, lift in ((1, 0), (.75, 0), (.5, 0), (.85, .15), (.7, .3))}\n+    result = {'#'+''.join(f'{round(c*gain+255*lift):02X}' for c in rgb(colour))\n+              for colour in colours for gain, lift in ((1, 0), (.75, 0), (.5, 0), (.85, .15), (.7, .3))}\n+    # Brighten a dark official shade without mixing in white, changing its\n+    # RGB proportions or clipping a channel. The independent 4.5:1 check\n+    # below still applies to every role, including the possession label.\n+    result.update('#'+''.join(f'{c*3:02X}' for c in rgb(colour))\n+                  for colour in colours if max(rgb(colour)) <= 85)\n+    return result\n \n \n def contrast_white(value):",
+   "file": "mod_editor/core/nfl2k5_scorebug_teams.py",
+   "kind": "code",
+   "status": "M",
+   "scores": {
+    "ctime_compare": 0.03,
+    "posix_only": 0.04,
+    "pinned_value": 0.04,
+    "slow_test": 0.03,
+    "weakens_safety": 0.08,
+    "inventory_mismatch": 0.08
+   },
+   "flags": [],
+   "max": 0.0
+  },
+  {
+   "start": 706,
+   "end": 712,
+   "header": "@@ -706,7 +706,7 @@ class Nfl2k5UnifiedVisualProvider:",
+   "text": "@@ -706,7 +706,7 @@ class Nfl2k5UnifiedVisualProvider:\n         \"mod_editor/core/nfl2k5_scorebug_mnf_font.py\": \"4aab9c01ea57c255671d7c3dde9e473173cf1b28fdd0004a4e2c053330415709\",\n         \"mod_editor/core/nfl2k5_scorebug_resources.py\": \"444d24c8b1c5c0b5bb1a8458e92eec12302b379f0f4f98d1c8f63930a9efbd97\",\n         'mod_editor/core/nfl2k5_scorebug_sprite.py': 'd7ecf5cb2fe50f06818121cca78026cc9091d4dd44d08ca4cf7cd71fcdb6a59c',\n-        'mod_editor/core/nfl2k5_scorebug_teams.py': '79dfac96ad264d6364ffb7cfd468c8a303e63d03c9796c8d47013c38086de94e',\n+        'mod_editor/core/nfl2k5_scorebug_teams.py': '0f4c96e08936d97db738e2c5368215be13d7f7283801707912b20b67dfa05c50',\n         'tools/scorebug_sprite/xemu_model.py': '1b97da7ecdf4e0fe19d6a1d7ea41ff3110810f14777da88f3ca94e18e1f110b3',\n         'mod_editor/core/nfl2k5_scorebug_sprite_code.py': '671ce854d227d6eb990d043cc22449a5c318315fdfc645affa521715e429a24e',\n         'tools/nfl2k5_scorebug_exact.py': '69e80b09ede53a5e0658c7561deb2e08acfd56bff82effdf6048573120af2c82',",
+   "file": "mod_editor/core/providers.py",
+   "kind": "code",
+   "status": "M",
+   "scores": {
+    "ctime_compare": 0.03,
+    "posix_only": 0.03,
+    "pinned_value": 0.97,
+    "slow_test": 0.02,
+    "weakens_safety": 0.13,
+    "inventory_mismatch": 0.08
+   },
+   "flags": [],
+   "pin_note": "digests on + lines vs HEAD bytes: 1 match, 0 differ",
+   "max": 0.0
+  },
+  {
+   "start": 301,
+   "end": 307,
+   "header": "@@ -301,7 +301,7 @@ REVIEWED_ICON_SHA256 = (",
+   "text": "@@ -301,7 +301,7 @@ REVIEWED_ICON_SHA256 = (\n # V10's new pixel art is distributable; retail PNGs remain forbidden. Each\n # exception is an exact reviewed path, byte count, hash and PNG dimension.\n SCOREBUG_TEMPLATE_PNG_CATALOG = \"packaging/nfl2k5_scorebug_template_pngs.json\"\n-SCOREBUG_TEMPLATE_PNG_CATALOG_SHA256 = \"7ea420ad2f47fc9aa748cdedaddc06777374b31882fb50bf95c2f341469a2044\"\n+SCOREBUG_TEMPLATE_PNG_CATALOG_SHA256 = \"f74bc048500e9555ca012c65ddeed6c8206893418ad956ba03aff4df13840512\"\n \n \n def _scorebug_template_pngs(root: Path) -> dict:",
+   "file": "packaging/check_2k5_mod_studio_release.py",
+   "kind": "packaging",
+   "status": "M",
+   "scores": {
+    "ctime_compare": 0.03,
+    "posix_only": 0.04,
+    "pinned_value": 0.98,
+    "slow_test": 0.03,
+    "weakens_safety": 0.14,
+    "inventory_mismatch": 0.12
+   },
+   "flags": [],
+   "pin_note": "digests on + lines vs HEAD bytes: 1 match, 0 differ",
+   "max": 0.0
+  },
+  {
+   "start": 296,
+   "end": 303,
+   "header": "@@ -296,8 +296,8 @@",
+   "text": "@@ -296,8 +296,8 @@\n     },\n     \"data/nfl2k5_scorebug_sprite/template.png\": {\n       \"height\": 512,\n-      \"sha256\": \"9701b949d2f4b21aaf0f9b13e5f82978e68faca2d3733dc17ed4cc7e79211a8e\",\n-      \"size\": 22204,\n+      \"sha256\": \"d9719adc101ece34e4af64b3e28a3acb2bd7aed00cd1263a438086e43323c8a0\",\n+      \"size\": 22990,\n       \"width\": 1536\n     },\n     \"docs/mod_editor/scorebug_studio/page_fable_down.png\": {",
+   "file": "packaging/nfl2k5_scorebug_template_pngs.json",
+   "kind": "packaging",
+   "status": "M",
+   "scores": {
+    "ctime_compare": 0.04,
+    "posix_only": 0.03,
+    "pinned_value": 0.97,
+    "slow_test": 0.02,
+    "weakens_safety": 0.11,
+    "inventory_mismatch": 0.17
+   },
+   "flags": [],
+   "pin_note": "digests on + lines vs HEAD bytes: 1 match, 0 differ",
+   "max": 0.0
+  },
+  {
+   "start": 1,
+   "end": 13,
+   "header": "@@ -1,13 +1,13 @@",
+   "text": "@@ -1,13 +1,13 @@\n \"\"\"Reviewed replication tool and metadata source identities; refreshed by repin.py.\"\"\"\n PINS = {\n     \"tools/scorebug_sprite/live.py\": \"1891b6e792b99cc7725cd8bd630ca2ac6deadfd8c1a90590767d135e964567a4\",\n-    \"mod_editor/core/nfl2k5_scorebug_teams.py\": \"79dfac96ad264d6364ffb7cfd468c8a303e63d03c9796c8d47013c38086de94e\",\n+    \"mod_editor/core/nfl2k5_scorebug_teams.py\": \"0f4c96e08936d97db738e2c5368215be13d7f7283801707912b20b67dfa05c50\",\n     \"tools/scorebug_sprite/gpu.py\": \"cbcf8feb70dac124072b0ee6db19ea59016dcd26eb26cedf4d3c161217206b36\",\n     \"tools/scorebug_sprite/xemu_model.py\": \"1b97da7ecdf4e0fe19d6a1d7ea41ff3110810f14777da88f3ca94e18e1f110b3\",\n     \"tools/scorebug_sprite/neutral_template.py\": \"fddad8bd118b3321b24eb3df67719f9f2c392ad36f6cf91811bc3af4e8dba35b\",\n     \"data/nfl2k5_scorebug_sprite/team_colors_official_2026.json\": \"e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4\",\n     \"data/nfl2k5_scorebug_sprite/broadcast_states.json\": \"16e07c2de4718bfe57066c35643a6302101c58eca72339f1e189d510b773e5a4\",\n-    \"data/nfl2k5_scorebug_sprite/team_accents.json\": \"5570ce12a77dbe8983f2b4342041ccff94678070789f6817fc7b58c6b345d31c\",\n+    \"data/nfl2k5_scorebug_sprite/team_accents.json\": \"3e124d9efa0fb5cae254109c3b5c315930de34d78a027f6a0578464ecfa1f618\",\n     \"tools/scorebug_sprite/compare_ingame.py\": \"f71be713be3c5466d791a3906d289d159668c3b42101758a9c1526b9469670ac\",\n     \"tools/scorebug_sprite/jev/accents.py\": \"42988d27dca8ea1192a96bdc47d0bf8809d12ad870a6c3a0c8ebda65a3d05ea3\",\n     \"tools/scorebug_sprite/jev/descriptors.py\": \"df9ac4ac41820390abcb941a3bc1d90df355cc09751769ece2710aa45cd22cfa\",",
+   "file": "packaging/scorebug_replication_pins.py",
+   "kind": "packaging",
+   "status": "M",
+   "scores": {
+    "ctime_compare": 0.03,
+    "posix_only": 0.04,
+    "pinned_value": 0.96,
+    "slow_test": 0.02,
+    "weakens_safety": 0.09,
+    "inventory_mismatch": 0.2
+   },
+   "flags": [],
+   "pin_note": "digests on + lines vs HEAD bytes: 2 match, 0 differ",
+   "max": 0.0
+  },
+  {
+   "start": 88,
+   "end": 101,
+   "header": "@@ -88,11 +88,14 @@ class LogoFitTests(unittest.TestCase):",
+   "text": "@@ -88,11 +88,14 @@ class LogoFitTests(unittest.TestCase):\n   from mod_editor.core import nfl2k5_scorebug_exact as exact, nfl2k5_scorebug_resources as art\n   spec=sprite.load_layout()[0];fit=spec['logo_fit']\n   self.assertEqual(set(fit['by_team']),set(art.TEAM_LOGOS))\n-  for team,expect in (('KC',1.89),('DEN',2.09),('BUF',None)):\n+  box=next(r['box'] for r in spec['static'] if r['name']=='home_logo')\n+  display_aspect=(box[2]-box[0])/(box[3]-box[1])\n+  # The larger logo wells now crop the mark. Check the visible silhouette\n+  # at its actual quad aspect, not the old 200x107 inset texture mapping.\n+  for team,expect in (('KC',1.74),('DEN',1.68),('BUF',None)):\n    im=exact.mnf_panel(team,'home',fit=art.logo_fit_for(team,fit));x0,y0,x1,y1=im.getchannel('A').getbbox()\n-   aspect=(x1-x0)/(y1-y0)*(200/107)/(64/64)   # cell aspect back to source pixels: 64 cell px = 200 source columns, 64 rows = 107\n-   plain=exact.mnf_panel(team,'home');px0,py0,px1,py1=plain.getchannel('A').getbbox()\n-   self.assertGreater(aspect,(px1-px0)/(py1-py0)*(200/107),team)   # wider-to-tall than the unfitted mark\n+   aspect=(x1-x0)/(y1-y0)*display_aspect\n+   self.assertGreater(aspect,1.4,team)  # preserve these wide team silhouettes after quad resizing and crop\n    if expect is not None:self.assertAlmostEqual(aspect,expect,delta=0.12,msg=team)\n    self.assertEqual(im.size,(64,64))\n   with self.assertRaises(ValueError):exact.mnf_panel('KC','home',fit={'fill_x':3.0})",
+   "file": "tests/mod_editor/test_nfl2k5_scorebug_sprite.py",
+   "kind": "test",
+   "status": "M",
+   "scores": {
+    "ctime_compare": 0.03,
+    "posix_only": 0.04,
+    "pinned_value": 0.91,
+    "slow_test": 0.03,
+    "weakens_safety": 0.49,
+    "inventory_mismatch": 0.07
+   },
+   "flags": [
+    "PINNED_VALUE"
+   ],
+   "pin_note": "",
+   "max": 0.91
+  },
+  {
+   "start": 56,
+   "end": 73,
+   "header": "@@ -56,6 +56,18 @@ class ReferenceTests(unittest.TestCase):",
+   "text": "@@ -56,6 +56,18 @@ class ReferenceTests(unittest.TestCase):\n             path=Path(directory)/'accents.json';path.write_text(json.dumps(data))\n             with self.assertRaisesRegex(ValueError,'Foreign'):teams.load(path)\n \n+    def test_vivid_shade_keeps_parent_channel_ratios_and_contrast_gate(self):\n+        self.assertIn('#1E69C9',teams.variants(['#0A2343']))\n+        # No saturation clipping that could shift the parent hue, and no\n+        # metadata escape from the independent white-label contrast gate.\n+        self.assertNotIn('#FFFFFF',teams.variants(['#606060']))\n+        data=json.loads((teams.DATA/'team_accents.json').read_text())\n+        den=data['teams']['DEN'];self.assertGreaterEqual(teams.contrast_white(den['plate']),4.5)\n+        den['plate']='#FFFFFF'\n+        with tempfile.TemporaryDirectory() as directory:\n+            path=Path(directory)/'accents.json';path.write_text(json.dumps(data))\n+            with self.assertRaisesRegex(ValueError,'low-contrast'):teams.load(path)\n+\n     def test_neutral_shapes_cannot_multiply_in_broadcast_hues(self):\n         spec,image=sprite.load_layout()\n         for row in spec['static']:",
+   "file": "tests/mod_editor/test_scorebug_gpu.py",
+   "kind": "test",
+   "status": "M",
+   "scores": {
+    "ctime_compare": 0.04,
+    "posix_only": 0.09,
+    "pinned_value": 0.03,
+    "slow_test": 0.04,
+    "weakens_safety": 0.06,
+    "inventory_mismatch": 0.08
+   },
+   "flags": [],
+   "max": 0.0
+  }
+ ]
+}

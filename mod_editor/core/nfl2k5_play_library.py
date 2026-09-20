@@ -343,8 +343,10 @@ ROUTE_LIBRARY: list[RouteDef] = [
     RouteDef("Out", lambda d, s: [seg(0, d), seg(5, 8)], 8, "up, then hard to the sideline"),
     RouteDef("In / Dig", lambda d, s: [seg(0, d), seg(4, 8)], 10, "up, then across the middle"),
     RouteDef("Slant", lambda d, s: [seg(0, 3), seg(1, d)], 8, "three steps, then a 30° cut inside"),
-    RouteDef("Curl", lambda d, s: [seg(0, d), seg(7, 2)], 10, "up, then turn back to the QB"),
-    RouteDef("Comeback", lambda d, s: [seg(0, d), seg(11, 2)], 12, "up, then back toward the sideline"),
+    # Kind 11 turns back toward the middle and kind 7 back toward the sideline (retail draw
+    # handler 0x182110, route executor 0x225730; retail "X/Z Comeback" plays use kind 7).
+    RouteDef("Curl", lambda d, s: [seg(0, d), seg(11, 2)], 10, "up, then turn back inside to the QB"),
+    RouteDef("Comeback", lambda d, s: [seg(0, d), seg(7, 2)], 12, "up, then back toward the sideline"),
     RouteDef("Hitch", lambda d, s: [seg(0, 5), seg(7, 1)], 5, "quick five-yard stop"),
     RouteDef("Flat", lambda d, s: [seg(5, d)], 6, "straight to the flat"),
     RouteDef("Drag", lambda d, s: [seg(0, 2), seg(4, d)], 12, "shallow cross under the linebackers"),
@@ -778,7 +780,10 @@ def quantize_drawn_route(points_cm: Sequence[tuple[float, float]], side: int,
                          max_nodes: int = ROUTE_MAX_NODES) -> tuple[Chain, str]:
     """Turn a polyline drawn from a receiver (cm, +z downfield, first point = his spot)
     into a route chain the game runs: straight stems, 30/45/60° breaks in, a 45°
-    break out, laterals in/out, comebacks.  Returns the chain and a plain description."""
+    break out, laterals in/out, comebacks.  Returns the chain and a plain description.
+
+    A break is its own segment after the stem: the game runs a kind 1/2/3/6 segment as
+    one diagonal leg of that distance, turned inside or outside of the receiver's side."""
     pts = [(float(x), float(z)) for x, z in points_cm]
     if len(pts) < 2:
         raise ValueError("draw a line from the player first")
@@ -821,16 +826,16 @@ def quantize_drawn_route(points_cm: Sequence[tuple[float, float]], side: int,
         if aa < 20:
             stem += length
         elif aa < 75:
-            yards = max(1.0, min(40.0, round(stem / YD))) if stem > 0 else 1.0
+            flush_stem()
+            yards = max(1.0, min(40.0, round(length / YD)))
             if inward:
                 t = 1 if aa < 37 else (2 if aa < 55 else 3)
                 deg = {1: 30, 2: 45, 3: 60}[t]
-                words.append(f"{yards:.0f} yd up, then {deg}° in" + (" (post)" if t == 2 else ""))
+                words.append(f"{yards:.0f} yd at {deg}° in" + (" (post)" if t == 2 else ""))
             else:
                 t = 6
-                words.append(f"{yards:.0f} yd up, then 45° out (corner)")
+                words.append(f"{yards:.0f} yd at 45° out (corner)")
             nodes.append(seg(t, yards))
-            stem = 0.0
         elif aa < 115:
             flush_stem()
             yards = max(1.0, min(30.0, round(length / YD)))
@@ -838,8 +843,8 @@ def quantize_drawn_route(points_cm: Sequence[tuple[float, float]], side: int,
             words.append(f"{yards:.0f} yd across the middle" if inward else f"{yards:.0f} yd to the sideline")
         else:
             flush_stem()
-            nodes.append(seg(7 if inward else 11, 2))
-            words.append("comeback inside" if inward else "comeback toward the sideline")
+            nodes.append(seg(11 if inward else 7, 2))
+            words.append("curl back inside" if inward else "comeback toward the sideline")
     flush_stem()
     trimmed = ""
     if len(nodes) > max_nodes:

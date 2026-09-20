@@ -460,7 +460,7 @@ class StreamingAudioFacadeTests(unittest.TestCase):
                 facade._session = active  # type: ignore[assignment]
                 facade._audio_service = service  # type: ignore[assignment]
                 identity = ProjectTargetIdentity(
-                    Path("/tmp/project.2k5mod"), 1, 2, 3, 4, 5
+                    Path("/tmp/project.2k5mod"), 1, 2, 3, 4, 5, "a" * 64
                 )
                 with patch.object(
                     facade_module,

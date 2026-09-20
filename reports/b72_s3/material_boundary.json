@@ -1,0 +1,181 @@
+{
+  "texture": {
+    "name": "score_buga",
+    "name_offset": 32,
+    "descriptor_offset": 56,
+    "pixel_offset": 0,
+    "palette_offset": 131072,
+    "packed_format": 159451945,
+    "packed_size": 0,
+    "descriptor_flags": 2147483648,
+    "dimensions": 2,
+    "format_code": 11,
+    "format_name": "P8",
+    "mip_levels": 1,
+    "width": 256,
+    "height": 512,
+    "depth": 1
+  },
+  "materials": [
+    {
+      "name": "cscore_buga",
+      "uv_transform": [
+        1.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "texture": "0x404a638",
+      "render_states": [
+        "0x245f0008",
+        "0xffff0003",
+        "0x1e000200",
+        "0x1e001e00",
+        "0x2060203",
+        "0x3030302",
+        "0x8006",
+        "0x0"
+      ]
+    },
+    {
+      "name": "dscore_buga",
+      "uv_transform": [
+        1.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "texture": "0x404a638",
+      "render_states": [
+        "0x245f0008",
+        "0xffff0003",
+        "0x1e000200",
+        "0x1e001e00",
+        "0x2060203",
+        "0x3030302",
+        "0x8006",
+        "0x0"
+      ]
+    },
+    {
+      "name": "yscore_buga1",
+      "uv_transform": [
+        1.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "texture": "0x404a638",
+      "render_states": [
+        "0x245f0008",
+        "0xffff0003",
+        "0x1e000200",
+        "0x1e001e00",
+        "0x2060203",
+        "0x3030302",
+        "0x8006",
+        "0x0"
+      ]
+    },
+    {
+      "name": "yscore_buga",
+      "uv_transform": [
+        1.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "texture": "0x404a638",
+      "render_states": [
+        "0x245f0008",
+        "0xffff0003",
+        "0x1e000200",
+        "0x1e001e00",
+        "0x2060203",
+        "0x3030302",
+        "0x8006",
+        "0x0"
+      ]
+    }
+  ],
+  "descriptor_counts": [
+    {
+      "name": "cscore_buga",
+      "counts": [
+        20,
+        0
+      ]
+    },
+    {
+      "name": "score_buga",
+      "counts": [
+        16,
+        0
+      ]
+    },
+    {
+      "name": "dscore_buga",
+      "counts": [
+        17,
+        0
+      ]
+    },
+    {
+      "name": "hscore_buga",
+      "counts": [
+        17,
+        0
+      ]
+    },
+    {
+      "name": "yscore_buga1",
+      "counts": [
+        50,
+        0
+      ]
+    },
+    {
+      "name": "bscore_buga",
+      "counts": [
+        17,
+        0
+      ]
+    },
+    {
+      "name": "bscore_buga1",
+      "counts": [
+        17,
+        0
+      ]
+    },
+    {
+      "name": "bscore_buga2",
+      "counts": [
+        17,
+        0
+      ]
+    },
+    {
+      "name": "yscore_buga",
+      "counts": [
+        53,
+        0
+      ]
+    },
+    {
+      "name": "zscore_buga",
+      "counts": [
+        28,
+        0
+      ]
+    },
+    {
+      "name": "zz_ESPN_bug1",
+      "counts": [
+        16,
+        0
+      ]
+    }
+  ],
+  "gpu_executed": false
+}

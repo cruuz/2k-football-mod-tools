@@ -1,0 +1,776 @@
+[
+  {
+    "request": {
+      "tool": "jev_ask",
+      "state": {
+        "team": "CAR",
+        "source": "supplied official 2026 identity palette",
+        "phrasing": 0,
+        "candidates": {
+          "colour0_base": {
+            "hue": "cyan",
+            "lightness": "light",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": true
+          },
+          "colour0_dark": {
+            "hue": "cyan",
+            "lightness": "mid",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": true
+          },
+          "colour0_darker": {
+            "hue": "cyan",
+            "lightness": "mid",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": true
+          },
+          "colour0_light": {
+            "hue": "cyan",
+            "lightness": "light",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": true
+          },
+          "colour0_lighter": {
+            "hue": "cyan",
+            "lightness": "light",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": true
+          },
+          "colour1_base": {
+            "hue": "neutral",
+            "lightness": "dark",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour1_dark": {
+            "hue": "neutral",
+            "lightness": "dark",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour1_darker": {
+            "hue": "neutral",
+            "lightness": "dark",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour1_light": {
+            "hue": "neutral",
+            "lightness": "dark",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour1_lighter": {
+            "hue": "neutral",
+            "lightness": "dark",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour2_base": {
+            "hue": "neutral",
+            "lightness": "mid",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour2_dark": {
+            "hue": "neutral",
+            "lightness": "mid",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour2_darker": {
+            "hue": "neutral",
+            "lightness": "mid",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour2_light": {
+            "hue": "neutral",
+            "lightness": "light",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour2_lighter": {
+            "hue": "neutral",
+            "lightness": "light",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          }
+        }
+      },
+      "questions": {
+        "wing": {
+          "type": "choice",
+          "instructions": "Choose this team accent, preserving its signature colour while keeping the white label readable. Role: wing.",
+          "criteria": {
+            "colour0_dark": null,
+            "colour0_darker": null,
+            "colour1_base": null,
+            "colour1_dark": null,
+            "colour1_darker": null,
+            "colour1_light": null,
+            "colour1_lighter": null,
+            "colour2_darker": null
+          }
+        },
+        "rim": {
+          "type": "choice",
+          "instructions": "Choose this team accent, preserving its signature colour while keeping the white label readable. Role: rim.",
+          "criteria": {
+            "colour0_dark": null,
+            "colour0_darker": null,
+            "colour1_base": null,
+            "colour1_dark": null,
+            "colour1_darker": null,
+            "colour1_light": null,
+            "colour1_lighter": null,
+            "colour2_darker": null
+          }
+        },
+        "plate": {
+          "type": "choice",
+          "instructions": "Choose this team accent, preserving its signature colour while keeping the white label readable. Role: plate.",
+          "criteria": {
+            "colour0_dark": null,
+            "colour0_darker": null,
+            "colour1_base": null,
+            "colour1_dark": null,
+            "colour1_darker": null,
+            "colour1_light": null,
+            "colour1_lighter": null,
+            "colour2_darker": null
+          }
+        }
+      }
+    },
+    "response": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"model\": \"jev-1.13.0\",\n  \"answers\": {\n    \"wing\": {\n      \"type\": \"choice\",\n      \"choice\": \"colour0_dark\",\n      \"confidence\": 0.86,\n      \"probabilities\": {\n        \"colour1_dark\": 0.0,\n        \"colour1_base\": 0.0,\n        \"colour1_darker\": 0.0,\n        \"colour1_lighter\": 0.0,\n        \"colour2_darker\": 0.0,\n        \"colour0_dark\": 0.88,\n        \"colour0_darker\": 0.12,\n        \"colour1_light\": 0.0\n      }\n    },\n    \"rim\": {\n      \"type\": \"choice\",\n      \"choice\": \"colour0_dark\",\n      \"confidence\": 0.81,\n      \"probabilities\": {\n        \"colour1_dark\": 0.0,\n        \"colour1_lighter\": 0.0,\n        \"colour1_darker\": 0.0,\n        \"colour1_base\": 0.0,\n        \"colour2_darker\": 0.0,\n        \"colour0_dark\": 0.85,\n        \"colour0_darker\": 0.15,\n        \"colour1_light\": 0.0\n      }\n    },\n    \"plate\": {\n      \"type\": \"choice\",\n      \"choice\": \"colour0_dark\",\n      \"confidence\": 0.82,\n      \"probabilities\": {\n        \"colour1_dark\": 0.0,\n        \"colour1_lighter\": 0.0,\n        \"colour1_darker\": 0.0,\n        \"colour1_base\": 0.01,\n        \"colour2_darker\": 0.0,\n        \"colour0_dark\": 0.84,\n        \"colour0_darker\": 0.15,\n        \"colour1_light\": 0.0\n      }\n    }\n  },\n  \"usage\": {\n    \"input_tokens\": 1445,\n    \"output_tokens\": 291\n  },\n  \"meta\": {\n    \"ts\": \"2026-09-19T12:37:30\",\n    \"tool\": \"jev_ask\",\n    \"model\": \"jev-1.13.0\",\n    \"input_tokens\": 1445,\n    \"output_tokens\": 291,\n    \"cost_usd\": 6.069e-05,\n    \"latency_ms\": 345.4,\n    \"questions\": 3\n  }\n}"
+        }
+      ],
+      "structuredContent": {
+        "result": "{\n  \"model\": \"jev-1.13.0\",\n  \"answers\": {\n    \"wing\": {\n      \"type\": \"choice\",\n      \"choice\": \"colour0_dark\",\n      \"confidence\": 0.86,\n      \"probabilities\": {\n        \"colour1_dark\": 0.0,\n        \"colour1_base\": 0.0,\n        \"colour1_darker\": 0.0,\n        \"colour1_lighter\": 0.0,\n        \"colour2_darker\": 0.0,\n        \"colour0_dark\": 0.88,\n        \"colour0_darker\": 0.12,\n        \"colour1_light\": 0.0\n      }\n    },\n    \"rim\": {\n      \"type\": \"choice\",\n      \"choice\": \"colour0_dark\",\n      \"confidence\": 0.81,\n      \"probabilities\": {\n        \"colour1_dark\": 0.0,\n        \"colour1_lighter\": 0.0,\n        \"colour1_darker\": 0.0,\n        \"colour1_base\": 0.0,\n        \"colour2_darker\": 0.0,\n        \"colour0_dark\": 0.85,\n        \"colour0_darker\": 0.15,\n        \"colour1_light\": 0.0\n      }\n    },\n    \"plate\": {\n      \"type\": \"choice\",\n      \"choice\": \"colour0_dark\",\n      \"confidence\": 0.82,\n      \"probabilities\": {\n        \"colour1_dark\": 0.0,\n        \"colour1_lighter\": 0.0,\n        \"colour1_darker\": 0.0,\n        \"colour1_base\": 0.01,\n        \"colour2_darker\": 0.0,\n        \"colour0_dark\": 0.84,\n        \"colour0_darker\": 0.15,\n        \"colour1_light\": 0.0\n      }\n    }\n  },\n  \"usage\": {\n    \"input_tokens\": 1445,\n    \"output_tokens\": 291\n  },\n  \"meta\": {\n    \"ts\": \"2026-09-19T12:37:30\",\n    \"tool\": \"jev_ask\",\n    \"model\": \"jev-1.13.0\",\n    \"input_tokens\": 1445,\n    \"output_tokens\": 291,\n    \"cost_usd\": 6.069e-05,\n    \"latency_ms\": 345.4,\n    \"questions\": 3\n  }\n}"
+      },
+      "isError": false
+    }
+  },
+  {
+    "request": {
+      "tool": "jev_ask",
+      "state": {
+        "team": "CAR",
+        "source": "supplied official 2026 identity palette",
+        "phrasing": 1,
+        "candidates": {
+          "colour0_base": {
+            "hue": "cyan",
+            "lightness": "light",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": true
+          },
+          "colour0_dark": {
+            "hue": "cyan",
+            "lightness": "mid",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": true
+          },
+          "colour0_darker": {
+            "hue": "cyan",
+            "lightness": "mid",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": true
+          },
+          "colour0_light": {
+            "hue": "cyan",
+            "lightness": "light",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": true
+          },
+          "colour0_lighter": {
+            "hue": "cyan",
+            "lightness": "light",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": true
+          },
+          "colour1_base": {
+            "hue": "neutral",
+            "lightness": "dark",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour1_dark": {
+            "hue": "neutral",
+            "lightness": "dark",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour1_darker": {
+            "hue": "neutral",
+            "lightness": "dark",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour1_light": {
+            "hue": "neutral",
+            "lightness": "dark",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour1_lighter": {
+            "hue": "neutral",
+            "lightness": "dark",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour2_base": {
+            "hue": "neutral",
+            "lightness": "mid",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour2_dark": {
+            "hue": "neutral",
+            "lightness": "mid",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour2_darker": {
+            "hue": "neutral",
+            "lightness": "mid",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour2_light": {
+            "hue": "neutral",
+            "lightness": "light",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour2_lighter": {
+            "hue": "neutral",
+            "lightness": "light",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          }
+        }
+      },
+      "questions": {
+        "wing": {
+          "type": "choice",
+          "instructions": "Select a readable accent that identifies the named team. Prefer its own signature hue; use only listed passing candidates. Role: wing.",
+          "criteria": {
+            "colour0_dark": null,
+            "colour0_darker": null,
+            "colour1_base": null,
+            "colour1_dark": null,
+            "colour1_darker": null,
+            "colour1_light": null,
+            "colour1_lighter": null,
+            "colour2_darker": null
+          }
+        },
+        "rim": {
+          "type": "choice",
+          "instructions": "Select a readable accent that identifies the named team. Prefer its own signature hue; use only listed passing candidates. Role: rim.",
+          "criteria": {
+            "colour0_dark": null,
+            "colour0_darker": null,
+            "colour1_base": null,
+            "colour1_dark": null,
+            "colour1_darker": null,
+            "colour1_light": null,
+            "colour1_lighter": null,
+            "colour2_darker": null
+          }
+        },
+        "plate": {
+          "type": "choice",
+          "instructions": "Select a readable accent that identifies the named team. Prefer its own signature hue; use only listed passing candidates. Role: plate.",
+          "criteria": {
+            "colour0_dark": null,
+            "colour0_darker": null,
+            "colour1_base": null,
+            "colour1_dark": null,
+            "colour1_darker": null,
+            "colour1_light": null,
+            "colour1_lighter": null,
+            "colour2_darker": null
+          }
+        }
+      }
+    },
+    "response": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"model\": \"jev-1.13.0\",\n  \"answers\": {\n    \"wing\": {\n      \"type\": \"choice\",\n      \"choice\": \"colour0_dark\",\n      \"confidence\": 0.85,\n      \"probabilities\": {\n        \"colour1_light\": 0.0,\n        \"colour1_dark\": 0.0,\n        \"colour1_lighter\": 0.0,\n        \"colour2_darker\": 0.0,\n        \"colour0_darker\": 0.12,\n        \"colour1_base\": 0.0,\n        \"colour1_darker\": 0.0,\n        \"colour0_dark\": 0.88\n      }\n    },\n    \"rim\": {\n      \"type\": \"choice\",\n      \"choice\": \"colour0_dark\",\n      \"confidence\": 0.86,\n      \"probabilities\": {\n        \"colour1_light\": 0.0,\n        \"colour1_dark\": 0.0,\n        \"colour1_lighter\": 0.0,\n        \"colour2_darker\": 0.0,\n        \"colour0_darker\": 0.11,\n        \"colour1_base\": 0.0,\n        \"colour1_darker\": 0.0,\n        \"colour0_dark\": 0.89\n      }\n    },\n    \"plate\": {\n      \"type\": \"choice\",\n      \"choice\": \"colour0_dark\",\n      \"confidence\": 0.81,\n      \"probabilities\": {\n        \"colour1_light\": 0.0,\n        \"colour1_dark\": 0.01,\n        \"colour1_lighter\": 0.0,\n        \"colour2_darker\": 0.01,\n        \"colour0_darker\": 0.14,\n        \"colour1_base\": 0.01,\n        \"colour1_darker\": 0.0,\n        \"colour0_dark\": 0.83\n      }\n    }\n  },\n  \"usage\": {\n    \"input_tokens\": 1463,\n    \"output_tokens\": 291\n  },\n  \"meta\": {\n    \"ts\": \"2026-09-19T12:37:30\",\n    \"tool\": \"jev_ask\",\n    \"model\": \"jev-1.13.0\",\n    \"input_tokens\": 1463,\n    \"output_tokens\": 291,\n    \"cost_usd\": 6.145e-05,\n    \"latency_ms\": 356.9,\n    \"questions\": 3\n  }\n}"
+        }
+      ],
+      "structuredContent": {
+        "result": "{\n  \"model\": \"jev-1.13.0\",\n  \"answers\": {\n    \"wing\": {\n      \"type\": \"choice\",\n      \"choice\": \"colour0_dark\",\n      \"confidence\": 0.85,\n      \"probabilities\": {\n        \"colour1_light\": 0.0,\n        \"colour1_dark\": 0.0,\n        \"colour1_lighter\": 0.0,\n        \"colour2_darker\": 0.0,\n        \"colour0_darker\": 0.12,\n        \"colour1_base\": 0.0,\n        \"colour1_darker\": 0.0,\n        \"colour0_dark\": 0.88\n      }\n    },\n    \"rim\": {\n      \"type\": \"choice\",\n      \"choice\": \"colour0_dark\",\n      \"confidence\": 0.86,\n      \"probabilities\": {\n        \"colour1_light\": 0.0,\n        \"colour1_dark\": 0.0,\n        \"colour1_lighter\": 0.0,\n        \"colour2_darker\": 0.0,\n        \"colour0_darker\": 0.11,\n        \"colour1_base\": 0.0,\n        \"colour1_darker\": 0.0,\n        \"colour0_dark\": 0.89\n      }\n    },\n    \"plate\": {\n      \"type\": \"choice\",\n      \"choice\": \"colour0_dark\",\n      \"confidence\": 0.81,\n      \"probabilities\": {\n        \"colour1_light\": 0.0,\n        \"colour1_dark\": 0.01,\n        \"colour1_lighter\": 0.0,\n        \"colour2_darker\": 0.01,\n        \"colour0_darker\": 0.14,\n        \"colour1_base\": 0.01,\n        \"colour1_darker\": 0.0,\n        \"colour0_dark\": 0.83\n      }\n    }\n  },\n  \"usage\": {\n    \"input_tokens\": 1463,\n    \"output_tokens\": 291\n  },\n  \"meta\": {\n    \"ts\": \"2026-09-19T12:37:30\",\n    \"tool\": \"jev_ask\",\n    \"model\": \"jev-1.13.0\",\n    \"input_tokens\": 1463,\n    \"output_tokens\": 291,\n    \"cost_usd\": 6.145e-05,\n    \"latency_ms\": 356.9,\n    \"questions\": 3\n  }\n}"
+      },
+      "isError": false
+    }
+  },
+  {
+    "request": {
+      "tool": "jev_ask",
+      "state": {
+        "team": "NE",
+        "source": "supplied official 2026 identity palette",
+        "phrasing": 0,
+        "candidates": {
+          "colour0_base": {
+            "hue": "cyan",
+            "lightness": "dark",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": true
+          },
+          "colour0_dark": {
+            "hue": "cyan",
+            "lightness": "dark",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": true
+          },
+          "colour0_darker": {
+            "hue": "cyan",
+            "lightness": "dark",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": true
+          },
+          "colour0_light": {
+            "hue": "cyan",
+            "lightness": "mid",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": true
+          },
+          "colour0_lighter": {
+            "hue": "cyan",
+            "lightness": "mid",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": true
+          },
+          "colour1_base": {
+            "hue": "pink",
+            "lightness": "light",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour1_dark": {
+            "hue": "pink",
+            "lightness": "mid",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour1_darker": {
+            "hue": "pink",
+            "lightness": "mid",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour1_light": {
+            "hue": "pink",
+            "lightness": "light",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour1_lighter": {
+            "hue": "pink",
+            "lightness": "light",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour2_base": {
+            "hue": "neutral",
+            "lightness": "mid",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour2_dark": {
+            "hue": "neutral",
+            "lightness": "mid",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour2_darker": {
+            "hue": "neutral",
+            "lightness": "mid",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour2_light": {
+            "hue": "neutral",
+            "lightness": "light",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour2_lighter": {
+            "hue": "neutral",
+            "lightness": "light",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour3_base": {
+            "hue": "neutral",
+            "lightness": "light",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour3_dark": {
+            "hue": "neutral",
+            "lightness": "light",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour3_darker": {
+            "hue": "neutral",
+            "lightness": "mid",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour3_light": {
+            "hue": "neutral",
+            "lightness": "light",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour3_lighter": {
+            "hue": "neutral",
+            "lightness": "light",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          }
+        }
+      },
+      "questions": {
+        "wing": {
+          "type": "choice",
+          "instructions": "Choose this team accent, preserving its signature colour while keeping the white label readable. Role: wing.",
+          "criteria": {
+            "colour0_base": null,
+            "colour0_dark": null,
+            "colour0_darker": null,
+            "colour0_light": null,
+            "colour0_lighter": null,
+            "colour1_base": null,
+            "colour1_dark": null,
+            "colour1_darker": null,
+            "colour1_light": null,
+            "colour2_darker": null
+          }
+        },
+        "rim": {
+          "type": "choice",
+          "instructions": "Choose this team accent, preserving its signature colour while keeping the white label readable. Role: rim.",
+          "criteria": {
+            "colour0_base": null,
+            "colour0_dark": null,
+            "colour0_darker": null,
+            "colour0_light": null,
+            "colour0_lighter": null,
+            "colour1_base": null,
+            "colour1_dark": null,
+            "colour1_darker": null,
+            "colour1_light": null,
+            "colour2_darker": null
+          }
+        },
+        "plate": {
+          "type": "choice",
+          "instructions": "Choose this team accent, preserving its signature colour while keeping the white label readable. Role: plate.",
+          "criteria": {
+            "colour0_base": null,
+            "colour0_dark": null,
+            "colour0_darker": null,
+            "colour0_light": null,
+            "colour0_lighter": null,
+            "colour1_base": null,
+            "colour1_dark": null,
+            "colour1_darker": null,
+            "colour1_light": null,
+            "colour2_darker": null
+          }
+        }
+      }
+    },
+    "response": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"model\": \"jev-1.13.0\",\n  \"answers\": {\n    \"wing\": {\n      \"type\": \"choice\",\n      \"choice\": \"colour0_light\",\n      \"confidence\": 0.64,\n      \"probabilities\": {\n        \"colour1_light\": 0.02,\n        \"colour0_darker\": 0.01,\n        \"colour0_dark\": 0.04,\n        \"colour1_dark\": 0.0,\n        \"colour1_darker\": 0.0,\n        \"colour1_base\": 0.02,\n        \"colour0_base\": 0.11,\n        \"colour2_darker\": 0.01,\n        \"colour0_lighter\": 0.1,\n        \"colour0_light\": 0.68\n      }\n    },\n    \"rim\": {\n      \"type\": \"choice\",\n      \"choice\": \"colour0_light\",\n      \"confidence\": 0.49,\n      \"probabilities\": {\n        \"colour1_light\": 0.02,\n        \"colour0_base\": 0.08,\n        \"colour0_dark\": 0.1,\n        \"colour1_darker\": 0.0,\n        \"colour0_darker\": 0.06,\n        \"colour1_base\": 0.04,\n        \"colour1_dark\": 0.0,\n        \"colour2_darker\": 0.03,\n        \"colour0_lighter\": 0.13,\n        \"colour0_light\": 0.54\n      }\n    },\n    \"plate\": {\n      \"type\": \"choice\",\n      \"choice\": \"colour0_light\",\n      \"confidence\": 0.47,\n      \"probabilities\": {\n        \"colour1_light\": 0.02,\n        \"colour0_darker\": 0.04,\n        \"colour0_dark\": 0.1,\n        \"colour1_dark\": 0.0,\n        \"colour0_base\": 0.12,\n        \"colour1_base\": 0.05,\n        \"colour1_darker\": 0.0,\n        \"colour2_darker\": 0.03,\n        \"colour0_lighter\": 0.11,\n        \"colour0_light\": 0.53\n      }\n    }\n  },\n  \"usage\": {\n    \"input_tokens\": 1772,\n    \"output_tokens\": 345\n  },\n  \"meta\": {\n    \"ts\": \"2026-09-19T12:37:31\",\n    \"tool\": \"jev_ask\",\n    \"model\": \"jev-1.13.0\",\n    \"input_tokens\": 1772,\n    \"output_tokens\": 345,\n    \"cost_usd\": 7.442e-05,\n    \"latency_ms\": 450.5,\n    \"questions\": 3\n  }\n}"
+        }
+      ],
+      "structuredContent": {
+        "result": "{\n  \"model\": \"jev-1.13.0\",\n  \"answers\": {\n    \"wing\": {\n      \"type\": \"choice\",\n      \"choice\": \"colour0_light\",\n      \"confidence\": 0.64,\n      \"probabilities\": {\n        \"colour1_light\": 0.02,\n        \"colour0_darker\": 0.01,\n        \"colour0_dark\": 0.04,\n        \"colour1_dark\": 0.0,\n        \"colour1_darker\": 0.0,\n        \"colour1_base\": 0.02,\n        \"colour0_base\": 0.11,\n        \"colour2_darker\": 0.01,\n        \"colour0_lighter\": 0.1,\n        \"colour0_light\": 0.68\n      }\n    },\n    \"rim\": {\n      \"type\": \"choice\",\n      \"choice\": \"colour0_light\",\n      \"confidence\": 0.49,\n      \"probabilities\": {\n        \"colour1_light\": 0.02,\n        \"colour0_base\": 0.08,\n        \"colour0_dark\": 0.1,\n        \"colour1_darker\": 0.0,\n        \"colour0_darker\": 0.06,\n        \"colour1_base\": 0.04,\n        \"colour1_dark\": 0.0,\n        \"colour2_darker\": 0.03,\n        \"colour0_lighter\": 0.13,\n        \"colour0_light\": 0.54\n      }\n    },\n    \"plate\": {\n      \"type\": \"choice\",\n      \"choice\": \"colour0_light\",\n      \"confidence\": 0.47,\n      \"probabilities\": {\n        \"colour1_light\": 0.02,\n        \"colour0_darker\": 0.04,\n        \"colour0_dark\": 0.1,\n        \"colour1_dark\": 0.0,\n        \"colour0_base\": 0.12,\n        \"colour1_base\": 0.05,\n        \"colour1_darker\": 0.0,\n        \"colour2_darker\": 0.03,\n        \"colour0_lighter\": 0.11,\n        \"colour0_light\": 0.53\n      }\n    }\n  },\n  \"usage\": {\n    \"input_tokens\": 1772,\n    \"output_tokens\": 345\n  },\n  \"meta\": {\n    \"ts\": \"2026-09-19T12:37:31\",\n    \"tool\": \"jev_ask\",\n    \"model\": \"jev-1.13.0\",\n    \"input_tokens\": 1772,\n    \"output_tokens\": 345,\n    \"cost_usd\": 7.442e-05,\n    \"latency_ms\": 450.5,\n    \"questions\": 3\n  }\n}"
+      },
+      "isError": false
+    }
+  },
+  {
+    "request": {
+      "tool": "jev_ask",
+      "state": {
+        "team": "NE",
+        "source": "supplied official 2026 identity palette",
+        "phrasing": 1,
+        "candidates": {
+          "colour0_base": {
+            "hue": "cyan",
+            "lightness": "dark",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": true
+          },
+          "colour0_dark": {
+            "hue": "cyan",
+            "lightness": "dark",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": true
+          },
+          "colour0_darker": {
+            "hue": "cyan",
+            "lightness": "dark",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": true
+          },
+          "colour0_light": {
+            "hue": "cyan",
+            "lightness": "mid",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": true
+          },
+          "colour0_lighter": {
+            "hue": "cyan",
+            "lightness": "mid",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": true
+          },
+          "colour1_base": {
+            "hue": "pink",
+            "lightness": "light",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour1_dark": {
+            "hue": "pink",
+            "lightness": "mid",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour1_darker": {
+            "hue": "pink",
+            "lightness": "mid",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour1_light": {
+            "hue": "pink",
+            "lightness": "light",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour1_lighter": {
+            "hue": "pink",
+            "lightness": "light",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour2_base": {
+            "hue": "neutral",
+            "lightness": "mid",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour2_dark": {
+            "hue": "neutral",
+            "lightness": "mid",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour2_darker": {
+            "hue": "neutral",
+            "lightness": "mid",
+            "white_label": "pass",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour2_light": {
+            "hue": "neutral",
+            "lightness": "light",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour2_lighter": {
+            "hue": "neutral",
+            "lightness": "light",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour3_base": {
+            "hue": "neutral",
+            "lightness": "light",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour3_dark": {
+            "hue": "neutral",
+            "lightness": "light",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour3_darker": {
+            "hue": "neutral",
+            "lightness": "mid",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour3_light": {
+            "hue": "neutral",
+            "lightness": "light",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          },
+          "colour3_lighter": {
+            "hue": "neutral",
+            "lightness": "light",
+            "white_label": "fail",
+            "plate_separation": "unknown_until_paired",
+            "signature": false
+          }
+        }
+      },
+      "questions": {
+        "wing": {
+          "type": "choice",
+          "instructions": "Select a readable accent that identifies the named team. Prefer its own signature hue; use only listed passing candidates. Role: wing.",
+          "criteria": {
+            "colour0_base": null,
+            "colour0_dark": null,
+            "colour0_darker": null,
+            "colour0_light": null,
+            "colour0_lighter": null,
+            "colour1_base": null,
+            "colour1_dark": null,
+            "colour1_darker": null,
+            "colour1_light": null,
+            "colour2_darker": null
+          }
+        },
+        "rim": {
+          "type": "choice",
+          "instructions": "Select a readable accent that identifies the named team. Prefer its own signature hue; use only listed passing candidates. Role: rim.",
+          "criteria": {
+            "colour0_base": null,
+            "colour0_dark": null,
+            "colour0_darker": null,
+            "colour0_light": null,
+            "colour0_lighter": null,
+            "colour1_base": null,
+            "colour1_dark": null,
+            "colour1_darker": null,
+            "colour1_light": null,
+            "colour2_darker": null
+          }
+        },
+        "plate": {
+          "type": "choice",
+          "instructions": "Select a readable accent that identifies the named team. Prefer its own signature hue; use only listed passing candidates. Role: plate.",
+          "criteria": {
+            "colour0_base": null,
+            "colour0_dark": null,
+            "colour0_darker": null,
+            "colour0_light": null,
+            "colour0_lighter": null,
+            "colour1_base": null,
+            "colour1_dark": null,
+            "colour1_darker": null,
+            "colour1_light": null,
+            "colour2_darker": null
+          }
+        }
+      }
+    },
+    "response": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"model\": \"jev-1.13.0\",\n  \"answers\": {\n    \"wing\": {\n      \"type\": \"choice\",\n      \"choice\": \"colour0_light\",\n      \"confidence\": 0.51,\n      \"probabilities\": {\n        \"colour2_darker\": 0.01,\n        \"colour0_light\": 0.55,\n        \"colour1_base\": 0.03,\n        \"colour0_dark\": 0.03,\n        \"colour0_base\": 0.28,\n        \"colour1_light\": 0.03,\n        \"colour0_darker\": 0.01,\n        \"colour0_lighter\": 0.06,\n        \"colour1_dark\": 0.0,\n        \"colour1_darker\": 0.0\n      }\n    },\n    \"rim\": {\n      \"type\": \"choice\",\n      \"choice\": \"colour0_light\",\n      \"confidence\": 0.46,\n      \"probabilities\": {\n        \"colour2_darker\": 0.01,\n        \"colour0_light\": 0.52,\n        \"colour1_base\": 0.03,\n        \"colour0_dark\": 0.04,\n        \"colour1_light\": 0.03,\n        \"colour0_base\": 0.25,\n        \"colour0_darker\": 0.03,\n        \"colour0_lighter\": 0.09,\n        \"colour1_dark\": 0.0,\n        \"colour1_darker\": 0.0\n      }\n    },\n    \"plate\": {\n      \"type\": \"choice\",\n      \"choice\": \"colour0_light\",\n      \"confidence\": 0.43,\n      \"probabilities\": {\n        \"colour2_darker\": 0.01,\n        \"colour0_light\": 0.49,\n        \"colour1_base\": 0.04,\n        \"colour0_dark\": 0.04,\n        \"colour1_light\": 0.04,\n        \"colour0_base\": 0.3,\n        \"colour0_darker\": 0.02,\n        \"colour0_lighter\": 0.06,\n        \"colour1_dark\": 0.0,\n        \"colour1_darker\": 0.0\n      }\n    }\n  },\n  \"usage\": {\n    \"input_tokens\": 1790,\n    \"output_tokens\": 345\n  },\n  \"meta\": {\n    \"ts\": \"2026-09-19T12:37:31\",\n    \"tool\": \"jev_ask\",\n    \"model\": \"jev-1.13.0\",\n    \"input_tokens\": 1790,\n    \"output_tokens\": 345,\n    \"cost_usd\": 7.518e-05,\n    \"latency_ms\": 339.6,\n    \"questions\": 3\n  }\n}"
+        }
+      ],
+      "structuredContent": {
+        "result": "{\n  \"model\": \"jev-1.13.0\",\n  \"answers\": {\n    \"wing\": {\n      \"type\": \"choice\",\n      \"choice\": \"colour0_light\",\n      \"confidence\": 0.51,\n      \"probabilities\": {\n        \"colour2_darker\": 0.01,\n        \"colour0_light\": 0.55,\n        \"colour1_base\": 0.03,\n        \"colour0_dark\": 0.03,\n        \"colour0_base\": 0.28,\n        \"colour1_light\": 0.03,\n        \"colour0_darker\": 0.01,\n        \"colour0_lighter\": 0.06,\n        \"colour1_dark\": 0.0,\n        \"colour1_darker\": 0.0\n      }\n    },\n    \"rim\": {\n      \"type\": \"choice\",\n      \"choice\": \"colour0_light\",\n      \"confidence\": 0.46,\n      \"probabilities\": {\n        \"colour2_darker\": 0.01,\n        \"colour0_light\": 0.52,\n        \"colour1_base\": 0.03,\n        \"colour0_dark\": 0.04,\n        \"colour1_light\": 0.03,\n        \"colour0_base\": 0.25,\n        \"colour0_darker\": 0.03,\n        \"colour0_lighter\": 0.09,\n        \"colour1_dark\": 0.0,\n        \"colour1_darker\": 0.0\n      }\n    },\n    \"plate\": {\n      \"type\": \"choice\",\n      \"choice\": \"colour0_light\",\n      \"confidence\": 0.43,\n      \"probabilities\": {\n        \"colour2_darker\": 0.01,\n        \"colour0_light\": 0.49,\n        \"colour1_base\": 0.04,\n        \"colour0_dark\": 0.04,\n        \"colour1_light\": 0.04,\n        \"colour0_base\": 0.3,\n        \"colour0_darker\": 0.02,\n        \"colour0_lighter\": 0.06,\n        \"colour1_dark\": 0.0,\n        \"colour1_darker\": 0.0\n      }\n    }\n  },\n  \"usage\": {\n    \"input_tokens\": 1790,\n    \"output_tokens\": 345\n  },\n  \"meta\": {\n    \"ts\": \"2026-09-19T12:37:31\",\n    \"tool\": \"jev_ask\",\n    \"model\": \"jev-1.13.0\",\n    \"input_tokens\": 1790,\n    \"output_tokens\": 345,\n    \"cost_usd\": 7.518e-05,\n    \"latency_ms\": 339.6,\n    \"questions\": 3\n  }\n}"
+      },
+      "isError": false
+    }
+  }
+]

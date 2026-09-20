@@ -1,0 +1,1087 @@
+{
+  "source": "/home/noah/Desktop/2K5-8 Editors/beta72_evidence/espn_broadcast_grammar_2026.json",
+  "source_sha256": "283928da5b04b2e25af8bfb46e452e6c2339f2ca31fd21a4c06b4489aeb37461",
+  "seconds": 8657,
+  "scope": "17:15 fidelity-only addendum; inventory is not an event-rule runtime compiler",
+  "newly_compiled_rules": [],
+  "rules": [
+    {
+      "rule": "Possession plate color",
+      "status": "Existing",
+      "reason": "Possession and team slots already exposed; own official palette retained."
+    },
+    {
+      "rule": "After snap: down alone, median 7 s",
+      "status": "Not compiled",
+      "reason": "No new snap/spot state machine in this fidelity-only change; current native text retained."
+    },
+    {
+      "rule": "Dead ball: ESPN plate, median 9 s",
+      "status": "Not compiled",
+      "reason": "No validated administrative-dead-ball classifier; native event ownership preserved."
+    },
+    {
+      "rule": "Flag yellow plate",
+      "status": "Existing",
+      "reason": "Native FLAG record drives the plate; no new timer."
+    },
+    {
+      "rule": "Flag yellow penalized end and attached foul strip",
+      "status": "Not compiled",
+      "reason": "Penalized-team identity and full foul-string sprite binding unproved."
+    },
+    {
+      "rule": "Play-clock red at <=5",
+      "status": "Not compiled",
+      "reason": "Numeric source exists, but a threshold tint rule is absent; normal white-pill artwork only."
+    },
+    {
+      "rule": "Touchdown compact bug, mirrored by scorer, 6-8 s",
+      "status": "Not compiled",
+      "reason": "Scores exist; no validated scoring-event edge/hold/hand-off or alternate scene; existing score slabs retained."
+    },
+    {
+      "rule": "TIMEOUT strip 2-5 s before dark dash",
+      "status": "Not compiled",
+      "reason": "Counts exist; delayed display requires a new timer and ownership decision; current native counts retained."
+    },
+    {
+      "rule": "NN-YARD ATTEMPT",
+      "status": "Not compiled",
+      "reason": "No proved field-goal-attempt distance accessor in the sprite owner; ball position alone is insufficient."
+    },
+    {
+      "rule": "TONIGHT player strip, about 7 s",
+      "status": "Not compiled",
+      "reason": "No proved per-player current-game stat/name accessor with lifetime and mode guards."
+    },
+    {
+      "rule": "Team/drive stat strip after first downs",
+      "status": "Not compiled",
+      "reason": "No proved drive plays/yards/time aggregation or current-drive identity/reset behavior."
+    },
+    {
+      "rule": "Official/person insert",
+      "status": "Not compiled",
+      "reason": "No equivalent game video/person graphic asset or trigger."
+    },
+    {
+      "rule": "Broadcast shot/replay suppression",
+      "status": "Not compiled",
+      "reason": "Native scorebug visibility retained; editorial shot state is not game state."
+    },
+    {
+      "rule": "NFL/MNF corner selection",
+      "status": "Existing",
+      "reason": "Existing tested calendar/mode selection retained; only raster masks changed."
+    },
+    {
+      "rule": "Records",
+      "status": "Omitted",
+      "reason": "No confirmed live wing records; no new option or Play Now record path."
+    }
+  ],
+  "states": {
+    "commercial_or_studio": {
+      "seconds": 1539,
+      "duration_s": {
+        "n": 49,
+        "median": 4,
+        "min": 1,
+        "max": 672,
+        "p25": 2,
+        "p75": 11
+      },
+      "runtime": "Outside game scorebug runtime; no broadcast director input."
+    },
+    "end_of_quarter": {
+      "seconds": 32,
+      "duration_s": {
+        "n": 3,
+        "median": 4,
+        "min": 1,
+        "max": 27,
+        "p25": 1,
+        "p75": 27
+      },
+      "runtime": "Existing quarter/clock fields; no broadcast transition timer."
+    },
+    "extra_point": {
+      "seconds": 138,
+      "duration_s": {
+        "n": 8,
+        "median": 12.0,
+        "min": 1,
+        "max": 39,
+        "p25": 4,
+        "p75": 39
+      },
+      "runtime": "Existing native event handling; no broadcast ESPN-on-plate replacement."
+    },
+    "field_goal": {
+      "seconds": 25,
+      "duration_s": {
+        "n": 10,
+        "median": 2.0,
+        "min": 1,
+        "max": 8,
+        "p25": 1,
+        "p75": 3
+      },
+      "runtime": "Native kick/event information exists; no proved attempt-distance binding for a new tab."
+    },
+    "first_and_ten": {
+      "seconds": 973,
+      "duration_s": {
+        "n": 79,
+        "median": 10,
+        "min": 1,
+        "max": 42,
+        "p25": 6,
+        "p75": 16
+      },
+      "runtime": "Existing native down and distance; no added first-down pop-up."
+    },
+    "flag": {
+      "seconds": 421,
+      "duration_s": {
+        "n": 16,
+        "median": 25.5,
+        "min": 1,
+        "max": 52,
+        "p25": 21,
+        "p75": 39
+      },
+      "runtime": "Existing FLAG record and yellow plate; no penalized-wing or foul-strip binding."
+    },
+    "fourth_down": {
+      "seconds": 495,
+      "duration_s": {
+        "n": 35,
+        "median": 12,
+        "min": 1,
+        "max": 39,
+        "p25": 6,
+        "p75": 21
+      },
+      "runtime": "Existing native down and distance."
+    },
+    "goal_to_go": {
+      "seconds": 345,
+      "duration_s": {
+        "n": 14,
+        "median": 15.0,
+        "min": 2,
+        "max": 90,
+        "p25": 9,
+        "p75": 22
+      },
+      "runtime": "Existing native Goal string; traced live word."
+    },
+    "halftime": {
+      "seconds": 28,
+      "duration_s": {
+        "n": 8,
+        "median": 3.0,
+        "min": 1,
+        "max": 6,
+        "p25": 2,
+        "p75": 5
+      },
+      "runtime": "Native game presentation retained; no broadcast studio transition."
+    },
+    "injury": {
+      "seconds": 1,
+      "duration_s": {
+        "n": 1,
+        "median": 1,
+        "min": 1,
+        "max": 1,
+        "p25": 1,
+        "p75": 1
+      },
+      "runtime": "No sprite injury identity/text or timing binding."
+    },
+    "kickoff": {
+      "seconds": 62,
+      "duration_s": {
+        "n": 15,
+        "median": 3,
+        "min": 1,
+        "max": 15,
+        "p25": 1,
+        "p75": 6
+      },
+      "runtime": "Native event/field-position handling; no broadcast ESPN-on-plate replacement."
+    },
+    "no_scorebug": {
+      "seconds": 1603,
+      "duration_s": {
+        "n": 141,
+        "median": 9,
+        "min": 1,
+        "max": 113,
+        "p25": 3,
+        "p75": 16
+      },
+      "runtime": "Native scene visibility retained; no broadcast shot-based suppression."
+    },
+    "normal": {
+      "seconds": 1629,
+      "duration_s": {
+        "n": 78,
+        "median": 15.0,
+        "min": 1,
+        "max": 87,
+        "p25": 4,
+        "p75": 36
+      },
+      "runtime": "Existing down/distance and clocks; preserved native visibility."
+    },
+    "other": {
+      "seconds": 350,
+      "duration_s": {
+        "n": 51,
+        "median": 5,
+        "min": 1,
+        "max": 23,
+        "p25": 3,
+        "p75": 10
+      },
+      "runtime": "No reliable semantic trigger; no inferred action."
+    },
+    "replay_or_review": {
+      "seconds": 420,
+      "duration_s": {
+        "n": 67,
+        "median": 3,
+        "min": 1,
+        "max": 40,
+        "p25": 1,
+        "p75": 7
+      },
+      "runtime": "Native scene behavior retained; no editorial replay/review classifier."
+    },
+    "short_yardage": {
+      "seconds": 175,
+      "duration_s": {
+        "n": 12,
+        "median": 15.0,
+        "min": 1,
+        "max": 32,
+        "p25": 6,
+        "p75": 25
+      },
+      "runtime": "Existing native distance and Inches formatting; rare glyphs reconstructed."
+    },
+    "third_and_long": {
+      "seconds": 295,
+      "duration_s": {
+        "n": 14,
+        "median": 23.0,
+        "min": 2,
+        "max": 45,
+        "p25": 8,
+        "p75": 31
+      },
+      "runtime": "Existing native down and distance."
+    },
+    "timeout": {
+      "seconds": 83,
+      "duration_s": {
+        "n": 16,
+        "median": 3.0,
+        "min": 1,
+        "max": 29,
+        "p25": 1,
+        "p75": 7
+      },
+      "runtime": "Existing timeout counts; no TIMEOUT strip or delayed dash change."
+    },
+    "touchdown": {
+      "seconds": 34,
+      "duration_s": {
+        "n": 6,
+        "median": 6.0,
+        "min": 4,
+        "max": 7,
+        "p25": 4,
+        "p75": 6
+      },
+      "runtime": "Existing score event slabs; no mirrored compact bug or 6-8 s timing."
+    },
+    "two_minute_warning": {
+      "seconds": 9,
+      "duration_s": {
+        "n": 2,
+        "median": 4.5,
+        "min": 1,
+        "max": 8,
+        "p25": 1,
+        "p75": 8
+      },
+      "runtime": "Clock available; no separate warning strip or broadcast trigger binding."
+    }
+  },
+  "graphics": {
+    "down_distance_callout": {
+      "segments": 5,
+      "seconds": 16,
+      "duration_s": {
+        "n": 5,
+        "median": 4,
+        "min": 1,
+        "max": 5,
+        "p25": 2,
+        "p75": 4
+      },
+      "zones": {
+        "above_bar": 4,
+        "right_panel": 1
+      },
+      "jev_trigger": {
+        "unknown": 3,
+        "milestone": 1,
+        "first_down": 1
+      },
+      "nearest_code_event_before": {
+        "no event within 90 s": 4,
+        "first_down_shown": 1
+      },
+      "delay_after_event_s": {
+        "first_down_shown": {
+          "n": 1,
+          "median": 1,
+          "min": 1,
+          "max": 1,
+          "p25": 1,
+          "p75": 1
+        }
+      },
+      "per_drive": 0.2,
+      "per_quarter": {
+        "0": 0,
+        "1": 1,
+        "2": 1,
+        "3": 3,
+        "4": 0
+      },
+      "by_state_at_start": {
+        "fourth_down": 2,
+        "field_goal": 2,
+        "first_and_ten": 1
+      },
+      "frames": [
+        {
+          "t": 958,
+          "hms": "0:15:58",
+          "file": "graphic_down_distance_callout_t00958.jpg"
+        },
+        {
+          "t": 3192,
+          "hms": "0:53:12",
+          "file": "graphic_down_distance_callout_t03192.jpg"
+        },
+        {
+          "t": 5770,
+          "hms": "1:36:10",
+          "file": "graphic_down_distance_callout_t05770.jpg"
+        },
+        {
+          "t": 6117,
+          "hms": "1:41:57",
+          "file": "graphic_down_distance_callout_t06117.jpg"
+        }
+      ]
+    },
+    "drive_banner": {
+      "segments": 8,
+      "seconds": 61,
+      "duration_s": {
+        "n": 8,
+        "median": 8.0,
+        "min": 1,
+        "max": 15,
+        "p25": 1,
+        "p75": 14
+      },
+      "zones": {
+        "above_bar": 6,
+        "bottom": 2
+      },
+      "jev_trigger": {
+        "score": 3,
+        "first_down": 1,
+        "turnover": 1,
+        "new_drive": 1,
+        "milestone": 1,
+        "unknown": 1
+      },
+      "nearest_code_event_before": {
+        "first_down_shown": 4,
+        "score": 3,
+        "no event within 90 s": 1
+      },
+      "delay_after_event_s": {
+        "first_down_shown": {
+          "n": 4,
+          "median": 18.5,
+          "min": 1,
+          "max": 38,
+          "p25": 2,
+          "p75": 38
+        },
+        "score": {
+          "n": 3,
+          "median": 18,
+          "min": 17,
+          "max": 21,
+          "p25": 17,
+          "p75": 21
+        }
+      },
+      "per_drive": 0.32,
+      "per_quarter": {
+        "0": 0,
+        "1": 4,
+        "2": 3,
+        "3": 0,
+        "4": 1
+      },
+      "by_state_at_start": {
+        "extra_point": 3,
+        "first_and_ten": 2,
+        "no_scorebug": 1,
+        "normal": 1,
+        "fourth_down": 1
+      },
+      "frames": [
+        {
+          "t": 1121,
+          "hms": "0:18:41",
+          "file": "graphic_drive_banner_t01121.jpg"
+        },
+        {
+          "t": 1308,
+          "hms": "0:21:48",
+          "file": "graphic_drive_banner_t01308.jpg"
+        },
+        {
+          "t": 1475,
+          "hms": "0:24:35",
+          "file": "graphic_drive_banner_t01475.jpg"
+        },
+        {
+          "t": 1819,
+          "hms": "0:30:19",
+          "file": "graphic_drive_banner_t01819.jpg"
+        },
+        {
+          "t": 3796,
+          "hms": "1:03:16",
+          "file": "graphic_drive_banner_t03796.jpg"
+        },
+        {
+          "t": 4043,
+          "hms": "1:07:23",
+          "file": "graphic_drive_banner_t04043.jpg"
+        }
+      ]
+    },
+    "flag_banner": {
+      "segments": 7,
+      "seconds": 29,
+      "duration_s": {
+        "n": 7,
+        "median": 3,
+        "min": 3,
+        "max": 7,
+        "p25": 3,
+        "p75": 5
+      },
+      "zones": {
+        "above_bar": 6,
+        "in_bar_insert": 1
+      },
+      "jev_trigger": {
+        "penalty": 6,
+        "milestone": 1
+      },
+      "nearest_code_event_before": {
+        "flag": 7
+      },
+      "delay_after_event_s": {
+        "flag": {
+          "n": 7,
+          "median": 18,
+          "min": 5,
+          "max": 49,
+          "p25": 16,
+          "p75": 26
+        }
+      },
+      "per_drive": 0.28,
+      "per_quarter": {
+        "0": 0,
+        "1": 2,
+        "2": 1,
+        "3": 4,
+        "4": 0
+      },
+      "by_state_at_start": {
+        "flag": 7
+      },
+      "frames": [
+        {
+          "t": 1230,
+          "hms": "0:20:30",
+          "file": "graphic_flag_banner_t01230.jpg"
+        },
+        {
+          "t": 2283,
+          "hms": "0:38:03",
+          "file": "graphic_flag_banner_t02283.jpg"
+        },
+        {
+          "t": 3336,
+          "hms": "0:55:36",
+          "file": "graphic_flag_banner_t03336.jpg"
+        },
+        {
+          "t": 5266,
+          "hms": "1:27:46",
+          "file": "graphic_flag_banner_t05266.jpg"
+        },
+        {
+          "t": 5534,
+          "hms": "1:32:14",
+          "file": "graphic_flag_banner_t05534.jpg"
+        },
+        {
+          "t": 6378,
+          "hms": "1:46:18",
+          "file": "graphic_flag_banner_t06378.jpg"
+        }
+      ]
+    },
+    "other": {
+      "segments": 80,
+      "seconds": 818,
+      "duration_s": {
+        "n": 80,
+        "median": 8.0,
+        "min": 1,
+        "max": 36,
+        "p25": 5,
+        "p75": 13
+      },
+      "zones": {
+        "bottom": 60,
+        "above_bar": 14,
+        "right_panel": 4,
+        "in_bar_insert": 1,
+        "null": 1
+      },
+      "jev_trigger": {
+        "unknown": 38,
+        "milestone": 15,
+        "score": 8,
+        "quarter_change": 5,
+        "timeout": 5,
+        "penalty": 4,
+        "none": 3,
+        "turnover": 1,
+        "first_down": 1
+      },
+      "nearest_code_event_before": {
+        "first_down_shown": 36,
+        "no event within 90 s": 32,
+        "score": 7,
+        "timeout": 3,
+        "flag": 1,
+        "possession_change": 1
+      },
+      "delay_after_event_s": {
+        "first_down_shown": {
+          "n": 36,
+          "median": 27.5,
+          "min": 0,
+          "max": 89,
+          "p25": 15,
+          "p75": 54
+        },
+        "flag": {
+          "n": 1,
+          "median": 20,
+          "min": 20,
+          "max": 20,
+          "p25": 20,
+          "p75": 20
+        },
+        "score": {
+          "n": 7,
+          "median": 12,
+          "min": 9,
+          "max": 24,
+          "p25": 10,
+          "p75": 24
+        },
+        "timeout": {
+          "n": 3,
+          "median": 9,
+          "min": 7,
+          "max": 86,
+          "p25": 7,
+          "p75": 86
+        },
+        "possession_change": {
+          "n": 1,
+          "median": 78,
+          "min": 78,
+          "max": 78,
+          "p25": 78,
+          "p75": 78
+        }
+      },
+      "per_drive": 2.64,
+      "per_quarter": {
+        "0": 14,
+        "1": 17,
+        "2": 25,
+        "3": 6,
+        "4": 18
+      },
+      "by_state_at_start": {
+        "commercial_or_studio": 29,
+        "no_scorebug": 22,
+        "replay_or_review": 8,
+        "normal": 6,
+        "fourth_down": 6,
+        "timeout": 3
+      },
+      "frames": [
+        {
+          "t": 1667,
+          "hms": "0:27:47",
+          "file": "graphic_other_t01667.jpg"
+        },
+        {
+          "t": 2499,
+          "hms": "0:41:39",
+          "file": "graphic_other_t02499.jpg"
+        },
+        {
+          "t": 2887,
+          "hms": "0:48:07",
+          "file": "graphic_other_t02887.jpg"
+        },
+        {
+          "t": 3029,
+          "hms": "0:50:29",
+          "file": "graphic_other_t03029.jpg"
+        },
+        {
+          "t": 3250,
+          "hms": "0:54:10",
+          "file": "graphic_other_t03250.jpg"
+        },
+        {
+          "t": 3309,
+          "hms": "0:55:09",
+          "file": "graphic_other_t03309.jpg"
+        }
+      ]
+    },
+    "player_stat_popup": {
+      "segments": 69,
+      "seconds": 539,
+      "duration_s": {
+        "n": 69,
+        "median": 6,
+        "min": 1,
+        "max": 52,
+        "p25": 4,
+        "p75": 10
+      },
+      "zones": {
+        "bottom": 37,
+        "above_bar": 30,
+        "null": 1,
+        "right_panel": 1
+      },
+      "jev_trigger": {
+        "milestone": 43,
+        "unknown": 13,
+        "first_down": 9,
+        "score": 2,
+        "quarter_change": 1,
+        "penalty": 1
+      },
+      "nearest_code_event_before": {
+        "first_down_shown": 41,
+        "no event within 90 s": 20,
+        "flag": 4,
+        "quarter_change": 1,
+        "score": 1,
+        "possession_change": 1,
+        "timeout": 1
+      },
+      "delay_after_event_s": {
+        "first_down_shown": {
+          "n": 41,
+          "median": 30,
+          "min": 0,
+          "max": 87,
+          "p25": 13,
+          "p75": 61
+        },
+        "flag": {
+          "n": 4,
+          "median": 49.5,
+          "min": 21,
+          "max": 77,
+          "p25": 48,
+          "p75": 77
+        },
+        "quarter_change": {
+          "n": 1,
+          "median": 2,
+          "min": 2,
+          "max": 2,
+          "p25": 2,
+          "p75": 2
+        },
+        "score": {
+          "n": 1,
+          "median": 18,
+          "min": 18,
+          "max": 18,
+          "p25": 18,
+          "p75": 18
+        },
+        "possession_change": {
+          "n": 1,
+          "median": 64,
+          "min": 64,
+          "max": 64,
+          "p25": 64,
+          "p75": 64
+        },
+        "timeout": {
+          "n": 1,
+          "median": 11,
+          "min": 11,
+          "max": 11,
+          "p25": 11,
+          "p75": 11
+        }
+      },
+      "per_drive": 2.48,
+      "per_quarter": {
+        "0": 7,
+        "1": 10,
+        "2": 23,
+        "3": 9,
+        "4": 20
+      },
+      "by_state_at_start": {
+        "no_scorebug": 21,
+        "normal": 16,
+        "commercial_or_studio": 13,
+        "fourth_down": 6,
+        "first_and_ten": 5,
+        "short_yardage": 2
+      },
+      "frames": [
+        {
+          "t": 5615,
+          "hms": "1:33:35",
+          "file": "graphic_player_stat_popup_t05615.jpg"
+        },
+        {
+          "t": 6121,
+          "hms": "1:42:01",
+          "file": "graphic_player_stat_popup_t06121.jpg"
+        },
+        {
+          "t": 7592,
+          "hms": "2:06:32",
+          "file": "graphic_player_stat_popup_t07592.jpg"
+        },
+        {
+          "t": 7980,
+          "hms": "2:13:00",
+          "file": "graphic_player_stat_popup_t07980.jpg"
+        },
+        {
+          "t": 8188,
+          "hms": "2:16:28",
+          "file": "graphic_player_stat_popup_t08188.jpg"
+        },
+        {
+          "t": 8332,
+          "hms": "2:18:52",
+          "file": "graphic_player_stat_popup_t08332.jpg"
+        }
+      ]
+    },
+    "records": {
+      "segments": 4,
+      "seconds": 12,
+      "duration_s": {
+        "n": 4,
+        "median": 2.0,
+        "min": 1,
+        "max": 7,
+        "p25": 1,
+        "p75": 7
+      },
+      "zones": {
+        "bottom": 4
+      },
+      "jev_trigger": {
+        "milestone": 3,
+        "timeout": 1
+      },
+      "nearest_code_event_before": {
+        "no event within 90 s": 3,
+        "timeout": 1
+      },
+      "delay_after_event_s": {
+        "timeout": {
+          "n": 1,
+          "median": 88,
+          "min": 88,
+          "max": 88,
+          "p25": 88,
+          "p75": 88
+        }
+      },
+      "per_drive": 0.04,
+      "per_quarter": {
+        "0": 3,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 1
+      },
+      "by_state_at_start": {
+        "commercial_or_studio": 3,
+        "no_scorebug": 1
+      },
+      "frames": [
+        {
+          "t": 228,
+          "hms": "0:03:48",
+          "file": "graphic_records_t00228.jpg"
+        },
+        {
+          "t": 7147,
+          "hms": "1:59:07",
+          "file": "graphic_records_t07147.jpg"
+        }
+      ]
+    },
+    "score_banner": {
+      "segments": 5,
+      "seconds": 26,
+      "duration_s": {
+        "n": 5,
+        "median": 6,
+        "min": 1,
+        "max": 7,
+        "p25": 6,
+        "p75": 6
+      },
+      "zones": {
+        "big_banner": 4,
+        "bottom": 1
+      },
+      "jev_trigger": {
+        "score": 4,
+        "quarter_change": 1
+      },
+      "nearest_code_event_before": {
+        "first_down_shown": 2,
+        "flag": 1,
+        "no event within 90 s": 1,
+        "quarter_change": 1
+      },
+      "delay_after_event_s": {
+        "flag": {
+          "n": 1,
+          "median": 73,
+          "min": 73,
+          "max": 73,
+          "p25": 73,
+          "p75": 73
+        },
+        "first_down_shown": {
+          "n": 2,
+          "median": 22.5,
+          "min": 19,
+          "max": 26,
+          "p25": 19,
+          "p75": 26
+        },
+        "quarter_change": {
+          "n": 1,
+          "median": 29,
+          "min": 29,
+          "max": 29,
+          "p25": 29,
+          "p75": 29
+        }
+      },
+      "per_drive": 0.2,
+      "per_quarter": {
+        "0": 0,
+        "1": 2,
+        "2": 2,
+        "3": 1,
+        "4": 0
+      },
+      "by_state_at_start": {
+        "touchdown": 4,
+        "halftime": 1
+      },
+      "frames": [
+        {
+          "t": 1288,
+          "hms": "0:21:28",
+          "file": "graphic_score_banner_t01288.jpg"
+        },
+        {
+          "t": 1796,
+          "hms": "0:29:56",
+          "file": "graphic_score_banner_t01796.jpg"
+        },
+        {
+          "t": 4015,
+          "hms": "1:06:55",
+          "file": "graphic_score_banner_t04015.jpg"
+        },
+        {
+          "t": 4894,
+          "hms": "1:21:34",
+          "file": "graphic_score_banner_t04894.jpg"
+        }
+      ]
+    },
+    "team_stat_popup": {
+      "segments": 32,
+      "seconds": 215,
+      "duration_s": {
+        "n": 32,
+        "median": 6.0,
+        "min": 1,
+        "max": 18,
+        "p25": 4,
+        "p75": 10
+      },
+      "zones": {
+        "above_bar": 24,
+        "bottom": 7,
+        "right_panel": 1
+      },
+      "jev_trigger": {
+        "milestone": 17,
+        "unknown": 7,
+        "first_down": 5,
+        "quarter_change": 1,
+        "penalty": 1,
+        "timeout": 1
+      },
+      "nearest_code_event_before": {
+        "first_down_shown": 24,
+        "no event within 90 s": 3,
+        "timeout": 2,
+        "flag": 2,
+        "quarter_change": 1
+      },
+      "delay_after_event_s": {
+        "first_down_shown": {
+          "n": 24,
+          "median": 33.0,
+          "min": 3,
+          "max": 90,
+          "p25": 15,
+          "p75": 70
+        },
+        "timeout": {
+          "n": 2,
+          "median": 35.0,
+          "min": 18,
+          "max": 52,
+          "p25": 18,
+          "p75": 52
+        },
+        "quarter_change": {
+          "n": 1,
+          "median": 5,
+          "min": 5,
+          "max": 5,
+          "p25": 5,
+          "p75": 5
+        },
+        "flag": {
+          "n": 2,
+          "median": 62.0,
+          "min": 36,
+          "max": 88,
+          "p25": 36,
+          "p75": 88
+        }
+      },
+      "per_drive": 1.28,
+      "per_quarter": {
+        "0": 0,
+        "1": 2,
+        "2": 9,
+        "3": 9,
+        "4": 12
+      },
+      "by_state_at_start": {
+        "normal": 11,
+        "first_and_ten": 6,
+        "no_scorebug": 5,
+        "third_and_long": 4,
+        "fourth_down": 3,
+        "goal_to_go": 1
+      },
+      "frames": [
+        {
+          "t": 963,
+          "hms": "0:16:03",
+          "file": "graphic_team_stat_popup_t00963.jpg"
+        },
+        {
+          "t": 3137,
+          "hms": "0:52:17",
+          "file": "graphic_team_stat_popup_t03137.jpg"
+        },
+        {
+          "t": 3418,
+          "hms": "0:56:58",
+          "file": "graphic_team_stat_popup_t03418.jpg"
+        },
+        {
+          "t": 7152,
+          "hms": "1:59:12",
+          "file": "graphic_team_stat_popup_t07152.jpg"
+        },
+        {
+          "t": 7458,
+          "hms": "2:04:18",
+          "file": "graphic_team_stat_popup_t07458.jpg"
+        },
+        {
+          "t": 7630,
+          "hms": "2:07:10",
+          "file": "graphic_team_stat_popup_t07630.jpg"
+        }
+      ]
+    }
+  },
+  "records_seen": {}
+}

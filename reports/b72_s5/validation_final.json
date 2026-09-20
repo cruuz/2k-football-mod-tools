@@ -1,0 +1,279 @@
+{
+  "required_files": 34,
+  "all_exit_codes_zero": true,
+  "all_default_paths_under_100_seconds": true,
+  "rows": [
+    {
+      "file": "tests/mod_editor/test_apf_scorebug_workspace_qt.py",
+      "exit_code": 0,
+      "seconds": 1.37,
+      "log": "checks/test_apf_scorebug_workspace_qt.log",
+      "tests": 11,
+      "skipped": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_scorebug_assets.py",
+      "exit_code": 0,
+      "seconds": 9.03,
+      "log": "checks_final/test_nfl2k5_scorebug_assets.log",
+      "tests": 8,
+      "skipped": 1
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_scorebug_author.py",
+      "exit_code": 0,
+      "seconds": 6.27,
+      "log": "checks/test_nfl2k5_scorebug_author.log",
+      "tests": 12,
+      "skipped": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_scorebug_down_visibility.py",
+      "exit_code": 0,
+      "seconds": 30.26,
+      "log": "checks_final/test_nfl2k5_scorebug_down_visibility.log",
+      "tests": 2,
+      "skipped": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_scorebug_draw_order.py",
+      "exit_code": 0,
+      "seconds": 16.59,
+      "log": "checks_final/test_nfl2k5_scorebug_draw_order.log",
+      "tests": 5,
+      "skipped": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_scorebug_exact.py",
+      "exit_code": 0,
+      "seconds": 36.88,
+      "log": "checks_final/test_nfl2k5_scorebug_exact.log",
+      "tests": 8,
+      "skipped": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_scorebug_fonts.py",
+      "exit_code": 0,
+      "seconds": 8.08,
+      "log": "checks/test_nfl2k5_scorebug_fonts.log",
+      "tests": 10,
+      "skipped": 5
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_scorebug_freeze.py",
+      "exit_code": 0,
+      "seconds": 39.87,
+      "log": "checks_final/test_nfl2k5_scorebug_freeze.log",
+      "tests": 7,
+      "skipped": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py",
+      "exit_code": 0,
+      "seconds": 65.77,
+      "log": "checks_final/test_nfl2k5_scorebug_freeze_v2.log",
+      "tests": 7,
+      "skipped": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_scorebug_ingame.py",
+      "exit_code": 0,
+      "seconds": 7.48,
+      "log": "checks_final/test_nfl2k5_scorebug_ingame.log",
+      "tests": 11,
+      "skipped": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py",
+      "exit_code": 0,
+      "seconds": 54.86,
+      "log": "checks_final/test_nfl2k5_scorebug_ingame_fix.log",
+      "tests": 9,
+      "skipped": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_scorebug_mnf.py",
+      "exit_code": 0,
+      "seconds": 14.62,
+      "log": "checks/test_nfl2k5_scorebug_mnf.log",
+      "tests": 10,
+      "skipped": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py",
+      "exit_code": 0,
+      "seconds": 55.11,
+      "log": "checks/test_nfl2k5_scorebug_mnf_v3.log",
+      "tests": 7,
+      "skipped": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_scorebug_native.py",
+      "exit_code": 0,
+      "seconds": 44.49,
+      "log": "checks/test_nfl2k5_scorebug_native.log",
+      "tests": 4,
+      "skipped": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_scorebug_projection.py",
+      "exit_code": 0,
+      "seconds": 54.7,
+      "log": "checks_final/test_nfl2k5_scorebug_projection.log",
+      "tests": 14,
+      "skipped": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_scorebug_resources.py",
+      "exit_code": 0,
+      "seconds": 78.49,
+      "log": "checks_final/test_nfl2k5_scorebug_resources.log",
+      "tests": 6,
+      "skipped": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_scorebug_runtime.py",
+      "exit_code": 0,
+      "seconds": 37.46,
+      "log": "checks/test_nfl2k5_scorebug_runtime.log",
+      "tests": 12,
+      "skipped": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_scorebug_sd.py",
+      "exit_code": 0,
+      "seconds": 0.61,
+      "log": "checks_final/test_nfl2k5_scorebug_sd.log",
+      "tests": 3,
+      "skipped": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_scorebug_source_art.py",
+      "exit_code": 0,
+      "seconds": 4.68,
+      "log": "checks/test_nfl2k5_scorebug_source_art.log",
+      "tests": 13,
+      "skipped": 2
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_scorebug_sprite.py",
+      "exit_code": 0,
+      "seconds": 41.58,
+      "log": "checks_final/test_nfl2k5_scorebug_sprite.log",
+      "tests": 19,
+      "skipped": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_scorebug_template.py",
+      "exit_code": 0,
+      "seconds": 5.32,
+      "log": "checks/test_nfl2k5_scorebug_template.log",
+      "tests": 19,
+      "skipped": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_scorebug_template_release.py",
+      "exit_code": 0,
+      "seconds": 0.57,
+      "log": "checks/test_nfl2k5_scorebug_template_release.log",
+      "tests": 5,
+      "skipped": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_scorebug_unified_adapter.py",
+      "exit_code": 0,
+      "seconds": 0.21,
+      "log": "checks/test_nfl2k5_scorebug_unified_adapter.log",
+      "tests": 5,
+      "skipped": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_scorebug_v10_ingame.py",
+      "exit_code": 0,
+      "seconds": 8.33,
+      "log": "checks/test_nfl2k5_scorebug_v10_ingame.log",
+      "tests": 11,
+      "skipped": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_scorebug_v10_projection.py",
+      "exit_code": 0,
+      "seconds": 27.96,
+      "log": "checks/test_nfl2k5_scorebug_v10_projection.log",
+      "tests": 14,
+      "skipped": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_scorebug_versions.py",
+      "exit_code": 0,
+      "seconds": 8.38,
+      "log": "checks/test_nfl2k5_scorebug_versions.log",
+      "tests": 4,
+      "skipped": 0
+    },
+    {
+      "file": "tests/mod_editor/test_nfl2k5_scorebug_watermark.py",
+      "exit_code": 0,
+      "seconds": 38.13,
+      "log": "checks_final/test_nfl2k5_scorebug_watermark.log",
+      "tests": 3,
+      "skipped": 0
+    },
+    {
+      "file": "tests/mod_editor/test_provider_integrity.py",
+      "exit_code": 0,
+      "seconds": 10.13,
+      "log": "checks_final/test_provider_integrity.log",
+      "tests": 8,
+      "skipped": 0
+    },
+    {
+      "file": "tests/mod_editor/test_scorebug_gpu.py",
+      "exit_code": 0,
+      "seconds": 17.84,
+      "log": "checks_final/test_scorebug_gpu.log",
+      "tests": 9,
+      "skipped": 0
+    },
+    {
+      "file": "tests/mod_editor/test_scorebug_replication.py",
+      "exit_code": 0,
+      "seconds": 0.52,
+      "log": "checks_final/test_scorebug_replication.log",
+      "tests": 12,
+      "skipped": 0
+    },
+    {
+      "file": "tests/mod_editor/test_scorebug_sprite_preview_qt.py",
+      "exit_code": 0,
+      "seconds": 12.78,
+      "log": "checks/test_scorebug_sprite_preview_qt.log",
+      "tests": 3,
+      "skipped": 0
+    },
+    {
+      "file": "tests/mod_editor/test_scorebug_studio_panel_qt.py",
+      "exit_code": 0,
+      "seconds": 7.33,
+      "log": "checks/test_scorebug_studio_panel_qt.log",
+      "tests": 11,
+      "skipped": 0
+    },
+    {
+      "file": "tests/mod_editor/test_shipped_tools_are_self_sufficient.py",
+      "exit_code": 0,
+      "seconds": 11.88,
+      "log": "checks_final/test_shipped_tools_are_self_sufficient.log",
+      "tests": 3,
+      "skipped": 0
+    },
+    {
+      "file": "tests/mod_editor/test_shipped_tools_posix_only.py",
+      "exit_code": 0,
+      "seconds": 11.58,
+      "log": "checks_final/test_shipped_tools_posix_only.log",
+      "tests": 13,
+      "skipped": 0
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+014db65d push ebp
+014db65e push edi
+014db65f push esi
+014db660 push ebx
+014db661 sub esp, 0x130
+014db667 mov ebx, dword ptr [esp + 0x144]
+014db66e call 0x14db405
+014db673 test eax, eax
+014db675 je 0x14dbca7
+014db67b cmp dword ptr [ebx + 4], 0
+014db67f je 0x14dbca7
+014db685 xchg ebp, eax
+014db686 lea eax, [ebp + 0x100]
+014db68c cmp dword ptr [ebx], eax
+014db68e jne 0x14dbca7
+014db694 mov eax, dword ptr [0xa95520]
+014db699 test eax, eax
+014db69b je 0x14dbca7
+014db6a1 push 3
+014db6a3 pop edx
+014db6a4 push 9
+014db6a6 pop eax
+014db6a7 cmp edx, 6
+014db6aa je 0x14db6d6
+014db6ac ja 0x14db6c3
+014db6ae push 2
+014db6b0 pop eax
+014db6b1 cmp edx, 3
+014db6b4 je 0x14db6d6
+014db6b6 xor eax, eax
+014db6b8 cmp edx, 5
+014db6bb setne al
+014db6be add eax, 3
+014db6c1 jmp 0x14db6d6
+014db6c3 push 0xa
+014db6c5 pop eax
+014db6c6 cmp edx, 8
+014db6c9 je 0x14db6d6
+014db6cb xor eax, eax
+014db6cd cmp edx, 9
+014db6d0 setne al
+014db6d3 add eax, 6
+014db6d6 mov ecx, dword ptr [ebp + 0x120]
+014db6dc shl eax, 7
+014db6df inc edx
+014db6e0 add eax, ecx
+014db6e2 mov ecx, dword ptr [eax + 8]
+014db6e5 and ecx, 0xfffffffe
+014db6e8 mov dword ptr [eax + 8], ecx
+014db6eb or dword ptr [eax + 0x18], 0xffffffff
+014db6ef cmp edx, 0xa
+014db6f2 jne 0x14db6a4
+014db6f4 cmp dword ptr [ebx + 8], 0
+014db6f8 jne 0x14db70f
+014db6fa mov edx, dword ptr [ebp + 0x120]
+014db700 mov eax, dword ptr [edx + 0x188]
+014db706 or eax, 1
+014db709 mov dword ptr [edx + 0x188], eax
+014db70f cmp dword ptr [ebx + 0xc], 0
+014db713 jne 0x14db72a
+014db715 mov edx, dword ptr [ebp + 0x120]
+014db71b mov eax, dword ptr [edx + 0x508]
+014db721 or eax, 1

@@ -1,0 +1,295 @@
+23870 sub esp, 8
+23873 push ebx
+23874 mov ebx, dword ptr [esp + 0x14]
+23878 push ebp
+23879 lea eax, [ebx + 0x10]
+2387c push esi
+2387d xor esi, esi
+2387f mov dword ptr [esp + 0xc], eax
+23883 mov ecx, dword ptr [esp + 0xc]
+23887 mov edx, dword ptr [ecx]
+23889 jmp dword ptr [edx*4 + 0x23b10]
+23890 fld dword ptr [edi + 0x2a0]
+23896 fmul dword ptr [0x4e4194]
+2389c fst dword ptr [esp + 0x1c]
+238a0 fcomp dword ptr [0x4e4180]
+238a6 fnstsw ax
+238a8 test ah, 0x41
+238ab jne 0x238c8
+238ad fld dword ptr [esp + 0x1c]
+238b1 fld dword ptr [esp + 0x1c]
+238b5 fcomp dword ptr [0x4e4194]
+238bb fnstsw ax
+238bd test ah, 5
+238c0 jp 0x238d4
+238c2 fstp dword ptr [esp + 0x10]
+238c6 jmp 0x238de
+238c8 fld dword ptr [0x4e4180]
+238ce fstp dword ptr [esp + 0x10]
+238d2 jmp 0x238de
+238d4 fstp st(0)
+238d6 mov dword ptr [esp + 0x10], 0x437f0000
+238de mov eax, dword ptr [esp + 0x18]
+238e2 mov edx, dword ptr [esp + 0x10]
+238e6 mov cl, byte ptr [eax + 9]
+238e9 push edx
+238ea call 0x219b0
+238ef xor edx, edx
+238f1 mov dh, al
+238f3 movzx eax, cl
+238f6 mov dl, cl
+238f8 movzx ecx, cl
+238fb shl edx, 8
+238fe or edx, eax
+23900 shl edx, 8
+23903 or edx, ecx
+23905 push edx
+23906 jmp 0x23ae9
+2390b mov edx, dword ptr [esp + 0x18]
+2390f mov eax, dword ptr [edx + 0x18]
+23912 jmp 0x23ae8
+23917 mov eax, dword ptr [esp + 0x20]
+2391b fld dword ptr [eax + 8]
+2391e mov ecx, dword ptr [eax]
+23920 sub esp, 8
+23923 fstp dword ptr [esp + 4]
+23927 fld dword ptr [eax + 4]
+2392a fstp dword ptr [esp]
+2392d fld dword ptr [eax + 0xc]
+23930 push ecx
+23931 push ecx
+23932 fstp dword ptr [esp]
+23935 jmp 0x23ae3
+2393a mov edx, dword ptr [esp + 0x18]
+2393e movzx eax, word ptr [edx + 0xa]
+23942 mov dword ptr [esp + 0x1c], eax
+23946 push ecx
+23947 fild dword ptr [esp + 0x20]
+2394b fmul dword ptr [0x4e5c88]
+23951 fstp dword ptr [esp + 0x20]
+23955 fld dword ptr [0x4e5ca0]
+2395b fdiv dword ptr [esp + 0x20]
+2395f fstp dword ptr [esp]
+23962 call 0x219b0
+23967 mov ecx, eax
+23969 cmp ecx, 0xff
+2396f jle 0x23976
+23971 mov ecx, 0xff
+23976 fld dword ptr [esp + 0x1c]
+2397a push ecx
+2397b fmul dword ptr [0x4e5c9c]
+23981 fstp dword ptr [esp]
+23984 call 0x219b0
+23989 cmp eax, 0xff
+2398e jle 0x23995
+23990 mov eax, 0xff
+23995 xor edx, edx
+23997 mov dh, cl
+23999 movzx ebp, al
+2399c or edx, ebp
+2399e shl edx, 8
+239a1 or edx, ebp
+239a3 shl edx, 8
+239a6 or edx, ebp
+239a8 push edx
+239a9 jmp 0x23ae9
+239ae mov eax, dword ptr [edi + 0xe0]
+239b4 mov ecx, dword ptr [esp + 0x18]
+239b8 push eax
+239b9 mov eax, dword ptr [ecx + 0x18]
+239bc call 0x220e0
+239c1 jmp 0x23ae8
+239c6 mov edx, dword ptr [edi + 0xe0]
+239cc push edx
+239cd jmp 0x23ae9
+239d2 mov eax, dword ptr [edi + 0xe4]
+239d8 jmp 0x23ae8
+239dd mov ecx, dword ptr [edi + 0xe8]
+239e3 push ecx
+239e4 jmp 0x23ae9
+239e9 mov edx, dword ptr [edi + 0xec]
+239ef push edx
+239f0 jmp 0x23ae9
+239f5 fld dword ptr [edi + 0xa8]
+239fb sub esp, 0xc
+239fe fmul dword ptr [0x4e4184]
+23a04 fadd dword ptr [0x4e4184]
+23a0a fstp dword ptr [esp + 8]
+23a0e fld dword ptr [edi + 0xa4]
+23a14 fmul dword ptr [0x4e4184]
+23a1a fadd dword ptr [0x4e4184]
+23a20 fstp dword ptr [esp + 4]
+23a24 fld dword ptr [edi + 0xa0]
+23a2a jmp 0x23ad2
+23a2f fld dword ptr [edi + 0xb8]
+23a35 sub esp, 0xc
+23a38 fmul dword ptr [0x4e4184]
+23a3e fadd dword ptr [0x4e4184]
+23a44 fstp dword ptr [esp + 8]
+23a48 fld dword ptr [edi + 0xb4]
+23a4e fmul dword ptr [0x4e4184]
+23a54 fadd dword ptr [0x4e4184]
+23a5a fstp dword ptr [esp + 4]
+23a5e fld dword ptr [edi + 0xb0]
+23a64 jmp 0x23ad2
+23a66 fld dword ptr [edi + 0xc8]
+23a6c sub esp, 0xc
+23a6f fmul dword ptr [0x4e4184]
+23a75 fadd dword ptr [0x4e4184]
+23a7b fstp dword ptr [esp + 8]
+23a7f fld dword ptr [edi + 0xc4]
+23a85 fmul dword ptr [0x4e4184]
+23a8b fadd dword ptr [0x4e4184]
+23a91 fstp dword ptr [esp + 4]
+23a95 fld dword ptr [edi + 0xc0]
+23a9b jmp 0x23ad2
+23a9d fld dword ptr [edi + 0xd8]
+23aa3 sub esp, 0xc
+23aa6 fmul dword ptr [0x4e4184]
+23aac fadd dword ptr [0x4e4184]
+23ab2 fstp dword ptr [esp + 8]
+23ab6 fld dword ptr [edi + 0xd4]
+23abc fmul dword ptr [0x4e4184]
+23ac2 fadd dword ptr [0x4e4184]
+23ac8 fstp dword ptr [esp + 4]
+23acc fld dword ptr [edi + 0xd0]
+23ad2 fmul dword ptr [0x4e4184]
+23ad8 fadd dword ptr [0x4e4184]
+23ade fstp dword ptr [esp]
+23ae1 push 0
+23ae3 call 0x21f80
+23ae8 push eax
+23ae9 mov ecx, ebx
+23aeb mov edx, esi
+23aed call 0x32630
+23af2 mov ecx, dword ptr [esp + 0xc]
+23af6 inc esi
+23af7 add ecx, 4
+23afa cmp esi, 8
+23afd mov dword ptr [esp + 0xc], ecx
+23b01 jl 0x23883
+23b07 pop esi
+23b08 pop ebp
+23b09 pop ebx
+23b0a add esp, 8
+23b0d ret 0xc
+23b10 cmp al, byte ptr [edx]
+23b13 add byte ptr [eax + 0xb000238], dl
+23b19 cmp dword ptr [edx], eax
+23b1b add byte ptr [edi], dl
+23b1d cmp dword ptr [edx], eax
+23b1f add byte ptr [edx], bh
+23b21 cmp dword ptr [edx], eax
+23b23 add byte ptr [esi - 0x39fffdc7], ch
+23b29 cmp dword ptr [edx], eax
+23b2b add dl, dl
+23b2d cmp dword ptr [edx], eax
+23b2f add ch, bl
+23b31 cmp dword ptr [edx], eax
+23b33 add cl, ch
+23b35 cmp dword ptr [edx], eax
+23b37 add ch, dh
+23b39 cmp dword ptr [edx], eax
+23b3b add byte ptr [edi], ch
+23b3d cmp al, byte ptr [edx]
+23b3f add byte ptr [esi + 0x3a], ah
+23b42 add al, byte ptr [eax]
+23b44 popfd
+23b45 cmp al, byte ptr [edx]
+23b47 add byte ptr [eax - 0x6f6f6f70], dl
+23b4d nop
+23b4e nop
+23b4f nop
+23b50 push ecx
+23b51 cmp edx, -1
+23b54 jne 0x23b5e
+23b56 lea eax, [ecx + 0x2e0]
+23b5c pop ecx
+23b5d ret
+23b5e mov eax, edx
+23b60 shr eax, 0x10
+23b63 movzx eax, al
+23b66 mov dword ptr [esp], eax
+23b6a mov eax, edx
+23b6c shr eax, 8
+23b6f fild dword ptr [esp]
+23b73 movzx eax, al
+23b76 push esi
+23b77 fmul dword ptr [0x4e5c8c]
+23b7d lea esi, [ecx + 0x2f0]
+23b83 mov dword ptr [esp + 4], eax
+23b87 fmul dword ptr [ecx + 0x2e0]
+23b8d movzx eax, dl
+23b90 shr edx, 0x18
+23b93 fstp dword ptr [esi]
+23b95 fild dword ptr [esp + 4]
+23b99 mov dword ptr [esp + 4], eax
+23b9d mov eax, esi
+23b9f pop esi
+23ba0 fmul dword ptr [0x4e5c8c]
+23ba6 fmul dword ptr [ecx + 0x2e4]
+23bac fstp dword ptr [ecx + 0x2f4]
+23bb2 fild dword ptr [esp]
+23bb6 mov dword ptr [esp], edx
+23bba fmul dword ptr [0x4e5c8c]
+23bc0 fmul dword ptr [ecx + 0x2e8]
+23bc6 fstp dword ptr [ecx + 0x2f8]
+23bcc fild dword ptr [esp]
+23bd0 fmul dword ptr [0x4e5c8c]
+23bd6 fmul dword ptr [ecx + 0x2ec]
+23bdc fstp dword ptr [ecx + 0x2fc]
+23be2 pop ecx
+23be3 ret
+23be4 nop
+23be5 nop
+23be6 nop
+23be7 nop
+23be8 nop
+23be9 nop
+23bea nop
+23beb nop
+23bec nop
+23bed nop
+23bee nop
+23bef nop
+23bf0 push ecx
+23bf1 lea eax, [edx + 0x66]
+23bf4 shl eax, 4
+23bf7 add eax, esi
+23bf9 cmp dword ptr [eax], ecx
+23bfb je 0x23c91
+23c01 mov dword ptr [eax], ecx
+23c03 mov eax, dword ptr [esi + 0xc]
+23c06 add edx, 0x60
+23c09 mov dword ptr [eax + 4], edx
+23c0c mov edx, ecx
+23c0e shr edx, 0x10
+23c11 movzx edx, dl
+23c14 mov dword ptr [esp], edx
+23c18 mov edx, ecx
+23c1a shr edx, 8
+23c1d fild dword ptr [esp]
+23c21 movzx edx, dl
+23c24 mov dword ptr [esp], edx
+23c28 fmul dword ptr [0x4e5c8c]
+23c2e movzx edx, cl
+23c31 shr ecx, 0x18
+23c34 fmul dword ptr [0x4e4184]
+23c3a mov dword ptr [eax], 0x41ea4
+23c40 mov dword ptr [eax + 8], 0x100b80
+23c47 fstp dword ptr [eax + 0xc]
+23c4a add eax, 0x1c
+23c4d fild dword ptr [esp]
+23c51 mov dword ptr [esp], edx
+23c55 fmul dword ptr [0x4e5c8c]
+23c5b fmul dword ptr [0x4e4184]
+23c61 fstp dword ptr [eax - 0xc]
+23c64 fild dword ptr [esp]
+23c68 mov dword ptr [esp], ecx
+23c6c fmul dword ptr [0x4e5c8c]
+23c72 fmul dword ptr [0x4e4184]
+23c78 fstp dword ptr [eax - 8]
+23c7b fild dword ptr [esp]
+23c7f fmul dword ptr [0x4e5c8c]
+23c85 fmul dword ptr [0x4e4184]
+23c8b fstp dword ptr [eax - 4]

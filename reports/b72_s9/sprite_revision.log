@@ -1,0 +1,14 @@
+............F........
+======================================================================
+FAIL: test_marks_are_drawn_as_the_broadcast_draws_them (__main__.LogoFitTests.test_marks_are_drawn_as_the_broadcast_draws_them)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b72-s9/tests/mod_editor/test_nfl2k5_scorebug_sprite.py", line 96, in test_marks_are_drawn_as_the_broadcast_draws_them
+    if expect is not None:self.assertAlmostEqual(aspect,expect,delta=0.12,msg=team)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 2.0625201417982595 != 1.87 within 0.12 delta (0.19252014179825938 difference) : DEN
+
+----------------------------------------------------------------------
+Ran 21 tests in 21.866s
+
+FAILED (failures=1)

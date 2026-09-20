@@ -1,0 +1,31 @@
+2adb0 mov eax, dword ptr [0xa6afb4]
+2adb5 ret
+2adb6 nop
+2adb7 nop
+2adb8 nop
+2adb9 nop
+2adba nop
+2adbb nop
+2adbc nop
+2adbd nop
+2adbe nop
+2adbf nop
+2adc0 push ebp
+2adc1 mov ebp, esp
+2adc3 and esp, 0xfffffff0
+2adc6 sub esp, 0x1c
+2adc9 push esi
+2adca mov esi, ecx
+2adcc lea eax, [esi + 0x40]
+2adcf lea ecx, [esp + 0x10]
+2add3 call 0x2a0c0
+2add8 fld dword ptr [esp + 0x18]
+2addc fsub dword ptr [ebp + 8]
+2addf fld dword ptr [esi + 0x238]
+2ade5 fcompp
+2ade7 fnstsw ax
+2ade9 test ah, 5
+2adec jnp 0x2ae76
+2adf2 fld dword ptr [esp + 0x18]
+2adf6 fadd dword ptr [ebp + 8]
+2adf9 fld dword ptr [esi + 0x248]

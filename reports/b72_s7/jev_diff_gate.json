@@ -1,0 +1,12 @@
+{
+ "base": "b6bdf1064f95e9cf0c4b90b110d76a4fa81239f2",
+ "head": "7c0d0369c6cf31c628f13d1a91262fe714f6d192",
+ "deterministic": [],
+ "notes": [],
+ "diff_facts": "New files under mod_editor/ in this diff: none. Release allowlists edited in this diff: no. mod_editor/core/providers.py (module_pins) edited: no. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: no. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+ "skipped": {
+  "reports/ (job evidence)": 12,
+  "binary": 3
+ },
+ "windows": []
+}

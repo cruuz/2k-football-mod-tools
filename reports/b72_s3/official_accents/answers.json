@@ -1,0 +1,4884 @@
+[
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.23,
+      "probabilities": {
+        "colour0_base": 0.26,
+        "colour1_dark": 0.02,
+        "colour0_dark": 0.07,
+        "colour0_darker": 0.22,
+        "colour1_darker": 0.01,
+        "colour0_lighter": 0.34,
+        "colour0_light": 0.08
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.33,
+      "probabilities": {
+        "colour0_dark": 0.08,
+        "colour0_base": 0.14,
+        "colour1_dark": 0.02,
+        "colour1_darker": 0.01,
+        "colour0_darker": 0.28,
+        "colour0_lighter": 0.42,
+        "colour0_light": 0.05
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_darker",
+      "confidence": 0.2,
+      "probabilities": {
+        "colour0_base": 0.23,
+        "colour1_dark": 0.02,
+        "colour0_dark": 0.1,
+        "colour0_darker": 0.33,
+        "colour1_darker": 0.01,
+        "colour0_lighter": 0.27,
+        "colour0_light": 0.04
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.32,
+      "probabilities": {
+        "colour0_base": 0.22,
+        "colour0_dark": 0.03,
+        "colour0_darker": 0.26,
+        "colour0_lighter": 0.41,
+        "colour1_dark": 0.02,
+        "colour1_darker": 0.01,
+        "colour0_light": 0.05
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_darker",
+      "confidence": 0.25,
+      "probabilities": {
+        "colour0_light": 0.04,
+        "colour0_dark": 0.04,
+        "colour0_darker": 0.36,
+        "colour1_dark": 0.02,
+        "colour0_lighter": 0.32,
+        "colour1_darker": 0.01,
+        "colour0_base": 0.21
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.28,
+      "probabilities": {
+        "colour0_base": 0.18,
+        "colour0_dark": 0.04,
+        "colour0_darker": 0.32,
+        "colour0_lighter": 0.39,
+        "colour1_dark": 0.03,
+        "colour1_darker": 0.01,
+        "colour0_light": 0.03
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.65,
+      "probabilities": {
+        "colour1_dark": 0.06,
+        "colour1_darker": 0.01,
+        "colour0_darker": 0.02,
+        "colour0_base": 0.12,
+        "colour0_dark": 0.08,
+        "colour0_lighter": 0.69,
+        "colour0_light": 0.02
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.65,
+      "probabilities": {
+        "colour0_dark": 0.08,
+        "colour1_darker": 0.01,
+        "colour0_darker": 0.02,
+        "colour0_base": 0.11,
+        "colour1_dark": 0.07,
+        "colour0_lighter": 0.69,
+        "colour0_light": 0.02
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.59,
+      "probabilities": {
+        "colour1_dark": 0.05,
+        "colour1_darker": 0.01,
+        "colour0_darker": 0.02,
+        "colour0_base": 0.15,
+        "colour0_dark": 0.1,
+        "colour0_lighter": 0.65,
+        "colour0_light": 0.02
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.6,
+      "probabilities": {
+        "colour0_darker": 0.02,
+        "colour0_light": 0.02,
+        "colour0_lighter": 0.65,
+        "colour1_dark": 0.08,
+        "colour0_base": 0.19,
+        "colour1_darker": 0.01,
+        "colour0_dark": 0.03
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.61,
+      "probabilities": {
+        "colour0_darker": 0.02,
+        "colour0_light": 0.02,
+        "colour0_lighter": 0.67,
+        "colour1_dark": 0.09,
+        "colour0_base": 0.17,
+        "colour1_darker": 0.0,
+        "colour0_dark": 0.03
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.66,
+      "probabilities": {
+        "colour0_darker": 0.01,
+        "colour0_light": 0.02,
+        "colour0_base": 0.16,
+        "colour1_dark": 0.08,
+        "colour0_lighter": 0.71,
+        "colour1_darker": 0.0,
+        "colour0_dark": 0.02
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.89,
+      "probabilities": {
+        "colour1_lighter": 0.0,
+        "colour1_light": 0.0,
+        "colour1_darker": 0.0,
+        "colour1_dark": 0.0,
+        "colour0_dark": 0.91,
+        "colour1_base": 0.01,
+        "colour0_darker": 0.08
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.87,
+      "probabilities": {
+        "colour1_lighter": 0.0,
+        "colour0_darker": 0.09,
+        "colour1_darker": 0.0,
+        "colour1_dark": 0.01,
+        "colour0_dark": 0.89,
+        "colour1_base": 0.01,
+        "colour1_light": 0.0
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.87,
+      "probabilities": {
+        "colour1_lighter": 0.0,
+        "colour1_light": 0.0,
+        "colour1_darker": 0.0,
+        "colour1_dark": 0.01,
+        "colour0_dark": 0.9,
+        "colour1_base": 0.02,
+        "colour0_darker": 0.07
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.9,
+      "probabilities": {
+        "colour1_lighter": 0.0,
+        "colour0_darker": 0.08,
+        "colour1_base": 0.0,
+        "colour1_light": 0.0,
+        "colour0_dark": 0.91,
+        "colour1_dark": 0.01,
+        "colour1_darker": 0.0
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.91,
+      "probabilities": {
+        "colour1_lighter": 0.0,
+        "colour0_darker": 0.07,
+        "colour1_base": 0.0,
+        "colour0_dark": 0.93,
+        "colour1_dark": 0.0,
+        "colour1_light": 0.0,
+        "colour1_darker": 0.0
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.89,
+      "probabilities": {
+        "colour1_lighter": 0.0,
+        "colour0_darker": 0.07,
+        "colour1_base": 0.02,
+        "colour1_light": 0.0,
+        "colour0_dark": 0.9,
+        "colour1_dark": 0.01,
+        "colour1_darker": 0.0
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.26,
+      "probabilities": {
+        "colour3_lighter": 0.01,
+        "colour3_darker": 0.04,
+        "colour1_light": 0.01,
+        "colour3_dark": 0.01,
+        "colour1_dark": 0.0,
+        "colour0_base": 0.31,
+        "colour1_darker": 0.0,
+        "colour0_dark": 0.06,
+        "colour0_light": 0.11,
+        "colour3_light": 0.02,
+        "colour1_base": 0.03,
+        "colour3_base": 0.06,
+        "colour0_darker": 0.31,
+        "colour0_lighter": 0.03
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.33,
+      "probabilities": {
+        "colour3_lighter": 0.01,
+        "colour3_darker": 0.03,
+        "colour1_light": 0.01,
+        "colour3_dark": 0.01,
+        "colour1_dark": 0.0,
+        "colour0_base": 0.38,
+        "colour1_darker": 0.0,
+        "colour0_dark": 0.07,
+        "colour0_light": 0.09,
+        "colour3_base": 0.05,
+        "colour1_base": 0.02,
+        "colour0_darker": 0.29,
+        "colour3_light": 0.01,
+        "colour0_lighter": 0.03
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_darker",
+      "confidence": 0.32,
+      "probabilities": {
+        "colour3_lighter": 0.01,
+        "colour3_darker": 0.03,
+        "colour1_light": 0.02,
+        "colour3_dark": 0.01,
+        "colour1_dark": 0.01,
+        "colour0_base": 0.28,
+        "colour3_light": 0.02,
+        "colour0_dark": 0.08,
+        "colour0_light": 0.05,
+        "colour1_base": 0.03,
+        "colour0_darker": 0.36,
+        "colour1_darker": 0.0,
+        "colour3_base": 0.08,
+        "colour0_lighter": 0.02
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.52,
+      "probabilities": {
+        "colour3_darker": 0.01,
+        "colour1_base": 0.01,
+        "colour0_lighter": 0.03,
+        "colour1_dark": 0.0,
+        "colour0_darker": 0.22,
+        "colour3_base": 0.05,
+        "colour0_light": 0.07,
+        "colour3_light": 0.02,
+        "colour3_lighter": 0.0,
+        "colour3_dark": 0.0,
+        "colour0_base": 0.56,
+        "colour1_light": 0.0,
+        "colour1_darker": 0.0,
+        "colour0_dark": 0.02
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.56,
+      "probabilities": {
+        "colour0_darker": 0.27,
+        "colour1_base": 0.0,
+        "colour0_lighter": 0.01,
+        "colour1_dark": 0.0,
+        "colour3_base": 0.03,
+        "colour1_light": 0.0,
+        "colour0_light": 0.03,
+        "colour3_light": 0.01,
+        "colour3_dark": 0.0,
+        "colour3_darker": 0.02,
+        "colour0_base": 0.6,
+        "colour3_lighter": 0.0,
+        "colour1_darker": 0.0,
+        "colour0_dark": 0.03
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.54,
+      "probabilities": {
+        "colour0_darker": 0.28,
+        "colour1_base": 0.01,
+        "colour0_lighter": 0.02,
+        "colour1_dark": 0.0,
+        "colour3_lighter": 0.0,
+        "colour3_darker": 0.01,
+        "colour3_dark": 0.0,
+        "colour3_light": 0.01,
+        "colour1_light": 0.0,
+        "colour0_light": 0.03,
+        "colour0_base": 0.58,
+        "colour3_base": 0.04,
+        "colour1_darker": 0.0,
+        "colour0_dark": 0.02
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.88,
+      "probabilities": {
+        "colour1_light": 0.01,
+        "colour0_dark": 0.9,
+        "colour1_darker": 0.0,
+        "colour0_darker": 0.06,
+        "colour1_lighter": 0.0,
+        "colour1_dark": 0.01,
+        "colour1_base": 0.02
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.82,
+      "probabilities": {
+        "colour1_light": 0.01,
+        "colour0_dark": 0.85,
+        "colour0_darker": 0.09,
+        "colour1_darker": 0.0,
+        "colour1_lighter": 0.0,
+        "colour1_dark": 0.02,
+        "colour1_base": 0.03
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.86,
+      "probabilities": {
+        "colour1_light": 0.01,
+        "colour0_dark": 0.88,
+        "colour1_darker": 0.0,
+        "colour0_darker": 0.07,
+        "colour1_lighter": 0.0,
+        "colour1_dark": 0.02,
+        "colour1_base": 0.02
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.85,
+      "probabilities": {
+        "colour0_darker": 0.03,
+        "colour1_lighter": 0.0,
+        "colour1_darker": 0.0,
+        "colour1_base": 0.03,
+        "colour1_dark": 0.04,
+        "colour0_dark": 0.88,
+        "colour1_light": 0.02
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.85,
+      "probabilities": {
+        "colour0_darker": 0.05,
+        "colour0_dark": 0.88,
+        "colour1_darker": 0.0,
+        "colour1_base": 0.03,
+        "colour1_dark": 0.03,
+        "colour1_lighter": 0.0,
+        "colour1_light": 0.01
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.83,
+      "probabilities": {
+        "colour0_darker": 0.04,
+        "colour1_lighter": 0.0,
+        "colour1_darker": 0.01,
+        "colour0_dark": 0.86,
+        "colour1_dark": 0.03,
+        "colour1_base": 0.04,
+        "colour1_light": 0.02
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.51,
+      "probabilities": {
+        "colour0_light": 0.03,
+        "colour1_darker": 0.01,
+        "colour0_darker": 0.05,
+        "colour0_base": 0.15,
+        "colour1_dark": 0.04,
+        "colour0_dark": 0.14,
+        "colour0_lighter": 0.58
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.47,
+      "probabilities": {
+        "colour0_lighter": 0.54,
+        "colour1_darker": 0.02,
+        "colour0_base": 0.15,
+        "colour0_darker": 0.07,
+        "colour1_dark": 0.04,
+        "colour0_dark": 0.15,
+        "colour0_light": 0.03
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.54,
+      "probabilities": {
+        "colour0_light": 0.03,
+        "colour1_darker": 0.03,
+        "colour0_darker": 0.03,
+        "colour0_base": 0.1,
+        "colour1_dark": 0.09,
+        "colour0_dark": 0.12,
+        "colour0_lighter": 0.6
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.64,
+      "probabilities": {
+        "colour1_dark": 0.02,
+        "colour0_darker": 0.03,
+        "colour0_base": 0.19,
+        "colour0_lighter": 0.69,
+        "colour0_dark": 0.03,
+        "colour0_light": 0.02,
+        "colour1_darker": 0.02
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.45,
+      "probabilities": {
+        "colour0_darker": 0.04,
+        "colour1_dark": 0.03,
+        "colour0_base": 0.29,
+        "colour0_lighter": 0.53,
+        "colour0_dark": 0.06,
+        "colour0_light": 0.02,
+        "colour1_darker": 0.03
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.6,
+      "probabilities": {
+        "colour0_darker": 0.02,
+        "colour1_dark": 0.04,
+        "colour0_base": 0.19,
+        "colour0_lighter": 0.65,
+        "colour0_dark": 0.05,
+        "colour0_light": 0.03,
+        "colour1_darker": 0.02
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.41,
+      "probabilities": {
+        "colour0_darker": 0.23,
+        "colour1_light": 0.0,
+        "colour3_dark": 0.0,
+        "colour1_dark": 0.0,
+        "colour0_light": 0.15,
+        "colour1_lighter": 0.01,
+        "colour3_base": 0.0,
+        "colour3_light": 0.0,
+        "colour0_dark": 0.12,
+        "colour0_base": 0.45,
+        "colour2_darker": 0.0,
+        "colour1_darker": 0.0,
+        "colour2_dark": 0.03,
+        "colour3_darker": 0.0,
+        "colour3_lighter": 0.0,
+        "colour1_base": 0.01
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.36,
+      "probabilities": {
+        "colour0_darker": 0.26,
+        "colour1_light": 0.01,
+        "colour3_dark": 0.0,
+        "colour1_lighter": 0.02,
+        "colour0_light": 0.13,
+        "colour1_dark": 0.0,
+        "colour3_light": 0.0,
+        "colour3_base": 0.0,
+        "colour0_dark": 0.13,
+        "colour0_base": 0.4,
+        "colour2_darker": 0.01,
+        "colour1_darker": 0.0,
+        "colour2_dark": 0.03,
+        "colour3_darker": 0.0,
+        "colour3_lighter": 0.0,
+        "colour1_base": 0.01
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.37,
+      "probabilities": {
+        "colour0_darker": 0.31,
+        "colour1_light": 0.01,
+        "colour3_dark": 0.0,
+        "colour1_lighter": 0.01,
+        "colour0_light": 0.1,
+        "colour1_dark": 0.0,
+        "colour3_base": 0.0,
+        "colour3_light": 0.0,
+        "colour0_dark": 0.12,
+        "colour0_base": 0.42,
+        "colour2_darker": 0.0,
+        "colour3_darker": 0.0,
+        "colour1_darker": 0.0,
+        "colour2_dark": 0.02,
+        "colour3_lighter": 0.0,
+        "colour1_base": 0.01
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.48,
+      "probabilities": {
+        "colour0_dark": 0.05,
+        "colour0_light": 0.09,
+        "colour3_light": 0.0,
+        "colour1_light": 0.0,
+        "colour1_base": 0.0,
+        "colour3_base": 0.0,
+        "colour3_dark": 0.0,
+        "colour1_darker": 0.0,
+        "colour2_darker": 0.01,
+        "colour1_lighter": 0.0,
+        "colour3_lighter": 0.0,
+        "colour1_dark": 0.0,
+        "colour0_base": 0.52,
+        "colour3_darker": 0.0,
+        "colour0_darker": 0.26,
+        "colour2_dark": 0.07
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.48,
+      "probabilities": {
+        "colour0_dark": 0.08,
+        "colour0_light": 0.05,
+        "colour3_light": 0.0,
+        "colour1_light": 0.0,
+        "colour1_base": 0.0,
+        "colour3_base": 0.0,
+        "colour3_dark": 0.0,
+        "colour1_darker": 0.0,
+        "colour2_darker": 0.01,
+        "colour1_lighter": 0.0,
+        "colour3_lighter": 0.0,
+        "colour1_dark": 0.0,
+        "colour2_dark": 0.09,
+        "colour3_darker": 0.0,
+        "colour0_darker": 0.25,
+        "colour0_base": 0.52
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.49,
+      "probabilities": {
+        "colour0_dark": 0.06,
+        "colour0_light": 0.05,
+        "colour3_light": 0.0,
+        "colour1_light": 0.0,
+        "colour1_base": 0.0,
+        "colour3_base": 0.0,
+        "colour3_dark": 0.0,
+        "colour1_darker": 0.0,
+        "colour2_darker": 0.01,
+        "colour1_lighter": 0.0,
+        "colour3_lighter": 0.0,
+        "colour1_dark": 0.0,
+        "colour2_dark": 0.07,
+        "colour3_darker": 0.0,
+        "colour0_darker": 0.27,
+        "colour0_base": 0.53
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.35,
+      "probabilities": {
+        "colour1_base": 0.02,
+        "colour0_base": 0.43,
+        "colour1_lighter": 0.0,
+        "colour1_darker": 0.0,
+        "colour1_dark": 0.01,
+        "colour0_dark": 0.12,
+        "colour0_darker": 0.32,
+        "colour0_light": 0.1,
+        "colour1_light": 0.0
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_darker",
+      "confidence": 0.32,
+      "probabilities": {
+        "colour1_base": 0.03,
+        "colour0_base": 0.27,
+        "colour1_lighter": 0.01,
+        "colour1_darker": 0.01,
+        "colour1_dark": 0.03,
+        "colour0_dark": 0.15,
+        "colour0_darker": 0.39,
+        "colour0_light": 0.1,
+        "colour1_light": 0.01
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.3,
+      "probabilities": {
+        "colour1_base": 0.05,
+        "colour0_base": 0.37,
+        "colour1_lighter": 0.01,
+        "colour1_darker": 0.01,
+        "colour1_dark": 0.03,
+        "colour0_dark": 0.09,
+        "colour0_darker": 0.34,
+        "colour0_light": 0.09,
+        "colour1_light": 0.01
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.41,
+      "probabilities": {
+        "colour1_light": 0.0,
+        "colour1_base": 0.02,
+        "colour1_dark": 0.01,
+        "colour1_lighter": 0.0,
+        "colour0_light": 0.05,
+        "colour1_darker": 0.0,
+        "colour0_base": 0.47,
+        "colour0_dark": 0.06,
+        "colour0_darker": 0.39
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.35,
+      "probabilities": {
+        "colour0_dark": 0.08,
+        "colour1_base": 0.02,
+        "colour1_dark": 0.01,
+        "colour1_lighter": 0.0,
+        "colour0_light": 0.03,
+        "colour1_darker": 0.0,
+        "colour0_base": 0.43,
+        "colour1_light": 0.0,
+        "colour0_darker": 0.43
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.42,
+      "probabilities": {
+        "colour0_dark": 0.06,
+        "colour1_base": 0.02,
+        "colour1_dark": 0.01,
+        "colour1_lighter": 0.0,
+        "colour0_light": 0.06,
+        "colour1_darker": 0.0,
+        "colour0_base": 0.49,
+        "colour1_light": 0.0,
+        "colour0_darker": 0.36
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.9,
+      "probabilities": {
+        "colour0_darker": 0.05,
+        "colour3_darker": 0.0,
+        "colour0_dark": 0.91,
+        "colour1_darker": 0.01,
+        "colour3_light": 0.0,
+        "colour3_dark": 0.0,
+        "colour3_lighter": 0.02,
+        "colour3_base": 0.01
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.8,
+      "probabilities": {
+        "colour0_darker": 0.09,
+        "colour3_darker": 0.0,
+        "colour0_dark": 0.82,
+        "colour1_darker": 0.02,
+        "colour3_light": 0.01,
+        "colour3_dark": 0.0,
+        "colour3_lighter": 0.03,
+        "colour3_base": 0.03
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.85,
+      "probabilities": {
+        "colour0_darker": 0.07,
+        "colour3_darker": 0.0,
+        "colour0_dark": 0.87,
+        "colour3_light": 0.0,
+        "colour1_darker": 0.01,
+        "colour3_dark": 0.0,
+        "colour3_lighter": 0.02,
+        "colour3_base": 0.03
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.8,
+      "probabilities": {
+        "colour0_dark": 0.83,
+        "colour3_base": 0.05,
+        "colour1_darker": 0.01,
+        "colour0_darker": 0.03,
+        "colour3_darker": 0.0,
+        "colour3_dark": 0.01,
+        "colour3_light": 0.01,
+        "colour3_lighter": 0.06
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.83,
+      "probabilities": {
+        "colour0_dark": 0.85,
+        "colour3_base": 0.05,
+        "colour1_darker": 0.01,
+        "colour0_darker": 0.04,
+        "colour3_darker": 0.01,
+        "colour3_dark": 0.01,
+        "colour3_light": 0.01,
+        "colour3_lighter": 0.02
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.8,
+      "probabilities": {
+        "colour0_dark": 0.83,
+        "colour3_base": 0.08,
+        "colour1_darker": 0.01,
+        "colour0_darker": 0.03,
+        "colour3_darker": 0.0,
+        "colour3_dark": 0.01,
+        "colour3_light": 0.01,
+        "colour3_lighter": 0.03
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.36,
+      "probabilities": {
+        "colour1_darker": 0.04,
+        "colour0_darker": 0.06,
+        "colour0_base": 0.39,
+        "colour0_dark": 0.51
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.43,
+      "probabilities": {
+        "colour1_darker": 0.06,
+        "colour0_darker": 0.12,
+        "colour0_base": 0.25,
+        "colour0_dark": 0.57
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.39,
+      "probabilities": {
+        "colour1_darker": 0.05,
+        "colour0_darker": 0.08,
+        "colour0_base": 0.33,
+        "colour0_dark": 0.54
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.39,
+      "probabilities": {
+        "colour0_darker": 0.08,
+        "colour0_dark": 0.23,
+        "colour0_base": 0.55,
+        "colour1_darker": 0.14
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.29,
+      "probabilities": {
+        "colour0_darker": 0.1,
+        "colour0_dark": 0.29,
+        "colour0_base": 0.47,
+        "colour1_darker": 0.14
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.42,
+      "probabilities": {
+        "colour0_darker": 0.07,
+        "colour0_dark": 0.19,
+        "colour0_base": 0.57,
+        "colour1_darker": 0.17
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.36,
+      "probabilities": {
+        "colour2_darker": 0.02,
+        "colour3_light": 0.02,
+        "colour3_dark": 0.01,
+        "colour0_dark": 0.13,
+        "colour3_darker": 0.01,
+        "colour0_light": 0.25,
+        "colour0_lighter": 0.09,
+        "colour3_base": 0.02,
+        "colour0_darker": 0.02,
+        "colour0_base": 0.41,
+        "colour3_lighter": 0.02
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.35,
+      "probabilities": {
+        "colour2_darker": 0.02,
+        "colour3_light": 0.01,
+        "colour3_dark": 0.01,
+        "colour0_darker": 0.05,
+        "colour3_darker": 0.01,
+        "colour0_light": 0.14,
+        "colour0_lighter": 0.08,
+        "colour0_dark": 0.22,
+        "colour3_base": 0.02,
+        "colour0_base": 0.41,
+        "colour3_lighter": 0.03
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.26,
+      "probabilities": {
+        "colour2_darker": 0.03,
+        "colour3_light": 0.02,
+        "colour3_dark": 0.01,
+        "colour0_darker": 0.03,
+        "colour3_darker": 0.01,
+        "colour0_light": 0.16,
+        "colour0_lighter": 0.06,
+        "colour3_base": 0.04,
+        "colour0_dark": 0.17,
+        "colour0_base": 0.33,
+        "colour3_lighter": 0.14
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.76,
+      "probabilities": {
+        "colour0_lighter": 0.02,
+        "colour3_dark": 0.0,
+        "colour0_dark": 0.06,
+        "colour3_darker": 0.01,
+        "colour0_light": 0.06,
+        "colour3_base": 0.04,
+        "colour3_light": 0.01,
+        "colour0_base": 0.77,
+        "colour3_lighter": 0.01,
+        "colour2_darker": 0.01,
+        "colour0_darker": 0.01
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.74,
+      "probabilities": {
+        "colour0_lighter": 0.01,
+        "colour3_dark": 0.0,
+        "colour0_dark": 0.1,
+        "colour3_darker": 0.01,
+        "colour0_light": 0.04,
+        "colour3_base": 0.03,
+        "colour3_light": 0.01,
+        "colour0_base": 0.76,
+        "colour3_lighter": 0.01,
+        "colour0_darker": 0.02,
+        "colour2_darker": 0.01
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.76,
+      "probabilities": {
+        "colour0_lighter": 0.02,
+        "colour3_dark": 0.0,
+        "colour0_dark": 0.05,
+        "colour3_darker": 0.01,
+        "colour0_light": 0.04,
+        "colour3_base": 0.04,
+        "colour3_light": 0.0,
+        "colour0_base": 0.78,
+        "colour3_lighter": 0.03,
+        "colour2_darker": 0.01,
+        "colour0_darker": 0.02
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.68,
+      "probabilities": {
+        "colour0_dark": 0.05,
+        "colour0_light": 0.72,
+        "colour3_dark": 0.0,
+        "colour1_base": 0.01,
+        "colour1_lighter": 0.0,
+        "colour3_darker": 0.0,
+        "colour0_lighter": 0.1,
+        "colour0_darker": 0.02,
+        "colour2_dark": 0.0,
+        "colour0_base": 0.1,
+        "colour2_darker": 0.0,
+        "colour1_dark": 0.0,
+        "colour1_darker": 0.0,
+        "colour1_light": 0.0
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.5,
+      "probabilities": {
+        "colour1_lighter": 0.0,
+        "colour0_light": 0.53,
+        "colour3_dark": 0.0,
+        "colour1_base": 0.02,
+        "colour3_darker": 0.0,
+        "colour0_dark": 0.08,
+        "colour0_lighter": 0.14,
+        "colour0_darker": 0.07,
+        "colour2_dark": 0.0,
+        "colour1_dark": 0.0,
+        "colour0_base": 0.14,
+        "colour2_darker": 0.0,
+        "colour1_darker": 0.01,
+        "colour1_light": 0.0
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.42,
+      "probabilities": {
+        "colour1_lighter": 0.0,
+        "colour0_light": 0.47000000000000003,
+        "colour3_dark": 0.0,
+        "colour1_base": 0.03,
+        "colour3_darker": 0.0,
+        "colour0_dark": 0.1,
+        "colour0_lighter": 0.07,
+        "colour0_darker": 0.02,
+        "colour2_dark": 0.01,
+        "colour0_base": 0.28,
+        "colour1_dark": 0.0,
+        "colour2_darker": 0.0,
+        "colour1_darker": 0.01,
+        "colour1_light": 0.0
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.53,
+      "probabilities": {
+        "colour1_lighter": 0.0,
+        "colour0_light": 0.58,
+        "colour3_dark": 0.0,
+        "colour1_base": 0.03,
+        "colour0_dark": 0.04,
+        "colour3_darker": 0.0,
+        "colour0_lighter": 0.13,
+        "colour0_darker": 0.02,
+        "colour2_dark": 0.0,
+        "colour2_darker": 0.0,
+        "colour1_dark": 0.0,
+        "colour0_base": 0.18000000000000002,
+        "colour1_darker": 0.01,
+        "colour1_light": 0.01
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.38,
+      "probabilities": {
+        "colour1_lighter": 0.0,
+        "colour0_light": 0.44,
+        "colour3_dark": 0.0,
+        "colour1_base": 0.02,
+        "colour0_dark": 0.07,
+        "colour3_darker": 0.0,
+        "colour0_lighter": 0.12,
+        "colour0_darker": 0.03,
+        "colour2_dark": 0.0,
+        "colour2_darker": 0.0,
+        "colour1_dark": 0.0,
+        "colour0_base": 0.31,
+        "colour1_darker": 0.01,
+        "colour1_light": 0.0
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.41,
+      "probabilities": {
+        "colour1_lighter": 0.0,
+        "colour3_darker": 0.0,
+        "colour3_dark": 0.0,
+        "colour1_base": 0.02,
+        "colour0_light": 0.46,
+        "colour0_dark": 0.05,
+        "colour0_lighter": 0.08,
+        "colour0_darker": 0.02,
+        "colour2_dark": 0.0,
+        "colour0_base": 0.34,
+        "colour1_dark": 0.0,
+        "colour2_darker": 0.0,
+        "colour1_darker": 0.01,
+        "colour1_light": 0.01
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.64,
+      "probabilities": {
+        "colour0_dark": 0.74,
+        "colour1_dark": 0.01,
+        "colour0_darker": 0.25,
+        "colour1_darker": 0.0
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.64,
+      "probabilities": {
+        "colour0_dark": 0.73,
+        "colour1_dark": 0.01,
+        "colour0_darker": 0.26,
+        "colour1_darker": 0.0
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.66,
+      "probabilities": {
+        "colour0_dark": 0.75,
+        "colour1_dark": 0.01,
+        "colour0_darker": 0.24,
+        "colour1_darker": 0.0
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.57,
+      "probabilities": {
+        "colour1_dark": 0.01,
+        "colour1_darker": 0.0,
+        "colour0_dark": 0.68,
+        "colour0_darker": 0.31
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.49,
+      "probabilities": {
+        "colour1_dark": 0.01,
+        "colour1_darker": 0.01,
+        "colour0_dark": 0.61,
+        "colour0_darker": 0.37
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.52,
+      "probabilities": {
+        "colour1_dark": 0.01,
+        "colour1_darker": 0.01,
+        "colour0_dark": 0.64,
+        "colour0_darker": 0.34
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.78,
+      "probabilities": {
+        "colour2_light": 0.0,
+        "colour0_dark": 0.07,
+        "colour2_lighter": 0.0,
+        "colour2_darker": 0.0,
+        "colour2_base": 0.0,
+        "colour2_dark": 0.0,
+        "colour1_darker": 0.0,
+        "colour0_base": 0.09,
+        "colour0_darker": 0.03,
+        "colour0_light": 0.81
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.72,
+      "probabilities": {
+        "colour2_light": 0.0,
+        "colour0_dark": 0.09,
+        "colour2_lighter": 0.0,
+        "colour2_darker": 0.0,
+        "colour2_base": 0.01,
+        "colour2_dark": 0.0,
+        "colour0_base": 0.09,
+        "colour1_darker": 0.0,
+        "colour0_darker": 0.05,
+        "colour0_light": 0.76
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.77,
+      "probabilities": {
+        "colour2_light": 0.0,
+        "colour0_dark": 0.07,
+        "colour2_lighter": 0.0,
+        "colour2_darker": 0.0,
+        "colour2_base": 0.01,
+        "colour1_darker": 0.0,
+        "colour0_base": 0.09,
+        "colour2_dark": 0.0,
+        "colour0_darker": 0.02,
+        "colour0_light": 0.8
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.5,
+      "probabilities": {
+        "colour2_dark": 0.0,
+        "colour2_base": 0.0,
+        "colour0_light": 0.55,
+        "colour1_darker": 0.0,
+        "colour2_light": 0.0,
+        "colour0_darker": 0.02,
+        "colour0_dark": 0.04,
+        "colour2_lighter": 0.0,
+        "colour2_darker": 0.0,
+        "colour0_base": 0.38
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.49,
+      "probabilities": {
+        "colour0_light": 0.55,
+        "colour2_base": 0.0,
+        "colour2_dark": 0.0,
+        "colour0_darker": 0.03,
+        "colour2_light": 0.0,
+        "colour1_darker": 0.0,
+        "colour0_dark": 0.05,
+        "colour2_lighter": 0.0,
+        "colour2_darker": 0.0,
+        "colour0_base": 0.37
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.55,
+      "probabilities": {
+        "colour0_light": 0.6,
+        "colour2_base": 0.01,
+        "colour2_dark": 0.0,
+        "colour1_darker": 0.0,
+        "colour2_light": 0.0,
+        "colour0_darker": 0.02,
+        "colour0_dark": 0.04,
+        "colour2_lighter": 0.0,
+        "colour2_darker": 0.0,
+        "colour0_base": 0.33
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.34,
+      "probabilities": {
+        "colour0_light": 0.17,
+        "colour2_darker": 0.02,
+        "colour0_darker": 0.29,
+        "colour1_lighter": 0.0,
+        "colour1_base": 0.01,
+        "colour1_darker": 0.0,
+        "colour0_base": 0.4,
+        "colour1_dark": 0.0,
+        "colour1_light": 0.01,
+        "colour0_dark": 0.1
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_darker",
+      "confidence": 0.29,
+      "probabilities": {
+        "colour0_light": 0.15000000000000002,
+        "colour2_darker": 0.02,
+        "colour0_darker": 0.37,
+        "colour1_lighter": 0.0,
+        "colour1_base": 0.01,
+        "colour1_darker": 0.0,
+        "colour0_base": 0.3,
+        "colour1_dark": 0.01,
+        "colour0_dark": 0.14,
+        "colour1_light": 0.0
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_darker",
+      "confidence": 0.36,
+      "probabilities": {
+        "colour0_light": 0.1,
+        "colour2_darker": 0.03,
+        "colour0_darker": 0.42,
+        "colour1_lighter": 0.0,
+        "colour1_base": 0.02,
+        "colour1_darker": 0.0,
+        "colour0_base": 0.29,
+        "colour1_dark": 0.01,
+        "colour0_dark": 0.12,
+        "colour1_light": 0.01
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.48,
+      "probabilities": {
+        "colour1_light": 0.0,
+        "colour0_darker": 0.35,
+        "colour0_dark": 0.05,
+        "colour1_lighter": 0.0,
+        "colour1_darker": 0.0,
+        "colour1_base": 0.01,
+        "colour2_darker": 0.01,
+        "colour0_base": 0.54,
+        "colour0_light": 0.04,
+        "colour1_dark": 0.0
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.42,
+      "probabilities": {
+        "colour0_darker": 0.39,
+        "colour1_light": 0.0,
+        "colour0_dark": 0.07,
+        "colour1_lighter": 0.0,
+        "colour1_darker": 0.0,
+        "colour1_base": 0.01,
+        "colour2_darker": 0.01,
+        "colour0_base": 0.49,
+        "colour0_light": 0.03,
+        "colour1_dark": 0.0
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.49,
+      "probabilities": {
+        "colour1_light": 0.0,
+        "colour0_darker": 0.32,
+        "colour0_dark": 0.05,
+        "colour1_lighter": 0.0,
+        "colour2_darker": 0.01,
+        "colour1_base": 0.01,
+        "colour1_darker": 0.0,
+        "colour0_base": 0.54,
+        "colour1_dark": 0.0,
+        "colour0_light": 0.07
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.28,
+      "probabilities": {
+        "colour1_base": 0.04,
+        "colour0_base": 0.37,
+        "colour1_darker": 0.03,
+        "colour1_dark": 0.01,
+        "colour0_lighter": 0.12,
+        "colour0_dark": 0.2,
+        "colour0_darker": 0.1,
+        "colour0_light": 0.12,
+        "colour1_light": 0.01
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.21,
+      "probabilities": {
+        "colour1_base": 0.03,
+        "colour0_base": 0.3,
+        "colour1_darker": 0.02,
+        "colour1_dark": 0.01,
+        "colour0_lighter": 0.17,
+        "colour0_dark": 0.18,
+        "colour0_darker": 0.08,
+        "colour0_light": 0.2,
+        "colour1_light": 0.01
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.22,
+      "probabilities": {
+        "colour1_base": 0.04,
+        "colour0_base": 0.31,
+        "colour1_darker": 0.03,
+        "colour1_dark": 0.01,
+        "colour0_lighter": 0.12,
+        "colour0_dark": 0.22,
+        "colour0_darker": 0.1,
+        "colour0_light": 0.16,
+        "colour1_light": 0.01
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.53,
+      "probabilities": {
+        "colour0_base": 0.58,
+        "colour1_darker": 0.01,
+        "colour0_darker": 0.09,
+        "colour1_base": 0.03,
+        "colour0_dark": 0.08,
+        "colour0_lighter": 0.06,
+        "colour1_light": 0.01,
+        "colour0_light": 0.14,
+        "colour1_dark": 0.0
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.42,
+      "probabilities": {
+        "colour1_darker": 0.01,
+        "colour0_base": 0.49,
+        "colour0_darker": 0.14,
+        "colour1_base": 0.02,
+        "colour0_dark": 0.11,
+        "colour0_lighter": 0.05,
+        "colour1_light": 0.0,
+        "colour0_light": 0.17,
+        "colour1_dark": 0.01
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.46,
+      "probabilities": {
+        "colour0_base": 0.53,
+        "colour1_darker": 0.01,
+        "colour0_darker": 0.13,
+        "colour1_base": 0.03,
+        "colour0_dark": 0.1,
+        "colour0_light": 0.16,
+        "colour1_light": 0.0,
+        "colour0_lighter": 0.04,
+        "colour1_dark": 0.0
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.4,
+      "probabilities": {
+        "colour0_darker": 0.32,
+        "colour2_darker": 0.01,
+        "colour1_dark": 0.0,
+        "colour1_lighter": 0.0,
+        "colour3_dark": 0.01,
+        "colour3_darker": 0.01,
+        "colour1_darker": 0.0,
+        "colour0_light": 0.12,
+        "colour1_light": 0.0,
+        "colour0_base": 0.46,
+        "colour1_base": 0.0,
+        "colour0_dark": 0.07
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_darker",
+      "confidence": 0.36,
+      "probabilities": {
+        "colour0_darker": 0.39999999999999997,
+        "colour2_darker": 0.02,
+        "colour1_dark": 0.0,
+        "colour3_darker": 0.01,
+        "colour3_dark": 0.02,
+        "colour1_lighter": 0.0,
+        "colour1_darker": 0.0,
+        "colour0_light": 0.1,
+        "colour1_base": 0.01,
+        "colour0_base": 0.33,
+        "colour1_light": 0.0,
+        "colour0_dark": 0.11
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.34,
+      "probabilities": {
+        "colour0_darker": 0.37,
+        "colour2_darker": 0.02,
+        "colour1_dark": 0.0,
+        "colour3_darker": 0.01,
+        "colour3_dark": 0.01,
+        "colour1_lighter": 0.0,
+        "colour1_darker": 0.0,
+        "colour0_light": 0.07,
+        "colour1_light": 0.0,
+        "colour0_base": 0.4,
+        "colour1_base": 0.01,
+        "colour0_dark": 0.11
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.41,
+      "probabilities": {
+        "colour1_darker": 0.0,
+        "colour3_dark": 0.01,
+        "colour3_darker": 0.01,
+        "colour0_dark": 0.03,
+        "colour0_light": 0.18,
+        "colour1_base": 0.0,
+        "colour1_lighter": 0.0,
+        "colour1_light": 0.0,
+        "colour0_base": 0.47000000000000003,
+        "colour0_darker": 0.28,
+        "colour2_darker": 0.02,
+        "colour1_dark": 0.0
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.56,
+      "probabilities": {
+        "colour3_dark": 0.01,
+        "colour1_darker": 0.0,
+        "colour0_dark": 0.04,
+        "colour1_base": 0.0,
+        "colour0_light": 0.05,
+        "colour3_darker": 0.01,
+        "colour1_lighter": 0.0,
+        "colour1_light": 0.0,
+        "colour0_base": 0.6,
+        "colour2_darker": 0.01,
+        "colour0_darker": 0.28,
+        "colour1_dark": 0.0
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.47,
+      "probabilities": {
+        "colour3_dark": 0.01,
+        "colour1_darker": 0.0,
+        "colour0_dark": 0.04,
+        "colour3_darker": 0.01,
+        "colour0_light": 0.03,
+        "colour1_base": 0.0,
+        "colour1_lighter": 0.0,
+        "colour1_light": 0.0,
+        "colour0_base": 0.53,
+        "colour0_darker": 0.36,
+        "colour2_darker": 0.02,
+        "colour1_dark": 0.0
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.73,
+      "probabilities": {
+        "colour2_lighter": 0.0,
+        "colour2_darker": 0.0,
+        "colour2_base": 0.02,
+        "colour0_base": 0.14,
+        "colour2_dark": 0.01,
+        "colour0_dark": 0.04,
+        "colour0_darker": 0.02,
+        "colour0_light": 0.77,
+        "colour2_light": 0.0
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.73,
+      "probabilities": {
+        "colour2_lighter": 0.0,
+        "colour2_darker": 0.0,
+        "colour2_base": 0.02,
+        "colour0_base": 0.14,
+        "colour2_dark": 0.01,
+        "colour0_dark": 0.04,
+        "colour0_darker": 0.02,
+        "colour0_light": 0.77,
+        "colour2_light": 0.0
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.69,
+      "probabilities": {
+        "colour2_lighter": 0.0,
+        "colour2_darker": 0.0,
+        "colour2_base": 0.03,
+        "colour0_base": 0.16,
+        "colour2_dark": 0.01,
+        "colour0_dark": 0.05,
+        "colour0_darker": 0.02,
+        "colour0_light": 0.73,
+        "colour2_light": 0.0
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.61,
+      "probabilities": {
+        "colour2_base": 0.0,
+        "colour2_lighter": 0.0,
+        "colour2_light": 0.0,
+        "colour2_dark": 0.0,
+        "colour0_light": 0.65,
+        "colour0_dark": 0.03,
+        "colour0_darker": 0.02,
+        "colour0_base": 0.3,
+        "colour2_darker": 0.0
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.66,
+      "probabilities": {
+        "colour2_base": 0.0,
+        "colour2_lighter": 0.0,
+        "colour2_light": 0.0,
+        "colour2_dark": 0.0,
+        "colour0_light": 0.7,
+        "colour0_dark": 0.03,
+        "colour0_darker": 0.02,
+        "colour0_base": 0.25,
+        "colour2_darker": 0.0
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.57,
+      "probabilities": {
+        "colour2_darker": 0.0,
+        "colour2_lighter": 0.0,
+        "colour2_light": 0.0,
+        "colour2_dark": 0.0,
+        "colour0_light": 0.63,
+        "colour0_darker": 0.01,
+        "colour0_dark": 0.02,
+        "colour0_base": 0.34,
+        "colour2_base": 0.0
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.71,
+      "probabilities": {
+        "colour3_base": 0.02,
+        "colour1_darker": 0.01,
+        "colour0_darker": 0.05,
+        "colour0_base": 0.74,
+        "colour0_dark": 0.18,
+        "colour3_dark": 0.0,
+        "colour3_light": 0.0,
+        "colour3_lighter": 0.0,
+        "colour3_darker": 0.0
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.54,
+      "probabilities": {
+        "colour3_base": 0.03,
+        "colour1_darker": 0.02,
+        "colour0_darker": 0.09,
+        "colour0_base": 0.59,
+        "colour0_dark": 0.24,
+        "colour3_dark": 0.01,
+        "colour3_light": 0.01,
+        "colour3_lighter": 0.01,
+        "colour3_darker": 0.0
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.53,
+      "probabilities": {
+        "colour3_base": 0.07,
+        "colour1_darker": 0.02,
+        "colour0_darker": 0.07,
+        "colour3_dark": 0.01,
+        "colour0_dark": 0.22,
+        "colour0_base": 0.58,
+        "colour3_light": 0.01,
+        "colour3_lighter": 0.01,
+        "colour3_darker": 0.01
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.84,
+      "probabilities": {
+        "colour3_lighter": 0.0,
+        "colour0_dark": 0.07,
+        "colour3_darker": 0.0,
+        "colour3_dark": 0.0,
+        "colour1_darker": 0.0,
+        "colour0_base": 0.85,
+        "colour3_light": 0.0,
+        "colour3_base": 0.01,
+        "colour0_darker": 0.07
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.79,
+      "probabilities": {
+        "colour3_lighter": 0.0,
+        "colour0_dark": 0.08,
+        "colour3_darker": 0.0,
+        "colour3_dark": 0.0,
+        "colour1_darker": 0.0,
+        "colour0_base": 0.81,
+        "colour3_light": 0.0,
+        "colour3_base": 0.02,
+        "colour0_darker": 0.08
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.79,
+      "probabilities": {
+        "colour3_lighter": 0.0,
+        "colour0_dark": 0.06,
+        "colour3_darker": 0.0,
+        "colour3_dark": 0.0,
+        "colour1_darker": 0.01,
+        "colour0_base": 0.81,
+        "colour3_light": 0.0,
+        "colour3_base": 0.03,
+        "colour0_darker": 0.08
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.28,
+      "probabilities": {
+        "colour0_lighter": 0.28,
+        "colour1_darker": 0.13,
+        "colour0_base": 0.4,
+        "colour0_dark": 0.06,
+        "colour0_darker": 0.04,
+        "colour0_light": 0.09
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.35,
+      "probabilities": {
+        "colour0_lighter": 0.45,
+        "colour1_darker": 0.11,
+        "colour0_base": 0.24,
+        "colour0_dark": 0.08,
+        "colour0_darker": 0.06,
+        "colour0_light": 0.06
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.41,
+      "probabilities": {
+        "colour0_lighter": 0.51,
+        "colour1_darker": 0.09,
+        "colour0_base": 0.25,
+        "colour0_dark": 0.07,
+        "colour0_darker": 0.03,
+        "colour0_light": 0.05
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.63,
+      "probabilities": {
+        "colour0_darker": 0.02,
+        "colour0_dark": 0.04,
+        "colour1_darker": 0.05,
+        "colour0_base": 0.69,
+        "colour0_light": 0.05,
+        "colour0_lighter": 0.15
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.61,
+      "probabilities": {
+        "colour0_darker": 0.04,
+        "colour0_dark": 0.05,
+        "colour1_darker": 0.06,
+        "colour0_light": 0.03,
+        "colour0_base": 0.67,
+        "colour0_lighter": 0.14
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.56,
+      "probabilities": {
+        "colour0_darker": 0.03,
+        "colour0_dark": 0.04,
+        "colour1_darker": 0.07,
+        "colour0_base": 0.63,
+        "colour0_light": 0.04,
+        "colour0_lighter": 0.19
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.86,
+      "probabilities": {
+        "colour1_dark": 0.0,
+        "colour1_base": 0.0,
+        "colour1_darker": 0.0,
+        "colour1_lighter": 0.0,
+        "colour2_darker": 0.0,
+        "colour0_dark": 0.88,
+        "colour0_darker": 0.12,
+        "colour1_light": 0.0
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.81,
+      "probabilities": {
+        "colour1_dark": 0.0,
+        "colour1_lighter": 0.0,
+        "colour1_darker": 0.0,
+        "colour1_base": 0.0,
+        "colour2_darker": 0.0,
+        "colour0_dark": 0.85,
+        "colour0_darker": 0.15,
+        "colour1_light": 0.0
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.82,
+      "probabilities": {
+        "colour1_dark": 0.0,
+        "colour1_lighter": 0.0,
+        "colour1_darker": 0.0,
+        "colour1_base": 0.01,
+        "colour2_darker": 0.0,
+        "colour0_dark": 0.84,
+        "colour0_darker": 0.15,
+        "colour1_light": 0.0
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.85,
+      "probabilities": {
+        "colour1_light": 0.0,
+        "colour1_dark": 0.0,
+        "colour1_lighter": 0.0,
+        "colour2_darker": 0.0,
+        "colour0_darker": 0.12,
+        "colour1_base": 0.0,
+        "colour1_darker": 0.0,
+        "colour0_dark": 0.88
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.86,
+      "probabilities": {
+        "colour1_light": 0.0,
+        "colour1_dark": 0.0,
+        "colour1_lighter": 0.0,
+        "colour2_darker": 0.0,
+        "colour0_darker": 0.11,
+        "colour1_base": 0.0,
+        "colour1_darker": 0.0,
+        "colour0_dark": 0.89
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.81,
+      "probabilities": {
+        "colour1_light": 0.0,
+        "colour1_dark": 0.01,
+        "colour1_lighter": 0.0,
+        "colour2_darker": 0.01,
+        "colour0_darker": 0.14,
+        "colour1_base": 0.01,
+        "colour1_darker": 0.0,
+        "colour0_dark": 0.83
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.64,
+      "probabilities": {
+        "colour1_light": 0.02,
+        "colour0_darker": 0.01,
+        "colour0_dark": 0.04,
+        "colour1_dark": 0.0,
+        "colour1_darker": 0.0,
+        "colour1_base": 0.02,
+        "colour0_base": 0.11,
+        "colour2_darker": 0.01,
+        "colour0_lighter": 0.1,
+        "colour0_light": 0.68
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.49,
+      "probabilities": {
+        "colour1_light": 0.02,
+        "colour0_base": 0.08,
+        "colour0_dark": 0.1,
+        "colour1_darker": 0.0,
+        "colour0_darker": 0.06,
+        "colour1_base": 0.04,
+        "colour1_dark": 0.0,
+        "colour2_darker": 0.03,
+        "colour0_lighter": 0.13,
+        "colour0_light": 0.54
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.47,
+      "probabilities": {
+        "colour1_light": 0.02,
+        "colour0_darker": 0.04,
+        "colour0_dark": 0.1,
+        "colour1_dark": 0.0,
+        "colour0_base": 0.12,
+        "colour1_base": 0.05,
+        "colour1_darker": 0.0,
+        "colour2_darker": 0.03,
+        "colour0_lighter": 0.11,
+        "colour0_light": 0.53
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.51,
+      "probabilities": {
+        "colour2_darker": 0.01,
+        "colour0_light": 0.55,
+        "colour1_base": 0.03,
+        "colour0_dark": 0.03,
+        "colour0_base": 0.28,
+        "colour1_light": 0.03,
+        "colour0_darker": 0.01,
+        "colour0_lighter": 0.06,
+        "colour1_dark": 0.0,
+        "colour1_darker": 0.0
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.46,
+      "probabilities": {
+        "colour2_darker": 0.01,
+        "colour0_light": 0.52,
+        "colour1_base": 0.03,
+        "colour0_dark": 0.04,
+        "colour1_light": 0.03,
+        "colour0_base": 0.25,
+        "colour0_darker": 0.03,
+        "colour0_lighter": 0.09,
+        "colour1_dark": 0.0,
+        "colour1_darker": 0.0
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.43,
+      "probabilities": {
+        "colour2_darker": 0.01,
+        "colour0_light": 0.49,
+        "colour1_base": 0.04,
+        "colour0_dark": 0.04,
+        "colour1_light": 0.04,
+        "colour0_base": 0.3,
+        "colour0_darker": 0.02,
+        "colour0_lighter": 0.06,
+        "colour1_dark": 0.0,
+        "colour1_darker": 0.0
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_darker",
+      "confidence": 0.97,
+      "probabilities": {
+        "colour1_darker": 0.0,
+        "colour1_lighter": 0.0,
+        "colour1_base": 0.02,
+        "colour1_light": 0.0,
+        "colour1_dark": 0.0,
+        "colour0_darker": 0.98
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_darker",
+      "confidence": 0.93,
+      "probabilities": {
+        "colour1_darker": 0.01,
+        "colour1_lighter": 0.0,
+        "colour1_light": 0.0,
+        "colour1_base": 0.03,
+        "colour1_dark": 0.01,
+        "colour0_darker": 0.95
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_darker",
+      "confidence": 0.96,
+      "probabilities": {
+        "colour1_darker": 0.0,
+        "colour1_lighter": 0.0,
+        "colour1_base": 0.02,
+        "colour1_light": 0.0,
+        "colour1_dark": 0.0,
+        "colour0_darker": 0.98
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_darker",
+      "confidence": 0.83,
+      "probabilities": {
+        "colour0_darker": 0.86,
+        "colour1_lighter": 0.01,
+        "colour1_base": 0.09,
+        "colour1_dark": 0.02,
+        "colour1_light": 0.01,
+        "colour1_darker": 0.01
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_darker",
+      "confidence": 0.82,
+      "probabilities": {
+        "colour0_darker": 0.84,
+        "colour1_lighter": 0.01,
+        "colour1_base": 0.09,
+        "colour1_dark": 0.03,
+        "colour1_light": 0.01,
+        "colour1_darker": 0.02
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_darker",
+      "confidence": 0.81,
+      "probabilities": {
+        "colour0_darker": 0.85,
+        "colour1_lighter": 0.0,
+        "colour1_base": 0.11,
+        "colour1_dark": 0.02,
+        "colour1_light": 0.01,
+        "colour1_darker": 0.01
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.46,
+      "probabilities": {
+        "colour0_lighter": 0.02,
+        "colour0_darker": 0.23,
+        "colour0_dark": 0.05,
+        "colour0_light": 0.09,
+        "colour0_base": 0.54,
+        "colour1_darker": 0.07
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.22,
+      "probabilities": {
+        "colour0_lighter": 0.05,
+        "colour0_darker": 0.32,
+        "colour0_dark": 0.07,
+        "colour0_light": 0.12,
+        "colour0_base": 0.36,
+        "colour1_darker": 0.08
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.27,
+      "probabilities": {
+        "colour0_lighter": 0.02,
+        "colour1_darker": 0.1,
+        "colour0_dark": 0.08,
+        "colour0_light": 0.06,
+        "colour0_base": 0.39,
+        "colour0_darker": 0.35
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.61,
+      "probabilities": {
+        "colour0_darker": 0.16,
+        "colour0_dark": 0.02,
+        "colour1_darker": 0.08,
+        "colour0_base": 0.67,
+        "colour0_light": 0.05,
+        "colour0_lighter": 0.01
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.53,
+      "probabilities": {
+        "colour0_darker": 0.24,
+        "colour0_dark": 0.03,
+        "colour1_darker": 0.07,
+        "colour0_base": 0.61,
+        "colour0_light": 0.04,
+        "colour0_lighter": 0.01
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.34,
+      "probabilities": {
+        "colour0_darker": 0.38,
+        "colour0_dark": 0.03,
+        "colour1_darker": 0.08,
+        "colour0_base": 0.45,
+        "colour0_light": 0.04,
+        "colour0_lighter": 0.02
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.22,
+      "probabilities": {
+        "colour2_dark": 0.11,
+        "colour1_base": 0.02,
+        "colour0_base": 0.29,
+        "colour0_lighter": 0.03,
+        "colour0_darker": 0.06,
+        "colour2_darker": 0.09,
+        "colour1_lighter": 0.01,
+        "colour0_dark": 0.24,
+        "colour1_darker": 0.0,
+        "colour0_light": 0.14,
+        "colour1_dark": 0.01,
+        "colour1_light": 0.0
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.2,
+      "probabilities": {
+        "colour2_dark": 0.1,
+        "colour1_base": 0.02,
+        "colour1_darker": 0.0,
+        "colour0_lighter": 0.06,
+        "colour0_darker": 0.05,
+        "colour2_darker": 0.07,
+        "colour1_lighter": 0.01,
+        "colour0_dark": 0.26,
+        "colour0_base": 0.17,
+        "colour1_dark": 0.02,
+        "colour0_light": 0.23,
+        "colour1_light": 0.01
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.29,
+      "probabilities": {
+        "colour2_dark": 0.08,
+        "colour0_base": 0.18,
+        "colour1_base": 0.04,
+        "colour0_lighter": 0.04,
+        "colour0_darker": 0.05,
+        "colour2_darker": 0.07,
+        "colour1_lighter": 0.01,
+        "colour1_darker": 0.01,
+        "colour0_dark": 0.35,
+        "colour0_light": 0.14,
+        "colour1_dark": 0.02,
+        "colour1_light": 0.01
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.38,
+      "probabilities": {
+        "colour0_dark": 0.2,
+        "colour0_light": 0.06,
+        "colour1_lighter": 0.0,
+        "colour1_base": 0.01,
+        "colour0_lighter": 0.02,
+        "colour0_darker": 0.05,
+        "colour2_dark": 0.15000000000000002,
+        "colour0_base": 0.44,
+        "colour2_darker": 0.06,
+        "colour1_dark": 0.01,
+        "colour1_darker": 0.0,
+        "colour1_light": 0.0
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.43,
+      "probabilities": {
+        "colour0_dark": 0.23,
+        "colour0_light": 0.06,
+        "colour1_lighter": 0.0,
+        "colour1_base": 0.01,
+        "colour0_lighter": 0.01,
+        "colour0_darker": 0.06,
+        "colour2_dark": 0.08,
+        "colour2_darker": 0.05,
+        "colour1_dark": 0.01,
+        "colour0_base": 0.49,
+        "colour1_darker": 0.0,
+        "colour1_light": 0.0
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.5,
+      "probabilities": {
+        "colour0_dark": 0.16,
+        "colour0_light": 0.07,
+        "colour1_lighter": 0.0,
+        "colour1_base": 0.02,
+        "colour0_lighter": 0.02,
+        "colour0_darker": 0.04,
+        "colour2_dark": 0.08,
+        "colour2_darker": 0.04,
+        "colour1_dark": 0.01,
+        "colour0_base": 0.55,
+        "colour1_darker": 0.0,
+        "colour1_light": 0.0
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.33,
+      "probabilities": {
+        "colour2_base": 0.02,
+        "colour0_light": 0.11,
+        "colour2_darker": 0.0,
+        "colour2_lighter": 0.0,
+        "colour0_base": 0.39,
+        "colour1_darker": 0.04,
+        "colour0_dark": 0.32,
+        "colour0_lighter": 0.05,
+        "colour2_dark": 0.01,
+        "colour0_darker": 0.05,
+        "colour2_light": 0.01
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.28,
+      "probabilities": {
+        "colour2_base": 0.03,
+        "colour0_light": 0.12,
+        "colour0_dark": 0.31,
+        "colour2_lighter": 0.0,
+        "colour0_base": 0.33,
+        "colour1_darker": 0.06,
+        "colour2_darker": 0.01,
+        "colour0_lighter": 0.04,
+        "colour2_light": 0.01,
+        "colour2_dark": 0.02,
+        "colour0_darker": 0.07
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.33,
+      "probabilities": {
+        "colour2_base": 0.04,
+        "colour0_light": 0.07,
+        "colour0_dark": 0.38,
+        "colour2_lighter": 0.01,
+        "colour0_base": 0.31,
+        "colour1_darker": 0.06,
+        "colour2_dark": 0.02,
+        "colour0_lighter": 0.03,
+        "colour0_darker": 0.06,
+        "colour2_darker": 0.01,
+        "colour2_light": 0.01
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.52,
+      "probabilities": {
+        "colour0_lighter": 0.03,
+        "colour2_lighter": 0.0,
+        "colour0_base": 0.5700000000000001,
+        "colour0_darker": 0.03,
+        "colour2_dark": 0.0,
+        "colour2_base": 0.01,
+        "colour0_dark": 0.21,
+        "colour0_light": 0.12,
+        "colour2_light": 0.01,
+        "colour2_darker": 0.0,
+        "colour1_darker": 0.02
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.68,
+      "probabilities": {
+        "colour0_lighter": 0.02,
+        "colour2_lighter": 0.0,
+        "colour0_base": 0.71,
+        "colour0_darker": 0.03,
+        "colour2_dark": 0.0,
+        "colour2_base": 0.01,
+        "colour0_light": 0.05,
+        "colour2_light": 0.0,
+        "colour0_dark": 0.16,
+        "colour2_darker": 0.0,
+        "colour1_darker": 0.02
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.71,
+      "probabilities": {
+        "colour1_darker": 0.02,
+        "colour2_lighter": 0.0,
+        "colour0_base": 0.74,
+        "colour0_darker": 0.02,
+        "colour2_dark": 0.01,
+        "colour2_base": 0.02,
+        "colour2_light": 0.0,
+        "colour0_light": 0.06,
+        "colour0_dark": 0.11,
+        "colour2_darker": 0.0,
+        "colour0_lighter": 0.02
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_darker",
+      "confidence": 0.99,
+      "probabilities": {
+        "colour1_darker": 0.0,
+        "colour1_dark": 0.0,
+        "colour1_lighter": 0.0,
+        "colour1_base": 0.01,
+        "colour0_darker": 0.99,
+        "colour1_light": 0.0
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_darker",
+      "confidence": 0.98,
+      "probabilities": {
+        "colour1_lighter": 0.0,
+        "colour1_dark": 0.0,
+        "colour0_darker": 0.99,
+        "colour1_base": 0.01,
+        "colour1_darker": 0.0,
+        "colour1_light": 0.0
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_darker",
+      "confidence": 0.99,
+      "probabilities": {
+        "colour1_dark": 0.0,
+        "colour1_lighter": 0.0,
+        "colour1_darker": 0.0,
+        "colour1_base": 0.01,
+        "colour0_darker": 0.99,
+        "colour1_light": 0.0
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_darker",
+      "confidence": 0.99,
+      "probabilities": {
+        "colour1_lighter": 0.0,
+        "colour1_dark": 0.0,
+        "colour1_darker": 0.0,
+        "colour1_base": 0.0,
+        "colour0_darker": 1.0,
+        "colour1_light": 0.0
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_darker",
+      "confidence": 0.99,
+      "probabilities": {
+        "colour1_light": 0.0,
+        "colour1_dark": 0.0,
+        "colour1_darker": 0.0,
+        "colour1_base": 0.0,
+        "colour0_darker": 1.0,
+        "colour1_lighter": 0.0
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_darker",
+      "confidence": 0.99,
+      "probabilities": {
+        "colour1_light": 0.0,
+        "colour1_dark": 0.0,
+        "colour1_darker": 0.0,
+        "colour1_base": 0.01,
+        "colour0_darker": 0.99,
+        "colour1_lighter": 0.0
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.64,
+      "probabilities": {
+        "colour1_darker": 0.03,
+        "colour0_base": 0.12,
+        "colour0_darker": 0.02,
+        "colour0_light": 0.69,
+        "colour0_lighter": 0.09,
+        "colour0_dark": 0.04,
+        "colour2_darker": 0.01
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.55,
+      "probabilities": {
+        "colour1_darker": 0.03,
+        "colour0_base": 0.09,
+        "colour0_darker": 0.04,
+        "colour0_light": 0.61,
+        "colour0_lighter": 0.16,
+        "colour0_dark": 0.06,
+        "colour2_darker": 0.01
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.5,
+      "probabilities": {
+        "colour0_base": 0.19,
+        "colour1_darker": 0.04,
+        "colour0_darker": 0.04,
+        "colour0_light": 0.5599999999999999,
+        "colour0_lighter": 0.1,
+        "colour0_dark": 0.06,
+        "colour2_darker": 0.01
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.49,
+      "probabilities": {
+        "colour2_darker": 0.0,
+        "colour0_lighter": 0.15,
+        "colour0_darker": 0.02,
+        "colour0_dark": 0.03,
+        "colour0_base": 0.22,
+        "colour0_light": 0.5599999999999999,
+        "colour1_darker": 0.02
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.33,
+      "probabilities": {
+        "colour2_darker": 0.0,
+        "colour0_lighter": 0.15,
+        "colour0_darker": 0.02,
+        "colour0_dark": 0.03,
+        "colour0_base": 0.35,
+        "colour0_light": 0.43,
+        "colour1_darker": 0.02
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.39,
+      "probabilities": {
+        "colour0_darker": 0.02,
+        "colour0_light": 0.48,
+        "colour0_dark": 0.03,
+        "colour0_lighter": 0.19,
+        "colour0_base": 0.24,
+        "colour2_darker": 0.01,
+        "colour1_darker": 0.03
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour1_darker",
+      "confidence": 0.41,
+      "probabilities": {
+        "colour0_darker": 0.02,
+        "colour0_dark": 0.04,
+        "colour1_darker": 0.51,
+        "colour0_base": 0.37,
+        "colour0_light": 0.04,
+        "colour0_lighter": 0.02
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour1_darker",
+      "confidence": 0.4,
+      "probabilities": {
+        "colour0_darker": 0.04,
+        "colour1_darker": 0.49,
+        "colour0_dark": 0.06,
+        "colour0_base": 0.32,
+        "colour0_lighter": 0.03,
+        "colour0_light": 0.06
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour1_darker",
+      "confidence": 0.44,
+      "probabilities": {
+        "colour0_darker": 0.03,
+        "colour0_dark": 0.06,
+        "colour1_darker": 0.52,
+        "colour0_base": 0.3,
+        "colour0_light": 0.05,
+        "colour0_lighter": 0.04
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour1_darker",
+      "confidence": 0.62,
+      "probabilities": {
+        "colour0_darker": 0.02,
+        "colour0_dark": 0.04,
+        "colour1_darker": 0.67,
+        "colour0_base": 0.24,
+        "colour0_light": 0.02,
+        "colour0_lighter": 0.01
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour1_darker",
+      "confidence": 0.57,
+      "probabilities": {
+        "colour0_darker": 0.03,
+        "colour1_darker": 0.64,
+        "colour0_dark": 0.04,
+        "colour0_base": 0.27,
+        "colour0_lighter": 0.01,
+        "colour0_light": 0.01
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour1_darker",
+      "confidence": 0.65,
+      "probabilities": {
+        "colour0_darker": 0.02,
+        "colour0_dark": 0.03,
+        "colour1_darker": 0.7,
+        "colour0_base": 0.23,
+        "colour0_light": 0.01,
+        "colour0_lighter": 0.01
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.66,
+      "probabilities": {
+        "colour0_light": 0.02,
+        "colour1_base": 0.01,
+        "colour0_darker": 0.01,
+        "colour0_lighter": 0.7,
+        "colour3_dark": 0.06,
+        "colour0_dark": 0.07,
+        "colour1_darker": 0.0,
+        "colour0_base": 0.12,
+        "colour3_darker": 0.01,
+        "colour1_dark": 0.0
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.5,
+      "probabilities": {
+        "colour0_light": 0.02,
+        "colour1_base": 0.01,
+        "colour1_darker": 0.0,
+        "colour0_lighter": 0.55,
+        "colour3_dark": 0.06,
+        "colour0_dark": 0.15,
+        "colour0_darker": 0.03,
+        "colour3_darker": 0.01,
+        "colour0_base": 0.16,
+        "colour1_dark": 0.01
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.5,
+      "probabilities": {
+        "colour0_light": 0.01,
+        "colour1_base": 0.01,
+        "colour0_darker": 0.02,
+        "colour0_lighter": 0.55,
+        "colour3_dark": 0.04,
+        "colour0_dark": 0.16,
+        "colour1_darker": 0.0,
+        "colour3_darker": 0.01,
+        "colour0_base": 0.19,
+        "colour1_dark": 0.0
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.5,
+      "probabilities": {
+        "colour1_dark": 0.0,
+        "colour3_dark": 0.13,
+        "colour0_darker": 0.01,
+        "colour1_base": 0.01,
+        "colour0_light": 0.01,
+        "colour0_lighter": 0.55,
+        "colour1_darker": 0.0,
+        "colour3_darker": 0.01,
+        "colour0_base": 0.25,
+        "colour0_dark": 0.03
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.45,
+      "probabilities": {
+        "colour1_dark": 0.0,
+        "colour3_dark": 0.05,
+        "colour0_dark": 0.04,
+        "colour1_base": 0.0,
+        "colour0_light": 0.01,
+        "colour0_lighter": 0.51,
+        "colour1_darker": 0.0,
+        "colour3_darker": 0.01,
+        "colour0_base": 0.36,
+        "colour0_darker": 0.02
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.66,
+      "probabilities": {
+        "colour3_dark": 0.07,
+        "colour1_dark": 0.0,
+        "colour0_darker": 0.01,
+        "colour3_darker": 0.01,
+        "colour0_light": 0.01,
+        "colour0_lighter": 0.7,
+        "colour0_dark": 0.03,
+        "colour1_base": 0.01,
+        "colour0_base": 0.16,
+        "colour1_darker": 0.0
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.82,
+      "probabilities": {
+        "colour1_darker": 0.0,
+        "colour0_dark": 0.85,
+        "colour3_light": 0.02,
+        "colour3_lighter": 0.0,
+        "colour1_dark": 0.01,
+        "colour1_base": 0.01,
+        "colour1_light": 0.01,
+        "colour3_darker": 0.0,
+        "colour0_darker": 0.08,
+        "colour3_base": 0.02,
+        "colour3_dark": 0.0
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.81,
+      "probabilities": {
+        "colour1_darker": 0.0,
+        "colour0_dark": 0.84,
+        "colour3_light": 0.02,
+        "colour3_lighter": 0.0,
+        "colour1_dark": 0.01,
+        "colour1_base": 0.01,
+        "colour1_light": 0.0,
+        "colour3_darker": 0.0,
+        "colour0_darker": 0.09999999999999999,
+        "colour3_base": 0.02,
+        "colour3_dark": 0.0
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.85,
+      "probabilities": {
+        "colour1_darker": 0.0,
+        "colour0_dark": 0.88,
+        "colour3_light": 0.01,
+        "colour3_lighter": 0.0,
+        "colour1_light": 0.0,
+        "colour3_base": 0.03,
+        "colour1_base": 0.01,
+        "colour3_darker": 0.0,
+        "colour0_darker": 0.06999999999999999,
+        "colour1_dark": 0.0,
+        "colour3_dark": 0.0
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.81,
+      "probabilities": {
+        "colour3_lighter": 0.0,
+        "colour1_dark": 0.01,
+        "colour0_dark": 0.84,
+        "colour3_base": 0.07,
+        "colour3_light": 0.02,
+        "colour1_light": 0.0,
+        "colour3_darker": 0.01,
+        "colour3_dark": 0.01,
+        "colour1_darker": 0.0,
+        "colour1_base": 0.01,
+        "colour0_darker": 0.03
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.81,
+      "probabilities": {
+        "colour1_base": 0.01,
+        "colour1_dark": 0.01,
+        "colour0_dark": 0.84,
+        "colour3_darker": 0.01,
+        "colour3_light": 0.01,
+        "colour1_light": 0.0,
+        "colour3_base": 0.06,
+        "colour3_dark": 0.01,
+        "colour1_darker": 0.0,
+        "colour3_lighter": 0.0,
+        "colour0_darker": 0.05
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.82,
+      "probabilities": {
+        "colour1_base": 0.01,
+        "colour1_dark": 0.01,
+        "colour0_dark": 0.85,
+        "colour3_base": 0.06,
+        "colour3_light": 0.01,
+        "colour1_light": 0.0,
+        "colour3_darker": 0.0,
+        "colour3_dark": 0.0,
+        "colour1_darker": 0.0,
+        "colour3_lighter": 0.0,
+        "colour0_darker": 0.06
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.32,
+      "probabilities": {
+        "colour0_light": 0.11,
+        "colour1_darker": 0.1,
+        "colour0_base": 0.43,
+        "colour0_lighter": 0.03,
+        "colour0_dark": 0.05,
+        "colour0_darker": 0.28
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_darker",
+      "confidence": 0.31,
+      "probabilities": {
+        "colour0_light": 0.1,
+        "colour1_darker": 0.12,
+        "colour0_lighter": 0.03,
+        "colour0_base": 0.25,
+        "colour0_dark": 0.07,
+        "colour0_darker": 0.43
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_darker",
+      "confidence": 0.26,
+      "probabilities": {
+        "colour0_light": 0.05,
+        "colour1_darker": 0.14,
+        "colour0_lighter": 0.02,
+        "colour0_base": 0.34,
+        "colour0_dark": 0.07,
+        "colour0_darker": 0.38
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.46,
+      "probabilities": {
+        "colour0_darker": 0.29,
+        "colour0_light": 0.06,
+        "colour0_base": 0.54,
+        "colour0_lighter": 0.01,
+        "colour1_darker": 0.07,
+        "colour0_dark": 0.03
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.36,
+      "probabilities": {
+        "colour0_darker": 0.39,
+        "colour1_darker": 0.07,
+        "colour0_lighter": 0.01,
+        "colour0_base": 0.46,
+        "colour0_light": 0.03,
+        "colour0_dark": 0.04
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_darker",
+      "confidence": 0.31,
+      "probabilities": {
+        "colour0_darker": 0.43,
+        "colour1_darker": 0.09,
+        "colour0_base": 0.4,
+        "colour0_lighter": 0.01,
+        "colour0_light": 0.03,
+        "colour0_dark": 0.04
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.6,
+      "probabilities": {
+        "colour0_darker": 0.02,
+        "colour0_dark": 0.02,
+        "colour0_base": 0.28,
+        "colour1_darker": 0,
+        "colour0_light": 0.01,
+        "colour0_lighter": 0.67
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.58,
+      "probabilities": {
+        "colour0_darker": 0.02,
+        "colour0_dark": 0.01,
+        "colour0_base": 0.3,
+        "colour1_darker": 0.01,
+        "colour0_light": 0.01,
+        "colour0_lighter": 0.65
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.53,
+      "probabilities": {
+        "colour0_darker": 0.02,
+        "colour0_dark": 0.02,
+        "colour1_darker": 0.01,
+        "colour0_base": 0.35,
+        "colour0_light": 0.01,
+        "colour0_lighter": 0.59
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.72,
+      "probabilities": {
+        "colour0_lighter": 0.76,
+        "colour0_dark": 0.02,
+        "colour0_base": 0.19,
+        "colour0_light": 0.01,
+        "colour0_darker": 0.01,
+        "colour1_darker": 0.01
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.67,
+      "probabilities": {
+        "colour0_lighter": 0.72,
+        "colour0_base": 0.22,
+        "colour0_dark": 0.02,
+        "colour0_light": 0.01,
+        "colour1_darker": 0.01,
+        "colour0_darker": 0.02
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.52,
+      "probabilities": {
+        "colour0_lighter": 0.6,
+        "colour0_base": 0.35,
+        "colour0_dark": 0.01,
+        "colour0_light": 0.01,
+        "colour0_darker": 0.01,
+        "colour1_darker": 0.02
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.59,
+      "probabilities": {
+        "colour1_darker": 0.01,
+        "colour0_dark": 0.02,
+        "colour0_light": 0.01,
+        "colour0_base": 0.29,
+        "colour0_darker": 0.02,
+        "colour0_lighter": 0.65
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.64,
+      "probabilities": {
+        "colour1_darker": 0.01,
+        "colour0_dark": 0.02,
+        "colour0_light": 0.01,
+        "colour0_lighter": 0.7,
+        "colour0_base": 0.25,
+        "colour0_darker": 0.01
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.47,
+      "probabilities": {
+        "colour1_darker": 0.01,
+        "colour0_dark": 0.02,
+        "colour0_light": 0.02,
+        "colour0_base": 0.39,
+        "colour0_darker": 0.01,
+        "colour0_lighter": 0.55
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.71,
+      "probabilities": {
+        "colour0_darker": 0.01,
+        "colour0_light": 0.01,
+        "colour0_dark": 0.01,
+        "colour1_darker": 0.01,
+        "colour0_lighter": 0.75,
+        "colour0_base": 0.21
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.66,
+      "probabilities": {
+        "colour0_darker": 0.01,
+        "colour0_light": 0.01,
+        "colour0_dark": 0.01,
+        "colour1_darker": 0.01,
+        "colour0_lighter": 0.72,
+        "colour0_base": 0.24
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.58,
+      "probabilities": {
+        "colour0_darker": 0.01,
+        "colour0_light": 0.01,
+        "colour0_dark": 0.01,
+        "colour1_darker": 0.02,
+        "colour0_lighter": 0.65,
+        "colour0_base": 0.3
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.5,
+      "probabilities": {
+        "colour0_darker": 0.18,
+        "colour0_lighter": 0.05,
+        "colour0_light": 0.14,
+        "colour0_dark": 0.02,
+        "colour0_base": 0.61
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.34,
+      "probabilities": {
+        "colour0_darker": 0.25,
+        "colour0_lighter": 0.12,
+        "colour0_light": 0.15,
+        "colour0_dark": 0.02,
+        "colour0_base": 0.45999999999999996
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.6,
+      "probabilities": {
+        "colour0_dark": 0.01,
+        "colour0_lighter": 0.03,
+        "colour0_light": 0.1,
+        "colour0_darker": 0.18,
+        "colour0_base": 0.68
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.56,
+      "probabilities": {
+        "colour0_darker": 0.21,
+        "colour0_base": 0.65,
+        "colour0_lighter": 0.01,
+        "colour0_light": 0.12,
+        "colour0_dark": 0.01
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.51,
+      "probabilities": {
+        "colour0_darker": 0.3,
+        "colour0_lighter": 0.01,
+        "colour0_dark": 0.02,
+        "colour0_light": 0.06,
+        "colour0_base": 0.61
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.61,
+      "probabilities": {
+        "colour0_darker": 0.22,
+        "colour0_lighter": 0.01,
+        "colour0_dark": 0.02,
+        "colour0_light": 0.06,
+        "colour0_base": 0.69
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.49,
+      "probabilities": {
+        "colour1_darker": 0,
+        "colour0_darker": 0.01,
+        "colour0_base": 0.34,
+        "colour1_base": 0,
+        "colour0_dark": 0.03,
+        "colour0_light": 0.55,
+        "colour1_dark": 0,
+        "colour0_lighter": 0.07,
+        "colour1_light": 0
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.48,
+      "probabilities": {
+        "colour1_darker": 0,
+        "colour0_darker": 0.02,
+        "colour0_base": 0.3,
+        "colour1_base": 0,
+        "colour0_dark": 0.03,
+        "colour0_light": 0.54,
+        "colour1_light": 0,
+        "colour0_lighter": 0.11,
+        "colour1_dark": 0
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.43,
+      "probabilities": {
+        "colour1_darker": 0,
+        "colour0_darker": 0.01,
+        "colour0_base": 0.49,
+        "colour1_base": 0,
+        "colour0_dark": 0.03,
+        "colour0_light": 0.42,
+        "colour1_light": 0,
+        "colour0_lighter": 0.05,
+        "colour1_dark": 0
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.6,
+      "probabilities": {
+        "colour1_darker": 0,
+        "colour0_lighter": 0.05,
+        "colour0_darker": 0.01,
+        "colour1_dark": 0,
+        "colour0_dark": 0.02,
+        "colour1_light": 0,
+        "colour0_light": 0.65,
+        "colour1_base": 0,
+        "colour0_base": 0.27
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.55,
+      "probabilities": {
+        "colour0_lighter": 0.07,
+        "colour1_darker": 0,
+        "colour0_darker": 0.03,
+        "colour1_dark": 0,
+        "colour0_light": 0.61,
+        "colour0_dark": 0.04,
+        "colour1_light": 0,
+        "colour1_base": 0,
+        "colour0_base": 0.25
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.47,
+      "probabilities": {
+        "colour1_darker": 0,
+        "colour0_lighter": 0.06,
+        "colour0_darker": 0.02,
+        "colour1_dark": 0,
+        "colour1_light": 0,
+        "colour0_light": 0.54,
+        "colour0_dark": 0.03,
+        "colour1_base": 0,
+        "colour0_base": 0.35
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.5,
+      "probabilities": {
+        "colour0_dark": 0.02,
+        "colour1_base": 0,
+        "colour1_darker": 0,
+        "colour0_base": 0.35,
+        "colour1_light": 0,
+        "colour1_dark": 0,
+        "colour0_light": 0.56,
+        "colour0_darker": 0.01,
+        "colour0_lighter": 0.06
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.43,
+      "probabilities": {
+        "colour0_dark": 0.03,
+        "colour1_base": 0,
+        "colour1_darker": 0,
+        "colour0_base": 0.36,
+        "colour1_light": 0,
+        "colour1_dark": 0,
+        "colour0_light": 0.5,
+        "colour0_darker": 0.01,
+        "colour0_lighter": 0.1
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.44,
+      "probabilities": {
+        "colour0_dark": 0.03,
+        "colour1_base": 0,
+        "colour1_darker": 0,
+        "colour0_base": 0.39,
+        "colour1_light": 0,
+        "colour1_dark": 0,
+        "colour0_light": 0.5,
+        "colour0_darker": 0.01,
+        "colour0_lighter": 0.07
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.54,
+      "probabilities": {
+        "colour1_dark": 0,
+        "colour0_lighter": 0.05,
+        "colour0_dark": 0.02,
+        "colour0_darker": 0.01,
+        "colour0_light": 0.59,
+        "colour1_light": 0,
+        "colour0_base": 0.33,
+        "colour1_base": 0,
+        "colour1_darker": 0
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.45,
+      "probabilities": {
+        "colour1_dark": 0,
+        "colour0_lighter": 0.05,
+        "colour0_base": 0.38,
+        "colour0_darker": 0.02,
+        "colour0_light": 0.51,
+        "colour0_dark": 0.04,
+        "colour1_light": 0,
+        "colour1_base": 0,
+        "colour1_darker": 0
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.53,
+      "probabilities": {
+        "colour1_dark": 0,
+        "colour0_lighter": 0.04,
+        "colour0_dark": 0.02,
+        "colour0_darker": 0.01,
+        "colour0_light": 0.59,
+        "colour0_base": 0.34,
+        "colour1_light": 0,
+        "colour1_base": 0,
+        "colour1_darker": 0
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.45,
+      "probabilities": {
+        "colour1_dark": 0,
+        "colour0_dark": 0.02,
+        "colour1_light": 0,
+        "colour0_base": 0.39,
+        "colour0_lighter": 0.06,
+        "colour0_light": 0.52,
+        "colour1_darker": 0,
+        "colour1_base": 0,
+        "colour0_darker": 0.01
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.42,
+      "probabilities": {
+        "colour1_dark": 0,
+        "colour0_dark": 0.03,
+        "colour1_light": 0,
+        "colour0_base": 0.49,
+        "colour1_darker": 0,
+        "colour0_light": 0.4,
+        "colour0_lighter": 0.07,
+        "colour1_base": 0,
+        "colour0_darker": 0.01
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.42,
+      "probabilities": {
+        "colour1_dark": 0,
+        "colour0_dark": 0.02,
+        "colour1_light": 0,
+        "colour0_base": 0.49,
+        "colour0_lighter": 0.06,
+        "colour0_light": 0.42,
+        "colour1_darker": 0,
+        "colour1_base": 0,
+        "colour0_darker": 0.01
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.62,
+      "probabilities": {
+        "colour0_light": 0.66,
+        "colour1_light": 0,
+        "colour1_base": 0.01,
+        "colour0_darker": 0.01,
+        "colour0_lighter": 0.06,
+        "colour1_darker": 0,
+        "colour0_dark": 0.02,
+        "colour0_base": 0.24,
+        "colour1_dark": 0
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.46,
+      "probabilities": {
+        "colour0_light": 0.53,
+        "colour1_light": 0,
+        "colour1_base": 0,
+        "colour1_darker": 0,
+        "colour0_lighter": 0.05,
+        "colour0_darker": 0.02,
+        "colour0_dark": 0.03,
+        "colour0_base": 0.37,
+        "colour1_dark": 0
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.5,
+      "probabilities": {
+        "colour0_light": 0.56,
+        "colour1_light": 0,
+        "colour1_base": 0,
+        "colour1_darker": 0,
+        "colour0_lighter": 0.05,
+        "colour0_darker": 0.01,
+        "colour0_dark": 0.02,
+        "colour0_base": 0.36,
+        "colour1_dark": 0
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.6,
+      "probabilities": {
+        "colour0_darker": 0.01,
+        "colour0_light": 0.01,
+        "colour0_dark": 0.02,
+        "colour1_darker": 0.01,
+        "colour0_lighter": 0.67,
+        "colour0_base": 0.28
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.62,
+      "probabilities": {
+        "colour0_darker": 0.02,
+        "colour0_light": 0.01,
+        "colour0_base": 0.26,
+        "colour1_darker": 0.01,
+        "colour0_lighter": 0.68,
+        "colour0_dark": 0.02
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.55,
+      "probabilities": {
+        "colour0_darker": 0.01,
+        "colour0_light": 0.01,
+        "colour0_dark": 0.02,
+        "colour1_darker": 0.01,
+        "colour0_lighter": 0.63,
+        "colour0_base": 0.32
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.75,
+      "probabilities": {
+        "colour0_darker": 0.01,
+        "colour0_light": 0.01,
+        "colour0_base": 0.18,
+        "colour1_darker": 0.01,
+        "colour0_lighter": 0.78,
+        "colour0_dark": 0.01
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.7,
+      "probabilities": {
+        "colour0_darker": 0.01,
+        "colour0_light": 0.01,
+        "colour0_base": 0.2,
+        "colour1_darker": 0.01,
+        "colour0_lighter": 0.75,
+        "colour0_dark": 0.02
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.68,
+      "probabilities": {
+        "colour0_darker": 0.01,
+        "colour0_light": 0.01,
+        "colour0_base": 0.22,
+        "colour1_darker": 0.01,
+        "colour0_lighter": 0.74,
+        "colour0_dark": 0.01
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.6,
+      "probabilities": {
+        "colour1_darker": 0.01,
+        "colour0_dark": 0.02,
+        "colour0_light": 0.01,
+        "colour0_base": 0.28,
+        "colour0_darker": 0.01,
+        "colour0_lighter": 0.67
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.5,
+      "probabilities": {
+        "colour1_darker": 0.01,
+        "colour0_dark": 0.03,
+        "colour0_light": 0.02,
+        "colour0_base": 0.34,
+        "colour0_darker": 0.02,
+        "colour0_lighter": 0.58
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.53,
+      "probabilities": {
+        "colour1_darker": 0.01,
+        "colour0_dark": 0.02,
+        "colour0_light": 0.01,
+        "colour0_base": 0.34,
+        "colour0_darker": 0.01,
+        "colour0_lighter": 0.61
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.7,
+      "probabilities": {
+        "colour0_darker": 0.01,
+        "colour0_base": 0.2,
+        "colour0_dark": 0.02,
+        "colour0_lighter": 0.75,
+        "colour1_darker": 0.01,
+        "colour0_light": 0.01
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.69,
+      "probabilities": {
+        "colour0_base": 0.21,
+        "colour0_darker": 0.01,
+        "colour0_dark": 0.02,
+        "colour1_darker": 0.01,
+        "colour0_lighter": 0.74,
+        "colour0_light": 0.01
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.56,
+      "probabilities": {
+        "colour0_darker": 0.01,
+        "colour0_base": 0.31,
+        "colour0_dark": 0.02,
+        "colour0_lighter": 0.63,
+        "colour1_darker": 0.02,
+        "colour0_light": 0.01
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.64,
+      "probabilities": {
+        "colour1_darker": 0.01,
+        "colour0_dark": 0.02,
+        "colour0_light": 0.01,
+        "colour0_base": 0.25,
+        "colour0_darker": 0.01,
+        "colour0_lighter": 0.7
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.67,
+      "probabilities": {
+        "colour1_darker": 0.01,
+        "colour0_dark": 0.02,
+        "colour0_light": 0.01,
+        "colour0_base": 0.22,
+        "colour0_darker": 0.02,
+        "colour0_lighter": 0.72
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.48,
+      "probabilities": {
+        "colour1_darker": 0.01,
+        "colour0_dark": 0.02,
+        "colour0_light": 0.02,
+        "colour0_darker": 0.02,
+        "colour0_lighter": 0.57,
+        "colour0_base": 0.36
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.71,
+      "probabilities": {
+        "colour0_light": 0.01,
+        "colour1_darker": 0.01,
+        "colour0_base": 0.2,
+        "colour0_darker": 0.01,
+        "colour0_lighter": 0.75,
+        "colour0_dark": 0.02
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.59,
+      "probabilities": {
+        "colour0_lighter": 0.65,
+        "colour1_darker": 0.01,
+        "colour0_base": 0.29,
+        "colour0_light": 0.01,
+        "colour0_darker": 0.02,
+        "colour0_dark": 0.02
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.53,
+      "probabilities": {
+        "colour0_lighter": 0.61,
+        "colour1_darker": 0.01,
+        "colour0_base": 0.34,
+        "colour0_darker": 0.01,
+        "colour0_light": 0.01,
+        "colour0_dark": 0.02
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.61,
+      "probabilities": {
+        "colour1_darker": 0.01,
+        "colour0_dark": 0.02,
+        "colour0_light": 0.01,
+        "colour0_base": 0.28,
+        "colour0_darker": 0.01,
+        "colour0_lighter": 0.67
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.62,
+      "probabilities": {
+        "colour1_darker": 0.01,
+        "colour0_dark": 0.02,
+        "colour0_light": 0.02,
+        "colour0_base": 0.26,
+        "colour0_darker": 0.02,
+        "colour0_lighter": 0.67
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.54,
+      "probabilities": {
+        "colour1_darker": 0.01,
+        "colour0_dark": 0.02,
+        "colour0_base": 0.33,
+        "colour0_light": 0.01,
+        "colour0_darker": 0.02,
+        "colour0_lighter": 0.61
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.73,
+      "probabilities": {
+        "colour1_darker": 0.01,
+        "colour0_dark": 0.01,
+        "colour0_light": 0.01,
+        "colour0_base": 0.18,
+        "colour0_darker": 0.01,
+        "colour0_lighter": 0.78
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.67,
+      "probabilities": {
+        "colour1_darker": 0.01,
+        "colour0_dark": 0.02,
+        "colour0_light": 0.01,
+        "colour0_darker": 0.02,
+        "colour0_lighter": 0.72,
+        "colour0_base": 0.22
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.65,
+      "probabilities": {
+        "colour1_darker": 0.01,
+        "colour0_dark": 0.01,
+        "colour0_light": 0.01,
+        "colour0_darker": 0.01,
+        "colour0_lighter": 0.71,
+        "colour0_base": 0.25
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.51,
+      "probabilities": {
+        "colour0_base": 0.36,
+        "colour1_darker": 0.01,
+        "colour0_dark": 0.02,
+        "colour0_lighter": 0.58,
+        "colour0_light": 0.01,
+        "colour0_darker": 0.02
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.49,
+      "probabilities": {
+        "colour0_base": 0.35,
+        "colour1_darker": 0.01,
+        "colour0_dark": 0.03,
+        "colour0_lighter": 0.57,
+        "colour0_light": 0.02,
+        "colour0_darker": 0.02
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.47,
+      "probabilities": {
+        "colour0_base": 0.38,
+        "colour1_darker": 0.01,
+        "colour0_dark": 0.02,
+        "colour0_lighter": 0.55,
+        "colour0_light": 0.02,
+        "colour0_darker": 0.02
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.7,
+      "probabilities": {
+        "colour0_dark": 0.02,
+        "colour0_base": 0.2,
+        "colour0_lighter": 0.75,
+        "colour0_light": 0.01,
+        "colour0_darker": 0.01,
+        "colour1_darker": 0.01
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.66,
+      "probabilities": {
+        "colour0_dark": 0.02,
+        "colour0_base": 0.23,
+        "colour1_darker": 0.01,
+        "colour0_lighter": 0.72,
+        "colour0_light": 0.01,
+        "colour0_darker": 0.01
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_lighter",
+      "confidence": 0.65,
+      "probabilities": {
+        "colour0_dark": 0.02,
+        "colour0_base": 0.24,
+        "colour0_lighter": 0.71,
+        "colour0_light": 0.01,
+        "colour0_darker": 0.01,
+        "colour1_darker": 0.01
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.79,
+      "probabilities": {
+        "colour0_dark": 0.07,
+        "colour1_lighter": 0,
+        "colour1_base": 0,
+        "colour1_darker": 0,
+        "colour0_base": 0.83,
+        "colour1_light": 0,
+        "colour1_dark": 0,
+        "colour0_darker": 0.1
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.78,
+      "probabilities": {
+        "colour0_dark": 0.07,
+        "colour1_lighter": 0,
+        "colour1_base": 0,
+        "colour1_darker": 0,
+        "colour0_base": 0.81,
+        "colour1_light": 0,
+        "colour1_dark": 0,
+        "colour0_darker": 0.12
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.79,
+      "probabilities": {
+        "colour0_dark": 0.07,
+        "colour1_lighter": 0,
+        "colour1_base": 0,
+        "colour1_darker": 0,
+        "colour0_base": 0.81,
+        "colour1_light": 0,
+        "colour1_dark": 0,
+        "colour0_darker": 0.11
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.76,
+      "probabilities": {
+        "colour1_light": 0,
+        "colour1_dark": 0,
+        "colour1_lighter": 0,
+        "colour0_base": 0.8,
+        "colour0_darker": 0.16,
+        "colour1_base": 0,
+        "colour1_darker": 0,
+        "colour0_dark": 0.04
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.64,
+      "probabilities": {
+        "colour1_light": 0,
+        "colour1_dark": 0,
+        "colour1_lighter": 0,
+        "colour0_base": 0.69,
+        "colour0_darker": 0.26,
+        "colour1_base": 0,
+        "colour1_darker": 0,
+        "colour0_dark": 0.05
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.75,
+      "probabilities": {
+        "colour1_light": 0,
+        "colour1_dark": 0,
+        "colour1_lighter": 0,
+        "colour0_base": 0.79,
+        "colour0_darker": 0.18,
+        "colour1_base": 0,
+        "colour1_darker": 0,
+        "colour0_dark": 0.03
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.83,
+      "probabilities": {
+        "colour0_dark": 0.02,
+        "colour0_light": 0.04,
+        "colour0_darker": 0.01,
+        "colour0_base": 0.86,
+        "colour1_dark": 0.03,
+        "colour0_lighter": 0.02,
+        "colour1_darker": 0.02
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.79,
+      "probabilities": {
+        "colour0_dark": 0.03,
+        "colour0_light": 0.04,
+        "colour0_darker": 0.02,
+        "colour1_dark": 0.03,
+        "colour0_base": 0.82,
+        "colour0_lighter": 0.04,
+        "colour1_darker": 0.02
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.82,
+      "probabilities": {
+        "colour0_dark": 0.02,
+        "colour0_light": 0.05,
+        "colour0_lighter": 0.02,
+        "colour0_base": 0.85,
+        "colour1_dark": 0.03,
+        "colour1_darker": 0.02,
+        "colour0_darker": 0.01
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.8,
+      "probabilities": {
+        "colour1_darker": 0.05,
+        "colour0_dark": 0.01,
+        "colour0_light": 0.02,
+        "colour0_darker": 0.01,
+        "colour0_lighter": 0.01,
+        "colour1_dark": 0.08,
+        "colour0_base": 0.82
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.78,
+      "probabilities": {
+        "colour1_darker": 0.06,
+        "colour0_dark": 0.02,
+        "colour0_light": 0.02,
+        "colour0_darker": 0.01,
+        "colour0_base": 0.81,
+        "colour1_dark": 0.07,
+        "colour0_lighter": 0.01
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.76,
+      "probabilities": {
+        "colour1_darker": 0.07,
+        "colour0_dark": 0.01,
+        "colour0_light": 0.02,
+        "colour0_base": 0.79,
+        "colour0_darker": 0.01,
+        "colour1_dark": 0.09,
+        "colour0_lighter": 0.01
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.65,
+      "probabilities": {
+        "colour0_dark": 0.07,
+        "colour0_light": 0.19,
+        "colour0_base": 0.73,
+        "colour0_darker": 0.01
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.54,
+      "probabilities": {
+        "colour0_dark": 0.16,
+        "colour0_light": 0.16,
+        "colour0_base": 0.66,
+        "colour0_darker": 0.02
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.68,
+      "probabilities": {
+        "colour0_dark": 0.07,
+        "colour0_light": 0.16,
+        "colour0_base": 0.76,
+        "colour0_darker": 0.01
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.74,
+      "probabilities": {
+        "colour0_darker": 0.01,
+        "colour0_light": 0.07,
+        "colour0_base": 0.8,
+        "colour0_dark": 0.11
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.69,
+      "probabilities": {
+        "colour0_darker": 0.02,
+        "colour0_light": 0.07,
+        "colour0_base": 0.77,
+        "colour0_dark": 0.14
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.75,
+      "probabilities": {
+        "colour0_darker": 0.01,
+        "colour0_light": 0.08,
+        "colour0_base": 0.81,
+        "colour0_dark": 0.1
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.69,
+      "probabilities": {
+        "colour1_lighter": 0,
+        "colour1_dark": 0,
+        "colour0_dark": 0.02,
+        "colour1_light": 0,
+        "colour0_base": 0.24,
+        "colour1_darker": 0,
+        "colour0_light": 0.72,
+        "colour1_base": 0,
+        "colour0_darker": 0.02
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.7,
+      "probabilities": {
+        "colour1_lighter": 0,
+        "colour1_dark": 0,
+        "colour0_dark": 0.02,
+        "colour1_light": 0,
+        "colour0_base": 0.23,
+        "colour1_darker": 0,
+        "colour0_light": 0.74,
+        "colour1_base": 0,
+        "colour0_darker": 0.01
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.62,
+      "probabilities": {
+        "colour1_lighter": 0,
+        "colour1_dark": 0,
+        "colour0_dark": 0.02,
+        "colour1_light": 0,
+        "colour0_base": 0.31,
+        "colour1_darker": 0,
+        "colour0_light": 0.66,
+        "colour1_base": 0,
+        "colour0_darker": 0.01
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.67,
+      "probabilities": {
+        "colour0_dark": 0.02,
+        "colour0_base": 0.26,
+        "colour1_lighter": 0,
+        "colour0_light": 0.71,
+        "colour1_light": 0,
+        "colour0_darker": 0.01,
+        "colour1_base": 0,
+        "colour1_darker": 0,
+        "colour1_dark": 0
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.59,
+      "probabilities": {
+        "colour0_dark": 0.03,
+        "colour0_base": 0.31,
+        "colour1_lighter": 0,
+        "colour0_light": 0.64,
+        "colour1_light": 0,
+        "colour0_darker": 0.02,
+        "colour1_base": 0,
+        "colour1_darker": 0,
+        "colour1_dark": 0
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_light",
+      "confidence": 0.53,
+      "probabilities": {
+        "colour1_lighter": 0,
+        "colour0_base": 0.37,
+        "colour0_dark": 0.02,
+        "colour0_light": 0.59,
+        "colour1_light": 0,
+        "colour0_darker": 0.02,
+        "colour1_darker": 0,
+        "colour1_base": 0,
+        "colour1_dark": 0
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.59,
+      "probabilities": {
+        "colour0_darker": 0.18,
+        "colour0_dark": 0.02,
+        "colour0_base": 0.68,
+        "colour1_darker": 0,
+        "colour0_light": 0.12
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.54,
+      "probabilities": {
+        "colour0_darker": 0.21,
+        "colour0_dark": 0.03,
+        "colour0_base": 0.64,
+        "colour1_darker": 0,
+        "colour0_light": 0.12
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.67,
+      "probabilities": {
+        "colour0_darker": 0.16,
+        "colour0_dark": 0.03,
+        "colour0_base": 0.74,
+        "colour1_darker": 0,
+        "colour0_light": 0.07
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.47,
+      "probabilities": {
+        "colour0_darker": 0.3,
+        "colour1_darker": 0,
+        "colour0_base": 0.57,
+        "colour0_light": 0.11,
+        "colour0_dark": 0.02
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.41,
+      "probabilities": {
+        "colour0_darker": 0.38,
+        "colour0_light": 0.07,
+        "colour0_base": 0.53,
+        "colour1_darker": 0,
+        "colour0_dark": 0.02
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.56,
+      "probabilities": {
+        "colour0_darker": 0.27,
+        "colour0_light": 0.05,
+        "colour0_base": 0.66,
+        "colour1_darker": 0,
+        "colour0_dark": 0.02
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.74,
+      "probabilities": {
+        "colour1_darker": 0.09,
+        "colour0_dark": 0.02,
+        "colour0_light": 0.06,
+        "colour0_base": 0.78,
+        "colour0_darker": 0.02,
+        "colour0_lighter": 0.03
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.77,
+      "probabilities": {
+        "colour1_darker": 0.06,
+        "colour0_dark": 0.03,
+        "colour0_light": 0.06,
+        "colour0_base": 0.8,
+        "colour0_darker": 0.02,
+        "colour0_lighter": 0.03
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.81,
+      "probabilities": {
+        "colour1_darker": 0.06,
+        "colour0_dark": 0.02,
+        "colour0_light": 0.04,
+        "colour0_base": 0.84,
+        "colour0_darker": 0.02,
+        "colour0_lighter": 0.02
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.74,
+      "probabilities": {
+        "colour0_darker": 0.01,
+        "colour0_light": 0.02,
+        "colour0_base": 0.79,
+        "colour1_darker": 0.15,
+        "colour0_lighter": 0.01,
+        "colour0_dark": 0.02
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.68,
+      "probabilities": {
+        "colour0_darker": 0.02,
+        "colour0_light": 0.03,
+        "colour0_base": 0.72,
+        "colour1_darker": 0.19,
+        "colour0_lighter": 0.01,
+        "colour0_dark": 0.03
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.66,
+      "probabilities": {
+        "colour0_darker": 0.01,
+        "colour0_light": 0.02,
+        "colour0_base": 0.73,
+        "colour1_darker": 0.21,
+        "colour0_lighter": 0.01,
+        "colour0_dark": 0.02
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.42,
+      "probabilities": {
+        "colour0_base": 0.48,
+        "colour1_darker": 0,
+        "colour0_darker": 0.14,
+        "colour1_base": 0,
+        "colour1_lighter": 0,
+        "colour0_dark": 0.29,
+        "colour0_light": 0.09,
+        "colour1_light": 0,
+        "colour1_dark": 0
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.4,
+      "probabilities": {
+        "colour1_darker": 0,
+        "colour0_base": 0.47000000000000003,
+        "colour0_darker": 0.16,
+        "colour1_base": 0,
+        "colour1_lighter": 0,
+        "colour0_dark": 0.26,
+        "colour0_light": 0.11,
+        "colour1_light": 0,
+        "colour1_dark": 0
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.38,
+      "probabilities": {
+        "colour0_base": 0.46,
+        "colour1_darker": 0,
+        "colour0_darker": 0.18,
+        "colour1_base": 0,
+        "colour1_lighter": 0,
+        "colour0_dark": 0.28,
+        "colour0_light": 0.08,
+        "colour1_light": 0,
+        "colour1_dark": 0
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.33,
+      "probabilities": {
+        "colour1_darker": 0,
+        "colour0_dark": 0.41,
+        "colour1_lighter": 0,
+        "colour0_light": 0.04,
+        "colour1_light": 0,
+        "colour1_base": 0,
+        "colour0_base": 0.25,
+        "colour1_dark": 0,
+        "colour0_darker": 0.3
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_dark",
+      "confidence": 0.31,
+      "probabilities": {
+        "colour1_darker": 0,
+        "colour0_dark": 0.39,
+        "colour1_lighter": 0,
+        "colour0_light": 0.04,
+        "colour1_dark": 0,
+        "colour1_base": 0,
+        "colour0_base": 0.19,
+        "colour1_light": 0,
+        "colour0_darker": 0.38
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_darker",
+      "confidence": 0.37,
+      "probabilities": {
+        "colour1_darker": 0,
+        "colour0_dark": 0.29,
+        "colour1_lighter": 0,
+        "colour0_light": 0.04,
+        "colour1_light": 0,
+        "colour1_base": 0,
+        "colour0_base": 0.23,
+        "colour1_dark": 0,
+        "colour0_darker": 0.44
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.61,
+      "probabilities": {
+        "colour0_darker": 0.01,
+        "colour0_light": 0.12,
+        "colour0_base": 0.6799999999999999,
+        "colour0_lighter": 0.04,
+        "colour0_dark": 0.15
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.5,
+      "probabilities": {
+        "colour0_darker": 0.02,
+        "colour0_light": 0.1,
+        "colour0_dark": 0.23,
+        "colour0_lighter": 0.04,
+        "colour0_base": 0.61
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.76,
+      "probabilities": {
+        "colour0_darker": 0.01,
+        "colour0_light": 0.06,
+        "colour0_base": 0.81,
+        "colour0_lighter": 0.02,
+        "colour0_dark": 0.09
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.7,
+      "probabilities": {
+        "colour0_dark": 0.12,
+        "colour0_base": 0.76,
+        "colour0_light": 0.09,
+        "colour0_darker": 0.01,
+        "colour0_lighter": 0.02
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.7,
+      "probabilities": {
+        "colour0_dark": 0.16,
+        "colour0_base": 0.76,
+        "colour0_light": 0.05,
+        "colour0_darker": 0.02,
+        "colour0_lighter": 0.01
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.77,
+      "probabilities": {
+        "colour0_dark": 0.12,
+        "colour0_light": 0.04,
+        "colour0_base": 0.8099999999999999,
+        "colour0_darker": 0.02,
+        "colour0_lighter": 0.01
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.64,
+      "probabilities": {
+        "colour0_darker": 0.02,
+        "colour1_base": 0,
+        "colour0_dark": 0.17,
+        "colour1_dark": 0,
+        "colour0_light": 0.09,
+        "colour0_base": 0.68,
+        "colour1_light": 0,
+        "colour0_lighter": 0.03,
+        "colour1_darker": 0
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.58,
+      "probabilities": {
+        "colour0_darker": 0.02,
+        "colour1_base": 0,
+        "colour0_dark": 0.21,
+        "colour1_dark": 0,
+        "colour1_darker": 0,
+        "colour0_base": 0.64,
+        "colour1_light": 0,
+        "colour0_lighter": 0.03,
+        "colour0_light": 0.1
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.77,
+      "probabilities": {
+        "colour0_darker": 0.02,
+        "colour1_base": 0,
+        "colour0_dark": 0.12,
+        "colour1_dark": 0,
+        "colour0_light": 0.05,
+        "colour0_base": 0.8,
+        "colour1_light": 0,
+        "colour0_lighter": 0.01,
+        "colour1_darker": 0
+      }
+    }
+  },
+  {
+    "wing": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.83,
+      "probabilities": {
+        "colour0_dark": 0.07,
+        "colour0_darker": 0.01,
+        "colour0_lighter": 0.01,
+        "colour1_light": 0,
+        "colour0_light": 0.04,
+        "colour1_base": 0,
+        "colour1_dark": 0,
+        "colour1_darker": 0.02,
+        "colour0_base": 0.85
+      }
+    },
+    "rim": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.79,
+      "probabilities": {
+        "colour0_dark": 0.1,
+        "colour0_darker": 0.01,
+        "colour1_light": 0,
+        "colour0_lighter": 0.01,
+        "colour1_base": 0,
+        "colour0_light": 0.03,
+        "colour1_dark": 0,
+        "colour1_darker": 0.02,
+        "colour0_base": 0.8200000000000001
+      }
+    },
+    "plate": {
+      "type": "choice",
+      "choice": "colour0_base",
+      "confidence": 0.88,
+      "probabilities": {
+        "colour0_dark": 0.04,
+        "colour0_darker": 0.01,
+        "colour1_light": 0,
+        "colour0_lighter": 0.01,
+        "colour0_light": 0.03,
+        "colour1_base": 0,
+        "colour1_dark": 0,
+        "colour1_darker": 0.02,
+        "colour0_base": 0.89
+      }
+    }
+  }
+]

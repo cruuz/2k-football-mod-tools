@@ -2360,7 +2360,12 @@ class ApfStudioFacade:
                             f"present in this game: {unknown_annotation_ids[0]}"
                         )
                 current_identity = project_target_identity(source)
-                if current_identity != opened_identity:
+                # Two descriptors minutes apart: only a change-time difference
+                # is tolerated, because that field moves with no byte changed on
+                # POSIX and is a creation time on Windows. Both captures hash
+                # every byte, so a same-size rewrite with its mtime restored
+                # still refuses (see ProjectTargetIdentity).
+                if not opened_identity.matches_apart_from_change_time(current_identity):
                     raise ProjectError(
                         "The project changed outside Mod Studio while it was opening. "
                         "The current workspace was kept; open the project again."

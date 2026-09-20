@@ -1,0 +1,247 @@
+[
+  {
+    "file": "tests/mod_editor/test_apf_scorebug_workspace_qt.py",
+    "exit_code": 0,
+    "seconds": 1.42,
+    "cases": 11,
+    "skips": 0
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_scorebug_assets.py",
+    "exit_code": 0,
+    "seconds": 6.33,
+    "cases": 8,
+    "skips": 1
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_scorebug_author.py",
+    "exit_code": 0,
+    "seconds": 6.28,
+    "cases": 12,
+    "skips": 0
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_scorebug_down_visibility.py",
+    "exit_code": 0,
+    "seconds": 19.96,
+    "cases": 2,
+    "skips": 0
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_scorebug_draw_order.py",
+    "exit_code": 0,
+    "seconds": 9.74,
+    "cases": 5,
+    "skips": 0
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_scorebug_exact.py",
+    "exit_code": 0,
+    "seconds": 30.83,
+    "cases": 8,
+    "skips": 0
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_scorebug_fonts.py",
+    "exit_code": 0,
+    "seconds": 4.88,
+    "cases": 10,
+    "skips": 5
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_scorebug_freeze.py",
+    "exit_code": 0,
+    "seconds": 17.6,
+    "cases": 7,
+    "skips": 0
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_scorebug_freeze_v2.py",
+    "exit_code": 0,
+    "seconds": 33.48,
+    "cases": 7,
+    "skips": 0
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_scorebug_ingame.py",
+    "exit_code": 0,
+    "seconds": 7.48,
+    "cases": 11,
+    "skips": 0
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py",
+    "exit_code": 0,
+    "seconds": 54.41,
+    "cases": 9,
+    "skips": 0
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_scorebug_mnf.py",
+    "exit_code": 0,
+    "seconds": 11.18,
+    "cases": 10,
+    "skips": 0
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_scorebug_mnf_v3.py",
+    "exit_code": 0,
+    "seconds": 20.85,
+    "cases": 7,
+    "skips": 0
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_scorebug_native.py",
+    "exit_code": 0,
+    "seconds": 21.6,
+    "cases": 4,
+    "skips": 0
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_scorebug_projection.py",
+    "exit_code": 0,
+    "seconds": 25.86,
+    "cases": 14,
+    "skips": 0
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_scorebug_resources.py",
+    "exit_code": 0,
+    "seconds": 79.36,
+    "cases": 6,
+    "skips": 0
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_scorebug_runtime.py",
+    "exit_code": 0,
+    "seconds": 12.74,
+    "cases": 12,
+    "skips": 0
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_scorebug_sd.py",
+    "exit_code": 0,
+    "seconds": 0.57,
+    "cases": 3,
+    "skips": 0
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_scorebug_source_art.py",
+    "exit_code": 0,
+    "seconds": 2.02,
+    "cases": 13,
+    "skips": 2
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_scorebug_sprite.py",
+    "exit_code": 0,
+    "seconds": 21.45,
+    "cases": 19,
+    "skips": 0
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_scorebug_template.py",
+    "exit_code": 0,
+    "seconds": 5.02,
+    "cases": 19,
+    "skips": 0
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_scorebug_template_release.py",
+    "exit_code": 0,
+    "seconds": 0.57,
+    "cases": 5,
+    "skips": 0
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_scorebug_unified_adapter.py",
+    "exit_code": 0,
+    "seconds": 0.16,
+    "cases": 5,
+    "skips": 0
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_scorebug_v10_ingame.py",
+    "exit_code": 0,
+    "seconds": 6.33,
+    "cases": 11,
+    "skips": 0
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_scorebug_v10_projection.py",
+    "exit_code": 0,
+    "seconds": 25.45,
+    "cases": 14,
+    "skips": 0
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_scorebug_versions.py",
+    "exit_code": 0,
+    "seconds": 4.72,
+    "cases": 4,
+    "skips": 0
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_scorebug_watermark.py",
+    "exit_code": 0,
+    "seconds": 17.04,
+    "cases": 3,
+    "skips": 0
+  },
+  {
+    "file": "tests/mod_editor/test_provider_integrity.py",
+    "exit_code": 0,
+    "seconds": 9.98,
+    "cases": 8,
+    "skips": 0
+  },
+  {
+    "file": "tests/mod_editor/test_scorebug_gpu.py",
+    "exit_code": 0,
+    "seconds": 9.13,
+    "cases": 9,
+    "skips": 0
+  },
+  {
+    "file": "tests/mod_editor/test_scorebug_live.py",
+    "exit_code": 0,
+    "seconds": 0.16,
+    "cases": 9,
+    "skips": 0
+  },
+  {
+    "file": "tests/mod_editor/test_scorebug_replication.py",
+    "exit_code": 0,
+    "seconds": 0.46,
+    "cases": 12,
+    "skips": 0
+  },
+  {
+    "file": "tests/mod_editor/test_scorebug_sprite_preview_qt.py",
+    "exit_code": 0,
+    "seconds": 7.17,
+    "cases": 3,
+    "skips": 0
+  },
+  {
+    "file": "tests/mod_editor/test_scorebug_studio_panel_qt.py",
+    "exit_code": 0,
+    "seconds": 7.28,
+    "cases": 11,
+    "skips": 0
+  },
+  {
+    "file": "tests/mod_editor/test_shipped_tools_are_self_sufficient.py",
+    "exit_code": 0,
+    "seconds": 12.24,
+    "cases": 3,
+    "skips": 0
+  },
+  {
+    "file": "tests/mod_editor/test_shipped_tools_posix_only.py",
+    "exit_code": 0,
+    "seconds": 14.25,
+    "cases": 13,
+    "skips": 0
+  }
+]

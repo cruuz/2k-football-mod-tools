@@ -1,0 +1,1892 @@
+[
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "SF",
+      "source": "supplied official 2026 identity palette",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "red",
+        "signature": true,
+        "wing": "#C44C4C",
+        "rim": "#C44C4C",
+        "plate": "#C44C4C",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#C44C4C",
+        "rim": "#C44C4C",
+        "plate": "#550000",
+        "wash": "#C44C4C",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": false
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "CHI",
+      "source": "supplied official 2026 identity palette",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "cyan",
+        "signature": true,
+        "wing": "#545C6A",
+        "rim": "#545C6A",
+        "plate": "#545C6A",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#545C6A",
+        "rim": "#545C6A",
+        "plate": "#545C6A",
+        "wash": "#545C6A",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": true
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "BUF",
+      "source": "supplied official 2026 identity palette",
+      "source_shade_uncertain": true,
+      "proposed": {
+        "hue": "cyan",
+        "signature": true,
+        "wing": "#4C70AF",
+        "rim": "#4C70AF",
+        "plate": "#4C70AF",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#00338D",
+        "rim": "#00338D",
+        "plate": "#001A46",
+        "wash": "#00338D",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": false
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "CLE",
+      "source": "supplied official 2026 identity palette",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "red",
+        "signature": true,
+        "wing": "#6F614C",
+        "rim": "#6F614C",
+        "plate": "#6F614C",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#6F614C",
+        "rim": "#6F614C",
+        "plate": "#6F614C",
+        "wash": "#6F614C",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": true
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "TB",
+      "source": "supplied official 2026 identity palette",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "pink",
+        "signature": true,
+        "wing": "#B43C4F",
+        "rim": "#B43C4F",
+        "plate": "#B43C4F",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#A71930",
+        "rim": "#A71930",
+        "plate": "#A71930",
+        "wash": "#A71930",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": false
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "ARI",
+      "source": "supplied official 2026 identity palette",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "pink",
+        "signature": true,
+        "wing": "#A7445C",
+        "rim": "#A7445C",
+        "plate": "#A7445C",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#97233F",
+        "rim": "#4C1220",
+        "plate": "#97233F",
+        "wash": "#97233F",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": false
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "KC",
+      "source": "supplied official 2026 identity palette",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "pink",
+        "signature": true,
+        "wing": "#E31837",
+        "rim": "#E31837",
+        "plate": "#E31837",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#AA1229",
+        "rim": "#AA1229",
+        "plate": "#AA1229",
+        "wash": "#AA1229",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": false
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "IND",
+      "source": "supplied official 2026 identity palette",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "cyan",
+        "signature": true,
+        "wing": "#4D7096",
+        "rim": "#4D7096",
+        "plate": "#4D7096",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#013369",
+        "rim": "#013369",
+        "plate": "#013369",
+        "wash": "#013369",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": false
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "DAL",
+      "source": "supplied official 2026 identity palette",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "cyan",
+        "signature": true,
+        "wing": "#4C647C",
+        "rim": "#4C647C",
+        "plate": "#4C647C",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#264360",
+        "rim": "#264360",
+        "plate": "#264360",
+        "wash": "#264360",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": false
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "MIA",
+      "source": "supplied official 2026 identity palette",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "cyan",
+        "signature": true,
+        "wing": "#006A71",
+        "rim": "#006A71",
+        "plate": "#006A71",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#006A71",
+        "rim": "#006A71",
+        "plate": "#006A71",
+        "wash": "#006A71",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": true
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "PHI",
+      "source": "supplied official 2026 identity palette",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "cyan",
+        "signature": true,
+        "wing": "#26636B",
+        "rim": "#26636B",
+        "plate": "#26636B",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#26636B",
+        "rim": "#26636B",
+        "plate": "#26636B",
+        "wash": "#26636B",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": true
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "ATL",
+      "source": "supplied official 2026 identity palette",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "pink",
+        "signature": true,
+        "wing": "#B43C4F",
+        "rim": "#B43C4F",
+        "plate": "#B43C4F",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#A71930",
+        "rim": "#540C18",
+        "plate": "#540C18",
+        "wash": "#A71930",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": false
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "NYG",
+      "source": "supplied official 2026 identity palette",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "cyan",
+        "signature": true,
+        "wing": "#546493",
+        "rim": "#546493",
+        "plate": "#546493",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#0B2265",
+        "rim": "#0B2265",
+        "plate": "#0B2265",
+        "wash": "#0B2265",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": false
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "JAX",
+      "source": "supplied official 2026 identity palette",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "cyan",
+        "signature": true,
+        "wing": "#267E8C",
+        "rim": "#267E8C",
+        "plate": "#267E8C",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#006778",
+        "rim": "#00343C",
+        "plate": "#006778",
+        "wash": "#006778",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": false
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "NYJ",
+      "source": "supplied official 2026 identity palette",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "green",
+        "signature": true,
+        "wing": "#35705D",
+        "rim": "#35705D",
+        "plate": "#35705D",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#35705D",
+        "rim": "#35705D",
+        "plate": "#35705D",
+        "wash": "#35705D",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": true
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "DET",
+      "source": "supplied official 2026 identity palette",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "cyan",
+        "signature": true,
+        "wing": "#0076B6",
+        "rim": "#0076B6",
+        "plate": "#0076B6",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#0076B6",
+        "rim": "#0076B6",
+        "plate": "#0076B6",
+        "wash": "#0076B6",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": true
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "GB",
+      "source": "supplied official 2026 identity palette",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "neutral",
+        "signature": true,
+        "wing": "#63736F",
+        "rim": "#63736F",
+        "plate": "#63736F",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#203731",
+        "rim": "#63736F",
+        "plate": "#63736F",
+        "wash": "#203731",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": false
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "NE",
+      "source": "supplied official 2026 identity palette",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "cyan",
+        "signature": true,
+        "wing": "#4C647C",
+        "rim": "#4C647C",
+        "plate": "#4C647C",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#264360",
+        "rim": "#264360",
+        "plate": "#264360",
+        "wash": "#264360",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": false
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "LAR",
+      "source": "supplied official 2026 identity palette",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "cyan",
+        "signature": true,
+        "wing": "#4C72B4",
+        "rim": "#4C72B4",
+        "plate": "#4C72B4",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#003594",
+        "rim": "#003594",
+        "plate": "#003594",
+        "wash": "#003594",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": false
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "BAL",
+      "source": "supplied official 2026 identity palette",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "blue",
+        "signature": true,
+        "wing": "#665A8F",
+        "rim": "#665A8F",
+        "plate": "#665A8F",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#24135F",
+        "rim": "#1B0E47",
+        "plate": "#1B0E47",
+        "wash": "#24135F",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": false
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "WAS",
+      "source": "supplied official 2026 identity palette",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "red",
+        "signature": true,
+        "wing": "#8C5A5A",
+        "rim": "#8C5A5A",
+        "plate": "#8C5A5A",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#5A1414",
+        "rim": "#5A1414",
+        "plate": "#440F0F",
+        "wash": "#5A1414",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": false
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "SEA",
+      "source": "supplied official 2026 identity palette",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "cyan",
+        "signature": true,
+        "wing": "#4C647C",
+        "rim": "#4C647C",
+        "plate": "#4C647C",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#264360",
+        "rim": "#264360",
+        "plate": "#264360",
+        "wash": "#264360",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": false
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "PIT",
+      "source": "supplied official 2026 identity palette",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "neutral",
+        "signature": true,
+        "wing": "#4C4C4C",
+        "rim": "#4C4C4C",
+        "plate": "#4C4C4C",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#805B09",
+        "rim": "#805B09",
+        "plate": "#805B09",
+        "wash": "#805B09",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": false
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "HOU",
+      "source": "supplied official 2026 identity palette",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "cyan",
+        "signature": true,
+        "wing": "#4E585D",
+        "rim": "#4E585D",
+        "plate": "#4E585D",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#4E585D",
+        "rim": "#4E585D",
+        "plate": "#4E585D",
+        "wash": "#4E585D",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": true
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "MIN",
+      "source": "supplied official 2026 identity palette",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "blue",
+        "signature": true,
+        "wing": "#8467A8",
+        "rim": "#8467A8",
+        "plate": "#8467A8",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#4F2683",
+        "rim": "#281342",
+        "plate": "#281342",
+        "wash": "#4F2683",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": false
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "USER1",
+      "source": "neutral custom fallback; supply team colours explicitly",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "neutral",
+        "signature": true,
+        "wing": "#6E6E6E",
+        "rim": "#6E6E6E",
+        "plate": "#6E6E6E",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#6E6E6E",
+        "rim": "#6E6E6E",
+        "plate": "#6E6E6E",
+        "wash": "#6E6E6E",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": true
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "USER2",
+      "source": "neutral custom fallback; supply team colours explicitly",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "neutral",
+        "signature": true,
+        "wing": "#6E6E6E",
+        "rim": "#6E6E6E",
+        "plate": "#6E6E6E",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#6E6E6E",
+        "rim": "#6E6E6E",
+        "plate": "#6E6E6E",
+        "wash": "#6E6E6E",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": true
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "BRI",
+      "source": "pinned retail primary/secondary table",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "pink",
+        "signature": true,
+        "wing": "#B2587A",
+        "rim": "#B2587A",
+        "plate": "#B2587A",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#911041",
+        "rim": "#911041",
+        "plate": "#911041",
+        "wash": "#911041",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": false
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "BRP",
+      "source": "pinned retail primary/secondary table",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "cyan",
+        "signature": true,
+        "wing": "#51657B",
+        "rim": "#51657B",
+        "plate": "#51657B",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#2C445F",
+        "rim": "#2C445F",
+        "plate": "#072343",
+        "wash": "#2C445F",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": false
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "BWG",
+      "source": "pinned retail primary/secondary table",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "cyan",
+        "signature": true,
+        "wing": "#51657B",
+        "rim": "#51657B",
+        "plate": "#51657B",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#2C445F",
+        "rim": "#2C445F",
+        "plate": "#2C445F",
+        "wash": "#2C445F",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": false
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "CHH",
+      "source": "pinned retail primary/secondary table",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "cyan",
+        "signature": true,
+        "wing": "#51657B",
+        "rim": "#51657B",
+        "plate": "#51657B",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#2C445F",
+        "rim": "#072343",
+        "plate": "#072343",
+        "wash": "#2C445F",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": false
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "UDC",
+      "source": "neutral custom fallback; supply team colours explicitly",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "neutral",
+        "signature": true,
+        "wing": "#6E6E6E",
+        "rim": "#6E6E6E",
+        "plate": "#6E6E6E",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#6E6E6E",
+        "rim": "#6E6E6E",
+        "plate": "#6E6E6E",
+        "wash": "#6E6E6E",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": true
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "LAL",
+      "source": "neutral custom fallback; supply team colours explicitly",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "neutral",
+        "signature": true,
+        "wing": "#6E6E6E",
+        "rim": "#6E6E6E",
+        "plate": "#6E6E6E",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#6E6E6E",
+        "rim": "#6E6E6E",
+        "plate": "#6E6E6E",
+        "wash": "#6E6E6E",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": true
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "CES",
+      "source": "neutral custom fallback; supply team colours explicitly",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "neutral",
+        "signature": true,
+        "wing": "#6E6E6E",
+        "rim": "#6E6E6E",
+        "plate": "#6E6E6E",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#6E6E6E",
+        "rim": "#6E6E6E",
+        "plate": "#6E6E6E",
+        "wash": "#6E6E6E",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": true
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "BFM",
+      "source": "neutral custom fallback; supply team colours explicitly",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "neutral",
+        "signature": true,
+        "wing": "#6E6E6E",
+        "rim": "#6E6E6E",
+        "plate": "#6E6E6E",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#6E6E6E",
+        "rim": "#6E6E6E",
+        "plate": "#6E6E6E",
+        "wash": "#6E6E6E",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": true
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "LAD",
+      "source": "neutral custom fallback; supply team colours explicitly",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "neutral",
+        "signature": true,
+        "wing": "#6E6E6E",
+        "rim": "#6E6E6E",
+        "plate": "#6E6E6E",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#6E6E6E",
+        "rim": "#6E6E6E",
+        "plate": "#6E6E6E",
+        "wash": "#6E6E6E",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": true
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "AMW",
+      "source": "pinned retail primary/secondary table",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "cyan",
+        "signature": true,
+        "wing": "#2F7075",
+        "rim": "#2F7075",
+        "plate": "#2F7075",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#0A575D",
+        "rim": "#0A575D",
+        "plate": "#0A575D",
+        "wash": "#0A575D",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": false
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "ANE",
+      "source": "pinned retail primary/secondary table",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "yellow",
+        "signature": true,
+        "wing": "#586755",
+        "rim": "#586755",
+        "plate": "#586755",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#586755",
+        "rim": "#586755",
+        "plate": "#586755",
+        "wash": "#586755",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": true
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "ASE",
+      "source": "pinned retail primary/secondary table",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "blue",
+        "signature": true,
+        "wing": "#5567A9",
+        "rim": "#5567A9",
+        "plate": "#5567A9",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#374C9A",
+        "rim": "#374C9A",
+        "plate": "#374C9A",
+        "wash": "#374C9A",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": false
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "AFC",
+      "source": "pinned retail primary/secondary table",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "pink",
+        "signature": true,
+        "wing": "#D33A3B",
+        "rim": "#D33A3B",
+        "plate": "#D33A3B",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#CB1718",
+        "rim": "#CB1718",
+        "plate": "#CB1718",
+        "wash": "#CB1718",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": false
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "NFC",
+      "source": "pinned retail primary/secondary table",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "cyan",
+        "signature": true,
+        "wing": "#5D709F",
+        "rim": "#5D709F",
+        "plate": "#5D709F",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#173376",
+        "rim": "#173376",
+        "plate": "#173376",
+        "wash": "#173376",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": false
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  },
+  {
+    "tool": "jev_ask",
+    "state": {
+      "team": "NFL",
+      "source": "pinned retail primary/secondary table",
+      "source_shade_uncertain": false,
+      "proposed": {
+        "hue": "cyan",
+        "signature": true,
+        "wing": "#5D709F",
+        "rim": "#5D709F",
+        "plate": "#5D709F",
+        "readability": "all passes"
+      },
+      "previous": {
+        "wing": "#173376",
+        "rim": "#173376",
+        "plate": "#173376",
+        "wash": "#173376",
+        "readability": "all passes"
+      },
+      "style": "Signature official hue, restrained gradient, readable white text; Raiders silver and black.",
+      "groups_identical": false
+    },
+    "questions": {
+      "choice_a": {
+        "type": "choice",
+        "instructions": "Which group better expresses this team within the stated style? If equivalent, choose proposed. Only use the supplied colour groups.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      },
+      "choice_b": {
+        "type": "choice",
+        "instructions": "Pick the group for the team accents. Prefer the signature hue and coherent roles. When the groups are equivalent, choose proposed. Choose defer if neither can be endorsed.",
+        "criteria": {
+          "proposed": "Use the proposed coherent group, preserving the signature hue.",
+          "previous": "Retain the prior reviewed candidate group.",
+          "defer": "Identity is uncertain and needs a human choice."
+        }
+      }
+    }
+  }
+]

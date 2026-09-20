@@ -1,0 +1,632 @@
+{
+  "bank_spacing": [
+    32288
+  ],
+  "banks": [
+    {
+      "absolute_offset": 2458464,
+      "roster_offset": 2457616,
+      "runtime_words": [
+        0,
+        820138755,
+        283267843
+      ],
+      "within_existing_converter_scan": false
+    },
+    {
+      "absolute_offset": 2490752,
+      "roster_offset": 2489904,
+      "runtime_words": [
+        1388086656,
+        820138755,
+        283267843
+      ],
+      "within_existing_converter_scan": false
+    },
+    {
+      "absolute_offset": 2523040,
+      "roster_offset": 2522192,
+      "runtime_words": [
+        1388086656,
+        820138755,
+        283267843
+      ],
+      "within_existing_converter_scan": false
+    },
+    {
+      "absolute_offset": 2555328,
+      "roster_offset": 2554480,
+      "runtime_words": [
+        1388086656,
+        820138755,
+        283267843
+      ],
+      "within_existing_converter_scan": true
+    },
+    {
+      "absolute_offset": 2587616,
+      "roster_offset": 2586768,
+      "runtime_words": [
+        1388086656,
+        820138755,
+        283267843
+      ],
+      "within_existing_converter_scan": true
+    },
+    {
+      "absolute_offset": 2619904,
+      "roster_offset": 2619056,
+      "runtime_words": [
+        1388086656,
+        820138755,
+        283267843
+      ],
+      "within_existing_converter_scan": true
+    },
+    {
+      "absolute_offset": 2652192,
+      "roster_offset": 2651344,
+      "runtime_words": [
+        1388086656,
+        820138755,
+        283267843
+      ],
+      "within_existing_converter_scan": true
+    },
+    {
+      "absolute_offset": 2684480,
+      "roster_offset": 2683632,
+      "runtime_words": [
+        1388086656,
+        820138755,
+        283267843
+      ],
+      "within_existing_converter_scan": true
+    }
+  ],
+  "calendar": {
+    "count": 19,
+    "count_offset": 2784340,
+    "meaning": "weekly packed calendar inferred from month/day progression; year epoch unknown",
+    "rows": [
+      {
+        "day_bits": 5,
+        "month_bits_plus_one": 9,
+        "offset": 2784344,
+        "packed_date": 3845,
+        "state_word": 2,
+        "year_bits_epoch_unknown": 7
+      },
+      {
+        "day_bits": 12,
+        "month_bits_plus_one": 9,
+        "offset": 2784364,
+        "packed_date": 3852,
+        "state_word": 2,
+        "year_bits_epoch_unknown": 7
+      },
+      {
+        "day_bits": 19,
+        "month_bits_plus_one": 9,
+        "offset": 2784384,
+        "packed_date": 3859,
+        "state_word": 2,
+        "year_bits_epoch_unknown": 7
+      },
+      {
+        "day_bits": 26,
+        "month_bits_plus_one": 9,
+        "offset": 2784404,
+        "packed_date": 3866,
+        "state_word": 2,
+        "year_bits_epoch_unknown": 7
+      },
+      {
+        "day_bits": 3,
+        "month_bits_plus_one": 10,
+        "offset": 2784424,
+        "packed_date": 3875,
+        "state_word": 2,
+        "year_bits_epoch_unknown": 7
+      },
+      {
+        "day_bits": 10,
+        "month_bits_plus_one": 10,
+        "offset": 2784444,
+        "packed_date": 3882,
+        "state_word": 2,
+        "year_bits_epoch_unknown": 7
+      },
+      {
+        "day_bits": 17,
+        "month_bits_plus_one": 10,
+        "offset": 2784464,
+        "packed_date": 3889,
+        "state_word": 2,
+        "year_bits_epoch_unknown": 7
+      },
+      {
+        "day_bits": 24,
+        "month_bits_plus_one": 10,
+        "offset": 2784484,
+        "packed_date": 3896,
+        "state_word": 2,
+        "year_bits_epoch_unknown": 7
+      },
+      {
+        "day_bits": 31,
+        "month_bits_plus_one": 10,
+        "offset": 2784504,
+        "packed_date": 3903,
+        "state_word": 2,
+        "year_bits_epoch_unknown": 7
+      },
+      {
+        "day_bits": 7,
+        "month_bits_plus_one": 11,
+        "offset": 2784524,
+        "packed_date": 3911,
+        "state_word": 2,
+        "year_bits_epoch_unknown": 7
+      },
+      {
+        "day_bits": 14,
+        "month_bits_plus_one": 11,
+        "offset": 2784544,
+        "packed_date": 3918,
+        "state_word": 2,
+        "year_bits_epoch_unknown": 7
+      },
+      {
+        "day_bits": 21,
+        "month_bits_plus_one": 11,
+        "offset": 2784564,
+        "packed_date": 3925,
+        "state_word": 2,
+        "year_bits_epoch_unknown": 7
+      },
+      {
+        "day_bits": 28,
+        "month_bits_plus_one": 11,
+        "offset": 2784584,
+        "packed_date": 3932,
+        "state_word": 2,
+        "year_bits_epoch_unknown": 7
+      },
+      {
+        "day_bits": 5,
+        "month_bits_plus_one": 12,
+        "offset": 2784604,
+        "packed_date": 3941,
+        "state_word": 2,
+        "year_bits_epoch_unknown": 7
+      },
+      {
+        "day_bits": 12,
+        "month_bits_plus_one": 12,
+        "offset": 2784624,
+        "packed_date": 3948,
+        "state_word": 2,
+        "year_bits_epoch_unknown": 7
+      },
+      {
+        "day_bits": 19,
+        "month_bits_plus_one": 12,
+        "offset": 2784644,
+        "packed_date": 3955,
+        "state_word": 2,
+        "year_bits_epoch_unknown": 7
+      },
+      {
+        "day_bits": 26,
+        "month_bits_plus_one": 12,
+        "offset": 2784664,
+        "packed_date": 3962,
+        "state_word": 2,
+        "year_bits_epoch_unknown": 7
+      },
+      {
+        "day_bits": 2,
+        "month_bits_plus_one": 1,
+        "offset": 2784684,
+        "packed_date": 4098,
+        "state_word": 2,
+        "year_bits_epoch_unknown": 8
+      },
+      {
+        "day_bits": 9,
+        "month_bits_plus_one": 1,
+        "offset": 2784704,
+        "packed_date": 4105,
+        "state_word": 2,
+        "year_bits_epoch_unknown": 8
+      }
+    ],
+    "stride": 20
+  },
+  "converter_built": false,
+  "embedded_platform": "ps3",
+  "feasibility": "L",
+  "interior_allocations": 658,
+  "odd_allocations": 207,
+  "palette_votes_alpha_first_last": [
+    0,
+    2640
+  ],
+  "regions": [
+    {
+      "description": "prefix of flags, integers and float-like settings; field meanings unproved",
+      "offset": 0,
+      "sha256": "279a09832cf2a777e8c6654ac23bd514d23ba7e268a73a2522f907591d58b728",
+      "size": 848,
+      "words_decoding_as_floats_in_0_1": 53,
+      "zero_or_one_words": 140
+    },
+    {
+      "description": "embedded roster graph",
+      "offset": 848,
+      "sha256": "05e2d460e2252d8faac5957f386ccf3952affc22b44384364d69db1577e2bc80",
+      "size": 2715908
+    },
+    {
+      "description": "season state, index/sentinel arenas, and packed calendar records",
+      "ff_bytes": 12389,
+      "offset": 2716756,
+      "sha256": "c139903bb39b773a0a5a7b809e6139fa2e5f76724a49b968cdb7f9560bf4a793",
+      "size": 69600,
+      "zero_bytes": 53131
+    }
+  ],
+  "repeated_records": [
+    {
+      "count": 48,
+      "end": 2747164,
+      "meaning": "unknown, repeated sentinel/default records",
+      "offset": 2746780,
+      "stride": 8,
+      "words": [
+        4294901760,
+        0
+      ]
+    },
+    {
+      "count": 100,
+      "end": 2749024,
+      "meaning": "unknown, repeated sentinel/default records",
+      "offset": 2747824,
+      "stride": 12,
+      "words": [
+        0,
+        0,
+        4294967040
+      ]
+    },
+    {
+      "count": 864,
+      "end": 2752484,
+      "meaning": "unknown, repeated sentinel/default records",
+      "offset": 2749028,
+      "stride": 4,
+      "words": [
+        65535
+      ]
+    },
+    {
+      "count": 600,
+      "end": 2759764,
+      "meaning": "unknown, repeated sentinel/default records",
+      "offset": 2752564,
+      "stride": 12,
+      "words": [
+        65535,
+        255,
+        0
+      ]
+    },
+    {
+      "count": 120,
+      "end": 2760336,
+      "meaning": "unknown, repeated sentinel/default records",
+      "offset": 2759856,
+      "stride": 4,
+      "words": [
+        65535
+      ]
+    }
+  ],
+  "root_counts": [
+    2254,
+    0,
+    1,
+    31,
+    40,
+    295,
+    199,
+    199,
+    199,
+    42,
+    5957,
+    69,
+    650,
+    1050,
+    3200,
+    266,
+    266,
+    3724,
+    266,
+    40,
+    93,
+    204,
+    212,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "root_runtime_words": [
+    {
+      "offset": 976,
+      "table": 15,
+      "value": 1373705352
+    },
+    {
+      "offset": 984,
+      "table": 16,
+      "value": 1373706108
+    },
+    {
+      "offset": 992,
+      "table": 17,
+      "value": 1373719100
+    },
+    {
+      "offset": 1000,
+      "table": 18,
+      "value": 1373749116
+    }
+  ],
+  "runtime_block_offset": 2295156,
+  "runtime_block_words": [
+    1400229856,
+    1486395616,
+    1402524192,
+    1402524192,
+    1346371584,
+    304428448,
+    505882,
+    83871392
+  ],
+  "runtime_in_game_proved": false,
+  "schema": "apf2k8_b72_season_probe/v1",
+  "size": 2786356,
+  "source_path": "inputs/aszemple/2k8-ideas_b9010ac3_3.zip",
+  "source_sha256": "9a11b3a9ac73e63fd6f8c547ed431fe30dc6562f5ad443ec8c8a667f51043bbb",
+  "strict_readers": {
+    "embedded_at_0x350": {
+      "labels": "accepted",
+      "players": "SaveRosterPlayerError: player 176 occurs in more than one counted membership slot",
+      "structure": "accepted"
+    },
+    "first_roster_size_bytes": {
+      "labels": "SaveError: playbook 0 name pointer is not UTF-16 aligned: 0x1D31DB",
+      "players": "SaveRosterPlayerError: root table 0 count changed",
+      "structure": "PS3RosterConvertError: root table 0 count changed"
+    },
+    "whole": {
+      "labels": "SaveError: playbook 0 name pointer is not UTF-16 aligned: 0x1D31DB",
+      "players": "SaveRosterPlayerError: root table 0 count changed",
+      "structure": "PS3RosterConvertError: root table 0 count changed"
+    }
+  },
+  "string_allocations": 7643,
+  "string_pool_absolute": 2054792,
+  "string_references": 42914,
+  "table10_index_arena": {
+    "active_count": 1990,
+    "active_min_max": [
+      2988,
+      5956
+    ],
+    "capacity": 5957,
+    "count_offset": 2760336,
+    "end": 2772254,
+    "entry_size": 2,
+    "meaning": "likely free/available record IDs; semantics unproved",
+    "offset": 2760340,
+    "sentinel_count": 3967,
+    "unique_descending": true
+  },
+  "tables": [
+    {
+      "absolute_offset": 1184,
+      "count": 2254,
+      "index": 0,
+      "relative_offset": 336,
+      "stride": 332
+    },
+    {
+      "absolute_offset": 753516,
+      "count": 31,
+      "index": 3,
+      "relative_offset": 752668,
+      "stride": 36
+    },
+    {
+      "absolute_offset": 754632,
+      "count": 40,
+      "index": 4,
+      "relative_offset": 753784,
+      "stride": 384
+    },
+    {
+      "absolute_offset": 769992,
+      "count": 295,
+      "index": 5,
+      "relative_offset": 769144,
+      "stride": 8
+    },
+    {
+      "absolute_offset": 772352,
+      "count": 199,
+      "index": 6,
+      "relative_offset": 771504,
+      "stride": 24
+    },
+    {
+      "absolute_offset": 777128,
+      "count": 199,
+      "index": 7,
+      "relative_offset": 776280,
+      "stride": 24
+    },
+    {
+      "absolute_offset": 781904,
+      "count": 199,
+      "index": 8,
+      "relative_offset": 781056,
+      "stride": 24
+    },
+    {
+      "absolute_offset": 786680,
+      "count": 42,
+      "index": 9,
+      "relative_offset": 785832,
+      "stride": 180
+    },
+    {
+      "absolute_offset": 794240,
+      "count": 5957,
+      "index": 10,
+      "relative_offset": 793392,
+      "stride": 188
+    },
+    {
+      "absolute_offset": 1914156,
+      "count": 69,
+      "index": 11,
+      "relative_offset": 1913308,
+      "stride": 12
+    },
+    {
+      "absolute_offset": 1914984,
+      "count": 650,
+      "index": 12,
+      "relative_offset": 1914136,
+      "stride": 8
+    },
+    {
+      "absolute_offset": 1920184,
+      "count": 1050,
+      "index": 13,
+      "relative_offset": 1919336,
+      "stride": 8
+    },
+    {
+      "absolute_offset": 1928584,
+      "count": 3200,
+      "index": 14,
+      "relative_offset": 1927736,
+      "stride": 8
+    },
+    {
+      "absolute_offset": 1954184,
+      "count": 266,
+      "index": 15,
+      "relative_offset": 1953336,
+      "stride": 2
+    },
+    {
+      "absolute_offset": 1954716,
+      "count": 266,
+      "index": 16,
+      "relative_offset": 1953868,
+      "stride": 48
+    },
+    {
+      "absolute_offset": 1967484,
+      "count": 3724,
+      "index": 17,
+      "relative_offset": 1966636,
+      "stride": 8
+    },
+    {
+      "absolute_offset": 1997276,
+      "count": 266,
+      "index": 18,
+      "relative_offset": 1996428,
+      "stride": 5
+    },
+    {
+      "absolute_offset": 1998608,
+      "count": 40,
+      "index": 19,
+      "relative_offset": 1997760,
+      "stride": 152
+    },
+    {
+      "absolute_offset": 2004688,
+      "count": 93,
+      "index": 20,
+      "relative_offset": 2003840,
+      "stride": 152
+    },
+    {
+      "absolute_offset": 2018824,
+      "count": 204,
+      "index": 21,
+      "relative_offset": 2017976,
+      "stride": 32
+    },
+    {
+      "absolute_offset": 2025352,
+      "count": 212,
+      "index": 22,
+      "relative_offset": 2024504,
+      "stride": 120
+    }
+  ],
+  "team_id_array": {
+    "count": 24,
+    "ids": [
+      0,
+      1,
+      32,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23
+    ],
+    "observation": "slots 0..23, except slot 2 replaced by custom slot 32",
+    "offset": 2717220
+  }
+}

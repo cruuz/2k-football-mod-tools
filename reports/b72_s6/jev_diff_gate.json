@@ -1,0 +1,266 @@
+{
+ "base": "ebed4b998b7f052bb05906c562f9650eb0e03776",
+ "head": "edef5c97ff24d2bcda1707032c197905e84566e0",
+ "deterministic": [],
+ "notes": [
+  "mod_editor/core/providers.py:707-713: PINNED_VALUE 0.97 but every digest on its + lines matches the HEAD bytes (digests on + lines vs HEAD bytes: 1 match, 0 differ); not flagged",
+  "packaging/scorebug_replication_pins.py:1-9: PINNED_VALUE 0.96 but every digest on its + lines matches the HEAD bytes (digests on + lines vs HEAD bytes: 2 match, 0 differ); not flagged"
+ ],
+ "diff_facts": "New files under mod_editor/ in this diff: none. Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: no. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+ "skipped": {},
+ "windows": [
+  {
+   "start": 707,
+   "end": 713,
+   "header": "@@ -707,7 +707,7 @@ class Nfl2k5UnifiedVisualProvider:",
+   "text": "@@ -707,7 +707,7 @@ class Nfl2k5UnifiedVisualProvider:\n         \"mod_editor/core/nfl2k5_scorebug_resources.py\": \"444d24c8b1c5c0b5bb1a8458e92eec12302b379f0f4f98d1c8f63930a9efbd97\",\n         'mod_editor/core/nfl2k5_scorebug_sprite.py': '7ceee0ee98bc32b1f314d9b06bf8331d3261b81b2c850edf20ee5c178301c606',\n         'mod_editor/core/nfl2k5_scorebug_teams.py': '79dfac96ad264d6364ffb7cfd468c8a303e63d03c9796c8d47013c38086de94e',\n-        'tools/scorebug_sprite/xemu_model.py': 'd223549fd9c56e08b8efec48bbd82ee0ad4ce675f09bca428aef60fa3532998e',\n+        'tools/scorebug_sprite/xemu_model.py': '1b97da7ecdf4e0fe19d6a1d7ea41ff3110810f14777da88f3ca94e18e1f110b3',\n         'mod_editor/core/nfl2k5_scorebug_sprite_code.py': '01e1288dff4fe6897b89489cbaba0072f8a8070fa12434d81f6d16fb7d29ad6b',\n         'tools/nfl2k5_scorebug_exact.py': '69e80b09ede53a5e0658c7561deb2e08acfd56bff82effdf6048573120af2c82',\n         'tools/nfl2k5_scorebug_projection.py': 'ca69ccbb6fdeb06a762d2f26ed81ea9c321986bbfcb23c14d9ab6d0c5d76c90d',",
+   "file": "mod_editor/core/providers.py",
+   "kind": "code",
+   "status": "M",
+   "scores": {
+    "ctime_compare": 0.04,
+    "posix_only": 0.04,
+    "pinned_value": 0.97,
+    "slow_test": 0.02,
+    "weakens_safety": 0.14,
+    "inventory_mismatch": 0.09
+   },
+   "flags": [],
+   "pin_note": "digests on + lines vs HEAD bytes: 1 match, 0 differ",
+   "max": 0.0
+  },
+  {
+   "start": 972,
+   "end": 976,
+   "header": "@@ -972,4 +972,5 @@ data/nfl2k5_scorebug_sprite/team_colors_official_2026.json",
+   "text": "@@ -972,4 +972,5 @@ data/nfl2k5_scorebug_sprite/team_colors_official_2026.json\n mod_editor/core/nfl2k5_scorebug_teams.py\n tools/scorebug_sprite/gpu.py\n tools/scorebug_sprite/xemu_model.py\n+tools/scorebug_sprite/live.py\n tools/scorebug_sprite/neutral_template.py",
+   "file": "packaging/release-allowlist.txt",
+   "kind": "packaging",
+   "status": "M",
+   "scores": {
+    "ctime_compare": 0.05,
+    "posix_only": 0.11,
+    "pinned_value": 0.03,
+    "slow_test": 0.03,
+    "weakens_safety": 0.16,
+    "inventory_mismatch": 0.15
+   },
+   "flags": [],
+   "max": 0.0
+  },
+  {
+   "start": 1,
+   "end": 9,
+   "header": "@@ -1,8 +1,9 @@",
+   "text": "@@ -1,8 +1,9 @@\n \"\"\"Reviewed replication tool and metadata source identities; refreshed by repin.py.\"\"\"\n PINS = {\n+    \"tools/scorebug_sprite/live.py\": \"1891b6e792b99cc7725cd8bd630ca2ac6deadfd8c1a90590767d135e964567a4\",\n     \"mod_editor/core/nfl2k5_scorebug_teams.py\": \"79dfac96ad264d6364ffb7cfd468c8a303e63d03c9796c8d47013c38086de94e\",\n     \"tools/scorebug_sprite/gpu.py\": \"cbcf8feb70dac124072b0ee6db19ea59016dcd26eb26cedf4d3c161217206b36\",\n-    \"tools/scorebug_sprite/xemu_model.py\": \"d223549fd9c56e08b8efec48bbd82ee0ad4ce675f09bca428aef60fa3532998e\",\n+    \"tools/scorebug_sprite/xemu_model.py\": \"1b97da7ecdf4e0fe19d6a1d7ea41ff3110810f14777da88f3ca94e18e1f110b3\",\n     \"tools/scorebug_sprite/neutral_template.py\": \"fddad8bd118b3321b24eb3df67719f9f2c392ad36f6cf91811bc3af4e8dba35b\",\n     \"data/nfl2k5_scorebug_sprite/team_colors_official_2026.json\": \"e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4\",\n     \"data/nfl2k5_scorebug_sprite/broadcast_states.json\": \"16e07c2de4718bfe57066c35643a6302101c58eca72339f1e189d510b773e5a4\",",
+   "file": "packaging/scorebug_replication_pins.py",
+   "kind": "packaging",
+   "status": "M",
+   "scores": {
+    "ctime_compare": 0.03,
+    "posix_only": 0.04,
+    "pinned_value": 0.96,
+    "slow_test": 0.02,
+    "weakens_safety": 0.1,
+    "inventory_mismatch": 0.2
+   },
+   "flags": [],
+   "pin_note": "digests on + lines vs HEAD bytes: 2 match, 0 differ",
+   "max": 0.0
+  },
+  {
+   "start": 143,
+   "end": 158,
+   "header": "@@ -143,6 +143,16 @@ class NativeTests(unittest.TestCase):",
+   "text": "@@ -143,6 +143,16 @@ class NativeTests(unittest.TestCase):\n             self.assertEqual(pipeline.fragment((255,)*4,(255,)*4,(19,)*4),(255,)*4)\n             self.assertIsNone(pipeline.fragment((255,255,255,1),(255,)*4,(19,)*4))\n             self.assertFalse(pipeline.receipt()['calibration_passed'])\n+            label['state']['0x1b14']=0x02063f00\n+            pipeline.select('yscore_buga1')\n+            self.assertEqual(pipeline.fragment((255,)*4,(255,)*4,(19,)*4),(255,)*4)\n+            label['vertex_program_complete']=False\n+            with self.assertRaisesRegex(ValueError,'Incomplete live'):\n+                pipeline.select('yscore_buga1')\n+            label['vertex_program_complete']=True\n+            label['state']['0x1b14']=0x01013f00\n+            with self.assertRaisesRegex(ValueError,'texture filter'):\n+                pipeline.select('yscore_buga1')\n         finally:c['machine'].close()\n \n ",
+   "file": "tests/mod_editor/test_scorebug_gpu.py",
+   "kind": "test",
+   "status": "M",
+   "scores": {
+    "ctime_compare": 0.03,
+    "posix_only": 0.04,
+    "pinned_value": 0.04,
+    "slow_test": 0.04,
+    "weakens_safety": 0.09,
+    "inventory_mismatch": 0.08
+   },
+   "flags": [],
+   "max": 0.0
+  },
+  {
+   "start": 1,
+   "end": 60,
+   "header": "@@ -0,0 +1,88 @@",
+   "text": "@@ -0,0 +1,88 @@\n[part 1 of 2 of a 88-line hunk]\n+\"\"\"Synthetic trace windows test missing-state and provenance boundaries.\"\"\"\n+from pathlib import Path\n+import sys\n+import unittest\n+\n+ROOT = Path(__file__).resolve().parents[2]\n+sys.path[:0] = [str(ROOT), str(ROOT/'tools')]\n+from tools.scorebug_sprite import live, xemu_model\n+\n+\n+def method(offset, value, name='KNOWN[0]', sub=0):\n+    return f'nv2a_pgraph_method {sub}: 0x97 -> 0x{offset:04x} {name} 0x{value:x}'\n+\n+\n+class LiveTests(unittest.TestCase):\n+    def test_partial_window_and_missing_indices_are_not_empty_draw_proof(self):\n+        result = live.parse([method(0x17fc, 0), method(0x1b00, 128),\n+                             method(0x17fc, 6), method(0x17fc, 0)], first_line=40)\n+        self.assertEqual(result['counts']['orphan_ends'], 1)\n+        draw = result['draws'][0]\n+        self.assertEqual((draw['begin_line'], draw['end_line']), (42, 43))\n+        self.assertEqual(draw['state_writes']['0x1b00'], 41)\n+        self.assertNotIn('0x030c', draw['state'])\n+        self.assertEqual(draw['geometry_events'], [])\n+        self.assertFalse(draw['vertex_program_complete'])\n+\n+    def test_upload_ports_use_component_not_event_count_and_advance_on_w(self):\n+        result = live.parse([method(0x1ea4, 6), method(0xb88, 12),\n+                             method(0xb8c, 13), method(0xb80, 14),\n+                             method(0x17fc, 6)])\n+        self.assertEqual(result['draws'][0]['vertex_constants'], {'26':12,'27':13,'28':14})\n+        self.assertIsNone(result['draws'][0]['end_line'])\n+\n+    def test_program_residency_and_rewrites_are_indexed(self):\n+        lines = [method(0x1e9c, 8), method(0x1ea0, 8)]\n+        lines += [method(0xb00+i*4, v) for i,v in enumerate((2,4,6,1))]\n+        lines += [method(0x17fc, 6), method(0x17fc, 0),\n+                  method(0x1e9c, 8), method(0xb00, 7), method(0x17fc, 6)]\n+        a,b = live.parse(lines)['draws']\n+        self.assertEqual(a['vertex_program'], [2,4,6,1])\n+        self.assertEqual(b['vertex_program'], [7,4,6,1])\n+        self.assertTrue(b['vertex_program_complete'])\n+\n+    def test_windows_do_not_share_missing_upload_pointers(self):\n+        live.parse([method(0x1ea4, 0), method(0xb80, 9)])\n+        result = live.parse([method(0xb80, 4), method(0x17fc, 6)])\n+        self.assertEqual(result['draws'][0]['vertex_constants'], {})\n+        self.assertEqual(result['counts']['uploads_without_load_pointer'], 1)\n+\n+    def test_unhandled_and_unknown_names_do_not_become_state(self):\n+        result = live.parse([method(0x380, 8, '?[0]'),\n+            'nv2a_pgraph_method_unhandled 0: 0x97 -> 0x0380 0x8', method(0x17fc, 6)])\n+        self.assertNotIn('0x0380', result['draws'][0]['state'])\n+        with self.assertRaisesRegex(ValueError, 'line 1'):\n+            live.parse(['broken method'])\n+\n+    def test_geometry_and_mutations_inside_draw_are_retained(self):\n+        lines = [method(0x17fc, 6), method(0x1800, 0x20001),\n+                 method(0x1810, 0x03000005), method(0x304, 1), method(0x17fc, 0)]\n+        draw = live.parse(lines)['draws'][0]",
+   "file": "tests/mod_editor/test_scorebug_live.py",
+   "kind": "test",
+   "status": "A",
+   "scores": {
+    "ctime_compare": 0.04,
+    "posix_only": 0.06,
+    "pinned_value": 0.04,
+    "slow_test": 0.04,
+    "weakens_safety": 0.09,
+    "inventory_mismatch": 0.12
+   },
+   "flags": [],
+   "max": 0.0
+  },
+  {
+   "start": 53,
+   "end": 88,
+   "header": "@@ -0,0 +1,88 @@",
+   "text": "@@ -0,0 +1,88 @@\n[part 2 of 2 of a 88-line hunk]\n+        self.assertNotIn('0x0380', result['draws'][0]['state'])\n+        with self.assertRaisesRegex(ValueError, 'line 1'):\n+            live.parse(['broken method'])\n+\n+    def test_geometry_and_mutations_inside_draw_are_retained(self):\n+        lines = [method(0x17fc, 6), method(0x1800, 0x20001),\n+                 method(0x1810, 0x03000005), method(0x304, 1), method(0x17fc, 0)]\n+        draw = live.parse(lines)['draws'][0]\n+        self.assertEqual([v['value'] for v in draw['geometry_events']], [0x20001,0x03000005])\n+        self.assertEqual(draw['changes_inside'][0]['method'], '0x0304')\n+        self.assertNotIn('0x0304', draw['state'])\n+\n+    def test_subchannels_and_abbreviated_indices_stay_distinct(self):\n+        lines = [method(0x1b00, 1), method(0x1b00, 2, sub=1), method(0x17fc, 6),\n+            'nv2a_pgraph_method_abbrev 0: 0x97 -> 0x1800 NV097_ARRAY_ELEMENT16 * 7',\n+            method(0x17fc, 0), method(0x17fc, 6, sub=1)]\n+        a,b = live.parse(lines)['draws']\n+        self.assertEqual([a['state']['0x1b00'], b['state']['0x1b00']], [1,2])\n+        self.assertTrue(a['geometry_events'][0]['indices_unknown'])\n+\n+    def test_ram_and_raw_texture_refuse_truncation(self):\n+        self.assertEqual(live.read_ram(b'abcd', 1, 2), b'bc')\n+        for offset,size in ((-1,1),(0,-1),(3,2)):\n+            with self.assertRaises(ValueError):live.read_ram(b'abcd',offset,size)\n+        with self.assertRaises(ValueError):xemu_model.p8_texture(bytes(3),bytes(1024),2,2)\n+        with self.assertRaises(ValueError):xemu_model.p8_texture(bytes(4),bytes(1023),2,2)\n+\n+    def test_rectangular_morton_decode_from_exact_bytes(self):\n+        palette = bytes(v for i in range(256) for v in (i,2,3,255))\n+        image = xemu_model.p8_texture(bytes(range(8)),palette,4,2)\n+        self.assertEqual([image.getpixel((x,0)) for x in range(4)],\n+                         [(3,2,v,255) for v in (0,1,4,5)])\n+        self.assertEqual([image.getpixel((x,1))[2] for x in range(4)], [2,3,6,7])\n+\n+\n+if __name__ == '__main__':unittest.main()",
+   "file": "tests/mod_editor/test_scorebug_live.py",
+   "kind": "test",
+   "status": "A",
+   "scores": {
+    "ctime_compare": 0.04,
+    "posix_only": 0.05,
+    "pinned_value": 0.04,
+    "slow_test": 0.04,
+    "weakens_safety": 0.08,
+    "inventory_mismatch": 0.12
+   },
+   "flags": [],
+   "max": 0.0
+  },
+  {
+   "start": 1,
+   "end": 60,
+   "header": "@@ -0,0 +1,159 @@",
+   "text": "@@ -0,0 +1,159 @@\n[part 1 of 3 of a 159-line hunk]\n+\"\"\"Read xemu NV097 text traces without supplying unobserved GPU defaults.\n+\n+The stock logger suppresses ARRAY_ELEMENT16 values. A BEGIN/END pair with no\n+geometry events is therefore not evidence of an empty draw. Each independently\n+enabled trace window must be parsed separately: state cannot cross a gap.\n+\"\"\"\n+from collections import Counter\n+from dataclasses import dataclass, field\n+import re\n+\n+\n+METHOD = re.compile(\n+    r'nv2a_pgraph_method (\\d+): (0x[0-9a-fA-F]+) -> '\n+    r'(0x[0-9a-fA-F]+) (\\S+) (0x[0-9a-fA-F]+)$')\n+ABBREV = re.compile(\n+    r'nv2a_pgraph_method_abbrev (\\d+): (0x[0-9a-fA-F]+) -> '\n+    r'(0x[0-9a-fA-F]+) (\\S+) \\* (\\d+)$')\n+UNHANDLED = re.compile(\n+    r'nv2a_pgraph_method_unhandled (\\d+): (0x[0-9a-fA-F]+) -> '\n+    r'(0x[0-9a-fA-F]+) (0x[0-9a-fA-F]+)$')\n+\n+\n+@dataclass\n+class Context:\n+    state: dict = field(default_factory=dict)\n+    writes: dict = field(default_factory=dict)\n+    constants: dict = field(default_factory=dict)\n+    constant_writes: dict = field(default_factory=dict)\n+    program: dict = field(default_factory=dict)\n+    program_writes: dict = field(default_factory=dict)\n+    constant_load: int | None = None\n+    program_load: int | None = None\n+    active: dict | None = None\n+\n+    def snapshot(self):\n+        start = self.state.get('0x1ea0')\n+        program = []\n+        complete = False\n+        if start is not None:\n+            for slot in range(start, 136):\n+                words = [self.program.get(str(slot*4+i)) for i in range(4)]\n+                if None in words:\n+                    break\n+                program.extend(words)\n+                if words[3] & 1:\n+                    complete = True\n+                    break\n+        return dict(state=dict(self.state), state_writes=dict(self.writes),\n+                    vertex_constants=dict(self.constants),\n+                    constant_writes=dict(self.constant_writes),\n+                    program_memory=dict(self.program),\n+                    program_writes=dict(self.program_writes),\n+                    vertex_program=program, vertex_program_complete=complete)\n+\n+\n+def parse(lines, *, first_line=1):\n+    \"\"\"Return observed draw states and provenance for one uninterrupted window.\n+\n+    Upload port component selection and auto-increment follow pgraph.c, not\n+    packet-order assumptions. Missing load pointers leave uploads unknown.",
+   "file": "tools/scorebug_sprite/live.py",
+   "kind": "code",
+   "status": "A",
+   "scores": {
+    "ctime_compare": 0.03,
+    "posix_only": 0.05,
+    "pinned_value": 0.03,
+    "slow_test": 0.03,
+    "weakens_safety": 0.11,
+    "inventory_mismatch": 0.11
+   },
+   "flags": [],
+   "max": 0.0
+  },
+  {
+   "start": 53,
+   "end": 112,
+   "header": "@@ -0,0 +1,159 @@",
+   "text": "@@ -0,0 +1,159 @@\n[part 2 of 3 of a 159-line hunk]\n+                    vertex_program=program, vertex_program_complete=complete)\n+\n+\n+def parse(lines, *, first_line=1):\n+    \"\"\"Return observed draw states and provenance for one uninterrupted window.\n+\n+    Upload port component selection and auto-increment follow pgraph.c, not\n+    packet-order assumptions. Missing load pointers leave uploads unknown.\n+    Unhandled notifications never establish register state.\n+    \"\"\"\n+    contexts = {}\n+    draws, events, warnings = [], [], []\n+    counts, names = Counter(), {}\n+    for number, raw in enumerate(lines, first_line):\n+        line = raw.strip()\n+        if not line:\n+            continue\n+        match = METHOD.fullmatch(line)\n+        if match is None:\n+            if UNHANDLED.fullmatch(line):\n+                counts['unhandled_notifications'] += 1\n+                continue\n+            abbrev = ABBREV.fullmatch(line)\n+            if abbrev:\n+                counts['abbreviations'] += 1\n+                sub, cls, offset, name, count = abbrev.groups()\n+                context = contexts.get((int(sub), int(cls, 16)))\n+                if context and context.active is not None:\n+                    context.active['geometry_events'].append(dict(\n+                        line=number, method=offset, abbreviated_count=int(count),\n+                        indices_unknown=True))\n+                continue\n+            raise ValueError(f'Unrecognized trace line {number}: {line[:120]}')\n+        sub, cls, offset, name, value = match.groups()\n+        sub, cls, offset, value = int(sub), int(cls, 16), int(offset, 16), int(value, 16)\n+        counts['handled'] += 1\n+        if cls != 0x97:\n+            counts['other_classes'] += 1\n+            continue\n+        context = contexts.setdefault((sub, cls), Context())\n+        key = f'0x{offset:04x}'\n+        names[key] = name\n+        if name.startswith('?'):\n+            counts['unnamed_attempts'] += 1\n+            continue\n+        if offset in (0x1800, 0x1808, 0x1810, 0x1818):\n+            if context.active is not None:\n+                context.active['geometry_events'].append(dict(line=number, method=key, value=value))\n+            else:\n+                warnings.append(dict(line=number, reason='geometry outside observed BEGIN'))\n+            continue\n+        if offset == 0x17fc:\n+            if value:\n+                if context.active is not None:\n+                    warnings.append(dict(line=number, reason='BEGIN without observed END'))\n+                row = dict(id=len(draws), begin_line=number, end_line=None,\n+                           subchannel=sub, primitive=value, geometry_events=[],\n+                           changes_inside=[], **context.snapshot())\n+                draws.append(row)\n+                context.active = row",
+   "file": "tools/scorebug_sprite/live.py",
+   "kind": "code",
+   "status": "A",
+   "scores": {
+    "ctime_compare": 0.03,
+    "posix_only": 0.04,
+    "pinned_value": 0.03,
+    "slow_test": 0.03,
+    "weakens_safety": 0.13,
+    "inventory_mismatch": 0.11
+   },
+   "flags": [],
+   "max": 0.0
+  },
+  {
+   "start": 105,
+   "end": 159,
+   "header": "@@ -0,0 +1,159 @@",
+   "text": "@@ -0,0 +1,159 @@\n[part 3 of 3 of a 159-line hunk]\n+            if value:\n+                if context.active is not None:\n+                    warnings.append(dict(line=number, reason='BEGIN without observed END'))\n+                row = dict(id=len(draws), begin_line=number, end_line=None,\n+                           subchannel=sub, primitive=value, geometry_events=[],\n+                           changes_inside=[], **context.snapshot())\n+                draws.append(row)\n+                context.active = row\n+            elif context.active is None:\n+                counts['orphan_ends'] += 1\n+            else:\n+                context.active['end_line'] = number\n+                context.active = None\n+            continue\n+        if context.active is not None:\n+            context.active['changes_inside'].append(dict(line=number, method=key, value=value))\n+        if offset == 0x1e9c:\n+            context.program_load = value\n+        elif offset == 0x1ea4:\n+            context.constant_load = value\n+        elif 0xb00 <= offset < 0xc00:\n+            constant = offset >= 0xb80\n+            component = ((offset - (0xb80 if constant else 0xb00)) // 4) % 4\n+            pointer = context.constant_load if constant else context.program_load\n+            if pointer is not None:\n+                memory = context.constants if constant else context.program\n+                writes = context.constant_writes if constant else context.program_writes\n+                index = str(pointer*4+component)\n+                memory[index], writes[index] = value, number\n+                if component == 3:\n+                    if constant:\n+                        context.constant_load += 1\n+                    else:\n+                        context.program_load += 1\n+            else:\n+                counts['uploads_without_load_pointer'] += 1\n+            continue\n+        context.state[key], context.writes[key] = value, number\n+        if offset in (0x12c, 0x130, 0x200, 0x204, 0x208, 0x210, 0x214, 0x1d94):\n+            events.append(dict(line=number, method=key, name=name, value=value))\n+    counts['draws'] = len(draws)\n+    counts['closed_draws'] = sum(d['end_line'] is not None for d in draws)\n+    counts['draws_without_geometry_values'] = sum(not d['geometry_events'] for d in draws)\n+    return dict(counts=dict(counts), draws=draws, boundary_events=events,\n+                warnings=warnings, method_names=names,\n+                limitations=['Missing registers and upload words are unknown',\n+                    'Stock xemu suppresses ARRAY_ELEMENT16 values',\n+                    'No DMA object, host texture cache, shader uniform or framebuffer snapshots'])\n+\n+\n+def read_ram(ram, offset, size):\n+    \"\"\"Refuse truncated regions instead of padding missing physical memory.\"\"\"\n+    if offset < 0 or size < 0 or offset+size > len(ram):\n+        raise ValueError(f'RAM range {offset:#x}+{size:#x} exceeds dump {len(ram):#x}')\n+    return ram[offset:offset+size]",
+   "file": "tools/scorebug_sprite/live.py",
+   "kind": "code",
+   "status": "A",
+   "scores": {
+    "ctime_compare": 0.04,
+    "posix_only": 0.05,
+    "pinned_value": 0.04,
+    "slow_test": 0.03,
+    "weakens_safety": 0.11,
+    "inventory_mismatch": 0.09
+   },
+   "flags": [],
+   "max": 0.0
+  },
+  {
+   "start": 62,
+   "end": 88,
+   "header": "@@ -62,16 +62,27 @@ def combiner(state, texture, diffuse, fog=(0, 0, 0, 1)):",
+   "text": "@@ -62,16 +62,27 @@ def combiner(state, texture, diffuse, fog=(0, 0, 0, 1)):\n @lru_cache(maxsize=40)\n def texture(span):\n     \"\"\"Independent P8/BGRA decode with xemu's rectangular Morton ordering.\"\"\"\n-    import numpy as np\n-    from PIL import Image\n     from mod_editor.core import nfl2k5_scorebug_ingame as scene\n     chunk, body, _ = scene.decode(span)\n     info = scene.tx.parse_texture(body, chunk)\n     if info.format_code != 11 or info.dimensions != 2 or info.mip_levels != 1:\n         raise ValueError('Reference model requires the captured one-level P8 texture')\n     w,h = info.width,info.height\n-    if w & (w-1) or h & (h-1):\n-        raise ValueError('P8 swizzle dimensions must be powers of two')\n+    video = memoryview(body)[chunk.system_bytes:]\n+    result = p8_texture(video[info.pixel_offset:info.pixel_offset+w*h],\n+                        video[info.palette_offset:info.palette_offset+1024], w, h)\n+    return result,dict(name=info.name,dimensions=[w,h],\n+        span_sha256=hashlib.sha256(span).hexdigest(),decode='xemu P8, Morton swizzle, BGRA palette')\n+\n+\n+def p8_texture(indices, palette, w, h):\n+    \"\"\"Decode exact physical-memory regions, refusing incomplete RAM extracts.\"\"\"\n+    import numpy as np\n+    from PIL import Image\n+    if not (1 <= w <= 4096 and 1 <= h <= 4096) or w & (w-1) or h & (h-1):\n+        raise ValueError('P8 swizzle dimensions must be bounded powers of two')\n+    if len(indices) != w*h or len(palette) != 1024:\n+        raise ValueError('Incomplete P8 index or palette bytes')\n     yy,xx = np.indices((h,w), dtype=np.uint32)\n     offsets = np.zeros((h,w), dtype=np.uint32)\n     bit = 1",
+   "file": "tools/scorebug_sprite/xemu_model.py",
+   "kind": "code",
+   "status": "M",
+   "scores": {
+    "ctime_compare": 0.04,
+    "posix_only": 0.04,
+    "pinned_value": 0.06,
+    "slow_test": 0.03,
+    "weakens_safety": 0.17,
+    "inventory_mismatch": 0.11
+   },
+   "flags": [],
+   "max": 0.0
+  },
+  {
+   "start": 93,
+   "end": 102,
+   "header": "@@ -82,12 +93,10 @@ def texture(span):",
+   "text": "@@ -82,12 +93,10 @@ def texture(span):\n                 offsets |= ((coords & bit) != 0).astype(np.uint32)*target\n                 target <<= 1\n         bit <<= 1\n-    video = memoryview(body)[chunk.system_bytes:]\n-    indices = np.frombuffer(video[info.pixel_offset:info.pixel_offset+w*h], dtype=np.uint8)[offsets]\n-    bgra = np.frombuffer(video[info.palette_offset:info.palette_offset+1024],dtype=np.uint8).reshape(256,4)\n+    indices = np.frombuffer(indices, dtype=np.uint8)[offsets]\n+    bgra = np.frombuffer(palette,dtype=np.uint8).reshape(256,4)\n     pixels = bgra[indices][:,:,[2,1,0,3]]\n-    return Image.fromarray(pixels,'RGBA'),dict(name=info.name,dimensions=[w,h],\n-        span_sha256=hashlib.sha256(span).hexdigest(),decode='xemu P8, Morton swizzle, BGRA palette')\n+    return Image.fromarray(pixels,'RGBA')\n \n \n class Pipeline:",
+   "file": "tools/scorebug_sprite/xemu_model.py",
+   "kind": "code",
+   "status": "M",
+   "scores": {
+    "ctime_compare": 0.04,
+    "posix_only": 0.04,
+    "pinned_value": 0.14,
+    "slow_test": 0.03,
+    "weakens_safety": 0.69,
+    "inventory_mismatch": 0.09
+   },
+   "flags": [
+    "WEAKENS_SAFETY"
+   ],
+   "max": 0.69
+  },
+  {
+   "start": 113,
+   "end": 119,
+   "header": "@@ -104,7 +113,7 @@ class Pipeline:",
+   "text": "@@ -104,7 +113,7 @@ class Pipeline:\n         state = row['state']\n         expected = {0x0300:1,0x0304:1,0x033c:0x206,0x0340:2,\n                     0x0344:0x302,0x0348:0x303,0x0350:0x8006,0x0358:0x01010101,\n-                    0x1b0c:0x4003ffc0,0x1b14:0x02062000,0x1e70:1,\n+                    0x1b0c:0x4003ffc0,0x1e70:1,\n                     0x176c:0xa40,0x1778:0xa21}\n         for key,value in expected.items():\n             if state.get(f'0x{key:04x}') != value:",
+   "file": "tools/scorebug_sprite/xemu_model.py",
+   "kind": "code",
+   "status": "M",
+   "scores": {
+    "ctime_compare": 0.04,
+    "posix_only": 0.03,
+    "pinned_value": 0.59,
+    "slow_test": 0.03,
+    "weakens_safety": 0.67,
+    "inventory_mismatch": 0.07
+   },
+   "flags": [
+    "WEAKENS_SAFETY"
+   ],
+   "max": 0.67
+  },
+  {
+   "start": 124,
+   "end": 136,
+   "header": "@@ -115,6 +124,13 @@ class Pipeline:",
+   "text": "@@ -115,6 +124,13 @@ class Pipeline:\n             raise ValueError('Unsupported texture address mode')\n         if (fmt & 0xffff) != 0x0b29 or (fmt >> 16 & 15) != 1 or fmt >> 28:\n             raise ValueError('Unsupported texture format/LOD')\n+        # The earlier live window uses bias -1 (0x1f00), the CPU fixture 0.\n+        # gl/texture.c bounds GL_TEXTURE_MAX_LEVEL to levels-1; both have the\n+        # same linear fetch and this validated one-level format has no other mip.\n+        if state.get('0x1b14') not in (0x02062000, 0x02063f00):\n+            raise ValueError('Unsupported captured HUD texture filter')\n+        if row.get('vertex_program_complete') is False:\n+            raise ValueError('Incomplete live vertex program')\n         program = row['vertex_program']\n         if hashlib.sha256(struct.pack('<'+'I'*len(program),*program)).hexdigest() != 'd2f8707d23d3e86d3d0f0e8d097292495c6701df9f51e3dc037dbae7d2d63867':\n             raise ValueError('Unsupported native vertex program')",
+   "file": "tools/scorebug_sprite/xemu_model.py",
+   "kind": "code",
+   "status": "M",
+   "scores": {
+    "ctime_compare": 0.03,
+    "posix_only": 0.04,
+    "pinned_value": 0.05,
+    "slow_test": 0.03,
+    "weakens_safety": 0.08,
+    "inventory_mismatch": 0.07
+   },
+   "flags": [],
+   "max": 0.0
+  }
+ ]
+}

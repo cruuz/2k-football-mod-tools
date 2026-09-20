@@ -1,0 +1,1853 @@
+{
+  "schema": "nfl2k5_movie_inventory/v1",
+  "runtime_witnessed": false,
+  "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+  "outer_count": 4323,
+  "outer_head_counts": {
+    "48495458": 1,
+    "43414352": 43,
+    "464f4e54": 1,
+    "44524354": 5,
+    "524f5354": 76,
+    "4869536e": 1,
+    "54585452": 1020,
+    "4d524b53": 12,
+    "53434e45": 1127,
+    "53495455": 1,
+    "4155444f": 681,
+    "4d414e55": 1,
+    "48696c74": 97,
+    "41495052": 5,
+    "504c4159": 37,
+    "534d4344": 11,
+    "42414e4b": 3,
+    "54534554": 510,
+    "4d4d4344": 3,
+    "53484150": 1,
+    "41424e4b": 3,
+    "00000000": 6,
+    "10003e00": 1,
+    "ffff0000": 2,
+    "11004d00": 1,
+    "0e004000": 1,
+    "ebff2200": 1,
+    "fcff0100": 1,
+    "06003100": 1,
+    "00003600": 1,
+    "00001100": 1,
+    "9f000700": 1,
+    "556e6966": 634,
+    "4c415954": 1,
+    "43524942": 1,
+    "54524956": 1,
+    "000001ba": 30
+  },
+  "movies": [
+    {
+      "name": "espn_videogames.mov",
+      "category": "boot/publisher",
+      "outer": 4293,
+      "name_id": "0xef47f2a2",
+      "size": 3973120,
+      "sha256": "50fa376d1a604193dd1919811d5f250a803996fe1cf2a153c4757ec5b9819611",
+      "container": "MPEG-PS / CRI Sofdec",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "adpcm_adx",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 2
+          },
+          {
+            "codec_name": "mpeg1video",
+            "codec_type": "video",
+            "width": 640,
+            "height": 480,
+            "side_data_list": [
+              {}
+            ]
+          }
+        ],
+        "format": {
+          "format_name": "mpeg"
+        }
+      },
+      "virtual_offset": 5190150144,
+      "pack_segments": [
+        {
+          "pack_ordinal": 13,
+          "pack_name": "D",
+          "pack_offset": 25114624,
+          "size": 3973120
+        }
+      ],
+      "iso_segments": [
+        {
+          "xiso_offset": 4179243008,
+          "length": 3973120,
+          "pack_name": "D",
+          "pack_offset": 25114624
+        }
+      ],
+      "call_sites": [
+        "0x74bce"
+      ],
+      "hypothetical_payload_reclaim": 3971072,
+      "selected_by_trim_intro": true
+    },
+    {
+      "name": "vc.mov",
+      "category": "boot/publisher",
+      "outer": 4294,
+      "name_id": "0xadb25e4f",
+      "size": 5425152,
+      "sha256": "ff285e3b8e643a71a332e09f667a363fa42dbd409803bb17b7d7920802cb649c",
+      "container": "MPEG-PS / CRI Sofdec",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "adpcm_adx",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 2
+          },
+          {
+            "codec_name": "mpeg1video",
+            "codec_type": "video",
+            "width": 640,
+            "height": 480,
+            "side_data_list": [
+              {}
+            ]
+          }
+        ],
+        "format": {
+          "format_name": "mpeg"
+        }
+      },
+      "virtual_offset": 5194123264,
+      "pack_segments": [
+        {
+          "pack_ordinal": 13,
+          "pack_name": "D",
+          "pack_offset": 29087744,
+          "size": 5425152
+        }
+      ],
+      "iso_segments": [
+        {
+          "xiso_offset": 4183216128,
+          "length": 5425152,
+          "pack_name": "D",
+          "pack_offset": 29087744
+        }
+      ],
+      "call_sites": [
+        "0x74bce"
+      ],
+      "hypothetical_payload_reclaim": 5423104,
+      "selected_by_trim_intro": true
+    },
+    {
+      "name": "espn_game_sound.mov",
+      "category": "boot/publisher",
+      "outer": 4295,
+      "name_id": "0xf7e8601f",
+      "size": 3256320,
+      "sha256": "4153fde58457c8dd63f69e817010800fa5934e1ac4c33a1519472e9d47fafc73",
+      "container": "MPEG-PS / CRI Sofdec",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "adpcm_adx",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 2
+          },
+          {
+            "codec_name": "mpeg1video",
+            "codec_type": "video",
+            "width": 640,
+            "height": 480,
+            "side_data_list": [
+              {}
+            ]
+          }
+        ],
+        "format": {
+          "format_name": "mpeg"
+        }
+      },
+      "virtual_offset": 5199548416,
+      "pack_segments": [
+        {
+          "pack_ordinal": 13,
+          "pack_name": "D",
+          "pack_offset": 34512896,
+          "size": 3256320
+        }
+      ],
+      "iso_segments": [
+        {
+          "xiso_offset": 4188641280,
+          "length": 3256320,
+          "pack_name": "D",
+          "pack_offset": 34512896
+        }
+      ],
+      "call_sites": [
+        "0x74bce"
+      ],
+      "hypothetical_payload_reclaim": 3254272,
+      "selected_by_trim_intro": true
+    },
+    {
+      "name": "intro.mov",
+      "category": "boot/publisher",
+      "outer": 4296,
+      "name_id": "0xda93a0c6",
+      "size": 50241536,
+      "sha256": "c5c52a954ac0b40738e37decb9c2ebccfb976d601b5db29a2f0659852744d62a",
+      "container": "MPEG-PS / CRI Sofdec",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "adpcm_adx",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 2
+          },
+          {
+            "codec_name": "mpeg1video",
+            "codec_type": "video",
+            "width": 640,
+            "height": 480,
+            "side_data_list": [
+              {}
+            ]
+          }
+        ],
+        "format": {
+          "format_name": "mpeg"
+        }
+      },
+      "virtual_offset": 5202804736,
+      "pack_segments": [
+        {
+          "pack_ordinal": 13,
+          "pack_name": "D",
+          "pack_offset": 37769216,
+          "size": 50241536
+        }
+      ],
+      "iso_segments": [
+        {
+          "xiso_offset": 4191897600,
+          "length": 50241536,
+          "pack_name": "D",
+          "pack_offset": 37769216
+        }
+      ],
+      "call_sites": [
+        "0x74bce"
+      ],
+      "hypothetical_payload_reclaim": 50239488,
+      "selected_by_trim_intro": true
+    },
+    {
+      "name": "all_games.mov",
+      "category": "menu promotion/tutorial",
+      "outer": 4297,
+      "name_id": "0x30487606",
+      "size": 96962560,
+      "sha256": "c6f6684837f317216538a26ff91b93b5f2cebb96262ca4c707783379d42bf380",
+      "container": "MPEG-PS / CRI Sofdec",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "adpcm_adx",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 2
+          },
+          {
+            "codec_name": "mpeg1video",
+            "codec_type": "video",
+            "width": 640,
+            "height": 480,
+            "side_data_list": [
+              {}
+            ]
+          }
+        ],
+        "format": {
+          "format_name": "mpeg"
+        }
+      },
+      "virtual_offset": 5253046272,
+      "pack_segments": [
+        {
+          "pack_ordinal": 13,
+          "pack_name": "D",
+          "pack_offset": 88010752,
+          "size": 96962560
+        }
+      ],
+      "iso_segments": [
+        {
+          "xiso_offset": 4242139136,
+          "length": 96962560,
+          "pack_name": "D",
+          "pack_offset": 88010752
+        }
+      ],
+      "call_sites": [
+        "0x363501"
+      ],
+      "hypothetical_payload_reclaim": 96960512,
+      "selected_by_trim_intro": false
+    },
+    {
+      "name": "crib_100percent.mov",
+      "category": "Crib reel",
+      "outer": 4298,
+      "name_id": "0x176c9e5e",
+      "size": 8337408,
+      "sha256": "701ca741f5d00df40b164fc3315eaa5a6b85ac3cce4d46989e819883f3c938fa",
+      "container": "MPEG-PS / CRI Sofdec",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "adpcm_adx",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 2
+          },
+          {
+            "codec_name": "mpeg1video",
+            "codec_type": "video",
+            "width": 256,
+            "height": 144,
+            "side_data_list": [
+              {}
+            ]
+          }
+        ],
+        "format": {
+          "format_name": "mpeg"
+        }
+      },
+      "virtual_offset": 5350008832,
+      "pack_segments": [
+        {
+          "pack_ordinal": 13,
+          "pack_name": "D",
+          "pack_offset": 184973312,
+          "size": 8337408
+        }
+      ],
+      "iso_segments": [
+        {
+          "xiso_offset": 4339101696,
+          "length": 8337408,
+          "pack_name": "D",
+          "pack_offset": 184973312
+        }
+      ],
+      "call_sites": [
+        "0x272a94"
+      ],
+      "hypothetical_payload_reclaim": 8335360,
+      "selected_by_trim_intro": false
+    },
+    {
+      "name": "crib_berman.mov",
+      "category": "Crib reel",
+      "outer": 4299,
+      "name_id": "0x5ce79069",
+      "size": 23930880,
+      "sha256": "ef222f93a722ba01b89bc2fd603fd703768a23cd21753eb343d8a596c7e2dd0f",
+      "container": "MPEG-PS / CRI Sofdec",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "adpcm_adx",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 2
+          },
+          {
+            "codec_name": "mpeg1video",
+            "codec_type": "video",
+            "width": 256,
+            "height": 144,
+            "side_data_list": [
+              {}
+            ]
+          }
+        ],
+        "format": {
+          "format_name": "mpeg"
+        }
+      },
+      "virtual_offset": 5358346240,
+      "pack_segments": [
+        {
+          "pack_ordinal": 13,
+          "pack_name": "D",
+          "pack_offset": 193310720,
+          "size": 23930880
+        }
+      ],
+      "iso_segments": [
+        {
+          "xiso_offset": 4347439104,
+          "length": 23930880,
+          "pack_name": "D",
+          "pack_offset": 193310720
+        }
+      ],
+      "call_sites": [
+        "0x272a94"
+      ],
+      "hypothetical_payload_reclaim": 23928832,
+      "selected_by_trim_intro": false
+    },
+    {
+      "name": "crib_celectra.mov",
+      "category": "Crib reel",
+      "outer": 4300,
+      "name_id": "0xd44e8353",
+      "size": 25511936,
+      "sha256": "53ff81aded5bcb9e5327d7295a21e8467f4966efec95d5e249de020cceb3ff99",
+      "container": "MPEG-PS / CRI Sofdec",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "adpcm_adx",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 2
+          },
+          {
+            "codec_name": "mpeg1video",
+            "codec_type": "video",
+            "width": 256,
+            "height": 144,
+            "side_data_list": [
+              {}
+            ]
+          }
+        ],
+        "format": {
+          "format_name": "mpeg"
+        }
+      },
+      "virtual_offset": 5382277120,
+      "pack_segments": [
+        {
+          "pack_ordinal": 13,
+          "pack_name": "D",
+          "pack_offset": 217241600,
+          "size": 25511936
+        }
+      ],
+      "iso_segments": [
+        {
+          "xiso_offset": 4371369984,
+          "length": 25511936,
+          "pack_name": "D",
+          "pack_offset": 217241600
+        }
+      ],
+      "call_sites": [
+        "0x272a94"
+      ],
+      "hypothetical_payload_reclaim": 25509888,
+      "selected_by_trim_intro": false
+    },
+    {
+      "name": "crib_darquette.mov",
+      "category": "Crib reel",
+      "outer": 4301,
+      "name_id": "0x26e70ca3",
+      "size": 16470016,
+      "sha256": "08a33ffabc85df304067ba13fdb1d0362d4caa03bfd9c4e448b51974ef8e1acf",
+      "container": "MPEG-PS / CRI Sofdec",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "adpcm_adx",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 2
+          },
+          {
+            "codec_name": "mpeg1video",
+            "codec_type": "video",
+            "width": 256,
+            "height": 144,
+            "side_data_list": [
+              {}
+            ]
+          }
+        ],
+        "format": {
+          "format_name": "mpeg"
+        }
+      },
+      "virtual_offset": 5407789056,
+      "pack_segments": [
+        {
+          "pack_ordinal": 13,
+          "pack_name": "D",
+          "pack_offset": 242753536,
+          "size": 16470016
+        }
+      ],
+      "iso_segments": [
+        {
+          "xiso_offset": 4396881920,
+          "length": 16470016,
+          "pack_name": "D",
+          "pack_offset": 242753536
+        }
+      ],
+      "call_sites": [
+        "0x272a94"
+      ],
+      "hypothetical_payload_reclaim": 16467968,
+      "selected_by_trim_intro": false
+    },
+    {
+      "name": "crib_fflex.mov",
+      "category": "Crib reel",
+      "outer": 4302,
+      "name_id": "0x7ca59ad7",
+      "size": 21512192,
+      "sha256": "41f8e9c2cfb7ce350be501939bd95db0c8e9e04fc70370c25f7f96f5908ff7c9",
+      "container": "MPEG-PS / CRI Sofdec",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "adpcm_adx",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 2
+          },
+          {
+            "codec_name": "mpeg1video",
+            "codec_type": "video",
+            "width": 256,
+            "height": 144,
+            "side_data_list": [
+              {}
+            ]
+          }
+        ],
+        "format": {
+          "format_name": "mpeg"
+        }
+      },
+      "virtual_offset": 5424259072,
+      "pack_segments": [
+        {
+          "pack_ordinal": 13,
+          "pack_name": "D",
+          "pack_offset": 259223552,
+          "size": 21512192
+        }
+      ],
+      "iso_segments": [
+        {
+          "xiso_offset": 4413351936,
+          "length": 21512192,
+          "pack_name": "D",
+          "pack_offset": 259223552
+        }
+      ],
+      "call_sites": [
+        "0x272a94"
+      ],
+      "hypothetical_payload_reclaim": 21510144,
+      "selected_by_trim_intro": false
+    },
+    {
+      "name": "crib_jkennedy.mov",
+      "category": "Crib reel",
+      "outer": 4303,
+      "name_id": "0x6c142e93",
+      "size": 22644736,
+      "sha256": "2958b4c9eb849c2d2e4023a7708e37e4fe61476266a5c4c907004f147477f643",
+      "container": "MPEG-PS / CRI Sofdec",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "adpcm_adx",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 2
+          },
+          {
+            "codec_name": "mpeg1video",
+            "codec_type": "video",
+            "width": 256,
+            "height": 144,
+            "side_data_list": [
+              {}
+            ]
+          }
+        ],
+        "format": {
+          "format_name": "mpeg"
+        }
+      },
+      "virtual_offset": 5445771264,
+      "pack_segments": [
+        {
+          "pack_ordinal": 13,
+          "pack_name": "D",
+          "pack_offset": 280735744,
+          "size": 22644736
+        }
+      ],
+      "iso_segments": [
+        {
+          "xiso_offset": 4434864128,
+          "length": 22644736,
+          "pack_name": "D",
+          "pack_offset": 280735744
+        }
+      ],
+      "call_sites": [
+        "0x272a94"
+      ],
+      "hypothetical_payload_reclaim": 22642688,
+      "selected_by_trim_intro": false
+    },
+    {
+      "name": "crib_nfl2k.mov",
+      "category": "Crib reel",
+      "outer": 4304,
+      "name_id": "0xf7bf664b",
+      "size": 34668544,
+      "sha256": "29043050a593abf4e887a89cf1cbc175e8e6aca52b5acf490c1f10e9fc8438f9",
+      "container": "MPEG-PS / CRI Sofdec",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "adpcm_adx",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 2
+          },
+          {
+            "codec_name": "mpeg1video",
+            "codec_type": "video",
+            "width": 256,
+            "height": 144,
+            "side_data_list": [
+              {}
+            ]
+          }
+        ],
+        "format": {
+          "format_name": "mpeg"
+        }
+      },
+      "virtual_offset": 5468416000,
+      "pack_segments": [
+        {
+          "pack_ordinal": 13,
+          "pack_name": "D",
+          "pack_offset": 303380480,
+          "size": 5754880
+        },
+        {
+          "pack_ordinal": 14,
+          "pack_name": "E",
+          "pack_offset": 0,
+          "size": 28913664
+        }
+      ],
+      "iso_segments": [
+        {
+          "xiso_offset": 4457508864,
+          "length": 5754880,
+          "pack_name": "D",
+          "pack_offset": 303380480
+        },
+        {
+          "xiso_offset": 5546938368,
+          "length": 28913664,
+          "pack_name": "E",
+          "pack_offset": 0
+        }
+      ],
+      "call_sites": [
+        "0x272a94"
+      ],
+      "hypothetical_payload_reclaim": 34666496,
+      "selected_by_trim_intro": false
+    },
+    {
+      "name": "crib_nfl2k1.mov",
+      "category": "Crib reel",
+      "outer": 4305,
+      "name_id": "0xf27c8912",
+      "size": 26591232,
+      "sha256": "6ca559c74eaabfc1d9f55e773d816c83950b942254e6c19f1a090f16f76ca40d",
+      "container": "MPEG-PS / CRI Sofdec",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "adpcm_adx",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 2
+          },
+          {
+            "codec_name": "mpeg1video",
+            "codec_type": "video",
+            "width": 256,
+            "height": 144,
+            "side_data_list": [
+              {}
+            ]
+          }
+        ],
+        "format": {
+          "format_name": "mpeg"
+        }
+      },
+      "virtual_offset": 5503084544,
+      "pack_segments": [
+        {
+          "pack_ordinal": 14,
+          "pack_name": "E",
+          "pack_offset": 28913664,
+          "size": 26591232
+        }
+      ],
+      "iso_segments": [
+        {
+          "xiso_offset": 5575852032,
+          "length": 26591232,
+          "pack_name": "E",
+          "pack_offset": 28913664
+        }
+      ],
+      "call_sites": [
+        "0x272a94"
+      ],
+      "hypothetical_payload_reclaim": 26589184,
+      "selected_by_trim_intro": false
+    },
+    {
+      "name": "crib_nfl2k2.mov",
+      "category": "Crib reel",
+      "outer": 4306,
+      "name_id": "0x194b3211",
+      "size": 28805120,
+      "sha256": "916994c7ae0d5b11cf8928f68f80d85b457cc32810247376798f3209cf20e80b",
+      "container": "MPEG-PS / CRI Sofdec",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "adpcm_adx",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 2
+          },
+          {
+            "codec_name": "mpeg1video",
+            "codec_type": "video",
+            "width": 256,
+            "height": 144,
+            "side_data_list": [
+              {}
+            ]
+          }
+        ],
+        "format": {
+          "format_name": "mpeg"
+        }
+      },
+      "virtual_offset": 5529675776,
+      "pack_segments": [
+        {
+          "pack_ordinal": 14,
+          "pack_name": "E",
+          "pack_offset": 55504896,
+          "size": 28805120
+        }
+      ],
+      "iso_segments": [
+        {
+          "xiso_offset": 5602443264,
+          "length": 28805120,
+          "pack_name": "E",
+          "pack_offset": 55504896
+        }
+      ],
+      "call_sites": [
+        "0x272a94"
+      ],
+      "hypothetical_payload_reclaim": 28803072,
+      "selected_by_trim_intro": false
+    },
+    {
+      "name": "crib_nfl2k3.mov",
+      "category": "Crib reel",
+      "outer": 4307,
+      "name_id": "0xf689592f",
+      "size": 47966208,
+      "sha256": "809f2b321fbeaf40b458a75fe166a054c9d645e01cbada30e7e86d77286b2e0f",
+      "container": "MPEG-PS / CRI Sofdec",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "adpcm_adx",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 2
+          },
+          {
+            "codec_name": "mpeg1video",
+            "codec_type": "video",
+            "width": 256,
+            "height": 144,
+            "side_data_list": [
+              {}
+            ]
+          }
+        ],
+        "format": {
+          "format_name": "mpeg"
+        }
+      },
+      "virtual_offset": 5558480896,
+      "pack_segments": [
+        {
+          "pack_ordinal": 14,
+          "pack_name": "E",
+          "pack_offset": 84310016,
+          "size": 47966208
+        }
+      ],
+      "iso_segments": [
+        {
+          "xiso_offset": 5631248384,
+          "length": 47966208,
+          "pack_name": "E",
+          "pack_offset": 84310016
+        }
+      ],
+      "call_sites": [
+        "0x272a94"
+      ],
+      "hypothetical_payload_reclaim": 47964160,
+      "selected_by_trim_intro": false
+    },
+    {
+      "name": "crib_nfl2k4.mov",
+      "category": "Crib reel",
+      "outer": 4308,
+      "name_id": "0x14554256",
+      "size": 18558976,
+      "sha256": "a3c49fb16ef6ee83684deedab51c7e5c5cbd5981b8426f0926924d98a7d84686",
+      "container": "MPEG-PS / CRI Sofdec",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "adpcm_adx",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 2
+          },
+          {
+            "codec_name": "mpeg1video",
+            "codec_type": "video",
+            "width": 256,
+            "height": 144,
+            "side_data_list": [
+              {}
+            ]
+          }
+        ],
+        "format": {
+          "format_name": "mpeg"
+        }
+      },
+      "virtual_offset": 5606447104,
+      "pack_segments": [
+        {
+          "pack_ordinal": 14,
+          "pack_name": "E",
+          "pack_offset": 132276224,
+          "size": 18558976
+        }
+      ],
+      "iso_segments": [
+        {
+          "xiso_offset": 5679214592,
+          "length": 18558976,
+          "pack_name": "E",
+          "pack_offset": 132276224
+        }
+      ],
+      "call_sites": [
+        "0x272a94"
+      ],
+      "hypothetical_payload_reclaim": 18556928,
+      "selected_by_trim_intro": false
+    },
+    {
+      "name": "crib_sc1.mov",
+      "category": "Crib reel",
+      "outer": 4309,
+      "name_id": "0x4f4e79cb",
+      "size": 13410304,
+      "sha256": "e56396d5ae1e781b1045ccd2c6e6d0d00265c8017e43ac7fe09770b06c47d708",
+      "container": "MPEG-PS / CRI Sofdec",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "adpcm_adx",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 2
+          },
+          {
+            "codec_name": "mpeg1video",
+            "codec_type": "video",
+            "width": 256,
+            "height": 144,
+            "side_data_list": [
+              {}
+            ]
+          }
+        ],
+        "format": {
+          "format_name": "mpeg"
+        }
+      },
+      "virtual_offset": 5625006080,
+      "pack_segments": [
+        {
+          "pack_ordinal": 14,
+          "pack_name": "E",
+          "pack_offset": 150835200,
+          "size": 13410304
+        }
+      ],
+      "iso_segments": [
+        {
+          "xiso_offset": 5697773568,
+          "length": 13410304,
+          "pack_name": "E",
+          "pack_offset": 150835200
+        }
+      ],
+      "call_sites": [
+        "0x272a94"
+      ],
+      "hypothetical_payload_reclaim": 13408256,
+      "selected_by_trim_intro": false
+    },
+    {
+      "name": "crib_sc10.mov",
+      "category": "Crib reel",
+      "outer": 4310,
+      "name_id": "0xab35cf63",
+      "size": 14424064,
+      "sha256": "5d2e186b4650844a02a4e3ea4786094506932fff77f3ceb1a6b0ebe11fce3784",
+      "container": "MPEG-PS / CRI Sofdec",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "adpcm_adx",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 2
+          },
+          {
+            "codec_name": "mpeg1video",
+            "codec_type": "video",
+            "width": 256,
+            "height": 144,
+            "side_data_list": [
+              {}
+            ]
+          }
+        ],
+        "format": {
+          "format_name": "mpeg"
+        }
+      },
+      "virtual_offset": 5638416384,
+      "pack_segments": [
+        {
+          "pack_ordinal": 14,
+          "pack_name": "E",
+          "pack_offset": 164245504,
+          "size": 14424064
+        }
+      ],
+      "iso_segments": [
+        {
+          "xiso_offset": 5711183872,
+          "length": 14424064,
+          "pack_name": "E",
+          "pack_offset": 164245504
+        }
+      ],
+      "call_sites": [
+        "0x272a94"
+      ],
+      "hypothetical_payload_reclaim": 14422016,
+      "selected_by_trim_intro": false
+    },
+    {
+      "name": "crib_sc2.mov",
+      "category": "Crib reel",
+      "outer": 4311,
+      "name_id": "0xa479c2c8",
+      "size": 12095488,
+      "sha256": "38ca53c17e962f69728eb36758ae475a8e90a2b42a916f3d368a8da2225b4bcd",
+      "container": "MPEG-PS / CRI Sofdec",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "adpcm_adx",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 2
+          },
+          {
+            "codec_name": "mpeg1video",
+            "codec_type": "video",
+            "width": 256,
+            "height": 144,
+            "side_data_list": [
+              {}
+            ]
+          }
+        ],
+        "format": {
+          "format_name": "mpeg"
+        }
+      },
+      "virtual_offset": 5652840448,
+      "pack_segments": [
+        {
+          "pack_ordinal": 14,
+          "pack_name": "E",
+          "pack_offset": 178669568,
+          "size": 12095488
+        }
+      ],
+      "iso_segments": [
+        {
+          "xiso_offset": 5725607936,
+          "length": 12095488,
+          "pack_name": "E",
+          "pack_offset": 178669568
+        }
+      ],
+      "call_sites": [
+        "0x272a94"
+      ],
+      "hypothetical_payload_reclaim": 12093440,
+      "selected_by_trim_intro": false
+    },
+    {
+      "name": "crib_sc3.mov",
+      "category": "Crib reel",
+      "outer": 4312,
+      "name_id": "0x4bbba9f6",
+      "size": 6963200,
+      "sha256": "c3c8859ec3ee615048d4a3fea178b7fa441ab09820b9fea6792a6d22a6428598",
+      "container": "MPEG-PS / CRI Sofdec",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "adpcm_adx",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 2
+          },
+          {
+            "codec_name": "mpeg1video",
+            "codec_type": "video",
+            "width": 256,
+            "height": 144,
+            "side_data_list": [
+              {}
+            ]
+          }
+        ],
+        "format": {
+          "format_name": "mpeg"
+        }
+      },
+      "virtual_offset": 5664935936,
+      "pack_segments": [
+        {
+          "pack_ordinal": 14,
+          "pack_name": "E",
+          "pack_offset": 190765056,
+          "size": 6963200
+        }
+      ],
+      "iso_segments": [
+        {
+          "xiso_offset": 5737703424,
+          "length": 6963200,
+          "pack_name": "E",
+          "pack_offset": 190765056
+        }
+      ],
+      "call_sites": [
+        "0x272a94"
+      ],
+      "hypothetical_payload_reclaim": 6961152,
+      "selected_by_trim_intro": false
+    },
+    {
+      "name": "crib_sc4.mov",
+      "category": "Crib reel",
+      "outer": 4313,
+      "name_id": "0xa967b28f",
+      "size": 12697600,
+      "sha256": "9853f0f55f8a609124186674daba31d8ee417c470d9f99516777e795a92ba781",
+      "container": "MPEG-PS / CRI Sofdec",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "adpcm_adx",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 2
+          },
+          {
+            "codec_name": "mpeg1video",
+            "codec_type": "video",
+            "width": 256,
+            "height": 144,
+            "side_data_list": [
+              {}
+            ]
+          }
+        ],
+        "format": {
+          "format_name": "mpeg"
+        }
+      },
+      "virtual_offset": 5671899136,
+      "pack_segments": [
+        {
+          "pack_ordinal": 14,
+          "pack_name": "E",
+          "pack_offset": 197728256,
+          "size": 12697600
+        }
+      ],
+      "iso_segments": [
+        {
+          "xiso_offset": 5744666624,
+          "length": 12697600,
+          "pack_name": "E",
+          "pack_offset": 197728256
+        }
+      ],
+      "call_sites": [
+        "0x272a94"
+      ],
+      "hypothetical_payload_reclaim": 12695552,
+      "selected_by_trim_intro": false
+    },
+    {
+      "name": "crib_sc5.mov",
+      "category": "Crib reel",
+      "outer": 4314,
+      "name_id": "0x46a5d9b1",
+      "size": 6318080,
+      "sha256": "585acc6542b3e3e8d345d898739aa28440455d23e159d53045758e48f9ac7d3a",
+      "container": "MPEG-PS / CRI Sofdec",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "adpcm_adx",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 2
+          },
+          {
+            "codec_name": "mpeg1video",
+            "codec_type": "video",
+            "width": 256,
+            "height": 144,
+            "side_data_list": [
+              {}
+            ]
+          }
+        ],
+        "format": {
+          "format_name": "mpeg"
+        }
+      },
+      "virtual_offset": 5684596736,
+      "pack_segments": [
+        {
+          "pack_ordinal": 14,
+          "pack_name": "E",
+          "pack_offset": 210425856,
+          "size": 6318080
+        }
+      ],
+      "iso_segments": [
+        {
+          "xiso_offset": 5757364224,
+          "length": 6318080,
+          "pack_name": "E",
+          "pack_offset": 210425856
+        }
+      ],
+      "call_sites": [
+        "0x272a94"
+      ],
+      "hypothetical_payload_reclaim": 6316032,
+      "selected_by_trim_intro": false
+    },
+    {
+      "name": "crib_sc6.mov",
+      "category": "Crib reel",
+      "outer": 4315,
+      "name_id": "0xad9262b2",
+      "size": 9363456,
+      "sha256": "227b3e41c1284e66675d3a3edba7b7512d714401c742549cec622c37f8b9e93b",
+      "container": "MPEG-PS / CRI Sofdec",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "adpcm_adx",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 2
+          },
+          {
+            "codec_name": "mpeg1video",
+            "codec_type": "video",
+            "width": 256,
+            "height": 144,
+            "side_data_list": [
+              {}
+            ]
+          }
+        ],
+        "format": {
+          "format_name": "mpeg"
+        }
+      },
+      "virtual_offset": 5690914816,
+      "pack_segments": [
+        {
+          "pack_ordinal": 14,
+          "pack_name": "E",
+          "pack_offset": 216743936,
+          "size": 9363456
+        }
+      ],
+      "iso_segments": [
+        {
+          "xiso_offset": 5763682304,
+          "length": 9363456,
+          "pack_name": "E",
+          "pack_offset": 216743936
+        }
+      ],
+      "call_sites": [
+        "0x272a94"
+      ],
+      "hypothetical_payload_reclaim": 9361408,
+      "selected_by_trim_intro": false
+    },
+    {
+      "name": "crib_sc7.mov",
+      "category": "Crib reel",
+      "outer": 4316,
+      "name_id": "0x4250098c",
+      "size": 7239680,
+      "sha256": "c971777d09f36455fa8bc89c7f632652ec49db6a3bea689a37889f2b2aa8e209",
+      "container": "MPEG-PS / CRI Sofdec",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "adpcm_adx",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 2
+          },
+          {
+            "codec_name": "mpeg1video",
+            "codec_type": "video",
+            "width": 256,
+            "height": 144,
+            "side_data_list": [
+              {}
+            ]
+          }
+        ],
+        "format": {
+          "format_name": "mpeg"
+        }
+      },
+      "virtual_offset": 5700278272,
+      "pack_segments": [
+        {
+          "pack_ordinal": 14,
+          "pack_name": "E",
+          "pack_offset": 226107392,
+          "size": 7239680
+        }
+      ],
+      "iso_segments": [
+        {
+          "xiso_offset": 5773045760,
+          "length": 7239680,
+          "pack_name": "E",
+          "pack_offset": 226107392
+        }
+      ],
+      "call_sites": [
+        "0x272a94"
+      ],
+      "hypothetical_payload_reclaim": 7237632,
+      "selected_by_trim_intro": false
+    },
+    {
+      "name": "crib_sc8.mov",
+      "category": "Crib reel",
+      "outer": 4317,
+      "name_id": "0xb35b5201",
+      "size": 13692928,
+      "sha256": "430b63f3272caca85d124720d1181b2ff90264e68d1da0b5ec9ac21e8b6db9d5",
+      "container": "MPEG-PS / CRI Sofdec",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "adpcm_adx",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 2
+          },
+          {
+            "codec_name": "mpeg1video",
+            "codec_type": "video",
+            "width": 256,
+            "height": 144,
+            "side_data_list": [
+              {}
+            ]
+          }
+        ],
+        "format": {
+          "format_name": "mpeg"
+        }
+      },
+      "virtual_offset": 5707517952,
+      "pack_segments": [
+        {
+          "pack_ordinal": 14,
+          "pack_name": "E",
+          "pack_offset": 233347072,
+          "size": 13692928
+        }
+      ],
+      "iso_segments": [
+        {
+          "xiso_offset": 5780285440,
+          "length": 13692928,
+          "pack_name": "E",
+          "pack_offset": 233347072
+        }
+      ],
+      "call_sites": [
+        "0x272a94"
+      ],
+      "hypothetical_payload_reclaim": 13690880,
+      "selected_by_trim_intro": false
+    },
+    {
+      "name": "crib_sc9.mov",
+      "category": "Crib reel",
+      "outer": 4318,
+      "name_id": "0x5c99393f",
+      "size": 13568000,
+      "sha256": "1fa5f646ca231f9d09422367415b13c502cd602eb05031cf435a1f681783b1fc",
+      "container": "MPEG-PS / CRI Sofdec",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "adpcm_adx",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 2
+          },
+          {
+            "codec_name": "mpeg1video",
+            "codec_type": "video",
+            "width": 256,
+            "height": 144,
+            "side_data_list": [
+              {}
+            ]
+          }
+        ],
+        "format": {
+          "format_name": "mpeg"
+        }
+      },
+      "virtual_offset": 5721210880,
+      "pack_segments": [
+        {
+          "pack_ordinal": 14,
+          "pack_name": "E",
+          "pack_offset": 247040000,
+          "size": 13568000
+        }
+      ],
+      "iso_segments": [
+        {
+          "xiso_offset": 5793978368,
+          "length": 13568000,
+          "pack_name": "E",
+          "pack_offset": 247040000
+        }
+      ],
+      "call_sites": [
+        "0x272a94"
+      ],
+      "hypothetical_payload_reclaim": 13565952,
+      "selected_by_trim_intro": false
+    },
+    {
+      "name": "crib_steveo.mov",
+      "category": "Crib reel",
+      "outer": 4319,
+      "name_id": "0xc6277bd8",
+      "size": 25849856,
+      "sha256": "05691391d2399e709a8e452f5e8039520f00b6b5c9449dcf53c540015e7eaf7d",
+      "container": "MPEG-PS / CRI Sofdec",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "adpcm_adx",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 2
+          },
+          {
+            "codec_name": "mpeg1video",
+            "codec_type": "video",
+            "width": 256,
+            "height": 144,
+            "side_data_list": [
+              {}
+            ]
+          }
+        ],
+        "format": {
+          "format_name": "mpeg"
+        }
+      },
+      "virtual_offset": 5734778880,
+      "pack_segments": [
+        {
+          "pack_ordinal": 14,
+          "pack_name": "E",
+          "pack_offset": 260608000,
+          "size": 25849856
+        }
+      ],
+      "iso_segments": [
+        {
+          "xiso_offset": 5807546368,
+          "length": 25849856,
+          "pack_name": "E",
+          "pack_offset": 260608000
+        }
+      ],
+      "call_sites": [
+        "0x272a94"
+      ],
+      "hypothetical_payload_reclaim": 25847808,
+      "selected_by_trim_intro": false
+    },
+    {
+      "name": "crib_towens.mov",
+      "category": "Crib reel",
+      "outer": 4320,
+      "name_id": "0xc343351f",
+      "size": 6549504,
+      "sha256": "c0a3505c0ed4e68d02c804665b752cc2d85ff61c527cc727ecb052ef8193ccb6",
+      "container": "MPEG-PS / CRI Sofdec",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "adpcm_adx",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 2
+          },
+          {
+            "codec_name": "mpeg1video",
+            "codec_type": "video",
+            "width": 256,
+            "height": 144,
+            "side_data_list": [
+              {}
+            ]
+          }
+        ],
+        "format": {
+          "format_name": "mpeg"
+        }
+      },
+      "virtual_offset": 5760628736,
+      "pack_segments": [
+        {
+          "pack_ordinal": 14,
+          "pack_name": "E",
+          "pack_offset": 286457856,
+          "size": 6549504
+        }
+      ],
+      "iso_segments": [
+        {
+          "xiso_offset": 5833396224,
+          "length": 6549504,
+          "pack_name": "E",
+          "pack_offset": 286457856
+        }
+      ],
+      "call_sites": [
+        "0x272a94"
+      ],
+      "hypothetical_payload_reclaim": 6547456,
+      "selected_by_trim_intro": false
+    },
+    {
+      "name": "tips_defense.mov",
+      "category": "menu promotion/tutorial",
+      "outer": 4321,
+      "name_id": "0xed854239",
+      "size": 191178752,
+      "sha256": "1e60bef996764baa13effe9fde173f6aa52dbd7fad6ad2876e8d513b8ab2aa33",
+      "container": "MPEG-PS / CRI Sofdec",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "adpcm_adx",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 2
+          },
+          {
+            "codec_name": "mpeg1video",
+            "codec_type": "video",
+            "width": 640,
+            "height": 480,
+            "side_data_list": [
+              {}
+            ]
+          }
+        ],
+        "format": {
+          "format_name": "mpeg"
+        }
+      },
+      "virtual_offset": 5767178240,
+      "pack_segments": [
+        {
+          "pack_ordinal": 14,
+          "pack_name": "E",
+          "pack_offset": 293007360,
+          "size": 8806400
+        },
+        {
+          "pack_ordinal": 15,
+          "pack_name": "F",
+          "pack_offset": 0,
+          "size": 182372352
+        }
+      ],
+      "iso_segments": [
+        {
+          "xiso_offset": 5839945728,
+          "length": 8806400,
+          "pack_name": "E",
+          "pack_offset": 293007360
+        },
+        {
+          "xiso_offset": 5848752128,
+          "length": 182372352,
+          "pack_name": "F",
+          "pack_offset": 0
+        }
+      ],
+      "call_sites": [
+        "0x3634de"
+      ],
+      "hypothetical_payload_reclaim": 191176704,
+      "selected_by_trim_intro": false
+    },
+    {
+      "name": "tips_offense.mov",
+      "category": "menu promotion/tutorial",
+      "outer": 4322,
+      "name_id": "0xc21784b3",
+      "size": 269361152,
+      "sha256": "5e6f8e11caa3da64264b05bc0f6bc28a681e1c3cfaa843740bdeaa0dc3e023bd",
+      "container": "MPEG-PS / CRI Sofdec",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "adpcm_adx",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 2
+          },
+          {
+            "codec_name": "mpeg1video",
+            "codec_type": "video",
+            "width": 640,
+            "height": 480,
+            "side_data_list": [
+              {}
+            ]
+          }
+        ],
+        "format": {
+          "format_name": "mpeg"
+        }
+      },
+      "virtual_offset": 5958356992,
+      "pack_segments": [
+        {
+          "pack_ordinal": 15,
+          "pack_name": "F",
+          "pack_offset": 182372352,
+          "size": 269361152
+        }
+      ],
+      "iso_segments": [
+        {
+          "xiso_offset": 6031124480,
+          "length": 269361152,
+          "pack_name": "F",
+          "pack_offset": 182372352
+        }
+      ],
+      "call_sites": [
+        "0x3634be"
+      ],
+      "hypothetical_payload_reclaim": 269359104,
+      "selected_by_trim_intro": false
+    }
+  ],
+  "named_files": [
+    {
+      "name": "dashupdate.xbe",
+      "size": 58421248,
+      "byte_offset": 14344192,
+      "sector": 7004,
+      "directory": false
+    },
+    {
+      "name": "default.xbe",
+      "size": 11948032,
+      "byte_offset": 2396160,
+      "sector": 1170,
+      "directory": false
+    },
+    {
+      "name": "update.xbe",
+      "size": 2326528,
+      "byte_offset": 69632,
+      "sector": 34,
+      "directory": false
+    },
+    {
+      "name": "vc_53450030",
+      "size": 2048,
+      "byte_offset": 72765440,
+      "sector": 35530,
+      "directory": true
+    },
+    {
+      "name": "vc_53450030/0",
+      "size": 193710080,
+      "byte_offset": 1631188992,
+      "sector": 796479,
+      "directory": false
+    },
+    {
+      "name": "vc_53450030/1",
+      "size": 299999232,
+      "byte_offset": 1331189760,
+      "sector": 649995,
+      "directory": false
+    },
+    {
+      "name": "vc_53450030/2",
+      "size": 309252096,
+      "byte_offset": 1824899072,
+      "sector": 891064,
+      "directory": false
+    },
+    {
+      "name": "vc_53450030/3",
+      "size": 315508736,
+      "byte_offset": 1015681024,
+      "sector": 495938,
+      "directory": false
+    },
+    {
+      "name": "vc_53450030/4",
+      "size": 313178112,
+      "byte_offset": 2134151168,
+      "sector": 1042066,
+      "directory": false
+    },
+    {
+      "name": "vc_53450030/5",
+      "size": 307972096,
+      "byte_offset": 707708928,
+      "sector": 345561,
+      "directory": false
+    },
+    {
+      "name": "vc_53450030/6",
+      "size": 458231808,
+      "byte_offset": 2766526464,
+      "sector": 1350843,
+      "directory": false
+    },
+    {
+      "name": "vc_53450030/7",
+      "size": 319197184,
+      "byte_offset": 2447329280,
+      "sector": 1194985,
+      "directory": false
+    },
+    {
+      "name": "vc_53450030/8",
+      "size": 929370112,
+      "byte_offset": 3224758272,
+      "sector": 1574589,
+      "directory": false
+    },
+    {
+      "name": "vc_53450030/9",
+      "size": 634941440,
+      "byte_offset": 72767488,
+      "sector": 35531,
+      "directory": false
+    },
+    {
+      "name": "vc_53450030/a",
+      "size": 310294528,
+      "byte_offset": 4921511936,
+      "sector": 2403082,
+      "directory": false
+    },
+    {
+      "name": "vc_53450030/b",
+      "size": 458248192,
+      "byte_offset": 4463263744,
+      "sector": 2179328,
+      "directory": false
+    },
+    {
+      "name": "vc_53450030/c",
+      "size": 315131904,
+      "byte_offset": 5231806464,
+      "sector": 2554593,
+      "directory": false
+    },
+    {
+      "name": "vc_53450030/d",
+      "size": 309135360,
+      "byte_offset": 4154128384,
+      "sector": 2028383,
+      "directory": false
+    },
+    {
+      "name": "vc_53450030/e",
+      "size": 301813760,
+      "byte_offset": 5546938368,
+      "sector": 2708466,
+      "directory": false
+    },
+    {
+      "name": "vc_53450030/f",
+      "size": 451733504,
+      "byte_offset": 5848752128,
+      "sector": 2855836,
+      "directory": false
+    }
+  ],
+  "source_bytes": 6300499968,
+  "partition_offset": 0,
+  "api_references": {
+    "0x178150": {
+      "near_calls": [
+        "0x74bce",
+        "0x3634be",
+        "0x3634de",
+        "0x363501"
+      ],
+      "absolute": []
+    },
+    "0x3cbbf0": {
+      "near_calls": [
+        "0x1781c5",
+        "0x272a94"
+      ],
+      "absolute": []
+    }
+  }
+}

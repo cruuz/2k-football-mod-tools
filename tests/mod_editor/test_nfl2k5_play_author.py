@@ -101,8 +101,8 @@ class LibraryUnitTests(unittest.TestCase):
         def line(*pts):
             return [(x * YD, z * YD) for x, z in pts]
         chain, words = lib.quantize_drawn_route(line((12, 0), (12, 10), (6, 16)), 1)
-        self.assertEqual([op for op, _ in chain], [0x01, 0x12])
-        self.assertEqual(chain[1][1][0], 2, "10 up then 45° inside is a post")
+        self.assertEqual([op for op, _ in chain], [0x01, 0x12, 0x12])
+        self.assertEqual([vals[0] for _op, vals in chain[1:]], [0, 2], "10 up, then a 45° inside leg: a post")
         self.assertIn("post", words)
         chain, _ = lib.quantize_drawn_route(line((12, 0), (12, 8), (20, 8)), 1)
         self.assertEqual([(op, vals[0]) for op, vals in chain[1:]], [(0x12, 0), (0x12, 5)], "stem then out")

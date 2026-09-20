@@ -1,0 +1,22 @@
+[
+  {
+    "path": "/home/noah/.var/app/app.xemu.xemu/data/xemu/capture/20260919-135300/ram_6.bin",
+    "bytes": 59207680,
+    "sha256": "62a4b3cbcbf8c6555b5462c8bc5aa26189b53741672fd599bbdb5d2f05105de8"
+  },
+  {
+    "path": "/home/noah/2k-worktrees/astra-b72-s7/reports/b72_s6/earlier_hud_draws.json",
+    "bytes": 606376,
+    "sha256": "f4eaa4fb95b7d4123069ce290a92795890dc97dd353bc9c3e8d5f51f933b6506"
+  },
+  {
+    "path": "/home/noah/Desktop/2K5-8 Editors/beta72_evidence/s6_reports/earlier_hud_draws.json",
+    "bytes": 606376,
+    "sha256": "f4eaa4fb95b7d4123069ce290a92795890dc97dd353bc9c3e8d5f51f933b6506"
+  },
+  {
+    "path": "/home/noah/Desktop/2K5-8 Editors/beta72_evidence/xemu_capture_0919/shot_6_xemu_window.png",
+    "bytes": 1068001,
+    "sha256": "82d021a452c9b90411137e32ca9ef278d9b63ad92cb12e101f1d1d313ed249ce"
+  }
+]

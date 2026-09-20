@@ -1,0 +1,938 @@
+[
+  {
+    "team": "SF",
+    "aspect": "43",
+    "core_luma": 243.34,
+    "white_core_pixels": 486,
+    "contrast": 4.682,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "CHI",
+    "aspect": "43",
+    "core_luma": 242.75,
+    "white_core_pixels": 491,
+    "contrast": 6.7395,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "CIN",
+    "aspect": "43",
+    "core_luma": 243.34,
+    "white_core_pixels": 417,
+    "contrast": 5.5692,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "BUF",
+    "aspect": "43",
+    "core_luma": 241.58,
+    "white_core_pixels": 407,
+    "contrast": 11.3016,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "DEN",
+    "aspect": "43",
+    "core_luma": 243.58,
+    "white_core_pixels": 435,
+    "contrast": 5.3582,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "CLE",
+    "aspect": "43",
+    "core_luma": 243.14,
+    "white_core_pixels": 486,
+    "contrast": 6.017,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "TB",
+    "aspect": "43",
+    "core_luma": 241.77,
+    "white_core_pixels": 427,
+    "contrast": 7.4341,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "ARI",
+    "aspect": "43",
+    "core_luma": 241.56,
+    "white_core_pixels": 438,
+    "contrast": 7.9907,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "LAC",
+    "aspect": "43",
+    "core_luma": 243.19,
+    "white_core_pixels": 407,
+    "contrast": 6.7725,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "KC",
+    "aspect": "43",
+    "core_luma": 242.62,
+    "white_core_pixels": 427,
+    "contrast": 4.717,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "IND",
+    "aspect": "43",
+    "core_luma": 241.51,
+    "white_core_pixels": 409,
+    "contrast": 12.5089,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "DAL",
+    "aspect": "43",
+    "core_luma": 241.88,
+    "white_core_pixels": 440,
+    "contrast": 10.2231,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "MIA",
+    "aspect": "43",
+    "core_luma": 243.76,
+    "white_core_pixels": 407,
+    "contrast": 6.3635,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "PHI",
+    "aspect": "43",
+    "core_luma": 243.15,
+    "white_core_pixels": 440,
+    "contrast": 6.8194,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "ATL",
+    "aspect": "43",
+    "core_luma": 242.83,
+    "white_core_pixels": 462,
+    "contrast": 5.6758,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "NYG",
+    "aspect": "43",
+    "core_luma": 240.83,
+    "white_core_pixels": 415,
+    "contrast": 14.6755,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "JAX",
+    "aspect": "43",
+    "core_luma": 244.72,
+    "white_core_pixels": 440,
+    "contrast": 4.7239,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "NYJ",
+    "aspect": "43",
+    "core_luma": 243.36,
+    "white_core_pixels": 456,
+    "contrast": 5.7897,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "DET",
+    "aspect": "43",
+    "core_luma": 244.69,
+    "white_core_pixels": 407,
+    "contrast": 4.9217,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "GB",
+    "aspect": "43",
+    "core_luma": 242.79,
+    "white_core_pixels": 525,
+    "contrast": 4.9853,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "CAR",
+    "aspect": "43",
+    "core_luma": 243.9,
+    "white_core_pixels": 407,
+    "contrast": 6.371,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "NE",
+    "aspect": "43",
+    "core_luma": 241.88,
+    "white_core_pixels": 440,
+    "contrast": 10.2231,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "LV",
+    "aspect": "43",
+    "core_luma": 242.0,
+    "white_core_pixels": 525,
+    "contrast": 5.9176,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "LAR",
+    "aspect": "43",
+    "core_luma": 241.76,
+    "white_core_pixels": 407,
+    "contrast": 10.8423,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "BAL",
+    "aspect": "43",
+    "core_luma": 242.45,
+    "white_core_pixels": 500,
+    "contrast": 6.1331,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "WAS",
+    "aspect": "43",
+    "core_luma": 242.85,
+    "white_core_pixels": 500,
+    "contrast": 5.6373,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "NO",
+    "aspect": "43",
+    "core_luma": 243.14,
+    "white_core_pixels": 480,
+    "contrast": 6.3591,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "SEA",
+    "aspect": "43",
+    "core_luma": 242.88,
+    "white_core_pixels": 486,
+    "contrast": 6.1382,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "PIT",
+    "aspect": "43",
+    "core_luma": 244.06,
+    "white_core_pixels": 413,
+    "contrast": 6.1436,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "HOU",
+    "aspect": "43",
+    "core_luma": 242.01,
+    "white_core_pixels": 407,
+    "contrast": 4.6022,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "TEN",
+    "aspect": "43",
+    "core_luma": 243.58,
+    "white_core_pixels": 456,
+    "contrast": 5.3136,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "MIN",
+    "aspect": "43",
+    "core_luma": 239.68,
+    "white_core_pixels": 419,
+    "contrast": 16.6397,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "USER1",
+    "aspect": "43",
+    "core_luma": 242.0,
+    "white_core_pixels": 557,
+    "contrast": 5.0989,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "USER2",
+    "aspect": "43",
+    "core_luma": 242.0,
+    "white_core_pixels": 557,
+    "contrast": 5.0989,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "BRI",
+    "aspect": "43",
+    "core_luma": 240.99,
+    "white_core_pixels": 417,
+    "contrast": 8.9195,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "BRP",
+    "aspect": "43",
+    "core_luma": 240.68,
+    "white_core_pixels": 411,
+    "contrast": 15.7836,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "BWG",
+    "aspect": "43",
+    "core_luma": 240.68,
+    "white_core_pixels": 411,
+    "contrast": 15.7836,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "CHH",
+    "aspect": "43",
+    "core_luma": 240.68,
+    "white_core_pixels": 411,
+    "contrast": 15.7836,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "UDC",
+    "aspect": "43",
+    "core_luma": 242.0,
+    "white_core_pixels": 557,
+    "contrast": 5.0989,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "LAL",
+    "aspect": "43",
+    "core_luma": 242.0,
+    "white_core_pixels": 557,
+    "contrast": 5.0989,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "CES",
+    "aspect": "43",
+    "core_luma": 242.0,
+    "white_core_pixels": 557,
+    "contrast": 5.0989,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "BFM",
+    "aspect": "43",
+    "core_luma": 242.0,
+    "white_core_pixels": 557,
+    "contrast": 5.0989,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "LAD",
+    "aspect": "43",
+    "core_luma": 242.0,
+    "white_core_pixels": 557,
+    "contrast": 5.0989,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "AFW",
+    "aspect": "43",
+    "core_luma": 242.47,
+    "white_core_pixels": 484,
+    "contrast": 6.12,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "AGP",
+    "aspect": "43",
+    "core_luma": 239.0,
+    "white_core_pixels": 407,
+    "contrast": 21.0,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "AMW",
+    "aspect": "43",
+    "core_luma": 242.94,
+    "white_core_pixels": 412,
+    "contrast": 8.2865,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "ANE",
+    "aspect": "43",
+    "core_luma": 242.87,
+    "white_core_pixels": 494,
+    "contrast": 6.0237,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "ASE",
+    "aspect": "43",
+    "core_luma": 243.15,
+    "white_core_pixels": 494,
+    "contrast": 5.3856,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "ASW",
+    "aspect": "43",
+    "core_luma": 239.0,
+    "white_core_pixels": 407,
+    "contrast": 21.0,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "AFC",
+    "aspect": "43",
+    "core_luma": 242.13,
+    "white_core_pixels": 423,
+    "contrast": 5.7142,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "NFC",
+    "aspect": "43",
+    "core_luma": 241.15,
+    "white_core_pixels": 424,
+    "contrast": 11.8539,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "NFL",
+    "aspect": "43",
+    "core_luma": 241.15,
+    "white_core_pixels": 424,
+    "contrast": 11.8539,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "SF",
+    "aspect": "169",
+    "core_luma": 243.49,
+    "white_core_pixels": 492,
+    "contrast": 4.682,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "CHI",
+    "aspect": "169",
+    "core_luma": 242.79,
+    "white_core_pixels": 498,
+    "contrast": 6.7395,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "CIN",
+    "aspect": "169",
+    "core_luma": 245.42,
+    "white_core_pixels": 397,
+    "contrast": 5.5692,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "BUF",
+    "aspect": "169",
+    "core_luma": 243.86,
+    "white_core_pixels": 384,
+    "contrast": 11.3016,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "DEN",
+    "aspect": "169",
+    "core_luma": 245.01,
+    "white_core_pixels": 423,
+    "contrast": 5.3582,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "CLE",
+    "aspect": "169",
+    "core_luma": 243.19,
+    "white_core_pixels": 492,
+    "contrast": 6.017,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "TB",
+    "aspect": "169",
+    "core_luma": 243.56,
+    "white_core_pixels": 417,
+    "contrast": 7.4341,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "ARI",
+    "aspect": "169",
+    "core_luma": 242.63,
+    "white_core_pixels": 430,
+    "contrast": 7.9907,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "LAC",
+    "aspect": "169",
+    "core_luma": 245.29,
+    "white_core_pixels": 384,
+    "contrast": 6.7725,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "KC",
+    "aspect": "169",
+    "core_luma": 243.91,
+    "white_core_pixels": 415,
+    "contrast": 4.717,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "IND",
+    "aspect": "169",
+    "core_luma": 243.74,
+    "white_core_pixels": 384,
+    "contrast": 12.5089,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "DAL",
+    "aspect": "169",
+    "core_luma": 242.72,
+    "white_core_pixels": 441,
+    "contrast": 10.2231,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "MIA",
+    "aspect": "169",
+    "core_luma": 245.72,
+    "white_core_pixels": 384,
+    "contrast": 6.3635,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "PHI",
+    "aspect": "169",
+    "core_luma": 244.15,
+    "white_core_pixels": 441,
+    "contrast": 6.8194,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "ATL",
+    "aspect": "169",
+    "core_luma": 242.77,
+    "white_core_pixels": 481,
+    "contrast": 5.6758,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "NYG",
+    "aspect": "169",
+    "core_luma": 243.08,
+    "white_core_pixels": 396,
+    "contrast": 14.6755,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "JAX",
+    "aspect": "169",
+    "core_luma": 245.01,
+    "white_core_pixels": 441,
+    "contrast": 4.7239,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "NYJ",
+    "aspect": "169",
+    "core_luma": 244.01,
+    "white_core_pixels": 471,
+    "contrast": 5.7897,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "DET",
+    "aspect": "169",
+    "core_luma": 246.15,
+    "white_core_pixels": 384,
+    "contrast": 4.9217,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "GB",
+    "aspect": "169",
+    "core_luma": 242.79,
+    "white_core_pixels": 542,
+    "contrast": 4.9853,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "CAR",
+    "aspect": "169",
+    "core_luma": 245.37,
+    "white_core_pixels": 384,
+    "contrast": 6.371,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "NE",
+    "aspect": "169",
+    "core_luma": 242.72,
+    "white_core_pixels": 441,
+    "contrast": 10.2231,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "LV",
+    "aspect": "169",
+    "core_luma": 242.0,
+    "white_core_pixels": 546,
+    "contrast": 5.9176,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "LAR",
+    "aspect": "169",
+    "core_luma": 243.86,
+    "white_core_pixels": 384,
+    "contrast": 10.8423,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "BAL",
+    "aspect": "169",
+    "core_luma": 242.62,
+    "white_core_pixels": 510,
+    "contrast": 6.1331,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "WAS",
+    "aspect": "169",
+    "core_luma": 242.85,
+    "white_core_pixels": 510,
+    "contrast": 5.6373,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "NO",
+    "aspect": "169",
+    "core_luma": 243.14,
+    "white_core_pixels": 488,
+    "contrast": 6.3591,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "SEA",
+    "aspect": "169",
+    "core_luma": 242.95,
+    "white_core_pixels": 492,
+    "contrast": 6.1382,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "PIT",
+    "aspect": "169",
+    "core_luma": 245.92,
+    "white_core_pixels": 395,
+    "contrast": 6.1436,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "HOU",
+    "aspect": "169",
+    "core_luma": 244.22,
+    "white_core_pixels": 384,
+    "contrast": 4.6022,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "TEN",
+    "aspect": "169",
+    "core_luma": 244.29,
+    "white_core_pixels": 470,
+    "contrast": 5.3136,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "MIN",
+    "aspect": "169",
+    "core_luma": 242.64,
+    "white_core_pixels": 405,
+    "contrast": 16.6397,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "USER1",
+    "aspect": "169",
+    "core_luma": 242.0,
+    "white_core_pixels": 571,
+    "contrast": 5.0989,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "USER2",
+    "aspect": "169",
+    "core_luma": 242.0,
+    "white_core_pixels": 571,
+    "contrast": 5.0989,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "BRI",
+    "aspect": "169",
+    "core_luma": 243.92,
+    "white_core_pixels": 399,
+    "contrast": 8.9195,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "BRP",
+    "aspect": "169",
+    "core_luma": 242.93,
+    "white_core_pixels": 393,
+    "contrast": 15.7836,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "BWG",
+    "aspect": "169",
+    "core_luma": 242.93,
+    "white_core_pixels": 393,
+    "contrast": 15.7836,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "CHH",
+    "aspect": "169",
+    "core_luma": 242.93,
+    "white_core_pixels": 393,
+    "contrast": 15.7836,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "UDC",
+    "aspect": "169",
+    "core_luma": 242.0,
+    "white_core_pixels": 571,
+    "contrast": 5.0989,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "LAL",
+    "aspect": "169",
+    "core_luma": 242.0,
+    "white_core_pixels": 571,
+    "contrast": 5.0989,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "CES",
+    "aspect": "169",
+    "core_luma": 242.0,
+    "white_core_pixels": 571,
+    "contrast": 5.0989,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "BFM",
+    "aspect": "169",
+    "core_luma": 242.0,
+    "white_core_pixels": 571,
+    "contrast": 5.0989,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "LAD",
+    "aspect": "169",
+    "core_luma": 242.0,
+    "white_core_pixels": 571,
+    "contrast": 5.0989,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "AFW",
+    "aspect": "169",
+    "core_luma": 243.06,
+    "white_core_pixels": 492,
+    "contrast": 6.12,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "AGP",
+    "aspect": "169",
+    "core_luma": 242.0,
+    "white_core_pixels": 384,
+    "contrast": 21.0,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "AMW",
+    "aspect": "169",
+    "core_luma": 245.11,
+    "white_core_pixels": 395,
+    "contrast": 8.2865,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "ANE",
+    "aspect": "169",
+    "core_luma": 243.64,
+    "white_core_pixels": 499,
+    "contrast": 6.0237,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "ASE",
+    "aspect": "169",
+    "core_luma": 243.86,
+    "white_core_pixels": 499,
+    "contrast": 5.3856,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "ASW",
+    "aspect": "169",
+    "core_luma": 242.0,
+    "white_core_pixels": 384,
+    "contrast": 21.0,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "AFC",
+    "aspect": "169",
+    "core_luma": 243.56,
+    "white_core_pixels": 414,
+    "contrast": 5.7142,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "NFC",
+    "aspect": "169",
+    "core_luma": 242.97,
+    "white_core_pixels": 414,
+    "contrast": 11.8539,
+    "passed": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "NFL",
+    "aspect": "169",
+    "core_luma": 242.97,
+    "white_core_pixels": 414,
+    "contrast": 11.8539,
+    "passed": true,
+    "runtime_witnessed": false
+  }
+]

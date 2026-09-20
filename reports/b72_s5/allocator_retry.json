@@ -1,0 +1,7 @@
+{
+  "file": "tests/mod_editor/test_beta61_allocator_integration.py",
+  "exit_code": 0,
+  "seconds": 431.67,
+  "timeout": 900,
+  "log": "reports/b72_s5/checks_final/test_beta61_allocator_integration_retry.log"
+}

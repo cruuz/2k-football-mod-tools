@@ -1,0 +1,76 @@
+..F...F...F........
+======================================================================
+FAIL: test_layout_capacity_full_alpha_and_source_boxes (__main__.ContractTests.test_layout_capacity_full_alpha_and_source_boxes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b72-s9/tests/mod_editor/test_nfl2k5_scorebug_sprite.py", line 25, in test_layout_capacity_full_alpha_and_source_boxes
+    for digit in '0123456789':self.assertEqual(c.spec['glyph_sets']['score']['glyphs'][digit]['size'],[40,53])
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: [48.105, 53] != [40, 53]
+
+First differing element 0:
+48.105
+40
+
+- [48.105, 53]
+?   --- -
+
++ [40, 53]
+
+======================================================================
+FAIL: test_flag_cell_is_yellow_with_a_dark_label_and_brand_cell_is_full_coverage (__main__.DisplayModelTests.test_flag_cell_is_yellow_with_a_dark_label_and_brand_cell_is_full_coverage)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b72-s9/tests/mod_editor/test_nfl2k5_scorebug_sprite.py", line 140, in test_flag_cell_is_yellow_with_a_dark_label_and_brand_cell_is_full_coverage
+    self.assertEqual(mark.convert('RGB').getextrema(),((255,255),(251,251),(241,241)))
+AssertionError: Tuples differ: ((0, 255), (0, 255), (0, 255)) != ((255, 255), (251, 251), (241, 241))
+
+First differing element 0:
+(0, 255)
+(255, 255)
+
+- ((0, 255), (0, 255), (0, 255))
++ ((255, 255), (251, 251), (241, 241))
+
+======================================================================
+FAIL: test_marks_are_drawn_as_the_broadcast_draws_them (__main__.LogoFitTests.test_marks_are_drawn_as_the_broadcast_draws_them)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b72-s9/tests/mod_editor/test_nfl2k5_scorebug_sprite.py", line 84, in test_marks_are_drawn_as_the_broadcast_draws_them
+    self.assertEqual(set(fit['by_team']),{'KC','DEN'})
+AssertionError: Items in the first set but not the second:
+'CIN'
+'ATL'
+'ARI'
+'DAL'
+'SF'
+'NYG'
+'NO'
+'DET'
+'IND'
+'PHI'
+'TB'
+'HOU'
+'TEN'
+'MIN'
+'JAX'
+'PIT'
+'WAS'
+'GB'
+'SEA'
+'CLE'
+'CAR'
+'LAC'
+'BAL'
+'MIA'
+'NYJ'
+'BUF'
+'NE'
+'LAR'
+'LV'
+'CHI'
+
+----------------------------------------------------------------------
+Ran 19 tests in 20.998s
+
+FAILED (failures=3)

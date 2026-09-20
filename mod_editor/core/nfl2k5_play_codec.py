@@ -90,19 +90,21 @@ LANE_NONE = 17
 NAMED_SPOT_X_FT: tuple[int, ...] = (11, -14, 2, -6, 7, -11, -2, 8, -9, 37, -36, 0)
 NAMED_SPOT_Y_FT: tuple[int, ...] = (2, 2, 2, 2, 11, 11, 11, 30, 30, 10, 9, 0)
 
+# Inside / outside is resolved from the receiver's side of the ball (see play_art); the
+# distance of kinds 1-6 is the length of that leg, so a post is Straight + 45° in.
 ROUTE_SEGMENT_TYPES: dict[int, str] = {
     0: "Straight (distance)",
-    1: "Straight then 30° break",
-    2: "Straight then 45° break (post/corner)",
-    3: "Straight then 60° break",
+    1: "30° break inside (distance)",
+    2: "45° break inside, post (distance)",
+    3: "60° break inside (distance)",
     4: "Lateral in (distance)",
     5: "Lateral out (distance)",
-    6: "Straight then 45° opposite break",
-    7: "Comeback (2ft back, 4ft in)",
-    8: "Chip block (4ft)",
-    9: "Pass block (side)",
-    10: "Straight then block",
-    11: "Comeback (opposite side)",
+    6: "45° break outside, corner (distance)",
+    7: "Come back outside (4ft back, 2ft out)",
+    8: "Chip block inside (4ft)",
+    9: "Pass block (side = distance sign)",
+    10: "Straight then block inside",
+    11: "Come back inside (4ft back, 2ft in)",
 }
 BLOCK_LEG_TYPES: dict[int, str] = {
     0: "Drive to offset (run block)",
@@ -1082,17 +1084,61 @@ class ArtSegment:
     label: str = ""
 
 
-def _rot(dx: float, dy: float, deg: float) -> tuple[float, float]:
-    import math
-    a = math.radians(deg)
-    return (dx * math.cos(a) - dy * math.sin(a), dx * math.sin(a) + dy * math.cos(a))
+# Route Segment (0x12) art follows the retail draw handler 0x182110 (draw slot of the 0x12
+# entry in the opcode table at 0x521078).  Its side test 0x17FF40 compares the receiver's
+# ALIGNMENT (stored once per chain at 0x182587, flip already applied) with the ball: more than
+# half a foot to the right is the right side, more than half a foot to the left the left side.
+# A player within half a foot of the ball takes the call screen's context flag (0xBDFC10
+# bit 1); the preview draws him as right-aligned.  Every kind except 0 and 9 then breaks
+# inside or outside of that side, and the runtime route executor 0x225730 turns the same
+# ways (1/2/3/4/8/10/11 toward the middle, 5/6/7 toward the sideline).
+ROUTE_SIDE_DEADBAND_CM = 15.24
+ROUTE_BREAK_DEGREES: dict[int, float] = {1: 30.0, 2: 45.0, 3: 60.0, 6: -45.0}   # + = inside, - = outside
+ROUTE_INSIDE_KINDS = frozenset({1, 2, 3, 4, 8, 10, 11})
+ROUTE_OUTSIDE_KINDS = frozenset({5, 6, 7})
 
 
-def play_art(nodes: Sequence[Node], start_xy: tuple[float, float], side: int = 1,
-             wide_left: bool = False) -> list[ArtSegment]:
-    """Approximate the play-call art for one chain. Coordinates in cm, offense-relative."""
+def route_side(x_cm: float) -> int:
+    """+1 when the game resolves a receiver aligned at ``x_cm`` as right of the ball, -1 left."""
+    return -1 if float(x_cm) < -ROUTE_SIDE_DEADBAND_CM else 1
+
+
+def route_segment_offset(kind: int, dist_cm: float, side: int) -> tuple[float, float]:
+    """Pen offset (dx, dy) of one Route Segment in the retail play art (cm, +dy downfield).
+
+    ``side`` is :func:`route_side` of the receiver's alignment.  Kinds 8, 9 and 10 end on a
+    block mark whose offset is returned here too."""
+    inward = -1.0 if side >= 0 else 1.0
+    dist = float(dist_cm)
+    if kind in ROUTE_BREAK_DEGREES:
+        a = math.radians(ROUTE_BREAK_DEGREES[kind])
+        return inward * dist * math.sin(a), dist * math.cos(a)
+    if kind == 4:
+        return inward * dist, 0.0
+    if kind == 5:
+        return -inward * dist, 0.0
+    if kind == 7:
+        return -inward * 60.96, -121.92
+    if kind == 11:
+        return inward * 60.96, -121.92
+    if kind == 8:
+        return inward * 121.92, 0.0
+    if kind == 9:
+        return (243.84 if dist > 0 else -243.84), 0.0
+    if kind == 10:
+        return inward * 121.92, dist
+    return 0.0, dist
+
+
+def play_art(nodes: Sequence[Node], start_xy: tuple[float, float], side: int = 1) -> list[ArtSegment]:
+    """Approximate the play-call art for one chain. Coordinates in cm, offense-relative.
+
+    ``side`` mirrors the lateral operands of block legs, run paths and moves.  Route
+    segments ignore it and resolve inside / outside from the alignment in ``start_xy``,
+    as the game does."""
     segs: list[ArtSegment] = []
     x, y = start_xy
+    receiver_side = route_side(start_xy[0])
     heading = 0.0  # degrees from straight downfield; positive turns toward +x
     for nd in nodes:
         v = nd.operands
@@ -1129,36 +1175,19 @@ def play_art(nodes: Sequence[Node], start_xy: tuple[float, float], side: int = 1
                 heading = -45.0
         elif op == 0x12:
             t, _f, dist, _k = v
-            dist = float(dist)
-            s = -1.0 if wide_left else 1.0
-            if t == 0:
-                nx, ny = x, y + dist
-                segs.append(ArtSegment([(x, y), (nx, ny)], end_marker="arrow"))
-                x, y = nx, ny
-            elif t in (1, 2, 3, 6):
-                nx, ny = x, y + dist
-                segs.append(ArtSegment([(x, y), (nx, ny)]))
-                x, y = nx, ny
-                ang = {1: 30, 2: 45, 3: 60, 6: -45}[t] * s
-                dx, dy = _rot(0, 457.2, -ang)
+            t = int(t)
+            dx, dy = route_segment_offset(t, dist, receiver_side)
+            if t == 10:
+                segs.append(ArtSegment([(x, y), (x, y + dy)]))
+                y += dy
+                dy = 0.0
+            if t in (8, 9, 10):
+                segs.append(ArtSegment([(x, y), (x + dx, y + dy)], style="block"))
+                if t != 9:
+                    x += dx
+            elif t in (0, 1, 2, 3, 4, 5, 6, 7, 11):
                 segs.append(ArtSegment([(x, y), (x + dx, y + dy)], end_marker="arrow"))
                 x, y = x + dx, y + dy
-            elif t in (4, 5):
-                d = dist * s * (1 if t == 4 else -1)
-                segs.append(ArtSegment([(x, y), (x - d, y)], end_marker="arrow"))
-                x -= d
-            elif t in (7, 11):
-                d = -60.96 * s if t == 7 else 60.96 * s
-                segs.append(ArtSegment([(x, y), (x + d, y - 121.92)], end_marker="arrow"))
-                x, y = x + d, y - 121.92
-            elif t == 8:
-                segs.append(ArtSegment([(x, y), (x + 121.92 * s, y)], style="block"))
-            elif t == 9:
-                segs.append(ArtSegment([(x, y), (x + (243.84 if dist >= 0 else -243.84), y)], style="block"))
-            elif t == 10:
-                segs.append(ArtSegment([(x, y), (x, y + dist)]))
-                y += dist
-                segs.append(ArtSegment([(x, y), (x + 60.96 * s, y)], style="block"))
         elif op == 0x0D:
             zx, zy = v[0], v[1]
             segs.append(ArtSegment([(x, y), (zx, zy)], style="zone", end_marker="zone"))
@@ -1200,7 +1229,7 @@ __all__ = [
     "Node", "OPCODE_FLAGS", "OPCODE_NAMES", "OPERAND_SCHEMAS", "OperandSpec", "POSITION_KINDS",
     "ROUTE_SEGMENT_TYPES", "START_ROLES", "YD_CM", "CARRIER_OPS", "analyze_chain", "assign_node_flags", "chain_is_carrier",
     "build_descriptor", "decode_operands", "encode_operands", "entry_flags", "formation_legality",
-    "play_art", "position_label", "validate_play",
+    "play_art", "position_label", "route_segment_offset", "route_side", "validate_play",
 ]
 
 

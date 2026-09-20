@@ -58,7 +58,7 @@ from nfl2k5_throw_tuning_test import _build_synthetic_xbe
 from mod_editor.core.studio_inspection import inspect_source
 from mod_editor.core.nfl2k5_scorebug_sprite import probe_sizes
 assert importlib.util.find_spec('numpy') is None
-assert probe_sizes() == (34, 323808, 323584)
+assert probe_sizes() == (34, 325216, 325632)
 with tempfile.TemporaryDirectory() as folder:
     source = Path(folder)/'fixture.xbe'
     source.write_bytes(_build_synthetic_xbe())

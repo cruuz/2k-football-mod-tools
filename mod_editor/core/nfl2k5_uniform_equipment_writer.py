@@ -29,7 +29,9 @@ from typing import Any, Iterable
 from functools import lru_cache
 from contextvars import ContextVar
 from functools import wraps
-from mod_editor.core.nfl2k5_equipment_lz import EquipmentSizeOverflow, minimum_equipment_size
+from mod_editor.core.nfl2k5_equipment_lz import (
+    EquipmentSearchTimeout, EquipmentSizeOverflow, minimum_equipment_size,
+)
 
 from mod_editor.core.errors import ValidationError
 from mod_editor.core.nfl2k5_equipment_import_intent import (
@@ -292,6 +294,14 @@ class UniformEquipmentWriterError(ValueError):
 
 class EquipmentRefitError(UniformEquipmentWriterError):
     """Valid artwork that cannot be compiled within the fixed allocation."""
+
+
+class EquipmentFitPending(EquipmentRefitError):
+    """The interactive quick check stopped on its clock before any measurement.
+
+    Never cached and never a refusal: Build and Refit equipment finish the
+    same search without a clock, and only their result decides the fit.
+    """
 
 
 class EquipmentFitError(EquipmentRefitError):
@@ -876,6 +886,10 @@ def _parse_candidate(candidate, stream_tag, offset_bits, budget, key, record):
         except EquipmentSizeOverflow as exc:
             record["optimal_miss"] = (exc.required, exc.exact)
             raise
+        except EquipmentSearchTimeout as exc:
+            # A clock is not a measurement. Record nothing, so an uncapped
+            # Build or Refit repeats this exact search to its real result.
+            raise EquipmentFitPending(str(exc)) from exc
         except TxtrError as exc:
             record['optimal_error'] = str(exc)
             raise EquipmentRefitError(str(exc)) from exc
@@ -1440,6 +1454,7 @@ def _compile_group(
         rebuilt_decoded, rebuilt_span, rebuild_info, selected_entries, selected_quality = fitted
     if rebuilt_decoded is None or rebuilt_span is None:
         suggestion = None
+        suggestion_pending = False
         # Retry the complete group, retaining every other edit. A suggestion
         # must actually pass the codec, scratch, mip and sibling checks.
         if suggest_fit:
@@ -1479,6 +1494,10 @@ def _compile_group(
                         checked = _compile_group(template_span, chunk, decoded, decode_info, rows,
                             alternative, requested_independent, donor, suggest_fit=False,
                             palette_limits=((16,) if stripe_floor else (2,)) if floor > chunk.stored_size else None)
+                    except EquipmentFitPending:
+                        # The quick check's clock, not a result: do not cache.
+                        suggestion_pending = True
+                        break
                     except EquipmentRefitError:
                         # One bounded ladder per suggestion request. Failure is
                         # not proof that a quarter-size import cannot fit.
@@ -1493,9 +1512,11 @@ def _compile_group(
         sizes = [attempt["required_bytes"] for attempt in attempts if attempt.get("required_bytes") is not None]
         if not sizes:
             raise EquipmentRefitError("Equipment artwork cannot fit while retaining the complete mip chain and edge coverage. Use Refit equipment to reduce colours, then size.")
-        raise EquipmentFitError(chunk.stored_size, min(sizes), tuple(attempts), suggestion,
+        failure = EquipmentFitError(chunk.stored_size, min(sizes), tuple(attempts), suggestion,
             required_is_lower_bound=not any(a.get("required_bytes") == min(sizes)
                 and not a.get("required_is_lower_bound") for a in attempts))
+        failure.suggestion_pending = suggestion_pending
+        raise failure
     assert rebuild_info is not None
 
     decoded_roundtrip, roundtrip_info = decode_chunk(
@@ -1667,6 +1688,7 @@ def build_unified_uniform_equipment_imports(
     compile_cache: EquipmentCompileCache | None = None,
     preflight_only: bool = False,
     fit_asset_id: str | None = None,
+    suggest_fit: bool = True,
 ) -> _CompiledGroup | tuple[bytes, list[tuple[str, bytes]], dict[str, Any], str, dict[str, Any]]:
     """Compile logical edits sharing one TSET into one fixed physical span.
 
@@ -1763,19 +1785,29 @@ def build_unified_uniform_equipment_imports(
     compiled = compile_cache.compiled.get(key)
     if compiled is None:
         compiled = compile_cache.restore_handoff(key, template_span)
-    failure = compile_cache.failures.get(key)
+    # A failure measured without the size-suggestion search (Refit and Build
+    # never show one) is kept apart: an import check must still suggest.
+    failure_keys = (key,) if suggest_fit else (key, ("no_suggestion",) + key)
+    failure_key = failure_keys[-1]
+    failure = next((found for found in map(compile_cache.failures.get, failure_keys)
+                    if found is not None), None)
     if failure is not None:
         raise _fit_failure_copy(failure)
     disk = None
     if compiled is None:
         try:
             disk, disk_key = _stage_disk_cache(index, key)
+            failure_disk_key = _stage_disk_cache(index, failure_key)[1]
         except OSError:
             # Packaged/unreadable source fingerprints disable this optional
             # disk cache; they must not prevent an independently checked import.
             disk = None
         if disk is not None:
-            stored = disk.get(disk_key)
+            stored = disk.get(failure_disk_key) if failure_disk_key != disk_key else None
+            if isinstance(stored, dict) and stored.get('fit_failure') == 1:
+                disk_key = failure_disk_key
+            else:
+                stored = disk.get(disk_key)
             if isinstance(stored, dict) and stored.get('fit_failure') == 1:
                 details = stored.get('details')
                 try:
@@ -1784,7 +1816,7 @@ def build_unified_uniform_equipment_imports(
                 except (TypeError, KeyError, ValueError):
                     failure = None  # A damaged optional cache is simply a miss.
                 if failure is not None:
-                    compile_cache.failures[key] = failure
+                    compile_cache.failures[failure_key if disk_key == failure_disk_key else key] = failure
                     raise _fit_failure_copy(failure)
                 stored = None
             compiled = _restore_staged(stored, template_span)
@@ -1828,14 +1860,21 @@ def build_unified_uniform_equipment_imports(
         preferred = by_id.get(fit_asset_id) if fit_asset_id is not None else None
         try:
             compiled = _compile_group(template_span, chunk, decoded, decode_info, rows, authored, independent, retail,
+                                      suggest_fit=suggest_fit,
                                       fit_reference=preferred.reference_index if preferred is not None else None)
+        except EquipmentFitPending:
+            # Neither the memory nor the disk failure cache may keep a clock
+            # result: beta 72 replayed a quick-check timeout at every Build.
+            raise
         except EquipmentRefitError as exc:
-            compile_cache.failures[key] = _fit_failure_copy(exc)
+            if getattr(exc, "suggestion_pending", False):
+                raise
+            compile_cache.failures[failure_key] = _fit_failure_copy(exc)
             if disk is not None:
                 details = (dict(budget=exc.budget, required=exc.required, attempts=exc.attempts,
                     suggestion=exc.suggestion, required_is_lower_bound=exc.required_is_lower_bound)
                     if isinstance(exc, EquipmentFitError) else None)
-                disk.put(disk_key, dict(fit_failure=1, message=str(exc), details=details))
+                disk.put(failure_disk_key, dict(fit_failure=1, message=str(exc), details=details))
             raise
         if disk is not None:
             record = asdict(compiled)
@@ -1978,7 +2017,8 @@ __all__ = [
 
 
 def preflight_project_equipment(index_path: Path, edits: Iterable[tuple[int | None, str, Path]],
-                                *, compile_cache: EquipmentCompileCache | None = None) -> list[dict[str, Any]]:
+                                *, compile_cache: EquipmentCompileCache | None = None,
+                                suggest_fit: bool = True) -> list[dict[str, Any]]:
     """Check restored equipment without making a fit miss a project-open error.
 
     Old PNG-only recolours and npTC/v1 private chains keep their original intent.
@@ -2004,7 +2044,7 @@ def preflight_project_equipment(index_path: Path, edits: Iterable[tuple[int | No
             return build_unified_uniform_equipment_imports(index_path,
                 [(asset_id, path) for _, asset_id, path in items],
                 pack_hashes=hashes, compile_cache=cache, preflight_only=True,
-                fit_asset_id=items[-1][1])
+                fit_asset_id=items[-1][1], suggest_fit=suggest_fit)
 
         def measured(items, compiled):
             for _, asset_id, _ in items:
@@ -2027,6 +2067,11 @@ def preflight_project_equipment(index_path: Path, edits: Iterable[tuple[int | No
                     number, asset_id, path = item
                     try:
                         candidate = compile_rows(accepted + [item])
+                    except EquipmentFitPending as exc:
+                        # The quick check ran out of time; Build finishes it.
+                        target = by_id[asset_id]
+                        fit_rows.append(dict(asset_id=asset_id, set_selector=target.set_selector,
+                            fit_status="fit pending", fit_error=str(exc), project_edit_index=number))
                     except EquipmentRefitError as exc:
                         target = by_id[asset_id]
                         fit_rows.append(dict(asset_id=asset_id, set_selector=target.set_selector,
@@ -2044,3 +2089,151 @@ def preflight_project_equipment(index_path: Path, edits: Iterable[tuple[int | No
             raise UniformEquipmentWriterError("Cannot load equipment edits: " + "; ".join(labels)
                 + f": {exc}") from exc
     return fit_rows
+
+
+def refit_candidates(target: EquipmentTarget, payload: bytes, rgba: bytes) -> Iterable[bytes]:
+    """The Refit equipment ladder, in its order: every colour limit, then size.
+
+    Each candidate is a complete PNG carrying the item's import mode. Only an
+    own-texture import may shrink (2 then 4, never below its current scale).
+    Build's automatic refit uses this same generator, so both produce the same
+    bytes for the same art.
+    """
+    for _scale, _limit, candidate in _refit_ladder(target, payload, rgba):
+        yield candidate
+
+
+def _refit_ladder(target, payload, rgba):
+    from mod_editor.core.nfl2k5_digit_texture import make_digit_mips
+    from mod_editor.core.nfl2k5_equipment_import_intent import with_import_mode
+    mode, current_scale = import_settings(payload, target.asset_id, rgba)
+    independent = mode == OWN_TEXTURE
+    levels = make_digit_mips(rgba, target.width, target.height, target.mip_levels)
+    seen = set()
+    for scale in ((s for s in (1, 2, 4) if s >= current_scale) if independent else (1,)):
+        for limit in PALETTE_LIMITS:
+            palette, indices, _ = _quantize_art(levels[:1], limit, measure_quality=False)
+            reduced = b"".join(bytes(palette[i]) for i in indices[0])
+            candidate = with_import_mode(encode_rgba_png(target.width, target.height, reduced),
+                                         target.asset_id, reduced, independent=independent, scale=scale)
+            digest = hashlib.sha256(candidate).digest()
+            if digest in seen:
+                continue
+            seen.add(digest)
+            yield scale, limit, candidate
+
+
+def refit_item(index: Path, asset_id: str, payload: bytes, rgba: bytes,
+               siblings: Iterable[tuple[str, Path]], directory: Path, *,
+               accept=None, compile_cache: EquipmentCompileCache | None = None, heartbeat=None):
+    """Exactly what Refit equipment applies: the first ladder PNG that fits.
+
+    A candidate must compile with every currently fitting sibling of its span,
+    then pass ``accept(png_path, compiled)`` (the caller's whole-group check).
+    Runs the complete search: no wall clock decides a refit. ``heartbeat``
+    (optional) receives a short progress note before each candidate. Returns
+    ``(png_bytes, compiled, accepted_value)``.
+    """
+    from mod_editor.core.nfl2k5_equipment_lz import uncapped_optimal_fit
+    by_id, _ = load_targets()
+    target = by_id[asset_id]
+    siblings = list(siblings)
+    png = Path(directory) / "refit.png"
+    last = None
+    with uncapped_optimal_fit(heartbeat):
+        for scale, limit, candidate in _refit_ladder(target, payload, rgba):
+            if heartbeat is not None:
+                heartbeat(f"Refitting {target.set_selector} / {target.name}: trying "
+                          f"{target.width // scale} x {target.height // scale}, up to {limit} colours")
+            png.write_bytes(candidate)
+            try:
+                # A refit tries smaller sizes itself; a size suggestion for a
+                # rejected candidate cannot change which candidate is chosen.
+                compiled = build_unified_uniform_equipment_imports(index, siblings + [(asset_id, png)],
+                    preflight_only=True, fit_asset_id=asset_id, compile_cache=compile_cache,
+                    suggest_fit=False)
+                checked = accept(png, compiled) if accept is not None else None
+            except EquipmentRefitError as exc:
+                last = exc
+                continue
+            return candidate, compiled, checked
+    raise EquipmentRefitError(f"Refit could not find a fitting colour count or size. {last}")
+
+
+def _row_failure(row: dict[str, Any]) -> EquipmentRefitError:
+    if row.get("budget") is None:
+        return EquipmentRefitError(row.get("fit_error") or "Equipment needs refit.")
+    return EquipmentFitError(row["budget"], row["required"], row["attempts"], row["suggestion"],
+                             required_is_lower_bound=row["required_is_lower_bound"])
+
+
+def auto_refit_group(index: Path, edits: Iterable[tuple[str, Path]], directory: Path, *,
+                     compile_cache: EquipmentCompileCache | None = None, heartbeat=None):
+    """Build: finish one physical group's fit and refit only what cannot fit.
+
+    The whole group is measured without a clock, in the order the Studio
+    measures it. Each item that still needs refit then receives exactly the
+    PNG Refit equipment would stage, checked with its fitting siblings, one
+    item after another from the top of the list. Returns ``(rows, substitutes,
+    refits)``: the final measured rows, ``{asset_id: png_bytes}`` to compile in
+    place of the project art, and one record per refitted item for the report.
+    The project art itself is never changed.
+    """
+    from mod_editor.core.nfl2k5_equipment_lz import uncapped_optimal_fit
+    by_id, _ = load_targets()
+    current = {str(asset_id): Path(path) for asset_id, path in edits}
+    substitutes: dict[str, bytes] = {}
+    refits: list[dict[str, Any]] = []
+    with uncapped_optimal_fit(heartbeat):
+        def measure(paths):
+            # Fit status never depends on the size-suggestion search; Build
+            # does not show suggestions, so it does not pay for them.
+            return preflight_project_equipment(index, [(None, key, value) for key, value in sorted(paths.items())],
+                                               compile_cache=compile_cache, suggest_fit=False)
+        rows = measure(current)
+        failed = [row for row in rows if row.get("fit_status") == "needs refit"]
+        for original in sorted(failed, key=lambda row: row["asset_id"]):
+            asset_id = original["asset_id"]
+            target = by_id[asset_id]
+            payload = current[asset_id].read_bytes()
+            _width, _height, rgba = palette_tools.decode_rgba_png(payload, (target.width, target.height))
+            ready = {row["asset_id"] for row in rows if row.get("fit_status") != "needs refit"}
+            siblings = [(key, value) for key, value in sorted(current.items())
+                        if key != asset_id and key in ready]
+            folder = Path(directory) / f"refit-{len(refits):03d}"
+            folder.mkdir()
+
+            def accept(png, _compiled, asset_id=asset_id):
+                prospective = dict(current)
+                prospective[asset_id] = png
+                checked = measure(prospective)
+                selected = next(row for row in checked if row["asset_id"] == asset_id)
+                if selected.get("fit_status") == "needs refit":
+                    raise _row_failure(selected)
+                return checked
+            try:
+                candidate, compiled, checked = refit_item(index, asset_id, payload, rgba, siblings, folder,
+                                                          accept=accept, compile_cache=compile_cache,
+                                                          heartbeat=heartbeat)
+            except EquipmentRefitError as exc:
+                raise EquipmentRefitError(
+                    f"Equipment / uniform set {target.set_selector} / {asset_id}: needs refit: "
+                    f"{original.get('fit_error')} Build tried every Refit equipment choice and none fits "
+                    f"beside the other edits in this span ({exc}). Revert this item or import simpler art."
+                ) from exc
+            final = folder / "refitted.png"
+            final.write_bytes(candidate)
+            current[asset_id] = final
+            substitutes[asset_id] = candidate
+            template = compiled.edit_templates[target.reference_index]
+            refits.append(dict(
+                asset_id=asset_id, set_selector=target.set_selector, name=target.name,
+                reason=original.get("fit_error"), original_png_sha256=_digest(payload),
+                refit_png_sha256=_digest(candidate), fit_summary=template["fit_summary"],
+                encoded_dimensions=list(template["encoded_dimensions"]),
+                used_palette_entries=template["used_palette_entries"],
+                encoded_bytes=compiled.rebuild_info.recompressed_bytes,
+                budget=original.get("budget"), required=original.get("required"),
+                required_is_lower_bound=original.get("required_is_lower_bound", False)))
+            rows = checked
+    return rows, substitutes, refits

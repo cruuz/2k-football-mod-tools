@@ -1,0 +1,31 @@
+{
+  "before_flags": [
+    "0x80000001",
+    "0x80000001",
+    "0x80000000",
+    "0x80000000",
+    "0x80000000",
+    "0x80000001",
+    "0x80000000",
+    "0x80000000",
+    "0x80000000",
+    "0x80000000",
+    "0x80000000"
+  ],
+  "after_flags": [
+    "0x80000001",
+    "0x80000001",
+    "0x80000000",
+    "0x80000000",
+    "0x80000000",
+    "0x80000001",
+    "0x80000000",
+    "0x80000000",
+    "0x80000001",
+    "0x80000000",
+    "0x80000000"
+  ],
+  "runtime_witnessed": false,
+  "owner_rx_bytes": 4096,
+  "boundary": "Execute rebuilt sprite_update on captured RAM with relocated owner and synthetic State/stack. Only output material visibility feeds the raster; all captured vertices, textures and state stay as s7."
+}

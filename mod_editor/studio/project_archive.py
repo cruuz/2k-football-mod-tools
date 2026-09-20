@@ -211,7 +211,9 @@ def _publish_archive(
                 "Fast-save target protection requires an atomic replacement."
             )
         current = project_target_identity(destination)
-        if current != expected_target:
+        # A change-time-only difference is not a refusal (see
+        # ProjectTargetIdentity.matches_apart_from_change_time).
+        if not expected_target.matches_apart_from_change_time(current):
             raise ValidationError(
                 "The active project changed outside Mod Studio. It was not "
                 "overwritten; use Save Project As or reopen it first."
@@ -278,11 +280,12 @@ class LoadedProject:
 
 @dataclass(frozen=True)
 class ProjectTargetIdentity:
-    """Private in-memory fingerprint for one named project file.
+    """In-memory file details and full SHA-256 of the active project.
 
-    This is deliberately filesystem metadata, not project content.  It lets a
-    document-style fast save prove that the path still names the exact regular
-    file the user opened or last saved before replacing it atomically.
+    Every capture hashes the open binary descriptor, even when all file details
+    match. Windows creation time cannot detect a same-size rewrite with its
+    modification time restored. ``changed_ns`` remains diagnostic only between
+    captures, since metadata maintenance can move it without changing a byte.
     """
 
     path: Path
@@ -291,6 +294,16 @@ class ProjectTargetIdentity:
     size: int
     modified_ns: int
     changed_ns: int
+    sha256: str
+
+    def matches_apart_from_change_time(self, other: object) -> bool:
+        """Require the same path, file ID, size, mtime and complete contents."""
+
+        return isinstance(other, ProjectTargetIdentity) and (
+            self.path, self.device, self.inode, self.size, self.modified_ns, self.sha256,
+        ) == (
+            other.path, other.device, other.inode, other.size, other.modified_ns, other.sha256,
+        )
 
 
 def project_target_identity(path: Path) -> ProjectTargetIdentity:
@@ -339,6 +352,30 @@ def project_target_identity(path: Path) -> ProjectTargetIdentity:
         ) from exc
     try:
         opened = os.fstat(descriptor)
+        if (not stat.S_ISREG(opened.st_mode) or opened.st_nlink != 1
+                or (before.st_dev, before.st_ino) != (opened.st_dev, opened.st_ino)):
+            raise ValidationError(
+                "The active project changed while Mod Studio checked it. Use "
+                "Save Project As or reopen it."
+            )
+        if opened.st_size > MAX_PROJECT_BYTES:
+            raise ValidationError(
+                "The active project exceeds the 2 GiB project size limit. "
+                "Use Save Project As to choose a safe destination."
+            )
+        # Reuse the positional binary reader on every platform. Hash the held
+        # descriptor, then verify both it and the name still describe this file.
+        digest = platform_compat._hash_fd(descriptor)
+        finished = os.fstat(descriptor)
+        details = lambda info: (info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns)
+        if details(opened) != details(finished):
+            raise ValidationError(
+                "The active project changed while Mod Studio checked it. Use "
+                "Save Project As or reopen it."
+            )
+        # Across the hash, ctime alone says nothing about the content. At the
+        # final fd/path check it is comparable only where the shared helper says.
+        opened = finished
         try:
             resolved = requested.resolve(strict=True)
             after = requested.lstat()
@@ -370,13 +407,13 @@ def project_target_identity(path: Path) -> ProjectTargetIdentity:
                 "The active project changed while Mod Studio checked it. Use "
                 "Save Project As or reopen it."
             )
-        # The recorded fingerprint keeps every field, including the raw change
-        # time: both sides of the later ProjectTargetIdentity comparison come
-        # from this same fd stat, so that field stays a usable signal on every
-        # platform and is not dropped here.
+        # The recorded fingerprint keeps the raw change time for diagnostics.
+        # A later identity comes from another descriptor at another time, where
+        # the change time can move with no byte changed, so the two are compared
+        # with matches_apart_from_change_time rather than ==.
         return ProjectTargetIdentity(
             resolved, opened.st_dev, opened.st_ino, opened.st_size,
-            opened.st_mtime_ns, opened.st_ctime_ns,
+            opened.st_mtime_ns, opened.st_ctime_ns, digest,
         )
     finally:
         os.close(descriptor)

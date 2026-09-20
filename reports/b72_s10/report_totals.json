@@ -1,0 +1,313 @@
+{
+  "cases": 313,
+  "skipped": 8,
+  "auxiliary_files_recorded": 4,
+  "cap_usd": 1.0,
+  "total_cost_usd": 0.0111721,
+  "calls": 28,
+  "input_tokens": 266002,
+  "model": "jev-1.13.0",
+  "rows": [
+    {
+      "ts": "2026-09-19T21:11:59",
+      "tool": "jev_choice",
+      "model": "jev-1.13.0",
+      "input_tokens": 1000,
+      "output_tokens": 72,
+      "cost_usd": 4.2e-05,
+      "latency_ms": 426.2,
+      "questions": 1,
+      "source": "jev_calls.json[0]"
+    },
+    {
+      "ts": "2026-09-19T21:11:59",
+      "tool": "jev_choice",
+      "model": "jev-1.13.0",
+      "input_tokens": 993,
+      "output_tokens": 72,
+      "cost_usd": 4.171e-05,
+      "latency_ms": 338.7,
+      "questions": 1,
+      "source": "jev_calls.json[1]"
+    },
+    {
+      "ts": "2026-09-19T21:14:41",
+      "tool": "jev_score",
+      "model": "jev-1.13.0",
+      "input_tokens": 895,
+      "output_tokens": 17,
+      "cost_usd": 3.759e-05,
+      "latency_ms": 431.1,
+      "questions": 1,
+      "source": "jev_calls.json[2]"
+    },
+    {
+      "ts": "2026-09-19T21:14:41",
+      "tool": "jev_score",
+      "model": "jev-1.13.0",
+      "input_tokens": 893,
+      "output_tokens": 17,
+      "cost_usd": 3.751e-05,
+      "latency_ms": 356.1,
+      "questions": 1,
+      "source": "jev_calls.json[3]"
+    },
+    {
+      "ts": "2026-09-19T21:18:57",
+      "tool": "jev_choice",
+      "model": "jev-1.13.0",
+      "input_tokens": 1185,
+      "output_tokens": 65,
+      "cost_usd": 4.977e-05,
+      "latency_ms": 457.6,
+      "questions": 1,
+      "source": "jev_calls.json[4]"
+    },
+    {
+      "ts": "2026-09-19T21:18:57",
+      "tool": "jev_choice",
+      "model": "jev-1.13.0",
+      "input_tokens": 1190,
+      "output_tokens": 65,
+      "cost_usd": 4.998e-05,
+      "latency_ms": 443.0,
+      "questions": 1,
+      "source": "jev_calls.json[5]"
+    },
+    {
+      "ts": "2026-09-19T21:20:26",
+      "tool": "jev_choice",
+      "model": "jev-1.13.0",
+      "input_tokens": 1082,
+      "output_tokens": 56,
+      "cost_usd": 4.544e-05,
+      "latency_ms": 328.7,
+      "questions": 1,
+      "source": "jev_calls.json[6]"
+    },
+    {
+      "ts": "2026-09-19T21:20:26",
+      "tool": "jev_choice",
+      "model": "jev-1.13.0",
+      "input_tokens": 1094,
+      "output_tokens": 56,
+      "cost_usd": 4.595e-05,
+      "latency_ms": 364.9,
+      "questions": 1,
+      "source": "jev_calls.json[7]"
+    },
+    {
+      "ts": "2026-09-19T21:23:42",
+      "tool": "jev_choice",
+      "model": "jev-1.13.0",
+      "input_tokens": 982,
+      "output_tokens": 45,
+      "cost_usd": 4.124e-05,
+      "latency_ms": 377.8,
+      "questions": 1,
+      "source": "jev_calls.json[8]"
+    },
+    {
+      "ts": "2026-09-19T21:23:43",
+      "tool": "jev_choice",
+      "model": "jev-1.13.0",
+      "input_tokens": 987,
+      "output_tokens": 45,
+      "cost_usd": 4.145e-05,
+      "latency_ms": 382.0,
+      "questions": 1,
+      "source": "jev_calls.json[9]"
+    },
+    {
+      "ts": "2026-09-19T21:24:56",
+      "tool": "jev_choice",
+      "model": "jev-1.13.0",
+      "input_tokens": 879,
+      "output_tokens": 38,
+      "cost_usd": 3.692e-05,
+      "latency_ms": 357.3,
+      "questions": 1,
+      "source": "jev_calls.json[10]"
+    },
+    {
+      "ts": "2026-09-19T21:24:57",
+      "tool": "jev_choice",
+      "model": "jev-1.13.0",
+      "input_tokens": 884,
+      "output_tokens": 38,
+      "cost_usd": 3.713e-05,
+      "latency_ms": 381.1,
+      "questions": 1,
+      "source": "jev_calls.json[11]"
+    },
+    {
+      "ts": "2026-09-19T21:24:57",
+      "tool": "jev_choice",
+      "model": "jev-1.13.0",
+      "input_tokens": 810,
+      "output_tokens": 31,
+      "cost_usd": 3.402e-05,
+      "latency_ms": 371.8,
+      "questions": 1,
+      "source": "jev_calls.json[12]"
+    },
+    {
+      "ts": "2026-09-19T21:24:58",
+      "tool": "jev_choice",
+      "model": "jev-1.13.0",
+      "input_tokens": 815,
+      "output_tokens": 31,
+      "cost_usd": 3.423e-05,
+      "latency_ms": 314.2,
+      "questions": 1,
+      "source": "jev_calls.json[13]"
+    },
+    {
+      "ts": "2026-09-19T21:30:26",
+      "tool": "jev_choice",
+      "model": "jev-1.13.0",
+      "input_tokens": 1169,
+      "output_tokens": 65,
+      "cost_usd": 4.91e-05,
+      "latency_ms": 327.4,
+      "questions": 1,
+      "source": "jev_calls.json[14]"
+    },
+    {
+      "ts": "2026-09-19T21:30:26",
+      "tool": "jev_choice",
+      "model": "jev-1.13.0",
+      "input_tokens": 1172,
+      "output_tokens": 65,
+      "cost_usd": 4.922e-05,
+      "latency_ms": 337.8,
+      "questions": 1,
+      "source": "jev_calls.json[15]"
+    },
+    {
+      "ts": "2026-09-19T21:34:12",
+      "tool": "jev_score",
+      "model": "jev-1.13.0",
+      "input_tokens": 988,
+      "output_tokens": 17,
+      "cost_usd": 4.15e-05,
+      "latency_ms": 357.1,
+      "questions": 1,
+      "source": "jev_calls.json[16]"
+    },
+    {
+      "ts": "2026-09-19T21:34:12",
+      "tool": "jev_score",
+      "model": "jev-1.13.0",
+      "input_tokens": 993,
+      "output_tokens": 17,
+      "cost_usd": 4.171e-05,
+      "latency_ms": 416.1,
+      "questions": 1,
+      "source": "jev_calls.json[17]"
+    },
+    {
+      "ts": "2026-09-19T21:34:13",
+      "tool": "jev_score",
+      "model": "jev-1.13.0",
+      "input_tokens": 1011,
+      "output_tokens": 17,
+      "cost_usd": 4.246e-05,
+      "latency_ms": 366.8,
+      "questions": 1,
+      "source": "jev_calls.json[18]"
+    },
+    {
+      "ts": "2026-09-19T21:34:13",
+      "tool": "jev_score",
+      "model": "jev-1.13.0",
+      "input_tokens": 1016,
+      "output_tokens": 17,
+      "cost_usd": 4.267e-05,
+      "latency_ms": 368.4,
+      "questions": 1,
+      "source": "jev_calls.json[19]"
+    },
+    {
+      "ts": "2026-09-19T21:46:42",
+      "tool": "jev_score",
+      "model": "jev-1.13.0",
+      "input_tokens": 929,
+      "output_tokens": 17,
+      "cost_usd": 3.902e-05,
+      "latency_ms": 320.2,
+      "questions": 1,
+      "source": "jev_calls.json[20]"
+    },
+    {
+      "ts": "2026-09-19T21:46:42",
+      "tool": "jev_score",
+      "model": "jev-1.13.0",
+      "input_tokens": 933,
+      "output_tokens": 17,
+      "cost_usd": 3.919e-05,
+      "latency_ms": 391.1,
+      "questions": 1,
+      "source": "jev_calls.json[21]"
+    },
+    {
+      "ts": "2026-09-19T21:59:08",
+      "tool": "jev_choice",
+      "model": "jev-1.13.0",
+      "input_tokens": 810,
+      "output_tokens": 71,
+      "cost_usd": 3.402e-05,
+      "latency_ms": 454.5,
+      "questions": 1,
+      "source": "jev_calls.json[22]"
+    },
+    {
+      "ts": "2026-09-19T21:59:08",
+      "tool": "jev_choice",
+      "model": "jev-1.13.0",
+      "input_tokens": 809,
+      "output_tokens": 71,
+      "cost_usd": 3.398e-05,
+      "latency_ms": 365.3,
+      "questions": 1,
+      "source": "jev_calls.json[23]"
+    },
+    {
+      "input_tokens": 16160,
+      "output_tokens": 1044,
+      "cost_usd": 0.00067873,
+      "errors": 0,
+      "wall_ms": 482.4,
+      "source": "gate_initial_call.json",
+      "tool": "jev_batch"
+    },
+    {
+      "input_tokens": 19381,
+      "output_tokens": 1276,
+      "cost_usd": 0.00081402,
+      "errors": 0,
+      "wall_ms": 522.1,
+      "source": "gate_final_call.json",
+      "tool": "jev_batch"
+    },
+    {
+      "input_tokens": 102010,
+      "output_tokens": 1800,
+      "cost_usd": 0.00428441,
+      "errors": 0,
+      "wall_ms": 778.0,
+      "source": "handoff_initial_call.json",
+      "tool": "jev_batch"
+    },
+    {
+      "input_tokens": 104932,
+      "output_tokens": 1800,
+      "cost_usd": 0.00440713,
+      "errors": 0,
+      "wall_ms": 756.1,
+      "source": "handoff_call.json",
+      "tool": "jev_batch"
+    }
+  ],
+  "configuration_probe": "Initial jev_status(ping=false) only inspected configuration; no charged inference. Full inference requests and responses are retained in the listed receipts."
+}

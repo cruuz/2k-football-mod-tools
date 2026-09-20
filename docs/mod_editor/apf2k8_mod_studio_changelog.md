@@ -1,13 +1,21 @@
+# APF 2K8 Mod Studio Changelog
+
+## 0.1.0-alpha.96 - beta 73
+
+- Project open and fast save now compare the full project SHA-256, closing the hole named in beta 72.1: a same-size rewrite with the old modification time restored is refused on every platform, including Windows. Changes only to change time still open and save normally; size, modification-time and file-replacement refusals keep their existing messages. Standalone regressions: `test_apf_open_full_sha256_refuses_same_size_rewrite_restored_mtime` and `test_apf_fast_save_full_sha256_refuses_same_size_rewrite_restored_mtime` in `test_b721_change_time_identity.py`.
+- The request to "write the playbook into a .Ros file" now has an explicit Save Assignments action. Choose a saved label and a same-side book from an already built game, review every affected team slot, and confirm a new raw roster plus receipt. Only the four-byte type pointer can change; strings and team assignments stay intact. Missing names, malformed saves and existing destinations are refused. Loading the clone from the rewritten save and retaining it after save/reload remain UNWITNESSED. No season-save writer is included.
+- `rewrite_save_label_type` in `apf2k8_book_identity.py` uses the same one-based relative pointer as the reader and the disc clone binder: `label + 4` points to an existing immutable UTF-16BE string, and that one four-byte pointer is the entire allowed write span. The source must be the known 2,715,908-byte Xbox layout and must pass the existing strict roster verification. A missing string-pool name refuses, which is the disc clone binder's existing behaviour rather than a new string allocator.
+- PS3 logo timings on the local 27-pair fixture measured 6.76 seconds to read, 133.85 seconds for cold preflight, and 1.84 seconds to compile one slot-96 crest. The unchanged package cache reused that crest in 0.026 seconds with identical bytes. These Linux measurements exclude full-folder copying and linked-cache compilation; the screenshot's exact artwork and larger allocation were unavailable. Further compression and template-cache work is deferred.
+
+## 0.1.0-alpha.95 - beta 72.1: projects open and save on Windows when only a file's change time moved (2026-09-19)
+
+- Opening a project and fast saving it compared the whole identity of the project file, including the change time that Windows backup, sync, antivirus and indexing software move without changing a byte. An untouched project could therefore refuse to open ("The project changed outside Mod Studio while it was opening") or to fast save ("The active project changed outside Mod Studio"). Both now compare the path, file ID, size and modification time, the same rule as 2K5 Mod Studio, and still refuse a different size, a moved modification time or a different file at the same path. They no longer notice a rewrite by another program that kept the same size and put the old modification time back. The APF build already checks the source and output by SHA-256 and never compared the change time. Offline tests only; not yet run on Windows.
+
 ## 0.1.0-alpha.94 - beta 72
 
 - The report "Still unable to add personnel sets to situations" now has a local control: choose a personnel comparison row for one book and one live down/distance bucket. Confirm the edit, then install the matching v2 situation patch. The checkbox states this dependency and shows whether the installed patch matches the project. This experimental option stays off by default in every preset.
 - The call candidate preview now shows the personnel curve term, member ratings mean, their product, category rank, retail weight and effective comparison row. Formation weights remain visible for the following draw. This addresses "Can't edit base weight or per-situation weight" by showing the existing calculation and exposing only the local comparison row.
 - Offline regression coverage checks that rating 7 remains eligible when Queens is the sole allowed 3rd-and-8 personnel set. Empty exclusions still fall back to the original draw. Gameplay is UNWITNESSED; the required check is O-ManBlock, 3rd-and-8 at midfield, Queens row 10, with Pro: Strong as the only unexcluded ordinary formation and all three ratings set to 7.
-
-# APF 2K8 Mod Studio Changelog
-
-## 0.1.0-alpha.94 - beta 72
-
 - Fine-tune Plays, Who lines up and Assignment Routes reuse the loaded books and validated staged views. Each tab now offers pending edits with bulk confirmation. Ten O-ManBlock edits measured 721.4 ms before and 96.7 ms plus 23.5 ms for confirmation after, with identical compiled bytes in the offline fixture.
 - Assignment Routes checks relay availability against the current staged assignments. Copying OL tasks on H Shovel Strong and H Lead Shovel no longer offers a consumed relay that would lose a chain start.
 - All nine CPU Play Calling tables sort numeric columns numerically and retain the correct selection and pending-edit actions after sorting.

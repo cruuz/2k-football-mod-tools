@@ -1,0 +1,20 @@
+{
+  "quad_count": 47,
+  "errors": {
+    "min": 18.5548,
+    "mean": 17.9839989010989,
+    "max": 17.212600000000002
+  },
+  "acceptance": {
+    "absolute_error": {
+      "min": 18.5548,
+      "mean": 17.9839989010989,
+      "max": 17.212600000000002
+    },
+    "within_15": false,
+    "fix_applied": false,
+    "cause_specific_writer_proved": false,
+    "runtime_witnessed": false,
+    "limitation": "RAM glyphs say play clock 17, screenshot says 19; trace is earlier still. No tone fitting."
+  }
+}

@@ -1,0 +1,50 @@
+[
+  {
+    "feature": "logo",
+    "s9": 2795.5,
+    "s10": 1931.75,
+    "s11": 1931.75,
+    "s10_gain_percent": 30.9,
+    "s11_gain_percent": 30.9
+  },
+  {
+    "feature": "wing_colour",
+    "s9": 1887.5,
+    "s10": 1524.0,
+    "s11": 1502.5,
+    "s10_gain_percent": 19.3,
+    "s11_gain_percent": 20.4
+  },
+  {
+    "feature": "score",
+    "s9": 221.25,
+    "s10": 16.75,
+    "s11": 16.75,
+    "s10_gain_percent": 92.4,
+    "s11_gain_percent": 92.4
+  },
+  {
+    "feature": "housing_rim",
+    "s9": 975.75,
+    "s10": 926.0,
+    "s11": 899.5,
+    "s10_gain_percent": 5.1,
+    "s11_gain_percent": 7.8
+  },
+  {
+    "feature": "down_capsule",
+    "s9": 669.75,
+    "s10": 669.5,
+    "s11": 669.5,
+    "s10_gain_percent": 0.0,
+    "s11_gain_percent": 0.0
+  },
+  {
+    "feature": "pill",
+    "s9": 431.5,
+    "s10": 431.0,
+    "s11": 431.0,
+    "s10_gain_percent": 0.1,
+    "s11_gain_percent": 0.1
+  }
+]

@@ -1,0 +1,1086 @@
+{
+  "schema": "scorebug-broadcast-states/v1",
+  "sampling": "every tenth source frame; pilot stratified across that subset",
+  "normal_reference": "frame_016151.jpg",
+  "states": {
+    "normal": {
+      "representatives": [
+        {
+          "frame": "frame_011321.jpg",
+          "sha256": "4d740af332a03198b778b22c17d13e20808698e5c981621ca7083c7d6e349eaa",
+          "median_luma_delta_from_normal": {
+            "away_score": 0.0,
+            "home_score": -7.0,
+            "clock": -26.0,
+            "quarter": 0.07,
+            "play_clock": -0.42,
+            "down": -0.52,
+            "plate": -0.27,
+            "away_wing": -0.5,
+            "home_wing": 0.06,
+            "away_rim": -0.02,
+            "home_rim": -3.96,
+            "away_timeouts": 0.0,
+            "home_timeouts": -1.0,
+            "network": 8.24
+          }
+        },
+        {
+          "frame": "frame_027931.jpg",
+          "sha256": "f905a3f620a3c0d8fd3bea6e2b11b9652b2922562a62912f5a1b4909dd7ae714",
+          "median_luma_delta_from_normal": {
+            "away_score": 10.0,
+            "home_score": 0.0,
+            "clock": -40.0,
+            "quarter": -0.14,
+            "play_clock": -0.57,
+            "down": -0.6,
+            "plate": -1.07,
+            "away_wing": -1.65,
+            "home_wing": -0.21,
+            "away_rim": -1.97,
+            "home_rim": -1.38,
+            "away_timeouts": -0.86,
+            "home_timeouts": 0.0,
+            "network": 6.69
+          }
+        },
+        {
+          "frame": "frame_016151.jpg",
+          "sha256": "47138d5f07c37ba4a985eb22cf74f4c8f7c7d4a6f96b7ba814cc50435b894f41",
+          "median_luma_delta_from_normal": {
+            "away_score": 0.0,
+            "home_score": 0.0,
+            "clock": 0.0,
+            "quarter": 0.0,
+            "play_clock": 0.0,
+            "down": 0.0,
+            "plate": 0.0,
+            "away_wing": 0.0,
+            "home_wing": 0.0,
+            "away_rim": 0.0,
+            "home_rim": 0.0,
+            "away_timeouts": 0.0,
+            "home_timeouts": 0.0,
+            "network": 0.0
+          }
+        }
+      ],
+      "game_reproducible": true,
+      "observed": true,
+      "count": 7
+    },
+    "kickoff": {
+      "representatives": [],
+      "game_reproducible": true,
+      "observed": false
+    },
+    "first_and_ten": {
+      "representatives": [
+        {
+          "frame": "frame_006941.jpg",
+          "sha256": "5c88c84a0d2a8492e92e55ed45d28f13205340a2df3e76edaf81623ef6676b92",
+          "median_luma_delta_from_normal": {
+            "away_score": 0.0,
+            "home_score": -7.0,
+            "clock": -27.29,
+            "quarter": -0.07,
+            "play_clock": -0.92,
+            "down": 0.13,
+            "plate": -0.72,
+            "away_wing": -1.15,
+            "home_wing": 0.1,
+            "away_rim": -2.87,
+            "home_rim": -0.35,
+            "away_timeouts": 0.0,
+            "home_timeouts": 0.0,
+            "network": -1.71
+          }
+        },
+        {
+          "frame": "frame_007091.jpg",
+          "sha256": "450f33127ec13f303950e2b1a770deed128cddcdc344ee65bc066512cc59c030",
+          "median_luma_delta_from_normal": {
+            "away_score": 0.0,
+            "home_score": -7.0,
+            "clock": -18.82,
+            "quarter": 0.43,
+            "play_clock": -0.92,
+            "down": 0.04,
+            "plate": 0.24,
+            "away_wing": 0.93,
+            "home_wing": -0.91,
+            "away_rim": -2.31,
+            "home_rim": -1.82,
+            "away_timeouts": 0.0,
+            "home_timeouts": -0.5,
+            "network": -2.87
+          }
+        },
+        {
+          "frame": "frame_007251.jpg",
+          "sha256": "5c5b1df05f08fa043e6dd4fa2c210104978c953bac8d0b6b1e55ae4dd2f91218",
+          "median_luma_delta_from_normal": {
+            "away_score": 0.0,
+            "home_score": -7.0,
+            "clock": -27.5,
+            "quarter": 0.21,
+            "play_clock": 0.32,
+            "down": -0.31,
+            "plate": -0.13,
+            "away_wing": 0.15,
+            "home_wing": -0.58,
+            "away_rim": -1.8,
+            "home_rim": -1.89,
+            "away_timeouts": 0.0,
+            "home_timeouts": -1.0,
+            "network": -8.32
+          }
+        }
+      ],
+      "game_reproducible": true,
+      "observed": true,
+      "count": 30
+    },
+    "short_yardage": {
+      "representatives": [
+        {
+          "frame": "frame_009361.jpg",
+          "sha256": "37f7981c58d890eb69f9d16bed181b47db77dae781a6123307bb481cc778e42d",
+          "median_luma_delta_from_normal": {
+            "away_score": 0.0,
+            "home_score": -6.58,
+            "clock": -2.39,
+            "quarter": -0.07,
+            "play_clock": -0.22,
+            "down": -1.38,
+            "plate": -1.86,
+            "away_wing": -1.44,
+            "home_wing": -0.71,
+            "away_rim": -4.82,
+            "home_rim": -0.62,
+            "away_timeouts": 0.0,
+            "home_timeouts": 0.0,
+            "network": 4.39
+          }
+        },
+        {
+          "frame": "frame_009211.jpg",
+          "sha256": "9cb12bc8026e2304663ff47dab341560c7c9145be287e7fb0b6ad31b12950c73",
+          "median_luma_delta_from_normal": {
+            "away_score": 0.0,
+            "home_score": -7.0,
+            "clock": -1.0,
+            "quarter": 0.57,
+            "play_clock": -195.81,
+            "down": -2.13,
+            "plate": -1.72,
+            "away_wing": -1.04,
+            "home_wing": 0.14,
+            "away_rim": 0.2,
+            "home_rim": 0.61,
+            "away_timeouts": 0.0,
+            "home_timeouts": 0.0,
+            "network": 11.25
+          }
+        }
+      ],
+      "game_reproducible": true,
+      "observed": true,
+      "count": 2
+    },
+    "third_and_long": {
+      "representatives": [
+        {
+          "frame": "frame_012231.jpg",
+          "sha256": "5a20c9638f259c485efd0330dc1fa60be8242ed062464d90b8005225b19f9013",
+          "median_luma_delta_from_normal": {
+            "away_score": -0.36,
+            "home_score": -6.08,
+            "clock": -32.5,
+            "quarter": -0.22,
+            "play_clock": 0.93,
+            "down": -15.01,
+            "plate": -14.33,
+            "away_wing": -2.44,
+            "home_wing": -0.13,
+            "away_rim": -35.5,
+            "home_rim": 32.97,
+            "away_timeouts": 0.0,
+            "home_timeouts": -0.14,
+            "network": 5.11
+          }
+        }
+      ],
+      "game_reproducible": true,
+      "observed": true,
+      "count": 1
+    },
+    "fourth_down": {
+      "representatives": [],
+      "game_reproducible": true,
+      "observed": false
+    },
+    "red_zone": {
+      "representatives": [],
+      "game_reproducible": true,
+      "observed": false
+    },
+    "goal_to_go": {
+      "representatives": [],
+      "game_reproducible": true,
+      "observed": false
+    },
+    "touchdown_banner": {
+      "representatives": [],
+      "game_reproducible": false,
+      "observed": false
+    },
+    "field_goal_banner": {
+      "representatives": [],
+      "game_reproducible": false,
+      "observed": false
+    },
+    "flag": {
+      "representatives": [],
+      "game_reproducible": true,
+      "observed": false
+    },
+    "timeout": {
+      "representatives": [],
+      "game_reproducible": true,
+      "observed": false
+    },
+    "two_minute": {
+      "representatives": [],
+      "game_reproducible": true,
+      "observed": false
+    },
+    "replay_or_network_bug": {
+      "representatives": [],
+      "game_reproducible": false,
+      "observed": false
+    },
+    "end_of_quarter": {
+      "representatives": [],
+      "game_reproducible": true,
+      "observed": false
+    },
+    "absent": {
+      "representatives": [],
+      "game_reproducible": true,
+      "observed": false
+    },
+    "other": {
+      "representatives": [],
+      "game_reproducible": false,
+      "observed": false
+    }
+  },
+  "rejected": [
+    {
+      "frame": "frame_000001.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000151.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000301.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000451.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000601.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000751.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000911.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_001061.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_001211.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_001361.jpg",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_001661.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_001811.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_001961.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_002421.jpg",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_002571.jpg",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_002721.jpg",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_002871.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_003021.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_003171.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_003321.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_003471.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_003621.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_003771.jpg",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_003921.jpg",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_004231.jpg",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_004381.jpg",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_004531.jpg",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_004831.jpg",
+      "state": "goal_to_go",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_004981.jpg",
+      "state": "goal_to_go",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_005131.jpg",
+      "state": "goal_to_go",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_005281.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_005431.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_005591.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_005741.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_005891.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_006041.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_006191.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_007401.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_007551.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_007701.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_007851.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_008001.jpg",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_008151.jpg",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_008301.jpg",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_008451.jpg",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_008601.jpg",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_008761.jpg",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_008911.jpg",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_009061.jpg",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_009661.jpg",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_009811.jpg",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_010421.jpg",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_010571.jpg",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_010721.jpg",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_011171.jpg",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_011471.jpg",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_011621.jpg",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_011771.jpg",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_011931.jpg",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_012081.jpg",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_012981.jpg",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_013131.jpg",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_013591.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_013741.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_014191.jpg",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_014341.jpg",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_014491.jpg",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_014641.jpg",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_014791.jpg",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_014941.jpg",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_015101.jpg",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_015251.jpg",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_015401.jpg",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_015551.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_015701.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_015851.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_016001.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_016451.jpg",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_016611.jpg",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_016761.jpg",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_017211.jpg",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_017361.jpg",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_017511.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_017661.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_017811.jpg",
+      "state": "goal_to_go",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_017961.jpg",
+      "state": "goal_to_go",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_018111.jpg",
+      "state": "goal_to_go",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_018271.jpg",
+      "state": "goal_to_go",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_018421.jpg",
+      "state": "goal_to_go",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_018571.jpg",
+      "state": "goal_to_go",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_018721.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_018871.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_019021.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_019171.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_019321.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_019471.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_019621.jpg",
+      "state": "goal_to_go",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_019781.jpg",
+      "state": "goal_to_go",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_019931.jpg",
+      "state": "goal_to_go",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_020081.jpg",
+      "state": "goal_to_go",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_020231.jpg",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_020381.jpg",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_020531.jpg",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_020681.jpg",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_020831.jpg",
+      "state": "goal_to_go",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_020981.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_021131.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_021281.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_021441.jpg",
+      "state": "goal_to_go",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_021591.jpg",
+      "state": "goal_to_go",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_021741.jpg",
+      "state": "goal_to_go",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_021891.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_022041.jpg",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_022191.jpg",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_022491.jpg",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_022641.jpg",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_022791.jpg",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_022951.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_023101.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_023251.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_023401.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_023551.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_023701.jpg",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_023851.jpg",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_024001.jpg",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_024151.jpg",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_024301.jpg",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_024451.jpg",
+      "state": "goal_to_go",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_024611.jpg",
+      "state": "goal_to_go",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_024761.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_024911.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_025061.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_025211.jpg",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_025361.jpg",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_025511.jpg",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_025811.jpg",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_025961.jpg",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_026121.jpg",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_026271.jpg",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_026421.jpg",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_026571.jpg",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_026721.jpg",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_026871.jpg",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_027021.jpg",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_027171.jpg",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_027321.jpg",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_027471.jpg",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_027781.jpg",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_028081.jpg",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_028381.jpg",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_028531.jpg",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_028681.jpg",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_028831.jpg",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_028981.jpg",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_029131.jpg",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_029291.jpg",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_029441.jpg",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_029741.jpg",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_029891.jpg",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_030041.jpg",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    }
+  ],
+  "limitations": [
+    "State reproducibility describes retail predicates, not authored event banners.",
+    "Uncertain frames are retained for review, not assigned invented labels."
+  ]
+}

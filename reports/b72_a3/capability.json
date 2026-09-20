@@ -1,0 +1,62 @@
+{
+  "backend": {
+    "command": "Studio: Playbooks and Plays > Save Assignments > Write a label's book type",
+    "module": "mod_editor/apf_studio/save_playbooks.py",
+    "operation": "write"
+  },
+  "classification": "offline-writer-proved",
+  "evidence": [
+    "docs/mod_editor/apf_saved_book_types.md",
+    "tests/mod_editor/test_apf_save_label_type.py",
+    "reports/b72_a3/save_label_type.json"
+  ],
+  "game": "apf2k8_xbox360",
+  "gui": {
+    "default_enabled": false,
+    "expose": true,
+    "mode": "edit",
+    "reason": "Explicit confirmation in Save Assignments; requires a raw roster and an already installed same-side book. Experimental and absent from presets."
+  },
+  "id": "apf2k8.playbooks.saved_label_type",
+  "input_constraints": [
+    "Only the known raw 2,715,908-byte Xbox roster layout passing strict readers; no signed-container, PS3 or season input.",
+    "The type must already exist in the save string pool. Only the selected four-byte type pointer changes, with every team assignment and existing string byte preserved.",
+    "Resolve the installed SPLB by CRC32 filename and verify its internal name and side through the built game's roster.",
+    "Source SHA-256 must still match. Output and receipt are exclusive new files; reread and independently verify them."
+  ],
+  "portme": [
+    "Witness the clone's distinctive formation/play for an affected team, then save and reload and inspect again.",
+    "New string allocation and season conversion need separate layout proof."
+  ],
+  "public_distribution": {
+    "game_data": "never-bundle-retail-data",
+    "mod_payload": "user-authored-inputs-and-recipes",
+    "rule": "Distribute tooling and metadata only; users supply their own roster and built game.",
+    "tooling": "source-and-schemas-only"
+  },
+  "runtime": {
+    "evidence": [],
+    "scope": "UNWITNESSED: serialized label/type and built resource are verified offline; loaded-book behavior and persistence require a player witness.",
+    "status": "not-tested"
+  },
+  "selectors": {
+    "fields": [
+      {"allowed": "raw Xbox Roster.ROS", "name": "source", "required": true},
+      {"allowed": "0..68", "name": "label_id", "required": true},
+      {"allowed": "existing saved string and installed same-side SPLB name", "name": "book_type", "required": true},
+      {"allowed": "already built game's 0A index", "name": "index_0a", "required": true},
+      {"allowed": "new raw save path", "name": "output", "required": true}
+    ],
+    "notes": "Every team sharing the saved label uses the changed type; team label assignments remain unchanged."
+  },
+  "source_container": {
+    "format": "Raw Xbox Roster.ROS with one-based relative label type pointer",
+    "hash_pins": ["85fdf0d82360294463ff6d7396d7bfc84ed175f0a40573cf3249ad12cc4263f1"],
+    "resource": "root[11] label type pointer and existing UTF-16BE string pool",
+    "retail_file": "user-owned Roster.ROS and built game 0A"
+  },
+  "summary": "Bind a saved label to a clone already installed in a built game, after explicit confirmation, and write a new verified raw roster plus receipt.",
+  "surface": "scripts_config",
+  "title": "Saved label book type",
+  "validation_command": "python3 tests/mod_editor/test_apf_save_label_type.py"
+}

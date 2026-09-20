@@ -1,0 +1,1539 @@
+{
+  "errors": 0,
+  "answers": [
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.46
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.24
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.13
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.73
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.78
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.15
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.1
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.94
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.95
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.07
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.08
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.98
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.92
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.11
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.46
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.97
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.83
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.15
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.48
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.02
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.97
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.96
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.13
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.08
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.97
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.29
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.56
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.35
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.91
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.76
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.11
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.22
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.89
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.84
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.21
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.12
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.93
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.61
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.43
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.47
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.02
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.95
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.57
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.23
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.23
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.94
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.8
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.23
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.16
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.96
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.91
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.09
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.34
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.96
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.93
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.13
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.13
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.97
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.89
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.19
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.17
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.96
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.92
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.06
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.27
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.02
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.96
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.93
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.09
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.35
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.96
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.94
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.09
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.52
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.96
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.92
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.1
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.17
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.02
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.96
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.95
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.05
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.39
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.02
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.97
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.63
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.12
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.11
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.95
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.42
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.63
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.11
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.95
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.83
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.2
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.09
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.96
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.96
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.08
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.11
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.97
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.87
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.13
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.21
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.95
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.93
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.06
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.24
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.05
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.97
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.93
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.09
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.11
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.96
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.94
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.1
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.18
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.97
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.92
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.08
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.08
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.96
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.35
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.55
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.18
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.02
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.89
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.96
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.3
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.02
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.97
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.87
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.27
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.34
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.02
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.96
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.59
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.46
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.15
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.92
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.96
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.08
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.09
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.97
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.75
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.16
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.19
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.97
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.91
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.07
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.08
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.94
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.32
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.46
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.18
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.06
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.66
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.05
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.28
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.11
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.39
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.07
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.22
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.08
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.56
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.92
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.09
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.97
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.94
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.05
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.09
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.07
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.96
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.93
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.08
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.1
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.95
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.13
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.29
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.23
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.81
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.91
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.07
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.14
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.02
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.98
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.67
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.51
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.12
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.02
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.94
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.63
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.26
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.14
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.02
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.94
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.92
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.06
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.35
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.98
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.86
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.08
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.41
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.96
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.92
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.12
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.13
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.96
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.85
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.17
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.17
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.95
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.9
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.12
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.51
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.02
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.97
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.49
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.52
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.23
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.96
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.89
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.13
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.27
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.97
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.76
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.19
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.57
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.95
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.94
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.08
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.56
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.97
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.96
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.06
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.41
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.02
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.98
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.83
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.1
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.09
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.96
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.51
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.47
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.17
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.94
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.93
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.1
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.3
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.97
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.71
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.16
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.13
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.02
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.95
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.84
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.12
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.21
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.81
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.91
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.93
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.08
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.97
+      }
+    }
+  ],
+  "receipts": [
+    {
+      "start": 0,
+      "input_tokens": 17492,
+      "output_tokens": 270,
+      "cost_usd": 0.00073467,
+      "errors": 0,
+      "wall_ms": 496.1
+    },
+    {
+      "start": 3,
+      "input_tokens": 17586,
+      "output_tokens": 270,
+      "cost_usd": 0.00073862,
+      "errors": 0,
+      "wall_ms": 492.5
+    },
+    {
+      "start": 6,
+      "input_tokens": 14584,
+      "output_tokens": 270,
+      "cost_usd": 0.00061253,
+      "errors": 0,
+      "wall_ms": 573.4
+    },
+    {
+      "start": 9,
+      "input_tokens": 15949,
+      "output_tokens": 270,
+      "cost_usd": 0.00066986,
+      "errors": 0,
+      "wall_ms": 549.5
+    },
+    {
+      "start": 12,
+      "input_tokens": 17200,
+      "output_tokens": 270,
+      "cost_usd": 0.0007224,
+      "errors": 0,
+      "wall_ms": 456.5
+    },
+    {
+      "start": 15,
+      "input_tokens": 16537,
+      "output_tokens": 270,
+      "cost_usd": 0.00069455,
+      "errors": 0,
+      "wall_ms": 542.6
+    },
+    {
+      "start": 18,
+      "input_tokens": 17400,
+      "output_tokens": 270,
+      "cost_usd": 0.00073081,
+      "errors": 0,
+      "wall_ms": 467
+    },
+    {
+      "start": 21,
+      "input_tokens": 16902,
+      "output_tokens": 270,
+      "cost_usd": 0.00070989,
+      "errors": 0,
+      "wall_ms": 519.5
+    },
+    {
+      "start": 24,
+      "input_tokens": 17068,
+      "output_tokens": 270,
+      "cost_usd": 0.00071685,
+      "errors": 0,
+      "wall_ms": 478.3
+    },
+    {
+      "start": 27,
+      "input_tokens": 18368,
+      "output_tokens": 270,
+      "cost_usd": 0.00077145,
+      "errors": 0,
+      "wall_ms": 522.5
+    },
+    {
+      "start": 30,
+      "input_tokens": 18074,
+      "output_tokens": 270,
+      "cost_usd": 0.00075911,
+      "errors": 0,
+      "wall_ms": 531.8
+    },
+    {
+      "start": 33,
+      "input_tokens": 16338,
+      "output_tokens": 270,
+      "cost_usd": 0.00068619,
+      "errors": 0,
+      "wall_ms": 519.7
+    },
+    {
+      "start": 36,
+      "input_tokens": 15376,
+      "output_tokens": 270,
+      "cost_usd": 0.0006458,
+      "errors": 0,
+      "wall_ms": 507.4
+    },
+    {
+      "start": 39,
+      "input_tokens": 18380,
+      "output_tokens": 270,
+      "cost_usd": 0.00077197,
+      "errors": 0,
+      "wall_ms": 536.4
+    },
+    {
+      "start": 42,
+      "input_tokens": 16342,
+      "output_tokens": 270,
+      "cost_usd": 0.00068636,
+      "errors": 0,
+      "wall_ms": 476.1
+    },
+    {
+      "start": 45,
+      "input_tokens": 17661,
+      "output_tokens": 270,
+      "cost_usd": 0.00074177,
+      "errors": 0,
+      "wall_ms": 503
+    },
+    {
+      "start": 48,
+      "input_tokens": 18403,
+      "output_tokens": 270,
+      "cost_usd": 0.00077293,
+      "errors": 0,
+      "wall_ms": 494.8
+    },
+    {
+      "start": 51,
+      "input_tokens": 16782,
+      "output_tokens": 270,
+      "cost_usd": 0.00070485,
+      "errors": 0,
+      "wall_ms": 463.9
+    },
+    {
+      "start": 54,
+      "input_tokens": 17686,
+      "output_tokens": 270,
+      "cost_usd": 0.00074281,
+      "errors": 0,
+      "wall_ms": 508.7
+    },
+    {
+      "start": 57,
+      "input_tokens": 17228,
+      "output_tokens": 270,
+      "cost_usd": 0.00072357,
+      "errors": 0,
+      "wall_ms": 473.6
+    },
+    {
+      "start": 60,
+      "input_tokens": 12598,
+      "output_tokens": 180,
+      "cost_usd": 0.00052912,
+      "errors": 0,
+      "wall_ms": 543.1
+    }
+  ]
+}
