@@ -66,17 +66,57 @@ def log_directory(app_name: str) -> Path:
     return base / slug
 
 
+def app_version(app_name: str) -> str:
+    """The shipped version string for the report header, never raising.
+
+    Until beta 74 no report carried a version, so a user's errors.log could
+    not say which build produced an entry, and a reinstall left no trace.
+    """
+
+    try:
+        if "APF" in app_name.upper():
+            from mod_editor.apf_studio import __version__ as version
+        else:
+            from mod_editor import __version__ as version
+        return str(version)
+    except Exception:  # noqa: BLE001
+        return "unknown"
+
+
 def format_report(exc_type, exc, tb, app_name: str, *, when: str | None = None) -> str:
     """One self-contained report: what broke, where, and on what."""
 
     stamp = when or datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     body = "".join(traceback.format_exception(exc_type, exc, tb))
     return (
-        f"{app_name}\n"
+        f"{app_name} {app_version(app_name)}\n"
         f"time: {stamp}\n"
         f"python: {sys.version.split()[0]} on {sys.platform}\n"
         f"\n{body}"
     )
+
+
+def record_operation(operation: str, message: str, app_name: str, *,
+                     directory: Path | None = None, when: str | None = None) -> Path | None:
+    """Append a caught, user-facing failure to errors.log with the version.
+
+    Build and import failures are caught and shown in a dialog, so the crash
+    hook never sees them and errors.log stayed empty for exactly the errors
+    people report. Coach Edwards' "texture receipt is missing" (2026-09-20)
+    existed only as a phone photo for that reason. Every "Couldn't ..." dialog
+    now leaves an entry here, so "share the error" can mean sharing a file.
+    """
+
+    stamp = when or datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    text = str(message).rstrip()
+    report = (
+        f"{app_name} {app_version(app_name)}\n"
+        f"time: {stamp}\n"
+        f"python: {sys.version.split()[0]} on {sys.platform}\n"
+        f"operation: {operation}\n"
+        f"\n{text}\n"
+    )
+    return write_report(report, app_name, directory=directory)
 
 
 def write_report(report: str, app_name: str, *, directory: Path | None = None) -> Path | None:

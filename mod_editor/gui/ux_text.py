@@ -191,6 +191,14 @@ def show_operation_error(parent: QWidget | None, operation: str, message: str,
                          *, source_unchanged: bool = True) -> None:
     """One error dialog shape for every page: plain title, real cause, next step, full text."""
 
+    # Every caught failure the user sees also lands in errors.log with the
+    # Studio version, so a report can be a file rather than a phone photo.
+    # Logging must never be the reason a dialog fails to appear.
+    try:
+        from mod_editor.gui import crash_report
+        crash_report.record_operation(operation, message, "2K5 Mod Studio")
+    except Exception:  # noqa: BLE001
+        pass
     hint = fix_hint(message)
     lines = [f"Couldn't {operation}."]
     detail = plain_error(message)
