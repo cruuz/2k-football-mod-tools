@@ -29,6 +29,8 @@ in `packaging/check_2k5_mod_studio_runtime.py` (two locations),
 `tests/mod_editor/test_phase1_packaging.py`, the APF runtime check and
 `tests/mod_editor/test_apf_studio_installer.py`. No registry or count was changed
 in this job because the local context reserves them for integration.
+The proposed row passes the existing JSON Schema and strict registry validator
+when inserted into an in-memory copy of the registry.
 
 ```json
 {
@@ -76,9 +78,9 @@ in this job because the local context reserves them for integration.
     "retail_file": "User-owned ESPN NFL 2K5 USA disc image"
   },
   "summary": "Skip four startup movies and compact the output disc while preserving Crib reels, training and game presentation.",
-  "surface": "build",
+  "surface": "menus",
   "title": "Trim intro videos (experimental, unwitnessed)",
-  "validation_command": "python3 tests/mod_editor/test_nfl2k5_intro_videos.py"
+  "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_intro_videos"
 }
 ```
 
@@ -92,6 +94,17 @@ Its pinned fingerprint of `mod_editor/core/mod_build.py` necessarily predates
 this new Build option. The integration owner will need a fresh manifest when
 integrating runtime source changes. Do not treat any stale-fingerprint gate as
 passed, and do not hand-edit the fingerprint to conceal drift.
+
+When that later integration records the new owner, add
+`nfl2k5_intro_videos` alongside `nfl2k5_crib_reclaim` in
+`mod_editor/core/nfl2k5_cave_manifest.py`: import it in the observed build,
+include it in the instrumented `modules` tuple and `extra_owners`, and execute
+`final, _ = intro_videos.apply(final)` immediately after the observed Crib XBE
+patch. This records only the five-byte hook and section seal, not a disc cut.
+The two image cuts must still remain separate. Add the new owner to the shared
+XBE-only composition union when maintaining those integration fixtures. This
+job independently tested its hook with every existing matrix owner in both
+orders; it did not edit or regenerate the manifest machinery.
 
 Git delivery uses independent metadata at `.scratch/b74-v1/git` because the
 linked worktree's common Git directory is read-only. The commit's parent is

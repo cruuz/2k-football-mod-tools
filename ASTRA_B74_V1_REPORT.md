@@ -2,7 +2,7 @@
 
 All game behavior remains UNWITNESSED. This report covers read-only retail inspection, bounded native x86 execution and synthetic archive transactions. No emulator, GUI display, audio playback, retail edit or release step was used.
 
-The September 18 presentation report is incorrect about the movie inventory. The USA archive has **30 CRI Sofdec MPEG program streams**, totaling **1,037,568,000 bytes**. Four are boot movies, 23 are Crib reels, and three are menu promotion/training movies. `.mov` is a resource name suffix, not a QuickTime container. FFprobe identifies MPEG-1 video and ADX ADPCM audio (48,000 Hz, stereo) in all 30. The native header reader compares `SofdecStream` at VA `0xEBD6B4`.
+The September 18 presentation report is incorrect about the movie inventory. The USA archive has **30 CRI Sofdec MPEG program streams**, totaling **1,037,568,000 bytes**. Four are boot movies, 23 are Crib reels, and three are menu promotion/training movies. `.mov` is a resource name suffix, not a QuickTime container. FFprobe identifies MPEG-1 video and ADX ADPCM audio (48,000 Hz, stereo) in all 30. The seven non-Crib streams are 640x480; the 23 Crib streams are 256x144. The native header reader compares `SofdecStream` at VA `0xEBD6B4`.
 
 Inputs: XBE SHA-256 `73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9`; ISO SHA-256 `7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9`, 6,300,499,968 bytes. Every movie was hashed independently through the extracted archive and through the ISO; all matched. [inventory.json](reports/b74-v1/inventory.json) contains every SHA-256, resource ID, pack seam, exact ISO byte offset, named file and FFprobe result.
 
@@ -82,7 +82,7 @@ Disc and memory budgets
 | Planned physical ISO saving | 62,902,272 |
 | Planned output ISO size | 6,237,597,696 |
 | Native boot movie allocation request, each, sequential | 10,171,344 |
-| Native Crib movie allocation request, each | 3,138,000 |
+| Each Crib stream through the shared player, header allocation request | 3,138,000 |
 | New patch runtime allocation | 0 |
 | Credit to GAMEDATA append ceiling | 0 |
 | Current GAMEDATA append ceiling | 400,000 |
@@ -91,7 +91,7 @@ Disc and memory budgets
 
 The cut helps disc space and avoids transient boot playback requests. It does **not** establish additional memory headroom at the later Berman peak. The 10,171,344 figure is an executed native allocation request, not measured live heap residency, fragmentation, total boot peak, or a four-times larger saving. Movies are played sequentially and free their buffer before returning. The code and data of the movie library are still mapped. No allocator limit is increased and no GAMEDATA byte is removed or appended. The 2K28 blocker remains the later memory ceiling.
 
-Practical disc equivalents using the conservative 62,887,936 payload bytes: **944** 256x256 P8 base images with a 1,024-byte palette (66,560 bytes each); **711** with all nine unpadded mip levels plus palette (88,405 bytes each); or **2,535.16 seconds / 42.25 minutes** of 22,050 Hz stereo Xbox IMA ADPCM at 72 bytes per 64 stereo frames. As 48 kHz stereo 16-bit PCM it is **327.54 seconds**. These exclude wrappers, alignment and codec metadata, and are storage equivalents, not promises that all assets can be resident. A separately loaded resource collection up to about 60 MiB could fit on disc, but it still needs a loader/lifetime design. This option neither creates a seventeenth physical archive volume nor proves a second simultaneously resident presentation pack.
+Practical disc equivalents using the conservative 62,887,936 payload bytes: **944** 256x256 P8 base images with a 1,024-byte palette (66,560 bytes each); **711** with all nine unpadded mip levels plus palette (88,405 bytes each); or **2,535.16 seconds / 42.25 minutes** of 22,050 Hz stereo Xbox IMA ADPCM at 72 bytes per 64 stereo frames. As 48 kHz stereo 16-bit PCM it is **327.54 seconds**. The current jukebox writer requires stereo `cribmusic` plus mono `crib22` twins (`nfl2k5_music_banks.py:_project`), at 108 bytes per 64 frames together: the same budget holds **1,690.11 seconds / 28.17 minutes** of that paired payload. These exclude wrappers, alignment and codec metadata, and are storage equivalents, not promises that all assets can be resident. A separately loaded resource collection up to about 60 MiB could fit on disc, but it still needs a loader/lifetime design. This option neither creates a seventeenth physical archive volume nor proves a second simultaneously resident presentation pack.
 
 Implementation and reproduction
 
@@ -113,3 +113,10 @@ QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_build_panel_qt.py
 
 The primary worktree Git metadata is read-only. The `b74-v1` commit and incremental bundle use independent Git metadata under `.scratch/b74-v1/git`, an alternate read-only object store, and this same working tree. Base is `origin/main` at `6944f5626b17f2ec6c1b56d854c0d00ecc55cc9e`. No other checkout is edited.
 
+Validation and integration limits
+
+The focused feature suite passes 13 tests, including all 90 movie header/failure cases, all 46 Crib-consumer failure cases, the native boot loop and controller gate, cleanup, 32-owner composition in both orders, source preservation, replay, rollback and non-POSIX file I/O. The existing Build suite passes 13 tests, Build panel 16, Build plan UI coverage seven, saved MyCareer/Build settings ten, beta-62 Build integration eight, and provider integrity eight. These are 75 passed tests across the seven focused suites.
+
+The full memory-write gate passes all 119 tests. The full oracle suite completes 29 tests with 27 passes and exactly the same two source-drift errors. The two source-fingerprint oracle assertions separately reproduce `stale reservation source: mod_editor/core/mod_build.py; regenerate manifest` at `mod_editor/core/nfl2k5_cave_oracle.py:217`. The unchanged manifest hash is `4fff3467479f70680f6743d9d45fec40264bda97148e07ed324be4153b663c33`. Its Build fingerprint matches the base (`c386188cf46d7179318629b0c9e473496eaf2d4f1fb74f24d6d5ed21419ea7b8`), while this implementation hashes to `9d1471d7b282fd1154754c7b64e11cd1680082908a327958ff2a4b631f7c7233`. No other pinned source drifts. The job explicitly forbids regeneration, so these assertions are not reported as passed.
+
+[WIRING_B74_V1.md](WIRING_B74_V1.md) supplies the protected packaging entry, a schema- and validator-checked capability row, and the future recorder integration for the five-byte hook. Those integration actions were not performed. The direct source Build option is implemented and tested; this job performs no release or packaged-app acceptance.
