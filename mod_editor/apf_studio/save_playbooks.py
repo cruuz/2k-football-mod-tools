@@ -40,6 +40,68 @@ class SavePlaybookError(ValueError):
     """A save or assignment can be corrected by the modder."""
 
 
+def built_label_types(index_0a: Path, side: str) -> tuple[str, ...]:
+    """Offer the selected built game's serialized types on this side."""
+    from mod_editor.core.apf2k8_book_identity import parse_roster_identity, read_disc_roster
+    identity = parse_roster_identity(read_disc_roster(Path(index_0a)))
+    return tuple(sorted({label.kind for label in identity.labels if label.side == side}))
+
+
+def prepare_label_type(document: SavePlaybookDocument, label_id: int, book_type: str,
+                       index_0a: Path) -> tuple[bytes, dict]:
+    from mod_editor.core import apf2k8_book_identity as identity
+    from mod_editor.core.errors import ValidationError
+    if document.signed_container:
+        raise SavePlaybookError("Extract a raw Roster.ROS first; label-type writes require a raw source")
+    try:
+        payload, receipt = identity.rewrite_save_label_type(document.raw_payload, label_id, book_type)
+        if book_type not in built_label_types(index_0a, receipt["side"]):
+            raise SavePlaybookError("The selected built game does not assign this book type on the label's side")
+        _, entry, _, book, _, _ = identity.read_resource(
+            Path(index_0a), identity.filename_id(book_type), "spb", "SPLB")
+        if identity.splb.parse_book(book, entry.table_index).name != book_type:
+            raise SavePlaybookError("The built book header does not match the selected type")
+    except (ValidationError, writer.SaveError) as exc:
+        raise SavePlaybookError(str(exc)) from exc
+    receipt["built_book"] = {"index_0a": str(index_0a), "outer_index": entry.table_index,
+                             "sha256": hashlib.sha256(book).hexdigest(), "reparsed": True}
+    return payload, receipt
+
+
+def write_label_type(document: SavePlaybookDocument, label_id: int, book_type: str,
+                     index_0a: Path, output: Path) -> dict:
+    """Create a raw label-type handoff and receipt using exclusive binary writes."""
+    from mod_editor.core.apf2k8_book_identity import verify_save_label_type
+    from mod_editor.core.errors import ValidationError
+    output = Path(output)
+    manifest = output.with_name(f"{output.name}.label-type.json")
+    if output.resolve() == document.source.resolve() or manifest.resolve() == document.source.resolve():
+        raise SavePlaybookError("Output and receipt must be separate from the source save")
+    if hashlib.sha256(writer.read_source(document.source)).hexdigest() != document.source_sha256:
+        raise SavePlaybookError("Source save changed after inspection; reload it before writing")
+    if hashlib.sha256(document.raw_payload).hexdigest() != document.raw_payload_sha256:
+        raise SavePlaybookError("Inspected raw payload identity changed")
+    payload, receipt = prepare_label_type(document, label_id, book_type, index_0a)
+    created = []
+    try:
+        for path, data in ((output, payload), (manifest, (json.dumps(receipt, indent=2, sort_keys=True) + "\n").encode("utf-8"))):
+            descriptor = _reserve(path)
+            created.append(path)
+            try:
+                _write_all(descriptor, data)
+            finally:
+                os.close(descriptor)
+        verify_save_label_type(document.raw_payload, writer.read_source(output),
+                               json.loads(manifest.read_text(encoding="utf-8")))
+    except Exception as exc:
+        for path in created:
+            path.unlink(missing_ok=True)
+        if isinstance(exc, (ValidationError, writer.SaveError)):
+            raise SavePlaybookError(str(exc)) from exc
+        raise
+    return {**receipt, "output": str(output), "manifest": str(manifest)}
+
+
 @dataclass(frozen=True)
 class PlaybookChoice:
     playbook_id: int
