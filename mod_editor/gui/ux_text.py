@@ -127,7 +127,13 @@ _FIX_HINTS: tuple[tuple[str, str], ...] = (
     ("free space", "Fix: free up room where the copy is being written, or choose another folder."),
     ("Permission denied", "Fix: choose a folder you can write to."),
     ("not a regular file", "Fix: choose the disc file itself."),
+    ("no longer on this computer", "Fix: open the file you want to build from, then build again."),
     ("No such file", "Fix: check that the file is still where it was."),
+    # Windows words a missing file its own way, so the POSIX needle above never
+    # matched there and a renamed build copy reached a tester with no next step
+    # at all: "[WinError 2] The system cannot find the file specified".
+    ("cannot find the file", "Fix: check that the file is still where it was."),
+    ("cannot find the path", "Fix: check that the folder is still where it was."),
 )
 
 
