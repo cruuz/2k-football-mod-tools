@@ -1,0 +1,1682 @@
+[
+  {
+    "name": "espn_videogames.mov",
+    "case": "missing",
+    "return_code": 0,
+    "reads": [],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "espn_videogames.mov",
+    "case": "marker",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ]
+    ],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "espn_videogames.mov",
+    "case": "retail",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ],
+      [
+        4128,
+        128
+      ],
+      [
+        4496,
+        128
+      ],
+      [
+        4560,
+        128
+      ]
+    ],
+    "allocation_requests": [
+      10171344
+    ],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "vc.mov",
+    "case": "missing",
+    "return_code": 0,
+    "reads": [],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "vc.mov",
+    "case": "marker",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ]
+    ],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "vc.mov",
+    "case": "retail",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ],
+      [
+        4128,
+        128
+      ],
+      [
+        4496,
+        128
+      ],
+      [
+        4560,
+        128
+      ]
+    ],
+    "allocation_requests": [
+      10171344
+    ],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "espn_game_sound.mov",
+    "case": "missing",
+    "return_code": 0,
+    "reads": [],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "espn_game_sound.mov",
+    "case": "marker",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ]
+    ],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "espn_game_sound.mov",
+    "case": "retail",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ],
+      [
+        4128,
+        128
+      ],
+      [
+        4496,
+        128
+      ],
+      [
+        4560,
+        128
+      ]
+    ],
+    "allocation_requests": [
+      10171344
+    ],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "intro.mov",
+    "case": "missing",
+    "return_code": 0,
+    "reads": [],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "intro.mov",
+    "case": "marker",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ]
+    ],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "intro.mov",
+    "case": "retail",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ],
+      [
+        4128,
+        128
+      ],
+      [
+        4496,
+        128
+      ],
+      [
+        4560,
+        128
+      ]
+    ],
+    "allocation_requests": [
+      10171344
+    ],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "all_games.mov",
+    "case": "missing",
+    "return_code": 0,
+    "reads": [],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "all_games.mov",
+    "case": "marker",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ]
+    ],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "all_games.mov",
+    "case": "retail",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ],
+      [
+        4128,
+        128
+      ],
+      [
+        4496,
+        128
+      ],
+      [
+        4560,
+        128
+      ]
+    ],
+    "allocation_requests": [
+      10171344
+    ],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_100percent.mov",
+    "case": "missing",
+    "return_code": 0,
+    "reads": [],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_100percent.mov",
+    "case": "marker",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ]
+    ],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_100percent.mov",
+    "case": "retail",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ],
+      [
+        4128,
+        128
+      ],
+      [
+        4496,
+        128
+      ],
+      [
+        4560,
+        128
+      ]
+    ],
+    "allocation_requests": [
+      3138000
+    ],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_berman.mov",
+    "case": "missing",
+    "return_code": 0,
+    "reads": [],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_berman.mov",
+    "case": "marker",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ]
+    ],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_berman.mov",
+    "case": "retail",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ],
+      [
+        4128,
+        128
+      ],
+      [
+        4496,
+        128
+      ],
+      [
+        4560,
+        128
+      ]
+    ],
+    "allocation_requests": [
+      3138000
+    ],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_celectra.mov",
+    "case": "missing",
+    "return_code": 0,
+    "reads": [],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_celectra.mov",
+    "case": "marker",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ]
+    ],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_celectra.mov",
+    "case": "retail",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ],
+      [
+        4128,
+        128
+      ],
+      [
+        4496,
+        128
+      ],
+      [
+        4560,
+        128
+      ]
+    ],
+    "allocation_requests": [
+      3138000
+    ],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_darquette.mov",
+    "case": "missing",
+    "return_code": 0,
+    "reads": [],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_darquette.mov",
+    "case": "marker",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ]
+    ],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_darquette.mov",
+    "case": "retail",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ],
+      [
+        4128,
+        128
+      ],
+      [
+        4496,
+        128
+      ],
+      [
+        4560,
+        128
+      ]
+    ],
+    "allocation_requests": [
+      3138000
+    ],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_fflex.mov",
+    "case": "missing",
+    "return_code": 0,
+    "reads": [],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_fflex.mov",
+    "case": "marker",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ]
+    ],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_fflex.mov",
+    "case": "retail",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ],
+      [
+        4128,
+        128
+      ],
+      [
+        4496,
+        128
+      ],
+      [
+        4560,
+        128
+      ]
+    ],
+    "allocation_requests": [
+      3138000
+    ],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_jkennedy.mov",
+    "case": "missing",
+    "return_code": 0,
+    "reads": [],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_jkennedy.mov",
+    "case": "marker",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ]
+    ],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_jkennedy.mov",
+    "case": "retail",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ],
+      [
+        4128,
+        128
+      ],
+      [
+        4496,
+        128
+      ],
+      [
+        4560,
+        128
+      ]
+    ],
+    "allocation_requests": [
+      3138000
+    ],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_nfl2k.mov",
+    "case": "missing",
+    "return_code": 0,
+    "reads": [],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_nfl2k.mov",
+    "case": "marker",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ]
+    ],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_nfl2k.mov",
+    "case": "retail",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ],
+      [
+        4128,
+        128
+      ],
+      [
+        4496,
+        128
+      ],
+      [
+        4560,
+        128
+      ]
+    ],
+    "allocation_requests": [
+      3138000
+    ],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_nfl2k1.mov",
+    "case": "missing",
+    "return_code": 0,
+    "reads": [],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_nfl2k1.mov",
+    "case": "marker",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ]
+    ],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_nfl2k1.mov",
+    "case": "retail",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ],
+      [
+        4128,
+        128
+      ],
+      [
+        4496,
+        128
+      ],
+      [
+        4560,
+        128
+      ]
+    ],
+    "allocation_requests": [
+      3138000
+    ],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_nfl2k2.mov",
+    "case": "missing",
+    "return_code": 0,
+    "reads": [],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_nfl2k2.mov",
+    "case": "marker",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ]
+    ],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_nfl2k2.mov",
+    "case": "retail",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ],
+      [
+        4128,
+        128
+      ],
+      [
+        4496,
+        128
+      ],
+      [
+        4560,
+        128
+      ]
+    ],
+    "allocation_requests": [
+      3138000
+    ],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_nfl2k3.mov",
+    "case": "missing",
+    "return_code": 0,
+    "reads": [],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_nfl2k3.mov",
+    "case": "marker",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ]
+    ],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_nfl2k3.mov",
+    "case": "retail",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ],
+      [
+        4128,
+        128
+      ],
+      [
+        4496,
+        128
+      ],
+      [
+        4560,
+        128
+      ]
+    ],
+    "allocation_requests": [
+      3138000
+    ],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_nfl2k4.mov",
+    "case": "missing",
+    "return_code": 0,
+    "reads": [],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_nfl2k4.mov",
+    "case": "marker",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ]
+    ],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_nfl2k4.mov",
+    "case": "retail",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ],
+      [
+        4128,
+        128
+      ],
+      [
+        4496,
+        128
+      ],
+      [
+        4560,
+        128
+      ]
+    ],
+    "allocation_requests": [
+      3138000
+    ],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_sc1.mov",
+    "case": "missing",
+    "return_code": 0,
+    "reads": [],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_sc1.mov",
+    "case": "marker",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ]
+    ],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_sc1.mov",
+    "case": "retail",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ],
+      [
+        4128,
+        128
+      ],
+      [
+        4496,
+        128
+      ],
+      [
+        4560,
+        128
+      ]
+    ],
+    "allocation_requests": [
+      3138000
+    ],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_sc10.mov",
+    "case": "missing",
+    "return_code": 0,
+    "reads": [],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_sc10.mov",
+    "case": "marker",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ]
+    ],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_sc10.mov",
+    "case": "retail",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ],
+      [
+        4128,
+        128
+      ],
+      [
+        4496,
+        128
+      ],
+      [
+        4560,
+        128
+      ]
+    ],
+    "allocation_requests": [
+      3138000
+    ],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_sc2.mov",
+    "case": "missing",
+    "return_code": 0,
+    "reads": [],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_sc2.mov",
+    "case": "marker",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ]
+    ],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_sc2.mov",
+    "case": "retail",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ],
+      [
+        4128,
+        128
+      ],
+      [
+        4496,
+        128
+      ],
+      [
+        4560,
+        128
+      ]
+    ],
+    "allocation_requests": [
+      3138000
+    ],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_sc3.mov",
+    "case": "missing",
+    "return_code": 0,
+    "reads": [],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_sc3.mov",
+    "case": "marker",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ]
+    ],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_sc3.mov",
+    "case": "retail",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ],
+      [
+        4128,
+        128
+      ],
+      [
+        4496,
+        128
+      ],
+      [
+        4560,
+        128
+      ]
+    ],
+    "allocation_requests": [
+      3138000
+    ],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_sc4.mov",
+    "case": "missing",
+    "return_code": 0,
+    "reads": [],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_sc4.mov",
+    "case": "marker",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ]
+    ],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_sc4.mov",
+    "case": "retail",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ],
+      [
+        4128,
+        128
+      ],
+      [
+        4496,
+        128
+      ],
+      [
+        4560,
+        128
+      ]
+    ],
+    "allocation_requests": [
+      3138000
+    ],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_sc5.mov",
+    "case": "missing",
+    "return_code": 0,
+    "reads": [],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_sc5.mov",
+    "case": "marker",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ]
+    ],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_sc5.mov",
+    "case": "retail",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ],
+      [
+        4128,
+        128
+      ],
+      [
+        4496,
+        128
+      ],
+      [
+        4560,
+        128
+      ]
+    ],
+    "allocation_requests": [
+      3138000
+    ],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_sc6.mov",
+    "case": "missing",
+    "return_code": 0,
+    "reads": [],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_sc6.mov",
+    "case": "marker",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ]
+    ],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_sc6.mov",
+    "case": "retail",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ],
+      [
+        4128,
+        128
+      ],
+      [
+        4496,
+        128
+      ],
+      [
+        4560,
+        128
+      ]
+    ],
+    "allocation_requests": [
+      3138000
+    ],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_sc7.mov",
+    "case": "missing",
+    "return_code": 0,
+    "reads": [],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_sc7.mov",
+    "case": "marker",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ]
+    ],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_sc7.mov",
+    "case": "retail",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ],
+      [
+        4128,
+        128
+      ],
+      [
+        4496,
+        128
+      ],
+      [
+        4560,
+        128
+      ]
+    ],
+    "allocation_requests": [
+      3138000
+    ],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_sc8.mov",
+    "case": "missing",
+    "return_code": 0,
+    "reads": [],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_sc8.mov",
+    "case": "marker",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ]
+    ],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_sc8.mov",
+    "case": "retail",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ],
+      [
+        4128,
+        128
+      ],
+      [
+        4496,
+        128
+      ],
+      [
+        4560,
+        128
+      ]
+    ],
+    "allocation_requests": [
+      3138000
+    ],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_sc9.mov",
+    "case": "missing",
+    "return_code": 0,
+    "reads": [],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_sc9.mov",
+    "case": "marker",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ]
+    ],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_sc9.mov",
+    "case": "retail",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ],
+      [
+        4128,
+        128
+      ],
+      [
+        4496,
+        128
+      ],
+      [
+        4560,
+        128
+      ]
+    ],
+    "allocation_requests": [
+      3138000
+    ],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_steveo.mov",
+    "case": "missing",
+    "return_code": 0,
+    "reads": [],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_steveo.mov",
+    "case": "marker",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ]
+    ],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_steveo.mov",
+    "case": "retail",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ],
+      [
+        4128,
+        128
+      ],
+      [
+        4496,
+        128
+      ],
+      [
+        4560,
+        128
+      ]
+    ],
+    "allocation_requests": [
+      3138000
+    ],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_towens.mov",
+    "case": "missing",
+    "return_code": 0,
+    "reads": [],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_towens.mov",
+    "case": "marker",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ]
+    ],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "crib_towens.mov",
+    "case": "retail",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ],
+      [
+        4128,
+        128
+      ],
+      [
+        4496,
+        128
+      ],
+      [
+        4560,
+        128
+      ]
+    ],
+    "allocation_requests": [
+      3138000
+    ],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "tips_defense.mov",
+    "case": "missing",
+    "return_code": 0,
+    "reads": [],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "tips_defense.mov",
+    "case": "marker",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ]
+    ],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "tips_defense.mov",
+    "case": "retail",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ],
+      [
+        4128,
+        128
+      ],
+      [
+        4496,
+        128
+      ],
+      [
+        4560,
+        128
+      ]
+    ],
+    "allocation_requests": [
+      10171344
+    ],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "tips_offense.mov",
+    "case": "missing",
+    "return_code": 0,
+    "reads": [],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "tips_offense.mov",
+    "case": "marker",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ]
+    ],
+    "allocation_requests": [],
+    "registered_contexts_after": 0
+  },
+  {
+    "name": "tips_offense.mov",
+    "case": "retail",
+    "return_code": 0,
+    "reads": [
+      [
+        32,
+        128
+      ],
+      [
+        2080,
+        128
+      ],
+      [
+        4128,
+        128
+      ],
+      [
+        4496,
+        128
+      ],
+      [
+        4560,
+        128
+      ]
+    ],
+    "allocation_requests": [
+      10171344
+    ],
+    "registered_contexts_after": 0
+  }
+]

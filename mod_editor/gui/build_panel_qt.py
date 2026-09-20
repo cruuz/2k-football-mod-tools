@@ -811,6 +811,10 @@ class BuildPanel(QWidget):
         self.modern_arrowhead_check = self._option(
             r, "modern_arrowhead", modern_arrowhead.BUILD_CAPTION, modern_arrowhead.HELP_TEXT,
             badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        from mod_editor.core import nfl2k5_intro_videos as intro_videos
+        self.trim_intro_videos_check = self._option(
+            r, "trim_intro_videos", intro_videos.BUILD_CAPTION, intro_videos.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
         self.player_star_check = self._option(
             r, "player_star", "Show a filled star under selected players",
             "A filled white star with a dark edge under every tagged player on the field; in-game appearance unwitnessed.",
@@ -1242,6 +1246,7 @@ class BuildPanel(QWidget):
         for key in ("momentum", "momentum_contact", "defensive_try", "zone_drop_cap", "all_stadiums", "team_names_2026", "coverage_slider", "scramble_tuning",
                     "music_shuffle", "practice_squad_screen", "abilities", "qb_spy", *r62_ui.KEYS):
             gate(getattr(self, key + "_check"), key, needs_image=True)
+        gate(self.trim_intro_videos_check, "trim_intro_videos", needs_image=True)
         gate(self.flatter_deep_ball_check, "flatter_deep_ball")
         gate(self.chop_block_toggle_check, "chop_block_toggle")
         gate(self.draft_check, "draft_ai")
@@ -1513,6 +1518,7 @@ class BuildPanel(QWidget):
             "weather_plan": self.weather_plan_check, "weather_haze": self.weather_haze_check,
             "modern_color": self.modern_color_check,
             "modern_arrowhead": self.modern_arrowhead_check,
+            "trim_intro_videos": self.trim_intro_videos_check,
             "espn25_plan": self.espn25_plan_check, "espn25_rosters": self.espn25_rosters_check,
             "realistic_flight": self.realistic_check, "arc_by_distance": self.arc_by_distance_check,
         }
@@ -1615,6 +1621,7 @@ class BuildPanel(QWidget):
             modern_color=self.modern_color_check.isChecked(),
             modern_color_settings=self.colour_lighting.settings(),
             modern_arrowhead=self._modern_arrowhead_changed(),
+            trim_intro_videos=self.trim_intro_videos_check.isChecked(),
             screen_timing=(self.screen_timing_combo.currentText() if self.screen_timing_check.isChecked() else None),
             scorebug_runtime=self.scorebug_runtime_check.isChecked(),
             scorebug_watermark=self.scorebug_watermark_combo.currentData(),
@@ -1661,7 +1668,7 @@ class BuildPanel(QWidget):
                     or any(getattr(p, key) for key in r62_ui.KEYS if key not in r62_ui.LEVELS) or p.cpu_money_downs != "retail" or p.scorebug_runtime or p.momentum > 0 or p.defensive_try or p.zone_drop_cap or p.all_stadiums or p.coverage_slider or p.scramble_tuning or p.flatter_deep_ball or p.chop_block_toggle or p.team_names_2026 or p.music_shuffle or p.practice_squad_screen or p.abilities or p.qb_spy or p.music_policy != "retail" or p.music_unlock or p.music_userlist or p.music_project or p.music_library or p.edge_rename or p.screen_timing is not None or p.hires_pack or p.guardian_cap or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
                     or p.kickoff_alignment or p.dynamic_kickoff or p.xbe_space or p.kickoff_relocated or p.season_cap or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.franchise_practice or p.practice_squad or p.depth_locks or p.prospect_names or p.player_star or p.player_tags or p.roster_edits or p.espn25_plan
                     or p.commentary or p.playbook_packs or self._helmet_finish_changed()
-                    or p.weather_plan or self._weather_haze_changed() or self._modern_color_changed() or self._modern_arrowhead_changed() or p.cpu_scrambles == "modern")
+                    or p.weather_plan or self._weather_haze_changed() or self._modern_color_changed() or self._modern_arrowhead_changed() or p.trim_intro_videos or p.cpu_scrambles == "modern")
 
     def _helmet_finish_changed(self) -> bool:
         """True when the chosen finish differs from what the source carries (a Glossy restoration counts)."""

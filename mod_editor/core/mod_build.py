@@ -130,6 +130,7 @@ class BuildPlan:
     my_career: bool = False
     my_career_setup: str | None = None
     franchise_autosave: bool = False
+    trim_intro_videos: bool = False  # output-only boot movie cut; off in every preset
     crib_reclaim: bool = False
     screen_hooks: bool = False
     coverage_trail: bool = False
@@ -334,7 +335,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "scorebug_runtime": False, "scorebug_watermark": "auto",
         "momentum": 0, "momentum_contact": False, "momentum_collisions": False, "momentum_collision_level": 0,
         "read_option_runtime": False, "franchise_2026_rules": False, "senior_bowl": False,
-        "guardian_overlay": False, "my_career": False, "my_career_setup": None, "crib_reclaim": False, "franchise_autosave": False,
+        "guardian_overlay": False, "my_career": False, "my_career_setup": None, "crib_reclaim": False, "trim_intro_videos": False, "franchise_autosave": False,
         "screen_hooks": False, "coverage_trail": False, "franchise_edit_player": False, "cpu_money_downs": "retail", "accelerated_clock": False, "accelerated_clock_minimum_seconds": 20, "weekly_prep": False, "weekly_prep_cpu": False, "weekly_prep_remember": False, "playbook_pair": False, "deep_zone_facing": False, "deep_zone_bail": False, "deep_zone_bail_calls": (), "reserves_16": False, "created_teams_extra": 0, "modern_naming": False, "defensive_try": False, "zone_drop_cap": False, "all_stadiums": False,
         "music_shuffle": False, "music_shuffle_selection": None, "practice_squad_screen": False,
         "abilities": False, "abilities_off_week": None, "abilities_lock_right_stick": True, "abilities_lock_special_moves": True, "abilities_lock_speedster": True, "qb_spy": False, "calendar_engine": False, "coverage_slider": False, "scramble_tuning": False, "flatter_deep_ball": False, "chop_block_toggle": False, "team_names_2026": False, "hires_pack": False,
@@ -355,7 +356,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "scorebug_runtime": False, "scorebug_watermark": "auto",
         "momentum": 0, "momentum_contact": False, "momentum_collisions": False, "momentum_collision_level": 0,
         "read_option_runtime": False, "franchise_2026_rules": False, "senior_bowl": False,
-        "guardian_overlay": False, "my_career": False, "my_career_setup": None, "crib_reclaim": False, "franchise_autosave": True,
+        "guardian_overlay": False, "my_career": False, "my_career_setup": None, "crib_reclaim": False, "trim_intro_videos": False, "franchise_autosave": True,
         "screen_hooks": False, "coverage_trail": True, "franchise_edit_player": True, "cpu_money_downs": "retail", "accelerated_clock": False, "accelerated_clock_minimum_seconds": 20, "weekly_prep": False, "weekly_prep_cpu": False, "weekly_prep_remember": False, "playbook_pair": False, "deep_zone_facing": False, "deep_zone_bail": False, "deep_zone_bail_calls": (), "reserves_16": False, "created_teams_extra": 0, "modern_naming": False, "defensive_try": False, "zone_drop_cap": False, "all_stadiums": False,
         "music_shuffle": False, "music_shuffle_selection": None, "practice_squad_screen": False,
         "abilities": False, "abilities_off_week": None, "abilities_lock_right_stick": True, "abilities_lock_special_moves": True, "abilities_lock_speedster": True, "qb_spy": False, "calendar_engine": False, "coverage_slider": False, "scramble_tuning": False, "flatter_deep_ball": False, "chop_block_toggle": False, "team_names_2026": False, "hires_pack": False,
@@ -376,7 +377,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "scorebug_runtime": False, "scorebug_watermark": "auto",
         "momentum": 0, "momentum_contact": False, "momentum_collisions": False, "momentum_collision_level": 0,
         "read_option_runtime": False, "franchise_2026_rules": False, "senior_bowl": False,
-        "guardian_overlay": False, "my_career": False, "my_career_setup": None, "crib_reclaim": False, "franchise_autosave": True,
+        "guardian_overlay": False, "my_career": False, "my_career_setup": None, "crib_reclaim": False, "trim_intro_videos": False, "franchise_autosave": True,
         "screen_hooks": False, "coverage_trail": True, "franchise_edit_player": True, "cpu_money_downs": "retail", "accelerated_clock": False, "accelerated_clock_minimum_seconds": 20, "weekly_prep": False, "weekly_prep_cpu": False, "weekly_prep_remember": False, "playbook_pair": False, "deep_zone_facing": False, "deep_zone_bail": False, "deep_zone_bail_calls": (), "reserves_16": False, "created_teams_extra": 0, "modern_naming": False, "defensive_try": False, "zone_drop_cap": False, "all_stadiums": False,
         "music_shuffle": False, "music_shuffle_selection": None, "practice_squad_screen": False,
         "abilities": False, "abilities_off_week": None, "abilities_lock_right_stick": True, "abilities_lock_special_moves": True, "abilities_lock_speedster": True, "qb_spy": False, "calendar_engine": True, "coverage_slider": False, "scramble_tuning": False, "flatter_deep_ball": False, "chop_block_toggle": False, "team_names_2026": False, "hires_pack": False,
@@ -470,6 +471,7 @@ def availability() -> dict[str, bool]:
                                ("calendar_engine", "nfl2k5_calendar_engine"))},
         "franchise_2026_rules": bool(tt.franchise_2026_patch.RUNTIME_READY),
         "senior_bowl": bool(tt.senior_bowl_patch.NATIVE_EVENT_AVAILABLE),
+        "trim_intro_videos": _core_module("nfl2k5_intro_videos") is not None,
         "crib_reclaim": _core_module("nfl2k5_crib_reclaim") is not None,
         "modern_naming": tt.modern_naming_patch.all_strings_fit(),
         "xbe_space": _core_module("nfl2k5_xbe_space") is not None,
@@ -819,6 +821,9 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
             out["helmet_finish"] = finish.status(_xbe_bytes(source))
         except (OSError, ValueError):  # a synthetic or foreign image without a readable executable
             out["helmet_finish"] = "unknown"
+    intro = _core_module("nfl2k5_intro_videos")
+    out["trim_intro_videos"] = (intro.image_status(source) if intro is not None and report.get("container") == "xiso"
+                                else "requires image")
     return out
 
 
@@ -967,13 +972,10 @@ PLAYBOOK_OPTION_LABELS = {
 
 
 def validate_plan(plan: BuildPlan) -> list[str]:
-    """Cheap selection checks, before reading files or preparing project edits (beta 66, job D1).
-
-    Returns the on-screen reasons a selection cannot be built. Beta 66 has none: separate playbooks now
-    compose with the authored read-option and QB-spy controls through the pair owner's paired-root
-    contract (job D2), so the old "turn one option off" refusal is gone. The gate stays so a future
-    selection conflict is reported at tick time, never after a fifteen-minute build.
-    """
+    """Report incompatible choices before reading inputs or copying a disc."""
+    if plan.trim_intro_videos and plan.crib_reclaim:
+        return ["Choose Trim intro videos or Crib movie cut. Their combined shrink exceeds "
+                "the current archive writer's final-pack capacity; build from the original source."]
     return []
 
 
@@ -1208,6 +1210,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Modern colour and lighting must be Off or On.")
     from . import nfl2k5_modern_color as colour
     colour.normalize_settings(plan.modern_color_settings)
+    if type(plan.trim_intro_videos) is not bool:
+        raise ValueError("Trim intro videos must be Off or On.")
     if type(plan.modern_arrowhead) is not bool:
         raise ValueError("Modern Arrowhead must be Off or On.")
     plan = replace(plan, weather_plan=plan.weather_plan.strip())
@@ -1315,6 +1319,13 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Modern mode names need a disc image")
     if is_image:
         naming_digest = tt._naming_source_preflight(source, plan.modern_naming)
+    if plan.trim_intro_videos:
+        if not is_image:
+            raise ValueError("Trim intro videos needs a disc image")
+        intro = _core_module("nfl2k5_intro_videos")
+        if intro is None:
+            raise RuntimeError("Trim intro videos is unavailable in this build")
+        intro.plan(source)
     if plan.crib_reclaim:
         if not is_image:
             raise ValueError("Crib movie cut needs a disc image")
@@ -2155,6 +2166,18 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         arrowhead_receipt = arrowhead.apply_to_image(target, progress=progress, retail_source=source)
         receipt["steps"].append({"step": "modern_arrowhead", **{k: v for k, v in arrowhead_receipt.items() if k != "edits"}})
         receipt["result"]["modern_arrowhead"] = "applied"
+    # Last resource pass, still inside build()'s disposable output transaction.
+    if plan.trim_intro_videos:
+        intro = _core_module("nfl2k5_intro_videos")
+        progress("Trimming intro videos", 0, 0)
+        cut = intro.finish_output(target, progress)
+        receipt["steps"].append({"step": "trim_intro_videos", **cut})
+        receipt["intro_video_disc_bytes_freed"] = cut["plan"]["disc_bytes_reclaimed"]
+        receipt["intro_video_payload_bytes_freed"] = cut["plan"]["archive_bytes_reclaimed"]
+        receipt["intro_video_gamedata_memory_credit"] = 0
+        receipt["result"].update(trim_intro_videos="applied",
+            image_size=cut["verification"]["output_bytes"],
+            image_sha256=cut["verification"]["output_sha256"])
     return receipt
 
 

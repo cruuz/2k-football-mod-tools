@@ -26,6 +26,22 @@ class BuildPanelTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.app = QApplication.instance() or QApplication([])
 
+    def test_intro_trim_is_build_only_off_and_roundtrips_project_settings(self):
+        panel = BuildPanel()
+        try:
+            self.assertEqual(panel.trim_intro_videos_check.text(), "Trim intro videos")
+            self.assertFalse(panel.plan().trim_intro_videos)
+            panel.trim_intro_videos_check.setEnabled(True)
+            panel.trim_intro_videos_check.setChecked(True)
+            self.assertTrue(panel.plan().trim_intro_videos)
+            self.assertFalse(panel.plan().crib_reclaim)
+            saved = panel.project_build_settings()
+            panel.trim_intro_videos_check.setChecked(False)
+            panel.restore_project_build_settings(saved)
+            self.assertTrue(panel.plan().trim_intro_videos)
+        finally:
+            panel.deleteLater()
+
     def test_watermark_choice_survives_project_restore(self):
         panel=BuildPanel()
         try:
