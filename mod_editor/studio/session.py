@@ -97,6 +97,23 @@ BACKEND_SCHEMA = "nfl2k5_visual_mod_project/v1"
 
 
 def default_session_root() -> Path:
+    """Where working session folders live, per platform.
+
+    This used to be ``~/.local/share`` on every platform, so on Windows the
+    Studio created and scanned ``C:\\Users\\<name>\\.local\\share\\2k5-mod-studio``,
+    a POSIX path materialised inside the user profile.  A user reported finding
+    exactly that folder, and workspace_state.py already documents a Windows
+    ``[Errno 13] Permission denied`` on such a ``.local`` path that only cleared
+    when the app ran as administrator.  Sessions now follow the same rule the
+    Studio's state already uses: ``%LOCALAPPDATA%`` on Windows (an owner-only
+    ACL, inherited), and ``$XDG_DATA_HOME`` or ``~/.local/share`` on POSIX.
+    """
+
+    configured = os.environ.get("XDG_DATA_HOME", "").strip()
+    if configured:
+        return Path(configured).expanduser() / "2k5-mod-studio" / "sessions"
+    if platform_compat.IS_WINDOWS:
+        return platform_compat.user_private_root() / "2k5-mod-studio" / "sessions"
     return Path.home() / ".local" / "share" / "2k5-mod-studio" / "sessions"
 
 
