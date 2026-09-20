@@ -124,7 +124,11 @@ class RenamedBuildOutputTests(unittest.TestCase):
         first = self.root / MODDED
         self.build(self.source, first)
         before = digest(first)
-        stat_before = first.stat()
+        # File ID and size, never a stat time field: beta 72.1 is the release
+        # that stopped letting those decide anything, so the proof here is the
+        # same shape the verifier uses, identity plus the bytes.
+        identity = first.stat()
+        identity = (identity.st_dev, identity.st_ino, identity.st_size)
 
         second = self.root / "ESPN NFL 2K5 (USA) (modded 2).xiso.iso"
         receipt = self.build(self.source, second)
@@ -132,8 +136,9 @@ class RenamedBuildOutputTests(unittest.TestCase):
         self.assertEqual(str(second), receipt["target"])
         self.assertEqual(before, digest(second), "the same source and plan make the same disc")
         self.assertEqual(before, digest(first), "the earlier copy is not rewritten")
-        self.assertEqual((stat_before.st_size, stat_before.st_mtime_ns),
-                         (first.stat().st_size, first.stat().st_mtime_ns))
+        after = first.stat()
+        self.assertEqual(identity, (after.st_dev, after.st_ino, after.st_size),
+                         "the earlier copy is not replaced either")
         self.assertEqual(self.retail, digest(self.source), "the game disc is never changed")
         self.assertNothingStaged()
 
