@@ -706,7 +706,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_scorebug_mnf_font.py": "4aab9c01ea57c255671d7c3dde9e473173cf1b28fdd0004a4e2c053330415709",
         "mod_editor/core/nfl2k5_scorebug_resources.py": "444d24c8b1c5c0b5bb1a8458e92eec12302b379f0f4f98d1c8f63930a9efbd97",
         'mod_editor/core/nfl2k5_scorebug_sprite.py': 'd7ecf5cb2fe50f06818121cca78026cc9091d4dd44d08ca4cf7cd71fcdb6a59c',
-        'mod_editor/core/nfl2k5_scorebug_teams.py': '79dfac96ad264d6364ffb7cfd468c8a303e63d03c9796c8d47013c38086de94e',
+        'mod_editor/core/nfl2k5_scorebug_teams.py': '0f4c96e08936d97db738e2c5368215be13d7f7283801707912b20b67dfa05c50',
         'tools/scorebug_sprite/xemu_model.py': '1b97da7ecdf4e0fe19d6a1d7ea41ff3110810f14777da88f3ca94e18e1f110b3',
         'mod_editor/core/nfl2k5_scorebug_sprite_code.py': '671ce854d227d6eb990d043cc22449a5c318315fdfc645affa521715e429a24e',
         'tools/nfl2k5_scorebug_exact.py': '69e80b09ede53a5e0658c7561deb2e08acfd56bff82effdf6048573120af2c82',

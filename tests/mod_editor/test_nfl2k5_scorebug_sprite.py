@@ -88,11 +88,14 @@ class LogoFitTests(unittest.TestCase):
   from mod_editor.core import nfl2k5_scorebug_exact as exact, nfl2k5_scorebug_resources as art
   spec=sprite.load_layout()[0];fit=spec['logo_fit']
   self.assertEqual(set(fit['by_team']),set(art.TEAM_LOGOS))
-  for team,expect in (('KC',1.89),('DEN',2.09),('BUF',None)):
+  box=next(r['box'] for r in spec['static'] if r['name']=='home_logo')
+  display_aspect=(box[2]-box[0])/(box[3]-box[1])
+  # The larger logo wells now crop the mark. Check the visible silhouette
+  # at its actual quad aspect, not the old 200x107 inset texture mapping.
+  for team,expect in (('KC',1.74),('DEN',1.68),('BUF',None)):
    im=exact.mnf_panel(team,'home',fit=art.logo_fit_for(team,fit));x0,y0,x1,y1=im.getchannel('A').getbbox()
-   aspect=(x1-x0)/(y1-y0)*(200/107)/(64/64)   # cell aspect back to source pixels: 64 cell px = 200 source columns, 64 rows = 107
-   plain=exact.mnf_panel(team,'home');px0,py0,px1,py1=plain.getchannel('A').getbbox()
-   self.assertGreater(aspect,(px1-px0)/(py1-py0)*(200/107),team)   # wider-to-tall than the unfitted mark
+   aspect=(x1-x0)/(y1-y0)*display_aspect
+   self.assertGreater(aspect,1.4,team)  # preserve these wide team silhouettes after quad resizing and crop
    if expect is not None:self.assertAlmostEqual(aspect,expect,delta=0.12,msg=team)
    self.assertEqual(im.size,(64,64))
   with self.assertRaises(ValueError):exact.mnf_panel('KC','home',fit={'fill_x':3.0})

@@ -38,703 +38,703 @@
    "box": [
     527,
     0,
-    609,
-    25
+    611,
+    23
    ]
   },
   "capsule": {
    "box": [
-    611,
+    613,
     0,
-    671,
+    673,
     16
    ]
   },
   "plate": {
    "box": [
-    673,
+    675,
     0,
-    762,
-    16
+    771,
+    19
    ]
   },
   "pointer": {
    "box": [
-    764,
+    773,
     0,
-    768,
+    777,
     2
    ]
   },
   "wing": {
    "box": [
-    770,
+    779,
     0,
-    847,
+    892,
     45
    ]
   },
   "home_wing": {
    "box": [
-    849,
+    894,
     0,
-    926,
+    1007,
     45
    ]
   },
   "red": {
    "box": [
-    928,
+    1009,
     0,
-    949,
+    1030,
     16
    ]
   },
   "espn_mnf": {
    "box": [
-    951,
+    1032,
     0,
-    1022,
+    1103,
     12
    ]
   },
   "espn_nfl": {
    "box": [
-    1024,
+    1105,
     0,
-    1095,
+    1176,
     12
    ]
   },
   "event": {
    "box": [
-    1097,
+    1178,
     0,
-    1099,
+    1180,
     2
    ]
   },
   "flag": {
    "box": [
-    1101,
+    1182,
     0,
-    1190,
+    1271,
     16
    ]
   },
   "score_0": {
    "box": [
-    1192,
+    1273,
     0,
-    1204,
-    21
+    1285,
+    23
    ]
   },
   "score_1": {
    "box": [
-    1206,
+    1287,
     0,
-    1212,
-    21
+    1293,
+    23
    ]
   },
   "score_2": {
    "box": [
-    1214,
+    1295,
     0,
-    1225,
-    21
+    1306,
+    23
    ]
   },
   "score_3": {
    "box": [
-    1227,
+    1308,
     0,
-    1239,
-    21
+    1320,
+    23
    ]
   },
   "score_4": {
    "box": [
-    1241,
+    1322,
     0,
-    1253,
-    21
+    1334,
+    23
    ]
   },
   "score_5": {
    "box": [
-    1255,
+    1336,
     0,
-    1267,
-    21
+    1348,
+    23
    ]
   },
   "score_6": {
    "box": [
-    1269,
+    1350,
     0,
-    1281,
-    21
+    1362,
+    23
    ]
   },
   "score_7": {
    "box": [
-    1283,
+    1364,
     0,
-    1293,
-    21
+    1374,
+    23
    ]
   },
   "score_8": {
    "box": [
-    1295,
+    1376,
     0,
-    1307,
-    21
+    1388,
+    23
    ]
   },
   "score_9": {
    "box": [
-    1309,
+    1390,
     0,
-    1321,
-    21
+    1402,
+    23
    ]
   },
   "clock_0": {
    "box": [
-    1323,
+    1404,
     0,
-    1329,
+    1410,
     11
    ]
   },
   "clock_1": {
    "box": [
-    1331,
+    1412,
     0,
-    1334,
+    1415,
     11
    ]
   },
   "clock_2": {
    "box": [
-    1336,
+    1417,
     0,
-    1342,
+    1423,
     11
    ]
   },
   "clock_3": {
    "box": [
-    1344,
+    1425,
     0,
-    1350,
+    1431,
     11
    ]
   },
   "clock_4": {
    "box": [
-    1352,
+    1433,
     0,
-    1358,
+    1439,
     11
    ]
   },
   "clock_5": {
    "box": [
-    1360,
+    1441,
     0,
-    1366,
+    1447,
     11
    ]
   },
   "clock_6": {
    "box": [
-    1368,
+    1449,
     0,
-    1374,
+    1455,
     11
    ]
   },
   "clock_7": {
    "box": [
-    1376,
+    1457,
     0,
-    1382,
+    1463,
     11
    ]
   },
   "clock_8": {
    "box": [
-    1384,
+    1465,
     0,
-    1390,
+    1471,
     11
    ]
   },
   "clock_9": {
    "box": [
-    1392,
+    1473,
     0,
-    1398,
+    1479,
     11
    ]
   },
   "colon": {
    "box": [
-    1400,
+    1481,
     0,
-    1402,
+    1483,
     7
    ]
   },
   "small_0": {
    "box": [
-    1404,
+    1485,
     0,
-    1410,
+    1491,
     10
    ]
   },
   "small_1": {
    "box": [
-    1412,
+    1493,
     0,
-    1415,
+    1496,
     10
    ]
   },
   "small_2": {
    "box": [
-    1417,
+    1498,
     0,
-    1423,
+    1504,
     10
    ]
   },
   "small_3": {
    "box": [
-    1425,
+    1506,
     0,
-    1431,
+    1512,
     10
    ]
   },
   "small_4": {
    "box": [
-    1433,
+    1514,
     0,
-    1439,
+    1520,
     10
    ]
   },
   "small_5": {
    "box": [
-    1441,
+    1522,
     0,
-    1447,
+    1528,
     10
    ]
   },
   "small_6": {
    "box": [
-    1449,
     0,
-    1455,
-    10
+    47,
+    6,
+    57
    ]
   },
   "small_7": {
    "box": [
-    1457,
-    0,
-    1463,
-    10
+    8,
+    47,
+    14,
+    57
    ]
   },
   "small_8": {
    "box": [
-    1465,
-    0,
-    1471,
-    10
+    16,
+    47,
+    22,
+    57
    ]
   },
   "small_9": {
    "box": [
-    1473,
-    0,
-    1479,
-    10
+    24,
+    47,
+    30,
+    57
    ]
   },
   "small_st": {
    "box": [
-    1481,
-    0,
-    1490,
-    7
+    32,
+    47,
+    41,
+    54
    ]
   },
   "small_nd": {
    "box": [
-    1492,
-    0,
-    1503,
-    7
+    43,
+    47,
+    54,
+    54
    ]
   },
   "small_rd": {
    "box": [
-    1505,
-    0,
-    1515,
-    7
+    56,
+    47,
+    66,
+    54
    ]
   },
   "small_th": {
    "box": [
-    1517,
-    0,
-    1526,
-    7
+    68,
+    47,
+    77,
+    54
    ]
   },
   "small_&": {
    "box": [
-    0,
+    79,
     47,
-    8,
+    87,
     57
    ]
   },
   "small_Goal": {
    "box": [
-    10,
+    89,
     47,
-    41,
+    120,
     57
    ]
   },
   "small_GOAL": {
    "box": [
-    43,
+    122,
     47,
-    74,
+    153,
     57
    ]
   },
   "small_and": {
    "box": [
-    76,
+    155,
     47,
-    95,
+    174,
     57
    ]
   },
   "small_OT": {
    "box": [
-    97,
+    176,
     47,
-    106,
+    185,
     57
    ]
   },
   "small_ST": {
    "box": [
-    108,
+    187,
     47,
-    117,
+    196,
     54
    ]
   },
   "small_ND": {
    "box": [
-    119,
+    198,
     47,
-    130,
+    209,
     54
    ]
   },
   "small_RD": {
    "box": [
-    132,
+    211,
     47,
-    142,
+    221,
     54
    ]
   },
   "small_TH": {
    "box": [
-    144,
+    223,
     47,
-    153,
+    232,
     54
    ]
   },
   "small_Inch": {
    "box": [
-    155,
+    234,
     47,
-    177,
+    256,
     57
    ]
   },
   "small_es": {
    "box": [
-    179,
+    258,
     47,
-    191,
+    270,
     57
    ]
   },
   "label_0": {
    "box": [
-    193,
-    47,
-    201,
-    59
-   ]
-  },
-  "label_1": {
-   "box": [
-    203,
-    47,
-    208,
-    59
-   ]
-  },
-  "label_2": {
-   "box": [
-    210,
-    47,
-    217,
-    59
-   ]
-  },
-  "label_3": {
-   "box": [
-    219,
-    47,
-    226,
-    59
-   ]
-  },
-  "label_4": {
-   "box": [
-    228,
-    47,
-    236,
-    59
-   ]
-  },
-  "label_5": {
-   "box": [
-    238,
-    47,
-    245,
-    59
-   ]
-  },
-  "label_6": {
-   "box": [
-    247,
-    47,
-    254,
-    59
-   ]
-  },
-  "label_7": {
-   "box": [
-    256,
-    47,
-    262,
-    59
-   ]
-  },
-  "label_8": {
-   "box": [
-    264,
-    47,
-    271,
-    59
-   ]
-  },
-  "label_9": {
-   "box": [
-    273,
+    272,
     47,
     280,
     59
    ]
   },
-  "label_st": {
+  "label_1": {
    "box": [
     282,
     47,
-    293,
+    287,
+    59
+   ]
+  },
+  "label_2": {
+   "box": [
+    289,
+    47,
+    296,
+    59
+   ]
+  },
+  "label_3": {
+   "box": [
+    298,
+    47,
+    305,
+    59
+   ]
+  },
+  "label_4": {
+   "box": [
+    307,
+    47,
+    315,
+    59
+   ]
+  },
+  "label_5": {
+   "box": [
+    317,
+    47,
+    324,
+    59
+   ]
+  },
+  "label_6": {
+   "box": [
+    326,
+    47,
+    333,
+    59
+   ]
+  },
+  "label_7": {
+   "box": [
+    335,
+    47,
+    341,
+    59
+   ]
+  },
+  "label_8": {
+   "box": [
+    343,
+    47,
+    350,
+    59
+   ]
+  },
+  "label_9": {
+   "box": [
+    352,
+    47,
+    359,
+    59
+   ]
+  },
+  "label_st": {
+   "box": [
+    361,
+    47,
+    372,
     59
    ]
   },
   "label_nd": {
    "box": [
-    295,
+    374,
     47,
-    309,
+    388,
     59
    ]
   },
   "label_rd": {
    "box": [
-    311,
+    390,
     47,
-    322,
+    401,
     59
    ]
   },
   "label_th": {
    "box": [
-    324,
+    403,
     47,
-    335,
+    414,
     59
    ]
   },
   "label_&": {
    "box": [
-    337,
+    416,
     47,
-    346,
+    425,
     59
    ]
   },
   "label_Goal": {
    "box": [
-    348,
+    427,
     47,
-    384,
+    463,
     59
    ]
   },
   "label_GOAL": {
    "box": [
-    386,
-    47,
-    422,
-    59
-   ]
-  },
-  "label_and": {
-   "box": [
-    424,
-    47,
-    446,
-    59
-   ]
-  },
-  "label_OT": {
-   "box": [
-    448,
-    47,
-    459,
-    59
-   ]
-  },
-  "label_ST": {
-   "box": [
-    461,
-    47,
-    472,
-    59
-   ]
-  },
-  "label_ND": {
-   "box": [
-    474,
-    47,
-    488,
-    59
-   ]
-  },
-  "label_RD": {
-   "box": [
-    490,
+    465,
     47,
     501,
     59
    ]
   },
-  "label_TH": {
+  "label_and": {
    "box": [
     503,
     47,
-    514,
+    525,
+    59
+   ]
+  },
+  "label_OT": {
+   "box": [
+    527,
+    47,
+    538,
+    59
+   ]
+  },
+  "label_ST": {
+   "box": [
+    540,
+    47,
+    551,
+    59
+   ]
+  },
+  "label_ND": {
+   "box": [
+    553,
+    47,
+    567,
+    59
+   ]
+  },
+  "label_RD": {
+   "box": [
+    569,
+    47,
+    580,
+    59
+   ]
+  },
+  "label_TH": {
+   "box": [
+    582,
+    47,
+    593,
     59
    ]
   },
   "label_Inch": {
    "box": [
-    516,
+    595,
     47,
-    542,
+    621,
     59
    ]
   },
   "label_es": {
    "box": [
-    544,
+    623,
     47,
-    558,
+    637,
     59
    ]
   },
   "tick": {
    "box": [
-    560,
+    639,
     47,
-    566,
+    645,
     49
    ]
   },
   "quarter_1ST": {
    "box": [
-    568,
+    647,
     47,
-    578,
+    657,
     56
    ]
   },
   "quarter_2ND": {
    "box": [
-    580,
+    659,
     47,
-    594,
+    673,
     56
    ]
   },
   "quarter_3RD": {
    "box": [
-    596,
+    675,
     47,
-    610,
+    689,
     56
    ]
   },
   "quarter_4TH": {
    "box": [
-    612,
+    691,
     47,
-    626,
+    705,
     56
    ]
   },
   "quarter_OT": {
    "box": [
-    628,
+    707,
     47,
-    638,
+    717,
     56
    ]
   }
@@ -1573,9 +1573,9 @@
   {
    "name": "housing",
    "box": [
-    837,
-    987,
-    1083,
+    834,
+    993,
+    1086,
     1049
    ],
    "cell": "housing",
@@ -1599,9 +1599,9 @@
   {
    "name": "plate",
    "box": [
-    825,
-    947,
-    1093,
+    822,
+    945,
+    1096,
     987
    ],
    "cell": "plate",
@@ -1627,7 +1627,7 @@
    "box": [
     437,
     942,
-    670,
+    777,
     1052
    ],
    "cell": "wing",
@@ -1638,7 +1638,7 @@
   {
    "name": "home_wing",
    "box": [
-    1245,
+    1138,
     942,
     1478,
     1052
@@ -1665,10 +1665,10 @@
   {
    "name": "away_logo",
    "box": [
-    440,
-    943,
-    640,
-    1051
+    437,
+    942,
+    667,
+    1052
    ],
    "cell": "logo",
    "material": 8,
@@ -1678,10 +1678,10 @@
   {
    "name": "home_logo",
    "box": [
-    1276,
-    943,
-    1476,
-    1051
+    1248,
+    942,
+    1478,
+    1052
    ],
    "cell": "logo",
    "material": 5,
@@ -1695,9 +1695,9 @@
    "source": "away score",
    "box": [
     696,
-    965,
+    964,
     816,
-    1018
+    1020
    ],
    "glyph_set": "score",
    "slots": 3,
@@ -1706,19 +1706,19 @@
    "alignment": "center",
    "anchor": [
     756.0,
-    965
+    964
    ],
-   "size": 53,
+   "size": 56,
    "z": -15
   },
   {
    "name": "home_score",
    "source": "home score",
    "box": [
-    1100,
-    965,
-    1220,
-    1018
+    1095,
+    964,
+    1215,
+    1020
    ],
    "glyph_set": "score",
    "slots": 3,
@@ -1726,10 +1726,10 @@
    "colour": "#FDFDFD",
    "alignment": "center",
    "anchor": [
-    1160.0,
-    965
+    1155.0,
+    964
    ],
-   "size": 53,
+   "size": 56,
    "z": -15
   },
   {
@@ -1844,10 +1844,10 @@
    "name": "down",
    "source": "down and distance",
    "box": [
-    838,
-    952,
-    1082,
-    982
+    829,
+    950,
+    1089,
+    980
    ],
    "glyph_set": "label",
    "slots": 8,
@@ -1855,8 +1855,8 @@
    "colour": "#FFFFFF",
    "alignment": "center",
    "anchor": [
-    960.0,
-    952
+    959,
+    950
    ],
    "size": 30,
    "z": -15
@@ -1925,9 +1925,9 @@
    "name": "FUMBLE",
    "material": 0,
    "box": [
-    825,
-    947,
-    1093,
+    822,
+    945,
+    1096,
     987
    ],
    "cell": "event",
@@ -1937,9 +1937,9 @@
    "name": "ball on",
    "material": 1,
    "box": [
-    825,
-    947,
-    1093,
+    822,
+    945,
+    1096,
     987
    ],
    "cell": "event",
@@ -1949,9 +1949,9 @@
    "name": "FLAG",
    "material": 2,
    "box": [
-    825,
-    947,
-    1093,
+    822,
+    945,
+    1096,
     987
    ],
    "cell": "flag",
@@ -1961,9 +1961,9 @@
    "name": "hang time",
    "material": 10,
    "box": [
-    825,
-    947,
-    1093,
+    822,
+    945,
+    1096,
     987
    ],
    "cell": "event",
@@ -1974,232 +1974,233 @@
  "wing_tints": {},
  "logo_fit": {
   "default": {
-   "fill_x": 1.0,
-   "height": 0.94
+   "fill_x": 0.92,
+   "height": 1.0,
+   "zoom": 1.13
   },
   "by_team": {
    "ARI": {
-    "fill_x": 1.0,
-    "height": 0.94,
-    "zoom": 1.0,
+    "fill_x": 0.92,
+    "height": 1.0,
+    "zoom": 1.13,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "ATL": {
-    "fill_x": 1.0,
-    "height": 0.94,
-    "zoom": 1.0,
+    "fill_x": 0.92,
+    "height": 1.0,
+    "zoom": 1.13,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "BAL": {
-    "fill_x": 1.08,
-    "height": 0.94,
-    "zoom": 1.0,
+    "fill_x": 1.02,
+    "height": 1.0,
+    "zoom": 1.07,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "BUF": {
-    "fill_x": 1.14,
-    "height": 0.93,
-    "zoom": 1.05,
+    "fill_x": 1.02,
+    "height": 1.0,
+    "zoom": 1.07,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "CAR": {
-    "fill_x": 1.08,
-    "height": 0.94,
-    "zoom": 1.0,
+    "fill_x": 1.02,
+    "height": 1.0,
+    "zoom": 1.07,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "CHI": {
-    "fill_x": 1.0,
-    "height": 0.94,
-    "zoom": 1.0,
+    "fill_x": 0.92,
+    "height": 1.0,
+    "zoom": 1.13,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "CIN": {
-    "fill_x": 1.0,
-    "height": 0.94,
-    "zoom": 1.0,
+    "fill_x": 0.92,
+    "height": 1.0,
+    "zoom": 1.13,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "DAL": {
-    "fill_x": 1.0,
-    "height": 0.94,
-    "zoom": 1.0,
+    "fill_x": 0.92,
+    "height": 1.0,
+    "zoom": 1.13,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "DEN": {
-    "fill_x": 1.29,
-    "height": 0.9,
+    "fill_x": 0.86,
+    "height": 1.0,
     "zoom": 1.0,
     "shift_x": 0.0,
-    "shift_y": -0.015
+    "shift_y": 0.045
    },
    "DET": {
-    "fill_x": 1.0,
-    "height": 0.94,
-    "zoom": 1.0,
+    "fill_x": 0.92,
+    "height": 1.0,
+    "zoom": 1.13,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "GB": {
-    "fill_x": 1.08,
-    "height": 0.94,
-    "zoom": 1.0,
+    "fill_x": 1.02,
+    "height": 1.0,
+    "zoom": 1.07,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "IND": {
-    "fill_x": 1.0,
-    "height": 0.94,
-    "zoom": 1.0,
+    "fill_x": 0.92,
+    "height": 1.0,
+    "zoom": 1.13,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "JAX": {
-    "fill_x": 1.0,
-    "height": 0.94,
-    "zoom": 1.0,
+    "fill_x": 0.92,
+    "height": 1.0,
+    "zoom": 1.13,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "KC": {
-    "fill_x": 1.3,
+    "fill_x": 0.9,
     "height": 1.0,
-    "zoom": 1.0,
+    "zoom": 1.1,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "MIA": {
-    "fill_x": 1.0,
-    "height": 0.94,
-    "zoom": 1.0,
+    "fill_x": 0.92,
+    "height": 1.0,
+    "zoom": 1.13,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "MIN": {
-    "fill_x": 1.0,
-    "height": 0.94,
-    "zoom": 1.0,
+    "fill_x": 0.92,
+    "height": 1.0,
+    "zoom": 1.13,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "NE": {
-    "fill_x": 1.08,
-    "height": 0.94,
-    "zoom": 1.0,
+    "fill_x": 1.02,
+    "height": 1.0,
+    "zoom": 1.07,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "NO": {
-    "fill_x": 1.0,
-    "height": 0.94,
-    "zoom": 1.0,
+    "fill_x": 0.92,
+    "height": 1.0,
+    "zoom": 1.13,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "NYG": {
-    "fill_x": 1.0,
-    "height": 0.94,
-    "zoom": 1.0,
+    "fill_x": 0.92,
+    "height": 1.0,
+    "zoom": 1.13,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "NYJ": {
-    "fill_x": 1.08,
-    "height": 0.94,
-    "zoom": 1.0,
+    "fill_x": 1.02,
+    "height": 1.0,
+    "zoom": 1.07,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "LV": {
-    "fill_x": 1.3,
+    "fill_x": 1.0,
     "height": 1.0,
     "zoom": 1.1,
     "shift_x": 0.0,
-    "shift_y": -0.01
+    "shift_y": 0.0
    },
    "PHI": {
-    "fill_x": 1.0,
-    "height": 0.94,
-    "zoom": 1.0,
+    "fill_x": 0.92,
+    "height": 1.0,
+    "zoom": 1.13,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "PIT": {
-    "fill_x": 1.0,
-    "height": 0.94,
-    "zoom": 1.0,
+    "fill_x": 0.92,
+    "height": 1.0,
+    "zoom": 1.13,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "LAR": {
-    "fill_x": 1.0,
-    "height": 0.94,
-    "zoom": 1.0,
+    "fill_x": 0.92,
+    "height": 1.0,
+    "zoom": 1.13,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "LAC": {
-    "fill_x": 1.08,
-    "height": 0.94,
-    "zoom": 1.0,
-    "shift_x": 0.0,
-    "shift_y": 0.0
+    "fill_x": 1.02,
+    "height": 1.0,
+    "zoom": 1.13,
+    "shift_x": 0.025,
+    "shift_y": 0.015
    },
    "SF": {
-    "fill_x": 1.08,
-    "height": 0.94,
-    "zoom": 1.0,
+    "fill_x": 1.02,
+    "height": 1.0,
+    "zoom": 1.07,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "SEA": {
-    "fill_x": 1.08,
-    "height": 0.94,
-    "zoom": 1.0,
+    "fill_x": 1.02,
+    "height": 1.0,
+    "zoom": 1.07,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "TB": {
-    "fill_x": 1.0,
-    "height": 0.94,
-    "zoom": 1.0,
+    "fill_x": 0.92,
+    "height": 1.0,
+    "zoom": 1.13,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "TEN": {
-    "fill_x": 1.0,
-    "height": 0.94,
-    "zoom": 1.0,
+    "fill_x": 0.92,
+    "height": 1.0,
+    "zoom": 1.13,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "WAS": {
-    "fill_x": 1.08,
-    "height": 0.94,
-    "zoom": 1.0,
-    "shift_x": 0.0,
+    "fill_x": 1.02,
+    "height": 1.0,
+    "zoom": 1.17,
+    "shift_x": -0.04,
     "shift_y": 0.0
    },
    "CLE": {
-    "fill_x": 1.0,
-    "height": 0.94,
-    "zoom": 1.0,
+    "fill_x": 0.92,
+    "height": 1.0,
+    "zoom": 1.13,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "HOU": {
-    "fill_x": 1.07,
+    "fill_x": 1.04,
     "height": 1.0,
-    "zoom": 1.19,
-    "shift_x": 0.0,
+    "zoom": 1.25,
+    "shift_x": 0.075,
     "shift_y": 0.0
    }
   }
@@ -2251,12 +2252,21 @@
  "provenance": {
   "font": "Broadcast temporal-median contour traces; reconstructed absent glyphs listed in report",
   "font_distributed": false,
-  "author": "reports/b72_s9/author.py",
+  "author": "reports/b72_s10/author.py",
   "rendered_once": true,
   "brand": "Direct measured MNF and NFL masks from supplied live broadcasts",
   "team_shapes": "Neutral masks and white pill; validated official team tints",
-  "fidelity_report": "reports/b72_s9/FIDELITY.md",
-  "revision": "b72-s9"
+  "fidelity_report": "reports/b72_s10/FIDELITY.md",
+  "revision": "b72-s10",
+  "geometry_steps": [
+   "wing_colour",
+   "housing_rim",
+   "down_capsule",
+   "logo",
+   "pill",
+   "score"
+  ],
+  "wing_decay": 65
  },
  "layer_order": "increasing-z",
  "sampling": "Cells area-filtered to no larger than the smallest 16:9 HUD footprint; one mip, no minification.",

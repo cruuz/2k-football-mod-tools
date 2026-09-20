@@ -1,13 +1,13 @@
 """Reviewed replication tool and metadata source identities; refreshed by repin.py."""
 PINS = {
     "tools/scorebug_sprite/live.py": "1891b6e792b99cc7725cd8bd630ca2ac6deadfd8c1a90590767d135e964567a4",
-    "mod_editor/core/nfl2k5_scorebug_teams.py": "79dfac96ad264d6364ffb7cfd468c8a303e63d03c9796c8d47013c38086de94e",
+    "mod_editor/core/nfl2k5_scorebug_teams.py": "0f4c96e08936d97db738e2c5368215be13d7f7283801707912b20b67dfa05c50",
     "tools/scorebug_sprite/gpu.py": "cbcf8feb70dac124072b0ee6db19ea59016dcd26eb26cedf4d3c161217206b36",
     "tools/scorebug_sprite/xemu_model.py": "1b97da7ecdf4e0fe19d6a1d7ea41ff3110810f14777da88f3ca94e18e1f110b3",
     "tools/scorebug_sprite/neutral_template.py": "fddad8bd118b3321b24eb3df67719f9f2c392ad36f6cf91811bc3af4e8dba35b",
     "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
     "data/nfl2k5_scorebug_sprite/broadcast_states.json": "16e07c2de4718bfe57066c35643a6302101c58eca72339f1e189d510b773e5a4",
-    "data/nfl2k5_scorebug_sprite/team_accents.json": "5570ce12a77dbe8983f2b4342041ccff94678070789f6817fc7b58c6b345d31c",
+    "data/nfl2k5_scorebug_sprite/team_accents.json": "3e124d9efa0fb5cae254109c3b5c315930de34d78a027f6a0578464ecfa1f618",
     "tools/scorebug_sprite/compare_ingame.py": "f71be713be3c5466d791a3906d289d159668c3b42101758a9c1526b9469670ac",
     "tools/scorebug_sprite/jev/accents.py": "42988d27dca8ea1192a96bdc47d0bf8809d12ad870a6c3a0c8ebda65a3d05ea3",
     "tools/scorebug_sprite/jev/descriptors.py": "df9ac4ac41820390abcb941a3bc1d90df355cc09751769ece2710aa45cd22cfa",

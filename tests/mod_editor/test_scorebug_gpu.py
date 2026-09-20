@@ -56,6 +56,18 @@ class ReferenceTests(unittest.TestCase):
             path=Path(directory)/'accents.json';path.write_text(json.dumps(data))
             with self.assertRaisesRegex(ValueError,'Foreign'):teams.load(path)
 
+    def test_vivid_shade_keeps_parent_channel_ratios_and_contrast_gate(self):
+        self.assertIn('#1E69C9',teams.variants(['#0A2343']))
+        # No saturation clipping that could shift the parent hue, and no
+        # metadata escape from the independent white-label contrast gate.
+        self.assertNotIn('#FFFFFF',teams.variants(['#606060']))
+        data=json.loads((teams.DATA/'team_accents.json').read_text())
+        den=data['teams']['DEN'];self.assertGreaterEqual(teams.contrast_white(den['plate']),4.5)
+        den['plate']='#FFFFFF'
+        with tempfile.TemporaryDirectory() as directory:
+            path=Path(directory)/'accents.json';path.write_text(json.dumps(data))
+            with self.assertRaisesRegex(ValueError,'low-contrast'):teams.load(path)
+
     def test_neutral_shapes_cannot_multiply_in_broadcast_hues(self):
         spec,image=sprite.load_layout()
         for row in spec['static']:

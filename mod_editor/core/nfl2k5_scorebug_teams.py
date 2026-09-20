@@ -17,8 +17,14 @@ def rgb(value):
 
 
 def variants(colours):
-    return {'#'+''.join(f'{round(c*gain+255*lift):02X}' for c in rgb(colour))
-            for colour in colours for gain, lift in ((1, 0), (.75, 0), (.5, 0), (.85, .15), (.7, .3))}
+    result = {'#'+''.join(f'{round(c*gain+255*lift):02X}' for c in rgb(colour))
+              for colour in colours for gain, lift in ((1, 0), (.75, 0), (.5, 0), (.85, .15), (.7, .3))}
+    # Brighten a dark official shade without mixing in white, changing its
+    # RGB proportions or clipping a channel. The independent 4.5:1 check
+    # below still applies to every role, including the possession label.
+    result.update('#'+''.join(f'{c*3:02X}' for c in rgb(colour))
+                  for colour in colours if max(rgb(colour)) <= 85)
+    return result
 
 
 def contrast_white(value):
