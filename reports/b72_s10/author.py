@@ -4,6 +4,7 @@ import argparse
 import json
 import sys
 import math
+import subprocess
 
 import numpy as np
 from PIL import Image, ImageDraw
@@ -15,6 +16,17 @@ from mod_editor.core import nfl2k5_scorebug_resources as resources
 from mod_editor.core import nfl2k5_scorebug_teams as teams
 
 ORDER=['wing_colour','housing_rim','down_capsule','logo','pill','score']
+
+
+def baseline():
+    path=ROOT/'.scratch/s10_before';path.mkdir(parents=True,exist_ok=True)
+    for name in ('layout.json','template.png','team_accents.json','team_colors_official_2026.json'):
+        expected=subprocess.check_output(['git','show','97d2bf9b2:data/nfl2k5_scorebug_sprite/'+name],cwd=ROOT)
+        target=path/name
+        if target.exists() and target.read_bytes()!=expected:
+            raise ValueError('Immutable s9 baseline differs: '+name)
+        if not target.exists():target.write_bytes(expected)
+    return path
 
 
 def rounded(w,h,r,colour,ends='both'):
@@ -30,7 +42,7 @@ def main():
     p.add_argument('--wing-decay',type=float,default=65);a=p.parse_args()
     if not 40<=a.wing_decay<=120:raise ValueError('Wing decay outside measured search range')
     steps=ORDER[:ORDER.index(a.through)+1]
-    src=ROOT/'.scratch/s10_before';dest=ROOT/'data/nfl2k5_scorebug_sprite'
+    src=baseline();dest=ROOT/'data/nfl2k5_scorebug_sprite'
     spec=json.loads((src/'layout.json').read_text());old=Image.open(src/'template.png').convert('RGBA')
     cells={n:old.crop(r['box']) for n,r in spec['cells'].items()}
     rows={r['name']:r for r in spec['static']};fields={r['name']:r for r in spec['fields']}
@@ -74,7 +86,7 @@ def main():
         d.polygon([(x*4,y*4) for x,y in [(0,0),(287,0),(278,7),(276,12),(276,34),(269,45),(18,45),(11,34),(11,12),(9,7)]],fill='white')
         plate=plate.resize((288,46),Image.Resampling.BOX);v=np.asarray(plate).copy()
         for y in range(46):v[y,:,:3]=round(255*np.interp(y,[0,3,7,25,39,45],[1,.98,.92,.90,.86,.66]))
-        cells['plate']=Image.fromarray(v).resize((96,19),Image.Resampling.BOX)
+        cells['plate']=Image.fromarray(v).resize((91,17),Image.Resampling.BOX)
         rows['plate']['box']=[822,945,1096,987]
         rows['pointer']['box']=[951,942,965,947]
         fields['down'].update(box=[829,950,1089,980],anchor=[959,950])

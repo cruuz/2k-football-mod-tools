@@ -159,8 +159,9 @@ def main():
     parser=argparse.ArgumentParser();parser.add_argument('phase',choices=['baseline','final'])
     args=parser.parse_args()
     if args.phase=='baseline':
+        from author import baseline
         from mod_editor.core import nfl2k5_scorebug_teams as teams
-        teams.DATA=ROOT/'.scratch/s10_before'
+        teams.DATA=baseline()
     preview=sprite.NativePreview(folder=ROOT/'.scratch/s10_before' if args.phase=='baseline' else None)
     rows=[];receipts={}
     for name,(path,state) in CASES.items():

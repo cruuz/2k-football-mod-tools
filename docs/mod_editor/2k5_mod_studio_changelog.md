@@ -1,5 +1,9 @@
 # 2K5 Mod Studio — Product Changelog
 
+## Unreleased: scorebug player-scale artwork candidate
+
+- The report "still not 1:1 looks about the same" prompted a proportion pass on the sprite bar. Colour ramps extend through larger wing boxes, logos use larger wells with individual crops, scores are slightly taller, and the down plate is wider and raised. Comparisons now use the native 448-line HUD and player-scale display output. Team accents remain derived from each team's own palette with the existing white-label contrast gate. Event ownership and the long-clock fix are retained. This is an offline candidate with visible broadcast differences remaining, not a new in-game result; the option remains EXPERIMENTAL and off in every preset.
+
 ## v1.0 RC98, beta 72
 
 - **Readable sprite down and distance.** The report was “the scorebug still doesn't appear to have readable 1st and 10.” The SD cut increases the down-label cap to 30 source pixels and the quarter/play clock to 26. Cells are area-filtered before packing, including the maximum score/clock compression. Team-coloured rims, brighter wing ramps, larger and repositioned logos, a glossy plate, brighter housing, white scores, a capsule separator and a dark pointer follow the measured ESPN reference. Native CPU and software-raster evidence cover both aspects; a played retest is still required.
