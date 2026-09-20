@@ -24,7 +24,7 @@ def prepare(frames,output,limit=200):
         d=describe(f);d.update(frame=f.name,sha256=hashlib.sha256(f.read_bytes()).hexdigest())
         descriptors.append(d);requests.append(dict(tool='jev_ask',state=compact(d),questions=QUESTIONS))
     for name,value in [('descriptors.json',descriptors),('requests.json',requests)]:
-        (output/name).write_text(json.dumps(value,indent=2)+'\n',encoding='utf-8')
+        (output/name).write_text(json.dumps(value,indent=2)+'\n',encoding='utf-8',newline='\n')
     return requests
 
 
