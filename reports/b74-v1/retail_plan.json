@@ -1,0 +1,49 @@
+{
+  "schema": "nfl2k5_intro_videos/v1",
+  "experimental": true,
+  "runtime_witnessed": false,
+  "source_sha256": "7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9",
+  "source_bytes": 6300499968,
+  "already_applied": false,
+  "movies": [
+    {
+      "index": 4293,
+      "name": "espn_videogames.mov",
+      "before_size": 3973120,
+      "after_size": 2048,
+      "before_sha256": "50fa376d1a604193dd1919811d5f250a803996fe1cf2a153c4757ec5b9819611"
+    },
+    {
+      "index": 4294,
+      "name": "vc.mov",
+      "before_size": 5425152,
+      "after_size": 2048,
+      "before_sha256": "ff285e3b8e643a71a332e09f667a363fa42dbd409803bb17b7d7920802cb649c"
+    },
+    {
+      "index": 4295,
+      "name": "espn_game_sound.mov",
+      "before_size": 3256320,
+      "after_size": 2048,
+      "before_sha256": "4153fde58457c8dd63f69e817010800fa5934e1ac4c33a1519472e9d47fafc73"
+    },
+    {
+      "index": 4296,
+      "name": "intro.mov",
+      "before_size": 50241536,
+      "after_size": 2048,
+      "before_sha256": "c5c52a954ac0b40738e37decb9c2ebccfb976d601b5db29a2f0659852744d62a"
+    }
+  ],
+  "gross_movie_bytes": 62896128,
+  "retained_movie_markers": 8192,
+  "archive_bytes_reclaimed": 62887936,
+  "disc_bytes_reclaimed": 62902272,
+  "scratch_bytes": 6317277184,
+  "crib_and_tutorials_preserved": true,
+  "gamedata_append_credit": 0,
+  "xbe_before_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+  "placement_gap_bytes_reclaimed": 14336,
+  "output_bytes": 6237597696,
+  "full_retail_image_rebuilt": false
+}
