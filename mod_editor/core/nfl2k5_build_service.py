@@ -1051,6 +1051,34 @@ def _rename_noreplace(source: Path, destination: Path) -> None:
     )
 
 
+def _preserve_failed_stage(stage: Path, output: Path) -> Path | None:
+    """Keep a failed build's receipts for diagnosis; drop the 6 GB staged disc.
+
+    Every failure used to end in ``shutil.rmtree(stage)``, so the manifest and
+    the per-texture receipts that explain a refusal were destroyed before
+    anyone could look, and a week of Windows reports had to be diagnosed from
+    phone photos of dialogs. The staged XISO is removed (it is the size of the
+    source disc and proves nothing on its own); everything else is renamed to
+    a sibling ``.<name>.2k5mod-failed-<time>`` beside the output, which the
+    error message names. Returns that folder, or None if nothing could be kept.
+    """
+    try:
+        staged = stage / "modded.xiso"
+        if staged.is_file() and not staged.is_symlink():
+            staged.unlink()
+        stamp = time.strftime("%Y%m%d-%H%M%S")
+        kept = output.parent / f".{output.name}.2k5mod-failed-{stamp}"
+        for _ in range(100):
+            if not kept.exists():
+                break
+            stamp = f"{stamp}-{os.getpid() % 1000}"
+            kept = output.parent / f".{output.name}.2k5mod-failed-{stamp}"
+        os.rename(stage, kept)
+        return kept
+    except OSError:
+        return None
+
+
 def _unlink_if_identity(path: Path, identity: tuple[int, int]) -> None:
     """Remove only the file this transaction published, never a replacement."""
 
@@ -1357,6 +1385,7 @@ class Nfl2k5BuildService:
         backend, _ = _regular_file(self.backend, "2K5 ISO builder")
         stage = Path(tempfile.mkdtemp(
             prefix=f".{output.name}.2k5mod-", dir=output.parent))
+        stage_kept: Path | None = None
         try:
             os.chmod(stage, 0o700)
             started = time.monotonic()
@@ -1500,16 +1529,28 @@ class Nfl2k5BuildService:
             except BuildCancelled:
                 pass  # Publication already committed; report the actual result.
             return final
-        except (Nfl2k5BuildError, OutputRefusedError, ValidationError):
+        except (Nfl2k5BuildError, OutputRefusedError, ValidationError) as exc:
+            stage_kept = _preserve_failed_stage(stage, output)
+            if stage_kept is not None and exc.args:
+                exc.args = (
+                    f"{exc.args[0]} The build's receipts were kept for diagnosis in "
+                    f"{stage_kept}; share that folder with the error.",
+                ) + tuple(exc.args[1:])
             raise
         except OSError as exc:
+            stage_kept = _preserve_failed_stage(stage, output)
+            note = (f" The build's receipts were kept for diagnosis in {stage_kept}; "
+                    "share that folder with the error." if stage_kept is not None else "")
             raise Nfl2k5BuildError(
-                f"The build could not be completed safely: {exc}"
+                f"The build could not be completed safely: {exc}{note}"
             ) from exc
         finally:
             # The stage name is returned by mkdtemp inside the already-resolved
-            # output parent.  It contains no user-selected descendants.
-            if stage.exists():
+            # output parent.  It contains no user-selected descendants.  A failed
+            # build's stage has already been renamed aside by the except clauses
+            # above (the receipts kept, the staged disc dropped), so only a
+            # successful or cancelled build cleans it here.
+            if stage_kept is None and stage.exists():
                 shutil.rmtree(stage)
 
     @staticmethod

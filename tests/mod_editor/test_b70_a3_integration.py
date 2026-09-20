@@ -163,11 +163,25 @@ class VerifiedBuildTests(unittest.TestCase):
     def test_changed_measurement_receipt_is_refused_before_publication(self):
         with tempfile.TemporaryDirectory(prefix='b70-a3-tamper-') as directory:
             fixture = build_fixtures.SyntheticFixture(Path(directory))
-            with self.assertRaisesRegex(ValidationError, 'measured texture receipt changed after build verification'):
+            with self.assertRaisesRegex(ValidationError, 'measured texture receipt changed after build verification') as caught:
                 Nfl2k5BuildService(runner=TextureReceiptRunner(tamper=True)).build(
                     fixture.cache, fixture.project, fixture.output)
             self.assertFalse(fixture.output.exists())
-            self.assertEqual(fixture.stage_paths(), [])
+            # Beta 74: a refused build no longer destroys its evidence. The stage
+            # is renamed aside with the manifest and the receipts kept and the
+            # staged disc dropped, and the refusal names that folder. Before
+            # this, a week of Windows receipt failures had to be read off phone
+            # photos of the dialog because rmtree ran on every exit.
+            kept = sorted(fixture.output.parent.glob(f'.{fixture.output.name}.2k5mod-failed-*'))
+            self.assertEqual(len(kept), 1, kept)
+            self.assertIn(str(kept[0]), str(caught.exception))
+            self.assertTrue((kept[0] / 'build-manifest.json').is_file())
+            self.assertTrue((kept[0] / 'build-artifacts' / 'uniform_equipment_texture.json').is_file())
+            self.assertFalse((kept[0] / 'modded.xiso').exists())
+            # And nothing else of the stage is left behind under its live name.
+            live = [p for p in fixture.output.parent.glob(f'.{fixture.output.name}.2k5mod-*')
+                    if '-failed-' not in p.name]
+            self.assertEqual(live, [])
 
 
 if __name__ == '__main__':

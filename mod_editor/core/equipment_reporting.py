@@ -2,8 +2,55 @@
 import hashlib
 import json
 from pathlib import Path
+import time
 
 from .errors import ValidationError
+
+#: Backoff, in seconds, between attempts to read a receipt the child build just
+#: wrote. On Windows a real-time scanner or a sync client can hold a freshly
+#: written file for a moment after the writing process exits; a file that is
+#: genuinely absent stays absent through every attempt and is reported as such.
+RECEIPT_READ_BACKOFF = (0.05, 0.1, 0.2, 0.4, 0.8)
+RECEIPT_SIZE_BOUND = 32 * 1024 * 1024
+
+
+def _read_receipt(path):
+    """Return the receipt's bytes, retrying briefly, or refuse naming the path.
+
+    Coach Edwards, 2026-09-20: "The texture receipt is missing or exceeds its
+    size bound" with nothing to say which receipt or where. The message now
+    names the file, and what the artifact folder actually holds, so a report
+    is diagnosable from the dialog alone.
+    """
+    last = None
+    for attempt, delay in enumerate((0.0,) + RECEIPT_READ_BACKOFF):
+        if delay:
+            time.sleep(delay)
+        try:
+            if path.is_symlink():
+                last = 'is a symlink'
+                break
+            if not path.is_file():
+                last = 'does not exist'
+                continue
+            size = path.stat().st_size
+            if not 0 < size <= RECEIPT_SIZE_BOUND:
+                last = f'is {size} bytes, outside 1..{RECEIPT_SIZE_BOUND}'
+                if size > RECEIPT_SIZE_BOUND:
+                    break
+                continue
+            return path.read_bytes()
+        except OSError as exc:
+            last = f'could not be read ({exc.__class__.__name__}: {exc})'
+            continue
+    try:
+        siblings = sorted(p.name for p in path.parent.iterdir())[:20]
+        present = ', '.join(siblings) if siblings else 'nothing'
+    except OSError:
+        present = 'the folder itself could not be listed'
+    raise ValidationError(
+        f'The texture receipt is missing or exceeds its size bound: {path} {last} after '
+        f'{len(RECEIPT_READ_BACKOFF) + 1} attempts. The artifact folder holds: {present}.')
 
 
 def fit_caption(row):
@@ -56,9 +103,7 @@ def _verified_reports(manifest):
         if not isinstance(name, str) or Path(name).name != name or '/' in name or '\\' in name:
             raise ValidationError('The texture receipt path is not a local artifact filename.')
         path = directory / name
-        if path.is_symlink() or not path.is_file() or not 0 < path.stat().st_size <= 32*1024*1024:
-            raise ValidationError('The texture receipt is missing or exceeds its size bound.')
-        payload = path.read_bytes()
+        payload = _read_receipt(path)
         if hashlib.sha256(payload).hexdigest() != reference['sha256']:
             raise ValidationError('The measured texture receipt changed after build verification.')
         yield edit['kind'], json.loads(payload)
