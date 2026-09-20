@@ -17,7 +17,7 @@ The field cannot carry those decisions:
   can also reset the creation time, which is the drift he saw.
 
 So a moved change time never refuses on its own, and an equal one never
-reassures: wherever a full-file SHA-256 exists it is compared always. Both
+reassures: every project identity now includes a full-file SHA-256, compared always. Both
 directions are exercised on every platform here, the Windows side through
 ``windows_change_time`` (one frozen st_ctime from every stat call) rather than
 by hoping a real touch is visible. APF 2K8 Mod Studio has the same project open
@@ -51,19 +51,18 @@ sys.path[:0] = [str(ROOT), str(ROOT / "tools"), str(Path(__file__).parent)]
 from mod_editor.apf_studio.facade import ApfStudioFacade
 from mod_editor.apf_studio.project import (
     ProjectError as ApfProjectError,
-    ProjectTargetIdentity as ApfProjectTargetIdentity,
     _publish_archive as apf_publish_archive,
     project_target_identity as apf_project_target_identity,
 )
 from mod_editor.core.equipment_staging import _verified_art
 from mod_editor.core.errors import ValidationError
+from mod_editor.core import platform_compat
 from mod_editor.core import nfl2k5_music_archive as music_archive
 from mod_editor.core import nfl2k5_music_banks as music_banks
 from mod_editor.core import nfl2k5_music_build as music_build
 from mod_editor.studio import music_service as music_service_module
 from mod_editor.studio.facade import Nfl2k5StudioFacade
 from mod_editor.studio.project_archive import (
-    ProjectTargetIdentity,
     _publish_archive,
     project_target_identity,
 )
@@ -349,6 +348,76 @@ class ProjectOpenChangeTimeTests(unittest.TestCase):
         self.assert_refused_and_kept(swap, "inode")
 
 
+class ProjectIdentityFullHashTests(unittest.TestCase):
+    def test_full_sha256_includes_every_byte_with_windows_positional_reader(self) -> None:
+        # CRLF and control-Z must survive the binary descriptor on Windows;
+        # multiple blocks and the tail must agree with an independent digest.
+        payload = bytes(range(256)) * 8193
+        with tempfile.TemporaryDirectory(prefix="b74-identity-") as temporary:
+            for suffix, capture in ((".2k5mod", project_target_identity),
+                                    (".apf2k8mod", apf_project_target_identity)):
+                with self.subTest(suffix=suffix), windows_change_time():
+                    path = Path(temporary) / ("project" + suffix)
+                    path.write_bytes(payload)
+                    with mock.patch.object(platform_compat, "pread",
+                                           side_effect=platform_compat._pread_via_seek):
+                        identity = capture(path)
+                    self.assertEqual(identity.sha256, sha256(payload))
+
+    def test_identity_accepts_metadata_only_touch_during_hash(self) -> None:
+        real_hash = platform_compat._hash_fd
+        with tempfile.TemporaryDirectory(prefix="b74-identity-") as temporary:
+            for suffix, capture in ((".2k5mod", project_target_identity),
+                                    (".apf2k8mod", apf_project_target_identity)):
+                with self.subTest(suffix=suffix):
+                    path = Path(temporary) / ("project" + suffix)
+                    path.write_bytes(b"same project bytes")
+                    before = capture(path)
+                    moved = []
+
+                    def hash_then_touch(fd):
+                        digest = real_hash(fd)
+                        moved.append(touch_metadata(path))
+                        return digest
+
+                    with mock.patch.object(platform_compat, "_hash_fd", side_effect=hash_then_touch):
+                        after = capture(path)
+                    self.assertEqual(before.changed_ns != after.changed_ns, moved[0])
+                    self.assertTrue(before.matches_apart_from_change_time(after))
+
+    def test_identity_refuses_size_or_name_change_during_hash(self) -> None:
+        real_hash = platform_compat._hash_fd
+        with tempfile.TemporaryDirectory(prefix="b74-identity-") as temporary:
+            for suffix, capture, error in ((".2k5mod", project_target_identity, ValidationError),
+                    (".apf2k8mod", apf_project_target_identity, ApfProjectError)):
+                for change in ("truncate", "grow", "replace"):
+                    with self.subTest(suffix=suffix, change=change), windows_change_time():
+                        path = Path(temporary) / ("project" + suffix)
+                        path.write_bytes(b"project bytes")
+
+                        def hash_then_change(fd):
+                            digest = real_hash(fd)
+                            if change == "replace":
+                                twin = path.with_suffix(".twin")
+                                shutil.copyfile(path, twin)
+                                info = path.stat()
+                                os.utime(twin, ns=(info.st_atime_ns, info.st_mtime_ns))
+                                try:
+                                    os.replace(twin, path)
+                                except PermissionError:
+                                    # Some Windows filesystems prohibit replacing an open
+                                    # file. Report that answer; the OS prevented this race.
+                                    self.skipTest("filesystem refused replacement of the open project")
+                            else:
+                                with path.open("r+b") as stream:
+                                    stream.truncate(3 if change == "truncate" else 100)
+                            return digest
+
+                        with mock.patch.object(platform_compat, "_hash_fd", side_effect=hash_then_change):
+                            with self.assertRaisesRegex(error, "changed while Mod Studio checked it"):
+                                capture(path)
+
+
 class FastSaveChangeTimeTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory(prefix="b721-save-")
@@ -361,9 +430,51 @@ class FastSaveChangeTimeTests(unittest.TestCase):
         self.pending.write_bytes(b"project saved now")
 
     def test_fast_save_accepts_a_change_time_only_difference(self) -> None:
-        touch_metadata(self.target)
+        moved = touch_metadata(self.target)
+        current = project_target_identity(self.target)
+        self.assertEqual(current.changed_ns != self.expected.changed_ns, moved)
+        self.assertTrue(self.expected.matches_apart_from_change_time(current))
         _publish_archive(self.pending, self.target, replace=True, expected_target=self.expected)
         self.assertEqual(self.target.read_bytes(), b"project saved now")
+
+    def test_fast_save_full_sha256_refuses_same_size_rewrite_restored_mtime(self) -> None:
+        # Probe beyond the first hash block as well as both ends. A prefix or
+        # sampled check must not masquerade as the full-file SHA-256 contract.
+        original = bytes(range(256)) * 8193
+        for windows in (False, True):
+            for offset in (0, 1024 * 1024 + 17, len(original) - 1):
+                with self.subTest(windows=windows, offset=offset), contextlib.ExitStack() as stack:
+                    if windows:
+                        stack.enter_context(windows_change_time())
+                    self.target.write_bytes(original)
+                    self.pending.write_bytes(b"pending project bytes")
+                    expected = project_target_identity(self.target)
+                    before = stat_identity(self.target)
+                    rewrite_same_size_keep_mtime(self.target, offset)
+                    after = stat_identity(self.target)
+                    self.assertEqual(before[:4], after[:4])
+                    if windows:
+                        self.assertEqual(before, after)
+                    external = self.target.read_bytes()
+                    self.assertNotEqual(sha256(external), sha256(original))
+                    with self.assertRaises(ValidationError) as caught:
+                        _publish_archive(self.pending, self.target, replace=True,
+                                         expected_target=expected)
+                    self.assertEqual(str(caught.exception),
+                        "The active project changed outside Mod Studio. It was not "
+                        "overwritten; use Save Project As or reopen it first.")
+                    self.assertEqual(self.target.read_bytes(), external)
+                    self.assertTrue(self.pending.is_file())
+
+    def test_fast_save_still_refuses_only_a_moved_mtime(self) -> None:
+        original = self.target.read_bytes()
+        info = self.target.stat()
+        os.utime(self.target, ns=(info.st_atime_ns, info.st_mtime_ns + 1_000_000_000))
+        self.assertNotEqual(fd_stat(self.target).st_mtime_ns, info.st_mtime_ns)
+        with self.assertRaisesRegex(ValidationError, "active project changed outside Mod Studio"):
+            _publish_archive(self.pending, self.target, replace=True,
+                             expected_target=self.expected)
+        self.assertEqual(self.target.read_bytes(), original)
 
     def test_fast_save_accepts_the_reported_windows_pair(self) -> None:
         drifted = dataclasses.replace(
@@ -383,12 +494,20 @@ class FastSaveChangeTimeTests(unittest.TestCase):
         self.assertEqual(self.target.read_bytes(), b"project saved elsewhere!")
 
     def test_fast_save_still_refuses_another_file_at_the_same_path(self) -> None:
-        other = ProjectTargetIdentity(
-            self.expected.path, self.expected.device, self.expected.inode + 1,
-            self.expected.size, self.expected.modified_ns, self.expected.changed_ns)
-        with self.assertRaisesRegex(ValidationError, "active project changed outside Mod Studio"):
-            _publish_archive(self.pending, self.target, replace=True, expected_target=other)
-        self.assertEqual(self.target.read_bytes(), b"project saved earlier")
+        original = self.target.read_bytes()
+        with windows_change_time():
+            before = stat_identity(self.target)
+            twin = self.target.with_suffix(".twin")
+            twin.write_bytes(original)
+            os.utime(twin, ns=(self.target.stat().st_atime_ns, before[3]))
+            os.replace(twin, self.target)
+            after = stat_identity(self.target)
+            self.assertEqual(before[2:], after[2:])
+            self.assertNotEqual(before[:2], after[:2])
+            with self.assertRaisesRegex(ValidationError, "active project changed outside Mod Studio"):
+                _publish_archive(self.pending, self.target, replace=True, expected_target=self.expected)
+        self.assertEqual(self.target.read_bytes(), original)
+
 
 
 # --------------------------------------------------------------------------
@@ -982,11 +1101,38 @@ class ApfProjectOpenChangeTimeTests(unittest.TestCase):
         self.assertEqual(self.facade.last_project_identity, after)
 
     def assert_refused_and_kept(self, during_load) -> None:
-        with self.assertRaisesRegex(ApfProjectError, "The current workspace was kept"):
+        with self.assertRaises(ApfProjectError) as caught:
             self.load(during_load)
+        self.assertEqual(str(caught.exception),
+            "The project changed outside Mod Studio while it was opening. "
+            "The current workspace was kept; open the project again.")
         self.assertIs(self.facade.session, self.active)
         self.active.close.assert_not_called()
         self.candidate.close.assert_called_once()
+
+    def test_apf_open_full_sha256_refuses_same_size_rewrite_restored_mtime(self) -> None:
+        original = bytes(range(256)) * 8193
+        for windows in (False, True):
+            for offset in (0, 1024 * 1024 + 17, len(original) - 1):
+                with self.subTest(windows=windows, offset=offset), contextlib.ExitStack() as stack:
+                    if windows:
+                        stack.enter_context(windows_change_time())
+                    self.project.write_bytes(original)
+                    self.facade.session = self.active
+                    self.facade.last_project_identity = None
+                    self.active.reset_mock()
+
+                    def rewrite(path):
+                        before = stat_identity(path)
+                        rewrite_same_size_keep_mtime(path, offset)
+                        after = stat_identity(path)
+                        self.assertEqual(before[:4], after[:4])
+                        if windows:
+                            self.assertEqual(before, after)
+                        self.assertNotEqual(sha256(path.read_bytes()), sha256(original))
+
+                    self.assert_refused_and_kept(rewrite)
+                    self.assertIsNone(self.facade.last_project_identity)
 
     def test_apf_open_still_refuses_new_bytes(self) -> None:
         def grow(path: Path) -> None:
@@ -1029,9 +1175,51 @@ class ApfFastSaveChangeTimeTests(unittest.TestCase):
                             expected_target=expected_target)
 
     def test_apf_fast_save_accepts_a_change_time_only_difference(self) -> None:
-        touch_metadata(self.target)
+        moved = touch_metadata(self.target)
+        current = apf_project_target_identity(self.target)
+        self.assertEqual(current.changed_ns != self.expected.changed_ns, moved)
+        self.assertTrue(self.expected.matches_apart_from_change_time(current))
         self.publish(self.expected)
         self.assertEqual(self.target.read_bytes(), b"APF project saved now")
+
+    def test_apf_fast_save_full_sha256_refuses_same_size_rewrite_restored_mtime(self) -> None:
+        # Probe beyond the first hash block as well as both ends. A prefix or
+        # sampled check must not masquerade as the full-file SHA-256 contract.
+        original = bytes(range(256)) * 8193
+        for windows in (False, True):
+            for offset in (0, 1024 * 1024 + 17, len(original) - 1):
+                with self.subTest(windows=windows, offset=offset), contextlib.ExitStack() as stack:
+                    if windows:
+                        stack.enter_context(windows_change_time())
+                    self.target.write_bytes(original)
+                    self.pending.write_bytes(b"pending project bytes")
+                    expected = apf_project_target_identity(self.target)
+                    before = stat_identity(self.target)
+                    rewrite_same_size_keep_mtime(self.target, offset)
+                    after = stat_identity(self.target)
+                    self.assertEqual(before[:4], after[:4])
+                    if windows:
+                        self.assertEqual(before, after)
+                    external = self.target.read_bytes()
+                    self.assertNotEqual(sha256(external), sha256(original))
+                    with self.assertRaises(ApfProjectError) as caught:
+                        apf_publish_archive(self.pending, self.target, replace=True,
+                                         expected_target=expected)
+                    self.assertEqual(str(caught.exception),
+                        "The active project changed outside Mod Studio. It was not "
+                        "overwritten; use Save Project As or reopen it first.")
+                    self.assertEqual(self.target.read_bytes(), external)
+                    self.assertTrue(self.pending.is_file())
+
+    def test_apf_fast_save_still_refuses_only_a_moved_mtime(self) -> None:
+        original = self.target.read_bytes()
+        info = self.target.stat()
+        os.utime(self.target, ns=(info.st_atime_ns, info.st_mtime_ns + 1_000_000_000))
+        self.assertNotEqual(fd_stat(self.target).st_mtime_ns, info.st_mtime_ns)
+        with self.assertRaisesRegex(ApfProjectError, "active project changed outside Mod Studio"):
+            apf_publish_archive(self.pending, self.target, replace=True,
+                             expected_target=self.expected)
+        self.assertEqual(self.target.read_bytes(), original)
 
     def test_apf_fast_save_accepts_the_reported_windows_pair(self) -> None:
         drifted = dataclasses.replace(
@@ -1049,12 +1237,20 @@ class ApfFastSaveChangeTimeTests(unittest.TestCase):
         self.assertEqual(self.target.read_bytes(), b"APF project saved elsewhere!")
 
     def test_apf_fast_save_still_refuses_another_file_at_the_same_path(self) -> None:
-        other = ApfProjectTargetIdentity(
-            self.expected.path, self.expected.device, self.expected.inode + 1,
-            self.expected.size, self.expected.modified_ns, self.expected.changed_ns)
-        with self.assertRaisesRegex(ApfProjectError, "active project changed outside Mod Studio"):
-            self.publish(other)
-        self.assertEqual(self.target.read_bytes(), b"APF project saved earlier")
+        original = self.target.read_bytes()
+        with windows_change_time():
+            before = stat_identity(self.target)
+            twin = self.target.with_suffix(".twin")
+            twin.write_bytes(original)
+            os.utime(twin, ns=(self.target.stat().st_atime_ns, before[3]))
+            os.replace(twin, self.target)
+            after = stat_identity(self.target)
+            self.assertEqual(before[2:], after[2:])
+            self.assertNotEqual(before[:2], after[:2])
+            with self.assertRaisesRegex(ApfProjectError, "active project changed outside Mod Studio"):
+                self.publish(self.expected)
+        self.assertEqual(self.target.read_bytes(), original)
+
 
 
 if __name__ == "__main__":

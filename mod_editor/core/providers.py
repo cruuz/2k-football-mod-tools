@@ -760,7 +760,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/studio/audio_annotations.py": "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
         "mod_editor/studio/audio_bundle.py": "fafc659024246d1cff782ab07f6c744c97a563f64fedca8a288f3126fbeb4604",
         "mod_editor/studio/music_service.py": "2f2126c1055d75b71597bf60d2583861eceb790499e2636e51ccb1e3428393d5",
-        "mod_editor/studio/project_archive.py": "454ab9bed57175cb2dfa614900273dfcdefd6f23b49877b142dfe74a247ed16f",
+        "mod_editor/studio/project_archive.py": "41a4c683d67cce74517cb5c6ebf8ebd68d4b882cfd8a185fd94f4a9d6f18449f",
         "mod_editor/studio/session.py": "033901e7c410376940a819191fdc89eb8f882ff9d7e9c932d52cfa650de75fbb",
         "tools/apf_inner.py": "4175688c9df2cb8d8253f5b4d08570a3a3486cb9856d000a4146e5a952982847",
         "tools/apf_outer.py": "e9ce600393f9c9f6b372bb385e9486a655167bf6cc9ef256cc96c8439957cd31",

@@ -2362,9 +2362,9 @@ class ApfStudioFacade:
                 current_identity = project_target_identity(source)
                 # Two descriptors minutes apart: only a change-time difference
                 # is tolerated, because that field moves with no byte changed on
-                # POSIX and is a creation time on Windows. No project hash is
-                # recorded here, so a same-size rewrite that restores the
-                # modification time is not detected (see ProjectTargetIdentity).
+                # POSIX and is a creation time on Windows. Both captures hash
+                # every byte, so a same-size rewrite with its mtime restored
+                # still refuses (see ProjectTargetIdentity).
                 if not opened_identity.matches_apart_from_change_time(current_identity):
                     raise ProjectError(
                         "The project changed outside Mod Studio while it was opening. "
