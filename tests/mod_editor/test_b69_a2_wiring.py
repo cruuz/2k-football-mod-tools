@@ -37,7 +37,11 @@ class AppliedIntegrationTests(unittest.TestCase):
     def test_historic_hold_refuses_before_reading_resources_or_creating_output(self):
         with tempfile.TemporaryDirectory() as folder:
             target = Path(folder) / 'copy.iso'
-            plan = mod_build.BuildPlan(source=str(Path(folder) / 'source.iso'),
+            # A source that is really there: beta 72.1 refuses a missing one by
+            # name before anything else, so the hold under test is what fires.
+            source = Path(folder) / 'source.iso'
+            source.write_bytes(b'stand-in bytes; is_disc_image is patched below')
+            plan = mod_build.BuildPlan(source=str(source),
                                        target=str(target), espn25_rosters=True)
             with patch.object(mod_build.tt, 'is_disc_image', return_value=True), \
                  patch.object(mod_build.tt, '_naming_source_preflight', return_value=None), \
