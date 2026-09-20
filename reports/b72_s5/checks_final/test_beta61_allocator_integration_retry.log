@@ -1,0 +1,12 @@
+test_capacity_permissions_metadata_and_stable_existing_addresses (__main__.CompleteOwnerTests.test_capacity_permissions_metadata_and_stable_existing_addresses) ... ok
+test_dispatcher_and_raw_writer_status_roundtrip (__main__.CompleteOwnerTests.test_dispatcher_and_raw_writer_status_roundtrip) ... ok
+test_extension_corruption_and_reconfiguration_fail_closed (__main__.CompleteOwnerTests.test_extension_corruption_and_reconfiguration_fail_closed) ... ok
+test_image_writer_and_reader_roundtrip_with_all_new_owners (__main__.CompleteOwnerTests.test_image_writer_and_reader_roundtrip_with_all_new_owners) ... ok
+test_build_and_gameplay_level_controls_and_preset_reset (__main__.SelectionTests.test_build_and_gameplay_level_controls_and_preset_reset) ... ok
+test_invalid_options_refuse_before_reading_foreign_bytes (__main__.SelectionTests.test_invalid_options_refuse_before_reading_foreign_bytes) ... ok
+test_presets_clear_every_new_opt_in_and_recipe_keeps_integer_level (__main__.SelectionTests.test_presets_clear_every_new_opt_in_and_recipe_keeps_integer_level) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 431.359s
+
+OK

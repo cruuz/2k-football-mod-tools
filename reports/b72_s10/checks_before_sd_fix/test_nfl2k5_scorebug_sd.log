@@ -1,0 +1,13 @@
+F..
+======================================================================
+FAIL: test_every_atlas_cell_fits_both_aspects_even_at_worst_field_compression (__main__.SDTests.test_every_atlas_cell_fits_both_aspects_even_at_worst_field_compression)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/astra-b72-s10/tests/mod_editor/test_nfl2k5_scorebug_sd.py", line 36, in test_every_atlas_cell_fits_both_aspects_even_at_worst_field_compression
+    self.assertTrue(all(t<=p+.02 for t,p in zip(row['texels'],row['minimum_footprint'])),row)
+AssertionError: False is not true : {'aspect': '4:3', 'cell': 'plate', 'field': 'plate', 'texels': [96, 19], 'minimum_footprint': [121.77777777777777, 17.42222222222222]}
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.460s
+
+FAILED (failures=1)

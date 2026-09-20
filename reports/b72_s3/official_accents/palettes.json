@@ -1,0 +1,2178 @@
+{
+  "table_sha256": "0713d8ca89333142d86dad04904d4804ea76687301a50df7265b5407302036e6",
+  "table_va": "0x4e7fe0",
+  "table_end": "0x4e88a0",
+  "teams": {
+    "SF": {
+      "slot": 0,
+      "name": "San Francisco 49ers",
+      "asset_code": "25",
+      "kind": 0,
+      "official": [
+        "#AA0000",
+        "#B3995D",
+        "#FFFFFF"
+      ],
+      "source": "supplied official 2026 identity palette",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      },
+      "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
+      "palette_evidence": [
+        {
+          "name": "49ers Red",
+          "hex": "#AA0000",
+          "role": "primary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/SF.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "49ers Gold",
+          "hex": "#B3995D",
+          "role": "secondary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/SF.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "White",
+          "hex": "#FFFFFF",
+          "role": "tertiary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/SF.svg",
+          "confidence": "medium",
+          "disputed": false,
+          "dispute_severity": "none"
+        }
+      ]
+    },
+    "CHI": {
+      "slot": 1,
+      "name": "Chicago Bears",
+      "asset_code": "05",
+      "kind": 0,
+      "official": [
+        "#0B162A",
+        "#E64100",
+        "#FFFFFF"
+      ],
+      "source": "supplied official 2026 identity palette",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      },
+      "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
+      "palette_evidence": [
+        {
+          "name": "Navy Blue",
+          "hex": "#0B162A",
+          "role": "primary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/CHI.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "Orange",
+          "hex": "#E64100",
+          "role": "secondary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/CHI.svg",
+          "confidence": "high",
+          "disputed": true,
+          "dispute_severity": "major"
+        },
+        {
+          "name": "White",
+          "hex": "#FFFFFF",
+          "role": "tertiary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/CHI.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        }
+      ]
+    },
+    "CIN": {
+      "slot": 2,
+      "name": "Cincinnati Bengals",
+      "asset_code": "06",
+      "kind": 0,
+      "official": [
+        "#FB4F14",
+        "#000000",
+        "#FFFFFF"
+      ],
+      "source": "supplied official 2026 identity palette",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      },
+      "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
+      "palette_evidence": [
+        {
+          "name": "Orange",
+          "hex": "#FB4F14",
+          "role": "primary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/CIN.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "Black",
+          "hex": "#000000",
+          "role": "secondary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/CIN.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "White",
+          "hex": "#FFFFFF",
+          "role": "tertiary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/CIN.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        }
+      ]
+    },
+    "BUF": {
+      "slot": 3,
+      "name": "Buffalo Bills",
+      "asset_code": "03",
+      "kind": 0,
+      "official": [
+        "#00338D",
+        "#C60C30",
+        "#FFFFFF",
+        "#00274D"
+      ],
+      "source": "supplied official 2026 identity palette",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      },
+      "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
+      "palette_evidence": [
+        {
+          "name": "Royal Blue",
+          "hex": "#00338D",
+          "role": "primary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/BUF.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "Red",
+          "hex": "#C60C30",
+          "role": "secondary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/BUF.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "White",
+          "hex": "#FFFFFF",
+          "role": "tertiary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/BUF.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "Navy",
+          "hex": "#00274D",
+          "role": "accent",
+          "source": "wikipedia",
+          "source_url": "https://en.wikipedia.org/w/index.php?title=Buffalo_Bills&action=raw",
+          "confidence": "low",
+          "disputed": false,
+          "dispute_severity": "none"
+        }
+      ]
+    },
+    "DEN": {
+      "slot": 4,
+      "name": "Denver Broncos",
+      "asset_code": "08",
+      "kind": 0,
+      "official": [
+        "#FC4C02",
+        "#0A2343",
+        "#FFFFFF"
+      ],
+      "source": "supplied official 2026 identity palette",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      },
+      "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
+      "palette_evidence": [
+        {
+          "name": "Sunset Orange",
+          "hex": "#FC4C02",
+          "role": "primary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/DEN.svg",
+          "confidence": "high",
+          "disputed": true,
+          "dispute_severity": "minor"
+        },
+        {
+          "name": "Midnight Navy",
+          "hex": "#0A2343",
+          "role": "secondary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/DEN.svg",
+          "confidence": "high",
+          "disputed": true,
+          "dispute_severity": "minor"
+        },
+        {
+          "name": "Summit White",
+          "hex": "#FFFFFF",
+          "role": "tertiary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/DEN.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        }
+      ]
+    },
+    "CLE": {
+      "slot": 5,
+      "name": "Cleveland Browns",
+      "asset_code": "30",
+      "kind": 0,
+      "official": [
+        "#311D00",
+        "#FF3C00",
+        "#FFFFFF"
+      ],
+      "source": "supplied official 2026 identity palette",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      },
+      "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
+      "palette_evidence": [
+        {
+          "name": "Brown",
+          "hex": "#311D00",
+          "role": "primary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/CLE.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "Orange",
+          "hex": "#FF3C00",
+          "role": "secondary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/CLE.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "White",
+          "hex": "#FFFFFF",
+          "role": "tertiary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/CLE.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        }
+      ]
+    },
+    "TB": {
+      "slot": 6,
+      "name": "Tampa Bay Buccaneers",
+      "asset_code": "27",
+      "kind": 0,
+      "official": [
+        "#A71930",
+        "#322F2B",
+        "#DC4405",
+        "#000000",
+        "#FFFFFF"
+      ],
+      "source": "supplied official 2026 identity palette",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      },
+      "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
+      "palette_evidence": [
+        {
+          "name": "Buccaneer Red",
+          "hex": "#A71930",
+          "role": "primary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/TB.svg",
+          "confidence": "high",
+          "disputed": true,
+          "dispute_severity": "major"
+        },
+        {
+          "name": "Pewter",
+          "hex": "#322F2B",
+          "role": "secondary",
+          "source": "wikipedia",
+          "source_url": "https://en.wikipedia.org/w/index.php?title=Tampa_Bay_Buccaneers&action=raw",
+          "confidence": "medium",
+          "disputed": true,
+          "dispute_severity": "negligible"
+        },
+        {
+          "name": "Orange",
+          "hex": "#DC4405",
+          "role": "tertiary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/TB.svg",
+          "confidence": "high",
+          "disputed": true,
+          "dispute_severity": "major"
+        },
+        {
+          "name": "Black",
+          "hex": "#000000",
+          "role": "accent",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/TB.svg",
+          "confidence": "high",
+          "disputed": true,
+          "dispute_severity": "minor"
+        },
+        {
+          "name": "White",
+          "hex": "#FFFFFF",
+          "role": "trim",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/TB.svg",
+          "confidence": "medium",
+          "disputed": false,
+          "dispute_severity": "none"
+        }
+      ]
+    },
+    "ARI": {
+      "slot": 7,
+      "name": "Arizona Cardinals",
+      "asset_code": "00",
+      "kind": 0,
+      "official": [
+        "#97233F",
+        "#000000",
+        "#FFFFFF"
+      ],
+      "source": "supplied official 2026 identity palette",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      },
+      "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
+      "palette_evidence": [
+        {
+          "name": "Cardinal Red",
+          "hex": "#97233F",
+          "role": "primary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/ARI.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "Black",
+          "hex": "#000000",
+          "role": "secondary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/ARI.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "White",
+          "hex": "#FFFFFF",
+          "role": "tertiary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/ARI.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        }
+      ]
+    },
+    "LAC": {
+      "slot": 8,
+      "name": "San Diego Chargers",
+      "asset_code": "24",
+      "kind": 0,
+      "official": [
+        "#0080C6",
+        "#FFC20E",
+        "#FFFFFF",
+        "#001532"
+      ],
+      "source": "supplied official 2026 identity palette",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      },
+      "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
+      "palette_evidence": [
+        {
+          "name": "Powder Blue",
+          "hex": "#0080C6",
+          "role": "primary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/LAC.svg",
+          "confidence": "high",
+          "disputed": true,
+          "dispute_severity": "minor"
+        },
+        {
+          "name": "Sunshine Gold",
+          "hex": "#FFC20E",
+          "role": "secondary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/LAC.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "White",
+          "hex": "#FFFFFF",
+          "role": "tertiary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/LAC.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "Navy",
+          "hex": "#001532",
+          "role": "accent",
+          "source": "nflverse",
+          "source_url": "https://raw.githubusercontent.com/nflverse/nflverse-pbp/master/teams_colors_logos.csv",
+          "confidence": "low",
+          "disputed": false,
+          "dispute_severity": "none"
+        }
+      ]
+    },
+    "KC": {
+      "slot": 9,
+      "name": "Kansas City Chiefs",
+      "asset_code": "13",
+      "kind": 0,
+      "official": [
+        "#E31837",
+        "#FFB612",
+        "#FFFFFF"
+      ],
+      "source": "supplied official 2026 identity palette",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      },
+      "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
+      "palette_evidence": [
+        {
+          "name": "Red",
+          "hex": "#E31837",
+          "role": "primary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/KC.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "Gold",
+          "hex": "#FFB612",
+          "role": "secondary",
+          "source": "wikipedia",
+          "source_url": "https://en.wikipedia.org/w/index.php?title=Kansas_City_Chiefs&action=raw",
+          "confidence": "medium",
+          "disputed": true,
+          "dispute_severity": "negligible"
+        },
+        {
+          "name": "White",
+          "hex": "#FFFFFF",
+          "role": "tertiary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/KC.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        }
+      ]
+    },
+    "IND": {
+      "slot": 10,
+      "name": "Indianapolis Colts",
+      "asset_code": "11",
+      "kind": 0,
+      "official": [
+        "#013369",
+        "#FFFFFF",
+        "#A5ACAF",
+        "#1D252C"
+      ],
+      "source": "supplied official 2026 identity palette",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      },
+      "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
+      "palette_evidence": [
+        {
+          "name": "Speed Blue",
+          "hex": "#013369",
+          "role": "primary",
+          "source": "team_first_party",
+          "source_url": "https://www.colts.com/team/brand/",
+          "confidence": "high",
+          "disputed": true,
+          "dispute_severity": "minor"
+        },
+        {
+          "name": "White",
+          "hex": "#FFFFFF",
+          "role": "secondary",
+          "source": "team_first_party",
+          "source_url": "https://www.colts.com/team/brand/",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "Facemask Gray",
+          "hex": "#A5ACAF",
+          "role": "trim",
+          "source": "team_first_party",
+          "source_url": "https://www.colts.com/team/brand/",
+          "confidence": "high",
+          "disputed": true,
+          "dispute_severity": "negligible"
+        },
+        {
+          "name": "Anvil Black",
+          "hex": "#1D252C",
+          "role": "accent",
+          "source": "team_first_party",
+          "source_url": "https://www.colts.com/team/brand/",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        }
+      ]
+    },
+    "DAL": {
+      "slot": 11,
+      "name": "Dallas Cowboys",
+      "asset_code": "07",
+      "kind": 0,
+      "official": [
+        "#002244",
+        "#003594",
+        "#869397",
+        "#7F9695",
+        "#FFFFFF"
+      ],
+      "source": "supplied official 2026 identity palette",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      },
+      "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
+      "palette_evidence": [
+        {
+          "name": "Blue",
+          "hex": "#002244",
+          "role": "primary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/DAL.svg",
+          "confidence": "high",
+          "disputed": true,
+          "dispute_severity": "minor"
+        },
+        {
+          "name": "Royal Blue",
+          "hex": "#003594",
+          "role": "secondary",
+          "source": "teamcolorcodes",
+          "source_url": "https://teamcolorcodes.com/dallas-cowboys-color-codes/",
+          "confidence": "medium",
+          "disputed": true,
+          "dispute_severity": "minor"
+        },
+        {
+          "name": "Metallic Silver Blue",
+          "hex": "#869397",
+          "role": "tertiary",
+          "source": "teamcolorcodes",
+          "source_url": "https://teamcolorcodes.com/dallas-cowboys-color-codes/",
+          "confidence": "medium",
+          "disputed": true,
+          "dispute_severity": "major"
+        },
+        {
+          "name": "Silver-Green",
+          "hex": "#7F9695",
+          "role": "accent",
+          "source": "teamcolorcodes",
+          "source_url": "https://teamcolorcodes.com/dallas-cowboys-color-codes/",
+          "confidence": "medium",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "White",
+          "hex": "#FFFFFF",
+          "role": "trim",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/DAL.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        }
+      ]
+    },
+    "MIA": {
+      "slot": 12,
+      "name": "Miami Dolphins",
+      "asset_code": "14",
+      "kind": 0,
+      "official": [
+        "#008E97",
+        "#FC4C02",
+        "#FFFFFF"
+      ],
+      "source": "supplied official 2026 identity palette",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      },
+      "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
+      "palette_evidence": [
+        {
+          "name": "Aqua",
+          "hex": "#008E97",
+          "role": "primary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/MIA.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "Orange",
+          "hex": "#FC4C02",
+          "role": "secondary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/MIA.svg",
+          "confidence": "high",
+          "disputed": true,
+          "dispute_severity": "major"
+        },
+        {
+          "name": "White",
+          "hex": "#FFFFFF",
+          "role": "tertiary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/MIA.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        }
+      ]
+    },
+    "PHI": {
+      "slot": 13,
+      "name": "Philadelphia Eagles",
+      "asset_code": "21",
+      "kind": 0,
+      "official": [
+        "#004851",
+        "#A2AAAD",
+        "#000000",
+        "#FFFFFF"
+      ],
+      "source": "supplied official 2026 identity palette",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      },
+      "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
+      "palette_evidence": [
+        {
+          "name": "Midnight Green",
+          "hex": "#004851",
+          "role": "primary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/PHI.svg",
+          "confidence": "high",
+          "disputed": true,
+          "dispute_severity": "minor"
+        },
+        {
+          "name": "Silver",
+          "hex": "#A2AAAD",
+          "role": "secondary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/PHI.svg",
+          "confidence": "high",
+          "disputed": true,
+          "dispute_severity": "negligible"
+        },
+        {
+          "name": "Black",
+          "hex": "#000000",
+          "role": "tertiary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/PHI.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "White",
+          "hex": "#FFFFFF",
+          "role": "trim",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/PHI.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        }
+      ]
+    },
+    "ATL": {
+      "slot": 14,
+      "name": "Atlanta Falcons",
+      "asset_code": "01",
+      "kind": 0,
+      "official": [
+        "#A71930",
+        "#000000",
+        "#A5ACAF",
+        "#FFFFFF"
+      ],
+      "source": "supplied official 2026 identity palette",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      },
+      "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
+      "palette_evidence": [
+        {
+          "name": "Red",
+          "hex": "#A71930",
+          "role": "primary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/ATL.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "Black",
+          "hex": "#000000",
+          "role": "secondary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/ATL.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "Silver",
+          "hex": "#A5ACAF",
+          "role": "tertiary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/ATL.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "White",
+          "hex": "#FFFFFF",
+          "role": "trim",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/ATL.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        }
+      ]
+    },
+    "NYG": {
+      "slot": 15,
+      "name": "New York Giants",
+      "asset_code": "18",
+      "kind": 0,
+      "official": [
+        "#0B2265",
+        "#A71930",
+        "#FFFFFF"
+      ],
+      "source": "supplied official 2026 identity palette",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      },
+      "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
+      "palette_evidence": [
+        {
+          "name": "Blue",
+          "hex": "#0B2265",
+          "role": "primary",
+          "source": "teamcolorcodes",
+          "source_url": "https://teamcolorcodes.com/new-york-giants-color-codes/",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "Red",
+          "hex": "#A71930",
+          "role": "secondary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/NYG.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "White",
+          "hex": "#FFFFFF",
+          "role": "tertiary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/NYG.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        }
+      ]
+    },
+    "JAX": {
+      "slot": 16,
+      "name": "Jacksonville Jaguars",
+      "asset_code": "12",
+      "kind": 0,
+      "official": [
+        "#006778",
+        "#000000",
+        "#D7A22A",
+        "#9F792C",
+        "#FFFFFF"
+      ],
+      "source": "supplied official 2026 identity palette",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      },
+      "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
+      "palette_evidence": [
+        {
+          "name": "Teal",
+          "hex": "#006778",
+          "role": "primary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/JAX.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "Black",
+          "hex": "#000000",
+          "role": "secondary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/JAX.svg",
+          "confidence": "high",
+          "disputed": true,
+          "dispute_severity": "major"
+        },
+        {
+          "name": "Gold",
+          "hex": "#D7A22A",
+          "role": "tertiary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/JAX.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "Dark Gold",
+          "hex": "#9F792C",
+          "role": "accent",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/JAX.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "White",
+          "hex": "#FFFFFF",
+          "role": "trim",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/JAX.svg",
+          "confidence": "medium",
+          "disputed": false,
+          "dispute_severity": "none"
+        }
+      ]
+    },
+    "NYJ": {
+      "slot": 17,
+      "name": "New York Jets",
+      "asset_code": "19",
+      "kind": 0,
+      "official": [
+        "#115740",
+        "#FFFFFF",
+        "#000000"
+      ],
+      "source": "supplied official 2026 identity palette",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      },
+      "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
+      "palette_evidence": [
+        {
+          "name": "Legacy Green",
+          "hex": "#115740",
+          "role": "primary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/NYJ.svg",
+          "confidence": "high",
+          "disputed": true,
+          "dispute_severity": "major"
+        },
+        {
+          "name": "Legacy White",
+          "hex": "#FFFFFF",
+          "role": "secondary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/NYJ.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "Legacy Black",
+          "hex": "#000000",
+          "role": "accent",
+          "source": "wikipedia",
+          "source_url": "https://en.wikipedia.org/w/index.php?title=New_York_Jets&action=raw",
+          "confidence": "medium",
+          "disputed": false,
+          "dispute_severity": "none"
+        }
+      ]
+    },
+    "DET": {
+      "slot": 18,
+      "name": "Detroit Lions",
+      "asset_code": "09",
+      "kind": 0,
+      "official": [
+        "#0076B6",
+        "#B0B7BC",
+        "#FFFFFF",
+        "#000000"
+      ],
+      "source": "supplied official 2026 identity palette",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      },
+      "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
+      "palette_evidence": [
+        {
+          "name": "Honolulu Blue",
+          "hex": "#0076B6",
+          "role": "primary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/DET.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "Silver",
+          "hex": "#B0B7BC",
+          "role": "secondary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/DET.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "White",
+          "hex": "#FFFFFF",
+          "role": "tertiary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/DET.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "Black",
+          "hex": "#000000",
+          "role": "accent",
+          "source": "wikipedia",
+          "source_url": "https://en.wikipedia.org/w/index.php?title=Detroit_Lions&action=raw",
+          "confidence": "medium",
+          "disputed": false,
+          "dispute_severity": "none"
+        }
+      ]
+    },
+    "GB": {
+      "slot": 19,
+      "name": "Green Bay Packers",
+      "asset_code": "10",
+      "kind": 0,
+      "official": [
+        "#203731",
+        "#FFB612",
+        "#FFFFFF"
+      ],
+      "source": "supplied official 2026 identity palette",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      },
+      "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
+      "palette_evidence": [
+        {
+          "name": "Dark Green",
+          "hex": "#203731",
+          "role": "primary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/GB.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "Gold",
+          "hex": "#FFB612",
+          "role": "secondary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/GB.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "White",
+          "hex": "#FFFFFF",
+          "role": "tertiary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/GB.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        }
+      ]
+    },
+    "CAR": {
+      "slot": 20,
+      "name": "Carolina Panthers",
+      "asset_code": "04",
+      "kind": 0,
+      "official": [
+        "#0085CF",
+        "#000000",
+        "#B2B4BB"
+      ],
+      "source": "supplied official 2026 identity palette",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      },
+      "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
+      "palette_evidence": [
+        {
+          "name": "Panther Blue",
+          "hex": "#0085CF",
+          "role": "primary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/CAR.svg",
+          "confidence": "medium",
+          "disputed": true,
+          "dispute_severity": "negligible"
+        },
+        {
+          "name": "Black",
+          "hex": "#000000",
+          "role": "secondary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/CAR.svg",
+          "confidence": "high",
+          "disputed": true,
+          "dispute_severity": "major"
+        },
+        {
+          "name": "Silver",
+          "hex": "#B2B4BB",
+          "role": "tertiary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/CAR.svg",
+          "confidence": "medium",
+          "disputed": true,
+          "dispute_severity": "noticeable"
+        }
+      ]
+    },
+    "NE": {
+      "slot": 21,
+      "name": "New England Patriots",
+      "asset_code": "16",
+      "kind": 0,
+      "official": [
+        "#002244",
+        "#C60C30",
+        "#B0B7BC",
+        "#FFFFFF"
+      ],
+      "source": "supplied official 2026 identity palette",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      },
+      "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
+      "palette_evidence": [
+        {
+          "name": "Nautical Blue",
+          "hex": "#002244",
+          "role": "primary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/NE.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "Red",
+          "hex": "#C60C30",
+          "role": "secondary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/NE.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "New Century Silver",
+          "hex": "#B0B7BC",
+          "role": "tertiary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/NE.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "White",
+          "hex": "#FFFFFF",
+          "role": "trim",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/NE.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        }
+      ]
+    },
+    "LV": {
+      "slot": 22,
+      "name": "Oakland Raiders",
+      "asset_code": "20",
+      "kind": 0,
+      "official": [
+        "#C8C7C7",
+        "#000000",
+        "#FFFFFF"
+      ],
+      "source": "supplied official 2026 identity palette",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      },
+      "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
+      "palette_evidence": [
+        {
+          "name": "Silver",
+          "hex": "#C8C7C7",
+          "role": "primary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/LV.svg",
+          "confidence": "high",
+          "disputed": true,
+          "dispute_severity": "major"
+        },
+        {
+          "name": "Black",
+          "hex": "#000000",
+          "role": "secondary",
+          "source": "wikipedia",
+          "source_url": "https://en.wikipedia.org/w/index.php?title=Las_Vegas_Raiders&action=raw",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "White",
+          "hex": "#FFFFFF",
+          "role": "trim",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/LV.svg",
+          "confidence": "medium",
+          "disputed": false,
+          "dispute_severity": "none"
+        }
+      ]
+    },
+    "LAR": {
+      "slot": 23,
+      "name": "St. Louis Rams",
+      "asset_code": "23",
+      "kind": 0,
+      "official": [
+        "#003594",
+        "#FFD100",
+        "#FFFFFF"
+      ],
+      "source": "supplied official 2026 identity palette",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      },
+      "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
+      "palette_evidence": [
+        {
+          "name": "Rams Royal",
+          "hex": "#003594",
+          "role": "primary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/LA.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "Sol",
+          "hex": "#FFD100",
+          "role": "secondary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/LA.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "White",
+          "hex": "#FFFFFF",
+          "role": "trim",
+          "source": "wikipedia",
+          "source_url": "https://en.wikipedia.org/w/index.php?title=Los_Angeles_Rams&action=raw",
+          "confidence": "medium",
+          "disputed": false,
+          "dispute_severity": "none"
+        }
+      ]
+    },
+    "BAL": {
+      "slot": 24,
+      "name": "Baltimore Ravens",
+      "asset_code": "02",
+      "kind": 0,
+      "official": [
+        "#24135F",
+        "#000000",
+        "#9A7611",
+        "#FFFFFF"
+      ],
+      "source": "supplied official 2026 identity palette",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      },
+      "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
+      "palette_evidence": [
+        {
+          "name": "Purple",
+          "hex": "#24135F",
+          "role": "primary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/BAL.svg",
+          "confidence": "high",
+          "disputed": true,
+          "dispute_severity": "noticeable"
+        },
+        {
+          "name": "Black",
+          "hex": "#000000",
+          "role": "secondary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/BAL.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "Metallic Gold",
+          "hex": "#9A7611",
+          "role": "tertiary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/BAL.svg",
+          "confidence": "high",
+          "disputed": true,
+          "dispute_severity": "minor"
+        },
+        {
+          "name": "White",
+          "hex": "#FFFFFF",
+          "role": "trim",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/BAL.svg",
+          "confidence": "medium",
+          "disputed": false,
+          "dispute_severity": "none"
+        }
+      ]
+    },
+    "WAS": {
+      "slot": 25,
+      "name": "Washington Redskins",
+      "asset_code": "29",
+      "kind": 0,
+      "official": [
+        "#5A1414",
+        "#FFB612",
+        "#000000",
+        "#FFFFFF"
+      ],
+      "source": "supplied official 2026 identity palette",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      },
+      "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
+      "palette_evidence": [
+        {
+          "name": "Burgundy",
+          "hex": "#5A1414",
+          "role": "primary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/WAS.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "Gold",
+          "hex": "#FFB612",
+          "role": "secondary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/WAS.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "Black",
+          "hex": "#000000",
+          "role": "accent",
+          "source": "wikipedia",
+          "source_url": "https://en.wikipedia.org/w/index.php?title=Washington_Commanders&action=raw",
+          "confidence": "medium",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "White",
+          "hex": "#FFFFFF",
+          "role": "trim",
+          "source": "wikipedia",
+          "source_url": "https://en.wikipedia.org/w/index.php?title=Washington_Commanders&action=raw",
+          "confidence": "medium",
+          "disputed": false,
+          "dispute_severity": "none"
+        }
+      ]
+    },
+    "NO": {
+      "slot": 26,
+      "name": "New Orleans Saints",
+      "asset_code": "17",
+      "kind": 0,
+      "official": [
+        "#D3BC8D",
+        "#000000",
+        "#FFFFFF"
+      ],
+      "source": "supplied official 2026 identity palette",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      },
+      "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
+      "palette_evidence": [
+        {
+          "name": "Old Gold",
+          "hex": "#D3BC8D",
+          "role": "primary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/NO.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "Black",
+          "hex": "#000000",
+          "role": "secondary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/NO.svg",
+          "confidence": "high",
+          "disputed": true,
+          "dispute_severity": "major"
+        },
+        {
+          "name": "White",
+          "hex": "#FFFFFF",
+          "role": "tertiary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/NO.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        }
+      ]
+    },
+    "SEA": {
+      "slot": 27,
+      "name": "Seattle Seahawks",
+      "asset_code": "26",
+      "kind": 0,
+      "official": [
+        "#002244",
+        "#69BE28",
+        "#A5ACAF",
+        "#FFFFFF"
+      ],
+      "source": "supplied official 2026 identity palette",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      },
+      "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
+      "palette_evidence": [
+        {
+          "name": "College Navy",
+          "hex": "#002244",
+          "role": "primary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/SEA.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "Action Green",
+          "hex": "#69BE28",
+          "role": "secondary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/SEA.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "Wolf Grey",
+          "hex": "#A5ACAF",
+          "role": "tertiary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/SEA.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "White",
+          "hex": "#FFFFFF",
+          "role": "trim",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/SEA.svg",
+          "confidence": "medium",
+          "disputed": false,
+          "dispute_severity": "none"
+        }
+      ]
+    },
+    "PIT": {
+      "slot": 28,
+      "name": "Pittsburgh Steelers",
+      "asset_code": "22",
+      "kind": 0,
+      "official": [
+        "#000000",
+        "#FFB612",
+        "#FFFFFF"
+      ],
+      "source": "supplied official 2026 identity palette",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      },
+      "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
+      "palette_evidence": [
+        {
+          "name": "Black",
+          "hex": "#000000",
+          "role": "primary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/PIT.svg",
+          "confidence": "high",
+          "disputed": true,
+          "dispute_severity": "major"
+        },
+        {
+          "name": "Gold",
+          "hex": "#FFB612",
+          "role": "secondary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/PIT.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "White",
+          "hex": "#FFFFFF",
+          "role": "tertiary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/PIT.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        }
+      ]
+    },
+    "HOU": {
+      "slot": 29,
+      "name": "Houston Texans",
+      "asset_code": "37",
+      "kind": 0,
+      "official": [
+        "#021018",
+        "#EB0028",
+        "#FFFFFF",
+        "#0080C6"
+      ],
+      "source": "supplied official 2026 identity palette",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      },
+      "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
+      "palette_evidence": [
+        {
+          "name": "Deep Steel Blue",
+          "hex": "#021018",
+          "role": "primary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/HOU.svg",
+          "confidence": "high",
+          "disputed": true,
+          "dispute_severity": "major"
+        },
+        {
+          "name": "Battle Red",
+          "hex": "#EB0028",
+          "role": "secondary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/HOU.svg",
+          "confidence": "high",
+          "disputed": true,
+          "dispute_severity": "major"
+        },
+        {
+          "name": "Liberty White",
+          "hex": "#FFFFFF",
+          "role": "tertiary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/HOU.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "H-Town Blue",
+          "hex": "#0080C6",
+          "role": "accent",
+          "source": "wikipedia",
+          "source_url": "https://en.wikipedia.org/w/index.php?title=Houston_Texans&action=raw",
+          "confidence": "medium",
+          "disputed": false,
+          "dispute_severity": "none"
+        }
+      ]
+    },
+    "TEN": {
+      "slot": 30,
+      "name": "Tennessee Titans",
+      "asset_code": "28",
+      "kind": 0,
+      "official": [
+        "#4495D2",
+        "#D50A0A",
+        "#FFFFFF",
+        "#0C2340"
+      ],
+      "source": "supplied official 2026 identity palette",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      },
+      "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
+      "palette_evidence": [
+        {
+          "name": "Titans Blue",
+          "hex": "#4495D2",
+          "role": "primary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/TEN.svg",
+          "confidence": "high",
+          "disputed": true,
+          "dispute_severity": "noticeable"
+        },
+        {
+          "name": "Red",
+          "hex": "#D50A0A",
+          "role": "secondary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/TEN.svg",
+          "confidence": "high",
+          "disputed": true,
+          "dispute_severity": "major"
+        },
+        {
+          "name": "White",
+          "hex": "#FFFFFF",
+          "role": "tertiary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/TEN.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "Navy",
+          "hex": "#0C2340",
+          "role": "accent",
+          "source": "teamcolorcodes",
+          "source_url": "https://teamcolorcodes.com/tennessee-titans-color-codes/",
+          "confidence": "medium",
+          "disputed": true,
+          "dispute_severity": "noticeable"
+        }
+      ]
+    },
+    "MIN": {
+      "slot": 31,
+      "name": "Minnesota Vikings",
+      "asset_code": "15",
+      "kind": 0,
+      "official": [
+        "#4F2683",
+        "#FFC62F",
+        "#FFFFFF"
+      ],
+      "source": "supplied official 2026 identity palette",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      },
+      "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
+      "palette_evidence": [
+        {
+          "name": "Purple",
+          "hex": "#4F2683",
+          "role": "primary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/MIN.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "Gold",
+          "hex": "#FFC62F",
+          "role": "secondary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/MIN.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        },
+        {
+          "name": "White",
+          "hex": "#FFFFFF",
+          "role": "tertiary",
+          "source": "nfl_logo_svg",
+          "source_url": "https://static.www.nfl.com/league/api/clubs/logos/MIN.svg",
+          "confidence": "high",
+          "disputed": false,
+          "dispute_severity": "none"
+        }
+      ]
+    },
+    "USER1": {
+      "slot": 32,
+      "name": "**************** ****************",
+      "asset_code": "50",
+      "kind": 2,
+      "official": [
+        "#303030",
+        "#C0C0C0"
+      ],
+      "source": "neutral custom fallback; supply team colours explicitly",
+      "custom": true,
+      "known": false,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "USER2": {
+      "slot": 33,
+      "name": "**************** ****************",
+      "asset_code": "50",
+      "kind": 2,
+      "official": [
+        "#303030",
+        "#C0C0C0"
+      ],
+      "source": "neutral custom fallback; supply team colours explicitly",
+      "custom": true,
+      "known": false,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "BRI": {
+      "slot": 34,
+      "name": "Bristol Swamis",
+      "asset_code": "33",
+      "kind": 5,
+      "official": [
+        "#911041",
+        "#FFFFFF"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "BRP": {
+      "slot": 35,
+      "name": "Bristol Risky Picks",
+      "asset_code": "46",
+      "kind": 5,
+      "official": [
+        "#072343",
+        "#BE1642"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "BWG": {
+      "slot": 36,
+      "name": "Bristol Wingadoros",
+      "asset_code": "46",
+      "kind": 5,
+      "official": [
+        "#072343",
+        "#BE1642"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "CHH": {
+      "slot": 37,
+      "name": "Canton Hammerheads",
+      "asset_code": "46",
+      "kind": 5,
+      "official": [
+        "#072343",
+        "#BE1642"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "UDC": {
+      "slot": 38,
+      "name": "Upper Darby Cheesesteaks",
+      "asset_code": "95",
+      "kind": 5,
+      "official": [
+        "#303030",
+        "#C0C0C0"
+      ],
+      "source": "neutral custom fallback; supply team colours explicitly",
+      "custom": false,
+      "known": false,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "LAL": {
+      "slot": 39,
+      "name": "Los Angeles Locos",
+      "asset_code": "96",
+      "kind": 5,
+      "official": [
+        "#303030",
+        "#C0C0C0"
+      ],
+      "source": "neutral custom fallback; supply team colours explicitly",
+      "custom": false,
+      "known": false,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "CES": {
+      "slot": 40,
+      "name": "Cincinnati Electra Shock",
+      "asset_code": "97",
+      "kind": 5,
+      "official": [
+        "#303030",
+        "#C0C0C0"
+      ],
+      "source": "neutral custom fallback; supply team colours explicitly",
+      "custom": false,
+      "known": false,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "BFM": {
+      "slot": 41,
+      "name": "Baurtwell Funkmasters",
+      "asset_code": "98",
+      "kind": 5,
+      "official": [
+        "#303030",
+        "#C0C0C0"
+      ],
+      "source": "neutral custom fallback; supply team colours explicitly",
+      "custom": false,
+      "known": false,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "LAD": {
+      "slot": 42,
+      "name": "Los Angeles DreamTeam",
+      "asset_code": "99",
+      "kind": 5,
+      "official": [
+        "#303030",
+        "#C0C0C0"
+      ],
+      "source": "neutral custom fallback; supply team colours explicitly",
+      "custom": false,
+      "known": false,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "AFW": {
+      "slot": 43,
+      "name": "Far West FW Alumni",
+      "asset_code": "40",
+      "kind": 1,
+      "official": [
+        "#9A494C",
+        "#000000"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "AGP": {
+      "slot": 44,
+      "name": "Great Plains GP Alumni",
+      "asset_code": "41",
+      "kind": 1,
+      "official": [
+        "#000000",
+        "#AD945D"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "AMW": {
+      "slot": 45,
+      "name": "Midwest MW Alumni",
+      "asset_code": "42",
+      "kind": 1,
+      "official": [
+        "#0A575D",
+        "#FFFFFF"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "ANE": {
+      "slot": 46,
+      "name": "Northeast NE Alumni",
+      "asset_code": "43",
+      "kind": 1,
+      "official": [
+        "#3B4C37",
+        "#000000"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "ASE": {
+      "slot": 47,
+      "name": "Southeast SE Alumni",
+      "asset_code": "44",
+      "kind": 1,
+      "official": [
+        "#374C9A",
+        "#9DA0A4"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "ASW": {
+      "slot": 48,
+      "name": "Southwest SW Alumni",
+      "asset_code": "45",
+      "kind": 1,
+      "official": [
+        "#000000",
+        "#D39A52"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "AFC": {
+      "slot": 49,
+      "name": "AFC AFC",
+      "asset_code": "34",
+      "kind": 1,
+      "official": [
+        "#CB1718",
+        "#000000"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "NFC": {
+      "slot": 50,
+      "name": "NFC NFC",
+      "asset_code": "35",
+      "kind": 1,
+      "official": [
+        "#173376",
+        "#FFFFFF"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "NFL": {
+      "slot": 51,
+      "name": "NFL NFL",
+      "asset_code": "31",
+      "kind": 1,
+      "official": [
+        "#173376",
+        "#CB1718"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    }
+  },
+  "official_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4"
+}

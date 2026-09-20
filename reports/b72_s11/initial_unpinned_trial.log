@@ -1,0 +1,44 @@
+[
+  {
+    "feature": "logo",
+    "visible_area_px": 1959.5,
+    "maximum_area_px": 2625,
+    "metric": "mean player pixels across two same-state matchups and both aspects",
+    "rank": 1
+  },
+  {
+    "feature": "wing_colour",
+    "visible_area_px": 1525.0,
+    "maximum_area_px": 1787,
+    "metric": "mean player pixels across two same-state matchups and both aspects",
+    "rank": 2
+  },
+  {
+    "feature": "housing_rim",
+    "visible_area_px": 912.25,
+    "maximum_area_px": 1129,
+    "metric": "mean player pixels across two same-state matchups and both aspects",
+    "rank": 3
+  },
+  {
+    "feature": "down_capsule",
+    "visible_area_px": 669.5,
+    "maximum_area_px": 679,
+    "metric": "mean player pixels across two same-state matchups and both aspects",
+    "rank": 4
+  },
+  {
+    "feature": "pill",
+    "visible_area_px": 431.0,
+    "maximum_area_px": 530,
+    "metric": "mean player pixels across two same-state matchups and both aspects",
+    "rank": 5
+  },
+  {
+    "feature": "score",
+    "visible_area_px": 16.75,
+    "maximum_area_px": 43,
+    "metric": "mean player pixels across two same-state matchups and both aspects",
+    "rank": 6
+  }
+]

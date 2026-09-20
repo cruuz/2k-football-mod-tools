@@ -1,0 +1,107 @@
+[
+  {
+    "filename": "ksnip_20260919-210430.png",
+    "sha256": "2bc645cfb41d74dcee0e7f2a3735ebdb5598b129f7a9c24973c51baa2a14210d",
+    "source_size": [
+      1146,
+      684
+    ],
+    "bar_bounds": [
+      260,
+      591,
+      877,
+      659
+    ],
+    "state": {
+      "away": "WAS",
+      "home": "LAC",
+      "away_score": 0,
+      "home_score": 0,
+      "quarter": 1,
+      "distance": 10,
+      "possession": "away",
+      "clock": 177,
+      "play_clock": 22,
+      "down": 1
+    }
+  },
+  {
+    "filename": "ksnip_20260919-210432.png",
+    "sha256": "bf666b153749bcc66cb92224c6d174953d6cd003a44b20ba1c7e2328e5986eb5",
+    "source_size": [
+      1154,
+      678
+    ],
+    "bar_bounds": [
+      267,
+      589,
+      884,
+      657
+    ],
+    "state": {
+      "away": "WAS",
+      "home": "LAC",
+      "away_score": 0,
+      "home_score": 0,
+      "quarter": 1,
+      "distance": 10,
+      "possession": "away",
+      "clock": 177,
+      "play_clock": 15,
+      "down": 1
+    }
+  },
+  {
+    "filename": "ksnip_20260919-210434.png",
+    "sha256": "574fab7e154f800bd287451fddae9fa00e3618f3e3db714315870b7b2e937407",
+    "source_size": [
+      1141,
+      677
+    ],
+    "bar_bounds": [
+      263,
+      591,
+      880,
+      659
+    ],
+    "state": {
+      "away": "WAS",
+      "home": "LAC",
+      "away_score": 0,
+      "home_score": 0,
+      "quarter": 1,
+      "distance": 10,
+      "possession": "away",
+      "clock": 173,
+      "play_clock": 0,
+      "down": 1,
+      "event": "hidden play clock"
+    }
+  },
+  {
+    "filename": "ksnip_20260919-210436.png",
+    "sha256": "007f4ae0fe24f8c2b915936e70fcc91cb8860335902f2c4bb287a612f6e08d17",
+    "source_size": [
+      1145,
+      676
+    ],
+    "bar_bounds": [
+      263,
+      589,
+      880,
+      657
+    ],
+    "state": {
+      "away": "WAS",
+      "home": "LAC",
+      "away_score": 0,
+      "home_score": 0,
+      "quarter": 1,
+      "distance": 10,
+      "possession": "away",
+      "clock": 173,
+      "play_clock": 35,
+      "down": 2
+    }
+  }
+]

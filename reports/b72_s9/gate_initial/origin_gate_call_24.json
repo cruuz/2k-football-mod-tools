@@ -1,0 +1,907 @@
+{
+  "request": {
+    "states": [
+      {
+        "file": "mod_editor/core/nfl2k5_scorebug_sprite.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -357,7 +367,13 @@ def compile_folder(folder=None,widescreen=False,watermark=\"auto\"):\n             brand_offset=TABLE_OFFSET+len(table)\n             table+=BRAND.pack(WATERMARK_MODES.index(watermark),*(u for v in ('nfl','mnf') for u in quantized_uv(cells[variants[v]['cell']],spec['atlas'])))\n         STATIC.pack_into(table,HEADER.size+len(fields)*FIELD.size+i*STATIC.size,row['vertex'],TINTS.index(row['tint']),row['material'],brand_offset)\n-    HEADER.pack_into(table,0,MAGIC,1,len(fields),TABLE_OFFSET+HEADER.size,len(statics),TABLE_OFFSET+HEADER.size+len(fields)*FIELD.size,len(table),len(quads))\n+    revision=1\n+    if spec.get('team_accents'):\n+        from . import nfl2k5_scorebug_teams as teams\n+        require(spec['team_accents']=='team_accents.json', 'Use the validated team accent dataset.')\n+        table+=teams.table(teams.load(),TABLE_OFFSET+len(table))\n+        revision=2\n+    HEADER.pack_into(table,0,MAGIC,revision,len(fields),TABLE_OFFSET+HEADER.size,len(statics),TABLE_OFFSET+HEADER.size+len(fields)*FIELD.size,len(table),len(quads))\n     return Compiled(spec,atlas,cells,quads,bytes(table),bool(widescreen),material_order)\n \n "
+      },
+      {
+        "file": "mod_editor/core/nfl2k5_scorebug_sprite.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -445,7 +461,13 @@ def appendix(pack,folder=None,widescreen=False,watermark=\"auto\"):\n     sources={n:pack[r['pack_offset']:r['pack_offset']+r['span_size']] for n,r in art.RESOURCES.items()}\n     template=sources['score_buga'];scene.pinned(template,art.RESOURCES['score_buga'])\n     chunks=[('TXTR','sb--h0',art.mnf_panel_span(template,None,'home'))]\n-    for team,rec in sorted(art.TEAM_LOGOS.items()):chunks.append(('TXTR','sb'+rec['asset_code']+'h0',art.mnf_panel_span(template,team,'home',plate_tints=c.spec.get('plate_tints'),logo_fit=c.spec.get('logo_fit'),wing_tints=c.spec.get('wing_\n+    plate_tints=c.spec.get('plate_tints');wing_tints=c.spec.get('wing_tints')\n+    if c.spec.get('team_accents'):\n+        from . import nfl2k5_scorebug_teams as teams\n+        palette=teams.load()\n+        plate_tints={name:t['plate'] for name,t in palette.items()}\n+        wing_tints={name:t['wing'] for name,t in palette.items()}\n+    for team,rec in sorted(art.TEAM_LOGOS.items()):chunks.append(('TXTR','sb'+rec['asset_code']+'h0',art.mnf_panel_span(template,team,'home',plate_tints=plate_tints,logo_fit=c.spec.get('logo_fit'),wing_tints=wing_tints)))\n     chunks.append(('TXTR','score_buga',texture_chunk('score_buga',c.atlas,template,alpha_aware=True,\n         reserved_colours=reserved_colours(c))[0]))\n     chunks.append(('SCNE','score_bug',scene_span(scene.pinned(sources['score_bug'],art.RESOURCES['score_bug']),c)))"
+      },
+      {
+        "file": "mod_editor/core/nfl2k5_scorebug_sprite.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -464,6 +486,9 @@ def probe_sizes(folder=None):\n     table_size += BRAND.size if any(r.get('variant')=='mnf' for r in spec.get('brand', [])) else 0\n     table_size += sum(len(spec['glyph_sets'][name]['glyphs'])*GLYPH.size\n                       for name, _cap in {(r['glyph_set'], r['size']) for r in fields})\n+    if spec.get('team_accents'):\n+        from . import nfl2k5_scorebug_teams as teams\n+        table_size += len(teams.load())*teams.ENTRY.size+teams.FOOTER.size\n     scene_size=(TABLE_OFFSET+table_size+127)//128*128+32\n     appended=32*5280+2208+math.prod(spec['atlas'])+1184+scene_size\n     require(appended<MAX_APPEND,'The scorebug exceeds the 0.4 MB resource limit.')"
+      },
+      {
+        "file": "mod_editor/core/nfl2k5_scorebug_sprite.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -521,7 +546,9 @@ STANDARD_STATE = dict(away='DEN', home='KC', away_score=7, home_score=7,\n def normalize_state(state=None):\n     state=dict(STANDARD_STATE,**(state or {}))\n     from .nfl2k5_scorebug_resources import TEAM_LOGOS\n-    require(state['away'] in TEAM_LOGOS and state['home'] in TEAM_LOGOS,'Choose two known NFL teams.')\n+    from . import nfl2k5_scorebug_teams as teams\n+    known=teams.load()\n+    require(state['away'] in known and state['home'] in known,'Choose two known roster teams.')\n     for key,low,high in (('home_score',0,999),('away_score',0,999),('home_timeouts',0,3),('away_timeouts',0,3),('quarter',1,9),('down',1,4),('clock',0,3600),('play_clock',0,99),('distance',0,99)):\n         require(type(state[key])==int and low<=state[key]<=high,'Invalid preview state: '+key)\n     require(type(state['goal_to_go'])==bool,'Goal to go must be true or false.')"
+      },
+      {
+        "file": "mod_editor/core/nfl2k5_scorebug_sprite.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -566,12 +593,12 @@ class NativePreview:\n         from . import nfl2k5_scorebug_ingame as scene\n         from nfl_main_menu_font import FONT_NAMES, EXPECTED_FONTS, parse_font\n         from nfl_scene_probe import ResourceRecord\n-        data,self.volume=appendix(view,folder,watermark=self.watermark)\n-        self.chunks=[data[c.offset:c.end_offset] for c in scene.tx.parse_chunks(data)]\n         self.modes={}\n         for wide in (False,True):\n             mode_data,volume=appendix(view,folder,wide,self.watermark)\n             chunks=[mode_data[c.offset:c.end_offset] for c in scene.tx.parse_chunks(mode_data)]\n+            if not wide:\n+                self.chunks,self.volume=chunks,volume\n             self.modes[wide]=dict(compiled=compile_folder(folder,wide,self.watermark),scene=scene.decode(chunks[-1])[1],atlas=chunks[-2],textures=chunks[:-1],volume=volume)\n         # Read only the native global font outer for retained retail events.\n         # The outer header has a fixed volume-table size, exposed by its parser."
+      },
+      {
+        "file": "mod_editor/core/nfl2k5_scorebug_sprite.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -591,9 +618,15 @@ class NativePreview:\n         s=normalize_state(state);capture={};mode=self.modes[bool(widescreen)]\n         events={'standard':(0,1),'FLAG':(1,3),'FUMBLE':(1,5),'hang time':(1,2),'ball on':(1,4),'score slabs':(0,1),'hidden play clock':(0,)}\n         visibility='flag' if s['event']=='FLAG' else 'fumble' if s['event']=='FUMBLE' else None\n+        from . import nfl2k5_scorebug_teams as teams\n+        palette=teams.load()\n+        identity={side:s[side] for side in ('home','away')}\n+        for side in ('home','away'):\n+            identity[side+'_code']=palette[s[side]]['asset_code']\n+            identity[side+'_kind']=palette[s[side]]['kind']\n         geometry=projection.native_geometry(self.payload,mode['scene'],fonts=self.fonts,texture_span=mode['atlas'],\n             runtime_textures=mode['textures'],capture=capture,widescreen=widescreen,\n-            identity=dict(home=s['home'],away=s['away']),score_values=(s['home_score'],s['away_score']),\n+            identity=identity,score_values=(s['home_score'],s['away_score']),\n             previous_scores=(0,0) if s['event']=='score slabs' else (s['home_score'],s['away_score']),\n             score_phase=.2 if s['event']=='score slabs' else 0,\n             timeouts=(s['home_timeouts'],s['away_timeouts']),quarter=s['quarter'],"
+      },
+      {
+        "file": "mod_editor/core/nfl2k5_scorebug_sprite_code.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -7,74 +7,83 @@ CODE = bytes.fromhex(\n[part 1 of 3 of a 145-line hunk]\n     \"83e80283e0fd744185d2743d0fb7020fb74a0289c383e83083e93083f803772983f909772466837a\"\n     \"0400751d6bc00a01c883f81e760583f825750e66895c2404668b4202668944240654bbe0490400ba\"\n     \"54585452b9b814e600ffd385c0751d66837c24042d7415c74424042d002d00ba54585452b9b814e6\"\n-    \"0054ffd383c4105bc356538b74240ce801ffffff8366040085c00f844a0100009381bb8040000053\"\n-    \"5052350f853901000083bb84400000010f852c01000083bb88400000100f871f01000083bb904000\"\n-    \"00180f871201000083bb9c400000470f87050100008d8300010000c74604010000008906b86408b3\"\n-    \"00e8defeffff894608b8580ab300e8d1feffff8b5608b9584e4aff89460c85d274038b4afc894e10\"\n-    \"b9584e4aff85c074038b48fc894e14b9483f3aff85d274038b4af8894e18b9483f3aff85c074038b\"\n-    \"48f8894e1c8b83200100008990b00100008b83200100008b560c899030050000c7058458a9000000\"\n-    \"0000c705ac58a90000000000c705d458a90000000000c705fc58a90000000000c7052459a9000000\"\n-    \"0000c7052459a90000000000c7058459a90000000000c7054c59a900000000008325a459a9000083\"\n-    \"256c59a90000c7053c5aa90000000000c705cc59a900000000008b83200100000500040000a3ec5a\"\n-    \"a9005b5ec35557565381ec300100008b9c2444010000e892fdffff85c00f842c060000837b04000f\"\n-    \"8422060000958d850001000039030f8513060000a12055a90085c00f84060600006a035a6a095883\"\n-    \"fa06742a77156a025883fa03742031c083fa050f95c083c003eb136a0a5883fa08740b31c083fa09\"\n-    \"0f95c083c0068b8d20010000c1e0074201c88b480883e1fe894808834818ff83fa0a75b0837b0800\"\n-    \"75158b95200100008b828801000083c801898288010000837b0c0075158b95200100008b82080500\"\n-    \"0083c801898208050000a18002e6003d20fce500740f8b1528fce500bf483f3aff39c275038b7b18\"\n-    \"3d60fce500740a8b1568fce50039c275038b7b1c8bb594400000836424040001ee8b4424043b8590\"\n-    \"4000000f832e0100008b460485c0744083f801740583f80475058b4b10eb0f83f802740789f983f8\"\n-    \"0575038b4b1483f8037614d1e981e17f7f7f0081c17f7f7f0081c9000000ff8b1689e8e874fcffff\"\n-    \"8b460c85c07509ff44240483c610eb9901e831c98b1683380289042489e80f95c1f7d9e84cfcffff\"\n-    \"8b04248b106a015883fa01747831c085d275728b15a076e50083fa0275678b158401e60083fa0275\"\n-    \"5c8b15b476e5008b0dbc76e50083fa15774983f91077446bd2118d941188af1c008d0cd500000000\"\n-    \"894c24088a0cd5030000004980f90b77248a14d5040000004a80fa1e77178b4c2408b8ac220d00ff\"\n-    \"d085c00f94c00fb6c0eb0231c08b0c24c1e0048324240001c1918b0c24030e83c0046bc90a8b10ff\"\n-    \"04248d8c0d242d0000668911668b5002833c24046689510275d8e920ffffff8b9d8c400000836424\"\n-    \"180001eb8b4424183b85884000000f83e303000031f68b430839c673128b430431c98d14b089e846\"\n-    \"e857fbffffebe783f8100f87b30300008b53048d04823d1e0100000f87a2030000817b1080000000\"\n-    \"0f87950300008b431c85c0740a8b0085c00f8484030000833b077548a1205aa90085c00f84720300\"\n-    \"00d905045aa900d905f459a900dff1ddd80f835c030000b8005ba9008b1085d27410d940e4d940d4\"\n-    \"dff1ddd80f824103000083c0703dc05ca90075e06683642470008b0383f801773919d283e2c081c2\"\n-    \"68fce5008b1285d20f84150300008b1281fae70300000f870703000083f8018d4c247019c083e0e0\"\n-    \"0570c00f00e9e700000083f803774183f802ba28fce500b868fce5000f44c28b0085c00f84d20200\"\n-    \"008b500431c083fa030f87c402000039c2740a66c74444707e0040ebf2668364547000e9a3000000\"\n-    \"83f804750e8d4c2470b890c00f00e98e00000083f8057526a18c02e60085c00f84860200008b4010\"\n-    \"3d000061450f87780200008d4c2470b800c10f00eb6383f8067532a19402e60085c00f845b020000\"\n-    \"8b501081fa0000c6420f874c0200008b4018a8060f85410200008d4c2470b830be0f00eb2c83f807\"\n-    \"0f852d020000a1ec02e60085c00f8420020000a18002e60085c00f84130200008d4c2470b8d0c70f\"\n-    \"00ffd0f6431801742566837c247030751d668b4424726685c0741366837c247400750b6689442470\"\n-    \"6683642472008d54247031f68324240066833a0074738d84241001000039c20f83be0100008b4310\"\n-    \"8b4b0c83642404008944240801e98b7c2408397c24040f849f01000031c0668b3c416685ff740e66\"\n-    \"3b3c42752b4083f80475ebeb0485c0741f8b3c24397b080f8476010000ff04248b3c2401c0037110\"\n-    \"01c2894cbc2ceb90ff44240483c128ebad833c24000f84500100008b04248b44842c8b50082b7010\"\n-    \"01f28954240485d20f8e350100008b432c8b4b2039c20f4ec2894424088b433083f801750c6a025e\"\n-    \"8b44240899f7feeb0d83f802b8000000000f4444240829c18364241400894c241c8364240c008b44\"\n-    \"240c8b7c240c8b7484308b43048d04b88b7c2414894424108b4424080fafc78b7c241c99f77c2404\"\n-    \"01f88b7c2408894424248b4424140346080fafc78b7c241c99f77c240431d201f88b7c2410894424\"\n-    \"288b4614034324894424202b460c8944242c6b4424100601e88d0cb8f6c2018b7c2428660f447c24\"\n-    \"24f6c2026689b8602600008b7c242c660f447c242083c00683c10a6689b85c2600008b7b286689b8\"\n-    \"5e2600008b7c96186689b91a2d0000668b7c961a426689b91c2d000083fa0475ab837e0800741483\"\n-    \"7e0c00740e8b4b148b54241089e8e8b1f7ffff8b7610ff44240c017424148b34243974240c0f820b\"\n-    \"ffffffff44241883c338e90dfcffff81c4300100005b5e5f5dc3\"\n+    \"0054ffd383c4105bc38b515831c085d2740fd9413cd9412c31c0dff1ddd80f92c0c383b884400000\"\n+    \"020f85bd000000555756538b74241889d3c706303030ff8b742414c706303030ffc701303030ff8b\"\n+    \"90984000008d72f481fef43f00000f878300000081c2744000008d3c10813f544e543575728b7704\"\n+    \"83fe34776a8b7f0881ff9f400000765f6bee1401fd39ea75568b930c01000085d2744c66833a0074\"\n+    \"4666837a02008b2a743d66837a040075368b932801000001f831db39de74283b28751e3b50047519\"\n+    \"8b50088b5c241889118b4c24148b500c89118b40108903eb064383c014ebd45b5e5f5dc3c3555756\"\n+    \"538b5c2414e81bfeffff8363040085c00f84aa0100009681be80400000535052350f85990100008b\""
+      },
+      {
+        "file": "mod_editor/core/nfl2k5_scorebug_sprite_code.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -7,74 +7,83 @@ CODE = bytes.fromhex(\n[part 2 of 3 of a 145-line hunk]\n-    \"ffffffff44241883c338e90dfcffff81c4300100005b5e5f5dc3\"\n+    \"0054ffd383c4105bc38b515831c085d2740fd9413cd9412c31c0dff1ddd80f92c0c383b884400000\"\n+    \"020f85bd000000555756538b74241889d3c706303030ff8b742414c706303030ffc701303030ff8b\"\n+    \"90984000008d72f481fef43f00000f878300000081c2744000008d3c10813f544e543575728b7704\"\n+    \"83fe34776a8b7f0881ff9f400000765f6bee1401fd39ea75568b930c01000085d2744c66833a0074\"\n+    \"4666837a02008b2a743d66837a040075368b932801000001f831db39de74283b28751e3b50047519\"\n+    \"8b50088b5c241889118b4c24148b500c89118b40108903eb064383c014ebd45b5e5f5dc3c3555756\"\n+    \"538b5c2414e81bfeffff8363040085c00f84aa0100009681be80400000535052350f85990100008b\"\n+    \"86844000004883f8010f878901000083be88400000100f877c01000083be90400000180f876f0100\"\n+    \"0083be9c400000470f87620100008d8600010000c74304010000008903b86408b300e8f5fdffff89\"\n+    \"4308b8580ab300e8e8fdffff8b7b08ba584e4aff91894b0c85ff74038b57fc895310b8584e4aff85\"\n+    \"c974038b41fc894314bd483f3aff85ff74038b6ff8896b18bd483f3aff85c974038b69f8d1e8d1ea\"\n+    \"896b1c8d4b10257f7f7f0081e27f7f7f00057f7f7f0081c27f7f7f000d000000ff81ca000000ff89\"\n+    \"43248d4318895320ba6408b300508d43205089f0e829feffff8d431cba580ab3008d4b14508d4324\"\n+    \"5089f0e812feffff8b862001000083c41089b8b00100008b86200100008b530c899030050000c705\"\n+    \"8458a90000000000c705ac58a90000000000c705d458a90000000000c705fc58a90000000000c705\"\n+    \"2459a90000000000c7052459a90000000000c7058459a90000000000c7054c59a900000000008325\"\n+    \"a459a9000083256c59a90000c7053c5aa90000000000c705cc59a900000000008b86200100000500\"\n+    \"040000a3ec5aa9005b5e5f5dc35557565381ec300100008b9c2444010000e84afcffff85c00f8404\"\n+    \"060000837b04000f84fa050000958d850001000039030f85eb050000a12055a90085c00f84de0500\"\n+    \"006a03be4293a7865a8d0c95f4ffffff89f08bbd20010000d3e883e00fc1e00701f88b780883e7fe\"\n+    \"83fa057506837b0800eb0b31c983fa08750a837b0c000f94c10fb6c909f942894808834818ff83fa\"\n+    \"0a75b6b9a85aa9008b794485ff74188b7708e8aafcffff83e6fe85c00f94c00fb6c009c689770883\"\n+    \"c17081f9685ca90075d6a18002e6003d20fce50074118b1528fce500c70424483f3aff39c275068b\"\n+    \"7b18893c243d60fce500740a8b1568fce50039c275068b431c8904248bb594400000836424040001\"\n+    \"ee8b4424043b85904000000f83110100008b460485c0743283f80175058b4b10eb1f83f80275058b\"\n+    \"4b14eb1583f80475058b4b20eb0b8b0c2483f80575038b4b248b1689e8e83afbffff8b7e0c85ff75\"\n+    \"09ff44240483c610eba701ef31c98b1689e8833f020f95c1f7d9e815fbffff8b176a015883fa0174\"\n+    \"7831c085d275728b15a076e50083fa0275678b158401e60083fa02755c8b15b476e5008b0dbc76e5\"\n+    \"0083fa15774983f91077446bd2118d941188af1c008d0cd500000000894c24088a0cd50300000049\"\n+    \"80f90b77248a14d5040000004a80fa1e77178b4c2408b8ac220d00ffd085c00f94c00fb6c0eb0231\"\n+    \"c0c1e00431d201f88b0e8b780483c00401d1426bc90a8d8c0d242d0000668939668b780266897902\"\n+    \"83fa0475dbe92fffffff8b9d8c400000836424180001eb8b4424183b85884000000f83d803000031\"\n+    \"f68b430839c673128b430431c98d14b089e846e82cfaffffebe783f8100f87a80300008b53048d04\"\n+    \"823d1e0100000f8797030000817b10800000000f878a0300008b431c85c0740a8b0085c00f847903\"\n+    \"0000833b07740f6683642470008b0383f8017768eb31b9c859a900e899faffff85c00f8453030000\"\n+    \"b9a85aa900e887faffff85c00f854103000083c17081f9685ca90075e8ebc019d283e2c081c268fc\"\n+    \"e5008b1285d20f841f0300008b1281fae70300000f871103000083f80119c083e0e00570c00f00e9\"\n+    \"8c00000083f803774183f802ba28fce500b868fce5000f44c28b0085c00f84e00200008b500431c0\"\n+    \"83fa030f87d202000039c2740a66c74444707e0040ebf2668364547000e9b100000083f804750e8d\"\n+    \"4c2470b890c00f00e99c00000083f8057534a18c02e60085c00f84940200008b501081fa00006145\"\n+    \"0f87850200008b40103d01c0154419c083e0b00550c10f008d4c2470eb6383f8067532a19402e600\"\n+    \"85c00f845b0200008b501081fa0000c6420f874c0200008b4018a8060f85410200008d4c2470b830\"\n+    \"be0f00eb2c83f8070f852d020000a1ec02e60085c00f8420020000a18002e60085c00f8413020000\"\n+    \"8d4c2470b8d0c70f00ffd0f6431801742566837c247030751d668b4424726685c0741366837c2474\"\n+    \"00750b66894424706683642472008d54247031f68324240066833a0074738d84241001000039c20f\"\n+    \"83be0100008b43108b4b0c83642404008944240801e98b7c2408397c24040f849f01000031c0668b\"\n+    \"3c416685ff740e663b3c42752b4083f80475ebeb0485c0741f8b3c24397b080f8476010000ff0424\"\n+    \"8b3c2401c003711001c2894cbc2ceb90ff44240483c128ebad833c24000f84500100008b04248b44\"\n+    \"842c8b50082b701001f28954240485d20f8e350100008b432c8b4b2039c20f4ec28944240c8b4330\"\n+    \"83f801750c6a025e8b44240c99f7feeb0d83f802b8000000000f4444240c29c18364241000894c24\"\n+    \"1c83642408008b4424088b7c24088b7484308b43048d04b88b7c240c894424148b4424100fafc78b\"\n+    \"7c241c99f77c240401f88b7c240c894424248b4424100346080fafc78b7c241c99f77c240431d201\"\n+    \"f88b7c2414894424288b4614034324894424202b460c8944242c6b4424140601e88d0cb8f6c2018b\"\n+    \"7c2428660f447c2424f6c2026689b8602600008b7c242c660f447c242083c00683c10a6689b85c26\"\n+    \"00008b7b286689b85e2600008b7c96186689b91a2d0000668b7c961a426689b91c2d000083fa0475\"\n+    \"ab837e08007414837e0c00740e8b4b148b54241489e8e891f6ffff8b7610ff442408017424108b34\"\n+    \"24397424080f820bffffffff44241883c338e918fcffff81c4300100005b5e5f5dc3\"\n )\n RELOCATIONS = ("
+      },
+      {
+        "file": "mod_editor/core/nfl2k5_scorebug_sprite_code.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -7,74 +7,83 @@ CODE = bytes.fromhex(\n[part 3 of 3 of a 145-line hunk]\n+    \"7c241c99f77c240401f88b7c240c894424248b4424100346080fafc78b7c241c99f77c240431d201\"\n+    \"f88b7c2414894424288b4614034324894424202b460c8944242c6b4424140601e88d0cb8f6c2018b\"\n+    \"7c2428660f447c2424f6c2026689b8602600008b7c242c660f447c242083c00683c10a6689b85c26\"\n+    \"00008b7b286689b85e2600008b7c96186689b91a2d0000668b7c961a426689b91c2d000083fa0475\"\n+    \"ab837e08007414837e0c00740e8b4b148b54241489e8e891f6ffff8b7610ff442408017424108b34\"\n+    \"24397424080f820bffffffff44241883c338e918fcffff81c4300100005b5e5f5dc3\"\n )\n RELOCATIONS = (\n-    (478, 1, 'code', 0),\n-    (488, 1, 'code', 0),\n-    (498, 1, 'code', 0),\n-    (508, 1, 'code', 0),\n-    (518, 1, 'code', 0),\n-    (528, 1, 'code', 0),\n-    (538, 1, 'code', 0),\n-    (548, 1, 'code', 0),\n-    (572, 1, 'code', 0),\n-    (582, 1, 'code', 0),\n+    (804, 1, 'code', 0),\n+    (814, 1, 'code', 0),\n+    (824, 1, 'code', 0),\n+    (834, 1, 'code', 0),\n+    (844, 1, 'code', 0),\n+    (854, 1, 'code', 0),\n+    (864, 1, 'code', 0),\n+    (874, 1, 'code', 0),\n+    (898, 1, 'code', 0),\n+    (908, 1, 'code', 0),\n )\n LABELS = {\n+    'accents': 274,\n     'base': 5,\n     'color': 52,\n+    'element_visible': 249,\n     'logo': 76,\n     'sprite_blank': 0,\n-    'sprite_setup': 249,\n-    'sprite_update': 605,\n+    'sprite_setup': 477,\n+    'sprite_update': 933,\n }"
+      },
+      {
+        "file": "mod_editor/core/nfl2k5_scorebug_teams.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -0,0 +1,63 @@\n+\"\"\"Official per-team sprite accents, validated before native table compilation.\"\"\"\n+import json\n+from pathlib import Path\n+import struct\n+\n+DATA = Path(__file__).resolve().parents[2] / 'data/nfl2k5_scorebug_sprite'\n+ENTRY = struct.Struct('<5I')  # two UTF16 code units, team kind, wing, rim, plate\n+FOOTER = struct.Struct('<3I')  # magic, count, scene-relative entries offset\n+MAGIC = 0x35544e54\n+ROLES = ('wing', 'rim', 'plate', 'wash')\n+\n+\n+def rgb(value):\n+    if not isinstance(value, str) or len(value) != 7 or value[0] != '#':\n+        raise ValueError('Expected #RRGGBB team colour')\n+    return tuple(int(value[i:i+2], 16) for i in (1, 3, 5))\n+\n+\n+def variants(colours):\n+    return {'#'+''.join(f'{round(c*gain+255*lift):02X}' for c in rgb(colour))\n+            for colour in colours for gain, lift in ((1, 0), (.75, 0), (.5, 0), (.85, .15), (.7, .3))}\n+\n+\n+def contrast_white(value):\n+    channels = [v/255 for v in rgb(value)]\n+    linear = [v/12.92 if v <= .04045 else ((v+.055)/1.055)**2.4 for v in channels]\n+    return 1.05 / (.05 + sum(v*w for v, w in zip(linear, (.2126, .7152, .0722))))\n+\n+\n+def load(path=None):\n+    data = json.loads(Path(path or DATA/'team_accents.json').read_text(encoding='utf-8'))\n+    official = json.loads((DATA/'team_colors_official_2026.json').read_text(encoding='utf-8'))\n+    source = {t['nfl2k5_retail_slot']['index']: {c['hex'].upper() for c in t['colors']\n+              if not c.get('logo_detail_only')} for t in official['teams']}\n+    teams = data['teams']\n+    if {t['slot'] for t in teams.values()} != set(range(52)) or len(teams) != 52:\n+        raise ValueError('Team accents must cover the 52 roster slots exactly')\n+    identities = {}\n+    for name, team in teams.items():\n+        if team['slot'] < 32 and set(team['official']) != source[team['slot']]:\n+            raise ValueError('Official team palette differs: ' + name)\n+        allowed = variants(team['official'])\n+        for role in ROLES:\n+            if team[role] not in allowed or contrast_white(team[role]) < 4.5:\n+                raise ValueError('Foreign or low-contrast accent: ' + name + '/' + role)\n+        code, kind = team['asset_code'], team['kind']\n+        if len(code) != 2 or not code.isascii() or not code.isdigit() or kind not in (0, 1, 2, 4, 5):\n+            raise ValueError('Invalid native team identity: ' + name)\n+        values = tuple(team[r] for r in ('wing', 'rim', 'plate'))\n+        if (code, kind) in identities and identities[code, kind] != values:\n+            raise ValueError('Shared native team identity has conflicting accents: ' + name)\n+        identities[code, kind] = values\n+    return teams\n+\n+\n+def table(teams, scene_offset):\n+    result = bytearray()\n+    for team in sorted(teams.values(), key=lambda t: t['slot']):\n+        code = struct.unpack('<I', team['asset_code'].encode('utf-16le'))[0]\n+        result += ENTRY.pack(code, team['kind'], *(0xff000000 | int(team[r][1:], 16)\n+                                                for r in ('wing', 'rim', 'plate')))\n+    result += FOOTER.pack(MAGIC, len(teams), scene_offset)\n+    return result"
+      },
+      {
+        "file": "mod_editor/core/nfl2k5_xbe_space.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -244,6 +244,23 @@ def _digest(data):\n     return hashlib.sha1(struct.pack(\"<I\", len(data)) + data).digest()  # nosec B324\n \n \n+def count_differing_bytes(before, after):\n+    \"\"\"Exact mismatch count over the common prefix, like comparing zip pairs.\n+\n+    XBE writers change only a few small spans. Compare 64 KiB blocks in C and\n+    count individual bytes only where a block differs, retaining every change.\n+    No hashes, timestamps or cached identities participate in this count.\n+    \"\"\"\n+    count = 0\n+    end = min(len(before), len(after))\n+    for offset in range(0, end, 64 * 1024):\n+        limit = min(end, offset + 64 * 1024)\n+        left, right = before[offset:limit], after[offset:limit]\n+        if left != right:\n+            count += sum(a != b for a, b in zip(left, right))\n+    return count\n+\n+\n def _validate(payload):\n     if is_scaleout(payload):\n         return _validate_scaleout(payload)"
+      },
+      {
+        "file": "mod_editor/core/nfl2k5_xbe_space.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -407,7 +424,7 @@ def apply(payload: bytes, requests=(), *, scaleout=False) -> tuple[bytes, dict]:\n     result = bytes(buf)\n     _require(status(result) == \"applied\", \"grown XBE postcondition failed\")\n     return result, {\"status\": \"applied\", \"experimental\": True, \"runtime_witnessed\": False,\n-                    \"changed_bytes\": sum(a != b for a, b in zip(payload, result)) + len(result) - len(payload),\n+                    \"changed_bytes\": count_differing_bytes(payload, result) + len(result) - len(payload),\n                     \"file_growth\": len(result) - len(payload), \"allocations\": _allocations(wanted),\n                     \"reservations\": reservations(result)}\n "
+      },
+      {
+        "file": "mod_editor/core/providers.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: no.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -699,20 +699,22 @@ class Nfl2k5UnifiedVisualProvider:\n         \"mod_editor/core/nfl2k5_save_writer.py\": \"5a883cd1e449e8c796dc9453e6e9245390715d081979c024ac1182ef2c483bc4\",\n         \"mod_editor/core/nfl2k5_scorebar_v3.py\": \"406ed027b583e9d49dee9a671eab085af171c2d2b50ab5bc115e487ff45d5d91\",\n         \"mod_editor/core/runtime_dependencies.py\": \"326c47fbd24a2cbd5e360b32fd8754434a8433d21bea7efda23bebbc0e9343ac\",\n-        \"mod_editor/core/nfl2k5_scorebug_assets.py\": \"d3dd50c3a88fc0e8c78a244ed46da5de37febe477cd1d8302183ea7b6c8e9bdf\",\n-        \"mod_editor/core/nfl2k5_scorebug_exact.py\": \"ff33710e689b86b6aa2f55134adeed6cd3e486667b18c8b13cac89e2d6ab3855\",\n+        \"mod_editor/core/nfl2k5_scorebug_assets.py\": \"9d7036c1a426faee7671337e976d6ef21ae8a7d4e01b03b9f1791651b75f6293\",\n+        \"mod_editor/core/nfl2k5_scorebug_exact.py\": \"9de7e52f9a36fd29dbadb98bdafdee71c46e9902c3a8c688fe0c22516d78ec0e\",\n         \"mod_editor/core/nfl2k5_scorebug_fonts.py\": \"b292f93b7bc25b64a379069b77c9172c1b92cf79553bfe4a7be835d1ad7119e9\",\n-        \"mod_editor/core/nfl2k5_scorebug_ingame.py\": \"5d2dcd63f2568937aeb609438022c2afe2d2ab9f7dc95c24a1d8462d36a5d5a0\",\n+        \"mod_editor/core/nfl2k5_scorebug_ingame.py\": \"a4e698e4d85858c385fe880b355ae709575abdfbc73a9df9a80c94fd4c70c3e7\",\n         \"mod_editor/core/nfl2k5_scorebug_mnf_font.py\": \"4aab9c01ea57c255671d7c3dde9e473173cf1b28fdd0004a4e2c053330415709\",\n-        \"mod_editor/core/nfl2k5_scorebug_resources.py\": \"77f0661694f0cdc151532b12048affc378588cef6fcdd1dafd5b701b2c8f68cc\",\n-        'mod_editor/core/nfl2k5_scorebug_sprite.py': '960be604263a1eca114a622048ad32a85eed728446d375ec019b47b2afbad50b',\n-        'mod_editor/core/nfl2k5_scorebug_sprite_code.py': '2d79e130d06f794b59404f5a7623d1c048e9cde66bb03d42ac4ef74850e482c4',\n+        \"mod_editor/core/nfl2k5_scorebug_resources.py\": \"444d24c8b1c5c0b5bb1a8458e92eec12302b379f0f4f98d1c8f63930a9efbd97\",\n+        'mod_editor/core/nfl2k5_scorebug_sprite.py': 'd7ecf5cb2fe50f06818121cca78026cc9091d4dd44d08ca4cf7cd71fcdb6a59c',\n+        'mod_editor/core/nfl2k5_scorebug_teams.py': '79dfac96ad264d6364ffb7cfd468c8a303e63d03c9796c8d47013c38086de94e',\n+        'tools/scorebug_sprite/xemu_model.py': '1b97da7ecdf4e0fe19d6a1d7ea41ff3110810f14777da88f3ca94e18e1f110b3',\n+        'mod_editor/core/nfl2k5_scorebug_sprite_code.py': '671ce854d227d6eb990d043cc22449a5c318315fdfc645affa521715e429a24e',\n         'tools/nfl2k5_scorebug_exact.py': '69e80b09ede53a5e0658c7561deb2e08acfd56bff82effdf6048573120af2c82',\n-        'tools/nfl2k5_scorebug_projection.py': '91c4a7c753f2e677ad207914dfadce4d395a37dd0db08a8214a87282a3bcc13e',\n+        'tools/nfl2k5_scorebug_projection.py': 'ca69ccbb6fdeb06a762d2f26ed81ea9c321986bbfcb23c14d9ab6d0c5d76c90d',\n         'tools/nfl2k5_scorebug_template_proof.py': '6f21bd9fc54d472db03ad5e84d8344cfdb358c7e2e6c950134d80e5cf345bcc2',\n         'tools/nfl_main_menu_font.py': '64ae881a6ccaede10d15dc3d68277d061c5ccb9f94ccdee5208095ca31316d60',\n         'tools/nfl_normshort3_positions.py': '925147094fdf03d91ee0e0487b0dee3b632438c333fbb9f2b8ecb54a15cf19e3',\n-        \"mod_editor/core/nfl2k5_scorebug_runtime.py\": \"5562c5d903a8356b6f89fe13b2a8f871bea2348254d112467cd5f61940f51c78\",\n+        \"mod_editor/core/nfl2k5_scorebug_runtime.py\": \"5a4fdd292b86af8b7ab0e3051d0f072606001bf0d60301d43088bd9f1f719fd5\",\n         \"mod_editor/core/nfl2k5_scorebug_source_art.py\": \"a3617552d90389df8e7ce4d78faa8fd64a1995c91e4e8ef93219007761ac27fd\",\n         \"mod_editor/core/nfl2k5_scorebug_template.py\": \"409f7324352b88a6b4387b1f1a8ee1231c56f9674d7762ece24a8142fd2d2060\",\n         \"mod_editor/core/nfl2k5_scorebug_unified_adapter.py\": \"3307d3b1777fcb51f112dea2c6c5290dd969c3037d5bc21112f9740b7cef9bfd\","
+      },
+      {
+        "file": "mod_editor/core/providers.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: no.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -745,7 +747,7 @@ class Nfl2k5UnifiedVisualProvider:\n         \"mod_editor/core/nfl2k5_weekly_prep_code.py\": \"554fb7018dd0d2d5c59bd230cffd64d3be1cbc910df6410e40920cd3c08e97f8\",\n         \"mod_editor/core/nfl2k5_weekly_prep_save.py\": \"aedb0576c3a19a3a6574362729f83d3dfac5bc4aae7eb203388403c721a83720\",\n         \"mod_editor/core/nfl2k5_widescreen.py\": \"e3c24be27e02098ef981349aa9a1008b26d022bf655c0c0c6e4e70557c0f0f43\",\n-        \"mod_editor/core/nfl2k5_xbe_space.py\": \"091d540327358361cbfe6beaa274acaca2cf93e4244ee5db719d976c2e887218\",\n+        \"mod_editor/core/nfl2k5_xbe_space.py\": \"901a13afc2b759fc0a14c6ff1457f4d52946a47248c66c3c1e36dabbf491cdea\",\n         \"mod_editor/core/nfl2k5_zone_drop.py\": \"96b915ac40cfbcb61b9bfa88a584a18841635e061947a7e1644ea193f83a94f0\",\n         \"mod_editor/core/nfl_audio.py\": \"31193529647bd5fc35a2c25d38bccb83d20b16d46358169c26ced120c6c8e05c\",\n         \"mod_editor/core/platform_compat.py\": \"cbcf52e782c474b91dbb2c36f35547e88e8062d4f3e0434baa8314e695a1e811\","
+      },
+      {
+        "file": "mod_editor/core/providers.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: no.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -800,7 +802,7 @@ class Nfl2k5UnifiedVisualProvider:\n         \"tools/nfl_team_select_card_png_import.py\": \"7012a7d75a4203016b532e301f9727ebf5d58f9f88dc1271087c5461e493af1d\",\n         \"tools/nfl_team_select_card_targets.py\": \"125361ee0aefbcbb46da8d466a1d850c91c3d9f33ea0eced3f2240f4563d5766\",\n         \"tools/nfl_tset_fixed_span_verify.py\": \"d9a60349538962cb7c3ea8e3d2461b118fbbc10d05e9b68f0fe010f8cc1c2eb1\",\n-        \"tools/nfl_tset_png_import.py\": \"70516de8445f00834cc9f5fc2b41132690a74f4ae449033d1031901b626166cd\",\n+        \"tools/nfl_tset_png_import.py\": \"40f4b264dc1c3876f90d88c3a7aeaed8eed5d710fe7bf550fc0c8bed2c2481b0\",\n         \"tools/nfl_tset_png_import_dynamic_validate.py\": \"da20c1dff0145780c0d485970a527a0f172ab8a8653977784deae5e7c7ce6a03\",\n         \"tools/nfl_tset_png_import_verify.py\": \"777ca0ed729e54c41f7b522c4b121f577a573f5b010a851ab36218fff472076b\",\n         \"tools/nfl_tset_png_import_xiso_generic_patch.py\": \"a84699a55b7e34ff49a28913a7b892ce673fac4b78d427929683c2afc0c68cc2\","
+      },
+      {
+        "file": "mod_editor/core/providers.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: no.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -1335,7 +1337,7 @@ class Nfl2k5ScorebugProvider:\n         \"tools/nfl_outer.py\": \"0f27ac4157f13704e4303dbf2e146427cc56d1d910a3e242fac4081a04d9ee6d\",\n         \"tools/nfl_scene_probe.py\": \"851841d8474dbd2e8be098a9c84537057fcc9ced9d4d74669e2b808e00d71450\",\n         \"tools/nfl_scorebug_png_import.py\": \"0dbef5f87476633d91ebea19aeb86451dd5ac434743ef80a5a694cf4e3975440\",\n-        \"tools/nfl_tset_png_import.py\": \"70516de8445f00834cc9f5fc2b41132690a74f4ae449033d1031901b626166cd\",\n+        \"tools/nfl_tset_png_import.py\": \"40f4b264dc1c3876f90d88c3a7aeaed8eed5d710fe7bf550fc0c8bed2c2481b0\",\n         \"tools/nfl_txtr.py\": \"a75395d736266fd42e59995844d8001d0c333ca5d6f29f8228bbe14ff73974f4\",\n         \"tools/nfl_uniform_color_xiso_direct_patch.py\": \"bbd4f5147d19afe3ad3ff0079c5bc0693108b58956bed74444c659718aef4ceb\",\n         \"tools/nfl_uniform_inventory.py\": \"f2fc4ee3fad2c7eff0e2ca669c7f2642cea38a8c4d5cafb6d17a9c0b6e042740\","
+      },
+      {
+        "file": "packaging/check_2k5_mod_studio_release.py",
+        "file_facts": "packaging / CI / release inventory; shipped in a release allowlist: yes; pinned by sha256 digest: no.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -301,7 +301,7 @@ REVIEWED_ICON_SHA256 = (\n # V10's new pixel art is distributable; retail PNGs remain forbidden. Each\n # exception is an exact reviewed path, byte count, hash and PNG dimension.\n SCOREBUG_TEMPLATE_PNG_CATALOG = \"packaging/nfl2k5_scorebug_template_pngs.json\"\n-SCOREBUG_TEMPLATE_PNG_CATALOG_SHA256 = \"8c69221862b16a928172048f9043588b356738dd1c0b26cee1a98f50ca96cc39\"\n+SCOREBUG_TEMPLATE_PNG_CATALOG_SHA256 = \"7ea420ad2f47fc9aa748cdedaddc06777374b31882fb50bf95c2f341469a2044\"\n \n \n def _scorebug_template_pngs(root: Path) -> dict:"
+      },
+      {
+        "file": "packaging/nfl2k5_scorebug_template_pngs.json",
+        "file_facts": "packaging / CI / release inventory; shipped in a release allowlist: yes; pinned by sha256 digest: no.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -296,8 +296,8 @@\n     },\n     \"data/nfl2k5_scorebug_sprite/template.png\": {\n       \"height\": 512,\n-      \"sha256\": \"69415d48b68eb8d732ba6543a7a99031e6fe72e94acfd2676227db59a72c021d\",\n-      \"size\": 28846,\n+      \"sha256\": \"9701b949d2f4b21aaf0f9b13e5f82978e68faca2d3733dc17ed4cc7e79211a8e\",\n+      \"size\": 22204,\n       \"width\": 1536\n     },\n     \"docs/mod_editor/scorebug_studio/page_fable_down.png\": {"
+      },
+      {
+        "file": "packaging/release-allowlist.txt",
+        "file_facts": "packaging / CI / release inventory; shipped in a release allowlist: yes; pinned by sha256 digest: no.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -953,3 +953,24 @@ packaging/requirements-studio.txt\n # Beta 72: MyCareer earned ratings, identity and advisory (m1)\n mod_editor/core/nfl2k5_my_career_advisory.py\n mod_editor/core/nfl2k5_my_career_events.py\n+tools/scorebug_sprite/native.py\n+tools/scorebug_sprite/jev/miner.py\n+tools/scorebug_sprite/jev/layout_search.py\n+tools/scorebug_sprite/jev/replay.py\n+tools/scorebug_sprite/jev/rubric.py\n+tools/scorebug_sprite/jev/judge.py\n+tools/scorebug_sprite/jev/session.py\n+tools/scorebug_sprite/jev/accents.py\n+tools/scorebug_sprite/jev/descriptors.py\n+tools/scorebug_sprite/render.py\n+tools/scorebug_sprite/compare_ingame.py\n+data/nfl2k5_scorebug_sprite/broadcast_states.json\n+data/nfl2k5_scorebug_sprite/team_accents.json\n+packaging/scorebug_replication_pins.py\n+tools/scorebug_sprite/jev/README.md\n+data/nfl2k5_scorebug_sprite/team_colors_official_2026.json\n+mod_editor/core/nfl2k5_scorebug_teams.py\n+tools/scorebug_sprite/gpu.py\n+tools/scorebug_sprite/xemu_model.py\n+tools/scorebug_sprite/live.py\n+tools/scorebug_sprite/neutral_template.py"
+      },
+      {
+        "file": "packaging/scorebug_replication_pins.py",
+        "file_facts": "packaging / CI / release inventory; shipped in a release allowlist: yes; pinned by sha256 digest: no.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -0,0 +1,22 @@\n+\"\"\"Reviewed replication tool and metadata source identities; refreshed by repin.py.\"\"\"\n+PINS = {\n+    \"tools/scorebug_sprite/live.py\": \"1891b6e792b99cc7725cd8bd630ca2ac6deadfd8c1a90590767d135e964567a4\",\n+    \"mod_editor/core/nfl2k5_scorebug_teams.py\": \"79dfac96ad264d6364ffb7cfd468c8a303e63d03c9796c8d47013c38086de94e\",\n+    \"tools/scorebug_sprite/gpu.py\": \"cbcf8feb70dac124072b0ee6db19ea59016dcd26eb26cedf4d3c161217206b36\",\n+    \"tools/scorebug_sprite/xemu_model.py\": \"1b97da7ecdf4e0fe19d6a1d7ea41ff3110810f14777da88f3ca94e18e1f110b3\",\n+    \"tools/scorebug_sprite/neutral_template.py\": \"fddad8bd118b3321b24eb3df67719f9f2c392ad36f6cf91811bc3af4e8dba35b\",\n+    \"data/nfl2k5_scorebug_sprite/team_colors_official_2026.json\": \"e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4\",\n+    \"data/nfl2k5_scorebug_sprite/broadcast_states.json\": \"16e07c2de4718bfe57066c35643a6302101c58eca72339f1e189d510b773e5a4\",\n+    \"data/nfl2k5_scorebug_sprite/team_accents.json\": \"5570ce12a77dbe8983f2b4342041ccff94678070789f6817fc7b58c6b345d31c\",\n+    \"tools/scorebug_sprite/compare_ingame.py\": \"f71be713be3c5466d791a3906d289d159668c3b42101758a9c1526b9469670ac\",\n+    \"tools/scorebug_sprite/jev/accents.py\": \"42988d27dca8ea1192a96bdc47d0bf8809d12ad870a6c3a0c8ebda65a3d05ea3\",\n+    \"tools/scorebug_sprite/jev/descriptors.py\": \"df9ac4ac41820390abcb941a3bc1d90df355cc09751769ece2710aa45cd22cfa\",\n+    \"tools/scorebug_sprite/jev/judge.py\": \"2ee0e08c268046a4b076fa14f4ed7759b9a423423c14cc2ce4e4b022f7f0814a\",\n+    \"tools/scorebug_sprite/jev/layout_search.py\": \"d448016f261374bcdae113efc3e32fe47e609d6c449415d1f82d588dd026af43\",\n+    \"tools/scorebug_sprite/jev/miner.py\": \"c9b7acfea8214b759c4c69f50d4226035dcdfeeb0adf4c30bb2d220da2886bb5\",\n+    \"tools/scorebug_sprite/jev/replay.py\": \"a2b62e698f3f4cafebb0d154fba61d6f71d39617a18ea379619e206cc0372ed8\",\n+    \"tools/scorebug_sprite/jev/rubric.py\": \"85b416f553b0faf8f5ebd0ec21d2c03eb93a7363802b5c2d027ef2c0c94bcb31\",\n+    \"tools/scorebug_sprite/jev/session.py\": \"d1353c8901cd8d80aac7a229adcc4c614ea1c3da1f07c46ac2449b31e44c280f\",\n+    \"tools/scorebug_sprite/native.py\": \"037309281a358e13599de6986812d4d42b1a8c5001a44d00fbb55cb85c565e72\",\n+    \"tools/scorebug_sprite/render.py\": \"adee2518ce065cf50c8e69dff456a10764a3745ed1c272ba0ad31f2e68c37d74\",\n+}"
+      },
+      {
+        "file": "tests/mod_editor/test_nfl2k5_scorebug_assets.py",
+        "file_facts": "test code; CI runs tests/mod_editor/test_*.py files as scripts with a 420 s limit each; shipped in a release allowlist: no; pinned by sha256 digest: no; no for-loops on the added lines.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -58,7 +58,8 @@ class NativeOuterLoad:\n         heap, pool = m.alloc(0x100), m.alloc(heap_bytes)\n         m.record = False\n         m.run(0x48640, (heap_bytes,), ecx=heap, edx=pool, limit=10000000)\n-        m.record = True\n+        # This fixture checks native resources and I/O events directly. It does\n+        # not consume the full instruction/write history during collection I/O.\n         m.put(0xb12034, heap)\n         handlers = m.alloc(48)\n         m.put(handlers, handlers + 16)"
+      },
+      {
+        "file": "tests/mod_editor/test_nfl2k5_scorebug_assets.py",
+        "file_facts": "test code; CI runs tests/mod_editor/test_*.py files as scripts with a 420 s limit each; shipped in a release allowlist: no; pinned by sha256 digest: no; deepest for-loop nest on the added lines: 1 level(s); its literal bounds multiply to 4 iterations (a few).",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -96,7 +97,8 @@ class NativeOuterLoad:\n                 self.fonts.append(m.uc.reg_read(m.x.UC_X86_REG_ECX))\n             elif va == 0x48fc0:\n                 self.closed = True\n-        m.uc.hook_add(unicorn.UC_HOOK_CODE, event)\n+        for address in (0x48ff0, 0x44da0, 0x44b60, 0x48fc0):\n+            m.uc.hook_add(unicorn.UC_HOOK_CODE, event, begin=address, end=address)\n \n     def run(self):\n         m = self.m"
+      },
+      {
+        "file": "tests/mod_editor/test_nfl2k5_scorebug_down_visibility.py",
+        "file_facts": "test code; CI runs tests/mod_editor/test_*.py files as scripts with a 420 s limit each; shipped in a release allowlist: no; pinned by sha256 digest: no; no for-loops on the added lines.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -34,13 +34,17 @@ class Sequence:\n             capture=self.capture, widescreen=wide, identity=dict(home='KC', away='DAL'),\n             possession='away', game_seconds=300, visibility_state='kickoff', visible_elements=())\n         self.machine = self.capture['machine']\n+        # Frame assertions read native output, not full instruction histories.\n+        self.machine.record = False\n         self.rows = [q for q in self.mode['compiled'].quads if q['name'].startswith('down:')]\n         self.frame = 0\n \n     def configure(self, state, *, down=1, latch=None):\n         m = self.machine\n         saved = m.get(0xba2f14)\n-        projection.configure_visibility(m, state)\n+        # The retained kick/punt world query supplies play kind 10 and phase 14.\n+        # Requests and slide history are still computed by FC9C0/FCE70.\n+        projection.configure_visibility(m, 'kickoff' if state == 'punt' else state)\n         # The stock single-state fixture writes this latch. Preserve history.\n         m.put(0xba2f14, saved)\n         m.put(0xe602b4, 2 if state == 'kickoff' else 4)"
+      },
+      {
+        "file": "tests/mod_editor/test_nfl2k5_scorebug_down_visibility.py",
+        "file_facts": "test code; CI runs tests/mod_editor/test_*.py files as scripts with a 420 s limit each; shipped in a release allowlist: no; pinned by sha256 digest: no; deepest for-loop nest on the added lines: 1 level(s); its literal bounds multiply to 4 iterations (a few).",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -57,7 +61,15 @@ class Sequence:\n     def read(self):\n         m = self.machine\n         colors = [m.get(self.capture['body'] + scene.layout.S1 + q['vertex'] * 10) for q in self.rows]\n-        return dict(frame=self.frame,\n+        events = []\n+        for index in range(2, 6):\n+            record = 0xa959c8 + index * 112\n+            material = m.get(record + 0x44)\n+            events.append(dict(index=index, material=material,\n+                minimum=m.floats(record + 0x2c, 1)[0],\n+                slide=m.floats(record + 0x3c, 1)[0], binding=m.get(record + 0x58),\n+                visible=not bool(m.get(material + 8) & 1)))\n+        return dict(frame=self.frame, events=events,\n                     requests=[m.get(0xa95a00 + i * 112) for i in range(6)],\n                     slides=[m.floats(0xa95a04 + i * 112, 1)[0] for i in range(6)],\n                     bindings=[m.get(0xa95a20 + i * 112) for i in range(6)],"
+      }
+    ],
+    "questions": {
+      "ctime_compare": {
+        "type": "noul",
+        "instructions": "Does `hunk` add or change code that compares file timestamps (st_ctime, st_mtime, st_ctime_ns, st_mtime_ns, getmtime, getctime or another st_* time field) taken at different times or from different stat calls, to decide whether a file changed? Count timestamps placed in a cache key, identity or fingerprint tuple that is compared later. Windows gives these fields different meanings.",
+        "criteria": {
+          "true": "an added or changed line puts a stat time field into a comparison, cache key, fingerprint or identity used to detect change",
+          "false": "no stat time field is used for change detection (absent, only printed, or only set with os.utime)"
+        }
+      },
+      "posix_only": {
+        "type": "noul",
+        "instructions": "Does `hunk` add behaviour that works only on Linux/macOS or differs on Windows: file-system path strings split, matched or compared on a literal '/', os.fork, fcntl, signal handlers or SIGALRM/SIGKILL, chmod or executable-bit assumptions, os.getuid, /tmp or /dev paths, POSIX shell commands, or file names that differ only by case?",
+        "criteria": {
+          "true": "an added line relies on one of those behaviours without a platform guard",
+          "false": "no added line relies on POSIX-only behaviour (pathlib joins and os.path calls are portable), or it is guarded by an explicit platform check"
+        }
+      },
+      "pinned_value": {
+        "type": "noul",
+        "instructions": "Does `hunk` replace a pinned expected value: a removed (-) line holds a count literal that a test or gate asserts, a SHA-256 digest, a byte offset or address, a size, or a golden / reference value, and an added (+) line holds a different value in its place?",
+        "criteria": {
+          "true": "an old expected count, digest, offset, size or golden value on a - line is replaced by a different one on a + line",
+          "false": "no expected value is replaced; brand-new code or new tests that only add assertions do not count"
+        }
+      },
+      "slow_test": {
+        "type": "noul",
+        "instructions": "Does `hunk` add or lengthen a test path that could run for minutes: nested loops over a large case matrix or cross product (see the loop facts in `file_facts`), sleeps or polling waits, full disc / ISO / XBE builds or scans, or many repeated heavy calls such as a full prepare/build/read-back per case? CI kills a test file after 420 seconds.",
+        "criteria": {
+          "true": "added test code runs hundreds of heavy cases (each a build, prepare, read-back, compress, fit or render), sleeps, full-disc work, or other heavy repeated calls",
+          "false": "the added code is not a test path, or its loops are small, or the loop body is only cheap assignments or arithmetic (fast even with thousands of iterations)"
+        }
+      },
+      "weakens_safety": {
+        "type": "noul",
+        "instructions": "Does `hunk` widen or weaken a safety check? Safety checks are: validation of files, saves or user input, refusals and raised errors, integrity checks (hashes, signatures, sizes, bounds), path and permission guards, allowlists, and test assertions. Weakening means removing one, loosening its condition or tolerance, adding a skip or bypass, or making it accept inputs it used to refuse.",
+        "criteria": {
+          "true": "a safety check of that kind is removed, loosened, skipped or bypassed, or now accepts inputs it used to refuse",
+          "false": "safety checks are unchanged, added or stricter; feature conditions, performance paths, search heuristics, cache bookkeeping and early returns that only skip work are not safety checks"
+        }
+      },
+      "inventory_mismatch": {
+        "type": "noul",
+        "instructions": "Does `hunk` touch the release inventory or pins without the matching change: it adds or imports a module that `diff_facts` marks MISSING from the release allowlist or not in module_pins, or it edits an allowlist, requirements, module_pins entry or pinned count while `diff_facts` says the counterpart was not edited?",
+        "criteria": {
+          "true": "the hunk adds, imports or edits something whose allowlist entry, pin or count `diff_facts` marks MISSING or not edited",
+          "false": "`diff_facts` shows every matching change present, or the hunk touches no inventory, pin or new module"
+        }
+      }
+    }
+  },
+  "response": {
+    "results": [
+      {
+        "index": 0,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.34
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.12
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.11
+          }
+        }
+      },
+      {
+        "index": 1,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.11
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.1
+          }
+        }
+      },
+      {
+        "index": 2,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.15
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.12
+          }
+        }
+      },
+      {
+        "index": 3,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.39
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.12
+          }
+        }
+      },
+      {
+        "index": 4,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.09
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.06
+          }
+        }
+      },
+      {
+        "index": 5,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.1
+          }
+        }
+      },
+      {
+        "index": 6,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.55
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.11
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.08
+          }
+        }
+      },
+      {
+        "index": 7,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.52
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.07
+          }
+        }
+      },
+      {
+        "index": 8,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.86
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.06
+          }
+        }
+      },
+      {
+        "index": 9,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.07
+          }
+        }
+      },
+      {
+        "index": 10,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.05
+          }
+        }
+      },
+      {
+        "index": 11,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.06
+          }
+        }
+      },
+      {
+        "index": 12,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.96
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.15
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.18
+          }
+        }
+      },
+      {
+        "index": 13,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.97
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.12
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.07
+          }
+        }
+      },
+      {
+        "index": 14,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.97
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.14
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.08
+          }
+        }
+      },
+      {
+        "index": 15,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.97
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.14
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.08
+          }
+        }
+      },
+      {
+        "index": 16,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.98
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.11
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.13
+          }
+        }
+      },
+      {
+        "index": 17,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.97
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.12
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.11
+          }
+        }
+      },
+      {
+        "index": 18,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.11
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.15
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.43
+          }
+        }
+      },
+      {
+        "index": 19,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.09
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.21
+          }
+        }
+      },
+      {
+        "index": 20,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.24
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.04
+          }
+        }
+      },
+      {
+        "index": 21,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.12
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.07
+          }
+        }
+      },
+      {
+        "index": 22,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.19
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.06
+          }
+        }
+      },
+      {
+        "index": 23,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.07
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.07
+          }
+        }
+      }
+    ],
+    "totals": {
+      "input_tokens": 54619,
+      "output_tokens": 2784,
+      "cost_usd": 0.002294,
+      "errors": 0,
+      "wall_ms": 583
+    }
+  }
+}

@@ -1,0 +1,5 @@
+[1] packaging/scorebug_replication_pins.py: data/nfl2k5_scorebug_sprite/team_accents.json
+    8c81fd84f3fa0a4dcb912347e92a754ede0881e0ca9a9e5204e2458f562fa978
+ -> c26215d9d61fd33629932c169a68620aac634c72965626e90b5f513bd1ad52bd
+
+applied 1 pin update(s)

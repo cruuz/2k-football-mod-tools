@@ -953,3 +953,24 @@ packaging/requirements-studio.txt
 # Beta 72: MyCareer earned ratings, identity and advisory (m1)
 mod_editor/core/nfl2k5_my_career_advisory.py
 mod_editor/core/nfl2k5_my_career_events.py
+tools/scorebug_sprite/native.py
+tools/scorebug_sprite/jev/miner.py
+tools/scorebug_sprite/jev/layout_search.py
+tools/scorebug_sprite/jev/replay.py
+tools/scorebug_sprite/jev/rubric.py
+tools/scorebug_sprite/jev/judge.py
+tools/scorebug_sprite/jev/session.py
+tools/scorebug_sprite/jev/accents.py
+tools/scorebug_sprite/jev/descriptors.py
+tools/scorebug_sprite/render.py
+tools/scorebug_sprite/compare_ingame.py
+data/nfl2k5_scorebug_sprite/broadcast_states.json
+data/nfl2k5_scorebug_sprite/team_accents.json
+packaging/scorebug_replication_pins.py
+tools/scorebug_sprite/jev/README.md
+data/nfl2k5_scorebug_sprite/team_colors_official_2026.json
+mod_editor/core/nfl2k5_scorebug_teams.py
+tools/scorebug_sprite/gpu.py
+tools/scorebug_sprite/xemu_model.py
+tools/scorebug_sprite/live.py
+tools/scorebug_sprite/neutral_template.py

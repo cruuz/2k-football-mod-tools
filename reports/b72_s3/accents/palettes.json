@@ -1,0 +1,891 @@
+{
+  "table_sha256": "0713d8ca89333142d86dad04904d4804ea76687301a50df7265b5407302036e6",
+  "table_va": "0x4e7fe0",
+  "table_end": "0x4e88a0",
+  "teams": {
+    "SF": {
+      "slot": 0,
+      "name": "San Francisco 49ers",
+      "asset_code": "25",
+      "kind": 0,
+      "official": [
+        "#93334F",
+        "#C9AC8C"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "CHI": {
+      "slot": 1,
+      "name": "Chicago Bears",
+      "asset_code": "05",
+      "kind": 0,
+      "official": [
+        "#072347",
+        "#D85A2E"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "CIN": {
+      "slot": 2,
+      "name": "Cincinnati Bengals",
+      "asset_code": "06",
+      "kind": 0,
+      "official": [
+        "#03031B",
+        "#E64E1E"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "BUF": {
+      "slot": 3,
+      "name": "Buffalo Bills",
+      "asset_code": "03",
+      "kind": 0,
+      "official": [
+        "#122F40",
+        "#A71340"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "DEN": {
+      "slot": 4,
+      "name": "Denver Broncos",
+      "asset_code": "08",
+      "kind": 0,
+      "official": [
+        "#0A2F5C",
+        "#E64E1E"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "CLE": {
+      "slot": 5,
+      "name": "Cleveland Browns",
+      "asset_code": "30",
+      "kind": 0,
+      "official": [
+        "#E64E1E",
+        "#3D2A2D"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "TB": {
+      "slot": 6,
+      "name": "Tampa Bay Buccaneers",
+      "asset_code": "27",
+      "kind": 0,
+      "official": [
+        "#A12943",
+        "#666056"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "ARI": {
+      "slot": 7,
+      "name": "Arizona Cardinals",
+      "asset_code": "00",
+      "kind": 0,
+      "official": [
+        "#911041",
+        "#FFFFFF"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "LAC": {
+      "slot": 8,
+      "name": "San Diego Chargers",
+      "asset_code": "24",
+      "kind": 0,
+      "official": [
+        "#072343",
+        "#E5AE19"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "KC": {
+      "slot": 9,
+      "name": "Kansas City Chiefs",
+      "asset_code": "13",
+      "kind": 0,
+      "official": [
+        "#BE1642",
+        "#FFFFFF"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "IND": {
+      "slot": 10,
+      "name": "Indianapolis Colts",
+      "asset_code": "11",
+      "kind": 0,
+      "official": [
+        "#FFFFFF",
+        "#252A96"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "DAL": {
+      "slot": 11,
+      "name": "Dallas Cowboys",
+      "asset_code": "07",
+      "kind": 0,
+      "official": [
+        "#2E4399",
+        "#FFFFFF"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "MIA": {
+      "slot": 12,
+      "name": "Miami Dolphins",
+      "asset_code": "14",
+      "kind": 0,
+      "official": [
+        "#0A5F60",
+        "#E64E1E"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "PHI": {
+      "slot": 13,
+      "name": "Philadelphia Eagles",
+      "asset_code": "21",
+      "kind": 0,
+      "official": [
+        "#08464C",
+        "#A7AFB1"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "ATL": {
+      "slot": 14,
+      "name": "Atlanta Falcons",
+      "asset_code": "01",
+      "kind": 0,
+      "official": [
+        "#101010",
+        "#B51441"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "NYG": {
+      "slot": 15,
+      "name": "New York Giants",
+      "asset_code": "18",
+      "kind": 0,
+      "official": [
+        "#191C5C",
+        "#B8344A"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "JAX": {
+      "slot": 16,
+      "name": "Jacksonville Jaguars",
+      "asset_code": "12",
+      "kind": 0,
+      "official": [
+        "#0C586D",
+        "#03031B"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "NYJ": {
+      "slot": 17,
+      "name": "New York Jets",
+      "asset_code": "19",
+      "kind": 0,
+      "official": [
+        "#253F36",
+        "#FFFFFF"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "DET": {
+      "slot": 18,
+      "name": "Detroit Lions",
+      "asset_code": "09",
+      "kind": 0,
+      "official": [
+        "#506CB8",
+        "#FFFFFF"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "GB": {
+      "slot": 19,
+      "name": "Green Bay Packers",
+      "asset_code": "10",
+      "kind": 0,
+      "official": [
+        "#006419",
+        "#E0B02A"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "CAR": {
+      "slot": 20,
+      "name": "Carolina Panthers",
+      "asset_code": "04",
+      "kind": 0,
+      "official": [
+        "#1590C3",
+        "#03031B"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "NE": {
+      "slot": 21,
+      "name": "New England Patriots",
+      "asset_code": "16",
+      "kind": 0,
+      "official": [
+        "#072343",
+        "#BE1642"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "LV": {
+      "slot": 22,
+      "name": "Oakland Raiders",
+      "asset_code": "20",
+      "kind": 0,
+      "official": [
+        "#101010",
+        "#D1D2D3"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "LAR": {
+      "slot": 23,
+      "name": "St. Louis Rams",
+      "asset_code": "23",
+      "kind": 0,
+      "official": [
+        "#071F44",
+        "#95825E"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "BAL": {
+      "slot": 24,
+      "name": "Baltimore Ravens",
+      "asset_code": "02",
+      "kind": 0,
+      "official": [
+        "#31145C",
+        "#101010"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "WAS": {
+      "slot": 25,
+      "name": "Washington Redskins",
+      "asset_code": "29",
+      "kind": 0,
+      "official": [
+        "#86364A",
+        "#E5AE19"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "NO": {
+      "slot": 26,
+      "name": "New Orleans Saints",
+      "asset_code": "17",
+      "kind": 0,
+      "official": [
+        "#CBBA92",
+        "#000000"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "SEA": {
+      "slot": 27,
+      "name": "Seattle Seahawks",
+      "asset_code": "26",
+      "kind": 0,
+      "official": [
+        "#355877",
+        "#061638"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "PIT": {
+      "slot": 28,
+      "name": "Pittsburgh Steelers",
+      "asset_code": "22",
+      "kind": 0,
+      "official": [
+        "#101010",
+        "#E5AF2A"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "HOU": {
+      "slot": 29,
+      "name": "Houston Texans",
+      "asset_code": "37",
+      "kind": 0,
+      "official": [
+        "#061638",
+        "#AB253C"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "TEN": {
+      "slot": 30,
+      "name": "Tennessee Titans",
+      "asset_code": "28",
+      "kind": 0,
+      "official": [
+        "#6894D7",
+        "#071F44"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "MIN": {
+      "slot": 31,
+      "name": "Minnesota Vikings",
+      "asset_code": "15",
+      "kind": 0,
+      "official": [
+        "#422259",
+        "#FFFFFF"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "USER1": {
+      "slot": 32,
+      "name": "**************** ****************",
+      "asset_code": "50",
+      "kind": 2,
+      "official": [
+        "#303030",
+        "#C0C0C0"
+      ],
+      "source": "neutral custom fallback; supply team colours explicitly",
+      "custom": true,
+      "known": false,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "USER2": {
+      "slot": 33,
+      "name": "**************** ****************",
+      "asset_code": "50",
+      "kind": 2,
+      "official": [
+        "#303030",
+        "#C0C0C0"
+      ],
+      "source": "neutral custom fallback; supply team colours explicitly",
+      "custom": true,
+      "known": false,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "BRI": {
+      "slot": 34,
+      "name": "Bristol Swamis",
+      "asset_code": "33",
+      "kind": 5,
+      "official": [
+        "#911041",
+        "#FFFFFF"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "BRP": {
+      "slot": 35,
+      "name": "Bristol Risky Picks",
+      "asset_code": "46",
+      "kind": 5,
+      "official": [
+        "#072343",
+        "#BE1642"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "BWG": {
+      "slot": 36,
+      "name": "Bristol Wingadoros",
+      "asset_code": "46",
+      "kind": 5,
+      "official": [
+        "#072343",
+        "#BE1642"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "CHH": {
+      "slot": 37,
+      "name": "Canton Hammerheads",
+      "asset_code": "46",
+      "kind": 5,
+      "official": [
+        "#072343",
+        "#BE1642"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "UDC": {
+      "slot": 38,
+      "name": "Upper Darby Cheesesteaks",
+      "asset_code": "95",
+      "kind": 5,
+      "official": [
+        "#303030",
+        "#C0C0C0"
+      ],
+      "source": "neutral custom fallback; supply team colours explicitly",
+      "custom": false,
+      "known": false,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "LAL": {
+      "slot": 39,
+      "name": "Los Angeles Locos",
+      "asset_code": "96",
+      "kind": 5,
+      "official": [
+        "#303030",
+        "#C0C0C0"
+      ],
+      "source": "neutral custom fallback; supply team colours explicitly",
+      "custom": false,
+      "known": false,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "CES": {
+      "slot": 40,
+      "name": "Cincinnati Electra Shock",
+      "asset_code": "97",
+      "kind": 5,
+      "official": [
+        "#303030",
+        "#C0C0C0"
+      ],
+      "source": "neutral custom fallback; supply team colours explicitly",
+      "custom": false,
+      "known": false,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "BFM": {
+      "slot": 41,
+      "name": "Baurtwell Funkmasters",
+      "asset_code": "98",
+      "kind": 5,
+      "official": [
+        "#303030",
+        "#C0C0C0"
+      ],
+      "source": "neutral custom fallback; supply team colours explicitly",
+      "custom": false,
+      "known": false,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "LAD": {
+      "slot": 42,
+      "name": "Los Angeles DreamTeam",
+      "asset_code": "99",
+      "kind": 5,
+      "official": [
+        "#303030",
+        "#C0C0C0"
+      ],
+      "source": "neutral custom fallback; supply team colours explicitly",
+      "custom": false,
+      "known": false,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "AFW": {
+      "slot": 43,
+      "name": "Far West FW Alumni",
+      "asset_code": "40",
+      "kind": 1,
+      "official": [
+        "#9A494C",
+        "#000000"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "AGP": {
+      "slot": 44,
+      "name": "Great Plains GP Alumni",
+      "asset_code": "41",
+      "kind": 1,
+      "official": [
+        "#000000",
+        "#AD945D"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "AMW": {
+      "slot": 45,
+      "name": "Midwest MW Alumni",
+      "asset_code": "42",
+      "kind": 1,
+      "official": [
+        "#0A575D",
+        "#FFFFFF"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "ANE": {
+      "slot": 46,
+      "name": "Northeast NE Alumni",
+      "asset_code": "43",
+      "kind": 1,
+      "official": [
+        "#3B4C37",
+        "#000000"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "ASE": {
+      "slot": 47,
+      "name": "Southeast SE Alumni",
+      "asset_code": "44",
+      "kind": 1,
+      "official": [
+        "#374C9A",
+        "#9DA0A4"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "ASW": {
+      "slot": 48,
+      "name": "Southwest SW Alumni",
+      "asset_code": "45",
+      "kind": 1,
+      "official": [
+        "#000000",
+        "#D39A52"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "AFC": {
+      "slot": 49,
+      "name": "AFC AFC",
+      "asset_code": "34",
+      "kind": 1,
+      "official": [
+        "#CB1718",
+        "#000000"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "NFC": {
+      "slot": 50,
+      "name": "NFC NFC",
+      "asset_code": "35",
+      "kind": 1,
+      "official": [
+        "#173376",
+        "#FFFFFF"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    },
+    "NFL": {
+      "slot": 51,
+      "name": "NFL NFL",
+      "asset_code": "31",
+      "kind": 1,
+      "official": [
+        "#173376",
+        "#CB1718"
+      ],
+      "source": "pinned retail primary/secondary table",
+      "custom": false,
+      "known": true,
+      "logo_fit": {
+        "fill_x": 1.14,
+        "height": 1.0
+      }
+    }
+  }
+}

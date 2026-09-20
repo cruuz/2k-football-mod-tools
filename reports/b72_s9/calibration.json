@@ -1,0 +1,2531 @@
+[
+  {
+    "capture": "ksnip_20260919-170803.png",
+    "source_sha256": "feacb60092ebf2631f9ecabdd83f7801681856d78f70b970d4bbedb22bf07829",
+    "actual": {
+      "schema": "scorebug-descriptor/v1",
+      "source_size": [
+        1920,
+        1080
+      ],
+      "aspect": "16:9",
+      "present": true,
+      "fields": {
+        "away_score": {
+          "box": [
+            696,
+            955,
+            816,
+            1024
+          ],
+          "luma": [
+            5.0,
+            19.0,
+            255.0
+          ],
+          "rgb": [
+            19.0,
+            19.0,
+            19.0
+          ],
+          "ink_pixels": 1221,
+          "ink_box": [
+            739,
+            971,
+            778,
+            1023
+          ],
+          "core_luma": 253.0,
+          "ink_style": "light",
+          "ocr": {
+            "text": "0",
+            "certain": true,
+            "error": 0.2056
+          }
+        },
+        "home_score": {
+          "box": [
+            1100,
+            955,
+            1220,
+            1024
+          ],
+          "luma": [
+            3.0,
+            19.0,
+            255.0
+          ],
+          "rgb": [
+            19.0,
+            19.0,
+            19.0
+          ],
+          "ink_pixels": 992,
+          "ink_box": [
+            1145,
+            971,
+            1183,
+            1023
+          ],
+          "core_luma": 252.0,
+          "ink_style": "light",
+          "ocr": {
+            "text": "3",
+            "certain": true,
+            "error": 0.2109
+          }
+        },
+        "clock": {
+          "box": [
+            915,
+            1003,
+            1009,
+            1036
+          ],
+          "luma": [
+            33.06,
+            119.25,
+            255.0
+          ],
+          "rgb": [
+            154.0,
+            110.0,
+            110.0
+          ],
+          "ink_pixels": 188,
+          "ink_box": [
+            915,
+            1003,
+            1009,
+            1005
+          ],
+          "core_luma": 52.1,
+          "ink_style": "dark",
+          "ocr": {
+            "text": "n",
+            "certain": false,
+            "error": 0.3625
+          }
+        },
+        "quarter": {
+          "box": [
+            844,
+            1003,
+            897,
+            1036
+          ],
+          "luma": [
+            26.79,
+            93.06,
+            255.0
+          ],
+          "rgb": [
+            135.0,
+            82.0,
+            82.0
+          ],
+          "ink_pixels": 174,
+          "ink_box": [
+            844,
+            1003,
+            897,
+            1036
+          ],
+          "core_luma": 52.1,
+          "ink_style": "dark",
+          "ocr": {
+            "text": "?",
+            "certain": false,
+            "error": 0.9648
+          }
+        },
+        "play_clock": {
+          "box": [
+            1023,
+            1003,
+            1077,
+            1036
+          ],
+          "luma": [
+            27.0,
+            99.84,
+            255.0
+          ],
+          "rgb": [
+            139.0,
+            89.0,
+            89.0
+          ],
+          "ink_pixels": 505,
+          "ink_box": [
+            1032,
+            1012,
+            1075,
+            1036
+          ],
+          "core_luma": 241.64,
+          "ink_style": "light",
+          "ocr": {
+            "text": "32",
+            "certain": true,
+            "error": 0.2387
+          }
+        },
+        "down": {
+          "box": [
+            835,
+            950,
+            1085,
+            985
+          ],
+          "luma": [
+            12.82,
+            69.78,
+            255.0
+          ],
+          "rgb": [
+            106.0,
+            60.0,
+            61.0
+          ],
+          "ink_pixels": 1847,
+          "ink_box": [
+            885,
+            957,
+            1043,
+            985
+          ],
+          "core_luma": 251.21,
+          "ink_style": "light",
+          "ocr": {
+            "text": "3st&30",
+            "certain": false,
+            "error": 0.3525
+          }
+        },
+        "plate": {
+          "box": [
+            825,
+            947,
+            1093,
+            987
+          ],
+          "luma": [
+            2.48,
+            68.57,
+            255.0
+          ],
+          "rgb": [
+            104.0,
+            59.0,
+            60.0
+          ],
+          "ink_pixels": 1964,
+          "ink_box": [
+            885,
+            957,
+            1043,
+            987
+          ],
+          "core_luma": 251.21,
+          "ink_style": "light"
+        },
+        "away_wing": {
+          "box": [
+            437,
+            950,
+            464,
+            1038
+          ],
+          "luma": [
+            25.5,
+            59.94,
+            116.92
+          ],
+          "rgb": [
+            28.0,
+            66.0,
+            92.0
+          ],
+          "ink_pixels": 0,
+          "ink_box": null,
+          "core_luma": 0.0,
+          "ink_style": "light"
+        },
+        "home_wing": {
+          "box": [
+            1450,
+            950,
+            1478,
+            1038
+          ],
+          "luma": [
+            17.01,
+            62.44,
+            198.76
+          ],
+          "rgb": [
+            95.0,
+            55.0,
+            0.0
+          ],
+          "ink_pixels": 0,
+          "ink_box": null,
+          "core_luma": 0.0,
+          "ink_style": "light"
+        },
+        "away_rim": {
+          "box": [
+            690,
+            942,
+            810,
+            951
+          ],
+          "luma": [
+            2.57,
+            49.77,
+            137.35
+          ],
+          "rgb": [
+            25.0,
+            56.5,
+            24.0
+          ],
+          "ink_pixels": 0,
+          "ink_box": null,
+          "core_luma": 0.0,
+          "ink_style": "light"
+        },
+        "home_rim": {
+          "box": [
+            1110,
+            942,
+            1235,
+            951
+          ],
+          "luma": [
+            0.28,
+            52.08,
+            133.05
+          ],
+          "rgb": [
+            54.0,
+            45.0,
+            19.0
+          ],
+          "ink_pixels": 0,
+          "ink_box": null,
+          "core_luma": 0.0,
+          "ink_style": "light"
+        },
+        "away_timeouts": {
+          "box": [
+            710,
+            1028,
+            804,
+            1042
+          ],
+          "luma": [
+            0.0,
+            19.0,
+            255.0
+          ],
+          "rgb": [
+            19.0,
+            19.0,
+            19.0
+          ],
+          "ink_pixels": 154,
+          "ink_box": [
+            720,
+            1038,
+            797,
+            1042
+          ],
+          "core_luma": 250.0,
+          "ink_style": "light"
+        },
+        "home_timeouts": {
+          "box": [
+            1114,
+            1028,
+            1208,
+            1042
+          ],
+          "luma": [
+            0.0,
+            19.0,
+            255.0
+          ],
+          "rgb": [
+            19.0,
+            19.0,
+            19.0
+          ],
+          "ink_pixels": 150,
+          "ink_box": [
+            1125,
+            1038,
+            1202,
+            1042
+          ],
+          "core_luma": 250.0,
+          "ink_style": "light"
+        },
+        "network": {
+          "box": [
+            1655,
+            35,
+            1869,
+            64
+          ],
+          "luma": [
+            0.0,
+            9.02,
+            193.64
+          ],
+          "rgb": [
+            18.0,
+            6.0,
+            6.0
+          ],
+          "ink_pixels": 57,
+          "ink_box": [
+            1678,
+            36,
+            1743,
+            43
+          ],
+          "core_luma": 190.07,
+          "ink_style": "light"
+        }
+      },
+      "readback": {
+        "text": "3st&30",
+        "down": null,
+        "distance": null,
+        "goal": false,
+        "certainty": "uncertain"
+      },
+      "banners": {
+        "flag": false,
+        "touchdown": "unresolved",
+        "field_goal": "unresolved",
+        "network": "unresolved"
+      },
+      "limitations": [
+        "Template matching can reject connected text and transitions.",
+        "Red zone needs field position evidence."
+      ]
+    },
+    "base_model": {
+      "schema": "scorebug-descriptor/v1",
+      "source_size": [
+        1920,
+        1080
+      ],
+      "aspect": "16:9",
+      "present": true,
+      "fields": {
+        "away_score": {
+          "box": [
+            696,
+            955,
+            816,
+            1024
+          ],
+          "luma": [
+            7.0,
+            37.0,
+            255.0
+          ],
+          "rgb": [
+            37.0,
+            37.0,
+            37.0
+          ],
+          "ink_pixels": 1210,
+          "ink_box": [
+            737,
+            965,
+            775,
+            1017
+          ],
+          "core_luma": 253.0,
+          "ink_style": "light",
+          "ocr": {
+            "text": "0",
+            "certain": true,
+            "error": 0.1923
+          }
+        },
+        "home_score": {
+          "box": [
+            1100,
+            955,
+            1220,
+            1024
+          ],
+          "luma": [
+            13.0,
+            37.0,
+            255.0
+          ],
+          "rgb": [
+            37.0,
+            37.0,
+            37.0
+          ],
+          "ink_pixels": 996,
+          "ink_box": [
+            1141,
+            965,
+            1179,
+            1017
+          ],
+          "core_luma": 253.0,
+          "ink_style": "light",
+          "ocr": {
+            "text": "3",
+            "certain": true,
+            "error": 0.1901
+          }
+        },
+        "clock": {
+          "box": [
+            915,
+            1003,
+            1009,
+            1036
+          ],
+          "luma": [
+            82.12,
+            144.44,
+            255.0
+          ],
+          "rgb": [
+            172.5,
+            137.0,
+            137.0
+          ],
+          "ink_pixels": 1172,
+          "ink_box": [
+            921,
+            1006,
+            999,
+            1033
+          ],
+          "core_luma": 238.28,
+          "ink_style": "light",
+          "ocr": {
+            "text": "5oo",
+            "certain": true,
+            "error": 0.3157
+          }
+        },
+        "quarter": {
+          "box": [
+            844,
+            1003,
+            897,
+            1036
+          ],
+          "luma": [
+            47.43,
+            117.57,
+            255.0
+          ],
+          "rgb": [
+            153.0,
+            108.0,
+            108.0
+          ],
+          "ink_pixels": 504,
+          "ink_box": [
+            849,
+            1006,
+            897,
+            1032
+          ],
+          "core_luma": 250.43,
+          "ink_style": "light",
+          "ocr": {
+            "text": "3s7",
+            "certain": false,
+            "error": 0.3915
+          }
+        },
+        "play_clock": {
+          "box": [
+            1023,
+            1003,
+            1077,
+            1036
+          ],
+          "luma": [
+            55.91,
+            123.14,
+            255.0
+          ],
+          "rgb": [
+            157.0,
+            114.0,
+            114.0
+          ],
+          "ink_pixels": 570,
+          "ink_box": [
+            1029,
+            1006,
+            1071,
+            1032
+          ],
+          "core_luma": 244.85,
+          "ink_style": "light",
+          "ocr": {
+            "text": "32",
+            "certain": true,
+            "error": 0.2052
+          }
+        },
+        "down": {
+          "box": [
+            835,
+            950,
+            1085,
+            985
+          ],
+          "luma": [
+            32.4,
+            84.72,
+            255.0
+          ],
+          "rgb": [
+            117.0,
+            76.0,
+            76.0
+          ],
+          "ink_pixels": 1947,
+          "ink_box": [
+            882,
+            952,
+            1040,
+            981
+          ],
+          "core_luma": 254.0,
+          "ink_style": "light",
+          "ocr": {
+            "text": "dst&30",
+            "certain": false,
+            "error": 0.3435
+          }
+        },
+        "plate": {
+          "box": [
+            825,
+            947,
+            1093,
+            987
+          ],
+          "luma": [
+            28.98,
+            83.11,
+            255.0
+          ],
+          "rgb": [
+            116.0,
+            75.0,
+            75.0
+          ],
+          "ink_pixels": 1947,
+          "ink_box": [
+            882,
+            952,
+            1040,
+            981
+          ],
+          "core_luma": 254.0,
+          "ink_style": "light"
+        },
+        "away_wing": {
+          "box": [
+            437,
+            950,
+            464,
+            1038
+          ],
+          "luma": [
+            55.31,
+            73.65,
+            108.3
+          ],
+          "rgb": [
+            45.0,
+            79.0,
+            105.0
+          ],
+          "ink_pixels": 0,
+          "ink_box": null,
+          "core_luma": 0.0,
+          "ink_style": "light"
+        },
+        "home_wing": {
+          "box": [
+            1450,
+            950,
+            1478,
+            1038
+          ],
+          "luma": [
+            21.85,
+            76.8,
+            202.97
+          ],
+          "rgb": [
+            106.0,
+            70.0,
+            23.5
+          ],
+          "ink_pixels": 0,
+          "ink_box": null,
+          "core_luma": 0.0,
+          "ink_style": "light"
+        },
+        "away_rim": {
+          "box": [
+            690,
+            942,
+            810,
+            951
+          ],
+          "luma": [
+            35.69,
+            46.0,
+            71.31
+          ],
+          "rgb": [
+            26.0,
+            51.0,
+            73.0
+          ],
+          "ink_pixels": 0,
+          "ink_box": null,
+          "core_luma": 0.0,
+          "ink_style": "light"
+        },
+        "home_rim": {
+          "box": [
+            1110,
+            942,
+            1235,
+            951
+          ],
+          "luma": [
+            37.4,
+            47.32,
+            69.23
+          ],
+          "rgb": [
+            67.0,
+            42.0,
+            42.0
+          ],
+          "ink_pixels": 0,
+          "ink_box": null,
+          "core_luma": 0.0,
+          "ink_style": "light"
+        },
+        "away_timeouts": {
+          "box": [
+            710,
+            1028,
+            804,
+            1042
+          ],
+          "luma": [
+            12.0,
+            37.07,
+            255.0
+          ],
+          "rgb": [
+            37.0,
+            37.0,
+            38.0
+          ],
+          "ink_pixels": 264,
+          "ink_box": [
+            717,
+            1032,
+            795,
+            1038
+          ],
+          "core_luma": 252.25,
+          "ink_style": "light"
+        },
+        "home_timeouts": {
+          "box": [
+            1114,
+            1028,
+            1208,
+            1042
+          ],
+          "luma": [
+            12.0,
+            37.0,
+            255.0
+          ],
+          "rgb": [
+            37.0,
+            37.0,
+            37.0
+          ],
+          "ink_pixels": 234,
+          "ink_box": [
+            1120,
+            1032,
+            1197,
+            1038
+          ],
+          "core_luma": 246.75,
+          "ink_style": "light"
+        },
+        "network": {
+          "box": [
+            1655,
+            35,
+            1869,
+            64
+          ],
+          "luma": [
+            35.07,
+            48.0,
+            210.85
+          ],
+          "rgb": [
+            48.0,
+            48.0,
+            48.0
+          ],
+          "ink_pixels": 473,
+          "ink_box": [
+            1655,
+            40,
+            1739,
+            59
+          ],
+          "core_luma": 191.92,
+          "ink_style": "light"
+        }
+      },
+      "readback": {
+        "text": "dst&30",
+        "down": null,
+        "distance": null,
+        "goal": false,
+        "certainty": "uncertain"
+      },
+      "banners": {
+        "flag": false,
+        "touchdown": "unresolved",
+        "field_goal": "unresolved",
+        "network": "unresolved"
+      },
+      "limitations": [
+        "Template matching can reject connected text and transitions.",
+        "Red zone needs field position evidence."
+      ]
+    },
+    "calibration_passed": false,
+    "limitation": "Witness crop has unrecorded display scaling and color processing. No artificial brightness multiplier fitted."
+  },
+  {
+    "capture": "ksnip_20260919-170844.png",
+    "source_sha256": "4c46717b1680520c8ceaf68425fda1193fb1135d10a7d73b914e065c2029670b",
+    "actual": {
+      "schema": "scorebug-descriptor/v1",
+      "source_size": [
+        1920,
+        1080
+      ],
+      "aspect": "16:9",
+      "present": true,
+      "fields": {
+        "away_score": {
+          "box": [
+            696,
+            955,
+            816,
+            1024
+          ],
+          "luma": [
+            0.0,
+            19.0,
+            255.0
+          ],
+          "rgb": [
+            19.0,
+            19.0,
+            19.0
+          ],
+          "ink_pixels": 845,
+          "ink_box": [
+            735,
+            971,
+            773,
+            1023
+          ],
+          "core_luma": 252.0,
+          "ink_style": "light",
+          "ocr": {
+            "text": "7",
+            "certain": true,
+            "error": 0.1685
+          }
+        },
+        "home_score": {
+          "box": [
+            1100,
+            955,
+            1220,
+            1024
+          ],
+          "luma": [
+            3.0,
+            19.0,
+            255.0
+          ],
+          "rgb": [
+            19.0,
+            19.0,
+            19.0
+          ],
+          "ink_pixels": 2002,
+          "ink_box": [
+            1121,
+            971,
+            1200,
+            1023
+          ],
+          "core_luma": 253.0,
+          "ink_style": "light",
+          "ocr": {
+            "text": "33",
+            "certain": false,
+            "error": 0.3533
+          }
+        },
+        "clock": {
+          "box": [
+            915,
+            1003,
+            1009,
+            1036
+          ],
+          "luma": [
+            30.86,
+            99.77,
+            255.0
+          ],
+          "rgb": [
+            93.0,
+            100.5,
+            114.0
+          ],
+          "ink_pixels": 1407,
+          "ink_box": [
+            915,
+            1003,
+            1009,
+            1036
+          ],
+          "core_luma": 79.24,
+          "ink_style": "dark",
+          "ocr": {
+            "text": "?",
+            "certain": false,
+            "error": 0.7122
+          }
+        },
+        "quarter": {
+          "box": [
+            844,
+            1003,
+            897,
+            1036
+          ],
+          "luma": [
+            27.0,
+            109.45,
+            255.0
+          ],
+          "rgb": [
+            103.0,
+            110.0,
+            123.0
+          ],
+          "ink_pixels": 703,
+          "ink_box": [
+            844,
+            1003,
+            897,
+            1036
+          ],
+          "core_luma": 79.24,
+          "ink_style": "dark",
+          "ocr": {
+            "text": "?",
+            "certain": false,
+            "error": 0.7402
+          }
+        },
+        "play_clock": {
+          "box": [
+            1023,
+            1003,
+            1077,
+            1036
+          ],
+          "luma": [
+            27.0,
+            89.38,
+            255.0
+          ],
+          "rgb": [
+            82.0,
+            90.0,
+            104.0
+          ],
+          "ink_pixels": 515,
+          "ink_box": [
+            1027,
+            1012,
+            1070,
+            1036
+          ],
+          "core_luma": 243.9,
+          "ink_style": "light",
+          "ocr": {
+            "text": "34",
+            "certain": true,
+            "error": 0.2317
+          }
+        },
+        "down": {
+          "box": [
+            835,
+            950,
+            1085,
+            985
+          ],
+          "luma": [
+            0.36,
+            62.24,
+            255.0
+          ],
+          "rgb": [
+            55.0,
+            63.0,
+            76.0
+          ],
+          "ink_pixels": 1785,
+          "ink_box": [
+            881,
+            958,
+            1039,
+            985
+          ],
+          "core_luma": 252.0,
+          "ink_style": "light",
+          "ocr": {
+            "text": "35t&3o",
+            "certain": false,
+            "error": 0.3274
+          }
+        },
+        "plate": {
+          "box": [
+            825,
+            947,
+            1093,
+            987
+          ],
+          "luma": [
+            0.0,
+            60.24,
+            255.0
+          ],
+          "rgb": [
+            54.0,
+            61.0,
+            73.0
+          ],
+          "ink_pixels": 1905,
+          "ink_box": [
+            881,
+            958,
+            1039,
+            987
+          ],
+          "core_luma": 251.79,
+          "ink_style": "light"
+        },
+        "away_wing": {
+          "box": [
+            437,
+            950,
+            464,
+            1038
+          ],
+          "luma": [
+            7.15,
+            28.64,
+            33.43
+          ],
+          "rgb": [
+            43.0,
+            20.0,
+            72.0
+          ],
+          "ink_pixels": 0,
+          "ink_box": null,
+          "core_luma": 0.0,
+          "ink_style": "light"
+        },
+        "home_wing": {
+          "box": [
+            1450,
+            950,
+            1478,
+            1038
+          ],
+          "luma": [
+            51.23,
+            58.45,
+            80.1
+          ],
+          "rgb": [
+            53.0,
+            59.0,
+            68.0
+          ],
+          "ink_pixels": 0,
+          "ink_box": null,
+          "core_luma": 0.0,
+          "ink_style": "light"
+        },
+        "away_rim": {
+          "box": [
+            690,
+            942,
+            810,
+            951
+          ],
+          "luma": [
+            0.0,
+            35.53,
+            144.21
+          ],
+          "rgb": [
+            29.0,
+            40.0,
+            21.0
+          ],
+          "ink_pixels": 0,
+          "ink_box": null,
+          "core_luma": 0.0,
+          "ink_style": "light"
+        },
+        "home_rim": {
+          "box": [
+            1110,
+            942,
+            1235,
+            951
+          ],
+          "luma": [
+            0.0,
+            44.16,
+            132.85
+          ],
+          "rgb": [
+            38.0,
+            47.0,
+            30.0
+          ],
+          "ink_pixels": 0,
+          "ink_box": null,
+          "core_luma": 0.0,
+          "ink_style": "light"
+        },
+        "away_timeouts": {
+          "box": [
+            710,
+            1028,
+            804,
+            1042
+          ],
+          "luma": [
+            0.0,
+            19.0,
+            255.0
+          ],
+          "rgb": [
+            19.0,
+            19.0,
+            19.0
+          ],
+          "ink_pixels": 149,
+          "ink_box": [
+            716,
+            1039,
+            793,
+            1042
+          ],
+          "core_luma": 250.0,
+          "ink_style": "light"
+        },
+        "home_timeouts": {
+          "box": [
+            1114,
+            1028,
+            1208,
+            1042
+          ],
+          "luma": [
+            0.0,
+            19.0,
+            255.0
+          ],
+          "rgb": [
+            19.0,
+            19.0,
+            19.0
+          ],
+          "ink_pixels": 145,
+          "ink_box": [
+            1121,
+            1038,
+            1197,
+            1042
+          ],
+          "core_luma": 250.0,
+          "ink_style": "light"
+        },
+        "network": {
+          "box": [
+            1655,
+            35,
+            1869,
+            64
+          ],
+          "luma": [
+            0.0,
+            83.16,
+            255.0
+          ],
+          "rgb": [
+            81.0,
+            83.0,
+            101.0
+          ],
+          "ink_pixels": 975,
+          "ink_box": [
+            1655,
+            35,
+            1869,
+            64
+          ],
+          "core_luma": 215.46,
+          "ink_style": "light"
+        }
+      },
+      "readback": {
+        "text": "35t&3o",
+        "down": null,
+        "distance": null,
+        "goal": false,
+        "certainty": "uncertain"
+      },
+      "banners": {
+        "flag": false,
+        "touchdown": "unresolved",
+        "field_goal": "unresolved",
+        "network": "unresolved"
+      },
+      "limitations": [
+        "Template matching can reject connected text and transitions.",
+        "Red zone needs field position evidence."
+      ]
+    },
+    "base_model": {
+      "schema": "scorebug-descriptor/v1",
+      "source_size": [
+        1920,
+        1080
+      ],
+      "aspect": "16:9",
+      "present": true,
+      "fields": {
+        "away_score": {
+          "box": [
+            696,
+            955,
+            816,
+            1024
+          ],
+          "luma": [
+            7.21,
+            37.0,
+            255.0
+          ],
+          "rgb": [
+            37.0,
+            37.0,
+            37.0
+          ],
+          "ink_pixels": 851,
+          "ink_box": [
+            737,
+            965,
+            776,
+            1017
+          ],
+          "core_luma": 253.0,
+          "ink_style": "light",
+          "ocr": {
+            "text": "7",
+            "certain": true,
+            "error": 0.1802
+          }
+        },
+        "home_score": {
+          "box": [
+            1100,
+            955,
+            1220,
+            1024
+          ],
+          "luma": [
+            5.0,
+            37.0,
+            255.0
+          ],
+          "rgb": [
+            37.0,
+            37.0,
+            37.0
+          ],
+          "ink_pixels": 1990,
+          "ink_box": [
+            1121,
+            965,
+            1200,
+            1017
+          ],
+          "core_luma": 253.0,
+          "ink_style": "light",
+          "ocr": {
+            "text": "d3",
+            "certain": false,
+            "error": 0.3469
+          }
+        },
+        "clock": {
+          "box": [
+            915,
+            1003,
+            1009,
+            1036
+          ],
+          "luma": [
+            70.96,
+            125.59,
+            255.0
+          ],
+          "rgb": [
+            120.0,
+            126.0,
+            137.0
+          ],
+          "ink_pixels": 1040,
+          "ink_box": [
+            921,
+            1006,
+            999,
+            1033
+          ],
+          "core_luma": 243.07,
+          "ink_style": "light",
+          "ocr": {
+            "text": "o?35",
+            "certain": false,
+            "error": 0.3784
+          }
+        },
+        "quarter": {
+          "box": [
+            844,
+            1003,
+            897,
+            1036
+          ],
+          "luma": [
+            47.07,
+            130.73,
+            255.0
+          ],
+          "rgb": [
+            125.0,
+            131.0,
+            142.0
+          ],
+          "ink_pixels": 571,
+          "ink_box": [
+            846,
+            1006,
+            897,
+            1032
+          ],
+          "core_luma": 232.93,
+          "ink_style": "light",
+          "ocr": {
+            "text": "380",
+            "certain": true,
+            "error": 0.2994
+          }
+        },
+        "play_clock": {
+          "box": [
+            1023,
+            1003,
+            1077,
+            1036
+          ],
+          "luma": [
+            53.0,
+            108.49,
+            255.0
+          ],
+          "rgb": [
+            102.0,
+            109.0,
+            122.0
+          ],
+          "ink_pixels": 554,
+          "ink_box": [
+            1029,
+            1006,
+            1071,
+            1032
+          ],
+          "core_luma": 247.07,
+          "ink_style": "light",
+          "ocr": {
+            "text": "34",
+            "certain": true,
+            "error": 0.1552
+          }
+        },
+        "down": {
+          "box": [
+            835,
+            950,
+            1085,
+            985
+          ],
+          "luma": [
+            21.5,
+            76.59,
+            255.0
+          ],
+          "rgb": [
+            71.0,
+            77.0,
+            89.0
+          ],
+          "ink_pixels": 1919,
+          "ink_box": [
+            882,
+            952,
+            1040,
+            981
+          ],
+          "core_luma": 254.0,
+          "ink_style": "light",
+          "ocr": {
+            "text": "dst&30",
+            "certain": false,
+            "error": 0.3403
+          }
+        },
+        "plate": {
+          "box": [
+            825,
+            947,
+            1093,
+            987
+          ],
+          "luma": [
+            4.21,
+            75.38,
+            255.0
+          ],
+          "rgb": [
+            69.0,
+            76.0,
+            88.0
+          ],
+          "ink_pixels": 1919,
+          "ink_box": [
+            882,
+            952,
+            1040,
+            981
+          ],
+          "core_luma": 254.0,
+          "ink_style": "light"
+        },
+        "away_wing": {
+          "box": [
+            437,
+            950,
+            464,
+            1038
+          ],
+          "luma": [
+            24.36,
+            46.22,
+            50.14
+          ],
+          "rgb": [
+            59.0,
+            38.0,
+            87.0
+          ],
+          "ink_pixels": 0,
+          "ink_box": null,
+          "core_luma": 0.0,
+          "ink_style": "light"
+        },
+        "home_wing": {
+          "box": [
+            1450,
+            950,
+            1478,
+            1038
+          ],
+          "luma": [
+            61.8,
+            72.37,
+            92.52
+          ],
+          "rgb": [
+            67.0,
+            73.0,
+            82.0
+          ],
+          "ink_pixels": 0,
+          "ink_box": null,
+          "core_luma": 0.0,
+          "ink_style": "light"
+        },
+        "away_rim": {
+          "box": [
+            690,
+            942,
+            810,
+            951
+          ],
+          "luma": [
+            8.07,
+            12.86,
+            30.07
+          ],
+          "rgb": [
+            19.0,
+            9.0,
+            33.0
+          ],
+          "ink_pixels": 0,
+          "ink_box": null,
+          "core_luma": 0.0,
+          "ink_style": "light"
+        },
+        "home_rim": {
+          "box": [
+            1110,
+            942,
+            1235,
+            951
+          ],
+          "luma": [
+            33.72,
+            41.73,
+            63.59
+          ],
+          "rgb": [
+            38.0,
+            42.0,
+            50.0
+          ],
+          "ink_pixels": 0,
+          "ink_box": null,
+          "core_luma": 0.0,
+          "ink_style": "light"
+        },
+        "away_timeouts": {
+          "box": [
+            710,
+            1028,
+            804,
+            1042
+          ],
+          "luma": [
+            12.0,
+            37.0,
+            255.0
+          ],
+          "rgb": [
+            37.0,
+            37.0,
+            37.0
+          ],
+          "ink_pixels": 264,
+          "ink_box": [
+            717,
+            1032,
+            795,
+            1038
+          ],
+          "core_luma": 252.25,
+          "ink_style": "light"
+        },
+        "home_timeouts": {
+          "box": [
+            1114,
+            1028,
+            1208,
+            1042
+          ],
+          "luma": [
+            12.0,
+            37.0,
+            255.0
+          ],
+          "rgb": [
+            37.0,
+            37.0,
+            37.0
+          ],
+          "ink_pixels": 234,
+          "ink_box": [
+            1120,
+            1032,
+            1197,
+            1038
+          ],
+          "core_luma": 246.75,
+          "ink_style": "light"
+        },
+        "network": {
+          "box": [
+            1655,
+            35,
+            1869,
+            64
+          ],
+          "luma": [
+            35.07,
+            48.0,
+            210.85
+          ],
+          "rgb": [
+            48.0,
+            48.0,
+            48.0
+          ],
+          "ink_pixels": 473,
+          "ink_box": [
+            1655,
+            40,
+            1739,
+            59
+          ],
+          "core_luma": 191.92,
+          "ink_style": "light"
+        }
+      },
+      "readback": {
+        "text": "dst&30",
+        "down": null,
+        "distance": null,
+        "goal": false,
+        "certainty": "uncertain"
+      },
+      "banners": {
+        "flag": false,
+        "touchdown": "unresolved",
+        "field_goal": "unresolved",
+        "network": "unresolved"
+      },
+      "limitations": [
+        "Template matching can reject connected text and transitions.",
+        "Red zone needs field position evidence."
+      ]
+    },
+    "calibration_passed": false,
+    "limitation": "Witness crop has unrecorded display scaling and color processing. No artificial brightness multiplier fitted."
+  },
+  {
+    "capture": "ksnip_20260919-170601.png",
+    "source_sha256": "38a19a249149e6cd2df5f052fc83624aa6321710379562f7c0b8d2be5c39b59d",
+    "actual": {
+      "schema": "scorebug-descriptor/v1",
+      "source_size": [
+        1920,
+        1080
+      ],
+      "aspect": "16:9",
+      "present": true,
+      "fields": {
+        "away_score": {
+          "box": [
+            696,
+            955,
+            816,
+            1024
+          ],
+          "luma": [
+            7.0,
+            19.0,
+            255.0
+          ],
+          "rgb": [
+            19.0,
+            19.0,
+            19.0
+          ],
+          "ink_pixels": 1196,
+          "ink_box": [
+            738,
+            970,
+            776,
+            1022
+          ],
+          "core_luma": 253.0,
+          "ink_style": "light",
+          "ocr": {
+            "text": "0",
+            "certain": true,
+            "error": 0.1941
+          }
+        },
+        "home_score": {
+          "box": [
+            1100,
+            955,
+            1220,
+            1024
+          ],
+          "luma": [
+            0.0,
+            19.0,
+            255.0
+          ],
+          "rgb": [
+            19.0,
+            19.0,
+            19.0
+          ],
+          "ink_pixels": 1208,
+          "ink_box": [
+            1145,
+            970,
+            1183,
+            1022
+          ],
+          "core_luma": 253.0,
+          "ink_style": "light",
+          "ocr": {
+            "text": "0",
+            "certain": true,
+            "error": 0.177
+          }
+        },
+        "clock": {
+          "box": [
+            915,
+            1003,
+            1009,
+            1036
+          ],
+          "luma": [
+            45.86,
+            92.18,
+            255.0
+          ],
+          "rgb": [
+            192.0,
+            70.0,
+            19.0
+          ],
+          "ink_pixels": 0,
+          "ink_box": null,
+          "core_luma": 0.0,
+          "ink_style": "dark",
+          "ocr": {
+            "text": "",
+            "certain": false,
+            "error": 1.0
+          }
+        },
+        "quarter": {
+          "box": [
+            844,
+            1003,
+            897,
+            1036
+          ],
+          "luma": [
+            26.79,
+            77.73,
+            255.0
+          ],
+          "rgb": [
+            190.0,
+            53.0,
+            9.0
+          ],
+          "ink_pixels": 50,
+          "ink_box": [
+            844,
+            1003,
+            859,
+            1036
+          ],
+          "core_luma": 38.82,
+          "ink_style": "dark",
+          "ocr": {
+            "text": "?",
+            "certain": false,
+            "error": 0.8799
+          }
+        },
+        "play_clock": {
+          "box": [
+            1023,
+            1003,
+            1077,
+            1036
+          ],
+          "luma": [
+            26.79,
+            93.22,
+            255.0
+          ],
+          "rgb": [
+            193.0,
+            70.5,
+            23.5
+          ],
+          "ink_pixels": 457,
+          "ink_box": [
+            1031,
+            1011,
+            1074,
+            1036
+          ],
+          "core_luma": 242.48,
+          "ink_style": "light",
+          "ocr": {
+            "text": "25",
+            "certain": true,
+            "error": 0.2832
+          }
+        },
+        "down": {
+          "box": [
+            835,
+            950,
+            1085,
+            985
+          ],
+          "luma": [
+            0.0,
+            36.16,
+            255.0
+          ],
+          "rgb": [
+            71.0,
+            27.0,
+            25.0
+          ],
+          "ink_pixels": 1914,
+          "ink_box": [
+            835,
+            960,
+            1085,
+            985
+          ],
+          "core_luma": 240.0,
+          "ink_style": "light",
+          "ocr": {
+            "text": "Do88O0DLh21",
+            "certain": false,
+            "error": 0.3719
+          }
+        },
+        "plate": {
+          "box": [
+            825,
+            947,
+            1093,
+            987
+          ],
+          "luma": [
+            0.0,
+            33.41,
+            255.0
+          ],
+          "rgb": [
+            69.0,
+            25.0,
+            21.0
+          ],
+          "ink_pixels": 2056,
+          "ink_box": [
+            833,
+            960,
+            1093,
+            985
+          ],
+          "core_luma": 240.0,
+          "ink_style": "light"
+        },
+        "away_wing": {
+          "box": [
+            437,
+            950,
+            464,
+            1038
+          ],
+          "luma": [
+            11.9,
+            45.56,
+            78.23
+          ],
+          "rgb": [
+            110.0,
+            31.0,
+            0.0
+          ],
+          "ink_pixels": 0,
+          "ink_box": null,
+          "core_luma": 0.0,
+          "ink_style": "light"
+        },
+        "home_wing": {
+          "box": [
+            1450,
+            950,
+            1478,
+            1038
+          ],
+          "luma": [
+            0.94,
+            47.44,
+            253.0
+          ],
+          "rgb": [
+            24.5,
+            52.0,
+            83.0
+          ],
+          "ink_pixels": 372,
+          "ink_box": [
+            1450,
+            960,
+            1478,
+            1038
+          ],
+          "core_luma": 225.21,
+          "ink_style": "light"
+        },
+        "away_rim": {
+          "box": [
+            690,
+            942,
+            810,
+            951
+          ],
+          "luma": [
+            4.46,
+            42.39,
+            255.0
+          ],
+          "rgb": [
+            94.0,
+            27.0,
+            15.0
+          ],
+          "ink_pixels": 155,
+          "ink_box": [
+            690,
+            942,
+            788,
+            946
+          ],
+          "core_luma": 252.93,
+          "ink_style": "light"
+        },
+        "home_rim": {
+          "box": [
+            1110,
+            942,
+            1235,
+            951
+          ],
+          "luma": [
+            0.07,
+            26.7,
+            216.91
+          ],
+          "rgb": [
+            11.0,
+            30.0,
+            48.0
+          ],
+          "ink_pixels": 3,
+          "ink_box": [
+            1135,
+            942,
+            1136,
+            945
+          ],
+          "core_luma": 216.7,
+          "ink_style": "light"
+        },
+        "away_timeouts": {
+          "box": [
+            710,
+            1028,
+            804,
+            1042
+          ],
+          "luma": [
+            0.0,
+            19.0,
+            255.0
+          ],
+          "rgb": [
+            19.0,
+            19.0,
+            19.0
+          ],
+          "ink_pixels": 244,
+          "ink_box": [
+            719,
+            1037,
+            796,
+            1042
+          ],
+          "core_luma": 244.0,
+          "ink_style": "light"
+        },
+        "home_timeouts": {
+          "box": [
+            1114,
+            1028,
+            1208,
+            1042
+          ],
+          "luma": [
+            0.0,
+            19.0,
+            255.0
+          ],
+          "rgb": [
+            19.0,
+            19.0,
+            19.0
+          ],
+          "ink_pixels": 247,
+          "ink_box": [
+            1124,
+            1037,
+            1201,
+            1042
+          ],
+          "core_luma": 244.0,
+          "ink_style": "light"
+        },
+        "network": {
+          "box": [
+            1655,
+            35,
+            1869,
+            64
+          ],
+          "luma": [
+            0.0,
+            66.93,
+            214.46
+          ],
+          "rgb": [
+            64.0,
+            68.0,
+            66.0
+          ],
+          "ink_pixels": 797,
+          "ink_box": [
+            1655,
+            39,
+            1746,
+            61
+          ],
+          "core_luma": 204.82,
+          "ink_style": "light"
+        }
+      },
+      "readback": {
+        "text": "Do88O0DLh21",
+        "down": null,
+        "distance": null,
+        "goal": false,
+        "certainty": "uncertain"
+      },
+      "banners": {
+        "flag": false,
+        "touchdown": "unresolved",
+        "field_goal": "unresolved",
+        "network": "unresolved"
+      },
+      "limitations": [
+        "Template matching can reject connected text and transitions.",
+        "Red zone needs field position evidence."
+      ]
+    },
+    "base_model": {
+      "schema": "scorebug-descriptor/v1",
+      "source_size": [
+        1920,
+        1080
+      ],
+      "aspect": "16:9",
+      "present": true,
+      "fields": {
+        "away_score": {
+          "box": [
+            696,
+            955,
+            816,
+            1024
+          ],
+          "luma": [
+            7.0,
+            37.0,
+            255.0
+          ],
+          "rgb": [
+            37.0,
+            37.0,
+            37.0
+          ],
+          "ink_pixels": 1210,
+          "ink_box": [
+            737,
+            965,
+            775,
+            1017
+          ],
+          "core_luma": 253.0,
+          "ink_style": "light",
+          "ocr": {
+            "text": "0",
+            "certain": true,
+            "error": 0.1923
+          }
+        },
+        "home_score": {
+          "box": [
+            1100,
+            955,
+            1220,
+            1024
+          ],
+          "luma": [
+            13.0,
+            37.0,
+            255.0
+          ],
+          "rgb": [
+            37.0,
+            37.0,
+            37.0
+          ],
+          "ink_pixels": 1204,
+          "ink_box": [
+            1141,
+            965,
+            1179,
+            1017
+          ],
+          "core_luma": 253.0,
+          "ink_style": "light",
+          "ocr": {
+            "text": "0",
+            "certain": true,
+            "error": 0.1812
+          }
+        },
+        "clock": {
+          "box": [
+            915,
+            1003,
+            1009,
+            1036
+          ],
+          "luma": [
+            76.55,
+            129.32,
+            255.0
+          ],
+          "rgb": [
+            117.0,
+            131.0,
+            149.0
+          ],
+          "ink_pixels": 1033,
+          "ink_box": [
+            922,
+            1006,
+            999,
+            1033
+          ],
+          "core_luma": 242.65,
+          "ink_style": "light",
+          "ocr": {
+            "text": "3?2o",
+            "certain": false,
+            "error": 0.3784
+          }
+        },
+        "quarter": {
+          "box": [
+            844,
+            1003,
+            897,
+            1036
+          ],
+          "luma": [
+            47.86,
+            116.25,
+            255.0
+          ],
+          "rgb": [
+            103.0,
+            118.0,
+            138.0
+          ],
+          "ink_pixels": 496,
+          "ink_box": [
+            849,
+            1006,
+            897,
+            1032
+          ],
+          "core_luma": 250.07,
+          "ink_style": "light",
+          "ocr": {
+            "text": "3s1",
+            "certain": false,
+            "error": 0.3922
+          }
+        },
+        "play_clock": {
+          "box": [
+            1023,
+            1003,
+            1077,
+            1036
+          ],
+          "luma": [
+            54.65,
+            124.32,
+            255.0
+          ],
+          "rgb": [
+            112.0,
+            126.0,
+            144.0
+          ],
+          "ink_pixels": 573,
+          "ink_box": [
+            1029,
+            1006,
+            1071,
+            1032
+          ],
+          "core_luma": 244.86,
+          "ink_style": "light",
+          "ocr": {
+            "text": "25",
+            "certain": true,
+            "error": 0.2194
+          }
+        },
+        "down": {
+          "box": [
+            835,
+            950,
+            1085,
+            985
+          ],
+          "luma": [
+            0.0,
+            57.27,
+            255.0
+          ],
+          "rgb": [
+            53.0,
+            58.0,
+            64.0
+          ],
+          "ink_pixels": 2089,
+          "ink_box": [
+            835,
+            955,
+            1085,
+            981
+          ],
+          "core_luma": 250.0,
+          "ink_style": "light",
+          "ocr": {
+            "text": "38nnODDLh26",
+            "certain": false,
+            "error": 0.3654
+          }
+        },
+        "plate": {
+          "box": [
+            825,
+            947,
+            1093,
+            987
+          ],
+          "luma": [
+            0.0,
+            55.58,
+            255.0
+          ],
+          "rgb": [
+            51.0,
+            56.0,
+            64.0
+          ],
+          "ink_pixels": 2283,
+          "ink_box": [
+            831,
+            955,
+            1091,
+            981
+          ],
+          "core_luma": 250.0,
+          "ink_style": "light"
+        },
+        "away_wing": {
+          "box": [
+            437,
+            950,
+            464,
+            1038
+          ],
+          "luma": [
+            26.5,
+            70.95,
+            104.77
+          ],
+          "rgb": [
+            63.0,
+            72.0,
+            84.0
+          ],
+          "ink_pixels": 0,
+          "ink_box": null,
+          "core_luma": 0.0,
+          "ink_style": "light"
+        },
+        "home_wing": {
+          "box": [
+            1450,
+            950,
+            1478,
+            1038
+          ],
+          "luma": [
+            2.6,
+            61.14,
+            255.0
+          ],
+          "rgb": [
+            40.0,
+            65.0,
+            93.0
+          ],
+          "ink_pixels": 393,
+          "ink_box": [
+            1450,
+            957,
+            1478,
+            1037
+          ],
+          "core_luma": 225.58,
+          "ink_style": "light"
+        },
+        "away_rim": {
+          "box": [
+            690,
+            942,
+            810,
+            951
+          ],
+          "luma": [
+            35.16,
+            43.88,
+            68.53
+          ],
+          "rgb": [
+            37.0,
+            45.0,
+            56.0
+          ],
+          "ink_pixels": 0,
+          "ink_box": null,
+          "core_luma": 0.0,
+          "ink_style": "light"
+        },
+        "home_rim": {
+          "box": [
+            1110,
+            942,
+            1235,
+            951
+          ],
+          "luma": [
+            24.81,
+            30.82,
+            44.12
+          ],
+          "rgb": [
+            18.0,
+            33.0,
+            45.0
+          ],
+          "ink_pixels": 0,
+          "ink_box": null,
+          "core_luma": 0.0,
+          "ink_style": "light"
+        },
+        "away_timeouts": {
+          "box": [
+            710,
+            1028,
+            804,
+            1042
+          ],
+          "luma": [
+            12.0,
+            37.0,
+            255.0
+          ],
+          "rgb": [
+            37.0,
+            37.0,
+            37.0
+          ],
+          "ink_pixels": 264,
+          "ink_box": [
+            717,
+            1032,
+            795,
+            1038
+          ],
+          "core_luma": 252.25,
+          "ink_style": "light"
+        },
+        "home_timeouts": {
+          "box": [
+            1114,
+            1028,
+            1208,
+            1042
+          ],
+          "luma": [
+            12.0,
+            37.0,
+            255.0
+          ],
+          "rgb": [
+            37.0,
+            37.0,
+            37.0
+          ],
+          "ink_pixels": 234,
+          "ink_box": [
+            1120,
+            1032,
+            1197,
+            1038
+          ],
+          "core_luma": 246.75,
+          "ink_style": "light"
+        },
+        "network": {
+          "box": [
+            1655,
+            35,
+            1869,
+            64
+          ],
+          "luma": [
+            35.07,
+            48.0,
+            210.85
+          ],
+          "rgb": [
+            48.0,
+            48.0,
+            48.0
+          ],
+          "ink_pixels": 473,
+          "ink_box": [
+            1655,
+            40,
+            1739,
+            59
+          ],
+          "core_luma": 191.92,
+          "ink_style": "light"
+        }
+      },
+      "readback": {
+        "text": "38nnODDLh26",
+        "down": null,
+        "distance": null,
+        "goal": false,
+        "certainty": "uncertain"
+      },
+      "banners": {
+        "flag": false,
+        "touchdown": "unresolved",
+        "field_goal": "unresolved",
+        "network": "unresolved"
+      },
+      "limitations": [
+        "Template matching can reject connected text and transitions.",
+        "Red zone needs field position evidence."
+      ]
+    },
+    "calibration_passed": false,
+    "limitation": "Witness crop has unrecorded display scaling and color processing. No artificial brightness multiplier fitted."
+  }
+]

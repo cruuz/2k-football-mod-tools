@@ -1,0 +1,499 @@
+{
+  "composite": {
+    "raster": {
+      "uv_transform": [
+        0.5,
+        0.5,
+        0.5,
+        0.5
+      ],
+      "winding": {
+        "cscore_buga": {
+          "positive": 0,
+          "negative": 6
+        },
+        "score_buga": {
+          "positive": 0,
+          "negative": 6
+        },
+        "dscore_buga": {
+          "positive": 0,
+          "negative": 8
+        },
+        "hscore_buga": {
+          "positive": 0,
+          "negative": 2
+        },
+        "yscore_buga1": {
+          "positive": 0,
+          "negative": 24
+        },
+        "yscore_buga": {
+          "positive": 0,
+          "negative": 20
+        },
+        "zscore_buga": {
+          "positive": 0,
+          "negative": 2
+        },
+        "zz_ESPN_bug1": {
+          "positive": 0,
+          "negative": 2
+        }
+      },
+      "rendered_materials": {
+        "cscore_buga": {
+          "descriptor": "0x81e55438",
+          "name": "yscore_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "offset": "0x1e55480",
+          "palette": "0x1e75480",
+          "indices_sha256": "964f45b1cd7f9c3516f29307c4ad456bed1b25e51f0c3fc54f2ef658571c23dd",
+          "palette_sha256": "c941f988309430391a56af7603a22996eebc73062f0e580bcdc41c6e77eada3f"
+        },
+        "dscore_buga": {
+          "descriptor": "0x81e55438",
+          "name": "yscore_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "offset": "0x1e55480",
+          "palette": "0x1e75480",
+          "indices_sha256": "964f45b1cd7f9c3516f29307c4ad456bed1b25e51f0c3fc54f2ef658571c23dd",
+          "palette_sha256": "c941f988309430391a56af7603a22996eebc73062f0e580bcdc41c6e77eada3f"
+        },
+        "hscore_buga": {
+          "descriptor": "0x81e2f338",
+          "name": "hscore_buga",
+          "dimensions": [
+            64,
+            64
+          ],
+          "offset": "0x1e2f380",
+          "palette": "0x1e30380",
+          "indices_sha256": "401a7e3e64347264ed236269833197090664c220a0f1b3b59bbb30a2baca6cee",
+          "palette_sha256": "908a4a1eb1c81c3b52f0b255ea7e3dcf24f1f57ddeb63206970e44bfc6f19097"
+        },
+        "score_buga": {
+          "descriptor": "0x81e55438",
+          "name": "yscore_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "offset": "0x1e55480",
+          "palette": "0x1e75480",
+          "indices_sha256": "964f45b1cd7f9c3516f29307c4ad456bed1b25e51f0c3fc54f2ef658571c23dd",
+          "palette_sha256": "c941f988309430391a56af7603a22996eebc73062f0e580bcdc41c6e77eada3f"
+        },
+        "yscore_buga": {
+          "descriptor": "0x81e55438",
+          "name": "yscore_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "offset": "0x1e55480",
+          "palette": "0x1e75480",
+          "indices_sha256": "964f45b1cd7f9c3516f29307c4ad456bed1b25e51f0c3fc54f2ef658571c23dd",
+          "palette_sha256": "c941f988309430391a56af7603a22996eebc73062f0e580bcdc41c6e77eada3f"
+        },
+        "yscore_buga1": {
+          "descriptor": "0x81e55438",
+          "name": "yscore_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "offset": "0x1e55480",
+          "palette": "0x1e75480",
+          "indices_sha256": "964f45b1cd7f9c3516f29307c4ad456bed1b25e51f0c3fc54f2ef658571c23dd",
+          "palette_sha256": "c941f988309430391a56af7603a22996eebc73062f0e580bcdc41c6e77eada3f"
+        },
+        "zscore_buga": {
+          "descriptor": "0x81e50038",
+          "name": "zscore_buga",
+          "dimensions": [
+            64,
+            64
+          ],
+          "offset": "0x1e50080",
+          "palette": "0x1e51080",
+          "indices_sha256": "a35cbf6177f92e0b1a0c5d37fe7ce98d956739eb598c4b7cd12110bcd799a882",
+          "palette_sha256": "e1f2752cd2d83c4802c773b5543f79f354d0d1c8a2988267eedc75bd5176dc6d"
+        },
+        "zz_ESPN_bug1": {
+          "descriptor": "0x81e55438",
+          "name": "yscore_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "offset": "0x1e55480",
+          "palette": "0x1e75480",
+          "indices_sha256": "964f45b1cd7f9c3516f29307c4ad456bed1b25e51f0c3fc54f2ef658571c23dd",
+          "palette_sha256": "c941f988309430391a56af7603a22996eebc73062f0e580bcdc41c6e77eada3f"
+        }
+      },
+      "submission": [
+        {
+          "material": 2,
+          "name": "cscore_buga",
+          "indices": 16
+        },
+        {
+          "material": 6,
+          "name": "score_buga",
+          "indices": 16
+        },
+        {
+          "material": 4,
+          "name": "dscore_buga",
+          "indices": 22
+        },
+        {
+          "material": 3,
+          "name": "hscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 7,
+          "name": "yscore_buga1",
+          "indices": 88
+        },
+        {
+          "material": 5,
+          "name": "bscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 0,
+          "name": "bscore_buga1",
+          "indices": 4
+        },
+        {
+          "material": 1,
+          "name": "bscore_buga2",
+          "indices": 4
+        },
+        {
+          "material": 9,
+          "name": "yscore_buga",
+          "indices": 94
+        },
+        {
+          "material": 10,
+          "name": "zscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 8,
+          "name": "zz_ESPN_bug1",
+          "indices": 4
+        }
+      ],
+      "raster_policy": {
+        "order": "SHAP descriptor order, then push-buffer order",
+        "depth": "none (sprite submission order)",
+        "blend": "captured xemu fragment equations",
+        "retained_font_draws": "none",
+        "cull_positive": false,
+        "gpu_state_proved": false,
+        "calibration": {
+          "size": [
+            1277,
+            760
+          ],
+          "affine": [
+            1.778125,
+            1.5,
+            39,
+            12.0
+          ]
+        }
+      },
+      "xemu_model": {
+        "model": "xemu f9b1403 observed HUD fragment path",
+        "gpu_state_proved": false,
+        "calibration_passed": false,
+        "assumptions": [
+          "Earlier 13:55:28 method state with later streamed RAM dump.",
+          "Indices inferred from RAM descriptors; stock trace omitted their values.",
+          "Guest P8 bytes; host cached texture and complete framebuffer history unavailable.",
+          "Preceding logic-op, depth-test enable, depth surface, shade mode and scissor state not captured",
+          "Pixel centres and CPU-projected geometry; surface_scale=4 coverage not emulated"
+        ],
+        "equation": "P8 fetch; oD0=v3*c6; R0=clamp(2*T0*oD0); final C0.a=0 passes R0; alpha>=2; SRC_ALPHA/ONE_MINUS_SRC_ALPHA ADD",
+        "reason": "Bounded native state does not reproduce the dark screenshots; no cause-specific fix proved."
+      }
+    },
+    "label_interior": {
+      "box": [
+        555,
+        631,
+        646,
+        645
+      ],
+      "min": 37.0,
+      "mean": 37.64037080062794,
+      "max": 50.0
+    }
+  },
+  "without_hang_counterfactual": {
+    "raster": {
+      "uv_transform": [
+        0.5,
+        0.5,
+        0.5,
+        0.5
+      ],
+      "winding": {
+        "cscore_buga": {
+          "positive": 0,
+          "negative": 6
+        },
+        "score_buga": {
+          "positive": 0,
+          "negative": 6
+        },
+        "dscore_buga": {
+          "positive": 0,
+          "negative": 8
+        },
+        "hscore_buga": {
+          "positive": 0,
+          "negative": 2
+        },
+        "yscore_buga1": {
+          "positive": 0,
+          "negative": 24
+        },
+        "yscore_buga": {
+          "positive": 0,
+          "negative": 20
+        },
+        "zscore_buga": {
+          "positive": 0,
+          "negative": 2
+        }
+      },
+      "rendered_materials": {
+        "cscore_buga": {
+          "descriptor": "0x81e55438",
+          "name": "yscore_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "offset": "0x1e55480",
+          "palette": "0x1e75480",
+          "indices_sha256": "964f45b1cd7f9c3516f29307c4ad456bed1b25e51f0c3fc54f2ef658571c23dd",
+          "palette_sha256": "c941f988309430391a56af7603a22996eebc73062f0e580bcdc41c6e77eada3f"
+        },
+        "dscore_buga": {
+          "descriptor": "0x81e55438",
+          "name": "yscore_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "offset": "0x1e55480",
+          "palette": "0x1e75480",
+          "indices_sha256": "964f45b1cd7f9c3516f29307c4ad456bed1b25e51f0c3fc54f2ef658571c23dd",
+          "palette_sha256": "c941f988309430391a56af7603a22996eebc73062f0e580bcdc41c6e77eada3f"
+        },
+        "hscore_buga": {
+          "descriptor": "0x81e2f338",
+          "name": "hscore_buga",
+          "dimensions": [
+            64,
+            64
+          ],
+          "offset": "0x1e2f380",
+          "palette": "0x1e30380",
+          "indices_sha256": "401a7e3e64347264ed236269833197090664c220a0f1b3b59bbb30a2baca6cee",
+          "palette_sha256": "908a4a1eb1c81c3b52f0b255ea7e3dcf24f1f57ddeb63206970e44bfc6f19097"
+        },
+        "score_buga": {
+          "descriptor": "0x81e55438",
+          "name": "yscore_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "offset": "0x1e55480",
+          "palette": "0x1e75480",
+          "indices_sha256": "964f45b1cd7f9c3516f29307c4ad456bed1b25e51f0c3fc54f2ef658571c23dd",
+          "palette_sha256": "c941f988309430391a56af7603a22996eebc73062f0e580bcdc41c6e77eada3f"
+        },
+        "yscore_buga": {
+          "descriptor": "0x81e55438",
+          "name": "yscore_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "offset": "0x1e55480",
+          "palette": "0x1e75480",
+          "indices_sha256": "964f45b1cd7f9c3516f29307c4ad456bed1b25e51f0c3fc54f2ef658571c23dd",
+          "palette_sha256": "c941f988309430391a56af7603a22996eebc73062f0e580bcdc41c6e77eada3f"
+        },
+        "yscore_buga1": {
+          "descriptor": "0x81e55438",
+          "name": "yscore_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "offset": "0x1e55480",
+          "palette": "0x1e75480",
+          "indices_sha256": "964f45b1cd7f9c3516f29307c4ad456bed1b25e51f0c3fc54f2ef658571c23dd",
+          "palette_sha256": "c941f988309430391a56af7603a22996eebc73062f0e580bcdc41c6e77eada3f"
+        },
+        "zscore_buga": {
+          "descriptor": "0x81e50038",
+          "name": "zscore_buga",
+          "dimensions": [
+            64,
+            64
+          ],
+          "offset": "0x1e50080",
+          "palette": "0x1e51080",
+          "indices_sha256": "a35cbf6177f92e0b1a0c5d37fe7ce98d956739eb598c4b7cd12110bcd799a882",
+          "palette_sha256": "e1f2752cd2d83c4802c773b5543f79f354d0d1c8a2988267eedc75bd5176dc6d"
+        }
+      },
+      "submission": [
+        {
+          "material": 2,
+          "name": "cscore_buga",
+          "indices": 16
+        },
+        {
+          "material": 6,
+          "name": "score_buga",
+          "indices": 16
+        },
+        {
+          "material": 4,
+          "name": "dscore_buga",
+          "indices": 22
+        },
+        {
+          "material": 3,
+          "name": "hscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 7,
+          "name": "yscore_buga1",
+          "indices": 88
+        },
+        {
+          "material": 5,
+          "name": "bscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 0,
+          "name": "bscore_buga1",
+          "indices": 4
+        },
+        {
+          "material": 1,
+          "name": "bscore_buga2",
+          "indices": 4
+        },
+        {
+          "material": 9,
+          "name": "yscore_buga",
+          "indices": 94
+        },
+        {
+          "material": 10,
+          "name": "zscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 8,
+          "name": "zz_ESPN_bug1",
+          "indices": 4
+        }
+      ],
+      "raster_policy": {
+        "order": "SHAP descriptor order, then push-buffer order",
+        "depth": "none (sprite submission order)",
+        "blend": "captured xemu fragment equations",
+        "retained_font_draws": "none",
+        "cull_positive": false,
+        "gpu_state_proved": false,
+        "calibration": {
+          "size": [
+            1277,
+            760
+          ],
+          "affine": [
+            1.778125,
+            1.5,
+            39,
+            12.0
+          ]
+        }
+      },
+      "xemu_model": {
+        "model": "xemu f9b1403 observed HUD fragment path",
+        "gpu_state_proved": false,
+        "calibration_passed": false,
+        "assumptions": [
+          "Earlier 13:55:28 method state with later streamed RAM dump.",
+          "Indices inferred from RAM descriptors; stock trace omitted their values.",
+          "Guest P8 bytes; host cached texture and complete framebuffer history unavailable.",
+          "Preceding logic-op, depth-test enable, depth surface, shade mode and scissor state not captured",
+          "Pixel centres and CPU-projected geometry; surface_scale=4 coverage not emulated"
+        ],
+        "equation": "P8 fetch; oD0=v3*c6; R0=clamp(2*T0*oD0); final C0.a=0 passes R0; alpha>=2; SRC_ALPHA/ONE_MINUS_SRC_ALPHA ADD",
+        "reason": "Bounded native state does not reproduce the dark screenshots; no cause-specific fix proved."
+      }
+    },
+    "label_interior": {
+      "box": [
+        555,
+        631,
+        646,
+        645
+      ],
+      "min": 16.3146,
+      "mean": 120.09631773940345,
+      "max": 254.99999999999997
+    }
+  },
+  "screenshot": {
+    "label_interior": {
+      "box": [
+        555,
+        631,
+        646,
+        645
+      ],
+      "min": 18.4452,
+      "mean": 19.65637189952904,
+      "max": 32.7874
+    }
+  },
+  "acceptance": {
+    "absolute_error": {
+      "min": 18.5548,
+      "mean": 17.9839989010989,
+      "max": 17.212600000000002
+    },
+    "within_15": false,
+    "fix_applied": false,
+    "cause_specific_writer_proved": false,
+    "runtime_witnessed": false,
+    "limitation": "RAM glyphs say play clock 17, screenshot says 19; trace is earlier still. No tone fitting."
+  }
+}

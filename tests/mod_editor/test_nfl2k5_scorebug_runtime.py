@@ -115,12 +115,18 @@ class Machine:
             for page in range(s.start&-4096,(s.end+4095)&-4096,4096):
                 flags=uc.UC_PROT_READ | (uc.UC_PROT_EXEC if s.executable else 0) | (uc.UC_PROT_WRITE if s.writable else 0)
                 pages[page]=pages.get(page,0)|flags
-        for page in pages:self.uc.mem_map(page,4096)
+        # Same permission union and unmapped gaps; adjacent pages need one
+        # Unicorn region, not thousands of expensive individual mappings.
+        regions=[]
+        for page,flags in sorted(pages.items()):
+            if regions and regions[-1][1]==page and regions[-1][2]==flags:regions[-1][1]+=4096
+            else:regions.append([page,page+4096,flags])
+        for start,end,_flags in regions:self.uc.mem_map(start,end-start)
         self.uc.mem_map(image.base,4096)
         self.uc.mem_write(image.base,payload[:image.headers_size])
         for s in image.sections:
             if s.flags&2:self.uc.mem_write(s.start,payload[s.raw:s.raw+s.raw_size])
-        for page,flags in pages.items():self.uc.mem_protect(page,4096,flags)
+        for start,end,flags in regions:self.uc.mem_protect(start,end-start,flags)
         self.uc.mem_map(self.HEAP,0x400000)
         self.uc.mem_map(self.STACK,0x10000)
         self.uc.mem_map(self.STOP,4096,uc.UC_PROT_READ|uc.UC_PROT_EXEC)
@@ -144,9 +150,21 @@ class Machine:
         self.play=self.alloc(512);self.put(0xe602ec,self.play);self.put(self.play+4,1)
         self.put(0xe60280,0xe5fc20);self.put(0xe602b4,4);self.put(0xa95a70,1);self.put(0xa95a00,1)
         self.uc.mem_write(0xfc9c0,b'\xc2\x04\x00')
-        self.writes=[];self.visits=[];self.record=True
-        self.uc.hook_add(uc.UC_HOOK_MEM_WRITE,lambda _u,_a,addr,size,value,_d:self.writes.append((addr,size,value)) if self.record else None)
-        self.uc.hook_add(uc.UC_HOOK_CODE,lambda _u,addr,_s,_d:self.visits.append(addr) if self.record else None)
+        self.writes=[];self.visits=[];self._record_hooks=[];self.record=True
+
+    @property
+    def record(self):return bool(self._record_hooks)
+
+    @record.setter
+    def record(self,enabled):
+        import unicorn as uc
+        if enabled and not self._record_hooks:
+            self._record_hooks=[
+                self.uc.hook_add(uc.UC_HOOK_MEM_WRITE,lambda _u,_a,addr,size,value,_d:self.writes.append((addr,size,value))),
+                self.uc.hook_add(uc.UC_HOOK_CODE,lambda _u,addr,_s,_d:self.visits.append(addr))]
+        elif not enabled:
+            for handle in self._record_hooks:self.uc.hook_del(handle)
+            self._record_hooks.clear()
 
     def alloc(self,size):
         at=(self.cursor+127)&-128;self.cursor=at+size;return at

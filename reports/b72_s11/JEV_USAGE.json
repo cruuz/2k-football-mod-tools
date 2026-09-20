@@ -1,0 +1,35 @@
+{
+  "cap_usd": 1.0,
+  "total_cost_usd": 0.00467289,
+  "tool_calls": 3,
+  "input_tokens": 111260,
+  "rows": [
+    {
+      "source": "jev_proof_review.json",
+      "ts": "2026-09-19T22:24:40",
+      "tool": "jev_ask",
+      "model": "jev-1.13.0",
+      "input_tokens": 738,
+      "output_tokens": 37,
+      "cost_usd": 3.1e-05,
+      "latency_ms": 359.6,
+      "questions": 2
+    },
+    {
+      "source": "own_gate_call.json",
+      "input_tokens": 13087,
+      "output_tokens": 812,
+      "cost_usd": 0.00054964,
+      "errors": 0,
+      "wall_ms": 546.3
+    },
+    {
+      "source": "handoff_call.json",
+      "input_tokens": 97435,
+      "output_tokens": 1800,
+      "cost_usd": 0.00409225,
+      "errors": 0,
+      "wall_ms": 945.3
+    }
+  ]
+}

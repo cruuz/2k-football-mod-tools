@@ -18,6 +18,7 @@ EXPERIMENTAL / UNWITNESSED in game.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from functools import lru_cache
 import hashlib
 import json
 import os
@@ -337,8 +338,23 @@ def texture_chunk(name: str, image, template: bytes, *, colours: int = 256, alph
     buffer supplies the object layout and the descriptor words. Only the name,
     the palette offset and the format word change.
     """
+    require(all(side in (32, 64, 128, 256, 512) for side in image.size), "texture size must be a power of two")
+    require(len((name + "\0").encode("utf-16le")) <= 24, "texture name too long")
+    # Preflight/status checks repeatedly request identical atlas and logo bytes.
+    # Key every input byte and option, never a path, mtime or ctime. The cache is
+    # bounded to 40 textures (about 50 MB at the maximum supported dimensions).
+    rgba = image.convert("RGBA")
+    result, receipt = _texture_chunk(name, rgba.size, rgba.tobytes(), bytes(template),
+                                     colours, alpha_aware, tuple(tuple(c) for c in reserved_colours))
+    return result, dict(receipt)
+
+
+@lru_cache(maxsize=40)
+def _texture_chunk(name, size, pixels, template, colours, alpha_aware, reserved_colours):
+    from PIL import Image
     from . import nfl2k5_scorebug_ingame as r
     import nfl_tset_png_import as palettes
+    image = Image.frombytes("RGBA", size, pixels)
     w, h = image.size
     require(w in (32, 64, 128, 256, 512) and h in (32, 64, 128, 256, 512), "texture size must be a power of two")
     encoded = (name + "\0").encode("utf-16le")

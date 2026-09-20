@@ -1,0 +1,907 @@
+{
+  "request": {
+    "states": [
+      {
+        "file": "tools/scorebug_sprite/jev/layout_search.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -0,0 +1,71 @@\n[part 1 of 2 of a 71-line hunk]\n+\"\"\"Measured greedy layout search and equal-budget random proposal control.\n+\n+The evaluator owns rendering and arithmetic. Jev proposes one bounded input;\n+it cannot override a worsening objective or an unverified calibration.\n+\"\"\"\n+from copy import deepcopy\n+import random\n+\n+NUDGES=dict(label_larger='Increase down label cap by one HUD pixel',\n+            label_smaller='Decrease down label cap by one HUD pixel',\n+            label_left='Move down label one HUD pixel left',label_right='Move down label one HUD pixel right',\n+            label_up='Move down label one HUD pixel up',label_down='Move down label one HUD pixel down',\n+            tracking_tighter='Reduce label advances by one source pixel',\n+            tracking_looser='Increase label advances by one source pixel',none='Keep the current layout')\n+\n+\n+def nudge(spec,name,aspect='16:9'):\n+    if name not in NUDGES:raise ValueError('Unlisted Jev input')\n+    out=deepcopy(spec);label=next(f for f in out['fields'] if f['name']=='down')\n+    dx=3 if aspect=='16:9' else 2.25;dy=1080/448\n+    if name in ('label_larger','label_smaller'):\n+        label['size']+=dy*(1 if name=='label_larger' else -1)\n+        label['size']=max(12,min(40,label['size']))\n+    elif name in ('label_left','label_right','label_up','label_down'):\n+        axis=0 if name in ('label_left','label_right') else 1\n+        change=(dx if axis==0 else dy)*(-1 if name in ('label_left','label_up') else 1)\n+        label['anchor'][axis]+=change\n+        label['box'][axis]+=change;label['box'][axis+2]+=change\n+    elif name.startswith('tracking_'):\n+        for g in out['glyph_sets'][label['glyph_set']]['glyphs'].values():\n+            g['advance']=max(g['size'][0],g['advance']+(1 if name=='tracking_looser' else -1))\n+    return out\n+\n+\n+def objective(residuals,readability):\n+    \"\"\"Each residual supplies its measured error and independent tolerance.\"\"\"\n+    if not residuals:raise ValueError('Measured residuals are required')\n+    normalized=[abs(r['error'])/r['tolerance'] for r in residuals if r['tolerance']>0]\n+    if len(normalized)!=len(residuals):raise ValueError('Positive tolerances are required')\n+    penalties=sum(10 for passed in readability.values() if not passed)\n+    return sum(normalized)/len(normalized)+penalties\n+\n+\n+def request(residuals,readability,history=(),calibration_verified=False):\n+    return dict(tool='jev_next_input',goal='every field readable and within tolerance of ESPN',\n+        state=dict(calibration='verified' if calibration_verified else 'unresolved',\n+            features={r['feature']:'within' if abs(r['error'])<=r['tolerance'] else 'near' if abs(r['error'])<=2*r['tolerance'] else 'far' for r in residuals},\n+            readability=readability),allowed_inputs=NUDGES,history=list(history),act_threshold=.8)\n+\n+\n+def run(spec,evaluate,decide,*,steps=12,aspect='16:9',calibration_verified=False,seed=72):\n+    if not calibration_verified:\n+        raise ValueError('Search is blocked until screenshot calibration passes. No layout was changed.')\n+    start=evaluate(spec);initial=objective(start['residuals'],start['readability'])\n+    curves={};final=spec\n+    for mode in ('jev','random'):\n+        rng=random.Random(seed);current=deepcopy(spec);measured=deepcopy(start);score=initial;history=[];curve=[]\n+        for step in range(steps):\n+            choice=decide(request(measured['residuals'],measured['readability'],history,True)) if mode=='jev' else dict(next_input=rng.choice(list(NUDGES)),goal_reached=0,confidence=1)\n+            proposal=choice.get('next_input','none');history.append(proposal)"
+      },
+      {
+        "file": "tools/scorebug_sprite/jev/layout_search.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -0,0 +1,71 @@\n[part 2 of 2 of a 71-line hunk]\n+        raise ValueError('Search is blocked until screenshot calibration passes. No layout was changed.')\n+    start=evaluate(spec);initial=objective(start['residuals'],start['readability'])\n+    curves={};final=spec\n+    for mode in ('jev','random'):\n+        rng=random.Random(seed);current=deepcopy(spec);measured=deepcopy(start);score=initial;history=[];curve=[]\n+        for step in range(steps):\n+            choice=decide(request(measured['residuals'],measured['readability'],history,True)) if mode=='jev' else dict(next_input=rng.choice(list(NUDGES)),goal_reached=0,confidence=1)\n+            proposal=choice.get('next_input','none');history.append(proposal)\n+            code_pass=all(abs(r['error'])<=r['tolerance'] for r in measured['residuals']) and all(measured['readability'].values())\n+            reached=choice.get('goal_reached_p',0)>=.9 and code_pass\n+            candidate=nudge(current,proposal,aspect);trial=evaluate(candidate);trial_score=objective(trial['residuals'],trial['readability'])\n+            keep=choice.get('confidence',0)>=.8 and trial_score<score\n+            if keep:current,measured,score=candidate,trial,trial_score\n+            curve.append(dict(step=step,input=proposal,proposed_objective=trial_score,objective=score,kept=keep,goal_reached=reached))\n+            # Random gets exactly the same number of trials as Jev.\n+            if reached and mode=='jev':steps=len(curve);break\n+        curves[mode]=curve\n+        if mode=='jev':final=current\n+    return final,dict(initial_objective=initial,curves=curves,seed=seed)"
+      },
+      {
+        "file": "tools/scorebug_sprite/jev/miner.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -0,0 +1,64 @@\n+\"\"\"Broadcast state requests and confidence-gated clustering; no pixel model.\"\"\"\n+from pathlib import Path\n+import argparse\n+import hashlib\n+import json\n+import sys\n+\n+ROOT=Path(__file__).resolve().parents[3]\n+sys.path[:0]=[str(ROOT),str(ROOT/'tools')]\n+from tools.scorebug_sprite.jev.descriptors import STATES,describe,compact\n+\n+QUESTIONS=dict(state=dict(type='choice',instructions='Classify the broadcast scorebug using only measured facts. Prefer absent if the bar is absent. Use other when text is uncertain or needed evidence is unknown. Do not invent clock, yard \n+               clean=dict(type='noul',instructions='Is this a clean representative of the chosen state? Reject unreadable or uncertain text, transitions and unknown banners, unless the bar is absent.'))\n+REPRODUCIBLE={'normal','kickoff','first_and_ten','short_yardage','third_and_long','fourth_down','red_zone','goal_to_go','flag','timeout','two_minute','end_of_quarter','absent'}\n+\n+\n+def prepare(frames,output,limit=200):\n+    files=sorted(Path(frames).glob('frame_*.jpg'))[::10]\n+    if limit and len(files)>limit:\n+        files=[files[round(i*(len(files)-1)/(limit-1))] for i in range(limit)]\n+    output=Path(output);output.mkdir(parents=True,exist_ok=True)\n+    descriptors=[];requests=[]\n+    for f in files:\n+        d=describe(f);d.update(frame=f.name,sha256=hashlib.sha256(f.read_bytes()).hexdigest())\n+        descriptors.append(d);requests.append(dict(tool='jev_ask',state=compact(d),questions=QUESTIONS))\n+    for name,value in [('descriptors.json',descriptors),('requests.json',requests)]:\n+        (output/name).write_text(json.dumps(value,indent=2)+'\\n',encoding='utf-8')\n+    return requests\n+\n+\n+def cluster(descriptors,answers):\n+    if len(descriptors)!=len(answers):raise ValueError('One answer is required per descriptor')\n+    import numpy as np\n+    groups={s:[] for s in STATES};rejected=[]\n+    for d,a in zip(descriptors,answers):\n+        a=a.get('answers',a);decision=a.get('state',{});state=decision.get('choice','other')\n+        if state not in groups:state='other'\n+        if decision.get('confidence',0)<.6 or a.get('clean',{}).get('noul',0)<.8:\n+            rejected.append(dict(frame=d['frame'],state=state,reason='confidence_or_clean_gate'));continue\n+        groups[state].append(d)\n+    normal=groups['normal'] or groups['first_and_ten']\n+    reference=normal[len(normal)//2] if normal else None\n+    result={}\n+    for state,rows in groups.items():\n+        if not rows:\n+            result[state]=dict(representatives=[],game_reproducible=state in REPRODUCIBLE,observed=False);continue\n+        # Deterministic medoid of measured luminance vectors.\n+        vectors=np.array([[v['luma'][1] for v in d['fields'].values()] for d in rows])\n+        center=np.median(vectors,axis=0);order=np.argsort(abs(vectors-center).mean(1))[:3]\n+        reps=[]\n+        for i in order:\n+            d=rows[int(i)];deltas={k:round(d['fields'][k]['luma'][1]-reference['fields'][k]['luma'][1],2) for k in d['fields']} if reference else None\n+            reps.append(dict(frame=d['frame'],sha256=d['sha256'],median_luma_delta_from_normal=deltas))\n+        result[state]=dict(representatives=reps,game_reproducible=state in REPRODUCIBLE,observed=True,count=len(rows))\n+    return dict(schema='scorebug-broadcast-states/v1',sampling='every tenth source frame; pilot stratified across that subset',\n+                normal_reference=reference['frame'] if reference else None,states=result,rejected=rejected,\n+                limitations=['State reproducibility describes retail predicates, not authored event banners.','Uncertain frames are retained for review, not assigned invented labels.'])\n+\n+\n+def main():\n+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--frames',type=Path,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--limit',type=int,default=200)\n+    a=p.parse_args();print('Prepared',len(prepare(a.frames,a.output,a.limit)),'text-only requests')\n+\n+if __name__=='__main__':main()"
+      },
+      {
+        "file": "tools/scorebug_sprite/jev/replay.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -0,0 +1,44 @@\n+\"\"\"Run every-tenth-frame mining outside the sandbox, with resumable receipts.\"\"\"\n+from pathlib import Path\n+import argparse\n+import hashlib\n+import json\n+import sys\n+\n+ROOT=Path(__file__).resolve().parents[3]\n+sys.path[:0]=[str(ROOT),str(ROOT/'tools')]\n+from tools.scorebug_sprite.jev.session import Session,write_json\n+from tools.scorebug_sprite.jev.miner import prepare,cluster\n+\n+\n+def request_hash(request):\n+    return hashlib.sha256(json.dumps(request,sort_keys=True,separators=(',',':')).encode('utf-8')).hexdigest()\n+\n+\n+def resume(requests,log):\n+    rows=[json.loads(s) for s in log.read_text(encoding='utf-8').splitlines() if s.strip()] if log.exists() else []\n+    if len(rows)>len(requests):raise ValueError('Answer journal is longer than the request set')\n+    for index,(row,request) in enumerate(zip(rows,requests)):\n+        if row.get('request_sha256')!=request_hash(request):\n+            raise ValueError('Answer journal does not match request '+str(index))\n+    return [r['answers'] for r in rows]\n+\n+\n+def main():\n+    p=argparse.ArgumentParser(description=__doc__)\n+    p.add_argument('--frames',type=Path,required=True);p.add_argument('--report',type=Path,default=ROOT/'reports/b72_s3')\n+    p.add_argument('--output',type=Path,default=ROOT/'data/nfl2k5_scorebug_sprite/broadcast_states.json')\n+    a=p.parse_args();out=a.report/'full_miner';session=Session(a.report)\n+    if not (out/'requests.json').exists():prepare(a.frames,out,0)\n+    requests=json.loads((out/'requests.json').read_text(encoding='utf-8'))\n+    log=out/'answers.jsonl'\n+    responses=resume(requests,log)\n+    for req in requests[len(responses):]:\n+        result=session.replay(req)\n+        with log.open('a',encoding='utf-8',newline='\\n') as f:\n+            f.write(json.dumps(dict(request_sha256=request_hash(req),answers=result))+'\\n')\n+        responses.append(result)\n+        if len(responses)%100==0:print(f'{len(responses)}/{len(requests)}; job cost ${session.spent():.4f}',flush=True)\n+    write_json(a.output,cluster(json.loads((out/'descriptors.json').read_text(encoding='utf-8')),responses))\n+\n+if __name__=='__main__':main()"
+      },
+      {
+        "file": "tools/scorebug_sprite/jev/rubric.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -0,0 +1,20 @@\n+\"\"\"ESPN hierarchy and readability rubric over code-measured facts only.\"\"\"\n+LEVELS=[\n+    'Critical failure: label absent/dim, overlap, or false calibration claim.',\n+    'Major issue: one or more fields unreadable or team identity incorrect.',\n+    'Readable fields, but hierarchy, spacing or team identity remains uncertain.',\n+    'Readable fields with clear hierarchy and identity; calibration unresolved.',\n+    'Every field readable, no overlaps, team identity clear, calibrated comparison passes.',\n+]\n+\n+\n+def request(descriptor,*,calibration_verified=False,identity_verified=False,overlap_verified=False):\n+    fields=descriptor['fields']\n+    # Clock and quarter have intentional dark ink on a light capsule.\n+    readable={k:(v['core_luma']>=200 if k not in ('clock','quarter') else v['ink_pixels']>0)\n+              for k,v in fields.items() if k in ('away_score','home_score','clock','quarter','play_clock','down')}\n+    heights={k:(v['ink_box'][3]-v['ink_box'][1] if v['ink_box'] else 0) for k,v in fields.items() if k in readable}\n+    hierarchy=heights['away_score']>heights['clock'] and heights['home_score']>heights['clock']\n+    return dict(tool='jev_score',instructions='Judge ESPN scorebug design from these measured facts only. Scores should lead, then clock, then label. Unknown calibration prevents the top level. Missing bright label ink is critical. Do not \n+                state=dict(readable=readable,score_hierarchy=hierarchy,overlap='verified_clear' if overlap_verified else 'unverified',\n+                    identity='verified_team_specific' if identity_verified else 'unverified',calibration='passed' if calibration_verified else 'unresolved'),levels=LEVELS)"
+      },
+      {
+        "file": "tools/scorebug_sprite/jev/session.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -0,0 +1,76 @@\n[part 1 of 2 of a 76-line hunk]\n+\"\"\"Auditable Jev request/replay boundary with a job-wide three-dollar cap.\"\"\"\n+from pathlib import Path\n+import json\n+import os\n+import time\n+\n+CAP_USD=3.0\n+PRICE_PER_TOKEN=.042/1_000_000\n+USAGE=Path.home()/'ai-stack/jev/logs/usage.jsonl'\n+\n+\n+def write_json(path,value):\n+    path=Path(path);path.parent.mkdir(parents=True,exist_ok=True)\n+    path.write_text(json.dumps(value,indent=2)+'\\n',encoding='utf-8',newline='\\n')\n+\n+\n+def usage_total(path=USAGE):\n+    if not Path(path).is_file():return 0.\n+    return sum(json.loads(s).get('cost_usd',0.) for s in Path(path).read_text(encoding='utf-8').splitlines() if s.strip())\n+\n+\n+def unpack(result):\n+    \"\"\"Accept the exact MCP envelope or the outside-sandbox SDK receipt.\"\"\"\n+    if 'structuredContent' in result:result=json.loads(result['structuredContent']['result'])\n+    elif 'content' in result:result=json.loads(next(c['text'] for c in result['content'] if c['type']=='text'))\n+    return result\n+\n+\n+def answers(result):\n+    result=unpack(result)\n+    return result.get('answers',result)\n+\n+\n+class Session:\n+    def __init__(self,report):\n+        self.report=Path(report);self.report.mkdir(parents=True,exist_ok=True)\n+        self.log=self.report/'jev_calls.jsonl'\n+        self.start=self.report/'usage_start.json'\n+        if not self.start.exists():write_json(self.start,dict(cost_usd=usage_total()))\n+        self.initial=json.loads(self.start.read_text())['cost_usd']\n+\n+    def spent(self):\n+        local=0.\n+        if self.log.exists():\n+            for line in self.log.read_text(encoding='utf-8').splitlines():\n+                r=json.loads(line);response=unpack(r.get('response',{}))\n+                local+=response.get('meta',response.get('totals',{})).get('cost_usd',0.)\n+        return max(local,usage_total()-self.initial)\n+\n+    def guard(self,request):\n+        # At most one UTF-8 byte per input token is a conservative reserve.\n+        reserve=(len(json.dumps(request).encode('utf-8'))+4096)*PRICE_PER_TOKEN\n+        if self.spent()+reserve>=CAP_USD:raise RuntimeError('Jev job cap reached; no call was sent')\n+\n+    def record(self,request,response):\n+        with self.log.open('a',encoding='utf-8',newline='\\n') as f:\n+            f.write(json.dumps(dict(tool=request['tool'],request=request,response=response))+'\\n')\n+\n+    def replay(self,request):\n+        \"\"\"Integrator only: installed TypeSafe SDK, environment key, no shell.\"\"\""
+      },
+      {
+        "file": "tools/scorebug_sprite/jev/session.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -0,0 +1,76 @@\n[part 2 of 2 of a 76-line hunk]\n+        if self.spent()+reserve>=CAP_USD:raise RuntimeError('Jev job cap reached; no call was sent')\n+\n+    def record(self,request,response):\n+        with self.log.open('a',encoding='utf-8',newline='\\n') as f:\n+            f.write(json.dumps(dict(tool=request['tool'],request=request,response=response))+'\\n')\n+\n+    def replay(self,request):\n+        \"\"\"Integrator only: installed TypeSafe SDK, environment key, no shell.\"\"\"\n+        self.guard(request)\n+        if not os.environ.get('TYPESAFE_API_KEY'):\n+            raise RuntimeError('TYPESAFE_API_KEY is not set; export it before replay. No answer was fabricated.')\n+        from typesafe_sdk import TypeSafeClient\n+        if request['tool']!='jev_ask':raise ValueError('Replay accepts raw typed jev_ask requests')\n+        start=time.monotonic()\n+        result=TypeSafeClient().system_one(state=request['state'],questions=request['questions'])\n+        meta=dict(tool='b72-s3-replay',model=result.model,input_tokens=result.usage.input_tokens or 0,\n+                  output_tokens=result.usage.output_tokens or 0,latency_ms=round((time.monotonic()-start)*1000,2))\n+        meta['cost_usd']=meta['input_tokens']*PRICE_PER_TOKEN\n+        response=dict(answers={k:v.model_dump() for k,v in result.answers.items()},meta=meta)\n+        # Global log is only written by an explicitly run outside-sandbox replay.\n+        USAGE.parent.mkdir(parents=True,exist_ok=True)\n+        with USAGE.open('a',encoding='utf-8') as f:f.write(json.dumps(meta)+'\\n')\n+        self.record(request,response)\n+        return response['answers']"
+      },
+      {
+        "file": "tools/scorebug_sprite/live.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -0,0 +1,159 @@\n[part 1 of 3 of a 159-line hunk]\n+\"\"\"Read xemu NV097 text traces without supplying unobserved GPU defaults.\n+\n+The stock logger suppresses ARRAY_ELEMENT16 values. A BEGIN/END pair with no\n+geometry events is therefore not evidence of an empty draw. Each independently\n+enabled trace window must be parsed separately: state cannot cross a gap.\n+\"\"\"\n+from collections import Counter\n+from dataclasses import dataclass, field\n+import re\n+\n+\n+METHOD = re.compile(\n+    r'nv2a_pgraph_method (\\d+): (0x[0-9a-fA-F]+) -> '\n+    r'(0x[0-9a-fA-F]+) (\\S+) (0x[0-9a-fA-F]+)$')\n+ABBREV = re.compile(\n+    r'nv2a_pgraph_method_abbrev (\\d+): (0x[0-9a-fA-F]+) -> '\n+    r'(0x[0-9a-fA-F]+) (\\S+) \\* (\\d+)$')\n+UNHANDLED = re.compile(\n+    r'nv2a_pgraph_method_unhandled (\\d+): (0x[0-9a-fA-F]+) -> '\n+    r'(0x[0-9a-fA-F]+) (0x[0-9a-fA-F]+)$')\n+\n+\n+@dataclass\n+class Context:\n+    state: dict = field(default_factory=dict)\n+    writes: dict = field(default_factory=dict)\n+    constants: dict = field(default_factory=dict)\n+    constant_writes: dict = field(default_factory=dict)\n+    program: dict = field(default_factory=dict)\n+    program_writes: dict = field(default_factory=dict)\n+    constant_load: int | None = None\n+    program_load: int | None = None\n+    active: dict | None = None\n+\n+    def snapshot(self):\n+        start = self.state.get('0x1ea0')\n+        program = []\n+        complete = False\n+        if start is not None:\n+            for slot in range(start, 136):\n+                words = [self.program.get(str(slot*4+i)) for i in range(4)]\n+                if None in words:\n+                    break\n+                program.extend(words)\n+                if words[3] & 1:\n+                    complete = True\n+                    break\n+        return dict(state=dict(self.state), state_writes=dict(self.writes),\n+                    vertex_constants=dict(self.constants),\n+                    constant_writes=dict(self.constant_writes),\n+                    program_memory=dict(self.program),\n+                    program_writes=dict(self.program_writes),\n+                    vertex_program=program, vertex_program_complete=complete)\n+\n+\n+def parse(lines, *, first_line=1):\n+    \"\"\"Return observed draw states and provenance for one uninterrupted window.\n+\n+    Upload port component selection and auto-increment follow pgraph.c, not\n+    packet-order assumptions. Missing load pointers leave uploads unknown."
+      },
+      {
+        "file": "tools/scorebug_sprite/live.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -0,0 +1,159 @@\n[part 2 of 3 of a 159-line hunk]\n+                    vertex_program=program, vertex_program_complete=complete)\n+\n+\n+def parse(lines, *, first_line=1):\n+    \"\"\"Return observed draw states and provenance for one uninterrupted window.\n+\n+    Upload port component selection and auto-increment follow pgraph.c, not\n+    packet-order assumptions. Missing load pointers leave uploads unknown.\n+    Unhandled notifications never establish register state.\n+    \"\"\"\n+    contexts = {}\n+    draws, events, warnings = [], [], []\n+    counts, names = Counter(), {}\n+    for number, raw in enumerate(lines, first_line):\n+        line = raw.strip()\n+        if not line:\n+            continue\n+        match = METHOD.fullmatch(line)\n+        if match is None:\n+            if UNHANDLED.fullmatch(line):\n+                counts['unhandled_notifications'] += 1\n+                continue\n+            abbrev = ABBREV.fullmatch(line)\n+            if abbrev:\n+                counts['abbreviations'] += 1\n+                sub, cls, offset, name, count = abbrev.groups()\n+                context = contexts.get((int(sub), int(cls, 16)))\n+                if context and context.active is not None:\n+                    context.active['geometry_events'].append(dict(\n+                        line=number, method=offset, abbreviated_count=int(count),\n+                        indices_unknown=True))\n+                continue\n+            raise ValueError(f'Unrecognized trace line {number}: {line[:120]}')\n+        sub, cls, offset, name, value = match.groups()\n+        sub, cls, offset, value = int(sub), int(cls, 16), int(offset, 16), int(value, 16)\n+        counts['handled'] += 1\n+        if cls != 0x97:\n+            counts['other_classes'] += 1\n+            continue\n+        context = contexts.setdefault((sub, cls), Context())\n+        key = f'0x{offset:04x}'\n+        names[key] = name\n+        if name.startswith('?'):\n+            counts['unnamed_attempts'] += 1\n+            continue\n+        if offset in (0x1800, 0x1808, 0x1810, 0x1818):\n+            if context.active is not None:\n+                context.active['geometry_events'].append(dict(line=number, method=key, value=value))\n+            else:\n+                warnings.append(dict(line=number, reason='geometry outside observed BEGIN'))\n+            continue\n+        if offset == 0x17fc:\n+            if value:\n+                if context.active is not None:\n+                    warnings.append(dict(line=number, reason='BEGIN without observed END'))\n+                row = dict(id=len(draws), begin_line=number, end_line=None,\n+                           subchannel=sub, primitive=value, geometry_events=[],\n+                           changes_inside=[], **context.snapshot())\n+                draws.append(row)\n+                context.active = row"
+      },
+      {
+        "file": "tools/scorebug_sprite/live.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -0,0 +1,159 @@\n[part 3 of 3 of a 159-line hunk]\n+            if value:\n+                if context.active is not None:\n+                    warnings.append(dict(line=number, reason='BEGIN without observed END'))\n+                row = dict(id=len(draws), begin_line=number, end_line=None,\n+                           subchannel=sub, primitive=value, geometry_events=[],\n+                           changes_inside=[], **context.snapshot())\n+                draws.append(row)\n+                context.active = row\n+            elif context.active is None:\n+                counts['orphan_ends'] += 1\n+            else:\n+                context.active['end_line'] = number\n+                context.active = None\n+            continue\n+        if context.active is not None:\n+            context.active['changes_inside'].append(dict(line=number, method=key, value=value))\n+        if offset == 0x1e9c:\n+            context.program_load = value\n+        elif offset == 0x1ea4:\n+            context.constant_load = value\n+        elif 0xb00 <= offset < 0xc00:\n+            constant = offset >= 0xb80\n+            component = ((offset - (0xb80 if constant else 0xb00)) // 4) % 4\n+            pointer = context.constant_load if constant else context.program_load\n+            if pointer is not None:\n+                memory = context.constants if constant else context.program\n+                writes = context.constant_writes if constant else context.program_writes\n+                index = str(pointer*4+component)\n+                memory[index], writes[index] = value, number\n+                if component == 3:\n+                    if constant:\n+                        context.constant_load += 1\n+                    else:\n+                        context.program_load += 1\n+            else:\n+                counts['uploads_without_load_pointer'] += 1\n+            continue\n+        context.state[key], context.writes[key] = value, number\n+        if offset in (0x12c, 0x130, 0x200, 0x204, 0x208, 0x210, 0x214, 0x1d94):\n+            events.append(dict(line=number, method=key, name=name, value=value))\n+    counts['draws'] = len(draws)\n+    counts['closed_draws'] = sum(d['end_line'] is not None for d in draws)\n+    counts['draws_without_geometry_values'] = sum(not d['geometry_events'] for d in draws)\n+    return dict(counts=dict(counts), draws=draws, boundary_events=events,\n+                warnings=warnings, method_names=names,\n+                limitations=['Missing registers and upload words are unknown',\n+                    'Stock xemu suppresses ARRAY_ELEMENT16 values',\n+                    'No DMA object, host texture cache, shader uniform or framebuffer snapshots'])\n+\n+\n+def read_ram(ram, offset, size):\n+    \"\"\"Refuse truncated regions instead of padding missing physical memory.\"\"\"\n+    if offset < 0 or size < 0 or offset+size > len(ram):\n+        raise ValueError(f'RAM range {offset:#x}+{size:#x} exceeds dump {len(ram):#x}')\n+    return ram[offset:offset+size]"
+      },
+      {
+        "file": "tools/scorebug_sprite/native.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -0,0 +1,83 @@\n[part 1 of 2 of a 83-line hunk]\n+\"\"\"Bounded retail CPU submission audit. No emulator or GPU execution.\"\"\"\n+from pathlib import Path\n+import hashlib\n+import struct\n+import sys\n+\n+ROOT = Path(__file__).resolve().parents[2]\n+sys.path[:0] = [str(ROOT), str(ROOT / 'tools')]\n+\n+CODE_PINS = (\n+    (0x243d0, 0x24a00, '5884747e2f9e61925c4804a546eabb5075b7e5c19dcc802d6de159a0e18218db'),\n+    (0x2fc80, 0x2fea3, 'dfa8fa09a91ba89dc0440ba9506ab1149207b43fdf81cbf7b284b3ef399c660e'),\n+)\n+\n+\n+def submission_trace(capture):\n+    \"\"\"Execute 243D0's descriptor walk and push-buffer copy with an owned sink.\n+\n+    Shader setup and matrix uploads are explicit boundaries. Material-state\n+    emission executes separately through retail 2FC80. No scene is reordered.\n+    \"\"\"\n+    import unicorn\n+    from mod_editor.core import nfl2k5_scorebug_ingame as scene\n+    m, body = capture['machine'], capture['body']\n+    for start, end, expected in CODE_PINS:\n+        if hashlib.sha256(bytes(m.uc.mem_read(start, end-start))).hexdigest() != expected:\n+            raise ValueError('Foreign native submission code at ' + hex(start))\n+    bucket, head, sink = m.alloc(0x400), m.alloc(128), m.alloc(0x10000)\n+    m.put(head,bucket); m.put(0xa6aa6c,head)\n+    mats = m.get(body+256+0x20)\n+    m.put(bucket+4,m.get(mats+4)); m.put(bucket+12,sink)\n+    # Shader helper, material binder, matrix upload. Restore all afterwards.\n+    replacements = {0x315c0:bytes.fromhex('c3'), 0x24160:bytes.fromhex('c20800'),\n+                    0x22950:bytes.fromhex('8b44240cc20c00'),\n+                    0x28110:bytes.fromhex('a16caaa600c3')}\n+    saved = {va:bytes(m.uc.mem_read(va,len(code))) for va,code in replacements.items()}\n+    rows=[]\n+    def trace(_u,va,_size,_data):\n+        if va==0x24555:\n+            mat=m.uc.reg_read(m.x.UC_X86_REG_ECX)\n+            descriptor=m.uc.reg_read(m.x.UC_X86_REG_EDI)\n+            rows.append(dict(material=(mat-mats)//128,name=m.read_string(m.get(mat)),\n+                visible=not bool(m.get(mat+8)&1),descriptor=descriptor-body,\n+                tint=hex(m.get(mat+24)),diffuse=hex(m.get(mat+20)),\n+                vertex_shader=hex(m.get(mat+4)),states=[hex(m.get(mat+0x60+j*4)) for j in range(8)]))\n+    hook=m.uc.hook_add(unicorn.UC_HOOK_CODE,trace)\n+    try:\n+        for va,code in replacements.items():\n+            m.uc.mem_write(va,code);m.uc.ctl_remove_cache(va,va+len(code))\n+        m.run(0x243d0,(mats,0,0),ecx=body+scene.layout.SHAPE,edx=capture['matrices'],limit=100000)\n+        size=m.get(bucket+12)-sink\n+        words=struct.unpack('<'+'I'*(size//4),m.uc.mem_read(sink,size))\n+    finally:\n+        m.uc.hook_del(hook)\n+        for va,code in saved.items():\n+            m.uc.mem_write(va,code);m.uc.ctl_remove_cache(va,va+len(code))\n+    # Native state encoder, starting with distinct cached values.\n+    m.uc.mem_write(bucket+0x20,bytes([0xff])*16);m.put(bucket+12,sink)\n+    m.run(0x2fc80,(0,),ecx=bucket,edx=mats+0x60,limit=10000)\n+    state_words=struct.unpack('<'+'I'*((m.get(bucket+12)-sink)//4),m.uc.mem_read(sink,m.get(bucket+12)-sink))"
+      },
+      {
+        "file": "tools/scorebug_sprite/native.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -0,0 +1,83 @@\n[part 2 of 2 of a 83-line hunk]\n+    finally:\n+        m.uc.hook_del(hook)\n+        for va,code in saved.items():\n+            m.uc.mem_write(va,code);m.uc.ctl_remove_cache(va,va+len(code))\n+    # Native state encoder, starting with distinct cached values.\n+    m.uc.mem_write(bucket+0x20,bytes([0xff])*16);m.put(bucket+12,sink)\n+    m.run(0x2fc80,(0,),ecx=bucket,edx=mats+0x60,limit=10000)\n+    state_words=struct.unpack('<'+'I'*((m.get(bucket+12)-sink)//4),m.uc.mem_read(sink,m.get(bucket+12)-sink))\n+    return dict(rows=rows,push_words=list(words),state_words=list(state_words),\n+        code_pins=[dict(start=hex(a),end=hex(b),sha256=h) for a,b,h in CODE_PINS],\n+        boundaries=['315C0 shader setup','24160 material binder','22950 matrix upload'],\n+        native_functions=['243D0 descriptor traversal and command copy','2FC80 render-state encoding'],\n+        runtime_witnessed=False)\n+\n+\n+def main():\n+    import argparse\n+    import json\n+    from mod_editor.core.nfl2k5_scorebug_sprite import NativePreview\n+    parser=argparse.ArgumentParser(description=__doc__)\n+    parser.add_argument('--output',type=Path,default=Path('native_submission.json'))\n+    args=parser.parse_args();preview=NativePreview();result={}\n+    for wide in (False,True):\n+        _,capture=preview.capture(dict(away='DET',home='LV'),wide)\n+        try:result['16:9' if wide else '4:3']=submission_trace(capture)\n+        finally:capture['machine'].close()\n+    args.output.write_text(json.dumps(result,indent=2)+'\\n',encoding='utf-8',newline='\\n')\n+    print(args.output)\n+\n+\n+if __name__=='__main__':main()"
+      },
+      {
+        "file": "tools/scorebug_sprite/neutral_template.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -0,0 +1,51 @@\n+\"\"\"Author neutral coverage masks in the existing sprite cell layout.\n+\n+Glyph cells and measured brand marks retain their source pixels. Team shapes\n+contain only grey/white so runtime multiplication cannot introduce a foreign hue.\n+\"\"\"\n+from pathlib import Path\n+import argparse\n+import json\n+\n+ROOT = Path(__file__).resolve().parents[2]\n+\n+\n+def neutralize(folder):\n+    import numpy as np\n+    from PIL import Image\n+    folder = Path(folder)\n+    spec = json.loads((folder/'layout.json').read_text(encoding='utf-8'))\n+    image = Image.open(folder/'template.png').convert('RGBA')\n+    if spec.get('team_accents'):\n+        raise ValueError('Template already neutralized; start from the original source')\n+    tinted = {'away_rim', 'home_rim', 'plate', 'pointer', 'capsule', 'red'}\n+    for name in tinted | {'body', 'housing'}:\n+        box = spec['cells'][name]['box']\n+        pixels = np.asarray(image.crop(box)).copy()\n+        grey = pixels[:, :, :3].max(axis=2)\n+        if name in ('capsule', 'red'):\n+            grey[:] = 255\n+        pixels[:, :, :3] = grey[:, :, None]\n+        image.paste(Image.fromarray(pixels), box[:2])\n+    for name in ('wing', 'home_wing'):\n+        box = spec['cells'][name]['box']\n+        pixels = np.asarray(image.crop(box)).copy()\n+        pixels[:, :, :3] = 255\n+        pixels[:, :, 3] = np.rint(pixels[:, :, 3]*.75).astype('uint8')\n+        image.paste(Image.fromarray(pixels), box[:2])\n+    for row in spec['static']:\n+        if row['name'] in ('capsule', 'red', 'pointer'):\n+            row['tint'] = 'possessing team'\n+    for row in spec['fields']:\n+        if row['name'] in ('clock', 'quarter'):\n+            row['colour'] = '#FFFFFF'\n+    spec.update(team_accents='team_accents.json', plate_tints={}, wing_tints={})\n+    spec['provenance']['team_shapes'] = 'Neutral masks; official per-team accents from team_accents.json; wing coverage reduced to 75 percent.'\n+    image.save(folder/'template.png')\n+    (folder/'layout.json').write_text(json.dumps(spec, indent=1)+'\\n', encoding='utf-8', newline='\\n')\n+\n+\n+if __name__ == '__main__':\n+    parser = argparse.ArgumentParser(description=__doc__)\n+    parser.add_argument('folder', type=Path)\n+    neutralize(parser.parse_args().folder)"
+      },
+      {
+        "file": "tools/scorebug_sprite/render.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -0,0 +1,109 @@\n[part 1 of 2 of a 109-line hunk]\n+\"\"\"Render sprite matchups through the bounded xemu reference fragment path.\n+\n+This command reports its calibration gate. A bright software label is not proof\n+that the screenshot mismatch has been solved.\n+\"\"\"\n+from pathlib import Path\n+import argparse\n+import json\n+import sys\n+import tempfile\n+\n+ROOT=Path(__file__).resolve().parents[2]\n+sys.path[:0]=[str(ROOT),str(ROOT/'tools')]\n+from mod_editor.core import nfl2k5_scorebug_sprite as sprite\n+from mod_editor.core.nfl2k5_scorebug_resources import TEAM_LOGOS\n+\n+STATES={\n+    'normal':{}, '1st_and_10':dict(down=1,distance=10),\n+    'first_and_ten':dict(down=1,distance=10), '2nd_and_10':dict(down=2,distance=10),\n+    'short_yardage':dict(down=3,distance=1),'third_and_long':dict(down=3,distance=12),\n+    'fourth_down':dict(down=4,distance=8),'goal_to_go':dict(down=1,distance=5,goal_to_go=True),\n+    'flag':dict(event='FLAG'),'fumble':dict(event='FUMBLE'),'field_goal_setup':dict(down=4,distance=3,event='ball on'),\n+    'two_minute':dict(clock=120),'end_of_quarter':dict(clock=0),\n+    'raiders_ball':dict(away='DET',home='LV',away_score=0,home_score=7,down=1,distance=10,clock=300,quarter=1,play_clock=29,possession='home'),\n+    'lions_ball':dict(away='DET',home='LV',away_score=0,home_score=7,down=2,distance=10,clock=300,quarter=1,possession='away'),\n+}\n+\n+\n+def team(value):\n+    value=value.upper().replace(' ','_')\n+    aliases={'OAK':'LV','RAIDERS':'LV','LIONS':'DET','CHIEFS':'KC','BRONCOS':'DEN','SD':'LAC','STL':'LAR','WSH':'WAS','COMMANDERS':'WAS'}\n+    names=json.loads((ROOT/'data/nfl2k5_team_names_2026.json').read_text())\n+    codes={r['asset_code']:k for k,r in TEAM_LOGOS.items()}\n+    aliases.update({r['retail']['nickname'].upper():codes[r['retail']['asset_code']] for r in names['teams']})\n+    value=aliases.get(value,value)\n+    from mod_editor.core.nfl2k5_scorebug_teams import load\n+    if value not in load():raise ValueError('Unknown team: '+value)\n+    return value\n+\n+\n+def state_for(name,away=None,home=None,possession=None):\n+    state=json.loads(name) if name.lstrip().startswith('{') else dict(STATES[name])\n+    for key,value in [('away',away),('home',home),('possession',possession)]:\n+        if value is not None:state[key]=team(value) if key!='possession' else value\n+    return sprite.normalize_state(state)\n+\n+\n+def render(preview,state,aspect,path,*,naive=False):\n+    from PIL import Image,ImageDraw\n+    import nfl2k5_scorebug_projection as projection\n+    from tools.scorebug_sprite.jev.descriptors import describe\n+    wide=aspect=='16:9';g,c=preview.capture(state,wide);mode=preview.modes[wide]\n+    path=Path(path);path.parent.mkdir(parents=True,exist_ok=True)\n+    try:\n+        pipeline=None\n+        if not naive:\n+            from tools.scorebug_sprite.gpu import capture_state\n+            from tools.scorebug_sprite.xemu_model import Pipeline\n+            pipeline=Pipeline(capture_state(c))\n+        with tempfile.TemporaryDirectory(prefix='sprite-preview-') as folder:"
+      },
+      {
+        "file": "tools/scorebug_sprite/render.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -0,0 +1,109 @@\n[part 2 of 2 of a 109-line hunk]\n+    path=Path(path);path.parent.mkdir(parents=True,exist_ok=True)\n+    try:\n+        pipeline=None\n+        if not naive:\n+            from tools.scorebug_sprite.gpu import capture_state\n+            from tools.scorebug_sprite.xemu_model import Pipeline\n+            pipeline=Pipeline(capture_state(c))\n+        with tempfile.TemporaryDirectory(prefix='sprite-preview-') as folder:\n+            raster_path=Path(folder)/'hud.png'\n+            receipt=projection.render_native(c['live_decoded'],mode['atlas'],preview.fonts,g,raster_path,\n+                texture_spans=c['texture_spans'],background=Image.new('RGB',(640,480),'#303030'),gpu_pipeline=pipeline)\n+            image=Image.open(raster_path).convert('RGB').crop((0,16,640,464)).resize(sprite.DISPLAY[wide]['size'],Image.Resampling.LANCZOS)\n+            ImageDraw.Draw(image).text((20,20),('NAIVE' if naive else 'XEMU FRAGMENT MODEL')+\n+                ' / CALIBRATION FAILED / NOT A GAME CAPTURE',fill='#ffcc66')\n+            image.save(path)\n+        light_clock=next(r for r in mode['compiled'].spec['fields'] if r['name']=='clock')['colour']=='#FFFFFF'\n+        result=dict(state=state,aspect=aspect,descriptor=describe(image,aspect=aspect,light_clock=light_clock),raster=receipt,\n+            appended_bytes=mode['volume']['appended_bytes'],runtime_witnessed=False,\n+            preview_path='naive' if naive else 'xemu-model',\n+            calibration=dict(passed=False,reason='Dark-label reproduction unresolved; preceding frame GPU state and surface-scale coverage are not captured.'))\n+        path.with_suffix('.json').write_text(json.dumps(result,indent=2)+'\\n',encoding='utf-8',newline='\\n')\n+        return image,result\n+    finally:c['machine'].close()\n+\n+\n+def contact_sheet(preview,path,aspect='16:9',*,naive=False):\n+    from PIL import Image,ImageDraw\n+    path=Path(path);path.parent.mkdir(parents=True,exist_ok=True)\n+    from mod_editor.core.nfl2k5_scorebug_teams import load\n+    teams=load();names=sorted(teams);sheet=Image.new('RGB',(800,20+64*len(names)//2),'#202020');draw=ImageDraw.Draw(sheet)\n+    draw.text((5,4),('NAIVE' if naive else 'XEMU FRAGMENT MODEL')+\n+        ' / CALIBRATION FAILED / NOT A GAME CAPTURE',fill='#ffcc66')\n+    rows=[]\n+    with tempfile.TemporaryDirectory(prefix='sprite-teams-') as directory:\n+        for i,name in enumerate(names):\n+            image,receipt=render(preview,state_for('1st_and_10',name,name,'home'),aspect,Path(directory)/(name+'.png'),naive=naive)\n+            rows.append(dict(team=name,review_required=teams[name]['review_required'],down=receipt['descriptor']['fields']['down'],plate=receipt['descriptor']['fields']['plate']))\n+            offset=(image.width-1920)//2;bar=image.crop((425+offset,938,1490+offset,1057)).resize((395,44))\n+            x=(i%2)*400;y=20+(i//2)*64;sheet.paste(bar,(x,y+18));draw.text((x+5,y+2),name+(' REVIEW' if teams[name]['review_required'] else ''),fill='white')\n+    sheet.save(path)\n+    path.with_suffix('.json').write_text(json.dumps(dict(aspect=aspect,teams=rows,calibration_passed=False,\n+        preview_path='naive' if naive else 'xemu-model',\n+        limitation='52 roster tint slots; extra slots use neutral logos. GPU calibration is unresolved; these are model predictions.'),indent=2)+'\\n',encoding='utf-8',newline='\\n')\n+\n+\n+def main():\n+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--away');p.add_argument('--home');p.add_argument('--state',default='1st_and_10')\n+    p.add_argument('--aspect',choices=['16:9','4:3'],default='16:9');p.add_argument('--possession',choices=['away','home'])\n+    p.add_argument('--all-teams',action='store_true');p.add_argument('--folder',type=Path);p.add_argument('--source',type=Path)\n+    p.add_argument('--naive',action='store_true',help='Use the former texture-times-vertex preview for comparison')\n+    p.add_argument('--output',type=Path,default=Path('scorebug_preview.png'))\n+    a=p.parse_args();preview=sprite.NativePreview(folder=a.folder,source=a.source)\n+    if a.all_teams:contact_sheet(preview,a.output,a.aspect,naive=a.naive)\n+    else:render(preview,state_for(a.state,a.away,a.home,a.possession),a.aspect,a.output,naive=a.naive)\n+    print(a.output);print('Calibration gate: FAIL (dark-label reproduction unresolved). In-game result unwitnessed.')\n+\n+if __name__=='__main__':main()"
+      },
+      {
+        "file": "tools/scorebug_sprite/runtime.c",
+        "file_facts": "product or tool source; shipped in a release allowlist: no; pinned by sha256 digest: no.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -16,7 +16,8 @@ struct Field {u32 source,vertex,capacity,glyphs,count,color,flags,visibility;int\n struct Static {u32 vertex,tint,material,brand;};\n struct Brand {u32 mode;s16 uv[16];}; /* NFL then MNF, one existing quad */\n struct Header {u32 magic,revision,fields,field_offset,statics,static_offset,size,quads;};\n-struct State {u32 scene,active,home,away,home_wing,away_wing,home_plate,away_plate;};\n+struct State {u32 scene,active,home,away,home_wing,away_wing,home_plate,away_plate,home_rim,away_rim;};\n+struct Accent {u32 code,kind,wing,rim,plate;};\n \n NOINLINE void FAST sprite_blank(u16 *out) {out[0]=0;}\n static u8 *base(void) {"
+      },
+      {
+        "file": "tools/scorebug_sprite/runtime.c",
+        "file_facts": "product or tool source; shipped in a release allowlist: no; pinned by sha256 digest: no.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -26,9 +27,10 @@ static u8 *base(void) {\n }\n static struct Header *header(u8 *b) {return (struct Header*)(b+16512);}\n static u32 material(u8 *b,u32 k) {\n- /* Native SCNE material array order differs from push-buffer batch order. */\n- if(k==0)k=5;else if(k==1)k=0;else if(k==2)k=1;else if(k==3)k=2;\n- else if(k==5)k=3;else if(k==6)k=9;else if(k==8)k=10;else if(k==9)k=6;else if(k==10)k=8;\n+ /* Callers use logical 3..10 -> native 2,4,3,9,7,10,6,8.\n+  * Event records already carry the pointers for logical 0..2.\n+  * Packed nibbles keep the event repair inside the existing RX reservation. */\n+ k=(0x86a79342u>>((k-3)*4))&15;\n  return V(b+256+0x20)+k*128;\n }\n static void color(u8 *b,u32 first,u32 c) {"
+      },
+      {
+        "file": "tools/scorebug_sprite/runtime.c",
+        "file_facts": "product or tool source; shipped in a release allowlist: no; pinned by sha256 digest: no.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -59,16 +61,36 @@ static u32 logo(u32 context) {\n  return found;\n }\n \n+static void accents(u8 *b,u32 context,u32 *wing,u32 *rim,u32 *plate) {\n+ struct Header *h=header(b);\n+ if(h->revision!=2)return;\n+ *wing=*rim=*plate=0xff303030;\n+ u32 *tail=(u32*)((u8*)h+h->size-12);\n+ if(h->size<12 || h->size>16384 || tail[0]!=0x35544e54 || tail[1]>52 ||\n+    tail[2]<16512+sizeof(struct Header) || tail[2]+tail[1]*sizeof(struct Accent)!=16512+h->size-12)return;\n+ u16 *code=(u16*)V(context+0x10c);\n+ if(!code || !code[0] || !code[1] || code[2])return;\n+ u32 key=(u32)code[0]|((u32)code[1]<<16),kind=V(context+0x128);\n+ struct Accent *rows=(struct Accent*)(b+tail[2]);\n+ for(u32 i=0;i<tail[1];i++)if(rows[i].code==key && rows[i].kind==kind){\n+  *wing=rows[i].wing;*rim=rows[i].rim;*plate=rows[i].plate;return;\n+ }\n+}\n+\n NOINLINE void sprite_setup(struct State *s) {\n  u8 *b=base();s->active=0;if(!b)return;\n  struct Header *h=header(b);\n- if(h->magic!=MAGIC || h->revision!=1 || h->fields>16 || h->statics>24 || h->quads>71)return;\n+ if(h->magic!=MAGIC || (h->revision!=1 && h->revision!=2) || h->fields>16 || h->statics>24 || h->quads>71)return;\n  s->scene=(u32)b+256;s->active=1;\n  s->home=logo(0xb30864);s->away=logo(0xb30a58);\n  s->home_wing=s->home?V(s->home-4):0xff4a4e58;\n  s->away_wing=s->away?V(s->away-4):0xff4a4e58;\n  s->home_plate=s->home?V(s->home-8):0xff3a3f48;\n  s->away_plate=s->away?V(s->away-8):0xff3a3f48;\n+ s->home_rim=0xff000000|(((s->home_wing&0xfefefe)>>1)+0x7f7f7f);\n+ s->away_rim=0xff000000|(((s->away_wing&0xfefefe)>>1)+0x7f7f7f);\n+ accents(b,0xb30864,&s->home_wing,&s->home_rim,&s->home_plate);\n+ accents(b,0xb30a58,&s->away_wing,&s->away_rim,&s->away_plate);\n  V(material(b,5)+0x30)=s->home;V(material(b,8)+0x30)=s->away;\n  /* Keep retail descriptor/slot words. Empty callbacks submit no bar glyphs. */\n  for(u32 i=0;i<5;i++)V(0xa95884+i*40)=(u32)sprite_blank;"
+      },
+      {
+        "file": "tools/scorebug_sprite/runtime.c",
+        "file_facts": "product or tool source; shipped in a release allowlist: no; pinned by sha256 digest: no.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -86,7 +108,10 @@ static u32 text(struct Field *f,u16 *out) {\n  if(source<2){p=V(source?0xe5fc68:0xe5fc28);if(!p || V(p)>999)return 0;((Formatter)(source?0xfc070:0xfc050))(out);}\n  else if(source<4){p=V(source==2?0xe5fc28:0xe5fc68);if(!p)return 0;u32 n=V(p+4);if(n>3)return 0;for(u32 j=0;j<n;j++)out[j]='~';out[n]=0;}\n  else if(source==4){((Formatter)0xfc090)(out);}\n- else if(source==5){p=V(0xe6028c);if(!p || V(p+16)>0x45610000u)return 0;((Formatter)0xfc100)(out);}\n+ /* Retail splits at ceil(seconds)==600. FC100 deliberately returns empty\n+  * above 599.0; FC150 handles that complementary range. Positive IEEE bits\n+  * preserve order after the finite, nonnegative range guard above. */\n+ else if(source==5){p=V(0xe6028c);if(!p || V(p+16)>0x45610000u)return 0;((Formatter)(V(p+16)<=0x4415c000u?0xfc100:0xfc150))(out);}\n  else if(source==6){p=V(0xe60294);if(!p || V(p+16)>0x42c60000u || (V(p+24)&6))return 0;((Formatter)0xfbe30)(out);}\n  else if(source==7){if(!V(0xe602ec) || !V(0xe60280))return 0;((Formatter)0xfc7d0)(out);}\n  else return 0;"
+      },
+      {
+        "file": "tools/scorebug_sprite/runtime.c",
+        "file_facts": "product or tool source; shipped in a release allowlist: no; pinned by sha256 digest: no.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -96,7 +121,7 @@ static u32 text(struct Field *f,u16 *out) {\n \n /* Record origin is the parent-index word (A959C8 + index * 0x70).\n  * This is FC360's binding/current-slide decision, including unordered x87. */\n-static u32 element_visible(u32 record) {\n+static u32 FAST element_visible(u32 record) {\n  return V(record+0x58) && !(*(volatile float*)(record+0x3c)<=*(volatile float*)(record+0x2c));\n }\n "
+      },
+      {
+        "file": "tools/scorebug_sprite/runtime.c",
+        "file_facts": "product or tool source; shipped in a release allowlist: no; pinned by sha256 digest: no.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -147,9 +172,18 @@ static void field(u8 *b,struct Field *f) {\n NOINLINE void sprite_update(struct State *s) {\n  u8 *b=base();if(!b || !s->active || s->scene!=(u32)b+256 || !V(0xa95520))return;\n  struct Header *h=header(b);\n- for(u32 k=3;k<10;k++){u32 m=material(b,k);V(m+8)&=~1u;V(m+24)=0xffffffff;}\n- if(!s->home)V(material(b,5)+8)|=1;\n- if(!s->away)V(material(b,8)+8)|=1;\n+ for(u32 k=3;k<10;k++) {\n+  u32 m=material(b,k);\n+  V(m+8)=(V(m+8)&~1u)|((k==5&&!s->home)||(k==8&&!s->away));\n+  V(m+24)=0xffffffff;\n+ }\n+ /* Event plates are logical 10, 2, 1, 0, outside the bar reset above.\n+  * Recompute every plate from the same binding/current-slide gate as text.\n+  * A request can end while its slide is still closing. */\n+ for(u32 record=0xa95aa8;record<0xa95c68;record+=0x70) {\n+  u32 m=V(record+0x44);\n+  if(m)V(m+8)=(V(m+8)&~1u)|!element_visible(record);\n+ }\n  u32 p=V(0xe60280),tint=0xff3a3f48;\n  if(p==0xe5fc20 || p==V(0xe5fc28))tint=s->home_plate;\n  if(p==0xe5fc60 || p==V(0xe5fc68))tint=s->away_plate;"
+      },
+      {
+        "file": "tools/scorebug_sprite/runtime.c",
+        "file_facts": "product or tool source; shipped in a release allowlist: no; pinned by sha256 digest: no.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -157,8 +191,7 @@ NOINLINE void sprite_update(struct State *s) {\n  for(u32 i=0;i<h->statics;i++){\n   u32 source=statics[i].tint;\n   if(source) {\n-   u32 c=source==1 || source==4?s->home_wing:source==2 || source==5?s->away_wing:tint;\n-   if(source>=4)c=0xff000000|(((c&0xfefefe)>>1)+0x7f7f7f);\n+   u32 c=source==1?s->home_wing:source==2?s->away_wing:source==4?s->home_rim:source==5?s->away_rim:tint;\n    color(b,statics[i].vertex,c);\n   }\n   if(statics[i].brand) {"
+      },
+      {
+        "file": "tools/scorebug_sprite/xemu_model.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -0,0 +1,178 @@\n[part 1 of 4 of a 178-line hunk]\n+\"\"\"Reference fragment path for the captured retail HUD NV2A state.\n+\n+Equations follow xemu f9b1403 pgraph/glsl/{vsh-prog,psh}.c, texture.c,\n+swizzle.c and gl/draw.c. This is a bounded reference, not a complete NV2A.\n+Missing frame state stays missing; no screenshot-fitted darkening is applied.\n+\"\"\"\n+from functools import lru_cache\n+import hashlib\n+from pathlib import Path\n+import struct\n+import sys\n+\n+ROOT = Path(__file__).resolve().parents[2]\n+sys.path[:0] = [str(ROOT), str(ROOT/'tools')]\n+\n+\n+def rgba(word):\n+    return tuple(((word >> s) & 255)/255 for s in (16, 8, 0, 24))\n+\n+\n+def input_value(byte, registers, alpha=False):\n+    \"\"\"xemu get_input_var: register, channel selection, then mapping.\"\"\"\n+    value = registers[byte & 15]\n+    value = (value[3 if byte & 16 else 2],) if alpha else ((value[3],)*3 if byte & 16 else value[:3])\n+    def mapping(x):\n+        positive = max(x, 0)\n+        return (positive, 1-min(positive, 1), 2*positive-1, 1-2*positive,\n+                positive-.5, .5-positive, x, -x)[byte >> 5]\n+    return tuple(mapping(v) for v in value)\n+\n+\n+def combiner(state, texture, diffuse, fog=(0, 0, 0, 1)):\n+    \"\"\"Evaluate the decoded single multiply stage and final E*F/fog mix.\n+\n+    General stage routing beyond this observed program is refused. Constants\n+    remain inputs, so a future captured final C0 change is not hidden.\n+    \"\"\"\n+    def get(offset):\n+        return state[f'0x{offset:04x}']\n+    expected = {0x0260:0xd8d41010, 0x0ac0:0xc8c40000,\n+                0x0aa0:0x100c0, 0x1e40:0x100c0, 0x1e60:0x11101,\n+                0x0288:0x0f030c00, 0x028c:0x11331c80}\n+    if any(get(k) != v for k, v in expected.items()):\n+        raise ValueError('Unsupported captured register-combiner program')\n+    regs = {0:(0,)*4, 1:rgba(get(0xa60)), 2:rgba(get(0xa80)),\n+            3:fog, 4:diffuse, 8:texture}\n+    result = []\n+    for alpha, offset in ((False, 0xac0), (True, 0x260)):\n+        word = get(offset)\n+        a, b, c, d = [input_value(word >> shift & 255, regs, alpha) for shift in (24, 16, 8, 0)]\n+        # AB routes to R0, shift-left-one, clamp [-1,1]. CD is discarded.\n+        result.extend(max(-1, min(1, 2*x*y)) for x, y in zip(a, b))\n+    regs[12] = tuple(result)\n+    regs[1], regs[2] = rgba(get(0x1e20)), rgba(get(0x1e24))\n+    e, f = [input_value(get(0x28c) >> shift & 255, regs) for shift in (24, 16)]\n+    regs[15] = tuple(x*y for x,y in zip(e,f))+(0,)\n+    a,b,c,d = [input_value(get(0x288) >> shift & 255, regs) for shift in (24,16,8,0)]\n+    rgb = tuple(min(1,max(0,w+x*y+(1-x)*z)) for x,y,z,w in zip(a,b,c,d))\n+    return rgb+input_value(get(0x28c) >> 8 & 255,regs,True)\n+"
+      },
+      {
+        "file": "tools/scorebug_sprite/xemu_model.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -0,0 +1,178 @@\n[part 2 of 4 of a 178-line hunk]\n+    regs[12] = tuple(result)\n+    regs[1], regs[2] = rgba(get(0x1e20)), rgba(get(0x1e24))\n+    e, f = [input_value(get(0x28c) >> shift & 255, regs) for shift in (24, 16)]\n+    regs[15] = tuple(x*y for x,y in zip(e,f))+(0,)\n+    a,b,c,d = [input_value(get(0x288) >> shift & 255, regs) for shift in (24,16,8,0)]\n+    rgb = tuple(min(1,max(0,w+x*y+(1-x)*z)) for x,y,z,w in zip(a,b,c,d))\n+    return rgb+input_value(get(0x28c) >> 8 & 255,regs,True)\n+\n+\n+@lru_cache(maxsize=40)\n+def texture(span):\n+    \"\"\"Independent P8/BGRA decode with xemu's rectangular Morton ordering.\"\"\"\n+    from mod_editor.core import nfl2k5_scorebug_ingame as scene\n+    chunk, body, _ = scene.decode(span)\n+    info = scene.tx.parse_texture(body, chunk)\n+    if info.format_code != 11 or info.dimensions != 2 or info.mip_levels != 1:\n+        raise ValueError('Reference model requires the captured one-level P8 texture')\n+    w,h = info.width,info.height\n+    video = memoryview(body)[chunk.system_bytes:]\n+    result = p8_texture(video[info.pixel_offset:info.pixel_offset+w*h],\n+                        video[info.palette_offset:info.palette_offset+1024], w, h)\n+    return result,dict(name=info.name,dimensions=[w,h],\n+        span_sha256=hashlib.sha256(span).hexdigest(),decode='xemu P8, Morton swizzle, BGRA palette')\n+\n+\n+def p8_texture(indices, palette, w, h):\n+    \"\"\"Decode exact physical-memory regions, refusing incomplete RAM extracts.\"\"\"\n+    import numpy as np\n+    from PIL import Image\n+    if not (1 <= w <= 4096 and 1 <= h <= 4096) or w & (w-1) or h & (h-1):\n+        raise ValueError('P8 swizzle dimensions must be bounded powers of two')\n+    if len(indices) != w*h or len(palette) != 1024:\n+        raise ValueError('Incomplete P8 index or palette bytes')\n+    yy,xx = np.indices((h,w), dtype=np.uint32)\n+    offsets = np.zeros((h,w), dtype=np.uint32)\n+    bit = 1\n+    target = 1\n+    while bit < max(w,h):\n+        for size,coords in ((w,xx),(h,yy)):\n+            if bit < size:\n+                offsets |= ((coords & bit) != 0).astype(np.uint32)*target\n+                target <<= 1\n+        bit <<= 1\n+    indices = np.frombuffer(indices, dtype=np.uint8)[offsets]\n+    bgra = np.frombuffer(palette,dtype=np.uint8).reshape(256,4)\n+    pixels = bgra[indices][:,:,[2,1,0,3]]\n+    return Image.fromarray(pixels,'RGBA')\n+\n+\n+class Pipeline:\n+    \"\"\"Compile the observed shader to its equivalent per-fragment expression.\"\"\"\n+    def __init__(self, trace):\n+        self.rows = {r['name']:r for r in trace['rows']}\n+        self.assumptions = list(trace['fixture_assumptions'])\n+        self.assumptions += ['Preceding logic-op, depth-test enable, depth surface, shade mode and scissor state not captured',\n+                             'Pixel centres and CPU-projected geometry; surface_scale=4 coverage not emulated']\n+        self.state = None\n+\n+    def select(self, name):\n+        row = self.rows[name]"
+      }
+    ],
+    "questions": {
+      "ctime_compare": {
+        "type": "noul",
+        "instructions": "Does `hunk` add or change code that compares file timestamps (st_ctime, st_mtime, st_ctime_ns, st_mtime_ns, getmtime, getctime or another st_* time field) taken at different times or from different stat calls, to decide whether a file changed? Count timestamps placed in a cache key, identity or fingerprint tuple that is compared later. Windows gives these fields different meanings.",
+        "criteria": {
+          "true": "an added or changed line puts a stat time field into a comparison, cache key, fingerprint or identity used to detect change",
+          "false": "no stat time field is used for change detection (absent, only printed, or only set with os.utime)"
+        }
+      },
+      "posix_only": {
+        "type": "noul",
+        "instructions": "Does `hunk` add behaviour that works only on Linux/macOS or differs on Windows: file-system path strings split, matched or compared on a literal '/', os.fork, fcntl, signal handlers or SIGALRM/SIGKILL, chmod or executable-bit assumptions, os.getuid, /tmp or /dev paths, POSIX shell commands, or file names that differ only by case?",
+        "criteria": {
+          "true": "an added line relies on one of those behaviours without a platform guard",
+          "false": "no added line relies on POSIX-only behaviour (pathlib joins and os.path calls are portable), or it is guarded by an explicit platform check"
+        }
+      },
+      "pinned_value": {
+        "type": "noul",
+        "instructions": "Does `hunk` replace a pinned expected value: a removed (-) line holds a count literal that a test or gate asserts, a SHA-256 digest, a byte offset or address, a size, or a golden / reference value, and an added (+) line holds a different value in its place?",
+        "criteria": {
+          "true": "an old expected count, digest, offset, size or golden value on a - line is replaced by a different one on a + line",
+          "false": "no expected value is replaced; brand-new code or new tests that only add assertions do not count"
+        }
+      },
+      "slow_test": {
+        "type": "noul",
+        "instructions": "Does `hunk` add or lengthen a test path that could run for minutes: nested loops over a large case matrix or cross product (see the loop facts in `file_facts`), sleeps or polling waits, full disc / ISO / XBE builds or scans, or many repeated heavy calls such as a full prepare/build/read-back per case? CI kills a test file after 420 seconds.",
+        "criteria": {
+          "true": "added test code runs hundreds of heavy cases (each a build, prepare, read-back, compress, fit or render), sleeps, full-disc work, or other heavy repeated calls",
+          "false": "the added code is not a test path, or its loops are small, or the loop body is only cheap assignments or arithmetic (fast even with thousands of iterations)"
+        }
+      },
+      "weakens_safety": {
+        "type": "noul",
+        "instructions": "Does `hunk` widen or weaken a safety check? Safety checks are: validation of files, saves or user input, refusals and raised errors, integrity checks (hashes, signatures, sizes, bounds), path and permission guards, allowlists, and test assertions. Weakening means removing one, loosening its condition or tolerance, adding a skip or bypass, or making it accept inputs it used to refuse.",
+        "criteria": {
+          "true": "a safety check of that kind is removed, loosened, skipped or bypassed, or now accepts inputs it used to refuse",
+          "false": "safety checks are unchanged, added or stricter; feature conditions, performance paths, search heuristics, cache bookkeeping and early returns that only skip work are not safety checks"
+        }
+      },
+      "inventory_mismatch": {
+        "type": "noul",
+        "instructions": "Does `hunk` touch the release inventory or pins without the matching change: it adds or imports a module that `diff_facts` marks MISSING from the release allowlist or not in module_pins, or it edits an allowlist, requirements, module_pins entry or pinned count while `diff_facts` says the counterpart was not edited?",
+        "criteria": {
+          "true": "the hunk adds, imports or edits something whose allowlist entry, pin or count `diff_facts` marks MISSING or not edited",
+          "false": "`diff_facts` shows every matching change present, or the hunk touches no inventory, pin or new module"
+        }
+      }
+    }
+  },
+  "response": {
+    "results": [
+      {
+        "index": 0,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.1
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.12
+          }
+        }
+      },
+      {
+        "index": 1,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.11
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.13
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.08
+          }
+        }
+      },
+      {
+        "index": 2,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.15
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.13
+          }
+        }
+      },
+      {
+        "index": 3,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.12
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.1
+          }
+        }
+      },
+      {
+        "index": 4,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.08
+          }
+        }
+      },
+      {
+        "index": 5,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.14
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.11
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.12
+          }
+        }
+      },
+      {
+        "index": 6,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.13
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.49
+          }
+        }
+      },
+      {
+        "index": 7,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.08
+          }
+        }
+      },
+      {
+        "index": 8,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.12
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.08
+          }
+        }
+      },
+      {
+        "index": 9,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.11
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.07
+          }
+        }
+      },
+      {
+        "index": 10,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.1
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.12
+          }
+        }
+      },
+      {
+        "index": 11,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.1
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.11
+          }
+        }
+      },
+      {
+        "index": 12,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.11
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.12
+          }
+        }
+      },
+      {
+        "index": 13,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.09
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.2
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.18
+          }
+        }
+      },
+      {
+        "index": 14,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.07
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.24
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.15
+          }
+        }
+      },
+      {
+        "index": 15,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.07
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.02
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.05
+          }
+        }
+      },
+      {
+        "index": 16,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.11
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.02
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.07
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.05
+          }
+        }
+      },
+      {
+        "index": 17,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.44
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.71
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.06
+          }
+        }
+      },
+      {
+        "index": 18,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.21
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.26
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.05
+          }
+        }
+      },
+      {
+        "index": 19,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.02
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.04
+          }
+        }
+      },
+      {
+        "index": 20,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.09
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.11
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.06
+          }
+        }
+      },
+      {
+        "index": 21,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.02
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.05
+          }
+        }
+      },
+      {
+        "index": 22,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.07
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.11
+          }
+        }
+      },
+      {
+        "index": 23,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.09
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.13
+          }
+        }
+      }
+    ],
+    "totals": {
+      "input_tokens": 49643,
+      "output_tokens": 2784,
+      "cost_usd": 0.00208499,
+      "errors": 0,
+      "wall_ms": 577
+    }
+  }
+}

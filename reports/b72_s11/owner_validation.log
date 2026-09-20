@@ -1,0 +1,36 @@
+test_abilities_v2__scorebug_runtime (tests.mod_editor.test_nfl2k5_owner_pairwise_composition.PairwiseCompositionTests.test_abilities_v2__scorebug_runtime) ... ok
+test_accelerated_clock_on_20__scorebug_runtime (tests.mod_editor.test_nfl2k5_owner_pairwise_composition.PairwiseCompositionTests.test_accelerated_clock_on_20__scorebug_runtime) ... ok
+test_animation_xbe__scorebug_runtime (tests.mod_editor.test_nfl2k5_owner_pairwise_composition.PairwiseCompositionTests.test_animation_xbe__scorebug_runtime) ... ok
+test_calendar__scorebug_runtime (tests.mod_editor.test_nfl2k5_owner_pairwise_composition.PairwiseCompositionTests.test_calendar__scorebug_runtime) ... ok
+test_camera_v5__scorebug_runtime (tests.mod_editor.test_nfl2k5_owner_pairwise_composition.PairwiseCompositionTests.test_camera_v5__scorebug_runtime) ... ok
+test_coin_defer__scorebug_runtime (tests.mod_editor.test_nfl2k5_owner_pairwise_composition.PairwiseCompositionTests.test_coin_defer__scorebug_runtime) ... ok
+test_coverage_trail__scorebug_runtime (tests.mod_editor.test_nfl2k5_owner_pairwise_composition.PairwiseCompositionTests.test_coverage_trail__scorebug_runtime) ... ok
+test_cpu_scrambles__scorebug_runtime (tests.mod_editor.test_nfl2k5_owner_pairwise_composition.PairwiseCompositionTests.test_cpu_scrambles__scorebug_runtime) ... ok
+test_crib_reclaim__scorebug_runtime (tests.mod_editor.test_nfl2k5_owner_pairwise_composition.PairwiseCompositionTests.test_crib_reclaim__scorebug_runtime) ... ok
+test_decided_clock__scorebug_runtime (tests.mod_editor.test_nfl2k5_owner_pairwise_composition.PairwiseCompositionTests.test_decided_clock__scorebug_runtime) ... ok
+test_deep_zone__scorebug_runtime (tests.mod_editor.test_nfl2k5_owner_pairwise_composition.PairwiseCompositionTests.test_deep_zone__scorebug_runtime) ... ok
+test_franchise_2026__scorebug_runtime (tests.mod_editor.test_nfl2k5_owner_pairwise_composition.PairwiseCompositionTests.test_franchise_2026__scorebug_runtime) ... ok
+test_franchise_autosave__scorebug_runtime (tests.mod_editor.test_nfl2k5_owner_pairwise_composition.PairwiseCompositionTests.test_franchise_autosave__scorebug_runtime) ... ok
+test_guardian_overlay__scorebug_runtime (tests.mod_editor.test_nfl2k5_owner_pairwise_composition.PairwiseCompositionTests.test_guardian_overlay__scorebug_runtime) ... ok
+test_helmet_finish__scorebug_runtime (tests.mod_editor.test_nfl2k5_owner_pairwise_composition.PairwiseCompositionTests.test_helmet_finish__scorebug_runtime) ... ok
+test_momentum__scorebug_runtime (tests.mod_editor.test_nfl2k5_owner_pairwise_composition.PairwiseCompositionTests.test_momentum__scorebug_runtime) ... ok
+test_music_playlist__scorebug_runtime (tests.mod_editor.test_nfl2k5_owner_pairwise_composition.PairwiseCompositionTests.test_music_playlist__scorebug_runtime) ... ok
+test_my_career__scorebug_runtime (tests.mod_editor.test_nfl2k5_owner_pairwise_composition.PairwiseCompositionTests.test_my_career__scorebug_runtime) ... ok
+test_my_career_generic__scorebug_runtime (tests.mod_editor.test_nfl2k5_owner_pairwise_composition.PairwiseCompositionTests.test_my_career_generic__scorebug_runtime) ... ok
+test_playbook_pair__scorebug_runtime (tests.mod_editor.test_nfl2k5_owner_pairwise_composition.PairwiseCompositionTests.test_playbook_pair__scorebug_runtime) ... ok
+test_practice_squad_screen__scorebug_runtime (tests.mod_editor.test_nfl2k5_owner_pairwise_composition.PairwiseCompositionTests.test_practice_squad_screen__scorebug_runtime) ... ok
+test_qb_spy_man_rush__scorebug_runtime (tests.mod_editor.test_nfl2k5_owner_pairwise_composition.PairwiseCompositionTests.test_qb_spy_man_rush__scorebug_runtime) ... ok
+test_read_option_v5__scorebug_runtime (tests.mod_editor.test_nfl2k5_owner_pairwise_composition.PairwiseCompositionTests.test_read_option_v5__scorebug_runtime) ... ok
+test_scorebug_runtime__cpu_money_downs (tests.mod_editor.test_nfl2k5_owner_pairwise_composition.PairwiseCompositionTests.test_scorebug_runtime__cpu_money_downs) ... ok
+test_scorebug_runtime__franchise_edit_player (tests.mod_editor.test_nfl2k5_owner_pairwise_composition.PairwiseCompositionTests.test_scorebug_runtime__franchise_edit_player) ... ok
+test_scorebug_runtime__static_scorebar_v3 (tests.mod_editor.test_nfl2k5_owner_pairwise_composition.PairwiseCompositionTests.test_scorebug_runtime__static_scorebar_v3) ... ok
+test_screen_hooks__scorebug_runtime (tests.mod_editor.test_nfl2k5_owner_pairwise_composition.PairwiseCompositionTests.test_screen_hooks__scorebug_runtime) ... ok
+test_senior_bowl__scorebug_runtime (tests.mod_editor.test_nfl2k5_owner_pairwise_composition.PairwiseCompositionTests.test_senior_bowl__scorebug_runtime) ... ok
+test_seven_on_seven_v2__scorebug_runtime (tests.mod_editor.test_nfl2k5_owner_pairwise_composition.PairwiseCompositionTests.test_seven_on_seven_v2__scorebug_runtime) ... ok
+test_weather_haze__scorebug_runtime (tests.mod_editor.test_nfl2k5_owner_pairwise_composition.PairwiseCompositionTests.test_weather_haze__scorebug_runtime) ... ok
+test_zone_drop__scorebug_runtime (tests.mod_editor.test_nfl2k5_owner_pairwise_composition.PairwiseCompositionTests.test_zone_drop__scorebug_runtime) ... ok
+
+----------------------------------------------------------------------
+Ran 31 tests in 176.996s
+
+OK

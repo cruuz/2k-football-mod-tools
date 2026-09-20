@@ -1,0 +1,18 @@
+{
+  "test_files": 35,
+  "test_cases": 312,
+  "skips": 8,
+  "executed": 304,
+  "max_default_seconds": 76.72,
+  "closures_passed": 6,
+  "owner_pairs": 31,
+  "retained_frames": 1350,
+  "label_slot_aspects": 104,
+  "residuals": {
+    "PASS": 56,
+    "FAIL": 40
+  },
+  "runtime_witnessed": false,
+  "calibration_passed": false,
+  "strict_fidelity_passed": false
+}

@@ -495,7 +495,7 @@ def apply(payload):
     result = bytes(buf)
     space._require(status(result) == "applied", "scorebug runtime postcondition failed")
     return result, dict(status="applied", experimental=True, runtime_witnessed=False,
-                        changed_bytes=sum(a != b for a, b in zip(payload, result)) + len(result) - len(payload),
+                        changed_bytes=space.count_differing_bytes(payload, result) + len(result) - len(payload),
                         code_va=hex(code["va"]), data_va=hex(data["va"]), edits=edits,
                         binding_collection="GAMEDATA", binding_revision=REVISION,
                         allocation=ar, installation=ir, scorebug=sr,

@@ -1,0 +1,48 @@
+Sat Sep 19 14:07:38 2026    /tmp/b72-s5-resources.prof
+
+         746594348 function calls (746532167 primitive calls) in 239.790 seconds
+
+   Ordered by: cumulative time
+   List reduced from 3222 to 40 due to restriction <40>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+   1167/1    0.067    0.000  244.943  244.943 {built-in method builtins.exec}
+        1    0.000    0.000  244.943  244.943 <frozen runpy>:201(run_module)
+        1    0.000    0.000  244.935  244.935 <frozen runpy>:65(_run_code)
+        1    0.000    0.000  244.935  244.935 __main__.py:1(<module>)
+        1    0.000    0.000  244.935  244.935 main.py:67(__init__)
+        1    0.000    0.000  244.680  244.680 main.py:255(runTests)
+        1    0.000    0.000  244.679  244.679 runner.py:224(run)
+      4/1    0.000    0.000  244.679  244.679 suite.py:83(__call__)
+      4/1    0.000    0.000  244.679  244.679 suite.py:102(run)
+        6    0.000    0.000  192.217   32.036 case.py:689(__call__)
+        6    0.000    0.000  192.217   32.036 case.py:599(run)
+        6    0.004    0.001  192.216   32.036 case.py:588(_callTestMethod)
+       33    0.003    0.000  132.429    4.013 nfl2k5_scorebug_ingame.py:862(runtime_image_plan)
+        1    0.012    0.012  125.867  125.867 test_nfl2k5_scorebug_resources.py:239(test_all_probe_sets_are_exact_idempotent_and_refuse_other_profiles)
+       25    0.018    0.001  107.859    4.314 nfl2k5_scorebug_ingame.py:938(runtime_apply_in_place)
+       51    0.052    0.001   94.228    1.848 nfl2k5_scorebug_resources.py:809(compile_runtime_collection)
+        8    0.113    0.014   90.112   11.264 nfl2k5_scorebug_reference.py:25(apply_copy)
+  8150411   39.618    0.000   88.512    0.000 {built-in method builtins.sum}
+       28    0.081    0.003   73.727    2.633 nfl2k5_scorebug_runtime.py:466(apply)
+        1    0.030    0.030   64.969   64.969 test_nfl2k5_scorebug_resources.py:177(test_disc_growth_replay_and_rollback_at_pack_node_and_xbe_writes)
+        6    0.000    0.000   52.463    8.744 suite.py:142(_handleClassSetUp)
+        1    0.000    0.000   52.463   52.463 test_nfl2k5_scorebug_resources.py:43(setUpClass)
+       67    0.018    0.000   51.797    0.773 nfl2k5_scorebug_resources.py:665(_compiled_panels)
+       26    0.221    0.008   38.644    1.486 nfl2k5_scorebug_ingame.py:608(apply_xbe)
+     2277    2.607    0.001   35.928    0.016 nfl2k5_xbe_space.py:247(_validate)
+       29    0.153    0.005   34.758    1.199 nfl2k5_xbe_space.py:364(apply)
+      279    3.211    0.012   33.472    0.120 nfl_tset_png_import.py:430(median_cut_palette)
+     2016    0.041    0.000   31.855    0.016 nfl2k5_xbe_space.py:326(layout)
+     1762    0.011    0.000   30.906    0.018 nfl2k5_scorebug_ingame.py:574(runtime_identity_installed)
+     1846    0.014    0.000   29.083    0.016 nfl2k5_scorebug_runtime.py:392(sites)
+     1122    0.015    0.000   26.576    0.024 nfl2k5_scorebug_resources.py:629(mnf_panel_span)
+      331    0.001    0.000   25.802    0.078 nfl2k5_scorebug_resources.py:658(panel_states)
+      265    1.681    0.006   25.801    0.097 nfl2k5_scorebug_exact.py:379(panel)
+       68    0.229    0.003   25.767    0.379 nfl_tset_png_import.py:478(quantize_levels)
+  6110445    3.059    0.000   23.796    0.000 nfl_tset_png_import.py:442(<genexpr>)
+  6567854    7.599    0.000   21.292    0.000 {built-in method builtins.min}
+     1156    0.021    0.000   21.103    0.018 nfl2k5_scorebug_assets.py:334(texture_chunk)
+       61    0.005    0.000   21.052    0.345 nfl2k5_scorebug_assets.py:352(_texture_chunk)
+      257    0.001    0.000   20.979    0.082 nfl2k5_scorebug_ingame.py:113(texture_image)
+    61/60    0.312    0.005   20.220    0.337 nfl2k5_scorebug_assets.py:274(quantize_alpha_aware)

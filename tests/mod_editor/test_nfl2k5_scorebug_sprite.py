@@ -22,7 +22,13 @@ class ContractTests(unittest.TestCase):
  def test_layout_capacity_full_alpha_and_source_boxes(self):
   c=sprite.compile_folder();self.assertEqual(c.atlas.size,(256,512));self.assertEqual(len(c.quads),47)
   self.assertLess(sprite.probe_sizes()[1],400*1024)
-  for digit in '0123456789':self.assertEqual(c.spec['glyph_sets']['score']['glyphs'][digit]['size'],[40,53])
+  scores=c.spec['glyph_sets']['score']['glyphs']
+  for digit in '0123456789':self.assertEqual(scores[digit]['size'][1],53)
+  # The live face is proportional: a narrow 1 and broad rounded 0. The old
+  # generic 40-column fit erased exactly this distinction.
+  self.assertAlmostEqual(scores['0']['size'][0]/53,49/54,delta=.01)
+  self.assertAlmostEqual(scores['1']['size'][0]/53,25/54,delta=.01)
+  self.assertLess(scores['7']['size'][0],scores['0']['size'][0])
   self.assertGreater(len(set(c.atlas.getchannel('A').getdata())),64)
   self.assertFalse(list(sprite.DEFAULT_FOLDER.glob('*.ttf')))
   self.assertEqual(c.spec['reference_boxes']['bar'],[437,942,1478,1052])
@@ -78,22 +84,36 @@ class ContractTests(unittest.TestCase):
    self.assertFalse(plan.scorebug_runtime)
 
 class LogoFitTests(unittest.TestCase):
- def test_marks_are_drawn_as_the_broadcast_draws_them(self):
+ def test_complete_wide_marks_keep_the_configured_proportions(self):
   from mod_editor.core import nfl2k5_scorebug_exact as exact, nfl2k5_scorebug_resources as art
   spec=sprite.load_layout()[0];fit=spec['logo_fit']
-  self.assertEqual(set(fit['by_team']),{'KC','DEN'})
-  for team,expect in (('KC',1.89),('DEN',1.87),('BUF',None)):
+  self.assertEqual(set(fit['by_team']),set(art.TEAM_LOGOS))
+  box=next(r['box'] for r in spec['static'] if r['name']=='home_logo')
+  display_aspect=(box[2]-box[0])/(box[3]-box[1])
+  # Check the complete silhouette at its actual quad aspect. The authored
+  # per-team fits preserve every stroke inside the larger s10 wells.
+  for team,expect in (('KC',1.59),('DEN',1.68),('BUF',None)):
    im=exact.mnf_panel(team,'home',fit=art.logo_fit_for(team,fit));x0,y0,x1,y1=im.getchannel('A').getbbox()
-   aspect=(x1-x0)/(y1-y0)*(200/107)/(64/64)   # cell aspect back to source pixels: 64 cell px = 200 source columns, 64 rows = 107
-   plain=exact.mnf_panel(team,'home');px0,py0,px1,py1=plain.getchannel('A').getbbox()
-   self.assertGreater(aspect,(px1-px0)/(py1-py0)*(200/107),team)   # wider-to-tall than the unfitted mark
+   aspect=(x1-x0)/(y1-y0)*display_aspect
+   self.assertGreater(aspect,1.4,team)
    if expect is not None:self.assertAlmostEqual(aspect,expect,delta=0.12,msg=team)
    self.assertEqual(im.size,(64,64))
   with self.assertRaises(ValueError):exact.mnf_panel('KC','home',fit={'fill_x':3.0})
+ def test_edge_bleed_clips_without_changing_native_texture_contract(self):
+  plain=exact.mnf_panel('LV','home',fit={'height':1.0})
+  zoomed=exact.mnf_panel('LV','home',fit={'height':1.0,'zoom':1.25,'shift_y':-.1})
+  self.assertEqual(plain.size,zoomed.size)
+  self.assertNotEqual(plain.tobytes(),zoomed.tobytes())
+  self.assertEqual(zoomed.getchannel('A').getbbox()[1],0)
+  self.assertEqual(exact.mnf_panel('LV','home').tobytes(),
+                   exact.mnf_panel('LV','home',fit={'zoom':1,'shift_x':0,'shift_y':0}).tobytes())
+  for fit in ({'zoom':float('nan')},{'zoom':2.01},{'shift_x':.51},{'shift_y':float('inf')}):
+   with self.assertRaises(ValueError):exact.mnf_panel('LV','home',fit=fit)
  def test_layout_rejects_a_bad_fit(self):
   import copy,json,tempfile
   spec,image=sprite.load_layout()
-  for bad in ({'default':{'fill_x':0.1}},{'by_team':{'XXX':{'fill_x':1.2}}},{'default':{'width':1.2}}):
+  for bad in ({'default':{'fill_x':0.1}},{'by_team':{'XXX':{'fill_x':1.2}}},{'default':{'width':1.2}},
+              {'default':{'zoom':float('nan')}},{'default':{'shift_x':.51}}):
    with tempfile.TemporaryDirectory() as directory:
     p=Path(directory);rewritten=copy.deepcopy(spec);rewritten['logo_fit']=bad
     (p/'layout.json').write_text(json.dumps(rewritten));image.save(p/'template.png')
@@ -117,7 +137,7 @@ class DisplayModelTests(unittest.TestCase):
   spec=sprite.load_layout()[0];brand=spec['brand'][0]
   self.assertEqual((brand['name'],brand['cell'],brand['material'],brand['pin']),('watermark','espn_mnf',9,'top-right'))
   self.assertEqual(brand['box'],[1655,35,1869,64]);self.assertAlmostEqual(brand['opacity'],0.714,delta=.02)
-  self.assertTrue({'frames','method','measured_opacity','colour'}<=set(brand['source']))
+  self.assertTrue({'frames','method','estimated_opacity','colour'}<=set(brand['source']))
   for wide in (False,True):
    c=sprite.compile_folder(widescreen=wide);row=next(q for q in c.quads if q['name']=='watermark')
    self.assertTrue(row['brand']);self.assertEqual(row['tint'],'none')
@@ -137,7 +157,17 @@ class DisplayModelTests(unittest.TestCase):
   self.assertEqual(next(e for e in spec['events'] if e['name']=='FLAG')['cell'],'flag')
   mark=image.crop(spec['cells']['espn_mnf']['box']);self.assertEqual(mark.size,(71,12))
   self.assertGreater(mark.getchannel('A').getextrema()[1],240)  # the template keeps full coverage; the row carries the opacity
-  self.assertEqual(mark.convert('RGB').getextrema(),((255,255),(251,251),(241,241)))
+  self.assertEqual(mark.convert('RGB').getextrema(),((255,255),)*3)
+ def test_live_clock_is_white_with_dark_ink_and_team_plate_is_separate(self):
+  spec,image=sprite.load_layout();rows={r['name']:r for r in spec['static']}
+  for name in ('capsule','red'):
+   self.assertEqual(rows[name]['tint'],'none')
+   cell=image.crop(spec['cells'][rows[name]['cell']]['box'])
+   self.assertGreater(min(cell.getpixel((cell.width//2,cell.height//2))[:3]),235)
+  self.assertEqual(rows['plate']['tint'],'possessing team')
+  for f in spec['fields']:
+   if f['name'] in ('quarter','clock','play_clock'):self.assertEqual(f['colour'],'#171717')
+   if f['name']=='down':self.assertGreaterEqual(f['size']*448/1080,12)
  def test_flag_literal_is_blanked_at_equal_length(self):
   rows={va:(old,new) for va,old,new,_ in owner.override_edits()}
   old,new=rows[0xE6C464];self.assertEqual(old,'FLAG\0'.encode('utf-16le'));self.assertEqual(new,bytes(10))
@@ -158,7 +188,7 @@ class NativeTests(unittest.TestCase):
     box=[min(p[0] for p in points),min(p[1] for p in points),max(p[0] for p in points),max(p[1] for p in points)]
     want=list(sprite.contracted(sprite.hud_box(q['box'],wide),wide))
     self.assertLess(max(abs(a-b) for a,b in zip(box,want)),.02,q['name'])
-   expected={'away_score':1,'home_score':1,'clock':4,'play_clock':1,'quarter':2,'down':5,'home_timeouts':3,'away_timeouts':3}
+   expected={'away_score':1,'home_score':1,'clock':4,'play_clock':1,'quarter':1,'down':5,'home_timeouts':3,'away_timeouts':3}
    for role,count in expected.items():
     rows=[q for q in self.preview.modes[wide]['compiled'].quads if q['name'].startswith(role+':')]
     visible=sum(bool(struct.unpack_from('<I',c['live_decoded'],scene.layout.S1+q['vertex']*10)[0]) for q in rows)
@@ -195,6 +225,17 @@ class NativeTests(unittest.TestCase):
    g,c=self.capture(event=event)
    # The FLAG plate carries its own dark label; its retail white text is blanked.
    self.assertEqual(any(row['vertices'] for row in g['draws']),event!='FLAG',event)
+ def test_clock_crosses_the_retail_ten_minute_formatter_boundary(self):
+  g,c=self.capture();m=c['machine'];code,data=owner.sites(self.patched)
+  update=owner.code_for(code['va'],data['va'])[1]['update']
+  rows=[q for q in self.preview.compiled.quads if q['name'].startswith('clock:')]
+  try:
+   for seconds,expected in ((599,4),(599.01,5),(599.5,5),(599.99,5),(600,5),(894,5),(900,5),(3600,5),(599,4)):
+    m.float(m.game_clock+16,seconds);m.run(update,(0x3c888889,),limit=500000)
+    actual=bytes(m.uc.mem_read(c['body'],len(self.preview.scene)))
+    self.assertEqual(sum(bool(struct.unpack_from('<I',actual,scene.layout.S1+q['vertex']*10)[0]) for q in rows),expected,seconds)
+    self.assertIn(0xfc100 if seconds<=599 else 0xfc150,m.visits)
+  finally:m.close()
  def test_plate_secondary_and_team_material_bindings(self):
   for away,home,possessing in (('DEN','KC','home'),('NO','DEN','away')):
    g,c=self.capture(away=away,home=home,possession=possessing)

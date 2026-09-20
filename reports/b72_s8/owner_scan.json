@@ -1,0 +1,1102 @@
+{
+  "rx_used": 4076,
+  "code": {
+    "owner": "nfl2k5_scorebug_runtime",
+    "kind": "code",
+    "size": 4096,
+    "align": 16,
+    "va": 21860352,
+    "raw": 12095488
+  },
+  "data": {
+    "owner": "nfl2k5_scorebug_runtime",
+    "kind": "data",
+    "size": 128,
+    "align": 16,
+    "va": 21737472,
+    "raw": 12025856
+  },
+  "absolute_writes": [
+    {
+      "instruction": "0x14d9012",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "fxsave [esp]"
+    },
+    {
+      "instruction": "0x14d9023",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "rep stosd dword ptr es:[edi], eax"
+    },
+    {
+      "instruction": "0x14d902a",
+      "target": "0x14bb000",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0x14bb000], eax"
+    },
+    {
+      "instruction": "0x14d9079",
+      "target": "0x14bb010",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0x14bb010], eax"
+    },
+    {
+      "instruction": "0x14d908e",
+      "target": "0x14bb044",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0x14bb044], eax"
+    },
+    {
+      "instruction": "0x14d9093",
+      "target": "0xa95a7c",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0xa95a7c], eax"
+    },
+    {
+      "instruction": "0x14d90ac",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "and dword ptr [eax + 8], 0xfffffffe"
+    },
+    {
+      "instruction": "0x14d90c8",
+      "target": "0xa95918",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0xa95918], eax"
+    },
+    {
+      "instruction": "0x14d90cd",
+      "target": "0xa95940",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0xa95940], eax"
+    },
+    {
+      "instruction": "0x14d90d2",
+      "target": "0xa95a80",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0xa95a80], eax"
+    },
+    {
+      "instruction": "0x14d90d7",
+      "target": "0xa95968",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0xa95968], eax"
+    },
+    {
+      "instruction": "0x14d90dc",
+      "target": "0xa959a0",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0xa959a0], eax"
+    },
+    {
+      "instruction": "0x14d90e1",
+      "target": "0xa958a0",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0xa958a0], eax"
+    },
+    {
+      "instruction": "0x14d90e6",
+      "target": "0xa958c8",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0xa958c8], eax"
+    },
+    {
+      "instruction": "0x14d90eb",
+      "target": "0xa95a10",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0xa95a10], eax"
+    },
+    {
+      "instruction": "0x14d90f0",
+      "target": "0xa9594c",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0xa9594c], 0x14d93e8"
+    },
+    {
+      "instruction": "0x14d90fa",
+      "target": "0xa95984",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0xa95984], 0x14d93ef"
+    },
+    {
+      "instruction": "0x14d9104",
+      "target": "0xa95a3c",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0xa95a3c], 0x14d94e2"
+    },
+    {
+      "instruction": "0x14d910e",
+      "target": "0xa958fc",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0xa958fc], 0x14d94fb"
+    },
+    {
+      "instruction": "0x14d9118",
+      "target": "0xa95924",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0xa95924], 0x14d9502"
+    },
+    {
+      "instruction": "0x14d913a",
+      "target": "0xa958f0",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0xa958f0], eax"
+    },
+    {
+      "instruction": "0x14d914f",
+      "target": "0xa95aec",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0xa95aec], eax"
+    },
+    {
+      "instruction": "0x14d9154",
+      "target": "0xa95884",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0xa95884], 0x14d9529"
+    },
+    {
+      "instruction": "0x14d915e",
+      "target": "0xa958ac",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0xa958ac], 0x14d9530"
+    },
+    {
+      "instruction": "0x14d9187",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "fxsave [esp]"
+    },
+    {
+      "instruction": "0x14d91c0",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [esp + 0x210], eax"
+    },
+    {
+      "instruction": "0x14d920c",
+      "target": "0x14bb030",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0x14bb030], ecx"
+    },
+    {
+      "instruction": "0x14d9220",
+      "target": "0x14bb038",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0x14bb038], ecx"
+    },
+    {
+      "instruction": "0x14d9234",
+      "target": "0x14bb03c",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0x14bb03c], ecx"
+    },
+    {
+      "instruction": "0x14d924b",
+      "target": "0x14bb034",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0x14bb034], ecx"
+    },
+    {
+      "instruction": "0x14d9262",
+      "target": "0x14bb040",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0x14bb040], ecx"
+    },
+    {
+      "instruction": "0x14d927e",
+      "target": "0xa95a04",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0xa95a04], 0x3f800000"
+    },
+    {
+      "instruction": "0x14d92c5",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [ecx + 0x18], eax"
+    },
+    {
+      "instruction": "0x14d92c8",
+      "target": "0xa95a48",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0xa95a48], 0xffffffff"
+    },
+    {
+      "instruction": "0x14d92dc",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [ecx + 0x18], 0xffd70033"
+    },
+    {
+      "instruction": "0x14d9305",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [ecx + 0x18], 0xfff00c3e"
+    },
+    {
+      "instruction": "0x14d9313",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [ecx + 0x18], 0xffd70033"
+    },
+    {
+      "instruction": "0x14d931a",
+      "target": "0x14bb004",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0x14bb004], 1"
+    },
+    {
+      "instruction": "0x14d933d",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [ecx + 0x30], edx"
+    },
+    {
+      "instruction": "0x14d9344",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "and dword ptr [ecx + 8], 0xfffffffe"
+    },
+    {
+      "instruction": "0x14d934a",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "or dword ptr [ecx + 8], 1"
+    },
+    {
+      "instruction": "0x14d935e",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [edi + 0x28], 0x3e3851ec"
+    },
+    {
+      "instruction": "0x14d9365",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [edi + 0x20], edx"
+    },
+    {
+      "instruction": "0x14d9368",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [esi], 0xffe1e1e1"
+    },
+    {
+      "instruction": "0x14d9375",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [esi], 0xffffd166"
+    },
+    {
+      "instruction": "0x14d9399",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [edi - 0xc], eax"
+    },
+    {
+      "instruction": "0x14d93aa",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [ecx + 0x30], eax"
+    },
+    {
+      "instruction": "0x14d93b1",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "and dword ptr [ecx + 8], 0xfffffffe"
+    },
+    {
+      "instruction": "0x14d93b7",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "or dword ptr [ecx + 8], 1"
+    },
+    {
+      "instruction": "0x14d93e0",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [eax + 0x18], edx"
+    },
+    {
+      "instruction": "0x14d93e3",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "and dword ptr [eax + 8], 0xfffffffe"
+    },
+    {
+      "instruction": "0x14d940c",
+      "target": null,
+      "size": 2,
+      "writable": null,
+      "detail": "add word ptr [ecx], dx"
+    },
+    {
+      "instruction": "0x14d9414",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [edi + 0x34], 0xff4a4e58"
+    },
+    {
+      "instruction": "0x14d941b",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [edi + 0x3c], 0xff3a3f48"
+    },
+    {
+      "instruction": "0x14d9425",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [esp], 0x620073"
+    },
+    {
+      "instruction": "0x14d942c",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [esp + 4], 0x2d002d"
+    },
+    {
+      "instruction": "0x14d9434",
+      "target": null,
+      "size": 2,
+      "writable": null,
+      "detail": "mov word ptr [esp + 8], dx"
+    },
+    {
+      "instruction": "0x14d9439",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [esp + 0xa], 0x30"
+    },
+    {
+      "instruction": "0x14d948c",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [esp + 4], eax"
+    },
+    {
+      "instruction": "0x14d94b1",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [esp + 4], 0x2d002d"
+    },
+    {
+      "instruction": "0x14d94cc",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [edi], eax"
+    },
+    {
+      "instruction": "0x14d94d5",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [edi + 0x34], edx"
+    },
+    {
+      "instruction": "0x14d94db",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [edi + 0x3c], edx"
+    },
+    {
+      "instruction": "0x14d94f2",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [ecx], eax"
+    },
+    {
+      "instruction": "0x14d9521",
+      "target": null,
+      "size": 2,
+      "writable": null,
+      "detail": "add word ptr [ecx], dx"
+    },
+    {
+      "instruction": "0x14d9549",
+      "target": null,
+      "size": 2,
+      "writable": null,
+      "detail": "mov word ptr [ecx], 0x7e"
+    },
+    {
+      "instruction": "0x14d9554",
+      "target": null,
+      "size": 2,
+      "writable": null,
+      "detail": "mov word ptr [ecx], 0x20"
+    },
+    {
+      "instruction": "0x14d955e",
+      "target": null,
+      "size": 2,
+      "writable": null,
+      "detail": "mov word ptr [ecx], 0"
+    },
+    {
+      "instruction": "0x14d9580",
+      "target": null,
+      "size": 2,
+      "writable": null,
+      "detail": "and word ptr [ecx], 0"
+    },
+    {
+      "instruction": "0x14d95c1",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [edx], ecx"
+    },
+    {
+      "instruction": "0x14d95d0",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [esp], 0x620073"
+    },
+    {
+      "instruction": "0x14d95d7",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [esp + 4], 0x2d002d"
+    },
+    {
+      "instruction": "0x14d95df",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [esp + 8], 0x300068"
+    },
+    {
+      "instruction": "0x14d95e7",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "and dword ptr [esp + 0xc], 0"
+    },
+    {
+      "instruction": "0x14d9633",
+      "target": null,
+      "size": 2,
+      "writable": null,
+      "detail": "mov word ptr [esp + 4], bx"
+    },
+    {
+      "instruction": "0x14d963c",
+      "target": null,
+      "size": 2,
+      "writable": null,
+      "detail": "mov word ptr [esp + 6], ax"
+    },
+    {
+      "instruction": "0x14d965f",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [esp + 4], 0x2d002d"
+    },
+    {
+      "instruction": "0x14d96a9",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [esi], 0xff303030"
+    },
+    {
+      "instruction": "0x14d96b3",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [esi], 0xff303030"
+    },
+    {
+      "instruction": "0x14d96b9",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [ecx], 0xff303030"
+    },
+    {
+      "instruction": "0x14d973f",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [ecx], edx"
+    },
+    {
+      "instruction": "0x14d9748",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [ecx], edx"
+    },
+    {
+      "instruction": "0x14d974d",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [ebx], eax"
+    },
+    {
+      "instruction": "0x14d976a",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "and dword ptr [ebx + 4], 0"
+    },
+    {
+      "instruction": "0x14d97c4",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [ebx + 4], 1"
+    },
+    {
+      "instruction": "0x14d97cb",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [ebx], eax"
+    },
+    {
+      "instruction": "0x14d97d7",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [ebx + 8], eax"
+    },
+    {
+      "instruction": "0x14d97ed",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [ebx + 0xc], ecx"
+    },
+    {
+      "instruction": "0x14d97f7",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [ebx + 0x10], edx"
+    },
+    {
+      "instruction": "0x14d9806",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [ebx + 0x14], eax"
+    },
+    {
+      "instruction": "0x14d9815",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [ebx + 0x18], ebp"
+    },
+    {
+      "instruction": "0x14d9828",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [ebx + 0x1c], ebp"
+    },
+    {
+      "instruction": "0x14d984f",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [ebx + 0x24], eax"
+    },
+    {
+      "instruction": "0x14d9855",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [ebx + 0x20], edx"
+    },
+    {
+      "instruction": "0x14d9889",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [eax + 0x1b0], edi"
+    },
+    {
+      "instruction": "0x14d9898",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [eax + 0x530], edx"
+    },
+    {
+      "instruction": "0x14d989e",
+      "target": "0xa95884",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0xa95884], 0x14d9580"
+    },
+    {
+      "instruction": "0x14d98a8",
+      "target": "0xa958ac",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0xa958ac], 0x14d9580"
+    },
+    {
+      "instruction": "0x14d98b2",
+      "target": "0xa958d4",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0xa958d4], 0x14d9580"
+    },
+    {
+      "instruction": "0x14d98bc",
+      "target": "0xa958fc",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0xa958fc], 0x14d9580"
+    },
+    {
+      "instruction": "0x14d98c6",
+      "target": "0xa95924",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0xa95924], 0x14d9580"
+    },
+    {
+      "instruction": "0x14d98d0",
+      "target": "0xa95924",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0xa95924], 0x14d9580"
+    },
+    {
+      "instruction": "0x14d98da",
+      "target": "0xa95984",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0xa95984], 0x14d9580"
+    },
+    {
+      "instruction": "0x14d98e4",
+      "target": "0xa9594c",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0xa9594c], 0x14d9580"
+    },
+    {
+      "instruction": "0x14d98ee",
+      "target": "0xa959a4",
+      "size": 4,
+      "writable": true,
+      "detail": "and dword ptr [0xa959a4], 0"
+    },
+    {
+      "instruction": "0x14d98f5",
+      "target": "0xa9596c",
+      "size": 4,
+      "writable": true,
+      "detail": "and dword ptr [0xa9596c], 0"
+    },
+    {
+      "instruction": "0x14d98fc",
+      "target": "0xa95a3c",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0xa95a3c], 0x14d9580"
+    },
+    {
+      "instruction": "0x14d9906",
+      "target": "0xa959cc",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0xa959cc], 0x14d9580"
+    },
+    {
+      "instruction": "0x14d991b",
+      "target": "0xa95aec",
+      "size": 4,
+      "writable": true,
+      "detail": "mov dword ptr [0xa95aec], eax"
+    },
+    {
+      "instruction": "0x14d99af",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [eax + 8], ecx"
+    },
+    {
+      "instruction": "0x14d99b2",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "or dword ptr [eax + 0x18], 0xffffffff"
+    },
+    {
+      "instruction": "0x14d99dc",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [edi + 8], esi"
+    },
+    {
+      "instruction": "0x14d99fc",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [esp], 0xff3a3f48"
+    },
+    {
+      "instruction": "0x14d9a0a",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [esp], edi"
+    },
+    {
+      "instruction": "0x14d9a21",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [esp], eax"
+    },
+    {
+      "instruction": "0x14d9a2a",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "and dword ptr [esp + 4], 0"
+    },
+    {
+      "instruction": "0x14d9a81",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "inc dword ptr [esp + 4]"
+    },
+    {
+      "instruction": "0x14d9aec",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [esp + 8], ecx"
+    },
+    {
+      "instruction": "0x14d9b3d",
+      "target": null,
+      "size": 2,
+      "writable": null,
+      "detail": "mov word ptr [ecx], di"
+    },
+    {
+      "instruction": "0x14d9b44",
+      "target": null,
+      "size": 2,
+      "writable": null,
+      "detail": "mov word ptr [ecx + 2], di"
+    },
+    {
+      "instruction": "0x14d9b58",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "and dword ptr [esp + 0x18], 0"
+    },
+    {
+      "instruction": "0x14d9bc7",
+      "target": null,
+      "size": 2,
+      "writable": null,
+      "detail": "and word ptr [esp + 0x70], 0"
+    },
+    {
+      "instruction": "0x14d9c71",
+      "target": null,
+      "size": 2,
+      "writable": null,
+      "detail": "mov word ptr [esp + eax*2 + 0x70], 0x7e"
+    },
+    {
+      "instruction": "0x14d9c7b",
+      "target": null,
+      "size": 2,
+      "writable": null,
+      "detail": "and word ptr [esp + edx*2 + 0x70], 0"
+    },
+    {
+      "instruction": "0x14d9d49",
+      "target": null,
+      "size": 2,
+      "writable": null,
+      "detail": "mov word ptr [esp + 0x70], ax"
+    },
+    {
+      "instruction": "0x14d9d4e",
+      "target": null,
+      "size": 2,
+      "writable": null,
+      "detail": "and word ptr [esp + 0x72], 0"
+    },
+    {
+      "instruction": "0x14d9d5a",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "and dword ptr [esp], 0"
+    },
+    {
+      "instruction": "0x14d9d79",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "and dword ptr [esp + 4], 0"
+    },
+    {
+      "instruction": "0x14d9d7e",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [esp + 8], eax"
+    },
+    {
+      "instruction": "0x14d9dbb",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "inc dword ptr [esp]"
+    },
+    {
+      "instruction": "0x14d9dc8",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [esp + edi*4 + 0x2c], ecx"
+    },
+    {
+      "instruction": "0x14d9dce",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "inc dword ptr [esp + 4]"
+    },
+    {
+      "instruction": "0x14d9df0",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [esp + 4], edx"
+    },
+    {
+      "instruction": "0x14d9e07",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [esp + 0xc], eax"
+    },
+    {
+      "instruction": "0x14d9e2e",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "and dword ptr [esp + 0x10], 0"
+    },
+    {
+      "instruction": "0x14d9e33",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [esp + 0x1c], ecx"
+    },
+    {
+      "instruction": "0x14d9e37",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "and dword ptr [esp + 8], 0"
+    },
+    {
+      "instruction": "0x14d9e52",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [esp + 0x14], eax"
+    },
+    {
+      "instruction": "0x14d9e6c",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [esp + 0x24], eax"
+    },
+    {
+      "instruction": "0x14d9e8b",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [esp + 0x28], eax"
+    },
+    {
+      "instruction": "0x14d9e95",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [esp + 0x20], eax"
+    },
+    {
+      "instruction": "0x14d9e9c",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "mov dword ptr [esp + 0x2c], eax"
+    },
+    {
+      "instruction": "0x14d9eba",
+      "target": null,
+      "size": 2,
+      "writable": null,
+      "detail": "mov word ptr [eax + 0x2660], di"
+    },
+    {
+      "instruction": "0x14d9ed1",
+      "target": null,
+      "size": 2,
+      "writable": null,
+      "detail": "mov word ptr [eax + 0x265c], di"
+    },
+    {
+      "instruction": "0x14d9edb",
+      "target": null,
+      "size": 2,
+      "writable": null,
+      "detail": "mov word ptr [eax + 0x265e], di"
+    },
+    {
+      "instruction": "0x14d9ee6",
+      "target": null,
+      "size": 2,
+      "writable": null,
+      "detail": "mov word ptr [ecx + 0x2d1a], di"
+    },
+    {
+      "instruction": "0x14d9ef3",
+      "target": null,
+      "size": 2,
+      "writable": null,
+      "detail": "mov word ptr [ecx + 0x2d1c], di"
+    },
+    {
+      "instruction": "0x14d9f1c",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "inc dword ptr [esp + 8]"
+    },
+    {
+      "instruction": "0x14d9f20",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "add dword ptr [esp + 0x10], esi"
+    },
+    {
+      "instruction": "0x14d9f31",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "inc dword ptr [esp + 0x18]"
+    },
+    {
+      "instruction": "0x14d9f73",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "fxsave [esp]"
+    },
+    {
+      "instruction": "0x14d9fc6",
+      "target": null,
+      "size": 4,
+      "writable": null,
+      "detail": "fxsave [esp]"
+    }
+  ],
+  "unchanged": {
+    "data/nfl2k5_scorebug_sprite": true,
+    "reports/b72_s6": true,
+    "reports/b72_s7": true
+  },
+  "source_manifest_check": "stale reservation source: mod_editor/core/nfl2k5_scorebug_exact.py; regenerate manifest",
+  "manifest_regeneration_owner": "integrator",
+  "idempotent": true,
+  "hook_ownership": true,
+  "allowlist_entries": {
+    "mod_editor/core/nfl2k5_scorebug_sprite_code.py": true,
+    "mod_editor/core/providers.py": true
+  },
+  "development_only": [
+    "tools/scorebug_sprite/runtime.c",
+    "tests/mod_editor/test_nfl2k5_scorebug_down_visibility.py"
+  ]
+}

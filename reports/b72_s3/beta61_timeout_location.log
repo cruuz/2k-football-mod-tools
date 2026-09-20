@@ -1,0 +1,26 @@
+Timeout (0:01:00)!
+Thread 0x0000755494969080 (most recent call first):
+  File "/home/noah/2k-worktrees/astra-b72-s3/mod_editor/core/nfl2k5_xbe_space.py", line 244 in _digest
+  File "/home/noah/2k-worktrees/astra-b72-s3/mod_editor/core/nfl2k5_xbe_space.py", line 866 in _validate_scaleout
+  File "/home/noah/2k-worktrees/astra-b72-s3/mod_editor/core/nfl2k5_xbe_space.py", line 249 in _validate
+  File "/home/noah/2k-worktrees/astra-b72-s3/mod_editor/core/nfl2k5_xbe_space.py", line 972 in _scaleout_layout
+  File "/home/noah/2k-worktrees/astra-b72-s3/mod_editor/core/nfl2k5_xbe_space.py", line 328 in layout
+  File "/home/noah/2k-worktrees/astra-b72-s3/mod_editor/core/nfl2k5_deep_zone.py", line 98 in allocations
+  File "/home/noah/2k-worktrees/astra-b72-s3/mod_editor/core/nfl2k5_deep_zone.py", line 113 in _inspect
+  File "/home/noah/2k-worktrees/astra-b72-s3/mod_editor/core/nfl2k5_deep_zone.py", line 156 in status
+  File "/home/noah/2k-worktrees/astra-b72-s3/mod_editor/core/nfl2k5_deep_zone.py", line 192 in apply
+  File "/home/noah/2k-worktrees/astra-b72-s3/tests/nfl2k5_allocator_stack.py", line 146 in compose
+  File "tests/mod_editor/test_beta61_allocator_integration.py", line 79 in setUpClass
+  File "/usr/lib/python3.12/unittest/suite.py", line 166 in _handleClassSetUp
+  File "/usr/lib/python3.12/unittest/suite.py", line 114 in run
+  File "/usr/lib/python3.12/unittest/suite.py", line 84 in __call__
+  File "/usr/lib/python3.12/unittest/suite.py", line 122 in run
+  File "/usr/lib/python3.12/unittest/suite.py", line 84 in __call__
+  File "/usr/lib/python3.12/unittest/runner.py", line 240 in run
+  File "/usr/lib/python3.12/unittest/main.py", line 281 in runTests
+  File "/usr/lib/python3.12/unittest/main.py", line 105 in __init__
+  File "tests/mod_editor/test_beta61_allocator_integration.py", line 170 in <module>
+  File "<frozen runpy>", line 88 in _run_code
+  File "<frozen runpy>", line 98 in _run_module_code
+  File "<frozen runpy>", line 286 in run_path
+  File "<stdin>", line 4 in <module>

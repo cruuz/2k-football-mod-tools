@@ -1,0 +1,907 @@
+{
+  "request": {
+    "states": [
+      {
+        "file": "data/nfl2k5_cave_reservations.json",
+        "file_facts": "data file (only the first windows are judged); shipped in a release allowlist: no; pinned by sha256 digest: no.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -166,7 +166,7 @@\n   \"disc_size\": 6300499968,\n   \"disc_xbe_sha256\": \"73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9\",\n   \"preset_xbe_sha256\": \"050d1193695d249c14ddd0311071c903d7e983d9a8ba5652ad1a0e64233a3039\",\n-  \"stack_xbe_sha256\": \"e30bbd318aea5748248b9557fee88742ce35d5b5cde98dba04b902eff42da03f\",\n+  \"stack_xbe_sha256\": \"aa8c404c8aabce064d2fae36f88777ae15c2503e95c4a1b09f1b85912f2aeed0\",\n   \"section_digests_verified\": true,\n   \"allocator_layout\": {\n     \"status\": \"applied\","
+      },
+      {
+        "file": "data/nfl2k5_cave_reservations.json",
+        "file_facts": "data file (only the first windows are judged); shipped in a release allowlist: no; pinned by sha256 digest: no.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -2336,13 +2336,14 @@\n     \"mod_editor/core/nfl2k5_save_rost.py\": \"2440e0796000f08bff319e5967675fc0b4df09ad7534733562fbbb22d8fbdac2\",\n     \"mod_editor/core/nfl2k5_save_writer.py\": \"5a883cd1e449e8c796dc9453e6e9245390715d081979c024ac1182ef2c483bc4\",\n     \"mod_editor/core/nfl2k5_scorebar_v3.py\": \"406ed027b583e9d49dee9a671eab085af171c2d2b50ab5bc115e487ff45d5d91\",\n-    \"mod_editor/core/nfl2k5_scorebug_exact.py\": \"ff33710e689b86b6aa2f55134adeed6cd3e486667b18c8b13cac89e2d6ab3855\",\n+    \"mod_editor/core/nfl2k5_scorebug_exact.py\": \"84dd25c9bbee8eada8d41b861122a7ab405edd4b30951718bfe87c6192b1cad9\",\n     \"mod_editor/core/nfl2k5_scorebug_fonts.py\": \"b292f93b7bc25b64a379069b77c9172c1b92cf79553bfe4a7be835d1ad7119e9\",\n-    \"mod_editor/core/nfl2k5_scorebug_ingame.py\": \"5d2dcd63f2568937aeb609438022c2afe2d2ab9f7dc95c24a1d8462d36a5d5a0\",\n-    \"mod_editor/core/nfl2k5_scorebug_resources.py\": \"77f0661694f0cdc151532b12048affc378588cef6fcdd1dafd5b701b2c8f68cc\",\n-    \"mod_editor/core/nfl2k5_scorebug_runtime.py\": \"5562c5d903a8356b6f89fe13b2a8f871bea2348254d112467cd5f61940f51c78\",\n-    \"mod_editor/core/nfl2k5_scorebug_sprite.py\": \"960be604263a1eca114a622048ad32a85eed728446d375ec019b47b2afbad50b\",\n-    \"mod_editor/core/nfl2k5_scorebug_sprite_code.py\": \"2d79e130d06f794b59404f5a7623d1c048e9cde66bb03d42ac4ef74850e482c4\",\n+    \"mod_editor/core/nfl2k5_scorebug_ingame.py\": \"a4e698e4d85858c385fe880b355ae709575abdfbc73a9df9a80c94fd4c70c3e7\",\n+    \"mod_editor/core/nfl2k5_scorebug_resources.py\": \"444d24c8b1c5c0b5bb1a8458e92eec12302b379f0f4f98d1c8f63930a9efbd97\",\n+    \"mod_editor/core/nfl2k5_scorebug_runtime.py\": \"5a4fdd292b86af8b7ab0e3051d0f072606001bf0d60301d43088bd9f1f719fd5\",\n+    \"mod_editor/core/nfl2k5_scorebug_sprite.py\": \"7ceee0ee98bc32b1f314d9b06bf8331d3261b81b2c850edf20ee5c178301c606\",\n+    \"mod_editor/core/nfl2k5_scorebug_sprite_code.py\": \"9cba0ba985ba0139fe32853f38f0f0408cc9f8c065c96d74fc46be6d4150b1f5\",\n+    \"mod_editor/core/nfl2k5_scorebug_teams.py\": \"79dfac96ad264d6364ffb7cfd468c8a303e63d03c9796c8d47013c38086de94e\",\n     \"mod_editor/core/nfl2k5_scorebug_template.py\": \"409f7324352b88a6b4387b1f1a8ee1231c56f9674d7762ece24a8142fd2d2060\",\n     \"mod_editor/core/nfl2k5_scramble_tuning.py\": \"f9e85191b7d93849a92a749385bdd746609465238e776ea0e7f072ac29bf2e92\",\n     \"mod_editor/core/nfl2k5_screen_hooks.py\": \"4e2d53a15e47e45ba76ec4a6c7d34d96bc100160aaab507c8c0a1f2b04eae27b\","
+      },
+      {
+        "file": "data/nfl2k5_scorebug_sprite/broadcast_states.json",
+        "file_facts": "data file (only the first windows are judged); shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -0,0 +1,1086 @@\n[part 1 of 21 of a 1086-line hunk]\n+{\n+  \"schema\": \"scorebug-broadcast-states/v1\",\n+  \"sampling\": \"every tenth source frame; pilot stratified across that subset\",\n+  \"normal_reference\": \"frame_016151.jpg\",\n+  \"states\": {\n+    \"normal\": {\n+      \"representatives\": [\n+        {\n+          \"frame\": \"frame_011321.jpg\",\n+          \"sha256\": \"4d740af332a03198b778b22c17d13e20808698e5c981621ca7083c7d6e349eaa\",\n+          \"median_luma_delta_from_normal\": {\n+            \"away_score\": 0.0,\n+            \"home_score\": -7.0,\n+            \"clock\": -26.0,\n+            \"quarter\": 0.07,\n+            \"play_clock\": -0.42,\n+            \"down\": -0.52,\n+            \"plate\": -0.27,\n+            \"away_wing\": -0.5,\n+            \"home_wing\": 0.06,\n+            \"away_rim\": -0.02,\n+            \"home_rim\": -3.96,\n+            \"away_timeouts\": 0.0,\n+            \"home_timeouts\": -1.0,\n+            \"network\": 8.24\n+          }\n+        },\n+        {\n+          \"frame\": \"frame_027931.jpg\",\n+          \"sha256\": \"f905a3f620a3c0d8fd3bea6e2b11b9652b2922562a62912f5a1b4909dd7ae714\",\n+          \"median_luma_delta_from_normal\": {\n+            \"away_score\": 10.0,\n+            \"home_score\": 0.0,\n+            \"clock\": -40.0,\n+            \"quarter\": -0.14,\n+            \"play_clock\": -0.57,\n+            \"down\": -0.6,\n+            \"plate\": -1.07,\n+            \"away_wing\": -1.65,\n+            \"home_wing\": -0.21,\n+            \"away_rim\": -1.97,\n+            \"home_rim\": -1.38,\n+            \"away_timeouts\": -0.86,\n+            \"home_timeouts\": 0.0,\n+            \"network\": 6.69\n+          }\n+        },\n+        {\n+          \"frame\": \"frame_016151.jpg\",\n+          \"sha256\": \"47138d5f07c37ba4a985eb22cf74f4c8f7c7d4a6f96b7ba814cc50435b894f41\",\n+          \"median_luma_delta_from_normal\": {\n+            \"away_score\": 0.0,\n+            \"home_score\": 0.0,\n+            \"clock\": 0.0,\n+            \"quarter\": 0.0,\n+            \"play_clock\": 0.0,\n+            \"down\": 0.0,\n+            \"plate\": 0.0,\n+            \"away_wing\": 0.0,\n+            \"home_wing\": 0.0,"
+      },
+      {
+        "file": "data/nfl2k5_scorebug_sprite/broadcast_states.json",
+        "file_facts": "data file (only the first windows are judged); shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -0,0 +1,1086 @@\n[part 2 of 21 of a 1086-line hunk]\n+            \"home_score\": 0.0,\n+            \"clock\": 0.0,\n+            \"quarter\": 0.0,\n+            \"play_clock\": 0.0,\n+            \"down\": 0.0,\n+            \"plate\": 0.0,\n+            \"away_wing\": 0.0,\n+            \"home_wing\": 0.0,\n+            \"away_rim\": 0.0,\n+            \"home_rim\": 0.0,\n+            \"away_timeouts\": 0.0,\n+            \"home_timeouts\": 0.0,\n+            \"network\": 0.0\n+          }\n+        }\n+      ],\n+      \"game_reproducible\": true,\n+      \"observed\": true,\n+      \"count\": 7\n+    },\n+    \"kickoff\": {\n+      \"representatives\": [],\n+      \"game_reproducible\": true,\n+      \"observed\": false\n+    },\n+    \"first_and_ten\": {\n+      \"representatives\": [\n+        {\n+          \"frame\": \"frame_006941.jpg\",\n+          \"sha256\": \"5c88c84a0d2a8492e92e55ed45d28f13205340a2df3e76edaf81623ef6676b92\",\n+          \"median_luma_delta_from_normal\": {\n+            \"away_score\": 0.0,\n+            \"home_score\": -7.0,\n+            \"clock\": -27.29,\n+            \"quarter\": -0.07,\n+            \"play_clock\": -0.92,\n+            \"down\": 0.13,\n+            \"plate\": -0.72,\n+            \"away_wing\": -1.15,\n+            \"home_wing\": 0.1,\n+            \"away_rim\": -2.87,\n+            \"home_rim\": -0.35,\n+            \"away_timeouts\": 0.0,\n+            \"home_timeouts\": 0.0,\n+            \"network\": -1.71\n+          }\n+        },\n+        {\n+          \"frame\": \"frame_007091.jpg\",\n+          \"sha256\": \"450f33127ec13f303950e2b1a770deed128cddcdc344ee65bc066512cc59c030\",\n+          \"median_luma_delta_from_normal\": {\n+            \"away_score\": 0.0,\n+            \"home_score\": -7.0,\n+            \"clock\": -18.82,\n+            \"quarter\": 0.43,\n+            \"play_clock\": -0.92,\n+            \"down\": 0.04,\n+            \"plate\": 0.24,\n+            \"away_wing\": 0.93,\n+            \"home_wing\": -0.91,"
+      },
+      {
+        "file": "data/nfl2k5_scorebug_sprite/layout.json",
+        "file_facts": "data file (only the first windows are judged); shipped in a release allowlist: yes; pinned by sha256 digest: no.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -87,7 +87,7 @@\n     928,\n     0,\n     949,\n-    17\n+    16\n    ]\n   },\n   \"espn_mnf\": {"
+      },
+      {
+        "file": "data/nfl2k5_scorebug_sprite/layout.json",
+        "file_facts": "data file (only the first windows are judged); shipped in a release allowlist: yes; pinned by sha256 digest: no.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -134,569 +134,609 @@\n[part 1 of 15 of a 751-line hunk]\n    \"box\": [\n     1206,\n     0,\n-    1218,\n+    1212,\n     21\n    ]\n   },\n   \"score_2\": {\n    \"box\": [\n-    1220,\n+    1214,\n     0,\n-    1232,\n+    1225,\n     21\n    ]\n   },\n   \"score_3\": {\n    \"box\": [\n-    1234,\n+    1227,\n     0,\n-    1246,\n+    1239,\n     21\n    ]\n   },\n   \"score_4\": {\n    \"box\": [\n-    1248,\n+    1241,\n     0,\n-    1260,\n+    1253,\n     21\n    ]\n   },\n   \"score_5\": {\n    \"box\": [\n-    1262,\n+    1255,\n     0,\n-    1274,\n+    1267,\n     21\n    ]\n   },\n   \"score_6\": {\n    \"box\": [\n-    1276,\n+    1269,\n     0,\n-    1288,\n+    1281,\n     21\n    ]\n   },\n   \"score_7\": {\n    \"box\": ["
+      },
+      {
+        "file": "data/nfl2k5_scorebug_sprite/team_accents.json",
+        "file_facts": "data file (only the first windows are judged); shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -0,0 +1,12699 @@\n[part 1 of 245 of a 12699-line hunk]\n+{\n+  \"schema\": \"scorebug-team-accents/v1\",\n+  \"status\": \"active build-time accents; GPU calibration unresolved\",\n+  \"teams\": {\n+    \"SF\": {\n+      \"slot\": 0,\n+      \"asset_code\": \"25\",\n+      \"source\": \"supplied official 2026 identity palette\",\n+      \"official\": [\n+        \"#AA0000\",\n+        \"#B3995D\",\n+        \"#FFFFFF\"\n+      ],\n+      \"wing\": \"#C44C4C\",\n+      \"rim\": \"#C44C4C\",\n+      \"plate\": \"#C44C4C\",\n+      \"wash\": \"#C44C4C\",\n+      \"logo_fit\": {\n+        \"fill_x\": 1.08,\n+        \"height\": 0.94,\n+        \"zoom\": 1.0,\n+        \"shift_x\": 0.0,\n+        \"shift_y\": 0.0\n+      },\n+      \"review_required\": false,\n+      \"candidates\": {\n+        \"colour0_base\": {\n+          \"hex\": \"#AA0000\",\n+          \"parent\": \"#AA0000\",\n+          \"variant\": \"base\",\n+          \"contrast_white\": 7.7513,\n+          \"facts\": {\n+            \"hue\": \"red\",\n+            \"lightness\": \"mid\",\n+            \"white_label\": \"pass\",\n+            \"plate_separation\": \"unknown_until_paired\",\n+            \"signature\": true\n+          }\n+        },\n+        \"colour0_dark\": {\n+          \"hex\": \"#800000\",\n+          \"parent\": \"#AA0000\",\n+          \"variant\": \"dark\",\n+          \"contrast_white\": 10.9498,\n+          \"facts\": {\n+            \"hue\": \"red\",\n+            \"lightness\": \"mid\",\n+            \"white_label\": \"pass\",\n+            \"plate_separation\": \"unknown_until_paired\",\n+            \"signature\": true\n+          }\n+        },\n+        \"colour0_darker\": {\n+          \"hex\": \"#550000\",\n+          \"parent\": \"#AA0000\",\n+          \"variant\": \"darker\",\n+          \"contrast_white\": 15.1487,\n+          \"facts\": {\n+            \"hue\": \"red\",\n+            \"lightness\": \"dark\","
+      },
+      {
+        "file": "data/nfl2k5_scorebug_sprite/team_accents.json",
+        "file_facts": "data file (only the first windows are judged); shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -0,0 +1,12699 @@\n[part 2 of 245 of a 12699-line hunk]\n+        \"colour0_darker\": {\n+          \"hex\": \"#550000\",\n+          \"parent\": \"#AA0000\",\n+          \"variant\": \"darker\",\n+          \"contrast_white\": 15.1487,\n+          \"facts\": {\n+            \"hue\": \"red\",\n+            \"lightness\": \"dark\",\n+            \"white_label\": \"pass\",\n+            \"plate_separation\": \"unknown_until_paired\",\n+            \"signature\": true\n+          }\n+        },\n+        \"colour0_light\": {\n+          \"hex\": \"#B72626\",\n+          \"parent\": \"#AA0000\",\n+          \"variant\": \"light\",\n+          \"contrast_white\": 6.3278,\n+          \"facts\": {\n+            \"hue\": \"red\",\n+            \"lightness\": \"mid\",\n+            \"white_label\": \"pass\",\n+            \"plate_separation\": \"unknown_until_paired\",\n+            \"signature\": true\n+          }\n+        },\n+        \"colour0_lighter\": {\n+          \"hex\": \"#C44C4C\",\n+          \"parent\": \"#AA0000\",\n+          \"variant\": \"lighter\",\n+          \"contrast_white\": 4.682,\n+          \"facts\": {\n+            \"hue\": \"red\",\n+            \"lightness\": \"light\",\n+            \"white_label\": \"pass\",\n+            \"plate_separation\": \"unknown_until_paired\",\n+            \"signature\": true\n+          }\n+        },\n+        \"colour1_base\": {\n+          \"hex\": \"#B3995D\",\n+          \"parent\": \"#B3995D\",\n+          \"variant\": \"base\",\n+          \"contrast_white\": 2.7518,\n+          \"facts\": {\n+            \"hue\": \"red\",\n+            \"lightness\": \"mid\",\n+            \"white_label\": \"fail\",\n+            \"plate_separation\": \"unknown_until_paired\",\n+            \"signature\": false\n+          }\n+        },\n+        \"colour1_dark\": {\n+          \"hex\": \"#867346\",\n+          \"parent\": \"#B3995D\",\n+          \"variant\": \"dark\",\n+          \"contrast_white\": 4.6109,\n+          \"facts\": {\n+            \"hue\": \"red\",\n+            \"lightness\": \"mid\","
+      },
+      {
+        "file": "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json",
+        "file_facts": "data file (only the first windows are judged); shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -0,0 +1,7859 @@\n[part 1 of 151 of a 7859-line hunk]\n+{\n+  \"title\": \"NFL team colours, 2026 season (current primary identity), for the ESPN NFL 2K5 scorebug\",\n+  \"retrieved\": \"2026-09-19\",\n+  \"purpose\": \"Authoritative per-team palette for the scorebug. Every scorebug accent must be one of a team's listed colours in the exact shade, or a lighter/darker variant of one for contrast. Colours flagged logo_detail_only are official \n+  \"selection_rule\": {\n+    \"inclusion\": \"A colour is listed when an official source supports it as a current 2026 team, logo or uniform colour: the 2026 NFL Record and Fact Book team colours, the NFL's own club logo file, or a team first-party page or publicatio\n+    \"hex_choice\": \"In order: (1) a hex the team itself publishes (Colts brand page); (2) the NFL's own club logo file, for every colour that appears in the logo; (3) otherwise teamcolorcodes.com when current and consistent with the team's \n+    \"normalisation\": \"NFL logo files encode white as #FFFFFE and some blacks as rich-black mixes (#0A0A09, #0A0B09, #231F20). These are export artifacts and are recorded as #FFFFFF / #000000.\",\n+    \"disputes\": \"A colour is disputed when any of the NFL logo file, a team first-party hex, teamcolorcodes, Wikipedia or nflverse gives a different hex. Every value is kept with its source; team-site theme values are informational only.\",\n+    \"dispute_severity_scale\": {\n+      \"metric\": \"CIEDE2000 colour difference between the chosen hex and the alternate\",\n+      \"negligible\": \"< 1.0 (not visible)\",\n+      \"minor\": \"1.0 to 2.5 (not visible at a glance)\",\n+      \"noticeable\": \"2.5 to 6.0 (visible side by side)\",\n+      \"major\": \">= 6.0 (clearly different colour)\"\n+    }\n+  },\n+  \"sources\": [\n+    {\n+      \"id\": \"nfl_factbook_2026\",\n+      \"tier\": \"1 (league first-party)\",\n+      \"name\": \"2026 Official NFL Record and Fact Book (NFL Enterprises, dated July 2026)\",\n+      \"url\": \"https://static.www.nfl.com/league/apps/league-site/media-guides/2026/2026-Record-and-Fact-Book.pdf\",\n+      \"used_for\": \"official 2026 team colour names on each club page (cited with #page=N)\"\n+    },\n+    {\n+      \"id\": \"nfl_logo_svg\",\n+      \"tier\": \"1 (league first-party)\",\n+      \"name\": \"NFL club logo files served by NFL.com\",\n+      \"url\": \"https://static.www.nfl.com/league/api/clubs/logos/<ABBR>.svg\",\n+      \"used_for\": \"exact hex of every colour present in each club's current logo\"\n+    },\n+    {\n+      \"id\": \"team_first_party\",\n+      \"tier\": \"1 (team first-party)\",\n+      \"name\": \"Team websites, releases and media guides\",\n+      \"used_for\": \"Colts brand-page hex; Pantone specs from the Cowboys, Packers, 49ers and Titans media guides; names and identity changes\",\n+      \"teams_with_team_first_party_source\": [\n+        \"ATL\",\n+        \"DAL\",\n+        \"DEN\",\n+        \"GB\",\n+        \"HOU\",\n+        \"IND\",\n+        \"LAC\",\n+        \"LV\",\n+        \"NO\",\n+        \"NYJ\",\n+        \"PIT\",\n+        \"SF\",\n+        \"TB\",\n+        \"TEN\",\n+        \"WAS\"\n+      ]\n+    },\n+    {\n+      \"id\": \"teamcolorcodes\",\n+      \"tier\": \"2\",\n+      \"name\": \"teamcolorcodes.com\",\n+      \"url\": \"https://teamcolorcodes.com/\","
+      },
+      {
+        "file": "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json",
+        "file_facts": "data file (only the first windows are judged); shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -0,0 +1,7859 @@\n[part 2 of 151 of a 7859-line hunk]\n+        \"WAS\"\n+      ]\n+    },\n+    {\n+      \"id\": \"teamcolorcodes\",\n+      \"tier\": \"2\",\n+      \"name\": \"teamcolorcodes.com\",\n+      \"url\": \"https://teamcolorcodes.com/\",\n+      \"used_for\": \"hex and Pantone per team (current section only); stale for several 2024-2026 changes\"\n+    },\n+    {\n+      \"id\": \"wikipedia\",\n+      \"tier\": \"3\",\n+      \"name\": \"Wikipedia team infobox colours, read from raw wikitext\",\n+      \"url\": \"https://en.wikipedia.org/w/index.php?title=<Team_Name>&action=raw\",\n+      \"used_for\": \"hex from the colour boxes and editors' sourcing comments\"\n+    },\n+    {\n+      \"id\": \"nflverse\",\n+      \"tier\": \"4\",\n+      \"name\": \"nflverse teams_colors_logos.csv (nflreadr load_teams)\",\n+      \"url\": \"https://raw.githubusercontent.com/nflverse/nflverse-pbp/master/teams_colors_logos.csv\",\n+      \"used_for\": \"cross-check; per nflreadr docs, primary/secondary come from nfl.com with modifications and tertiary/quaternary from Lee Sharpe's teamcolors.csv\"\n+    },\n+    {\n+      \"id\": \"team_site_theme_css\",\n+      \"tier\": \"corroboration only\",\n+      \"name\": \"Team website theme stylesheets (NFL clubs platform)\",\n+      \"used_for\": \"first-party corroboration; web UI palette with hover and contrast shades, never used to choose a value\"\n+    },\n+    {\n+      \"id\": \"nfl2k5_team_slots\",\n+      \"tier\": \"local\",\n+      \"name\": \"ESPN NFL 2K5 retail team slot table (mod repo)\",\n+      \"url\": \"reports/b72_s3/team_slots.json and mod_editor/core/nfl2k5_team_history.py\",\n+      \"used_for\": \"the game's 2004 abbreviations, franchise names and slot indices\"\n+    }\n+  ],\n+  \"teams\": [\n+    {\n+      \"nflverse_abbr\": \"BUF\",\n+      \"historical_abbrs_2004\": [\n+        \"BUF\"\n+      ],\n+      \"franchise_name_2004\": \"Buffalo Bills\",\n+      \"nfl2k5_retail_slot\": {\n+        \"index\": 3,\n+        \"abbreviation\": \"BUF\",\n+        \"name\": \"Buffalo Bills\",\n+        \"known_aliases\": []\n+      },\n+      \"full_name\": \"Buffalo Bills\",\n+      \"conference\": \"AFC\",\n+      \"division\": \"AFC East\",\n+      \"nfl_factbook_2026\": {\n+        \"team_colors\": \"Royal, Red, White and Navy\",\n+        \"url\": \"https://static.www.nfl.com/league/apps/league-site/media-guides/2026/2026-Record-and-Fact-Book.pdf#page=50\"\n+      },\n+      \"colors\": [\n+        {"
+      },
+      {
+        "file": "mod_editor/core/nfl2k5_scorebug_assets.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -18,6 +18,7 @@ EXPERIMENTAL / UNWITNESSED in game.\n from __future__ import annotations\n \n from dataclasses import dataclass\n+from functools import lru_cache\n import hashlib\n import json\n import os"
+      },
+      {
+        "file": "mod_editor/core/nfl2k5_scorebug_assets.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -337,8 +338,23 @@ def texture_chunk(name: str, image, template: bytes, *, colours: int = 256, alph\n     buffer supplies the object layout and the descriptor words. Only the name,\n     the palette offset and the format word change.\n     \"\"\"\n+    require(all(side in (32, 64, 128, 256, 512) for side in image.size), \"texture size must be a power of two\")\n+    require(len((name + \"\\0\").encode(\"utf-16le\")) <= 24, \"texture name too long\")\n+    # Preflight/status checks repeatedly request identical atlas and logo bytes.\n+    # Key every input byte and option, never a path, mtime or ctime. The cache is\n+    # bounded to 40 textures (about 50 MB at the maximum supported dimensions).\n+    rgba = image.convert(\"RGBA\")\n+    result, receipt = _texture_chunk(name, rgba.size, rgba.tobytes(), bytes(template),\n+                                     colours, alpha_aware, tuple(tuple(c) for c in reserved_colours))\n+    return result, dict(receipt)\n+\n+\n+@lru_cache(maxsize=40)\n+def _texture_chunk(name, size, pixels, template, colours, alpha_aware, reserved_colours):\n+    from PIL import Image\n     from . import nfl2k5_scorebug_ingame as r\n     import nfl_tset_png_import as palettes\n+    image = Image.frombytes(\"RGBA\", size, pixels)\n     w, h = image.size\n     require(w in (32, 64, 128, 256, 512) and h in (32, 64, 128, 256, 512), \"texture size must be a power of two\")\n     encoded = (name + \"\\0\").encode(\"utf-16le\")"
+      },
+      {
+        "file": "mod_editor/core/nfl2k5_scorebug_exact.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -377,7 +377,7 @@ def wordmark(text):\n \n \n def panel(span, team, side, *, timeouts=3):\n-    from PIL import Image, ImageDraw\n+    from PIL import Image\n     from math import exp\n     from . import nfl2k5_scorebug_ingame as r\n     if side not in (\"home\", \"away\") or type(timeouts) is not int or not 0 <= timeouts <= 3:"
+      },
+      {
+        "file": "mod_editor/core/nfl2k5_scorebug_exact.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -391,7 +391,6 @@ def panel(span, team, side, *, timeouts=3):\n     if team in (\"LV\", \"HOU\"):\n         primary = (STYLE[\"silver\"], min(255,STYLE[\"silver\"]+3), STYLE[\"silver\"]) if team == \"LV\" else (STYLE[\"red\"], 18, 51)\n     im = Image.new(\"RGBA\", (128, 32))\n-    d = ImageDraw.Draw(im)\n     for x in range(128):\n         distance = x if side == \"away\" else 127 - x\n         t = min(1, distance / (57 if team == \"LV\" else 66))"
+      },
+      {
+        "file": "mod_editor/core/nfl2k5_scorebug_exact.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -427,6 +426,13 @@ def panel(span, team, side, *, timeouts=3):\n                 mark.putalpha(mark.getchannel(\"A\").filter(ImageFilter.MaxFilter(3) if STYLE[\"wordmark_weight\"] > 0 else ImageFilter.MinFilter(3)))\n             mark = mark.resize((min(43, mark.width), 4), Image.Resampling.LANCZOS)\n             im.alpha_composite(mark, (x + (43 - mark.width) // 2, 0))\n+    return _panel_timeouts(im, side, timeouts)\n+\n+\n+def _panel_timeouts(im, side, timeouts):\n+    \"\"\"Paint only the three opaque timeout dashes on a validated panel.\"\"\"\n+    from PIL import ImageDraw\n+    d = ImageDraw.Draw(im)\n     for n, x in enumerate((91, 101, 111)):\n         dx = x if side == \"away\" else 127 - x - 6\n         d.polygon(((dx + 1, 27), (dx + 6, 27), (dx + 5, 29), (dx, 29)),"
+      },
+      {
+        "file": "mod_editor/core/nfl2k5_scorebug_exact.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -734,14 +740,23 @@ def mnf_panel(team, side, fit=None):\n             a,b,c,d = MNF_SOURCE[\"home_logo\"]\n             fill_x = float((fit or {}).get(\"fill_x\", 1.0))\n             height = float((fit or {}).get(\"height\", 1.0))\n-            if not (0.5 <= fill_x <= 2.0 and 0.25 <= height <= 1.0):\n+            zoom = float((fit or {}).get(\"zoom\", 1.0))\n+            shift_x = float((fit or {}).get(\"shift_x\", 0.0))\n+            shift_y = float((fit or {}).get(\"shift_y\", 0.0))\n+            if not (0.5 <= fill_x <= 2.0 and 0.25 <= height <= 1.0\n+                    and 0.5 <= zoom <= 2.0 and -0.5 <= shift_x <= 0.5\n+                    and -0.5 <= shift_y <= 0.5):\n                 raise ValueError(\"invalid logo fit\")\n             scale = min((c-a)/logo.width,(d-b)*height/logo.height)\n             src_w = min(c-a, logo.width*scale*fill_x)\n-            w = max(1,round(src_w*64/(c-a)))\n-            h = max(1,round(logo.height*scale*(l1-l0)/(d-b)))\n+            w = max(1,round(src_w*64/(c-a)*zoom))\n+            h = max(1,round(logo.height*scale*(l1-l0)/(d-b)*zoom))\n             from .nfl2k5_scorebug_assets import resample_logo, alpha_bleed\n             logo = resample_logo(logo, (w, h))\n-            im.paste(logo, (((64-w)//2), l0 + (l1 - l0 - h) // 2))\n+            # Clip the enlarged mark at the wing edge, as the live package\n+            # does for tall shields and the Texans bull. Defaults preserve\n+            # legacy callers and the 64 by 64 runtime texture contract.\n+            im.paste(logo, ((64-w)//2+round(shift_x*64),\n+                           l0+(l1-l0-h)//2+round(shift_y*64)))\n             im = alpha_bleed(im)\n     return im"
+      },
+      {
+        "file": "mod_editor/core/nfl2k5_scorebug_ingame.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -8,6 +8,7 @@ template contract. Retail bytes supply structure, never reference pixels.\n from __future__ import annotations\n \n import hashlib\n+from functools import lru_cache\n import os\n from pathlib import Path\n import struct"
+      },
+      {
+        "file": "mod_editor/core/nfl2k5_scorebug_ingame.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -113,8 +114,16 @@ def texture_image(span: bytes, record: dict):\n     from PIL import Image\n     decoded = pinned(span, record)\n     chunk = decode(span)[0]\n+    size, pixels = _texture_pixels(decoded, chunk)\n+    return Image.frombytes(\"RGBA\", size, pixels)\n+\n+\n+@lru_cache(maxsize=40)\n+def _texture_pixels(decoded, chunk):\n+    # Repeated timeout/side variants share immutable retail logo pixels. Keep\n+    # pin validation in texture_image and return a fresh mutable image there.\n     texture = tx.parse_texture(decoded, chunk)\n-    return Image.frombytes(\"RGBA\", (texture.width, texture.height), tx.texture_to_rgba(decoded, chunk, texture))\n+    return (texture.width, texture.height), tx.texture_to_rgba(decoded, chunk, texture)\n \n \n def atlas_v8(inputs: dict[str, bytes]):"
+      },
+      {
+        "file": "mod_editor/core/nfl2k5_scorebug_ingame.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -190,6 +199,22 @@ def template_uv(region, x, y):\n \n def encode_atlas(template: bytes, image) -> tuple[bytes, dict]:\n     \"\"\"Encode the retail fixed span, or the explicit appended painted atlas.\"\"\"\n+    from copy import deepcopy\n+    if image.mode != 'RGBA':\n+        return _encode_atlas_uncached(template, image)\n+    result, receipt = _encode_atlas_cached(bytes(template), image.size, image.tobytes())\n+    return result, deepcopy(receipt)\n+\n+\n+@lru_cache(maxsize=8)\n+def _encode_atlas_cached(template, size, pixels):\n+    # Exact immutable inputs only. Repeated profile/status checks still compare\n+    # their actual pack bytes; they need not repeat quantization/compression.\n+    from PIL import Image\n+    return _encode_atlas_uncached(template, Image.frombytes('RGBA', size, pixels))\n+\n+\n+def _encode_atlas_uncached(template, image):\n     if image.size == (256,512):\n         from . import nfl2k5_scorebug_assets as assets\n         return assets.texture_chunk(\"score_buga\", image, template)"
+      },
+      {
+        "file": "mod_editor/core/nfl2k5_scorebug_ingame.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -604,12 +629,14 @@ def apply_xbe(payload: bytes, *, scorebug_folder=None) -> tuple[bytes, dict]:\n     buf = bytearray(result)\n     edits, touched = [], set()\n     sections = bs._sections(payload)\n+    # The input payload is unchanged throughout this loop. Recognize and fully\n+    # validate its owner once, rather than rehashing the XBE for every field.\n+    overrides = {}\n+    if scorebug_folder is None and runtime_identity_installed(payload):\n+        from . import nfl2k5_scorebug_runtime as runtime\n+        overrides = {va: new for va, _old, new, _ in runtime.override_edits()}\n     for va,old,new,label in xbe_specs(scorebug_folder=scorebug_folder):\n-        if scorebug_folder is None and runtime_identity_installed(payload):\n-            from . import nfl2k5_scorebug_runtime as runtime\n-            for ova, _old, onew, _ in runtime.override_edits():\n-                if ova == va:\n-                    new = onew\n+        new = overrides.get(va, new)\n         off = layout.sbpos.va_to_off(payload,va)\n         if before == \"retail\":\n             buf[off:off+len(new)] = new"
+      },
+      {
+        "file": "mod_editor/core/nfl2k5_scorebug_resources.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -658,8 +658,11 @@ def mnf_atlas_span(template):\n def panel_states(span, team, side):\n     \"\"\"Yield four source images, 0..3 actual remaining timeout dashes.\"\"\"\n     from . import nfl2k5_scorebug_exact as exact\n+    # All artwork and provenance are identical across these four variants.\n+    # The opaque dashes can be repainted without resampling the logo/gradient.\n+    base = exact.panel(span, team, side, timeouts=0)\n     for count in range(4):\n-        yield exact.panel(span, team, side, timeouts=count)\n+        yield exact._panel_timeouts(base.copy(), side, count)\n \n \n @lru_cache(maxsize=66)"
+      },
+      {
+        "file": "mod_editor/core/nfl2k5_scorebug_runtime.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -495,7 +495,7 @@ def apply(payload):\n     result = bytes(buf)\n     space._require(status(result) == \"applied\", \"scorebug runtime postcondition failed\")\n     return result, dict(status=\"applied\", experimental=True, runtime_witnessed=False,\n-                        changed_bytes=sum(a != b for a, b in zip(payload, result)) + len(result) - len(payload),\n+                        changed_bytes=space.count_differing_bytes(payload, result) + len(result) - len(payload),\n                         code_va=hex(code[\"va\"]), data_va=hex(data[\"va\"]), edits=edits,\n                         binding_collection=\"GAMEDATA\", binding_revision=REVISION,\n                         allocation=ar, installation=ir, scorebug=sr,"
+      },
+      {
+        "file": "mod_editor/core/nfl2k5_scorebug_sprite.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -119,8 +119,10 @@ def load_layout(folder=None):\n     for team, row in [('default', fit.get('default', {}))]+list(fit.get('by_team', {}).items()):\n         from .nfl2k5_scorebug_resources import TEAM_LOGOS\n         require(team=='default' or team in TEAM_LOGOS, 'Unknown logo fit team.')\n-        require(isinstance(row, dict) and set(row)<= {'fill_x','height'} and all(isinstance(v,(int,float)) for v in row.values())\n-                and 0.5<=row.get('fill_x',1.0)<=2.0 and 0.25<=row.get('height',1.0)<=1.0, 'Invalid logo fit for '+team)\n+        require(isinstance(row, dict) and set(row)<= {'fill_x','height','zoom','shift_x','shift_y'} and all(_number(v) for v in row.values())\n+                and 0.5<=row.get('fill_x',1.0)<=2.0 and 0.25<=row.get('height',1.0)<=1.0\n+                and 0.5<=row.get('zoom',1.0)<=2.0\n+                and all(-0.5<=row.get(k,0)<=0.5 for k in ('shift_x','shift_y')), 'Invalid logo fit for '+team)\n     require(len(spec.get('brand',[]))<=8, 'Too many brand layers.')\n     names=set()\n     for row in spec['static']+spec['fields']+spec.get('events',[])+spec.get('brand',[]):"
+      },
+      {
+        "file": "mod_editor/core/nfl2k5_scorebug_sprite.py",
+        "file_facts": "product or tool source; shipped in a release allowlist: yes; pinned by sha256 digest: yes.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -159,6 +161,14 @@ def load_layout(folder=None):\n             require(1<=len(token)<=4 and all(0<ord(c)<128 for c in token), 'Glyph tokens must have 1–4 ASCII characters.')\n             require(row['cell'] in spec['cells'] and len(row['size'])==2 and all(_number(v) and 0<=v<=256 for v in row['size']), 'Invalid glyph cell or size.')\n             require(_number(row['advance']) and 0<row['advance']<=256 and _number(row.get('raise',0)), 'Invalid glyph advance.')\n+    if spec.get('team_accents'):\n+        from . import nfl2k5_scorebug_teams as teams\n+        from .nfl2k5_scorebug_resources import TEAM_LOGOS\n+        require(spec['team_accents']=='team_accents.json', 'Use the validated team accent dataset.')\n+        palette=teams.load()\n+        # Expose effective values to inspectors without duplicating source JSON.\n+        spec['plate_tints']={name:palette[name]['plate'] for name in TEAM_LOGOS}\n+        spec['wing_tints']={name:palette[name]['wing'] for name in TEAM_LOGOS}\n     return spec,image\n \n @dataclass"
+      }
+    ],
+    "questions": {
+      "ctime_compare": {
+        "type": "noul",
+        "instructions": "Does `hunk` add or change code that compares file timestamps (st_ctime, st_mtime, st_ctime_ns, st_mtime_ns, getmtime, getctime or another st_* time field) taken at different times or from different stat calls, to decide whether a file changed? Count timestamps placed in a cache key, identity or fingerprint tuple that is compared later. Windows gives these fields different meanings.",
+        "criteria": {
+          "true": "an added or changed line puts a stat time field into a comparison, cache key, fingerprint or identity used to detect change",
+          "false": "no stat time field is used for change detection (absent, only printed, or only set with os.utime)"
+        }
+      },
+      "posix_only": {
+        "type": "noul",
+        "instructions": "Does `hunk` add behaviour that works only on Linux/macOS or differs on Windows: file-system path strings split, matched or compared on a literal '/', os.fork, fcntl, signal handlers or SIGALRM/SIGKILL, chmod or executable-bit assumptions, os.getuid, /tmp or /dev paths, POSIX shell commands, or file names that differ only by case?",
+        "criteria": {
+          "true": "an added line relies on one of those behaviours without a platform guard",
+          "false": "no added line relies on POSIX-only behaviour (pathlib joins and os.path calls are portable), or it is guarded by an explicit platform check"
+        }
+      },
+      "pinned_value": {
+        "type": "noul",
+        "instructions": "Does `hunk` replace a pinned expected value: a removed (-) line holds a count literal that a test or gate asserts, a SHA-256 digest, a byte offset or address, a size, or a golden / reference value, and an added (+) line holds a different value in its place?",
+        "criteria": {
+          "true": "an old expected count, digest, offset, size or golden value on a - line is replaced by a different one on a + line",
+          "false": "no expected value is replaced; brand-new code or new tests that only add assertions do not count"
+        }
+      },
+      "slow_test": {
+        "type": "noul",
+        "instructions": "Does `hunk` add or lengthen a test path that could run for minutes: nested loops over a large case matrix or cross product (see the loop facts in `file_facts`), sleeps or polling waits, full disc / ISO / XBE builds or scans, or many repeated heavy calls such as a full prepare/build/read-back per case? CI kills a test file after 420 seconds.",
+        "criteria": {
+          "true": "added test code runs hundreds of heavy cases (each a build, prepare, read-back, compress, fit or render), sleeps, full-disc work, or other heavy repeated calls",
+          "false": "the added code is not a test path, or its loops are small, or the loop body is only cheap assignments or arithmetic (fast even with thousands of iterations)"
+        }
+      },
+      "weakens_safety": {
+        "type": "noul",
+        "instructions": "Does `hunk` widen or weaken a safety check? Safety checks are: validation of files, saves or user input, refusals and raised errors, integrity checks (hashes, signatures, sizes, bounds), path and permission guards, allowlists, and test assertions. Weakening means removing one, loosening its condition or tolerance, adding a skip or bypass, or making it accept inputs it used to refuse.",
+        "criteria": {
+          "true": "a safety check of that kind is removed, loosened, skipped or bypassed, or now accepts inputs it used to refuse",
+          "false": "safety checks are unchanged, added or stricter; feature conditions, performance paths, search heuristics, cache bookkeeping and early returns that only skip work are not safety checks"
+        }
+      },
+      "inventory_mismatch": {
+        "type": "noul",
+        "instructions": "Does `hunk` touch the release inventory or pins without the matching change: it adds or imports a module that `diff_facts` marks MISSING from the release allowlist or not in module_pins, or it edits an allowlist, requirements, module_pins entry or pinned count while `diff_facts` says the counterpart was not edited?",
+        "criteria": {
+          "true": "the hunk adds, imports or edits something whose allowlist entry, pin or count `diff_facts` marks MISSING or not edited",
+          "false": "`diff_facts` shows every matching change present, or the hunk touches no inventory, pin or new module"
+        }
+      }
+    }
+  },
+  "response": {
+    "results": [
+      {
+        "index": 0,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.97
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.15
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.08
+          }
+        }
+      },
+      {
+        "index": 1,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.96
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.13
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.08
+          }
+        }
+      },
+      {
+        "index": 2,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.07
+          }
+        }
+      },
+      {
+        "index": 3,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.07
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.07
+          }
+        }
+      },
+      {
+        "index": 4,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.65
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.16
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.08
+          }
+        }
+      },
+      {
+        "index": 5,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.6
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.06
+          }
+        }
+      },
+      {
+        "index": 6,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.07
+          }
+        }
+      },
+      {
+        "index": 7,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.06
+          }
+        }
+      },
+      {
+        "index": 8,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.07
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.07
+          }
+        }
+      },
+      {
+        "index": 9,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.07
+          }
+        }
+      },
+      {
+        "index": 10,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.07
+          }
+        }
+      },
+      {
+        "index": 11,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.11
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.11
+          }
+        }
+      },
+      {
+        "index": 12,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.02
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.06
+          }
+        }
+      },
+      {
+        "index": 13,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.02
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.04
+          }
+        }
+      },
+      {
+        "index": 14,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.08
+          }
+        }
+      },
+      {
+        "index": 15,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.1
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.07
+          }
+        }
+      },
+      {
+        "index": 16,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.08
+          }
+        }
+      },
+      {
+        "index": 17,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.09
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.06
+          }
+        }
+      },
+      {
+        "index": 18,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.11
+          }
+        }
+      },
+      {
+        "index": 19,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.12
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.17
+          }
+        }
+      },
+      {
+        "index": 20,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.07
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.07
+          }
+        }
+      },
+      {
+        "index": 21,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.07
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.06
+          }
+        }
+      },
+      {
+        "index": 22,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.07
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.3
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.08
+          }
+        }
+      },
+      {
+        "index": 23,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.11
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.17
+          }
+        }
+      }
+    ],
+    "totals": {
+      "input_tokens": 43769,
+      "output_tokens": 2784,
+      "cost_usd": 0.00183829,
+      "errors": 0,
+      "wall_ms": 640.5
+    }
+  }
+}

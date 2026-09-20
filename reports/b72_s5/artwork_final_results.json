@@ -1,0 +1,27 @@
+[
+  {
+    "file": "tests/mod_editor/test_nfl2k5_scorebug_resources.py",
+    "exit_code": 0,
+    "seconds": 108.81
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_scorebug_exact.py",
+    "exit_code": 0,
+    "seconds": 36.88
+  },
+  {
+    "file": "tests/mod_editor/test_png_import_accepts_real_pngs.py",
+    "exit_code": 0,
+    "seconds": 0.16
+  },
+  {
+    "file": "tests/mod_editor/test_provider_integrity.py",
+    "exit_code": 0,
+    "seconds": 10.58
+  },
+  {
+    "file": "tests/mod_editor/test_scorebug_replication.py",
+    "exit_code": 0,
+    "seconds": 0.47
+  }
+]

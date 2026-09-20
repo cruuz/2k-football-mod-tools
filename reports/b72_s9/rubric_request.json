@@ -1,0 +1,81 @@
+{
+  "states": [
+    {
+      "readable": {
+        "away_score": true,
+        "home_score": true,
+        "clock": true,
+        "quarter": true,
+        "play_clock": true,
+        "down": true
+      },
+      "score_hierarchy": true,
+      "overlap": "verified_clear",
+      "identity": "verified_team_specific",
+      "calibration": "unresolved",
+      "case": "LV_HOU_169",
+      "limitations": "Identity uses official palette, not exact broadcast RGB. All results offline."
+    },
+    {
+      "readable": {
+        "away_score": true,
+        "home_score": true,
+        "clock": true,
+        "quarter": true,
+        "play_clock": true,
+        "down": true
+      },
+      "score_hierarchy": true,
+      "overlap": "verified_clear",
+      "identity": "verified_team_specific",
+      "calibration": "unresolved",
+      "case": "LV_HOU_43",
+      "limitations": "Identity uses official palette, not exact broadcast RGB. All results offline."
+    },
+    {
+      "readable": {
+        "away_score": true,
+        "home_score": true,
+        "clock": true,
+        "quarter": true,
+        "play_clock": true,
+        "down": true
+      },
+      "score_hierarchy": true,
+      "overlap": "verified_clear",
+      "identity": "verified_team_specific",
+      "calibration": "unresolved",
+      "case": "DEN_KC_169",
+      "limitations": "Identity uses official palette, not exact broadcast RGB. All results offline."
+    },
+    {
+      "readable": {
+        "away_score": true,
+        "home_score": true,
+        "clock": true,
+        "quarter": true,
+        "play_clock": true,
+        "down": true
+      },
+      "score_hierarchy": true,
+      "overlap": "verified_clear",
+      "identity": "verified_team_specific",
+      "calibration": "unresolved",
+      "case": "DEN_KC_43",
+      "limitations": "Identity uses official palette, not exact broadcast RGB. All results offline."
+    }
+  ],
+  "questions": {
+    "design": {
+      "type": "score",
+      "instructions": "Judge ESPN scorebug design from these measured facts only. Scores should lead, then clock, then label. Unknown calibration prevents the top level. Missing bright label ink is critical. Do not calculate or infer unprovided facts.",
+      "criteria": [
+        "Critical failure: label absent/dim, overlap, or false calibration claim.",
+        "Major issue: one or more fields unreadable or team identity incorrect.",
+        "Readable fields, but hierarchy, spacing or team identity remains uncertain.",
+        "Readable fields with clear hierarchy and identity; calibration unresolved.",
+        "Every field readable, no overlaps, team identity clear, calibrated comparison passes."
+      ]
+    }
+  }
+}

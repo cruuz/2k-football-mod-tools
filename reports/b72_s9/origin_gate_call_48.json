@@ -1,0 +1,907 @@
+{
+  "request": {
+    "states": [
+      {
+        "file": "tests/mod_editor/test_nfl2k5_scorebug_down_visibility.py",
+        "file_facts": "test code; CI runs tests/mod_editor/test_*.py files as scripts with a 420 s limit each; shipped in a release allowlist: no; pinned by sha256 digest: no; deepest for-loop nest on the added lines: 3 level(s); its literal bounds multiply to 2 iterations (a few) plus loops over names whose size code cannot see.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -121,10 +133,65 @@ class DownVisibilityTests(unittest.TestCase):\n                 m.put(0xa95a00, request); m.float(0xa95a04, slide); m.put(0xa95a20, binding)\n                 for va in (0xa95ae0, 0xa95b50, 0xa95bc0, 0xa95c30):\n                     m.put(va, events); m.float(va + 4, event_slide); m.put(va + 0x20, event_binding)\n+                    # Reproduce stale flags at the owner boundary independently\n+                    # of the earlier retail material writer, in both directions.\n+                    material = m.get(va + 12)\n+                    m.put(material + 8, (m.get(material + 8) & ~1) | int(event_slide > 0))\n                 m.run(call, limit=500000)\n                 entered, _ = seq.native_draw()\n                 self.assertEqual(0 in entered and not any(i in entered for i in (2, 3, 4, 5)), expected)\n                 self.assertEqual(seq.read()['visible_glyphs'], 5 if expected else 0)\n+                for event in seq.read()['events']:\n+                    self.assertEqual(event['visible'], bool(event_binding and event_slide > event['minimum']))\n+            # An unavailable native binding may have no material pointer.\n+            # The owner must not write through address zero or hide the down.\n+            for record in range(0xa95aa8, 0xa95c68, 0x70):\n+                m.put(record + 0x44, 0)\n+                m.put(record + 0x58, 0)\n+            m.run(call, limit=500000)\n+            self.assertEqual(sum(bool(m.get(seq.capture['body'] + scene.layout.S1 + q['vertex'] * 10))\n+                                 for q in seq.rows), 5)\n+\n+    def test_all_event_plates_follow_records_through_punt_and_next_snap(self):\n+        for wide in (False, True):\n+            seq = self.sequence(wide)\n+            # One retained machine per aspect. No event/slide/flag writes here.\n+            for state, latch, frames, active in (\n+                    ('pre_snap', False, 120, None), ('punt', None, 60, 2),\n+                    ('pre_snap', False, 120, None), ('after_play', True, 45, 4),\n+                    ('pre_snap', False, 80, None), ('flag', None, 45, 3),\n+                    ('pre_snap', False, 80, None), ('fumble', None, 45, 5),\n+                    ('pre_snap', False, 80, None)):\n+                seq.configure(state, latch=latch)\n+                for frame in range(frames):\n+                    result = seq.step()\n+                    for event in result['events']:\n+                        self.assertEqual(event['visible'], bool(event['binding'] and\n+                            not event['slide'] <= event['minimum']), (wide, state, result))\n+                    if state == 'pre_snap' and not any(e['visible'] for e in result['events']):\n+                        self.assertEqual(result['visible_glyphs'], 5, (wide, state, result))\n+                self.assertEqual([e['index'] for e in result['events'] if e['visible']],\n+                                 [] if active is None else [active])\n+                entered, _ = seq.native_draw()\n+                self.assertEqual([i for i in entered if i >= 2], [] if active is None else [active])\n+                self.assertEqual(result['visible_glyphs'], 5 if active is None else 0)\n+\n+    def test_compact_material_mapping_matches_all_used_native_slots(self):\n+        seq = self.sequence(False)\n+        m = seq.machine\n+        mats = m.get(seq.capture['body'] + 256 + 0x20)\n+        self.assertEqual({e['material'] for e in seq.mode['compiled'].spec['events']}, {0, 1, 2, 10})\n+        self.assertEqual(m.get(0xa95aec), mats + 8 * 128)  # logical 10\n+        for native in (2, 4, 3, 9, 7, 10, 6):  # logical 3..9\n+            m.put(mats + native * 128 + 8, 0x80000001)\n+            m.put(mats + native * 128 + 24, 0)\n+        seq.configure('pre_snap', latch=False)\n+        seq.step()\n+        for native in (2, 4, 3, 9, 7, 10, 6):\n+            self.assertEqual(m.get(mats + native * 128 + 8), 0x80000000)\n+            self.assertEqual(m.get(mats + native * 128 + 24), 0xffffffff)\n+        for index, native in ((2, 8), (3, 1), (4, 0), (5, 5)):\n+            self.assertEqual(m.get(0xa959c8 + index * 112 + 0x44), mats + native * 128)\n \n     def test_kickoff_ball_on_flag_and_every_down_keep_native_history(self):\n         for wide in (False, True):"
+      },
+      {
+        "file": "tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py",
+        "file_facts": "test code; CI runs tests/mod_editor/test_*.py files as scripts with a 420 s limit each; shipped in a release allowlist: no; pinned by sha256 digest: no; no for-loops on the added lines.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -50,6 +50,9 @@ class NativeFixTests(unittest.TestCase):\n         capture = {}\n         geometry = projection.native_geometry(self.build.payload, self.decoded,\n             fonts=self.build.fonts, texture_span=self.atlas, capture=capture, **kwargs)\n+        # Repeated text/visibility cases assert the captured native vertices,\n+        # colours and game state. They never consume an instruction/write log.\n+        capture['machine'].record = False\n         return geometry, capture\n \n     def test_quarter_clocks_and_long_down_fit_separate_cells_both_modes_and_aspects(self):"
+      },
+      {
+        "file": "tests/mod_editor/test_nfl2k5_scorebug_native.py",
+        "file_facts": "test code; CI runs tests/mod_editor/test_*.py files as scripts with a 420 s limit each; shipped in a release allowlist: no; pinned by sha256 digest: no; deepest for-loop nest on the added lines: 1 level(s); its literal bounds multiply to 4 iterations (a few).",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -70,7 +70,10 @@ class Collection:\n                 self.registered_fonts.append(m.uc.reg_read(m.x.UC_X86_REG_ECX))\n             elif va == 0x48fc0:\n                 self.closed = True\n-        m.uc.hook_add(unicorn.UC_HOOK_CODE, event)\n+        # The callback observes exactly these four PCs. Native instructions\n+        # outside them still execute and the independent visit recorder stays.\n+        for address in (0x48ff0,0x44da0,0x44b60,0x48fc0):\n+            m.uc.hook_add(unicorn.UC_HOOK_CODE,event,begin=address,end=address)\n \n     def run(self):\n         m = self.m"
+      },
+      {
+        "file": "tests/mod_editor/test_nfl2k5_scorebug_native.py",
+        "file_facts": "test code; CI runs tests/mod_editor/test_*.py files as scripts with a 420 s limit each; shipped in a release allowlist: no; pinned by sha256 digest: no; no for-loops on the added lines.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -94,7 +97,7 @@ class Collection:\n                 raise AssertionError('native callback event bound exceeded')\n         if not self.closed or m.get(0xb09584) or m.get(0xb09598) != m.get(0xb095a0):\n             raise AssertionError('native collection did not finish exactly at EOF')\n-        return {'events': events, 'max_callback_instructions': worst,\n+        return {'events': events, 'max_callback_instructions': worst if m.record else None,\n                 'registered_txtr': len(self.registered),\n                 'registered_font': len(self.registered_fonts),\n                 'heap_bytes': self.free_before - m.get(self.heap + 0x88)}"
+      },
+      {
+        "file": "tests/mod_editor/test_nfl2k5_scorebug_resources.py",
+        "file_facts": "test code; CI runs tests/mod_editor/test_*.py files as scripts with a 420 s limit each; shipped in a release allowlist: no; pinned by sha256 digest: no; no for-loops on the added lines.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -56,13 +56,13 @@ class RetailTests(unittest.TestCase):\n         # still sees the exact logical file, including all zero bytes.\n         real_write=io.pwrite\n         def sparse_write(fd,data,offset):\n-            if offset >= os.fstat(fd).st_size and not any(data):\n+            if offset >= os.fstat(fd).st_size and not bytes(data).strip(b'\\0'):\n                 os.ftruncate(fd,offset+len(data));return len(data)\n             return real_write(fd,data,offset)\n         def sparse_copy(source,target):\n             with Path(source).open('rb') as src,Path(target).open('wb') as dst:\n                 while block:=src.read(a.READ_BLOCK):\n-                    if any(block):dst.write(block)\n+                    if block.strip(b'\\0'):dst.write(block)\n                     else:dst.seek(len(block),1)\n                 dst.truncate()\n             return str(target)"
+      },
+      {
+        "file": "tests/mod_editor/test_nfl2k5_scorebug_runtime.py",
+        "file_facts": "test code; CI runs tests/mod_editor/test_*.py files as scripts with a 420 s limit each; shipped in a release allowlist: no; pinned by sha256 digest: no; deepest for-loop nest on the added lines: 1 level(s); its literal bounds multiply to 1 iterations (a few) plus loops over names whose size code cannot see.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -115,12 +115,18 @@ class Machine:\n             for page in range(s.start&-4096,(s.end+4095)&-4096,4096):\n                 flags=uc.UC_PROT_READ | (uc.UC_PROT_EXEC if s.executable else 0) | (uc.UC_PROT_WRITE if s.writable else 0)\n                 pages[page]=pages.get(page,0)|flags\n-        for page in pages:self.uc.mem_map(page,4096)\n+        # Same permission union and unmapped gaps; adjacent pages need one\n+        # Unicorn region, not thousands of expensive individual mappings.\n+        regions=[]\n+        for page,flags in sorted(pages.items()):\n+            if regions and regions[-1][1]==page and regions[-1][2]==flags:regions[-1][1]+=4096\n+            else:regions.append([page,page+4096,flags])\n+        for start,end,_flags in regions:self.uc.mem_map(start,end-start)\n         self.uc.mem_map(image.base,4096)\n         self.uc.mem_write(image.base,payload[:image.headers_size])\n         for s in image.sections:\n             if s.flags&2:self.uc.mem_write(s.start,payload[s.raw:s.raw+s.raw_size])\n-        for page,flags in pages.items():self.uc.mem_protect(page,4096,flags)\n+        for start,end,flags in regions:self.uc.mem_protect(start,end-start,flags)\n         self.uc.mem_map(self.HEAP,0x400000)\n         self.uc.mem_map(self.STACK,0x10000)\n         self.uc.mem_map(self.STOP,4096,uc.UC_PROT_READ|uc.UC_PROT_EXEC)"
+      },
+      {
+        "file": "tests/mod_editor/test_nfl2k5_scorebug_runtime.py",
+        "file_facts": "test code; CI runs tests/mod_editor/test_*.py files as scripts with a 420 s limit each; shipped in a release allowlist: no; pinned by sha256 digest: no; no for-loops on the added lines.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -144,9 +150,21 @@ class Machine:\n         self.play=self.alloc(512);self.put(0xe602ec,self.play);self.put(self.play+4,1)\n         self.put(0xe60280,0xe5fc20);self.put(0xe602b4,4);self.put(0xa95a70,1);self.put(0xa95a00,1)\n         self.uc.mem_write(0xfc9c0,b'\\xc2\\x04\\x00')\n-        self.writes=[];self.visits=[];self.record=True\n-        self.uc.hook_add(uc.UC_HOOK_MEM_WRITE,lambda _u,_a,addr,size,value,_d:self.writes.append((addr,size,value)) if self.record else None)\n-        self.uc.hook_add(uc.UC_HOOK_CODE,lambda _u,addr,_s,_d:self.visits.append(addr) if self.record else None)\n+        self.writes=[];self.visits=[];self._record_hooks=[];self.record=True\n+\n+    @property\n+    def record(self):return bool(self._record_hooks)\n+\n+    @record.setter\n+    def record(self,enabled):\n+        import unicorn as uc\n+        if enabled and not self._record_hooks:\n+            self._record_hooks=[\n+                self.uc.hook_add(uc.UC_HOOK_MEM_WRITE,lambda _u,_a,addr,size,value,_d:self.writes.append((addr,size,value))),\n+                self.uc.hook_add(uc.UC_HOOK_CODE,lambda _u,addr,_s,_d:self.visits.append(addr))]\n+        elif not enabled:\n+            for handle in self._record_hooks:self.uc.hook_del(handle)\n+            self._record_hooks.clear()\n \n     def alloc(self,size):\n         at=(self.cursor+127)&-128;self.cursor=at+size;return at"
+      },
+      {
+        "file": "tests/mod_editor/test_nfl2k5_scorebug_sd.py",
+        "file_facts": "test code; CI runs tests/mod_editor/test_*.py files as scripts with a 420 s limit each; shipped in a release allowlist: no; pinned by sha256 digest: no; no for-loops on the added lines.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -10,7 +10,7 @@ def sampling_receipt():\n  spec,image=s.load_layout();records=[]\n  # Maximum supported formatted widths, including native ordinal suffixes and\n  # Inches. Every digit and ordinal in each set is then tested at that bound.\n- longest={'score':list('888'),'clock':list('60:00'),'small':['4','TH'],\n+ longest={'score':list('888'),'clock':list('60:00'),'small':['4','TH'],'quarter':['4TH'],\n           'label':['4','th',' ','&',' ','Inch','es'],'ticks':['~','~','~']}\n  for wide in (False,True):\n   sx=s.x_scale(wide)*(s.WIDE_CONTRACTION if wide else 1);sy=448/1080"
+      },
+      {
+        "file": "tests/mod_editor/test_nfl2k5_scorebug_sprite.py",
+        "file_facts": "test code; CI runs tests/mod_editor/test_*.py files as scripts with a 420 s limit each; shipped in a release allowlist: no; pinned by sha256 digest: no; no for-loops on the added lines.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -22,7 +22,13 @@ class ContractTests(unittest.TestCase):\n  def test_layout_capacity_full_alpha_and_source_boxes(self):\n   c=sprite.compile_folder();self.assertEqual(c.atlas.size,(256,512));self.assertEqual(len(c.quads),47)\n   self.assertLess(sprite.probe_sizes()[1],400*1024)\n-  for digit in '0123456789':self.assertEqual(c.spec['glyph_sets']['score']['glyphs'][digit]['size'],[40,53])\n+  scores=c.spec['glyph_sets']['score']['glyphs']\n+  for digit in '0123456789':self.assertEqual(scores[digit]['size'][1],53)\n+  # The live face is proportional: a narrow 1 and broad rounded 0. The old\n+  # generic 40-column fit erased exactly this distinction.\n+  self.assertAlmostEqual(scores['0']['size'][0]/53,49/54,delta=.01)\n+  self.assertAlmostEqual(scores['1']['size'][0]/53,25/54,delta=.01)\n+  self.assertLess(scores['7']['size'][0],scores['0']['size'][0])\n   self.assertGreater(len(set(c.atlas.getchannel('A').getdata())),64)\n   self.assertFalse(list(sprite.DEFAULT_FOLDER.glob('*.ttf')))\n   self.assertEqual(c.spec['reference_boxes']['bar'],[437,942,1478,1052])"
+      },
+      {
+        "file": "tests/mod_editor/test_nfl2k5_scorebug_sprite.py",
+        "file_facts": "test code; CI runs tests/mod_editor/test_*.py files as scripts with a 420 s limit each; shipped in a release allowlist: no; pinned by sha256 digest: no; deepest for-loop nest on the added lines: 1 level(s); its literal bounds multiply to 3 iterations (a few).",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -81,8 +87,8 @@ class LogoFitTests(unittest.TestCase):\n  def test_marks_are_drawn_as_the_broadcast_draws_them(self):\n   from mod_editor.core import nfl2k5_scorebug_exact as exact, nfl2k5_scorebug_resources as art\n   spec=sprite.load_layout()[0];fit=spec['logo_fit']\n-  self.assertEqual(set(fit['by_team']),{'KC','DEN'})\n-  for team,expect in (('KC',1.89),('DEN',1.87),('BUF',None)):\n+  self.assertEqual(set(fit['by_team']),set(art.TEAM_LOGOS))\n+  for team,expect in (('KC',1.89),('DEN',2.09),('BUF',None)):\n    im=exact.mnf_panel(team,'home',fit=art.logo_fit_for(team,fit));x0,y0,x1,y1=im.getchannel('A').getbbox()\n    aspect=(x1-x0)/(y1-y0)*(200/107)/(64/64)   # cell aspect back to source pixels: 64 cell px = 200 source columns, 64 rows = 107\n    plain=exact.mnf_panel(team,'home');px0,py0,px1,py1=plain.getchannel('A').getbbox()"
+      },
+      {
+        "file": "tests/mod_editor/test_nfl2k5_scorebug_sprite.py",
+        "file_facts": "test code; CI runs tests/mod_editor/test_*.py files as scripts with a 420 s limit each; shipped in a release allowlist: no; pinned by sha256 digest: no; deepest for-loop nest on the added lines: 1 level(s); its literal bounds multiply to 4 iterations (a few).",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -90,10 +96,21 @@ class LogoFitTests(unittest.TestCase):\n    if expect is not None:self.assertAlmostEqual(aspect,expect,delta=0.12,msg=team)\n    self.assertEqual(im.size,(64,64))\n   with self.assertRaises(ValueError):exact.mnf_panel('KC','home',fit={'fill_x':3.0})\n+ def test_edge_bleed_clips_without_changing_native_texture_contract(self):\n+  plain=exact.mnf_panel('LV','home',fit={'height':1.0})\n+  zoomed=exact.mnf_panel('LV','home',fit={'height':1.0,'zoom':1.25,'shift_y':-.1})\n+  self.assertEqual(plain.size,zoomed.size)\n+  self.assertNotEqual(plain.tobytes(),zoomed.tobytes())\n+  self.assertEqual(zoomed.getchannel('A').getbbox()[1],0)\n+  self.assertEqual(exact.mnf_panel('LV','home').tobytes(),\n+                   exact.mnf_panel('LV','home',fit={'zoom':1,'shift_x':0,'shift_y':0}).tobytes())\n+  for fit in ({'zoom':float('nan')},{'zoom':2.01},{'shift_x':.51},{'shift_y':float('inf')}):\n+   with self.assertRaises(ValueError):exact.mnf_panel('LV','home',fit=fit)\n  def test_layout_rejects_a_bad_fit(self):\n   import copy,json,tempfile\n   spec,image=sprite.load_layout()\n-  for bad in ({'default':{'fill_x':0.1}},{'by_team':{'XXX':{'fill_x':1.2}}},{'default':{'width':1.2}}):\n+  for bad in ({'default':{'fill_x':0.1}},{'by_team':{'XXX':{'fill_x':1.2}}},{'default':{'width':1.2}},\n+              {'default':{'zoom':float('nan')}},{'default':{'shift_x':.51}}):\n    with tempfile.TemporaryDirectory() as directory:\n     p=Path(directory);rewritten=copy.deepcopy(spec);rewritten['logo_fit']=bad\n     (p/'layout.json').write_text(json.dumps(rewritten));image.save(p/'template.png')"
+      },
+      {
+        "file": "tests/mod_editor/test_nfl2k5_scorebug_sprite.py",
+        "file_facts": "test code; CI runs tests/mod_editor/test_*.py files as scripts with a 420 s limit each; shipped in a release allowlist: no; pinned by sha256 digest: no; no for-loops on the added lines.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -117,7 +134,7 @@ class DisplayModelTests(unittest.TestCase):\n   spec=sprite.load_layout()[0];brand=spec['brand'][0]\n   self.assertEqual((brand['name'],brand['cell'],brand['material'],brand['pin']),('watermark','espn_mnf',9,'top-right'))\n   self.assertEqual(brand['box'],[1655,35,1869,64]);self.assertAlmostEqual(brand['opacity'],0.714,delta=.02)\n-  self.assertTrue({'frames','method','measured_opacity','colour'}<=set(brand['source']))\n+  self.assertTrue({'frames','method','estimated_opacity','colour'}<=set(brand['source']))\n   for wide in (False,True):\n    c=sprite.compile_folder(widescreen=wide);row=next(q for q in c.quads if q['name']=='watermark')\n    self.assertTrue(row['brand']);self.assertEqual(row['tint'],'none')"
+      },
+      {
+        "file": "tests/mod_editor/test_nfl2k5_scorebug_sprite.py",
+        "file_facts": "test code; CI runs tests/mod_editor/test_*.py files as scripts with a 420 s limit each; shipped in a release allowlist: no; pinned by sha256 digest: no; deepest for-loop nest on the added lines: 1 level(s); its literal bounds multiply to 2 iterations (a few).",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -137,7 +154,17 @@ class DisplayModelTests(unittest.TestCase):\n   self.assertEqual(next(e for e in spec['events'] if e['name']=='FLAG')['cell'],'flag')\n   mark=image.crop(spec['cells']['espn_mnf']['box']);self.assertEqual(mark.size,(71,12))\n   self.assertGreater(mark.getchannel('A').getextrema()[1],240)  # the template keeps full coverage; the row carries the opacity\n-  self.assertEqual(mark.convert('RGB').getextrema(),((255,255),(251,251),(241,241)))\n+  self.assertEqual(mark.convert('RGB').getextrema(),((255,255),)*3)\n+ def test_live_clock_is_white_with_dark_ink_and_team_plate_is_separate(self):\n+  spec,image=sprite.load_layout();rows={r['name']:r for r in spec['static']}\n+  for name in ('capsule','red'):\n+   self.assertEqual(rows[name]['tint'],'none')\n+   cell=image.crop(spec['cells'][rows[name]['cell']]['box'])\n+   self.assertGreater(min(cell.getpixel((cell.width//2,cell.height//2))[:3]),235)\n+  self.assertEqual(rows['plate']['tint'],'possessing team')\n+  for f in spec['fields']:\n+   if f['name'] in ('quarter','clock','play_clock'):self.assertEqual(f['colour'],'#171717')\n+   if f['name']=='down':self.assertGreaterEqual(f['size']*448/1080,12)\n  def test_flag_literal_is_blanked_at_equal_length(self):\n   rows={va:(old,new) for va,old,new,_ in owner.override_edits()}\n   old,new=rows[0xE6C464];self.assertEqual(old,'FLAG\\0'.encode('utf-16le'));self.assertEqual(new,bytes(10))"
+      },
+      {
+        "file": "tests/mod_editor/test_nfl2k5_scorebug_sprite.py",
+        "file_facts": "test code; CI runs tests/mod_editor/test_*.py files as scripts with a 420 s limit each; shipped in a release allowlist: no; pinned by sha256 digest: no; no for-loops on the added lines.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -158,7 +185,7 @@ class NativeTests(unittest.TestCase):\n     box=[min(p[0] for p in points),min(p[1] for p in points),max(p[0] for p in points),max(p[1] for p in points)]\n     want=list(sprite.contracted(sprite.hud_box(q['box'],wide),wide))\n     self.assertLess(max(abs(a-b) for a,b in zip(box,want)),.02,q['name'])\n-   expected={'away_score':1,'home_score':1,'clock':4,'play_clock':1,'quarter':2,'down':5,'home_timeouts':3,'away_timeouts':3}\n+   expected={'away_score':1,'home_score':1,'clock':4,'play_clock':1,'quarter':1,'down':5,'home_timeouts':3,'away_timeouts':3}\n    for role,count in expected.items():\n     rows=[q for q in self.preview.modes[wide]['compiled'].quads if q['name'].startswith(role+':')]\n     visible=sum(bool(struct.unpack_from('<I',c['live_decoded'],scene.layout.S1+q['vertex']*10)[0]) for q in rows)"
+      },
+      {
+        "file": "tests/mod_editor/test_nfl2k5_scorebug_sprite.py",
+        "file_facts": "test code; CI runs tests/mod_editor/test_*.py files as scripts with a 420 s limit each; shipped in a release allowlist: no; pinned by sha256 digest: no; deepest for-loop nest on the added lines: 1 level(s); its literal bounds multiply to 9 iterations (a few).",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -195,6 +222,17 @@ class NativeTests(unittest.TestCase):\n    g,c=self.capture(event=event)\n    # The FLAG plate carries its own dark label; its retail white text is blanked.\n    self.assertEqual(any(row['vertices'] for row in g['draws']),event!='FLAG',event)\n+ def test_clock_crosses_the_retail_ten_minute_formatter_boundary(self):\n+  g,c=self.capture();m=c['machine'];code,data=owner.sites(self.patched)\n+  update=owner.code_for(code['va'],data['va'])[1]['update']\n+  rows=[q for q in self.preview.compiled.quads if q['name'].startswith('clock:')]\n+  try:\n+   for seconds,expected in ((599,4),(599.01,5),(599.5,5),(599.99,5),(600,5),(894,5),(900,5),(3600,5),(599,4)):\n+    m.float(m.game_clock+16,seconds);m.run(update,(0x3c888889,),limit=500000)\n+    actual=bytes(m.uc.mem_read(c['body'],len(self.preview.scene)))\n+    self.assertEqual(sum(bool(struct.unpack_from('<I',actual,scene.layout.S1+q['vertex']*10)[0]) for q in rows),expected,seconds)\n+    self.assertIn(0xfc100 if seconds<=599 else 0xfc150,m.visits)\n+  finally:m.close()\n  def test_plate_secondary_and_team_material_bindings(self):\n   for away,home,possessing in (('DEN','KC','home'),('NO','DEN','away')):\n    g,c=self.capture(away=away,home=home,possession=possessing)"
+      },
+      {
+        "file": "tests/mod_editor/test_provider_integrity.py",
+        "file_facts": "test code; CI runs tests/mod_editor/test_*.py files as scripts with a 420 s limit each; shipped in a release allowlist: no; pinned by sha256 digest: no; no for-loops on the added lines.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -215,7 +215,7 @@ class ProviderIntegrityTests(unittest.TestCase):\n             # formation/play clone writer, fixed-slot audio, the fail-closed\n             # AUDO family-label loader, package-local equipment, and every\n             # local module in those exact import closures.\n-            [299, 10, 8, 9, 8, 9]  # beta 72: + nfl2k5_my_career_advisory and nfl2k5_my_career_events (M1 MyCareer earned ratings, identity and advisory, both reached from the pinned nfl2k5_my_career); P1: + lazy runtime dependency helper;\n+            [301, 10, 8, 9, 8, 9]  # s5: + official team accents and the xemu reference fragment model.\n         )\n         for provider in providers:\n             entries = [provider.backend_module]"
+      },
+      {
+        "file": "tests/mod_editor/test_scorebug_gpu.py",
+        "file_facts": "test code; CI runs tests/mod_editor/test_*.py files as scripts with a 420 s limit each; shipped in a release allowlist: no; pinned by sha256 digest: no; deepest for-loop nest on the added lines: 1 level(s); its literal bounds multiply to 3 iterations (a few).",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -0,0 +1,159 @@\n[part 1 of 3 of a 159-line hunk]\n+\"\"\"NV2A packet, palette, combiner and native tint-binding regressions.\"\"\"\n+from pathlib import Path\n+import importlib.util\n+import json\n+import struct\n+import sys\n+import tempfile\n+import unittest\n+\n+ROOT = Path(__file__).resolve().parents[2]\n+sys.path[:0] = [str(ROOT), str(ROOT/'tools')]\n+from mod_editor.core import nfl2k5_scorebug_sprite as sprite\n+from mod_editor.core import nfl2k5_scorebug_teams as teams\n+from tools.scorebug_sprite import gpu, xemu_model\n+\n+\n+class ReferenceTests(unittest.TestCase):\n+    def test_changed_byte_count_includes_block_edges_and_partial_blocks(self):\n+        from mod_editor.core.nfl2k5_xbe_space import count_differing_bytes\n+        before=bytes(range(256))*513\n+        after=bytearray(before)\n+        for index in (0,65535,65536,131071,len(before)-1):after[index]^=255\n+        self.assertEqual(count_differing_bytes(before,after),5)\n+        self.assertEqual(count_differing_bytes(before,after+bytes(300)),5)\n+        self.assertEqual(count_differing_bytes(before[:-1],after),4)\n+        self.assertEqual(count_differing_bytes(before,before),0)\n+        self.assertEqual(count_differing_bytes(b'',after),0)\n+        inverse=bytes(v^255 for v in before)\n+        self.assertEqual(count_differing_bytes(before,inverse),len(before))\n+\n+    def test_packets_preserve_increasing_and_nonincreasing_writes(self):\n+        got = gpu.methods([0x00081b00, 17, 23, 0x40081800, 4, 9])\n+        self.assertEqual([(m['method'],m['value']) for m in got],\n+                         [(0x1b00,17),(0x1b04,23),(0x1800,4),(0x1800,9)])\n+        for bad in ([0x80081b00,17,23],[0x00081b00,17],[0x20000001]):\n+            with self.assertRaises(ValueError): gpu.methods(bad)\n+\n+    def test_combiner_mappings_and_measured_final_constant(self):\n+        state = {f'0x{k:04x}':v for k,v in {\n+            0x260:0xd8d41010,0xac0:0xc8c40000,0xaa0:0x100c0,0x1e40:0x100c0,\n+            0x1e60:0x11101,0x288:0xf030c00,0x28c:0x11331c80,\n+            0xa60:0,0xa80:0,0x1e20:0,0x1e24:0}.items()}\n+        self.assertEqual(xemu_model.combiner(state,(1,1,1,1),(.5,)*4),(1,1,1,1))\n+        # A hypothetical captured fog mix would darken both identical materials.\n+        state['0x1e20']=0xff000000\n+        self.assertEqual(xemu_model.combiner(state,(1,1,1,1),(.5,)*4,fog=(.1,.1,.1,0)),(.1,.1,.1,1))\n+        state['0x1e60']=2\n+        with self.assertRaises(ValueError):xemu_model.combiner(state,(1,)*4,(.5,)*4)\n+        self.assertEqual(xemu_model.input_value(0x21,{1:(-.5,.5,1.5,0)}),(1,.5,0))\n+\n+    def test_official_tints_are_recomputed_from_parent_not_trusted_metadata(self):\n+        data=json.loads((teams.DATA/'team_accents.json').read_text())\n+        data['teams']['LV']['wing']='#FF0080'\n+        data['teams']['LV']['candidates']['forged']={'hex':'#FF0080','parent':'#000000','contrast_white':7}\n+        with tempfile.TemporaryDirectory() as directory:\n+            path=Path(directory)/'accents.json';path.write_text(json.dumps(data))\n+            with self.assertRaisesRegex(ValueError,'Foreign'):teams.load(path)\n+\n+    def test_neutral_shapes_cannot_multiply_in_broadcast_hues(self):\n+        spec,image=sprite.load_layout()"
+      },
+      {
+        "file": "tests/mod_editor/test_scorebug_gpu.py",
+        "file_facts": "test code; CI runs tests/mod_editor/test_*.py files as scripts with a 420 s limit each; shipped in a release allowlist: no; pinned by sha256 digest: no; deepest for-loop nest on the added lines: 2 level(s); its literal bounds multiply to 1 iterations (a few) plus loops over names whose size code cannot see.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -0,0 +1,159 @@\n[part 2 of 3 of a 159-line hunk]\n+        data['teams']['LV']['wing']='#FF0080'\n+        data['teams']['LV']['candidates']['forged']={'hex':'#FF0080','parent':'#000000','contrast_white':7}\n+        with tempfile.TemporaryDirectory() as directory:\n+            path=Path(directory)/'accents.json';path.write_text(json.dumps(data))\n+            with self.assertRaisesRegex(ValueError,'Foreign'):teams.load(path)\n+\n+    def test_neutral_shapes_cannot_multiply_in_broadcast_hues(self):\n+        spec,image=sprite.load_layout()\n+        for row in spec['static']:\n+            if row['cell']=='logo':continue\n+            for red,green,blue,alpha in image.crop(spec['cells'][row['cell']]['box']).getdata():\n+                if alpha:self.assertEqual((red,green),(green,blue),row['cell'])\n+        compiled=sprite.compile_folder()\n+        magic,count,offset=teams.FOOTER.unpack(compiled.table[-12:])\n+        self.assertEqual((magic,count),(teams.MAGIC,52))\n+        for index,team in enumerate(sorted(teams.load().values(),key=lambda t:t['slot'])):\n+            values=teams.ENTRY.unpack_from(compiled.table,offset-sprite.TABLE_OFFSET+index*teams.ENTRY.size)\n+            self.assertEqual(values[2:],tuple(0xff000000|int(team[r][1:],16) for r in ('wing','rim','plate')))\n+\n+\n+PACK=ROOT/'extracted/ESPN NFL 2K5 (USA)/vc_53450030/0'\n+@unittest.skipUnless(PACK.is_file() and importlib.util.find_spec('unicorn'), 'retail resources and Unicorn required')\n+class NativeTests(unittest.TestCase):\n+    @classmethod\n+    def setUpClass(cls):cls.preview=sprite.NativePreview()\n+\n+    def test_texture_cache_tracks_pixel_options_and_template_changes(self):\n+        from PIL import Image\n+        from mod_editor.core.nfl2k5_scorebug_assets import texture_chunk\n+        pixels=Image.new('RGBA',(32,32),(255,255,255,255))\n+        first,receipt=texture_chunk('cacheproof',pixels,self.preview.atlas,alpha_aware=True)\n+        receipt['sha256']='mutated caller receipt'\n+        again,fresh=texture_chunk('cacheproof',pixels,self.preview.atlas,alpha_aware=True)\n+        self.assertEqual(first,again)\n+        self.assertNotEqual(fresh['sha256'],receipt['sha256'])\n+        pixels.putpixel((16,16),(0,0,0,255))\n+        changed,_=texture_chunk('cacheproof',pixels,self.preview.atlas,alpha_aware=True)\n+        reserved,_=texture_chunk('cacheproof',pixels,self.preview.atlas,alpha_aware=True,\n+                                  reserved_colours=((255,0,0,255),))\n+        self.assertNotEqual(first,changed)\n+        self.assertNotEqual(changed,reserved)\n+        with self.assertRaises(ValueError):\n+            texture_chunk('cacheproof',pixels,b'foreign',alpha_aware=True)\n+\n+    def test_decoded_logo_cache_retains_pin_checks_and_image_isolation(self):\n+        from mod_editor.core import nfl2k5_scorebug_ingame as scene\n+        record=scene.TEAM_LOGOS['LV']\n+        with PACK.open('rb') as stream:\n+            stream.seek(record['pack_offset']);span=stream.read(record['span_size'])\n+        first=scene.texture_image(span,record);expected=first.tobytes()\n+        first.putpixel((0,0),(255,0,128,255))\n+        self.assertEqual(scene.texture_image(span,record).tobytes(),expected)\n+        with self.assertRaises(ValueError):\n+            scene.texture_image(span,dict(record,decoded_sha256='0'*64))\n+\n+    def test_actual_native_tints_every_slot_possession_and_aspect(self):\n+        from mod_editor.core import nfl2k5_scorebug_runtime as owner\n+        palette=teams.load();payload=owner.apply(self.preview.payload)[0]\n+        code,data=owner.sites(payload);labels=owner.code_for(code['va'],data['va'])[1]\n+        for wide in (False,True):"
+      },
+      {
+        "file": "tests/mod_editor/test_scorebug_gpu.py",
+        "file_facts": "test code; CI runs tests/mod_editor/test_*.py files as scripts with a 420 s limit each; shipped in a release allowlist: no; pinned by sha256 digest: no; deepest for-loop nest on the added lines: 4 level(s); its literal bounds multiply to 4 iterations (a few) plus loops over names whose size code cannot see.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -0,0 +1,159 @@\n[part 3 of 3 of a 159-line hunk]\n+        with self.assertRaises(ValueError):\n+            scene.texture_image(span,dict(record,decoded_sha256='0'*64))\n+\n+    def test_actual_native_tints_every_slot_possession_and_aspect(self):\n+        from mod_editor.core import nfl2k5_scorebug_runtime as owner\n+        palette=teams.load();payload=owner.apply(self.preview.payload)[0]\n+        code,data=owner.sites(payload);labels=owner.code_for(code['va'],data['va'])[1]\n+        for wide in (False,True):\n+            _,capture=self.preview.capture(dict(home='LV',away='DET'),wide)\n+            m=capture['machine'];compiled=self.preview.modes[wide]['compiled']\n+            try:\n+                for name,t in palette.items():\n+                    m.identity(home=name,away=name,home_code=t['asset_code'],away_code=t['asset_code'],home_kind=t['kind'],away_kind=t['kind'])\n+                    m.run(labels['setup'],limit=100000)\n+                    for possession in (0xe5fc20,0xe5fc60):\n+                        m.put(0xe60280,possession)\n+                        m.run(labels['update'],(0x3c888889,),limit=100000)\n+                        for q in compiled.quads:\n+                            tint=q.get('tint','none')\n+                            if tint=='none':continue\n+                            role='rim' if 'rim' in tint else 'plate' if tint=='possessing team' else 'wing'\n+                            word=m.get(capture['body']+0x2d20+q['vertex']*10)\n+                            self.assertEqual(word,0xff000000|int(t[role][1:],16),(name,wide,possession,q['name']))\n+            finally:m.close()\n+\n+    def test_native_state_equal_and_independent_xemu_texture_decode(self):\n+        import nfl2k5_scorebug_projection as projection\n+        g,c=self.preview.capture(dict(home='LV',away='DET'),True)\n+        try:\n+            trace=gpu.capture_state(c);rows={r['name']:r for r in trace['rows']}\n+            label,score=rows['yscore_buga1'],rows['yscore_buga']\n+            for key in ('0x1b04','0x1b08','0x1b14','0x1b20','0x0260','0x0ac0','0x0288','0x028c','0x0344','0x0348','0x0350','0x0340'):\n+                self.assertEqual(label['state'][key],score['state'][key],key)\n+            for span in c['texture_spans'].values():\n+                got,_=xemu_model.texture(bytes(span));expected,_=projection._raster_texture(bytes(span))\n+                self.assertEqual(got.tobytes(),expected.tobytes())\n+            pipeline=xemu_model.Pipeline(trace);pipeline.select('yscore_buga1')\n+            self.assertEqual(pipeline.vertex_uv((-32768,32767)),(0,1))\n+            self.assertEqual(pipeline.fragment((255,)*4,(255,)*4,(19,)*4),(255,)*4)\n+            self.assertIsNone(pipeline.fragment((255,255,255,1),(255,)*4,(19,)*4))\n+            self.assertFalse(pipeline.receipt()['calibration_passed'])\n+            label['state']['0x1b14']=0x02063f00\n+            pipeline.select('yscore_buga1')\n+            self.assertEqual(pipeline.fragment((255,)*4,(255,)*4,(19,)*4),(255,)*4)\n+            label['vertex_program_complete']=False\n+            with self.assertRaisesRegex(ValueError,'Incomplete live'):\n+                pipeline.select('yscore_buga1')\n+            label['vertex_program_complete']=True\n+            label['state']['0x1b14']=0x01013f00\n+            with self.assertRaisesRegex(ValueError,'texture filter'):\n+                pipeline.select('yscore_buga1')\n+        finally:c['machine'].close()\n+\n+\n+if __name__=='__main__':unittest.main()"
+      },
+      {
+        "file": "tests/mod_editor/test_scorebug_live.py",
+        "file_facts": "test code; CI runs tests/mod_editor/test_*.py files as scripts with a 420 s limit each; shipped in a release allowlist: no; pinned by sha256 digest: no; no for-loops on the added lines.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -0,0 +1,88 @@\n[part 1 of 2 of a 88-line hunk]\n+\"\"\"Synthetic trace windows test missing-state and provenance boundaries.\"\"\"\n+from pathlib import Path\n+import sys\n+import unittest\n+\n+ROOT = Path(__file__).resolve().parents[2]\n+sys.path[:0] = [str(ROOT), str(ROOT/'tools')]\n+from tools.scorebug_sprite import live, xemu_model\n+\n+\n+def method(offset, value, name='KNOWN[0]', sub=0):\n+    return f'nv2a_pgraph_method {sub}: 0x97 -> 0x{offset:04x} {name} 0x{value:x}'\n+\n+\n+class LiveTests(unittest.TestCase):\n+    def test_partial_window_and_missing_indices_are_not_empty_draw_proof(self):\n+        result = live.parse([method(0x17fc, 0), method(0x1b00, 128),\n+                             method(0x17fc, 6), method(0x17fc, 0)], first_line=40)\n+        self.assertEqual(result['counts']['orphan_ends'], 1)\n+        draw = result['draws'][0]\n+        self.assertEqual((draw['begin_line'], draw['end_line']), (42, 43))\n+        self.assertEqual(draw['state_writes']['0x1b00'], 41)\n+        self.assertNotIn('0x030c', draw['state'])\n+        self.assertEqual(draw['geometry_events'], [])\n+        self.assertFalse(draw['vertex_program_complete'])\n+\n+    def test_upload_ports_use_component_not_event_count_and_advance_on_w(self):\n+        result = live.parse([method(0x1ea4, 6), method(0xb88, 12),\n+                             method(0xb8c, 13), method(0xb80, 14),\n+                             method(0x17fc, 6)])\n+        self.assertEqual(result['draws'][0]['vertex_constants'], {'26':12,'27':13,'28':14})\n+        self.assertIsNone(result['draws'][0]['end_line'])\n+\n+    def test_program_residency_and_rewrites_are_indexed(self):\n+        lines = [method(0x1e9c, 8), method(0x1ea0, 8)]\n+        lines += [method(0xb00+i*4, v) for i,v in enumerate((2,4,6,1))]\n+        lines += [method(0x17fc, 6), method(0x17fc, 0),\n+                  method(0x1e9c, 8), method(0xb00, 7), method(0x17fc, 6)]\n+        a,b = live.parse(lines)['draws']\n+        self.assertEqual(a['vertex_program'], [2,4,6,1])\n+        self.assertEqual(b['vertex_program'], [7,4,6,1])\n+        self.assertTrue(b['vertex_program_complete'])\n+\n+    def test_windows_do_not_share_missing_upload_pointers(self):\n+        live.parse([method(0x1ea4, 0), method(0xb80, 9)])\n+        result = live.parse([method(0xb80, 4), method(0x17fc, 6)])\n+        self.assertEqual(result['draws'][0]['vertex_constants'], {})\n+        self.assertEqual(result['counts']['uploads_without_load_pointer'], 1)\n+\n+    def test_unhandled_and_unknown_names_do_not_become_state(self):\n+        result = live.parse([method(0x380, 8, '?[0]'),\n+            'nv2a_pgraph_method_unhandled 0: 0x97 -> 0x0380 0x8', method(0x17fc, 6)])\n+        self.assertNotIn('0x0380', result['draws'][0]['state'])\n+        with self.assertRaisesRegex(ValueError, 'line 1'):\n+            live.parse(['broken method'])\n+\n+    def test_geometry_and_mutations_inside_draw_are_retained(self):\n+        lines = [method(0x17fc, 6), method(0x1800, 0x20001),\n+                 method(0x1810, 0x03000005), method(0x304, 1), method(0x17fc, 0)]\n+        draw = live.parse(lines)['draws'][0]"
+      },
+      {
+        "file": "tests/mod_editor/test_scorebug_live.py",
+        "file_facts": "test code; CI runs tests/mod_editor/test_*.py files as scripts with a 420 s limit each; shipped in a release allowlist: no; pinned by sha256 digest: no; deepest for-loop nest on the added lines: 1 level(s); its literal bounds multiply to 3 iterations (a few).",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -0,0 +1,88 @@\n[part 2 of 2 of a 88-line hunk]\n+        self.assertNotIn('0x0380', result['draws'][0]['state'])\n+        with self.assertRaisesRegex(ValueError, 'line 1'):\n+            live.parse(['broken method'])\n+\n+    def test_geometry_and_mutations_inside_draw_are_retained(self):\n+        lines = [method(0x17fc, 6), method(0x1800, 0x20001),\n+                 method(0x1810, 0x03000005), method(0x304, 1), method(0x17fc, 0)]\n+        draw = live.parse(lines)['draws'][0]\n+        self.assertEqual([v['value'] for v in draw['geometry_events']], [0x20001,0x03000005])\n+        self.assertEqual(draw['changes_inside'][0]['method'], '0x0304')\n+        self.assertNotIn('0x0304', draw['state'])\n+\n+    def test_subchannels_and_abbreviated_indices_stay_distinct(self):\n+        lines = [method(0x1b00, 1), method(0x1b00, 2, sub=1), method(0x17fc, 6),\n+            'nv2a_pgraph_method_abbrev 0: 0x97 -> 0x1800 NV097_ARRAY_ELEMENT16 * 7',\n+            method(0x17fc, 0), method(0x17fc, 6, sub=1)]\n+        a,b = live.parse(lines)['draws']\n+        self.assertEqual([a['state']['0x1b00'], b['state']['0x1b00']], [1,2])\n+        self.assertTrue(a['geometry_events'][0]['indices_unknown'])\n+\n+    def test_ram_and_raw_texture_refuse_truncation(self):\n+        self.assertEqual(live.read_ram(b'abcd', 1, 2), b'bc')\n+        for offset,size in ((-1,1),(0,-1),(3,2)):\n+            with self.assertRaises(ValueError):live.read_ram(b'abcd',offset,size)\n+        with self.assertRaises(ValueError):xemu_model.p8_texture(bytes(3),bytes(1024),2,2)\n+        with self.assertRaises(ValueError):xemu_model.p8_texture(bytes(4),bytes(1023),2,2)\n+\n+    def test_rectangular_morton_decode_from_exact_bytes(self):\n+        palette = bytes(v for i in range(256) for v in (i,2,3,255))\n+        image = xemu_model.p8_texture(bytes(range(8)),palette,4,2)\n+        self.assertEqual([image.getpixel((x,0)) for x in range(4)],\n+                         [(3,2,v,255) for v in (0,1,4,5)])\n+        self.assertEqual([image.getpixel((x,1))[2] for x in range(4)], [2,3,6,7])\n+\n+\n+if __name__ == '__main__':unittest.main()"
+      },
+      {
+        "file": "tests/mod_editor/test_scorebug_replication.py",
+        "file_facts": "test code; CI runs tests/mod_editor/test_*.py files as scripts with a 420 s limit each; shipped in a release allowlist: no; pinned by sha256 digest: no; deepest for-loop nest on the added lines: 2 level(s); its literal bounds multiply to 4 iterations (a few) plus loops over names whose size code cannot see.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -0,0 +1,117 @@\n[part 1 of 3 of a 117-line hunk]\n+\"\"\"Replication gates must reject false confidence and invalid team colours.\"\"\"\n+from pathlib import Path\n+import hashlib\n+import importlib.util\n+import json\n+import sys\n+import unittest\n+\n+ROOT=Path(__file__).resolve().parents[2]\n+sys.path[:0]=[str(ROOT),str(ROOT/'tools')]\n+from tools.scorebug_sprite.jev import accents,descriptors,judge,layout_search,session,replay\n+\n+\n+class ReplicationTests(unittest.TestCase):\n+    def test_source_closure_and_pins(self):\n+        spec=importlib.util.spec_from_file_location('replication_pins',ROOT/'packaging/scorebug_replication_pins.py')\n+        module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)\n+        declared=set((ROOT/'packaging/release-allowlist.txt').read_text().splitlines())\n+        for name,wanted in module.PINS.items():\n+            self.assertIn(name,declared)\n+            self.assertEqual(hashlib.sha256((ROOT/name).read_bytes()).hexdigest(),wanted,name)\n+\n+    def test_all_roster_slots_and_contrast_gates(self):\n+        data=json.loads((ROOT/'data/nfl2k5_scorebug_sprite/team_accents.json').read_text())\n+        self.assertEqual({t['slot'] for t in data['teams'].values()},set(range(52)))\n+        for name,team in data['teams'].items():\n+            for role in ('wing','rim','plate','wash'):\n+                color=team[role]\n+                self.assertGreaterEqual(descriptors.contrast(accents.rgb(color)),4.5,(name,role))\n+                candidates=[c for c in team['candidates'].values() if c['hex']==color]\n+                self.assertTrue(candidates)\n+                self.assertTrue(all(c['parent'] in team['official'] for c in candidates))\n+        for role in ('wing','rim','plate'):\n+            r,g,b=accents.rgb(data['teams']['LV'][role]);self.assertLessEqual(max(r,g,b)-min(r,g,b),2)\n+\n+    def test_every_native_team_roundtrips_through_matchup_arguments(self):\n+        from tools.scorebug_sprite.render import team,TEAM_LOGOS\n+        for name in TEAM_LOGOS:self.assertEqual(team(name),name)\n+        self.assertEqual(team('COMMANDERS'),'WAS')\n+\n+    def test_current_nfl_palette_uses_supplied_shades_and_excludes_logo_details(self):\n+        source=json.loads((ROOT/'data/nfl2k5_scorebug_sprite/team_colors_official_2026.json').read_text())\n+        actual=json.loads((ROOT/'data/nfl2k5_scorebug_sprite/team_accents.json').read_text())['teams']\n+        by_slot={t['nfl2k5_retail_slot']['index']:t for t in source['teams']}\n+        for team in actual.values():\n+            if team['slot']>=32:continue\n+            allowed={c['hex'].upper() for c in by_slot[team['slot']]['colors'] if not c.get('logo_detail_only',False)}\n+            self.assertEqual(set(team['official']),allowed)\n+\n+    def test_jev_cannot_inject_a_foreign_colour(self):\n+        team=dict(slot=22,asset_code='20',source='test',official=['#101010','#D1D2D3'],logo_fit=dict(fill_x=1,height=1))\n+        teams,_=accents.prepare(dict(teams={'LV':team}))\n+        bad={role:dict(choice='#FF00AA',confidence=1) for role in ('wing','rim','plate')}\n+        result=accents.choose(teams,[bad,bad]);self.assertTrue(result['review'])\n+        self.assertIn(result['teams']['LV']['plate'],{v['hex'] for v in teams['LV']['candidates'].values()})\n+\n+    def test_equivalent_black_variants_are_not_a_colour_disagreement(self):\n+        team=dict(slot=22,asset_code='20',source='test',official=['#000000'],logo_fit={})\n+        teams,_=accents.prepare(dict(teams={'LV':team}))\n+        a={r:dict(choice='colour0_base',confidence=1) for r in ('wing','rim','plate')}"
+      },
+      {
+        "file": "tests/mod_editor/test_scorebug_replication.py",
+        "file_facts": "test code; CI runs tests/mod_editor/test_*.py files as scripts with a 420 s limit each; shipped in a release allowlist: no; pinned by sha256 digest: no; deepest for-loop nest on the added lines: 1 level(s); its literal bounds multiply to 3 iterations (a few).",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -0,0 +1,117 @@\n[part 2 of 3 of a 117-line hunk]\n+        bad={role:dict(choice='#FF00AA',confidence=1) for role in ('wing','rim','plate')}\n+        result=accents.choose(teams,[bad,bad]);self.assertTrue(result['review'])\n+        self.assertIn(result['teams']['LV']['plate'],{v['hex'] for v in teams['LV']['candidates'].values()})\n+\n+    def test_equivalent_black_variants_are_not_a_colour_disagreement(self):\n+        team=dict(slot=22,asset_code='20',source='test',official=['#000000'],logo_fit={})\n+        teams,_=accents.prepare(dict(teams={'LV':team}))\n+        a={r:dict(choice='colour0_base',confidence=1) for r in ('wing','rim','plate')}\n+        b={r:dict(choice='colour0_dark',confidence=1) for r in ('wing','rim','plate')}\n+        self.assertEqual(accents.choose(teams,[a,b])['review'],[])\n+\n+    def test_unverified_calibration_blocks_mutations_and_baseline(self):\n+        called=[]\n+        with self.assertRaisesRegex(ValueError,'calibration'):\n+            layout_search.run({},lambda _:called.append('render'),lambda _:called.append('Jev'))\n+        self.assertEqual(called,[])\n+\n+    def test_measured_objective_vetoes_confident_worsening_and_matches_control_budget(self):\n+        spec=json.loads((ROOT/'data/nfl2k5_scorebug_sprite/layout.json').read_text())\n+        def evaluate(s):\n+            size=next(f['size'] for f in s['fields'] if f['name']=='down')\n+            return dict(residuals=[dict(feature='cap',error=abs(size-28),tolerance=.5)],readability=dict(label=True))\n+        def decide(_):return dict(next_input='label_larger',confidence=1,goal_reached_p=1)\n+        final,result=layout_search.run(spec,evaluate,decide,steps=3,calibration_verified=True)\n+        self.assertEqual(final,spec)\n+        self.assertFalse(any(r['kept'] for r in result['curves']['jev']))\n+        self.assertFalse(any(r['goal_reached'] for r in result['curves']['jev']))\n+        self.assertEqual(len(result['curves']['jev']),len(result['curves']['random']))\n+\n+    def test_budget_reads_batch_and_individual_receipts(self):\n+        import tempfile\n+        from unittest.mock import patch\n+        with tempfile.TemporaryDirectory() as directory:\n+            with patch.object(session,'usage_total',return_value=0):\n+                s=session.Session(directory)\n+                s.record(dict(tool='jev_ask'),dict(answers={},meta=dict(cost_usd=1.4)))\n+                s.record(dict(tool='jev_batch'),dict(results=[],totals=dict(cost_usd=1.6)))\n+                self.assertAlmostEqual(s.spent(),3)\n+                with self.assertRaisesRegex(RuntimeError,'cap'):s.guard(dict(state='no call'))\n+\n+    def test_opaque_source_image_does_not_turn_every_glyph_into_a_rectangle(self):\n+        templates=descriptors.templates()\n+        for name in ('0','1','&'):\n+            self.assertTrue(templates[name].any())\n+            self.assertFalse(templates[name].all())\n+\n+    def test_replay_cannot_reuse_a_judgment_for_changed_evidence(self):\n+        import tempfile\n+        request=dict(state='first frame')\n+        with tempfile.TemporaryDirectory() as directory:\n+            log=Path(directory)/'answers.jsonl'\n+            log.write_text(json.dumps(dict(request_sha256=replay.request_hash(request),answers={'state':'normal'}))+'\\n',encoding='utf-8')\n+            self.assertEqual(replay.resume([request],log),[{'state':'normal'}])\n+            with self.assertRaisesRegex(ValueError,'does not match'):\n+                replay.resume([dict(state='another frame')],log)\n+\n+    def test_missing_bright_ink_does_not_assert_an_occlusion_cause(self):\n+        row=dict(field='down',actual_luma=[19,27,67],preview_luma=[20,80,255],core_delta=255,\n+            placement_delta=None,residual='far',actual_ink=False,preview_ink=True,actual_hue='neutral',preview_hue='neutral')\n+        req=judge.request([row],'plate submits before label')"
+      },
+      {
+        "file": "tests/mod_editor/test_scorebug_replication.py",
+        "file_facts": "test code; CI runs tests/mod_editor/test_*.py files as scripts with a 420 s limit each; shipped in a release allowlist: no; pinned by sha256 digest: no; no for-loops on the added lines.",
+        "diff_facts": "New files under mod_editor/ in this diff: mod_editor/core/nfl2k5_scorebug_teams.py (release allowlist: yes, module_pins: yes). Release allowlists edited in this diff: yes. mod_editor/core/providers.py (module_pins) edited: yes. Pinned closure count test tests/mod_editor/test_provider_integrity.py edited: yes. packaging/requirements-*.txt edited: no; third-party packages already declared there: capstone, numpy, pillow, pyqt5, unicorn (PIL is pillow), so importing them needs no inventory change.",
+        "hunk": "@@ -0,0 +1,117 @@\n[part 3 of 3 of a 117-line hunk]\n+            self.assertEqual(replay.resume([request],log),[{'state':'normal'}])\n+            with self.assertRaisesRegex(ValueError,'does not match'):\n+                replay.resume([dict(state='another frame')],log)\n+\n+    def test_missing_bright_ink_does_not_assert_an_occlusion_cause(self):\n+        row=dict(field='down',actual_luma=[19,27,67],preview_luma=[20,80,255],core_delta=255,\n+            placement_delta=None,residual='far',actual_ink=False,preview_ink=True,actual_hue='neutral',preview_hue='neutral')\n+        req=judge.request([row],'plate submits before label')\n+        self.assertNotIn('actual_luma',req['state']['fields'][0])\n+        self.assertIn('unproved',req['questions']['down']['instructions'])\n+\n+\n+if __name__=='__main__':unittest.main()"
+      }
+    ],
+    "questions": {
+      "ctime_compare": {
+        "type": "noul",
+        "instructions": "Does `hunk` add or change code that compares file timestamps (st_ctime, st_mtime, st_ctime_ns, st_mtime_ns, getmtime, getctime or another st_* time field) taken at different times or from different stat calls, to decide whether a file changed? Count timestamps placed in a cache key, identity or fingerprint tuple that is compared later. Windows gives these fields different meanings.",
+        "criteria": {
+          "true": "an added or changed line puts a stat time field into a comparison, cache key, fingerprint or identity used to detect change",
+          "false": "no stat time field is used for change detection (absent, only printed, or only set with os.utime)"
+        }
+      },
+      "posix_only": {
+        "type": "noul",
+        "instructions": "Does `hunk` add behaviour that works only on Linux/macOS or differs on Windows: file-system path strings split, matched or compared on a literal '/', os.fork, fcntl, signal handlers or SIGALRM/SIGKILL, chmod or executable-bit assumptions, os.getuid, /tmp or /dev paths, POSIX shell commands, or file names that differ only by case?",
+        "criteria": {
+          "true": "an added line relies on one of those behaviours without a platform guard",
+          "false": "no added line relies on POSIX-only behaviour (pathlib joins and os.path calls are portable), or it is guarded by an explicit platform check"
+        }
+      },
+      "pinned_value": {
+        "type": "noul",
+        "instructions": "Does `hunk` replace a pinned expected value: a removed (-) line holds a count literal that a test or gate asserts, a SHA-256 digest, a byte offset or address, a size, or a golden / reference value, and an added (+) line holds a different value in its place?",
+        "criteria": {
+          "true": "an old expected count, digest, offset, size or golden value on a - line is replaced by a different one on a + line",
+          "false": "no expected value is replaced; brand-new code or new tests that only add assertions do not count"
+        }
+      },
+      "slow_test": {
+        "type": "noul",
+        "instructions": "Does `hunk` add or lengthen a test path that could run for minutes: nested loops over a large case matrix or cross product (see the loop facts in `file_facts`), sleeps or polling waits, full disc / ISO / XBE builds or scans, or many repeated heavy calls such as a full prepare/build/read-back per case? CI kills a test file after 420 seconds.",
+        "criteria": {
+          "true": "added test code runs hundreds of heavy cases (each a build, prepare, read-back, compress, fit or render), sleeps, full-disc work, or other heavy repeated calls",
+          "false": "the added code is not a test path, or its loops are small, or the loop body is only cheap assignments or arithmetic (fast even with thousands of iterations)"
+        }
+      },
+      "weakens_safety": {
+        "type": "noul",
+        "instructions": "Does `hunk` widen or weaken a safety check? Safety checks are: validation of files, saves or user input, refusals and raised errors, integrity checks (hashes, signatures, sizes, bounds), path and permission guards, allowlists, and test assertions. Weakening means removing one, loosening its condition or tolerance, adding a skip or bypass, or making it accept inputs it used to refuse.",
+        "criteria": {
+          "true": "a safety check of that kind is removed, loosened, skipped or bypassed, or now accepts inputs it used to refuse",
+          "false": "safety checks are unchanged, added or stricter; feature conditions, performance paths, search heuristics, cache bookkeeping and early returns that only skip work are not safety checks"
+        }
+      },
+      "inventory_mismatch": {
+        "type": "noul",
+        "instructions": "Does `hunk` touch the release inventory or pins without the matching change: it adds or imports a module that `diff_facts` marks MISSING from the release allowlist or not in module_pins, or it edits an allowlist, requirements, module_pins entry or pinned count while `diff_facts` says the counterpart was not edited?",
+        "criteria": {
+          "true": "the hunk adds, imports or edits something whose allowlist entry, pin or count `diff_facts` marks MISSING or not edited",
+          "false": "`diff_facts` shows every matching change present, or the hunk touches no inventory, pin or new module"
+        }
+      }
+    }
+  },
+  "response": {
+    "results": [
+      {
+        "index": 0,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.27
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.1
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.07
+          }
+        }
+      },
+      {
+        "index": 1,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.28
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.05
+          }
+        }
+      },
+      {
+        "index": 2,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.11
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.07
+          }
+        }
+      },
+      {
+        "index": 3,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.07
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.32
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.05
+          }
+        }
+      },
+      {
+        "index": 4,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.22
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.05
+          }
+        }
+      },
+      {
+        "index": 5,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.06
+          }
+        }
+      },
+      {
+        "index": 6,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.07
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.12
+          }
+        }
+      },
+      {
+        "index": 7,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.12
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.09
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.05
+          }
+        }
+      },
+      {
+        "index": 8,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.8
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.41
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.06
+          }
+        }
+      },
+      {
+        "index": 9,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.9
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.3
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.09
+          }
+        }
+      },
+      {
+        "index": 10,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.07
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.07
+          }
+        }
+      },
+      {
+        "index": 11,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.36
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.22
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.05
+          }
+        }
+      },
+      {
+        "index": 12,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.91
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.73
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.06
+          }
+        }
+      },
+      {
+        "index": 13,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.95
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.13
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.04
+          }
+        }
+      },
+      {
+        "index": 14,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.14
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.08
+          }
+        }
+      },
+      {
+        "index": 15,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.97
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.26
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.09
+          }
+        }
+      },
+      {
+        "index": 16,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.11
+          }
+        }
+      },
+      {
+        "index": 17,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.3
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.1
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.13
+          }
+        }
+      },
+      {
+        "index": 18,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.63
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.09
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.13
+          }
+        }
+      },
+      {
+        "index": 19,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.07
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.11
+          }
+        }
+      },
+      {
+        "index": 20,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.07
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.09
+          }
+        }
+      },
+      {
+        "index": 21,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.12
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.14
+          }
+        }
+      },
+      {
+        "index": 22,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.11
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.09
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.09
+          }
+        }
+      },
+      {
+        "index": 23,
+        "answers": {
+          "ctime_compare": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "posix_only": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "pinned_value": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "slow_test": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "weakens_safety": {
+            "type": "noul",
+            "noul": 0.11
+          },
+          "inventory_mismatch": {
+            "type": "noul",
+            "noul": 0.07
+          }
+        }
+      }
+    ],
+    "totals": {
+      "input_tokens": 47959,
+      "output_tokens": 2784,
+      "cost_usd": 0.00201429,
+      "errors": 0,
+      "wall_ms": 611.5
+    }
+  }
+}

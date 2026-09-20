@@ -1,0 +1,37 @@
+[
+  {
+    "file": "tests/mod_editor/test_nfl2k5_scorebug_resources.py",
+    "exit_code": 0,
+    "seconds": 78.49
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py",
+    "exit_code": 0,
+    "seconds": 54.86
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_scorebug_ingame.py",
+    "exit_code": 0,
+    "seconds": 7.48
+  },
+  {
+    "file": "tests/mod_editor/test_provider_integrity.py",
+    "exit_code": 0,
+    "seconds": 10.13
+  },
+  {
+    "file": "tests/mod_editor/test_shipped_tools_are_self_sufficient.py",
+    "exit_code": 0,
+    "seconds": 11.88
+  },
+  {
+    "file": "tests/mod_editor/test_shipped_tools_posix_only.py",
+    "exit_code": 0,
+    "seconds": 11.58
+  },
+  {
+    "file": "tests/mod_editor/test_scorebug_replication.py",
+    "exit_code": 0,
+    "seconds": 0.52
+  }
+]

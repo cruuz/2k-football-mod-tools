@@ -1,0 +1,506 @@
+{
+  "label_box": [
+    293.3377265930176,
+    410.90185546875,
+    346.6661770989105,
+    423.3475341796875
+  ],
+  "draws_after_label": [
+    {
+      "draw": 393,
+      "name": "yscore_buga",
+      "begin_line": 157500,
+      "roles": [
+        "away_score:0",
+        "away_score:1",
+        "away_score:2",
+        "home_score:0",
+        "home_score:1",
+        "home_score:2",
+        "clock:0",
+        "clock:1",
+        "clock:2",
+        "clock:3",
+        "clock:4",
+        "play_clock:0",
+        "play_clock:1",
+        "quarter:0",
+        "quarter:1",
+        "quarter:2"
+      ],
+      "texture": {
+        "name": "yscore_buga",
+        "dimensions": [
+          256,
+          512
+        ],
+        "offset": "0x1e55480",
+        "palette": "0x1e75480",
+        "indices_sha256": "964f45b1cd7f9c3516f29307c4ad456bed1b25e51f0c3fc54f2ef658571c23dd",
+        "palette_sha256": "c941f988309430391a56af7603a22996eebc73062f0e580bcdc41c6e77eada3f"
+      },
+      "blend": {
+        "0x0304": "0x1",
+        "0x0344": "0x302",
+        "0x0348": "0x303",
+        "0x0350": "0x8006"
+      },
+      "quads": [
+        {
+          "first_vertex": 52,
+          "box": [
+            245.34223556518555,
+            416.2979736328125,
+            258.67671966552734,
+            438.27978515625
+          ],
+          "overlap_area": 0.0,
+          "diffuse": [
+            "0xfffdfdfd",
+            "0xfffdfdfd",
+            "0xfffdfdfd",
+            "0xfffdfdfd"
+          ],
+          "atlas_box": [
+            183,
+            170,
+            195,
+            191
+          ]
+        },
+        {
+          "first_vertex": 56,
+          "box": [
+            319.99639500106815,
+            424.001220703125,
+            319.99639500106815,
+            424.001220703125
+          ],
+          "overlap_area": 0,
+          "diffuse": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0"
+          ],
+          "atlas_box": [
+            128,
+            256,
+            128,
+            256
+          ]
+        },
+        {
+          "first_vertex": 60,
+          "box": [
+            319.99639500106815,
+            424.001220703125,
+            319.99639500106815,
+            424.001220703125
+          ],
+          "overlap_area": 0,
+          "diffuse": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0"
+          ],
+          "atlas_box": [
+            128,
+            256,
+            128,
+            256
+          ]
+        },
+        {
+          "first_vertex": 64,
+          "box": [
+            380.00881221961123,
+            416.2979736328125,
+            393.34370326853235,
+            438.27978515625
+          ],
+          "overlap_area": 0.0,
+          "diffuse": [
+            "0xfffdfdfd",
+            "0xfffdfdfd",
+            "0xfffdfdfd",
+            "0xfffdfdfd"
+          ],
+          "atlas_box": [
+            127,
+            160,
+            139,
+            181
+          ]
+        },
+        {
+          "first_vertex": 68,
+          "box": [
+            319.99639500106815,
+            424.001220703125,
+            319.99639500106815,
+            424.001220703125
+          ],
+          "overlap_area": 0,
+          "diffuse": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0"
+          ],
+          "atlas_box": [
+            128,
+            256,
+            128,
+            256
+          ]
+        },
+        {
+          "first_vertex": 72,
+          "box": [
+            319.99639500106815,
+            424.001220703125,
+            319.99639500106815,
+            424.001220703125
+          ],
+          "overlap_area": 0,
+          "diffuse": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0"
+          ],
+          "atlas_box": [
+            128,
+            256,
+            128,
+            256
+          ]
+        },
+        {
+          "first_vertex": 76,
+          "box": [
+            306.661503952147,
+            433.306640625,
+            314.318521683401,
+            444.509033203125
+          ],
+          "overlap_area": 0.0,
+          "diffuse": [
+            "0xff000000",
+            "0xff000000",
+            "0xff000000",
+            "0xff000000"
+          ],
+          "atlas_box": [
+            71,
+            200,
+            76,
+            211
+          ]
+        },
+        {
+          "first_vertex": 80,
+          "box": [
+            314.9890514847255,
+            434.9600830078125,
+            316.65456099124117,
+            442.4326171875
+          ],
+          "overlap_area": 0.0,
+          "diffuse": [
+            "0xff000000",
+            "0xff000000",
+            "0xff000000",
+            "0xff000000"
+          ],
+          "atlas_box": [
+            246,
+            86,
+            246,
+            93
+          ]
+        },
+        {
+          "first_vertex": 84,
+          "box": [
+            317.3250907925657,
+            433.306640625,
+            324.99292352061525,
+            444.509033203125
+          ],
+          "overlap_area": 0.0,
+          "diffuse": [
+            "0xff000000",
+            "0xff000000",
+            "0xff000000",
+            "0xff000000"
+          ],
+          "atlas_box": [
+            248,
+            60,
+            253,
+            71
+          ]
+        },
+        {
+          "first_vertex": 88,
+          "box": [
+            325.66345332193976,
+            433.306640625,
+            333.33128604998933,
+            444.509033203125
+          ],
+          "overlap_area": 0.0,
+          "diffuse": [
+            "0xff000000",
+            "0xff000000",
+            "0xff000000",
+            "0xff000000"
+          ],
+          "atlas_box": [
+            248,
+            60,
+            253,
+            71
+          ]
+        },
+        {
+          "first_vertex": 92,
+          "box": [
+            319.99639500106815,
+            424.001220703125,
+            319.99639500106815,
+            424.001220703125
+          ],
+          "overlap_area": 0,
+          "diffuse": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0"
+          ],
+          "atlas_box": [
+            128,
+            256,
+            128,
+            256
+          ]
+        },
+        {
+          "first_vertex": 96,
+          "box": [
+            342.5024033326212,
+            433.306640625,
+            349.49970625934634,
+            444.0860595703125
+          ],
+          "overlap_area": 0.0,
+          "diffuse": [
+            "0xffffffff",
+            "0xffffffff",
+            "0xffffffff",
+            "0xffffffff"
+          ],
+          "atlas_box": [
+            55,
+            201,
+            62,
+            211
+          ]
+        },
+        {
+          "first_vertex": 100,
+          "box": [
+            350.1702360606708,
+            433.306640625,
+            357.16753898739586,
+            444.0860595703125
+          ],
+          "overlap_area": 0,
+          "diffuse": [
+            "0xffffffff",
+            "0xffffffff",
+            "0xffffffff",
+            "0xffffffff"
+          ],
+          "atlas_box": [
+            137,
+            197,
+            144,
+            207
+          ]
+        },
+        {
+          "first_vertex": 104,
+          "box": [
+            282.16617584228516,
+            433.306640625,
+            289.1632652282715,
+            444.0860595703125
+          ],
+          "overlap_area": 0,
+          "diffuse": [
+            "0xff1e1e1e",
+            "0xff1e1e1e",
+            "0xff1e1e1e",
+            "0xff1e1e1e"
+          ],
+          "atlas_box": [
+            55,
+            201,
+            62,
+            211
+          ]
+        },
+        {
+          "first_vertex": 108,
+          "box": [
+            289.8337745666504,
+            433.306640625,
+            299.83734130859375,
+            440.7791748046875
+          ],
+          "overlap_area": 0.0,
+          "diffuse": [
+            "0xff1e1e1e",
+            "0xff1e1e1e",
+            "0xff1e1e1e",
+            "0xff1e1e1e"
+          ],
+          "atlas_box": [
+            164,
+            197,
+            174,
+            204
+          ]
+        },
+        {
+          "first_vertex": 112,
+          "box": [
+            319.99639500106815,
+            424.001220703125,
+            319.99639500106815,
+            424.001220703125
+          ],
+          "overlap_area": 0,
+          "diffuse": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0"
+          ],
+          "atlas_box": [
+            128,
+            256,
+            128,
+            256
+          ]
+        }
+      ]
+    },
+    {
+      "draw": 394,
+      "name": "zscore_buga",
+      "begin_line": 157511,
+      "roles": [
+        "away_logo"
+      ],
+      "texture": {
+        "name": "zscore_buga",
+        "dimensions": [
+          64,
+          64
+        ],
+        "offset": "0x1e50080",
+        "palette": "0x1e51080",
+        "indices_sha256": "a35cbf6177f92e0b1a0c5d37fe7ce98d956739eb598c4b7cd12110bcd799a882",
+        "palette_sha256": "e1f2752cd2d83c4802c773b5543f79f354d0d1c8a2988267eedc75bd5176dc6d"
+      },
+      "blend": {
+        "0x0304": "0x1",
+        "0x0344": "0x302",
+        "0x0348": "0x303",
+        "0x0350": "0x8006"
+      },
+      "quads": [
+        {
+          "first_vertex": 40,
+          "box": [
+            152.00084686279297,
+            406.7618408203125,
+            212.99556732177734,
+            453.2120361328125
+          ],
+          "overlap_area": 0.0,
+          "diffuse": [
+            "0xffffffff",
+            "0xffffffff",
+            "0xffffffff",
+            "0xffffffff"
+          ],
+          "atlas_box": [
+            0,
+            0,
+            64,
+            64
+          ]
+        }
+      ]
+    },
+    {
+      "draw": 395,
+      "name": "zz_ESPN_bug1",
+      "begin_line": 157522,
+      "roles": [
+        "hang time"
+      ],
+      "texture": {
+        "name": "zz_ESPN_bug1",
+        "dimensions": [
+          256,
+          512
+        ],
+        "offset": "0x1e55480",
+        "palette": "0x1e75480",
+        "indices_sha256": "964f45b1cd7f9c3516f29307c4ad456bed1b25e51f0c3fc54f2ef658571c23dd",
+        "palette_sha256": "c941f988309430391a56af7603a22996eebc73062f0e580bcdc41c6e77eada3f"
+      },
+      "blend": {
+        "0x0304": "0x1",
+        "0x0344": "0x302",
+        "0x0348": "0x303",
+        "0x0350": "0x8006"
+      },
+      "quads": [
+        {
+          "first_vertex": 184,
+          "box": [
+            274.9960517883301,
+            408.825439453125,
+            364.3378818628498,
+            425.4239501953125
+          ],
+          "overlap_area": 663.7087611484758,
+          "diffuse": [
+            "0xffffffff",
+            "0xffffffff",
+            "0xffffffff",
+            "0xffffffff"
+          ],
+          "atlas_box": [
+            249,
+            90,
+            251,
+            92
+          ]
+        }
+      ]
+    }
+  ],
+  "overlapping_draws": [
+    395
+  ],
+  "provenance": "All three later draws in supplied HUD inventory, not a complete same-frame history."
+}

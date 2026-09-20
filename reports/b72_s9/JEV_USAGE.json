@@ -1,0 +1,11 @@
+{
+  "cost_usd": 0.05185558,
+  "cap_usd": 3.0,
+  "mcp_batches": 41,
+  "batch_states": 966,
+  "status_pings": 1,
+  "errors": 0,
+  "input_tokens": 1234656,
+  "source_grammar_previous_job_cost_usd": 1.4173,
+  "source_grammar_cost_included": false
+}

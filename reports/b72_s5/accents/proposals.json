@@ -1,0 +1,254 @@
+{
+  "SF": {
+    "wing": "#C44C4C",
+    "rim": "#C44C4C",
+    "plate": "#C44C4C",
+    "wash": "#C44C4C"
+  },
+  "CHI": {
+    "wing": "#545C6A",
+    "rim": "#545C6A",
+    "plate": "#545C6A",
+    "wash": "#545C6A"
+  },
+  "BUF": {
+    "wing": "#4C70AF",
+    "rim": "#4C70AF",
+    "plate": "#4C70AF",
+    "wash": "#4C70AF"
+  },
+  "CLE": {
+    "wing": "#6F614C",
+    "rim": "#6F614C",
+    "plate": "#6F614C",
+    "wash": "#6F614C"
+  },
+  "TB": {
+    "wing": "#B43C4F",
+    "rim": "#B43C4F",
+    "plate": "#B43C4F",
+    "wash": "#B43C4F"
+  },
+  "ARI": {
+    "wing": "#A7445C",
+    "rim": "#A7445C",
+    "plate": "#A7445C",
+    "wash": "#A7445C"
+  },
+  "KC": {
+    "wing": "#E31837",
+    "rim": "#E31837",
+    "plate": "#E31837",
+    "wash": "#E31837"
+  },
+  "IND": {
+    "wing": "#4D7096",
+    "rim": "#4D7096",
+    "plate": "#4D7096",
+    "wash": "#4D7096"
+  },
+  "DAL": {
+    "wing": "#4C647C",
+    "rim": "#4C647C",
+    "plate": "#4C647C",
+    "wash": "#4C647C"
+  },
+  "MIA": {
+    "wing": "#006A71",
+    "rim": "#006A71",
+    "plate": "#006A71",
+    "wash": "#006A71"
+  },
+  "PHI": {
+    "wing": "#26636B",
+    "rim": "#26636B",
+    "plate": "#26636B",
+    "wash": "#26636B"
+  },
+  "ATL": {
+    "wing": "#B43C4F",
+    "rim": "#B43C4F",
+    "plate": "#B43C4F",
+    "wash": "#B43C4F"
+  },
+  "NYG": {
+    "wing": "#546493",
+    "rim": "#546493",
+    "plate": "#546493",
+    "wash": "#546493"
+  },
+  "JAX": {
+    "wing": "#267E8C",
+    "rim": "#267E8C",
+    "plate": "#267E8C",
+    "wash": "#267E8C"
+  },
+  "NYJ": {
+    "wing": "#35705D",
+    "rim": "#35705D",
+    "plate": "#35705D",
+    "wash": "#35705D"
+  },
+  "DET": {
+    "wing": "#0076B6",
+    "rim": "#0076B6",
+    "plate": "#0076B6",
+    "wash": "#0076B6"
+  },
+  "GB": {
+    "wing": "#63736F",
+    "rim": "#63736F",
+    "plate": "#63736F",
+    "wash": "#63736F"
+  },
+  "NE": {
+    "wing": "#4C647C",
+    "rim": "#4C647C",
+    "plate": "#4C647C",
+    "wash": "#4C647C"
+  },
+  "LAR": {
+    "wing": "#4C72B4",
+    "rim": "#4C72B4",
+    "plate": "#4C72B4",
+    "wash": "#4C72B4"
+  },
+  "BAL": {
+    "wing": "#665A8F",
+    "rim": "#665A8F",
+    "plate": "#665A8F",
+    "wash": "#665A8F"
+  },
+  "WAS": {
+    "wing": "#8C5A5A",
+    "rim": "#8C5A5A",
+    "plate": "#8C5A5A",
+    "wash": "#8C5A5A"
+  },
+  "SEA": {
+    "wing": "#4C647C",
+    "rim": "#4C647C",
+    "plate": "#4C647C",
+    "wash": "#4C647C"
+  },
+  "PIT": {
+    "wing": "#4C4C4C",
+    "rim": "#4C4C4C",
+    "plate": "#4C4C4C",
+    "wash": "#4C4C4C"
+  },
+  "HOU": {
+    "wing": "#4E585D",
+    "rim": "#4E585D",
+    "plate": "#4E585D",
+    "wash": "#4E585D"
+  },
+  "MIN": {
+    "wing": "#8467A8",
+    "rim": "#8467A8",
+    "plate": "#8467A8",
+    "wash": "#8467A8"
+  },
+  "USER1": {
+    "wing": "#6E6E6E",
+    "rim": "#6E6E6E",
+    "plate": "#6E6E6E",
+    "wash": "#6E6E6E"
+  },
+  "USER2": {
+    "wing": "#6E6E6E",
+    "rim": "#6E6E6E",
+    "plate": "#6E6E6E",
+    "wash": "#6E6E6E"
+  },
+  "BRI": {
+    "wing": "#B2587A",
+    "rim": "#B2587A",
+    "plate": "#B2587A",
+    "wash": "#B2587A"
+  },
+  "BRP": {
+    "wing": "#51657B",
+    "rim": "#51657B",
+    "plate": "#51657B",
+    "wash": "#51657B"
+  },
+  "BWG": {
+    "wing": "#51657B",
+    "rim": "#51657B",
+    "plate": "#51657B",
+    "wash": "#51657B"
+  },
+  "CHH": {
+    "wing": "#51657B",
+    "rim": "#51657B",
+    "plate": "#51657B",
+    "wash": "#51657B"
+  },
+  "UDC": {
+    "wing": "#6E6E6E",
+    "rim": "#6E6E6E",
+    "plate": "#6E6E6E",
+    "wash": "#6E6E6E"
+  },
+  "LAL": {
+    "wing": "#6E6E6E",
+    "rim": "#6E6E6E",
+    "plate": "#6E6E6E",
+    "wash": "#6E6E6E"
+  },
+  "CES": {
+    "wing": "#6E6E6E",
+    "rim": "#6E6E6E",
+    "plate": "#6E6E6E",
+    "wash": "#6E6E6E"
+  },
+  "BFM": {
+    "wing": "#6E6E6E",
+    "rim": "#6E6E6E",
+    "plate": "#6E6E6E",
+    "wash": "#6E6E6E"
+  },
+  "LAD": {
+    "wing": "#6E6E6E",
+    "rim": "#6E6E6E",
+    "plate": "#6E6E6E",
+    "wash": "#6E6E6E"
+  },
+  "AMW": {
+    "wing": "#2F7075",
+    "rim": "#2F7075",
+    "plate": "#2F7075",
+    "wash": "#2F7075"
+  },
+  "ANE": {
+    "wing": "#586755",
+    "rim": "#586755",
+    "plate": "#586755",
+    "wash": "#586755"
+  },
+  "ASE": {
+    "wing": "#5567A9",
+    "rim": "#5567A9",
+    "plate": "#5567A9",
+    "wash": "#5567A9"
+  },
+  "AFC": {
+    "wing": "#D33A3B",
+    "rim": "#D33A3B",
+    "plate": "#D33A3B",
+    "wash": "#D33A3B"
+  },
+  "NFC": {
+    "wing": "#5D709F",
+    "rim": "#5D709F",
+    "plate": "#5D709F",
+    "wash": "#5D709F"
+  },
+  "NFL": {
+    "wing": "#5D709F",
+    "rim": "#5D709F",
+    "plate": "#5D709F",
+    "wash": "#5D709F"
+  }
+}

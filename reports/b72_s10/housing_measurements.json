@@ -1,0 +1,324 @@
+{
+  "player_sizes": {
+    "False": [
+      853,
+      640
+    ],
+    "True": [
+      1138,
+      640
+    ]
+  },
+  "bar_width_px": 617,
+  "rows": [
+    {
+      "matchup": "DEN_KC",
+      "aspect": "43",
+      "feature": "wing_colour",
+      "visible_area_px": 5307,
+      "measured_area_px": 12206,
+      "threshold": "24 RGB levels and a 2x2 player-pixel core",
+      "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+      "matchup": "DEN_KC",
+      "aspect": "43",
+      "feature": "logo",
+      "visible_area_px": 1962,
+      "measured_area_px": 15934,
+      "threshold": "155 white-core XOR and a 2x2 player-pixel core",
+      "caveat": "White logo ink only; coloured silhouette also changes the wing ROI."
+    },
+    {
+      "matchup": "DEN_KC",
+      "aspect": "43",
+      "feature": "score",
+      "visible_area_px": 209,
+      "measured_area_px": 5964,
+      "threshold": "155 white-core XOR and a 2x2 player-pixel core",
+      "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+      "matchup": "DEN_KC",
+      "aspect": "43",
+      "feature": "down_capsule",
+      "visible_area_px": 3873,
+      "measured_area_px": 4676,
+      "threshold": "24 RGB levels and a 2x2 player-pixel core",
+      "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+      "matchup": "DEN_KC",
+      "aspect": "43",
+      "feature": "housing_rim",
+      "visible_area_px": 4451,
+      "measured_area_px": 5832,
+      "threshold": "24 RGB levels and a 2x2 player-pixel core",
+      "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+      "matchup": "DEN_KC",
+      "aspect": "43",
+      "feature": "pill",
+      "visible_area_px": 1201,
+      "measured_area_px": 3744,
+      "threshold": "24 RGB levels and a 2x2 player-pixel core",
+      "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+      "matchup": "DEN_KC",
+      "aspect": "169",
+      "feature": "wing_colour",
+      "visible_area_px": 5273,
+      "measured_area_px": 12165,
+      "threshold": "24 RGB levels and a 2x2 player-pixel core",
+      "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+      "matchup": "DEN_KC",
+      "aspect": "169",
+      "feature": "logo",
+      "visible_area_px": 2072,
+      "measured_area_px": 15934,
+      "threshold": "155 white-core XOR and a 2x2 player-pixel core",
+      "caveat": "White logo ink only; coloured silhouette also changes the wing ROI."
+    },
+    {
+      "matchup": "DEN_KC",
+      "aspect": "169",
+      "feature": "score",
+      "visible_area_px": 286,
+      "measured_area_px": 5964,
+      "threshold": "155 white-core XOR and a 2x2 player-pixel core",
+      "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+      "matchup": "DEN_KC",
+      "aspect": "169",
+      "feature": "down_capsule",
+      "visible_area_px": 3883,
+      "measured_area_px": 4676,
+      "threshold": "24 RGB levels and a 2x2 player-pixel core",
+      "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+      "matchup": "DEN_KC",
+      "aspect": "169",
+      "feature": "housing_rim",
+      "visible_area_px": 4450,
+      "measured_area_px": 5832,
+      "threshold": "24 RGB levels and a 2x2 player-pixel core",
+      "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+      "matchup": "DEN_KC",
+      "aspect": "169",
+      "feature": "pill",
+      "visible_area_px": 1278,
+      "measured_area_px": 3744,
+      "threshold": "24 RGB levels and a 2x2 player-pixel core",
+      "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+      "matchup": "LV_HOU",
+      "aspect": "43",
+      "feature": "wing_colour",
+      "visible_area_px": 4335,
+      "measured_area_px": 13144,
+      "threshold": "24 RGB levels and a 2x2 player-pixel core",
+      "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+      "matchup": "LV_HOU",
+      "aspect": "43",
+      "feature": "logo",
+      "visible_area_px": 3587,
+      "measured_area_px": 15934,
+      "threshold": "155 white-core XOR and a 2x2 player-pixel core",
+      "caveat": "White logo ink only; coloured silhouette also changes the wing ROI."
+    },
+    {
+      "matchup": "LV_HOU",
+      "aspect": "43",
+      "feature": "score",
+      "visible_area_px": 181,
+      "measured_area_px": 5964,
+      "threshold": "155 white-core XOR and a 2x2 player-pixel core",
+      "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+      "matchup": "LV_HOU",
+      "aspect": "43",
+      "feature": "down_capsule",
+      "visible_area_px": 2671,
+      "measured_area_px": 4676,
+      "threshold": "24 RGB levels and a 2x2 player-pixel core",
+      "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+      "matchup": "LV_HOU",
+      "aspect": "43",
+      "feature": "housing_rim",
+      "visible_area_px": 4283,
+      "measured_area_px": 5832,
+      "threshold": "24 RGB levels and a 2x2 player-pixel core",
+      "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+      "matchup": "LV_HOU",
+      "aspect": "43",
+      "feature": "pill",
+      "visible_area_px": 1746,
+      "measured_area_px": 3744,
+      "threshold": "24 RGB levels and a 2x2 player-pixel core",
+      "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+      "matchup": "LV_HOU",
+      "aspect": "169",
+      "feature": "wing_colour",
+      "visible_area_px": 4412,
+      "measured_area_px": 13136,
+      "threshold": "24 RGB levels and a 2x2 player-pixel core",
+      "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+      "matchup": "LV_HOU",
+      "aspect": "169",
+      "feature": "logo",
+      "visible_area_px": 3590,
+      "measured_area_px": 15934,
+      "threshold": "155 white-core XOR and a 2x2 player-pixel core",
+      "caveat": "White logo ink only; coloured silhouette also changes the wing ROI."
+    },
+    {
+      "matchup": "LV_HOU",
+      "aspect": "169",
+      "feature": "score",
+      "visible_area_px": 208,
+      "measured_area_px": 5964,
+      "threshold": "155 white-core XOR and a 2x2 player-pixel core",
+      "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+      "matchup": "LV_HOU",
+      "aspect": "169",
+      "feature": "down_capsule",
+      "visible_area_px": 2664,
+      "measured_area_px": 4676,
+      "threshold": "24 RGB levels and a 2x2 player-pixel core",
+      "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+      "matchup": "LV_HOU",
+      "aspect": "169",
+      "feature": "housing_rim",
+      "visible_area_px": 4283,
+      "measured_area_px": 5832,
+      "threshold": "24 RGB levels and a 2x2 player-pixel core",
+      "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+      "matchup": "LV_HOU",
+      "aspect": "169",
+      "feature": "pill",
+      "visible_area_px": 1769,
+      "measured_area_px": 3744,
+      "threshold": "24 RGB levels and a 2x2 player-pixel core",
+      "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    }
+  ],
+  "ranked": [
+    {
+      "feature": "wing_colour",
+      "visible_area_px": 4831.75,
+      "maximum_area_px": 5307,
+      "metric": "mean player pixels across two same-state matchups and both aspects",
+      "rank": 1
+    },
+    {
+      "feature": "housing_rim",
+      "visible_area_px": 4366.75,
+      "maximum_area_px": 4451,
+      "metric": "mean player pixels across two same-state matchups and both aspects",
+      "rank": 2
+    },
+    {
+      "feature": "down_capsule",
+      "visible_area_px": 3272.75,
+      "maximum_area_px": 3883,
+      "metric": "mean player pixels across two same-state matchups and both aspects",
+      "rank": 3
+    },
+    {
+      "feature": "logo",
+      "visible_area_px": 2802.75,
+      "maximum_area_px": 3590,
+      "metric": "mean player pixels across two same-state matchups and both aspects",
+      "rank": 4
+    },
+    {
+      "feature": "pill",
+      "visible_area_px": 1498.5,
+      "maximum_area_px": 1769,
+      "metric": "mean player pixels across two same-state matchups and both aspects",
+      "rank": 5
+    },
+    {
+      "feature": "score",
+      "visible_area_px": 221.0,
+      "maximum_area_px": 286,
+      "metric": "mean player pixels across two same-state matchups and both aspects",
+      "rank": 6
+    }
+  ],
+  "provenance": {
+    "DEN_KC": {
+      "path": "/media/noah/Storage/Broadcast refs/espn-2026-broncos-chiefs-full/frames_1s/s_00724.jpg",
+      "sha256": "6274b8fcc7f644999d1be7aaa74472b2ae865a76d80019cd0a05093c061f932f",
+      "state": {
+        "away": "DEN",
+        "home": "KC",
+        "away_score": 0,
+        "home_score": 0,
+        "clock": 897,
+        "quarter": 1,
+        "play_clock": 40,
+        "down": 1,
+        "distance": 10,
+        "possession": "away",
+        "broadcast": "monday_night"
+      },
+      "bar_bounds": [
+        435,
+        942,
+        1486,
+        1055
+      ]
+    },
+    "LV_HOU": {
+      "path": "/media/noah/Storage/Broadcast refs/espn-2025-raiders-texans/frames/frame_005000.jpg",
+      "sha256": "559562073ef693f73561954f9aba6a826f52d877c261301d2fe4e1fe85d08846",
+      "state": {
+        "away": "LV",
+        "home": "HOU",
+        "away_score": 0,
+        "home_score": 7,
+        "clock": 515,
+        "quarter": 1,
+        "play_clock": 10,
+        "down": 1,
+        "distance": 10,
+        "possession": "away",
+        "broadcast": "play_now"
+      },
+      "bar_bounds": [
+        433,
+        942,
+        1487,
+        1055
+      ]
+    }
+  },
+  "limitation": "Proxy counts overlap between logo and wing and must not be summed. No 4:3 broadcast or WAS-LAC broadcast is supplied."
+}

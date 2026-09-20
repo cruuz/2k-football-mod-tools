@@ -1,0 +1,3490 @@
+[
+  {
+    "team": "ARI",
+    "before": {
+      "team": "ARI",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 1.13,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/ari.png",
+        "sha256": "98340d9f962b6b9b82f305768c700fc5423aee755886abfd18b7da3b76aeff81",
+        "ink_bbox": [
+          1,
+          2,
+          63,
+          61
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.0508474576271187
+      },
+      "transformed_size": [
+        37,
+        72
+      ],
+      "texture_origin": [
+        13,
+        -4
+      ],
+      "source": {
+        "total_ink_pixels": 1997,
+        "retained_ink_pixels": 1944,
+        "total_alpha": 438501,
+        "retained_alpha": 432864,
+        "ink_fraction": 0.9871448411748206,
+        "binary_fraction": 0.9734601902854282
+      },
+      "texture": {
+        "total_ink_pixels": 1352,
+        "retained_ink_pixels": 1333,
+        "total_alpha": 319774,
+        "retained_alpha": 317018,
+        "ink_fraction": 0.9913814131230181,
+        "binary_fraction": 0.9859467455621301
+      },
+      "actual_texture_alpha": 317018,
+      "passed": false
+    },
+    "after": {
+      "team": "ARI",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/ari.png",
+        "sha256": "98340d9f962b6b9b82f305768c700fc5423aee755886abfd18b7da3b76aeff81",
+        "ink_bbox": [
+          1,
+          2,
+          63,
+          61
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.0508474576271187
+      },
+      "transformed_size": [
+        32,
+        62
+      ],
+      "texture_origin": [
+        16,
+        1
+      ],
+      "source": {
+        "total_ink_pixels": 1997,
+        "retained_ink_pixels": 1997,
+        "total_alpha": 438501,
+        "retained_alpha": 438501,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "texture": {
+        "total_ink_pixels": 1016,
+        "retained_ink_pixels": 1016,
+        "total_alpha": 238194,
+        "retained_alpha": 238194,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "actual_texture_alpha": 238194,
+      "passed": true
+    }
+  },
+  {
+    "team": "ATL",
+    "before": {
+      "team": "ATL",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 1.13,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/atl.png",
+        "sha256": "8a3f939fbe6a3e137ed6fae12283203e1e3e0febd0763f6ab0d92dd84d799e98",
+        "ink_bbox": [
+          1,
+          2,
+          63,
+          61
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.0508474576271187
+      },
+      "transformed_size": [
+        37,
+        72
+      ],
+      "texture_origin": [
+        13,
+        -4
+      ],
+      "source": {
+        "total_ink_pixels": 1986,
+        "retained_ink_pixels": 1876,
+        "total_alpha": 429027,
+        "retained_alpha": 414754,
+        "ink_fraction": 0.9667316975388496,
+        "binary_fraction": 0.9446122860020141
+      },
+      "texture": {
+        "total_ink_pixels": 1331,
+        "retained_ink_pixels": 1290,
+        "total_alpha": 312427,
+        "retained_alpha": 305335,
+        "ink_fraction": 0.9773002973494609,
+        "binary_fraction": 0.9691960931630353
+      },
+      "actual_texture_alpha": 305335,
+      "passed": false
+    },
+    "after": {
+      "team": "ATL",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/atl.png",
+        "sha256": "8a3f939fbe6a3e137ed6fae12283203e1e3e0febd0763f6ab0d92dd84d799e98",
+        "ink_bbox": [
+          1,
+          2,
+          63,
+          61
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.0508474576271187
+      },
+      "transformed_size": [
+        32,
+        62
+      ],
+      "texture_origin": [
+        16,
+        1
+      ],
+      "source": {
+        "total_ink_pixels": 1986,
+        "retained_ink_pixels": 1986,
+        "total_alpha": 429027,
+        "retained_alpha": 429027,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "texture": {
+        "total_ink_pixels": 1002,
+        "retained_ink_pixels": 1002,
+        "total_alpha": 233052,
+        "retained_alpha": 233052,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "actual_texture_alpha": 233052,
+      "passed": true
+    }
+  },
+  {
+    "team": "BAL",
+    "before": {
+      "team": "BAL",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 1.02,
+        "height": 1.0,
+        "zoom": 1.07,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/bal.png",
+        "sha256": "c81a544e52b45c0e9853d1d0250d8142229b1f3c74eff409478cf8beb6efe1ff",
+        "ink_bbox": [
+          1,
+          17,
+          63,
+          47
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 2.066666666666667
+      },
+      "transformed_size": [
+        68,
+        62
+      ],
+      "texture_origin": [
+        -2,
+        1
+      ],
+      "source": {
+        "total_ink_pixels": 1180,
+        "retained_ink_pixels": 1149,
+        "total_alpha": 243115,
+        "retained_alpha": 239620,
+        "ink_fraction": 0.9856240873660613,
+        "binary_fraction": 0.9737288135593221
+      },
+      "texture": {
+        "total_ink_pixels": 2386,
+        "retained_ink_pixels": 2346,
+        "total_alpha": 551632,
+        "retained_alpha": 544505,
+        "ink_fraction": 0.987080154885866,
+        "binary_fraction": 0.9832355406538139
+      },
+      "actual_texture_alpha": 544505,
+      "passed": false
+    },
+    "after": {
+      "team": "BAL",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 1.02,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/bal.png",
+        "sha256": "c81a544e52b45c0e9853d1d0250d8142229b1f3c74eff409478cf8beb6efe1ff",
+        "ink_bbox": [
+          1,
+          17,
+          63,
+          47
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 2.066666666666667
+      },
+      "transformed_size": [
+        62,
+        56
+      ],
+      "texture_origin": [
+        1,
+        4
+      ],
+      "source": {
+        "total_ink_pixels": 1180,
+        "retained_ink_pixels": 1180,
+        "total_alpha": 243115,
+        "retained_alpha": 243115,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "texture": {
+        "total_ink_pixels": 1957,
+        "retained_ink_pixels": 1957,
+        "total_alpha": 454276,
+        "retained_alpha": 454276,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "actual_texture_alpha": 454276,
+      "passed": true
+    }
+  },
+  {
+    "team": "BUF",
+    "before": {
+      "team": "BUF",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 1.02,
+        "height": 1.0,
+        "zoom": 1.07,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/buf.png",
+        "sha256": "53a67a14dc2351e88c22745105ea742ca6ebc49d5e41ecd2f67d0c0db26299a1",
+        "ink_bbox": [
+          1,
+          11,
+          63,
+          52
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.5121951219512195
+      },
+      "transformed_size": [
+        57,
+        68
+      ],
+      "texture_origin": [
+        3,
+        -2
+      ],
+      "source": {
+        "total_ink_pixels": 1552,
+        "retained_ink_pixels": 1505,
+        "total_alpha": 325505,
+        "retained_alpha": 320893,
+        "ink_fraction": 0.9858312468318459,
+        "binary_fraction": 0.9697164948453608
+      },
+      "texture": {
+        "total_ink_pixels": 2142,
+        "retained_ink_pixels": 2118,
+        "total_alpha": 496592,
+        "retained_alpha": 493841,
+        "ink_fraction": 0.9944602410026743,
+        "binary_fraction": 0.988795518207283
+      },
+      "actual_texture_alpha": 493841,
+      "passed": false
+    },
+    "after": {
+      "team": "BUF",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 1.02,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/buf.png",
+        "sha256": "53a67a14dc2351e88c22745105ea742ca6ebc49d5e41ecd2f67d0c0db26299a1",
+        "ink_bbox": [
+          1,
+          11,
+          63,
+          52
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.5121951219512195
+      },
+      "transformed_size": [
+        52,
+        62
+      ],
+      "texture_origin": [
+        6,
+        1
+      ],
+      "source": {
+        "total_ink_pixels": 1552,
+        "retained_ink_pixels": 1552,
+        "total_alpha": 325505,
+        "retained_alpha": 325505,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "texture": {
+        "total_ink_pixels": 1783,
+        "retained_ink_pixels": 1783,
+        "total_alpha": 412943,
+        "retained_alpha": 412943,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "actual_texture_alpha": 412943,
+      "passed": true
+    }
+  },
+  {
+    "team": "CAR",
+    "before": {
+      "team": "CAR",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 1.02,
+        "height": 1.0,
+        "zoom": 1.07,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/car.png",
+        "sha256": "2353697661c7dc2b118aa6bc056722540d7099ba2c94135981c4d37920f735c6",
+        "ink_bbox": [
+          1,
+          15,
+          63,
+          48
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.878787878787879
+      },
+      "transformed_size": [
+        68,
+        68
+      ],
+      "texture_origin": [
+        -2,
+        -2
+      ],
+      "source": {
+        "total_ink_pixels": 1306,
+        "retained_ink_pixels": 1243,
+        "total_alpha": 275808,
+        "retained_alpha": 270434,
+        "ink_fraction": 0.9805154310244808,
+        "binary_fraction": 0.9517611026033691
+      },
+      "texture": {
+        "total_ink_pixels": 2620,
+        "retained_ink_pixels": 2550,
+        "total_alpha": 621926,
+        "retained_alpha": 609776,
+        "ink_fraction": 0.9804639137132071,
+        "binary_fraction": 0.9732824427480916
+      },
+      "actual_texture_alpha": 609776,
+      "passed": false
+    },
+    "after": {
+      "team": "CAR",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 1.02,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/car.png",
+        "sha256": "2353697661c7dc2b118aa6bc056722540d7099ba2c94135981c4d37920f735c6",
+        "ink_bbox": [
+          1,
+          15,
+          63,
+          48
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.878787878787879
+      },
+      "transformed_size": [
+        62,
+        62
+      ],
+      "texture_origin": [
+        1,
+        1
+      ],
+      "source": {
+        "total_ink_pixels": 1306,
+        "retained_ink_pixels": 1306,
+        "total_alpha": 275808,
+        "retained_alpha": 275808,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "texture": {
+        "total_ink_pixels": 2177,
+        "retained_ink_pixels": 2177,
+        "total_alpha": 517430,
+        "retained_alpha": 517430,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "actual_texture_alpha": 517430,
+      "passed": true
+    }
+  },
+  {
+    "team": "CHI",
+    "before": {
+      "team": "CHI",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 1.13,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/chi.png",
+        "sha256": "de13ce77f15a3aa2886065817db8281bf94f09cd2fb422f65fae4470f6905aca",
+        "ink_bbox": [
+          1,
+          1,
+          63,
+          62
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.0163934426229508
+      },
+      "transformed_size": [
+        36,
+        72
+      ],
+      "texture_origin": [
+        14,
+        -4
+      ],
+      "source": {
+        "total_ink_pixels": 2933,
+        "retained_ink_pixels": 2705,
+        "total_alpha": 677648,
+        "retained_alpha": 635818,
+        "ink_fraction": 0.9382717871225179,
+        "binary_fraction": 0.9222638936242755
+      },
+      "texture": {
+        "total_ink_pixels": 1920,
+        "retained_ink_pixels": 1811,
+        "total_alpha": 464685,
+        "retained_alpha": 442046,
+        "ink_fraction": 0.9512809752843324,
+        "binary_fraction": 0.9432291666666667
+      },
+      "actual_texture_alpha": 442046,
+      "passed": false
+    },
+    "after": {
+      "team": "CHI",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/chi.png",
+        "sha256": "de13ce77f15a3aa2886065817db8281bf94f09cd2fb422f65fae4470f6905aca",
+        "ink_bbox": [
+          1,
+          1,
+          63,
+          62
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.0163934426229508
+      },
+      "transformed_size": [
+        31,
+        62
+      ],
+      "texture_origin": [
+        16,
+        1
+      ],
+      "source": {
+        "total_ink_pixels": 2933,
+        "retained_ink_pixels": 2933,
+        "total_alpha": 677648,
+        "retained_alpha": 677648,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "texture": {
+        "total_ink_pixels": 1426,
+        "retained_ink_pixels": 1426,
+        "total_alpha": 344837,
+        "retained_alpha": 344837,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "actual_texture_alpha": 344837,
+      "passed": true
+    }
+  },
+  {
+    "team": "CIN",
+    "before": {
+      "team": "CIN",
+      "category": "wordmark_or_letters",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 1.13,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/cin.png",
+        "sha256": "b7d435e303762eec0955cf393d67ffdcb1f366e162bb28783de6b187445cf14a",
+        "ink_bbox": [
+          1,
+          10,
+          63,
+          54
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.4090909090909092
+      },
+      "transformed_size": [
+        50,
+        72
+      ],
+      "texture_origin": [
+        7,
+        -4
+      ],
+      "source": {
+        "total_ink_pixels": 2499,
+        "retained_ink_pixels": 2194,
+        "total_alpha": 596906,
+        "retained_alpha": 528057,
+        "ink_fraction": 0.8846568806478742,
+        "binary_fraction": 0.8779511804721889
+      },
+      "texture": {
+        "total_ink_pixels": 3204,
+        "retained_ink_pixels": 2899,
+        "total_alpha": 788659,
+        "retained_alpha": 715520,
+        "ink_fraction": 0.9072615667861522,
+        "binary_fraction": 0.9048064918851436
+      },
+      "actual_texture_alpha": 715520,
+      "passed": false
+    },
+    "after": {
+      "team": "CIN",
+      "category": "wordmark_or_letters",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/cin.png",
+        "sha256": "b7d435e303762eec0955cf393d67ffdcb1f366e162bb28783de6b187445cf14a",
+        "ink_bbox": [
+          1,
+          10,
+          63,
+          54
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.4090909090909092
+      },
+      "transformed_size": [
+        43,
+        62
+      ],
+      "texture_origin": [
+        10,
+        1
+      ],
+      "source": {
+        "total_ink_pixels": 2499,
+        "retained_ink_pixels": 2499,
+        "total_alpha": 596906,
+        "retained_alpha": 596906,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "texture": {
+        "total_ink_pixels": 2355,
+        "retained_ink_pixels": 2355,
+        "total_alpha": 583802,
+        "retained_alpha": 583802,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "actual_texture_alpha": 583802,
+      "passed": true
+    }
+  },
+  {
+    "team": "DAL",
+    "before": {
+      "team": "DAL",
+      "category": "symmetric_enclosure_or_symbol",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 1.13,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/dal.png",
+        "sha256": "1894dcc15592bdfce22666e0d44ec2cdbe098dee1c1fb33eac46ae903d635f0e",
+        "ink_bbox": [
+          1,
+          2,
+          63,
+          61
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.0508474576271187
+      },
+      "transformed_size": [
+        37,
+        72
+      ],
+      "texture_origin": [
+        13,
+        -4
+      ],
+      "source": {
+        "total_ink_pixels": 1541,
+        "retained_ink_pixels": 1474,
+        "total_alpha": 304314,
+        "retained_alpha": 298636,
+        "ink_fraction": 0.9813416405423345,
+        "binary_fraction": 0.9565217391304348
+      },
+      "texture": {
+        "total_ink_pixels": 993,
+        "retained_ink_pixels": 970,
+        "total_alpha": 221698,
+        "retained_alpha": 218952,
+        "ink_fraction": 0.9876137809091647,
+        "binary_fraction": 0.9768378650553877
+      },
+      "actual_texture_alpha": 218952,
+      "passed": false
+    },
+    "after": {
+      "team": "DAL",
+      "category": "symmetric_enclosure_or_symbol",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/dal.png",
+        "sha256": "1894dcc15592bdfce22666e0d44ec2cdbe098dee1c1fb33eac46ae903d635f0e",
+        "ink_bbox": [
+          1,
+          2,
+          63,
+          61
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.0508474576271187
+      },
+      "transformed_size": [
+        32,
+        62
+      ],
+      "texture_origin": [
+        16,
+        1
+      ],
+      "source": {
+        "total_ink_pixels": 1541,
+        "retained_ink_pixels": 1541,
+        "total_alpha": 304314,
+        "retained_alpha": 304314,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "texture": {
+        "total_ink_pixels": 750,
+        "retained_ink_pixels": 750,
+        "total_alpha": 165132,
+        "retained_alpha": 165132,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "actual_texture_alpha": 165132,
+      "passed": true
+    }
+  },
+  {
+    "team": "DEN",
+    "before": {
+      "team": "DEN",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.86,
+        "height": 1.0,
+        "zoom": 1.0,
+        "shift_x": 0.0,
+        "shift_y": 0.045
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/den.png",
+        "sha256": "e96da6fee457ab2671c282143a8e5e98d7bdbd34bb79224e8e4ff746df0571d9",
+        "ink_bbox": [
+          1,
+          13,
+          63,
+          50
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.6756756756756757
+      },
+      "transformed_size": [
+        49,
+        64
+      ],
+      "texture_origin": [
+        7,
+        3
+      ],
+      "source": {
+        "total_ink_pixels": 1299,
+        "retained_ink_pixels": 1291,
+        "total_alpha": 268567,
+        "retained_alpha": 267950,
+        "ink_fraction": 0.9977026216921662,
+        "binary_fraction": 0.993841416474211
+      },
+      "texture": {
+        "total_ink_pixels": 1615,
+        "retained_ink_pixels": 1606,
+        "total_alpha": 367497,
+        "retained_alpha": 366769,
+        "ink_fraction": 0.9980190314478757,
+        "binary_fraction": 0.9944272445820433
+      },
+      "actual_texture_alpha": 366769,
+      "passed": false
+    },
+    "after": {
+      "team": "DEN",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.86,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/den.png",
+        "sha256": "e96da6fee457ab2671c282143a8e5e98d7bdbd34bb79224e8e4ff746df0571d9",
+        "ink_bbox": [
+          1,
+          13,
+          63,
+          50
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.6756756756756757
+      },
+      "transformed_size": [
+        48,
+        62
+      ],
+      "texture_origin": [
+        8,
+        1
+      ],
+      "source": {
+        "total_ink_pixels": 1299,
+        "retained_ink_pixels": 1299,
+        "total_alpha": 268567,
+        "retained_alpha": 268567,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "texture": {
+        "total_ink_pixels": 1522,
+        "retained_ink_pixels": 1522,
+        "total_alpha": 348665,
+        "retained_alpha": 348665,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "actual_texture_alpha": 348665,
+      "passed": true
+    }
+  },
+  {
+    "team": "DET",
+    "before": {
+      "team": "DET",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 1.13,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/det.png",
+        "sha256": "0fc5ae3f560595dd7dd8ceaacd9d8d142fe70b9a20738faad3ad3c9de5463e3c",
+        "ink_bbox": [
+          1,
+          8,
+          63,
+          55
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.3191489361702127
+      },
+      "transformed_size": [
+        47,
+        72
+      ],
+      "texture_origin": [
+        8,
+        -4
+      ],
+      "source": {
+        "total_ink_pixels": 1528,
+        "retained_ink_pixels": 1472,
+        "total_alpha": 311179,
+        "retained_alpha": 304203,
+        "ink_fraction": 0.9775820347774111,
+        "binary_fraction": 0.9633507853403142
+      },
+      "texture": {
+        "total_ink_pixels": 1584,
+        "retained_ink_pixels": 1545,
+        "total_alpha": 361563,
+        "retained_alpha": 355129,
+        "ink_fraction": 0.9822050375729817,
+        "binary_fraction": 0.9753787878787878
+      },
+      "actual_texture_alpha": 355129,
+      "passed": false
+    },
+    "after": {
+      "team": "DET",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/det.png",
+        "sha256": "0fc5ae3f560595dd7dd8ceaacd9d8d142fe70b9a20738faad3ad3c9de5463e3c",
+        "ink_bbox": [
+          1,
+          8,
+          63,
+          55
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.3191489361702127
+      },
+      "transformed_size": [
+        41,
+        62
+      ],
+      "texture_origin": [
+        11,
+        1
+      ],
+      "source": {
+        "total_ink_pixels": 1528,
+        "retained_ink_pixels": 1528,
+        "total_alpha": 311179,
+        "retained_alpha": 311179,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "texture": {
+        "total_ink_pixels": 1196,
+        "retained_ink_pixels": 1196,
+        "total_alpha": 271698,
+        "retained_alpha": 271698,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "actual_texture_alpha": 271698,
+      "passed": true
+    }
+  },
+  {
+    "team": "GB",
+    "before": {
+      "team": "GB",
+      "category": "wordmark_or_letters",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 1.02,
+        "height": 1.0,
+        "zoom": 1.07,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/gb.png",
+        "sha256": "5694def26bc90c348ea5743c08999080ced5f625efafbf862cf3affbed9e0ab0",
+        "ink_bbox": [
+          1,
+          12,
+          63,
+          52
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.55
+      },
+      "transformed_size": [
+        58,
+        68
+      ],
+      "texture_origin": [
+        3,
+        -2
+      ],
+      "source": {
+        "total_ink_pixels": 2095,
+        "retained_ink_pixels": 1983,
+        "total_alpha": 491315,
+        "retained_alpha": 474161,
+        "ink_fraction": 0.9650855357560831,
+        "binary_fraction": 0.9465393794749404
+      },
+      "texture": {
+        "total_ink_pixels": 3195,
+        "retained_ink_pixels": 3119,
+        "total_alpha": 783256,
+        "retained_alpha": 770080,
+        "ink_fraction": 0.9831779137344623,
+        "binary_fraction": 0.9762128325508607
+      },
+      "actual_texture_alpha": 770080,
+      "passed": false
+    },
+    "after": {
+      "team": "GB",
+      "category": "wordmark_or_letters",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 1.02,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/gb.png",
+        "sha256": "5694def26bc90c348ea5743c08999080ced5f625efafbf862cf3affbed9e0ab0",
+        "ink_bbox": [
+          1,
+          12,
+          63,
+          52
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.55
+      },
+      "transformed_size": [
+        53,
+        62
+      ],
+      "texture_origin": [
+        5,
+        1
+      ],
+      "source": {
+        "total_ink_pixels": 2095,
+        "retained_ink_pixels": 2095,
+        "total_alpha": 491315,
+        "retained_alpha": 491315,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "texture": {
+        "total_ink_pixels": 2666,
+        "retained_ink_pixels": 2666,
+        "total_alpha": 652602,
+        "retained_alpha": 652602,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "actual_texture_alpha": 652602,
+      "passed": true
+    }
+  },
+  {
+    "team": "IND",
+    "before": {
+      "team": "IND",
+      "category": "symmetric_enclosure_or_symbol",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 1.13,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/ind.png",
+        "sha256": "88a758c61588a429a0883d05dcfbe3f6f9696e5db99628dcd4228a3ee2db17d8",
+        "ink_bbox": [
+          2,
+          1,
+          61,
+          63
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 0.9516129032258065
+      },
+      "transformed_size": [
+        34,
+        72
+      ],
+      "texture_origin": [
+        15,
+        -4
+      ],
+      "source": {
+        "total_ink_pixels": 2104,
+        "retained_ink_pixels": 1875,
+        "total_alpha": 436674,
+        "retained_alpha": 393315,
+        "ink_fraction": 0.9007062476813367,
+        "binary_fraction": 0.8911596958174905
+      },
+      "texture": {
+        "total_ink_pixels": 1292,
+        "retained_ink_pixels": 1178,
+        "total_alpha": 293867,
+        "retained_alpha": 269938,
+        "ink_fraction": 0.9185720070644203,
+        "binary_fraction": 0.9117647058823529
+      },
+      "actual_texture_alpha": 269938,
+      "passed": false
+    },
+    "after": {
+      "team": "IND",
+      "category": "symmetric_enclosure_or_symbol",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/ind.png",
+        "sha256": "88a758c61588a429a0883d05dcfbe3f6f9696e5db99628dcd4228a3ee2db17d8",
+        "ink_bbox": [
+          2,
+          1,
+          61,
+          63
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 0.9516129032258065
+      },
+      "transformed_size": [
+        29,
+        62
+      ],
+      "texture_origin": [
+        17,
+        1
+      ],
+      "source": {
+        "total_ink_pixels": 2104,
+        "retained_ink_pixels": 2104,
+        "total_alpha": 436674,
+        "retained_alpha": 436674,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "texture": {
+        "total_ink_pixels": 962,
+        "retained_ink_pixels": 962,
+        "total_alpha": 216100,
+        "retained_alpha": 216100,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "actual_texture_alpha": 216100,
+      "passed": true
+    }
+  },
+  {
+    "team": "JAX",
+    "before": {
+      "team": "JAX",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 1.13,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/jax.png",
+        "sha256": "dfd47e6d7bd1cf26804a7a7bad88ed7d7f36fa0660cb56edbeb89e9219343ffb",
+        "ink_bbox": [
+          1,
+          9,
+          63,
+          55
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.3478260869565217
+      },
+      "transformed_size": [
+        48,
+        72
+      ],
+      "texture_origin": [
+        8,
+        -4
+      ],
+      "source": {
+        "total_ink_pixels": 1966,
+        "retained_ink_pixels": 1818,
+        "total_alpha": 444610,
+        "retained_alpha": 420376,
+        "ink_fraction": 0.9454938035581746,
+        "binary_fraction": 0.9247202441505595
+      },
+      "texture": {
+        "total_ink_pixels": 2245,
+        "retained_ink_pixels": 2130,
+        "total_alpha": 539882,
+        "retained_alpha": 516055,
+        "ink_fraction": 0.9558662818912281,
+        "binary_fraction": 0.9487750556792873
+      },
+      "actual_texture_alpha": 516055,
+      "passed": false
+    },
+    "after": {
+      "team": "JAX",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/jax.png",
+        "sha256": "dfd47e6d7bd1cf26804a7a7bad88ed7d7f36fa0660cb56edbeb89e9219343ffb",
+        "ink_bbox": [
+          1,
+          9,
+          63,
+          55
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.3478260869565217
+      },
+      "transformed_size": [
+        41,
+        62
+      ],
+      "texture_origin": [
+        11,
+        1
+      ],
+      "source": {
+        "total_ink_pixels": 1966,
+        "retained_ink_pixels": 1966,
+        "total_alpha": 444610,
+        "retained_alpha": 444610,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "texture": {
+        "total_ink_pixels": 1655,
+        "retained_ink_pixels": 1655,
+        "total_alpha": 397148,
+        "retained_alpha": 397148,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "actual_texture_alpha": 397148,
+      "passed": true
+    }
+  },
+  {
+    "team": "KC",
+    "before": {
+      "team": "KC",
+      "category": "wordmark_or_letters",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.9,
+        "height": 1.0,
+        "zoom": 1.1,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/kc.png",
+        "sha256": "9b21f1910368ddadabb1f51260367fa68e0a689d6dde818a4047bd785da5d2df",
+        "ink_bbox": [
+          1,
+          12,
+          63,
+          52
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.55
+      },
+      "transformed_size": [
+        53,
+        70
+      ],
+      "texture_origin": [
+        5,
+        -3
+      ],
+      "source": {
+        "total_ink_pixels": 1889,
+        "retained_ink_pixels": 1801,
+        "total_alpha": 430891,
+        "retained_alpha": 418986,
+        "ink_fraction": 0.97237120292603,
+        "binary_fraction": 0.953414505029116
+      },
+      "texture": {
+        "total_ink_pixels": 2679,
+        "retained_ink_pixels": 2595,
+        "total_alpha": 644969,
+        "retained_alpha": 631072,
+        "ink_fraction": 0.9784532279846008,
+        "binary_fraction": 0.9686450167973124
+      },
+      "actual_texture_alpha": 631072,
+      "passed": false
+    },
+    "after": {
+      "team": "KC",
+      "category": "wordmark_or_letters",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.9,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.03125,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/kc.png",
+        "sha256": "9b21f1910368ddadabb1f51260367fa68e0a689d6dde818a4047bd785da5d2df",
+        "ink_bbox": [
+          1,
+          12,
+          63,
+          52
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.55
+      },
+      "transformed_size": [
+        47,
+        62
+      ],
+      "texture_origin": [
+        10,
+        1
+      ],
+      "source": {
+        "total_ink_pixels": 1889,
+        "retained_ink_pixels": 1889,
+        "total_alpha": 430891,
+        "retained_alpha": 430891,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "texture": {
+        "total_ink_pixels": 2110,
+        "retained_ink_pixels": 2110,
+        "total_alpha": 506649,
+        "retained_alpha": 506649,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "actual_texture_alpha": 506649,
+      "passed": true
+    }
+  },
+  {
+    "team": "MIA",
+    "before": {
+      "team": "MIA",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 1.13,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/mia.png",
+        "sha256": "d71d99dae086dccd3e623721f1531527bfc4d7e85b7a32823a306fe582e6b444",
+        "ink_bbox": [
+          1,
+          7,
+          63,
+          56
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.2653061224489797
+      },
+      "transformed_size": [
+        45,
+        72
+      ],
+      "texture_origin": [
+        9,
+        -4
+      ],
+      "source": {
+        "total_ink_pixels": 1734,
+        "retained_ink_pixels": 1687,
+        "total_alpha": 334675,
+        "retained_alpha": 333375,
+        "ink_fraction": 0.9961156345708523,
+        "binary_fraction": 0.9728950403690888
+      },
+      "texture": {
+        "total_ink_pixels": 1607,
+        "retained_ink_pixels": 1600,
+        "total_alpha": 356839,
+        "retained_alpha": 356104,
+        "ink_fraction": 0.9979402475626263,
+        "binary_fraction": 0.9956440572495333
+      },
+      "actual_texture_alpha": 356104,
+      "passed": false
+    },
+    "after": {
+      "team": "MIA",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/mia.png",
+        "sha256": "d71d99dae086dccd3e623721f1531527bfc4d7e85b7a32823a306fe582e6b444",
+        "ink_bbox": [
+          1,
+          7,
+          63,
+          56
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.2653061224489797
+      },
+      "transformed_size": [
+        39,
+        62
+      ],
+      "texture_origin": [
+        12,
+        1
+      ],
+      "source": {
+        "total_ink_pixels": 1734,
+        "retained_ink_pixels": 1734,
+        "total_alpha": 334675,
+        "retained_alpha": 334675,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "texture": {
+        "total_ink_pixels": 1220,
+        "retained_ink_pixels": 1220,
+        "total_alpha": 266333,
+        "retained_alpha": 266333,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "actual_texture_alpha": 266333,
+      "passed": true
+    }
+  },
+  {
+    "team": "MIN",
+    "before": {
+      "team": "MIN",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 1.13,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/min.png",
+        "sha256": "bcd9d55666c60b33e2b5f967893c48e2e4c11dc048f9da5a6df7d423de5dd499",
+        "ink_bbox": [
+          7,
+          1,
+          57,
+          63
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 0.8064516129032258
+      },
+      "transformed_size": [
+        29,
+        72
+      ],
+      "texture_origin": [
+        17,
+        -4
+      ],
+      "source": {
+        "total_ink_pixels": 1700,
+        "retained_ink_pixels": 1626,
+        "total_alpha": 342862,
+        "retained_alpha": 334417,
+        "ink_fraction": 0.975369098937765,
+        "binary_fraction": 0.9564705882352941
+      },
+      "texture": {
+        "total_ink_pixels": 1052,
+        "retained_ink_pixels": 1022,
+        "total_alpha": 233955,
+        "retained_alpha": 229276,
+        "ink_fraction": 0.9800004274326259,
+        "binary_fraction": 0.9714828897338403
+      },
+      "actual_texture_alpha": 229276,
+      "passed": false
+    },
+    "after": {
+      "team": "MIN",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/min.png",
+        "sha256": "bcd9d55666c60b33e2b5f967893c48e2e4c11dc048f9da5a6df7d423de5dd499",
+        "ink_bbox": [
+          7,
+          1,
+          57,
+          63
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 0.8064516129032258
+      },
+      "transformed_size": [
+        25,
+        62
+      ],
+      "texture_origin": [
+        19,
+        1
+      ],
+      "source": {
+        "total_ink_pixels": 1700,
+        "retained_ink_pixels": 1700,
+        "total_alpha": 342862,
+        "retained_alpha": 342862,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "texture": {
+        "total_ink_pixels": 780,
+        "retained_ink_pixels": 780,
+        "total_alpha": 173601,
+        "retained_alpha": 173601,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "actual_texture_alpha": 173601,
+      "passed": true
+    }
+  },
+  {
+    "team": "NE",
+    "before": {
+      "team": "NE",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 1.02,
+        "height": 1.0,
+        "zoom": 1.07,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/ne.png",
+        "sha256": "bae2432fbe1cc31df4aad6ef9e2a700e24aec8b2b6f48cd390d0fb069d48385c",
+        "ink_bbox": [
+          1,
+          17,
+          63,
+          47
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 2.066666666666667
+      },
+      "transformed_size": [
+        68,
+        62
+      ],
+      "texture_origin": [
+        -2,
+        1
+      ],
+      "source": {
+        "total_ink_pixels": 1007,
+        "retained_ink_pixels": 977,
+        "total_alpha": 206966,
+        "retained_alpha": 204258,
+        "ink_fraction": 0.9869157252882116,
+        "binary_fraction": 0.9702085402184707
+      },
+      "texture": {
+        "total_ink_pixels": 2031,
+        "retained_ink_pixels": 1998,
+        "total_alpha": 469941,
+        "retained_alpha": 464678,
+        "ink_fraction": 0.9888007217927357,
+        "binary_fraction": 0.983751846381093
+      },
+      "actual_texture_alpha": 464678,
+      "passed": false
+    },
+    "after": {
+      "team": "NE",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 1.02,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/ne.png",
+        "sha256": "bae2432fbe1cc31df4aad6ef9e2a700e24aec8b2b6f48cd390d0fb069d48385c",
+        "ink_bbox": [
+          1,
+          17,
+          63,
+          47
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 2.066666666666667
+      },
+      "transformed_size": [
+        62,
+        56
+      ],
+      "texture_origin": [
+        1,
+        4
+      ],
+      "source": {
+        "total_ink_pixels": 1007,
+        "retained_ink_pixels": 1007,
+        "total_alpha": 206966,
+        "retained_alpha": 206966,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "texture": {
+        "total_ink_pixels": 1655,
+        "retained_ink_pixels": 1655,
+        "total_alpha": 386845,
+        "retained_alpha": 386845,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "actual_texture_alpha": 386845,
+      "passed": true
+    }
+  },
+  {
+    "team": "NO",
+    "before": {
+      "team": "NO",
+      "category": "symmetric_enclosure_or_symbol",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 1.13,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/no.png",
+        "sha256": "a837e8e770cd39c6372799fa6e80828c1ff78a3b51d720891de1a5fa76ecb378",
+        "ink_bbox": [
+          6,
+          1,
+          57,
+          63
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 0.8225806451612904
+      },
+      "transformed_size": [
+        29,
+        72
+      ],
+      "texture_origin": [
+        17,
+        -4
+      ],
+      "source": {
+        "total_ink_pixels": 1670,
+        "retained_ink_pixels": 1621,
+        "total_alpha": 344262,
+        "retained_alpha": 339265,
+        "ink_fraction": 0.9854848923203839,
+        "binary_fraction": 0.9706586826347305
+      },
+      "texture": {
+        "total_ink_pixels": 996,
+        "retained_ink_pixels": 978,
+        "total_alpha": 227541,
+        "retained_alpha": 225122,
+        "ink_fraction": 0.989368948892727,
+        "binary_fraction": 0.9819277108433735
+      },
+      "actual_texture_alpha": 225122,
+      "passed": false
+    },
+    "after": {
+      "team": "NO",
+      "category": "symmetric_enclosure_or_symbol",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/no.png",
+        "sha256": "a837e8e770cd39c6372799fa6e80828c1ff78a3b51d720891de1a5fa76ecb378",
+        "ink_bbox": [
+          6,
+          1,
+          57,
+          63
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 0.8225806451612904
+      },
+      "transformed_size": [
+        25,
+        62
+      ],
+      "texture_origin": [
+        19,
+        1
+      ],
+      "source": {
+        "total_ink_pixels": 1670,
+        "retained_ink_pixels": 1670,
+        "total_alpha": 344262,
+        "retained_alpha": 344262,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "texture": {
+        "total_ink_pixels": 753,
+        "retained_ink_pixels": 753,
+        "total_alpha": 169183,
+        "retained_alpha": 169183,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "actual_texture_alpha": 169183,
+      "passed": true
+    }
+  },
+  {
+    "team": "NYG",
+    "before": {
+      "team": "NYG",
+      "category": "wordmark_or_letters",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 1.13,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/nyg.png",
+        "sha256": "00bf91e61684eae478ff62eb1a57af2526c100120a40aeaf6734b7ce81316fbd",
+        "ink_bbox": [
+          1,
+          8,
+          63,
+          56
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.2916666666666667
+      },
+      "transformed_size": [
+        46,
+        72
+      ],
+      "texture_origin": [
+        9,
+        -4
+      ],
+      "source": {
+        "total_ink_pixels": 2596,
+        "retained_ink_pixels": 2252,
+        "total_alpha": 550517,
+        "retained_alpha": 475688,
+        "ink_fraction": 0.8640750421876163,
+        "binary_fraction": 0.8674884437596302
+      },
+      "texture": {
+        "total_ink_pixels": 2698,
+        "retained_ink_pixels": 2375,
+        "total_alpha": 616418,
+        "retained_alpha": 539518,
+        "ink_fraction": 0.8752469914895412,
+        "binary_fraction": 0.8802816901408451
+      },
+      "actual_texture_alpha": 539518,
+      "passed": false
+    },
+    "after": {
+      "team": "NYG",
+      "category": "wordmark_or_letters",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/nyg.png",
+        "sha256": "00bf91e61684eae478ff62eb1a57af2526c100120a40aeaf6734b7ce81316fbd",
+        "ink_bbox": [
+          1,
+          8,
+          63,
+          56
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.2916666666666667
+      },
+      "transformed_size": [
+        40,
+        62
+      ],
+      "texture_origin": [
+        12,
+        1
+      ],
+      "source": {
+        "total_ink_pixels": 2596,
+        "retained_ink_pixels": 2596,
+        "total_alpha": 550517,
+        "retained_alpha": 550517,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "texture": {
+        "total_ink_pixels": 1955,
+        "retained_ink_pixels": 1955,
+        "total_alpha": 459843,
+        "retained_alpha": 459843,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "actual_texture_alpha": 459843,
+      "passed": true
+    }
+  },
+  {
+    "team": "NYJ",
+    "before": {
+      "team": "NYJ",
+      "category": "wordmark_or_letters",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 1.02,
+        "height": 1.0,
+        "zoom": 1.07,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/nyj.png",
+        "sha256": "febcd9426b57d00d7a63bdbc82b5c662df0a6279a5bd90d5f60c04f6a56cce50",
+        "ink_bbox": [
+          1,
+          22,
+          63,
+          42
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 3.1
+      },
+      "transformed_size": [
+        68,
+        41
+      ],
+      "texture_origin": [
+        -2,
+        11
+      ],
+      "source": {
+        "total_ink_pixels": 756,
+        "retained_ink_pixels": 738,
+        "total_alpha": 129561,
+        "retained_alpha": 128159,
+        "ink_fraction": 0.9891788423985612,
+        "binary_fraction": 0.9761904761904762
+      },
+      "texture": {
+        "total_ink_pixels": 1527,
+        "retained_ink_pixels": 1504,
+        "total_alpha": 295117,
+        "retained_alpha": 292420,
+        "ink_fraction": 0.9908612516391804,
+        "binary_fraction": 0.9849377865094957
+      },
+      "actual_texture_alpha": 292420,
+      "passed": false
+    },
+    "after": {
+      "team": "NYJ",
+      "category": "wordmark_or_letters",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 1.02,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/nyj.png",
+        "sha256": "febcd9426b57d00d7a63bdbc82b5c662df0a6279a5bd90d5f60c04f6a56cce50",
+        "ink_bbox": [
+          1,
+          22,
+          63,
+          42
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 3.1
+      },
+      "transformed_size": [
+        62,
+        38
+      ],
+      "texture_origin": [
+        1,
+        13
+      ],
+      "source": {
+        "total_ink_pixels": 756,
+        "retained_ink_pixels": 756,
+        "total_alpha": 129561,
+        "retained_alpha": 129561,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "texture": {
+        "total_ink_pixels": 1260,
+        "retained_ink_pixels": 1260,
+        "total_alpha": 248206,
+        "retained_alpha": 248206,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "actual_texture_alpha": 248206,
+      "passed": true
+    }
+  },
+  {
+    "team": "LV",
+    "before": {
+      "team": "LV",
+      "category": "wordmark_or_letters",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 1.0,
+        "height": 1.0,
+        "zoom": 1.1,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/lv.png",
+        "sha256": "db2716f33d4e4d6ebe0dc4d9167e897408655c43855ec5e63f1e2f4cd3438c11",
+        "ink_bbox": [
+          2,
+          1,
+          61,
+          63
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 0.9516129032258065
+      },
+      "transformed_size": [
+        36,
+        70
+      ],
+      "texture_origin": [
+        14,
+        -3
+      ],
+      "source": {
+        "total_ink_pixels": 2938,
+        "retained_ink_pixels": 2857,
+        "total_alpha": 689721,
+        "retained_alpha": 679426,
+        "ink_fraction": 0.9850736747177482,
+        "binary_fraction": 0.972430224642614
+      },
+      "texture": {
+        "total_ink_pixels": 1957,
+        "retained_ink_pixels": 1924,
+        "total_alpha": 476429,
+        "retained_alpha": 470757,
+        "ink_fraction": 0.9880947633330465,
+        "binary_fraction": 0.9831374552887072
+      },
+      "actual_texture_alpha": 470757,
+      "passed": false
+    },
+    "after": {
+      "team": "LV",
+      "category": "wordmark_or_letters",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 1.0,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/lv.png",
+        "sha256": "db2716f33d4e4d6ebe0dc4d9167e897408655c43855ec5e63f1e2f4cd3438c11",
+        "ink_bbox": [
+          2,
+          1,
+          61,
+          63
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 0.9516129032258065
+      },
+      "transformed_size": [
+        32,
+        62
+      ],
+      "texture_origin": [
+        16,
+        1
+      ],
+      "source": {
+        "total_ink_pixels": 2938,
+        "retained_ink_pixels": 2938,
+        "total_alpha": 689721,
+        "retained_alpha": 689721,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "texture": {
+        "total_ink_pixels": 1535,
+        "retained_ink_pixels": 1535,
+        "total_alpha": 375222,
+        "retained_alpha": 375222,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "actual_texture_alpha": 375222,
+      "passed": true
+    }
+  },
+  {
+    "team": "PHI",
+    "before": {
+      "team": "PHI",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 1.13,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/phi.png",
+        "sha256": "02afc83aea87b4cf2b8e4de119e0000005adf0f4d86f1004e4603e1a734fa948",
+        "ink_bbox": [
+          1,
+          11,
+          63,
+          53
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.4761904761904763
+      },
+      "transformed_size": [
+        53,
+        72
+      ],
+      "texture_origin": [
+        5,
+        -4
+      ],
+      "source": {
+        "total_ink_pixels": 1632,
+        "retained_ink_pixels": 1542,
+        "total_alpha": 351453,
+        "retained_alpha": 342885,
+        "ink_fraction": 0.9756212068185505,
+        "binary_fraction": 0.9448529411764706
+      },
+      "texture": {
+        "total_ink_pixels": 2187,
+        "retained_ink_pixels": 2135,
+        "total_alpha": 515560,
+        "retained_alpha": 507902,
+        "ink_fraction": 0.985146248739235,
+        "binary_fraction": 0.9762231367169639
+      },
+      "actual_texture_alpha": 507902,
+      "passed": false
+    },
+    "after": {
+      "team": "PHI",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/phi.png",
+        "sha256": "02afc83aea87b4cf2b8e4de119e0000005adf0f4d86f1004e4603e1a734fa948",
+        "ink_bbox": [
+          1,
+          11,
+          63,
+          53
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.4761904761904763
+      },
+      "transformed_size": [
+        45,
+        62
+      ],
+      "texture_origin": [
+        9,
+        1
+      ],
+      "source": {
+        "total_ink_pixels": 1632,
+        "retained_ink_pixels": 1632,
+        "total_alpha": 351453,
+        "retained_alpha": 351453,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "texture": {
+        "total_ink_pixels": 1609,
+        "retained_ink_pixels": 1609,
+        "total_alpha": 376947,
+        "retained_alpha": 376947,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "actual_texture_alpha": 376947,
+      "passed": true
+    }
+  },
+  {
+    "team": "PIT",
+    "before": {
+      "team": "PIT",
+      "category": "symmetric_enclosure_or_symbol",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 1.13,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/pit.png",
+        "sha256": "4a9f03f9e54f3fdac8811794700d1324b985dc9f5ed67f52f77066643b93b6d0",
+        "ink_bbox": [
+          1,
+          1,
+          63,
+          63
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.0
+      },
+      "transformed_size": [
+        36,
+        72
+      ],
+      "texture_origin": [
+        14,
+        -4
+      ],
+      "source": {
+        "total_ink_pixels": 3200,
+        "retained_ink_pixels": 2984,
+        "total_alpha": 763629,
+        "retained_alpha": 723437,
+        "ink_fraction": 0.9473671115161943,
+        "binary_fraction": 0.9325
+      },
+      "texture": {
+        "total_ink_pixels": 2096,
+        "retained_ink_pixels": 1996,
+        "total_alpha": 516414,
+        "retained_alpha": 494614,
+        "ink_fraction": 0.9577858075110279,
+        "binary_fraction": 0.9522900763358778
+      },
+      "actual_texture_alpha": 494614,
+      "passed": false
+    },
+    "after": {
+      "team": "PIT",
+      "category": "symmetric_enclosure_or_symbol",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/pit.png",
+        "sha256": "4a9f03f9e54f3fdac8811794700d1324b985dc9f5ed67f52f77066643b93b6d0",
+        "ink_bbox": [
+          1,
+          1,
+          63,
+          63
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.0
+      },
+      "transformed_size": [
+        31,
+        62
+      ],
+      "texture_origin": [
+        16,
+        1
+      ],
+      "source": {
+        "total_ink_pixels": 3200,
+        "retained_ink_pixels": 3200,
+        "total_alpha": 763629,
+        "retained_alpha": 763629,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "texture": {
+        "total_ink_pixels": 1562,
+        "retained_ink_pixels": 1562,
+        "total_alpha": 383075,
+        "retained_alpha": 383075,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "actual_texture_alpha": 383075,
+      "passed": true
+    }
+  },
+  {
+    "team": "LAR",
+    "before": {
+      "team": "LAR",
+      "category": "wordmark_or_letters",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 1.13,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/lar.png",
+        "sha256": "2e9ae595bb54d86ca4b092a55f028eb2fa8e324354decf71e038ad9a09890752",
+        "ink_bbox": [
+          1,
+          9,
+          63,
+          54
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.3777777777777778
+      },
+      "transformed_size": [
+        49,
+        72
+      ],
+      "texture_origin": [
+        7,
+        -4
+      ],
+      "source": {
+        "total_ink_pixels": 1785,
+        "retained_ink_pixels": 1654,
+        "total_alpha": 325585,
+        "retained_alpha": 303059,
+        "ink_fraction": 0.930813765990448,
+        "binary_fraction": 0.9266106442577031
+      },
+      "texture": {
+        "total_ink_pixels": 1952,
+        "retained_ink_pixels": 1835,
+        "total_alpha": 411478,
+        "retained_alpha": 388642,
+        "ink_fraction": 0.9445025007412304,
+        "binary_fraction": 0.9400614754098361
+      },
+      "actual_texture_alpha": 388642,
+      "passed": false
+    },
+    "after": {
+      "team": "LAR",
+      "category": "wordmark_or_letters",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/lar.png",
+        "sha256": "2e9ae595bb54d86ca4b092a55f028eb2fa8e324354decf71e038ad9a09890752",
+        "ink_bbox": [
+          1,
+          9,
+          63,
+          54
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.3777777777777778
+      },
+      "transformed_size": [
+        42,
+        62
+      ],
+      "texture_origin": [
+        11,
+        1
+      ],
+      "source": {
+        "total_ink_pixels": 1785,
+        "retained_ink_pixels": 1785,
+        "total_alpha": 325585,
+        "retained_alpha": 325585,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "texture": {
+        "total_ink_pixels": 1449,
+        "retained_ink_pixels": 1449,
+        "total_alpha": 303830,
+        "retained_alpha": 303830,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "actual_texture_alpha": 303830,
+      "passed": true
+    }
+  },
+  {
+    "team": "LAC",
+    "before": {
+      "team": "LAC",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 1.02,
+        "height": 1.0,
+        "zoom": 1.13,
+        "shift_x": 0.025,
+        "shift_y": 0.015
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/lac.png",
+        "sha256": "7bbacd983b6e3b6fe927cc8a63b4128a6843a87bae36bb456b8c31dd69efe327",
+        "ink_bbox": [
+          1,
+          18,
+          63,
+          46
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 2.2142857142857144
+      },
+      "transformed_size": [
+        72,
+        61
+      ],
+      "texture_origin": [
+        -2,
+        2
+      ],
+      "source": {
+        "total_ink_pixels": 876,
+        "retained_ink_pixels": 782,
+        "total_alpha": 168837,
+        "retained_alpha": 154821,
+        "ink_fraction": 0.9169850210558113,
+        "binary_fraction": 0.8926940639269406
+      },
+      "texture": {
+        "total_ink_pixels": 1909,
+        "retained_ink_pixels": 1754,
+        "total_alpha": 427207,
+        "retained_alpha": 397470,
+        "ink_fraction": 0.9303920581825672,
+        "binary_fraction": 0.9188056574122577
+      },
+      "actual_texture_alpha": 397508,
+      "passed": false
+    },
+    "after": {
+      "team": "LAC",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 1.02,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/lac.png",
+        "sha256": "7bbacd983b6e3b6fe927cc8a63b4128a6843a87bae36bb456b8c31dd69efe327",
+        "ink_bbox": [
+          1,
+          18,
+          63,
+          46
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 2.2142857142857144
+      },
+      "transformed_size": [
+        62,
+        53
+      ],
+      "texture_origin": [
+        1,
+        5
+      ],
+      "source": {
+        "total_ink_pixels": 876,
+        "retained_ink_pixels": 876,
+        "total_alpha": 168837,
+        "retained_alpha": 168837,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "texture": {
+        "total_ink_pixels": 1436,
+        "retained_ink_pixels": 1436,
+        "total_alpha": 320227,
+        "retained_alpha": 320227,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "actual_texture_alpha": 320227,
+      "passed": true
+    }
+  },
+  {
+    "team": "SF",
+    "before": {
+      "team": "SF",
+      "category": "wordmark_or_letters",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 1.02,
+        "height": 1.0,
+        "zoom": 1.07,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/sf.png",
+        "sha256": "5dd6fea203c6b6a864d4f1cc3b20f6d43fe67e3dc8dc0abb33197da2d80f939b",
+        "ink_bbox": [
+          1,
+          13,
+          63,
+          50
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.6756756756756757
+      },
+      "transformed_size": [
+        63,
+        68
+      ],
+      "texture_origin": [
+        0,
+        -2
+      ],
+      "source": {
+        "total_ink_pixels": 1943,
+        "retained_ink_pixels": 1827,
+        "total_alpha": 453924,
+        "retained_alpha": 436063,
+        "ink_fraction": 0.9606520034190745,
+        "binary_fraction": 0.9402985074626866
+      },
+      "texture": {
+        "total_ink_pixels": 3466,
+        "retained_ink_pixels": 3383,
+        "total_alpha": 850026,
+        "retained_alpha": 835315,
+        "ink_fraction": 0.9826934705526654,
+        "binary_fraction": 0.9760530871321408
+      },
+      "actual_texture_alpha": 835315,
+      "passed": false
+    },
+    "after": {
+      "team": "SF",
+      "category": "wordmark_or_letters",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 1.02,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/sf.png",
+        "sha256": "5dd6fea203c6b6a864d4f1cc3b20f6d43fe67e3dc8dc0abb33197da2d80f939b",
+        "ink_bbox": [
+          1,
+          13,
+          63,
+          50
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.6756756756756757
+      },
+      "transformed_size": [
+        57,
+        62
+      ],
+      "texture_origin": [
+        3,
+        1
+      ],
+      "source": {
+        "total_ink_pixels": 1943,
+        "retained_ink_pixels": 1943,
+        "total_alpha": 453924,
+        "retained_alpha": 453924,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "texture": {
+        "total_ink_pixels": 2872,
+        "retained_ink_pixels": 2872,
+        "total_alpha": 700748,
+        "retained_alpha": 700748,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "actual_texture_alpha": 700748,
+      "passed": true
+    }
+  },
+  {
+    "team": "SEA",
+    "before": {
+      "team": "SEA",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 1.02,
+        "height": 1.0,
+        "zoom": 1.07,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/sea.png",
+        "sha256": "204422fdd52f676c8bdfe82b460875f4e0cc824d8b90eafbeb3245a28d11ef7a",
+        "ink_bbox": [
+          1,
+          18,
+          63,
+          46
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 2.2142857142857144
+      },
+      "transformed_size": [
+        68,
+        58
+      ],
+      "texture_origin": [
+        -2,
+        3
+      ],
+      "source": {
+        "total_ink_pixels": 1332,
+        "retained_ink_pixels": 1285,
+        "total_alpha": 282181,
+        "retained_alpha": 276078,
+        "ink_fraction": 0.978372037805522,
+        "binary_fraction": 0.9647147147147147
+      },
+      "texture": {
+        "total_ink_pixels": 2717,
+        "retained_ink_pixels": 2650,
+        "total_alpha": 642212,
+        "retained_alpha": 629711,
+        "ink_fraction": 0.9805344652544643,
+        "binary_fraction": 0.9753404490246596
+      },
+      "actual_texture_alpha": 629711,
+      "passed": false
+    },
+    "after": {
+      "team": "SEA",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 1.02,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/sea.png",
+        "sha256": "204422fdd52f676c8bdfe82b460875f4e0cc824d8b90eafbeb3245a28d11ef7a",
+        "ink_bbox": [
+          1,
+          18,
+          63,
+          46
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 2.2142857142857144
+      },
+      "transformed_size": [
+        62,
+        53
+      ],
+      "texture_origin": [
+        1,
+        5
+      ],
+      "source": {
+        "total_ink_pixels": 1332,
+        "retained_ink_pixels": 1332,
+        "total_alpha": 282181,
+        "retained_alpha": 282181,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "texture": {
+        "total_ink_pixels": 2250,
+        "retained_ink_pixels": 2250,
+        "total_alpha": 534406,
+        "retained_alpha": 534406,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "actual_texture_alpha": 534406,
+      "passed": true
+    }
+  },
+  {
+    "team": "TB",
+    "before": {
+      "team": "TB",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 1.13,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/tb.png",
+        "sha256": "83053423c891c0b4049a64c53ca16d5f29f147c05e6d49001db3a7c4b79c0627",
+        "ink_bbox": [
+          1,
+          4,
+          63,
+          59
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.1272727272727272
+      },
+      "transformed_size": [
+        40,
+        72
+      ],
+      "texture_origin": [
+        12,
+        -4
+      ],
+      "source": {
+        "total_ink_pixels": 1929,
+        "retained_ink_pixels": 1855,
+        "total_alpha": 408502,
+        "retained_alpha": 400311,
+        "ink_fraction": 0.9799486905816862,
+        "binary_fraction": 0.9616381544841887
+      },
+      "texture": {
+        "total_ink_pixels": 1483,
+        "retained_ink_pixels": 1457,
+        "total_alpha": 346109,
+        "retained_alpha": 341733,
+        "ink_fraction": 0.9873565841974639,
+        "binary_fraction": 0.9824679703304113
+      },
+      "actual_texture_alpha": 341733,
+      "passed": false
+    },
+    "after": {
+      "team": "TB",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/tb.png",
+        "sha256": "83053423c891c0b4049a64c53ca16d5f29f147c05e6d49001db3a7c4b79c0627",
+        "ink_bbox": [
+          1,
+          4,
+          63,
+          59
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.1272727272727272
+      },
+      "transformed_size": [
+        35,
+        62
+      ],
+      "texture_origin": [
+        14,
+        1
+      ],
+      "source": {
+        "total_ink_pixels": 1929,
+        "retained_ink_pixels": 1929,
+        "total_alpha": 408502,
+        "retained_alpha": 408502,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "texture": {
+        "total_ink_pixels": 1124,
+        "retained_ink_pixels": 1124,
+        "total_alpha": 261190,
+        "retained_alpha": 261190,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "actual_texture_alpha": 261190,
+      "passed": true
+    }
+  },
+  {
+    "team": "TEN",
+    "before": {
+      "team": "TEN",
+      "category": "symmetric_enclosure_or_symbol",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 1.13,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/ten.png",
+        "sha256": "f4470852e0967853a5effd943235405b13f30019705bb2acdb2d9ad33fed3844",
+        "ink_bbox": [
+          1,
+          1,
+          63,
+          63
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.0
+      },
+      "transformed_size": [
+        36,
+        72
+      ],
+      "texture_origin": [
+        14,
+        -4
+      ],
+      "source": {
+        "total_ink_pixels": 3225,
+        "retained_ink_pixels": 2999,
+        "total_alpha": 769834,
+        "retained_alpha": 727731,
+        "ink_fraction": 0.9453089886910685,
+        "binary_fraction": 0.929922480620155
+      },
+      "texture": {
+        "total_ink_pixels": 2116,
+        "retained_ink_pixels": 2012,
+        "total_alpha": 520273,
+        "retained_alpha": 497495,
+        "ink_fraction": 0.9562191387982848,
+        "binary_fraction": 0.9508506616257089
+      },
+      "actual_texture_alpha": 497495,
+      "passed": false
+    },
+    "after": {
+      "team": "TEN",
+      "category": "symmetric_enclosure_or_symbol",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/ten.png",
+        "sha256": "f4470852e0967853a5effd943235405b13f30019705bb2acdb2d9ad33fed3844",
+        "ink_bbox": [
+          1,
+          1,
+          63,
+          63
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.0
+      },
+      "transformed_size": [
+        31,
+        62
+      ],
+      "texture_origin": [
+        16,
+        1
+      ],
+      "source": {
+        "total_ink_pixels": 3225,
+        "retained_ink_pixels": 3225,
+        "total_alpha": 769834,
+        "retained_alpha": 769834,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "texture": {
+        "total_ink_pixels": 1568,
+        "retained_ink_pixels": 1568,
+        "total_alpha": 385911,
+        "retained_alpha": 385911,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "actual_texture_alpha": 385911,
+      "passed": true
+    }
+  },
+  {
+    "team": "WAS",
+    "before": {
+      "team": "WAS",
+      "category": "wordmark_or_letters",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 1.02,
+        "height": 1.0,
+        "zoom": 1.17,
+        "shift_x": -0.04,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/wsh.png",
+        "sha256": "8f06fbbc8cd9ca6cd740bff637c8e0d47a12c39c66688f1a7a18f3727ba4beeb",
+        "ink_bbox": [
+          1,
+          15,
+          63,
+          49
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.8235294117647058
+      },
+      "transformed_size": [
+        75,
+        75
+      ],
+      "texture_origin": [
+        -9,
+        -6
+      ],
+      "source": {
+        "total_ink_pixels": 1733,
+        "retained_ink_pixels": 1362,
+        "total_alpha": 399696,
+        "retained_alpha": 325124,
+        "ink_fraction": 0.8134282054361315,
+        "binary_fraction": 0.7859203693017888
+      },
+      "texture": {
+        "total_ink_pixels": 4395,
+        "retained_ink_pixels": 3658,
+        "total_alpha": 1068992,
+        "retained_alpha": 897534,
+        "ink_fraction": 0.8396077800395139,
+        "binary_fraction": 0.8323094425483504
+      },
+      "actual_texture_alpha": 900994,
+      "passed": false
+    },
+    "after": {
+      "team": "WAS",
+      "category": "wordmark_or_letters",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 1.02,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/wsh.png",
+        "sha256": "8f06fbbc8cd9ca6cd740bff637c8e0d47a12c39c66688f1a7a18f3727ba4beeb",
+        "ink_bbox": [
+          1,
+          15,
+          63,
+          49
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.8235294117647058
+      },
+      "transformed_size": [
+        62,
+        62
+      ],
+      "texture_origin": [
+        1,
+        1
+      ],
+      "source": {
+        "total_ink_pixels": 1733,
+        "retained_ink_pixels": 1733,
+        "total_alpha": 399696,
+        "retained_alpha": 399696,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "texture": {
+        "total_ink_pixels": 2973,
+        "retained_ink_pixels": 2973,
+        "total_alpha": 730523,
+        "retained_alpha": 730523,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "actual_texture_alpha": 730523,
+      "passed": true
+    }
+  },
+  {
+    "team": "CLE",
+    "before": {
+      "team": "CLE",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 1.13,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/cle.png",
+        "sha256": "88b292b45210a411b97e0425dd9e38891847ec439879a28fd0a8f0dde7a99225",
+        "ink_bbox": [
+          1,
+          8,
+          63,
+          56
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.2916666666666667
+      },
+      "transformed_size": [
+        46,
+        72
+      ],
+      "texture_origin": [
+        9,
+        -4
+      ],
+      "source": {
+        "total_ink_pixels": 2410,
+        "retained_ink_pixels": 2208,
+        "total_alpha": 560663,
+        "retained_alpha": 527345,
+        "ink_fraction": 0.9405739276535102,
+        "binary_fraction": 0.9161825726141078
+      },
+      "texture": {
+        "total_ink_pixels": 2568,
+        "retained_ink_pixels": 2408,
+        "total_alpha": 625102,
+        "retained_alpha": 594172,
+        "ink_fraction": 0.9505200751237398,
+        "binary_fraction": 0.9376947040498442
+      },
+      "actual_texture_alpha": 594172,
+      "passed": false
+    },
+    "after": {
+      "team": "CLE",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/cle.png",
+        "sha256": "88b292b45210a411b97e0425dd9e38891847ec439879a28fd0a8f0dde7a99225",
+        "ink_bbox": [
+          1,
+          8,
+          63,
+          56
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.2916666666666667
+      },
+      "transformed_size": [
+        40,
+        62
+      ],
+      "texture_origin": [
+        12,
+        1
+      ],
+      "source": {
+        "total_ink_pixels": 2410,
+        "retained_ink_pixels": 2410,
+        "total_alpha": 560663,
+        "retained_alpha": 560663,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "texture": {
+        "total_ink_pixels": 1926,
+        "retained_ink_pixels": 1926,
+        "total_alpha": 468139,
+        "retained_alpha": 468139,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "actual_texture_alpha": 468139,
+      "passed": true
+    }
+  },
+  {
+    "team": "HOU",
+    "before": {
+      "team": "HOU",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 1.04,
+        "height": 1.0,
+        "zoom": 1.25,
+        "shift_x": 0.075,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/hou.png",
+        "sha256": "37f10269cb23401a945ff5dc06982af918b32302f7c81565857bdbd864dcec86",
+        "ink_bbox": [
+          1,
+          4,
+          63,
+          60
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.1071428571428572
+      },
+      "transformed_size": [
+        49,
+        80
+      ],
+      "texture_origin": [
+        12,
+        -8
+      ],
+      "source": {
+        "total_ink_pixels": 2035,
+        "retained_ink_pixels": 1779,
+        "total_alpha": 435879,
+        "retained_alpha": 389679,
+        "ink_fraction": 0.8940072818373906,
+        "binary_fraction": 0.8742014742014742
+      },
+      "texture": {
+        "total_ink_pixels": 2083,
+        "retained_ink_pixels": 1857,
+        "total_alpha": 492555,
+        "retained_alpha": 444975,
+        "ink_fraction": 0.9034016505770929,
+        "binary_fraction": 0.8915026404224676
+      },
+      "actual_texture_alpha": 444975,
+      "passed": false
+    },
+    "after": {
+      "team": "HOU",
+      "category": "asymmetric",
+      "tolerance": 0,
+      "fit": {
+        "fill_x": 1.04,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "provenance": {
+        "path": "data/nfl2k5_scorebug_mnf/logos/hou.png",
+        "sha256": "37f10269cb23401a945ff5dc06982af918b32302f7c81565857bdbd864dcec86",
+        "ink_bbox": [
+          1,
+          4,
+          63,
+          60
+        ],
+        "artwork_size": [
+          64,
+          64
+        ],
+        "ink_aspect": 1.1071428571428572
+      },
+      "transformed_size": [
+        38,
+        62
+      ],
+      "texture_origin": [
+        13,
+        1
+      ],
+      "source": {
+        "total_ink_pixels": 2035,
+        "retained_ink_pixels": 2035,
+        "total_alpha": 435879,
+        "retained_alpha": 435879,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "texture": {
+        "total_ink_pixels": 1260,
+        "retained_ink_pixels": 1260,
+        "total_alpha": 296316,
+        "retained_alpha": 296316,
+        "ink_fraction": 1.0,
+        "binary_fraction": 1.0
+      },
+      "actual_texture_alpha": 296316,
+      "passed": true
+    }
+  }
+]

@@ -1,0 +1,301 @@
+{
+  "results": [
+    {
+      "index": 0,
+      "answers": {
+        "ctime_compare": {
+          "type": "noul",
+          "noul": 0.04
+        },
+        "posix_only": {
+          "type": "noul",
+          "noul": 0.04
+        },
+        "pinned_value": {
+          "type": "noul",
+          "noul": 0.43
+        },
+        "slow_test": {
+          "type": "noul",
+          "noul": 0.02
+        },
+        "weakens_safety": {
+          "type": "noul",
+          "noul": 0.07
+        },
+        "inventory_mismatch": {
+          "type": "noul",
+          "noul": 0.08
+        }
+      }
+    },
+    {
+      "index": 1,
+      "answers": {
+        "ctime_compare": {
+          "type": "noul",
+          "noul": 0.04
+        },
+        "posix_only": {
+          "type": "noul",
+          "noul": 0.05
+        },
+        "pinned_value": {
+          "type": "noul",
+          "noul": 0.58
+        },
+        "slow_test": {
+          "type": "noul",
+          "noul": 0.02
+        },
+        "weakens_safety": {
+          "type": "noul",
+          "noul": 0.07
+        },
+        "inventory_mismatch": {
+          "type": "noul",
+          "noul": 0.08
+        }
+      }
+    },
+    {
+      "index": 2,
+      "answers": {
+        "ctime_compare": {
+          "type": "noul",
+          "noul": 0.03
+        },
+        "posix_only": {
+          "type": "noul",
+          "noul": 0.04
+        },
+        "pinned_value": {
+          "type": "noul",
+          "noul": 0.87
+        },
+        "slow_test": {
+          "type": "noul",
+          "noul": 0.02
+        },
+        "weakens_safety": {
+          "type": "noul",
+          "noul": 0.05
+        },
+        "inventory_mismatch": {
+          "type": "noul",
+          "noul": 0.07
+        }
+      }
+    },
+    {
+      "index": 3,
+      "answers": {
+        "ctime_compare": {
+          "type": "noul",
+          "noul": 0.04
+        },
+        "posix_only": {
+          "type": "noul",
+          "noul": 0.04
+        },
+        "pinned_value": {
+          "type": "noul",
+          "noul": 0.97
+        },
+        "slow_test": {
+          "type": "noul",
+          "noul": 0.02
+        },
+        "weakens_safety": {
+          "type": "noul",
+          "noul": 0.12
+        },
+        "inventory_mismatch": {
+          "type": "noul",
+          "noul": 0.08
+        }
+      }
+    },
+    {
+      "index": 4,
+      "answers": {
+        "ctime_compare": {
+          "type": "noul",
+          "noul": 0.03
+        },
+        "posix_only": {
+          "type": "noul",
+          "noul": 0.04
+        },
+        "pinned_value": {
+          "type": "noul",
+          "noul": 0.06
+        },
+        "slow_test": {
+          "type": "noul",
+          "noul": 0.04
+        },
+        "weakens_safety": {
+          "type": "noul",
+          "noul": 0.18
+        },
+        "inventory_mismatch": {
+          "type": "noul",
+          "noul": 0.09
+        }
+      }
+    },
+    {
+      "index": 5,
+      "answers": {
+        "ctime_compare": {
+          "type": "noul",
+          "noul": 0.03
+        },
+        "posix_only": {
+          "type": "noul",
+          "noul": 0.04
+        },
+        "pinned_value": {
+          "type": "noul",
+          "noul": 0.06
+        },
+        "slow_test": {
+          "type": "noul",
+          "noul": 0.04
+        },
+        "weakens_safety": {
+          "type": "noul",
+          "noul": 0.06
+        },
+        "inventory_mismatch": {
+          "type": "noul",
+          "noul": 0.08
+        }
+      }
+    },
+    {
+      "index": 6,
+      "answers": {
+        "ctime_compare": {
+          "type": "noul",
+          "noul": 0.04
+        },
+        "posix_only": {
+          "type": "noul",
+          "noul": 0.04
+        },
+        "pinned_value": {
+          "type": "noul",
+          "noul": 0.06
+        },
+        "slow_test": {
+          "type": "noul",
+          "noul": 0.25
+        },
+        "weakens_safety": {
+          "type": "noul",
+          "noul": 0.09
+        },
+        "inventory_mismatch": {
+          "type": "noul",
+          "noul": 0.08
+        }
+      }
+    },
+    {
+      "index": 7,
+      "answers": {
+        "ctime_compare": {
+          "type": "noul",
+          "noul": 0.03
+        },
+        "posix_only": {
+          "type": "noul",
+          "noul": 0.03
+        },
+        "pinned_value": {
+          "type": "noul",
+          "noul": 0.1
+        },
+        "slow_test": {
+          "type": "noul",
+          "noul": 0.02
+        },
+        "weakens_safety": {
+          "type": "noul",
+          "noul": 0.07
+        },
+        "inventory_mismatch": {
+          "type": "noul",
+          "noul": 0.05
+        }
+      }
+    },
+    {
+      "index": 8,
+      "answers": {
+        "ctime_compare": {
+          "type": "noul",
+          "noul": 0.03
+        },
+        "posix_only": {
+          "type": "noul",
+          "noul": 0.03
+        },
+        "pinned_value": {
+          "type": "noul",
+          "noul": 0.03
+        },
+        "slow_test": {
+          "type": "noul",
+          "noul": 0.02
+        },
+        "weakens_safety": {
+          "type": "noul",
+          "noul": 0.03
+        },
+        "inventory_mismatch": {
+          "type": "noul",
+          "noul": 0.04
+        }
+      }
+    },
+    {
+      "index": 9,
+      "answers": {
+        "ctime_compare": {
+          "type": "noul",
+          "noul": 0.04
+        },
+        "posix_only": {
+          "type": "noul",
+          "noul": 0.03
+        },
+        "pinned_value": {
+          "type": "noul",
+          "noul": 0.09
+        },
+        "slow_test": {
+          "type": "noul",
+          "noul": 0.03
+        },
+        "weakens_safety": {
+          "type": "noul",
+          "noul": 0.12
+        },
+        "inventory_mismatch": {
+          "type": "noul",
+          "noul": 0.06
+        }
+      }
+    }
+  ],
+  "totals": {
+    "input_tokens": 28390,
+    "output_tokens": 1160,
+    "cost_usd": 0.00119237,
+    "errors": 0,
+    "wall_ms": 470.7
+  }
+}

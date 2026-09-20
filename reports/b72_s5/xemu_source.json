@@ -1,0 +1,12 @@
+{
+  "commit": "f9b14039e5bb56ae2d8f028e31e7cc19f13f7e12",
+  "files": {
+    "nv2a_regs.h": "c9c87c1455201f556cd4b4457a6676250e073640e6581b93bc5b40659cf82262",
+    "pgraph/texture.c": "375df0f8570441e6d6be677b13a80b2c8158c7024e3c713e40cf7958d373c87c",
+    "pgraph/swizzle.c": "397e94eb8a6ece7e42bbe8575b3d8d0721f57ba33d303e9e26702402cd9955c6",
+    "pgraph/glsl/psh.c": "c68f36467d100c119314e9da5b94b1b1485ffccdd4fceda360934bcc286b19bb",
+    "pgraph/glsl/vsh-prog.c": "dbb4b71d99d91b15a0b2fd61dd297929d4d3fb0a5f964e68dc6506debb2df01e",
+    "pgraph/gl/draw.c": "98e8bbaa99352a2270aad4363c429a72a928786f6c947c704b10877cfee6d203",
+    "pgraph/gl/texture.c": "946c5ac6bc83ad7328185d70a1941f2c18996b9ffd28e03864a145fbb7158188"
+  }
+}

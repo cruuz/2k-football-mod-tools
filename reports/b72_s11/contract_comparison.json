@@ -1,0 +1,17 @@
+{
+  "s10_residuals_reproduced": true,
+  "label_measurements_equal": true,
+  "labels": 104,
+  "event_records_equal": true,
+  "event_frames": 1350,
+  "primary_aspect_checks": 64,
+  "projected_end_checks": 128,
+  "permitted_crop": 0,
+  "appended_bytes": 325216,
+  "rx_used": 4086,
+  "rx_reserved": 4096,
+  "rw_reserved": 128,
+  "default_files": 36,
+  "default_cases": 316,
+  "existing_skips": 8
+}

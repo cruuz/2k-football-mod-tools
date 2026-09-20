@@ -1,0 +1,5506 @@
+[
+  {
+    "parameters": {
+      "wing_peak": 0.6564869270086274,
+      "wing_power": 2.8124044543417703,
+      "rim_width": 1.2083273276367867,
+      "gloss": 0.0894107249680241,
+      "score_scale": 0.9583147147451538,
+      "label_height": 30.253151639435004
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.3908824553806219,
+        "wing_peak": 0.2060865876078427,
+        "rim": 1.1916726723632132,
+        "gloss": 0.188214499360482,
+        "score_shape": 1.042132131371154,
+        "label_floor": 0.12657581971750176
+      },
+      "residual": 0.5242606943001359,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 0,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "far",
+        "label_floor": "close"
+      },
+      "score_prominence": "distorted",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6925816859958951,
+      "wing_power": 2.5282092098803,
+      "rim_width": 2.852952774686902,
+      "gloss": 0.1229568867259888,
+      "score_scale": 1.012775555100944,
+      "label_height": 31.017457169049855
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.4105105942643608,
+        "wing_peak": 0.6572710749486884,
+        "rim": 0.452952774686902,
+        "gloss": 0.8591377345197759,
+        "score_shape": 0.319388877523602,
+        "label_floor": 0.5087285845249276
+      },
+      "residual": 0.5346649400780428,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 1,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "strong",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.7125745227021558,
+      "wing_power": 2.706979161648578,
+      "rim_width": 2.5115307377946836,
+      "gloss": 0.11874879646830958,
+      "score_scale": 0.9784928858350855,
+      "label_height": 30.824610441488804
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.37586182976185123,
+        "wing_peak": 0.9071815337769475,
+        "rim": 0.1115307377946837,
+        "gloss": 0.7749759293661914,
+        "score_shape": 0.5376778541228616,
+        "label_floor": 0.41230522074440223
+      },
+      "residual": 0.5199221842611563,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 2,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6087334649986099,
+      "wing_power": 3.155933304473428,
+      "rim_width": 1.2896945260477122,
+      "gloss": 0.0884978914979586,
+      "score_scale": 0.9981264193173371,
+      "label_height": 30.002548401919007
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.5611962846632752,
+        "wing_peak": 0.3908316875173762,
+        "rim": 1.1103054739522877,
+        "gloss": 0.16995782995917197,
+        "score_shape": 0.04683951706657141,
+        "label_floor": 0.0012742009595037018
+      },
+      "residual": 0.38006749901969766,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 3,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6227686366599746,
+      "wing_power": 2.7457875731594323,
+      "rim_width": 1.5197086992092326,
+      "gloss": 0.11973297360949528,
+      "score_scale": 0.9776697920742216,
+      "label_height": 30.787575722355214
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.3794641332559617,
+        "wing_peak": 0.21539204175031745,
+        "rim": 0.8802913007907673,
+        "gloss": 0.7946594721899055,
+        "score_shape": 0.5582551981444611,
+        "label_floor": 0.3937878611776071
+      },
+      "residual": 0.5369750012181701,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 4,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6412592675235549,
+      "wing_power": 2.9135863687955137,
+      "rim_width": 1.5820388206666414,
+      "gloss": 0.10290878028261204,
+      "score_scale": 0.9803923674822739,
+      "label_height": 30.636127952220175
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.42855584508829664,
+        "wing_peak": 0.01574084404443593,
+        "rim": 0.8179611793333585,
+        "gloss": 0.4581756056522407,
+        "score_shape": 0.49019081294315314,
+        "label_floor": 0.3180639761100874
+      },
+      "residual": 0.42144804386192875,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 5,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6335833692569718,
+      "wing_power": 2.8019369158181986,
+      "rim_width": 1.0,
+      "gloss": 0.10025553218314674,
+      "score_scale": 1.0099116557275776,
+      "label_height": 30.38253986651662
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.3883985397449878,
+        "wing_peak": 0.08020788428785286,
+        "rim": 1.4,
+        "gloss": 0.4051106436629348,
+        "score_shape": 0.24779139318943932,
+        "label_floor": 0.19126993325830988
+      },
+      "residual": 0.4521297323572542,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 6,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6502202202514966,
+      "wing_power": 2.959738406080191,
+      "rim_width": 1.6615214309987012,
+      "gloss": 0.10918545552444896,
+      "score_scale": 1.006213023682458,
+      "label_height": 30.706795548687207
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.44996457914952237,
+        "wing_peak": 0.12775275314370754,
+        "rim": 0.7384785690012987,
+        "gloss": 0.5837091104889791,
+        "score_shape": 0.15532559206145047,
+        "label_floor": 0.35339777434360364
+      },
+      "residual": 0.40143806303142693,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 7,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6661219028192552,
+      "wing_power": 2.5677043329796,
+      "rim_width": 2.3505928312392923,
+      "gloss": 0.09833754504848857,
+      "score_scale": 0.9839017567113979,
+      "label_height": 30.890541149101406
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.39746707837704537,
+        "wing_peak": 0.3265237852406899,
+        "rim": 0.04940716876070761,
+        "gloss": 0.3667509009697714,
+        "score_shape": 0.40245608221505247,
+        "label_floor": 0.44527057455070285
+      },
+      "residual": 0.33131259835232824,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 8,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.596389023743957,
+      "wing_power": 2.685006138359779,
+      "rim_width": 1.4797964313766987,
+      "gloss": 0.11102921371474929,
+      "score_scale": 0.9799251741441121,
+      "label_height": 30.751478917674465
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.3737757217946033,
+        "wing_peak": 0.545137203200538,
+        "rim": 0.9202035686233012,
+        "gloss": 0.6205842742949857,
+        "score_shape": 0.5018706463971984,
+        "label_floor": 0.3757394588372325
+      },
+      "residual": 0.5562184788579765,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 9,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6262546997687102,
+      "wing_power": 2.957711842076563,
+      "rim_width": 1.6370758899076483,
+      "gloss": 0.11118583482634156,
+      "score_scale": 0.9679925253170824,
+      "label_height": 30.107807179837344
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.4490338048288071,
+        "wing_peak": 0.17181625289112296,
+        "rim": 0.7629241100923516,
+        "gloss": 0.6237166965268311,
+        "score_shape": 0.8001868670729412,
+        "label_floor": 0.05390358991867217
+      },
+      "residual": 0.4769302202217877,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 10,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6119874874160637,
+      "wing_power": 2.568708718072463,
+      "rim_width": 1.0,
+      "gloss": 0.08389886813551947,
+      "score_scale": 0.9974958622287273,
+      "label_height": 30.0
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.39713822549541583,
+        "wing_peak": 0.35015640729920416,
+        "rim": 1.4,
+        "gloss": 0.07797736271038941,
+        "score_shape": 0.06260344428181686,
+        "label_floor": 0.0
+      },
+      "residual": 0.3813125732978044,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 11,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.7119268366226505,
+      "wing_power": 2.724689729386887,
+      "rim_width": 1.8467535534849104,
+      "gloss": 0.1222201181766388,
+      "score_scale": 0.9784468307574119,
+      "label_height": 30.837613922732302
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.3775184092387665,
+        "wing_peak": 0.8990854577831316,
+        "rim": 0.5532464465150895,
+        "gloss": 0.844402363532776,
+        "score_shape": 0.5388292310647025,
+        "label_floor": 0.41880696136615114
+      },
+      "residual": 0.6053148115834363,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 12,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "strong",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6627069815890874,
+      "wing_power": 2.7631872726896844,
+      "rim_width": 1.2022908784792672,
+      "gloss": 0.11073340693330094,
+      "score_scale": 0.9851810311783713,
+      "label_height": 30.640175580977818
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.3810470724370895,
+        "wing_peak": 0.28383726986359187,
+        "rim": 1.1977091215207327,
+        "gloss": 0.6146681386660188,
+        "score_shape": 0.37047422054071744,
+        "label_floor": 0.320087790488909
+      },
+      "residual": 0.5279706022528432,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 13,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.646590347802317,
+      "wing_power": 2.724984099675088,
+      "rim_width": 1.3867297150460085,
+      "gloss": 0.094445897340131,
+      "score_scale": 0.9889054775284902,
+      "label_height": 30.728146304071718
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.3775457615343839,
+        "wing_peak": 0.08237934752896164,
+        "rim": 1.0132702849539914,
+        "gloss": 0.28891794680261984,
+        "score_shape": 0.2773630617877443,
+        "label_floor": 0.3640731520358589
+      },
+      "residual": 0.4005915924405934,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 14,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.7293114840659248,
+      "wing_power": 2.76146046633381,
+      "rim_width": 2.2763804044392595,
+      "gloss": 0.13308226090262612,
+      "score_scale": 1.0142379370702335,
+      "label_height": 31.0236688733828
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.38089083011094615,
+        "wing_peak": 1.11639355082406,
+        "rim": 0.12361959556074043,
+        "gloss": 1.0616452180525222,
+        "score_shape": 0.3559484267558366,
+        "label_floor": 0.5118344366913998
+      },
+      "residual": 0.5917220096659176,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 15,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "far",
+        "rim": "close",
+        "gloss": "far",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "strong",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.7002564339428254,
+      "wing_power": 2.7009848930022007,
+      "rim_width": 1.8654116859836383,
+      "gloss": 0.10098861960058082,
+      "score_scale": 0.9912297046477799,
+      "label_height": 31.171816581596946
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.37529618273206505,
+        "wing_peak": 0.7532054242853178,
+        "rim": 0.5345883140163616,
+        "gloss": 0.4197723920116164,
+        "score_shape": 0.21925738380550175,
+        "label_floor": 0.5859082907984732
+      },
+      "residual": 0.48133799794155596,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 16,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6244118977813263,
+      "wing_power": 3.022595448906671,
+      "rim_width": 1.0,
+      "gloss": 0.08964287769878276,
+      "score_scale": 1.0017269022165618,
+      "label_height": 30.404824380033098
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.4845269008549426,
+        "wing_peak": 0.19485127773342104,
+        "rim": 1.4,
+        "gloss": 0.19285755397565524,
+        "score_shape": 0.043172555414044966,
+        "label_floor": 0.20241219001654898
+      },
+      "residual": 0.41963674633243553,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 17,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6444566519678985,
+      "wing_power": 2.8534518856870634,
+      "rim_width": 1.2135713365635625,
+      "gloss": 0.08538945711110994,
+      "score_scale": 1.0027605741377996,
+      "label_height": 30.0
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.40057434146566223,
+        "wing_peak": 0.05570814959873077,
+        "rim": 1.1864286634364374,
+        "gloss": 0.10778914222219882,
+        "score_shape": 0.06901435344499052,
+        "label_floor": 0.0
+      },
+      "residual": 0.30325244169466997,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 18,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6708205504682406,
+      "wing_power": 2.6695678264603746,
+      "rim_width": 2.281888965344351,
+      "gloss": 0.1147352012235062,
+      "score_scale": 1.004313176105638,
+      "label_height": 30.76804588397578
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.37440950366519216,
+        "wing_peak": 0.3852568808530077,
+        "rim": 0.11811103465564887,
+        "gloss": 0.6947040244701238,
+        "score_shape": 0.10782940264095209,
+        "label_floor": 0.3840229419878902
+      },
+      "residual": 0.3440556313788024,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 19,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.696981192558193,
+      "wing_power": 2.8613204000699164,
+      "rim_width": 2.2656098775394526,
+      "gloss": 0.12053689289649079,
+      "score_scale": 1.0053875595302852,
+      "label_height": 31.193556296046584
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.40376001924495075,
+        "wing_peak": 0.7122649069774125,
+        "rim": 0.13439012246054727,
+        "gloss": 0.8107378579298158,
+        "score_shape": 0.13468898825713116,
+        "label_floor": 0.5967781480232919
+      },
+      "residual": 0.46543667381552484,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 20,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "strong",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.7104956605405789,
+      "wing_power": 2.562512061136835,
+      "rim_width": 2.642676747975745,
+      "gloss": 0.10700590515355075,
+      "score_scale": 1.007202170478841,
+      "label_height": 31.447963253712157
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.39916938191136947,
+        "wing_peak": 0.8811957567572359,
+        "rim": 0.24267674797574523,
+        "gloss": 0.540118103071015,
+        "score_shape": 0.18005426197102437,
+        "label_floor": 0.7239816268560784
+      },
+      "residual": 0.4945326464237447,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 21,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6385089922215933,
+      "wing_power": 2.993138317821413,
+      "rim_width": 1.4159081205468491,
+      "gloss": 0.09879538886112833,
+      "score_scale": 1.008742317445544,
+      "label_height": 30.943082581275753
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.46724377452676874,
+        "wing_peak": 0.018637597230083958,
+        "rim": 0.9840918794531508,
+        "gloss": 0.37590777722256663,
+        "score_shape": 0.21855793613860253,
+        "label_floor": 0.47154129063787664
+      },
+      "residual": 0.4226633758681748,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 22,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6641729717415324,
+      "wing_power": 2.5649046196354837,
+      "rim_width": 1.146531415037209,
+      "gloss": 0.09797459078615091,
+      "score_scale": 1.010508117242622,
+      "label_height": 30.0
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.3983845023683359,
+        "wing_peak": 0.3021621467691554,
+        "rim": 1.253468584962791,
+        "gloss": 0.35949181572301814,
+        "score_shape": 0.2627029310655504,
+        "label_floor": 0.0
+      },
+      "residual": 0.42936833014814185,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 23,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6441691582514003,
+      "wing_power": 3.6615916955346632,
+      "rim_width": 1.0,
+      "gloss": 0.09485402998160995,
+      "score_scale": 0.9951652655270624,
+      "label_height": 30.0
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.8963583140201946,
+        "wing_peak": 0.052114478142503695,
+        "rim": 1.4,
+        "gloss": 0.297080599632199,
+        "score_shape": 0.12086836182343963,
+        "label_floor": 0.0
+      },
+      "residual": 0.4610702922697228,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 24,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6358720138608588,
+      "wing_power": 2.631473001596833,
+      "rim_width": 1.0,
+      "gloss": 0.07196407060681045,
+      "score_scale": 0.979176409423503,
+      "label_height": 30.0
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.37855475884592943,
+        "wing_peak": 0.05159982673926533,
+        "rim": 1.4,
+        "gloss": 0.16071858786379095,
+        "score_shape": 0.5205897644124241,
+        "label_floor": 0.0
+      },
+      "residual": 0.41857715631023495,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 25,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6176193587517778,
+      "wing_power": 3.0056960103778594,
+      "rim_width": 1.0554131121301378,
+      "gloss": 0.08997018599346258,
+      "score_scale": 0.988135237533801,
+      "label_height": 30.0
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.4746391633707484,
+        "wing_peak": 0.2797580156027782,
+        "rim": 1.3445868878698621,
+        "gloss": 0.19940371986925165,
+        "score_shape": 0.2966190616549763,
+        "label_floor": 0.0
+      },
+      "residual": 0.4325011413946028,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 26,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6864464368417025,
+      "wing_power": 2.6047842606427962,
+      "rim_width": 2.1515388100474455,
+      "gloss": 0.1258372959333328,
+      "score_scale": 0.9893039168745457,
+      "label_height": 31.203783847952952
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.38542106231381906,
+        "wing_peak": 0.5805804605212808,
+        "rim": 0.2484611899525544,
+        "gloss": 0.9167459186666557,
+        "score_shape": 0.2674020781363584,
+        "label_floor": 0.601891923976476
+      },
+      "residual": 0.5000837722611907,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 27,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "strong",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6848198768572286,
+      "wing_power": 2.963584076942646,
+      "rim_width": 2.462592788811633,
+      "gloss": 0.11004926076104343,
+      "score_scale": 1.0023150086876067,
+      "label_height": 30.538447711477286
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.4517285336128808,
+        "wing_peak": 0.5602484607153568,
+        "rim": 0.06259278881163288,
+        "gloss": 0.6009852152208686,
+        "score_shape": 0.05787521719016753,
+        "label_floor": 0.2692238557386428
+      },
+      "residual": 0.33377567854825824,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 28,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6471490246127907,
+      "wing_power": 2.6931091238182425,
+      "rim_width": 1.6237769274016218,
+      "gloss": 0.12915112085707897,
+      "score_scale": 1.0148485580681936,
+      "label_height": 30.44012201567725
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.3745490818631322,
+        "wing_peak": 0.08936280765988319,
+        "rim": 0.7762230725983781,
+        "gloss": 0.9830224171415793,
+        "score_shape": 0.37121395170484073,
+        "label_floor": 0.22006100783862514
+      },
+      "residual": 0.46907205646773975,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 29,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "strong",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.62550040326028,
+      "wing_power": 2.9574007273328533,
+      "rim_width": 1.4500934357461586,
+      "gloss": 0.08140699241787298,
+      "score_scale": 0.9905092363504976,
+      "label_height": 30.0
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.44889083930509155,
+        "wing_peak": 0.18124495924650014,
+        "rim": 0.9499065642538413,
+        "gloss": 0.02813984835745964,
+        "score_shape": 0.23726909123756024,
+        "label_floor": 0.0
+      },
+      "residual": 0.3075752170667421,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 30,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6453761973456468,
+      "wing_power": 2.8821981798365197,
+      "rim_width": 1.4973577087946957,
+      "gloss": 0.11663173544354002,
+      "score_scale": 0.9945792535121506,
+      "label_height": 30.970809972148043
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.41373667838501993,
+        "wing_peak": 0.0672024668205845,
+        "rim": 0.9026422912053043,
+        "gloss": 0.7326347088708004,
+        "score_shape": 0.1355186621962351,
+        "label_floor": 0.4854049860740215
+      },
+      "residual": 0.45618996559199426,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 31,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6595294433853719,
+      "wing_power": 2.6903334941225836,
+      "rim_width": 2.8536747164527285,
+      "gloss": 0.10868804937090591,
+      "score_scale": 0.9936635005564106,
+      "label_height": 31.354132761346627
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.374284713491801,
+        "wing_peak": 0.2441180423171485,
+        "rim": 0.4536747164527286,
+        "gloss": 0.5737609874181182,
+        "score_shape": 0.15841248608973457,
+        "label_floor": 0.6770663806733133
+      },
+      "residual": 0.413552887740474,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 32,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6397425885638959,
+      "wing_power": 2.8705323306407773,
+      "rim_width": 1.172064404774897,
+      "gloss": 0.09426335159912265,
+      "score_scale": 1.0011405049385211,
+      "label_height": 30.0
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.4081739846045417,
+        "wing_peak": 0.0032176429513017246,
+        "rim": 1.227935595225103,
+        "gloss": 0.28526703198245296,
+        "score_shape": 0.028512623463028408,
+        "label_floor": 0.0
+      },
+      "residual": 0.3255178130377379,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 33,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.615286073599854,
+      "wing_power": 2.6566923318472777,
+      "rim_width": 1.0896705972945393,
+      "gloss": 0.071471500323974,
+      "score_scale": 1.0009382762970203,
+      "label_height": 30.0
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.37512707804313505,
+        "wing_peak": 0.3089240800018253,
+        "rim": 1.3103294027054606,
+        "gloss": 0.17056999352052016,
+        "score_shape": 0.023456907425506435,
+        "label_floor": 0.0
+      },
+      "residual": 0.364734576949408,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 34,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6076888161424749,
+      "wing_power": 3.1979897322677737,
+      "rim_width": 1.3143396913742658,
+      "gloss": 0.10469752862185719,
+      "score_scale": 0.9765703926847222,
+      "label_height": 30.0
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.5914264938850712,
+        "wing_peak": 0.4038897982190634,
+        "rim": 1.0856603086257341,
+        "gloss": 0.49395057243714374,
+        "score_shape": 0.5857401828819442,
+        "label_floor": 0.0
+      },
+      "residual": 0.5267778926748261,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 35,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6155961357570757,
+      "wing_power": 3.1478246070301092,
+      "rim_width": 1.3565332426723713,
+      "gloss": 0.09059606108967265,
+      "score_scale": 0.9743059816348157,
+      "label_height": 30.03886684339942
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.5559901569284829,
+        "wing_peak": 0.3050483030365536,
+        "rim": 1.0434667573276286,
+        "gloss": 0.21192122179345296,
+        "score_shape": 0.6423504591296064,
+        "label_floor": 0.019433421699709186
+      },
+      "residual": 0.46303505331923894,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 36,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.7154634114711272,
+      "wing_power": 2.5507564617759666,
+      "rim_width": 2.0013289564746497,
+      "gloss": 0.11868502339103362,
+      "score_scale": 0.9955582447597029,
+      "label_height": 31.65081038656814
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.40303748933247296,
+        "wing_peak": 0.9432926433890904,
+        "rim": 0.3986710435253502,
+        "gloss": 0.7737004678206724,
+        "score_shape": 0.11104388100742768,
+        "label_floor": 0.8254051932840696
+      },
+      "residual": 0.5758584530598472,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 37,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.7079341544806805,
+      "wing_power": 2.7001255928519226,
+      "rim_width": 2.749631999104349,
+      "gloss": 0.12039739019123089,
+      "score_scale": 0.997295869527191,
+      "label_height": 30.966861084618127
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.3752148856367987,
+        "wing_peak": 0.8491769310085064,
+        "rim": 0.34963199910434906,
+        "gloss": 0.8079478038246176,
+        "score_shape": 0.06760326182022602,
+        "label_floor": 0.4834305423090637
+      },
+      "residual": 0.48883423728392694,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 38,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "strong",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6137416244542215,
+      "wing_power": 2.809767456037166,
+      "rim_width": 1.300731381642898,
+      "gloss": 0.09310332704622712,
+      "score_scale": 0.999502908043044,
+      "label_height": 30.222439990139115
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.39025768761955404,
+        "wing_peak": 0.328229694322231,
+        "rim": 1.0992686183571019,
+        "gloss": 0.26206654092454235,
+        "score_shape": 0.012427298923900487,
+        "label_floor": 0.1112199950695576
+      },
+      "residual": 0.3672449725361479,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 39,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.586239071135896,
+      "wing_power": 2.9020368379712536,
+      "rim_width": 1.4140923597123767,
+      "gloss": 0.0906697138712161,
+      "score_scale": 1.0004861542710175,
+      "label_height": 30.0
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.42312783696555395,
+        "wing_peak": 0.6720116108012999,
+        "rim": 0.9859076402876232,
+        "gloss": 0.21339427742432193,
+        "score_shape": 0.012153856775437566,
+        "label_floor": 0.0
+      },
+      "residual": 0.38443253704237285,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 40,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6616205775539666,
+      "wing_power": 3.014892490562176,
+      "rim_width": 1.4719039788097854,
+      "gloss": 0.11217265074138515,
+      "score_scale": 1.006233309625307,
+      "label_height": 30.495960693322157
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.4800290911385294,
+        "wing_peak": 0.2702572194245828,
+        "rim": 0.9280960211902145,
+        "gloss": 0.6434530148277029,
+        "score_shape": 0.1558327406326776,
+        "label_floor": 0.2479803466610786
+      },
+      "residual": 0.454274738979131,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 41,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.7324219894364382,
+      "wing_power": 2.573483048883372,
+      "rim_width": 2.3396349118288517,
+      "gloss": 0.11095185707464077,
+      "score_scale": 0.9719978225469067,
+      "label_height": 31.25883647911614
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.3955769722426846,
+        "wing_peak": 1.1552748679554774,
+        "rim": 0.06036508817114816,
+        "gloss": 0.6190371414928153,
+        "score_shape": 0.7000544363273326,
+        "label_floor": 0.6294182395580705
+      },
+      "residual": 0.5932877909579214,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 42,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "far",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6140617345166752,
+      "wing_power": 2.951742576591615,
+      "rim_width": 2.024895203823996,
+      "gloss": 0.08561998474443125,
+      "score_scale": 0.9811486299127832,
+      "label_height": 30.68062786616467
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.44628729549347246,
+        "wing_peak": 0.3242283185415598,
+        "rim": 0.3751047961760041,
+        "gloss": 0.11239969488862495,
+        "score_shape": 0.4712842521804206,
+        "label_floor": 0.34031393308233504
+      },
+      "residual": 0.3449363817270695,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 43,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6725273250381061,
+      "wing_power": 2.78864922268218,
+      "rim_width": 2.1582959670339386,
+      "gloss": 0.12214680137869101,
+      "score_scale": 1.0075646846785662,
+      "label_height": 30.720861532499683
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.3852302106781444,
+        "wing_peak": 0.40659156297632587,
+        "rim": 0.24170403296606136,
+        "gloss": 0.8429360275738201,
+        "score_shape": 0.18911711696415479,
+        "label_floor": 0.3604307662498414
+      },
+      "residual": 0.4043349529013913,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 44,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "strong",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.7403944864398684,
+      "wing_power": 2.6381291987925675,
+      "rim_width": 2.4811271256662835,
+      "gloss": 0.13284431693023876,
+      "score_scale": 0.989081966025336,
+      "label_height": 30.630457711474815
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.377090142786654,
+        "wing_peak": 1.2549310804983547,
+        "rim": 0.08112712566628355,
+        "gloss": 1.056886338604775,
+        "score_shape": 0.27295084936659886,
+        "label_floor": 0.31522885573740744
+      },
+      "residual": 0.5597023987766789,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 45,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "far",
+        "rim": "close",
+        "gloss": "far",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "strong",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6844215836990324,
+      "wing_power": 2.713316566880349,
+      "rim_width": 1.5437344367124366,
+      "gloss": 0.09736856484821202,
+      "score_scale": 0.9856277499790979,
+      "label_height": 31.205365535251566
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.37645710280693306,
+        "wing_peak": 0.5552697962379046,
+        "rim": 0.8562655632875633,
+        "gloss": 0.34737129696424035,
+        "score_shape": 0.3593062505225536,
+        "label_floor": 0.6026827676257831
+      },
+      "residual": 0.5162254629074964,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 46,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6560068928842575,
+      "wing_power": 3.093636834284701,
+      "rim_width": 1.24587164546059,
+      "gloss": 0.08477082019266688,
+      "score_scale": 1.0013671743185193,
+      "label_height": 30.248850417183682
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.5253034668537211,
+        "wing_peak": 0.2000861610532187,
+        "rim": 1.1541283545394099,
+        "gloss": 0.09541640385333755,
+        "score_shape": 0.034179357962982326,
+        "label_floor": 0.12442520859184114
+      },
+      "residual": 0.35558982547575174,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 47,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6379178535950297,
+      "wing_power": 2.9421364543907886,
+      "rim_width": 1.0,
+      "gloss": 0.06379724449489281,
+      "score_scale": 0.9696674285163884,
+      "label_height": 30.0
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.4418519823874611,
+        "wing_peak": 0.02602683006212858,
+        "rim": 1.4,
+        "gloss": 0.32405511010214383,
+        "score_shape": 0.7583142870902893,
+        "label_floor": 0.0
+      },
+      "residual": 0.4917080349403371,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 48,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6359461868444722,
+      "wing_power": 2.7048343126247874,
+      "rim_width": 1.200064489094033,
+      "gloss": 0.07097994339386454,
+      "score_scale": 0.9878820196348755,
+      "label_height": 30.0
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.37565972460220387,
+        "wing_peak": 0.05067266444409718,
+        "rim": 1.1999355109059668,
+        "gloss": 0.1804011321227092,
+        "score_shape": 0.30294950912811147,
+        "label_floor": 0.0
+      },
+      "residual": 0.3516030902005148,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 49,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6956723670719523,
+      "wing_power": 2.9363079164066113,
+      "rim_width": 2.4839042896502947,
+      "gloss": 0.0920942306327185,
+      "score_scale": 1.0146208608841316,
+      "label_height": 30.83371431988829
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.4391514913364031,
+        "wing_peak": 0.6959045883994042,
+        "rim": 0.08390428965029484,
+        "gloss": 0.24188461265437,
+        "score_shape": 0.36552152210329036,
+        "label_floor": 0.4168571599441453
+      },
+      "residual": 0.37387061068131794,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 50,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6694241773036315,
+      "wing_power": 2.774641126774777,
+      "rim_width": 1.938057244807216,
+      "gloss": 0.10990223508526789,
+      "score_scale": 0.9697317530414009,
+      "label_height": 30.796823441191428
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.38207876112216177,
+        "wing_peak": 0.3678022162953931,
+        "rim": 0.46194275519278394,
+        "gloss": 0.5980447017053577,
+        "score_shape": 0.7567061739649772,
+        "label_floor": 0.39841172059571406
+      },
+      "residual": 0.49416438814606467,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 51,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6316077937187239,
+      "wing_power": 3.0979584545201453,
+      "rim_width": 2.017137642290659,
+      "gloss": 0.10445633907663471,
+      "score_scale": 0.9657131938375233,
+      "label_height": 30.161072884646604
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.5277438372790945,
+        "wing_peak": 0.10490257851595158,
+        "rim": 0.3828623577093411,
+        "gloss": 0.4891267815326941,
+        "score_shape": 0.8571701540619175,
+        "label_floor": 0.08053644232330193
+      },
+      "residual": 0.40705702523705006,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 52,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.7123643377228324,
+      "wing_power": 2.790143359885237,
+      "rim_width": 2.6144784169617536,
+      "gloss": 0.12065376828915744,
+      "score_scale": 0.9826197931193256,
+      "label_height": 30.847505538110017
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.38558733181117555,
+        "wing_peak": 0.9045542215354043,
+        "rim": 0.21447841696175374,
+        "gloss": 0.8130753657831488,
+        "score_shape": 0.4345051720168608,
+        "label_floor": 0.42375276905500847
+      },
+      "residual": 0.5293255461938919,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 53,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "strong",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6677993120209408,
+      "wing_power": 2.2441784915809344,
+      "rim_width": 2.13280400759724,
+      "gloss": 0.09601009610088301,
+      "score_scale": 1.0093401170925889,
+      "label_height": 30.79519403903827
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.5712028793655115,
+        "wing_peak": 0.3474914002617596,
+        "rim": 0.26719599240276004,
+        "gloss": 0.32020192201766023,
+        "score_shape": 0.23350292731472155,
+        "label_floor": 0.39759701951913584
+      },
+      "residual": 0.3561986901469248,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 54,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6533614314030225,
+      "wing_power": 2.8118630756455607,
+      "rim_width": 1.558502505201147,
+      "gloss": 0.10840543812440247,
+      "score_scale": 1.0043371427246748,
+      "label_height": 30.54665547205861
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.39075424366750205,
+        "wing_peak": 0.16701789253778104,
+        "rim": 0.8414974947988529,
+        "gloss": 0.5681087624880493,
+        "score_shape": 0.10842856811686952,
+        "label_floor": 0.27332773602930516
+      },
+      "residual": 0.3915224496063933,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 55,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6067376356365223,
+      "wing_power": 2.76750642205465,
+      "rim_width": 1.0,
+      "gloss": 0.09310319400605534,
+      "score_scale": 0.9958997049431654,
+      "label_height": 30.0
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.3814370605886478,
+        "wing_peak": 0.4157795545434717,
+        "rim": 1.4,
+        "gloss": 0.2620638801211067,
+        "score_shape": 0.1025073764208656,
+        "label_floor": 0.0
+      },
+      "residual": 0.4269646452790153,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 56,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6428319671633146,
+      "wing_power": 2.7253212408522804,
+      "rim_width": 1.5111756049114813,
+      "gloss": 0.10781850346203743,
+      "score_scale": 1.0074657523536423,
+      "label_height": 30.884851596152522
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.37757708080293834,
+        "wing_peak": 0.035399589541432186,
+        "rim": 0.8888243950885186,
+        "gloss": 0.5563700692407486,
+        "score_shape": 0.18664380884105825,
+        "label_floor": 0.44242579807626115
+      },
+      "residual": 0.41454012359849285,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 57,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6658644231966323,
+      "wing_power": 2.958604818403029,
+      "rim_width": 1.3721987983494042,
+      "gloss": 0.08639070115783921,
+      "score_scale": 0.9822604425377046,
+      "label_height": 30.0
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.44944404095224266,
+        "wing_peak": 0.32330528995790364,
+        "rim": 1.0278012016505957,
+        "gloss": 0.12781402315678425,
+        "score_shape": 0.44348893655738464,
+        "label_floor": 0.0
+      },
+      "residual": 0.39530891537915186,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 58,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6648982841610817,
+      "wing_power": 2.549906888095596,
+      "rim_width": 1.1121724342240207,
+      "gloss": 0.09056769104984419,
+      "score_scale": 1.0033819982228134,
+      "label_height": 30.18956106283118
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.403317786993828,
+        "wing_peak": 0.3112285520135205,
+        "rim": 1.2878275657759792,
+        "gloss": 0.21135382099688377,
+        "score_shape": 0.0845499555703344,
+        "label_floor": 0.09478053141559073
+      },
+      "residual": 0.3988430354610228,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 59,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.7200446327432535,
+      "wing_power": 2.6360869782511744,
+      "rim_width": 2.6557398348018233,
+      "gloss": 0.11358918243363955,
+      "score_scale": 0.9828810975157812,
+      "label_height": 30.960978552242985
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.37753925408023636,
+        "wing_peak": 1.0005579092906682,
+        "rim": 0.2557398348018234,
+        "gloss": 0.671783648672791,
+        "score_shape": 0.4279725621054692,
+        "label_floor": 0.4804892761214923
+      },
+      "residual": 0.5356804141787468,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 60,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "far",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.690560020066962,
+      "wing_power": 2.6937055410056225,
+      "rim_width": 2.5043288204268546,
+      "gloss": 0.11844325585491658,
+      "score_scale": 0.9974523275664722,
+      "label_height": 30.69937976290334
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.37460581518461183,
+        "wing_peak": 0.6320002508370254,
+        "rim": 0.10432882042685465,
+        "gloss": 0.7688651170983315,
+        "score_shape": 0.06369181083819564,
+        "label_floor": 0.34968988145167046
+      },
+      "residual": 0.38219694930611486,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 61,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6507143966813929,
+      "wing_power": 2.8203917378630714,
+      "rim_width": 1.8656785650426664,
+      "gloss": 0.1032760838916886,
+      "score_scale": 0.9757751108973175,
+      "label_height": 30.74281630090874
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.3927708254097749,
+        "wing_peak": 0.13392995851741057,
+        "rim": 0.5343214349573335,
+        "gloss": 0.465521677833772,
+        "score_shape": 0.6056222275670625,
+        "label_floor": 0.3714081504543696
+      },
+      "residual": 0.41726237912328723,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 62,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.5874685914311224,
+      "wing_power": 3.091413508580402,
+      "rim_width": 1.0,
+      "gloss": 0.09531203523657128,
+      "score_scale": 0.9829586113994226,
+      "label_height": 30.316835288193744
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.5240462169221743,
+        "wing_peak": 0.6566426071109701,
+        "rim": 1.4,
+        "gloss": 0.30624070473142556,
+        "score_shape": 0.4260347150144339,
+        "label_floor": 0.15841764409687187
+      },
+      "residual": 0.5785636479793126,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 63,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6431644520492698,
+      "wing_power": 2.9294534796253964,
+      "rim_width": 1.975845604876983,
+      "gloss": 0.1115057641793763,
+      "score_scale": 0.9968795512169316,
+      "label_height": 30.791765027381093
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.4359665771341954,
+        "wing_peak": 0.03955565061587174,
+        "rim": 0.4241543951230169,
+        "gloss": 0.6301152835875259,
+        "score_shape": 0.07801121957670965,
+        "label_floor": 0.3958825136905464
+      },
+      "residual": 0.333947606621311,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 64,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6819231540685663,
+      "wing_power": 2.694956943857882,
+      "rim_width": 2.317255378628254,
+      "gloss": 0.11201710191711518,
+      "score_scale": 0.9986432909877869,
+      "label_height": 31.085297645199027
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.3747247691998459,
+        "wing_peak": 0.5240394258570785,
+        "rim": 0.08274462137174599,
+        "gloss": 0.6403420383423036,
+        "score_shape": 0.033917725305326885,
+        "label_floor": 0.5426488225995136
+      },
+      "residual": 0.36640290044596907,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 65,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6691234021303735,
+      "wing_power": 3.0863331142125627,
+      "rim_width": 1.7844447392252731,
+      "gloss": 0.12028442769281045,
+      "score_scale": 1.013283753739739,
+      "label_height": 31.077473701480322
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.5211688383570189,
+        "wing_peak": 0.3640425266296682,
+        "rim": 0.6155552607747268,
+        "gloss": 0.8056885538562089,
+        "score_shape": 0.33209384349347504,
+        "label_floor": 0.5387368507401611
+      },
+      "residual": 0.5295476456418765,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 66,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "strong",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6270162760378558,
+      "wing_power": 2.6790344130068093,
+      "rim_width": 1.133693570027988,
+      "gloss": 0.1016710967070091,
+      "score_scale": 1.0026787580514633,
+      "label_height": 31.128944401016152
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.3738824557992665,
+        "wing_peak": 0.1622965495268025,
+        "rim": 1.266306429972012,
+        "gloss": 0.4334219341401821,
+        "score_shape": 0.06696895128658342,
+        "label_floor": 0.5644722005080762
+      },
+      "residual": 0.47789142020548714,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 67,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6882570085728963,
+      "wing_power": 2.5826756086063556,
+      "rim_width": 2.2199329044200034,
+      "gloss": 0.11420711397429091,
+      "score_scale": 0.9791079744919049,
+      "label_height": 30.978514391998164
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.3925799779389902,
+        "wing_peak": 0.6032126071612034,
+        "rim": 0.18006709557999656,
+        "gloss": 0.6841422794858182,
+        "score_shape": 0.5223006377023776,
+        "label_floor": 0.48925719599908213
+      },
+      "residual": 0.47859329897791136,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 68,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6115088772905027,
+      "wing_power": 2.9320800678861443,
+      "rim_width": 1.8522678540493978,
+      "gloss": 0.0975745459308848,
+      "score_scale": 0.9932654809064793,
+      "label_height": 30.79905060006936
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.437188187629718,
+        "wing_peak": 0.3561390338687159,
+        "rim": 0.5477321459506022,
+        "gloss": 0.35149091861769594,
+        "score_shape": 0.16836297733801853,
+        "label_floor": 0.39952530003468034
+      },
+      "residual": 0.3767397605732385,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 69,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6094678040264759,
+      "wing_power": 2.7224956543601557,
+      "rim_width": 1.642618640149324,
+      "gloss": 0.12126872358251818,
+      "score_scale": 0.9693017118304246,
+      "label_height": 30.41370763182707
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.3773143548625874,
+        "wing_peak": 0.381652449669051,
+        "rim": 0.757381359850676,
+        "gloss": 0.8253744716503636,
+        "score_shape": 0.7674572042393857,
+        "label_floor": 0.2068538159135347
+      },
+      "residual": 0.552672276030933,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 70,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "strong",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.649560922366049,
+      "wing_power": 3.1932392297944903,
+      "rim_width": 1.6287821241544482,
+      "gloss": 0.10382064823068933,
+      "score_scale": 0.9961480910491987,
+      "label_height": 31.150399008815214
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.587951743143457,
+        "wing_peak": 0.11951152957561245,
+        "rim": 0.7712178758455517,
+        "gloss": 0.47641296461378657,
+        "score_shape": 0.09629772377003354,
+        "label_floor": 0.5751995044076068
+      },
+      "residual": 0.4377652235593414,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 71,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6396015686394887,
+      "wing_power": 3.0000005812166033,
+      "rim_width": 1.0,
+      "gloss": 0.09748737683650202,
+      "score_scale": 0.9811629544133295,
+      "label_height": 30.20851045595319
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.47129015009693365,
+        "wing_peak": 0.004980392006391499,
+        "rim": 1.4,
+        "gloss": 0.3497475367300404,
+        "score_shape": 0.47092613966676355,
+        "label_floor": 0.10425522797659426
+      },
+      "residual": 0.46686657441278717,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 72,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6440003270549239,
+      "wing_power": 2.9356701289922973,
+      "rim_width": 1.4034204341176433,
+      "gloss": 0.09612878292760438,
+      "score_scale": 0.9789845039919436,
+      "label_height": 31.099912208430936
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.43885555932455367,
+        "wing_peak": 0.050004088186549056,
+        "rim": 0.9965795658823566,
+        "gloss": 0.32257565855208753,
+        "score_shape": 0.5253874002014103,
+        "label_floor": 0.5499561042154681
+      },
+      "residual": 0.48055972939373753,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 73,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6529270799556343,
+      "wing_power": 2.761287779319926,
+      "rim_width": 1.5531338196114692,
+      "gloss": 0.09905294002803386,
+      "score_scale": 0.9893339842815911,
+      "label_height": 31.00059499395677
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.3808751950701427,
+        "wing_peak": 0.16158849944542808,
+        "rim": 0.8468661803885307,
+        "gloss": 0.38105880056067715,
+        "score_shape": 0.2666503929602215,
+        "label_floor": 0.5002974969783853
+      },
+      "residual": 0.42288942756723086,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 74,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6413877712786256,
+      "wing_power": 2.865178182375164,
+      "rim_width": 1.5691641572572397,
+      "gloss": 0.12159108496312661,
+      "score_scale": 1.0135648443702467,
+      "label_height": 30.686959355984023
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.4056108137660977,
+        "wing_peak": 0.017347140982819365,
+        "rim": 0.8308358427427602,
+        "gloss": 0.8318216992625321,
+        "score_shape": 0.33912110925616856,
+        "label_floor": 0.3434796779920113
+      },
+      "residual": 0.4613693806670649,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 75,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "strong",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6641936125951683,
+      "wing_power": 2.7546456320643142,
+      "rim_width": 1.7139772042084875,
+      "gloss": 0.12722575315376417,
+      "score_scale": 0.9875771169449853,
+      "label_height": 30.721172293275515
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.3802723957264155,
+        "wing_peak": 0.3024201574396035,
+        "rim": 0.6860227957915124,
+        "gloss": 0.9445150630752832,
+        "score_shape": 0.31057207637536777,
+        "label_floor": 0.36058614663775757
+      },
+      "residual": 0.49739810584099003,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 76,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "strong",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6622856123565776,
+      "wing_power": 3.025393296115394,
+      "rim_width": 1.3943756689819986,
+      "gloss": 0.11676313263808939,
+      "score_scale": 0.984485179344914,
+      "label_height": 30.950079934156527
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.48615681403002237,
+        "wing_peak": 0.27857015445721944,
+        "rim": 1.0056243310180013,
+        "gloss": 0.7352626527617878,
+        "score_shape": 0.38787051637715064,
+        "label_floor": 0.47503996707826346
+      },
+      "residual": 0.5614207392870741,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 77,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6405641254280148,
+      "wing_power": 2.764247335921672,
+      "rim_width": 1.5380756059555019,
+      "gloss": 0.11009353079115188,
+      "score_scale": 0.9762406156854019,
+      "label_height": 30.665278752539198
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.381142895562154,
+        "wing_peak": 0.007051567850184515,
+        "rim": 0.861924394044498,
+        "gloss": 0.6018706158230375,
+        "score_shape": 0.593984607864953,
+        "label_floor": 0.33263937626959894
+      },
+      "residual": 0.4631022429024043,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 78,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6576069249387555,
+      "wing_power": 2.7175601814408763,
+      "rim_width": 1.1104331510239451,
+      "gloss": 0.09364330050349753,
+      "score_scale": 0.982116042478977,
+      "label_height": 30.33480939534983
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.37685414273306195,
+        "wing_peak": 0.22008656173444358,
+        "rim": 1.2895668489760548,
+        "gloss": 0.27286601006995065,
+        "score_shape": 0.4470989380255752,
+        "label_floor": 0.16740469767491462
+      },
+      "residual": 0.4623128665356668,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 79,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.7119113945389827,
+      "wing_power": 2.549735697488006,
+      "rim_width": 2.0314512761033483,
+      "gloss": 0.11748939891136721,
+      "score_scale": 1.0192496173242511,
+      "label_height": 31.02551026683519
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.4033742797015812,
+        "wing_peak": 0.8988924317372832,
+        "rim": 0.3685487238966516,
+        "gloss": 0.7497879782273442,
+        "score_shape": 0.48124043310627806,
+        "label_floor": 0.5127551334175955
+      },
+      "residual": 0.5690998300144556,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 80,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6060204541125982,
+      "wing_power": 3.2850949095359625,
+      "rim_width": 1.0605552977160806,
+      "gloss": 0.08611936890301687,
+      "score_scale": 0.9869238633393729,
+      "label_height": 30.053493760477398
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.6537698464729516,
+        "wing_peak": 0.42474432359252273,
+        "rim": 1.3394447022839193,
+        "gloss": 0.12238737806033739,
+        "score_shape": 0.3269034165156781,
+        "label_floor": 0.026746880238698978
+      },
+      "residual": 0.4823327578606847,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 81,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6240533291912902,
+      "wing_power": 2.8094187509133604,
+      "rim_width": 1.2354321330823663,
+      "gloss": 0.0905343210514638,
+      "score_scale": 0.9740353036911683,
+      "label_height": 30.0
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.3901750216276083,
+        "wing_peak": 0.19933338510887272,
+        "rim": 1.1645678669176336,
+        "gloss": 0.2106864210292761,
+        "score_shape": 0.6491174077207923,
+        "label_floor": 0.0
+      },
+      "residual": 0.4356466837340305,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 82,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6835956848979913,
+      "wing_power": 2.6740523436586927,
+      "rim_width": 2.347087611538955,
+      "gloss": 0.11493899173478714,
+      "score_scale": 0.9762252648840183,
+      "label_height": 30.72019881340255
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.3741597651152516,
+        "wing_peak": 0.5449460612248908,
+        "rim": 0.052912388461044735,
+        "gloss": 0.6987798346957427,
+        "score_shape": 0.5943683778995429,
+        "label_floor": 0.36009940670127527
+      },
+      "residual": 0.437544305682958,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 83,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6525279232218307,
+      "wing_power": 2.735281018926732,
+      "rim_width": 1.822467615041557,
+      "gloss": 0.11363647000441061,
+      "score_scale": 0.9843968159590127,
+      "label_height": 30.903038774004266
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.37849886335815935,
+        "wing_peak": 0.15659904027288396,
+        "rim": 0.5775323849584428,
+        "gloss": 0.6727294000882122,
+        "score_shape": 0.39007960102468153,
+        "label_floor": 0.4515193870021328
+      },
+      "residual": 0.4378264461174188,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 84,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6423317644342732,
+      "wing_power": 2.6935533334070487,
+      "rim_width": 1.0,
+      "gloss": 0.08871387059195789,
+      "score_scale": 0.9866425577802458,
+      "label_height": 30.158006136708124
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.37459133911194875,
+        "wing_peak": 0.029147055428414836,
+        "rim": 1.4,
+        "gloss": 0.17427741183915768,
+        "score_shape": 0.3339360554938553,
+        "label_floor": 0.07900306835406212
+      },
+      "residual": 0.3984924883712398,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 85,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.5838879633985313,
+      "wing_power": 2.7441472143213197,
+      "rim_width": 1.3695463114479796,
+      "gloss": 0.09776907028475315,
+      "score_scale": 0.9726333494897337,
+      "label_height": 30.263184260787046
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.3793139030509626,
+        "wing_peak": 0.7014004575183586,
+        "rim": 1.0304536885520204,
+        "gloss": 0.355381405695063,
+        "score_shape": 0.684166262756658,
+        "label_floor": 0.13159213039352302
+      },
+      "residual": 0.5470513079944309,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 86,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6627918859849142,
+      "wing_power": 2.7503653061298263,
+      "rim_width": 2.5133984025777694,
+      "gloss": 0.10502738894386907,
+      "score_scale": 0.9954197374573552,
+      "label_height": 30.83256700198596
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.37988246053247837,
+        "wing_peak": 0.2848985748114277,
+        "rim": 0.11339840257776945,
+        "gloss": 0.5005477788773812,
+        "score_shape": 0.1145065635661191,
+        "label_floor": 0.4162835009929804
+      },
+      "residual": 0.30158621355969273,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 87,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.651429474810585,
+      "wing_power": 2.9231619420694384,
+      "rim_width": 1.4861284767968115,
+      "gloss": 0.1316779920368817,
+      "score_scale": 0.9945767417832122,
+      "label_height": 31.012166175939385
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.4330345042809541,
+        "wing_peak": 0.1428684351323123,
+        "rim": 0.9138715232031884,
+        "gloss": 1.033559840737634,
+        "score_shape": 0.1355814554196949,
+        "label_floor": 0.5060830879696923
+      },
+      "residual": 0.5274998077905794,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 88,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "far",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "strong",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6173002207704434,
+      "wing_power": 3.256818204249151,
+      "rim_width": 1.0,
+      "gloss": 0.0842898607577969,
+      "score_scale": 0.9874782455455906,
+      "label_height": 30.0
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.6338120117423082,
+        "wing_peak": 0.28374724036945714,
+        "rim": 1.4,
+        "gloss": 0.08579721515593802,
+        "score_shape": 0.3130438613602349,
+        "label_floor": 0.0
+      },
+      "residual": 0.4527333881046564,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 89,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6197329360392142,
+      "wing_power": 3.2015947109201046,
+      "rim_width": 1.2582227975869797,
+      "gloss": 0.08351809391124851,
+      "score_scale": 0.9784204153958052,
+      "label_height": 30.0
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.5940580936648373,
+        "wing_peak": 0.2533382995098227,
+        "rim": 1.1417772024130202,
+        "gloss": 0.07036187822497014,
+        "score_shape": 0.5394896151048711,
+        "label_floor": 0.0
+      },
+      "residual": 0.43317084815292023,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 90,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.5944545284561221,
+      "wing_power": 2.9445526992506585,
+      "rim_width": 1.6612246093215794,
+      "gloss": 0.10288803389539683,
+      "score_scale": 0.9981618389166889,
+      "label_height": 30.0
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.4429694063085034,
+        "wing_peak": 0.5693183942984736,
+        "rim": 0.7387753906784205,
+        "gloss": 0.45776067790793656,
+        "score_shape": 0.045954027082778515,
+        "label_floor": 0.0
+      },
+      "residual": 0.37579631604601876,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 91,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.622160457846712,
+      "wing_power": 2.85636472288485,
+      "rim_width": 1.108515630687488,
+      "gloss": 0.10261772205637142,
+      "score_scale": 0.9968250234139728,
+      "label_height": 30.226416469319506
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.40169697030537016,
+        "wing_peak": 0.22299427691609974,
+        "rim": 1.291484369312512,
+        "gloss": 0.4523544411274283,
+        "score_shape": 0.07937441465067918,
+        "label_floor": 0.11320823465975316
+      },
+      "residual": 0.4268521178286404,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 92,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6358910329521129,
+      "wing_power": 2.7216013348949786,
+      "rim_width": 1.125333832091453,
+      "gloss": 0.09600038199935548,
+      "score_scale": 0.9903248674292352,
+      "label_height": 30.21835145123649
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.3772310869612528,
+        "wing_peak": 0.051362088098588776,
+        "rim": 1.274666167908547,
+        "gloss": 0.3200076399871096,
+        "score_shape": 0.24187831426912,
+        "label_floor": 0.10917572561824507
+      },
+      "residual": 0.3957201704738105,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 93,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.5953050213212336,
+      "wing_power": 2.718563649820929,
+      "rim_width": 1.3744954603105848,
+      "gloss": 0.11431711984287739,
+      "score_scale": 1.0028465872803893,
+      "label_height": 30.170088329761743
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.3769478472255385,
+        "wing_peak": 0.5586872334845796,
+        "rim": 1.0255045396894151,
+        "gloss": 0.6863423968575477,
+        "score_shape": 0.07116468200973336,
+        "label_floor": 0.08504416488087152
+      },
+      "residual": 0.46728181069128105,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 94,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.5885829624069353,
+      "wing_power": 3.0021686348691268,
+      "rim_width": 1.0614513275966189,
+      "gloss": 0.08551239045056581,
+      "score_scale": 1.0145812450889866,
+      "label_height": 30.284432112604613
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.47256599944564687,
+        "wing_peak": 0.6427129699133088,
+        "rim": 1.338548672403381,
+        "gloss": 0.11024780901131626,
+        "score_shape": 0.3645311272246654,
+        "label_floor": 0.14221605630230627
+      },
+      "residual": 0.5118037723834375,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 95,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.7358593041669287,
+      "wing_power": 2.3625226924273752,
+      "rim_width": 2.3098510255602434,
+      "gloss": 0.10904493979757192,
+      "score_scale": 0.9895743115455267,
+      "label_height": 30.992689509992974
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.4882496290374007,
+        "wing_peak": 1.1982413020866083,
+        "rim": 0.09014897443975656,
+        "gloss": 0.5808987959514383,
+        "score_shape": 0.2606422113618334,
+        "label_floor": 0.4963447549964872
+      },
+      "residual": 0.5190876113122541,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 96,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "far",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6345052971487947,
+      "wing_power": 2.943084782144092,
+      "rim_width": 1.3394723713731933,
+      "gloss": 0.08725110253447554,
+      "score_scale": 0.9906760085548227,
+      "label_height": 31.22325555264012
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.4422906936767377,
+        "wing_peak": 0.06868378564006683,
+        "rim": 1.0605276286268066,
+        "gloss": 0.14502205068951085,
+        "score_shape": 0.2330997861294315,
+        "label_floor": 0.6116277763200593
+      },
+      "residual": 0.42687528684710213,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 97,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6322309675441825,
+      "wing_power": 2.7881459482890447,
+      "rim_width": 1.4069312926513375,
+      "gloss": 0.09006479259839315,
+      "score_scale": 0.9759819314965671,
+      "label_height": 30.0
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.3851098713083759,
+        "wing_peak": 0.0971129056977188,
+        "rim": 0.9930687073486624,
+        "gloss": 0.20129585196786287,
+        "score_shape": 0.6004517125858227,
+        "label_floor": 0.0
+      },
+      "residual": 0.37950650815140713,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 98,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.7099374131322911,
+      "wing_power": 2.280776337687405,
+      "rim_width": 2.2053091536469016,
+      "gloss": 0.1230434700973592,
+      "score_scale": 1.0104814926263963,
+      "label_height": 30.87604513337762
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.5432150439725791,
+        "wing_peak": 0.8742176641536383,
+        "rim": 0.1946908463530983,
+        "gloss": 0.8608694019471841,
+        "score_shape": 0.2620373156599076,
+        "label_floor": 0.4380225666888098
+      },
+      "residual": 0.5288421397958696,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 99,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "strong",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6515269368258618,
+      "wing_power": 2.605330202568882,
+      "rim_width": 2.076470724077935,
+      "gloss": 0.12880459503515404,
+      "score_scale": 0.9772662104238203,
+      "label_height": 31.102691275804375
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.3852451620869314,
+        "wing_peak": 0.14408671032327264,
+        "rim": 0.32352927592206493,
+        "gloss": 0.9760919007030807,
+        "score_shape": 0.5683447394044916,
+        "label_floor": 0.5513456379021875
+      },
+      "residual": 0.49144057105700484,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 100,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "strong",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6309524855759541,
+      "wing_power": 2.9402673250887075,
+      "rim_width": 1.6455899181050744,
+      "gloss": 0.09847392193494446,
+      "score_scale": 1.0337761899097695,
+      "label_height": 30.58423713870406
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.4409867455052498,
+        "wing_peak": 0.1130939303005743,
+        "rim": 0.7544100818949255,
+        "gloss": 0.3694784386988892,
+        "score_shape": 0.8444047477442373,
+        "label_floor": 0.29211856935203073
+      },
+      "residual": 0.46908208558265113,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 101,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6419316991377129,
+      "wing_power": 2.951746855185275,
+      "rim_width": 1.211130113198206,
+      "gloss": 0.09551573359155083,
+      "score_scale": 0.9955490369304663,
+      "label_height": 30.2606268512455
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.44628926673904845,
+        "wing_peak": 0.024146239221410626,
+        "rim": 1.188869886801794,
+        "gloss": 0.3103146718310165,
+        "score_shape": 0.11127407673834355,
+        "label_floor": 0.1303134256227505
+      },
+      "residual": 0.3685345944923939,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 102,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.686408598409759,
+      "wing_power": 2.6339607422480524,
+      "rim_width": 2.0953083983338674,
+      "gloss": 0.12146172136041578,
+      "score_scale": 0.9868040330844993,
+      "label_height": 30.813072554594747
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.37800708152403784,
+        "wing_peak": 0.5801074801219871,
+        "rim": 0.3046916016661325,
+        "gloss": 0.8292344272083154,
+        "score_shape": 0.32989917288751835,
+        "label_floor": 0.4065362772973735
+      },
+      "residual": 0.4714126734508941,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 103,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "strong",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6302575995652696,
+      "wing_power": 2.902831939058104,
+      "rim_width": 1.6544802156037928,
+      "gloss": 0.11566142985992153,
+      "score_scale": 0.9989356951230048,
+      "label_height": 30.589604821299794
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.4235024361346563,
+        "wing_peak": 0.12178000543413003,
+        "rim": 0.7455197843962071,
+        "gloss": 0.7132285971984306,
+        "score_shape": 0.026607621924878977,
+        "label_floor": 0.294802410649897
+      },
+      "residual": 0.3875734759563667,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 104,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6354093795152993,
+      "wing_power": 2.591620353768636,
+      "rim_width": 1.0825950240886026,
+      "gloss": 0.07624411520535869,
+      "score_scale": 0.989440628173639,
+      "label_height": 30.915759581578317
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.38967525705405376,
+        "wing_peak": 0.05738275605875892,
+        "rim": 1.3174049759113973,
+        "gloss": 0.07511769589282624,
+        "score_shape": 0.2639842956590255,
+        "label_floor": 0.45787979078915875
+      },
+      "residual": 0.4269074618942034,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 105,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6091063043376815,
+      "wing_power": 3.005894078658958,
+      "rim_width": 1.0452034875451326,
+      "gloss": 0.10017013387678504,
+      "score_scale": 0.9910923709439646,
+      "label_height": 30.048781243731575
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.47475547924542466,
+        "wing_peak": 0.38617119577898096,
+        "rim": 1.3547965124548673,
+        "gloss": 0.4034026775357008,
+        "score_shape": 0.22269072640088428,
+        "label_floor": 0.024390621865787665
+      },
+      "residual": 0.47770120221360757,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 106,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.634202551417463,
+      "wing_power": 2.8328918279931896,
+      "rim_width": 1.4714168703696162,
+      "gloss": 0.08754114065183603,
+      "score_scale": 0.9907761516673393,
+      "label_height": 30.0
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.39571416257824177,
+        "wing_peak": 0.07246810728171321,
+        "rim": 0.9285831296303837,
+        "gloss": 0.15082281303672063,
+        "score_shape": 0.2305962083165164,
+        "label_floor": 0.0
+      },
+      "residual": 0.2963640701405959,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 107,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6200794325322174,
+      "wing_power": 2.7507965147928535,
+      "rim_width": 1.691015776277711,
+      "gloss": 0.10126892434292849,
+      "score_scale": 1.0032970207292387,
+      "label_height": 30.89813052120143
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.3799217963401191,
+        "wing_peak": 0.24900709334728238,
+        "rim": 0.708984223722289,
+        "gloss": 0.4253784868585697,
+        "score_shape": 0.08242551823096633,
+        "label_floor": 0.4490652606007153
+      },
+      "residual": 0.3824637298499903,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 108,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6341157760098054,
+      "wing_power": 2.7950397116463197,
+      "rim_width": 1.502592736851487,
+      "gloss": 0.12591121301085148,
+      "score_scale": 1.0060030183274808,
+      "label_height": 30.89249852151043
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.3867561048190344,
+        "wing_peak": 0.07355279987743268,
+        "rim": 0.8974072631485128,
+        "gloss": 0.9182242602170295,
+        "score_shape": 0.15007545818702117,
+        "label_floor": 0.44624926075521465
+      },
+      "residual": 0.4787108578340408,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 109,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "strong",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6717256419491072,
+      "wing_power": 2.666305867867617,
+      "rim_width": 2.4437805334301568,
+      "gloss": 0.10940122643159451,
+      "score_scale": 1.0029864230530265,
+      "label_height": 30.752210625841055
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.374591226230422,
+        "wing_peak": 0.3965705243638401,
+        "rim": 0.043780533430156865,
+        "gloss": 0.5880245286318903,
+        "score_shape": 0.07466057632566359,
+        "label_floor": 0.3761053129205276
+      },
+      "residual": 0.3089554503170834,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 110,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6248341403087155,
+      "wing_power": 2.810539212948857,
+      "rim_width": 1.0366552898181314,
+      "gloss": 0.07853369723612003,
+      "score_scale": 0.9902671155730397,
+      "label_height": 30.0
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.3904406035439131,
+        "wing_peak": 0.18957324614105597,
+        "rim": 1.3633447101818685,
+        "gloss": 0.029326055277599516,
+        "score_shape": 0.24332211067400744,
+        "label_floor": 0.0
+      },
+      "residual": 0.3693344543030741,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 111,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.7172668158994471,
+      "wing_power": 2.2593103657632847,
+      "rim_width": 2.2899729874990946,
+      "gloss": 0.12713119047085225,
+      "score_scale": 0.9904705023505447,
+      "label_height": 30.99306588611877
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.5595846267666696,
+        "wing_peak": 0.9658351987430882,
+        "rim": 0.1100270125009053,
+        "gloss": 0.9426238094170449,
+        "score_shape": 0.23823744123638302,
+        "label_floor": 0.49653294305938545
+      },
+      "residual": 0.5521401719539129,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 112,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "strong",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6183879620662284,
+      "wing_power": 3.1877817995507494,
+      "rim_width": 1.0,
+      "gloss": 0.09100570784607978,
+      "score_scale": 0.9897806203368118,
+      "label_height": 30.295416480000753
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.5839501529638013,
+        "wing_peak": 0.27015047417214555,
+        "rim": 1.4,
+        "gloss": 0.22011415692159558,
+        "score_shape": 0.255484491579705,
+        "label_floor": 0.14770824000037663
+      },
+      "residual": 0.47956791927293735,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 113,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.7399075554399422,
+      "wing_power": 2.3669317664568714,
+      "rim_width": 2.324019903411654,
+      "gloss": 0.12641162206023085,
+      "score_scale": 0.9936568560663511,
+      "label_height": 31.078813704630196
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.48547569223972115,
+        "wing_peak": 1.2488444429992778,
+        "rim": 0.0759800965883457,
+        "gloss": 0.9282324412046169,
+        "score_shape": 0.1585785983412219,
+        "label_floor": 0.5394068523150981
+      },
+      "residual": 0.5727530206147136,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 114,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "far",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "strong",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6070158460066575,
+      "wing_power": 3.120743258163797,
+      "rim_width": 1.067750591508961,
+      "gloss": 0.11215723702240826,
+      "score_scale": 0.9773767473614271,
+      "label_height": 30.0
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.540535897229364,
+        "wing_peak": 0.4123019249167817,
+        "rim": 1.332249408491039,
+        "gloss": 0.6431447404481652,
+        "score_shape": 0.5655813159643225,
+        "label_floor": 0.0
+      },
+      "residual": 0.5823022145082788,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 115,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.635815537730094,
+      "wing_power": 2.991417008251973,
+      "rim_width": 1.1669913869473423,
+      "gloss": 0.09161616894864434,
+      "score_scale": 0.9734308948624087,
+      "label_height": 30.0
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.46622685881470705,
+        "wing_peak": 0.05230577837382483,
+        "rim": 1.2330086130526576,
+        "gloss": 0.2323233789728868,
+        "score_shape": 0.6642276284397813,
+        "label_floor": 0.0
+      },
+      "residual": 0.4413487096089763,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 116,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6654610886569686,
+      "wing_power": 2.270154548387514,
+      "rim_width": 2.5294851564734757,
+      "gloss": 0.09822210941099496,
+      "score_scale": 1.0069263097471293,
+      "label_height": 30.837259539569256
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.551298612773741,
+        "wing_peak": 0.31826360821210764,
+        "rim": 0.1294851564734758,
+        "gloss": 0.3644421882198992,
+        "score_shape": 0.17315774367823167,
+        "label_floor": 0.4186297697846282
+      },
+      "residual": 0.32587951319034725,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 117,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6247356528122175,
+      "wing_power": 2.755999282527887,
+      "rim_width": 1.5259214656180966,
+      "gloss": 0.0842262368403087,
+      "score_scale": 1.0002600871966925,
+      "label_height": 30.0
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.38039547013809605,
+        "wing_peak": 0.19080433984728085,
+        "rim": 0.8740785343819033,
+        "gloss": 0.08452473680617384,
+        "score_shape": 0.006502179917311501,
+        "label_floor": 0.0
+      },
+      "residual": 0.2560508768484609,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 118,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.5979805229877229,
+      "wing_power": 2.952462771583219,
+      "rim_width": 1.0,
+      "gloss": 0.0922230745498345,
+      "score_scale": 0.9960923629120023,
+      "label_height": 30.01392880973536
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.44661905254491147,
+        "wing_peak": 0.5252434626534643,
+        "rim": 1.4,
+        "gloss": 0.24446149099668996,
+        "score_shape": 0.0976909271999421,
+        "label_floor": 0.006964404867680685
+      },
+      "residual": 0.4534965563771147,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 119,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6706098976452468,
+      "wing_power": 2.599103964967208,
+      "rim_width": 2.1331085081724908,
+      "gloss": 0.13014062097956428,
+      "score_scale": 0.9814902837674768,
+      "label_height": 31.070058843725906
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.38725374769907944,
+        "wing_peak": 0.38262372056558497,
+        "rim": 0.26689149182750915,
+        "gloss": 1.0028124195912853,
+        "score_shape": 0.4627429058130794,
+        "label_floor": 0.5350294218629532
+      },
+      "residual": 0.5062256178932486,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 120,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "far",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "strong",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6778646580819667,
+      "wing_power": 2.5525306108931374,
+      "rim_width": 2.3401726142042536,
+      "gloss": 0.1183212446592745,
+      "score_scale": 0.9916526300998062,
+      "label_height": 31.387040838993787
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.4024524747804374,
+        "wing_peak": 0.47330822602458383,
+        "rim": 0.05982738579574631,
+        "gloss": 0.76642489318549,
+        "score_shape": 0.20868424750484504,
+        "label_floor": 0.6935204194968936
+      },
+      "residual": 0.434036274464666,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 121,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6004985279051965,
+      "wing_power": 2.914035270349065,
+      "rim_width": 1.3160643888934813,
+      "gloss": 0.08153790841066207,
+      "score_scale": 1.0104970343976707,
+      "label_height": 30.07523728996513
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.42876624057181717,
+        "wing_peak": 0.4937684011850435,
+        "rim": 1.0839356111065186,
+        "gloss": 0.030758168213241288,
+        "score_shape": 0.26242585994176726,
+        "label_floor": 0.037618644982565286
+      },
+      "residual": 0.38954548766682545,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 122,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.670329122676415,
+      "wing_power": 2.8056254618815126,
+      "rim_width": 1.1912666934656706,
+      "gloss": 0.07923918928916893,
+      "score_scale": 1.0021840637840307,
+      "label_height": 30.09982566444403
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.38927501475338305,
+        "wing_peak": 0.37911403345518707,
+        "rim": 1.2087333065343293,
+        "gloss": 0.015216214216621504,
+        "score_shape": 0.05460159460076719,
+        "label_floor": 0.049912832222014814
+      },
+      "residual": 0.3494754992970505,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 123,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.610088826218413,
+      "wing_power": 3.017256894625415,
+      "rim_width": 1.0,
+      "gloss": 0.09056107747956077,
+      "score_scale": 1.0029419750399284,
+      "label_height": 30.0
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.4814113054219746,
+        "wing_peak": 0.3738896722698379,
+        "rim": 1.4,
+        "gloss": 0.21122154959121536,
+        "score_shape": 0.07354937599821088,
+        "label_floor": 0.0
+      },
+      "residual": 0.42334531721353974,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 124,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6356140561106876,
+      "wing_power": 2.8152973846050426,
+      "rim_width": 1.8279587940056086,
+      "gloss": 0.1306919060798052,
+      "score_scale": 0.9659538197826334,
+      "label_height": 30.70556572216871
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.3915671020874956,
+        "wing_peak": 0.05482429861640575,
+        "rim": 0.5720412059943913,
+        "gloss": 1.0138381215961036,
+        "score_shape": 0.8511545054341652,
+        "label_floor": 0.3527828610843553
+      },
+      "residual": 0.5393680158021529,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 125,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "far",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "strong",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.674304651266615,
+      "wing_power": 2.4453080942770478,
+      "rim_width": 2.2970782276918533,
+      "gloss": 0.11517741698654112,
+      "score_scale": 0.9863015362448828,
+      "label_height": 30.7953932125784
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.4426851475649657,
+        "wing_peak": 0.42880814083268715,
+        "rim": 0.10292177230814659,
+        "gloss": 0.7035483397308223,
+        "score_shape": 0.3424615938779296,
+        "label_floor": 0.3976966062892
+      },
+      "residual": 0.4030202667672919,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 126,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "close",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  },
+  {
+    "parameters": {
+      "wing_peak": 0.6603156819308916,
+      "wing_power": 2.9781889288884797,
+      "rim_width": 1.3393707751156747,
+      "gloss": 0.10071643476520492,
+      "score_scale": 0.9938821790493996,
+      "label_height": 30.0
+    },
+    "metrics": {
+      "errors": {
+        "wing_profile": 0.4584001568973948,
+        "wing_peak": 0.2539460241361452,
+        "rim": 1.0606292248843252,
+        "gloss": 0.4143286953040984,
+        "score_shape": 0.1529455237650107,
+        "label_floor": 0.0
+      },
+      "residual": 0.3900416041644958,
+      "readable": true,
+      "contrast": true
+    },
+    "descriptor": {
+      "candidate": 127,
+      "targets": {
+        "wing_profile": "close",
+        "wing_peak": "close",
+        "rim": "far",
+        "gloss": "close",
+        "score_shape": "close",
+        "label_floor": "close"
+      },
+      "score_prominence": "correct",
+      "gradients": "subtle",
+      "rim": "fine",
+      "gloss": "restrained",
+      "label": "readability floor preserved",
+      "clock": "white pill with dark broadcast-traced digits",
+      "palettes": "official only; white label contrast passes",
+      "overlap": "existing field envelopes retained",
+      "evidence": "offline artwork prediction, in-game result unwitnessed"
+    }
+  }
+]

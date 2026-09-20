@@ -1,0 +1,314 @@
+[
+  {
+    "index": 0,
+    "name": "San Francisco 49ers",
+    "abbreviation": "SF",
+    "kind": 0
+  },
+  {
+    "index": 1,
+    "name": "Chicago Bears",
+    "abbreviation": "CHI",
+    "kind": 0
+  },
+  {
+    "index": 2,
+    "name": "Cincinnati Bengals",
+    "abbreviation": "CIN",
+    "kind": 0
+  },
+  {
+    "index": 3,
+    "name": "Buffalo Bills",
+    "abbreviation": "BUF",
+    "kind": 0
+  },
+  {
+    "index": 4,
+    "name": "Denver Broncos",
+    "abbreviation": "DEN",
+    "kind": 0
+  },
+  {
+    "index": 5,
+    "name": "Cleveland Browns",
+    "abbreviation": "CLE",
+    "kind": 0
+  },
+  {
+    "index": 6,
+    "name": "Tampa Bay Buccaneers",
+    "abbreviation": "TB",
+    "kind": 0
+  },
+  {
+    "index": 7,
+    "name": "Arizona Cardinals",
+    "abbreviation": "ARZ",
+    "kind": 0
+  },
+  {
+    "index": 8,
+    "name": "San Diego Chargers",
+    "abbreviation": "SD",
+    "kind": 0
+  },
+  {
+    "index": 9,
+    "name": "Kansas City Chiefs",
+    "abbreviation": "KC",
+    "kind": 0
+  },
+  {
+    "index": 10,
+    "name": "Indianapolis Colts",
+    "abbreviation": "IND",
+    "kind": 0
+  },
+  {
+    "index": 11,
+    "name": "Dallas Cowboys",
+    "abbreviation": "DAL",
+    "kind": 0
+  },
+  {
+    "index": 12,
+    "name": "Miami Dolphins",
+    "abbreviation": "MIA",
+    "kind": 0
+  },
+  {
+    "index": 13,
+    "name": "Philadelphia Eagles",
+    "abbreviation": "PHI",
+    "kind": 0
+  },
+  {
+    "index": 14,
+    "name": "Atlanta Falcons",
+    "abbreviation": "ATL",
+    "kind": 0
+  },
+  {
+    "index": 15,
+    "name": "New York Giants",
+    "abbreviation": "NYG",
+    "kind": 0
+  },
+  {
+    "index": 16,
+    "name": "Jacksonville Jaguars",
+    "abbreviation": "JAX",
+    "kind": 0
+  },
+  {
+    "index": 17,
+    "name": "New York Jets",
+    "abbreviation": "NYJ",
+    "kind": 0
+  },
+  {
+    "index": 18,
+    "name": "Detroit Lions",
+    "abbreviation": "DET",
+    "kind": 0
+  },
+  {
+    "index": 19,
+    "name": "Green Bay Packers",
+    "abbreviation": "GB",
+    "kind": 0
+  },
+  {
+    "index": 20,
+    "name": "Carolina Panthers",
+    "abbreviation": "CAR",
+    "kind": 0
+  },
+  {
+    "index": 21,
+    "name": "New England Patriots",
+    "abbreviation": "NE",
+    "kind": 0
+  },
+  {
+    "index": 22,
+    "name": "Oakland Raiders",
+    "abbreviation": "OAK",
+    "kind": 0
+  },
+  {
+    "index": 23,
+    "name": "St. Louis Rams",
+    "abbreviation": "STL",
+    "kind": 0
+  },
+  {
+    "index": 24,
+    "name": "Baltimore Ravens",
+    "abbreviation": "BAL",
+    "kind": 0
+  },
+  {
+    "index": 25,
+    "name": "Washington Redskins",
+    "abbreviation": "WAS",
+    "kind": 0
+  },
+  {
+    "index": 26,
+    "name": "New Orleans Saints",
+    "abbreviation": "NO",
+    "kind": 0
+  },
+  {
+    "index": 27,
+    "name": "Seattle Seahawks",
+    "abbreviation": "SEA",
+    "kind": 0
+  },
+  {
+    "index": 28,
+    "name": "Pittsburgh Steelers",
+    "abbreviation": "PIT",
+    "kind": 0
+  },
+  {
+    "index": 29,
+    "name": "Houston Texans",
+    "abbreviation": "HOU",
+    "kind": 0
+  },
+  {
+    "index": 30,
+    "name": "Tennessee Titans",
+    "abbreviation": "TEN",
+    "kind": 0
+  },
+  {
+    "index": 31,
+    "name": "Minnesota Vikings",
+    "abbreviation": "MIN",
+    "kind": 0
+  },
+  {
+    "index": 32,
+    "name": "**************** ****************",
+    "abbreviation": "USER1",
+    "kind": 2
+  },
+  {
+    "index": 33,
+    "name": "**************** ****************",
+    "abbreviation": "USER2",
+    "kind": 2
+  },
+  {
+    "index": 34,
+    "name": "Bristol Swamis",
+    "abbreviation": "BRI",
+    "kind": 5
+  },
+  {
+    "index": 35,
+    "name": "Bristol Risky Picks",
+    "abbreviation": "BRP",
+    "kind": 5
+  },
+  {
+    "index": 36,
+    "name": "Bristol Wingadoros",
+    "abbreviation": "BWG",
+    "kind": 5
+  },
+  {
+    "index": 37,
+    "name": "Canton Hammerheads",
+    "abbreviation": "CHH",
+    "kind": 5
+  },
+  {
+    "index": 38,
+    "name": "Upper Darby Cheesesteaks",
+    "abbreviation": "UDC",
+    "kind": 5
+  },
+  {
+    "index": 39,
+    "name": "Los Angeles Locos",
+    "abbreviation": "LAL",
+    "kind": 5
+  },
+  {
+    "index": 40,
+    "name": "Cincinnati Electra Shock",
+    "abbreviation": "CES",
+    "kind": 5
+  },
+  {
+    "index": 41,
+    "name": "Baurtwell Funkmasters",
+    "abbreviation": "BFM",
+    "kind": 5
+  },
+  {
+    "index": 42,
+    "name": "Los Angeles DreamTeam",
+    "abbreviation": "LAD",
+    "kind": 5
+  },
+  {
+    "index": 43,
+    "name": "Far West FW Alumni",
+    "abbreviation": "AFW",
+    "kind": 1
+  },
+  {
+    "index": 44,
+    "name": "Great Plains GP Alumni",
+    "abbreviation": "AGP",
+    "kind": 1
+  },
+  {
+    "index": 45,
+    "name": "Midwest MW Alumni",
+    "abbreviation": "AMW",
+    "kind": 1
+  },
+  {
+    "index": 46,
+    "name": "Northeast NE Alumni",
+    "abbreviation": "ANE",
+    "kind": 1
+  },
+  {
+    "index": 47,
+    "name": "Southeast SE Alumni",
+    "abbreviation": "ASE",
+    "kind": 1
+  },
+  {
+    "index": 48,
+    "name": "Southwest SW Alumni",
+    "abbreviation": "ASW",
+    "kind": 1
+  },
+  {
+    "index": 49,
+    "name": "AFC AFC",
+    "abbreviation": "AFC",
+    "kind": 1
+  },
+  {
+    "index": 50,
+    "name": "NFC NFC",
+    "abbreviation": "NFC",
+    "kind": 1
+  },
+  {
+    "index": 51,
+    "name": "NFL NFL",
+    "abbreviation": "NFL",
+    "kind": 1
+  }
+]

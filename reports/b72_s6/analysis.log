@@ -1,0 +1,322 @@
+{
+  "sample": {
+    "counts": {
+      "handled": 60972,
+      "orphan_ends": 1,
+      "unnamed_attempts": 3,
+      "unhandled_notifications": 20,
+      "draws": 788,
+      "closed_draws": 788,
+      "draws_without_geometry_values": 395
+    },
+    "boundary_events": [],
+    "sprite_format_draws": 0,
+    "sprite_offset_draws": 0,
+    "warnings": [],
+    "ram_bytes": 59207680,
+    "missing_top_bytes": 7901184,
+    "exact_sample_slice": [
+      13976229,
+      18742095
+    ],
+    "conclusion": "The supplied sample does not contain an appended sprite atlas draw."
+  },
+  "ram_comparison": {
+    "build": {
+      "patch": {
+        "path": "/home/noah/2K5 Mod Studio Builds/NFL 2K5 MOD TEST 2026-09-19p (beta 72 maximum: experimental + dynamic kickoff + colour + Arrowhead + widescreen).2k5patch",
+        "bytes": 225496757,
+        "sha256": "4353ae19a395df68cbf3a69673b41810e08b22433ffa60019f8b7d4e85fd9831"
+      },
+      "payload_member": "operations/file-0000.bin",
+      "pack_origin_in_member": 12021760,
+      "appended_bytes": 323808,
+      "atlas_span_sha256": "3486f2ffbbe87cc3d25049e2ddb6cf9dc3b2f043fae8d51c10f28a5553c2b254",
+      "scene_span_sha256": "1caee849d3159244cef4bbab9c2a8569d8467abf1cd4751e7e0f00acfe437da0"
+    },
+    "regions": [
+      {
+        "name": "indices",
+        "physical_offset": "0x1e55480",
+        "bytes": 131072,
+        "ram_sha256": "964f45b1cd7f9c3516f29307c4ad456bed1b25e51f0c3fc54f2ef658571c23dd",
+        "build_sha256": "964f45b1cd7f9c3516f29307c4ad456bed1b25e51f0c3fc54f2ef658571c23dd",
+        "equal": true,
+        "changed_bytes": 0
+      },
+      {
+        "name": "palette",
+        "physical_offset": "0x1e75480",
+        "bytes": 1024,
+        "ram_sha256": "c941f988309430391a56af7603a22996eebc73062f0e580bcdc41c6e77eada3f",
+        "build_sha256": "c941f988309430391a56af7603a22996eebc73062f0e580bcdc41c6e77eada3f",
+        "equal": true,
+        "changed_bytes": 0
+      }
+    ],
+    "scene_index_batches_equal_disc_p": true
+  },
+  "probe": [
+    {
+      "material": "yscore_buga1",
+      "vertex": 140,
+      "position_s1": [
+        -905,
+        -6780,
+        2301
+      ],
+      "vertex_bgra": [
+        "0xffffffff",
+        "0xffffffff",
+        "0xffffffff",
+        "0xffffffff"
+      ],
+      "uv_bounds": [
+        234,
+        194,
+        242,
+        206
+      ],
+      "opaque_core_texels": 16,
+      "predicted_core_luma_min": 254.99999999999997,
+      "predicted_core_luma_max": 254.99999999999997,
+      "limitation": "Texel-centre fragment probes, not framebuffer reproduction or raster-coverage prediction"
+    },
+    {
+      "material": "yscore_buga1",
+      "vertex": 144,
+      "position_s1": [
+        -104,
+        -6780,
+        2301
+      ],
+      "vertex_bgra": [
+        "0xffffffff",
+        "0xffffffff",
+        "0xffffffff",
+        "0xffffffff"
+      ],
+      "uv_bounds": [
+        208,
+        193,
+        219,
+        205
+      ],
+      "opaque_core_texels": 7,
+      "predicted_core_luma_min": 254.99999999999997,
+      "predicted_core_luma_max": 254.99999999999997,
+      "limitation": "Texel-centre fragment probes, not framebuffer reproduction or raster-coverage prediction"
+    },
+    {
+      "material": "yscore_buga1",
+      "vertex": 152,
+      "position_s1": [
+        1345,
+        -6780,
+        2301
+      ],
+      "vertex_bgra": [
+        "0xffffffff",
+        "0xffffffff",
+        "0xffffffff",
+        "0xffffffff"
+      ],
+      "uv_bounds": [
+        246,
+        170,
+        254,
+        182
+      ],
+      "opaque_core_texels": 1,
+      "predicted_core_luma_min": 254.99999999999997,
+      "predicted_core_luma_max": 254.99999999999997,
+      "limitation": "Texel-centre fragment probes, not framebuffer reproduction or raster-coverage prediction"
+    },
+    {
+      "material": "yscore_buga1",
+      "vertex": 160,
+      "position_s1": [
+        2485,
+        -6780,
+        2301
+      ],
+      "vertex_bgra": [
+        "0xffffffff",
+        "0xffffffff",
+        "0xffffffff",
+        "0xffffffff"
+      ],
+      "uv_bounds": [
+        234,
+        194,
+        242,
+        206
+      ],
+      "opaque_core_texels": 16,
+      "predicted_core_luma_min": 254.99999999999997,
+      "predicted_core_luma_max": 254.99999999999997,
+      "limitation": "Texel-centre fragment probes, not framebuffer reproduction or raster-coverage prediction"
+    },
+    {
+      "material": "yscore_buga1",
+      "vertex": 164,
+      "position_s1": [
+        3286,
+        -6780,
+        2301
+      ],
+      "vertex_bgra": [
+        "0xffffffff",
+        "0xffffffff",
+        "0xffffffff",
+        "0xffffffff"
+      ],
+      "uv_bounds": [
+        246,
+        184,
+        254,
+        196
+      ],
+      "opaque_core_texels": 13,
+      "predicted_core_luma_min": 254.99999999999997,
+      "predicted_core_luma_max": 254.99999999999997,
+      "limitation": "Texel-centre fragment probes, not framebuffer reproduction or raster-coverage prediction"
+    },
+    {
+      "material": "yscore_buga",
+      "vertex": 52,
+      "position_s1": [
+        -5343,
+        -7201,
+        2301
+      ],
+      "vertex_bgra": [
+        "0xfffdfdfd",
+        "0xfffdfdfd",
+        "0xfffdfdfd",
+        "0xfffdfdfd"
+      ],
+      "uv_bounds": [
+        183,
+        170,
+        195,
+        191
+      ],
+      "opaque_core_texels": 47,
+      "predicted_core_luma_min": 253.0,
+      "predicted_core_luma_max": 253.0,
+      "limitation": "Texel-centre fragment probes, not framebuffer reproduction or raster-coverage prediction"
+    },
+    {
+      "material": "yscore_buga",
+      "vertex": 64,
+      "position_s1": [
+        7109,
+        -7201,
+        2301
+      ],
+      "vertex_bgra": [
+        "0xfffdfdfd",
+        "0xfffdfdfd",
+        "0xfffdfdfd",
+        "0xfffdfdfd"
+      ],
+      "uv_bounds": [
+        127,
+        160,
+        139,
+        181
+      ],
+      "opaque_core_texels": 56,
+      "predicted_core_luma_min": 253.0,
+      "predicted_core_luma_max": 253.0,
+      "limitation": "Texel-centre fragment probes, not framebuffer reproduction or raster-coverage prediction"
+    }
+  ],
+  "screenshots": [
+    {
+      "filename": "shot_6_xemu_window.png",
+      "size": [
+        1280,
+        760
+      ],
+      "regions": {
+        "label": {
+          "box": [
+            555,
+            631,
+            646,
+            645
+          ],
+          "luma_min": 18.4452,
+          "luma_mean": 19.65637189952904,
+          "luma_max": 32.7874
+        },
+        "away": {
+          "box": [
+            474,
+            638,
+            499,
+            670
+          ],
+          "luma_min": 19.0,
+          "luma_mean": 109.95,
+          "luma_max": 253.0
+        },
+        "home": {
+          "box": [
+            715,
+            638,
+            741,
+            670
+          ],
+          "luma_min": 19.0,
+          "luma_mean": 129.79447115384616,
+          "luma_max": 253.0
+        }
+      }
+    },
+    {
+      "filename": "noah_screenshot_135542_49ers_at_bills.png",
+      "size": [
+        1281,
+        747
+      ],
+      "regions": {
+        "label": {
+          "box": [
+            587,
+            648,
+            678,
+            662
+          ],
+          "luma_min": 18.4452,
+          "luma_mean": 19.65637189952904,
+          "luma_max": 32.7874
+        },
+        "away": {
+          "box": [
+            506,
+            655,
+            531,
+            687
+          ],
+          "luma_min": 19.0,
+          "luma_mean": 109.95,
+          "luma_max": 253.0
+        },
+        "home": {
+          "box": [
+            747,
+            655,
+            773,
+            687
+          ],
+          "luma_min": 19.0,
+          "luma_mean": 129.79447115384616,
+          "luma_max": 253.0
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "base": "42579f4a5",
+  "expected_failure": true,
+  "reason": "Traceback (most recent call last):\n  File \"/home/noah/2k-worktrees/astra-b72-s9/tests/mod_editor/test_nfl2k5_scorebug_sprite.py\", line 233, in test_clock_crosses_the_retail_ten_minute_formatter_boundary\n    self.assertEqual(sum(bool(struct.unpack_from('<I',actual,scene.layout.S1+q['vertex']*10)[0]) for q in rows),expected,seconds)\nAssertionError: 0 != 5 : 599.01\n"
+}

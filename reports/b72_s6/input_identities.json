@@ -1,0 +1,37 @@
+[
+  {
+    "path": "/home/noah/Desktop/2K5-8 Editors/beta72_evidence/xemu_capture_0919/trace_sample6.log",
+    "bytes": 4765866,
+    "sha256": "cd6cc7cf84db008fdbfe0230d78af2387841b4e22d5c7859156d9dcf3ff612e6"
+  },
+  {
+    "path": "/home/noah/.var/app/app.xemu.xemu/data/xemu/capture/20260919-135300/trace.log",
+    "bytes": 18784833,
+    "sha256": "20bb51fd49f39cd90130434d8a4efe7426830578b07c252a44d6bb892bad1db9"
+  },
+  {
+    "path": "/home/noah/.var/app/app.xemu.xemu/data/xemu/capture/20260919-135300/ram_6.bin",
+    "bytes": 59207680,
+    "sha256": "62a4b3cbcbf8c6555b5462c8bc5aa26189b53741672fd599bbdb5d2f05105de8"
+  },
+  {
+    "path": "/home/noah/.var/app/app.xemu.xemu/data/xemu/capture/20260919-135300/samples.json",
+    "bytes": 886,
+    "sha256": "315bdb9a52791e06f89e72383096b4dd9c9ab132a2779972c43f0d4e959731d5"
+  },
+  {
+    "path": "/home/noah/Desktop/2K5-8 Editors/beta72_evidence/xemu_capture_0919/xemu_stdout.log",
+    "bytes": 1449,
+    "sha256": "98a976d9973b77837396e304ce6dd4ae30b2f413206afe564683719170cddcb9"
+  },
+  {
+    "path": "/home/noah/Desktop/2K5-8 Editors/beta72_evidence/xemu_capture_0919/noah_screenshot_135542_49ers_at_bills.png",
+    "bytes": 1167066,
+    "sha256": "9279e382b637cce5959e1ac4a1704346f185a5bdfbe1efb51681a351ea50551d"
+  },
+  {
+    "path": "/home/noah/Desktop/2K5-8 Editors/beta72_evidence/xemu_capture_0919/shot_6_xemu_window.png",
+    "bytes": 1068001,
+    "sha256": "82d021a452c9b90411137e32ca9ef278d9b63ad92cb12e101f1d1d313ed249ce"
+  }
+]

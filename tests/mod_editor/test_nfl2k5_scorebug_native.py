@@ -70,7 +70,10 @@ class Collection:
                 self.registered_fonts.append(m.uc.reg_read(m.x.UC_X86_REG_ECX))
             elif va == 0x48fc0:
                 self.closed = True
-        m.uc.hook_add(unicorn.UC_HOOK_CODE, event)
+        # The callback observes exactly these four PCs. Native instructions
+        # outside them still execute and the independent visit recorder stays.
+        for address in (0x48ff0,0x44da0,0x44b60,0x48fc0):
+            m.uc.hook_add(unicorn.UC_HOOK_CODE,event,begin=address,end=address)
 
     def run(self):
         m = self.m
@@ -94,7 +97,7 @@ class Collection:
                 raise AssertionError('native callback event bound exceeded')
         if not self.closed or m.get(0xb09584) or m.get(0xb09598) != m.get(0xb095a0):
             raise AssertionError('native collection did not finish exactly at EOF')
-        return {'events': events, 'max_callback_instructions': worst,
+        return {'events': events, 'max_callback_instructions': worst if m.record else None,
                 'registered_txtr': len(self.registered),
                 'registered_font': len(self.registered_fonts),
                 'heap_bytes': self.free_before - m.get(self.heap + 0x88)}

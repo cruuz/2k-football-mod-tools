@@ -1,21 +1,21 @@
-b72-m1 completes the requested host-side MyCareer work.
-Delivery branch b72-m1 is based on 088e3f41.
-Senior Bowl passing and rushing bands enforce the six-point cap.
-Pre-draft dash and Pass Skeleton bands enforce the eleven-point cap.
-All 21 Max Speed rows are validated and covered by boundary tests.
-Documented rules resolve fractional gaps, ties and out-of-range times.
-Earned purchases preserve existing progression caps and attribute permissions.
-Replayed journals prevent duplicate events, duplicate purchases and overspending.
-Named and recovery Studio projects preserve and validate earned-rating journals.
-Jersey, height, weight and college are written before tier calibration.
-All 612 native-template, body and tier combinations read back at 74/70/64/59.
-The position picker offers eleven retail rows or ten with one-pool LB.
-QB has four distinct host prototypes; other visible positions have three.
-Draft Advisory uses club counts against the executable roster tables.
-The adjacent 53-man cut-risk estimate is read-only and never cuts MyPlayer.
-MyCareer and MyCareer-mode XBE outputs are byte-identical to the base.
-The b69 budget receipt is unchanged, retaining 295 spare RX bytes.
-Validation: 51 suites, 1068 passing tests, four artwork-cache skips; all four XBE gates passed.
-No in-game result is claimed; protected integration changes are specified in WIRING.md.
-Verified delivery bundle: .scratch/astra-b72-m1.bundle; full evidence: ASTRA_REPORT.md.
+b72-s11 fixes primary-logo cropping offline for beta 73.
+Base: refs/astra/b72-s10/b72-s10 at c3b3b53a2; branch: b72-s11.
+Delivery: .scratch/astra-b72-s11.bundle; the base is its prerequisite.
+All 32 primary fits derive from their own ink bounds, aspect and complete coverage.
+Washington source-ink containment rises from 81.3428 percent to 100 percent.
+All 64 primary-team/aspect audits retain 100 percent at both native bar ends.
+Allowed crop is zero for wordmarks, asymmetric marks, circles and shields.
+Both all-team sheets render all 52 roster slots at the 617-pixel player bar scale.
+Six before/after sheets cover WAS-LAC, LV-HOU and circular PIT-TEN in both aspects.
+Logo residual stays 1931.75 player pixels, retaining the 30.9 percent s10 gain.
+Wing residual falls from 1524.00 to 1502.50; gain rises from 19.3 to 20.4 percent.
+Score residual stays 16.75 player pixels, retaining the 92.4 percent s10 gain.
+Every one of the 104 native label measurements equals s10 exactly.
+All 1350 retained native event-frame records equal s10 exactly.
+Wing art, scores, plate, housing, palettes and native owners remain unchanged.
+Append: 325216 bytes; RX: 4086 of 4096; RW: 128 bytes, all unchanged.
+All 36 default standalone files pass: 316 cases, including 8 existing skips.
+Both product closures, provider integrity and 31 focused owner-composition pairs pass.
+Auxiliary gates retain two timeouts and two stale-manifest errors; integration needs regeneration.
+Jev audits are logged below $1; no emulator, release action or in-game result is claimed.
 ASTRA_DONE

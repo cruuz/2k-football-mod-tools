@@ -1,0 +1,8 @@
+[1] mod_editor/core/providers.py: mod_editor/core/nfl2k5_scorebug_sprite_code.py
+    9cba0ba985ba0139fe32853f38f0f0408cc9f8c065c96d74fc46be6d4150b1f5
+ -> e5fa4ec770b22dd53c7edb167b9a0c95c9035b66561187b488d9dbfd586077ef
+[1] packaging/scorebug_replication_pins.py: data/nfl2k5_scorebug_sprite/team_accents.json
+    c26215d9d61fd33629932c169a68620aac634c72965626e90b5f513bd1ad52bd
+ -> cacfbbd4b3081dad1c13541b7c1bb560a1a214e9dacefd7636d940506ee65869
+
+applied 2 pin update(s)

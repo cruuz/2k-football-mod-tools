@@ -244,6 +244,23 @@ def _digest(data):
     return hashlib.sha1(struct.pack("<I", len(data)) + data).digest()  # nosec B324
 
 
+def count_differing_bytes(before, after):
+    """Exact mismatch count over the common prefix, like comparing zip pairs.
+
+    XBE writers change only a few small spans. Compare 64 KiB blocks in C and
+    count individual bytes only where a block differs, retaining every change.
+    No hashes, timestamps or cached identities participate in this count.
+    """
+    count = 0
+    end = min(len(before), len(after))
+    for offset in range(0, end, 64 * 1024):
+        limit = min(end, offset + 64 * 1024)
+        left, right = before[offset:limit], after[offset:limit]
+        if left != right:
+            count += sum(a != b for a, b in zip(left, right))
+    return count
+
+
 def _validate(payload):
     if is_scaleout(payload):
         return _validate_scaleout(payload)
@@ -407,7 +424,7 @@ def apply(payload: bytes, requests=(), *, scaleout=False) -> tuple[bytes, dict]:
     result = bytes(buf)
     _require(status(result) == "applied", "grown XBE postcondition failed")
     return result, {"status": "applied", "experimental": True, "runtime_witnessed": False,
-                    "changed_bytes": sum(a != b for a, b in zip(payload, result)) + len(result) - len(payload),
+                    "changed_bytes": count_differing_bytes(payload, result) + len(result) - len(payload),
                     "file_growth": len(result) - len(payload), "allocations": _allocations(wanted),
                     "reservations": reservations(result)}
 

@@ -1,0 +1,22 @@
+{
+  "stale_current": [
+    "mod_editor/core/nfl2k5_scorebug_exact.py",
+    "mod_editor/core/nfl2k5_scorebug_ingame.py",
+    "mod_editor/core/nfl2k5_scorebug_resources.py",
+    "mod_editor/core/nfl2k5_scorebug_runtime.py",
+    "mod_editor/core/nfl2k5_scorebug_sprite.py",
+    "mod_editor/core/nfl2k5_scorebug_sprite_code.py",
+    "mod_editor/core/nfl2k5_xbe_space.py"
+  ],
+  "stale_base": [
+    "mod_editor/core/nfl2k5_scorebug_exact.py",
+    "mod_editor/core/nfl2k5_scorebug_ingame.py",
+    "mod_editor/core/nfl2k5_scorebug_resources.py",
+    "mod_editor/core/nfl2k5_scorebug_runtime.py",
+    "mod_editor/core/nfl2k5_scorebug_sprite.py",
+    "mod_editor/core/nfl2k5_scorebug_sprite_code.py",
+    "mod_editor/core/nfl2k5_xbe_space.py"
+  ],
+  "new_stale_sources": [],
+  "manifest_unchanged": true
+}

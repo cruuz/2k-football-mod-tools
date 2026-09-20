@@ -658,8 +658,11 @@ def mnf_atlas_span(template):
 def panel_states(span, team, side):
     """Yield four source images, 0..3 actual remaining timeout dashes."""
     from . import nfl2k5_scorebug_exact as exact
+    # All artwork and provenance are identical across these four variants.
+    # The opaque dashes can be repainted without resampling the logo/gradient.
+    base = exact.panel(span, team, side, timeouts=0)
     for count in range(4):
-        yield exact.panel(span, team, side, timeouts=count)
+        yield exact._panel_timeouts(base.copy(), side, count)
 
 
 @lru_cache(maxsize=66)

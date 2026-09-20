@@ -1,0 +1,22 @@
+{
+  "counts": {
+    "handled": 60972,
+    "orphan_ends": 1,
+    "unnamed_attempts": 3,
+    "unhandled_notifications": 20,
+    "draws": 788,
+    "closed_draws": 788,
+    "draws_without_geometry_values": 395
+  },
+  "boundary_events": [],
+  "sprite_format_draws": 0,
+  "sprite_offset_draws": 0,
+  "warnings": [],
+  "ram_bytes": 59207680,
+  "missing_top_bytes": 7901184,
+  "exact_sample_slice": [
+    13976229,
+    18742095
+  ],
+  "conclusion": "The supplied sample does not contain an appended sprite atlas draw."
+}

@@ -1,0 +1,834 @@
+[
+  {
+    "team": "SF",
+    "aspect": "16:9",
+    "core_luma": 249.85,
+    "contrast": 5.2746610724834335,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "CHI",
+    "aspect": "16:9",
+    "core_luma": 249.07,
+    "contrast": 7.500780976157032,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "CIN",
+    "aspect": "16:9",
+    "core_luma": 251.35,
+    "contrast": 6.216692887815734,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "BUF",
+    "aspect": "16:9",
+    "core_luma": 251.86,
+    "contrast": 12.063434542807212,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "DEN",
+    "aspect": "16:9",
+    "core_luma": 249.63,
+    "contrast": 6.628782221491497,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "CLE",
+    "aspect": "16:9",
+    "core_luma": 249.93,
+    "contrast": 6.708911225400055,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "TB",
+    "aspect": "16:9",
+    "core_luma": 250.64,
+    "contrast": 8.141546331732968,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "ARI",
+    "aspect": "16:9",
+    "core_luma": 250.5,
+    "contrast": 8.724357084793075,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "LAC",
+    "aspect": "16:9",
+    "core_luma": 251.86,
+    "contrast": 7.509029727138914,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "KC",
+    "aspect": "16:9",
+    "core_luma": 250.92,
+    "contrast": 5.335516756491512,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "IND",
+    "aspect": "16:9",
+    "core_luma": 251.79,
+    "contrast": 13.20158539549498,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "DAL",
+    "aspect": "16:9",
+    "core_luma": 250.07,
+    "contrast": 11.004460261825663,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "MIA",
+    "aspect": "16:9",
+    "core_luma": 251.86,
+    "contrast": 7.10056728942698,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "PHI",
+    "aspect": "16:9",
+    "core_luma": 250.79,
+    "contrast": 7.5375732952443295,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "ATL",
+    "aspect": "16:9",
+    "core_luma": 249.71,
+    "contrast": 6.354056838779406,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "NYG",
+    "aspect": "16:9",
+    "core_luma": 250.86,
+    "contrast": 15.023120285467396,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "JAX",
+    "aspect": "16:9",
+    "core_luma": 251.57,
+    "contrast": 5.327419845782565,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "NYJ",
+    "aspect": "16:9",
+    "core_luma": 250.5,
+    "contrast": 6.471302110224628,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "DET",
+    "aspect": "16:9",
+    "core_luma": 252.57,
+    "contrast": 5.512187655468658,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "GB",
+    "aspect": "16:9",
+    "core_luma": 249.0,
+    "contrast": 5.594040807258181,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "CAR",
+    "aspect": "16:9",
+    "core_luma": 251.88,
+    "contrast": 7.059021392942498,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "NE",
+    "aspect": "16:9",
+    "core_luma": 250.07,
+    "contrast": 11.004460261825663,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "LV",
+    "aspect": "16:9",
+    "core_luma": 248.0,
+    "contrast": 6.584652797685219,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "LAR",
+    "aspect": "16:9",
+    "core_luma": 251.86,
+    "contrast": 11.621429310596351,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "BAL",
+    "aspect": "16:9",
+    "core_luma": 249.14,
+    "contrast": 6.788647331033767,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "WAS",
+    "aspect": "16:9",
+    "core_luma": 249.21,
+    "contrast": 6.277438670717572,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "NO",
+    "aspect": "16:9",
+    "core_luma": 249.93,
+    "contrast": 7.09712933311056,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "SEA",
+    "aspect": "16:9",
+    "core_luma": 249.79,
+    "contrast": 6.815482498779699,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "PIT",
+    "aspect": "16:9",
+    "core_luma": 251.86,
+    "contrast": 6.8664950251108,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "HOU",
+    "aspect": "16:9",
+    "core_luma": 252.43,
+    "contrast": 5.211554606315486,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "TEN",
+    "aspect": "16:9",
+    "core_luma": 250.65,
+    "contrast": 5.961996260314798,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "MIN",
+    "aspect": "16:9",
+    "core_luma": 250.18,
+    "contrast": 16.755584631335662,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "USER1",
+    "aspect": "16:9",
+    "core_luma": 248.0,
+    "contrast": 5.74183648145415,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "USER2",
+    "aspect": "16:9",
+    "core_luma": 248.0,
+    "contrast": 5.74183648145415,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "BRI",
+    "aspect": "16:9",
+    "core_luma": 250.71,
+    "contrast": 9.59527513934094,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "BRP",
+    "aspect": "16:9",
+    "core_luma": 250.86,
+    "contrast": 15.998774164147807,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "BWG",
+    "aspect": "16:9",
+    "core_luma": 250.86,
+    "contrast": 15.998774164147807,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "CHH",
+    "aspect": "16:9",
+    "core_luma": 250.86,
+    "contrast": 15.998774164147807,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "UDC",
+    "aspect": "16:9",
+    "core_luma": 248.0,
+    "contrast": 5.74183648145415,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "LAL",
+    "aspect": "16:9",
+    "core_luma": 248.0,
+    "contrast": 5.74183648145415,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "CES",
+    "aspect": "16:9",
+    "core_luma": 248.0,
+    "contrast": 5.74183648145415,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "BFM",
+    "aspect": "16:9",
+    "core_luma": 248.0,
+    "contrast": 5.74183648145415,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "LAD",
+    "aspect": "16:9",
+    "core_luma": 248.0,
+    "contrast": 5.74183648145415,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "AFW",
+    "aspect": "16:9",
+    "core_luma": 249.48,
+    "contrast": 6.8054475226128615,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "AGP",
+    "aspect": "16:9",
+    "core_luma": 251.0,
+    "contrast": 20.381370411830552,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "AMW",
+    "aspect": "16:9",
+    "core_luma": 251.56,
+    "contrast": 9.012792770888494,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "ANE",
+    "aspect": "16:9",
+    "core_luma": 249.11,
+    "contrast": 6.677650404831682,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "ASE",
+    "aspect": "16:9",
+    "core_luma": 249.22,
+    "contrast": 6.012943962655213,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "ASW",
+    "aspect": "16:9",
+    "core_luma": 251.0,
+    "contrast": 20.381370411830552,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "AFC",
+    "aspect": "16:9",
+    "core_luma": 250.71,
+    "contrast": 6.378632380382342,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "NFC",
+    "aspect": "16:9",
+    "core_luma": 250.86,
+    "contrast": 12.551562275729193,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "NFL",
+    "aspect": "16:9",
+    "core_luma": 250.86,
+    "contrast": 12.551562275729193,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "SF",
+    "aspect": "4:3",
+    "core_luma": 246.28,
+    "contrast": 5.2746610724834335,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "CHI",
+    "aspect": "4:3",
+    "core_luma": 245.07,
+    "contrast": 7.500780976157032,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "CIN",
+    "aspect": "4:3",
+    "core_luma": 247.13,
+    "contrast": 6.216692887815734,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "BUF",
+    "aspect": "4:3",
+    "core_luma": 246.79,
+    "contrast": 12.063434542807212,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "DEN",
+    "aspect": "4:3",
+    "core_luma": 245.86,
+    "contrast": 6.628782221491497,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "CLE",
+    "aspect": "4:3",
+    "core_luma": 245.93,
+    "contrast": 6.708911225400055,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "TB",
+    "aspect": "4:3",
+    "core_luma": 245.56,
+    "contrast": 8.146354813508825,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "ARI",
+    "aspect": "4:3",
+    "core_luma": 245.21,
+    "contrast": 8.731814348297005,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "LAC",
+    "aspect": "4:3",
+    "core_luma": 247.74,
+    "contrast": 7.509029727138914,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "KC",
+    "aspect": "4:3",
+    "core_luma": 246.2,
+    "contrast": 5.335516756491512,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "IND",
+    "aspect": "4:3",
+    "core_luma": 246.72,
+    "contrast": 13.232821530271599,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "DAL",
+    "aspect": "4:3",
+    "core_luma": 244.97,
+    "contrast": 11.004460261825663,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "MIA",
+    "aspect": "4:3",
+    "core_luma": 248.1,
+    "contrast": 7.10056728942698,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "PHI",
+    "aspect": "4:3",
+    "core_luma": 246.43,
+    "contrast": 7.5375732952443295,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "ATL",
+    "aspect": "4:3",
+    "core_luma": 245.42,
+    "contrast": 6.354056838779406,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "NYG",
+    "aspect": "4:3",
+    "core_luma": 245.22,
+    "contrast": 15.023120285467396,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "JAX",
+    "aspect": "4:3",
+    "core_luma": 247.22,
+    "contrast": 5.327419845782565,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "NYJ",
+    "aspect": "4:3",
+    "core_luma": 246.5,
+    "contrast": 6.471302110224628,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "DET",
+    "aspect": "4:3",
+    "core_luma": 248.37,
+    "contrast": 5.512187655468658,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "GB",
+    "aspect": "4:3",
+    "core_luma": 245.79,
+    "contrast": 5.594040807258181,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "CAR",
+    "aspect": "4:3",
+    "core_luma": 247.79,
+    "contrast": 7.059021392942498,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "NE",
+    "aspect": "4:3",
+    "core_luma": 244.97,
+    "contrast": 11.004460261825663,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "LV",
+    "aspect": "4:3",
+    "core_luma": 245.0,
+    "contrast": 6.584652797685219,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "LAR",
+    "aspect": "4:3",
+    "core_luma": 246.79,
+    "contrast": 11.621429310596351,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "BAL",
+    "aspect": "4:3",
+    "core_luma": 245.39,
+    "contrast": 6.788647331033767,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "WAS",
+    "aspect": "4:3",
+    "core_luma": 245.64,
+    "contrast": 6.277438670717572,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "NO",
+    "aspect": "4:3",
+    "core_luma": 245.89,
+    "contrast": 7.09712933311056,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "SEA",
+    "aspect": "4:3",
+    "core_luma": 245.86,
+    "contrast": 6.815482498779699,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "PIT",
+    "aspect": "4:3",
+    "core_luma": 248.0,
+    "contrast": 6.8664950251108,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "HOU",
+    "aspect": "4:3",
+    "core_luma": 247.61,
+    "contrast": 5.211554606315486,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "TEN",
+    "aspect": "4:3",
+    "core_luma": 246.58,
+    "contrast": 5.961996260314798,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "MIN",
+    "aspect": "4:3",
+    "core_luma": 244.48,
+    "contrast": 16.755584631335662,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "USER1",
+    "aspect": "4:3",
+    "core_luma": 245.0,
+    "contrast": 5.74183648145415,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "USER2",
+    "aspect": "4:3",
+    "core_luma": 245.0,
+    "contrast": 5.74183648145415,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "BRI",
+    "aspect": "4:3",
+    "core_luma": 245.49,
+    "contrast": 9.59527513934094,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "BRP",
+    "aspect": "4:3",
+    "core_luma": 245.84,
+    "contrast": 15.998774164147807,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "BWG",
+    "aspect": "4:3",
+    "core_luma": 245.84,
+    "contrast": 15.998774164147807,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "CHH",
+    "aspect": "4:3",
+    "core_luma": 245.84,
+    "contrast": 15.998774164147807,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "UDC",
+    "aspect": "4:3",
+    "core_luma": 245.0,
+    "contrast": 5.74183648145415,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "LAL",
+    "aspect": "4:3",
+    "core_luma": 245.0,
+    "contrast": 5.74183648145415,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "CES",
+    "aspect": "4:3",
+    "core_luma": 245.0,
+    "contrast": 5.74183648145415,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "BFM",
+    "aspect": "4:3",
+    "core_luma": 245.0,
+    "contrast": 5.74183648145415,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "LAD",
+    "aspect": "4:3",
+    "core_luma": 245.0,
+    "contrast": 5.74183648145415,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "AFW",
+    "aspect": "4:3",
+    "core_luma": 245.64,
+    "contrast": 6.8054475226128615,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "AGP",
+    "aspect": "4:3",
+    "core_luma": 245.0,
+    "contrast": 20.381370411830552,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "AMW",
+    "aspect": "4:3",
+    "core_luma": 246.77,
+    "contrast": 9.012792770888494,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "ANE",
+    "aspect": "4:3",
+    "core_luma": 245.72,
+    "contrast": 6.677650404831682,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "ASE",
+    "aspect": "4:3",
+    "core_luma": 246.0,
+    "contrast": 6.012943962655213,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "ASW",
+    "aspect": "4:3",
+    "core_luma": 245.0,
+    "contrast": 20.381370411830552,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "AFC",
+    "aspect": "4:3",
+    "core_luma": 246.31,
+    "contrast": 6.378632380382342,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "NFC",
+    "aspect": "4:3",
+    "core_luma": 245.22,
+    "contrast": 12.551562275729193,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  },
+  {
+    "team": "NFL",
+    "aspect": "4:3",
+    "core_luma": 245.22,
+    "contrast": 12.551562275729193,
+    "predicted_pass": true,
+    "runtime_witnessed": false
+  }
+]

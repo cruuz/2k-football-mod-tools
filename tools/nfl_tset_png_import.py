@@ -434,18 +434,26 @@ def median_cut_palette(histogram: Counter[tuple[int, int, int, int]],
     if len(colors) <= maximum:
         return colors
     boxes: list[list[tuple[int, int, int, int]]] = [colors]
+
+    def box_metrics(box):
+        if len(box) < 2:
+            return None
+        ranges = tuple(max(color[channel] for color in box) -
+                       min(color[channel] for color in box)
+                       for channel in range(4))
+        channel = max(range(4), key=lambda item: (ranges[item], -item))
+        return (max(ranges), sum(histogram[color] for color in box), len(box)), channel
+
+    # Only the two children change after a split. Reuse every other box's
+    # exact range/population, but attach its current index for the same tie rule.
+    metrics = [box_metrics(colors)]
     while len(boxes) < maximum:
         candidates: list[tuple[tuple[int, int, int, int], int, int]] = []
-        for box_index, box in enumerate(boxes):
-            if len(box) < 2:
+        for box_index, metric in enumerate(metrics):
+            if metric is None:
                 continue
-            ranges = tuple(max(color[channel] for color in box) -
-                           min(color[channel] for color in box)
-                           for channel in range(4))
-            channel = max(range(4), key=lambda item: (ranges[item], -item))
-            population = sum(histogram[color] for color in box)
-            candidates.append(((max(ranges), population, len(box), -box_index),
-                               box_index, channel))
+            priority, channel = metric
+            candidates.append(((*priority, -box_index), box_index, channel))
         if not candidates:
             break
         _, box_index, channel = max(candidates)
@@ -459,7 +467,9 @@ def median_cut_palette(histogram: Counter[tuple[int, int, int, int]],
             if accumulated >= target:
                 split = color_index
                 break
-        boxes[box_index:box_index + 1] = [box[:split], box[split:]]
+        children = [box[:split], box[split:]]
+        boxes[box_index:box_index + 1] = children
+        metrics[box_index:box_index + 1] = [box_metrics(child) for child in children]
 
     representatives: list[tuple[int, int, int, int]] = []
     for box in boxes:

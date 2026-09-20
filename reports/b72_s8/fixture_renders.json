@@ -1,0 +1,62 @@
+{
+  "rows": [
+    {
+      "aspect": "4:3",
+      "possession": "home",
+      "team": "LV",
+      "label_box": [
+        284,
+        410,
+        356,
+        424
+      ],
+      "mean": 96.79861111111111,
+      "max": 254.99999999999997,
+      "all_event_plates_hidden": true
+    },
+    {
+      "aspect": "4:3",
+      "possession": "away",
+      "team": "DET",
+      "label_box": [
+        284,
+        410,
+        356,
+        424
+      ],
+      "mean": 145.690208531746,
+      "max": 254.99999999999997,
+      "all_event_plates_hidden": true
+    },
+    {
+      "aspect": "16:9",
+      "possession": "home",
+      "team": "LV",
+      "label_box": [
+        293,
+        410,
+        347,
+        424
+      ],
+      "mean": 95.44179894179894,
+      "max": 254.99999999999997,
+      "all_event_plates_hidden": true
+    },
+    {
+      "aspect": "16:9",
+      "possession": "away",
+      "team": "DET",
+      "label_box": [
+        293,
+        410,
+        347,
+        424
+      ],
+      "mean": 144.76458862433861,
+      "max": 254.99999999999997,
+      "all_event_plates_hidden": true
+    }
+  ],
+  "runtime_witnessed": false,
+  "boundary": "Fresh native CPU fixtures and existing fragment model; no in-game capture or calibration claim."
+}

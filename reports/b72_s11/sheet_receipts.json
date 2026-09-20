@@ -1,0 +1,3578 @@
+[
+  {
+    "phase": "s10 BEFORE",
+    "matchup": "WAS_LAC",
+    "aspect": "43",
+    "state": {
+      "away": "WAS",
+      "home": "LAC",
+      "away_score": 0,
+      "home_score": 0,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 1,
+      "clock": 177,
+      "play_clock": 22,
+      "down": 1,
+      "distance": 10,
+      "possession": "away",
+      "event": "standard",
+      "goal_to_go": false,
+      "broadcast": "play_now"
+    },
+    "raster": {
+      "uv_transform": [
+        0.5,
+        0.5,
+        0.5,
+        0.5
+      ],
+      "winding": {
+        "cscore_buga": {
+          "positive": 0,
+          "negative": 6
+        },
+        "score_buga": {
+          "positive": 0,
+          "negative": 6
+        },
+        "dscore_buga": {
+          "positive": 0,
+          "negative": 8
+        },
+        "hscore_buga": {
+          "positive": 0,
+          "negative": 2
+        },
+        "yscore_buga1": {
+          "positive": 0,
+          "negative": 24
+        },
+        "yscore_buga": {
+          "positive": 0,
+          "negative": 18
+        },
+        "zscore_buga": {
+          "positive": 0,
+          "negative": 2
+        }
+      },
+      "rendered_materials": {
+        "cscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "dscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "hscore_buga": {
+          "descriptor": "0x4035e38",
+          "name": "sb24h0",
+          "dimensions": [
+            64,
+            64
+          ],
+          "span_sha256": "a28e9d4e707ca8ec9451e3d8285f7fce398dbada462fde0b72ddfeb08f69a802",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "score_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "yscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "yscore_buga1": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "zscore_buga": {
+          "descriptor": "0x40491b8",
+          "name": "sb29h0",
+          "dimensions": [
+            64,
+            64
+          ],
+          "span_sha256": "372e4f9d9bf3e4ae57137e9a47650bf2f0240d36e2b21ebeb26f0983b2bf9c34",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        }
+      },
+      "submission": [
+        {
+          "material": 2,
+          "name": "cscore_buga",
+          "indices": 16
+        },
+        {
+          "material": 6,
+          "name": "score_buga",
+          "indices": 16
+        },
+        {
+          "material": 4,
+          "name": "dscore_buga",
+          "indices": 22
+        },
+        {
+          "material": 3,
+          "name": "hscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 7,
+          "name": "yscore_buga1",
+          "indices": 88
+        },
+        {
+          "material": 9,
+          "name": "yscore_buga",
+          "indices": 94
+        },
+        {
+          "material": 5,
+          "name": "bscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 0,
+          "name": "bscore_buga1",
+          "indices": 4
+        },
+        {
+          "material": 1,
+          "name": "bscore_buga2",
+          "indices": 4
+        },
+        {
+          "material": 10,
+          "name": "zscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 8,
+          "name": "zz_ESPN_bug1",
+          "indices": 4
+        }
+      ],
+      "raster_policy": {
+        "order": "SHAP descriptor order, then push-buffer order",
+        "depth": "none (sprite submission order)",
+        "blend": "captured xemu fragment equations",
+        "retained_font_draws": "legacy font raster; GPU state not captured",
+        "cull_positive": false,
+        "gpu_state_proved": false,
+        "calibration": null
+      },
+      "xemu_model": {
+        "model": "xemu f9b1403 observed HUD fragment path",
+        "gpu_state_proved": false,
+        "calibration_passed": false,
+        "assumptions": [
+          "Caller diffuse multiplier at bucket+0x2e0 = (1,1,1,1)",
+          "Owned resident vertex slots; native upload executes",
+          "22950 matrix upload replaced by already captured native geometry",
+          "No preceding game-frame FIFO/PGRAPH state supplied",
+          "Preceding logic-op, depth-test enable, depth surface, shade mode and scissor state not captured",
+          "Pixel centres and CPU-projected geometry; surface_scale=4 coverage not emulated"
+        ],
+        "equation": "P8 fetch; oD0=v3*c6; R0=clamp(2*T0*oD0); final C0.a=0 passes R0; alpha>=2; SRC_ALPHA/ONE_MINUS_SRC_ALPHA ADD",
+        "reason": "Bounded native state does not reproduce the dark screenshots; no cause-specific fix proved."
+      }
+    },
+    "logo_geometry": {
+      "away_wing": [
+        [
+          87.5518798828125,
+          406.7618408203125
+        ],
+        [
+          238.6688232421875,
+          406.7618408203125
+        ],
+        [
+          87.5518798828125,
+          452.37890625
+        ],
+        [
+          238.6688232421875,
+          452.37890625
+        ]
+      ],
+      "home_wing": [
+        [
+          399.1070251464844,
+          406.7618408203125
+        ],
+        [
+          550.2285766601562,
+          406.7618408203125
+        ],
+        [
+          399.1070251464844,
+          452.37890625
+        ],
+        [
+          550.2285766601562,
+          452.37890625
+        ]
+      ],
+      "away_logo": [
+        [
+          87.5518798828125,
+          406.7618408203125
+        ],
+        [
+          189.7833251953125,
+          406.7618408203125
+        ],
+        [
+          87.5518798828125,
+          452.37890625
+        ],
+        [
+          189.7833251953125,
+          452.37890625
+        ]
+      ],
+      "home_logo": [
+        [
+          447.9940185546875,
+          406.7618408203125
+        ],
+        [
+          550.2285766601562,
+          406.7618408203125
+        ],
+        [
+          447.9940185546875,
+          452.37890625
+        ],
+        [
+          550.2285766601562,
+          452.37890625
+        ]
+      ]
+    },
+    "hud": [
+      640,
+      448
+    ],
+    "display": [
+      853,
+      640
+    ],
+    "filter": "Lanczos display approximation",
+    "runtime_witnessed": false,
+    "calibrated_gpu_capture": false
+  },
+  {
+    "phase": "s11 AFTER",
+    "matchup": "WAS_LAC",
+    "aspect": "43",
+    "state": {
+      "away": "WAS",
+      "home": "LAC",
+      "away_score": 0,
+      "home_score": 0,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 1,
+      "clock": 177,
+      "play_clock": 22,
+      "down": 1,
+      "distance": 10,
+      "possession": "away",
+      "event": "standard",
+      "goal_to_go": false,
+      "broadcast": "play_now"
+    },
+    "raster": {
+      "uv_transform": [
+        0.5,
+        0.5,
+        0.5,
+        0.5
+      ],
+      "winding": {
+        "cscore_buga": {
+          "positive": 0,
+          "negative": 6
+        },
+        "score_buga": {
+          "positive": 0,
+          "negative": 6
+        },
+        "dscore_buga": {
+          "positive": 0,
+          "negative": 8
+        },
+        "hscore_buga": {
+          "positive": 0,
+          "negative": 2
+        },
+        "yscore_buga1": {
+          "positive": 0,
+          "negative": 24
+        },
+        "yscore_buga": {
+          "positive": 0,
+          "negative": 18
+        },
+        "zscore_buga": {
+          "positive": 0,
+          "negative": 2
+        }
+      },
+      "rendered_materials": {
+        "cscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "dscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "hscore_buga": {
+          "descriptor": "0x4035e38",
+          "name": "sb24h0",
+          "dimensions": [
+            64,
+            64
+          ],
+          "span_sha256": "683f6587748612afaefa6dee38019c894fade946968ae600dd213ca079a33d63",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "score_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "yscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "yscore_buga1": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "zscore_buga": {
+          "descriptor": "0x40491b8",
+          "name": "sb29h0",
+          "dimensions": [
+            64,
+            64
+          ],
+          "span_sha256": "76574c9e23bc3c8a1aa7da8a4b3d8193feeac03cc535368d5954c8280cda3471",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        }
+      },
+      "submission": [
+        {
+          "material": 2,
+          "name": "cscore_buga",
+          "indices": 16
+        },
+        {
+          "material": 6,
+          "name": "score_buga",
+          "indices": 16
+        },
+        {
+          "material": 4,
+          "name": "dscore_buga",
+          "indices": 22
+        },
+        {
+          "material": 3,
+          "name": "hscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 7,
+          "name": "yscore_buga1",
+          "indices": 88
+        },
+        {
+          "material": 9,
+          "name": "yscore_buga",
+          "indices": 94
+        },
+        {
+          "material": 5,
+          "name": "bscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 0,
+          "name": "bscore_buga1",
+          "indices": 4
+        },
+        {
+          "material": 1,
+          "name": "bscore_buga2",
+          "indices": 4
+        },
+        {
+          "material": 10,
+          "name": "zscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 8,
+          "name": "zz_ESPN_bug1",
+          "indices": 4
+        }
+      ],
+      "raster_policy": {
+        "order": "SHAP descriptor order, then push-buffer order",
+        "depth": "none (sprite submission order)",
+        "blend": "captured xemu fragment equations",
+        "retained_font_draws": "legacy font raster; GPU state not captured",
+        "cull_positive": false,
+        "gpu_state_proved": false,
+        "calibration": null
+      },
+      "xemu_model": {
+        "model": "xemu f9b1403 observed HUD fragment path",
+        "gpu_state_proved": false,
+        "calibration_passed": false,
+        "assumptions": [
+          "Caller diffuse multiplier at bucket+0x2e0 = (1,1,1,1)",
+          "Owned resident vertex slots; native upload executes",
+          "22950 matrix upload replaced by already captured native geometry",
+          "No preceding game-frame FIFO/PGRAPH state supplied",
+          "Preceding logic-op, depth-test enable, depth surface, shade mode and scissor state not captured",
+          "Pixel centres and CPU-projected geometry; surface_scale=4 coverage not emulated"
+        ],
+        "equation": "P8 fetch; oD0=v3*c6; R0=clamp(2*T0*oD0); final C0.a=0 passes R0; alpha>=2; SRC_ALPHA/ONE_MINUS_SRC_ALPHA ADD",
+        "reason": "Bounded native state does not reproduce the dark screenshots; no cause-specific fix proved."
+      }
+    },
+    "logo_geometry": {
+      "away_wing": [
+        [
+          87.5518798828125,
+          406.7618408203125
+        ],
+        [
+          238.6688232421875,
+          406.7618408203125
+        ],
+        [
+          87.5518798828125,
+          452.37890625
+        ],
+        [
+          238.6688232421875,
+          452.37890625
+        ]
+      ],
+      "home_wing": [
+        [
+          399.1070251464844,
+          406.7618408203125
+        ],
+        [
+          550.2285766601562,
+          406.7618408203125
+        ],
+        [
+          399.1070251464844,
+          452.37890625
+        ],
+        [
+          550.2285766601562,
+          452.37890625
+        ]
+      ],
+      "away_logo": [
+        [
+          87.5518798828125,
+          406.7618408203125
+        ],
+        [
+          189.7833251953125,
+          406.7618408203125
+        ],
+        [
+          87.5518798828125,
+          452.37890625
+        ],
+        [
+          189.7833251953125,
+          452.37890625
+        ]
+      ],
+      "home_logo": [
+        [
+          447.9940185546875,
+          406.7618408203125
+        ],
+        [
+          550.2285766601562,
+          406.7618408203125
+        ],
+        [
+          447.9940185546875,
+          452.37890625
+        ],
+        [
+          550.2285766601562,
+          452.37890625
+        ]
+      ]
+    },
+    "hud": [
+      640,
+      448
+    ],
+    "display": [
+      853,
+      640
+    ],
+    "filter": "Lanczos display approximation",
+    "runtime_witnessed": false,
+    "calibrated_gpu_capture": false
+  },
+  {
+    "phase": "s10 BEFORE",
+    "matchup": "WAS_LAC",
+    "aspect": "169",
+    "state": {
+      "away": "WAS",
+      "home": "LAC",
+      "away_score": 0,
+      "home_score": 0,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 1,
+      "clock": 177,
+      "play_clock": 22,
+      "down": 1,
+      "distance": 10,
+      "possession": "away",
+      "event": "standard",
+      "goal_to_go": false,
+      "broadcast": "play_now"
+    },
+    "raster": {
+      "uv_transform": [
+        0.5,
+        0.5,
+        0.5,
+        0.5
+      ],
+      "winding": {
+        "cscore_buga": {
+          "positive": 0,
+          "negative": 6
+        },
+        "score_buga": {
+          "positive": 0,
+          "negative": 6
+        },
+        "dscore_buga": {
+          "positive": 0,
+          "negative": 8
+        },
+        "hscore_buga": {
+          "positive": 0,
+          "negative": 2
+        },
+        "yscore_buga1": {
+          "positive": 0,
+          "negative": 24
+        },
+        "yscore_buga": {
+          "positive": 0,
+          "negative": 18
+        },
+        "zscore_buga": {
+          "positive": 0,
+          "negative": 2
+        }
+      },
+      "rendered_materials": {
+        "cscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "dscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "hscore_buga": {
+          "descriptor": "0x4035e38",
+          "name": "sb24h0",
+          "dimensions": [
+            64,
+            64
+          ],
+          "span_sha256": "a28e9d4e707ca8ec9451e3d8285f7fce398dbada462fde0b72ddfeb08f69a802",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "score_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "yscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "yscore_buga1": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "zscore_buga": {
+          "descriptor": "0x40491b8",
+          "name": "sb29h0",
+          "dimensions": [
+            64,
+            64
+          ],
+          "span_sha256": "372e4f9d9bf3e4ae57137e9a47650bf2f0240d36e2b21ebeb26f0983b2bf9c34",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        }
+      },
+      "submission": [
+        {
+          "material": 2,
+          "name": "cscore_buga",
+          "indices": 16
+        },
+        {
+          "material": 6,
+          "name": "score_buga",
+          "indices": 16
+        },
+        {
+          "material": 4,
+          "name": "dscore_buga",
+          "indices": 22
+        },
+        {
+          "material": 3,
+          "name": "hscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 7,
+          "name": "yscore_buga1",
+          "indices": 88
+        },
+        {
+          "material": 9,
+          "name": "yscore_buga",
+          "indices": 94
+        },
+        {
+          "material": 5,
+          "name": "bscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 0,
+          "name": "bscore_buga1",
+          "indices": 4
+        },
+        {
+          "material": 1,
+          "name": "bscore_buga2",
+          "indices": 4
+        },
+        {
+          "material": 10,
+          "name": "zscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 8,
+          "name": "zz_ESPN_bug1",
+          "indices": 4
+        }
+      ],
+      "raster_policy": {
+        "order": "SHAP descriptor order, then push-buffer order",
+        "depth": "none (sprite submission order)",
+        "blend": "captured xemu fragment equations",
+        "retained_font_draws": "legacy font raster; GPU state not captured",
+        "cull_positive": false,
+        "gpu_state_proved": false,
+        "calibration": null
+      },
+      "xemu_model": {
+        "model": "xemu f9b1403 observed HUD fragment path",
+        "gpu_state_proved": false,
+        "calibration_passed": false,
+        "assumptions": [
+          "Caller diffuse multiplier at bucket+0x2e0 = (1,1,1,1)",
+          "Owned resident vertex slots; native upload executes",
+          "22950 matrix upload replaced by already captured native geometry",
+          "No preceding game-frame FIFO/PGRAPH state supplied",
+          "Preceding logic-op, depth-test enable, depth surface, shade mode and scissor state not captured",
+          "Pixel centres and CPU-projected geometry; surface_scale=4 coverage not emulated"
+        ],
+        "equation": "P8 fetch; oD0=v3*c6; R0=clamp(2*T0*oD0); final C0.a=0 passes R0; alpha>=2; SRC_ALPHA/ONE_MINUS_SRC_ALPHA ADD",
+        "reason": "Bounded native state does not reproduce the dark screenshots; no cause-specific fix proved."
+      }
+    },
+    "logo_geometry": {
+      "away_wing": [
+        [
+          145.6634521484375,
+          406.7618408203125
+        ],
+        [
+          259.00115966796875,
+          406.7618408203125
+        ],
+        [
+          145.6634521484375,
+          452.37890625
+        ],
+        [
+          259.00115966796875,
+          452.37890625
+        ]
+      ],
+      "home_wing": [
+        [
+          379.33828043937683,
+          406.7618408203125
+        ],
+        [
+          492.6686429977417,
+          406.7618408203125
+        ],
+        [
+          379.33828043937683,
+          452.37890625
+        ],
+        [
+          492.6686429977417,
+          452.37890625
+        ]
+      ],
+      "away_logo": [
+        [
+          145.6634521484375,
+          406.7618408203125
+        ],
+        [
+          222.3286247253418,
+          406.7618408203125
+        ],
+        [
+          145.6634521484375,
+          452.37890625
+        ],
+        [
+          222.3286247253418,
+          452.37890625
+        ]
+      ],
+      "home_logo": [
+        [
+          416.00112080574036,
+          406.7618408203125
+        ],
+        [
+          492.6686429977417,
+          406.7618408203125
+        ],
+        [
+          416.00112080574036,
+          452.37890625
+        ],
+        [
+          492.6686429977417,
+          452.37890625
+        ]
+      ]
+    },
+    "hud": [
+      640,
+      448
+    ],
+    "display": [
+      1138,
+      640
+    ],
+    "filter": "Lanczos display approximation",
+    "runtime_witnessed": false,
+    "calibrated_gpu_capture": false
+  },
+  {
+    "phase": "s11 AFTER",
+    "matchup": "WAS_LAC",
+    "aspect": "169",
+    "state": {
+      "away": "WAS",
+      "home": "LAC",
+      "away_score": 0,
+      "home_score": 0,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 1,
+      "clock": 177,
+      "play_clock": 22,
+      "down": 1,
+      "distance": 10,
+      "possession": "away",
+      "event": "standard",
+      "goal_to_go": false,
+      "broadcast": "play_now"
+    },
+    "raster": {
+      "uv_transform": [
+        0.5,
+        0.5,
+        0.5,
+        0.5
+      ],
+      "winding": {
+        "cscore_buga": {
+          "positive": 0,
+          "negative": 6
+        },
+        "score_buga": {
+          "positive": 0,
+          "negative": 6
+        },
+        "dscore_buga": {
+          "positive": 0,
+          "negative": 8
+        },
+        "hscore_buga": {
+          "positive": 0,
+          "negative": 2
+        },
+        "yscore_buga1": {
+          "positive": 0,
+          "negative": 24
+        },
+        "yscore_buga": {
+          "positive": 0,
+          "negative": 18
+        },
+        "zscore_buga": {
+          "positive": 0,
+          "negative": 2
+        }
+      },
+      "rendered_materials": {
+        "cscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "dscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "hscore_buga": {
+          "descriptor": "0x4035e38",
+          "name": "sb24h0",
+          "dimensions": [
+            64,
+            64
+          ],
+          "span_sha256": "683f6587748612afaefa6dee38019c894fade946968ae600dd213ca079a33d63",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "score_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "yscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "yscore_buga1": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "zscore_buga": {
+          "descriptor": "0x40491b8",
+          "name": "sb29h0",
+          "dimensions": [
+            64,
+            64
+          ],
+          "span_sha256": "76574c9e23bc3c8a1aa7da8a4b3d8193feeac03cc535368d5954c8280cda3471",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        }
+      },
+      "submission": [
+        {
+          "material": 2,
+          "name": "cscore_buga",
+          "indices": 16
+        },
+        {
+          "material": 6,
+          "name": "score_buga",
+          "indices": 16
+        },
+        {
+          "material": 4,
+          "name": "dscore_buga",
+          "indices": 22
+        },
+        {
+          "material": 3,
+          "name": "hscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 7,
+          "name": "yscore_buga1",
+          "indices": 88
+        },
+        {
+          "material": 9,
+          "name": "yscore_buga",
+          "indices": 94
+        },
+        {
+          "material": 5,
+          "name": "bscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 0,
+          "name": "bscore_buga1",
+          "indices": 4
+        },
+        {
+          "material": 1,
+          "name": "bscore_buga2",
+          "indices": 4
+        },
+        {
+          "material": 10,
+          "name": "zscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 8,
+          "name": "zz_ESPN_bug1",
+          "indices": 4
+        }
+      ],
+      "raster_policy": {
+        "order": "SHAP descriptor order, then push-buffer order",
+        "depth": "none (sprite submission order)",
+        "blend": "captured xemu fragment equations",
+        "retained_font_draws": "legacy font raster; GPU state not captured",
+        "cull_positive": false,
+        "gpu_state_proved": false,
+        "calibration": null
+      },
+      "xemu_model": {
+        "model": "xemu f9b1403 observed HUD fragment path",
+        "gpu_state_proved": false,
+        "calibration_passed": false,
+        "assumptions": [
+          "Caller diffuse multiplier at bucket+0x2e0 = (1,1,1,1)",
+          "Owned resident vertex slots; native upload executes",
+          "22950 matrix upload replaced by already captured native geometry",
+          "No preceding game-frame FIFO/PGRAPH state supplied",
+          "Preceding logic-op, depth-test enable, depth surface, shade mode and scissor state not captured",
+          "Pixel centres and CPU-projected geometry; surface_scale=4 coverage not emulated"
+        ],
+        "equation": "P8 fetch; oD0=v3*c6; R0=clamp(2*T0*oD0); final C0.a=0 passes R0; alpha>=2; SRC_ALPHA/ONE_MINUS_SRC_ALPHA ADD",
+        "reason": "Bounded native state does not reproduce the dark screenshots; no cause-specific fix proved."
+      }
+    },
+    "logo_geometry": {
+      "away_wing": [
+        [
+          145.6634521484375,
+          406.7618408203125
+        ],
+        [
+          259.00115966796875,
+          406.7618408203125
+        ],
+        [
+          145.6634521484375,
+          452.37890625
+        ],
+        [
+          259.00115966796875,
+          452.37890625
+        ]
+      ],
+      "home_wing": [
+        [
+          379.33828043937683,
+          406.7618408203125
+        ],
+        [
+          492.6686429977417,
+          406.7618408203125
+        ],
+        [
+          379.33828043937683,
+          452.37890625
+        ],
+        [
+          492.6686429977417,
+          452.37890625
+        ]
+      ],
+      "away_logo": [
+        [
+          145.6634521484375,
+          406.7618408203125
+        ],
+        [
+          222.3286247253418,
+          406.7618408203125
+        ],
+        [
+          145.6634521484375,
+          452.37890625
+        ],
+        [
+          222.3286247253418,
+          452.37890625
+        ]
+      ],
+      "home_logo": [
+        [
+          416.00112080574036,
+          406.7618408203125
+        ],
+        [
+          492.6686429977417,
+          406.7618408203125
+        ],
+        [
+          416.00112080574036,
+          452.37890625
+        ],
+        [
+          492.6686429977417,
+          452.37890625
+        ]
+      ]
+    },
+    "hud": [
+      640,
+      448
+    ],
+    "display": [
+      1138,
+      640
+    ],
+    "filter": "Lanczos display approximation",
+    "runtime_witnessed": false,
+    "calibrated_gpu_capture": false
+  },
+  {
+    "phase": "s10 BEFORE",
+    "matchup": "LV_HOU",
+    "aspect": "43",
+    "state": {
+      "away": "LV",
+      "home": "HOU",
+      "away_score": 0,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 1,
+      "clock": 515,
+      "play_clock": 10,
+      "down": 1,
+      "distance": 10,
+      "possession": "away",
+      "event": "standard",
+      "goal_to_go": false,
+      "broadcast": "play_now"
+    },
+    "raster": {
+      "uv_transform": [
+        0.5,
+        0.5,
+        0.5,
+        0.5
+      ],
+      "winding": {
+        "cscore_buga": {
+          "positive": 0,
+          "negative": 6
+        },
+        "score_buga": {
+          "positive": 0,
+          "negative": 6
+        },
+        "dscore_buga": {
+          "positive": 0,
+          "negative": 8
+        },
+        "hscore_buga": {
+          "positive": 0,
+          "negative": 2
+        },
+        "yscore_buga1": {
+          "positive": 0,
+          "negative": 24
+        },
+        "yscore_buga": {
+          "positive": 0,
+          "negative": 18
+        },
+        "zscore_buga": {
+          "positive": 0,
+          "negative": 2
+        }
+      },
+      "rendered_materials": {
+        "cscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "dscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "hscore_buga": {
+          "descriptor": "0x4030c38",
+          "name": "sb37h0",
+          "dimensions": [
+            64,
+            64
+          ],
+          "span_sha256": "f5ab1937d25e9c56a02e815b4d942a4870975bdb4c360d90693cd59d8d8690f9",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "score_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "yscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "yscore_buga1": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "zscore_buga": {
+          "descriptor": "0x4038738",
+          "name": "sb20h0",
+          "dimensions": [
+            64,
+            64
+          ],
+          "span_sha256": "141d18f27975b9a2518db123b6088246f732abc58497f42011f3f30d4f8f652e",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        }
+      },
+      "submission": [
+        {
+          "material": 2,
+          "name": "cscore_buga",
+          "indices": 16
+        },
+        {
+          "material": 6,
+          "name": "score_buga",
+          "indices": 16
+        },
+        {
+          "material": 4,
+          "name": "dscore_buga",
+          "indices": 22
+        },
+        {
+          "material": 3,
+          "name": "hscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 7,
+          "name": "yscore_buga1",
+          "indices": 88
+        },
+        {
+          "material": 9,
+          "name": "yscore_buga",
+          "indices": 94
+        },
+        {
+          "material": 5,
+          "name": "bscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 0,
+          "name": "bscore_buga1",
+          "indices": 4
+        },
+        {
+          "material": 1,
+          "name": "bscore_buga2",
+          "indices": 4
+        },
+        {
+          "material": 10,
+          "name": "zscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 8,
+          "name": "zz_ESPN_bug1",
+          "indices": 4
+        }
+      ],
+      "raster_policy": {
+        "order": "SHAP descriptor order, then push-buffer order",
+        "depth": "none (sprite submission order)",
+        "blend": "captured xemu fragment equations",
+        "retained_font_draws": "legacy font raster; GPU state not captured",
+        "cull_positive": false,
+        "gpu_state_proved": false,
+        "calibration": null
+      },
+      "xemu_model": {
+        "model": "xemu f9b1403 observed HUD fragment path",
+        "gpu_state_proved": false,
+        "calibration_passed": false,
+        "assumptions": [
+          "Caller diffuse multiplier at bucket+0x2e0 = (1,1,1,1)",
+          "Owned resident vertex slots; native upload executes",
+          "22950 matrix upload replaced by already captured native geometry",
+          "No preceding game-frame FIFO/PGRAPH state supplied",
+          "Preceding logic-op, depth-test enable, depth surface, shade mode and scissor state not captured",
+          "Pixel centres and CPU-projected geometry; surface_scale=4 coverage not emulated"
+        ],
+        "equation": "P8 fetch; oD0=v3*c6; R0=clamp(2*T0*oD0); final C0.a=0 passes R0; alpha>=2; SRC_ALPHA/ONE_MINUS_SRC_ALPHA ADD",
+        "reason": "Bounded native state does not reproduce the dark screenshots; no cause-specific fix proved."
+      }
+    },
+    "logo_geometry": {
+      "away_wing": [
+        [
+          87.5518798828125,
+          406.7618408203125
+        ],
+        [
+          238.6688232421875,
+          406.7618408203125
+        ],
+        [
+          87.5518798828125,
+          452.37890625
+        ],
+        [
+          238.6688232421875,
+          452.37890625
+        ]
+      ],
+      "home_wing": [
+        [
+          399.1070251464844,
+          406.7618408203125
+        ],
+        [
+          550.2285766601562,
+          406.7618408203125
+        ],
+        [
+          399.1070251464844,
+          452.37890625
+        ],
+        [
+          550.2285766601562,
+          452.37890625
+        ]
+      ],
+      "away_logo": [
+        [
+          87.5518798828125,
+          406.7618408203125
+        ],
+        [
+          189.7833251953125,
+          406.7618408203125
+        ],
+        [
+          87.5518798828125,
+          452.37890625
+        ],
+        [
+          189.7833251953125,
+          452.37890625
+        ]
+      ],
+      "home_logo": [
+        [
+          447.9940185546875,
+          406.7618408203125
+        ],
+        [
+          550.2285766601562,
+          406.7618408203125
+        ],
+        [
+          447.9940185546875,
+          452.37890625
+        ],
+        [
+          550.2285766601562,
+          452.37890625
+        ]
+      ]
+    },
+    "hud": [
+      640,
+      448
+    ],
+    "display": [
+      853,
+      640
+    ],
+    "filter": "Lanczos display approximation",
+    "runtime_witnessed": false,
+    "calibrated_gpu_capture": false
+  },
+  {
+    "phase": "s11 AFTER",
+    "matchup": "LV_HOU",
+    "aspect": "43",
+    "state": {
+      "away": "LV",
+      "home": "HOU",
+      "away_score": 0,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 1,
+      "clock": 515,
+      "play_clock": 10,
+      "down": 1,
+      "distance": 10,
+      "possession": "away",
+      "event": "standard",
+      "goal_to_go": false,
+      "broadcast": "play_now"
+    },
+    "raster": {
+      "uv_transform": [
+        0.5,
+        0.5,
+        0.5,
+        0.5
+      ],
+      "winding": {
+        "cscore_buga": {
+          "positive": 0,
+          "negative": 6
+        },
+        "score_buga": {
+          "positive": 0,
+          "negative": 6
+        },
+        "dscore_buga": {
+          "positive": 0,
+          "negative": 8
+        },
+        "hscore_buga": {
+          "positive": 0,
+          "negative": 2
+        },
+        "yscore_buga1": {
+          "positive": 0,
+          "negative": 24
+        },
+        "yscore_buga": {
+          "positive": 0,
+          "negative": 18
+        },
+        "zscore_buga": {
+          "positive": 0,
+          "negative": 2
+        }
+      },
+      "rendered_materials": {
+        "cscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "dscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "hscore_buga": {
+          "descriptor": "0x4030c38",
+          "name": "sb37h0",
+          "dimensions": [
+            64,
+            64
+          ],
+          "span_sha256": "8d8e2b3fa0ceff97e6e0e3c2bdeceadc68a76fa1c44930529c7fda4745b7b031",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "score_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "yscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "yscore_buga1": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "zscore_buga": {
+          "descriptor": "0x4038738",
+          "name": "sb20h0",
+          "dimensions": [
+            64,
+            64
+          ],
+          "span_sha256": "f9d1fe77ae4688bd134e3fd69bf752fe0643c5489fd76d17c1c1c49fa35b7c91",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        }
+      },
+      "submission": [
+        {
+          "material": 2,
+          "name": "cscore_buga",
+          "indices": 16
+        },
+        {
+          "material": 6,
+          "name": "score_buga",
+          "indices": 16
+        },
+        {
+          "material": 4,
+          "name": "dscore_buga",
+          "indices": 22
+        },
+        {
+          "material": 3,
+          "name": "hscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 7,
+          "name": "yscore_buga1",
+          "indices": 88
+        },
+        {
+          "material": 9,
+          "name": "yscore_buga",
+          "indices": 94
+        },
+        {
+          "material": 5,
+          "name": "bscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 0,
+          "name": "bscore_buga1",
+          "indices": 4
+        },
+        {
+          "material": 1,
+          "name": "bscore_buga2",
+          "indices": 4
+        },
+        {
+          "material": 10,
+          "name": "zscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 8,
+          "name": "zz_ESPN_bug1",
+          "indices": 4
+        }
+      ],
+      "raster_policy": {
+        "order": "SHAP descriptor order, then push-buffer order",
+        "depth": "none (sprite submission order)",
+        "blend": "captured xemu fragment equations",
+        "retained_font_draws": "legacy font raster; GPU state not captured",
+        "cull_positive": false,
+        "gpu_state_proved": false,
+        "calibration": null
+      },
+      "xemu_model": {
+        "model": "xemu f9b1403 observed HUD fragment path",
+        "gpu_state_proved": false,
+        "calibration_passed": false,
+        "assumptions": [
+          "Caller diffuse multiplier at bucket+0x2e0 = (1,1,1,1)",
+          "Owned resident vertex slots; native upload executes",
+          "22950 matrix upload replaced by already captured native geometry",
+          "No preceding game-frame FIFO/PGRAPH state supplied",
+          "Preceding logic-op, depth-test enable, depth surface, shade mode and scissor state not captured",
+          "Pixel centres and CPU-projected geometry; surface_scale=4 coverage not emulated"
+        ],
+        "equation": "P8 fetch; oD0=v3*c6; R0=clamp(2*T0*oD0); final C0.a=0 passes R0; alpha>=2; SRC_ALPHA/ONE_MINUS_SRC_ALPHA ADD",
+        "reason": "Bounded native state does not reproduce the dark screenshots; no cause-specific fix proved."
+      }
+    },
+    "logo_geometry": {
+      "away_wing": [
+        [
+          87.5518798828125,
+          406.7618408203125
+        ],
+        [
+          238.6688232421875,
+          406.7618408203125
+        ],
+        [
+          87.5518798828125,
+          452.37890625
+        ],
+        [
+          238.6688232421875,
+          452.37890625
+        ]
+      ],
+      "home_wing": [
+        [
+          399.1070251464844,
+          406.7618408203125
+        ],
+        [
+          550.2285766601562,
+          406.7618408203125
+        ],
+        [
+          399.1070251464844,
+          452.37890625
+        ],
+        [
+          550.2285766601562,
+          452.37890625
+        ]
+      ],
+      "away_logo": [
+        [
+          87.5518798828125,
+          406.7618408203125
+        ],
+        [
+          189.7833251953125,
+          406.7618408203125
+        ],
+        [
+          87.5518798828125,
+          452.37890625
+        ],
+        [
+          189.7833251953125,
+          452.37890625
+        ]
+      ],
+      "home_logo": [
+        [
+          447.9940185546875,
+          406.7618408203125
+        ],
+        [
+          550.2285766601562,
+          406.7618408203125
+        ],
+        [
+          447.9940185546875,
+          452.37890625
+        ],
+        [
+          550.2285766601562,
+          452.37890625
+        ]
+      ]
+    },
+    "hud": [
+      640,
+      448
+    ],
+    "display": [
+      853,
+      640
+    ],
+    "filter": "Lanczos display approximation",
+    "runtime_witnessed": false,
+    "calibrated_gpu_capture": false
+  },
+  {
+    "phase": "s10 BEFORE",
+    "matchup": "LV_HOU",
+    "aspect": "169",
+    "state": {
+      "away": "LV",
+      "home": "HOU",
+      "away_score": 0,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 1,
+      "clock": 515,
+      "play_clock": 10,
+      "down": 1,
+      "distance": 10,
+      "possession": "away",
+      "event": "standard",
+      "goal_to_go": false,
+      "broadcast": "play_now"
+    },
+    "raster": {
+      "uv_transform": [
+        0.5,
+        0.5,
+        0.5,
+        0.5
+      ],
+      "winding": {
+        "cscore_buga": {
+          "positive": 0,
+          "negative": 6
+        },
+        "score_buga": {
+          "positive": 0,
+          "negative": 6
+        },
+        "dscore_buga": {
+          "positive": 0,
+          "negative": 8
+        },
+        "hscore_buga": {
+          "positive": 0,
+          "negative": 2
+        },
+        "yscore_buga1": {
+          "positive": 0,
+          "negative": 24
+        },
+        "yscore_buga": {
+          "positive": 0,
+          "negative": 18
+        },
+        "zscore_buga": {
+          "positive": 0,
+          "negative": 2
+        }
+      },
+      "rendered_materials": {
+        "cscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "dscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "hscore_buga": {
+          "descriptor": "0x4030c38",
+          "name": "sb37h0",
+          "dimensions": [
+            64,
+            64
+          ],
+          "span_sha256": "f5ab1937d25e9c56a02e815b4d942a4870975bdb4c360d90693cd59d8d8690f9",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "score_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "yscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "yscore_buga1": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "zscore_buga": {
+          "descriptor": "0x4038738",
+          "name": "sb20h0",
+          "dimensions": [
+            64,
+            64
+          ],
+          "span_sha256": "141d18f27975b9a2518db123b6088246f732abc58497f42011f3f30d4f8f652e",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        }
+      },
+      "submission": [
+        {
+          "material": 2,
+          "name": "cscore_buga",
+          "indices": 16
+        },
+        {
+          "material": 6,
+          "name": "score_buga",
+          "indices": 16
+        },
+        {
+          "material": 4,
+          "name": "dscore_buga",
+          "indices": 22
+        },
+        {
+          "material": 3,
+          "name": "hscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 7,
+          "name": "yscore_buga1",
+          "indices": 88
+        },
+        {
+          "material": 9,
+          "name": "yscore_buga",
+          "indices": 94
+        },
+        {
+          "material": 5,
+          "name": "bscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 0,
+          "name": "bscore_buga1",
+          "indices": 4
+        },
+        {
+          "material": 1,
+          "name": "bscore_buga2",
+          "indices": 4
+        },
+        {
+          "material": 10,
+          "name": "zscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 8,
+          "name": "zz_ESPN_bug1",
+          "indices": 4
+        }
+      ],
+      "raster_policy": {
+        "order": "SHAP descriptor order, then push-buffer order",
+        "depth": "none (sprite submission order)",
+        "blend": "captured xemu fragment equations",
+        "retained_font_draws": "legacy font raster; GPU state not captured",
+        "cull_positive": false,
+        "gpu_state_proved": false,
+        "calibration": null
+      },
+      "xemu_model": {
+        "model": "xemu f9b1403 observed HUD fragment path",
+        "gpu_state_proved": false,
+        "calibration_passed": false,
+        "assumptions": [
+          "Caller diffuse multiplier at bucket+0x2e0 = (1,1,1,1)",
+          "Owned resident vertex slots; native upload executes",
+          "22950 matrix upload replaced by already captured native geometry",
+          "No preceding game-frame FIFO/PGRAPH state supplied",
+          "Preceding logic-op, depth-test enable, depth surface, shade mode and scissor state not captured",
+          "Pixel centres and CPU-projected geometry; surface_scale=4 coverage not emulated"
+        ],
+        "equation": "P8 fetch; oD0=v3*c6; R0=clamp(2*T0*oD0); final C0.a=0 passes R0; alpha>=2; SRC_ALPHA/ONE_MINUS_SRC_ALPHA ADD",
+        "reason": "Bounded native state does not reproduce the dark screenshots; no cause-specific fix proved."
+      }
+    },
+    "logo_geometry": {
+      "away_wing": [
+        [
+          145.6634521484375,
+          406.7618408203125
+        ],
+        [
+          259.00115966796875,
+          406.7618408203125
+        ],
+        [
+          145.6634521484375,
+          452.37890625
+        ],
+        [
+          259.00115966796875,
+          452.37890625
+        ]
+      ],
+      "home_wing": [
+        [
+          379.33828043937683,
+          406.7618408203125
+        ],
+        [
+          492.6686429977417,
+          406.7618408203125
+        ],
+        [
+          379.33828043937683,
+          452.37890625
+        ],
+        [
+          492.6686429977417,
+          452.37890625
+        ]
+      ],
+      "away_logo": [
+        [
+          145.6634521484375,
+          406.7618408203125
+        ],
+        [
+          222.3286247253418,
+          406.7618408203125
+        ],
+        [
+          145.6634521484375,
+          452.37890625
+        ],
+        [
+          222.3286247253418,
+          452.37890625
+        ]
+      ],
+      "home_logo": [
+        [
+          416.00112080574036,
+          406.7618408203125
+        ],
+        [
+          492.6686429977417,
+          406.7618408203125
+        ],
+        [
+          416.00112080574036,
+          452.37890625
+        ],
+        [
+          492.6686429977417,
+          452.37890625
+        ]
+      ]
+    },
+    "hud": [
+      640,
+      448
+    ],
+    "display": [
+      1138,
+      640
+    ],
+    "filter": "Lanczos display approximation",
+    "runtime_witnessed": false,
+    "calibrated_gpu_capture": false
+  },
+  {
+    "phase": "s11 AFTER",
+    "matchup": "LV_HOU",
+    "aspect": "169",
+    "state": {
+      "away": "LV",
+      "home": "HOU",
+      "away_score": 0,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 1,
+      "clock": 515,
+      "play_clock": 10,
+      "down": 1,
+      "distance": 10,
+      "possession": "away",
+      "event": "standard",
+      "goal_to_go": false,
+      "broadcast": "play_now"
+    },
+    "raster": {
+      "uv_transform": [
+        0.5,
+        0.5,
+        0.5,
+        0.5
+      ],
+      "winding": {
+        "cscore_buga": {
+          "positive": 0,
+          "negative": 6
+        },
+        "score_buga": {
+          "positive": 0,
+          "negative": 6
+        },
+        "dscore_buga": {
+          "positive": 0,
+          "negative": 8
+        },
+        "hscore_buga": {
+          "positive": 0,
+          "negative": 2
+        },
+        "yscore_buga1": {
+          "positive": 0,
+          "negative": 24
+        },
+        "yscore_buga": {
+          "positive": 0,
+          "negative": 18
+        },
+        "zscore_buga": {
+          "positive": 0,
+          "negative": 2
+        }
+      },
+      "rendered_materials": {
+        "cscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "dscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "hscore_buga": {
+          "descriptor": "0x4030c38",
+          "name": "sb37h0",
+          "dimensions": [
+            64,
+            64
+          ],
+          "span_sha256": "8d8e2b3fa0ceff97e6e0e3c2bdeceadc68a76fa1c44930529c7fda4745b7b031",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "score_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "yscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "yscore_buga1": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "zscore_buga": {
+          "descriptor": "0x4038738",
+          "name": "sb20h0",
+          "dimensions": [
+            64,
+            64
+          ],
+          "span_sha256": "f9d1fe77ae4688bd134e3fd69bf752fe0643c5489fd76d17c1c1c49fa35b7c91",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        }
+      },
+      "submission": [
+        {
+          "material": 2,
+          "name": "cscore_buga",
+          "indices": 16
+        },
+        {
+          "material": 6,
+          "name": "score_buga",
+          "indices": 16
+        },
+        {
+          "material": 4,
+          "name": "dscore_buga",
+          "indices": 22
+        },
+        {
+          "material": 3,
+          "name": "hscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 7,
+          "name": "yscore_buga1",
+          "indices": 88
+        },
+        {
+          "material": 9,
+          "name": "yscore_buga",
+          "indices": 94
+        },
+        {
+          "material": 5,
+          "name": "bscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 0,
+          "name": "bscore_buga1",
+          "indices": 4
+        },
+        {
+          "material": 1,
+          "name": "bscore_buga2",
+          "indices": 4
+        },
+        {
+          "material": 10,
+          "name": "zscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 8,
+          "name": "zz_ESPN_bug1",
+          "indices": 4
+        }
+      ],
+      "raster_policy": {
+        "order": "SHAP descriptor order, then push-buffer order",
+        "depth": "none (sprite submission order)",
+        "blend": "captured xemu fragment equations",
+        "retained_font_draws": "legacy font raster; GPU state not captured",
+        "cull_positive": false,
+        "gpu_state_proved": false,
+        "calibration": null
+      },
+      "xemu_model": {
+        "model": "xemu f9b1403 observed HUD fragment path",
+        "gpu_state_proved": false,
+        "calibration_passed": false,
+        "assumptions": [
+          "Caller diffuse multiplier at bucket+0x2e0 = (1,1,1,1)",
+          "Owned resident vertex slots; native upload executes",
+          "22950 matrix upload replaced by already captured native geometry",
+          "No preceding game-frame FIFO/PGRAPH state supplied",
+          "Preceding logic-op, depth-test enable, depth surface, shade mode and scissor state not captured",
+          "Pixel centres and CPU-projected geometry; surface_scale=4 coverage not emulated"
+        ],
+        "equation": "P8 fetch; oD0=v3*c6; R0=clamp(2*T0*oD0); final C0.a=0 passes R0; alpha>=2; SRC_ALPHA/ONE_MINUS_SRC_ALPHA ADD",
+        "reason": "Bounded native state does not reproduce the dark screenshots; no cause-specific fix proved."
+      }
+    },
+    "logo_geometry": {
+      "away_wing": [
+        [
+          145.6634521484375,
+          406.7618408203125
+        ],
+        [
+          259.00115966796875,
+          406.7618408203125
+        ],
+        [
+          145.6634521484375,
+          452.37890625
+        ],
+        [
+          259.00115966796875,
+          452.37890625
+        ]
+      ],
+      "home_wing": [
+        [
+          379.33828043937683,
+          406.7618408203125
+        ],
+        [
+          492.6686429977417,
+          406.7618408203125
+        ],
+        [
+          379.33828043937683,
+          452.37890625
+        ],
+        [
+          492.6686429977417,
+          452.37890625
+        ]
+      ],
+      "away_logo": [
+        [
+          145.6634521484375,
+          406.7618408203125
+        ],
+        [
+          222.3286247253418,
+          406.7618408203125
+        ],
+        [
+          145.6634521484375,
+          452.37890625
+        ],
+        [
+          222.3286247253418,
+          452.37890625
+        ]
+      ],
+      "home_logo": [
+        [
+          416.00112080574036,
+          406.7618408203125
+        ],
+        [
+          492.6686429977417,
+          406.7618408203125
+        ],
+        [
+          416.00112080574036,
+          452.37890625
+        ],
+        [
+          492.6686429977417,
+          452.37890625
+        ]
+      ]
+    },
+    "hud": [
+      640,
+      448
+    ],
+    "display": [
+      1138,
+      640
+    ],
+    "filter": "Lanczos display approximation",
+    "runtime_witnessed": false,
+    "calibrated_gpu_capture": false
+  },
+  {
+    "phase": "s10 BEFORE",
+    "matchup": "PIT_TEN",
+    "aspect": "43",
+    "state": {
+      "away": "PIT",
+      "home": "TEN",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 40,
+      "down": 1,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false,
+      "broadcast": "play_now"
+    },
+    "raster": {
+      "uv_transform": [
+        0.5,
+        0.5,
+        0.5,
+        0.5
+      ],
+      "winding": {
+        "cscore_buga": {
+          "positive": 0,
+          "negative": 6
+        },
+        "score_buga": {
+          "positive": 0,
+          "negative": 6
+        },
+        "dscore_buga": {
+          "positive": 0,
+          "negative": 8
+        },
+        "hscore_buga": {
+          "positive": 0,
+          "negative": 2
+        },
+        "yscore_buga1": {
+          "positive": 0,
+          "negative": 24
+        },
+        "yscore_buga": {
+          "positive": 0,
+          "negative": 18
+        },
+        "zscore_buga": {
+          "positive": 0,
+          "negative": 2
+        }
+      },
+      "rendered_materials": {
+        "cscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "dscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "hscore_buga": {
+          "descriptor": "0x4047d38",
+          "name": "sb28h0",
+          "dimensions": [
+            64,
+            64
+          ],
+          "span_sha256": "f0fe8611b0114ba1f130d2a807487abc1260b3d09897fdb47ba420b7eb2ecbca",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "score_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "yscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "yscore_buga1": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "zscore_buga": {
+          "descriptor": "0x4042b38",
+          "name": "sb22h0",
+          "dimensions": [
+            64,
+            64
+          ],
+          "span_sha256": "b2f46b0ba6b6d00c529171bb2cf572db516e4c14dd1f6f288c2844ba571ab452",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        }
+      },
+      "submission": [
+        {
+          "material": 2,
+          "name": "cscore_buga",
+          "indices": 16
+        },
+        {
+          "material": 6,
+          "name": "score_buga",
+          "indices": 16
+        },
+        {
+          "material": 4,
+          "name": "dscore_buga",
+          "indices": 22
+        },
+        {
+          "material": 3,
+          "name": "hscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 7,
+          "name": "yscore_buga1",
+          "indices": 88
+        },
+        {
+          "material": 9,
+          "name": "yscore_buga",
+          "indices": 94
+        },
+        {
+          "material": 5,
+          "name": "bscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 0,
+          "name": "bscore_buga1",
+          "indices": 4
+        },
+        {
+          "material": 1,
+          "name": "bscore_buga2",
+          "indices": 4
+        },
+        {
+          "material": 10,
+          "name": "zscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 8,
+          "name": "zz_ESPN_bug1",
+          "indices": 4
+        }
+      ],
+      "raster_policy": {
+        "order": "SHAP descriptor order, then push-buffer order",
+        "depth": "none (sprite submission order)",
+        "blend": "captured xemu fragment equations",
+        "retained_font_draws": "legacy font raster; GPU state not captured",
+        "cull_positive": false,
+        "gpu_state_proved": false,
+        "calibration": null
+      },
+      "xemu_model": {
+        "model": "xemu f9b1403 observed HUD fragment path",
+        "gpu_state_proved": false,
+        "calibration_passed": false,
+        "assumptions": [
+          "Caller diffuse multiplier at bucket+0x2e0 = (1,1,1,1)",
+          "Owned resident vertex slots; native upload executes",
+          "22950 matrix upload replaced by already captured native geometry",
+          "No preceding game-frame FIFO/PGRAPH state supplied",
+          "Preceding logic-op, depth-test enable, depth surface, shade mode and scissor state not captured",
+          "Pixel centres and CPU-projected geometry; surface_scale=4 coverage not emulated"
+        ],
+        "equation": "P8 fetch; oD0=v3*c6; R0=clamp(2*T0*oD0); final C0.a=0 passes R0; alpha>=2; SRC_ALPHA/ONE_MINUS_SRC_ALPHA ADD",
+        "reason": "Bounded native state does not reproduce the dark screenshots; no cause-specific fix proved."
+      }
+    },
+    "logo_geometry": {
+      "away_wing": [
+        [
+          87.5518798828125,
+          406.7618408203125
+        ],
+        [
+          238.6688232421875,
+          406.7618408203125
+        ],
+        [
+          87.5518798828125,
+          452.37890625
+        ],
+        [
+          238.6688232421875,
+          452.37890625
+        ]
+      ],
+      "home_wing": [
+        [
+          399.1070251464844,
+          406.7618408203125
+        ],
+        [
+          550.2285766601562,
+          406.7618408203125
+        ],
+        [
+          399.1070251464844,
+          452.37890625
+        ],
+        [
+          550.2285766601562,
+          452.37890625
+        ]
+      ],
+      "away_logo": [
+        [
+          87.5518798828125,
+          406.7618408203125
+        ],
+        [
+          189.7833251953125,
+          406.7618408203125
+        ],
+        [
+          87.5518798828125,
+          452.37890625
+        ],
+        [
+          189.7833251953125,
+          452.37890625
+        ]
+      ],
+      "home_logo": [
+        [
+          447.9940185546875,
+          406.7618408203125
+        ],
+        [
+          550.2285766601562,
+          406.7618408203125
+        ],
+        [
+          447.9940185546875,
+          452.37890625
+        ],
+        [
+          550.2285766601562,
+          452.37890625
+        ]
+      ]
+    },
+    "hud": [
+      640,
+      448
+    ],
+    "display": [
+      853,
+      640
+    ],
+    "filter": "Lanczos display approximation",
+    "runtime_witnessed": false,
+    "calibrated_gpu_capture": false
+  },
+  {
+    "phase": "s11 AFTER",
+    "matchup": "PIT_TEN",
+    "aspect": "43",
+    "state": {
+      "away": "PIT",
+      "home": "TEN",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 40,
+      "down": 1,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false,
+      "broadcast": "play_now"
+    },
+    "raster": {
+      "uv_transform": [
+        0.5,
+        0.5,
+        0.5,
+        0.5
+      ],
+      "winding": {
+        "cscore_buga": {
+          "positive": 0,
+          "negative": 6
+        },
+        "score_buga": {
+          "positive": 0,
+          "negative": 6
+        },
+        "dscore_buga": {
+          "positive": 0,
+          "negative": 8
+        },
+        "hscore_buga": {
+          "positive": 0,
+          "negative": 2
+        },
+        "yscore_buga1": {
+          "positive": 0,
+          "negative": 24
+        },
+        "yscore_buga": {
+          "positive": 0,
+          "negative": 18
+        },
+        "zscore_buga": {
+          "positive": 0,
+          "negative": 2
+        }
+      },
+      "rendered_materials": {
+        "cscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "dscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "hscore_buga": {
+          "descriptor": "0x4047d38",
+          "name": "sb28h0",
+          "dimensions": [
+            64,
+            64
+          ],
+          "span_sha256": "4767de7936650fc80ee0b421292d87f4bbcf4b9ebe58f10f9799262426d63762",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "score_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "yscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "yscore_buga1": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "zscore_buga": {
+          "descriptor": "0x4042b38",
+          "name": "sb22h0",
+          "dimensions": [
+            64,
+            64
+          ],
+          "span_sha256": "218763828eefbd56a807469cd31fcfc0d2fcc1306753a87bfa01f3f5062b6c68",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        }
+      },
+      "submission": [
+        {
+          "material": 2,
+          "name": "cscore_buga",
+          "indices": 16
+        },
+        {
+          "material": 6,
+          "name": "score_buga",
+          "indices": 16
+        },
+        {
+          "material": 4,
+          "name": "dscore_buga",
+          "indices": 22
+        },
+        {
+          "material": 3,
+          "name": "hscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 7,
+          "name": "yscore_buga1",
+          "indices": 88
+        },
+        {
+          "material": 9,
+          "name": "yscore_buga",
+          "indices": 94
+        },
+        {
+          "material": 5,
+          "name": "bscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 0,
+          "name": "bscore_buga1",
+          "indices": 4
+        },
+        {
+          "material": 1,
+          "name": "bscore_buga2",
+          "indices": 4
+        },
+        {
+          "material": 10,
+          "name": "zscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 8,
+          "name": "zz_ESPN_bug1",
+          "indices": 4
+        }
+      ],
+      "raster_policy": {
+        "order": "SHAP descriptor order, then push-buffer order",
+        "depth": "none (sprite submission order)",
+        "blend": "captured xemu fragment equations",
+        "retained_font_draws": "legacy font raster; GPU state not captured",
+        "cull_positive": false,
+        "gpu_state_proved": false,
+        "calibration": null
+      },
+      "xemu_model": {
+        "model": "xemu f9b1403 observed HUD fragment path",
+        "gpu_state_proved": false,
+        "calibration_passed": false,
+        "assumptions": [
+          "Caller diffuse multiplier at bucket+0x2e0 = (1,1,1,1)",
+          "Owned resident vertex slots; native upload executes",
+          "22950 matrix upload replaced by already captured native geometry",
+          "No preceding game-frame FIFO/PGRAPH state supplied",
+          "Preceding logic-op, depth-test enable, depth surface, shade mode and scissor state not captured",
+          "Pixel centres and CPU-projected geometry; surface_scale=4 coverage not emulated"
+        ],
+        "equation": "P8 fetch; oD0=v3*c6; R0=clamp(2*T0*oD0); final C0.a=0 passes R0; alpha>=2; SRC_ALPHA/ONE_MINUS_SRC_ALPHA ADD",
+        "reason": "Bounded native state does not reproduce the dark screenshots; no cause-specific fix proved."
+      }
+    },
+    "logo_geometry": {
+      "away_wing": [
+        [
+          87.5518798828125,
+          406.7618408203125
+        ],
+        [
+          238.6688232421875,
+          406.7618408203125
+        ],
+        [
+          87.5518798828125,
+          452.37890625
+        ],
+        [
+          238.6688232421875,
+          452.37890625
+        ]
+      ],
+      "home_wing": [
+        [
+          399.1070251464844,
+          406.7618408203125
+        ],
+        [
+          550.2285766601562,
+          406.7618408203125
+        ],
+        [
+          399.1070251464844,
+          452.37890625
+        ],
+        [
+          550.2285766601562,
+          452.37890625
+        ]
+      ],
+      "away_logo": [
+        [
+          87.5518798828125,
+          406.7618408203125
+        ],
+        [
+          189.7833251953125,
+          406.7618408203125
+        ],
+        [
+          87.5518798828125,
+          452.37890625
+        ],
+        [
+          189.7833251953125,
+          452.37890625
+        ]
+      ],
+      "home_logo": [
+        [
+          447.9940185546875,
+          406.7618408203125
+        ],
+        [
+          550.2285766601562,
+          406.7618408203125
+        ],
+        [
+          447.9940185546875,
+          452.37890625
+        ],
+        [
+          550.2285766601562,
+          452.37890625
+        ]
+      ]
+    },
+    "hud": [
+      640,
+      448
+    ],
+    "display": [
+      853,
+      640
+    ],
+    "filter": "Lanczos display approximation",
+    "runtime_witnessed": false,
+    "calibrated_gpu_capture": false
+  },
+  {
+    "phase": "s10 BEFORE",
+    "matchup": "PIT_TEN",
+    "aspect": "169",
+    "state": {
+      "away": "PIT",
+      "home": "TEN",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 40,
+      "down": 1,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false,
+      "broadcast": "play_now"
+    },
+    "raster": {
+      "uv_transform": [
+        0.5,
+        0.5,
+        0.5,
+        0.5
+      ],
+      "winding": {
+        "cscore_buga": {
+          "positive": 0,
+          "negative": 6
+        },
+        "score_buga": {
+          "positive": 0,
+          "negative": 6
+        },
+        "dscore_buga": {
+          "positive": 0,
+          "negative": 8
+        },
+        "hscore_buga": {
+          "positive": 0,
+          "negative": 2
+        },
+        "yscore_buga1": {
+          "positive": 0,
+          "negative": 24
+        },
+        "yscore_buga": {
+          "positive": 0,
+          "negative": 18
+        },
+        "zscore_buga": {
+          "positive": 0,
+          "negative": 2
+        }
+      },
+      "rendered_materials": {
+        "cscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "dscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "hscore_buga": {
+          "descriptor": "0x4047d38",
+          "name": "sb28h0",
+          "dimensions": [
+            64,
+            64
+          ],
+          "span_sha256": "f0fe8611b0114ba1f130d2a807487abc1260b3d09897fdb47ba420b7eb2ecbca",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "score_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "yscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "yscore_buga1": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "zscore_buga": {
+          "descriptor": "0x4042b38",
+          "name": "sb22h0",
+          "dimensions": [
+            64,
+            64
+          ],
+          "span_sha256": "b2f46b0ba6b6d00c529171bb2cf572db516e4c14dd1f6f288c2844ba571ab452",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        }
+      },
+      "submission": [
+        {
+          "material": 2,
+          "name": "cscore_buga",
+          "indices": 16
+        },
+        {
+          "material": 6,
+          "name": "score_buga",
+          "indices": 16
+        },
+        {
+          "material": 4,
+          "name": "dscore_buga",
+          "indices": 22
+        },
+        {
+          "material": 3,
+          "name": "hscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 7,
+          "name": "yscore_buga1",
+          "indices": 88
+        },
+        {
+          "material": 9,
+          "name": "yscore_buga",
+          "indices": 94
+        },
+        {
+          "material": 5,
+          "name": "bscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 0,
+          "name": "bscore_buga1",
+          "indices": 4
+        },
+        {
+          "material": 1,
+          "name": "bscore_buga2",
+          "indices": 4
+        },
+        {
+          "material": 10,
+          "name": "zscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 8,
+          "name": "zz_ESPN_bug1",
+          "indices": 4
+        }
+      ],
+      "raster_policy": {
+        "order": "SHAP descriptor order, then push-buffer order",
+        "depth": "none (sprite submission order)",
+        "blend": "captured xemu fragment equations",
+        "retained_font_draws": "legacy font raster; GPU state not captured",
+        "cull_positive": false,
+        "gpu_state_proved": false,
+        "calibration": null
+      },
+      "xemu_model": {
+        "model": "xemu f9b1403 observed HUD fragment path",
+        "gpu_state_proved": false,
+        "calibration_passed": false,
+        "assumptions": [
+          "Caller diffuse multiplier at bucket+0x2e0 = (1,1,1,1)",
+          "Owned resident vertex slots; native upload executes",
+          "22950 matrix upload replaced by already captured native geometry",
+          "No preceding game-frame FIFO/PGRAPH state supplied",
+          "Preceding logic-op, depth-test enable, depth surface, shade mode and scissor state not captured",
+          "Pixel centres and CPU-projected geometry; surface_scale=4 coverage not emulated"
+        ],
+        "equation": "P8 fetch; oD0=v3*c6; R0=clamp(2*T0*oD0); final C0.a=0 passes R0; alpha>=2; SRC_ALPHA/ONE_MINUS_SRC_ALPHA ADD",
+        "reason": "Bounded native state does not reproduce the dark screenshots; no cause-specific fix proved."
+      }
+    },
+    "logo_geometry": {
+      "away_wing": [
+        [
+          145.6634521484375,
+          406.7618408203125
+        ],
+        [
+          259.00115966796875,
+          406.7618408203125
+        ],
+        [
+          145.6634521484375,
+          452.37890625
+        ],
+        [
+          259.00115966796875,
+          452.37890625
+        ]
+      ],
+      "home_wing": [
+        [
+          379.33828043937683,
+          406.7618408203125
+        ],
+        [
+          492.6686429977417,
+          406.7618408203125
+        ],
+        [
+          379.33828043937683,
+          452.37890625
+        ],
+        [
+          492.6686429977417,
+          452.37890625
+        ]
+      ],
+      "away_logo": [
+        [
+          145.6634521484375,
+          406.7618408203125
+        ],
+        [
+          222.3286247253418,
+          406.7618408203125
+        ],
+        [
+          145.6634521484375,
+          452.37890625
+        ],
+        [
+          222.3286247253418,
+          452.37890625
+        ]
+      ],
+      "home_logo": [
+        [
+          416.00112080574036,
+          406.7618408203125
+        ],
+        [
+          492.6686429977417,
+          406.7618408203125
+        ],
+        [
+          416.00112080574036,
+          452.37890625
+        ],
+        [
+          492.6686429977417,
+          452.37890625
+        ]
+      ]
+    },
+    "hud": [
+      640,
+      448
+    ],
+    "display": [
+      1138,
+      640
+    ],
+    "filter": "Lanczos display approximation",
+    "runtime_witnessed": false,
+    "calibrated_gpu_capture": false
+  },
+  {
+    "phase": "s11 AFTER",
+    "matchup": "PIT_TEN",
+    "aspect": "169",
+    "state": {
+      "away": "PIT",
+      "home": "TEN",
+      "away_score": 7,
+      "home_score": 7,
+      "away_timeouts": 3,
+      "home_timeouts": 3,
+      "quarter": 2,
+      "clock": 273,
+      "play_clock": 40,
+      "down": 1,
+      "distance": 10,
+      "possession": "home",
+      "event": "standard",
+      "goal_to_go": false,
+      "broadcast": "play_now"
+    },
+    "raster": {
+      "uv_transform": [
+        0.5,
+        0.5,
+        0.5,
+        0.5
+      ],
+      "winding": {
+        "cscore_buga": {
+          "positive": 0,
+          "negative": 6
+        },
+        "score_buga": {
+          "positive": 0,
+          "negative": 6
+        },
+        "dscore_buga": {
+          "positive": 0,
+          "negative": 8
+        },
+        "hscore_buga": {
+          "positive": 0,
+          "negative": 2
+        },
+        "yscore_buga1": {
+          "positive": 0,
+          "negative": 24
+        },
+        "yscore_buga": {
+          "positive": 0,
+          "negative": 18
+        },
+        "zscore_buga": {
+          "positive": 0,
+          "negative": 2
+        }
+      },
+      "rendered_materials": {
+        "cscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "dscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "hscore_buga": {
+          "descriptor": "0x4047d38",
+          "name": "sb28h0",
+          "dimensions": [
+            64,
+            64
+          ],
+          "span_sha256": "4767de7936650fc80ee0b421292d87f4bbcf4b9ebe58f10f9799262426d63762",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "score_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "yscore_buga": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "yscore_buga1": {
+          "descriptor": "0x404a638",
+          "name": "score_buga",
+          "dimensions": [
+            256,
+            512
+          ],
+          "span_sha256": "59443e68ddf480673ccf6aa1eeedbb08b96151cfcf589367b3c1b2075e8c6bde",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        },
+        "zscore_buga": {
+          "descriptor": "0x4042b38",
+          "name": "sb22h0",
+          "dimensions": [
+            64,
+            64
+          ],
+          "span_sha256": "218763828eefbd56a807469cd31fcfc0d2fcc1306753a87bfa01f3f5062b6c68",
+          "decode": "xemu P8, Morton swizzle, BGRA palette"
+        }
+      },
+      "submission": [
+        {
+          "material": 2,
+          "name": "cscore_buga",
+          "indices": 16
+        },
+        {
+          "material": 6,
+          "name": "score_buga",
+          "indices": 16
+        },
+        {
+          "material": 4,
+          "name": "dscore_buga",
+          "indices": 22
+        },
+        {
+          "material": 3,
+          "name": "hscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 7,
+          "name": "yscore_buga1",
+          "indices": 88
+        },
+        {
+          "material": 9,
+          "name": "yscore_buga",
+          "indices": 94
+        },
+        {
+          "material": 5,
+          "name": "bscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 0,
+          "name": "bscore_buga1",
+          "indices": 4
+        },
+        {
+          "material": 1,
+          "name": "bscore_buga2",
+          "indices": 4
+        },
+        {
+          "material": 10,
+          "name": "zscore_buga",
+          "indices": 4
+        },
+        {
+          "material": 8,
+          "name": "zz_ESPN_bug1",
+          "indices": 4
+        }
+      ],
+      "raster_policy": {
+        "order": "SHAP descriptor order, then push-buffer order",
+        "depth": "none (sprite submission order)",
+        "blend": "captured xemu fragment equations",
+        "retained_font_draws": "legacy font raster; GPU state not captured",
+        "cull_positive": false,
+        "gpu_state_proved": false,
+        "calibration": null
+      },
+      "xemu_model": {
+        "model": "xemu f9b1403 observed HUD fragment path",
+        "gpu_state_proved": false,
+        "calibration_passed": false,
+        "assumptions": [
+          "Caller diffuse multiplier at bucket+0x2e0 = (1,1,1,1)",
+          "Owned resident vertex slots; native upload executes",
+          "22950 matrix upload replaced by already captured native geometry",
+          "No preceding game-frame FIFO/PGRAPH state supplied",
+          "Preceding logic-op, depth-test enable, depth surface, shade mode and scissor state not captured",
+          "Pixel centres and CPU-projected geometry; surface_scale=4 coverage not emulated"
+        ],
+        "equation": "P8 fetch; oD0=v3*c6; R0=clamp(2*T0*oD0); final C0.a=0 passes R0; alpha>=2; SRC_ALPHA/ONE_MINUS_SRC_ALPHA ADD",
+        "reason": "Bounded native state does not reproduce the dark screenshots; no cause-specific fix proved."
+      }
+    },
+    "logo_geometry": {
+      "away_wing": [
+        [
+          145.6634521484375,
+          406.7618408203125
+        ],
+        [
+          259.00115966796875,
+          406.7618408203125
+        ],
+        [
+          145.6634521484375,
+          452.37890625
+        ],
+        [
+          259.00115966796875,
+          452.37890625
+        ]
+      ],
+      "home_wing": [
+        [
+          379.33828043937683,
+          406.7618408203125
+        ],
+        [
+          492.6686429977417,
+          406.7618408203125
+        ],
+        [
+          379.33828043937683,
+          452.37890625
+        ],
+        [
+          492.6686429977417,
+          452.37890625
+        ]
+      ],
+      "away_logo": [
+        [
+          145.6634521484375,
+          406.7618408203125
+        ],
+        [
+          222.3286247253418,
+          406.7618408203125
+        ],
+        [
+          145.6634521484375,
+          452.37890625
+        ],
+        [
+          222.3286247253418,
+          452.37890625
+        ]
+      ],
+      "home_logo": [
+        [
+          416.00112080574036,
+          406.7618408203125
+        ],
+        [
+          492.6686429977417,
+          406.7618408203125
+        ],
+        [
+          416.00112080574036,
+          452.37890625
+        ],
+        [
+          492.6686429977417,
+          452.37890625
+        ]
+      ]
+    },
+    "hud": [
+      640,
+      448
+    ],
+    "display": [
+      1138,
+      640
+    ],
+    "filter": "Lanczos display approximation",
+    "runtime_witnessed": false,
+    "calibrated_gpu_capture": false
+  }
+]

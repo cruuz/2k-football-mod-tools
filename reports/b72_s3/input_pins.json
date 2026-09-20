@@ -1,0 +1,46 @@
+{
+  "screenshots": {
+    "ksnip_20260919-112349.png": {
+      "bytes": 1627210,
+      "sha256": "900b3735f0573bebb77e460cbaca531b55e5470a055b0bf4834f065e59a136d9"
+    },
+    "ksnip_20260919-112501.png": {
+      "bytes": 1630967,
+      "sha256": "dc82a179c031318f148cbb178d0a7dc36d567968948249310095cc4f0f08193c"
+    },
+    "ksnip_20260919-112603.png": {
+      "bytes": 1644530,
+      "sha256": "f30fc11a0347d2a06b865caa548590f4a20a21fd06d69c82b204b36916d8f990"
+    },
+    "scorebug_plate_zoom.png": {
+      "bytes": 26885,
+      "sha256": "b4975ccde0ce56b9ab6a19186f2578a7fbba9d1108e65cae91395b4745f451a5"
+    }
+  },
+  "production": {
+    "data/nfl2k5_scorebug_sprite/layout.json": {
+      "sha256": "cae4733c2f0d8f257faa85eb11b969f5758962a7b0cd48441cc32ddeddd71a0b",
+      "unchanged_from_base": true
+    },
+    "data/nfl2k5_scorebug_sprite/template.png": {
+      "sha256": "69415d48b68eb8d732ba6543a7a99031e6fe72e94acfd2676227db59a72c021d",
+      "unchanged_from_base": true
+    },
+    "tools/scorebug_sprite/runtime.c": {
+      "sha256": "f467d7f1aff4e2e48739405cd390ca971921c1ff9d2318cf9e21f783baf65d1e",
+      "unchanged_from_base": true
+    },
+    "mod_editor/core/nfl2k5_scorebug_sprite.py": {
+      "sha256": "960be604263a1eca114a622048ad32a85eed728446d375ec019b47b2afbad50b",
+      "unchanged_from_base": true
+    },
+    "mod_editor/core/nfl2k5_scorebug_runtime.py": {
+      "sha256": "5562c5d903a8356b6f89fe13b2a8f871bea2348254d112467cd5f61940f51c78",
+      "unchanged_from_base": true
+    },
+    "tools/nfl2k5_scorebug_projection.py": {
+      "sha256": "91c4a7c753f2e677ad207914dfadce4d395a37dd0db08a8214a87282a3bcc13e",
+      "unchanged_from_base": true
+    }
+  }
+}

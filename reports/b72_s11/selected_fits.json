@@ -1,0 +1,30 @@
+{
+  "DEN": {
+    "fill_x": 0.86,
+    "height": 1.0,
+    "zoom": 0.976,
+    "shift_x": 0.0,
+    "shift_y": 0.0
+  },
+  "KC": {
+    "fill_x": 0.9,
+    "height": 1.0,
+    "zoom": 0.976,
+    "shift_x": 0.03125,
+    "shift_y": 0.0
+  },
+  "LV": {
+    "fill_x": 1.0,
+    "height": 1.0,
+    "zoom": 0.976,
+    "shift_x": 0.0,
+    "shift_y": 0.0
+  },
+  "HOU": {
+    "fill_x": 1.04,
+    "height": 1.0,
+    "zoom": 0.976,
+    "shift_x": 0.0,
+    "shift_y": 0.0
+  }
+}

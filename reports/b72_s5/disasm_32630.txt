@@ -1,0 +1,119 @@
+32630 push esi
+32631 mov esi, dword ptr [esp + 8]
+32635 mov eax, ecx
+32637 push edx
+32638 call 0x32290
+3263d pop esi
+3263e ret 4
+32641 nop
+32642 nop
+32643 nop
+32644 nop
+32645 nop
+32646 nop
+32647 nop
+32648 nop
+32649 nop
+3264a nop
+3264b nop
+3264c nop
+3264d nop
+3264e nop
+3264f nop
+32650 mov dword ptr [ecx + 0x31c], 0
+3265a ret
+3265b nop
+3265c nop
+3265d nop
+3265e nop
+3265f nop
+32660 push esi
+32661 mov esi, dword ptr [ecx + 0xc]
+32664 push edi
+32665 xor eax, eax
+32667 mov edi, 1
+3266c mov ecx, eax
+3266e shl edi, cl
+32670 test esi, edi
+32672 je 0x3268a
+32674 mov ecx, dword ptr [eax*4 + 0xa6d308]
+3267b mov edi, 1
+32680 shl edi, cl
+32682 movzx ecx, word ptr [edx + 0xa]
+32686 test ecx, edi
+32688 je 0x32698
+3268a inc eax
+3268b cmp eax, 6
+3268e jle 0x32667
+32690 pop edi
+32691 mov eax, 1
+32696 pop esi
+32697 ret
+32698 pop edi
+32699 xor eax, eax
+3269b pop esi
+3269c ret
+3269d nop
+3269e nop
+3269f nop
+326a0 dec eax
+326a1 not eax
+326a3 and eax, ecx
+326a5 ret
+326a6 nop
+326a7 nop
+326a8 nop
+326a9 nop
+326aa nop
+326ab nop
+326ac nop
+326ad nop
+326ae nop
+326af nop
+326b0 push esi
+326b1 mov esi, ecx
+326b3 lea ecx, [esi + eax]
+326b6 cmp esi, ecx
+326b8 jae 0x326da
+326ba mov edx, dword ptr [esp + 8]
+326be mov eax, dword ptr [esp + 0xc]
+326c2 sub ecx, esi
+326c4 dec ecx
+326c5 push edi
+326c6 shr ecx, 2
+326c9 and ecx, 0x3ffffffe
+326cf lea edi, [esi + 8]
+326d2 mov dword ptr [esi], edx
+326d4 mov dword ptr [esi + 4], eax
+326d7 rep movsd dword ptr es:[edi], dword ptr [esi]
+326d9 pop edi
+326da pop esi
+326db ret 8
+326de nop
+326df nop
+326e0 mov eax, dword ptr [0xb018c0]
+326e5 inc eax
+326e6 cmp eax, 1
+326e9 mov dword ptr [0xb018c0], eax
+326ee jg 0x32867
+326f4 push esi
+326f5 push 0xb018e0
+326fa call 0x3783b0
+326ff mov esi, 0x4000000
+32704 push 4
+32706 push 0x1000
+3270b push -1
+3270d push esi
+3270e call 0x20694
+32713 test eax, eax
+32715 mov dword ptr [0xb018c4], eax
+3271a jne 0x32728
+3271c sub esi, 0x1000
+32722 test esi, esi
+32724 jg 0x32704
+32726 jmp 0x32738
+32728 push eax
+32729 call 0x2071a
+3272e mov dword ptr [0xb018c4], 0
+32738 mov eax, dword ptr [0xa6d324]
+3273d push 4

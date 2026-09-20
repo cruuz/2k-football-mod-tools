@@ -1,0 +1,3284 @@
+{
+  "aspect": "4:3",
+  "teams": [
+    {
+      "team": "AFC",
+      "review_required": true,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          18.69,
+          51.41,
+          255.0
+        ],
+        "rgb": [
+          170.0,
+          20.0,
+          20.0
+        ],
+        "ink_pixels": 1711,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.21,
+        "ink_style": "light",
+        "ocr": {
+          "text": "35t&30",
+          "certain": false,
+          "error": 0.341
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          17.27,
+          50.75,
+          255.0
+        ],
+        "rgb": [
+          168.0,
+          20.0,
+          20.0
+        ],
+        "ink_pixels": 1711,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.21,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "AFW",
+      "review_required": false,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          28.17,
+          75.89,
+          255.0
+        ],
+        "rgb": [
+          129.5,
+          61.0,
+          64.0
+        ],
+        "ink_pixels": 1872,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "3st&30",
+          "certain": false,
+          "error": 0.3283
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          25.75,
+          74.82,
+          255.0
+        ],
+        "rgb": [
+          128.0,
+          60.0,
+          63.0
+        ],
+        "ink_pixels": 1872,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "AGP",
+      "review_required": false,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          0.0,
+          1.0,
+          255.0
+        ],
+        "rgb": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "ink_pixels": 1680,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "35t&30",
+          "certain": false,
+          "error": 0.3403
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          0.0,
+          1.0,
+          255.0
+        ],
+        "rgb": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "ink_pixels": 1680,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "AMW",
+      "review_required": true,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          21.25,
+          59.54,
+          255.0
+        ],
+        "rgb": [
+          9.0,
+          73.0,
+          78.0
+        ],
+        "ink_pixels": 1693,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "35t&30",
+          "certain": false,
+          "error": 0.3403
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          20.39,
+          58.83,
+          255.0
+        ],
+        "rgb": [
+          9.0,
+          72.0,
+          77.0
+        ],
+        "ink_pixels": 1693,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "ANE",
+      "review_required": false,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          30.5,
+          83.15,
+          255.0
+        ],
+        "rgb": [
+          74.0,
+          87.0,
+          72.0
+        ],
+        "ink_pixels": 1946,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 253.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "3st&30",
+          "certain": true,
+          "error": 0.3073
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          27.79,
+          81.44,
+          255.0
+        ],
+        "rgb": [
+          73.0,
+          85.0,
+          70.0
+        ],
+        "ink_pixels": 1946,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 253.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "ARI",
+      "review_required": true,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          9.83,
+          51.86,
+          255.0
+        ],
+        "rgb": [
+          127.0,
+          30.0,
+          53.0
+        ],
+        "ink_pixels": 1739,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "35t&30",
+          "certain": false,
+          "error": 0.3303
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          8.62,
+          51.07,
+          255.0
+        ],
+        "rgb": [
+          125.0,
+          30.0,
+          52.0
+        ],
+        "ink_pixels": 1739,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "ASE",
+      "review_required": false,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          32.24,
+          87.78,
+          255.0
+        ],
+        "rgb": [
+          72.0,
+          87.0,
+          142.0
+        ],
+        "ink_pixels": 1946,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 253.07,
+        "ink_style": "light",
+        "ocr": {
+          "text": "3st&30",
+          "certain": true,
+          "error": 0.3073
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          29.24,
+          85.85,
+          255.0
+        ],
+        "rgb": [
+          71.0,
+          85.0,
+          140.0
+        ],
+        "ink_pixels": 1946,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 253.07,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "ASW",
+      "review_required": false,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          0.0,
+          1.0,
+          255.0
+        ],
+        "rgb": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "ink_pixels": 1680,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "35t&30",
+          "certain": false,
+          "error": 0.3403
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          0.0,
+          1.0,
+          255.0
+        ],
+        "rgb": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "ink_pixels": 1680,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "ATL",
+      "review_required": false,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          27.15,
+          73.56,
+          255.0
+        ],
+        "rgb": [
+          151.0,
+          51.0,
+          67.0
+        ],
+        "ink_pixels": 1818,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "3st&30",
+          "certain": false,
+          "error": 0.337
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          24.8,
+          72.13,
+          255.0
+        ],
+        "rgb": [
+          149.0,
+          50.0,
+          65.0
+        ],
+        "ink_pixels": 1818,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "BAL",
+      "review_required": false,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          29.15,
+          81.3,
+          255.0
+        ],
+        "rgb": [
+          86.0,
+          76.0,
+          120.0
+        ],
+        "ink_pixels": 1977,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 253.07,
+        "ink_style": "light",
+        "ocr": {
+          "text": "3st&30",
+          "certain": true,
+          "error": 0.309
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          27.72,
+          79.87,
+          255.0
+        ],
+        "rgb": [
+          84.0,
+          75.0,
+          118.0
+        ],
+        "ink_pixels": 1977,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 253.07,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "BFM",
+      "review_required": true,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          34.0,
+          93.0,
+          255.0
+        ],
+        "rgb": [
+          93.0,
+          93.0,
+          93.0
+        ],
+        "ink_pixels": 2084,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 253.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "3st&30",
+          "certain": false,
+          "error": 0.3308
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          31.0,
+          91.0,
+          255.0
+        ],
+        "rgb": [
+          91.0,
+          91.0,
+          91.0
+        ],
+        "ink_pixels": 2084,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 253.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "BRI",
+      "review_required": true,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          14.08,
+          39.42,
+          255.0
+        ],
+        "rgb": [
+          122.0,
+          14.0,
+          55.0
+        ],
+        "ink_pixels": 1701,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "35t&30",
+          "certain": false,
+          "error": 0.3399
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          13.09,
+          39.0,
+          255.0
+        ],
+        "rgb": [
+          120.0,
+          14.0,
+          54.0
+        ],
+        "ink_pixels": 1701,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "BRP",
+      "review_required": true,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          1.95,
+          26.85,
+          255.0
+        ],
+        "rgb": [
+          6.0,
+          30.0,
+          56.0
+        ],
+        "ink_pixels": 1691,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "35t&30",
+          "certain": false,
+          "error": 0.34
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          1.95,
+          27.11,
+          255.0
+        ],
+        "rgb": [
+          9.0,
+          30.0,
+          56.0
+        ],
+        "ink_pixels": 1691,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "BUF",
+      "review_required": true,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          2.09,
+          20.07,
+          255.0
+        ],
+        "rgb": [
+          1.0,
+          22.0,
+          59.0
+        ],
+        "ink_pixels": 1680,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "35t&30",
+          "certain": false,
+          "error": 0.3403
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          2.09,
+          20.92,
+          255.0
+        ],
+        "rgb": [
+          1.0,
+          23.0,
+          58.0
+        ],
+        "ink_pixels": 1680,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "BWG",
+      "review_required": true,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          1.95,
+          26.85,
+          255.0
+        ],
+        "rgb": [
+          6.0,
+          30.0,
+          56.0
+        ],
+        "ink_pixels": 1691,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "35t&30",
+          "certain": false,
+          "error": 0.34
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          1.95,
+          27.11,
+          255.0
+        ],
+        "rgb": [
+          9.0,
+          30.0,
+          56.0
+        ],
+        "ink_pixels": 1691,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "CAR",
+      "review_required": false,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          27.14,
+          69.53,
+          255.0
+        ],
+        "rgb": [
+          1.0,
+          84.0,
+          130.0
+        ],
+        "ink_pixels": 1680,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.07,
+        "ink_style": "light",
+        "ocr": {
+          "text": "35t&30",
+          "certain": false,
+          "error": 0.3403
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          23.99,
+          68.68,
+          255.0
+        ],
+        "rgb": [
+          1.0,
+          83.0,
+          128.0
+        ],
+        "ink_pixels": 1680,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.07,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "CES",
+      "review_required": true,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          34.0,
+          93.0,
+          255.0
+        ],
+        "rgb": [
+          93.0,
+          93.0,
+          93.0
+        ],
+        "ink_pixels": 2084,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 253.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "3st&30",
+          "certain": false,
+          "error": 0.3308
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          31.0,
+          91.0,
+          255.0
+        ],
+        "rgb": [
+          91.0,
+          91.0,
+          91.0
+        ],
+        "ink_pixels": 2084,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 253.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "CHH",
+      "review_required": true,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          1.95,
+          26.85,
+          255.0
+        ],
+        "rgb": [
+          6.0,
+          30.0,
+          56.0
+        ],
+        "ink_pixels": 1691,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "35t&30",
+          "certain": false,
+          "error": 0.34
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          1.95,
+          27.11,
+          255.0
+        ],
+        "rgb": [
+          9.0,
+          30.0,
+          56.0
+        ],
+        "ink_pixels": 1691,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "CHI",
+      "review_required": false,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          28.58,
+          76.59,
+          255.0
+        ],
+        "rgb": [
+          71.0,
+          77.0,
+          89.0
+        ],
+        "ink_pixels": 1943,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 253.07,
+        "ink_style": "light",
+        "ocr": {
+          "text": "3st&30",
+          "certain": true,
+          "error": 0.3063
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          25.86,
+          75.52,
+          255.0
+        ],
+        "rgb": [
+          70.0,
+          76.0,
+          88.0
+        ],
+        "ink_pixels": 1943,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 253.07,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "CIN",
+      "review_required": false,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          25.63,
+          70.29,
+          255.0
+        ],
+        "rgb": [
+          157.5,
+          50.0,
+          13.0
+        ],
+        "ink_pixels": 1697,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.21,
+        "ink_style": "light",
+        "ocr": {
+          "text": "35t&30",
+          "certain": false,
+          "error": 0.34
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          23.43,
+          69.08,
+          255.0
+        ],
+        "rgb": [
+          156.0,
+          49.0,
+          13.0
+        ],
+        "ink_pixels": 1697,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.21,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "CLE",
+      "review_required": false,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          30.63,
+          83.04,
+          255.0
+        ],
+        "rgb": [
+          93.0,
+          82.0,
+          64.0
+        ],
+        "ink_pixels": 1891,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 253.93,
+        "ink_style": "light",
+        "ocr": {
+          "text": "3st&30",
+          "certain": true,
+          "error": 0.3186
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          28.2,
+          81.32,
+          255.0
+        ],
+        "rgb": [
+          92.0,
+          80.0,
+          63.0
+        ],
+        "ink_pixels": 1891,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 253.93,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "DAL",
+      "review_required": true,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          19.52,
+          52.77,
+          255.0
+        ],
+        "rgb": [
+          32.0,
+          56.0,
+          81.0
+        ],
+        "ink_pixels": 1748,
+        "ink_box": [
+          642,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "35t&30",
+          "certain": false,
+          "error": 0.3284
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          17.66,
+          51.77,
+          255.0
+        ],
+        "rgb": [
+          32.0,
+          55.0,
+          79.0
+        ],
+        "ink_pixels": 1748,
+        "ink_box": [
+          642,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "DEN",
+      "review_required": false,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          25.35,
+          68.28,
+          255.0
+        ],
+        "rgb": [
+          158.0,
+          48.0,
+          2.0
+        ],
+        "ink_pixels": 1684,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.21,
+        "ink_style": "light",
+        "ocr": {
+          "text": "35t&30",
+          "certain": false,
+          "error": 0.3407
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          23.21,
+          67.29,
+          255.0
+        ],
+        "rgb": [
+          157.0,
+          47.0,
+          3.0
+        ],
+        "ink_pixels": 1684,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.21,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "DET",
+      "review_required": false,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          30.65,
+          81.85,
+          255.0
+        ],
+        "rgb": [
+          1.0,
+          99.0,
+          153.0
+        ],
+        "ink_pixels": 1680,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.07,
+        "ink_style": "light",
+        "ocr": {
+          "text": "35t&30",
+          "certain": false,
+          "error": 0.3403
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          27.5,
+          80.99,
+          255.0
+        ],
+        "rgb": [
+          1.0,
+          98.0,
+          151.0
+        ],
+        "ink_pixels": 1680,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.07,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "GB",
+      "review_required": true,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          34.86,
+          93.73,
+          255.0
+        ],
+        "rgb": [
+          83.0,
+          97.0,
+          93.0
+        ],
+        "ink_pixels": 2029,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 253.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "3st&30",
+          "certain": false,
+          "error": 0.3363
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          31.08,
+          92.02,
+          255.0
+        ],
+        "rgb": [
+          82.0,
+          95.0,
+          92.0
+        ],
+        "ink_pixels": 2029,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 253.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "HOU",
+      "review_required": false,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          26.43,
+          72.59,
+          255.0
+        ],
+        "rgb": [
+          66.0,
+          74.0,
+          78.0
+        ],
+        "ink_pixels": 1905,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 253.79,
+        "ink_style": "light",
+        "ocr": {
+          "text": "3st&30",
+          "certain": true,
+          "error": 0.3184
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          24.43,
+          71.52,
+          255.0
+        ],
+        "rgb": [
+          65.0,
+          73.0,
+          77.0
+        ],
+        "ink_pixels": 1905,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 253.79,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "IND",
+      "review_required": true,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          12.99,
+          37.39,
+          255.0
+        ],
+        "rgb": [
+          2.0,
+          43.0,
+          88.0
+        ],
+        "ink_pixels": 1681,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "35t&30",
+          "certain": false,
+          "error": 0.3408
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          12.18,
+          37.32,
+          255.0
+        ],
+        "rgb": [
+          2.0,
+          43.0,
+          87.0
+        ],
+        "ink_pixels": 1681,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "JAX",
+      "review_required": false,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          33.41,
+          91.13,
+          255.0
+        ],
+        "rgb": [
+          32.0,
+          106.0,
+          117.5
+        ],
+        "ink_pixels": 1748,
+        "ink_box": [
+          642,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "35t&30",
+          "certain": false,
+          "error": 0.3284
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          30.26,
+          89.56,
+          255.0
+        ],
+        "rgb": [
+          32.0,
+          104.0,
+          116.0
+        ],
+        "ink_pixels": 1748,
+        "ink_box": [
+          642,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "KC",
+      "review_required": true,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          15.92,
+          43.87,
+          255.0
+        ],
+        "rgb": [
+          143.0,
+          15.0,
+          35.0
+        ],
+        "ink_pixels": 1702,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.21,
+        "ink_style": "light",
+        "ocr": {
+          "text": "35t&30",
+          "certain": false,
+          "error": 0.3399
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          14.78,
+          43.37,
+          255.0
+        ],
+        "rgb": [
+          141.0,
+          16.0,
+          35.0
+        ],
+        "ink_pixels": 1702,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.21,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "LAC",
+      "review_required": false,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          24.85,
+          66.96,
+          255.0
+        ],
+        "rgb": [
+          1.0,
+          81.0,
+          125.0
+        ],
+        "ink_pixels": 1680,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "35t&30",
+          "certain": false,
+          "error": 0.3403
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          22.41,
+          66.02,
+          255.0
+        ],
+        "rgb": [
+          1.0,
+          79.0,
+          123.0
+        ],
+        "ink_pixels": 1680,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "LAD",
+      "review_required": true,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          34.0,
+          93.0,
+          255.0
+        ],
+        "rgb": [
+          93.0,
+          93.0,
+          93.0
+        ],
+        "ink_pixels": 2084,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 253.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "3st&30",
+          "certain": false,
+          "error": 0.3308
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          31.0,
+          91.0,
+          255.0
+        ],
+        "rgb": [
+          91.0,
+          91.0,
+          91.0
+        ],
+        "ink_pixels": 2084,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 253.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "LAL",
+      "review_required": true,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          34.0,
+          93.0,
+          255.0
+        ],
+        "rgb": [
+          93.0,
+          93.0,
+          93.0
+        ],
+        "ink_pixels": 2084,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 253.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "3st&30",
+          "certain": false,
+          "error": 0.3308
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          31.0,
+          91.0,
+          255.0
+        ],
+        "rgb": [
+          91.0,
+          91.0,
+          91.0
+        ],
+        "ink_pixels": 2084,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 253.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "LAR",
+      "review_required": true,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          14.84,
+          41.21,
+          255.0
+        ],
+        "rgb": [
+          1.0,
+          45.0,
+          125.0
+        ],
+        "ink_pixels": 1680,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.02,
+        "ink_style": "light",
+        "ocr": {
+          "text": "35t&30",
+          "certain": false,
+          "error": 0.3403
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          14.55,
+          40.42,
+          255.0
+        ],
+        "rgb": [
+          1.0,
+          44.0,
+          123.0
+        ],
+        "ink_pixels": 1680,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.02,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "LV",
+      "review_required": false,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          0.0,
+          1.0,
+          255.0
+        ],
+        "rgb": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "ink_pixels": 1680,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "35t&30",
+          "certain": false,
+          "error": 0.3403
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          0.0,
+          4.0,
+          255.0
+        ],
+        "rgb": [
+          4.0,
+          4.0,
+          4.0
+        ],
+        "ink_pixels": 1680,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "MIA",
+      "review_required": false,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          26.13,
+          70.51,
+          255.0
+        ],
+        "rgb": [
+          1.0,
+          89.0,
+          95.0
+        ],
+        "ink_pixels": 1680,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "35t&30",
+          "certain": false,
+          "error": 0.3403
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          23.77,
+          69.72,
+          255.0
+        ],
+        "rgb": [
+          1.0,
+          88.0,
+          93.0
+        ],
+        "ink_pixels": 1680,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "MIN",
+      "review_required": true,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          2.3,
+          22.71,
+          255.0
+        ],
+        "rgb": [
+          34.0,
+          16.0,
+          56.0
+        ],
+        "ink_pixels": 1704,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "35t&30",
+          "certain": false,
+          "error": 0.3388
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          2.3,
+          22.86,
+          255.0
+        ],
+        "rgb": [
+          34.0,
+          17.0,
+          55.0
+        ],
+        "ink_pixels": 1704,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "NE",
+      "review_required": true,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          19.52,
+          52.77,
+          255.0
+        ],
+        "rgb": [
+          32.0,
+          56.0,
+          81.0
+        ],
+        "ink_pixels": 1748,
+        "ink_box": [
+          642,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "35t&30",
+          "certain": false,
+          "error": 0.3284
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          17.66,
+          51.77,
+          255.0
+        ],
+        "rgb": [
+          32.0,
+          55.0,
+          79.0
+        ],
+        "ink_pixels": 1748,
+        "ink_box": [
+          642,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "NFC",
+      "review_required": true,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          13.85,
+          42.01,
+          255.0
+        ],
+        "rgb": [
+          20.0,
+          43.0,
+          99.0
+        ],
+        "ink_pixels": 1713,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "35t&30",
+          "certain": false,
+          "error": 0.3407
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          13.74,
+          41.8,
+          255.0
+        ],
+        "rgb": [
+          20.0,
+          43.0,
+          98.0
+        ],
+        "ink_pixels": 1713,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "NFL",
+      "review_required": true,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          13.85,
+          42.01,
+          255.0
+        ],
+        "rgb": [
+          20.0,
+          43.0,
+          99.0
+        ],
+        "ink_pixels": 1713,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "35t&30",
+          "certain": false,
+          "error": 0.3407
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          13.74,
+          41.8,
+          255.0
+        ],
+        "rgb": [
+          20.0,
+          43.0,
+          98.0
+        ],
+        "ink_pixels": 1713,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "NO",
+      "review_required": false,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          29.34,
+          79.68,
+          255.0
+        ],
+        "rgb": [
+          89.0,
+          79.0,
+          59.0
+        ],
+        "ink_pixels": 1856,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "3st&30",
+          "certain": false,
+          "error": 0.3331
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          27.13,
+          78.68,
+          255.0
+        ],
+        "rgb": [
+          88.0,
+          78.0,
+          58.0
+        ],
+        "ink_pixels": 1856,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "NYG",
+      "review_required": true,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          4.12,
+          28.86,
+          255.0
+        ],
+        "rgb": [
+          9.0,
+          29.0,
+          85.0
+        ],
+        "ink_pixels": 1693,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "35t&30",
+          "certain": false,
+          "error": 0.3403
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          4.12,
+          28.86,
+          255.0
+        ],
+        "rgb": [
+          10.0,
+          29.0,
+          84.0
+        ],
+        "ink_pixels": 1693,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "NYJ",
+      "review_required": false,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          30.46,
+          82.5,
+          255.0
+        ],
+        "rgb": [
+          45.0,
+          94.0,
+          78.0
+        ],
+        "ink_pixels": 1793,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "3st&30",
+          "certain": false,
+          "error": 0.347
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          28.17,
+          81.43,
+          255.0
+        ],
+        "rgb": [
+          44.0,
+          93.0,
+          77.0
+        ],
+        "ink_pixels": 1793,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "PHI",
+      "review_required": false,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          26.89,
+          73.09,
+          255.0
+        ],
+        "rgb": [
+          32.0,
+          83.0,
+          90.0
+        ],
+        "ink_pixels": 1748,
+        "ink_box": [
+          642,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "35t&30",
+          "certain": false,
+          "error": 0.3284
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          24.39,
+          71.66,
+          255.0
+        ],
+        "rgb": [
+          32.0,
+          82.0,
+          88.0
+        ],
+        "ink_pixels": 1748,
+        "ink_box": [
+          642,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "PIT",
+      "review_required": true,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          28.82,
+          78.61,
+          255.0
+        ],
+        "rgb": [
+          108.0,
+          77.0,
+          8.0
+        ],
+        "ink_pixels": 1693,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "35t&30",
+          "certain": false,
+          "error": 0.3403
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          26.68,
+          76.89,
+          255.0
+        ],
+        "rgb": [
+          106.0,
+          75.0,
+          8.0
+        ],
+        "ink_pixels": 1693,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "SEA",
+      "review_required": false,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          31.23,
+          81.19,
+          255.0
+        ],
+        "rgb": [
+          64.0,
+          84.0,
+          104.0
+        ],
+        "ink_pixels": 1891,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 253.89,
+        "ink_style": "light",
+        "ocr": {
+          "text": "3st&30",
+          "certain": true,
+          "error": 0.3186
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          27.95,
+          80.19,
+          255.0
+        ],
+        "rgb": [
+          63.0,
+          83.0,
+          103.0
+        ],
+        "ink_pixels": 1891,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 253.89,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "SF",
+      "review_required": false,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          30.94,
+          85.47,
+          255.0
+        ],
+        "rgb": [
+          164.0,
+          64.0,
+          64.0
+        ],
+        "ink_pixels": 1891,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 253.61,
+        "ink_style": "light",
+        "ocr": {
+          "text": "3st&30",
+          "certain": true,
+          "error": 0.3186
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          29.02,
+          84.05,
+          255.0
+        ],
+        "rgb": [
+          162.0,
+          63.0,
+          63.0
+        ],
+        "ink_pixels": 1891,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 253.61,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "TB",
+      "review_required": true,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          17.29,
+          47.96,
+          255.0
+        ],
+        "rgb": [
+          140.0,
+          21.0,
+          41.0
+        ],
+        "ink_pixels": 1717,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.21,
+        "ink_style": "light",
+        "ocr": {
+          "text": "35t&30",
+          "certain": false,
+          "error": 0.3384
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          16.14,
+          47.46,
+          255.0
+        ],
+        "rgb": [
+          138.0,
+          22.0,
+          40.0
+        ],
+        "ink_pixels": 1717,
+        "ink_box": [
+          643,
+          953,
+          799,
+          981
+        ],
+        "core_luma": 254.21,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "TEN",
+      "review_required": false,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          31.69,
+          85.97,
+          255.0
+        ],
+        "rgb": [
+          43.0,
+          94.0,
+          133.0
+        ],
+        "ink_pixels": 1786,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "3st&30",
+          "certain": false,
+          "error": 0.3493
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          29.18,
+          84.9,
+          255.0
+        ],
+        "rgb": [
+          43.0,
+          93.0,
+          131.0
+        ],
+        "ink_pixels": 1786,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 254.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "UDC",
+      "review_required": true,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          34.0,
+          93.0,
+          255.0
+        ],
+        "rgb": [
+          93.0,
+          93.0,
+          93.0
+        ],
+        "ink_pixels": 2084,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 253.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "3st&30",
+          "certain": false,
+          "error": 0.3308
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          31.0,
+          91.0,
+          255.0
+        ],
+        "rgb": [
+          91.0,
+          91.0,
+          91.0
+        ],
+        "ink_pixels": 2084,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 253.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "USER1",
+      "review_required": true,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          34.0,
+          93.0,
+          255.0
+        ],
+        "rgb": [
+          93.0,
+          93.0,
+          93.0
+        ],
+        "ink_pixels": 2084,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 253.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "3st&30",
+          "certain": false,
+          "error": 0.3308
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          31.0,
+          91.0,
+          255.0
+        ],
+        "rgb": [
+          91.0,
+          91.0,
+          91.0
+        ],
+        "ink_pixels": 2084,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 253.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "USER2",
+      "review_required": true,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          34.0,
+          93.0,
+          255.0
+        ],
+        "rgb": [
+          93.0,
+          93.0,
+          93.0
+        ],
+        "ink_pixels": 2084,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 253.0,
+        "ink_style": "light",
+        "ocr": {
+          "text": "3st&30",
+          "certain": false,
+          "error": 0.3308
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          31.0,
+          91.0,
+          255.0
+        ],
+        "rgb": [
+          91.0,
+          91.0,
+          91.0
+        ],
+        "ink_pixels": 2084,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 253.0,
+        "ink_style": "light"
+      }
+    },
+    {
+      "team": "WAS",
+      "review_required": false,
+      "down": {
+        "box": [
+          595,
+          950,
+          845,
+          985
+        ],
+        "luma": [
+          30.61,
+          84.93,
+          255.0
+        ],
+        "rgb": [
+          117.0,
+          76.0,
+          76.0
+        ],
+        "ink_pixels": 1977,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 253.21,
+        "ink_style": "light",
+        "ocr": {
+          "text": "3st&30",
+          "certain": true,
+          "error": 0.309
+        }
+      },
+      "plate": {
+        "box": [
+          585,
+          947,
+          853,
+          987
+        ],
+        "luma": [
+          28.98,
+          83.29,
+          255.0
+        ],
+        "rgb": [
+          116.0,
+          75.0,
+          75.0
+        ],
+        "ink_pixels": 1977,
+        "ink_box": [
+          642,
+          952,
+          800,
+          981
+        ],
+        "core_luma": 253.21,
+        "ink_style": "light"
+      }
+    }
+  ],
+  "calibration_passed": false,
+  "preview_path": "xemu-model",
+  "limitation": "52 roster tint slots; extra slots use neutral logos. GPU calibration is unresolved; these are model predictions."
+}

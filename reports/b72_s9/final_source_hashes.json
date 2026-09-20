@@ -1,0 +1,16 @@
+{
+  "data/nfl2k5_scorebug_sprite/layout.json": "95e3b4110bdbc0088d6e3fa88c5c4829a603e99283531c69dcb7d54935002bf5",
+  "data/nfl2k5_scorebug_sprite/team_accents.json": "5570ce12a77dbe8983f2b4342041ccff94678070789f6817fc7b58c6b345d31c",
+  "data/nfl2k5_scorebug_sprite/template.png": "9701b949d2f4b21aaf0f9b13e5f82978e68faca2d3733dc17ed4cc7e79211a8e",
+  "mod_editor/core/nfl2k5_scorebug_exact.py": "9de7e52f9a36fd29dbadb98bdafdee71c46e9902c3a8c688fe0c22516d78ec0e",
+  "mod_editor/core/nfl2k5_scorebug_sprite.py": "d7ecf5cb2fe50f06818121cca78026cc9091d4dd44d08ca4cf7cd71fcdb6a59c",
+  "mod_editor/core/nfl2k5_scorebug_sprite_code.py": "671ce854d227d6eb990d043cc22449a5c318315fdfc645affa521715e429a24e",
+  "mod_editor/core/providers.py": "41335b10a7222ed3e6c3ab0dd1c326aabe77aeb7ed292d8847ea1e36aac43454",
+  "packaging/check_2k5_mod_studio_release.py": "744aa1f7dc98e1c0138c86ca7d93453a92694a4184d8a6be80cc6211843abdaf",
+  "packaging/nfl2k5_scorebug_template_pngs.json": "7ea420ad2f47fc9aa748cdedaddc06777374b31882fb50bf95c2f341469a2044",
+  "packaging/scorebug_replication_pins.py": "9ac10cbf97b9fdc26653abcf095526280d05f9d512fb591e426948f00aff31fe",
+  "tests/mod_editor/test_nfl2k5_scorebug_sd.py": "3725f3fbe12075c5ea26436fa100b1bd14ae38f690602080be675161968d9bb5",
+  "tests/mod_editor/test_nfl2k5_scorebug_sprite.py": "2f453c272520384768488bc3443a28826aabe32c9ad950a77bb0ec33fbf5a3a3",
+  "tools/scorebug_sprite/runtime.c": "d902d7b102d95dddd28e1ca731aea638063cbf4de7bb44354454ae67bf303565",
+  "data/nfl2k5_cave_reservations.json": "969d42cde4dd8be10e619668e8f3796003ca57293b28f5d2d6b2d35a691176cc"
+}

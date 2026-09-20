@@ -56,13 +56,13 @@ class RetailTests(unittest.TestCase):
         # still sees the exact logical file, including all zero bytes.
         real_write=io.pwrite
         def sparse_write(fd,data,offset):
-            if offset >= os.fstat(fd).st_size and not any(data):
+            if offset >= os.fstat(fd).st_size and not bytes(data).strip(b'\0'):
                 os.ftruncate(fd,offset+len(data));return len(data)
             return real_write(fd,data,offset)
         def sparse_copy(source,target):
             with Path(source).open('rb') as src,Path(target).open('wb') as dst:
                 while block:=src.read(a.READ_BLOCK):
-                    if any(block):dst.write(block)
+                    if block.strip(b'\0'):dst.write(block)
                     else:dst.seek(len(block),1)
                 dst.truncate()
             return str(target)

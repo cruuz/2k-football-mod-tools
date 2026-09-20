@@ -1,0 +1,92 @@
+28110 mov eax, dword ptr [0xa6aa6c]
+28115 ret 
+28116 nop 
+28117 nop 
+28118 nop 
+28119 nop 
+2811a nop 
+2811b nop 
+2811c nop 
+2811d nop 
+2811e nop 
+2811f nop 
+28120 mov dword ptr [0xa6aa3c], ecx
+28126 ret 
+28127 nop 
+28128 nop 
+28129 nop 
+2812a nop 
+2812b nop 
+2812c nop 
+2812d nop 
+2812e nop 
+2812f nop 
+28130 sub esp, 0x30
+28133 push ebx
+28134 push ebp
+28135 push esi
+28136 mov esi, edx
+28138 test esi, esi
+2813a push edi
+2813b mov dword ptr [esp + 0x34], ecx
+2813f jne 0x281ad
+28141 mov eax, dword ptr [0xa6aa18]
+28146 mov ecx, dword ptr [eax*4 + 0xa6aa20]
+2814d mov dword ptr [esp + 0x18], ecx
+28151 call 0x27890
+28156 mov edi, dword ptr [eax + 0x1c]
+28159 mov ecx, dword ptr [eax + 0x20]
+2815c mov esi, dword ptr [0xa6aa34]
+28162 mov edx, dword ptr [eax + 0x18]
+28165 mov ebp, dword ptr [eax + 0x14]
+28168 mov eax, dword ptr [eax + 0x38]
+2816b add ecx, edi
+2816d mov edi, dword ptr [0xa6aa48]
+28173 xor ebx, ebx
+28175 cmp ecx, 0x10
+28178 setle bl
+2817b mov dword ptr [esp + 0x24], ecx
+2817f mov ecx, dword ptr [0xa6aa44]
+28185 mov dword ptr [esp + 0x14], esi
+28189 mov esi, dword ptr [0xa6aa4c]
+2818f mov dword ptr [esp + 0x50], edx
+28193 mov dword ptr [esp + 0x2c], ecx
+28197 dec ebx
+28198 and ebx, 5
+2819b add ebx, 3
+2819e mov dword ptr [esp + 0x4c], ebx
+281a2 mov ebx, dword ptr [0xa6aa40]
+281a8 jmp 0x2825a
+281ad mov ebx, dword ptr [esp + 0x50]
+281b1 mov ecx, dword ptr [esp + 0x4c]
+281b5 push ebx
+281b6 push ecx
+281b7 push esi
+281b8 call 0x271d0
+281bd mov edx, dword ptr [esi + 0x14]
+281c0 and edx, 0xffff
+281c6 mov dword ptr [esp + 0x18], eax
+281ca jne 0x281de
+281cc mov ecx, dword ptr [esi + 0xc]
+281cf shr ecx, 0x14
+281d2 and ecx, 0xf
+281d5 mov ebp, 1
+281da shl ebp, cl
+281dc jmp 0x281e2
+281de movzx ebp, word ptr [esi + 0x12]
+281e2 mov ecx, ebx
+281e4 sar ebp, cl
+281e6 test edx, edx
+281e8 jne 0x281fb
+281ea xor ecx, ecx
+281ec mov cl, byte ptr [esi + 0xf]
+281ef mov eax, 1
+281f4 and ecx, 0xf
+281f7 shl eax, cl
+281f9 jmp 0x28203
+281fb mov eax, dword ptr [esi + 0x10]
+281fe and eax, 0xffff
+28203 movsx edi, byte ptr [esi + 0xd]
+28207 mov ecx, ebx
+28209 sar eax, cl
+2820b mov dword ptr [esp + 0x50], eax
