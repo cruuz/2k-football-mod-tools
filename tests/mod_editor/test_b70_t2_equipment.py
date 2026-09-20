@@ -68,13 +68,45 @@ class SiblingTests(unittest.TestCase):
         self.assertEqual(len(result.changed_asset_ids), 3)
         self.assertTrue(all(a.endswith('_mud') for a in result.changed_asset_ids))
 
-    def test_combined_refusal_is_atomic(self):
+    def test_capped_import_stages_art_the_quick_check_cannot_fit(self):
+        # Beta 74. Until now a capped "needs refit" at import hard-refused with
+        # "No fitting smaller size was established... Simplify the artwork", the
+        # dead end Coach Edwards hit on 2026-09-20 with a sock that Build's own
+        # uncapped search fits at 16x16. The quick check giving up is not a
+        # measurement; Build (auto_refit_group) is the arbiter, so import now
+        # stages the art and says so. The mock makes every rebuild fail, which
+        # no real art does at 16x16; it is the strongest possible refusal and
+        # import must still defer it to Build rather than lose the import.
         with self.f.archive.context(), patch.object(writer, '_rebuild_fixed_span',
                 side_effect=writer.TxtrError('VC-LZ stream is 90000 bytes; exceeds 4000')):
-            with self.assertRaises(ValueError):
-                staging.stage_equipment_import(self.f.session, self.asset, self.png, independent=True)
-        self.assertEqual(self.f.staged(), ())
-        self.assertEqual(self.f.session._undo, [])
+            result = staging.stage_equipment_import(self.f.session, self.asset, self.png, independent=True)
+        self.assertEqual(len(result.changed_asset_ids), 6)
+        self.assertEqual(len(self.f.staged()), 6)
+        self.assertEqual(len(self.f.session._undo), 1)
+        self.assertIn('Build refits it automatically', result.message)
+        self.assertNotIn('Simplify the artwork', result.message)
+        row = next(r for r in result.receipt['edits'] if r['asset_id'] == self.asset.asset_id)
+        self.assertEqual(row['fit_status'], 'needs refit')
+        self.assertEqual((row['budget'], row['required']), (5216, 90000))
+
+    def test_uncapped_refit_refusal_is_atomic(self):
+        # The refusal that still exists is the explicit, uncapped one: Refit
+        # equipment ran the complete ladder and it genuinely cannot fit. That
+        # must leave the staged bytes and the undo stack exactly as they were.
+        with self.f.archive.context():
+            staged = staging.stage_equipment_import(self.f.session, self.asset, self.png, independent=True)
+        before = {a: self.f.session.current_path(self.f.assets[a]).read_bytes()
+                  for a in staged.changed_asset_ids}
+        undo_before = list(self.f.session._undo)
+        with self.f.archive.context(), patch.object(writer, '_rebuild_fixed_span',
+                side_effect=writer.TxtrError('VC-LZ stream is 90000 bytes; exceeds 4000')):
+            with self.assertRaises(staging.ValidationError) as caught:
+                staging.refit_equipment(self.f.session, self.asset.asset_id)
+        self.assertIn('could not find a fitting colour count or size', str(caught.exception))
+        after = {a: self.f.session.current_path(self.f.assets[a]).read_bytes()
+                 for a in staged.changed_asset_ids}
+        self.assertEqual(before, after)
+        self.assertEqual(self.f.session._undo, undo_before)
 
     def test_repeat_and_restore_original(self):
         self.stage()
