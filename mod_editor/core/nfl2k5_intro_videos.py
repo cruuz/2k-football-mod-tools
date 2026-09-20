@@ -35,14 +35,15 @@ HELP_TEXT = (
     "Keeps the legal/Sega screens, Crib reels, tutorials and game presentation. "
     "Does not increase the GAMEDATA memory budget. EXPERIMENTAL / UNWITNESSED."
 )
-# Skip directly to the existing post-movie clock reset. No new runtime memory,
-# no shared movie-player patch, and no fake stream ever reaches the decoder.
-SITES = (("skip_boot_movie_loop", 0x74BBB, bytes.fromhex("be30974e00"),
-          bytes.fromhex("e923000000")),)
+# Preserve the player's initial pending-work barrier, then use the existing
+# post-movie clock reset. No new runtime memory or shared player patch.
+SITES = (("skip_boot_movie_loop", 0x74BBB, bytes.fromhex("be30974e00d946048b0e"),
+          bytes.fromhex("e810e7fcffe91e000000")),)
 GUARDS = (
     (0x74bb1, 0x3d, '6164102e9bff6a3f7299db5973776b7cb83ef469d8d820214066dfdd78fcc9e7'),
     (0x4e9720, 0x30, 'c9697cb9f0df49bc45c6453e7a8218df0a43d17b272984016474bdd4e9a60893'),
     (0x178150, 0x573, 'f42d8148095a66612407439109556088b84099a2ce26fd8b961a6d4e82d85e09'),
+    (0x432c0, 0x2f, '92ea290bc2112ee28246b4a9ad98ecc168a6c02a276c7b99c9cf70488f4eb14c'),
 )
 MOVIES = (
     (4293, 'espn_videogames.mov', 3973120, '50fa376d1a604193dd1919811d5f250a803996fe1cf2a153c4757ec5b9819611'),

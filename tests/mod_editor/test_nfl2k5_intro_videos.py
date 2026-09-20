@@ -61,12 +61,12 @@ class RetailTests(unittest.TestCase):
         im, original = XbeImage(patched), XbeImage(self.retail)
         for va, n in ((0x178150,0x573), (0x272a60,0x15c), (0x3634b0,0x6e), (0x4e9720,48)):
             self.assertEqual(im.read(va,n), original.read(va,n))
-        allowed = set(range(im.offset(0x74bbb),im.offset(0x74bbb)+5))
+        allowed = set(range(im.offset(0x74bbb),im.offset(0x74bbb)+10))
         for s in cut._sections(patched):
             self.assertEqual(s.stored_digest,cut.section_digest(patched,s))
             allowed.update(range(s.header_offset+36,s.header_offset+56))
         self.assertTrue(all(i in allowed for i,(a,b) in enumerate(zip(patched,self.retail)) if a!=b))
-        for va in (0x74bbb,0x74bce,0x4e9738,0x1781c5):
+        for va in (0x74bbb,0x74bce,0x4e9738,0x1781c5,0x432c0):
             bad = bytearray(self.retail); bad[original.offset(va)] ^= 1
             self.assertEqual(cut.status(bytes(bad)), 'foreign')
             with self.assertRaises(ValueError):cut.apply(bytes(bad))
@@ -77,7 +77,7 @@ class RetailTests(unittest.TestCase):
         from tests import nfl2k5_allocator_stack as stack
         from tests.mod_editor.test_nfl2k5_owner_pairwise_composition import OWNERS, prerequisites
         manifest=ReservationManifest.load(ROOT/'data/nfl2k5_cave_reservations.json',XbeImage(self.retail))
-        self.assertEqual(manifest.overlaps(0x74bbb,0x74bc0),[])
+        self.assertEqual(manifest.overlaps(0x74bbb,0x74bc5),[])
         seed,_=stack.space.apply(prerequisites(self.retail),stack.REQUESTS,scaleout=True)
         for label,owner in OWNERS:
             with self.subTest(owner=label):
@@ -205,6 +205,20 @@ class NativeTests(unittest.TestCase):
                 self.assertEqual(calls,[] if patched else ['espn_videogames'] if result==2 else
                                  ['espn_videogames','vc','espn_game_sound','intro'])
                 self.assertEqual(m.allocations_seen,[])
+
+    def test_skip_keeps_native_pending_work_barrier(self):
+        m=MovieMachine(cut.apply(self.retail)[0]); polls=[]
+        m.put(0xb09584,2)
+        def complete_pending_work():
+            polls.append(m.get(0xb09584))
+            m.put(0xb09584,m.get(0xb09584)-1)
+            m.ret()
+        m.stub(0x38f50,complete_pending_work)
+        m.stub(0x178150,lambda:self.fail('skip entered movie player'))
+        m.call(0x74bbb,stop=0x74be3)
+        self.assertEqual(polls,[2,1])
+        self.assertEqual(m.get(0xb09584),0)
+        self.assertEqual(m.allocations_seen,[])
 
     def test_every_stream_missing_stub_and_native_header_allocation(self):
         path=XBE.parent/'vc_53450030/0'

@@ -84,8 +84,10 @@ when inserted into an in-memory copy of the registry.
 }
 ```
 
-The new owner uses no cave or allocator reservation. Its five-byte intentional
-hook is VA `0x74BBB..0x74BC0`, replacing `be30974e00` with `e923000000`.
+The new owner uses no cave or allocator reservation. Its ten-byte intentional
+hook is VA `0x74BBB..0x74BC5`, replacing `be30974e00d946048b0e` with
+`e810e7fcffe91e000000`. It calls the original pending-work barrier at
+`0x432D0` before jumping to the existing clock reset at `0x74BE3`.
 The unchanged current manifest reports no competing owner at that hook. The
 32-owner composition check executes both application orders for the new patch.
 
@@ -100,7 +102,7 @@ When that later integration records the new owner, add
 `mod_editor/core/nfl2k5_cave_manifest.py`: import it in the observed build,
 include it in the instrumented `modules` tuple and `extra_owners`, and execute
 `final, _ = intro_videos.apply(final)` immediately after the observed Crib XBE
-patch. This records only the five-byte hook and section seal, not a disc cut.
+patch. This records only the ten-byte hook and section seal, not a disc cut.
 The two image cuts must still remain separate. Add the new owner to the shared
 XBE-only composition union when maintaining those integration fixtures. This
 job independently tested its hook with every existing matrix owner in both

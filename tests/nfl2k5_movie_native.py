@@ -31,7 +31,6 @@ class MovieMachine(Machine):
         self.put(0xaf5880, 0xaf57c8)
         self.put(0xaf58c0, 1)  # clock denominator, frozen time avoids hardware work
         self.stub(0x3cae50, lambda: (self.reg('EDX', 0), self.ret()))
-        self.stub(0x432d0, lambda: self.ret())
         self.stub(0x38fb0, lambda: self.ret(self.BODIES))
         self.stub(0x48ef0, self.open_file)
         self.stub(0x48ff0, self.read_file)
