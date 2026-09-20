@@ -37,6 +37,9 @@ class AppliedIntegrationTests(unittest.TestCase):
     def test_historic_hold_refuses_before_reading_resources_or_creating_output(self):
         with tempfile.TemporaryDirectory() as folder:
             target = Path(folder) / 'copy.iso'
+            # Beta 72.1 names a vanished source before any build work, so this
+            # fixture's source has to exist for the historic hold to be reached.
+            (Path(folder) / 'source.iso').write_bytes(b'')
             plan = mod_build.BuildPlan(source=str(Path(folder) / 'source.iso'),
                                        target=str(target), espn25_rosters=True)
             with patch.object(mod_build.tt, 'is_disc_image', return_value=True), \
