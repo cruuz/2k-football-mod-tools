@@ -58,6 +58,19 @@ class ErrorsLogVersionTests(unittest.TestCase):
         self.assertTrue(report.startswith(f"2K5 Mod Studio {mod_editor.__version__}\n"), report[:80])
         self.assertIn("RuntimeError: boom", report)
 
+    def test_a_failed_background_task_is_recorded_with_its_label(self):
+        # The main window reports a failed build through its own
+        # "Couldn't finish that" dialog, not show_operation_error, so the
+        # recording hangs off the task runner's error path with the task label.
+        from unittest.mock import patch
+        from mod_editor.gui import studio_qt
+        with patch.object(crash_report, "record_operation") as recorded:
+            studio_qt._record_failed_operation("Making the disc", "The texture receipt is missing")
+        recorded.assert_called_once_with("Making the disc", "The texture receipt is missing",
+                                         "2K5 Mod Studio")
+        with patch.object(crash_report, "record_operation", side_effect=RuntimeError("disk")):
+            studio_qt._record_failed_operation("Making the disc", "boom")  # never raises
+
     def test_recording_never_raises_on_an_unwritable_directory(self):
         with tempfile.TemporaryDirectory() as folder:
             blocked = Path(folder) / "file-not-a-dir"
