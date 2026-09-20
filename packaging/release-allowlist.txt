@@ -974,3 +974,4 @@ tools/scorebug_sprite/gpu.py
 tools/scorebug_sprite/xemu_model.py
 tools/scorebug_sprite/live.py
 tools/scorebug_sprite/neutral_template.py
+mod_editor/core/nfl2k5_intro_videos.py
