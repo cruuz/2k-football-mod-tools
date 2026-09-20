@@ -16,7 +16,7 @@ PINS = {
     "tools/scorebug_sprite/jev/miner.py": "f8bbfddb8a3b59de71b0eb07c235642c29fb538458a9941e512f491450c72518",
     "tools/scorebug_sprite/jev/replay.py": "a2b62e698f3f4cafebb0d154fba61d6f71d39617a18ea379619e206cc0372ed8",
     "tools/scorebug_sprite/jev/rubric.py": "85b416f553b0faf8f5ebd0ec21d2c03eb93a7363802b5c2d027ef2c0c94bcb31",
-    "tools/scorebug_sprite/jev/session.py": "d1353c8901cd8d80aac7a229adcc4c614ea1c3da1f07c46ac2449b31e44c280f",
+    "tools/scorebug_sprite/jev/session.py": "c66d970aa3c966273b178faa7a88aae9bc658372edb73e5da10384b1e99061b5",
     "tools/scorebug_sprite/native.py": "037309281a358e13599de6986812d4d42b1a8c5001a44d00fbb55cb85c565e72",
     "tools/scorebug_sprite/render.py": "adee2518ce065cf50c8e69dff456a10764a3745ed1c272ba0ad31f2e68c37d74",
 }

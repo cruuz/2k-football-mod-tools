@@ -61,7 +61,13 @@ class Session:
         self.guard(request)
         if not os.environ.get('TYPESAFE_API_KEY'):
             raise RuntimeError('TYPESAFE_API_KEY is not set; export it before replay. No answer was fabricated.')
-        from typesafe_sdk import TypeSafeClient
+        try:
+            from typesafe_sdk import TypeSafeClient
+        except ImportError as exc:  # integrator-only path; never reached by a normal Studio install
+            raise RuntimeError(
+                'Replay needs the TypeSafe SDK, which the Studio does not ship. '
+                'Install it with: pip install typesafe-sdk. No answer was fabricated.'
+            ) from exc
         if request['tool']!='jev_ask':raise ValueError('Replay accepts raw typed jev_ask requests')
         start=time.monotonic()
         result=TypeSafeClient().system_one(state=request['state'],questions=request['questions'])
