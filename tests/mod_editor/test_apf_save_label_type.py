@@ -5,6 +5,7 @@ import copy
 import hashlib
 import json
 import os
+import struct
 from pathlib import Path
 import sys
 import tempfile
@@ -73,6 +74,45 @@ class WriterTests(unittest.TestCase):
         self.assertEqual(restored, source)
         self.assertEqual(FIXTURE.read_bytes(), source)
         self.assertEqual(receipt["filename_id"], identity.filename_id(before.labels[0].name))
+
+    @unittest.skipUnless(FIXTURE.is_file(), f"Raw Roster.ROS fixture absent: {FIXTURE}")
+    def test_fixture_handoff_resolves_clone_in_built_archive_by_name(self):
+        # A tiny authored built archive exercises the real CRC lookup, IFF
+        # decode and SPLB parser without copying or modifying a retail volume.
+        from tests.mod_editor.test_apf_book_unlock import roster_body, book_body, iff
+        import apf_outer
+        import apf_roster
+        source = FIXTURE.read_bytes()
+        label = identity.parse_roster_identity(source, raw_save=True).labels[0]
+        disc = bytearray(roster_body())
+        disc_label = identity.parse_roster_identity(bytes(disc)).labels[0]
+        target = apf_roster.resolve_relative(bytes(disc), disc_label.offset, "label")
+        text = label.name.encode("utf-16-be") + b"\0\0"
+        self.assertLessEqual(len(text), len((disc_label.name + "\0").encode("utf-16-be")))
+        disc[target:target + len(text)] = text
+        struct.pack_into(">i", disc, disc_label.offset + 4, target - disc_label.offset - 4 + 1)
+        resources = sorted([(apf_roster.OUTER_NAME_ID, iff(bytes(disc), "roster", "ROST")),
+                            (identity.filename_id(label.name), iff(book_body(label.name), "spb", "SPLB"))])
+        archive = bytearray(2048)
+        rows = []
+        for key, resource in resources:
+            rows.append((key, len(archive) // 2048, len(resource) // 2048))
+            archive.extend(resource)
+        struct.pack_into(">6I", archive, 0, apf_outer.MAGIC, 2048, 1, 0, len(rows), 0)
+        struct.pack_into(">II8s", archive, 24, len(archive) // 2048, 0, "0A".encode("utf-16-be").ljust(8, b"\0"))
+        for i, row in enumerate(rows):
+            struct.pack_into(">3I", archive, 40 + i * 12, *row)
+        with tempfile.TemporaryDirectory(prefix="apf-clone-save-") as directory:
+            root = Path(directory)
+            (root / "0A").write_bytes(archive)
+            save = root / "Roster.ROS"
+            save.write_bytes(source)
+            result = service.write_label_type(service.inspect_save(save), 0, label.name,
+                                              root / "0A", root / "updated.ROS")
+            self.assertTrue(result["built_book"]["reparsed"])
+            self.assertEqual(result["filename_id"], identity.filename_id(label.name))
+            identity.verify_save_label_type(source, (root / "updated.ROS").read_bytes(), result)
+            self.assertEqual(save.read_bytes(), source)
 
 
 class ServiceTests(unittest.TestCase):

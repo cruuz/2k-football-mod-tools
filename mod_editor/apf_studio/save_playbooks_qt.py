@@ -418,6 +418,13 @@ class SavePlaybookAssignmentsPanel(QWidget):
         self.stage_button.setEnabled(writable and selected)
         self.write_button.setEnabled(writable and bool(self.staged))
         self.label_type_button.setEnabled(writable and not self.document.signed_container and not self.staged)
+        if self.document is not None and self.document.signed_container:
+            self.label_type_button.setToolTip("Extract a raw Roster.ROS first; label-type writes require a raw source.")
+        elif self.staged:
+            self.label_type_button.setToolTip("Write the staged assignments and load that new save before changing a label type.")
+        else:
+            self.label_type_button.setToolTip(
+                "Choose an installed book from a built game, then confirm a separate raw save. UNWITNESSED in game.")
         count = len(self.staged)
         self.stage_count.setText(f"{count} team{'s' if count != 1 else ''} staged")
 

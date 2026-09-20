@@ -49,6 +49,7 @@ def built_label_types(index_0a: Path, side: str) -> tuple[str, ...]:
 
 def prepare_label_type(document: SavePlaybookDocument, label_id: int, book_type: str,
                        index_0a: Path) -> tuple[bytes, dict]:
+    """Preflight the raw edit and reparse the matching installed book."""
     from mod_editor.core import apf2k8_book_identity as identity
     from mod_editor.core.errors import ValidationError
     if document.signed_container:
@@ -412,6 +413,7 @@ def write_new_save(
 
 
 __all__ = [
+    "built_label_types",
     "PlaybookChoice",
     "PlaybookEdit",
     "RAW_SAVE_BOUNDARY",
@@ -422,6 +424,8 @@ __all__ = [
     "TeamPlaybookAssignment",
     "default_manifest_path",
     "inspect_save",
+    "prepare_label_type",
     "stage_edit",
     "write_new_save",
+    "write_label_type",
 ]
