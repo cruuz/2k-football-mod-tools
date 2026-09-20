@@ -136,9 +136,14 @@ class TextureReceiptRunner(build_fixtures.FakeBackendRunner):
                 value['edits'].append(dict(kind=kind, import_report=dict(
                     file_name=name, sha256=hashlib.sha256(payload).hexdigest())))
             manifest.write_text(json.dumps(value))
-        elif self.tamper:
-            path = artifact_dir / 'uniform_equipment_texture.json'
-            path.write_bytes(path.read_bytes() + b' ')
+            if self.tamper:
+                # Changed after the manifest recorded its hash. Beta 74 reads
+                # the receipts the moment the builder exits, so this is where
+                # a tamper still has to be caught; one during the verifier's
+                # minutes of hashing no longer reaches the summary at all
+                # (test_b74_receipts_read_before_verify).
+                path = artifact_dir / 'uniform_equipment_texture.json'
+                path.write_bytes(path.read_bytes() + b' ')
         return result
 
 
@@ -163,7 +168,7 @@ class VerifiedBuildTests(unittest.TestCase):
     def test_changed_measurement_receipt_is_refused_before_publication(self):
         with tempfile.TemporaryDirectory(prefix='b70-a3-tamper-') as directory:
             fixture = build_fixtures.SyntheticFixture(Path(directory))
-            with self.assertRaisesRegex(ValidationError, 'measured texture receipt changed after build verification') as caught:
+            with self.assertRaisesRegex(ValidationError, 'measured texture receipt changed after the build wrote it') as caught:
                 Nfl2k5BuildService(runner=TextureReceiptRunner(tamper=True)).build(
                     fixture.cache, fixture.project, fixture.output)
             self.assertFalse(fixture.output.exists())

@@ -17,6 +17,7 @@ import ctypes
 from dataclasses import dataclass, field
 from enum import Enum
 import errno
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -869,6 +870,77 @@ def _new_output_path(path: Path) -> Path:
     )
 
 
+#: The environment variables OneDrive sets to its sync roots on Windows.
+_ONEDRIVE_ROOT_VARIABLES = ("OneDrive", "OneDriveConsumer", "OneDriveCommercial")
+#: Microsoft's cloud-files reparse tags (IO_REPARSE_TAG_CLOUD through
+#: IO_REPARSE_TAG_CLOUD_F) differ only in the IO_REPARSE_TAG_CLOUD_MASK bits.
+_WIN_REPARSE_TAG_CLOUD = 0x9000001A
+_WIN_REPARSE_TAG_CLOUD_MASK = 0x0000F000
+
+
+def _cloud_synced_root(parent: Path, environment=None) -> tuple[Path, str] | None:
+    """The OneDrive root that manages ``parent`` and how it was recognised, or None.
+
+    Two signals, both Windows-only.  OneDrive publishes its sync roots in the
+    ``OneDrive``, ``OneDriveConsumer`` and ``OneDriveCommercial`` variables,
+    and a folder it keeps as Files On-Demand carries a cloud-files reparse
+    tag.  The tag is matched exactly rather than the reparse attribute alone:
+    a junction is also a reparse point and is no reason to refuse.
+    """
+
+    if not platform_compat.IS_WINDOWS:
+        return None
+    environment = os.environ if environment is None else environment
+    text = str(parent).casefold()
+    for name in _ONEDRIVE_ROOT_VARIABLES:
+        raw = environment.get(name, "").strip()
+        if not raw:
+            continue
+        root = Path(raw)
+        try:
+            root = root.resolve()
+        except OSError:
+            pass
+        root_text = str(root).casefold().rstrip(os.sep)
+        if root_text and (text == root_text or text.startswith(root_text + os.sep)):
+            return root, f"the {name} folder"
+    for candidate in (parent, *parent.parents):
+        try:
+            info = os.lstat(candidate)
+        except OSError:
+            continue
+        attributes = getattr(info, "st_file_attributes", 0)
+        tag = getattr(info, "st_reparse_tag", 0)
+        if (attributes & stat.FILE_ATTRIBUTE_REPARSE_POINT
+                and (tag & ~_WIN_REPARSE_TAG_CLOUD_MASK) == _WIN_REPARSE_TAG_CLOUD):
+            return candidate, "a folder OneDrive keeps as Files On-Demand"
+    return None
+
+
+def _require_local_output_folder(parent: Path, environment=None) -> None:
+    """Refuse an output folder OneDrive manages, before anything is staged.
+
+    A build writes a 6 GB disc copy and its working files beside the output
+    and reads those files back after two child passes.  A synced folder
+    uploads and scans every one of them and can hold or replace a file in
+    that window, none of which the Studio controls.  Beta 74 refuses up front
+    with the fix in the message rather than failing part-way through (Coach
+    Edwards, 2026-09-20).
+    """
+
+    found = _cloud_synced_root(parent, environment)
+    if found is None:
+        return
+    root, how = found
+    raise ValidationError(
+        f"The output folder is inside OneDrive ({how}, {root}): {parent}. "
+        "OneDrive uploads and scans everything written there, including the "
+        "6 GB disc copy and the working files the build checks, and it can hold "
+        "a file while the build is reading it. Choose a folder OneDrive does not "
+        "sync, such as a new folder directly on your C: drive, and build again."
+    )
+
+
 def _require_build_space(parent: Path, source: Path | None = None) -> None:
     """Refuse before staging when one complete XISO cannot fit safely.
 
@@ -1061,8 +1133,15 @@ def _preserve_failed_stage(stage: Path, output: Path) -> Path | None:
     source disc and proves nothing on its own); everything else is renamed to
     a sibling ``.<name>.2k5mod-failed-<time>`` beside the output, which the
     error message names. Returns that folder, or None if nothing could be kept.
+
+    Only a stage the builder actually wrote into is kept. A refusal before the
+    backend runs (a bad output path, a missing audio inventory) leaves a stage
+    with nothing in it to diagnose, and that is removed as it always was.
     """
     try:
+        if not ((stage / "build-manifest.json").exists()
+                or (stage / "build-artifacts").exists()):
+            return None
         staged = stage / "modded.xiso"
         if staged.is_file() and not staged.is_symlink():
             staged.unlink()
@@ -1379,8 +1458,9 @@ class Nfl2k5BuildService:
         """
 
         _emit(progress, BuildStage.PREPARING, 0, 4, "Preparing a safe build")
-        source = self._validate_cache(cache)
         output = _new_output_path(output_xiso)
+        _require_local_output_folder(output.parent)
+        source = self._validate_cache(cache)
         _require_build_space(output.parent, source)
         backend, _ = _regular_file(self.backend, "2K5 ISO builder")
         stage = Path(tempfile.mkdtemp(
@@ -1419,6 +1499,17 @@ class Nfl2k5BuildService:
                 raise Nfl2k5BuildError(
                     "Could not make the disc copy. " + _last_message(built)
                 )
+            # Beta 74: read the texture receipts now, while the builder has
+            # only just closed them, and hold them for the final summary.
+            # The verifier runs next: it checks this folder first and then
+            # spends minutes hashing two 6 GB discs, and Coach Edwards' "The
+            # texture receipt is missing" (2026-09-20) came from a summary
+            # read AFTER that, on a disc the verifier had passed.  Whatever
+            # holds or removes files in that window on his machine, the
+            # receipts no longer have to survive it.  The manifest read after
+            # verification must hash the same as it does here.
+            from mod_editor.core.equipment_reporting import load_verified_reports
+            receipts = load_verified_reports(manifest)
 
             verify_command = self._command(
                 "verify", backend, project_path, source, staged_xiso,
@@ -1450,7 +1541,7 @@ class Nfl2k5BuildService:
 
             started = time.monotonic()
             result, staged_identity = self._read_verified_result(
-                manifest, staged_xiso, source, output)
+                manifest, staged_xiso, source, output, receipts)
             # O_RDONLY | O_NOFOLLOW | O_CLOEXEC | O_BINARY on POSIX, unchanged.
             # This descriptor is held across the publish on purpose -- it pins
             # the exact inode the manifest was verified against, which is the
@@ -1753,6 +1844,7 @@ class Nfl2k5BuildService:
     @staticmethod
     def _read_verified_result(
         manifest_path: Path, staged_xiso: Path, source: Path, final_output: Path,
+        receipts=None,
     ) -> tuple[BuildResult, tuple[int, int]]:
         manifest, _ = _regular_file(
             manifest_path, "internal build receipt", maximum_size=512 * 1024 * 1024)
@@ -1765,11 +1857,20 @@ class Nfl2k5BuildService:
         staged, staged_info = _regular_file(
             staged_xiso, "staged modded XISO", expected_size=source_size)
         try:
-            value = json.loads(manifest.read_bytes())
+            payload = manifest.read_bytes()
+            value = json.loads(payload)
         except (OSError, json.JSONDecodeError) as exc:
             raise Nfl2k5BuildError(
                 "The builder produced an unreadable internal receipt."
             ) from exc
+        # The texture receipts were read and hash-checked against the manifest
+        # when the builder exited; they describe this disc only if the manifest
+        # the verifier just passed is that same manifest.
+        if receipts is not None and hashlib.sha256(payload).hexdigest() != receipts.manifest_sha256:
+            raise Nfl2k5BuildError(
+                "The build receipt changed between the build and its safety check. "
+                "No output was published."
+            )
         source_row = value.get("source", {}) if isinstance(value, dict) else {}
         output_row = value.get("output", {}) if isinstance(value, dict) else {}
         project_row = value.get("project", {}) if isinstance(value, dict) else {}
@@ -1799,8 +1900,9 @@ class Nfl2k5BuildService:
         from mod_editor.core.equipment_reporting import (
             verified_build_refit_lines, verified_build_texture_lines,
         )
-        texture_summary = verified_build_texture_lines(manifest)
-        refitted = verified_build_refit_lines(manifest)
+        reports = None if receipts is None else receipts.reports
+        texture_summary = verified_build_texture_lines(manifest, reports=reports)
+        refitted = verified_build_refit_lines(manifest, reports=reports)
         return BuildResult(
             output_xiso=final_output,
             output_size=source_size,

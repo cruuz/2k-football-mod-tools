@@ -109,7 +109,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/studio/project_archive.py":
         "41a4c683d67cce74517cb5c6ebf8ebd68d4b882cfd8a185fd94f4a9d6f18449f",
     "mod_editor/studio/session.py":
-        "033901e7c410376940a819191fdc89eb8f882ff9d7e9c932d52cfa650de75fbb",
+        "1cc72fb379f6634bc3a34a8fb648817da3fadce606c1d245b2d15f7d3451f0eb",
 }
 
 B69_GAME_RUNTIME_PINS = {

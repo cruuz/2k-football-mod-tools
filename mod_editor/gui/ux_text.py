@@ -125,6 +125,7 @@ _FIX_HINTS: tuple[tuple[str, str], ...] = (
     ("target must not be the source", "Fix: choose a different output file."),
     ("neither retail nor this patch", "Fix: start from a disc this patch recognises, or turn that change off."),
     ("free space", "Fix: free up room where the copy is being written, or choose another folder."),
+    ("inside OneDrive", "Fix: choose a folder OneDrive does not sync, such as a new folder directly on your C: drive."),
     ("Permission denied", "Fix: choose a folder you can write to."),
     ("not a regular file", "Fix: choose the disc file itself."),
     ("no longer on this computer", "Fix: open the file you want to build from, then build again."),
