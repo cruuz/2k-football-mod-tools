@@ -1,0 +1,445 @@
+{
+  "answers": [
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.68
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.29
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.09
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.06
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.95
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.93
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.09
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.05
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.05
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.95
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.75
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.1
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.07
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.05
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.94
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.5
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.37
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.17
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.94
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.88
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.06
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.2
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.95
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.85
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.09
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.21
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.95
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.86
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.11
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.02
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.98
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.95
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.13
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.02
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.98
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.96
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.12
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.98
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.91
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.06
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.98
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.94
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.08
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.09
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.97
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.95
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.06
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.09
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.02
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.98
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.88
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.12
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.06
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.96
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.97
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.06
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.97
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.96
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.05
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.08
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.96
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.93
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.14
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.07
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.05
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.95
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.96
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.05
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.97
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.93
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.06
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.09
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.28
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.97
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.45
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.27
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.06
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.06
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.91
+      }
+    },
+    {
+      "supported": {
+        "type": "noul",
+        "noul": 0.48
+      },
+      "contradicted": {
+        "type": "noul",
+        "noul": 0.23
+      },
+      "in_game_claim": {
+        "type": "noul",
+        "noul": 0.04
+      },
+      "names_person": {
+        "type": "noul",
+        "noul": 0.05
+      },
+      "covered": {
+        "type": "noul",
+        "noul": 0.95
+      }
+    }
+  ],
+  "errors": []
+}

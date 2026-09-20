@@ -1,0 +1,8 @@
+{
+  "identical": true,
+  "sha256": {
+    "data/nfl2k5_scorebug_sprite/layout.json": "e3a83ae299c6a8f6153c2c0babef02d6d4d91189dfca54f7662188b296537761",
+    "data/nfl2k5_scorebug_sprite/template.png": "d9719adc101ece34e4af64b3e28a3acb2bd7aed00cd1263a438086e43323c8a0",
+    "data/nfl2k5_scorebug_sprite/team_accents.json": "3e124d9efa0fb5cae254109c3b5c315930de34d78a027f6a0578464ecfa1f618"
+  }
+}

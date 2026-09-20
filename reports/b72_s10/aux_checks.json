@@ -1,0 +1,22 @@
+[
+  {
+    "file": "tests/mod_editor/test_xbe_patch_memory_writes.py",
+    "exit_code": 124,
+    "seconds": 420.03
+  },
+  {
+    "file": "tests/mod_editor/test_xbe_patch_cave_references.py",
+    "exit_code": 124,
+    "seconds": 420.03
+  },
+  {
+    "file": "tests/mod_editor/test_nfl2k5_cave_oracle.py",
+    "exit_code": 1,
+    "seconds": 394.37
+  },
+  {
+    "file": "tests/mod_editor/test_phase1_packaging.py",
+    "exit_code": 0,
+    "seconds": 2.48
+  }
+]

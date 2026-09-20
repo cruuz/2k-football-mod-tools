@@ -1,0 +1,770 @@
+[
+  {
+    "team": "ARI",
+    "fit": {
+      "fill_x": 0.92,
+      "height": 1.0,
+      "zoom": 1.13,
+      "shift_x": 0.0,
+      "shift_y": 0.0
+    },
+    "bounds": [
+      13,
+      0,
+      50,
+      64
+    ],
+    "coverage_pixels": 1244,
+    "edge_pixels": {
+      "top": 3,
+      "bottom": 4,
+      "left": 0,
+      "right": 0
+    },
+    "provenance": "Silhouette inference; no same-team broadcast supplied"
+  },
+  {
+    "team": "ATL",
+    "fit": {
+      "fill_x": 0.92,
+      "height": 1.0,
+      "zoom": 1.13,
+      "shift_x": 0.0,
+      "shift_y": 0.0
+    },
+    "bounds": [
+      13,
+      0,
+      50,
+      64
+    ],
+    "coverage_pixels": 1205,
+    "edge_pixels": {
+      "top": 11,
+      "bottom": 4,
+      "left": 0,
+      "right": 0
+    },
+    "provenance": "Silhouette inference; no same-team broadcast supplied"
+  },
+  {
+    "team": "BAL",
+    "fit": {
+      "fill_x": 1.02,
+      "height": 1.0,
+      "zoom": 1.07,
+      "shift_x": 0.0,
+      "shift_y": 0.0
+    },
+    "bounds": [
+      0,
+      1,
+      64,
+      63
+    ],
+    "coverage_pixels": 2139,
+    "edge_pixels": {
+      "top": 0,
+      "bottom": 0,
+      "left": 4,
+      "right": 16
+    },
+    "provenance": "Silhouette inference; no same-team broadcast supplied"
+  },
+  {
+    "team": "BUF",
+    "fit": {
+      "fill_x": 1.02,
+      "height": 1.0,
+      "zoom": 1.07,
+      "shift_x": 0.0,
+      "shift_y": 0.0
+    },
+    "bounds": [
+      3,
+      0,
+      60,
+      64
+    ],
+    "coverage_pixels": 1932,
+    "edge_pixels": {
+      "top": 10,
+      "bottom": 1,
+      "left": 0,
+      "right": 0
+    },
+    "provenance": "Silhouette inference; no same-team broadcast supplied"
+  },
+  {
+    "team": "CAR",
+    "fit": {
+      "fill_x": 1.02,
+      "height": 1.0,
+      "zoom": 1.07,
+      "shift_x": 0.0,
+      "shift_y": 0.0
+    },
+    "bounds": [
+      0,
+      0,
+      61,
+      64
+    ],
+    "coverage_pixels": 2393,
+    "edge_pixels": {
+      "top": 22,
+      "bottom": 11,
+      "left": 4,
+      "right": 0
+    },
+    "provenance": "Silhouette inference; no same-team broadcast supplied"
+  },
+  {
+    "team": "CHI",
+    "fit": {
+      "fill_x": 0.92,
+      "height": 1.0,
+      "zoom": 1.13,
+      "shift_x": 0.0,
+      "shift_y": 0.0
+    },
+    "bounds": [
+      14,
+      0,
+      50,
+      64
+    ],
+    "coverage_pixels": 1733,
+    "edge_pixels": {
+      "top": 26,
+      "bottom": 9,
+      "left": 0,
+      "right": 0
+    },
+    "provenance": "Silhouette inference; no same-team broadcast supplied"
+  },
+  {
+    "team": "CIN",
+    "fit": {
+      "fill_x": 0.92,
+      "height": 1.0,
+      "zoom": 1.13,
+      "shift_x": 0.0,
+      "shift_y": 0.0
+    },
+    "bounds": [
+      7,
+      0,
+      57,
+      64
+    ],
+    "coverage_pixels": 2806,
+    "edge_pixels": {
+      "top": 39,
+      "bottom": 40,
+      "left": 0,
+      "right": 0
+    },
+    "provenance": "Silhouette inference; no same-team broadcast supplied"
+  },
+  {
+    "team": "DAL",
+    "fit": {
+      "fill_x": 0.92,
+      "height": 1.0,
+      "zoom": 1.13,
+      "shift_x": 0.0,
+      "shift_y": 0.0
+    },
+    "bounds": [
+      13,
+      0,
+      50,
+      64
+    ],
+    "coverage_pixels": 850,
+    "edge_pixels": {
+      "top": 1,
+      "bottom": 4,
+      "left": 0,
+      "right": 0
+    },
+    "provenance": "Silhouette inference; no same-team broadcast supplied"
+  },
+  {
+    "team": "DEN",
+    "fit": {
+      "fill_x": 0.86,
+      "height": 1.0,
+      "zoom": 1.0,
+      "shift_x": 0.0,
+      "shift_y": 0.045
+    },
+    "bounds": [
+      7,
+      3,
+      56,
+      64
+    ],
+    "coverage_pixels": 1436,
+    "edge_pixels": {
+      "top": 0,
+      "bottom": 1,
+      "left": 0,
+      "right": 0
+    },
+    "provenance": "Compared with supplied broadcast"
+  },
+  {
+    "team": "DET",
+    "fit": {
+      "fill_x": 0.92,
+      "height": 1.0,
+      "zoom": 1.13,
+      "shift_x": 0.0,
+      "shift_y": 0.0
+    },
+    "bounds": [
+      8,
+      0,
+      55,
+      64
+    ],
+    "coverage_pixels": 1385,
+    "edge_pixels": {
+      "top": 7,
+      "bottom": 5,
+      "left": 0,
+      "right": 0
+    },
+    "provenance": "Silhouette inference; no same-team broadcast supplied"
+  },
+  {
+    "team": "GB",
+    "fit": {
+      "fill_x": 1.02,
+      "height": 1.0,
+      "zoom": 1.07,
+      "shift_x": 0.0,
+      "shift_y": 0.0
+    },
+    "bounds": [
+      3,
+      0,
+      61,
+      64
+    ],
+    "coverage_pixels": 3021,
+    "edge_pixels": {
+      "top": 20,
+      "bottom": 21,
+      "left": 0,
+      "right": 0
+    },
+    "provenance": "Silhouette inference; no same-team broadcast supplied"
+  },
+  {
+    "team": "IND",
+    "fit": {
+      "fill_x": 0.92,
+      "height": 1.0,
+      "zoom": 1.13,
+      "shift_x": 0.0,
+      "shift_y": 0.0
+    },
+    "bounds": [
+      15,
+      0,
+      49,
+      64
+    ],
+    "coverage_pixels": 1065,
+    "edge_pixels": {
+      "top": 18,
+      "bottom": 16,
+      "left": 0,
+      "right": 0
+    },
+    "provenance": "Silhouette inference; no same-team broadcast supplied"
+  },
+  {
+    "team": "JAX",
+    "fit": {
+      "fill_x": 0.92,
+      "height": 1.0,
+      "zoom": 1.13,
+      "shift_x": 0.0,
+      "shift_y": 0.0
+    },
+    "bounds": [
+      8,
+      0,
+      56,
+      64
+    ],
+    "coverage_pixels": 2024,
+    "edge_pixels": {
+      "top": 25,
+      "bottom": 11,
+      "left": 0,
+      "right": 0
+    },
+    "provenance": "Silhouette inference; no same-team broadcast supplied"
+  },
+  {
+    "team": "KC",
+    "fit": {
+      "fill_x": 0.9,
+      "height": 1.0,
+      "zoom": 1.1,
+      "shift_x": 0.0,
+      "shift_y": 0.0
+    },
+    "bounds": [
+      5,
+      0,
+      58,
+      64
+    ],
+    "coverage_pixels": 2478,
+    "edge_pixels": {
+      "top": 16,
+      "bottom": 17,
+      "left": 0,
+      "right": 0
+    },
+    "provenance": "Compared with supplied broadcast"
+  },
+  {
+    "team": "MIA",
+    "fit": {
+      "fill_x": 0.92,
+      "height": 1.0,
+      "zoom": 1.13,
+      "shift_x": 0.0,
+      "shift_y": 0.0
+    },
+    "bounds": [
+      9,
+      0,
+      54,
+      64
+    ],
+    "coverage_pixels": 1396,
+    "edge_pixels": {
+      "top": 1,
+      "bottom": 2,
+      "left": 0,
+      "right": 0
+    },
+    "provenance": "Silhouette inference; no same-team broadcast supplied"
+  },
+  {
+    "team": "MIN",
+    "fit": {
+      "fill_x": 0.92,
+      "height": 1.0,
+      "zoom": 1.13,
+      "shift_x": 0.0,
+      "shift_y": 0.0
+    },
+    "bounds": [
+      17,
+      0,
+      46,
+      64
+    ],
+    "coverage_pixels": 889,
+    "edge_pixels": {
+      "top": 4,
+      "bottom": 3,
+      "left": 0,
+      "right": 0
+    },
+    "provenance": "Silhouette inference; no same-team broadcast supplied"
+  },
+  {
+    "team": "NE",
+    "fit": {
+      "fill_x": 1.02,
+      "height": 1.0,
+      "zoom": 1.07,
+      "shift_x": 0.0,
+      "shift_y": 0.0
+    },
+    "bounds": [
+      0,
+      1,
+      64,
+      63
+    ],
+    "coverage_pixels": 1821,
+    "edge_pixels": {
+      "top": 0,
+      "bottom": 0,
+      "left": 5,
+      "right": 14
+    },
+    "provenance": "Silhouette inference; no same-team broadcast supplied"
+  },
+  {
+    "team": "NO",
+    "fit": {
+      "fill_x": 0.92,
+      "height": 1.0,
+      "zoom": 1.13,
+      "shift_x": 0.0,
+      "shift_y": 0.0
+    },
+    "bounds": [
+      17,
+      0,
+      46,
+      64
+    ],
+    "coverage_pixels": 877,
+    "edge_pixels": {
+      "top": 1,
+      "bottom": 3,
+      "left": 0,
+      "right": 0
+    },
+    "provenance": "Silhouette inference; no same-team broadcast supplied"
+  },
+  {
+    "team": "NYG",
+    "fit": {
+      "fill_x": 0.92,
+      "height": 1.0,
+      "zoom": 1.13,
+      "shift_x": 0.0,
+      "shift_y": 0.0
+    },
+    "bounds": [
+      9,
+      0,
+      55,
+      64
+    ],
+    "coverage_pixels": 2062,
+    "edge_pixels": {
+      "top": 39,
+      "bottom": 41,
+      "left": 0,
+      "right": 0
+    },
+    "provenance": "Silhouette inference; no same-team broadcast supplied"
+  },
+  {
+    "team": "NYJ",
+    "fit": {
+      "fill_x": 1.02,
+      "height": 1.0,
+      "zoom": 1.07,
+      "shift_x": 0.0,
+      "shift_y": 0.0
+    },
+    "bounds": [
+      0,
+      11,
+      64,
+      52
+    ],
+    "coverage_pixels": 1169,
+    "edge_pixels": {
+      "top": 0,
+      "bottom": 0,
+      "left": 6,
+      "right": 6
+    },
+    "provenance": "Silhouette inference; no same-team broadcast supplied"
+  },
+  {
+    "team": "LV",
+    "fit": {
+      "fill_x": 1.0,
+      "height": 1.0,
+      "zoom": 1.1,
+      "shift_x": 0.0,
+      "shift_y": 0.0
+    },
+    "bounds": [
+      14,
+      0,
+      50,
+      64
+    ],
+    "coverage_pixels": 1845,
+    "edge_pixels": {
+      "top": 6,
+      "bottom": 10,
+      "left": 0,
+      "right": 0
+    },
+    "provenance": "Compared with supplied broadcast"
+  },
+  {
+    "team": "PHI",
+    "fit": {
+      "fill_x": 0.92,
+      "height": 1.0,
+      "zoom": 1.13,
+      "shift_x": 0.0,
+      "shift_y": 0.0
+    },
+    "bounds": [
+      5,
+      0,
+      58,
+      64
+    ],
+    "coverage_pixels": 1987,
+    "edge_pixels": {
+      "top": 11,
+      "bottom": 4,
+      "left": 0,
+      "right": 0
+    },
+    "provenance": "Silhouette inference; no same-team broadcast supplied"
+  },
+  {
+    "team": "PIT",
+    "fit": {
+      "fill_x": 0.92,
+      "height": 1.0,
+      "zoom": 1.13,
+      "shift_x": 0.0,
+      "shift_y": 0.0
+    },
+    "bounds": [
+      14,
+      0,
+      50,
+      64
+    ],
+    "coverage_pixels": 1938,
+    "edge_pixels": {
+      "top": 16,
+      "bottom": 18,
+      "left": 0,
+      "right": 0
+    },
+    "provenance": "Silhouette inference; no same-team broadcast supplied"
+  },
+  {
+    "team": "LAR",
+    "fit": {
+      "fill_x": 0.92,
+      "height": 1.0,
+      "zoom": 1.13,
+      "shift_x": 0.0,
+      "shift_y": 0.0
+    },
+    "bounds": [
+      7,
+      0,
+      56,
+      64
+    ],
+    "coverage_pixels": 1539,
+    "edge_pixels": {
+      "top": 11,
+      "bottom": 17,
+      "left": 0,
+      "right": 0
+    },
+    "provenance": "Silhouette inference; no same-team broadcast supplied"
+  },
+  {
+    "team": "LAC",
+    "fit": {
+      "fill_x": 1.02,
+      "height": 1.0,
+      "zoom": 1.13,
+      "shift_x": 0.025,
+      "shift_y": 0.015
+    },
+    "bounds": [
+      0,
+      2,
+      64,
+      60
+    ],
+    "coverage_pixels": 1553,
+    "edge_pixels": {
+      "top": 0,
+      "bottom": 0,
+      "left": 13,
+      "right": 21
+    },
+    "provenance": "Silhouette inference; no same-team broadcast supplied"
+  },
+  {
+    "team": "SF",
+    "fit": {
+      "fill_x": 1.02,
+      "height": 1.0,
+      "zoom": 1.07,
+      "shift_x": 0.0,
+      "shift_y": 0.0
+    },
+    "bounds": [
+      0,
+      0,
+      63,
+      64
+    ],
+    "coverage_pixels": 3282,
+    "edge_pixels": {
+      "top": 23,
+      "bottom": 23,
+      "left": 11,
+      "right": 0
+    },
+    "provenance": "Silhouette inference; no same-team broadcast supplied"
+  },
+  {
+    "team": "SEA",
+    "fit": {
+      "fill_x": 1.02,
+      "height": 1.0,
+      "zoom": 1.07,
+      "shift_x": 0.0,
+      "shift_y": 0.0
+    },
+    "bounds": [
+      0,
+      3,
+      64,
+      61
+    ],
+    "coverage_pixels": 2484,
+    "edge_pixels": {
+      "top": 0,
+      "bottom": 0,
+      "left": 19,
+      "right": 23
+    },
+    "provenance": "Silhouette inference; no same-team broadcast supplied"
+  },
+  {
+    "team": "TB",
+    "fit": {
+      "fill_x": 0.92,
+      "height": 1.0,
+      "zoom": 1.13,
+      "shift_x": 0.0,
+      "shift_y": 0.0
+    },
+    "bounds": [
+      12,
+      0,
+      52,
+      64
+    ],
+    "coverage_pixels": 1341,
+    "edge_pixels": {
+      "top": 1,
+      "bottom": 7,
+      "left": 0,
+      "right": 0
+    },
+    "provenance": "Silhouette inference; no same-team broadcast supplied"
+  },
+  {
+    "team": "TEN",
+    "fit": {
+      "fill_x": 0.92,
+      "height": 1.0,
+      "zoom": 1.13,
+      "shift_x": 0.0,
+      "shift_y": 0.0
+    },
+    "bounds": [
+      14,
+      0,
+      50,
+      64
+    ],
+    "coverage_pixels": 1952,
+    "edge_pixels": {
+      "top": 18,
+      "bottom": 18,
+      "left": 0,
+      "right": 0
+    },
+    "provenance": "Silhouette inference; no same-team broadcast supplied"
+  },
+  {
+    "team": "WAS",
+    "fit": {
+      "fill_x": 1.02,
+      "height": 1.0,
+      "zoom": 1.17,
+      "shift_x": -0.04,
+      "shift_y": 0.0
+    },
+    "bounds": [
+      0,
+      0,
+      64,
+      64
+    ],
+    "coverage_pixels": 3534,
+    "edge_pixels": {
+      "top": 56,
+      "bottom": 42,
+      "left": 28,
+      "right": 8
+    },
+    "provenance": "Silhouette inference; no same-team broadcast supplied"
+  },
+  {
+    "team": "CLE",
+    "fit": {
+      "fill_x": 0.92,
+      "height": 1.0,
+      "zoom": 1.13,
+      "shift_x": 0.0,
+      "shift_y": 0.0
+    },
+    "bounds": [
+      9,
+      0,
+      55,
+      64
+    ],
+    "coverage_pixels": 2328,
+    "edge_pixels": {
+      "top": 17,
+      "bottom": 35,
+      "left": 0,
+      "right": 0
+    },
+    "provenance": "Silhouette inference; no same-team broadcast supplied"
+  },
+  {
+    "team": "HOU",
+    "fit": {
+      "fill_x": 1.04,
+      "height": 1.0,
+      "zoom": 1.25,
+      "shift_x": 0.075,
+      "shift_y": 0.0
+    },
+    "bounds": [
+      12,
+      0,
+      61,
+      64
+    ],
+    "coverage_pixels": 1747,
+    "edge_pixels": {
+      "top": 12,
+      "bottom": 20,
+      "left": 0,
+      "right": 0
+    },
+    "provenance": "Compared with supplied broadcast"
+  }
+]

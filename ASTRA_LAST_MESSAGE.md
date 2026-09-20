@@ -1,21 +1,21 @@
-b72-s9 is a beta 73 fidelity candidate based on disc q commit 42579f4a5.
-Import branch b72-s9 from .scratch/astra-b72-s9.bundle; ASTRA_REPORT.md links all evidence.
-Strict 1:1 acceptance is not met: 40 detailed residual checks remain FAIL.
-All proposed renders are offline; Noah's three disc q captures are the supplied before witnesses.
-Broadcast median contours replace generic score, clock, label and quarter artwork.
-Unobserved rare glyphs are explicitly reconstructed, not certified exact shapes.
-The normal clock pill is white with dark ink, and quarter ordinals use hinted whole tokens.
-Wing fades, rims and gloss are reduced; official team palette and label floors remain enforced.
-All 32 modern teams have explicit logo fits; four have live fitting evidence and 28 are inferred.
-NFL and MNF marks are separately harvested; the existing HUD boundary prevents exact corner placement.
-There are 72 state comparison sheets and four detail sheets across 16:9 and 4:3.
-All 104 team/aspect label checks pass the offline luminance and contrast requirements.
-All 35 default test files pass below 100 seconds; the slowest takes 76.72 seconds.
-Both product closures, 31 scorebug owner pairs and 1,350 retained native event frames pass offline.
-The native clock formatter now handles the fractional transition into 10:00 and longer clocks.
-RX uses 4,086 of 4,096 bytes, RW is 128, and each appendix is 325,216 of 400,000 bytes.
-Jev ran population search, two accent phrasings, state mining, screenshot review and diff gates under $3.
-Records and new stat/event behaviors are omitted; STATE_COVERAGE.md gives each evidence boundary.
-The cave manifest was not regenerated; the integrator must refresh its source fingerprints.
-No release or new game witness exists; the integrator builds one test disc and Noah approves any release.
+b72-s10 is an offline ESPN proportion candidate for beta 73 or 74.
+Base: refs/astra/b72-s9/b72-s9 at 97d2bf9b2; branch: b72-s10.
+Bundle path: .scratch/astra-b72-s10.bundle; the base is a prerequisite.
+Six sheets cover WAS-LAC, LV-HOU and DEN-KC in both aspects.
+Every sheet retains all four original disc r before captures.
+After views use the native 448-line HUD and a documented display-filter approximation.
+Wing boxes grow to 340 source pixels with a soft two-dimensional ramp.
+Logo wells grow to 230x110 with individual crop and edge bleed.
+Scores grow to 56 source pixels; the raised down plate is 274x42.
+Mean logo and wing residual areas fall 30.9 percent and 19.3 percent.
+Mean score residual area falls 92.4 percent; all feature residuals remain open.
+The down capsule and white pill have no material measured closure.
+All 104 team/aspect label checks and 1,350 retained event frames pass offline.
+The 35 default test files pass: 313 cases, including 8 existing skips.
+Both product closures and 31 focused owner-composition pairs pass.
+Auxiliary gates have two timeouts and two inherited manifest errors; see VALIDATION.md.
+Append: 325,216 of 400,000 bytes; RX: 4,086 of 4,096; RW: 128 bytes.
+Jev recognition is cautious at 1.79 and 1.86 of 4; all calls remain below the $1 cap.
+Exact disc q/r options are in TEST_DISC.md; inherited manifest regeneration is required.
+No emulator or release step ran; no s10 in-game outcome or 1:1 match is claimed.
 ASTRA_DONE
