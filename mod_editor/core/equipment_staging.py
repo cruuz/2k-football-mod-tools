@@ -69,17 +69,21 @@ def _checked_rows(session, paths, by_id, *, selected=None):
     rows.sort(key=lambda row: row['asset_id'])
     if selected is not None:
         row = next((r for r in rows if r['asset_id'] == selected), None)
-        # A capped "needs refit" is the interactive quick check giving up, NOT a
-        # measurement: Build runs the same ladder uncapped and auto-refits what
-        # cannot fit (auto_refit_group), so a solid-white sock the quick check
-        # rejected fits at 16x16 at Build. Refusing the import here dead-ended
-        # exactly that case (Coach Edwards, 2026-09-20: "No fitting smaller size
-        # was established... Simplify the artwork"), so import now stages it like
-        # a fit-pending item. Only an UNCAPPED needs-refit, from Refit equipment,
-        # is a final refusal worth raising.
-        if (row is not None and row.get('fit_status') == 'needs refit'
-                and not capped):
-            _raise_fit(row)
+        # A capped "needs refit" WITH a budget is the interactive quick check
+        # giving up on a measured overflow, NOT a measurement: Build runs the
+        # same ladder uncapped and auto-refits what cannot fit
+        # (auto_refit_group), so a solid-white sock the quick check rejected
+        # fits at 16x16 at Build. Refusing the import here dead-ended exactly
+        # that case (Coach Edwards, 2026-09-20: "No fitting smaller size was
+        # established... Simplify the artwork"), so import stages it like a
+        # fit-pending item. A row WITHOUT a budget is a structural refusal
+        # (the wrapper, the loader's scratch allowance) that a smaller or
+        # flatter refit cannot address, so Build would refuse it with the same
+        # words after minutes of building; that is raised here, at once, as is
+        # every uncapped needs-refit from Refit equipment.
+        if row is not None and row.get('fit_status') == 'needs refit':
+            if not capped or row.get('budget') is None:
+                _raise_fit(row)
     return rows
 
 

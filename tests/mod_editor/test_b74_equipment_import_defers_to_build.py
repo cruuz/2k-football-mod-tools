@@ -94,5 +94,39 @@ class ImportDefersToBuildTests(unittest.TestCase):
         self.assertEqual(row["fit_status"], "needs refit")
 
 
+class CappedRowPolicyTests(unittest.TestCase):
+    """Jev, 2026-09-20 (0.97): stage measured overflows for Build; refuse
+    structural rows at import, since Build cannot cure them and would refuse
+    with the same words after minutes of building. No retail data."""
+
+    def _rows(self, row):
+        from types import SimpleNamespace
+        from unittest.mock import patch
+        from mod_editor.core import equipment_staging as staging
+        from mod_editor.core import nfl2k5_equipment_lz as lz
+        from mod_editor.core import nfl2k5_uniform_equipment_writer as writer
+        session = SimpleNamespace(cache=SimpleNamespace(pack0=Path("/nonexistent/pack0"),
+                                                        source=SimpleNamespace(sha256="a" * 64)),
+                                  iter_edits=lambda: iter(()))
+        with patch.object(staging, "_verified_art", return_value="b" * 64), \
+                patch("mod_editor.core.nfl2k5_project_fit.equipment_keys", return_value={SOCK: ("k",)}), \
+                patch("mod_editor.core.nfl2k5_project_fit.source_hash", return_value="c" * 64), \
+                patch.object(writer, "preflight_project_equipment", return_value=[dict(row)]), \
+                patch.object(lz, "optimal_fit_is_capped", return_value=True):
+            return staging._checked_rows(session, {SOCK: Path("/nonexistent/sock.png")}, {}, selected=SOCK)
+
+    def test_a_capped_measured_overflow_is_staged_for_build(self):
+        rows = self._rows(dict(asset_id=SOCK, fit_status="needs refit", budget=6848, required=7639,
+                               attempts=(), suggestion=None, required_is_lower_bound=False,
+                               fit_error="Equipment art needs refit: it cannot fit and missed the span"))
+        self.assertEqual(rows[0]["fit_status"], "needs refit")
+
+    def test_a_capped_structural_refusal_is_raised_at_import(self):
+        from mod_editor.core.nfl2k5_uniform_equipment_writer import EquipmentRefitError
+        with self.assertRaisesRegex(EquipmentRefitError, "retail loader scratch allowance"):
+            self._rows(dict(asset_id=SOCK, fit_status="needs refit", budget=None,
+                            fit_error="Equipment cannot fit with the retail loader scratch allowance"))
+
+
 if __name__ == "__main__":
     unittest.main()

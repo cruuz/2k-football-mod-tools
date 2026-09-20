@@ -10,7 +10,8 @@ window uses and with no Qt:
 2. import a near-white independent sock into the Cardinals home set, the exact
    art that beta 73 refused with "Simplify the artwork" and that Build fits
    at 16 x 16, and expect it staged for Build instead of refused;
-3. import a normal shoe texture into the same set and expect it fitted;
+3. import a normal shoe texture (shared palette) into the same set and expect it
+   fitted at full size;
 4. save the project and load it back, as he does to share it;
 5. build a real disc through the real child builder and verifier, and read
    the receipts back: the sock refit is reported, the shoe fit is listed,
@@ -112,9 +113,9 @@ class CoachEdwardsWorkflowGate(unittest.TestCase):
                 sock, sock_png, progress, independent=True, scale=1, scope=None)
             self.assertFalse(isinstance(staged, Exception), staged)
             self.assertIn("Build refits it automatically", staged.message)
-            # 3. A normal shoe: fitted at import.
+            # 3. A normal shoe on the shared palette: fitted at import at full size.
             fitted = facade.replace_equipment_texture(
-                shoe, shoe_png, progress, independent=True, scale=1, scope=None)
+                shoe, shoe_png, progress, independent=False, scale=1, scope=None)
             self.assertFalse(isinstance(fitted, Exception), fitted)
             self.assertIn("fitted at", fitted.message)
 

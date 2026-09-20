@@ -933,9 +933,23 @@ def _rebuild_grown_video(template_span: bytes, candidate: bytes):
     scratch = chunk.overlap_scratch_bytes
     if padding > scratch or minimum > scratch:
         from nfl_vc_lz_fill import fill_stream
-        encoded, _expanded = fill_stream(encoded, candidate, chunk.stored_size, slack=min(scratch, 16))
-        padding = chunk.stored_size - len(encoded)
-        minimum = minimum_vc_lz_overlap_scratch(encoded, chunk.stored_size, len(candidate))
+        # The loader's in-place overlap need grows with the padding left after
+        # the fill, so a stream that lands inside the size window can still ask
+        # for a byte or two more scratch than the wrapper grants. Tighten the
+        # window by the excess and fill again from the compact stream; the fill
+        # moves a byte at a time, so the window is reachable while any match
+        # remains. Beta 74: found by the retail workflow gate on a flat shoes01
+        # in package 3653 (gap 15, minimum 17, scratch 16), where every refit
+        # choice was refused as "cannot fit with the retail loader scratch
+        # allowance" although the art only needed a one-byte tighter fill.
+        compact, slack = encoded, min(scratch, 16)
+        while True:
+            encoded, _expanded = fill_stream(compact, candidate, chunk.stored_size, slack=slack)
+            padding = chunk.stored_size - len(encoded)
+            minimum = minimum_vc_lz_overlap_scratch(encoded, chunk.stored_size, len(candidate))
+            if (padding <= scratch and minimum <= scratch) or slack == 0:
+                break
+            slack = max(0, min(slack - 1, slack - (minimum - scratch)))
     if padding > scratch or minimum > scratch:
         raise EquipmentRefitError("Equipment cannot fit with the retail loader scratch allowance")
     video = len(candidate) - chunk.system_bytes

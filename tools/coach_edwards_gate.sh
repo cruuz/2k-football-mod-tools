@@ -14,6 +14,6 @@ log="${NFL2K5_GATE_LOG:-$here/.scratch/coach-edwards-gate/last-run.log}"
 mkdir -p "$(dirname "$log")"
 echo "coach edwards gate -> $log"
 cd "$here" || exit 2
-NFL2K5_COACH_EDWARDS_GATE=1 nice -n 19 ionice -c3 \
+NFL2K5_COACH_EDWARDS_GATE=1 nice -n 19 ionice -c2 -n7 \
   python3 -m pytest -q -s tests/mod_editor/test_b74_coach_edwards_gate.py 2>&1 | tee "$log"
 exit "${PIPESTATUS[0]}"
