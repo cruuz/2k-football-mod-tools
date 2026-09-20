@@ -11,6 +11,8 @@ from dataclasses import dataclass
 from pathlib import Path
 import struct
 import zlib
+import hashlib
+import re
 
 from .errors import ValidationError
 from . import apf2k8_splb_writer as splb
@@ -101,6 +103,74 @@ def parse_roster_identity(body: bytes, *, raw_save: bool = False) -> RosterIdent
             body, apf_roster.resolve_relative(body, at + 0xA8, "team name"), "team name")
         teams.append(Team(index, name, *selected, at + 0xE0, at + 0xE4))
     return RosterIdentity(tuple(labels), tuple(teams), "disc_ROST")
+
+
+def rewrite_save_label_type(body: bytes, label_id: int, book_type: str) -> tuple[bytes, dict]:
+    """Bind one raw roster label to an existing immutable string, as disc clones do.
+
+    Never overwrite an interned type string: other labels may share it. Clone
+    types are names already present in the roster's label/team string pool.
+    Unsupported or missing names require a different source roster, not growth
+    of an unproved save allocation.
+    """
+    from mod_editor.apf_studio import ps3_roster_convert as layout
+
+    if not isinstance(body, bytes) or len(body) != layout.ROSTER_SIZE:
+        raise ValidationError("Choose a raw 2,715,908-byte Xbox Roster.ROS; season saves are unsupported")
+    if type(label_id) is not int or not 0 <= label_id < save_writer.PLAYBOOK_COUNT:
+        raise ValidationError("Choose a roster label from 0 to 68")
+    if not isinstance(book_type, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9 -]{0,26}", book_type):
+        raise ValidationError("Book types must be 1..27 ASCII letters, digits, spaces or hyphens")
+    try:
+        layout.verify_converted(body)
+        structure = layout.inspect_structure(body)
+        before = parse_roster_identity(body, raw_save=True)
+        targets = sorted(t for t, a in structure.allocations.items()
+                         if a.text == book_type and structure.pool_start <= t < layout.RUNTIME_BLOCK_OFFSET
+                         and not a.odd and t not in structure.interior)
+        if not targets:
+            raise ValidationError("This book type is absent from the save's string pool. Choose a clone "
+                                  "using an existing saved label or team name; string allocation is unsupported")
+        label = before.labels[label_id]
+        if label.kind == book_type:
+            raise ValidationError("This label already uses the selected book type")
+        field = label.offset + 4
+        output = bytearray(body)
+        struct.pack_into(">i", output, field, targets[0] - field + 1)
+        result = bytes(output)
+        after = parse_roster_identity(result, raw_save=True)
+        strict = layout.verify_converted(result)
+    except (layout.PS3RosterConvertError, save_writer.SaveError) as exc:
+        raise ValidationError(f"Raw roster validation failed: {exc}") from exc
+    if after.teams != before.teams or any(
+            new != (Label(old.index, old.offset, old.name, book_type, old.side)
+                    if old.index == label_id else old)
+            for old, new in zip(before.labels, after.labels)):
+        raise ValidationError("The label type did not reparse independently")
+    changed = [i for i in range(field, field + 4) if body[i] != result[i]]
+    if body[:field] != result[:field] or body[field + 4:] != result[field + 4:]:
+        raise ValidationError("The label edit escaped its type pointer")
+    return result, {
+        "schema": "apf2k8_save_label_type/v1", "label_id": label_id, "label": label.name,
+        "side": label.side, "before_type": label.kind, "after_type": book_type,
+        "type_pointer_offset": field, "string_target_offset": targets[0],
+        "filename": book_type + "-spb.iff", "filename_id": filename_id(book_type),
+        "source_sha256": hashlib.sha256(body).hexdigest(),
+        "output_sha256": hashlib.sha256(result).hexdigest(),
+        "changed_offsets": changed, "changed_byte_count": len(changed),
+        "affected_team_indices": [t.index for t in before.teams if getattr(t, label.side) == label_id],
+        "team_assignments_unchanged": True, "all_string_bytes_preserved": True,
+        "strict_readers": strict, "runtime_in_game_proved": False,
+        "runtime_status": "UNWITNESSED: load this roster with the matching built game and check the team's plays",
+    }
+
+
+def verify_save_label_type(source: bytes, output: bytes, receipt: dict) -> dict:
+    """Re-derive the permitted edit from the source, then compare every byte."""
+    expected, derived = rewrite_save_label_type(source, receipt.get("label_id"), receipt.get("after_type"))
+    if output != expected or any(receipt.get(key) != value for key, value in derived.items()):
+        raise ValidationError("Written label type or receipt differs from the verified edit")
+    return {"verified": True, "changed_byte_count": derived["changed_byte_count"]}
 
 
 def read_resource(index_path: Path, name_id: int, name: str, type_name: str):

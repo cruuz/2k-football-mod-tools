@@ -1,3 +1,8 @@
+## 0.1.0-alpha.94 - beta 72
+
+- The request to "write the playbook into a .Ros file" now has an explicit Save Assignments action. Choose a saved label and a same-side book from an already built game, review every affected team slot, and confirm a new raw roster plus receipt. Only the four-byte type pointer can change; strings and team assignments stay intact. Missing names, malformed saves and existing destinations are refused. Loading the clone from the rewritten save and retaining it after save/reload remain UNWITNESSED. No season-save writer is included.
+- PS3 logo timings on the local 27-pair fixture measured 6.76 seconds to read, 133.85 seconds for cold preflight, and 1.84 seconds to compile one slot-96 crest. The unchanged package cache reused that crest in 0.026 seconds with identical bytes. These Linux measurements exclude full-folder copying and linked-cache compilation; the screenshot's exact artwork and larger allocation were unavailable. Further compression and template-cache work is deferred.
+
 # APF 2K8 Mod Studio Changelog
 
 ## 0.1.0-alpha.95 - beta 72.1: projects open and save on Windows when only a file's change time moved (2026-09-19)

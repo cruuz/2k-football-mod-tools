@@ -1,0 +1,121 @@
+{
+  "bundle": "/home/noah/Downloads/NFL Logos Textures.zip",
+  "bundle_sha256": "57d7d4a9916cafbc654846ab21514e0e95cccfea73003867c07dc33a36a411d3",
+  "calls": {
+    "greedy_h7a": 160,
+    "ladder_overhead": 55,
+    "mips": 328,
+    "optimal_h7a": 123,
+    "ps3_decode": 2,
+    "region_masks": 548,
+    "source_decode": 712,
+    "verification": 816
+  },
+  "cpu_count": 32,
+  "encoder_policy": [
+    true,
+    false
+  ],
+  "index": "/media/noah/Storage/for codex 1.0/extracted/All-Pro Football 2K8 (USA)/0A",
+  "limitations": [
+    "Linux timing, native helper enabled if available",
+    "No full game-folder copy, linked logo-cache build, or emulator run",
+    "Local fixture ZIP is not the missing September 11 attachment; screenshot's exact art is unknown"
+  ],
+  "logo_pairs": 27,
+  "package": {
+    "fit": {
+      "allow_simplification": true,
+      "alpha_preserved": true,
+      "attempts": [
+        {
+          "compressed_art_bytes": 67116,
+          "encoder": "greedy H7A",
+          "fits": false,
+          "shades_per_region": 16
+        },
+        {
+          "compressed_art_bytes": 66333,
+          "encoder": "safe optimal H7A",
+          "fits": false,
+          "shades_per_region": 16
+        },
+        {
+          "compressed_art_bytes": 63503,
+          "encoder": "greedy H7A",
+          "fits": false,
+          "shades_per_region": 8
+        },
+        {
+          "compressed_art_bytes": 62552,
+          "encoder": "safe optimal H7A",
+          "fits": false,
+          "shades_per_region": 8
+        },
+        {
+          "compressed_art_bytes": 58844,
+          "encoder": "greedy H7A",
+          "fits": false,
+          "shades_per_region": 4
+        },
+        {
+          "compressed_art_bytes": 57682,
+          "encoder": "safe optimal H7A",
+          "fits": false,
+          "shades_per_region": 4
+        },
+        {
+          "compressed_art_bytes": 50261,
+          "encoder": "greedy H7A",
+          "fits": true,
+          "shades_per_region": 2
+        }
+      ],
+      "budget_bytes": 54753,
+      "changed_layers": [
+        "logo_l0",
+        "logo_l1"
+      ],
+      "compressed_art_bytes": 50261,
+      "encoder": "greedy H7A",
+      "mips_regenerated": true,
+      "shades_per_region": 2,
+      "status": "Logo slot 96: 16 shades reduced to 2 per region to fit 54,753 bytes; 50,261 used"
+    },
+    "sha256": "1eac2f87cf93b79049d47dee1a4ee4464596fb389010453dd89334eaeb001dea",
+    "size": 55296,
+    "warm_bytes_identical": true
+  },
+  "phases": {
+    "compile_slot96": 1.8357654490100686,
+    "compile_slot96_warm": 0.0258822159958072,
+    "destination_slots": 0.9334620040026493,
+    "measure_all_cold": 133.85276624800463,
+    "measure_all_warm": 12.23301991900371,
+    "plan_slot96": 0.004034109995700419,
+    "read_bundle_cold": 6.756935422992683,
+    "read_bundle_warm": 6.523431499997969,
+    "stage_slot96": 12.598028483989765
+  },
+  "platform": "Linux-6.8.0-139-generic-x86_64-with-glibc2.39",
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "rejected_pairs": 5,
+  "scenario": {
+    "compressed_art_budget": 54753,
+    "crest_asset_index": 96,
+    "pair_id": "Los Angeles Raiders/logo/default/7f6207cf",
+    "screenshot_art_identity_known": false,
+    "slot": "logo:884",
+    "team": "Los Angeles Raiders"
+  },
+  "stages_exclusive_seconds": {
+    "greedy_h7a": 12.447683161124587,
+    "ladder_overhead": 0.8961069090437377,
+    "mips": 23.14998414889851,
+    "optimal_h7a": 1733.542356087084,
+    "ps3_decode": 13.28034252600628,
+    "region_masks": 23.108290270945872,
+    "source_decode": 35.627412104877294,
+    "verification": 119.56078545488708
+  }
+}

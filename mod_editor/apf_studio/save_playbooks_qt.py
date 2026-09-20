@@ -11,6 +11,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QComboBox,
     QFileDialog,
+    QInputDialog,
     QFrame,
     QHBoxLayout,
     QLabel,
@@ -30,6 +31,9 @@ from .save_playbooks import (
     inspect_save,
     stage_edit,
     write_new_save,
+    built_label_types,
+    prepare_label_type,
+    write_label_type,
 )
 
 
@@ -134,6 +138,11 @@ class SavePlaybookAssignmentsPanel(QWidget):
         self.write_button.setToolTip(
             "Create a new raw roster payload plus an independently verified receipt."
         )
+        self.label_type_button = QPushButton("Write a label's book type…")
+        self.label_type_button.setToolTip(
+            "Point a saved label at a book already installed in a built game. "
+            "Choose a raw Roster.ROS, then confirm a separate output. UNWITNESSED in game."
+        )
         output_note = QLabel(
             "The receipt proves that only the selected four-byte assignment fields "
             "changed. In-game behavior still requires reinjection and emulator/hardware testing."
@@ -149,6 +158,7 @@ class SavePlaybookAssignmentsPanel(QWidget):
         editor_layout.addWidget(self.stage_count)
         editor_layout.addStretch(1)
         editor_layout.addWidget(self.write_button)
+        editor_layout.addWidget(self.label_type_button)
         editor_layout.addWidget(output_note)
         body.addWidget(editor, 3)
         layout.addLayout(body, 1)
@@ -157,7 +167,63 @@ class SavePlaybookAssignmentsPanel(QWidget):
         self.team_list.currentRowChanged.connect(self._select_team)
         self.stage_button.clicked.connect(self._stage_selected)
         self.write_button.clicked.connect(self._write_new_save)
+        self.label_type_button.clicked.connect(self._write_label_type)
         self._update_enabled()
+
+    def _write_label_type(self) -> None:
+        document = self.document
+        if document is None or document.signed_container or self.staged:
+            return
+        labels = [f"{b.playbook_id:02d}: {b.name} ({b.side}, {b.kind})" for b in document.playbooks]
+        selected, accepted = QInputDialog.getItem(self, "Choose saved label", "Label to update", labels, 0, False)
+        if not accepted:
+            return
+        label = document.playbooks[labels.index(selected)]
+        selected_index, _ = QFileDialog.getOpenFileName(
+            self, "Choose 0A from the game folder with the installed clone", "", "APF index (0A);;All files (*)")
+        if not selected_index:
+            return
+        index_0a = Path(selected_index)
+        try:
+            choices = list(built_label_types(index_0a, label.side))
+            if not choices:
+                raise SavePlaybookError("No matching book types found; choose the built game's 0A file")
+            kind, accepted = QInputDialog.getItem(self, "Choose installed book", "Book type", choices, 0, False)
+            if not accepted:
+                return
+            _, receipt = prepare_label_type(document, label.playbook_id, kind, index_0a)
+        except Exception as exc:
+            QMessageBox.information(self, "Label type not ready", failure_body(exc))
+            return
+        selected_output, _ = QFileDialog.getSaveFileName(
+            self, "Write a new raw roster with this book type",
+            str(document.source.with_name(f"{document.source.stem}-book-type.ROS")),
+            "Raw APF roster payload (*.ROS);;All files (*)")
+        if not selected_output:
+            return
+        teams = ", ".join(str(i) for i in receipt["affected_team_indices"]) or "none currently"
+        answer = QMessageBox.question(
+            self, "Confirm saved label book type",
+            f"Label {label.playbook_id}: {label.name}\n{label.kind} -> {kind}\n"
+            f"Affected team slots: {teams}\nBuilt game: {index_0a.parent}\n"
+            f"New raw save: {selected_output}\n\n"
+            "Every team using this label will resolve the new book type. Team assignments stay unchanged. "
+            "The source save stays unchanged. No game rebuild is needed when that book is already installed.\n\n"
+            "UNWITNESSED: load the new roster in the matching game folder, check the team's plays, "
+            "then save and reload to check persistence. Write this new save?",
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        if answer != QMessageBox.Yes:
+            return
+        self.run_task("Writing verified label book type",
+                      lambda _progress: write_label_type(document, label.playbook_id, kind,
+                                                         index_0a, Path(selected_output)),
+                      self._label_type_complete, True)
+
+    def _label_type_complete(self, receipt: object) -> None:
+        QMessageBox.information(self, "New label type verified",
+                               f"Saved: {receipt['output']}\nReceipt: {receipt['manifest']}\n\n"
+                               f"{receipt['changed_byte_count']} bytes changed in one type pointer. "
+                               "Team assignments and strings are unchanged.\n" + receipt["runtime_status"])
 
     def _choose_save(self) -> None:
         selected, _filter = QFileDialog.getOpenFileName(
@@ -351,6 +417,14 @@ class SavePlaybookAssignmentsPanel(QWidget):
         self.defense.setEnabled(writable and selected)
         self.stage_button.setEnabled(writable and selected)
         self.write_button.setEnabled(writable and bool(self.staged))
+        self.label_type_button.setEnabled(writable and not self.document.signed_container and not self.staged)
+        if self.document is not None and self.document.signed_container:
+            self.label_type_button.setToolTip("Extract a raw Roster.ROS first; label-type writes require a raw source.")
+        elif self.staged:
+            self.label_type_button.setToolTip("Write the staged assignments and load that new save before changing a label type.")
+        else:
+            self.label_type_button.setToolTip(
+                "Choose an installed book from a built game, then confirm a separate raw save. UNWITNESSED in game.")
         count = len(self.staged)
         self.stage_count.setText(f"{count} team{'s' if count != 1 else ''} staged")
 
