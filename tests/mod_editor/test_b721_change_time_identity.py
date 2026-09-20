@@ -172,6 +172,13 @@ def sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+def stat_identity(path: Path) -> tuple:
+    """The five fields the staged-art cache keys on, read the way it reads them."""
+
+    info = Path(path).lstat()
+    return (info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_ctime_ns)
+
+
 def load_backend():
     spec = importlib.util.spec_from_file_location(
         "_b721_visual_mod_project", ROOT / "tools/nfl2k5_visual_mod_project.py")
@@ -751,27 +758,40 @@ class StagedArtChangeTimeTests(unittest.TestCase):
                 ValidationError, "staged equipment PNG changed outside Mod Studio"):
             _verified_art(session, self.png, expected=self.digest)
 
-    def test_staged_art_identity_cache_is_blind_to_a_restored_mtime_on_windows(self) -> None:
+    def test_staged_art_identity_cache_and_the_rewrite_it_cannot_see(self) -> None:
         """The beta 72 speed contract, and what it costs on Windows.
 
         test_b72_equipment_speed pins that an unchanged staged PNG is never
         re-read, which is what made a 600-item project open in under a second
-        for the tester whose opens used to take hours. The cache key invalidates
-        on st_ctime, so POSIX still catches a same-size rewrite that restores
-        the modification time. Windows reports a creation time and cannot, and
-        re-reading every staged PNG there would take back the fix that platform
-        needed most. The bytes are still read and hashed when Build compiles
-        them, so the disc always matches the file on disk and the receipt
-        records that hash; what is lost is the studio saying so first.
+        for the tester whose opens used to take hours. The cache key carries
+        st_ctime, so a POSIX rewrite that restores the modification time still
+        invalidates it. Windows reports a creation time, nothing in the key
+        moves, and the cached digest answers for bytes that are not the same.
+        Re-reading every staged PNG there would take back the fix that platform
+        needed most, so Build reads and hashes every image it compiles instead:
+        the disc matches the file on disk, and what is lost is the studio
+        saying so first.
+
+        Both answers are asserted, whichever one this platform gives, and
+        neither is skipped. When beta 73 hardens this, the Windows half below
+        starts failing and has to become the refusal.
         """
 
         session = SimpleNamespace()
         self.assertEqual(_verified_art(session, self.png, expected=self.digest), self.digest)
+        before = stat_identity(self.png)
         rewrite_same_size_keep_mtime(self.png, 20)
-        with self.assertRaisesRegex(
-                ValidationError, "staged equipment PNG changed outside Mod Studio"):
-            _verified_art(session, self.png, expected=self.digest)
+        self.assertNotEqual(sha256(self.png.read_bytes()), self.digest)
+        if stat_identity(self.png) != before:
+            with self.assertRaisesRegex(
+                    ValidationError, "staged equipment PNG changed outside Mod Studio"):
+                _verified_art(session, self.png, expected=self.digest)
+        else:
+            self.assertEqual(
+                _verified_art(session, self.png, expected=self.digest), self.digest,
+                "this platform shows the rewrite, so the cache must refuse it")
 
+        # And the Windows answer on every platform, including this one.
         self.setUp()
         with windows_change_time():
             session = SimpleNamespace()
