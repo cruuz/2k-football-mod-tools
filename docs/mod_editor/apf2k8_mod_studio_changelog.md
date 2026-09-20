@@ -1,5 +1,9 @@
 # APF 2K8 Mod Studio Changelog
 
+## Beta 74 (unreleased)
+
+- Project open and fast save now compare the full project SHA-256, closing the hole named in beta 72.1: a same-size rewrite with the old modification time restored is refused on every platform, including Windows. Changes only to change time still open and save normally; size, modification-time and file-replacement refusals keep their existing messages. Standalone regressions: `test_apf_open_full_sha256_refuses_same_size_rewrite_restored_mtime` and `test_apf_fast_save_full_sha256_refuses_same_size_rewrite_restored_mtime` in `test_b721_change_time_identity.py`.
+
 ## 0.1.0-alpha.95 - beta 72.1: projects open and save on Windows when only a file's change time moved (2026-09-19)
 
 - Opening a project and fast saving it compared the whole identity of the project file, including the change time that Windows backup, sync, antivirus and indexing software move without changing a byte. An untouched project could therefore refuse to open ("The project changed outside Mod Studio while it was opening") or to fast save ("The active project changed outside Mod Studio"). Both now compare the path, file ID, size and modification time, the same rule as 2K5 Mod Studio, and still refuse a different size, a moved modification time or a different file at the same path. They no longer notice a rewrite by another program that kept the same size and put the old modification time back. The APF build already checks the source and output by SHA-256 and never compared the change time. Offline tests only; not yet run on Windows.

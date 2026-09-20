@@ -669,15 +669,12 @@ class WorkspaceStateStore:
 
 @dataclass(frozen=True)
 class ProjectTargetIdentity:
-    """Private fingerprint for the exact regular project file being edited.
+    """In-memory file details and full SHA-256 of the active project.
 
-    The fingerprint is kept in memory only.  It lets a named-document fast save
-    prove that the destination still names the same single-linked file that Mod
-    Studio opened or last published before atomically replacing it.
-
-    ``changed_ns`` is recorded for diagnostics.  Two identities taken at
-    different times are compared with :meth:`matches_apart_from_change_time`,
-    never with ``==``.
+    Every capture hashes the open binary descriptor, even when all file details
+    match. Windows creation time cannot detect a same-size rewrite with its
+    modification time restored. ``changed_ns`` remains diagnostic only between
+    captures, since metadata maintenance can move it without changing a byte.
     """
 
     path: Path
@@ -686,26 +683,15 @@ class ProjectTargetIdentity:
     size: int
     modified_ns: int
     changed_ns: int
+    sha256: str
 
     def matches_apart_from_change_time(self, other: object) -> bool:
-        """Whether ``other`` still names this file with the same size and mtime.
-
-        Path, file ID (device and inode), size and modification time must all
-        match; only ``changed_ns`` may differ, because that field decides
-        nothing on its own: POSIX moves it with no byte changed (a chmod, an
-        xattr write, a restored mtime), which is what refused a 2K5 beta 72
-        tester's untouched project, and Windows never moves it for a change at
-        all, because Python reports the file's CREATION time there.  An equal
-        change time is therefore not proof either, and this project open and
-        fast save record no content hash to fall back on: what they detect is a
-        replaced file, a resized file and an ordinary rewrite, not a same-size
-        rewrite that puts the modification time back.
-        """
+        """Require the same path, file ID, size, mtime and complete contents."""
 
         return isinstance(other, ProjectTargetIdentity) and (
-            self.path, self.device, self.inode, self.size, self.modified_ns,
+            self.path, self.device, self.inode, self.size, self.modified_ns, self.sha256,
         ) == (
-            other.path, other.device, other.inode, other.size, other.modified_ns,
+            other.path, other.device, other.inode, other.size, other.modified_ns, other.sha256,
         )
 
 
@@ -769,6 +755,30 @@ def project_target_identity(path: Path) -> ProjectTargetIdentity:
         ) from exc
     try:
         opened = os.fstat(descriptor)
+        if (not stat.S_ISREG(opened.st_mode) or opened.st_nlink != 1
+                or (before.st_dev, before.st_ino) != (opened.st_dev, opened.st_ino)):
+            raise ProjectError(
+                "The active project changed while Mod Studio checked it. Use "
+                "Save Project As or reopen it."
+            )
+        if opened.st_size > MAX_PROJECT_BYTES:
+            raise ProjectError(
+                "The active project exceeds the 2 GiB project size limit. "
+                "Use Save Project As to choose a safe destination."
+            )
+        # Reuse the positional binary reader on every platform. Hash the held
+        # descriptor, then verify both it and the name still describe this file.
+        digest = platform_compat._hash_fd(descriptor)
+        finished = os.fstat(descriptor)
+        details = lambda info: (info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns)
+        if details(opened) != details(finished):
+            raise ProjectError(
+                "The active project changed while Mod Studio checked it. Use "
+                "Save Project As or reopen it."
+            )
+        # Across the hash, ctime alone says nothing about the content. At the
+        # final fd/path check it is comparable only where the shared helper says.
+        opened = finished
         try:
             resolved = requested.resolve(strict=True)
             after = requested.lstat()
@@ -818,6 +828,7 @@ def project_target_identity(path: Path) -> ProjectTargetIdentity:
             opened.st_size,
             opened.st_mtime_ns,
             opened.st_ctime_ns,
+            digest,
         )
     finally:
         os.close(descriptor)

@@ -1,5 +1,9 @@
 # 2K5 Mod Studio — Product Changelog
 
+## Beta 74 (unreleased)
+
+- Fast save now compares the full project SHA-256 on every save, closing the hole named in beta 72.1: a same-size rewrite with the old modification time restored is refused on every platform, including Windows. Changes only to change time still save normally; size, modification-time and file-replacement refusals keep their existing messages. Standalone regression: `FastSaveChangeTimeTests.test_fast_save_full_sha256_refuses_same_size_rewrite_restored_mtime` in `test_b721_change_time_identity.py`.
+
 ## v1.0 RC99, beta 72.1: projects open and build on Windows when only a file's change time moved, Build finishes every equipment fit, Team Kits import into a fresh project, and Build finds its source disc after you rename it (2026-09-19)
 
 - **Projects open, save and build when only a file's change time moved.** On Windows a file's change time moves when backup, sync, antivirus or indexing software touches it, and when the file is copied, even though no byte changes. Beta 72 compared that time between two looks at the same file, so an untouched project could refuse to open with "The project changed outside Mod Studio while it was opening: changed_ns", and a finished build could stop at its safety check with "source/output changed since the full build check" or "source or output changed before final manifest commit". Opening and fast saving a project now compare the path, file ID, size and modification time, and opening still requires the SHA-256 of every byte to match. When only the change time moved during a build, the build and its separate verification process hash the source or output disc again and accept it only when it equals the full-file SHA-256 the build recorded. The Music page and the music and resource build steps no longer include the change time in the file identities they compare between steps.

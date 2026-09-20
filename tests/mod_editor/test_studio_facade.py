@@ -588,6 +588,7 @@ class StudioFacadeTests(unittest.TestCase):
             opened.size + 1,
             opened.modified_ns + 1,
             opened.changed_ns + 1,
+            opened.sha256,
         )
 
         with mock.patch(
