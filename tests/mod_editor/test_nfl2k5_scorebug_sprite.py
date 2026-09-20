@@ -84,18 +84,18 @@ class ContractTests(unittest.TestCase):
    self.assertFalse(plan.scorebug_runtime)
 
 class LogoFitTests(unittest.TestCase):
- def test_marks_are_drawn_as_the_broadcast_draws_them(self):
+ def test_complete_wide_marks_keep_the_configured_proportions(self):
   from mod_editor.core import nfl2k5_scorebug_exact as exact, nfl2k5_scorebug_resources as art
   spec=sprite.load_layout()[0];fit=spec['logo_fit']
   self.assertEqual(set(fit['by_team']),set(art.TEAM_LOGOS))
   box=next(r['box'] for r in spec['static'] if r['name']=='home_logo')
   display_aspect=(box[2]-box[0])/(box[3]-box[1])
-  # The larger logo wells now crop the mark. Check the visible silhouette
-  # at its actual quad aspect, not the old 200x107 inset texture mapping.
-  for team,expect in (('KC',1.74),('DEN',1.68),('BUF',None)):
+  # Check the complete silhouette at its actual quad aspect. The authored
+  # per-team fits preserve every stroke inside the larger s10 wells.
+  for team,expect in (('KC',1.59),('DEN',1.68),('BUF',None)):
    im=exact.mnf_panel(team,'home',fit=art.logo_fit_for(team,fit));x0,y0,x1,y1=im.getchannel('A').getbbox()
    aspect=(x1-x0)/(y1-y0)*display_aspect
-   self.assertGreater(aspect,1.4,team)  # preserve these wide team silhouettes after quad resizing and crop
+   self.assertGreater(aspect,1.4,team)
    if expect is not None:self.assertAlmostEqual(aspect,expect,delta=0.12,msg=team)
    self.assertEqual(im.size,(64,64))
   with self.assertRaises(ValueError):exact.mnf_panel('KC','home',fit={'fill_x':3.0})

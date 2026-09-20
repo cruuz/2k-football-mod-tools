@@ -18,7 +18,7 @@
       "logo_fit": {
         "fill_x": 1.02,
         "height": 1.0,
-        "zoom": 1.07,
+        "zoom": 0.976,
         "shift_x": 0.0,
         "shift_y": 0.0
       },
@@ -271,7 +271,7 @@
       "logo_fit": {
         "fill_x": 0.92,
         "height": 1.0,
-        "zoom": 1.13,
+        "zoom": 0.976,
         "shift_x": 0.0,
         "shift_y": 0.0
       },
@@ -524,7 +524,7 @@
       "logo_fit": {
         "fill_x": 0.92,
         "height": 1.0,
-        "zoom": 1.13,
+        "zoom": 0.976,
         "shift_x": 0.0,
         "shift_y": 0.0
       },
@@ -778,7 +778,7 @@
       "logo_fit": {
         "fill_x": 1.02,
         "height": 1.0,
-        "zoom": 1.07,
+        "zoom": 0.976,
         "shift_x": 0.0,
         "shift_y": 0.0
       },
@@ -1106,9 +1106,9 @@
       "logo_fit": {
         "fill_x": 0.86,
         "height": 1.0,
-        "zoom": 1.0,
+        "zoom": 0.976,
         "shift_x": 0.0,
-        "shift_y": 0.045
+        "shift_y": 0.0
       },
       "review_required": false,
       "candidates": {
@@ -1371,7 +1371,7 @@
       "logo_fit": {
         "fill_x": 0.92,
         "height": 1.0,
-        "zoom": 1.13,
+        "zoom": 0.976,
         "shift_x": 0.0,
         "shift_y": 0.0
       },
@@ -1626,7 +1626,7 @@
       "logo_fit": {
         "fill_x": 0.92,
         "height": 1.0,
-        "zoom": 1.13,
+        "zoom": 0.976,
         "shift_x": 0.0,
         "shift_y": 0.0
       },
@@ -2029,7 +2029,7 @@
       "logo_fit": {
         "fill_x": 0.92,
         "height": 1.0,
-        "zoom": 1.13,
+        "zoom": 0.976,
         "shift_x": 0.0,
         "shift_y": 0.0
       },
@@ -2283,9 +2283,9 @@
       "logo_fit": {
         "fill_x": 1.02,
         "height": 1.0,
-        "zoom": 1.13,
-        "shift_x": 0.025,
-        "shift_y": 0.015
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
       },
       "review_required": false,
       "candidates": {
@@ -2611,8 +2611,8 @@
       "logo_fit": {
         "fill_x": 0.9,
         "height": 1.0,
-        "zoom": 1.1,
-        "shift_x": 0.0,
+        "zoom": 0.976,
+        "shift_x": 0.03125,
         "shift_y": 0.0
       },
       "review_required": true,
@@ -2865,7 +2865,7 @@
       "logo_fit": {
         "fill_x": 0.92,
         "height": 1.0,
-        "zoom": 1.13,
+        "zoom": 0.976,
         "shift_x": 0.0,
         "shift_y": 0.0
       },
@@ -3195,7 +3195,7 @@
       "logo_fit": {
         "fill_x": 0.92,
         "height": 1.0,
-        "zoom": 1.13,
+        "zoom": 0.976,
         "shift_x": 0.0,
         "shift_y": 0.0
       },
@@ -3598,7 +3598,7 @@
       "logo_fit": {
         "fill_x": 0.92,
         "height": 1.0,
-        "zoom": 1.13,
+        "zoom": 0.976,
         "shift_x": 0.0,
         "shift_y": 0.0
       },
@@ -3852,7 +3852,7 @@
       "logo_fit": {
         "fill_x": 0.92,
         "height": 1.0,
-        "zoom": 1.13,
+        "zoom": 0.976,
         "shift_x": 0.0,
         "shift_y": 0.0
       },
@@ -4181,7 +4181,7 @@
       "logo_fit": {
         "fill_x": 0.92,
         "height": 1.0,
-        "zoom": 1.13,
+        "zoom": 0.976,
         "shift_x": 0.0,
         "shift_y": 0.0
       },
@@ -4509,7 +4509,7 @@
       "logo_fit": {
         "fill_x": 0.92,
         "height": 1.0,
-        "zoom": 1.13,
+        "zoom": 0.976,
         "shift_x": 0.0,
         "shift_y": 0.0
       },
@@ -4764,7 +4764,7 @@
       "logo_fit": {
         "fill_x": 0.92,
         "height": 1.0,
-        "zoom": 1.13,
+        "zoom": 0.976,
         "shift_x": 0.0,
         "shift_y": 0.0
       },
@@ -5167,7 +5167,7 @@
       "logo_fit": {
         "fill_x": 1.02,
         "height": 1.0,
-        "zoom": 1.07,
+        "zoom": 0.976,
         "shift_x": 0.0,
         "shift_y": 0.0
       },
@@ -5421,7 +5421,7 @@
       "logo_fit": {
         "fill_x": 0.92,
         "height": 1.0,
-        "zoom": 1.13,
+        "zoom": 0.976,
         "shift_x": 0.0,
         "shift_y": 0.0
       },
@@ -5749,7 +5749,7 @@
       "logo_fit": {
         "fill_x": 1.02,
         "height": 1.0,
-        "zoom": 1.07,
+        "zoom": 0.976,
         "shift_x": 0.0,
         "shift_y": 0.0
       },
@@ -6002,7 +6002,7 @@
       "logo_fit": {
         "fill_x": 1.02,
         "height": 1.0,
-        "zoom": 1.07,
+        "zoom": 0.976,
         "shift_x": 0.0,
         "shift_y": 0.0
       },
@@ -6256,7 +6256,7 @@
       "logo_fit": {
         "fill_x": 1.02,
         "height": 1.0,
-        "zoom": 1.07,
+        "zoom": 0.976,
         "shift_x": 0.0,
         "shift_y": 0.0
       },
@@ -6584,7 +6584,7 @@
       "logo_fit": {
         "fill_x": 1.0,
         "height": 1.0,
-        "zoom": 1.1,
+        "zoom": 0.976,
         "shift_x": 0.0,
         "shift_y": 0.0
       },
@@ -6837,7 +6837,7 @@
       "logo_fit": {
         "fill_x": 0.92,
         "height": 1.0,
-        "zoom": 1.13,
+        "zoom": 0.976,
         "shift_x": 0.0,
         "shift_y": 0.0
       },
@@ -7091,7 +7091,7 @@
       "logo_fit": {
         "fill_x": 1.02,
         "height": 1.0,
-        "zoom": 1.07,
+        "zoom": 0.976,
         "shift_x": 0.0,
         "shift_y": 0.0
       },
@@ -7420,8 +7420,8 @@
       "logo_fit": {
         "fill_x": 1.02,
         "height": 1.0,
-        "zoom": 1.17,
-        "shift_x": -0.04,
+        "zoom": 0.976,
+        "shift_x": 0.0,
         "shift_y": 0.0
       },
       "review_required": false,
@@ -7748,7 +7748,7 @@
       "logo_fit": {
         "fill_x": 0.92,
         "height": 1.0,
-        "zoom": 1.13,
+        "zoom": 0.976,
         "shift_x": 0.0,
         "shift_y": 0.0
       },
@@ -8002,7 +8002,7 @@
       "logo_fit": {
         "fill_x": 1.02,
         "height": 1.0,
-        "zoom": 1.07,
+        "zoom": 0.976,
         "shift_x": 0.0,
         "shift_y": 0.0
       },
@@ -8330,7 +8330,7 @@
       "logo_fit": {
         "fill_x": 0.92,
         "height": 1.0,
-        "zoom": 1.13,
+        "zoom": 0.976,
         "shift_x": 0.0,
         "shift_y": 0.0
       },
@@ -8584,8 +8584,8 @@
       "logo_fit": {
         "fill_x": 1.04,
         "height": 1.0,
-        "zoom": 1.25,
-        "shift_x": 0.075,
+        "zoom": 0.976,
+        "shift_x": 0.0,
         "shift_y": 0.0
       },
       "review_required": false,
@@ -8913,7 +8913,7 @@
       "logo_fit": {
         "fill_x": 0.92,
         "height": 1.0,
-        "zoom": 1.13,
+        "zoom": 0.976,
         "shift_x": 0.0,
         "shift_y": 0.0
       },
@@ -9241,7 +9241,7 @@
       "logo_fit": {
         "fill_x": 0.92,
         "height": 1.0,
-        "zoom": 1.13,
+        "zoom": 0.976,
         "shift_x": 0.0,
         "shift_y": 0.0
       },

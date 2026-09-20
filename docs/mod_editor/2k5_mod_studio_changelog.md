@@ -2,6 +2,8 @@
 
 ## Unreleased: scorebug player-scale artwork candidate
 
+- Primary team marks now fit completely inside the enlarged logo wells. Washington's W keeps its left arm, and the Raiders lettering and circular marks remain intact. Per-team source-ink and native-projection audits cover both aspects with zero crop tolerance. The larger wings, scores, raised plate, palettes and native resource budgets remain unchanged. This is an offline candidate; the option remains EXPERIMENTAL and off in every preset.
+
 - The report "still not 1:1 looks about the same" prompted a proportion pass on the sprite bar. Colour ramps extend through larger wing boxes, logos use larger wells with individual crops, scores are slightly taller, and the down plate is wider and raised. Comparisons now use the native 448-line HUD and player-scale display output. Team accents remain derived from each team's own palette with the existing white-label contrast gate. Event ownership and the long-clock fix are retained. This is an offline candidate with visible broadcast differences remaining, not a new in-game result; the option remains EXPERIMENTAL and off in every preset.
 
 ## v1.0 RC98, beta 72

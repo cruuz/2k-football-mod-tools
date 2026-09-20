@@ -1976,231 +1976,231 @@
   "default": {
    "fill_x": 0.92,
    "height": 1.0,
-   "zoom": 1.13
+   "zoom": 0.96
   },
   "by_team": {
    "ARI": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 1.13,
+    "zoom": 0.976,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "ATL": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 1.13,
+    "zoom": 0.976,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "BAL": {
     "fill_x": 1.02,
     "height": 1.0,
-    "zoom": 1.07,
+    "zoom": 0.976,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "BUF": {
     "fill_x": 1.02,
     "height": 1.0,
-    "zoom": 1.07,
+    "zoom": 0.976,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "CAR": {
     "fill_x": 1.02,
     "height": 1.0,
-    "zoom": 1.07,
+    "zoom": 0.976,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "CHI": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 1.13,
+    "zoom": 0.976,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "CIN": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 1.13,
+    "zoom": 0.976,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "DAL": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 1.13,
+    "zoom": 0.976,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "DEN": {
     "fill_x": 0.86,
     "height": 1.0,
-    "zoom": 1.0,
+    "zoom": 0.976,
     "shift_x": 0.0,
-    "shift_y": 0.045
+    "shift_y": 0.0
    },
    "DET": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 1.13,
+    "zoom": 0.976,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "GB": {
     "fill_x": 1.02,
     "height": 1.0,
-    "zoom": 1.07,
+    "zoom": 0.976,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "IND": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 1.13,
+    "zoom": 0.976,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "JAX": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 1.13,
+    "zoom": 0.976,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "KC": {
     "fill_x": 0.9,
     "height": 1.0,
-    "zoom": 1.1,
-    "shift_x": 0.0,
+    "zoom": 0.976,
+    "shift_x": 0.03125,
     "shift_y": 0.0
    },
    "MIA": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 1.13,
+    "zoom": 0.976,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "MIN": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 1.13,
+    "zoom": 0.976,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "NE": {
     "fill_x": 1.02,
     "height": 1.0,
-    "zoom": 1.07,
+    "zoom": 0.976,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "NO": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 1.13,
+    "zoom": 0.976,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "NYG": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 1.13,
+    "zoom": 0.976,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "NYJ": {
     "fill_x": 1.02,
     "height": 1.0,
-    "zoom": 1.07,
+    "zoom": 0.976,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "LV": {
     "fill_x": 1.0,
     "height": 1.0,
-    "zoom": 1.1,
+    "zoom": 0.976,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "PHI": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 1.13,
+    "zoom": 0.976,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "PIT": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 1.13,
+    "zoom": 0.976,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "LAR": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 1.13,
+    "zoom": 0.976,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "LAC": {
     "fill_x": 1.02,
     "height": 1.0,
-    "zoom": 1.13,
-    "shift_x": 0.025,
-    "shift_y": 0.015
+    "zoom": 0.976,
+    "shift_x": 0.0,
+    "shift_y": 0.0
    },
    "SF": {
     "fill_x": 1.02,
     "height": 1.0,
-    "zoom": 1.07,
+    "zoom": 0.976,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "SEA": {
     "fill_x": 1.02,
     "height": 1.0,
-    "zoom": 1.07,
+    "zoom": 0.976,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "TB": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 1.13,
+    "zoom": 0.976,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "TEN": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 1.13,
+    "zoom": 0.976,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "WAS": {
     "fill_x": 1.02,
     "height": 1.0,
-    "zoom": 1.17,
-    "shift_x": -0.04,
+    "zoom": 0.976,
+    "shift_x": 0.0,
     "shift_y": 0.0
    },
    "CLE": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 1.13,
+    "zoom": 0.976,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "HOU": {
     "fill_x": 1.04,
     "height": 1.0,
-    "zoom": 1.25,
-    "shift_x": 0.075,
+    "zoom": 0.976,
+    "shift_x": 0.0,
     "shift_y": 0.0
    }
   }
