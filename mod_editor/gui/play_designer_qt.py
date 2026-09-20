@@ -426,10 +426,10 @@ ROUTE_RECIPES: list[RouteRecipe] = [
     RouteRecipe("Slant", lambda d, s: [_seg(0, 3), _seg(1, d)], "3 yd then 30° inside break"),
     RouteRecipe("Out", lambda d, s: [_seg(0, d), _seg(5, 8)], "depth then 8 yd to the sideline"),
     RouteRecipe("In / Dig", lambda d, s: [_seg(0, d), _seg(4, 8)], "depth then 8 yd across"),
-    RouteRecipe("Post / Corner (45° toward middle)", lambda d, s: [_seg(0, d), _seg(2, 10)], "depth then 45° break inside"),
-    RouteRecipe("Corner / Post (45° away)", lambda d, s: [_seg(0, d), _seg(6, 10)], "depth then 45° break outside"),
-    RouteRecipe("Curl / Stop", lambda d, s: [_seg(0, d), _seg(7, 2)], "depth then come back inside"),
-    RouteRecipe("Comeback", lambda d, s: [_seg(0, d), _seg(11, 2)], "depth then come back outside"),
+    RouteRecipe("Post (45° inside)", lambda d, s: [_seg(0, d), _seg(2, 10)], "depth then 45° break inside"),
+    RouteRecipe("Corner (45° outside)", lambda d, s: [_seg(0, d), _seg(6, 10)], "depth then 45° break outside"),
+    RouteRecipe("Curl / Stop", lambda d, s: [_seg(0, d), _seg(11, 2)], "depth then come back inside"),
+    RouteRecipe("Comeback", lambda d, s: [_seg(0, d), _seg(7, 2)], "depth then come back outside"),
     RouteRecipe("Hitch", lambda d, s: [_seg(0, 5), _seg(7, 1)], "5 yd hitch"),
     RouteRecipe("Flat (lateral out)", lambda d, s: [_seg(5, d)], "run to the flat"),
     RouteRecipe("Drag (lateral in)", lambda d, s: [_seg(4, d)], "shallow cross"),
@@ -858,7 +858,7 @@ class PlayDesignerDialog(QDialog):
         for slot in range(11):
             x0, z0 = positions[slot]
             side = 1 if x0 >= 0 else -1
-            segs = codec.play_art(self.chains[slot], (x0, z0), side=side, wide_left=x0 < 0)
+            segs = codec.play_art(self.chains[slot], (x0, z0), side=side)
             color = palette[0] if not self.changed[slot] else palette[1]
             if slot == self.current_slot:
                 color = palette[2]
