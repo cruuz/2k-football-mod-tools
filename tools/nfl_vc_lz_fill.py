@@ -114,7 +114,7 @@ def fill_stream(stream: bytes, decoded: bytes, stored_size: int, *, slack: int) 
     current_size = 9 + (token_count + 7) // 8 + payload_size
     if current_size > stored_size:
         raise t.TxtrError('compressed stream already exceeds the stored body')
-    expanded, position, result = 0, 0, []
+    expanded, position, result, positions = 0, 0, [], []
     for token in tokens:
         length = token[2] if token[0] == 'M' else 1
         if token[0] == 'M' and current_size < stored_size - slack:
@@ -123,12 +123,50 @@ def fill_stream(stream: bytes, decoded: bytes, stored_size: int, *, slack: int) 
             trial_size = 9 + (trial_count + 7) // 8 + trial_payload
             if trial_size <= stored_size:
                 result.extend(('L', value) for value in decoded[position:position + length])
+                positions.extend(range(position, position + length))
                 token_count, payload_size, current_size = trial_count, trial_payload, trial_size
                 expanded += 1
                 position += length
                 continue
         result.append(token)
+        positions.append(position)
         position += length
+    # Whole matches expand in jumps of up to the maximum match length, so the pass
+    # above can stop short of the window when every remaining match would overshoot
+    # it: a very flat texture beside retail neighbours in one chunk left the stream
+    # more than ``slack`` bytes short and the equipment writer refused the art as
+    # "cannot fit with the retail loader scratch allowance", even though the refit
+    # ladder only makes such art smaller (beta 74, found by the retail workflow
+    # gate on shoes01 in package 3653). Splitting one match into a shorter match
+    # plus its trailing literals moves the size a byte at a time, so the window is
+    # always reachable while a match of four or more bytes remains.
+    index = len(result) - 1
+    while current_size < stored_size - slack and index >= 0:
+        token = result[index]
+        if token[0] != 'M' or token[2] < 4:
+            index -= 1
+            continue
+        distance, length = token[1], token[2]
+        chosen = None
+        for split in range(1, length - 2):
+            trial_count = token_count + split
+            trial_payload = payload_size + split
+            trial_size = 9 + (trial_count + 7) // 8 + trial_payload
+            if trial_size > stored_size:
+                break
+            chosen = (split, trial_count, trial_payload, trial_size)
+            if trial_size >= stored_size - slack:
+                break
+        if chosen is None:
+            index -= 1
+            continue
+        split, token_count, payload_size, current_size = chosen
+        start = positions[index]
+        tail = decoded[start + length - split:start + length]
+        result[index:index + 1] = [('M', distance, length - split), *(('L', value) for value in tail)]
+        positions[index:index + 1] = [start, *range(start + length - split, start + length)]
+        expanded += 1
+        index -= 1
     return serialize(output_size, tag, offset_bits, result), expanded
 
 

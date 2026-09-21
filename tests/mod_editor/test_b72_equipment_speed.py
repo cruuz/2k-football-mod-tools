@@ -234,12 +234,29 @@ class EquipmentSpeedTests(unittest.TestCase):
     def test_span_filler_preserves_every_trial_decision(self):
         from b72_fill_oracle import fill_stream as old_fill
         from nfl_vc_lz_fill import fill_stream
+        from nfl_txtr import decompress_vc_lz
         for data in (bytes(2048), b'abc123' * 400, random.Random(72).randbytes(2048)):
             stream, _ = compress_vc_lz(data, stream_tag=1, offset_bits=10)
             for growth in (0, 1, 7, 32, 128, 1024):
                 for slack in (0, 4, 16):
-                    self.assertEqual(fill_stream(stream, data, len(stream) + growth, slack=slack),
-                                     old_fill(stream, data, len(stream) + growth, slack=slack))
+                    stored = len(stream) + growth
+                    new = fill_stream(stream, data, stored, slack=slack)
+                    old = old_fill(stream, data, stored, slack=slack)
+                    if stored - slack <= len(old[0]) <= stored:
+                        # Wherever the whole-match pass already lands in the
+                        # window, every trial decision is preserved exactly.
+                        self.assertEqual(new, old)
+                    elif stored - slack <= len(new[0]) <= stored:
+                        # Beta 74: where it stopped short, the fine pass splits
+                        # one match and lands; the old result was a refusal.
+                        self.assertEqual(decompress_vc_lz(new[0], len(data))[0], data)
+                    else:
+                        # A zero-slack window can be unreachable by parity (a
+                        # split adds a payload byte and may roll a flag byte);
+                        # then the result is never shorter than before and
+                        # still decodes.
+                        self.assertGreaterEqual(len(new[0]), len(old[0]), (growth, slack))
+                        self.assertEqual(decompress_vc_lz(new[0], len(data))[0], data)
 
     def test_identical_art_reuses_mips_across_target_specific_png_intents(self):
         from b70_equipment_fixture import SizedFixture

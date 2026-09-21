@@ -1,5 +1,9 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.97 - beta 74
+
+- Version aligned with the beta 74 stability release. Shared with the 2K5 Studio: every report in errors.log now carries the Studio version on its first line, and failures shown through the shared error dialog are recorded there as well.
+
 ## 0.1.0-alpha.96 - beta 73
 
 - Project open and fast save now compare the full project SHA-256, closing the hole named in beta 72.1: a same-size rewrite with the old modification time restored is refused on every platform, including Windows. Changes only to change time still open and save normally; size, modification-time and file-replacement refusals keep their existing messages. Standalone regressions: `test_apf_open_full_sha256_refuses_same_size_rewrite_restored_mtime` and `test_apf_fast_save_full_sha256_refuses_same_size_rewrite_restored_mtime` in `test_b721_change_time_identity.py`.

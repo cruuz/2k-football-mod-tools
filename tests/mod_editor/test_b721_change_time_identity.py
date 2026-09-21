@@ -562,16 +562,21 @@ class _BuildFixture(unittest.TestCase):
         return calls, mock.patch.object(self.tool.common, "sha256_fd", side_effect=counting)
 
     def after_union(self, action):
-        """Run ``action`` inside build(), after the union pass and before its final check."""
+        """Run ``action`` inside build(), after the copy pass and before its final check.
 
-        real = self.tool.verify_union
+        Beta 74 folded the union pass into the copy; the span readback that
+        follows it is the same point in the build: both snapshots are taken,
+        every byte is hashed, and the gate has not run yet.
+        """
+
+        real = self.tool.prove_written_spans
 
         def union_then(*args, **kwargs):
             result = real(*args, **kwargs)
             action()
             return result
 
-        return mock.patch.object(self.tool, "verify_union", side_effect=union_then)
+        return mock.patch.object(self.tool, "prove_written_spans", side_effect=union_then)
 
 
 def fd_snapshot(path: Path) -> list[int]:
@@ -652,20 +657,19 @@ class BuildSnapshotChangeTimeTests(_BuildFixture):
 
     def test_new_bytes_the_stat_cannot_see_are_refused_before_publication(self) -> None:
         # Windows semantics: nothing in the stat moves, so the build's gate has
-        # nothing to see and the manifest is written. The verifier hashes both
-        # files against that receipt before anything is published, and refuses.
-        for name in ("output", "source"):
-            with self.subTest(file=name):
-                self.setUp()
-                path = getattr(self, name)
-                with windows_change_time():
-                    with self.after_union(lambda: rewrite_same_size_keep_mtime(path, 128)):
-                        self.build()
-                    self.assertTrue(self.output.is_file(), "the build itself sees nothing")
-                    with self.assertRaisesRegex(
-                            self.tool.ProjectError,
-                            "build files changed during receipt verification"):
-                        self.verify()
+        # nothing to see and the manifest is written. The verifier hashes the
+        # output against that receipt before anything is published, and
+        # refuses. (A rewrite of the SOURCE after the copy pass is another
+        # program's doing and leaves the output exactly what the receipt says;
+        # beta 74 no longer spends a second 6 GB read to notice it.)
+        with windows_change_time():
+            with self.after_union(lambda: rewrite_same_size_keep_mtime(self.output, 128)):
+                self.build()
+            self.assertTrue(self.output.is_file(), "the build itself sees nothing")
+            with self.assertRaisesRegex(
+                    self.tool.ProjectError,
+                    "build files changed during receipt verification"):
+                self.verify()
 
     def test_build_refuses_a_moved_mtime_mid_build_without_rehashing(self) -> None:
         real = self.tool.file_snapshot
@@ -697,20 +701,22 @@ class BuildReceiptChangeTimeTests(_BuildFixture):
             result = self.verify()
         self.assertTrue(result["written_spans_verified"])
         self.assertEqual(result["output_sha256"], self.tool.file_digest(self.output))
-        self.assertEqual(len(calls), 2, "source and output are each hashed once")
+        # Beta 74: the output is hashed once; the source was hashed by the
+        # build's copy pass and is not read again.
+        self.assertEqual(len(calls), 1, "the output is hashed once")
 
     def test_receipt_check_always_proves_the_content(self) -> None:
-        # Nothing moved at all, and both files are still hashed in full: an
+        # Nothing moved at all, and the output is still hashed in full: an
         # equal stat is not proof on Windows, so it is never taken as one.
         calls, counting = self.whole_file_hashes()
         with counting:
             self.assertTrue(self.verify()["written_spans_verified"])
-        self.assertEqual(len(calls), 2)
+        self.assertEqual(len(calls), 1)
         with windows_change_time():
             calls, counting = self.whole_file_hashes()
             with counting:
                 self.assertTrue(self.verify()["written_spans_verified"])
-            self.assertEqual(len(calls), 2)
+            self.assertEqual(len(calls), 1)
 
     def test_receipt_check_accepts_the_reported_shape(self) -> None:
         real = self.tool.file_snapshot
@@ -744,18 +750,21 @@ class BuildReceiptChangeTimeTests(_BuildFixture):
     def test_receipt_check_refuses_a_rewrite_that_restored_the_mtime(self) -> None:
         # Size, mtime and file ID all still match the receipt, and on Windows
         # so does st_ctime. The bytes are what refuses, on either platform.
+        # The output is what is published, so it is the file hashed here; the
+        # source was hashed once by the build's copy pass (beta 74) and a
+        # rewrite of it after the build is another program's doing, which the
+        # published output does not depend on.
         for frozen in (False, True):
-            for name in ("output", "source"):
-                with self.subTest(windows=frozen, file=name):
-                    self.setUp()
-                    with contextlib.ExitStack() as stack:
-                        if frozen:
-                            stack.enter_context(windows_change_time())
-                        rewrite_same_size_keep_mtime(getattr(self, name), 128)
-                        with self.assertRaisesRegex(
-                                self.tool.ProjectError,
-                                "build files changed during receipt verification"):
-                            self.verify()
+            with self.subTest(windows=frozen):
+                self.setUp()
+                with contextlib.ExitStack() as stack:
+                    if frozen:
+                        stack.enter_context(windows_change_time())
+                    rewrite_same_size_keep_mtime(self.output, 128)
+                    with self.assertRaisesRegex(
+                            self.tool.ProjectError,
+                            "build files changed during receipt verification"):
+                        self.verify()
 
     def during_verify(self, action):
         """Run ``action`` inside verify_written, after its first check, before its last."""
@@ -776,7 +785,7 @@ class BuildReceiptChangeTimeTests(_BuildFixture):
         calls, counting = self.whole_file_hashes()
         with self.during_verify(touch_both), counting:
             self.assertTrue(self.verify()["written_spans_verified"])
-        self.assertEqual(len(calls), 2, "the final recheck hashes source and output once")
+        self.assertEqual(len(calls), 1, "the final recheck hashes the output once")
 
     def test_receipt_check_still_refuses_new_bytes_while_verifying(self) -> None:
         for frozen in (False, True):

@@ -2760,6 +2760,10 @@ class BuildPanel(QWidget):
         next_step = "Open this copy in xemu, or use Play latest disc in xemu in the studio."
         if not tt.is_disc_image(target):
             next_step = "This is an executable copy. Build from a game disc to make a playable disc image."
+        from mod_editor.core.build_feedback import timing_summary
+        timing = timing_summary(receipt.get("stage_seconds"))
+        if timing:
+            contents += "\n" + timing
         body = f"{target}\n\n{message}\n\n{contents}\n\nYour original game disc was not changed.\n\n{next_step}"
         self._last_build_summary = (self._requested_build_summary or f"2K5 Mod Studio {BUILD_RELEASE_TAG}") + f"\n\n{title}\n{body}"
         self.copy_summary_button.setEnabled(True)

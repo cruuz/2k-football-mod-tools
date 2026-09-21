@@ -264,6 +264,24 @@ _FIX_HINTS: tuple[tuple[str, str], ...] = (
 )
 
 
+def _record_failed_operation(label: str, message: str) -> None:
+    """Append a failed background operation to errors.log, never raising.
+
+    Beta 74. A build or import that fails is caught and shown in the
+    "Couldn't finish that" dialog, so the crash hook never saw it and
+    errors.log stayed empty for exactly the failures people report; Coach
+    Edwards' "The texture receipt is missing" (2026-09-20) existed only as a
+    phone photo. The entry carries the task's own label and the Studio
+    version, so "share the error" can mean sharing a file.
+    """
+
+    try:
+        from mod_editor.gui import crash_report
+        crash_report.record_operation(label, message, "2K5 Mod Studio")
+    except Exception:  # noqa: BLE001 - logging must never block the dialog
+        pass
+
+
 def friendly_fix_hint(message: str) -> str | None:
     """Return the plain next-step for a known refusal, or None."""
 
@@ -8040,6 +8058,10 @@ class StudioMainWindow(QMainWindow):
             refitted = tuple(getattr(result, "refitted", ()) or ())
             if refitted:
                 extra += "\n\n" + "\n".join(refitted)
+            from mod_editor.core.build_feedback import timing_summary
+            timing = timing_summary(getattr(result, "stage_seconds", None))
+            if timing:
+                extra += "\n\n" + timing
             QMessageBox.information(
                 self,
                 "Modded XISO ready",
@@ -8148,6 +8170,7 @@ class StudioMainWindow(QMainWindow):
             )
 
         def error(message: str) -> None:
+            _record_failed_operation(label, message)
             if on_error is not None:
                 on_error(message)
             self._set_status(f"Could not finish: {message}")

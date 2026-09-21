@@ -69,8 +69,21 @@ def _checked_rows(session, paths, by_id, *, selected=None):
     rows.sort(key=lambda row: row['asset_id'])
     if selected is not None:
         row = next((r for r in rows if r['asset_id'] == selected), None)
+        # A capped "needs refit" WITH a budget is the interactive quick check
+        # giving up on a measured overflow, NOT a measurement: Build runs the
+        # same ladder uncapped and auto-refits what cannot fit
+        # (auto_refit_group), so a solid-white sock the quick check rejected
+        # fits at 16x16 at Build. Refusing the import here dead-ended exactly
+        # that case (Coach Edwards, 2026-09-20: "No fitting smaller size was
+        # established... Simplify the artwork"), so import stages it like a
+        # fit-pending item. A row WITHOUT a budget is a structural refusal
+        # (the wrapper, the loader's scratch allowance) that a smaller or
+        # flatter refit cannot address, so Build would refuse it with the same
+        # words after minutes of building; that is raised here, at once, as is
+        # every uncapped needs-refit from Refit equipment.
         if row is not None and row.get('fit_status') == 'needs refit':
-            _raise_fit(row)
+            if not capped or row.get('budget') is None:
+                _raise_fit(row)
     return rows
 
 
@@ -232,9 +245,22 @@ def stage_equipment_import(session, asset, path, *, independent=None, scale=1, s
         row = next(r for r in checked if r["asset_id"] == asset.asset_id)
         from .equipment_reporting import fit_caption
         fits = sorted({fit_caption(r) for r in checked if r["asset_id"] in consumer_ids})
-        message = (f"Equipment artwork {row['fit_summary']}." if row.get("fit_status") == "fits" else
-                   "Equipment artwork staged. The quick check ran out of time, so Build finishes "
-                   "its fit and refits it only if it cannot fit.")
+        if row.get("fit_status") == "fits":
+            message = f"Equipment artwork {row['fit_summary']}."
+        elif row.get("fit_status") == "fit pending":
+            message = ("Equipment artwork staged. The quick check ran out of time, so Build finishes "
+                       "its fit and refits it only if it cannot fit.")
+        else:
+            # Capped "needs refit": the quick check could not fit it, but Build's
+            # uncapped search will and refits it automatically. Do not tell the
+            # user to simplify art that Build can fit.
+            message = ("Equipment artwork staged. It does not fit at full size in the quick check, so Build "
+                       "refits it automatically and lists it when the build finishes.")
+            suggestion = row.get("suggestion")
+            if isinstance(suggestion, dict) and suggestion.get("width") and suggestion.get("height"):
+                message += (f" The quick check found that {suggestion['width']} x {suggestion['height']} at "
+                            f"{suggestion.get('colours', '?')} colours fits; Refit equipment in Build makes "
+                            "that choice yours instead of automatic.")
         if row.get("palette_method") == "preserved_retail":
             message += " Retail palette and distance images preserved exactly."
         if len(fits) > 1:

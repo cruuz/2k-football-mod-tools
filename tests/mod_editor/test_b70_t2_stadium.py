@@ -27,8 +27,14 @@ class IdentityTests(unittest.TestCase):
         self.assertEqual(w.stadium_package_identity('0xdeadbeef'), {})
 
 
+# The Stadium writer binds CACHE/derived/stadium-studio-v1 with resolve(strict=True),
+# which only exists once Stadium Studio has been opened on this disc. Indexing the
+# disc for a build (the retail equipment gate does this) creates the index this guard
+# checked but not that derived cache, so the guard must require it too or the test
+# errors instead of skipping on a machine that has only ever built, never opened Stadium.
 @unittest.skipUnless(native.Uc and (RETAIL/'default.xbe').is_file() and
-                     (CACHE/'indexes/nfl2k5_resource_chunks_v2.json').is_file(),
+                     (CACHE/'indexes/nfl2k5_resource_chunks_v2.json').is_file() and
+                     (CACHE/'derived/stadium-studio-v1').is_dir(),
                      'Requires private retail files, inventory, Stadium cache and Unicorn')
 class RetailBannerTests(unittest.TestCase):
     @classmethod

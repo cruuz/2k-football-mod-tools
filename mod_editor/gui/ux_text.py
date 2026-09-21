@@ -125,6 +125,7 @@ _FIX_HINTS: tuple[tuple[str, str], ...] = (
     ("target must not be the source", "Fix: choose a different output file."),
     ("neither retail nor this patch", "Fix: start from a disc this patch recognises, or turn that change off."),
     ("free space", "Fix: free up room where the copy is being written, or choose another folder."),
+    ("inside OneDrive", "Fix: choose a folder OneDrive does not sync, such as a new folder directly on your C: drive."),
     ("Permission denied", "Fix: choose a folder you can write to."),
     ("not a regular file", "Fix: choose the disc file itself."),
     ("no longer on this computer", "Fix: open the file you want to build from, then build again."),
@@ -191,6 +192,14 @@ def show_operation_error(parent: QWidget | None, operation: str, message: str,
                          *, source_unchanged: bool = True) -> None:
     """One error dialog shape for every page: plain title, real cause, next step, full text."""
 
+    # Every caught failure the user sees also lands in errors.log with the
+    # Studio version, so a report can be a file rather than a phone photo.
+    # Logging must never be the reason a dialog fails to appear.
+    try:
+        from mod_editor.gui import crash_report
+        crash_report.record_operation(operation, message, "2K5 Mod Studio")
+    except Exception:  # noqa: BLE001
+        pass
     hint = fix_hint(message)
     lines = [f"Couldn't {operation}."]
     detail = plain_error(message)

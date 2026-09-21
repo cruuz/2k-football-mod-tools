@@ -922,7 +922,15 @@ class Nfl2k5BuildServiceTests(unittest.TestCase):
                     )
                 self.assertEqual([call[2] for call in runner.calls], ["build", "verify"])
                 self.assertFalse(fixture.output.exists())
-                self.assertFalse(fixture.stage_paths())
+                # Beta 74: the builder wrote a manifest and receipts, so a
+                # failed safety check keeps them beside the output for
+                # diagnosis (the staged disc is dropped) and nothing stays
+                # under the live stage name.
+                kept = [p for p in fixture.stage_paths() if "-failed-" in p.name]
+                self.assertEqual(len(kept), 1, kept)
+                self.assertTrue((kept[0] / "build-manifest.json").is_file())
+                self.assertFalse((kept[0] / "modded.xiso").exists())
+                self.assertEqual([p for p in fixture.stage_paths() if "-failed-" not in p.name], [])
 
     def test_interruption_cleans_staging_without_publishing(self) -> None:
         with tempfile.TemporaryDirectory(prefix="2k5-build-service-test-") as temporary:
@@ -946,7 +954,8 @@ class Nfl2k5BuildServiceTests(unittest.TestCase):
             self.assertEqual(
                 fixture.output.read_bytes(), b"another process owns this file"
             )
-            self.assertFalse(fixture.stage_paths())
+            # The receipts of the refused build are kept (beta 74); no live stage remains.
+            self.assertEqual([p for p in fixture.stage_paths() if "-failed-" not in p.name], [])
 
     def test_existing_destination_is_refused_before_backend_runs(self) -> None:
         with tempfile.TemporaryDirectory(prefix="2k5-build-service-test-") as temporary:

@@ -395,8 +395,13 @@ GLOVES = ("None", "Type 1", "Type 2", "Type 3", "Type 4", "Team 1", "Team 2", "T
 WRISTS = ("None", "Single White", "Double White", "Single Black", "Double Black", "Neoprene Small",
           "Neoprene Large", "Elastic Small", "Elastic Large", "Single Team", "Double Team",
           "Taped Small", "Taped Large", "Quarterback")
+# The game's own order, from the option table default.xbe keeps at 0x555BC4 (file 0x54B0E4): sixteen
+# entries, which is exactly what the two 4-bit elbow fields can hold.  Until beta 74 this list skipped
+# White Turf, Black Turf and Taped, so "High White" wrote the value the game shows as White Turf and
+# the three real High pads could not be chosen at all (X_Ray, #2k5-ideas, 2026-09-20).
 ELBOWS = ("None", "White", "Black", "White/Black Stripe", "Black/White Stripe", "Black/Team Stripe",
-          "Team", "White/Team Stripe", "Elastic", "Neoprene", "High White", "High Black", "High Team")
+          "Team", "White/Team Stripe", "Elastic", "Neoprene", "White Turf", "Black Turf", "Taped",
+          "High White", "High Black", "High Team")
 SLEEVES = ("None", "White", "Black", "Team")
 TURTLENECKS = SLEEVES
 SHOES = ("Style 1", "Style 2", "Style 3", "Style 4", "Style 5", "Style 6", "Taped")

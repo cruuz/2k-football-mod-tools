@@ -4,7 +4,7 @@ APF 2K8 Mod Studio works from your own legally dumped USA copy of *All-Pro
 Football 2K8* for Xbox 360. The app ships no game images, textures, audio,
 screenshots, extracted archives, or other retail game data.
 
-This guide is for **0.1.0-alpha.96, beta 73**. On Windows, install from the release
+This guide is for **0.1.0-alpha.97, beta 74**. On Windows, install from the release
 Setup.exe. The studio reads your original game and writes a separate modded folder.
 Share the project, which contains your edits; keep game files and private caches local.
 

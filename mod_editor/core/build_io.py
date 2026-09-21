@@ -12,14 +12,19 @@ CHUNK = 8 * 1024 * 1024
 _UNSUPPORTED = {errno.EXDEV, errno.EINVAL, errno.ENOSYS, errno.ENOTSUP}
 
 
-def copy_descriptors(source, target, size, progress=None):
+def copy_descriptors(source, target, size, progress=None, hasher=None):
     """Copy exact bytes with kernel acceleration, falling back only if unsupported.
 
     Explicit offsets preserve descriptor positions on every path. Short copies
     and interrupted system calls are retried; storage failures remain failures.
+
+    With ``hasher`` (a ``hashlib`` object) every source byte is fed to it as it
+    is read, so the build's "unchanged copy" measurement does not read the
+    6 GB source a second time (beta 74). That path reads and writes through
+    userspace instead of ``copy_file_range``; the bytes move once either way.
     """
     copied, last = 0, 0.0
-    accelerated = True
+    accelerated = hasher is None
     while copied < size:
         count = min(CHUNK, size - copied)
         try:
@@ -28,6 +33,10 @@ def copy_descriptors(source, target, size, progress=None):
                     offset_src=copied, offset_dst=copied)
             else:
                 data = platform_compat.pread(source, count, copied)
+                if not data:
+                    raise OSError("source image shrank during the copy")
+                if hasher is not None:
+                    hasher.update(data)
                 done = 0
                 while done < len(data):
                     written = platform_compat.pwrite(target, memoryview(data)[done:], copied + done)
@@ -51,9 +60,9 @@ def copy_descriptors(source, target, size, progress=None):
     return copied
 
 
-def copy_image(source, target, progress=None):
+def copy_image(source, target, progress=None, hasher=None):
     with Path(source).open("rb") as src, Path(target).open("xb") as dst:
-        return copy_descriptors(src.fileno(), dst.fileno(), os.fstat(src.fileno()).st_size, progress)
+        return copy_descriptors(src.fileno(), dst.fileno(), os.fstat(src.fileno()).st_size, progress, hasher)
 
 
 class StageProgress:

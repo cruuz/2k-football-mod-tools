@@ -2200,10 +2200,15 @@ def write_image_copy(
             dst = _open_binary(target, os.O_RDWR)
         else:
             dst = _open_binary(target, os.O_RDWR | os.O_CREAT | os.O_EXCL)
+        source_hasher = None
         try:
             if not _consume_source:
                 from .build_io import copy_descriptors
-                copy_descriptors(src, dst, size, report)
+                import hashlib
+                # The source is hashed as it is copied, so the build's measured
+                # outcome never reads it again (beta 74).
+                source_hasher = hashlib.sha256()
+                copy_descriptors(src, dst, size, report, source_hasher)
             report("Writing default.xbe changes", 0, 0)
             ranges: list[tuple[int, int]] = []
             i = 0
@@ -2319,6 +2324,9 @@ def write_image_copy(
     return {
         "schema": WRITE_SCHEMA,
         "container": "xiso",
+        # The SHA-256 of the source as the copy pass read it, or None when the
+        # staged image was consumed in place (beta 74).
+        "source_sha256": source_hasher.hexdigest() if source_hasher is not None else None,
         "arc_table": arc_state,
         "catch_slider": catch_slider_patch.status(after),
         "accel_ramp": accel_ramp_patch.status(after),

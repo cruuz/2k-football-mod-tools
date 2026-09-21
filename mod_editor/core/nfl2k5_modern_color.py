@@ -1157,24 +1157,93 @@ def _worker(args):
     return (settings_id(settings), kind, sha(span)), after.hex(), receipt
 
 
+@lru_cache(maxsize=1)
+def _refit_transform_key():
+    """Digests of every source the refit's bytes depend on; part of each cache key."""
+    paths = ("mod_editor/core/nfl2k5_modern_color.py", "tools/nfl_txtr.py", "tools/nfl_vc_lz_fill.py",
+             "tools/nfl_scne_inventory.py", "tools/nfl_scene_probe.py")
+    return tuple((path, sha((ROOT / path).read_bytes())) for path in paths)
+
+
+def _refit_cache():
+    """The on-disk refit cache, or None when the private cache root is unusable.
+
+    ``NFL2K5_DISABLE_MODERN_COLOR_CACHE=1`` turns it off (tests, tracing).
+    """
+    if os.environ.get("NFL2K5_DISABLE_MODERN_COLOR_CACHE") == "1":
+        return None
+    try:
+        from .nfl2k5_compile_cache import CompileCache
+        from .nfl2k5_source_cache import default_cache_root
+        return CompileCache(default_cache_root() / "modern-colour-refits")
+    except Exception:  # noqa: BLE001 - a cache can never refuse a build
+        return None
+
+
+def _cached_refit(cache, key, span):
+    """A cached (refit span, receipt) for ``key``, or None; the entry is checked, not trusted."""
+    if cache is None:
+        return None
+    record = cache.get(key)
+    if not isinstance(record, dict):
+        return None
+    after, receipt = record.get("after"), record.get("receipt")
+    if not (isinstance(after, bytes) and isinstance(receipt, dict) and len(after) == len(span)
+            and record.get("span_sha256") == sha(span) and record.get("after_sha256") == sha(after)):
+        return None
+    return after, receipt
+
+
 def _refit_fields(spans, *, progress, workers=None, settings=None):
-    """spans: {sha: (outer, span bytes)} -> {sha: (refit span, receipt)}."""
+    """spans: {sha: (outer, span bytes)} -> {sha: (refit span, receipt)}.
+
+    Every distinct span's refit is deterministic in (span bytes, settings,
+    transform sources), so it is kept on disk under the private cache root
+    (beta 74): a second build with the same colour settings replays 390 refits
+    in seconds instead of two and a half minutes on a process pool. A cache
+    entry is used only when its span and result digests match, and the bundle
+    pins in :func:`apply_to_image` still check the whole transformed bundle.
+    """
     say = progress or (lambda message, done, total: None)
-    jobs = [(kind, outer, span.hex(), settings) for kind, outer, span in spans.values()]
+    cache = _refit_cache()
+    keys, results, jobs = {}, {}, []
+    for kind, outer, span in spans.values():
+        key = sha(json.dumps([_refit_transform_key(), settings_id(settings), kind, sha(span)],
+                             sort_keys=True).encode("utf-8"))
+        cached = _cached_refit(cache, key, span)
+        if cached is not None:
+            results[(settings_id(settings), kind, sha(span))] = cached
+        else:
+            keys[(kind, sha(span))] = key
+            jobs.append((kind, outer, span.hex(), settings))
+    hits = len(results)
+    # Longest spans first: the pool's stragglers were its biggest scenes at the
+    # end of the queue (one batch 68 s behind the rest, 2026-09-20).
+    jobs.sort(key=lambda job: len(job[2]), reverse=True)
     count = workers or min(8, max(1, (os.cpu_count() or 2) - 1))
-    results = {}
-    say(f"Modern colour: refitting {len(jobs)} distinct field scenes, bump maps and divot layers", 0, len(jobs))
+    say(f"Modern colour: refitting {len(jobs)} distinct field scenes, bump maps and divot layers"
+        + (f" ({hits} cached)" if hits else ""), 0, len(jobs))
+
+    def keep(key, after_hex, receipt):
+        after = bytes.fromhex(after_hex)
+        results[key] = (after, receipt)
+        if cache is not None:
+            span_sha = key[2]
+            cache.put(keys[(key[1], span_sha)], dict(span_sha256=span_sha, after=after, after_sha256=sha(after),
+                                                    receipt=receipt))
+
     if count > 1 and len(jobs) > 1:
         from concurrent.futures import ProcessPoolExecutor
         with ProcessPoolExecutor(max_workers=count) as pool:
-            for index, (key, after_hex, receipt) in enumerate(pool.map(_worker, jobs, chunksize=2)):
-                results[key] = (bytes.fromhex(after_hex), receipt)
+            for index, (key, after_hex, receipt) in enumerate(pool.map(_worker, jobs, chunksize=1)):
+                keep(key, after_hex, receipt)
                 say(f"Modern colour: {index + 1} of {len(jobs)} field scenes refit", index + 1, len(jobs))
     else:
         for index, job in enumerate(jobs):
             key, after_hex, receipt = _worker(job)
-            results[key] = (bytes.fromhex(after_hex), receipt)
+            keep(key, after_hex, receipt)
             say(f"Modern colour: {index + 1} of {len(jobs)} field scenes refit", index + 1, len(jobs))
+    _refit_fields.last_hits = hits  # read by apply_to_image for the receipt
     return results
 
 
@@ -1211,7 +1280,8 @@ def apply_to_image(target, *, progress=None, workers=None, settings=None, source
     receipt = dict(schema=RECEIPT_SCHEMA, settings=settings, settings_sha256=settings_id(settings),
                    state="applied (custom)" if is_custom(settings) else "applied",
                    label=LABEL, runtime_witnessed=False, bundles=len(pins["bundles"]), already_applied=len(done),
-                   rewritten=0, distinct_field_refits=len(field_cache), edits={}, bundle_pins={})
+                   rewritten=0, distinct_field_refits=len(field_cache),
+                   cached_field_refits=(getattr(_refit_fields, "last_hits", 0) if spans else 0), edits={}, bundle_pins={})
     for pin in done:
         receipt["bundle_pins"][pin["name"]] = deepcopy(pin)
     # All refits above finish before opening the output for writes. Unfit spans
