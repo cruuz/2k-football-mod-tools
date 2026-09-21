@@ -12,6 +12,8 @@ import hashlib
 import io
 import os
 from pathlib import Path
+import re
+import subprocess
 import sys
 import tarfile
 import tempfile
@@ -163,8 +165,8 @@ class PlanTests(unittest.TestCase):
 
     def _assets(self) -> dict[str, bytes]:
         return {
-            "2K5-Mod-Studio-1.0.0rc101-Setup.exe": b"exe",
-            "2K5-Mod-Studio-1.0.0rc101-Setup.exe.sha256": b"x",
+            "2K5-Mod-Studio-1.0.0rc102-Setup.exe": b"exe",
+            "2K5-Mod-Studio-1.0.0rc102-Setup.exe.sha256": b"x",
             "2K5-Mod-Studio-v1.0-RC100-2026-09-09.tar.gz": b"tgz",
             "2K5-Mod-Studio-v1.0-RC100-2026-09-09.tar.gz.sha256": b"x",
             "APF-2K8-Mod-Studio-0.9.0-Setup.exe": b"apf",
@@ -178,7 +180,7 @@ class PlanTests(unittest.TestCase):
         self.assertEqual(tar.asset.name, "2K5-Mod-Studio-v1.0-RC100-2026-09-09.tar.gz")
         self.assertEqual(tar.sidecar.name, tar.asset.name + ".sha256")
         win = U.plan_update(document, self.windows)
-        self.assertEqual(win.asset.name, "2K5-Mod-Studio-1.0.0rc101-Setup.exe")
+        self.assertEqual(win.asset.name, "2K5-Mod-Studio-1.0.0rc102-Setup.exe")
         self.assertEqual(win.sidecar.name, win.asset.name + ".sha256")
         self.assertEqual(win.tag, "beta-99")
 
@@ -378,7 +380,7 @@ class WindowsApplyTests(unittest.TestCase):
             (base / "runtime" / "pythonw.exe").write_bytes(b"MZ")
             (base / "app").mkdir()
             install = U.detect_install(base / "app", platform="win32")
-            installer = Path(tmp).resolve() / "dl" / "2K5-Mod-Studio-1.0.0rc101-Setup.exe"
+            installer = Path(tmp).resolve() / "dl" / "2K5-Mod-Studio-1.0.0rc102-Setup.exe"
             installer.parent.mkdir()
             installer.write_bytes(b"MZ")
             plan = U.UpdatePlan("2k5", "beta-99", install, U.ReleaseAsset(installer.name, HOST + installer.name, 2), None)
@@ -395,7 +397,7 @@ class WindowsApplyTests(unittest.TestCase):
         import build_windows_installer as B  # noqa: E402
 
         with tempfile.TemporaryDirectory() as tmp:
-            script = B.render_nsis(B.PRODUCTS["2k5"], "1.0.0rc101", Path(tmp).resolve(), None, Path(tmp).resolve())
+            script = B.render_nsis(B.PRODUCTS["2k5"], "1.0.0rc102", Path(tmp).resolve(), None, Path(tmp).resolve())
         self.assertIn('!include "FileFunc.nsh"', script)
         self.assertIn('${GetOptions} $R0 "/WAITPID=" $R1', script)
         self.assertIn("kernel32::WaitForSingleObject", script)
@@ -506,6 +508,51 @@ class BannerTests(unittest.TestCase):
         self.assertEqual((self.root / "mod_editor" / "__main__.py").read_text(), "print('old')\n")
         banner.deleteLater()
 
+    def _release_files(self) -> dict[str, bytes]:
+        name = "2K5-Mod-Studio-v1.0-RC100-2026-09-09.tar.gz"
+        payload = _make_tarball("2K5-Mod-Studio-v1.0-RC100-2026-09-09", RELEASE_FILES)
+        return {name: payload, name + ".sha256": _sidecar(name, payload)}
+
+    def test_the_window_is_asked_about_unsaved_work_before_anything_is_spawned(self) -> None:
+        # The installer waits for this process to exit, so the question has to
+        # be answered before the hand-off, not underneath a banner that has
+        # already said the studio is closing.
+        window = _ParentWindow()
+        banner = self._banner()
+        banner.setParent(window)
+        banner.show_status(self._status(self._release_files()))
+        order: list[str] = []
+        answered = window.prepare_for_update_quit
+
+        def watched(proceed):
+            order.append("asked")
+            answered(proceed)
+
+        window.prepare_for_update_quit = watched
+        with unittest.mock.patch.object(self.update_ui.self_update, "run_update") as run:
+            run.side_effect = lambda *a, **k: order.append("ran")
+            self.assertTrue(banner.start_update())
+            self.assertTrue(banner.wait_idle())
+        self.assertEqual(order, ["asked", "ran"])
+        self.assertEqual(window.asked, 1)
+        banner.setParent(None)
+        banner.deleteLater()
+        window.deleteLater()
+
+    def test_cancelling_the_unsaved_question_spawns_nothing(self) -> None:
+        window = _ParentWindow(answer=False)
+        banner = self._banner()
+        banner.setParent(window)
+        banner.show_status(self._status(self._release_files()))
+        with unittest.mock.patch.object(self.update_ui.self_update, "run_update") as run:
+            self.assertFalse(banner.start_update())
+        run.assert_not_called()
+        self.assertEqual(window.asked, 1)
+        self.assertTrue(banner.update_button.isEnabled())
+        banner.setParent(None)
+        banner.deleteLater()
+        window.deleteLater()
+
     def test_declining_the_confirmation_does_nothing(self) -> None:
         name = "2K5-Mod-Studio-v1.0-RC100-2026-09-09.tar.gz"
         banner = self._banner()
@@ -519,6 +566,271 @@ class BannerTests(unittest.TestCase):
 
 
 import unittest.mock  # noqa: E402  (used by the apply tests)
+
+
+def _installer_builder():
+    sys.path.insert(0, str(REPO / "packaging" / "windows"))
+    import build_windows_installer as B  # noqa: E402
+
+    return B
+
+
+class InstallerReplacesTheTreeTests(unittest.TestCase):
+    """The installer must replace the installed trees, not merge into them.
+
+    ``File /r`` overwrites what it ships and removes nothing else, so an update
+    used to leave the previous release's ``__pycache__`` behind. With every
+    staged file's mtime flattened to one constant that every release shared,
+    CPython read that stale bytecode instead of the new source and the studio
+    came back reporting the version it had just replaced.
+    """
+
+    def _script(self, product: str = "2k5") -> str:
+        B = _installer_builder()
+        with tempfile.TemporaryDirectory() as tmp:
+            return B.render_nsis(B.PRODUCTS[product], "1.0.0rc102",
+                                 Path(tmp).resolve(), None, Path(tmp).resolve())
+
+    def test_the_install_section_clears_both_trees_before_extracting(self) -> None:
+        for product in ("2k5", "apf"):
+            with self.subTest(product=product):
+                section = self._script(product).split('Section "Install"', 1)[1]
+                section = section.split("SectionEnd", 1)[0]
+                first_file = section.index("File /r ")
+                self.assertLess(section.index(r'RMDir /r "$INSTDIR\app"'), first_file)
+                self.assertLess(section.index(r'RMDir /r "$INSTDIR\runtime"'), first_file)
+
+    def test_the_uninstaller_still_removes_only_what_it_created(self) -> None:
+        # The delete above must not have been copied out of the Uninstall
+        # section: that one is still the only place $INSTDIR itself goes.
+        section = self._script().split('Section "Uninstall"', 1)[1]
+        self.assertIn(r'RMDir "$INSTDIR"', section)
+        self.assertNotIn(r'RMDir /r "$INSTDIR"' + "\n", section)
+
+
+class SourceDateEpochTests(unittest.TestCase):
+    """Every release gets its own stamp, and the same version always its own."""
+
+    def test_each_version_gets_a_different_instant(self) -> None:
+        B = _installer_builder()
+        versions = ("1.0.0rc99", "1.0.0rc100", "1.0.0rc101", "1.0.0rc102", "0.9.0")
+        stamps = {version: B.source_date_epoch(version) for version in versions}
+        self.assertEqual(len(set(stamps.values())), len(versions))
+
+    def test_one_version_always_rebuilds_to_the_same_instant(self) -> None:
+        B = _installer_builder()
+        self.assertEqual(B.source_date_epoch("1.0.0rc101"), B.source_date_epoch("1.0.0rc101"))
+
+    def test_no_stamp_is_in_the_future(self) -> None:
+        B = _installer_builder()
+        for version in ("1.0.0rc101", "1.0.0rc102", "0.9.0", "2.0"):
+            stamp = B.source_date_epoch(version)
+            self.assertLessEqual(stamp, B.SOURCE_DATE_EPOCH_ANCHOR)
+            self.assertGreater(stamp, B.SOURCE_DATE_EPOCH_ANCHOR - B.SOURCE_DATE_EPOCH_WINDOW)
+
+    def test_the_whole_staged_tree_is_flattened_to_it(self) -> None:
+        B = _installer_builder()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp).resolve() / "work"
+            (root / "app" / "mod_editor").mkdir(parents=True)
+            (root / "app" / "mod_editor" / "__init__.py").write_text("x\n")
+            (root / "runtime").mkdir()
+            (root / "runtime" / "python.exe").write_bytes(b"MZ")
+            stamp = B.source_date_epoch("1.0.0rc102")
+            B.normalise_mtimes(root, stamp)
+            for path in [root, *root.rglob("*")]:
+                self.assertEqual(int(path.stat().st_mtime), stamp, path)
+
+
+class StaleBytecodeTests(unittest.TestCase):
+    """Why a shared stamp broke the update, in one interpreter and no Windows.
+
+    ``mod_editor/core/update_check.py`` is 8334 bytes in every release from
+    beta 68 to beta 74, because only the tag inside ``BUILD_RELEASE_TAG``
+    changes and every published tag is the same length. A timestamp ``.pyc``
+    is validated on the source's mtime and size alone, so a release that
+    landed with its predecessor's mtime was invisible to the import system.
+    """
+
+    OLD = 'TAG = "beta-73"\n'
+    NEW = 'TAG = "beta-74"\n'
+
+    def _import_tag(self, folder: Path, text: str, stamp: int) -> str:
+        source = folder / "pinned.py"
+        source.write_text(text, encoding="utf-8")
+        os.utime(source, (stamp, stamp))
+        environment = dict(os.environ)
+        environment.pop("PYTHONDONTWRITEBYTECODE", None)
+        code = ("import sys; sys.path.insert(0, sys.argv[1]); "
+                "import pinned; sys.stdout.write(pinned.TAG)")
+        result = subprocess.run([sys.executable, "-c", code, str(folder)],
+                                capture_output=True, text=True, env=environment, check=True)
+        return result.stdout.strip()
+
+    def test_the_two_releases_are_the_same_size(self) -> None:
+        self.assertEqual(len(self.OLD), len(self.NEW))
+
+    def test_a_same_size_same_stamp_rewrite_keeps_the_old_bytecode(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp).resolve()
+            shared = 1785110400  # the one constant every release used to share
+            self.assertEqual(self._import_tag(folder, self.OLD, shared), "beta-73")
+            self.assertTrue((folder / "__pycache__").is_dir())
+            # Exactly what the merged install produced: new source on disk,
+            # previous release's bytecode still considered valid.
+            self.assertEqual(self._import_tag(folder, self.NEW, shared), "beta-73")
+
+    def test_a_per_release_stamp_lets_the_new_source_win(self) -> None:
+        B = _installer_builder()
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp).resolve()
+            self.assertEqual(
+                self._import_tag(folder, self.OLD, B.source_date_epoch("1.0.0rc100")), "beta-73")
+            self.assertEqual(
+                self._import_tag(folder, self.NEW, B.source_date_epoch("1.0.0rc101")), "beta-74")
+
+    def test_the_release_tag_can_never_change_the_module_size(self) -> None:
+        # This is why update_check.py was the guaranteed casualty rather than
+        # an unlucky one, and why the stamp had to carry the difference. The
+        # live tag can itself now be a longer hotfix tag (beta-74.1 onward),
+        # so this compares same-length samples against each other rather
+        # than against the live file, whose own tag length is no longer fixed.
+        text = (REPO / "mod_editor" / "core" / "update_check.py").read_text(encoding="utf-8")
+        lengths = set()
+        for tag in ("beta-68", "beta-73", "beta-74", "beta-99"):
+            rewritten = re.sub(r'BUILD_RELEASE_TAG = "[^"]*"',
+                               f'BUILD_RELEASE_TAG = "{tag}"', text, count=1)
+            lengths.add(len(rewritten.encode("utf-8")))
+        self.assertEqual(len(lengths), 1)
+
+
+def _ParentWindow(answer: bool = True):
+    """A window that answers the banner's prepare_for_update_quit contract."""
+
+    from PyQt5.QtWidgets import QMainWindow
+
+    class ParentWindow(QMainWindow):
+        def __init__(self) -> None:
+            super().__init__()
+            self.asked = 0
+
+        def prepare_for_update_quit(self, proceed) -> None:
+            self.asked += 1
+            if answer:
+                proceed()
+
+    return ParentWindow()
+
+
+class StudioUpdateQuitTests(unittest.TestCase):
+    """The real 2K5 window: asked once, then closes with nothing in the way."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        from PyQt5.QtWidgets import QApplication
+        cls.app = QApplication.instance() or QApplication([])
+
+    def _window(self, folder: Path):
+        # The same lean construction tests/mod_editor/test_beta69_studios_offscreen.py
+        # uses: metadata-only catalogs and no disc.
+        from mod_editor.gui.studio_qt import StudioMainWindow, BrowseOnlyFacade
+        from mod_editor.core import nfl2k5_uniform_catalog as uniform_module
+        from mod_editor.core.nfl2k5_uniform_catalog import Nfl2k5UniformCatalog
+        from mod_editor.core.nfl2k5_extended_visual_catalog import (
+            Nfl2k5ExtendedVisualCatalog, VisualReportPaths,
+        )
+        with unittest.mock.patch.object(uniform_module, "EXPECTED_SET_COUNT", 0):
+            return StudioMainWindow(
+                facade=BrowseOnlyFacade(),
+                uniform_catalog=Nfl2k5UniformCatalog((), (), folder / "catalog.json"),
+                extended_visual_catalog=Nfl2k5ExtendedVisualCatalog((), VisualReportPaths()),
+                offer_recovery=False,
+            )
+
+    def test_a_dirty_workspace_is_asked_once_and_then_closes(self) -> None:
+        from PyQt5.QtCore import QSettings
+        from PyQt5.QtGui import QCloseEvent
+        with tempfile.TemporaryDirectory(prefix="b741-studio-") as tmp:
+            QSettings.setPath(QSettings.IniFormat, QSettings.UserScope, tmp)
+            window = self._window(Path(tmp).resolve())
+            try:
+                window._workspace_dirty = True
+                asked: list[str] = []
+
+                def answer(context: str) -> str:
+                    asked.append(context)
+                    return "discard"
+
+                window._prompt_unsaved_decision = answer  # type: ignore[assignment]
+                went: list[bool] = []
+                window.prepare_for_update_quit(lambda: went.append(True))
+                # Asked once, before the update starts, and answering it is
+                # what lets the update start at all.
+                self.assertEqual(len(asked), 1)
+                self.assertEqual(went, [True])
+                self.assertTrue(window._allow_close)
+
+                def never(context: str) -> str:
+                    raise AssertionError(f"asked a second time: {context}")
+
+                window._prompt_unsaved_decision = never  # type: ignore[assignment]
+                # The close that follows the hand-off asks nothing: not about
+                # unsaved work, not about a blocking operation. In beta 74 this
+                # is where the save prompt appeared, underneath a banner that
+                # had already said the studio was closing.
+                window._workspace_dirty = True
+                window._blocking = True
+                event = QCloseEvent()
+                window.closeEvent(event)
+                self.assertTrue(event.isAccepted())
+            finally:
+                window._allow_close = True
+                window.close()
+                window.deleteLater()
+                self.app.processEvents()
+
+    def test_the_banner_finds_the_hook_on_the_studio_it_lives_in(self) -> None:
+        # The banner asks self.window(), so a reparenting that put it outside
+        # the main window would silently go back to spawning first and asking
+        # afterwards. Nothing else would fail.
+        with tempfile.TemporaryDirectory(prefix="b741-wiring-") as tmp:
+            from PyQt5.QtCore import QSettings
+            QSettings.setPath(QSettings.IniFormat, QSettings.UserScope, tmp)
+            window = self._window(Path(tmp).resolve())
+            try:
+                banner = window._update_banner
+                self.assertIs(banner.window(), window)
+                self.assertTrue(callable(getattr(banner.window(), "prepare_for_update_quit", None)))
+            finally:
+                window._allow_close = True
+                window.close()
+                window.deleteLater()
+                self.app.processEvents()
+
+    def test_a_busy_studio_refuses_the_update_instead_of_starting_one(self) -> None:
+        # The drain fences that defer a close are left alone; an update that
+        # would meet one is never started, so the installer never waits on a
+        # studio that cannot close.
+        with tempfile.TemporaryDirectory(prefix="b741-busy-") as tmp:
+            from PyQt5.QtCore import QSettings
+            QSettings.setPath(QSettings.IniFormat, QSettings.UserScope, tmp)
+            window = self._window(Path(tmp).resolve())
+            try:
+                window._blocking = True
+                went: list[bool] = []
+                with unittest.mock.patch(
+                    "mod_editor.gui.studio_qt.QMessageBox.information"
+                ) as told:
+                    window.prepare_for_update_quit(lambda: went.append(True))
+                self.assertEqual(went, [])
+                self.assertFalse(window._allow_close)
+                told.assert_called_once()
+            finally:
+                window._allow_close = True
+                window.close()
+                window.deleteLater()
+                self.app.processEvents()
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -126,6 +126,10 @@ _FIX_HINTS: tuple[tuple[str, str], ...] = (
     ("neither retail nor this patch", "Fix: start from a disc this patch recognises, or turn that change off."),
     ("free space", "Fix: free up room where the copy is being written, or choose another folder."),
     ("inside OneDrive", "Fix: choose a folder OneDrive does not sync, such as a new folder directly on your C: drive."),
+    # The Studio's own .studio-build-* folder is named for the user by what the
+    # file in it was for, never by its random temporary path, so the hint is
+    # about the build rather than about a file they could go and look for.
+    ("private copy of the disc", "Fix: build again. If it happens twice, copy this message and share it on the Discord."),
     ("Permission denied", "Fix: choose a folder you can write to."),
     ("not a regular file", "Fix: choose the disc file itself."),
     ("no longer on this computer", "Fix: open the file you want to build from, then build again."),

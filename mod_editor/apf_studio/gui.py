@@ -22074,6 +22074,23 @@ class ApfStudioMainWindow(QMainWindow):
         self._allow_close = True
         self.close()
 
+    def prepare_for_update_quit(self, proceed: Callable[[], None]) -> None:
+        """Settle unsaved work before an update is downloaded.
+
+        The same contract the 2K5 studio answers: the Windows installer waits
+        for this process to exit before it writes a file, so the question is
+        asked before the download starts rather than underneath a banner that
+        has already said the studio is closing. Answering sets ``_allow_close``,
+        which ``closeEvent`` takes as the decision; cancelling never calls
+        ``proceed`` and no update starts.
+        """
+
+        def go(_discarded: bool) -> None:
+            self._allow_close = True
+            proceed()
+
+        self._continue_after_unsaved("Updating Mod Studio", go)
+
     def closeEvent(self, event: QCloseEvent) -> None:
         self._save_ui_state()
         if self._workers:

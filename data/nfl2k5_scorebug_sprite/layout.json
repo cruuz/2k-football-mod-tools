@@ -92,18 +92,18 @@
   },
   "espn_mnf": {
    "box": [
-    1027,
-    0,
-    1098,
-    12
+    1026,
+    1,
+    1097,
+    13
    ]
   },
   "espn_nfl": {
    "box": [
-    1100,
-    0,
-    1171,
-    12
+    1098,
+    1,
+    1169,
+    13
    ]
   },
   "event": {
@@ -2266,9 +2266,10 @@
    "pill",
    "score"
   ],
-  "wing_decay": 65
+  "wing_decay": 65,
+  "brand_filter": "tools/scorebug_sprite/author_default.py --brand-only: exact-area premultiplied box filter, then rows the measured ink band covers by at least 0.4 are divided by their own coverage"
  },
  "layer_order": "increasing-z",
- "sampling": "Cells area-filtered to no larger than the smallest 16:9 HUD footprint; one mip, no minification.",
+ "sampling": "Cells area-filtered to no larger than the smallest 16:9 HUD footprint; one mip, no minification. Watermark cells are area-filtered premultiplied with a coverage curve that keeps the measured ink band's edge rows at full alpha, and are packed with a one-pixel transparent gutter away from the sheet edge.",
  "team_accents": "team_accents.json"
 }
