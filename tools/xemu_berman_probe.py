@@ -203,7 +203,8 @@ def home_slot_name(run: xr.XemuRun) -> str:
     return xr.normalized(xr._ocr_image(image, 7))
 
 
-def quick_game_home(run: xr.XemuRun, pad: xr.Gamepad, out_dir: Path, *, home_team: str, away_team: str = "") -> str:
+def quick_game_home(run: xr.XemuRun, pad: xr.Gamepad, out_dir: Path, *, home_team: str, away_team: str = "",
+                    explore: bool = False):
     """Main Menu -> Quick Game -> Team Select with a chosen HOME team -> coach matchup -> game.
 
     The right trigger cycles the right slot, which is the home team; the
@@ -246,6 +247,8 @@ def quick_game_home(run: xr.XemuRun, pad: xr.Gamepad, out_dir: Path, *, home_tea
     text = wait_text(run, ("TEAM SELECT", "TEAMSELECT", "CURRENT UNIFORM", "PRESS L R"), 40.0,
                      "team-select", pad=pad)
     run.screenshot("03-team-select", out_dir)
+    if explore:
+        return explore_team_select(run, pad, out_dir)
     slot = cycle_slot_to(run, pad, HOME_SLOT, home_team, "home")
     text = slot
     if away_team:
@@ -346,6 +349,34 @@ def watch(run: xr.XemuRun, out_dir: Path, port: int, minutes: float) -> dict:
                 saw_motion=seen_motion_at is not None, text=seen_text[:300], cpu=samples)
 
 
+def explore_team_select(run: xr.XemuRun, pad: xr.Gamepad, out_dir: Path) -> list[dict]:
+    """Diagnostic: from Team Select, press each control once and record both slots.
+
+    Which slot the triggers act on, and what the D-pad does, is not documented
+    anywhere the probe can read; forty pulses that changed nothing (2026-09-20)
+    cost more than one look at the frames after each press.
+    """
+    steps = [("start", None), ("LT", ("LT", True)), ("RT", ("RT", True)), ("LEFT", ("LEFT", False)),
+             ("LEFT-RT", ("RT", True)), ("LEFT-LT", ("LT", True)), ("RIGHT", ("RIGHT", False)),
+             ("RIGHT-RIGHT", ("RIGHT", False)), ("RIGHT-RIGHT-RT", ("RT", True)), ("LEFT-back", ("LEFT", False)),
+             ("UP", ("UP", False)), ("UP-RT", ("RT", True)), ("DOWN", ("DOWN", False)), ("DOWN-RT", ("RT", True))]
+    rows = []
+    for index, (name, press) in enumerate(steps):
+        if press is not None:
+            button, trigger = press
+            if trigger:
+                tap(pad, button, secs=xr.TRIGGER_PULSE, settle=1.2)
+            else:
+                tap(pad, button, settle=1.2)
+        run.screenshot(f"e{index:02d}-{name}", out_dir)
+        away, away_team = read_slot(run, AWAY_SLOT, tries=2)
+        home, home_team = read_slot(run, HOME_SLOT, tries=2)
+        row = dict(step=name, away=away, away_team=away_team, home=home, home_team=home_team)
+        log(f"explore {name}: away {away!r} -> {away_team or '?'} | home {home!r} -> {home_team or '?'}")
+        rows.append(row)
+    return rows
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--xiso", required=True)
@@ -355,6 +386,8 @@ def main() -> int:
     ap.add_argument("--away-team-slot", default="", help="with --home-team: also cycle the left slot to this away team")
     ap.add_argument("--minutes", type=float, default=8.0)
     ap.add_argument("--label", default="")
+    ap.add_argument("--explore-team-select", action="store_true",
+                    help="diagnostic: press each Team Select control once, record both slots, stop")
     args = ap.parse_args()
     xiso = Path(args.xiso)
     run_dir = Path(args.run_dir)
@@ -377,6 +410,11 @@ def main() -> int:
         run.start_xemu(xiso)
         log(f"xemu up on Xvfb :{display}, gdb tcp::{port}")
         route_started = time.monotonic()
+        if args.explore_team_select:
+            ledger["explore"] = quick_game_home(run, pad, out_dir, home_team="", away_team="", explore=True)
+            ledger["outcome"] = "EXPLORED"
+            ledger["elapsed"] = round(time.monotonic() - route_started, 1)
+            return 0
         if args.home_team:
             ledger["home_team"] = args.home_team.upper()
             if args.away_team_slot:
