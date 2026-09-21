@@ -110,6 +110,15 @@ MOTION_GRACE_SECONDS = 20.0
 #: The name bar on Team Select, in the 1280x720 capture: "AWAY AT HOME" at y 104..132,
 #: the away name in the left slot and the home name in the right slot.
 HOME_SLOT = (690, 104, 960, 132)
+AWAY_SLOT = (330, 104, 600, 132)
+
+
+def slot_name(run: xr.XemuRun, box) -> str:
+    from PIL import ImageEnhance
+    image = run._frame().convert("L").crop(box)
+    image = image.resize((image.width * 4, image.height * 4))
+    image = ImageEnhance.Contrast(image).enhance(2.0)
+    return xr.normalized(xr._ocr_image(image, 7))
 
 
 def home_slot_name(run: xr.XemuRun) -> str:
@@ -127,7 +136,7 @@ def home_slot_name(run: xr.XemuRun) -> str:
     return xr.normalized(xr._ocr_image(image, 7))
 
 
-def quick_game_home(run: xr.XemuRun, pad: xr.Gamepad, out_dir: Path, *, home_team: str) -> str:
+def quick_game_home(run: xr.XemuRun, pad: xr.Gamepad, out_dir: Path, *, home_team: str, away_team: str = "") -> str:
     """Main Menu -> Quick Game -> Team Select with a chosen HOME team -> coach matchup -> game.
 
     The right trigger cycles the right slot, which is the home team; the
@@ -177,10 +186,24 @@ def quick_game_home(run: xr.XemuRun, pad: xr.Gamepad, out_dir: Path, *, home_tea
         pulses += 1
         slot = home_slot_name(run)
     log(f"home slot after {pulses} RT pulses: {slot!r}")
-    run.screenshot("04-team-select-home", out_dir)
     if home_team not in slot:
         raise xr.GateError("team-select", f"{home_team} never read in the home slot; last {slot!r}")
     text = slot
+    if away_team:
+        # The left trigger cycles the left slot, the away team. The crashed
+        # B/PATRIOTS run had a random away team (Redskins) and its repeat did
+        # not; the pairing has to be repeatable to be tested.
+        pulses = 0
+        left = slot_name(run, AWAY_SLOT)
+        while away_team not in left and pulses < 40:
+            tap(pad, "LT", secs=xr.TRIGGER_PULSE, settle=0.7)
+            pulses += 1
+            left = slot_name(run, AWAY_SLOT)
+        log(f"away slot after {pulses} LT pulses: {left!r}")
+        if away_team not in left:
+            raise xr.GateError("team-select", f"{away_team} never read in the away slot; last {left!r}")
+        text = f"{left} AT {slot}"
+    run.screenshot("04-team-select-home", out_dir)
     hold(pad, "START", xr.START_HOLD)
     time.sleep(4.0)
     run.screenshot("05-coach-matchup", out_dir)
@@ -269,6 +292,7 @@ def main() -> int:
     ap.add_argument("--run-dir", required=True)
     ap.add_argument("--away-team", default="FALCONS")
     ap.add_argument("--home-team", default="", help="cycle Team Select until this team is at home")
+    ap.add_argument("--away-team-slot", default="", help="with --home-team: also cycle the left slot to this away team")
     ap.add_argument("--minutes", type=float, default=8.0)
     ap.add_argument("--label", default="")
     args = ap.parse_args()
@@ -295,7 +319,10 @@ def main() -> int:
         route_started = time.monotonic()
         if args.home_team:
             ledger["home_team"] = args.home_team.upper()
-            ledger["team_select"] = quick_game_home(run, pad, out_dir, home_team=args.home_team.upper())
+            if args.away_team_slot:
+                ledger["away_team"] = args.away_team_slot.upper()
+            ledger["team_select"] = quick_game_home(run, pad, out_dir, home_team=args.home_team.upper(),
+                                                    away_team=args.away_team_slot.upper())
         else:
             quick_game_route(run, pad, out_dir, away_team=args.away_team.upper())
         ledger["route_seconds"] = round(time.monotonic() - route_started, 1)
@@ -313,7 +340,7 @@ def main() -> int:
         ledger["shutdown"] = run.shutdown()
         (run_dir / "berman-probe.json").write_text(json.dumps(ledger, indent=1) + "\n",
                                                    encoding="utf-8", newline="\n")
-        print(f"BERMAN_PROBE label={args.label or '-'} home={ledger.get('home_team', '-')} "
+        print(f"BERMAN_PROBE label={args.label or '-'} away={ledger.get('away_team', '?')} home={ledger.get('home_team', '-')} "
               f"outcome={ledger['outcome']} elapsed={ledger.get('elapsed', 0):.0f}s", flush=True)
     return 0 if ledger["outcome"] == "PASS" else 1
 
