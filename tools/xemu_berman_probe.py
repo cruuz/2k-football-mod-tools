@@ -121,6 +121,18 @@ def slot_name(run: xr.XemuRun, box) -> str:
     return xr.normalized(xr._ocr_image(image, 7))
 
 
+def slot_has(slot: str, name: str) -> bool:
+    """The name is in the slot, allowing one OCR miss: "BILLS" read as "BIILS"
+    or "B1LLS" forty pulses running (B/Bills, 2026-09-20) while the longer
+    names read cleanly. Exact substring first, then a close alphabetic token."""
+    if name in slot:
+        return True
+    import difflib
+    tokens = [t for t in re.findall(r"[A-Z0-9]+", slot) if len(t) >= max(3, len(name) - 2)]
+    return any(difflib.SequenceMatcher(None, name, t[-len(name) - 1:]).ratio() >= 0.8
+               or difflib.SequenceMatcher(None, name, t).ratio() >= 0.8 for t in tokens)
+
+
 def home_slot_name(run: xr.XemuRun) -> str:
     """OCR only the right slot of the Team Select name bar: the home team.
 
@@ -181,12 +193,12 @@ def quick_game_home(run: xr.XemuRun, pad: xr.Gamepad, out_dir: Path, *, home_tea
     run.screenshot("03-team-select", out_dir)
     pulses = 0
     slot = home_slot_name(run)
-    while home_team not in slot and pulses < 40:
+    while not slot_has(slot, home_team) and pulses < 40:
         tap(pad, "RT", secs=xr.TRIGGER_PULSE, settle=0.7)
         pulses += 1
         slot = home_slot_name(run)
     log(f"home slot after {pulses} RT pulses: {slot!r}")
-    if home_team not in slot:
+    if not slot_has(slot, home_team):
         raise xr.GateError("team-select", f"{home_team} never read in the home slot; last {slot!r}")
     text = slot
     if away_team:
@@ -195,12 +207,12 @@ def quick_game_home(run: xr.XemuRun, pad: xr.Gamepad, out_dir: Path, *, home_tea
         # not; the pairing has to be repeatable to be tested.
         pulses = 0
         left = slot_name(run, AWAY_SLOT)
-        while away_team not in left and pulses < 40:
+        while not slot_has(left, away_team) and pulses < 40:
             tap(pad, "LT", secs=xr.TRIGGER_PULSE, settle=0.7)
             pulses += 1
             left = slot_name(run, AWAY_SLOT)
         log(f"away slot after {pulses} LT pulses: {left!r}")
-        if away_team not in left:
+        if not slot_has(left, away_team):
             raise xr.GateError("team-select", f"{away_team} never read in the away slot; last {left!r}")
         text = f"{left} AT {slot}"
     run.screenshot("04-team-select-home", out_dir)
