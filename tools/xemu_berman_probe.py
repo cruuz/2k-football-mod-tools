@@ -62,20 +62,34 @@ class HeadlessRun(xr.XemuRun):
         self.window = xr.Window(self.display)
 
 
-def sample_cpu(port: int, log_path: Path) -> dict:
-    """Attach, read eip/eax/ecx, detach with the guest running again."""
+#: The 2026-09-15 bugcheck: the kernel loop at 0x800151EF with eax = 0x1E
+#: (KMODE_EXCEPTION_NOT_HANDLED). A lone in-kernel EIP proves nothing; the
+#: guest is in a kernel prologue most of the time it is sampled.
+BUGCHECK_EIP = (0x80015100, 0x80015300)
+BUGCHECK_CODE = 0x1E
 
-    session = xr.GdbSession(port, log_path)
-    try:
-        mark = session.send("info registers eip eax ecx", "(gdb)")
-        lines = session.tail(mark)
-    finally:
-        session.close(resume=True)
-    values = {}
-    for line in lines:
-        found = re.match(r"\s*(eip|eax|ecx)\s+0x([0-9a-fA-F]+)", line)
+
+def sample_cpu(port: int, log_path: Path) -> dict:
+    """One-shot batch gdb: attach, read eip/eax/ecx/esp and the next three
+    instructions, detach so the guest runs on. The shared interactive session
+    never sees gdb's newline-less prompt under this xemu build; a batch run
+    has no prompt to wait for. Proved live on 2026-09-20 (sub-second halt)."""
+
+    command = ["gdb", "-q", "-nx", "-batch", "-ex", "set pagination off", "-ex", "set confirm off",
+               "-ex", f"target remote 127.0.0.1:{port}", "-ex", "info registers eip eax ecx esp",
+               "-ex", "x/3i $eip", "-ex", "detach"]
+    done = subprocess.run(command, capture_output=True, text=True, timeout=45)
+    log_path.write_text(done.stdout + done.stderr, encoding="utf-8", newline="\n")
+    values: dict = {}
+    for line in done.stdout.splitlines():
+        found = re.match(r"\s*(eip|eax|ecx|esp)\s+0x([0-9a-fA-F]+)", line)
         if found:
             values[found.group(1)] = int(found.group(2), 16)
+    code = [line.strip() for line in done.stdout.splitlines() if re.match(r"\s*(=>)?\s*0x8", line) and ":" in line]
+    if code:
+        values["at"] = code[:3]
+    if not values:
+        values["error"] = (done.stderr.strip().splitlines() or ["no registers"])[-1][:120]
     return values
 
 
@@ -214,8 +228,17 @@ def watch(run: xr.XemuRun, out_dir: Path, port: int, minutes: float) -> dict:
         if (seen_motion_at is not None and frozen_since is not None
                 and elapsed - frozen_since >= FREEZE_SECONDS):
             run.screenshot(f"frozen-{elapsed:.0f}s", out_dir)
-            in_kernel = any(KERNEL[0] <= s.get("eip", 0) < KERNEL[1] for s in samples[-3:])
-            return dict(outcome="BUGCHECK" if in_kernel else "FROZEN",
+            try:
+                halted = sample_cpu(port, run.logs / "gdb-frozen.log")
+            except Exception as exc:  # noqa: BLE001
+                halted = dict(error=f"{type(exc).__name__}: {exc}")
+            halted["elapsed"] = round(elapsed, 1)
+            samples.append(halted)
+            log("frozen; cpu: " + ", ".join(f"{k}={v:#x}" if isinstance(v, int) else f"{k}={v}"
+                                          for k, v in halted.items() if k != "elapsed"))
+            bugcheck = (BUGCHECK_EIP[0] <= halted.get("eip", 0) < BUGCHECK_EIP[1]
+                        and halted.get("eax") == BUGCHECK_CODE)
+            return dict(outcome="BUGCHECK" if bugcheck else "FROZEN",
                         elapsed=round(elapsed, 1), frozen_since=round(frozen_since, 1),
                         text=seen_text[:300], cpu=samples)
         time.sleep(10.0)
