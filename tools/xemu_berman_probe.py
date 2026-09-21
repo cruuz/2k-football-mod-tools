@@ -205,19 +205,26 @@ def quick_game_home(run: xr.XemuRun, pad: xr.Gamepad, out_dir: Path, *, home_tea
         raise xr.GateError("team-select", f"{home_team} never read in the home slot; last {slot!r}")
     text = slot
     if away_team:
-        # The left trigger cycles the left slot, the away team. The crashed
-        # B/PATRIOTS run had a random away team (Redskins) and its repeat did
-        # not; the pairing has to be repeatable to be tested.
+        # The triggers cycle the slot the controller sits on, and it starts in
+        # the middle where they cycle the home side (forty LT pulses left the
+        # away slot untouched, 2026-09-20). D-pad LEFT moves the controller to
+        # the away side, RT cycles that slot, D-pad RIGHT puts it back in the
+        # middle so the rest of the route matches every earlier run.
+        tap(pad, "LEFT", settle=1.0)
         pulses = 0
         left = slot_name(run, AWAY_SLOT)
         while not slot_has(left, away_team) and pulses < 40:
-            tap(pad, "LT", secs=xr.TRIGGER_PULSE, settle=0.7)
+            tap(pad, "RT", secs=xr.TRIGGER_PULSE, settle=0.7)
             pulses += 1
             left = slot_name(run, AWAY_SLOT)
-        log(f"away slot after {pulses} LT pulses: {left!r}")
+        log(f"away slot after {pulses} RT pulses on the away side: {left!r}")
+        tap(pad, "RIGHT", settle=1.0)
         if not slot_has(left, away_team):
             raise xr.GateError("team-select", f"{away_team} never read in the away slot; last {left!r}")
-        text = f"{left} AT {slot}"
+        home_after = home_slot_name(run)
+        if not slot_has(home_after, home_team):
+            raise xr.GateError("team-select", f"home slot changed while choosing the away team: {home_after!r}")
+        text = f"{left} AT {home_after}"
     run.screenshot("04-team-select-home", out_dir)
     hold(pad, "START", xr.START_HOLD)
     time.sleep(4.0)
