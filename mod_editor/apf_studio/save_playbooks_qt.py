@@ -25,6 +25,7 @@ from PyQt5.QtWidgets import (
 
 from .save_playbooks import (
     PlaybookEdit,
+    SAVE_ASSIGNMENTS_SCOPE,
     SavePlaybookDocument,
     SavePlaybookError,
     SavePlaybookWriteReceipt,
@@ -44,9 +45,11 @@ TaskRunner = Callable[[str, Callable[[Progress], object], Callable[[object], Non
 class SavePlaybookAssignmentsPanel(QWidget):
     """Inspect 40 team slots and safely write staged O/D pointer changes."""
 
-    def __init__(self, run_task: TaskRunner):
+    def __init__(self, run_task: TaskRunner, facade=None):
         super().__init__()
         self.run_task = run_task
+        # Optional: the loaded project, used only to read its staged book bodies.
+        self.facade = facade
         self.document: SavePlaybookDocument | None = None
         self.staged: dict[int, PlaybookEdit] = {}
 
@@ -64,8 +67,13 @@ class SavePlaybookAssignmentsPanel(QWidget):
         )
         explanation.setObjectName("mutedLabel")
         explanation.setWordWrap(True)
+        self.scope = QLabel(SAVE_ASSIGNMENTS_SCOPE)
+        self.scope.setObjectName("mutedLabel")
+        self.scope.setWordWrap(True)
+        self.scope.setAccessibleName("What Save Assignments writes")
         layout.addWidget(heading)
         layout.addWidget(explanation)
+        layout.addWidget(self.scope)
 
         source_row = QHBoxLayout()
         self.choose_button = QPushButton("Choose APF roster save…")
@@ -191,7 +199,8 @@ class SavePlaybookAssignmentsPanel(QWidget):
             kind, accepted = QInputDialog.getItem(self, "Choose installed book", "Book type", choices, 0, False)
             if not accepted:
                 return
-            _, receipt = prepare_label_type(document, label.playbook_id, kind, index_0a)
+            project_book = self.project_book(kind)
+            _, receipt = prepare_label_type(document, label.playbook_id, kind, index_0a, project_book)
         except Exception as exc:
             QMessageBox.information(self, "Label type not ready", failure_body(exc))
             return
@@ -202,13 +211,15 @@ class SavePlaybookAssignmentsPanel(QWidget):
         if not selected_output:
             return
         teams = ", ".join(str(i) for i in receipt["affected_team_indices"]) or "none currently"
+        folder_book = str(receipt.get("folder_book_sha256", ""))[:16]
         answer = QMessageBox.question(
             self, "Confirm saved label book type",
             f"Label {label.playbook_id}: {label.name}\n{label.kind} -> {kind}\n"
             f"Affected team slots: {teams}\nBuilt game: {index_0a.parent}\n"
-            f"New raw save: {selected_output}\n\n"
-            "Every team using this label will resolve the new book type. Team assignments stay unchanged. "
-            "The source save stays unchanged. No game rebuild is needed when that book is already installed.\n\n"
+            f"Folder book {kind}: {folder_book}\nNew raw save: {selected_output}\n\n"
+            "Every team using this label will resolve the new book type inside that built folder. "
+            "Team assignments stay unchanged. The source save stays unchanged.\n\n"
+            + SAVE_ASSIGNMENTS_SCOPE + "\n\n"
             "UNWITNESSED: load the new roster in the matching game folder, check the team's plays, "
             "then save and reload to check persistence. Write this new save?",
             QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
@@ -216,14 +227,24 @@ class SavePlaybookAssignmentsPanel(QWidget):
             return
         self.run_task("Writing verified label book type",
                       lambda _progress: write_label_type(document, label.playbook_id, kind,
-                                                         index_0a, Path(selected_output)),
+                                                         index_0a, Path(selected_output), project_book),
                       self._label_type_complete, True)
+
+    def project_book(self, book_type: str) -> bytes | None:
+        """This project's fine-tuned body for one book type, or None when it has no edit."""
+        accessor = getattr(self.facade, "staged_book_body", None)
+        if accessor is None:
+            return None
+        return accessor(book_type)
 
     def _label_type_complete(self, receipt: object) -> None:
         QMessageBox.information(self, "New label type verified",
                                f"Saved: {receipt['output']}\nReceipt: {receipt['manifest']}\n\n"
                                f"{receipt['changed_byte_count']} bytes changed in one type pointer. "
-                               "Team assignments and strings are unchanged.\n" + receipt["runtime_status"])
+                               "Team assignments and strings are unchanged. The plays stay the ones in the "
+                               "built game folder, whose book is recorded as "
+                               f"{str(receipt.get('folder_book_sha256', ''))[:16]}.\n"
+                               + receipt["runtime_status"])
 
     def _choose_save(self) -> None:
         selected, _filter = QFileDialog.getOpenFileName(

@@ -1,5 +1,12 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.98 - beta 75
+
+- Save Assignments now states what it writes and what it does not. The page and the confirmation say that the action writes which book type a saved label points at, inside a new raw roster file, and that it does not write plays, formations, personnel or any Fine-tune Plays work. Those live in the books inside a built game folder, so a save can only choose which of that folder's books a team uses. The order that works is printed with it: fine-tune the book in this project, run Build Game Folder, then point the label at that book type, then play the new save on that built folder. This answers the report that pointing a label at a cloned book "does not carry over the unique plays assigned to that book from the fine tuning of plays".
+- Before anything is written, the action compares the selected built game folder's copy of the chosen book with this project's staged, fine-tuned copy of the same book, reusing the loaded books and the validated staged view that CPU Play Calling already keeps rather than reparsing the source. When they differ it refuses with `The built game folder does not contain your fine-tuned <book type>. Build the game folder from this project first, then save assignments.` and creates no output and no receipt. A project with no edit for that book is not compared and sees no message.
+- The label-type receipt records the SHA-256 of the book as it exists in the built folder, as `folder_book_sha256` and inside `built_book`, alongside the project book hash when one was compared. The confirmation and the completion message show its first 16 characters, so a screenshot or a bug report can be matched to the folder it was written against.
+- Offline tests only, in `tests/mod_editor/test_apf_b75_save_assignments_books.py`: a real one-pack game folder covers the refusal, the folder rebuilt from the project, the unchecked case with no staged edit, the session accessor and the page copy. Loading the new save in the matching game folder remains UNWITNESSED.
+
 ## 0.1.0-alpha.98 - beta 74.1
 
 - Version aligned with this release; no APF 2K8 changes ship here.
