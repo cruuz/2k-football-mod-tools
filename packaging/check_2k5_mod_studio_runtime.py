@@ -99,7 +99,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "dd3529836c4ebdc5ddf344de19edca38191f918ca341248953cb289b56c5e42e",
     "mod_editor/gui/studio_qt.py":
-        "51f0e112e442b86f1953873e39221f863270b4751687880c863743374778cd21",
+        "a9998761743cc7578dccf9939f10d3f48f52b4bc44b022a833a1a2bbce1bca73",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
@@ -115,8 +115,8 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
 B69_GAME_RUNTIME_PINS = {
     "mod_editor/core/nfl2k5_weather.py": "6540d7ffc8d441898f5a89988752efd6aa0238c87b4a0941c1962b7b3feba380",
     "mod_editor/core/nfl2k5_weather_haze.py": "3d045e099f1585658b899ab6e7d3560e92edb24529ca8d6f224e901dc7712ff9",
-    "mod_editor/gui/build_panel_qt.py": "ca7676aad29d0bc5c77a37bd8d8063143f879c4597b4c8cee8234b4b7a256a12",
-    "mod_editor/gui/build_panel_qt.py": "ca7676aad29d0bc5c77a37bd8d8063143f879c4597b4c8cee8234b4b7a256a12",
+    "mod_editor/gui/build_panel_qt.py": "4c47bfbf6abdcfb3116db2545abbeb64fc3a0b4f7c113f941df2b342f737bf89",
+    "mod_editor/gui/build_panel_qt.py": "4c47bfbf6abdcfb3116db2545abbeb64fc3a0b4f7c113f941df2b342f737bf89",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "6377a6089d0c01233b810e0ec82f962dfbc40cdea6d80cb8dbf092b2f83b8839",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "17e2abf5ba748a945406c20668c3d5a7347794947a02c2cf0d70951d2062ff73",
