@@ -887,12 +887,10 @@ def main() -> int:
             "dispatch_guest_offset":
                 f"0x{EXPECTED_IMAGE_BASE + EXPECTED_DECODED_SIZE:08X}",
             "dispatch_reserved_bytes": EXPECTED_CODE_SIZE * 2 + 8,
-            "dispatch_end_exclusive": f"0x{(
-                EXPECTED_IMAGE_BASE + EXPECTED_DECODED_SIZE +
-                EXPECTED_CODE_SIZE * 2 + 8):08X}",
-            "dispatch_host_page_rounded_end_exclusive": f"0x{(
-                EXPECTED_IMAGE_BASE + EXPECTED_DECODED_SIZE +
-                ((EXPECTED_CODE_SIZE * 2 + 8 + 4095) & ~4095)):08X}",
+            # One line: a replacement field that spans lines is Python 3.12 syntax (PEP 701)
+            # and a SyntaxError on the 3.11 CI jobs.
+            "dispatch_end_exclusive": f"0x{EXPECTED_IMAGE_BASE + EXPECTED_DECODED_SIZE + EXPECTED_CODE_SIZE * 2 + 8:08X}",
+            "dispatch_host_page_rounded_end_exclusive": f"0x{EXPECTED_IMAGE_BASE + EXPECTED_DECODED_SIZE + ((EXPECTED_CODE_SIZE * 2 + 8 + 4095) & ~4095):08X}",
             "loaded_title_byte_overlap": 0,
             "pe_size_of_image_metadata_overlap_bytes":
                 EXPECTED_PE_IMAGE_SIZE - EXPECTED_DECODED_SIZE,

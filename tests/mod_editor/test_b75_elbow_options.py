@@ -31,7 +31,14 @@ from mod_editor.core import nfl2k5_rdata_sites as rdata  # noqa: E402
 from mod_editor.core import nfl2k5_roster_records as rr  # noqa: E402
 from mod_editor.core import nfl2k5_throw_tuning as tt  # noqa: E402
 from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest  # noqa: E402
-from nfl2k5_throw_tuning_test import _build_synthetic_xbe  # noqa: E402
+from nfl2k5_throw_tuning_test import _build_synthetic_xbe as _plain_synthetic_xbe  # noqa: E402
+
+
+def _build_synthetic_xbe(*args, **kwargs):
+    """The shared synthetic image with the Edit Player elbow window added (opt-in there so the
+    frozen beta 60/61 pack receipts, which hash the plain image, keep their base hash)."""
+    kwargs.setdefault("elbow", True)
+    return _plain_synthetic_xbe(*args, **kwargs)
 
 XBE = Path(os.environ.get("NFL2K5_RETAIL_EXTRACTION",
                           "/media/noah/Storage/for codex 1.0/extracted")) / "ESPN NFL 2K5 (USA)" / "default.xbe"
