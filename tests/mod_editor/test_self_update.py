@@ -163,8 +163,8 @@ class PlanTests(unittest.TestCase):
 
     def _assets(self) -> dict[str, bytes]:
         return {
-            "2K5-Mod-Studio-1.0.0rc100-Setup.exe": b"exe",
-            "2K5-Mod-Studio-1.0.0rc100-Setup.exe.sha256": b"x",
+            "2K5-Mod-Studio-1.0.0rc101-Setup.exe": b"exe",
+            "2K5-Mod-Studio-1.0.0rc101-Setup.exe.sha256": b"x",
             "2K5-Mod-Studio-v1.0-RC100-2026-09-09.tar.gz": b"tgz",
             "2K5-Mod-Studio-v1.0-RC100-2026-09-09.tar.gz.sha256": b"x",
             "APF-2K8-Mod-Studio-0.9.0-Setup.exe": b"apf",
@@ -178,7 +178,7 @@ class PlanTests(unittest.TestCase):
         self.assertEqual(tar.asset.name, "2K5-Mod-Studio-v1.0-RC100-2026-09-09.tar.gz")
         self.assertEqual(tar.sidecar.name, tar.asset.name + ".sha256")
         win = U.plan_update(document, self.windows)
-        self.assertEqual(win.asset.name, "2K5-Mod-Studio-1.0.0rc100-Setup.exe")
+        self.assertEqual(win.asset.name, "2K5-Mod-Studio-1.0.0rc101-Setup.exe")
         self.assertEqual(win.sidecar.name, win.asset.name + ".sha256")
         self.assertEqual(win.tag, "beta-99")
 
@@ -378,7 +378,7 @@ class WindowsApplyTests(unittest.TestCase):
             (base / "runtime" / "pythonw.exe").write_bytes(b"MZ")
             (base / "app").mkdir()
             install = U.detect_install(base / "app", platform="win32")
-            installer = Path(tmp).resolve() / "dl" / "2K5-Mod-Studio-1.0.0rc100-Setup.exe"
+            installer = Path(tmp).resolve() / "dl" / "2K5-Mod-Studio-1.0.0rc101-Setup.exe"
             installer.parent.mkdir()
             installer.write_bytes(b"MZ")
             plan = U.UpdatePlan("2k5", "beta-99", install, U.ReleaseAsset(installer.name, HOST + installer.name, 2), None)
@@ -395,7 +395,7 @@ class WindowsApplyTests(unittest.TestCase):
         import build_windows_installer as B  # noqa: E402
 
         with tempfile.TemporaryDirectory() as tmp:
-            script = B.render_nsis(B.PRODUCTS["2k5"], "1.0.0rc100", Path(tmp).resolve(), None, Path(tmp).resolve())
+            script = B.render_nsis(B.PRODUCTS["2k5"], "1.0.0rc101", Path(tmp).resolve(), None, Path(tmp).resolve())
         self.assertIn('!include "FileFunc.nsh"', script)
         self.assertIn('${GetOptions} $R0 "/WAITPID=" $R1', script)
         self.assertIn("kernel32::WaitForSingleObject", script)

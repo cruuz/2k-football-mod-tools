@@ -1,5 +1,15 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC101, beta 74: the stability release
+
+- **Equipment art the quick check cannot fit is handed to Build, not refused.** Importing a solid or near-white sock with its own palette ended in "No fitting smaller size was established in the bounded check. Simplify the artwork", while Build's own search fits the same art at 16 x 16. The import now stages such art and says so; Build refits it and lists the refit when the disc is ready. A refusal that no smaller size can cure is still reported at import, before any build.
+- **Flat equipment art fits its span.** A very plain shoe or glove compresses so well that the stream had to be grown back to its fixed span, and the grower moved in whole-match jumps that could miss the loader's one-byte-exact window; the build then refused it as "cannot fit with the retail loader scratch allowance" for a package the art is shared with. The grower now moves a byte at a time and the writer tightens the window when the loader's overlap needs it.
+- **Texture receipts are read the moment the builder finishes.** "The texture receipt is missing or exceeds its size bound" was raised after the verifier had passed, minutes later, on files something on the machine had removed in between. The receipts are read and hash-checked as soon as the builder exits, held for the summary, and a receipt that is already gone stops the build before the minutes of verification, naming the file and what the folder holds. A failed build keeps its receipts in a folder beside the output that the message names.
+- **Building into a OneDrive folder is refused up front,** with the reason and the fix, before anything is written. OneDrive uploads and scans everything a build writes there, including the 6 GB disc copy.
+- **Every failure you see is written to errors.log,** stamped with the Studio version and the operation, so "share the error" can mean sharing a file.
+- **The working-session folder lives under %LOCALAPPDATA% on Windows,** not in a `.local\share` folder inside the user profile.
+- **Edit Player lists all sixteen elbow pad options in the game's own order.** The list had thirteen and skipped White Turf, Black Turf and Taped, so "High White" wrote White Turf and the three High pads could not be chosen.
+
 ## v1.0 RC100, beta 73
 
 - Fast save now compares the full project SHA-256 on every save, closing the hole named in beta 72.1: a same-size rewrite with the old modification time restored is refused on every platform, including Windows. Changes only to change time still save normally; size, modification-time and file-replacement refusals keep their existing messages. Standalone regression: `FastSaveChangeTimeTests.test_fast_save_full_sha256_refuses_same_size_rewrite_restored_mtime` in `test_b721_change_time_identity.py`.
