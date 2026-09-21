@@ -111,7 +111,10 @@ class ProjectArrowheadSourceTests(unittest.TestCase):
                 lost = str(exc)
         if lost is not None:
             self.fail(f"a build step read a file the copy pass had consumed: {lost}")
-        self.assertEqual(self.retail_reads, [str(self.source)])
+        # Resolved on both sides: the build resolves the chosen disc, and the
+        # runners' temp folders are symlinks (/private/var on macOS) or 8.3
+        # short names (RUNNER~1 on Windows).
+        self.assertEqual([Path(p).resolve() for p in self.retail_reads], [Path(self.source).resolve()])
         self.assertEqual(receipt["result"]["modern_arrowhead"], "applied")
         self.assertTrue(target.is_file())
         self.assertEqual(self.source.read_bytes(), self.original)
@@ -121,7 +124,7 @@ class ProjectArrowheadSourceTests(unittest.TestCase):
         target = self.root / "plain.iso"
         with self._modules():
             mod_build.build(self._plan(target.name))
-        self.assertEqual(self.retail_reads, [str(Path(self.source).resolve())])
+        self.assertEqual([Path(p).resolve() for p in self.retail_reads], [Path(self.source).resolve()])
         self.assertTrue(target.is_file())
 
     def test_a_missing_step_input_names_the_step_and_the_role(self):
