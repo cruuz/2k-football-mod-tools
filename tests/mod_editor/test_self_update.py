@@ -165,8 +165,8 @@ class PlanTests(unittest.TestCase):
 
     def _assets(self) -> dict[str, bytes]:
         return {
-            "2K5-Mod-Studio-1.0.0rc101-Setup.exe": b"exe",
-            "2K5-Mod-Studio-1.0.0rc101-Setup.exe.sha256": b"x",
+            "2K5-Mod-Studio-1.0.0rc102-Setup.exe": b"exe",
+            "2K5-Mod-Studio-1.0.0rc102-Setup.exe.sha256": b"x",
             "2K5-Mod-Studio-v1.0-RC100-2026-09-09.tar.gz": b"tgz",
             "2K5-Mod-Studio-v1.0-RC100-2026-09-09.tar.gz.sha256": b"x",
             "APF-2K8-Mod-Studio-0.9.0-Setup.exe": b"apf",
@@ -180,7 +180,7 @@ class PlanTests(unittest.TestCase):
         self.assertEqual(tar.asset.name, "2K5-Mod-Studio-v1.0-RC100-2026-09-09.tar.gz")
         self.assertEqual(tar.sidecar.name, tar.asset.name + ".sha256")
         win = U.plan_update(document, self.windows)
-        self.assertEqual(win.asset.name, "2K5-Mod-Studio-1.0.0rc101-Setup.exe")
+        self.assertEqual(win.asset.name, "2K5-Mod-Studio-1.0.0rc102-Setup.exe")
         self.assertEqual(win.sidecar.name, win.asset.name + ".sha256")
         self.assertEqual(win.tag, "beta-99")
 
@@ -380,7 +380,7 @@ class WindowsApplyTests(unittest.TestCase):
             (base / "runtime" / "pythonw.exe").write_bytes(b"MZ")
             (base / "app").mkdir()
             install = U.detect_install(base / "app", platform="win32")
-            installer = Path(tmp).resolve() / "dl" / "2K5-Mod-Studio-1.0.0rc101-Setup.exe"
+            installer = Path(tmp).resolve() / "dl" / "2K5-Mod-Studio-1.0.0rc102-Setup.exe"
             installer.parent.mkdir()
             installer.write_bytes(b"MZ")
             plan = U.UpdatePlan("2k5", "beta-99", install, U.ReleaseAsset(installer.name, HOST + installer.name, 2), None)
@@ -397,7 +397,7 @@ class WindowsApplyTests(unittest.TestCase):
         import build_windows_installer as B  # noqa: E402
 
         with tempfile.TemporaryDirectory() as tmp:
-            script = B.render_nsis(B.PRODUCTS["2k5"], "1.0.0rc101", Path(tmp).resolve(), None, Path(tmp).resolve())
+            script = B.render_nsis(B.PRODUCTS["2k5"], "1.0.0rc102", Path(tmp).resolve(), None, Path(tmp).resolve())
         self.assertIn('!include "FileFunc.nsh"', script)
         self.assertIn('${GetOptions} $R0 "/WAITPID=" $R1', script)
         self.assertIn("kernel32::WaitForSingleObject", script)
@@ -691,12 +691,17 @@ class StaleBytecodeTests(unittest.TestCase):
 
     def test_the_release_tag_can_never_change_the_module_size(self) -> None:
         # This is why update_check.py was the guaranteed casualty rather than
-        # an unlucky one, and why the stamp had to carry the difference.
+        # an unlucky one, and why the stamp had to carry the difference. The
+        # live tag can itself now be a longer hotfix tag (beta-74.1 onward),
+        # so this compares same-length samples against each other rather
+        # than against the live file, whose own tag length is no longer fixed.
         text = (REPO / "mod_editor" / "core" / "update_check.py").read_text(encoding="utf-8")
+        lengths = set()
         for tag in ("beta-68", "beta-73", "beta-74", "beta-99"):
             rewritten = re.sub(r'BUILD_RELEASE_TAG = "[^"]*"',
                                f'BUILD_RELEASE_TAG = "{tag}"', text, count=1)
-            self.assertEqual(len(rewritten.encode("utf-8")), len(text.encode("utf-8")))
+            lengths.add(len(rewritten.encode("utf-8")))
+        self.assertEqual(len(lengths), 1)
 
 
 def _ParentWindow(answer: bool = True):
