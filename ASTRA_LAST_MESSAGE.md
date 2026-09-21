@@ -1,21 +1,21 @@
-b72-s11 fixes primary-logo cropping offline for beta 73.
-Base: refs/astra/b72-s10/b72-s10 at c3b3b53a2; branch: b72-s11.
-Delivery: .scratch/astra-b72-s11.bundle; the base is its prerequisite.
-All 32 primary fits derive from their own ink bounds, aspect and complete coverage.
-Washington source-ink containment rises from 81.3428 percent to 100 percent.
-All 64 primary-team/aspect audits retain 100 percent at both native bar ends.
-Allowed crop is zero for wordmarks, asymmetric marks, circles and shields.
-Both all-team sheets render all 52 roster slots at the 617-pixel player bar scale.
-Six before/after sheets cover WAS-LAC, LV-HOU and circular PIT-TEN in both aspects.
-Logo residual stays 1931.75 player pixels, retaining the 30.9 percent s10 gain.
-Wing residual falls from 1524.00 to 1502.50; gain rises from 19.3 to 20.4 percent.
-Score residual stays 16.75 player pixels, retaining the 92.4 percent s10 gain.
-Every one of the 104 native label measurements equals s10 exactly.
-All 1350 retained native event-frame records equal s10 exactly.
-Wing art, scores, plate, housing, palettes and native owners remain unchanged.
-Append: 325216 bytes; RX: 4086 of 4096; RW: 128 bytes, all unchanged.
-All 36 default standalone files pass: 316 cases, including 8 existing skips.
-Both product closures, provider integrity and 31 focused owner-composition pairs pass.
-Auxiliary gates retain two timeouts and two stale-manifest errors; integration needs regeneration.
-Jev audits are logged below $1; no emulator, release action or in-game result is claimed.
+b75-a2: ability-based charged-ability cap implemented; off by default and EXPERIMENTAL.
+Delivery: one commit in .scratch/b75-a2.bundle from beta-74 base 56b537342; no push.
+Core module: mod_editor/core/apf2k8_charge_abilities.py; supports pinned BASE and TU 1.1.
+Charge routine: BASE 848C51C0; TU 848C5FF8, both .text.
+Gold comparison: BASE 848C5294; TU 848C60CC; packed tier word mask 00000600 equals 00000200.
+Hook/resume: BASE 848C5288/848C52AC; TU 848C60C0/848C60E4.
+QB no-arm gate preserved at BASE 848C5214 and TU 848C604C.
+Authored leaf: 76 bytes at 84D0D100; reserved zero range ends 84D0D180 in the XEX code page.
+Charged masks: roster +24=0F800000, +28=000001FC, +2C=0E000000; 15 charged abilities.
+Retail Gold+ability / Silver+ability / Gold-without-ability decision table: 2 / 1 / 2.
+Patched decision table: 2 / 2 / 1; all four tiers and every packed bit tested.
+QB qualification: retail passing fixture caps armed Gold at 1; patched arms reach 2, no-arm gate stays 0.
+CPU bypass: controller -1 skips unless the selected-automation helper is true; caller remains retail.
+Proof: both complete pinned images execute bounded charge state transitions; full-width authored-leaf ABI oracle.
+Exact synthetic-XEX and real-image apply/revert pass; partial, foreign and occupied-cave inputs are refused.
+Build flag, Tools checkbox, patch install/remove, receipts, capability, allowlist and alpha.98 beta-75 changelog added.
+Final isolated result: 34 files, 380 passed, 1 skipped, 834 subtests passed.
+APF product contract and registry pass; repin applies zero changes; H7A remains 0755; 2K5 code unchanged.
+Integration follow-up: untouched 2K5 count assertions expect 176 shared rows; new registry has 177.
+Report and Urianus player/ability/halo/move retest: docs/research/apf_b75_charge_abilities.md; gameplay UNWITNESSED.
 ASTRA_DONE

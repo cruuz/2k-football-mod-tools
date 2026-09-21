@@ -20180,6 +20180,8 @@ class ApfStudioMainWindow(QMainWindow):
         tools_menu = self.menuBar().addMenu("&Tools")
         self.fourth_down_action = tools_menu.addAction("CPU fourth-down triggers…")
         self.fourth_down_action.triggered.connect(self._fourth_down_triggers)
+        self.charge_abilities_action = tools_menu.addAction("Charged abilities (experimental)…")
+        self.charge_abilities_action.triggered.connect(self._charge_abilities)
         self._install_help_menu()
 
     def _install_help_menu(self) -> None:
@@ -21951,6 +21953,10 @@ class ApfStudioMainWindow(QMainWindow):
     def _fourth_down_triggers(self) -> None:
         from .fourth_down_qt import FourthDownDialog
         FourthDownDialog(self.facade.launcher, self).exec_()
+
+    def _charge_abilities(self) -> None:
+        from .charge_abilities_qt import ChargeAbilitiesDialog
+        ChargeAbilitiesDialog(self.facade, self).exec_()
 
     def _configure_xenia(self) -> None:
         selected, _filter = QFileDialog.getOpenFileName(

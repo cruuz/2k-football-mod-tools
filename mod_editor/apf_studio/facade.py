@@ -42,7 +42,7 @@ from .audio_encoding import (
     Pcm16TemplateReceipt,
 )
 from .asset_io import ApfAssetIO
-from .build import ApfBuildService
+from .build import ApfBuildService, ApfBuildOptions
 from .catalog import ApfCatalog, CatalogBuilder
 from .inspectors import (
     ApfInspectorService,
@@ -150,6 +150,7 @@ class ApfStudioFacade:
         self.session: ApfSession | None = None
         self.inspectors: ApfInspectorService | None = None
         self.last_build: BuildReceipt | None = None
+        self.build_options = ApfBuildOptions()
         self.last_project_identity: ProjectTargetIdentity | None = None
         self._playable_audio_rows: dict[str, InspectorRow] | None = None
         # A 53-player planning roster deliberately remains separate from the
@@ -2442,6 +2443,7 @@ class ApfStudioFacade:
                 output_game,
                 progress,
                 replace_existing=replace_existing,
+                options=self.build_options,
             )
             self.last_build = receipt
             return receipt

@@ -1421,6 +1421,71 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.apf2k8_charge_abilities --profile <base|tu_1_1> --output <authored.patch.toml> [--enable]",
+        "module": "mod_editor/core/apf2k8_charge_abilities.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/research/apf_b75_charge_abilities.md",
+        "tests/mod_editor/test_apf_charge_abilities.py",
+        "tests/mod_editor/test_apf_charge_abilities_native.py",
+        "tests/mod_editor/test_apf_charge_abilities_qt.py"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Tools > Charged abilities provides an explicit session Build checkbox and matching-profile patch export, installation and removal."
+      },
+      "id": "apf2k8.gameplay_tuning_sliders.charge_abilities",
+      "input_constraints": [
+        "Pinned Xbox 360 BASE or TU 1.1; EXPERIMENTAL and off by default.",
+        "Charged ability bits replace the Gold/passing-mode cap. The QB no-arm input gate is unchanged.",
+        "Code reservation 0x84D0D100..0x84D0D180 must stay disjoint from other patches."
+      ],
+      "portme": [
+        "Witness the level-2 halo and charged moves in Xenia for Silver/Bronze and Gold without abilities.",
+        "Retest QBs in passing and runner contexts; the retail passing fixture caps armed Gold QBs at level 1."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship authored code and patch recipes only. No retail images, books or reconstructed title updates.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "UNWITNESSED in-game. Bounded PPC32 execution of both images; only charge rate and notification callees are boundaries.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "base or tu_1_1",
+            "name": "profile",
+            "required": true
+          }
+        ],
+        "notes": "Build exports both hash-keyed profiles with receipts; install the matching profile to apply. Session Build option is not saved in a project."
+      },
+      "source_container": {
+        "format": "Hash-keyed Xenia patch TOML",
+        "hash_pins": [
+          "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf",
+          "65f522ce1cdda42cf19c112e9ec07302e89c81e4148c9f22e6db5e03952f9457"
+        ],
+        "resource": "Input charge-state cap and separate QB arm-ability gate",
+        "retail_file": "User-owned APF Xbox 360 BASE or Title Update 1.1"
+      },
+      "summary": "Charge level 2 follows charged abilities at any tier. Gold without a charged ability stops at 1; QB no-arm gate stays retail. Gameplay UNWITNESSED.",
+      "surface": "scripts_config",
+      "title": "Ability-based charging (EXPERIMENTAL)",
+      "validation_command": "python3 -m tests.mod_editor.test_apf_charge_abilities"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.apf_studio.coverage_service <0A> <profile.json> --receipt <receipt.json>",
         "module": "mod_editor/apf_studio/coverage_service.py",
         "operation": "write"

@@ -108,10 +108,11 @@ class CapabilityActionParityTests(unittest.TestCase):
                         self.assertEqual(curves.CLASSIFICATION, "EXPERIMENTAL")
                         self.assertFalse(curves.DEFAULT_ENABLED)
                         self.assertIn("UNWITNESSED", curves.DESCRIPTION.upper())
-                    elif capability_id == "apf2k8.playbooks.fourth_down":
+                    elif capability_id in {"apf2k8.playbooks.fourth_down",
+                                           "apf2k8.gameplay_tuning_sliders.charge_abilities"}:
                         self.assertEqual(binding.output_kind, "authored-xenia-patch-toml")
                         self.assertEqual(binding.one_shot_target,
-                                         "mod_editor.core.apf2k8_fourth_down:write_patch")
+                                         module_name + ":write_patch")
                         fourth_down = importlib.import_module(module_name)
                         self.assertFalse(fourth_down.DEFAULT_ENABLED)
                         self.assertEqual(fourth_down.CLASSIFICATION, "EXPERIMENTAL")

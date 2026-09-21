@@ -472,6 +472,10 @@ class XeniaLauncher:
         )
 
     def _patch_contract(self, kind):
+        if kind == "charge_abilities":
+            from mod_editor.core import apf2k8_charge_abilities
+            return (apf2k8_charge_abilities.FILENAME, apf2k8_charge_abilities.canonical_payload,
+                    "Charge-abilities patch", " Ability-based charge cap; EXPERIMENTAL. Gameplay UNWITNESSED.")
         if kind == "situations":
             from .situation_masks import FILENAME
             from mod_editor.core.apf2k8_situation_mask import canonical_payload
@@ -577,7 +581,7 @@ class XeniaLauncher:
         folder = storage / "patches"
         if folder.is_symlink() or (folder.exists() and not folder.is_dir()):
             raise LaunchError("The launch patches folder is not a regular directory; move it aside and launch again")
-        for kind in ("pass_fetch", "curves", "situations", "fourth_down"):
+        for kind in ("pass_fetch", "curves", "situations", "fourth_down", "charge_abilities"):
             filename, validator, _, _ = self._patch_contract(kind)
             source = self.settings.patches_folder / filename
             target = folder / filename
@@ -728,7 +732,7 @@ class XeniaLauncher:
         except OSError as exc:
             raise LaunchError(f"Xenia could not be started: {exc}") from exc
         patch_note = self.pass_fetch_status()["message"]
-        for kind in ("curves", "fourth_down"):
+        for kind in ("curves", "fourth_down", "charge_abilities"):
             status = self.pass_fetch_status(kind=kind)
             if status["installed"]:
                 patch_note += "\n" + status["message"]

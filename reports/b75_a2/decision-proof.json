@@ -1,0 +1,746 @@
+{
+  "base": {
+    "adapted_words": {
+      "84BD6DE4": "fb61ffd0",
+      "84BD6DE8": "fb81ffd8",
+      "84BD6DEC": "fba1ffe0",
+      "84BD6DF0": "fbc1ffe8",
+      "84BD6DF4": "fbe1fff0",
+      "84BD6E34": "eb61ffd0",
+      "84BD6E38": "eb81ffd8",
+      "84BD6E3C": "eba1ffe0",
+      "84BD6E40": "ebc1ffe8",
+      "84BD6E44": "ebe1fff0"
+    },
+    "disabled_toml_sha256": "070a6808db27fbcce6a911aa5e39dfed1771dc0915e97bbf41395ac6fd5111d7",
+    "pins": {
+      "charged_abilities": [
+        "ankle_breaker",
+        "arms_of_steel",
+        "battering_ram",
+        "cyclone",
+        "stop_on_a_dime",
+        "swim",
+        "bull_rush",
+        "club",
+        "rip",
+        "spin",
+        "laser_arm",
+        "rocket_arm",
+        "finesse",
+        "power",
+        "finesse_and_power"
+      ],
+      "classification": "EXPERIMENTAL",
+      "enabled": true,
+      "gold_comparison": 2223788692,
+      "hook": 2223788680,
+      "image_sha256": "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf",
+      "module_hash": "5447E5428AA2D52A",
+      "passing_mode_cap_replaced": true,
+      "profile": "base",
+      "qb_gate": 2223788564,
+      "qb_gate_preserved": true,
+      "reservation_end": 2228277632,
+      "reservation_section": "XEX code page 0x84D00000 (0x11), after .text virtual end",
+      "resume": 2223788716,
+      "retail_cap_bytes": "817d0044816b0010556b056c2b0b0200409a00102f1c00003b600001419a00083b600000",
+      "retail_qb_gate_bytes": "817d00443b800001816b00285569077a2b090000409a001c556b07382b0b0000409a0010816a0018556b07b8916a0018",
+      "routine": 2223788480,
+      "schema": "apf2k8_charge_abilities/v1",
+      "scope": "Input charge state machine; CPU bypass unchanged; gameplay UNWITNESSED.",
+      "section": ".text",
+      "trampoline": 2228277504,
+      "word_masks": [
+        [
+          36,
+          260046848
+        ],
+        [
+          40,
+          508
+        ],
+        [
+          44,
+          234881024
+        ]
+      ],
+      "writes": [
+        {
+          "address": 2223788680,
+          "value": 1212448376
+        },
+        {
+          "address": 2228277504,
+          "value": 2172452932
+        },
+        {
+          "address": 2228277508,
+          "value": 2171273252
+        },
+        {
+          "address": 2228277512,
+          "value": 1433075984
+        },
+        {
+          "address": 2228277516,
+          "value": 722141184
+        },
+        {
+          "address": 2228277520,
+          "value": 1083834420
+        },
+        {
+          "address": 2228277524,
+          "value": 2172452932
+        },
+        {
+          "address": 2228277528,
+          "value": 2171273256
+        },
+        {
+          "address": 2228277532,
+          "value": 1433077242
+        },
+        {
+          "address": 2228277536,
+          "value": 722141184
+        },
+        {
+          "address": 2228277540,
+          "value": 1083834400
+        },
+        {
+          "address": 2228277544,
+          "value": 2172452932
+        },
+        {
+          "address": 2228277548,
+          "value": 2171273260
+        },
+        {
+          "address": 2228277552,
+          "value": 1433075980
+        },
+        {
+          "address": 2228277556,
+          "value": 722141184
+        },
+        {
+          "address": 2228277560,
+          "value": 1083834380
+        },
+        {
+          "address": 2228277564,
+          "value": 996147200
+        },
+        {
+          "address": 2228277568,
+          "value": 1207959560
+        },
+        {
+          "address": 2228277572,
+          "value": 996147201
+        },
+        {
+          "address": 2228277576,
+          "value": 1270579556
+        }
+      ]
+    },
+    "table": [
+      {
+        "abilities": [
+          "finesse"
+        ],
+        "patched": {
+          "frames": [
+            {
+              "charge": 0.5,
+              "state": 2
+            },
+            {
+              "charge": 1.0,
+              "state": 2
+            },
+            {
+              "charge": 1.0,
+              "state": 5
+            },
+            {
+              "charge": 1.5,
+              "state": 5
+            },
+            {
+              "charge": 2.0,
+              "state": 5
+            },
+            {
+              "charge": 2.0,
+              "state": 6
+            },
+            {
+              "charge": 2.0,
+              "state": 6
+            }
+          ],
+          "maximum": 2.0,
+          "peak_instructions": 121
+        },
+        "retail": {
+          "frames": [
+            {
+              "charge": 0.5,
+              "state": 2
+            },
+            {
+              "charge": 1.0,
+              "state": 2
+            },
+            {
+              "charge": 1.0,
+              "state": 5
+            },
+            {
+              "charge": 1.5,
+              "state": 5
+            },
+            {
+              "charge": 2.0,
+              "state": 5
+            },
+            {
+              "charge": 2.0,
+              "state": 6
+            },
+            {
+              "charge": 2.0,
+              "state": 6
+            }
+          ],
+          "maximum": 2.0,
+          "peak_instructions": 111
+        },
+        "tier": 2
+      },
+      {
+        "abilities": [
+          "finesse"
+        ],
+        "patched": {
+          "frames": [
+            {
+              "charge": 0.5,
+              "state": 2
+            },
+            {
+              "charge": 1.0,
+              "state": 2
+            },
+            {
+              "charge": 1.0,
+              "state": 5
+            },
+            {
+              "charge": 1.5,
+              "state": 5
+            },
+            {
+              "charge": 2.0,
+              "state": 5
+            },
+            {
+              "charge": 2.0,
+              "state": 6
+            },
+            {
+              "charge": 2.0,
+              "state": 6
+            }
+          ],
+          "maximum": 2.0,
+          "peak_instructions": 121
+        },
+        "retail": {
+          "frames": [
+            {
+              "charge": 0.5,
+              "state": 2
+            },
+            {
+              "charge": 1.0,
+              "state": 2
+            },
+            {
+              "charge": 1.0,
+              "state": 3
+            },
+            {
+              "charge": 1.0,
+              "state": 3
+            },
+            {
+              "charge": 1.0,
+              "state": 3
+            },
+            {
+              "charge": 1.0,
+              "state": 3
+            },
+            {
+              "charge": 1.0,
+              "state": 3
+            }
+          ],
+          "maximum": 1.0,
+          "peak_instructions": 109
+        },
+        "tier": 4
+      },
+      {
+        "abilities": [],
+        "patched": {
+          "frames": [
+            {
+              "charge": 0.5,
+              "state": 2
+            },
+            {
+              "charge": 1.0,
+              "state": 2
+            },
+            {
+              "charge": 1.0,
+              "state": 3
+            },
+            {
+              "charge": 1.0,
+              "state": 3
+            },
+            {
+              "charge": 1.0,
+              "state": 3
+            },
+            {
+              "charge": 1.0,
+              "state": 3
+            },
+            {
+              "charge": 1.0,
+              "state": 3
+            }
+          ],
+          "maximum": 1.0,
+          "peak_instructions": 122
+        },
+        "retail": {
+          "frames": [
+            {
+              "charge": 0.5,
+              "state": 2
+            },
+            {
+              "charge": 1.0,
+              "state": 2
+            },
+            {
+              "charge": 1.0,
+              "state": 5
+            },
+            {
+              "charge": 1.5,
+              "state": 5
+            },
+            {
+              "charge": 2.0,
+              "state": 5
+            },
+            {
+              "charge": 2.0,
+              "state": 6
+            },
+            {
+              "charge": 2.0,
+              "state": 6
+            }
+          ],
+          "maximum": 2.0,
+          "peak_instructions": 111
+        },
+        "tier": 2
+      }
+    ]
+  },
+  "tu_1_1": {
+    "adapted_words": {
+      "84BD7DB4": "fb61ffd0",
+      "84BD7DB8": "fb81ffd8",
+      "84BD7DBC": "fba1ffe0",
+      "84BD7DC0": "fbc1ffe8",
+      "84BD7DC4": "fbe1fff0",
+      "84BD7E04": "eb61ffd0",
+      "84BD7E08": "eb81ffd8",
+      "84BD7E0C": "eba1ffe0",
+      "84BD7E10": "ebc1ffe8",
+      "84BD7E14": "ebe1fff0"
+    },
+    "disabled_toml_sha256": "499b3b295ea5a5343d15a2321640bfb9231437af2d0971d8f0d4f0ec04d467a9",
+    "pins": {
+      "charged_abilities": [
+        "ankle_breaker",
+        "arms_of_steel",
+        "battering_ram",
+        "cyclone",
+        "stop_on_a_dime",
+        "swim",
+        "bull_rush",
+        "club",
+        "rip",
+        "spin",
+        "laser_arm",
+        "rocket_arm",
+        "finesse",
+        "power",
+        "finesse_and_power"
+      ],
+      "classification": "EXPERIMENTAL",
+      "enabled": true,
+      "gold_comparison": 2223792332,
+      "hook": 2223792320,
+      "image_sha256": "65f522ce1cdda42cf19c112e9ec07302e89c81e4148c9f22e6db5e03952f9457",
+      "module_hash": "CEA825F7C2012F5A",
+      "passing_mode_cap_replaced": true,
+      "profile": "tu_1_1",
+      "qb_gate": 2223792204,
+      "qb_gate_preserved": true,
+      "reservation_end": 2228277632,
+      "reservation_section": "XEX code page 0x84D00000 (0x11), after .text virtual end",
+      "resume": 2223792356,
+      "retail_cap_bytes": "817d0044816b0010556b056c2b0b0200409a00102f1c00003b600001419a00083b600000",
+      "retail_qb_gate_bytes": "817d00443b800001816b00285569077a2b090000409a001c556b07382b0b0000409a0010816a0018556b07b8916a0018",
+      "routine": 2223792120,
+      "schema": "apf2k8_charge_abilities/v1",
+      "scope": "Input charge state machine; CPU bypass unchanged; gameplay UNWITNESSED.",
+      "section": ".text",
+      "trampoline": 2228277504,
+      "word_masks": [
+        [
+          36,
+          260046848
+        ],
+        [
+          40,
+          508
+        ],
+        [
+          44,
+          234881024
+        ]
+      ],
+      "writes": [
+        {
+          "address": 2223792320,
+          "value": 1212444736
+        },
+        {
+          "address": 2228277504,
+          "value": 2172452932
+        },
+        {
+          "address": 2228277508,
+          "value": 2171273252
+        },
+        {
+          "address": 2228277512,
+          "value": 1433075984
+        },
+        {
+          "address": 2228277516,
+          "value": 722141184
+        },
+        {
+          "address": 2228277520,
+          "value": 1083834420
+        },
+        {
+          "address": 2228277524,
+          "value": 2172452932
+        },
+        {
+          "address": 2228277528,
+          "value": 2171273256
+        },
+        {
+          "address": 2228277532,
+          "value": 1433077242
+        },
+        {
+          "address": 2228277536,
+          "value": 722141184
+        },
+        {
+          "address": 2228277540,
+          "value": 1083834400
+        },
+        {
+          "address": 2228277544,
+          "value": 2172452932
+        },
+        {
+          "address": 2228277548,
+          "value": 2171273260
+        },
+        {
+          "address": 2228277552,
+          "value": 1433075980
+        },
+        {
+          "address": 2228277556,
+          "value": 722141184
+        },
+        {
+          "address": 2228277560,
+          "value": 1083834380
+        },
+        {
+          "address": 2228277564,
+          "value": 996147200
+        },
+        {
+          "address": 2228277568,
+          "value": 1207959560
+        },
+        {
+          "address": 2228277572,
+          "value": 996147201
+        },
+        {
+          "address": 2228277576,
+          "value": 1270583196
+        }
+      ]
+    },
+    "table": [
+      {
+        "abilities": [
+          "finesse"
+        ],
+        "patched": {
+          "frames": [
+            {
+              "charge": 0.5,
+              "state": 2
+            },
+            {
+              "charge": 1.0,
+              "state": 2
+            },
+            {
+              "charge": 1.0,
+              "state": 5
+            },
+            {
+              "charge": 1.5,
+              "state": 5
+            },
+            {
+              "charge": 2.0,
+              "state": 5
+            },
+            {
+              "charge": 2.0,
+              "state": 6
+            },
+            {
+              "charge": 2.0,
+              "state": 6
+            }
+          ],
+          "maximum": 2.0,
+          "peak_instructions": 121
+        },
+        "retail": {
+          "frames": [
+            {
+              "charge": 0.5,
+              "state": 2
+            },
+            {
+              "charge": 1.0,
+              "state": 2
+            },
+            {
+              "charge": 1.0,
+              "state": 5
+            },
+            {
+              "charge": 1.5,
+              "state": 5
+            },
+            {
+              "charge": 2.0,
+              "state": 5
+            },
+            {
+              "charge": 2.0,
+              "state": 6
+            },
+            {
+              "charge": 2.0,
+              "state": 6
+            }
+          ],
+          "maximum": 2.0,
+          "peak_instructions": 111
+        },
+        "tier": 2
+      },
+      {
+        "abilities": [
+          "finesse"
+        ],
+        "patched": {
+          "frames": [
+            {
+              "charge": 0.5,
+              "state": 2
+            },
+            {
+              "charge": 1.0,
+              "state": 2
+            },
+            {
+              "charge": 1.0,
+              "state": 5
+            },
+            {
+              "charge": 1.5,
+              "state": 5
+            },
+            {
+              "charge": 2.0,
+              "state": 5
+            },
+            {
+              "charge": 2.0,
+              "state": 6
+            },
+            {
+              "charge": 2.0,
+              "state": 6
+            }
+          ],
+          "maximum": 2.0,
+          "peak_instructions": 121
+        },
+        "retail": {
+          "frames": [
+            {
+              "charge": 0.5,
+              "state": 2
+            },
+            {
+              "charge": 1.0,
+              "state": 2
+            },
+            {
+              "charge": 1.0,
+              "state": 3
+            },
+            {
+              "charge": 1.0,
+              "state": 3
+            },
+            {
+              "charge": 1.0,
+              "state": 3
+            },
+            {
+              "charge": 1.0,
+              "state": 3
+            },
+            {
+              "charge": 1.0,
+              "state": 3
+            }
+          ],
+          "maximum": 1.0,
+          "peak_instructions": 109
+        },
+        "tier": 4
+      },
+      {
+        "abilities": [],
+        "patched": {
+          "frames": [
+            {
+              "charge": 0.5,
+              "state": 2
+            },
+            {
+              "charge": 1.0,
+              "state": 2
+            },
+            {
+              "charge": 1.0,
+              "state": 3
+            },
+            {
+              "charge": 1.0,
+              "state": 3
+            },
+            {
+              "charge": 1.0,
+              "state": 3
+            },
+            {
+              "charge": 1.0,
+              "state": 3
+            },
+            {
+              "charge": 1.0,
+              "state": 3
+            }
+          ],
+          "maximum": 1.0,
+          "peak_instructions": 122
+        },
+        "retail": {
+          "frames": [
+            {
+              "charge": 0.5,
+              "state": 2
+            },
+            {
+              "charge": 1.0,
+              "state": 2
+            },
+            {
+              "charge": 1.0,
+              "state": 5
+            },
+            {
+              "charge": 1.5,
+              "state": 5
+            },
+            {
+              "charge": 2.0,
+              "state": 5
+            },
+            {
+              "charge": 2.0,
+              "state": 6
+            },
+            {
+              "charge": 2.0,
+              "state": 6
+            }
+          ],
+          "maximum": 2.0,
+          "peak_instructions": 111
+        },
+        "tier": 2
+      }
+    ]
+  }
+}

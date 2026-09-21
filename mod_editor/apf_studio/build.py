@@ -311,6 +311,17 @@ class BuildError(ValueError):
 
 
 @dataclass(frozen=True)
+class ApfBuildOptions:
+    """Explicit session build plan; runtime experiments are off by default."""
+
+    charge_abilities: bool = False
+
+    def __post_init__(self):
+        if type(self.charge_abilities) is not bool:
+            raise BuildError("Ability-based charging must be a boolean build option")
+
+
+@dataclass(frozen=True)
 class _CompiledBuildSpan:
     """One typed, verified pack write in a composed APF build.
 
@@ -805,7 +816,10 @@ class ApfBuildService:
         progress: Progress = _noop,
         *,
         replace_existing: bool = False,
+        options: ApfBuildOptions = ApfBuildOptions(),
     ) -> BuildReceipt:
+        if not isinstance(options, ApfBuildOptions):
+            raise BuildError("Choose validated APF build options")
         output_game = output_game.expanduser().absolute().resolve(strict=False)
         source_root = self.source.game_root.resolve(strict=True)
         if output_game == source_root or output_game.is_relative_to(source_root):
@@ -1552,7 +1566,7 @@ class ApfBuildService:
             manifest_document = {
                 "schema": BUILD_SCHEMA,
                 "game": "apf2k8_xbox360",
-                "mode": "modded" if edits else "clean_copy",
+                "mode": "modded" if edits or options.charge_abilities else "clean_copy",
                 "source": {
                     "0a_sha256_before": source_before,
                     "0a_sha256_after": source_after,
@@ -1581,6 +1595,7 @@ class ApfBuildService:
                 "edit_count": len(edits),
                 "book_identity": book_identity,
                 "playcalling": playcalling_receipt,
+                "build_options": {"charge_abilities": options.charge_abilities},
                 "compiled_entry_count": len(compiled),
                 "compiled_span_count": len(spans),
                 "compiled_raw_overlay_count": len(raw_overlays),
@@ -1606,6 +1621,9 @@ class ApfBuildService:
                     "share_the_apf2k8mod_project_instead": True,
                 },
             }
+            if options.charge_abilities:
+                from mod_editor.core.apf2k8_charge_abilities import export_build
+                manifest_document["charge_abilities"] = export_build(staging)
             manifest_stage = staging / ".apf2k8-mod-studio-build.json"
             with manifest_stage.open("xb") as stream:
                 stream.write(
