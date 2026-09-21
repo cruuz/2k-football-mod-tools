@@ -2207,7 +2207,7 @@
     "all_stadiums"
   ],
   "source_sha256": {
-    "mod_editor/core/mod_build.py": "b8733913126d328824632afb7f3635619f4324cf2f89d7ead7dc730ab37639bb",
+    "mod_editor/core/mod_build.py": "37315c9b9d5535f15615f5f825c35a478b924ae8ad73a23870752c78f3beeea9",
     "mod_editor/core/nfl2k5_abilities_runtime.py": "9a4de702d6daf475df990f47f787c7b554451e11648f14d3082ab84aa954f41a",
     "mod_editor/core/nfl2k5_abilities_runtime_code.py": "30da3adf1c622a8a650e090e0380e4cf23e725b8215d0e79dd2acf03270d370f",
     "mod_editor/core/nfl2k5_accel_ramp.py": "95014c753d46faed2e75e545d992794bb62965a9bbe6407057d3626395c6e862",
@@ -2247,6 +2247,7 @@
     "mod_editor/core/nfl2k5_dynamic_kickoff.py": "0f2a618ce8ad2443a472145fa69a7d06e0f78af1e9f7ce211ed9b35b00e6a6e7",
     "mod_editor/core/nfl2k5_dynamic_kickoff_relocated.py": "211063695451178000aa7088245ddef8c31973f08fad490341a378bf6e8a6b4f",
     "mod_editor/core/nfl2k5_edge_rename.py": "8d07169164719fff6121c36b07f90ac8af0d350ea39cb2dcaee83a3ab4e3fc0d",
+    "mod_editor/core/nfl2k5_elbow_options.py": "ce07ea905a57bad63359323f70164572943fa75764da2d4a97456f85ed58476f",
     "mod_editor/core/nfl2k5_espn25_rosters.py": "f5378d1d490d1e1432716d1879f14aeadc2f4f0878e3658a7761682393d5d82c",
     "mod_editor/core/nfl2k5_espn25_scenarios.py": "0cc44d754382e37b75d22f90a6091a3f0d5343df8db984f3f4e668d69caa098b",
     "mod_editor/core/nfl2k5_formation_play_writer.py": "fb09bdd724874d0a03488e12a046d8107221e99b52c77df21c04a7181d3508bf",
@@ -2364,7 +2365,7 @@
     "mod_editor/core/nfl2k5_team_names_2026.py": "60c5c6be99a1d24098a63422fadbd1af8010df599822548d11195d1f03f8e082",
     "mod_editor/core/nfl2k5_text_catalog.py": "514706a38b28a4c7189f49e7601813cd55e16f1b9e81c9c8aa3e92c072e962c9",
     "mod_editor/core/nfl2k5_throw_arc.py": "0fbf33d12fe27a0f940fb7e13f375390b88701c4ccb7e89a1de895d8f66b9c3c",
-    "mod_editor/core/nfl2k5_throw_tuning.py": "b7c707dfe807b74e1441251b1410ed7fbf7f18798fdd0e25aa5069944e00d124",
+    "mod_editor/core/nfl2k5_throw_tuning.py": "cb1e7483921cb6e82d992d513c42039189bb8259cc19461cc83df2dceb22bb51",
     "mod_editor/core/nfl2k5_uniform_choice.py": "d618e2d8ebeae1443b0e9846e4f26d53cbc8d74314253798b860ddf8e9c312d9",
     "mod_editor/core/nfl2k5_universal_asset_index.py": "9df3c0a754abcb60fa4db3afd0f9b8af364f60551014d259e2713f5387491421",
     "mod_editor/core/nfl2k5_weather.py": "6540d7ffc8d441898f5a89988752efd6aa0238c87b4a0941c1962b7b3feba380",

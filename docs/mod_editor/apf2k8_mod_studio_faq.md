@@ -1,4 +1,4 @@
-# APF 2K8 Mod Studio FAQ, beta 74.1
+# APF 2K8 Mod Studio FAQ, beta 75
 
 Use the [Getting Started guide](apf2k8_mod_studio_getting_started.md) for the complete page order
 and first build. This studio edits your own USA Xbox 360 **All-Pro Football 2K8** dump.

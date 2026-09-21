@@ -44,3 +44,7 @@ class ChargeQtTests(unittest.TestCase):
             reopened.close()
             dialog.close()
             app.processEvents()
+
+
+if __name__ == "__main__":
+    unittest.main()
