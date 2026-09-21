@@ -5189,6 +5189,123 @@ def stream_source_as_virtual_identity(source_fd: int, start: int, length: int,
         remaining -= amount
 
 
+def copy_and_hash(source_fd: int, output_fd: int, size: int,
+                  edits: list[PreparedEdit]) -> dict[str, Any]:
+    """Copy the source onto the output with the selected spans replaced, hashing both.
+
+    One read of the source and one write of the output (beta 74). The source
+    is hashed as it is read; each block is written with the replacement bytes
+    substituted for the selected spans and hashed as written. Beta 73 copied
+    the disc, wrote the spans, then read both files again to hash and compare
+    them, so a build moved the disc five times before its verifier read it
+    twice more: a 6 GB disc on a laptop drive took half an hour where beta 66
+    took a minute. Byte-identity outside the spans is now a construction (the
+    bytes written are the bytes hashed from the source), and the receipt's
+    output hash is proved by the verifier's one full read before publication.
+    Returns the same ledger as :func:`verify_union` plus the copy method.
+    """
+
+    ordered = sorted(edits, key=lambda item: item.absolute)
+    cursor = 0
+    for edit in ordered:
+        require(edit.absolute >= cursor and edit.absolute + edit.replacement_size <= size,
+                "selected spans overlap or exceed the source")
+        cursor = edit.absolute + edit.replacement_size
+    replacements: dict[int, bytes] = {}
+    for edit in ordered:
+        with _naming_prepared_edit(edit):
+            replacement = edit.replacement_path.read_bytes()
+            require(len(replacement) == edit.replacement_size
+                    and digest(replacement) == edit.replacement_sha256,
+                    f"replacement changed before the copy for {edit.kind}:{edit.selector}")
+            replacements[edit.absolute] = replacement
+    source_hash = hashlib.sha256()
+    output_hash = hashlib.sha256()
+    position = 0
+    pending = list(ordered)
+    while position < size:
+        amount = min(HASH_BLOCK, size - position)
+        block = platform_compat.pread(source_fd, amount, position)
+        require(len(block) == amount, "short source read while copying the XISO")
+        source_hash.update(block)
+        end = position + amount
+        patched: bytearray | None = None
+        while pending and pending[0].absolute < end:
+            edit = pending[0]
+            start = max(edit.absolute, position)
+            stop = min(edit.absolute + edit.replacement_size, end)
+            if patched is None:
+                patched = bytearray(block)
+            replacement = replacements[edit.absolute]
+            patched[start - position:stop - position] = \
+                replacement[start - edit.absolute:stop - edit.absolute]
+            if edit.absolute + edit.replacement_size <= end:
+                pending.pop(0)
+            else:
+                break
+        written_block = bytes(patched) if patched is not None else block
+        written = 0
+        while written < amount:
+            count = platform_compat.pwrite(output_fd, memoryview(written_block)[written:],
+                                           position + written)
+            require(count > 0, "short destination write while copying the XISO")
+            written += count
+        output_hash.update(written_block)
+        position = end
+    os.fsync(output_fd)
+    require(os.fstat(output_fd).st_size == size, "copied XISO size mismatch")
+    return {
+        "source_sha256": source_hash.hexdigest(),
+        "output_sha256": output_hash.hexdigest(),
+        "copy_method": "pread_pwrite",
+    }
+
+
+def prove_written_spans(source_fd: int, output_fd: int, size: int,
+                        edits: list[PreparedEdit], hashes: dict[str, Any]) -> dict[str, Any]:
+    """Read every selected span back from both files and settle the change ledger.
+
+    The full-disc identity comes from :func:`copy_and_hash`; this reads only the
+    spans (a few hundred kilobytes) and returns the union ledger the manifest
+    records, in the shape :func:`verify_union` returns for a historical check.
+    """
+
+    ordered = sorted(edits, key=lambda item: item.absolute)
+    offset_hash = hashlib.sha256()
+    changed_count = 0
+    total_span_bytes = 0
+    cursor = 0
+    for edit in ordered:
+        require(edit.absolute >= cursor, "selected spans overlap during final verification")
+        with _naming_prepared_edit(edit):
+            before = common.read_exact(source_fd, edit.absolute, edit.replacement_size)
+            after = common.read_exact(output_fd, edit.absolute, edit.replacement_size)
+            replacement = edit.replacement_path.read_bytes()
+            require(digest(before) == edit.retail_span_sha256 and
+                    after == replacement and digest(after) == edit.replacement_sha256,
+                    f"selected span readback failed for {edit.kind}:{edit.selector}")
+            actual_runs = difference_runs(before, after)
+            require(actual_runs == edit.relative_runs,
+                    f"changed-byte ledger changed for {edit.kind}:{edit.selector}")
+            for offset in iter_run_offsets(actual_runs, edit.absolute):
+                offset_hash.update(struct.pack("<Q", offset))
+                changed_count += 1
+        total_span_bytes += edit.replacement_size
+        cursor = edit.absolute + edit.replacement_size
+    require(cursor <= size, "selected spans exceed the output")
+    return {
+        "source_sha256": hashes["source_sha256"],
+        "output_sha256": hashes["output_sha256"],
+        "span_count": len(ordered),
+        "selected_span_bytes": total_span_bytes,
+        "changed_byte_count": changed_count,
+        "changed_offsets_u64le_sha256": offset_hash.hexdigest(),
+        "all_bytes_outside_selected_spans_identical": True,
+        "all_selected_spans_equal_validated_replacements": True,
+        "selected_spans_non_overlapping": True,
+    }
+
+
 def verify_union(source_fd: int, output_fd: int, size: int,
                  edits: list[PreparedEdit]) -> dict[str, Any]:
     ordered = sorted(edits, key=lambda item: item.absolute)
@@ -5768,17 +5885,14 @@ def build(project_path: Path, source_path: Path, output_path: Path,
         source_size = os.fstat(source_fd).st_size
         output_owned = common.reserve_file(output)
         require(output_owned.identity != source_identity, "output XISO aliases source")
-        copy_method = common.copy_fd_exact(
-            source_fd, output_owned.descriptor, source_size)
+        # One pass: the source is read and hashed once, each block is written
+        # with the selected spans already substituted and hashed as written.
+        hashes = copy_and_hash(source_fd, output_owned.descriptor, source_size, prepared.edits)
+        copy_method = hashes["copy_method"]
         phase("copy")
-        for edit in prepared.edits:
-            with _naming_prepared_edit(edit):
-                replacement = edit.replacement_path.read_bytes()
-                write_all(output_owned.descriptor, edit.absolute, replacement)
-                require(common.read_exact(output_owned.descriptor, edit.absolute,
-                                          edit.replacement_size) == replacement,
-                        f"replacement readback failed for {edit.kind}:{edit.selector}")
-        os.fsync(output_owned.descriptor)
+        # The output's snapshot is taken here, after its last write, so the
+        # gate below spans the span readback and the manifest commit.
+        output_snapshot = file_snapshot(output_owned.descriptor)
         phase("write_spans")
         output_entries, output_directory = common.parse_xdvdfs(
             output_owned.descriptor, source_size)
@@ -5803,23 +5917,24 @@ def build(project_path: Path, source_path: Path, output_path: Path,
         ownership.assert_owned_tree(artifacts_root, artifact_files, [])
         verify_prepared_pins(project, prepared, index_pin, inventory_pin)
         phase("artifacts_and_directory")
-        # One full pair scan is retained: the manifest's byte-identity claim
-        # includes every gap, including padding outside filesystem entries.
-        # Compile, copy and artifact checks are finished before this pass.
-        output_snapshot = file_snapshot(output_owned.descriptor)
-        union = verify_union(source_fd, output_owned.descriptor, source_size, prepared.edits)
+        # The manifest's byte-identity claim covers every gap, including the
+        # padding outside filesystem entries: the copy pass hashed the source
+        # as it read it and the output as it wrote it. Only the selected spans
+        # are read back here; compile, copy and artifact checks are finished.
+        union = prove_written_spans(source_fd, output_owned.descriptor, source_size,
+                                    prepared.edits, hashes)
         source_sha = union["source_sha256"]
         require(common.path_identity(source) == source_identity,
                 "source or output changed before final manifest commit")
         # The snapshots span the whole build, and this is a fail-fast gate: a
         # change-time-only move is settled by hashing the file again against
-        # the union pass's hash, and the receipt records what the gate saw.
+        # the copy pass's hash, and the receipt records what the gate saw.
         # On Windows an unmoved change time proves nothing (st_ctime is the
         # creation time), so the binding proof is the verifier's unconditional
-        # hash of both files against this receipt, before anything is
+        # hash of the output against this receipt, before anything is
         # published. Hashing here as well would cost two more full reads of
-        # every build to cover only the moment between the union pass and this
-        # line; anything earlier is already inside the union's own hashes.
+        # every build to cover only the moment between the copy pass and this
+        # line; anything earlier is already inside the copy pass's own hashes.
         source_snapshot = snapshot_if_unchanged(
             source_fd, source_snapshot, union["source_sha256"])
         output_snapshot = snapshot_if_unchanged(
@@ -6159,7 +6274,8 @@ def verify_written(project_path: Path, source_path: Path, output_path: Path,
     The receipt hash is passed over the builder's stdout by the parent service;
     it is not taken from the mutable manifest itself. The full byte-identity
     proof was made once in build(). File snapshots bind that proof to this
-    short, independently opened span/directory readback before publication.
+    independently opened span/directory readback and to one full read of the
+    output, the only 6 GB pass this process makes, before publication.
     For an unrelated/historical manifest use verify(), which reconstructs it.
     """
     resolved, payload, manifest, manifest_identity = read_build_manifest(manifest_path)
@@ -6246,12 +6362,17 @@ def verify_written(project_path: Path, source_path: Path, output_path: Path,
             with _naming_project_edits(project, input_indices[pin.path]):
                 verify_input_pin(pin)
         # The content proof, and the last thing between this build and
-        # publication: both files are hashed in full and must equal what the
-        # build recorded, whatever their stat fields say. Nothing that reached
+        # publication: the output is hashed in full and must equal what the
+        # build recorded, whatever its stat fields say. Nothing that reached
         # this point on a stat comparison alone is published on the strength of
-        # it, on any platform.
-        require(snapshot_proving_sha256(source_fd, source_seen,
-                                        manifest["source"].get("sha256_before")) is not None
+        # it, on any platform. The source is not read again (beta 74): the
+        # build hashed it once as it copied it, held it on a read-only
+        # descriptor with an identity distinct from the output's, and this
+        # process has just matched its identity and size against that receipt.
+        # Re-reading 6 GB here could only detect another program rewriting the
+        # source between the two processes, which the published output does
+        # not depend on; a historical Verify still reconstructs from the source.
+        require(same_file_apart_from_change_time(file_snapshot(source_fd), source_seen)
                 and snapshot_proving_sha256(output_fd, output_seen,
                                             manifest["output"].get("xiso_sha256")) is not None
                 and common.path_identity(source_path) == common.fd_identity(source_fd)
@@ -6306,8 +6427,10 @@ def verify(project_path: Path, source_path: Path, output_path: Path,
         inventory_pin = ownership.pin_large_file(
             inventory_path, "canonical chunk inventory",
             INVENTORY_SIZE, INVENTORY_SHA256)
-        source, source_fd, source_identity, source_sha, entries, directory, xbe = \
-            validate_source(source_path)
+        # The union pass below hashes the whole source; a second full read
+        # here proved nothing more (beta 74).
+        source, source_fd, source_identity, _, entries, directory, xbe = \
+            validate_source(source_path, hash_image=False)
         # The user's container size, never the project's own -- see build().
         source_size = os.fstat(source_fd).st_size
         output_identity: tuple[int, int] | None = None
@@ -6361,6 +6484,7 @@ def verify(project_path: Path, source_path: Path, output_path: Path,
                 "verified output XDVDFS/default.xbe changed",
             )
 
+        source_sha = union["source_sha256"]
         expected_edits = [stable_edit_record(edit) for edit in prepared.edits]
         current_inputs = {
             "index": {"path": str(index_pin.path), "size": INDEX_SIZE,

@@ -78,12 +78,12 @@ class WrittenBuildTests(unittest.TestCase):
             self.assertEqual(outputs[0], outputs[1])
             self.assertEqual(outputs[0], outputs[2])
             self.assertNotEqual(outputs[0], outputs[3])
-            original_union = tool.verify_union
-            def mutate_after_scan(source_fd, output_fd, size, edits):
-                result = original_union(source_fd, output_fd, size, edits)
+            original_union = tool.prove_written_spans
+            def mutate_after_scan(source_fd, output_fd, size, edits, hashes):
+                result = original_union(source_fd, output_fd, size, edits, hashes)
                 tool.write_all(output_fd, 128, b"late mutation")
                 return result
-            with patch.object(tool, "verify_union", side_effect=mutate_after_scan), \
+            with patch.object(tool, "prove_written_spans", side_effect=mutate_after_scan), \
                  contextlib.redirect_stdout(io.StringIO()), \
                  self.assertRaisesRegex(tool.ProjectError, "source or output changed"):
                 tool.build(project, root / "source.iso", root / "raced.iso", root / "raced.json", root / "raced",
