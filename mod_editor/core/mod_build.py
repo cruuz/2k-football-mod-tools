@@ -1011,10 +1011,84 @@ def require_build_source(source: Path | str) -> Path:
     )
 
 
+#: The prefix of the private folder ``build`` makes beside the chosen output.
+STAGE_PREFIX = ".studio-build-"
+
+
+def _private_stage_role(path: Path) -> str | None:
+    """What a file inside the Studio's own build folder is for, or None.
+
+    ``.studio-build-aqijzioj`` is a random name that exists only while a build
+    runs, so printing it tells the user nothing and reads like a folder they
+    were supposed to know about ("a directory I never set", Smuzz 2026-09-21).
+    The role is the part that means something.
+    """
+
+    for parent in path.parents:
+        if parent.name.startswith(STAGE_PREFIX):
+            if path.parent.name == "project":
+                return "the project build's private copy of the disc"
+            return "the build's private copy of the disc"
+    return None
+
+
+def require_step_source(source: Path | str, step: str) -> Path:
+    """Name the step and the file's role when a step's input disc is gone.
+
+    Steps that read the source after the copy pass must say which step wanted
+    the file and what the file was, not hand the platform's own sentence about
+    a temporary path to the user.
+    """
+
+    source = Path(source)
+    try:
+        if source.is_file():
+            return source
+    except OSError:  # an unreadable parent, a dead network share
+        pass
+    role = _private_stage_role(source)
+    if role is None:
+        raise ValueError(f"{step} could not read the file to build from: {source} is no longer on this "
+                         "computer. Nothing was written to your chosen output.")
+    raise ValueError(f"{step} could not read {role}: it is no longer there. "
+                     "Nothing was written to your chosen output.")
+
+
+def _private_stage_refusal(exc: OSError, stage: Path | None, step: str) -> ValueError | None:
+    """Words for a build that lost one of its own private files, or None.
+
+    Only files inside this build's own ``.studio-build-*`` folder are reworded.
+    A refusal about the user's own file, the output folder or the disk keeps
+    the platform's sentence, which is the useful one there.
+    """
+
+    if stage is None:
+        return None
+    try:
+        roots = {stage, stage.resolve()}
+    except OSError:  # pragma: no cover - the folder is already gone
+        roots = {stage}
+    named = [Path(str(name)) for name in (getattr(exc, "filename", None), getattr(exc, "filename2", None)) if name]
+    for path in named:
+        role = _private_stage_role(path)
+        try:
+            inside = any(path.is_relative_to(root) for root in roots)
+        except (OSError, ValueError):  # pragma: no cover - a malformed name
+            inside = False
+        if role is None or not inside:
+            continue
+        what = step if step and step != "preflight" else "The build"
+        reason = exc.strerror or str(exc)
+        return ValueError(f"{what}: {role} could not be read ({reason}). This is a fault inside the "
+                          "Studio's own build folder, not in the files you chose. Nothing was published.")
+    return None
+
+
 def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_builder=None) -> dict[str, Any]:
     """Apply the plan to a copy; archive rebuilds publish only a complete result."""
     from .build_io import StageProgress
     progress = StageProgress(progress)
+    stage: Path | None = None
     try:
         blockers = validate_plan(plan)
         if blockers:
@@ -1028,8 +1102,9 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_bui
         if target.exists() and os.path.samefile(source, target):
             raise ValueError("target must not be the source")
         previous_target = check_image_destination(target, overwrite=plan.overwrite)
-        with tempfile.TemporaryDirectory(prefix=".studio-build-", dir=target.parent) as folder:
+        with tempfile.TemporaryDirectory(prefix=STAGE_PREFIX, dir=target.parent) as folder:
             directory = Path(folder)
+            stage = directory
             edits = None
             project_result = None
             effective_source = source
@@ -1060,7 +1135,8 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_bui
                         raise ValueError("Choose the Music project or the separate music library, then build again.")
                     plan = replace(plan, music_library=project_library[0])
             receipt = _build(replace(plan, source=str(effective_source), target=str(directory / target.name), overwrite=False), progress,
-                             music_edits=edits, r62_options=r62, _consume_source=project_result is not None)
+                             music_edits=edits, r62_options=r62, _consume_source=project_result is not None,
+                             _retail_source=source)
             if project_result is not None:
                 receipt["steps"].insert(0, {"step": "shared_project", **asdict(project_result)})
                 receipt["source"] = str(source)
@@ -1104,6 +1180,14 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_bui
     except ValueError as exc:
         source = Path(plan.source)
         raise _with_identity(exc, source, tt.is_disc_image(source)) from exc
+    except OSError as exc:
+        # The user never chose anything inside the private build folder, so the
+        # platform's own sentence about a file in it is unreadable as a report
+        # and unusable as an instruction. Everything else keeps its own words.
+        worded = _private_stage_refusal(exc, stage, progress.stage)
+        if worded is None:
+            raise
+        raise worded from exc
 
 
 def preflight_plan(plan: BuildPlan, progress: ProgressSink | None = None):
@@ -1195,7 +1279,7 @@ def _validated_r62_plan_options(plan):
     return r62
 
 
-def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits=None, r62_options=None, _consume_source=False, _preflight_only=False) -> dict[str, Any]:
+def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits=None, r62_options=None, _consume_source=False, _preflight_only=False, _retail_source=None) -> dict[str, Any]:
     progress = progress or (lambda *_a: None)
     blockers = validate_plan(plan)
     if blockers:
@@ -2207,7 +2291,17 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if plan.modern_arrowhead:
         arrowhead = _core_module("nfl2k5_modern_arrowhead")
         progress("Modern Arrowhead: stadium packages", 0, 0)
-        arrowhead_receipt = arrowhead.apply_to_image(target, progress=progress, retail_source=source)
+        # On a colour build this reads the RETAIL stadium bundles again, to
+        # compose the arrowhead art with the graded field before writing. Those
+        # bytes belong to the disc the user chose, never to ``plan.source``: on
+        # a project build that is the project's private copy, which the copy
+        # step above consumed (beta 74 moves it onto the output rather than
+        # copying it 6 GB at a time), and the retail bundles in it may carry
+        # the project's own texture edits besides. Reported by Smuzz on
+        # 2026-09-21 as "[Errno 2] No such file or directory:
+        # ...\.studio-build-aqijzioj\project\source.iso".
+        retail = require_step_source(source if _retail_source is None else _retail_source, "Modern Arrowhead")
+        arrowhead_receipt = arrowhead.apply_to_image(target, progress=progress, retail_source=retail)
         receipt["steps"].append({"step": "modern_arrowhead", **{k: v for k, v in arrowhead_receipt.items() if k != "edits"}})
         receipt["result"]["modern_arrowhead"] = "applied"
     # Last resource pass, still inside build()'s disposable output transaction.
