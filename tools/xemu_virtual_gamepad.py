@@ -31,6 +31,15 @@ TRIGGER_AXES = {
     "LT": ecodes.ABS_Z,
     "RT": ecodes.ABS_RZ,
 }
+#: Left and right thumbstick deflections, for menus that ignore the D-pad.
+STICK_AXES = {
+    "LS_LEFT": (ecodes.ABS_X, -32768),
+    "LS_RIGHT": (ecodes.ABS_X, 32767),
+    "LS_UP": (ecodes.ABS_Y, -32768),
+    "LS_DOWN": (ecodes.ABS_Y, 32767),
+    "RS_LEFT": (ecodes.ABS_RX, -32768),
+    "RS_RIGHT": (ecodes.ABS_RX, 32767),
+}
 
 stick = AbsInfo(value=0, min=-32768, max=32767, fuzz=16, flat=128, resolution=0)
 trigger = AbsInfo(value=0, min=0, max=255, fuzz=0, flat=0, resolution=0)
@@ -60,6 +69,9 @@ def set_control(ui: UInput, name: str, active: bool) -> None:
         ui.write(ecodes.EV_ABS, code, value if active else 0)
     elif name in TRIGGER_AXES:
         ui.write(ecodes.EV_ABS, TRIGGER_AXES[name], 255 if active else 0)
+    elif name in STICK_AXES:
+        code, value = STICK_AXES[name]
+        ui.write(ecodes.EV_ABS, code, value if active else 0)
     else:
         raise ValueError(f"unknown control: {name}")
     ui.syn()

@@ -252,15 +252,19 @@ def quick_game_home(run: xr.XemuRun, pad: xr.Gamepad, out_dir: Path, *, home_tea
     slot = cycle_slot_to(run, pad, HOME_SLOT, home_team, "home")
     text = slot
     if away_team:
-        # The triggers cycle the slot the controller sits on, and it starts in
-        # the middle where they cycle the home side (forty LT pulses left the
-        # away slot untouched, 2026-09-20). D-pad LEFT moves the controller to
-        # the away side, RT cycles that slot, D-pad RIGHT puts it back in the
-        # middle so the rest of the route matches every earlier run.
+        # Read from the frames (explore rounds one and two, 2026-09-20): the
+        # controller starts assigned to the HOME side, where the triggers cycle
+        # the home slot; one D-pad LEFT makes it neutral (highlighted icon, the
+        # triggers do nothing); a second LEFT puts it on the AWAY side, where
+        # RT cycles the away slot (Browns -> Buccaneers -> Cardinals). Two
+        # RIGHTs put it back on the home side so the rest of the route matches
+        # every earlier run. The left stick moves it the same way.
+        tap(pad, "LEFT", settle=1.0)
         tap(pad, "LEFT", settle=1.0)
         try:
             left = cycle_slot_to(run, pad, AWAY_SLOT, away_team, "away")
         finally:
+            tap(pad, "RIGHT", settle=1.0)
             tap(pad, "RIGHT", settle=1.0)
         home_after, home_read = read_slot(run, HOME_SLOT)
         if home_read != home_team:
@@ -356,10 +360,20 @@ def explore_team_select(run: xr.XemuRun, pad: xr.Gamepad, out_dir: Path) -> list
     anywhere the probe can read; forty pulses that changed nothing (2026-09-20)
     cost more than one look at the frames after each press.
     """
-    steps = [("start", None), ("LT", ("LT", True)), ("RT", ("RT", True)), ("LEFT", ("LEFT", False)),
-             ("LEFT-RT", ("RT", True)), ("LEFT-LT", ("LT", True)), ("RIGHT", ("RIGHT", False)),
-             ("RIGHT-RIGHT", ("RIGHT", False)), ("RIGHT-RIGHT-RT", ("RT", True)), ("LEFT-back", ("LEFT", False)),
-             ("UP", ("UP", False)), ("UP-RT", ("RT", True)), ("DOWN", ("DOWN", False)), ("DOWN-RT", ("RT", True))]
+    # Round one (22:40): in the middle LT/RT cycle the HOME slot (prev/next);
+    # one D-pad LEFT highlights the icon with a yellow arrow and the hint
+    # "Press L R for Random Team", and there the triggers change nothing;
+    # RIGHT returns to the middle; UP/DOWN do nothing readable. Round two
+    # tries a second LEFT, A after LEFT, the left stick, and the bumpers.
+    steps = [("start", None), ("LEFT", ("LEFT", False)), ("LEFT-LEFT", ("LEFT", False)),
+             ("LEFT-LEFT-RT", ("RT", True)), ("LEFT-LEFT-RT-RT", ("RT", True)),
+             ("RIGHT", ("RIGHT", False)), ("RIGHT-RIGHT", ("RIGHT", False)),
+             ("LS_LEFT", ("LS_LEFT", False)), ("LS_LEFT-RT", ("RT", True)), ("LS_LEFT-RT-RT", ("RT", True)),
+             ("LS_RIGHT", ("LS_RIGHT", False)), ("LS_RIGHT-RT", ("RT", True)),
+             ("LEFT-again", ("LEFT", False)), ("LEFT-A", ("A", False)), ("LEFT-A-RT", ("RT", True)),
+             ("LEFT-A-RT-RT", ("RT", True)), ("B", ("B", False)), ("B-RT", ("RT", True)),
+             ("RIGHT-home", ("RIGHT", False)), ("LEFT-mid", ("LEFT", False)), ("RB", ("RB", False)),
+             ("LB", ("LB", False)), ("RIGHT-end", ("RIGHT", False))]
     rows = []
     for index, (name, press) in enumerate(steps):
         if press is not None:
