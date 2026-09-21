@@ -30,7 +30,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 import xemu_playbook_create_runtime as xr  # noqa: E402
-from xemu_practice_runtime import quick_game_route, screen_text  # noqa: E402
+from xemu_practice_runtime import (  # noqa: E402
+    dismiss_prompt, hold, is_prompt, quick_game_route, screen_text, tap, wait_text)
 
 xr.FIRMWARE_SOURCE = Path.home() / ".var/app/app.xemu.xemu/data/xemu/xemu"
 log = xr.log
@@ -90,6 +91,57 @@ FREEZE_SECONDS = 75.0
 #: The first frames are the black boot and the attract loop; motion before this
 #: does not count as "the intro started".
 MOTION_GRACE_SECONDS = 20.0
+
+
+def home_selected(text: str, home_team: str) -> bool:
+    """Team Select reads "AWAY AT HOME"; the wanted name must sit after the AT."""
+    if " AT " in text:
+        return home_team in text.split(" AT ", 1)[1]
+    return home_team in text
+
+
+def quick_game_home(run: xr.XemuRun, pad: xr.Gamepad, out_dir: Path, *, home_team: str) -> str:
+    """Main Menu -> Quick Game -> Team Select with a chosen HOME team -> coach matchup -> game.
+
+    The right trigger cycles the right slot, which is the home team; the
+    practice route's "away" naming had that backwards. andrethealchemist
+    (2026-09-20): the freeze depends on which team is at home, so the probe has
+    to choose it. Returns the team-select OCR line for the ledger.
+    """
+    wait_text(run, ("PRESS", "START"), 480.0, "press-start")
+    run.screenshot("01-press-start", out_dir)
+    hold(pad, "START", xr.START_HOLD)
+    time.sleep(4.0)
+    main_menu = ("QUICKGAME", "QUICK GAME", "GAMEMODES", "GAME MODES", "MAINMENU", "MAIN MENU")
+    for attempt in range(8):
+        text = screen_text(run)
+        if any(m in text for m in main_menu) and not is_prompt(text):
+            time.sleep(5.0)
+            if not is_prompt(screen_text(run)):
+                break
+            continue
+        dismiss_prompt(run, pad, text, f"modal {attempt}")
+    run.screenshot("02-main-menu", out_dir)
+    hold(pad, "START", xr.START_HOLD)
+    time.sleep(4.0)
+    text = wait_text(run, ("TEAM SELECT", "TEAMSELECT", "CURRENT UNIFORM", "PRESS L R"), 40.0,
+                     "team-select", pad=pad)
+    run.screenshot("03-team-select", out_dir)
+    pulses = 0
+    while not home_selected(text, home_team) and pulses < 40:
+        tap(pad, "RT", secs=xr.TRIGGER_PULSE, settle=0.7)
+        pulses += 1
+        text = screen_text(run)
+    log(f"home team after {pulses} RT pulses: {text[:110]!r}")
+    run.screenshot("04-team-select-home", out_dir)
+    if not home_selected(text, home_team):
+        raise xr.GateError("team-select", f"{home_team} never read as the home team; saw {text[:120]!r}")
+    hold(pad, "START", xr.START_HOLD)
+    time.sleep(4.0)
+    run.screenshot("05-coach-matchup", out_dir)
+    hold(pad, "A", xr.MODAL_A_HOLD)
+    log("game starting")
+    return text[:200]
 
 
 def watch(run: xr.XemuRun, out_dir: Path, port: int, minutes: float) -> dict:
@@ -162,6 +214,7 @@ def main() -> int:
     ap.add_argument("--xiso", required=True)
     ap.add_argument("--run-dir", required=True)
     ap.add_argument("--away-team", default="FALCONS")
+    ap.add_argument("--home-team", default="", help="cycle Team Select until this team is at home")
     ap.add_argument("--minutes", type=float, default=8.0)
     ap.add_argument("--label", default="")
     args = ap.parse_args()
@@ -186,7 +239,11 @@ def main() -> int:
         run.start_xemu(xiso)
         log(f"xemu up on Xvfb :{display}, gdb tcp::{port}")
         route_started = time.monotonic()
-        quick_game_route(run, pad, out_dir, away_team=args.away_team.upper())
+        if args.home_team:
+            ledger["home_team"] = args.home_team.upper()
+            ledger["team_select"] = quick_game_home(run, pad, out_dir, home_team=args.home_team.upper())
+        else:
+            quick_game_route(run, pad, out_dir, away_team=args.away_team.upper())
         ledger["route_seconds"] = round(time.monotonic() - route_started, 1)
         ledger.update(watch(run, out_dir, port, args.minutes))
     except Exception as exc:  # noqa: BLE001
@@ -202,8 +259,8 @@ def main() -> int:
         ledger["shutdown"] = run.shutdown()
         (run_dir / "berman-probe.json").write_text(json.dumps(ledger, indent=1) + "\n",
                                                    encoding="utf-8", newline="\n")
-        print(f"BERMAN_PROBE label={args.label or '-'} outcome={ledger['outcome']} "
-              f"elapsed={ledger.get('elapsed', 0):.0f}s", flush=True)
+        print(f"BERMAN_PROBE label={args.label or '-'} home={ledger.get('home_team', '-')} "
+              f"outcome={ledger['outcome']} elapsed={ledger.get('elapsed', 0):.0f}s", flush=True)
     return 0 if ledger["outcome"] == "PASS" else 1
 
 
