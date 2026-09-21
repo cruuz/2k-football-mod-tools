@@ -1288,7 +1288,9 @@ reproducibility without this qualification; that claim was too strong.)
 
 **Fixed for the next release, after these assets were published.**
 `packaging/windows/build_windows_installer.py` now flattens every mtime in the
-staged tree to a fixed `SOURCE_DATE_EPOCH` before NSIS runs — the same technique
+staged tree to one instant before NSIS runs, derived from the version being
+built (`source_date_epoch`, one stamp per release since beta 74.1, a fixed
+`SOURCE_DATE_EPOCH` before that), the same technique
 `build_archive.py` already used for the tarballs. Two from-scratch builds now
 produce a byte-identical installer, verified. The beta-5 installers above were
 built before that change and are **not** re-cut: replacing a published asset

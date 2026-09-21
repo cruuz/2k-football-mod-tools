@@ -8616,6 +8616,41 @@ class StudioMainWindow(QMainWindow):
         self._allow_close = True
         self.close()
 
+    def prepare_for_update_quit(self, proceed: Callable[[], None]) -> None:
+        """Settle unsaved work before an update is downloaded.
+
+        The update banner calls this before it downloads or spawns anything,
+        because the Windows installer waits for this process to exit before it
+        writes a file: an answer that arrives after the hand-off is an answer
+        that keeps the installer waiting, which is what beta 74 did. So the
+        two questions a closing studio can ask are both asked here instead.
+
+        A studio that is not free to close refuses the update outright rather
+        than starting one it cannot finish, and answering the unsaved-work
+        question sets ``_allow_close``, which ``closeEvent`` reads as the
+        decision instead of asking a second time. The drain fences above it,
+        an audio or build worker that must reach a safe boundary, are left
+        exactly as they are: they defer a close, they never prompt for one.
+        Cancelling simply never calls ``proceed``, and no update starts.
+        """
+
+        if self._blocking:
+            QMessageBox.information(
+                self,
+                "Finish the current operation",
+                "Wait for the current index, save, or build operation to finish "
+                "before updating Mod Studio.",
+            )
+            return
+        if self._refuse_while_embedded_busy("update"):
+            return
+
+        def go(_discarded: bool) -> None:
+            self._allow_close = True
+            proceed()
+
+        self._continue_after_unsaved("Updating Mod Studio", go)
+
     def closeEvent(self, event: QCloseEvent) -> None:  # type: ignore[override]
         opening = getattr(self, '_project_open_worker', None)
         if opening is not None:

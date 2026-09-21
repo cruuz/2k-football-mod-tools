@@ -19,6 +19,7 @@ Design rules, because this is the one piece of UI that talks to the internet:
 from __future__ import annotations
 
 import os
+from typing import Callable
 
 from PyQt5.QtCore import (
     QObject,
@@ -200,9 +201,10 @@ class UpdateBanner(QFrame):
         self._task: _UpdateTask | None = None
         self.plan: self_update.UpdatePlan | None = None
         self.last_error = ""
-        # Replaceable hooks: confirmation and quitting are the two things a
-        # test must not do for real.
+        # Replaceable hooks: confirming, settling unsaved work and quitting are
+        # the three things a test must not do for real.
         self.confirm = self._confirm_dialog
+        self.prepare_to_close = self._prepare_to_close
         self.request_quit = self._request_quit
 
         layout = QHBoxLayout(self)
@@ -314,15 +316,36 @@ class UpdateBanner(QFrame):
                    "It then switches folders and opens the new version. If startup fails, "
                    "the old version is restored. Previous versions stay in sibling folders "
                    "whose names end with .previous or start with .previous- until you delete them.")
-        box.setInformativeText(f"{how}\n\nSave your work first: the studio closes to finish.\n\n"
+        box.setInformativeText(f"{how}\n\nThe studio closes to finish, and asks about unsaved "
+                               "work before the download starts.\n\n"
                                f"Download: {plan.asset.name} ({plan.size_mb:.0f} MB)")
         install_button = box.addButton("Install and restart", QMessageBox.AcceptRole)
         box.addButton("Not now", QMessageBox.RejectRole)
         box.exec_()
         return box.clickedButton() is install_button
 
+    def _prepare_to_close(self, proceed: Callable[[], None]) -> None:
+        """Settle unsaved work now, before anything is downloaded or spawned.
+
+        The Windows installer waits for this process to exit before it writes a
+        file, so the studio has to be free to close before the hand-off, not
+        after it. Asking afterwards is what stranded the update: the save
+        prompt opened underneath a banner that already said the studio was
+        closing, and cancelling it left the installer waiting ten minutes for a
+        process that never quit.
+
+        The window answers by calling ``proceed`` once it is ready to close,
+        and by never calling it when the user cancels. A parent with no such
+        hook is already free to close.
+        """
+        hook = getattr(self.window(), "prepare_for_update_quit", None)
+        if callable(hook):
+            hook(proceed)
+            return
+        proceed()
+
     def start_update(self) -> bool:
-        """Confirm, then download + verify + install on a pool thread."""
+        """Confirm, settle unsaved work, then download + verify + install on a pool thread."""
         if self._status is None or self._task is not None:
             return False
         document = self._status.release_document()
@@ -335,6 +358,13 @@ class UpdateBanner(QFrame):
             return False
         if not self.confirm(plan):
             return False
+        self.prepare_to_close(lambda: self._begin_update(document, plan))
+        return self._task is not None
+
+    def _begin_update(self, document: dict, plan: self_update.UpdatePlan) -> None:
+        """Hand one release to the pool. The studio is already free to close."""
+        if self._task is not None:
+            return
         self._set_busy(True)
         self.message.setText(f"Downloading {plan.asset.name} ({plan.size_mb:.0f} MB)…")
         task = _UpdateTask(document, self._product, self._install)
@@ -344,7 +374,6 @@ class UpdateBanner(QFrame):
         self._task = task
         _LIVE_UPDATES.add(task)
         QThreadPool.globalInstance().start(task)
-        return True
 
     def _update_failure(self, error: object) -> str:
         return (
@@ -382,28 +411,19 @@ class UpdateBanner(QFrame):
         QTimer.singleShot(1200, self.request_quit)
 
     def _request_quit(self) -> None:
+        """Close, unconditionally, because the banner has already promised it.
+
+        The installer is running and waiting on this process by the time this
+        is reached, so there is no answer to a second prompt that helps anyone.
+        Unsaved work was settled before the download started (prepare_to_close),
+        and the studio's closeEvent reads that decision ahead of both of its
+        prompts, so closing here asks nothing. Ending the event loop as well
+        means even a window that defers its close cannot hold the process.
+        """
         app = QApplication.instance()
         if app is None:
             return
         app.closeAllWindows()
-        still_open = [
-            widget for widget in app.topLevelWidgets()
-            if widget.isWindow() and widget.isVisible() and widget is not self
-        ]
-        if still_open:
-            # A close was refused (unsaved work, a running build). The hand-off
-            # already happened, so say what finishes it rather than forcing it.
-            if self.plan is not None and self.plan.install.kind == "windows-installer":
-                self.message.setText(
-                    "The update installs as soon as you close the studio. It waits "
-                    "up to ten minutes."
-                )
-            else:
-                self.message.setText(
-                    "The new version is already running. Close this window when "
-                    "you are done here."
-                )
-            return
         app.quit()
 
     def wait_idle(self, timeout_ms: int = 60_000) -> bool:

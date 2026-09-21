@@ -227,15 +227,48 @@ def build_icon(repo: pathlib.Path, icon_rel: str, out: pathlib.Path) -> pathlib.
 # stamp the current time on everything they create. Two builds of identical
 # *content* therefore produced installers with different bytes -- reproducible
 # in contents but not in hash, which makes a published SHA-256 unverifiable by
-# rebuild. Flattening every mtime in the staged tree to one fixed instant is
-# what closes that gap; it is the same trick `build_archive.py` uses for the
-# tarballs. The value is arbitrary but must never drift: 2026-07-27T00:00:00Z,
-# the date this became reproducible.
-SOURCE_DATE_EPOCH = 1785110400
+# rebuild. Flattening every mtime in the staged tree closes that gap; it is the
+# same trick `build_archive.py` uses for the tarballs.
+#
+# It used to be flattened to one constant shared by every release, and that
+# constant cost two users their update. NSIS restores the stored mtime on
+# extraction, so a new `update_check.py` landed carrying exactly the mtime the
+# one it replaced had; that module is 8334 bytes in every release from beta 68
+# to beta 74, because only the tag inside BUILD_RELEASE_TAG changes and every
+# tag is the same length. A timestamp `.pyc` is validated on the source's mtime
+# and size alone, so the previous release's bytecode stayed valid forever and
+# the studio went on running, and reporting, the code it had just replaced.
+#
+# The stamp is therefore derived from the version being built. It is still a
+# pure function of the build inputs, so a given version rebuilds to the same
+# bytes, but two releases can never hand CPython the same mtime and size pair.
+#: Where the flattening pass used to stop: 2026-07-27T00:00:00Z, the date the
+#: installer became reproducible. It is now the anchor a release's own stamp is
+#: measured back from rather than the stamp itself.
+SOURCE_DATE_EPOCH_ANCHOR = 1785110400
+#: How far back of the anchor a release's stamp may fall, in seconds: twenty
+#: years. Wide enough that two versions colliding is not a practical concern,
+#: and it keeps every stamp in the past, where a build artefact belongs.
+SOURCE_DATE_EPOCH_WINDOW = 20 * 365 * 24 * 60 * 60
 
 
-def normalise_mtimes(root: pathlib.Path) -> int:
-    """Flatten every mtime under *root* so NSIS output depends only on content.
+def source_date_epoch(version: str) -> int:
+    """The instant every staged file's mtime is flattened to, for one version.
+
+    Deterministic, so a given version still rebuilds byte for byte. Distinct
+    per version, which is what lets Python notice that a same-size module has
+    been replaced by an installer that wrote into an existing tree.
+    """
+    seed = hashlib.sha256(f"2k-football-mod-tools {version}".encode("utf-8")).digest()
+    offset = int.from_bytes(seed[:8], "big") % SOURCE_DATE_EPOCH_WINDOW
+    return SOURCE_DATE_EPOCH_ANCHOR - offset
+
+
+def normalise_mtimes(root: pathlib.Path, epoch: int) -> int:
+    """Flatten every mtime under *root* to *epoch*.
+
+    NSIS output then depends only on the content and the version, never on when
+    the build ran.
 
     Directories are stamped after their children: on POSIX, writing a child
     updates the parent's mtime, so doing it in the other order would undo the
@@ -246,9 +279,9 @@ def normalise_mtimes(root: pathlib.Path) -> int:
     for path in sorted(root.rglob("*"), key=lambda p: len(p.parts), reverse=True):
         if path.is_symlink():
             continue
-        os.utime(path, (SOURCE_DATE_EPOCH, SOURCE_DATE_EPOCH))
+        os.utime(path, (epoch, epoch))
         stamped += 1
-    os.utime(root, (SOURCE_DATE_EPOCH, SOURCE_DATE_EPOCH))
+    os.utime(root, (epoch, epoch))
     return stamped + 1
 
 
@@ -295,8 +328,9 @@ def main() -> int:
     shutil.copy2(notice_src, work / "UNSIGNED-NOTICE.txt")
 
     print("[4/4] NSIS script")
-    normalised = normalise_mtimes(work)
-    print(f"      normalised {normalised} mtimes to {SOURCE_DATE_EPOCH}")
+    epoch = source_date_epoch(args.version)
+    normalised = normalise_mtimes(work, epoch)
+    print(f"      normalised {normalised} mtimes to {epoch} (derived from {args.version})")
     nsi = work / "installer.nsi"
     nsi.write_text(
         render_nsis(product, args.version, work, icon, out), encoding="utf-8"
@@ -411,6 +445,21 @@ relaunch_done:
 FunctionEnd
 
 Section "Install"
+  ; Replace the installed trees; never merge into them. `File /r` overwrites
+  ; what it ships and removes nothing else, so an update used to leave the
+  ; previous release's __pycache__ in place, and with every file's mtime
+  ; flattened CPython read that stale bytecode instead of the new source: the
+  ; studio came back reporting the version it had just replaced. The same merge
+  ; left behind any file a release had stopped shipping.
+  ; Both trees are re-extracted whole on every install -- `build_runtime` builds
+  ; runtime\\ from the pinned embeddable CPython and the pinned wheels every
+  ; time, and app\\ is the staged release -- and neither holds anything the user
+  ; owns: projects, working sessions and workspace state live under
+  ; %LOCALAPPDATA%. Deleting first costs an interrupted install its fallback,
+  ; the same way it already would for a half-overwritten tree; re-running this
+  ; Setup repairs either. /WAITPID has already waited for the studio to exit.
+  RMDir /r "$INSTDIR\\app"
+  RMDir /r "$INSTDIR\\runtime"
   SetOutPath "$INSTDIR"
   File /r "{work / 'runtime'}"
   File /r "{work / 'app'}"
