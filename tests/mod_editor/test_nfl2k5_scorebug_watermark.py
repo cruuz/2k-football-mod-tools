@@ -1,6 +1,7 @@
 """One brand quad, real weekday-site dispatch, conservative date fallbacks."""
 from pathlib import Path
 import importlib.util
+import json
 import struct
 import sys
 import unittest
@@ -32,6 +33,56 @@ class ContractTests(unittest.TestCase):
    plan=build.apply_preset(build.BuildPlan('',''),name)
    self.assertFalse(plan.scorebug_runtime);self.assertEqual(plan.scorebug_watermark,'auto')
   with self.assertRaises(ValueError):saved.build_settings({'scorebug_watermark':'bad'})
+
+
+class CoverageTests(unittest.TestCase):
+ """The shipped watermark cells must not lose their letter tops to the minify.
+
+ A box filter is area accurate, so an ink band that does not land on whole
+ output rows leaves the band's first row at part of the alpha the rows below
+ it carry. Drawn at the layout's 0.72 opacity over a bright crowd that row
+ disappears and the letters read as flat-topped. Coverage is measured per row
+ as the row's peak alpha: the ESPN wordmark is shorter than the MNF/NFL mark
+ beside it, so the count of inked texels legitimately differs row to row,
+ while a letter row that is dimmer than the letter body never does.
+ """
+ FLOOR=0.85
+ @classmethod
+ def setUpClass(cls):
+  from PIL import Image
+  folder=ROOT/'data/nfl2k5_scorebug_sprite'
+  cls.spec=json.loads((folder/'layout.json').read_text(encoding='utf-8'))
+  with Image.open(folder/'template.png') as sheet:cls.sheet=sheet.convert('RGBA')
+
+ def cells(self):
+  for row in self.spec['brand']:
+   box=self.spec['cells'][row['cell']]['box']
+   yield row['cell'],box,self.sheet.crop(box)
+
+ def test_every_letter_row_keeps_the_marks_own_coverage(self):
+  for name,_box,cell in self.cells():
+   pixels=cell.load()
+   peaks=[max(pixels[x,y][3] for x in range(cell.width)) for y in range(cell.height)]
+   top=max(peaks)
+   self.assertGreater(top,200,name)
+   band=[y for y,v in enumerate(peaks) if v>=top/2]
+   self.assertTrue(band and band==list(range(band[0],band[-1]+1)),(name,peaks))
+   self.assertGreaterEqual(len(band),10,(name,peaks))
+   self.assertGreaterEqual(min(peaks[y] for y in band),self.FLOOR*top,(name,peaks))
+
+ def test_watermark_cells_are_packed_with_a_gutter_off_the_sheet_edge(self):
+  boxes={n:r['box'] for n,r in self.spec['cells'].items()}
+  for name,box,_cell in self.cells():
+   x0,y0,x1,y1=box
+   self.assertTrue(x0>0 and y0>0 and x1<self.sheet.width and y1<self.sheet.height,(name,box))
+   gutter=(x0-1,y0-1,x1+1,y1+1)
+   for other,(a,b,c,d) in boxes.items():
+    if other==name:continue
+    self.assertFalse(a<gutter[2] and gutter[0]<c and b<gutter[3] and gutter[1]<d,(name,other))
+   for x in range(gutter[0],gutter[2]):
+    for y in (gutter[1],gutter[3]-1):self.assertEqual(self.sheet.getpixel((x,y))[3],0,(name,x,y))
+   for y in range(gutter[1],gutter[3]):
+    for x in (gutter[0],gutter[2]-1):self.assertEqual(self.sheet.getpixel((x,y))[3],0,(name,x,y))
 
 
 def brand_record(compiled):

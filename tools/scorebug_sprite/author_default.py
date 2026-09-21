@@ -9,14 +9,113 @@ import argparse
 parser=argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--font',type=Path,default=Path('/usr/share/fonts/truetype/noto/NotoSansDisplay-Bold.ttf'))
 parser.add_argument('--output',type=Path,default=OUT)
+parser.add_argument('--brand-only',action='store_true',
+ help='Refilter only the two ESPN watermark cells in an existing --output folder, leaving every other cell and every other layout key untouched.')
 args=parser.parse_args()
 FONT=args.font;OUT=args.output
+
+# The measured watermark masks the shipped cells were lifted from, with the
+# offset that centres each one in the 214x29 quad the layout draws.
+BRAND_CANVAS=(214,29)
+BRAND_SOURCES={'mnf':('reports/b72_s9/watermark_mnf.png',(3,3)),
+               'nfl':('reports/b72_s9/watermark_nfl.png',(21,1))}
+# An output row that the measured ink band covers by at least this much is a
+# letter row, not a band edge, so it is lifted back to full coverage.
+BRAND_KNEE=0.4
+
+def area_rows(lo,hi,count,source):
+ """Exact-area resampling weights: `count` output rows spanning source [lo,hi)."""
+ step=(hi-lo)/count;out=[]
+ for j in range(count):
+  a=lo+j*step;b=a+step;w=np.zeros(source)
+  for y in range(max(0,int(np.floor(a))),min(source,int(np.ceil(b)))):w[y]=max(0.0,min(b,y+1)-max(a,y))
+  out.append(w/w.sum())
+ return np.array(out)
+
+def brand_coverage(cell,size,colour=(255,255,255)):
+ """Minify a measured watermark mask without thinning its letter tops.
+
+ A box filter is area accurate, so an ink band that does not land on whole
+ output rows leaves the band's first and last row at part of the alpha the
+ rows between them carry. At the watermark's drawn 0.72 opacity that partial
+ top row reads as a cut-off letter rather than as an edge. The filter runs
+ premultiplied over exact areas, then a coverage curve divides any output row
+ the measured ink band covers by at least BRAND_KNEE by its own coverage, so
+ it returns to the level of the rows below it. The letterforms are the still's
+ and are never redrawn: only the sampling of the band's edge rows changes.
+ """
+ width,height=size
+ alpha=np.asarray(cell.convert('RGBA')).astype(float)[:,:,3]/255
+ # RGB is one flat brand colour, so rebuilding the cell as colour plus
+ # coverage is exactly the premultiplied result and carries no dark fringe.
+ peak=np.percentile(alpha[alpha>0],99.5) if (alpha>0).any() else 1.0
+ profile=np.clip(alpha.max(axis=1)/peak,0,1)
+ filtered=area_rows(0,cell.height,height,cell.height)@alpha@area_rows(0,cell.width,width,cell.width).T
+ ink=np.nonzero(profile>0)[0]
+ if len(ink):
+  # Subpixel band edges: the first and last inked row are themselves partly
+  # covered, and the mask's own antialiasing measures by how much.
+  top=ink[0]+(1-profile[ink[0]]);bottom=ink[-1]+profile[ink[-1]];step=cell.height/height
+  for j in range(height):
+   covered=max(0.0,min((j+1)*step,bottom)-max(j*step,top))/step
+   if covered>=BRAND_KNEE:filtered[j]=filtered[j]/covered
+ image=Image.new('RGBA',size,tuple(colour)+(255,))
+ image.putalpha(Image.fromarray(np.rint(np.clip(filtered,0,1)*255).astype('uint8'),'L'))
+ return image
+
+def brand_mask(variant,size=BRAND_CANVAS):
+ """The measured mask for one variant, placed in the quad the layout draws."""
+ name,offset=BRAND_SOURCES[variant]
+ canvas=Image.new('RGBA',size,(255,255,255,0))
+ canvas.paste(Image.open(ROOT/name).convert('RGBA'),offset)
+ return canvas
+
+def free_slot(sheet,boxes,size,gutter=1):
+ """First position whose cell plus a transparent gutter is clear, never at y=0."""
+ width,height=size;alpha=sheet.getchannel('A')
+ for y in range(gutter,sheet.height-height-gutter+1):
+  for x in range(gutter,sheet.width-width-gutter+1):
+   area=(x-gutter,y-gutter,x+width+gutter,y+height+gutter)
+   if any(a<area[2] and area[0]<b and c<area[3] and area[1]<d for a,c,b,d in boxes):continue
+   if alpha.crop(area).getbbox() is None:return x,y
+ raise AssertionError('No free slot for a %dx%d brand cell'%size)
+
+def author_brand_only(folder):
+ """Refilter the two watermark cells in place; every other byte of the layout stays."""
+ spec=json.loads((folder/'layout.json').read_text(encoding='utf-8'))
+ sheet=Image.open(folder/'template.png').convert('RGBA')
+ moved={}
+ for row in spec.get('brand',[]):
+  name=row['cell'];box=spec['cells'][name]['box']
+  size=(box[2]-box[0],box[3]-box[1])
+  colour=tuple(row.get('source',{}).get('colour',(255,255,255)))
+  built=brand_coverage(brand_mask(row['variant']),size,colour)
+  # Vacate the old rectangle before repacking, so no stale texels survive.
+  sheet.paste(Image.new('RGBA',size,(255,255,255,0)),(box[0],box[1]))
+  spec['cells'][name]['box']=[0,0,0,0];moved[name]=built
+ for name,built in moved.items():
+  boxes=[c['box'] for n,c in spec['cells'].items() if n!=name and c['box'][2]>c['box'][0]]
+  x,y=free_slot(sheet,boxes,built.size)
+  sheet.paste(built,(x,y));spec['cells'][name]['box']=[x,y,x+built.width,y+built.height]
+ spec['sampling']=(spec.get('sampling','')+' Watermark cells are area-filtered premultiplied with a coverage '
+  'curve that keeps the measured ink band\'s edge rows at full alpha, and are packed with a one-pixel '
+  'transparent gutter away from the sheet edge.').strip()
+ spec['provenance']['brand_filter']=('tools/scorebug_sprite/author_default.py --brand-only: exact-area '
+  'premultiplied box filter, then rows the measured ink band covers by at least %g are divided by their '
+  'own coverage'%BRAND_KNEE)
+ sheet.save(folder/'template.png')
+ (folder/'layout.json').write_text(json.dumps(spec,indent=1)+'\n',encoding='utf-8',newline='\n')
+ print('refiltered brand cells',{n:spec['cells'][n]['box'] for n in moved},folder)
+
+if args.brand_only:
+ author_brand_only(OUT);raise SystemExit(0)
 if not FONT.is_file():parser.error('Pass --font with NotoSansDisplay-Bold.ttf (SIL OFL 1.1).')
 # Noto Sans Display is SIL OFL 1.1. Fit its bold outlines to condensed broadcast cells.
-sheet=Image.new('RGBA',(1536,512),(255,255,255,0));cells={};cursor=[0,0,0]
+# Packing starts one pixel in so no cell, least of all a brand cell, sits on the sheet edge.
+sheet=Image.new('RGBA',(1536,512),(255,255,255,0));cells={};cursor=[1,1,0]
 def put(name,im):
  w,h=im.size;x,y,row=cursor
- if x+w+2>sheet.width:x=0;y+=row+2;row=0
+ if x+w+2>sheet.width:x=1;y+=row+2;row=0
  assert y+h+2<=sheet.height,name
  sheet.paste(im,(x,y));cells[name]={'box':[x,y,x+w,y+h]}
  cursor[:]=[x+w+2,y,max(row,h)]
@@ -196,7 +295,7 @@ for row in static:
 # Pre-filter all used atlas cells to the smallest (16:9) raster footprint.
 # Floor, rather than round, ensures neither axis minifies at either aspect.
 # Shared glyph cells use the smallest dimensions of every reference.
-original=sheet.copy();source_cells=dict(cells);sizes={}
+original=sheet.copy();source_cells=dict(cells);sizes={};cursor[:]=[1,1,0]
 def footprint(cell,w,h):
  if w and h:
   size=(max(1,int(w/3)),max(1,int(h*448/1080)))
@@ -209,17 +308,21 @@ for name,gs in sets.items():
  # Native fields compress three-digit scores and two-digit-minute clocks.
  factor={'score':120/124,'clock':80/105}.get(name,1)
  for g in gs['glyphs'].values():footprint(g['cell'],g['size'][0]*factor,g['size'][1])
-sheet=Image.new('RGBA',(1536,512),(255,255,255,0));cells={};cursor[:]=[0,0,0]
+sheet=Image.new('RGBA',(1536,512),(255,255,255,0));cells={};cursor[:]=[1,1,0]
 for name,size in sizes.items():
  im=original.crop(source_cells[name]['box'])
  # Pillow's RGBA BOX filter is alpha-aware; each cell is filtered separately.
  fitted=im.resize((min(im.width,size[0]),min(im.height,size[1])),Image.Resampling.BOX)
  if name.startswith('espn_'):
-  coverage=fitted.getchannel('A');fitted=Image.new('RGBA',fitted.size,(255,251,241,255));fitted.putalpha(coverage)
+  # A plain box leaves the mark's top row at part of the alpha the rows below
+  # it carry, which reads in game as a flat-topped letter. Refilter instead.
+  fitted=brand_coverage(im,fitted.size,(255,251,241))
  if name in ('wing','home_wing'):
   a=np.asarray(fitted).copy();a[:,-1,3]=0;fitted=Image.fromarray(a)
  put(name,fitted)
 layout['cells']=cells
-layout['sampling']='Cells area-filtered to no larger than the smallest 16:9 HUD footprint; one mip, no minification.'
+layout['sampling']=('Cells area-filtered to no larger than the smallest 16:9 HUD footprint; one mip, no minification. '
+ 'Watermark cells are area-filtered premultiplied with a coverage curve that keeps the measured ink band\'s edge '
+ 'rows at full alpha, and are packed with a one-pixel transparent gutter away from the sheet edge.')
 OUT.mkdir(parents=True,exist_ok=True);sheet.save(OUT/'template.png');(OUT/'layout.json').write_text(json.dumps(layout,indent=1)+'\n',newline='\n')
 print('authored',cursor,OUT)
