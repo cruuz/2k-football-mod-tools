@@ -179,7 +179,9 @@ class VerifiedBuildTests(unittest.TestCase):
             # photos of the dialog because rmtree ran on every exit.
             kept = sorted(fixture.output.parent.glob(f'.{fixture.output.name}.2k5mod-failed-*'))
             self.assertEqual(len(kept), 1, kept)
-            self.assertIn(str(kept[0]), str(caught.exception))
+            # Folder name, not the full path: the Windows runner's temp dir is an 8.3
+            # short name that the service's resolved output path spells out in full.
+            self.assertIn(kept[0].name, str(caught.exception))
             self.assertTrue((kept[0] / 'build-manifest.json').is_file())
             self.assertTrue((kept[0] / 'build-artifacts' / 'uniform_equipment_texture.json').is_file())
             self.assertFalse((kept[0] / 'modded.xiso').exists())

@@ -88,7 +88,10 @@ class ReceiptsReadBeforeVerifyTests(unittest.TestCase):
             self.assertFalse(fixture.output.exists())
             kept = sorted(fixture.output.parent.glob(f".{fixture.output.name}.2k5mod-failed-*"))
             self.assertEqual(len(kept), 1, kept)
-            self.assertIn(str(kept[0]), text)
+            # The service names the kept folder from its resolved output path; on the
+            # Windows runner the temp dir is an 8.3 short name (RUNNER~1) that the
+            # message spells out in full, so the folder NAME is what is compared.
+            self.assertIn(kept[0].name, text)
             self.assertTrue((kept[0] / "build-manifest.json").is_file())
             self.assertTrue((kept[0] / "build-artifacts" / "stadium_texture.json").is_file())
 
