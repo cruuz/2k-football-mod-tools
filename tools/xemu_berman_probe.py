@@ -135,11 +135,27 @@ def quick_game_home(run: xr.XemuRun, pad: xr.Gamepad, out_dir: Path, *, home_tea
     (2026-09-20): the freeze depends on which team is at home, so the probe has
     to choose it. Returns the team-select OCR line for the ledger.
     """
-    wait_text(run, ("PRESS", "START"), 480.0, "press-start")
-    run.screenshot("01-press-start", out_dir)
-    hold(pad, "START", xr.START_HOLD)
-    time.sleep(4.0)
     main_menu = ("QUICKGAME", "QUICK GAME", "GAMEMODES", "GAME MODES", "MAINMENU", "MAIN MENU")
+    # The title screen hands off to an attract-mode highlight demo after a short
+    # idle; a run that misses the "PRESS START" window then reads the demo for
+    # the whole wait (B/Giants, 2026-09-20). A START press leaves the demo, so
+    # on each shorter timeout press it and accept either the title or the menu.
+    deadline = time.monotonic() + 480.0
+    at_menu = False
+    while True:
+        try:
+            text = wait_text(run, ("PRESS", "START") + main_menu, 120.0, "press-start")
+            at_menu = any(m in text for m in main_menu) and not is_prompt(text)
+            break
+        except xr.GateError:
+            if time.monotonic() > deadline:
+                raise
+            log("no title screen yet (attract demo?); pressing START to leave it")
+            tap(pad, "START", secs=0.3, settle=3.0)
+    run.screenshot("01-press-start", out_dir)
+    if not at_menu:
+        hold(pad, "START", xr.START_HOLD)
+        time.sleep(4.0)
     for attempt in range(8):
         text = screen_text(run)
         if any(m in text for m in main_menu) and not is_prompt(text):
