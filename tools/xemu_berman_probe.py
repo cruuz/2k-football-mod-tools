@@ -136,6 +136,58 @@ def slot_has(slot: str, name: str) -> bool:
     return False
 
 
+#: Team Select cycles the nicknames in alphabetical order (Giants -> Patriots
+#: took six RT pulses: Jaguars, Jets, Lions, Packers, Panthers, Patriots).
+TEAMS = ("49ERS", "BEARS", "BENGALS", "BILLS", "BRONCOS", "BROWNS", "BUCCANEERS", "CARDINALS",
+         "CHARGERS", "CHIEFS", "COLTS", "COWBOYS", "DOLPHINS", "EAGLES", "FALCONS", "GIANTS",
+         "JAGUARS", "JETS", "LIONS", "PACKERS", "PANTHERS", "PATRIOTS", "RAIDERS", "RAMS",
+         "RAVENS", "REDSKINS", "SAINTS", "SEAHAWKS", "STEELERS", "TEXANS", "TITANS", "VIKINGS")
+
+
+def read_slot(run: xr.XemuRun, box, tries: int = 4) -> tuple[str, str]:
+    """(raw OCR line, the team it names or '') from up to ``tries`` frames.
+
+    One read per pulse missed REDSKINS on two full laps of the list (2026-09-20):
+    the slot is read again a few times before it counts as unknown.
+    """
+    raw = ""
+    for attempt in range(tries):
+        raw = slot_name(run, box)
+        for team in TEAMS:
+            if slot_has(raw, team):
+                return raw, team
+        time.sleep(0.35)
+    return raw, ""
+
+
+def cycle_slot_to(run: xr.XemuRun, pad: xr.Gamepad, box, team: str, side: str) -> str:
+    """Cycle one Team Select slot with RT until it names ``team``; the OCR line.
+
+    The current name gives the number of pulses (the list order is known), the
+    slot is read again at the end, and a miss falls back to single pulses with a
+    read after each one, so one bad read never costs a lap of the list.
+    """
+    require = team in TEAMS
+    if not require:
+        raise xr.GateError("team-select", f"{team} is not a Team Select nickname")
+    raw, current = read_slot(run, box)
+    log(f"{side} slot reads {raw!r} -> {current or 'unknown'}")
+    if current:
+        for _ in range((TEAMS.index(team) - TEAMS.index(current)) % len(TEAMS)):
+            tap(pad, "RT", secs=xr.TRIGGER_PULSE, settle=0.6)
+        raw, current = read_slot(run, box)
+        log(f"{side} slot after the computed pulses reads {raw!r} -> {current or 'unknown'}")
+    pulses = 0
+    while current != team and pulses < 40:
+        tap(pad, "RT", secs=xr.TRIGGER_PULSE, settle=0.7)
+        pulses += 1
+        raw, current = read_slot(run, box, tries=3)
+        log(f"{side} slot after single pulse {pulses}: {raw!r} -> {current or 'unknown'}")
+    if current != team:
+        raise xr.GateError("team-select", f"{team} never read in the {side} slot; last {raw!r}")
+    return raw
+
+
 def home_slot_name(run: xr.XemuRun) -> str:
     """OCR only the right slot of the Team Select name bar: the home team.
 
@@ -194,15 +246,7 @@ def quick_game_home(run: xr.XemuRun, pad: xr.Gamepad, out_dir: Path, *, home_tea
     text = wait_text(run, ("TEAM SELECT", "TEAMSELECT", "CURRENT UNIFORM", "PRESS L R"), 40.0,
                      "team-select", pad=pad)
     run.screenshot("03-team-select", out_dir)
-    pulses = 0
-    slot = home_slot_name(run)
-    while not slot_has(slot, home_team) and pulses < 40:
-        tap(pad, "RT", secs=xr.TRIGGER_PULSE, settle=0.7)
-        pulses += 1
-        slot = home_slot_name(run)
-    log(f"home slot after {pulses} RT pulses: {slot!r}")
-    if not slot_has(slot, home_team):
-        raise xr.GateError("team-select", f"{home_team} never read in the home slot; last {slot!r}")
+    slot = cycle_slot_to(run, pad, HOME_SLOT, home_team, "home")
     text = slot
     if away_team:
         # The triggers cycle the slot the controller sits on, and it starts in
@@ -211,18 +255,12 @@ def quick_game_home(run: xr.XemuRun, pad: xr.Gamepad, out_dir: Path, *, home_tea
         # the away side, RT cycles that slot, D-pad RIGHT puts it back in the
         # middle so the rest of the route matches every earlier run.
         tap(pad, "LEFT", settle=1.0)
-        pulses = 0
-        left = slot_name(run, AWAY_SLOT)
-        while not slot_has(left, away_team) and pulses < 40:
-            tap(pad, "RT", secs=xr.TRIGGER_PULSE, settle=0.7)
-            pulses += 1
-            left = slot_name(run, AWAY_SLOT)
-        log(f"away slot after {pulses} RT pulses on the away side: {left!r}")
-        tap(pad, "RIGHT", settle=1.0)
-        if not slot_has(left, away_team):
-            raise xr.GateError("team-select", f"{away_team} never read in the away slot; last {left!r}")
-        home_after = home_slot_name(run)
-        if not slot_has(home_after, home_team):
+        try:
+            left = cycle_slot_to(run, pad, AWAY_SLOT, away_team, "away")
+        finally:
+            tap(pad, "RIGHT", settle=1.0)
+        home_after, home_read = read_slot(run, HOME_SLOT)
+        if home_read != home_team:
             raise xr.GateError("team-select", f"home slot changed while choosing the away team: {home_after!r}")
         text = f"{left} AT {home_after}"
     run.screenshot("04-team-select-home", out_dir)
