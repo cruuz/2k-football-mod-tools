@@ -93,11 +93,24 @@ FREEZE_SECONDS = 75.0
 MOTION_GRACE_SECONDS = 20.0
 
 
-def home_selected(text: str, home_team: str) -> bool:
-    """Team Select reads "AWAY AT HOME"; the wanted name must sit after the AT."""
-    if " AT " in text:
-        return home_team in text.split(" AT ", 1)[1]
-    return home_team in text
+#: The name bar on Team Select, in the 1280x720 capture: "AWAY AT HOME" at y 104..132,
+#: the away name in the left slot and the home name in the right slot.
+HOME_SLOT = (690, 104, 960, 132)
+
+
+def home_slot_name(run: xr.XemuRun) -> str:
+    """OCR only the right slot of the Team Select name bar: the home team.
+
+    Full-screen OCR read "FALCONS" once by luck and then never read "PATRIOTS"
+    in forty pulses (2026-09-20, disc B), so the check is on the slot alone,
+    upscaled and read as one line. The L/R arrow glyphs leak a few letters
+    ("SEFALCONS"), so the caller tests the name as a substring.
+    """
+    from PIL import ImageEnhance
+    image = run._frame().convert("L").crop(HOME_SLOT)
+    image = image.resize((image.width * 4, image.height * 4))
+    image = ImageEnhance.Contrast(image).enhance(2.0)
+    return xr.normalized(xr._ocr_image(image, 7))
 
 
 def quick_game_home(run: xr.XemuRun, pad: xr.Gamepad, out_dir: Path, *, home_team: str) -> str:
@@ -128,14 +141,16 @@ def quick_game_home(run: xr.XemuRun, pad: xr.Gamepad, out_dir: Path, *, home_tea
                      "team-select", pad=pad)
     run.screenshot("03-team-select", out_dir)
     pulses = 0
-    while not home_selected(text, home_team) and pulses < 40:
+    slot = home_slot_name(run)
+    while home_team not in slot and pulses < 40:
         tap(pad, "RT", secs=xr.TRIGGER_PULSE, settle=0.7)
         pulses += 1
-        text = screen_text(run)
-    log(f"home team after {pulses} RT pulses: {text[:110]!r}")
+        slot = home_slot_name(run)
+    log(f"home slot after {pulses} RT pulses: {slot!r}")
     run.screenshot("04-team-select-home", out_dir)
-    if not home_selected(text, home_team):
-        raise xr.GateError("team-select", f"{home_team} never read as the home team; saw {text[:120]!r}")
+    if home_team not in slot:
+        raise xr.GateError("team-select", f"{home_team} never read in the home slot; last {slot!r}")
+    text = slot
     hold(pad, "START", xr.START_HOLD)
     time.sleep(4.0)
     run.screenshot("05-coach-matchup", out_dir)
