@@ -82,12 +82,32 @@ def frame_digest(run: xr.XemuRun) -> str:
     return hashlib.sha256(run._frame().tobytes()).hexdigest()[:16]
 
 
+#: How long the picture may sit perfectly still, once the intro has started
+#: moving, before it is called frozen. The Berman intro is full-motion video,
+#: so a run that has shown motion and then holds one identical frame this long
+#: is not a slow load; it is the hang.
+FREEZE_SECONDS = 75.0
+#: The first frames are the black boot and the attract loop; motion before this
+#: does not count as "the intro started".
+MOTION_GRACE_SECONDS = 20.0
+
+
 def watch(run: xr.XemuRun, out_dir: Path, port: int, minutes: float) -> dict:
+    """Classify from the picture; gdb registers are a best-effort corroboration only.
+
+    The screen is the trustworthy signal here: reaching the coin toss / kickoff
+    is PASS, and a full-motion intro that then holds one identical frame past
+    ``FREEZE_SECONDS`` is the freeze. The gdb sample is attempted and its EIP
+    recorded when it works (the 2026-09-15 bugcheck sat at 0x800151EF), but the
+    attach is unreliable under this xemu build, so a freeze is never gated on
+    it -- a run with no CPU data still returns FROZEN on the frozen picture.
+    """
     started = time.monotonic()
     deadline = started + minutes * 60
     samples: list[dict] = []
     frames: list[tuple[float, str]] = []
-    shots = 0
+    seen_motion_at: float | None = None
+    frozen_since: float | None = None
     last_shot = 0.0
     last_cpu = 0.0
     seen_text = ""
@@ -99,12 +119,18 @@ def watch(run: xr.XemuRun, out_dir: Path, port: int, minutes: float) -> dict:
             log(f"+{elapsed:.0f}s screen: {text[:120]!r}")
         if any(n in text for n in REACHED):
             run.screenshot(f"reached-{elapsed:.0f}s", out_dir)
-            return dict(outcome="PASS", elapsed=elapsed, text=text[:300], cpu=samples)
+            return dict(outcome="PASS", elapsed=round(elapsed, 1), text=text[:300], cpu=samples)
+        digest = frame_digest(run)
+        if frames and digest != frames[-1][1]:
+            if elapsed >= MOTION_GRACE_SECONDS and seen_motion_at is None:
+                seen_motion_at = elapsed
+            frozen_since = None
+        elif frames and digest == frames[-1][1] and frozen_since is None:
+            frozen_since = elapsed
+        frames.append((elapsed, digest))
         if elapsed - last_shot >= 30:
             run.screenshot(f"watch-{elapsed:03.0f}s", out_dir)
-            shots += 1
             last_shot = elapsed
-        frames.append((elapsed, frame_digest(run)))
         if elapsed - last_cpu >= 30:
             last_cpu = elapsed
             try:
@@ -115,14 +141,20 @@ def watch(run: xr.XemuRun, out_dir: Path, port: int, minutes: float) -> dict:
             samples.append(cpu)
             log(f"+{elapsed:.0f}s cpu: " + ", ".join(f"{k}={v:#x}" if isinstance(v, int) else f"{k}={v}"
                                                     for k, v in cpu.items() if k != "elapsed"))
-            in_kernel = [s for s in samples[-2:] if KERNEL[0] <= s.get("eip", 0) < KERNEL[1]]
-            static = len(frames) >= 6 and len({d for _, d in frames[-6:]}) == 1
-            if len(in_kernel) == 2 and static:
-                run.screenshot(f"bugcheck-{elapsed:.0f}s", out_dir)
-                return dict(outcome="BUGCHECK", elapsed=elapsed, text=text[:300], cpu=samples)
+        # A full-motion intro that then holds one frame past the freeze window,
+        # having shown motion first, is the hang. The kernel EIP, when a sample
+        # landed, says whether it is the 2026-09-15 bugcheck specifically.
+        if (seen_motion_at is not None and frozen_since is not None
+                and elapsed - frozen_since >= FREEZE_SECONDS):
+            run.screenshot(f"frozen-{elapsed:.0f}s", out_dir)
+            in_kernel = any(KERNEL[0] <= s.get("eip", 0) < KERNEL[1] for s in samples[-3:])
+            return dict(outcome="BUGCHECK" if in_kernel else "FROZEN",
+                        elapsed=round(elapsed, 1), frozen_since=round(frozen_since, 1),
+                        text=seen_text[:300], cpu=samples)
         time.sleep(10.0)
     run.screenshot("timeout", out_dir)
-    return dict(outcome="TIMEOUT", elapsed=minutes * 60, text=seen_text[:300], cpu=samples)
+    return dict(outcome="TIMEOUT", elapsed=round(minutes * 60, 1),
+                saw_motion=seen_motion_at is not None, text=seen_text[:300], cpu=samples)
 
 
 def main() -> int:
@@ -168,7 +200,8 @@ def main() -> int:
         if pad is not None:
             pad.quit()
         ledger["shutdown"] = run.shutdown()
-        (run_dir / "berman-probe.json").write_text(json.dumps(ledger, indent=1) + "\n", encoding="utf-8")
+        (run_dir / "berman-probe.json").write_text(json.dumps(ledger, indent=1) + "\n",
+                                                   encoding="utf-8", newline="\n")
         print(f"BERMAN_PROBE label={args.label or '-'} outcome={ledger['outcome']} "
               f"elapsed={ledger.get('elapsed', 0):.0f}s", flush=True)
     return 0 if ledger["outcome"] == "PASS" else 1
