@@ -128,9 +128,12 @@ def slot_has(slot: str, name: str) -> bool:
     if name in slot:
         return True
     import difflib
-    tokens = [t for t in re.findall(r"[A-Z0-9]+", slot) if len(t) >= max(3, len(name) - 2)]
-    return any(difflib.SequenceMatcher(None, name, t[-len(name) - 1:]).ratio() >= 0.8
-               or difflib.SequenceMatcher(None, name, t).ratio() >= 0.8 for t in tokens)
+    letters = re.sub(r"[^A-Z0-9]", "", slot)
+    for width in (len(name) - 1, len(name), len(name) + 1):
+        for start in range(0, max(0, len(letters) - width) + 1):
+            if difflib.SequenceMatcher(None, name, letters[start:start + width]).ratio() >= 0.8:
+                return True
+    return False
 
 
 def home_slot_name(run: xr.XemuRun) -> str:
