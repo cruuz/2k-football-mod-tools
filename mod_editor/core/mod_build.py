@@ -1074,11 +1074,16 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_bui
                     if preflight is not None:
                         preflight.update(checked)
             progress("Hashing the verified disc", 0, 0)
-            from .build_feedback import measure
-            if project_result is not None and getattr(project_result, "source_sha256", ""):
-                from .build_feedback import compare, _digest
+            from .build_feedback import measure, compare, _digest
+            # One read of the output. The source's hash comes from the pass
+            # that copied it (the project builder's receipt, or this build's
+            # own copy); beta 73 read the 6 GB source again here to get it.
+            source_sha256 = (project_result.source_sha256
+                             if project_result is not None and getattr(project_result, "source_sha256", "")
+                             else receipt.get("source_sha256"))
+            if source_sha256:
                 receipt["outcome"] = compare(
-                    {"sha256": project_result.source_sha256, "size": project_result.output_size},
+                    {"sha256": source_sha256, "size": source.stat().st_size},
                     _digest(directory / target.name))
             else:
                 receipt["outcome"] = measure(source, directory / target.name)
@@ -1660,6 +1665,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         if _consume_source:
             kwargs["_consume_source"] = True
         step = tt.write_copy(source, target, **kwargs)
+        receipt["source_sha256"] = step.get("source_sha256")
         receipt["steps"].append({"step": "xbe", **{k: step.get(k) for k in ("modern_naming_patch", "crib_reclaim_patch", "catch_slider", "accel_ramp", "draft_ai", "edge_rename", "edge_rename_disc", "returner_fix", "progression", "scheme_labels", "camera", "kick_rules", "kick_power", "dynamic_kickoff", "dynamic_kickoff_settings", "dynamic_kickoff_patch", "depth_chart_rows", "practice_squad", "practice_reserves", "depth_locks", "season_cap", "season_cap_patch", "widescreen", "widescreen_patch", "overtime", "team_column", "seven_on_seven", "position_row", "probowl_order", "penalties", "flatter_deep_ball", "flatter_deep_ball_patch", "chop_block_toggle", "chop_block_toggle_patch", "chop_block_evidence", "uniform_choice", "kick_laces", "franchise_practice", "prospect_names", "player_star", "music_policy", "music_unlock", "music_userlist", "music_state", "music_policy_patch", "scorebug_xbe", "changed_byte_count")}})
     else:
         progress("Copying the image", 0, 0)
@@ -1669,7 +1675,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             os.replace(source, target)
         else:
             from .build_io import copy_image
-            copy_image(source, target, progress)
+            import hashlib
+            # Hashed as it is copied; the measured outcome never reads the
+            # source again (beta 74).
+            source_hasher = hashlib.sha256()
+            copy_image(source, target, progress, source_hasher)
+            receipt["source_sha256"] = source_hasher.hexdigest()
         receipt["steps"].append({"step": "copy"})
 
     # 3. presentation on the copy

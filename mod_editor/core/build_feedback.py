@@ -69,3 +69,28 @@ def completion(receipt):
     if legacy:
         message += "\n\n" + "\n".join(legacy)
     return title, message
+
+
+def timing_summary(stage_seconds, *, limit=4):
+    """One line naming the slowest stages of a build, from its recorded timings.
+
+    Beta 74: a build that takes minutes says where they went ("builder 41 s,
+    verify 12 s"), so a slow machine or a slow option is named in the report
+    people paste, not guessed at afterwards.
+    """
+    if not isinstance(stage_seconds, dict):
+        return ""
+    rows = [(str(name), float(seconds)) for name, seconds in stage_seconds.items()
+            if isinstance(seconds, (int, float)) and seconds >= 0.05]
+    if not rows:
+        return ""
+    total = sum(seconds for _, seconds in rows)
+    rows.sort(key=lambda row: row[1], reverse=True)
+
+    def fmt(seconds):
+        if seconds >= 60:
+            return f"{int(seconds // 60)} min {int(seconds % 60)} s"
+        return f"{seconds:.0f} s" if seconds >= 10 else f"{seconds:.1f} s"
+
+    named = ", ".join(f"{name} {fmt(seconds)}" for name, seconds in rows[:limit])
+    return f"Time: {fmt(total)} ({named})"

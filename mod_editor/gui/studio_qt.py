@@ -8058,6 +8058,10 @@ class StudioMainWindow(QMainWindow):
             refitted = tuple(getattr(result, "refitted", ()) or ())
             if refitted:
                 extra += "\n\n" + "\n".join(refitted)
+            from mod_editor.core.build_feedback import timing_summary
+            timing = timing_summary(getattr(result, "stage_seconds", None))
+            if timing:
+                extra += "\n\n" + timing
             QMessageBox.information(
                 self,
                 "Modded XISO ready",
