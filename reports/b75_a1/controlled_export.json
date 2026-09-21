@@ -1,0 +1,285 @@
+{
+  "kind": "controlled production finalizer, not tester folder",
+  "requests": [
+    {
+      "kind": "audibles",
+      "book": "O-ManBlock"
+    },
+    {
+      "kind": "situation_mask",
+      "book": "O-ManBlock",
+      "key": 8,
+      "formation": 14,
+      "exclude": true
+    },
+    {
+      "kind": "situation_personnel_row",
+      "book": "O-ManBlock",
+      "key": 8,
+      "category": 6,
+      "value": 10
+    },
+    {
+      "kind": "situation_masks_enabled",
+      "enabled": true
+    }
+  ],
+  "before_defensive_books": {
+    "USER-d": "83b3da4aa3fd412f50e242c130c6613d59aa27e0c7ddcf3943689dedb00d92e1",
+    "X-34Base": "67ef383cc1fcde7a44639fa761fbb4efbd82aa3d4560035d27abd704d30ae218",
+    "X-34ZoneBlitz": "45ee87e572dfa573c82db722e95b45b4d999efea9d822276b73d1a832e939dcf",
+    "X-43Blitz": "a2ce06b26b10dd3b9be637553fef01e4f961c9f74cfc162be35b5267fd301fa3",
+    "X-43Cover2": "2191bc3a494f58d279e79449abd6f619b83dd8b7170b86847ae445c930c4b428",
+    "global-d": "2740c33db3378ec9ffb8be222aed7cbd17c99f376c46b2ef240b28ca7e4e1408"
+  },
+  "after_defensive_books": {
+    "USER-d": "83b3da4aa3fd412f50e242c130c6613d59aa27e0c7ddcf3943689dedb00d92e1",
+    "X-34Base": "67ef383cc1fcde7a44639fa761fbb4efbd82aa3d4560035d27abd704d30ae218",
+    "X-34ZoneBlitz": "45ee87e572dfa573c82db722e95b45b4d999efea9d822276b73d1a832e939dcf",
+    "X-43Blitz": "a2ce06b26b10dd3b9be637553fef01e4f961c9f74cfc162be35b5267fd301fa3",
+    "X-43Cover2": "2191bc3a494f58d279e79449abd6f619b83dd8b7170b86847ae445c930c4b428",
+    "global-d": "2740c33db3378ec9ffb8be222aed7cbd17c99f376c46b2ef240b28ca7e4e1408"
+  },
+  "master_comparison": {
+    "before_master_sha256": "2de9d17dd4de29c37b005fabf4b1e5db7017556ae538fde2be6b3aca1c70a891",
+    "after_master_sha256": "2de9d17dd4de29c37b005fabf4b1e5db7017556ae538fde2be6b3aca1c70a891",
+    "defensive_play_count": 266,
+    "changed": []
+  },
+  "omanblock_before": "18de1e3ee886aceba6535be2c8472d0af3f5554f8c9023d553068005416dd1f5",
+  "omanblock_after": "3142d1380fd60bd2097f1a7f2567580793db588249dfecaced4b83897016e794",
+  "receipt": {
+    "schema": "apf_playcalling_build/v1",
+    "situation_masks": {
+      "patches": [
+        {
+          "schema": "apf2k8_situation_mask/v2",
+          "classification": "EXPERIMENTAL",
+          "runtime_status": "UNWITNESSED",
+          "profile": "base",
+          "image_sha256": "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf",
+          "key": "actual down 1..4 x absolute f32 longitudinal distance <=182.88 / <=640.08 / >640.08",
+          "policies": {
+            "O-ManBlock": [
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [
+                14
+              ],
+              [],
+              [],
+              []
+            ]
+          },
+          "personnel_rows": {
+            "O-ManBlock": [
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {
+                "6": 10
+              },
+              {},
+              {},
+              {}
+            ]
+          },
+          "data_sha256": "bffaa5c141ddfca769abd932480819fd54773b8e130650851e4df9d8cdb7864c",
+          "hooks": [
+            [
+              2223419800,
+              2228282112
+            ],
+            [
+              2223412928,
+              2228283500
+            ],
+            [
+              2223419536,
+              2228284592
+            ]
+          ],
+          "code": {
+            "instructions": 789,
+            "branches": 130,
+            "sha256": "036b7bd9e6505b8ae24277cb4412c9ee123efda91586ad571879b1a11c9a2529"
+          },
+          "fallback": "An empty filtered draw uses the original complete draw; last-draw receipts at 0x852D6500 and 0x852D6518",
+          "limits": "Ordinary automatic offense calls in scrimmage phase 4 only; cached specials, explicit play/formation paths and kick/try phases bypass the filter.",
+          "file": "54540807-situations-base.patch.toml"
+        },
+        {
+          "schema": "apf2k8_situation_mask/v2",
+          "classification": "EXPERIMENTAL",
+          "runtime_status": "UNWITNESSED",
+          "profile": "tu_1_1",
+          "image_sha256": "65f522ce1cdda42cf19c112e9ec07302e89c81e4148c9f22e6db5e03952f9457",
+          "key": "actual down 1..4 x absolute f32 longitudinal distance <=182.88 / <=640.08 / >640.08",
+          "policies": {
+            "O-ManBlock": [
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [
+                14
+              ],
+              [],
+              [],
+              []
+            ]
+          },
+          "personnel_rows": {
+            "O-ManBlock": [
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {
+                "6": 10
+              },
+              {},
+              {},
+              {}
+            ]
+          },
+          "data_sha256": "bffaa5c141ddfca769abd932480819fd54773b8e130650851e4df9d8cdb7864c",
+          "hooks": [
+            [
+              2223423128,
+              2228282112
+            ],
+            [
+              2223416256,
+              2228283500
+            ],
+            [
+              2223422864,
+              2228284592
+            ]
+          ],
+          "code": {
+            "instructions": 789,
+            "branches": 130,
+            "sha256": "55b9446d84200cf33d851331dd6cb78b65f1e87a1c0ae7c826f75b559f4aabe7"
+          },
+          "fallback": "An empty filtered draw uses the original complete draw; last-draw receipts at 0x852D6500 and 0x852D6518",
+          "limits": "Ordinary automatic offense calls in scrimmage phase 4 only; cached specials, explicit play/formation paths and kick/try phases bypass the filter.",
+          "file": "54540807-situations-tu_1_1.patch.toml"
+        }
+      ],
+      "data": "situation-masks.bin",
+      "next_step": "Install the patch for the executable version you launch. Book data alone does not enable exclusions or personnel-row overrides.",
+      "runtime_status": "UNWITNESSED"
+    },
+    "events": [
+      {
+        "after": "3142d1380fd60bd2097f1a7f2567580793db588249dfecaced4b83897016e794",
+        "before": "18de1e3ee886aceba6535be2c8472d0af3f5554f8c9023d553068005416dd1f5",
+        "coverage": {},
+        "request": {
+          "book": "O-ManBlock",
+          "kind": "audibles"
+        },
+        "retired": [],
+        "warning": ""
+      },
+      {
+        "after": true,
+        "before": false,
+        "coverage": {},
+        "request": {
+          "book": "O-ManBlock",
+          "exclude": true,
+          "formation": 14,
+          "key": 8,
+          "kind": "situation_mask"
+        },
+        "retired": [],
+        "warning": ""
+      },
+      {
+        "after": 10,
+        "before": null,
+        "coverage": {},
+        "request": {
+          "book": "O-ManBlock",
+          "category": 6,
+          "key": 8,
+          "kind": "situation_personnel_row",
+          "value": 10
+        },
+        "retired": [],
+        "warning": ""
+      },
+      {
+        "after": true,
+        "before": false,
+        "coverage": {},
+        "request": {
+          "enabled": true,
+          "kind": "situation_masks_enabled"
+        },
+        "retired": [],
+        "warning": ""
+      }
+    ],
+    "clones": [],
+    "removed_formations": [],
+    "retired_categories": [],
+    "teams_now_own_books": [],
+    "clone_verification": null,
+    "runtime_status": "UNWITNESSED",
+    "verification": {
+      "content_reparsed": true,
+      "outside_content_allocations_identical": true,
+      "resources_resolved_by_name_after_insertion": true
+    },
+    "resources": [
+      {
+        "name_id": 359254844,
+        "outer_index": 130,
+        "body_sha256": "3142d1380fd60bd2097f1a7f2567580793db588249dfecaced4b83897016e794",
+        "transport": {
+          "allocation_bytes": 2048,
+          "active_bytes": 1534,
+          "remaining_bytes": 514,
+          "h7a_round_trip_exact": true,
+          "h7a_overlapping_matches": 0,
+          "transport": {
+            "retail_token_count": 890,
+            "output_token_count": 906,
+            "retail_tokens_preserved_semantically": 874,
+            "retail_tokens_split_or_replaced": 16,
+            "retail_payload_consumed_bytes": 1327,
+            "retail_zero_alignment_bytes": 0,
+            "strategy": "retail-token-preserving",
+            "token_preserving_bytes": 1340,
+            "payload_bytes": 1340,
+            "payload_budget": 1854,
+            "overlapping_matches": 0
+          }
+        }
+      }
+    ]
+  }
+}
