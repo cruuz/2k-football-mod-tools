@@ -37,7 +37,7 @@ class FeedbackTests(unittest.TestCase):
         self.assertNotIn('Steps checked:', body)
         self.assertIn('Play latest disc in xemu', body)
         panel.copy_summary_button.click()
-        self.assertIn('beta-73', self.app.clipboard().text())
+        self.assertIn('beta-74', self.app.clipboard().text())
         self.assertIn('Project artwork', self.app.clipboard().text())
         panel.deleteLater()
 
