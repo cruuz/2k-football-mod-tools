@@ -227,8 +227,13 @@ def quick_game_home(run: xr.XemuRun, pad: xr.Gamepad, out_dir: Path, *, home_tea
         except xr.GateError:
             if time.monotonic() > deadline:
                 raise
-            log("no title screen yet (attract demo?); pressing START to leave it")
+            log("no title screen yet (attract demo?); pressing START, A and B to leave it")
+            # A START tap left the highlight demo once (B/Giants) and not the
+            # sideline cutscene demo (chain 9 run 1, eight minutes of Ravens on
+            # a bench, 2026-09-20); A and B are tried as well, each settled.
             tap(pad, "START", secs=0.3, settle=3.0)
+            tap(pad, "A", secs=0.3, settle=3.0)
+            tap(pad, "B", secs=0.3, settle=3.0)
     run.screenshot("01-press-start", out_dir)
     if not at_menu:
         hold(pad, "START", xr.START_HOLD)
