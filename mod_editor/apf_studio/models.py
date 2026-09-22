@@ -182,6 +182,18 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
         "explicit installation, status and removal. Gameplay UNWITNESSED."
     ),
 ),
+"apf2k8.gameplay_tuning_sliders.charge_abilities": CapabilityActionBinding(
+    "apf2k8.gameplay_tuning_sliders.charge_abilities",
+    "gameplay.charge_abilities",
+    _actions(ApfProductAction.EXPORT, ApfProductAction.BUILD_COPY),
+    one_shot_target="mod_editor.core.apf2k8_charge_abilities:write_patch",
+    output_kind="authored-xenia-patch-toml",
+    product_note=(
+        "Tools > Charged abilities offers an off-by-default EXPERIMENTAL Build "
+        "checkbox, profile export, explicit installation and removal. Builds emit "
+        "BASE/TU patches and receipts. Gameplay UNWITNESSED."
+    ),
+),
 "apf2k8.playbooks.personnel_curve_patch": CapabilityActionBinding(
     "apf2k8.playbooks.personnel_curve_patch",
     "playbooks.personnel_curves",

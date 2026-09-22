@@ -215,7 +215,7 @@ class ProviderIntegrityTests(unittest.TestCase):
             # formation/play clone writer, fixed-slot audio, the fail-closed
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
-            [301, 10, 8, 9, 8, 9]  # s5: + official team accents and the xemu reference fragment model.
+            [302, 10, 8, 9, 8, 9]  # b75: + the Edit Player elbow-pad option patch.
         )
         for provider in providers:
             entries = [provider.backend_module]

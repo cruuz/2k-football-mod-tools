@@ -144,12 +144,22 @@ class SearchTests(unittest.TestCase):
                                0xFEEDBEEF, stored, 0, 0) + encoded + bytes(16)
             chunk = replace(parse_chunks(span)[0], index=4)
             _, info = decode_chunk(span, parse_chunks(span)[0])
-            _, png = f.png()
-            payload, rgba, levels = writer._read_png(png, f.rows[0])
+            # Three DIFFERENT own-texture imports, so this group really does
+            # append three chains: references carrying one artwork share one
+            # chain (beta 75) and three copies of it are not what is measured.
+            def art(reference):
+                return b''.join(bytes((240, 245, 250, 255) if x > y + 3 else
+                                      (20 + reference * 40, 180, 170 - reference * 50, 255))
+                                for y in range(f.height) for x in range(f.width))
+            authored = {}
+            for row in f.rows:
+                png = Path(folder) / f'floor-art-{row.reference_index}.png'
+                png.write_bytes(writer.encode_rgba_png(f.width, f.height, art(row.reference_index)))
+                authored[row.reference_index] = (row,) + writer._read_png(png, row)
             with patch.object(writer, '_rebuild_fixed_span', side_effect=AssertionError('impossible rung parsed')):
                 with self.assertRaises(writer.EquipmentFitError) as caught:
                     writer._compile_group(span, chunk, f.decoded, info, f.rows,
-                        {r.reference_index: (r, payload, rgba, levels) for r in f.rows}, {0,1,2}, suggest_fit=False)
+                        authored, {0,1,2}, suggest_fit=False)
             self.assertEqual(caught.exception.attempts[0]['proof'], 'palette_invariant_token_bound')
             self.assertTrue(caught.exception.required_is_lower_bound)
 

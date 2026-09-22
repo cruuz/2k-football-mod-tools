@@ -58,9 +58,16 @@ CARD_SECTION = 6            # synthetic .rdata window: the Player Card column li
 CARD_VA = 0x535000
 CARD_RAW = ROOKIE_RAW + ROOKIE_SIZE
 CARD_SIZE = 0x1000
+ELBOW_SECTION = 7           # synthetic .text window: the Edit Player elbow-pad cycling handlers (0x34521F..)
+ELBOW_VA = 0x345000
+ELBOW_RAW = CARD_RAW + CARD_SIZE
+ELBOW_SIZE = 0x1000
 
 
-def _build_synthetic_xbe(curves: dict[str, tuple[tuple[float, float], ...]] | None = None) -> bytes:
+def _build_synthetic_xbe(curves: dict[str, tuple[tuple[float, float], ...]] | None = None, *,
+                         elbow: bool = False) -> bytes:
+    # ``elbow`` adds the Edit Player elbow-row .text window (beta 75). Off by default so the
+    # frozen beta 60/61 pack receipts, which hash this synthetic image, keep their base hash.
     buf = bytearray(TEXT_RAW + TEXT_SIZE)
     buf[0:4] = strength.XBE_MAGIC
     struct.pack_into("<I", buf, 0x104, IMAGE_BASE)
@@ -85,9 +92,13 @@ def _build_synthetic_xbe(curves: dict[str, tuple[tuple[float, float], ...]] | No
             fields[1] = CARD_VA
             fields[3] = CARD_RAW
             fields[4] = CARD_SIZE
+        if elbow and index == ELBOW_SECTION:
+            fields[1] = ELBOW_VA
+            fields[3] = ELBOW_RAW
+            fields[4] = ELBOW_SIZE
         struct.pack_into(strength.SECTION_TABLE_FIELDS, buf, header, *fields)
     # .data window for the Rookie Report key tables (retail scale words of the K / P / FB structs)
-    buf.extend(b"\0" * (CARD_RAW + CARD_SIZE - len(buf)))
+    buf.extend(b"\0" * ((ELBOW_RAW + ELBOW_SIZE if elbow else CARD_RAW + CARD_SIZE) - len(buf)))
     # .rdata window for the Player Card TEAM column: the six column lists and the Yr descriptor it clones
     buf[CARD_RAW + (team_column.YR_DESCRIPTOR_VA - CARD_VA): CARD_RAW + (team_column.YR_DESCRIPTOR_VA - CARD_VA) + team_column.DESCRIPTOR_SIZE] = team_column.RETAIL_YR_DESCRIPTOR
     for _label, list_va, pointers in team_column.COLUMN_LISTS:
@@ -116,6 +127,11 @@ def _build_synthetic_xbe(curves: dict[str, tuple[tuple[float, float], ...]] | No
     for va, retail in seven.RETAIL_RUSH_READS:
         off = TEXT_RAW + (va - TEXT_VA)
         buf[off:off + len(retail)] = retail
+    if elbow:
+        from mod_editor.core import nfl2k5_elbow_options as elbow_options
+        for _label, va, retail, _patched in elbow_options.sites():   # the two Edit Player elbow rows
+            off = ELBOW_RAW + (va - ELBOW_VA)
+            buf[off: off + len(retail)] = retail
     from mod_editor.core import nfl2k5_season_cap as season_cap
     off = TEXT_RAW + season_cap.CONTEXT_VA - TEXT_VA
     buf[off:off + len(season_cap.RETAIL_CONTEXT)] = season_cap.RETAIL_CONTEXT
@@ -129,7 +145,7 @@ def _build_synthetic_xbe(curves: dict[str, tuple[tuple[float, float], ...]] | No
     for va, retail in ((tt.LOBSPEED_COUNT_SITE_VA, tt.RETAIL_COUNT_OPERAND), (tt.LOBSPEED_PAIRS_SITE_VA, tt.RETAIL_PAIRS_OPERAND)):
         off = TEXT_RAW + (va - TEXT_VA)
         buf[off: off + len(retail)] = retail
-    for index, (raw, size) in ((3, (DATA_RAW, DATA_SIZE)), (0, (TEXT_RAW, TEXT_SIZE)), (ROOKIE_SECTION, (ROOKIE_RAW, ROOKIE_SIZE)), (CARD_SECTION, (CARD_RAW, CARD_SIZE))):
+    for index, (raw, size) in ((3, (DATA_RAW, DATA_SIZE)), (0, (TEXT_RAW, TEXT_SIZE)), (ROOKIE_SECTION, (ROOKIE_RAW, ROOKIE_SIZE)), (CARD_SECTION, (CARD_RAW, CARD_SIZE)), *(((ELBOW_SECTION, (ELBOW_RAW, ELBOW_SIZE)),) if elbow else ())):
         header = TABLE_OFF + index * strength.SECTION_HEADER_SIZE
         buf[header + 36: header + 56] = _section_digest(bytes(buf), raw, size)
     return bytes(buf)

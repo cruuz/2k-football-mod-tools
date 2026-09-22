@@ -42,7 +42,7 @@ from .audio_encoding import (
     Pcm16TemplateReceipt,
 )
 from .asset_io import ApfAssetIO
-from .build import ApfBuildService
+from .build import ApfBuildService, ApfBuildOptions
 from .catalog import ApfCatalog, CatalogBuilder
 from .inspectors import (
     ApfInspectorService,
@@ -150,6 +150,7 @@ class ApfStudioFacade:
         self.session: ApfSession | None = None
         self.inspectors: ApfInspectorService | None = None
         self.last_build: BuildReceipt | None = None
+        self.build_options = ApfBuildOptions()
         self.last_project_identity: ProjectTargetIdentity | None = None
         self._playable_audio_rows: dict[str, InspectorRow] | None = None
         # A 53-player planning roster deliberately remains separate from the
@@ -228,6 +229,36 @@ class ApfStudioFacade:
     def playcalling_snapshot(self):
         with self._session_lock:
             return (id(self.session), self._playcalling.snapshot(self.require_session()))
+
+    def staged_book_body(self, book_type: str):
+        """This project's fine-tuned body for one book type, or None when it has no edit.
+
+        Save Assignments compares this with the same book inside the built game
+        folder it is about to point a label at. The plays come from that folder,
+        so a folder built before the fine-tuning holds different bytes and the
+        write is refused. This reuses the loaded books and the validated staged
+        view CPU Play Calling already keeps; it never reparses the source again.
+        """
+        from types import SimpleNamespace
+        from mod_editor.core.errors import ModEditorError
+        with self._session_lock:
+            session = self.session
+            if session is None:
+                return None
+            try:
+                staged = self._playcalling.state(session).books.get(book_type)
+                if staged is None:
+                    return None
+                unedited = self._playcalling.backend.load(SimpleNamespace(
+                    source=session.source, modifications=(),
+                    staged_splb_changes=lambda: ())).books.get(book_type)
+            except (ModEditorError, FacadeError, OSError, ValueError):
+                # A project that cannot produce a staged view has no fine-tuned
+                # book to compare, so the write proceeds under the page's copy.
+                return None
+            if unedited is None or bytes(staged) == bytes(unedited):
+                return None
+            return bytes(staged)
 
     def prepare_situation_patch(self, profile):
         from .situation_masks import prepare
@@ -2412,6 +2443,7 @@ class ApfStudioFacade:
                 output_game,
                 progress,
                 replace_existing=replace_existing,
+                options=self.build_options,
             )
             self.last_build = receipt
             return receipt

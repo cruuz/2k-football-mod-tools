@@ -1,0 +1,250 @@
+{
+  "files": 34,
+  "returncode": 0,
+  "passed": 380,
+  "skipped": 1,
+  "subtests_passed": 834,
+  "results": [
+    {
+      "file": "tests/mod_editor/test_apf_b69_launch_patches.py",
+      "returncode": 0,
+      "seconds": 2.05,
+      "log": "reports/b75_a2/isolated/test_apf_b69_launch_patches.log",
+      "pytest_summary": "5 passed in 0.62s"
+    },
+    {
+      "file": "tests/mod_editor/test_apf_b70_stock_recipes.py",
+      "returncode": 0,
+      "seconds": 211.15,
+      "log": "reports/b75_a2/isolated/test_apf_b70_stock_recipes.log",
+      "pytest_summary": "5 passed, 64 subtests passed in 209.68s (0:03:29)"
+    },
+    {
+      "file": "tests/mod_editor/test_apf_build_ausb_overlays.py",
+      "returncode": 0,
+      "seconds": 0.94,
+      "log": "reports/b75_a2/isolated/test_apf_build_ausb_overlays.log",
+      "pytest_summary": "5 passed in 0.52s"
+    },
+    {
+      "file": "tests/mod_editor/test_apf_build_raw_span_overlays.py",
+      "returncode": 0,
+      "seconds": 0.95,
+      "log": "reports/b75_a2/isolated/test_apf_build_raw_span_overlays.log",
+      "pytest_summary": "7 passed in 0.55s"
+    },
+    {
+      "file": "tests/mod_editor/test_apf_capability_action_parity.py",
+      "returncode": 0,
+      "seconds": 1.22,
+      "log": "reports/b75_a2/isolated/test_apf_capability_action_parity.log",
+      "pytest_summary": "11 passed, 122 subtests passed in 0.71s"
+    },
+    {
+      "file": "tests/mod_editor/test_apf_charge_abilities.py",
+      "returncode": 0,
+      "seconds": 8.29,
+      "log": "reports/b75_a2/isolated/test_apf_charge_abilities.log",
+      "pytest_summary": "5 passed in 7.78s"
+    },
+    {
+      "file": "tests/mod_editor/test_apf_charge_abilities_native.py",
+      "returncode": 0,
+      "seconds": 15.54,
+      "log": "reports/b75_a2/isolated/test_apf_charge_abilities_native.log",
+      "pytest_summary": "5 passed in 15.11s"
+    },
+    {
+      "file": "tests/mod_editor/test_apf_charge_abilities_qt.py",
+      "returncode": 0,
+      "seconds": 0.95,
+      "log": "reports/b75_a2/isolated/test_apf_charge_abilities_qt.log",
+      "pytest_summary": "1 passed in 0.51s"
+    },
+    {
+      "file": "tests/mod_editor/test_apf_crest_budget_import.py",
+      "returncode": 0,
+      "seconds": 1.58,
+      "log": "reports/b75_a2/isolated/test_apf_crest_budget_import.log",
+      "pytest_summary": "12 passed in 1.09s"
+    },
+    {
+      "file": "tests/mod_editor/test_apf_crest_fit.py",
+      "returncode": 0,
+      "seconds": 29.88,
+      "log": "reports/b75_a2/isolated/test_apf_crest_fit.log",
+      "pytest_summary": "10 passed, 4 subtests passed in 29.47s"
+    },
+    {
+      "file": "tests/mod_editor/test_apf_cross_domain_audio_safety.py",
+      "returncode": 0,
+      "seconds": 0.97,
+      "log": "reports/b75_a2/isolated/test_apf_cross_domain_audio_safety.log",
+      "pytest_summary": "4 passed in 0.54s"
+    },
+    {
+      "file": "tests/mod_editor/test_apf_digital_font.py",
+      "returncode": 0,
+      "seconds": 0.94,
+      "log": "reports/b75_a2/isolated/test_apf_digital_font.log",
+      "pytest_summary": "14 passed, 11 subtests passed in 0.55s"
+    },
+    {
+      "file": "tests/mod_editor/test_apf_endzone_dxt5a.py",
+      "returncode": 0,
+      "seconds": 40.27,
+      "log": "reports/b75_a2/isolated/test_apf_endzone_dxt5a.log",
+      "pytest_summary": "9 passed, 1 skipped, 45 subtests passed in 39.76s"
+    },
+    {
+      "file": "tests/mod_editor/test_apf_field_material_project.py",
+      "returncode": 0,
+      "seconds": 1.24,
+      "log": "reports/b75_a2/isolated/test_apf_field_material_project.log",
+      "pytest_summary": "4 passed in 0.76s"
+    },
+    {
+      "file": "tests/mod_editor/test_apf_fourth_down.py",
+      "returncode": 0,
+      "seconds": 0.81,
+      "log": "reports/b75_a2/isolated/test_apf_fourth_down.log",
+      "pytest_summary": "5 passed in 0.42s"
+    },
+    {
+      "file": "tests/mod_editor/test_apf_fourth_down_native.py",
+      "returncode": 0,
+      "seconds": 329.1,
+      "log": "reports/b75_a2/isolated/test_apf_fourth_down_native.log",
+      "pytest_summary": "36 passed in 328.66s (0:05:28)"
+    },
+    {
+      "file": "tests/mod_editor/test_apf_fourth_down_qt.py",
+      "returncode": 0,
+      "seconds": 0.76,
+      "log": "reports/b75_a2/isolated/test_apf_fourth_down_qt.log",
+      "pytest_summary": "1 passed in 0.40s"
+    },
+    {
+      "file": "tests/mod_editor/test_apf_helmet_crest_design_product.py",
+      "returncode": 0,
+      "seconds": 2.08,
+      "log": "reports/b75_a2/isolated/test_apf_helmet_crest_design_product.log",
+      "pytest_summary": "13 passed in 1.67s"
+    },
+    {
+      "file": "tests/mod_editor/test_apf_number_texture_writer.py",
+      "returncode": 0,
+      "seconds": 273.77,
+      "log": "reports/b75_a2/isolated/test_apf_number_texture_writer.log",
+      "pytest_summary": "25 passed in 273.31s (0:04:33)"
+    },
+    {
+      "file": "tests/mod_editor/test_apf_playcall_research_native.py",
+      "returncode": 0,
+      "seconds": 223.65,
+      "log": "reports/b75_a2/isolated/test_apf_playcall_research_native.log",
+      "pytest_summary": "30 passed in 223.20s (0:03:43)"
+    },
+    {
+      "file": "tests/mod_editor/test_apf_player_position_product_backend.py",
+      "returncode": 0,
+      "seconds": 21.87,
+      "log": "reports/b75_a2/isolated/test_apf_player_position_product_backend.log",
+      "pytest_summary": "7 passed, 8 subtests passed in 21.37s"
+    },
+    {
+      "file": "tests/mod_editor/test_apf_player_rating_patch.py",
+      "returncode": 0,
+      "seconds": 4.88,
+      "log": "reports/b75_a2/isolated/test_apf_player_rating_patch.log",
+      "pytest_summary": "12 passed, 6 subtests passed in 4.44s"
+    },
+    {
+      "file": "tests/mod_editor/test_apf_player_rating_product_backend.py",
+      "returncode": 0,
+      "seconds": 10.18,
+      "log": "reports/b75_a2/isolated/test_apf_player_rating_product_backend.log",
+      "pytest_summary": "5 passed, 5 subtests passed in 9.70s"
+    },
+    {
+      "file": "tests/mod_editor/test_apf_ps3_speed.py",
+      "returncode": 0,
+      "seconds": 4.59,
+      "log": "reports/b75_a2/isolated/test_apf_ps3_speed.log",
+      "pytest_summary": "15 passed in 4.10s"
+    },
+    {
+      "file": "tests/mod_editor/test_apf_ps3_speed_packages.py",
+      "returncode": 0,
+      "seconds": 10.85,
+      "log": "reports/b75_a2/isolated/test_apf_ps3_speed_packages.log",
+      "pytest_summary": "6 passed in 10.35s"
+    },
+    {
+      "file": "tests/mod_editor/test_apf_ps3_texture_bundle.py",
+      "returncode": 0,
+      "seconds": 30.84,
+      "log": "reports/b75_a2/isolated/test_apf_ps3_texture_bundle.log",
+      "pytest_summary": "28 passed, 4 subtests passed in 30.37s"
+    },
+    {
+      "file": "tests/mod_editor/test_apf_roster_identity.py",
+      "returncode": 0,
+      "seconds": 12.61,
+      "log": "reports/b75_a2/isolated/test_apf_roster_identity.log",
+      "pytest_summary": "18 passed, 5 subtests passed in 12.15s"
+    },
+    {
+      "file": "tests/mod_editor/test_apf_studio_draft_logo.py",
+      "returncode": 0,
+      "seconds": 1.2,
+      "log": "reports/b75_a2/isolated/test_apf_studio_draft_logo.log",
+      "pytest_summary": "7 passed in 0.68s"
+    },
+    {
+      "file": "tests/mod_editor/test_apf_studio_safety.py",
+      "returncode": 0,
+      "seconds": 1.13,
+      "log": "reports/b75_a2/isolated/test_apf_studio_safety.log",
+      "pytest_summary": "27 passed in 0.66s"
+    },
+    {
+      "file": "tests/mod_editor/test_apf_team_art.py",
+      "returncode": 0,
+      "seconds": 16.34,
+      "log": "reports/b75_a2/isolated/test_apf_team_art.log",
+      "pytest_summary": "10 passed, 542 subtests passed in 15.64s"
+    },
+    {
+      "file": "tests/mod_editor/test_apf_textlogo_writer.py",
+      "returncode": 0,
+      "seconds": 61.76,
+      "log": "reports/b75_a2/isolated/test_apf_textlogo_writer.log",
+      "pytest_summary": "8 passed in 61.33s (0:01:01)"
+    },
+    {
+      "file": "tests/mod_editor/test_apf_wave_integration.py",
+      "returncode": 0,
+      "seconds": 15.26,
+      "log": "reports/b75_a2/isolated/test_apf_wave_integration.log",
+      "pytest_summary": "8 passed, 8 subtests passed in 14.83s"
+    },
+    {
+      "file": "tests/mod_editor/test_apf_xenia_edge.py",
+      "returncode": 0,
+      "seconds": 0.77,
+      "log": "reports/b75_a2/isolated/test_apf_xenia_edge.log",
+      "pytest_summary": "6 passed, 10 subtests passed in 0.40s"
+    },
+    {
+      "file": "tests/mod_editor/test_apf_studio_installer.py",
+      "returncode": 0,
+      "log": "reports/b75_a2/installer-final.log",
+      "pytest_summary": "16 passed in 17.41s"
+    }
+  ],
+  "combined_process_qt_crash": "See regression.log; affected file passed in isolation.",
+  "gameplay": "UNWITNESSED",
+  "repin_updates": 0,
+  "integration_followup": "2K5 shared-registry count assertions still expect 176; APF adds row 177. No 2K5 code changed."
+}

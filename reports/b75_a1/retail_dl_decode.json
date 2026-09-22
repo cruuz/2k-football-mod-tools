@@ -1,0 +1,1349 @@
+{
+  "master_sha256": "2de9d17dd4de29c37b005fabf4b1e5db7017556ae538fde2be6b3aca1c70a891",
+  "plays": [
+    {
+      "id": 277,
+      "name": "Base",
+      "offset": "0xecf8",
+      "flags": "0x11400000",
+      "features": "0x1000",
+      "slots": [
+        {
+          "slot": 0,
+          "descriptor": "0x2210b800",
+          "owned": true,
+          "pointer_field": "0xed08",
+          "relative_pointer": "0xea2d",
+          "nodes": [
+            {
+              "index": 2958,
+              "offset": "0x1d734",
+              "op": "0x1b",
+              "flags": "0x0",
+              "operands": [
+                0,
+                0,
+                0.0,
+                0.0,
+                0,
+                0
+              ],
+              "packed": "0x80400000"
+            },
+            {
+              "index": 2959,
+              "offset": "0x1d73c",
+              "op": "0xb",
+              "flags": "0x60",
+              "operands": [
+                1,
+                13,
+                0.0
+              ],
+              "packed": "0x68000001"
+            }
+          ]
+        },
+        {
+          "slot": 1,
+          "descriptor": "0x2210b800",
+          "owned": true,
+          "pointer_field": "0xed10",
+          "relative_pointer": "0xea35",
+          "nodes": [
+            {
+              "index": 2960,
+              "offset": "0x1d744",
+              "op": "0x1b",
+              "flags": "0x0",
+              "operands": [
+                0,
+                0,
+                0.0,
+                0.0,
+                0,
+                0
+              ],
+              "packed": "0x80400000"
+            },
+            {
+              "index": 2961,
+              "offset": "0x1d74c",
+              "op": "0xb",
+              "flags": "0x60",
+              "operands": [
+                1,
+                3,
+                0.0
+              ],
+              "packed": "0x18000001"
+            }
+          ]
+        },
+        {
+          "slot": 2,
+          "descriptor": "0x2220b800",
+          "owned": true,
+          "pointer_field": "0xed18",
+          "relative_pointer": "0xea3d",
+          "nodes": [
+            {
+              "index": 2962,
+              "offset": "0x1d754",
+              "op": "0x1b",
+              "flags": "0x0",
+              "operands": [
+                0,
+                0,
+                0.0,
+                0.0,
+                0,
+                0
+              ],
+              "packed": "0x80400000"
+            },
+            {
+              "index": 2963,
+              "offset": "0x1d75c",
+              "op": "0xb",
+              "flags": "0x60",
+              "operands": [
+                0,
+                9,
+                0.0
+              ],
+              "packed": "0x48000000"
+            }
+          ]
+        },
+        {
+          "slot": 3,
+          "descriptor": "0x2210b800",
+          "owned": true,
+          "pointer_field": "0xed20",
+          "relative_pointer": "0xea45",
+          "nodes": [
+            {
+              "index": 2964,
+              "offset": "0x1d764",
+              "op": "0x1b",
+              "flags": "0x0",
+              "operands": [
+                0,
+                0,
+                0.0,
+                0.0,
+                0,
+                0
+              ],
+              "packed": "0x80400000"
+            },
+            {
+              "index": 2965,
+              "offset": "0x1d76c",
+              "op": "0xb",
+              "flags": "0x60",
+              "operands": [
+                1,
+                5,
+                0.0
+              ],
+              "packed": "0x28000001"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 279,
+      "name": "Razor Left",
+      "offset": "0xedc0",
+      "flags": "0x11480000",
+      "features": "0x1000",
+      "slots": [
+        {
+          "slot": 0,
+          "descriptor": "0x2210b800",
+          "owned": true,
+          "pointer_field": "0xedd0",
+          "relative_pointer": "0xea95",
+          "nodes": [
+            {
+              "index": 2996,
+              "offset": "0x1d864",
+              "op": "0x1b",
+              "flags": "0x0",
+              "operands": [
+                0,
+                0,
+                0.0,
+                0.0,
+                0,
+                0
+              ],
+              "packed": "0x80400000"
+            },
+            {
+              "index": 2997,
+              "offset": "0x1d86c",
+              "op": "0xb",
+              "flags": "0x60",
+              "operands": [
+                1,
+                14,
+                0.0
+              ],
+              "packed": "0x70000001"
+            }
+          ]
+        },
+        {
+          "slot": 1,
+          "descriptor": "0x2210b800",
+          "owned": true,
+          "pointer_field": "0xedd8",
+          "relative_pointer": "0xea9d",
+          "nodes": [
+            {
+              "index": 2998,
+              "offset": "0x1d874",
+              "op": "0x1b",
+              "flags": "0x0",
+              "operands": [
+                0,
+                0,
+                0.0,
+                0.0,
+                0,
+                0
+              ],
+              "packed": "0x80400000"
+            },
+            {
+              "index": 2999,
+              "offset": "0x1d87c",
+              "op": "0xb",
+              "flags": "0x60",
+              "operands": [
+                1,
+                4,
+                0.0
+              ],
+              "packed": "0x20000001"
+            }
+          ]
+        },
+        {
+          "slot": 2,
+          "descriptor": "0x2220b800",
+          "owned": true,
+          "pointer_field": "0xede0",
+          "relative_pointer": "0xeaa5",
+          "nodes": [
+            {
+              "index": 3000,
+              "offset": "0x1d884",
+              "op": "0x1b",
+              "flags": "0x0",
+              "operands": [
+                0,
+                0,
+                0.0,
+                0.0,
+                0,
+                0
+              ],
+              "packed": "0x80400000"
+            },
+            {
+              "index": 3001,
+              "offset": "0x1d88c",
+              "op": "0xb",
+              "flags": "0x60",
+              "operands": [
+                0,
+                10,
+                0.0
+              ],
+              "packed": "0x50000000"
+            }
+          ]
+        },
+        {
+          "slot": 3,
+          "descriptor": "0x2210b800",
+          "owned": true,
+          "pointer_field": "0xede8",
+          "relative_pointer": "0xeaad",
+          "nodes": [
+            {
+              "index": 3002,
+              "offset": "0x1d894",
+              "op": "0x1b",
+              "flags": "0x0",
+              "operands": [
+                0,
+                0,
+                0.0,
+                0.0,
+                0,
+                0
+              ],
+              "packed": "0x80400000"
+            },
+            {
+              "index": 3003,
+              "offset": "0x1d89c",
+              "op": "0xb",
+              "flags": "0x60",
+              "operands": [
+                1,
+                6,
+                0.0
+              ],
+              "packed": "0x30000001"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 280,
+      "name": "Razor Right",
+      "offset": "0xee24",
+      "flags": "0x11480000",
+      "features": "0x1000",
+      "slots": [
+        {
+          "slot": 0,
+          "descriptor": "0x2210b800",
+          "owned": true,
+          "pointer_field": "0xee34",
+          "relative_pointer": "0xeab1",
+          "nodes": [
+            {
+              "index": 3012,
+              "offset": "0x1d8e4",
+              "op": "0x1b",
+              "flags": "0x0",
+              "operands": [
+                0,
+                0,
+                0.0,
+                0.0,
+                0,
+                0
+              ],
+              "packed": "0x80400000"
+            },
+            {
+              "index": 3013,
+              "offset": "0x1d8ec",
+              "op": "0xb",
+              "flags": "0x60",
+              "operands": [
+                1,
+                12,
+                0.0
+              ],
+              "packed": "0x60000001"
+            }
+          ]
+        },
+        {
+          "slot": 1,
+          "descriptor": "0x2210b800",
+          "owned": true,
+          "pointer_field": "0xee3c",
+          "relative_pointer": "0xeab9",
+          "nodes": [
+            {
+              "index": 3014,
+              "offset": "0x1d8f4",
+              "op": "0x1b",
+              "flags": "0x0",
+              "operands": [
+                0,
+                0,
+                0.0,
+                0.0,
+                0,
+                0
+              ],
+              "packed": "0x80400000"
+            },
+            {
+              "index": 3015,
+              "offset": "0x1d8fc",
+              "op": "0xb",
+              "flags": "0x60",
+              "operands": [
+                1,
+                2,
+                0.0
+              ],
+              "packed": "0x10000001"
+            }
+          ]
+        },
+        {
+          "slot": 2,
+          "descriptor": "0x2220b800",
+          "owned": true,
+          "pointer_field": "0xee44",
+          "relative_pointer": "0xeac1",
+          "nodes": [
+            {
+              "index": 3016,
+              "offset": "0x1d904",
+              "op": "0x1b",
+              "flags": "0x0",
+              "operands": [
+                0,
+                0,
+                0.0,
+                0.0,
+                0,
+                0
+              ],
+              "packed": "0x80400000"
+            },
+            {
+              "index": 3017,
+              "offset": "0x1d90c",
+              "op": "0xb",
+              "flags": "0x60",
+              "operands": [
+                0,
+                8,
+                0.0
+              ],
+              "packed": "0x40000000"
+            }
+          ]
+        },
+        {
+          "slot": 3,
+          "descriptor": "0x2210b800",
+          "owned": true,
+          "pointer_field": "0xee4c",
+          "relative_pointer": "0xea29",
+          "nodes": [
+            {
+              "index": 2998,
+              "offset": "0x1d874",
+              "op": "0x1b",
+              "flags": "0x0",
+              "operands": [
+                0,
+                0,
+                0.0,
+                0.0,
+                0,
+                0
+              ],
+              "packed": "0x80400000"
+            },
+            {
+              "index": 2999,
+              "offset": "0x1d87c",
+              "op": "0xb",
+              "flags": "0x60",
+              "operands": [
+                1,
+                4,
+                0.0
+              ],
+              "packed": "0x20000001"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 284,
+      "name": "Fan",
+      "offset": "0xefb4",
+      "flags": "0x11500000",
+      "features": "0x1000",
+      "slots": [
+        {
+          "slot": 0,
+          "descriptor": "0x2230b800",
+          "owned": true,
+          "pointer_field": "0xefc4",
+          "relative_pointer": "0xea41",
+          "nodes": [
+            {
+              "index": 3048,
+              "offset": "0x1da04",
+              "op": "0x1b",
+              "flags": "0x0",
+              "operands": [
+                0,
+                0,
+                0.0,
+                0.0,
+                0,
+                0
+              ],
+              "packed": "0x80400000"
+            },
+            {
+              "index": 3049,
+              "offset": "0x1da0c",
+              "op": "0xb",
+              "flags": "0x60",
+              "operands": [
+                2,
+                14,
+                0.0
+              ],
+              "packed": "0x70000002"
+            }
+          ]
+        },
+        {
+          "slot": 1,
+          "descriptor": "0x2230b800",
+          "owned": true,
+          "pointer_field": "0xefcc",
+          "relative_pointer": "0xea49",
+          "nodes": [
+            {
+              "index": 3050,
+              "offset": "0x1da14",
+              "op": "0x1b",
+              "flags": "0x0",
+              "operands": [
+                0,
+                0,
+                0.0,
+                0.0,
+                0,
+                0
+              ],
+              "packed": "0x80400000"
+            },
+            {
+              "index": 3051,
+              "offset": "0x1da1c",
+              "op": "0xb",
+              "flags": "0x60",
+              "operands": [
+                2,
+                2,
+                0.0
+              ],
+              "packed": "0x10000002"
+            }
+          ]
+        },
+        {
+          "slot": 2,
+          "descriptor": "0x2210b800",
+          "owned": true,
+          "pointer_field": "0xefd4",
+          "relative_pointer": "0xea51",
+          "nodes": [
+            {
+              "index": 3052,
+              "offset": "0x1da24",
+              "op": "0x1b",
+              "flags": "0x0",
+              "operands": [
+                0,
+                0,
+                0.0,
+                0.0,
+                0,
+                0
+              ],
+              "packed": "0x80400000"
+            },
+            {
+              "index": 3053,
+              "offset": "0x1da2c",
+              "op": "0xb",
+              "flags": "0x60",
+              "operands": [
+                1,
+                10,
+                0.0
+              ],
+              "packed": "0x50000001"
+            }
+          ]
+        },
+        {
+          "slot": 3,
+          "descriptor": "0x2210b800",
+          "owned": true,
+          "pointer_field": "0xefdc",
+          "relative_pointer": "0xe899",
+          "nodes": [
+            {
+              "index": 2998,
+              "offset": "0x1d874",
+              "op": "0x1b",
+              "flags": "0x0",
+              "operands": [
+                0,
+                0,
+                0.0,
+                0.0,
+                0,
+                0
+              ],
+              "packed": "0x80400000"
+            },
+            {
+              "index": 2999,
+              "offset": "0x1d87c",
+              "op": "0xb",
+              "flags": "0x60",
+              "operands": [
+                1,
+                4,
+                0.0
+              ],
+              "packed": "0x20000001"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 285,
+      "name": "Pinch",
+      "offset": "0xf018",
+      "flags": "0x11500000",
+      "features": "0x1000",
+      "slots": [
+        {
+          "slot": 0,
+          "descriptor": "0x2210b800",
+          "owned": true,
+          "pointer_field": "0xf028",
+          "relative_pointer": "0xe70d",
+          "nodes": [
+            {
+              "index": 2958,
+              "offset": "0x1d734",
+              "op": "0x1b",
+              "flags": "0x0",
+              "operands": [
+                0,
+                0,
+                0.0,
+                0.0,
+                0,
+                0
+              ],
+              "packed": "0x80400000"
+            },
+            {
+              "index": 2959,
+              "offset": "0x1d73c",
+              "op": "0xb",
+              "flags": "0x60",
+              "operands": [
+                1,
+                13,
+                0.0
+              ],
+              "packed": "0x68000001"
+            }
+          ]
+        },
+        {
+          "slot": 1,
+          "descriptor": "0x2210b800",
+          "owned": true,
+          "pointer_field": "0xf030",
+          "relative_pointer": "0xe715",
+          "nodes": [
+            {
+              "index": 2960,
+              "offset": "0x1d744",
+              "op": "0x1b",
+              "flags": "0x0",
+              "operands": [
+                0,
+                0,
+                0.0,
+                0.0,
+                0,
+                0
+              ],
+              "packed": "0x80400000"
+            },
+            {
+              "index": 2961,
+              "offset": "0x1d74c",
+              "op": "0xb",
+              "flags": "0x60",
+              "operands": [
+                1,
+                3,
+                0.0
+              ],
+              "packed": "0x18000001"
+            }
+          ]
+        },
+        {
+          "slot": 2,
+          "descriptor": "0x2220b800",
+          "owned": true,
+          "pointer_field": "0xf038",
+          "relative_pointer": "0xe8cd",
+          "nodes": [
+            {
+              "index": 3016,
+              "offset": "0x1d904",
+              "op": "0x1b",
+              "flags": "0x0",
+              "operands": [
+                0,
+                0,
+                0.0,
+                0.0,
+                0,
+                0
+              ],
+              "packed": "0x80400000"
+            },
+            {
+              "index": 3017,
+              "offset": "0x1d90c",
+              "op": "0xb",
+              "flags": "0x60",
+              "operands": [
+                0,
+                8,
+                0.0
+              ],
+              "packed": "0x40000000"
+            }
+          ]
+        },
+        {
+          "slot": 3,
+          "descriptor": "0x2220b800",
+          "owned": true,
+          "pointer_field": "0xf040",
+          "relative_pointer": "0xe9f5",
+          "nodes": [
+            {
+              "index": 3054,
+              "offset": "0x1da34",
+              "op": "0x1b",
+              "flags": "0x0",
+              "operands": [
+                0,
+                0,
+                0.0,
+                0.0,
+                0,
+                0
+              ],
+              "packed": "0x80400000"
+            },
+            {
+              "index": 3055,
+              "offset": "0x1da3c",
+              "op": "0xb",
+              "flags": "0x60",
+              "operands": [
+                0,
+                7,
+                0.0
+              ],
+              "packed": "0x38000000"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 288,
+      "name": "Gap Left",
+      "offset": "0xf144",
+      "flags": "0x11500000",
+      "features": "0x1000",
+      "slots": [
+        {
+          "slot": 0,
+          "descriptor": "0x2230b800",
+          "owned": true,
+          "pointer_field": "0xf154",
+          "relative_pointer": "0xe961",
+          "nodes": [
+            {
+              "index": 3070,
+              "offset": "0x1dab4",
+              "op": "0x1b",
+              "flags": "0x0",
+              "operands": [
+                0,
+                0,
+                0.0,
+                0.0,
+                0,
+                0
+              ],
+              "packed": "0x80400000"
+            },
+            {
+              "index": 3071,
+              "offset": "0x1dabc",
+              "op": "0xb",
+              "flags": "0x60",
+              "operands": [
+                2,
+                15,
+                0.0
+              ],
+              "packed": "0x78000002"
+            }
+          ]
+        },
+        {
+          "slot": 1,
+          "descriptor": "0x2210b800",
+          "owned": true,
+          "pointer_field": "0xf15c",
+          "relative_pointer": "0xe609",
+          "nodes": [
+            {
+              "index": 2964,
+              "offset": "0x1d764",
+              "op": "0x1b",
+              "flags": "0x0",
+              "operands": [
+                0,
+                0,
+                0.0,
+                0.0,
+                0,
+                0
+              ],
+              "packed": "0x80400000"
+            },
+            {
+              "index": 2965,
+              "offset": "0x1d76c",
+              "op": "0xb",
+              "flags": "0x60",
+              "operands": [
+                1,
+                5,
+                0.0
+              ],
+              "packed": "0x28000001"
+            }
+          ]
+        },
+        {
+          "slot": 2,
+          "descriptor": "0x2210b800",
+          "owned": true,
+          "pointer_field": "0xf164",
+          "relative_pointer": "0xe961",
+          "nodes": [
+            {
+              "index": 3072,
+              "offset": "0x1dac4",
+              "op": "0x1b",
+              "flags": "0x0",
+              "operands": [
+                0,
+                0,
+                0.0,
+                0.0,
+                0,
+                0
+              ],
+              "packed": "0x80400000"
+            },
+            {
+              "index": 3073,
+              "offset": "0x1dacc",
+              "op": "0xb",
+              "flags": "0x60",
+              "operands": [
+                1,
+                11,
+                0.0
+              ],
+              "packed": "0x58000001"
+            }
+          ]
+        },
+        {
+          "slot": 3,
+          "descriptor": "0x2210b800",
+          "owned": true,
+          "pointer_field": "0xf16c",
+          "relative_pointer": "0xe939",
+          "nodes": [
+            {
+              "index": 3068,
+              "offset": "0x1daa4",
+              "op": "0x1b",
+              "flags": "0x0",
+              "operands": [
+                0,
+                0,
+                0.0,
+                0.0,
+                0,
+                0
+              ],
+              "packed": "0x80400000"
+            },
+            {
+              "index": 3069,
+              "offset": "0x1daac",
+              "op": "0xb",
+              "flags": "0x60",
+              "operands": [
+                1,
+                7,
+                0.0
+              ],
+              "packed": "0x38000001"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 289,
+      "name": "Gap Right",
+      "offset": "0xf1a8",
+      "flags": "0x11500000",
+      "features": "0x1000",
+      "slots": [
+        {
+          "slot": 0,
+          "descriptor": "0x2210b800",
+          "owned": true,
+          "pointer_field": "0xf1b8",
+          "relative_pointer": "0xe90d",
+          "nodes": [
+            {
+              "index": 3072,
+              "offset": "0x1dac4",
+              "op": "0x1b",
+              "flags": "0x0",
+              "operands": [
+                0,
+                0,
+                0.0,
+                0.0,
+                0,
+                0
+              ],
+              "packed": "0x80400000"
+            },
+            {
+              "index": 3073,
+              "offset": "0x1dacc",
+              "op": "0xb",
+              "flags": "0x60",
+              "operands": [
+                1,
+                11,
+                0.0
+              ],
+              "packed": "0x58000001"
+            }
+          ]
+        },
+        {
+          "slot": 1,
+          "descriptor": "0x2230b800",
+          "owned": true,
+          "pointer_field": "0xf1c0",
+          "relative_pointer": "0xe915",
+          "nodes": [
+            {
+              "index": 3074,
+              "offset": "0x1dad4",
+              "op": "0x1b",
+              "flags": "0x0",
+              "operands": [
+                0,
+                0,
+                0.0,
+                0.0,
+                0,
+                0
+              ],
+              "packed": "0x80400000"
+            },
+            {
+              "index": 3075,
+              "offset": "0x1dadc",
+              "op": "0xb",
+              "flags": "0x60",
+              "operands": [
+                2,
+                1,
+                0.0
+              ],
+              "packed": "0x8000002"
+            }
+          ]
+        },
+        {
+          "slot": 2,
+          "descriptor": "0x2210b800",
+          "owned": true,
+          "pointer_field": "0xf1c8",
+          "relative_pointer": "0xe8dd",
+          "nodes": [
+            {
+              "index": 3068,
+              "offset": "0x1daa4",
+              "op": "0x1b",
+              "flags": "0x0",
+              "operands": [
+                0,
+                0,
+                0.0,
+                0.0,
+                0,
+                0
+              ],
+              "packed": "0x80400000"
+            },
+            {
+              "index": 3069,
+              "offset": "0x1daac",
+              "op": "0xb",
+              "flags": "0x60",
+              "operands": [
+                1,
+                7,
+                0.0
+              ],
+              "packed": "0x38000001"
+            }
+          ]
+        },
+        {
+          "slot": 3,
+          "descriptor": "0x2210b800",
+          "owned": true,
+          "pointer_field": "0xf1d0",
+          "relative_pointer": "0xe575",
+          "nodes": [
+            {
+              "index": 2960,
+              "offset": "0x1d744",
+              "op": "0x1b",
+              "flags": "0x0",
+              "operands": [
+                0,
+                0,
+                0.0,
+                0.0,
+                0,
+                0
+              ],
+              "packed": "0x80400000"
+            },
+            {
+              "index": 2961,
+              "offset": "0x1d74c",
+              "op": "0xb",
+              "flags": "0x60",
+              "operands": [
+                1,
+                3,
+                0.0
+              ],
+              "packed": "0x18000001"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "books": [
+    {
+      "outer": 134,
+      "name": "X-43Cover2",
+      "sha256": "2191bc3a494f58d279e79449abd6f619b83dd8b7170b86847ae445c930c4b428",
+      "four_three": [
+        [
+          277,
+          0
+        ],
+        [
+          278,
+          2
+        ],
+        [
+          279,
+          2
+        ],
+        [
+          280,
+          2
+        ],
+        [
+          281,
+          4
+        ],
+        [
+          282,
+          4
+        ],
+        [
+          283,
+          2
+        ],
+        [
+          284,
+          3
+        ],
+        [
+          285,
+          2
+        ],
+        [
+          286,
+          0
+        ],
+        [
+          287,
+          2
+        ],
+        [
+          288,
+          2
+        ],
+        [
+          289,
+          2
+        ],
+        [
+          290,
+          3
+        ],
+        [
+          291,
+          4
+        ],
+        [
+          292,
+          4
+        ],
+        [
+          293,
+          1
+        ],
+        [
+          294,
+          2
+        ],
+        [
+          295,
+          3
+        ],
+        [
+          296,
+          2
+        ],
+        [
+          301,
+          2
+        ],
+        [
+          304,
+          3
+        ],
+        [
+          305,
+          3
+        ],
+        [
+          306,
+          3
+        ],
+        [
+          307,
+          3
+        ],
+        [
+          308,
+          2
+        ],
+        [
+          309,
+          2
+        ],
+        [
+          319,
+          2
+        ]
+      ]
+    },
+    {
+      "outer": 293,
+      "name": "USER-d",
+      "sha256": "83b3da4aa3fd412f50e242c130c6613d59aa27e0c7ddcf3943689dedb00d92e1",
+      "four_three": [
+        [
+          279,
+          2
+        ],
+        [
+          277,
+          0
+        ],
+        [
+          280,
+          2
+        ],
+        [
+          287,
+          2
+        ],
+        [
+          285,
+          2
+        ],
+        [
+          284,
+          2
+        ],
+        [
+          291,
+          4
+        ],
+        [
+          281,
+          4
+        ],
+        [
+          292,
+          4
+        ],
+        [
+          278,
+          2
+        ],
+        [
+          283,
+          0
+        ],
+        [
+          286,
+          0
+        ],
+        [
+          297,
+          1
+        ],
+        [
+          301,
+          2
+        ],
+        [
+          298,
+          1
+        ],
+        [
+          317,
+          2
+        ],
+        [
+          343,
+          2
+        ],
+        [
+          318,
+          2
+        ],
+        [
+          295,
+          2
+        ],
+        [
+          294,
+          2
+        ],
+        [
+          308,
+          2
+        ],
+        [
+          348,
+          1
+        ],
+        [
+          314,
+          2
+        ],
+        [
+          311,
+          3
+        ],
+        [
+          320,
+          3
+        ],
+        [
+          331,
+          2
+        ],
+        [
+          327,
+          2
+        ],
+        [
+          324,
+          2
+        ],
+        [
+          350,
+          3
+        ],
+        [
+          332,
+          2
+        ],
+        [
+          336,
+          2
+        ],
+        [
+          337,
+          3
+        ],
+        [
+          335,
+          2
+        ]
+      ]
+    },
+    {
+      "outer": 618,
+      "name": "X-34Base",
+      "sha256": "67ef383cc1fcde7a44639fa761fbb4efbd82aa3d4560035d27abd704d30ae218",
+      "four_three": []
+    },
+    {
+      "outer": 656,
+      "name": "global-d",
+      "sha256": "2740c33db3378ec9ffb8be222aed7cbd17c99f376c46b2ef240b28ca7e4e1408",
+      "four_three": []
+    }
+  ],
+  "scope": "Derived front-assignment decode for seven named 4-3 components; no resource payloads."
+}

@@ -19380,8 +19380,11 @@ class InspectorCategoryPage(QWidget):
             if category is ApfCategory.ROSTERS
             else None
         )
+        # The facade is passed so the page can read the project's staged book
+        # bodies and refuse a label type whose plays the chosen built game
+        # folder does not hold.  It writes nothing through the facade.
         self.save_playbooks = (
-            SavePlaybookAssignmentsPanel(run_task)
+            SavePlaybookAssignmentsPanel(run_task, facade)
             if category is ApfCategory.PLAYBOOKS
             else None
         )
@@ -19455,6 +19458,11 @@ class InspectorCategoryPage(QWidget):
                 tabs.addTab(self.playbook_package_maps, "Who lines up")  # type: ignore[arg-type]
                 tabs.addTab(self.playbook_routes, "Assignment Routes")  # type: ignore[arg-type]
                 tabs.addTab(self.save_playbooks, "Save Assignments")  # type: ignore[arg-type]
+                tabs.setTabToolTip(
+                    tabs.count() - 1,
+                    "Writes which book type a saved label points at. It does not write plays or "
+                    "fine-tuning: fine-tune the book, Build Game Folder, then save assignments.",
+                )
                 tabs.addTab(self.play_designer, "Design Plays / Formations")
                 tabs.addTab(self.coverage_geometry, "Coverage Geometry (experimental)")
                 tabs.addTab(self.book_identity, "Book Identity")
@@ -20172,6 +20180,8 @@ class ApfStudioMainWindow(QMainWindow):
         tools_menu = self.menuBar().addMenu("&Tools")
         self.fourth_down_action = tools_menu.addAction("CPU fourth-down triggers…")
         self.fourth_down_action.triggered.connect(self._fourth_down_triggers)
+        self.charge_abilities_action = tools_menu.addAction("Charged abilities (experimental)…")
+        self.charge_abilities_action.triggered.connect(self._charge_abilities)
         self._install_help_menu()
 
     def _install_help_menu(self) -> None:
@@ -21943,6 +21953,10 @@ class ApfStudioMainWindow(QMainWindow):
     def _fourth_down_triggers(self) -> None:
         from .fourth_down_qt import FourthDownDialog
         FourthDownDialog(self.facade.launcher, self).exec_()
+
+    def _charge_abilities(self) -> None:
+        from .charge_abilities_qt import ChargeAbilitiesDialog
+        ChargeAbilitiesDialog(self.facade, self).exec_()
 
     def _configure_xenia(self) -> None:
         selected, _filter = QFileDialog.getOpenFileName(

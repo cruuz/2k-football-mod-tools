@@ -1,0 +1,2772 @@
+{
+  "native_runs": [
+    {
+      "image_sha256": "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf",
+      "executed_image_sha256": "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf",
+      "installed_patch_word_count": 0,
+      "master_sha256": "2de9d17dd4de29c37b005fabf4b1e5db7017556ae538fde2be6b3aca1c70a891",
+      "profile": "BASE",
+      "pairs": [
+        {
+          "first": 277,
+          "second": 278,
+          "selected_by_slot": [
+            277,
+            277,
+            277,
+            277,
+            278,
+            278,
+            278,
+            278,
+            278,
+            278,
+            278
+          ]
+        },
+        {
+          "first": 277,
+          "second": 283,
+          "selected_by_slot": [
+            277,
+            277,
+            277,
+            277,
+            283,
+            283,
+            283,
+            283,
+            283,
+            283,
+            283
+          ]
+        },
+        {
+          "first": 277,
+          "second": 288,
+          "selected_by_slot": [
+            288,
+            288,
+            288,
+            288,
+            288,
+            288,
+            288,
+            288,
+            288,
+            288,
+            288
+          ]
+        },
+        {
+          "first": 277,
+          "second": 289,
+          "selected_by_slot": [
+            289,
+            289,
+            289,
+            289,
+            289,
+            289,
+            289,
+            289,
+            289,
+            289,
+            289
+          ]
+        }
+      ],
+      "front_ownership_checks": 1064,
+      "operand_reads": [
+        {
+          "play": 277,
+          "name": "Base",
+          "mirror": false,
+          "modes": [
+            1,
+            1,
+            0,
+            1
+          ],
+          "lanes": [
+            13,
+            3,
+            9,
+            5
+          ]
+        },
+        {
+          "play": 277,
+          "name": "Base",
+          "mirror": true,
+          "modes": [
+            1,
+            1,
+            0,
+            1
+          ],
+          "lanes": [
+            3,
+            13,
+            7,
+            11
+          ]
+        },
+        {
+          "play": 284,
+          "name": "Fan",
+          "mirror": false,
+          "modes": [
+            2,
+            2,
+            1,
+            1
+          ],
+          "lanes": [
+            14,
+            2,
+            10,
+            4
+          ]
+        },
+        {
+          "play": 284,
+          "name": "Fan",
+          "mirror": true,
+          "modes": [
+            2,
+            2,
+            1,
+            1
+          ],
+          "lanes": [
+            2,
+            14,
+            6,
+            12
+          ]
+        },
+        {
+          "play": 285,
+          "name": "Pinch",
+          "mirror": false,
+          "modes": [
+            1,
+            1,
+            0,
+            0
+          ],
+          "lanes": [
+            13,
+            3,
+            8,
+            7
+          ]
+        },
+        {
+          "play": 285,
+          "name": "Pinch",
+          "mirror": true,
+          "modes": [
+            1,
+            1,
+            0,
+            0
+          ],
+          "lanes": [
+            3,
+            13,
+            8,
+            9
+          ]
+        },
+        {
+          "play": 288,
+          "name": "Gap Left",
+          "mirror": false,
+          "modes": [
+            2,
+            1,
+            1,
+            1
+          ],
+          "lanes": [
+            15,
+            5,
+            11,
+            7
+          ]
+        },
+        {
+          "play": 288,
+          "name": "Gap Left",
+          "mirror": true,
+          "modes": [
+            2,
+            1,
+            1,
+            1
+          ],
+          "lanes": [
+            1,
+            11,
+            5,
+            9
+          ]
+        },
+        {
+          "play": 289,
+          "name": "Gap Right",
+          "mirror": false,
+          "modes": [
+            1,
+            2,
+            1,
+            1
+          ],
+          "lanes": [
+            11,
+            1,
+            7,
+            3
+          ]
+        },
+        {
+          "play": 289,
+          "name": "Gap Right",
+          "mirror": true,
+          "modes": [
+            1,
+            2,
+            1,
+            1
+          ],
+          "lanes": [
+            5,
+            15,
+            9,
+            13
+          ]
+        }
+      ],
+      "human_team_guard_entries": [
+        "848667d8",
+        "848668c8",
+        "84867ef0"
+      ],
+      "cpu_lane_resolutions": [
+        {
+          "play": 277,
+          "design_x_input": 0.0,
+          "actual_x_input": -152.4,
+          "lanes": [
+            11,
+            1,
+            7,
+            3
+          ]
+        },
+        {
+          "play": 277,
+          "design_x_input": 0.0,
+          "actual_x_input": 0.0,
+          "lanes": [
+            13,
+            3,
+            9,
+            5
+          ]
+        },
+        {
+          "play": 277,
+          "design_x_input": 0.0,
+          "actual_x_input": 152.4,
+          "lanes": [
+            15,
+            5,
+            11,
+            7
+          ]
+        },
+        {
+          "play": 285,
+          "design_x_input": 0.0,
+          "actual_x_input": -152.4,
+          "lanes": [
+            11,
+            1,
+            6,
+            5
+          ]
+        },
+        {
+          "play": 285,
+          "design_x_input": 0.0,
+          "actual_x_input": 0.0,
+          "lanes": [
+            13,
+            3,
+            8,
+            7
+          ]
+        },
+        {
+          "play": 285,
+          "design_x_input": 0.0,
+          "actual_x_input": 152.4,
+          "lanes": [
+            15,
+            5,
+            10,
+            9
+          ]
+        },
+        {
+          "play": 288,
+          "design_x_input": 0.0,
+          "actual_x_input": -152.4,
+          "lanes": [
+            13,
+            3,
+            9,
+            5
+          ]
+        },
+        {
+          "play": 288,
+          "design_x_input": 0.0,
+          "actual_x_input": 0.0,
+          "lanes": [
+            15,
+            5,
+            11,
+            7
+          ]
+        },
+        {
+          "play": 288,
+          "design_x_input": 0.0,
+          "actual_x_input": 152.4,
+          "lanes": [
+            16,
+            7,
+            13,
+            9
+          ]
+        },
+        {
+          "play": 289,
+          "design_x_input": 0.0,
+          "actual_x_input": -152.4,
+          "lanes": [
+            9,
+            0,
+            5,
+            1
+          ]
+        },
+        {
+          "play": 289,
+          "design_x_input": 0.0,
+          "actual_x_input": 0.0,
+          "lanes": [
+            11,
+            1,
+            7,
+            3
+          ]
+        },
+        {
+          "play": 289,
+          "design_x_input": 0.0,
+          "actual_x_input": 152.4,
+          "lanes": [
+            13,
+            3,
+            9,
+            5
+          ]
+        }
+      ],
+      "position_provider_boundary": "847d0dd8",
+      "shift_distributions": [
+        {
+          "class_input": 0,
+          "strength_input": 0,
+          "counts_100": [
+            100,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 0,
+          "strength_input": 1,
+          "counts_100": [
+            100,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 0,
+          "strength_input": 2,
+          "counts_100": [
+            100,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 1,
+          "strength_input": 0,
+          "counts_100": [
+            30,
+            30,
+            20,
+            20,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 1,
+          "strength_input": 1,
+          "counts_100": [
+            30,
+            30,
+            10,
+            30,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 1,
+          "strength_input": 2,
+          "counts_100": [
+            30,
+            30,
+            30,
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 2,
+          "strength_input": 0,
+          "counts_100": [
+            30,
+            10,
+            50,
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 2,
+          "strength_input": 1,
+          "counts_100": [
+            30,
+            10,
+            25,
+            35,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 2,
+          "strength_input": 2,
+          "counts_100": [
+            30,
+            5,
+            50,
+            10,
+            5,
+            0
+          ]
+        },
+        {
+          "class_input": 3,
+          "strength_input": 0,
+          "counts_100": [
+            30,
+            10,
+            10,
+            50,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 3,
+          "strength_input": 1,
+          "counts_100": [
+            30,
+            5,
+            10,
+            50,
+            0,
+            5
+          ]
+        },
+        {
+          "class_input": 3,
+          "strength_input": 2,
+          "counts_100": [
+            30,
+            10,
+            35,
+            25,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 4,
+          "strength_input": 0,
+          "counts_100": [
+            25,
+            5,
+            20,
+            0,
+            50,
+            0
+          ]
+        },
+        {
+          "class_input": 4,
+          "strength_input": 1,
+          "counts_100": [
+            25,
+            5,
+            0,
+            40,
+            30,
+            0
+          ]
+        },
+        {
+          "class_input": 4,
+          "strength_input": 2,
+          "counts_100": [
+            25,
+            5,
+            20,
+            0,
+            50,
+            0
+          ]
+        },
+        {
+          "class_input": 5,
+          "strength_input": 0,
+          "counts_100": [
+            25,
+            5,
+            0,
+            20,
+            0,
+            50
+          ]
+        },
+        {
+          "class_input": 5,
+          "strength_input": 1,
+          "counts_100": [
+            25,
+            5,
+            0,
+            20,
+            0,
+            50
+          ]
+        },
+        {
+          "class_input": 5,
+          "strength_input": 2,
+          "counts_100": [
+            25,
+            5,
+            40,
+            0,
+            0,
+            30
+          ]
+        }
+      ],
+      "adapted_pcs": [
+        "84800700",
+        "84800728",
+        "84800750",
+        "8480078c",
+        "8482dca8",
+        "8482dce0",
+        "8485a7d8",
+        "8485a8bc",
+        "848667e0",
+        "84866854",
+        "84867ef8",
+        "84867fb4",
+        "84a91f58",
+        "84a91f60",
+        "84a91f7c",
+        "84a91f80",
+        "84a91f88",
+        "84a91f98",
+        "84a91f9c",
+        "84a91fa4",
+        "84a91fc4",
+        "84a91fd0",
+        "84bd6ddc",
+        "84bd6de0",
+        "84bd6de4",
+        "84bd6de8",
+        "84bd6dec",
+        "84bd6df0",
+        "84bd6df4",
+        "84bd6e2c",
+        "84bd6e30",
+        "84bd6e34",
+        "84bd6e38",
+        "84bd6e3c",
+        "84bd6e40",
+        "84bd6e44"
+      ],
+      "limits": [
+        "Explicit relocation and minimal synthetic match state",
+        "Shift classifier, RNG and design position are supplied boundaries",
+        "No full player update, Xenia frame or tester-folder reproduction"
+      ],
+      "configuration": "retail"
+    },
+    {
+      "image_sha256": "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf",
+      "executed_image_sha256": "02298801a4465adfbf8556600422e5e6565107aa8d0e424981ef01a47a0082bd",
+      "installed_patch_word_count": 4301,
+      "master_sha256": "2de9d17dd4de29c37b005fabf4b1e5db7017556ae538fde2be6b3aca1c70a891",
+      "profile": "BASE",
+      "pairs": [
+        {
+          "first": 277,
+          "second": 278,
+          "selected_by_slot": [
+            277,
+            277,
+            277,
+            277,
+            278,
+            278,
+            278,
+            278,
+            278,
+            278,
+            278
+          ]
+        },
+        {
+          "first": 277,
+          "second": 283,
+          "selected_by_slot": [
+            277,
+            277,
+            277,
+            277,
+            283,
+            283,
+            283,
+            283,
+            283,
+            283,
+            283
+          ]
+        },
+        {
+          "first": 277,
+          "second": 288,
+          "selected_by_slot": [
+            288,
+            288,
+            288,
+            288,
+            288,
+            288,
+            288,
+            288,
+            288,
+            288,
+            288
+          ]
+        },
+        {
+          "first": 277,
+          "second": 289,
+          "selected_by_slot": [
+            289,
+            289,
+            289,
+            289,
+            289,
+            289,
+            289,
+            289,
+            289,
+            289,
+            289
+          ]
+        }
+      ],
+      "front_ownership_checks": 1064,
+      "operand_reads": [
+        {
+          "play": 277,
+          "name": "Base",
+          "mirror": false,
+          "modes": [
+            1,
+            1,
+            0,
+            1
+          ],
+          "lanes": [
+            13,
+            3,
+            9,
+            5
+          ]
+        },
+        {
+          "play": 277,
+          "name": "Base",
+          "mirror": true,
+          "modes": [
+            1,
+            1,
+            0,
+            1
+          ],
+          "lanes": [
+            3,
+            13,
+            7,
+            11
+          ]
+        },
+        {
+          "play": 284,
+          "name": "Fan",
+          "mirror": false,
+          "modes": [
+            2,
+            2,
+            1,
+            1
+          ],
+          "lanes": [
+            14,
+            2,
+            10,
+            4
+          ]
+        },
+        {
+          "play": 284,
+          "name": "Fan",
+          "mirror": true,
+          "modes": [
+            2,
+            2,
+            1,
+            1
+          ],
+          "lanes": [
+            2,
+            14,
+            6,
+            12
+          ]
+        },
+        {
+          "play": 285,
+          "name": "Pinch",
+          "mirror": false,
+          "modes": [
+            1,
+            1,
+            0,
+            0
+          ],
+          "lanes": [
+            13,
+            3,
+            8,
+            7
+          ]
+        },
+        {
+          "play": 285,
+          "name": "Pinch",
+          "mirror": true,
+          "modes": [
+            1,
+            1,
+            0,
+            0
+          ],
+          "lanes": [
+            3,
+            13,
+            8,
+            9
+          ]
+        },
+        {
+          "play": 288,
+          "name": "Gap Left",
+          "mirror": false,
+          "modes": [
+            2,
+            1,
+            1,
+            1
+          ],
+          "lanes": [
+            15,
+            5,
+            11,
+            7
+          ]
+        },
+        {
+          "play": 288,
+          "name": "Gap Left",
+          "mirror": true,
+          "modes": [
+            2,
+            1,
+            1,
+            1
+          ],
+          "lanes": [
+            1,
+            11,
+            5,
+            9
+          ]
+        },
+        {
+          "play": 289,
+          "name": "Gap Right",
+          "mirror": false,
+          "modes": [
+            1,
+            2,
+            1,
+            1
+          ],
+          "lanes": [
+            11,
+            1,
+            7,
+            3
+          ]
+        },
+        {
+          "play": 289,
+          "name": "Gap Right",
+          "mirror": true,
+          "modes": [
+            1,
+            2,
+            1,
+            1
+          ],
+          "lanes": [
+            5,
+            15,
+            9,
+            13
+          ]
+        }
+      ],
+      "human_team_guard_entries": [
+        "848667d8",
+        "848668c8",
+        "84867ef0"
+      ],
+      "cpu_lane_resolutions": [
+        {
+          "play": 277,
+          "design_x_input": 0.0,
+          "actual_x_input": -152.4,
+          "lanes": [
+            11,
+            1,
+            7,
+            3
+          ]
+        },
+        {
+          "play": 277,
+          "design_x_input": 0.0,
+          "actual_x_input": 0.0,
+          "lanes": [
+            13,
+            3,
+            9,
+            5
+          ]
+        },
+        {
+          "play": 277,
+          "design_x_input": 0.0,
+          "actual_x_input": 152.4,
+          "lanes": [
+            15,
+            5,
+            11,
+            7
+          ]
+        },
+        {
+          "play": 285,
+          "design_x_input": 0.0,
+          "actual_x_input": -152.4,
+          "lanes": [
+            11,
+            1,
+            6,
+            5
+          ]
+        },
+        {
+          "play": 285,
+          "design_x_input": 0.0,
+          "actual_x_input": 0.0,
+          "lanes": [
+            13,
+            3,
+            8,
+            7
+          ]
+        },
+        {
+          "play": 285,
+          "design_x_input": 0.0,
+          "actual_x_input": 152.4,
+          "lanes": [
+            15,
+            5,
+            10,
+            9
+          ]
+        },
+        {
+          "play": 288,
+          "design_x_input": 0.0,
+          "actual_x_input": -152.4,
+          "lanes": [
+            13,
+            3,
+            9,
+            5
+          ]
+        },
+        {
+          "play": 288,
+          "design_x_input": 0.0,
+          "actual_x_input": 0.0,
+          "lanes": [
+            15,
+            5,
+            11,
+            7
+          ]
+        },
+        {
+          "play": 288,
+          "design_x_input": 0.0,
+          "actual_x_input": 152.4,
+          "lanes": [
+            16,
+            7,
+            13,
+            9
+          ]
+        },
+        {
+          "play": 289,
+          "design_x_input": 0.0,
+          "actual_x_input": -152.4,
+          "lanes": [
+            9,
+            0,
+            5,
+            1
+          ]
+        },
+        {
+          "play": 289,
+          "design_x_input": 0.0,
+          "actual_x_input": 0.0,
+          "lanes": [
+            11,
+            1,
+            7,
+            3
+          ]
+        },
+        {
+          "play": 289,
+          "design_x_input": 0.0,
+          "actual_x_input": 152.4,
+          "lanes": [
+            13,
+            3,
+            9,
+            5
+          ]
+        }
+      ],
+      "position_provider_boundary": "847d0dd8",
+      "shift_distributions": [
+        {
+          "class_input": 0,
+          "strength_input": 0,
+          "counts_100": [
+            100,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 0,
+          "strength_input": 1,
+          "counts_100": [
+            100,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 0,
+          "strength_input": 2,
+          "counts_100": [
+            100,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 1,
+          "strength_input": 0,
+          "counts_100": [
+            30,
+            30,
+            20,
+            20,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 1,
+          "strength_input": 1,
+          "counts_100": [
+            30,
+            30,
+            10,
+            30,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 1,
+          "strength_input": 2,
+          "counts_100": [
+            30,
+            30,
+            30,
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 2,
+          "strength_input": 0,
+          "counts_100": [
+            30,
+            10,
+            50,
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 2,
+          "strength_input": 1,
+          "counts_100": [
+            30,
+            10,
+            25,
+            35,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 2,
+          "strength_input": 2,
+          "counts_100": [
+            30,
+            5,
+            50,
+            10,
+            5,
+            0
+          ]
+        },
+        {
+          "class_input": 3,
+          "strength_input": 0,
+          "counts_100": [
+            30,
+            10,
+            10,
+            50,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 3,
+          "strength_input": 1,
+          "counts_100": [
+            30,
+            5,
+            10,
+            50,
+            0,
+            5
+          ]
+        },
+        {
+          "class_input": 3,
+          "strength_input": 2,
+          "counts_100": [
+            30,
+            10,
+            35,
+            25,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 4,
+          "strength_input": 0,
+          "counts_100": [
+            25,
+            5,
+            20,
+            0,
+            50,
+            0
+          ]
+        },
+        {
+          "class_input": 4,
+          "strength_input": 1,
+          "counts_100": [
+            25,
+            5,
+            0,
+            40,
+            30,
+            0
+          ]
+        },
+        {
+          "class_input": 4,
+          "strength_input": 2,
+          "counts_100": [
+            25,
+            5,
+            20,
+            0,
+            50,
+            0
+          ]
+        },
+        {
+          "class_input": 5,
+          "strength_input": 0,
+          "counts_100": [
+            25,
+            5,
+            0,
+            20,
+            0,
+            50
+          ]
+        },
+        {
+          "class_input": 5,
+          "strength_input": 1,
+          "counts_100": [
+            25,
+            5,
+            0,
+            20,
+            0,
+            50
+          ]
+        },
+        {
+          "class_input": 5,
+          "strength_input": 2,
+          "counts_100": [
+            25,
+            5,
+            40,
+            0,
+            0,
+            30
+          ]
+        }
+      ],
+      "adapted_pcs": [
+        "84800700",
+        "84800728",
+        "84800750",
+        "8480078c",
+        "8482dca8",
+        "8482dce0",
+        "8485a7d8",
+        "8485a8bc",
+        "848667e0",
+        "84866854",
+        "84867ef8",
+        "84867fb4",
+        "84a91f58",
+        "84a91f60",
+        "84a91f7c",
+        "84a91f80",
+        "84a91f88",
+        "84a91f98",
+        "84a91f9c",
+        "84a91fa4",
+        "84a91fc4",
+        "84a91fd0",
+        "84bd6ddc",
+        "84bd6de0",
+        "84bd6de4",
+        "84bd6de8",
+        "84bd6dec",
+        "84bd6df0",
+        "84bd6df4",
+        "84bd6e2c",
+        "84bd6e30",
+        "84bd6e34",
+        "84bd6e38",
+        "84bd6e3c",
+        "84bd6e40",
+        "84bd6e44"
+      ],
+      "limits": [
+        "Explicit relocation and minimal synthetic match state",
+        "Shift classifier, RNG and design position are supplied boundaries",
+        "No full player update, Xenia frame or tester-folder reproduction"
+      ],
+      "configuration": "shipped_options"
+    },
+    {
+      "image_sha256": "65f522ce1cdda42cf19c112e9ec07302e89c81e4148c9f22e6db5e03952f9457",
+      "executed_image_sha256": "65f522ce1cdda42cf19c112e9ec07302e89c81e4148c9f22e6db5e03952f9457",
+      "installed_patch_word_count": 0,
+      "master_sha256": "2de9d17dd4de29c37b005fabf4b1e5db7017556ae538fde2be6b3aca1c70a891",
+      "profile": "TU 1.1",
+      "pairs": [
+        {
+          "first": 277,
+          "second": 278,
+          "selected_by_slot": [
+            277,
+            277,
+            277,
+            277,
+            278,
+            278,
+            278,
+            278,
+            278,
+            278,
+            278
+          ]
+        },
+        {
+          "first": 277,
+          "second": 283,
+          "selected_by_slot": [
+            277,
+            277,
+            277,
+            277,
+            283,
+            283,
+            283,
+            283,
+            283,
+            283,
+            283
+          ]
+        },
+        {
+          "first": 277,
+          "second": 288,
+          "selected_by_slot": [
+            288,
+            288,
+            288,
+            288,
+            288,
+            288,
+            288,
+            288,
+            288,
+            288,
+            288
+          ]
+        },
+        {
+          "first": 277,
+          "second": 289,
+          "selected_by_slot": [
+            289,
+            289,
+            289,
+            289,
+            289,
+            289,
+            289,
+            289,
+            289,
+            289,
+            289
+          ]
+        }
+      ],
+      "front_ownership_checks": 1064,
+      "operand_reads": [
+        {
+          "play": 277,
+          "name": "Base",
+          "mirror": false,
+          "modes": [
+            1,
+            1,
+            0,
+            1
+          ],
+          "lanes": [
+            13,
+            3,
+            9,
+            5
+          ]
+        },
+        {
+          "play": 277,
+          "name": "Base",
+          "mirror": true,
+          "modes": [
+            1,
+            1,
+            0,
+            1
+          ],
+          "lanes": [
+            3,
+            13,
+            7,
+            11
+          ]
+        },
+        {
+          "play": 284,
+          "name": "Fan",
+          "mirror": false,
+          "modes": [
+            2,
+            2,
+            1,
+            1
+          ],
+          "lanes": [
+            14,
+            2,
+            10,
+            4
+          ]
+        },
+        {
+          "play": 284,
+          "name": "Fan",
+          "mirror": true,
+          "modes": [
+            2,
+            2,
+            1,
+            1
+          ],
+          "lanes": [
+            2,
+            14,
+            6,
+            12
+          ]
+        },
+        {
+          "play": 285,
+          "name": "Pinch",
+          "mirror": false,
+          "modes": [
+            1,
+            1,
+            0,
+            0
+          ],
+          "lanes": [
+            13,
+            3,
+            8,
+            7
+          ]
+        },
+        {
+          "play": 285,
+          "name": "Pinch",
+          "mirror": true,
+          "modes": [
+            1,
+            1,
+            0,
+            0
+          ],
+          "lanes": [
+            3,
+            13,
+            8,
+            9
+          ]
+        },
+        {
+          "play": 288,
+          "name": "Gap Left",
+          "mirror": false,
+          "modes": [
+            2,
+            1,
+            1,
+            1
+          ],
+          "lanes": [
+            15,
+            5,
+            11,
+            7
+          ]
+        },
+        {
+          "play": 288,
+          "name": "Gap Left",
+          "mirror": true,
+          "modes": [
+            2,
+            1,
+            1,
+            1
+          ],
+          "lanes": [
+            1,
+            11,
+            5,
+            9
+          ]
+        },
+        {
+          "play": 289,
+          "name": "Gap Right",
+          "mirror": false,
+          "modes": [
+            1,
+            2,
+            1,
+            1
+          ],
+          "lanes": [
+            11,
+            1,
+            7,
+            3
+          ]
+        },
+        {
+          "play": 289,
+          "name": "Gap Right",
+          "mirror": true,
+          "modes": [
+            1,
+            2,
+            1,
+            1
+          ],
+          "lanes": [
+            5,
+            15,
+            9,
+            13
+          ]
+        }
+      ],
+      "human_team_guard_entries": [
+        "848674a8",
+        "84867598",
+        "84868bf0"
+      ],
+      "cpu_lane_resolutions": [
+        {
+          "play": 277,
+          "design_x_input": 0.0,
+          "actual_x_input": -152.4,
+          "lanes": [
+            11,
+            1,
+            7,
+            3
+          ]
+        },
+        {
+          "play": 277,
+          "design_x_input": 0.0,
+          "actual_x_input": 0.0,
+          "lanes": [
+            13,
+            3,
+            9,
+            5
+          ]
+        },
+        {
+          "play": 277,
+          "design_x_input": 0.0,
+          "actual_x_input": 152.4,
+          "lanes": [
+            15,
+            5,
+            11,
+            7
+          ]
+        },
+        {
+          "play": 285,
+          "design_x_input": 0.0,
+          "actual_x_input": -152.4,
+          "lanes": [
+            11,
+            1,
+            6,
+            5
+          ]
+        },
+        {
+          "play": 285,
+          "design_x_input": 0.0,
+          "actual_x_input": 0.0,
+          "lanes": [
+            13,
+            3,
+            8,
+            7
+          ]
+        },
+        {
+          "play": 285,
+          "design_x_input": 0.0,
+          "actual_x_input": 152.4,
+          "lanes": [
+            15,
+            5,
+            10,
+            9
+          ]
+        },
+        {
+          "play": 288,
+          "design_x_input": 0.0,
+          "actual_x_input": -152.4,
+          "lanes": [
+            13,
+            3,
+            9,
+            5
+          ]
+        },
+        {
+          "play": 288,
+          "design_x_input": 0.0,
+          "actual_x_input": 0.0,
+          "lanes": [
+            15,
+            5,
+            11,
+            7
+          ]
+        },
+        {
+          "play": 288,
+          "design_x_input": 0.0,
+          "actual_x_input": 152.4,
+          "lanes": [
+            16,
+            7,
+            13,
+            9
+          ]
+        },
+        {
+          "play": 289,
+          "design_x_input": 0.0,
+          "actual_x_input": -152.4,
+          "lanes": [
+            9,
+            0,
+            5,
+            1
+          ]
+        },
+        {
+          "play": 289,
+          "design_x_input": 0.0,
+          "actual_x_input": 0.0,
+          "lanes": [
+            11,
+            1,
+            7,
+            3
+          ]
+        },
+        {
+          "play": 289,
+          "design_x_input": 0.0,
+          "actual_x_input": 152.4,
+          "lanes": [
+            13,
+            3,
+            9,
+            5
+          ]
+        }
+      ],
+      "position_provider_boundary": "847d1a80",
+      "shift_distributions": [
+        {
+          "class_input": 0,
+          "strength_input": 0,
+          "counts_100": [
+            100,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 0,
+          "strength_input": 1,
+          "counts_100": [
+            100,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 0,
+          "strength_input": 2,
+          "counts_100": [
+            100,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 1,
+          "strength_input": 0,
+          "counts_100": [
+            30,
+            30,
+            20,
+            20,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 1,
+          "strength_input": 1,
+          "counts_100": [
+            30,
+            30,
+            10,
+            30,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 1,
+          "strength_input": 2,
+          "counts_100": [
+            30,
+            30,
+            30,
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 2,
+          "strength_input": 0,
+          "counts_100": [
+            30,
+            10,
+            50,
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 2,
+          "strength_input": 1,
+          "counts_100": [
+            30,
+            10,
+            25,
+            35,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 2,
+          "strength_input": 2,
+          "counts_100": [
+            30,
+            5,
+            50,
+            10,
+            5,
+            0
+          ]
+        },
+        {
+          "class_input": 3,
+          "strength_input": 0,
+          "counts_100": [
+            30,
+            10,
+            10,
+            50,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 3,
+          "strength_input": 1,
+          "counts_100": [
+            30,
+            5,
+            10,
+            50,
+            0,
+            5
+          ]
+        },
+        {
+          "class_input": 3,
+          "strength_input": 2,
+          "counts_100": [
+            30,
+            10,
+            35,
+            25,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 4,
+          "strength_input": 0,
+          "counts_100": [
+            25,
+            5,
+            20,
+            0,
+            50,
+            0
+          ]
+        },
+        {
+          "class_input": 4,
+          "strength_input": 1,
+          "counts_100": [
+            25,
+            5,
+            0,
+            40,
+            30,
+            0
+          ]
+        },
+        {
+          "class_input": 4,
+          "strength_input": 2,
+          "counts_100": [
+            25,
+            5,
+            20,
+            0,
+            50,
+            0
+          ]
+        },
+        {
+          "class_input": 5,
+          "strength_input": 0,
+          "counts_100": [
+            25,
+            5,
+            0,
+            20,
+            0,
+            50
+          ]
+        },
+        {
+          "class_input": 5,
+          "strength_input": 1,
+          "counts_100": [
+            25,
+            5,
+            0,
+            20,
+            0,
+            50
+          ]
+        },
+        {
+          "class_input": 5,
+          "strength_input": 2,
+          "counts_100": [
+            25,
+            5,
+            40,
+            0,
+            0,
+            30
+          ]
+        }
+      ],
+      "adapted_pcs": [
+        "848013a0",
+        "848013c8",
+        "848013f0",
+        "8480142c",
+        "8482e948",
+        "8482e980",
+        "8485b478",
+        "8485b55c",
+        "848674b0",
+        "84867524",
+        "84868bf8",
+        "84868cb4",
+        "84a92f28",
+        "84a92f30",
+        "84a92f4c",
+        "84a92f50",
+        "84a92f58",
+        "84a92f68",
+        "84a92f6c",
+        "84a92f74",
+        "84a92f94",
+        "84a92fa0",
+        "84bd7dac",
+        "84bd7db0",
+        "84bd7db4",
+        "84bd7db8",
+        "84bd7dbc",
+        "84bd7dc0",
+        "84bd7dc4",
+        "84bd7dfc",
+        "84bd7e00",
+        "84bd7e04",
+        "84bd7e08",
+        "84bd7e0c",
+        "84bd7e10",
+        "84bd7e14"
+      ],
+      "limits": [
+        "Explicit relocation and minimal synthetic match state",
+        "Shift classifier, RNG and design position are supplied boundaries",
+        "No full player update, Xenia frame or tester-folder reproduction"
+      ],
+      "configuration": "retail"
+    },
+    {
+      "image_sha256": "65f522ce1cdda42cf19c112e9ec07302e89c81e4148c9f22e6db5e03952f9457",
+      "executed_image_sha256": "1c98f88bc14d519d32e82744d327fd0bc6ce70745b93a0622689cb41353bb44c",
+      "installed_patch_word_count": 4301,
+      "master_sha256": "2de9d17dd4de29c37b005fabf4b1e5db7017556ae538fde2be6b3aca1c70a891",
+      "profile": "TU 1.1",
+      "pairs": [
+        {
+          "first": 277,
+          "second": 278,
+          "selected_by_slot": [
+            277,
+            277,
+            277,
+            277,
+            278,
+            278,
+            278,
+            278,
+            278,
+            278,
+            278
+          ]
+        },
+        {
+          "first": 277,
+          "second": 283,
+          "selected_by_slot": [
+            277,
+            277,
+            277,
+            277,
+            283,
+            283,
+            283,
+            283,
+            283,
+            283,
+            283
+          ]
+        },
+        {
+          "first": 277,
+          "second": 288,
+          "selected_by_slot": [
+            288,
+            288,
+            288,
+            288,
+            288,
+            288,
+            288,
+            288,
+            288,
+            288,
+            288
+          ]
+        },
+        {
+          "first": 277,
+          "second": 289,
+          "selected_by_slot": [
+            289,
+            289,
+            289,
+            289,
+            289,
+            289,
+            289,
+            289,
+            289,
+            289,
+            289
+          ]
+        }
+      ],
+      "front_ownership_checks": 1064,
+      "operand_reads": [
+        {
+          "play": 277,
+          "name": "Base",
+          "mirror": false,
+          "modes": [
+            1,
+            1,
+            0,
+            1
+          ],
+          "lanes": [
+            13,
+            3,
+            9,
+            5
+          ]
+        },
+        {
+          "play": 277,
+          "name": "Base",
+          "mirror": true,
+          "modes": [
+            1,
+            1,
+            0,
+            1
+          ],
+          "lanes": [
+            3,
+            13,
+            7,
+            11
+          ]
+        },
+        {
+          "play": 284,
+          "name": "Fan",
+          "mirror": false,
+          "modes": [
+            2,
+            2,
+            1,
+            1
+          ],
+          "lanes": [
+            14,
+            2,
+            10,
+            4
+          ]
+        },
+        {
+          "play": 284,
+          "name": "Fan",
+          "mirror": true,
+          "modes": [
+            2,
+            2,
+            1,
+            1
+          ],
+          "lanes": [
+            2,
+            14,
+            6,
+            12
+          ]
+        },
+        {
+          "play": 285,
+          "name": "Pinch",
+          "mirror": false,
+          "modes": [
+            1,
+            1,
+            0,
+            0
+          ],
+          "lanes": [
+            13,
+            3,
+            8,
+            7
+          ]
+        },
+        {
+          "play": 285,
+          "name": "Pinch",
+          "mirror": true,
+          "modes": [
+            1,
+            1,
+            0,
+            0
+          ],
+          "lanes": [
+            3,
+            13,
+            8,
+            9
+          ]
+        },
+        {
+          "play": 288,
+          "name": "Gap Left",
+          "mirror": false,
+          "modes": [
+            2,
+            1,
+            1,
+            1
+          ],
+          "lanes": [
+            15,
+            5,
+            11,
+            7
+          ]
+        },
+        {
+          "play": 288,
+          "name": "Gap Left",
+          "mirror": true,
+          "modes": [
+            2,
+            1,
+            1,
+            1
+          ],
+          "lanes": [
+            1,
+            11,
+            5,
+            9
+          ]
+        },
+        {
+          "play": 289,
+          "name": "Gap Right",
+          "mirror": false,
+          "modes": [
+            1,
+            2,
+            1,
+            1
+          ],
+          "lanes": [
+            11,
+            1,
+            7,
+            3
+          ]
+        },
+        {
+          "play": 289,
+          "name": "Gap Right",
+          "mirror": true,
+          "modes": [
+            1,
+            2,
+            1,
+            1
+          ],
+          "lanes": [
+            5,
+            15,
+            9,
+            13
+          ]
+        }
+      ],
+      "human_team_guard_entries": [
+        "848674a8",
+        "84867598",
+        "84868bf0"
+      ],
+      "cpu_lane_resolutions": [
+        {
+          "play": 277,
+          "design_x_input": 0.0,
+          "actual_x_input": -152.4,
+          "lanes": [
+            11,
+            1,
+            7,
+            3
+          ]
+        },
+        {
+          "play": 277,
+          "design_x_input": 0.0,
+          "actual_x_input": 0.0,
+          "lanes": [
+            13,
+            3,
+            9,
+            5
+          ]
+        },
+        {
+          "play": 277,
+          "design_x_input": 0.0,
+          "actual_x_input": 152.4,
+          "lanes": [
+            15,
+            5,
+            11,
+            7
+          ]
+        },
+        {
+          "play": 285,
+          "design_x_input": 0.0,
+          "actual_x_input": -152.4,
+          "lanes": [
+            11,
+            1,
+            6,
+            5
+          ]
+        },
+        {
+          "play": 285,
+          "design_x_input": 0.0,
+          "actual_x_input": 0.0,
+          "lanes": [
+            13,
+            3,
+            8,
+            7
+          ]
+        },
+        {
+          "play": 285,
+          "design_x_input": 0.0,
+          "actual_x_input": 152.4,
+          "lanes": [
+            15,
+            5,
+            10,
+            9
+          ]
+        },
+        {
+          "play": 288,
+          "design_x_input": 0.0,
+          "actual_x_input": -152.4,
+          "lanes": [
+            13,
+            3,
+            9,
+            5
+          ]
+        },
+        {
+          "play": 288,
+          "design_x_input": 0.0,
+          "actual_x_input": 0.0,
+          "lanes": [
+            15,
+            5,
+            11,
+            7
+          ]
+        },
+        {
+          "play": 288,
+          "design_x_input": 0.0,
+          "actual_x_input": 152.4,
+          "lanes": [
+            16,
+            7,
+            13,
+            9
+          ]
+        },
+        {
+          "play": 289,
+          "design_x_input": 0.0,
+          "actual_x_input": -152.4,
+          "lanes": [
+            9,
+            0,
+            5,
+            1
+          ]
+        },
+        {
+          "play": 289,
+          "design_x_input": 0.0,
+          "actual_x_input": 0.0,
+          "lanes": [
+            11,
+            1,
+            7,
+            3
+          ]
+        },
+        {
+          "play": 289,
+          "design_x_input": 0.0,
+          "actual_x_input": 152.4,
+          "lanes": [
+            13,
+            3,
+            9,
+            5
+          ]
+        }
+      ],
+      "position_provider_boundary": "847d1a80",
+      "shift_distributions": [
+        {
+          "class_input": 0,
+          "strength_input": 0,
+          "counts_100": [
+            100,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 0,
+          "strength_input": 1,
+          "counts_100": [
+            100,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 0,
+          "strength_input": 2,
+          "counts_100": [
+            100,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 1,
+          "strength_input": 0,
+          "counts_100": [
+            30,
+            30,
+            20,
+            20,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 1,
+          "strength_input": 1,
+          "counts_100": [
+            30,
+            30,
+            10,
+            30,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 1,
+          "strength_input": 2,
+          "counts_100": [
+            30,
+            30,
+            30,
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 2,
+          "strength_input": 0,
+          "counts_100": [
+            30,
+            10,
+            50,
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 2,
+          "strength_input": 1,
+          "counts_100": [
+            30,
+            10,
+            25,
+            35,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 2,
+          "strength_input": 2,
+          "counts_100": [
+            30,
+            5,
+            50,
+            10,
+            5,
+            0
+          ]
+        },
+        {
+          "class_input": 3,
+          "strength_input": 0,
+          "counts_100": [
+            30,
+            10,
+            10,
+            50,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 3,
+          "strength_input": 1,
+          "counts_100": [
+            30,
+            5,
+            10,
+            50,
+            0,
+            5
+          ]
+        },
+        {
+          "class_input": 3,
+          "strength_input": 2,
+          "counts_100": [
+            30,
+            10,
+            35,
+            25,
+            0,
+            0
+          ]
+        },
+        {
+          "class_input": 4,
+          "strength_input": 0,
+          "counts_100": [
+            25,
+            5,
+            20,
+            0,
+            50,
+            0
+          ]
+        },
+        {
+          "class_input": 4,
+          "strength_input": 1,
+          "counts_100": [
+            25,
+            5,
+            0,
+            40,
+            30,
+            0
+          ]
+        },
+        {
+          "class_input": 4,
+          "strength_input": 2,
+          "counts_100": [
+            25,
+            5,
+            20,
+            0,
+            50,
+            0
+          ]
+        },
+        {
+          "class_input": 5,
+          "strength_input": 0,
+          "counts_100": [
+            25,
+            5,
+            0,
+            20,
+            0,
+            50
+          ]
+        },
+        {
+          "class_input": 5,
+          "strength_input": 1,
+          "counts_100": [
+            25,
+            5,
+            0,
+            20,
+            0,
+            50
+          ]
+        },
+        {
+          "class_input": 5,
+          "strength_input": 2,
+          "counts_100": [
+            25,
+            5,
+            40,
+            0,
+            0,
+            30
+          ]
+        }
+      ],
+      "adapted_pcs": [
+        "848013a0",
+        "848013c8",
+        "848013f0",
+        "8480142c",
+        "8482e948",
+        "8482e980",
+        "8485b478",
+        "8485b55c",
+        "848674b0",
+        "84867524",
+        "84868bf8",
+        "84868cb4",
+        "84a92f28",
+        "84a92f30",
+        "84a92f4c",
+        "84a92f50",
+        "84a92f58",
+        "84a92f68",
+        "84a92f6c",
+        "84a92f74",
+        "84a92f94",
+        "84a92fa0",
+        "84bd7dac",
+        "84bd7db0",
+        "84bd7db4",
+        "84bd7db8",
+        "84bd7dbc",
+        "84bd7dc0",
+        "84bd7dc4",
+        "84bd7dfc",
+        "84bd7e00",
+        "84bd7e04",
+        "84bd7e08",
+        "84bd7e0c",
+        "84bd7e10",
+        "84bd7e14"
+      ],
+      "limits": [
+        "Explicit relocation and minimal synthetic match state",
+        "Shift classifier, RNG and design position are supplied boundaries",
+        "No full player update, Xenia frame or tester-folder reproduction"
+      ],
+      "configuration": "shipped_options"
+    }
+  ],
+  "route_explicit_base_slot0_from_gap_left": {
+    "before_master_sha256": "2de9d17dd4de29c37b005fabf4b1e5db7017556ae538fde2be6b3aca1c70a891",
+    "after_master_sha256": "d4d4db21291b28ade46d467223e6e753b0fef8c7f72fdc41cd127cdc84b4b1a8",
+    "defensive_play_count": 266,
+    "changed": [
+      {
+        "play": 277,
+        "before": {
+          "name": "Base",
+          "slots": [
+            {
+              "slot": 0,
+              "owned": true,
+              "descriptor": "2210b800",
+              "chain_sha256": "56675faf19cf01544a38b517a8c60fd6143f28a620735d3bcb218805c9547112"
+            },
+            {
+              "slot": 1,
+              "owned": true,
+              "descriptor": "2210b800",
+              "chain_sha256": "563b792058a852b5e902c05c6ddfdb0d4afa87f0444d2867801a488771b05a5b"
+            },
+            {
+              "slot": 2,
+              "owned": true,
+              "descriptor": "2220b800",
+              "chain_sha256": "b46895d5745e588e79c124f8ea41782ccb16dce6706550cbcb6d4967a3c9bfbd"
+            },
+            {
+              "slot": 3,
+              "owned": true,
+              "descriptor": "2210b800",
+              "chain_sha256": "176ff317736ff6d12e1720d69453651c481e2bfb9914481bd36c570126eeddb6"
+            },
+            {
+              "slot": 4,
+              "owned": false,
+              "descriptor": "2a00b000",
+              "chain_sha256": "69331600a056a1df34e77d6930e1611cf7315f9df578950bb2fab4e480f13346"
+            },
+            {
+              "slot": 5,
+              "owned": false,
+              "descriptor": "2a00b000",
+              "chain_sha256": "6c7faefa75a8480216d9995b1227ce611f32955eb623d192d40e5bc8701c6835"
+            },
+            {
+              "slot": 6,
+              "owned": false,
+              "descriptor": "2a00b000",
+              "chain_sha256": "85116b1571d55d94b0061a78af9a3e6ae660bf6d44fb092e543e78979ad9b8ce"
+            },
+            {
+              "slot": 7,
+              "owned": false,
+              "descriptor": "2a00b000",
+              "chain_sha256": "7af857edabe31519121fcc693414bd44714c97332731125a845c78ceea7ce498"
+            },
+            {
+              "slot": 8,
+              "owned": false,
+              "descriptor": "2a00b000",
+              "chain_sha256": "fdf9d582f24a0cc91d9aaf24e56fb3c04ab521145a4fef148980499c9618c96e"
+            },
+            {
+              "slot": 9,
+              "owned": false,
+              "descriptor": "2a00b000",
+              "chain_sha256": "ddb06d313b4f28858f134aa87863f08ef3ede9d46ce59bea720d40c5eb778dbc"
+            },
+            {
+              "slot": 10,
+              "owned": false,
+              "descriptor": "2a00b000",
+              "chain_sha256": "a3bfcd4d1244451136dd3004af2ca9907c72f625b789e30d9bfa2f08e29fd2db"
+            }
+          ],
+          "record_sha256": "b60a1ddd143a0a22c8c6ed36524194af796dc0ef57368525c4c7d4bfd67c305c"
+        },
+        "after": {
+          "name": "Base",
+          "slots": [
+            {
+              "slot": 0,
+              "owned": true,
+              "descriptor": "2230b800",
+              "chain_sha256": "936a854862070e229afb8757edbf2237b55b084e79dc168e0191c55f33c16416"
+            },
+            {
+              "slot": 1,
+              "owned": true,
+              "descriptor": "2210b800",
+              "chain_sha256": "563b792058a852b5e902c05c6ddfdb0d4afa87f0444d2867801a488771b05a5b"
+            },
+            {
+              "slot": 2,
+              "owned": true,
+              "descriptor": "2220b800",
+              "chain_sha256": "b46895d5745e588e79c124f8ea41782ccb16dce6706550cbcb6d4967a3c9bfbd"
+            },
+            {
+              "slot": 3,
+              "owned": true,
+              "descriptor": "2210b800",
+              "chain_sha256": "176ff317736ff6d12e1720d69453651c481e2bfb9914481bd36c570126eeddb6"
+            },
+            {
+              "slot": 4,
+              "owned": false,
+              "descriptor": "2a00b000",
+              "chain_sha256": "69331600a056a1df34e77d6930e1611cf7315f9df578950bb2fab4e480f13346"
+            },
+            {
+              "slot": 5,
+              "owned": false,
+              "descriptor": "2a00b000",
+              "chain_sha256": "6c7faefa75a8480216d9995b1227ce611f32955eb623d192d40e5bc8701c6835"
+            },
+            {
+              "slot": 6,
+              "owned": false,
+              "descriptor": "2a00b000",
+              "chain_sha256": "85116b1571d55d94b0061a78af9a3e6ae660bf6d44fb092e543e78979ad9b8ce"
+            },
+            {
+              "slot": 7,
+              "owned": false,
+              "descriptor": "2a00b000",
+              "chain_sha256": "7af857edabe31519121fcc693414bd44714c97332731125a845c78ceea7ce498"
+            },
+            {
+              "slot": 8,
+              "owned": false,
+              "descriptor": "2a00b000",
+              "chain_sha256": "fdf9d582f24a0cc91d9aaf24e56fb3c04ab521145a4fef148980499c9618c96e"
+            },
+            {
+              "slot": 9,
+              "owned": false,
+              "descriptor": "2a00b000",
+              "chain_sha256": "ddb06d313b4f28858f134aa87863f08ef3ede9d46ce59bea720d40c5eb778dbc"
+            },
+            {
+              "slot": 10,
+              "owned": false,
+              "descriptor": "2a00b000",
+              "chain_sha256": "a3bfcd4d1244451136dd3004af2ca9907c72f625b789e30d9bfa2f08e29fd2db"
+            }
+          ],
+          "record_sha256": "43a612c2b0ee042d10546239e25813536047c20c1d87fefee3d17bcf11770ca7"
+        }
+      }
+    ]
+  },
+  "alignment_explicit_4_3_swap_slots0_1": {
+    "before_master_sha256": "2de9d17dd4de29c37b005fabf4b1e5db7017556ae538fde2be6b3aca1c70a891",
+    "after_master_sha256": "7a56a1dd56c800e3c13fbc8f7c2fabe89e605d0535ae132aabfd92e399c45ae6",
+    "defensive_play_count": 266,
+    "changed": []
+  }
+}

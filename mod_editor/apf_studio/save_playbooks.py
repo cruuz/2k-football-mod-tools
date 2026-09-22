@@ -34,6 +34,22 @@ RAW_SAVE_BOUNDARY = (
     "Raw roster payload detected. Mod Studio will write a separate file and an "
     "independent byte-verification receipt; the selected source is never changed."
 )
+# Aszemple, 2026-09-21: "all this does is change the name, but the playbook itself
+# is affected and stays the same, does not carry over the unique plays assigned to
+# that book from the fine tuning of plays." The page now states the boundary.
+SAVE_ASSIGNMENTS_SCOPE = (
+    "What this writes: which book type a saved label points at, inside a new raw roster file. "
+    "What it does not write: plays, formations, personnel or any Fine-tune Plays work. Those live in "
+    "the books inside a built game folder, so a save can only choose which of that folder's books a "
+    "team uses. The order that works: fine-tune the book in this project, run Build Game Folder, then "
+    "point the label at that book type here, then play this new save on that built folder."
+)
+# Raised before any output exists, so a label never starts pointing at a folder
+# book that is not the one this project holds.
+PROJECT_BOOK_MISMATCH = (
+    "The built game folder does not contain your fine-tuned {book_type}. "
+    "Build the game folder from this project first, then save assignments."
+)
 
 
 class SavePlaybookError(ValueError):
@@ -48,8 +64,14 @@ def built_label_types(index_0a: Path, side: str) -> tuple[str, ...]:
 
 
 def prepare_label_type(document: SavePlaybookDocument, label_id: int, book_type: str,
-                       index_0a: Path) -> tuple[bytes, dict]:
-    """Preflight the raw edit and reparse the matching installed book."""
+                       index_0a: Path, project_book: bytes | None = None) -> tuple[bytes, dict]:
+    """Preflight the raw edit and reparse the matching installed book.
+
+    ``project_book`` is this project's staged/fine-tuned body for the same book
+    type, or ``None`` when the project has no edit for it. When it is supplied
+    and the built game folder holds different bytes, the write is refused: the
+    plays come from the folder, so that save would run the folder's older book.
+    """
     from mod_editor.core import apf2k8_book_identity as identity
     from mod_editor.core.errors import ValidationError
     if document.signed_container:
@@ -64,13 +86,24 @@ def prepare_label_type(document: SavePlaybookDocument, label_id: int, book_type:
             raise SavePlaybookError("The built book header does not match the selected type")
     except (ValidationError, writer.SaveError) as exc:
         raise SavePlaybookError(str(exc)) from exc
+    folder_sha256 = hashlib.sha256(book).hexdigest()
+    project_sha256 = None
+    if project_book is not None:
+        project_sha256 = hashlib.sha256(bytes(project_book)).hexdigest()
+        if project_sha256 != folder_sha256:
+            raise SavePlaybookError(PROJECT_BOOK_MISMATCH.format(book_type=book_type))
     receipt["built_book"] = {"index_0a": str(index_0a), "outer_index": entry.table_index,
-                             "sha256": hashlib.sha256(book).hexdigest(), "reparsed": True}
+                             "sha256": folder_sha256, "reparsed": True,
+                             "project_book_sha256": project_sha256,
+                             "project_book_compared": project_book is not None}
+    # Top level as well, so a screenshot of the receipt names the folder book a
+    # report has to be matched against.
+    receipt["folder_book_sha256"] = folder_sha256
     return payload, receipt
 
 
 def write_label_type(document: SavePlaybookDocument, label_id: int, book_type: str,
-                     index_0a: Path, output: Path) -> dict:
+                     index_0a: Path, output: Path, project_book: bytes | None = None) -> dict:
     """Create a raw label-type handoff and receipt using exclusive binary writes."""
     from mod_editor.core.apf2k8_book_identity import verify_save_label_type
     from mod_editor.core.errors import ValidationError
@@ -82,7 +115,7 @@ def write_label_type(document: SavePlaybookDocument, label_id: int, book_type: s
         raise SavePlaybookError("Source save changed after inspection; reload it before writing")
     if hashlib.sha256(document.raw_payload).hexdigest() != document.raw_payload_sha256:
         raise SavePlaybookError("Inspected raw payload identity changed")
-    payload, receipt = prepare_label_type(document, label_id, book_type, index_0a)
+    payload, receipt = prepare_label_type(document, label_id, book_type, index_0a, project_book)
     created = []
     try:
         for path, data in ((output, payload), (manifest, (json.dumps(receipt, indent=2, sort_keys=True) + "\n").encode("utf-8"))):
@@ -416,7 +449,9 @@ __all__ = [
     "built_label_types",
     "PlaybookChoice",
     "PlaybookEdit",
+    "PROJECT_BOOK_MISMATCH",
     "RAW_SAVE_BOUNDARY",
+    "SAVE_ASSIGNMENTS_SCOPE",
     "SIGNED_SAVE_BOUNDARY",
     "SavePlaybookDocument",
     "SavePlaybookError",
