@@ -1,5 +1,9 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.100 - beta 75.1
+
+- Version aligned with this release; no APF 2K8 changes ship here.
+
 ## 0.1.0-alpha.99 - beta 75
 
 - Save Assignments now states what it writes and what it does not. The page and the confirmation say that the action writes which book type a saved label points at, inside a new raw roster file, and that it does not write plays, formations, personnel or any Fine-tune Plays work. Those live in the books inside a built game folder, so a save can only choose which of that folder's books a team uses. The order that works is printed with it: fine-tune the book in this project, run Build Game Folder, then point the label at that book type, then play the new save on that built folder. This answers the report that pointing a label at a cloned book "does not carry over the unique plays assigned to that book from the fine tuning of plays".

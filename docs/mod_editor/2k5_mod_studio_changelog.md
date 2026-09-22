@@ -1,5 +1,9 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC104, beta 75.1: the1wam lineman rating adjustment
+
+- **the1wam lineman rating adjustment.** Building rosters, the1wam found that the game's own OVERALL moves with a player's weight, and asked for that effect to be capped for offensive linemen. It is real, and it is weight alone: for a Center, Guard or Tackle the game adds a tenth of a rating point to its run-blocking measure for every pound over 300 and to its pass-blocking measure for every pound over 290, which comes out at roughly one and a half points of overall for every ten pounds, while height does nothing at all for those three positions. A new Build option, off by default and marked experimental, applies his rule for the time it takes to compute one overall and nowhere else: a lineman of 326 lb or more counts as 294 lb, and a lineman of 325 lb or less counts as 317 lb. The weight stored in the roster is untouched, and blocking, collisions, animation and commentary all keep the real number, so this changes the number on the roster screens and the player cards, not how the player plays. Not yet witnessed in game.
+
 ## v1.0 RC103, beta 75: the 2K8 release
 
 - **Equipment art shared by several references fits its span.** Importing a shoe stages its mud twin, and shoes01 and shoes04 are global rows, so two plain shoe imports filled four references of one 54,480-byte span with one artwork; the writer appended a copy of the same 87,360-byte pixel chain for every reference, four times the bytes for one image, and the build refused with "missed the span by 272 bytes" after every refit choice. References whose bytes are identical now share one chain, which is the retail layout, and Build refits items that carry one artwork to one choice together; the four shoes land at 128 x 128 in 54,474 of 54,480 bytes. All 66 retail shoe spans behind that import now build, and the retail workflow gate carries the case.
