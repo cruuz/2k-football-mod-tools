@@ -41,10 +41,10 @@ def artwork(width, height):
 
 
 class Fixture:
-    def __init__(self, root, *, family=8, margin=2048, names=None):
-        self.width, self.height, self.count = 32, (16 if family == 6 else 32), 3
+    def __init__(self, root, *, family=8, margin=2048, names=None, count=3, width=32):
+        self.width, self.height, self.count = width, (width // 2 if family == 6 else width), count
         if names is not None and len(names) != self.count:
-            raise ValueError("synthetic equipment fixture names must match its three references")
+            raise ValueError("synthetic equipment fixture names must match its references")
         self.levels = 2 if family == 6 else 3
         system = 512
         chains = []
@@ -66,18 +66,23 @@ class Fixture:
         decoded = bytearray(system) + video
         struct.pack_into("<II", decoded, 0, 13, self.count)
         rows = []
+        # The reference table grows with the count, so a fixture carrying more
+        # than the historical three references moves its name and descriptor
+        # tables past it; three references keep their original offsets.
+        names_at, descriptors_at = (128, 256) if self.count <= 3 else (192, 320)
         for reference, palette_offset in enumerate(palette_offsets):
             name = ("glove" if family == 6 else "shoes") + f"{reference + 1:02d}"
             if names is not None:
                 name = names[reference]
             base = 0x18 + reference * 0x24
-            name_at, descriptor = 128 + reference * 32, 256 + reference * 32
+            name_at, descriptor = names_at + reference * 32, descriptors_at + reference * 32
             decoded[base:base + 4] = b"TXTR"
             for field, target in ((base + 4, name_at), (base + 8, descriptor)):
                 struct.pack_into("<i", decoded, field, target - field + 1)
             encoded_name = (name + "\0").encode("utf-16le")
             decoded[name_at:name_at + len(encoded_name)] = encoded_name
-            packed = 0xB29 | self.levels << 16 | 5 << 20 | (4 if family == 6 else 5) << 24
+            packed = (0xB29 | self.levels << 16 | (self.width.bit_length() - 1) << 20
+                      | (self.height.bit_length() - 1) << 24)
             struct.pack_into("<6I", decoded, descriptor, 0, 0, palette_offset, packed, 0, 0x80000000)
             rows.append(writer.EquipmentTarget(
                 0, "SYNTHETIC", family, reference, name, self.width, self.height,
@@ -124,6 +129,37 @@ class Fixture:
             return writer.build_unified_uniform_equipment_imports(
                 self.root / "0", edits, pack_hashes={"pack": digest(self.span)},
             )
+
+
+def tight_four_stream_fixture(root, headroom=768):
+    """One 64x64 shoe span with four references, packed like a retail span.
+
+    Retail equipment streams are packed to within a few bytes of their span:
+    the 11H0 shoe span Coach Edwards imported into leaves 9 bytes of 54,480, so
+    a fixture with room to spare cannot show what an appended chain costs. Its
+    chain is also larger than the VC-LZ distance window, again like the retail
+    shoe chains, so a second copy of it cannot be matched against the first.
+    """
+    from mod_editor.core.nfl2k5_equipment_lz import compress_equipment_optimal
+
+    f = Fixture(root, family=8, margin=0, width=64, count=4,
+                names=("shoes01", "shoes01_mud", "shoes04", "shoes04_mud"))
+    raw = bytearray(f.decoded)
+    rows = []
+    for row in f.rows:
+        palette = bytes((30, 50, 70, 255)) * 256
+        start = f.chunk.system_bytes + row.palette_offset
+        raw[start:start + 1024] = palette
+        rows.append(replace(row, palette_bgra_sha256=digest(palette)))
+    f.rows, f.decoded = tuple(rows), bytes(raw)
+    encoded = min((compress_equipment_optimal(f.decoded, stream_tag=1, offset_bits=bits,
+                                              max_encoded_size=100_000) for bits in (10, 11, 12)), key=len)
+    stored = (len(encoded) + headroom + 15) & ~15
+    f.span = (HEADER.pack(b"TSET", stored, f.chunk.system_bytes, f.chunk.video_bytes,
+                          0xFEEDBEEF, stored, 0, 0) + encoded + bytes(stored - len(encoded)))
+    f.chunk = replace(parse_chunks(f.span)[0], index=8)
+    f.pack.write_bytes(f.span)
+    return f
 
 
 class EquipmentChainTests(unittest.TestCase):
@@ -268,6 +304,43 @@ class EquipmentChainTests(unittest.TestCase):
         self.assertLess(offsets[0] + f.chain_size, offsets[2] + 1)
         self.assertNotEqual(offsets[0], offsets[2])
         self.assertEqual(a[2]["allocation"]["independent_variant_count"], 2)
+
+    def test_four_streams_carrying_one_artwork_share_one_appended_chain(self):
+        # Coach Edwards, beta 74 and 74.1: importing two shoes stages each
+        # one's mud twin as well, so four references of one span receive ONE
+        # artwork. Beta 74 appended that chain once per reference and his plain
+        # art missed the 54,480-byte 11H0 shoe span by 272 bytes at every refit
+        # choice. The retail references themselves all share the chain at pixel
+        # offset 0; equal appended chains are written once for the same reason.
+        f = tight_four_stream_fixture(self.root)
+        rgba = artwork(f.width, f.height)
+        edits = [f.png(reference, rgba=rgba) for reference in range(4)]
+        span, _previews, report, _selector, _target = f.build(edits)
+        offsets = {row["pixel_offset"] for row in report["edits"]}
+        self.assertEqual(len(offsets), 1)
+        self.assertEqual(report["allocation"]["added_video_bytes"], (f.chain_size + 127) & ~127)
+        self.assertLessEqual(report["compression"]["recompressed_bytes"], f.chunk.stored_size)
+        self.assertTrue(report["compression"]["loader_in_place_end_guard"])
+        self.assertTrue(report["compression"]["loader_in_place_alias_guard"])
+        # Each reference still decodes its own artwork through its own descriptor.
+        chunk = parse_chunks(span)[0]
+        actual, _ = decode_chunk(span, chunk)
+        textures, _ = writer._validate_layout(f.decoded, f.chunk, f.rows)
+        expected = make_digit_mips(rgba, f.width, f.height, f.levels)
+        expected[0] = replace(expected[0], rgba=rgba)
+        for reference in range(4):
+            texture = replace(textures[reference], pixel_offset=next(iter(offsets)))
+            self.assertEqual(writer.decode_equipment_levels(actual, chunk, texture),
+                             [level.rgba for level in expected])
+        # One appended chain per reference is exactly what beta 74 wrote.
+        writer._PARSE_CACHE.clear()
+        writer.staged_equipment_cache().clear()
+        with patch.object(writer, "_appended_chain_key",
+                          side_effect=lambda reference, *_rest: ("per reference", reference)), \
+                patch.object(writer, "_stage_disk_cache", side_effect=OSError("no disk cache")), \
+                self.assertRaises(writer.EquipmentFitError) as caught:
+            f.build(edits)
+        self.assertEqual((caught.exception.budget, caught.exception.required), (1280, 1553))
 
     def test_reduces_busy_art_to_budget_without_writing_the_source(self):
         f = Fixture(self.root, margin=0)

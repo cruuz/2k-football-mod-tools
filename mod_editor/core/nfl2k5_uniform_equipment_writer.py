@@ -1339,6 +1339,40 @@ def _capacity_bounds(decoded, fixed_regions, total, geometries):
     return tuple(result)
 
 
+def _appended_chain_key(reference, authored, retail):
+    """Exactly what an appended index chain's bytes depend on.
+
+    The quantizer is a pure function of the authored levels and the colour
+    limit, and one candidate uses one limit for every reference, so equal
+    levels give equal indices at every rung of the ladder. A preserved retail
+    chain is its own bytes. Two references with the same key therefore write
+    the same chain and can point at one copy of it.
+    """
+
+    if reference in retail:
+        source, chain, _palette, _levels = retail[reference]
+        return ("retail", source.width, source.height, source.mip_levels, _digest(chain))
+    return ("art",) + tuple((level.width, level.height, _digest(level.rgba))
+                            for level in authored[reference][3])
+
+
+def _write_appended_chain(candidate, chunk, texture, chain, written):
+    """Point this descriptor at its appended chain and write shared bytes once."""
+
+    struct.pack_into("<I", candidate, texture.descriptor_offset + 4, texture.pixel_offset)
+    struct.pack_into("<I", candidate, texture.descriptor_offset + 12, texture.packed_format)
+    existing = written.get(texture.pixel_offset)
+    if existing is None:
+        start = chunk.system_bytes + texture.pixel_offset
+        _require(start + len(chain) <= len(candidate),
+                 "Independent equipment chain exceeds its appended allocation")
+        candidate[start:start + len(chain)] = chain
+        written[texture.pixel_offset] = chain
+    else:
+        _require(existing == chain,
+                 "Equipment references sharing one appended chain compiled different bytes")
+
+
 @_one_optimal_fit
 def _compile_group(
     template_span: bytes,
@@ -1370,8 +1404,15 @@ def _compile_group(
 
     # Allocate after ALL original bytes, including palette alignment gaps. Only
     # these selected descriptors move; no sibling ever references the append.
+    # References whose appended bytes are identical share ONE chain, exactly as
+    # the retail references all share the chain at pixel offset 0. A normal
+    # shoe, glove or pad import stages the same artwork into its ``_mud`` twin,
+    # so one span routinely receives the same chain twice or four times; four
+    # 11H0 shoe edits appended 349,696 bytes of identical indices and missed the
+    # 54,480-byte span at every refit choice (Coach Edwards, beta 74/74.1).
     updated_textures = dict(textures)
     video_end = chunk.video_bytes
+    chain_starts: dict[tuple[Any, ...], int] = {}
     for reference in sorted(independent):
         texture = textures[reference]
         levels = authored[reference][3]
@@ -1379,12 +1420,15 @@ def _compile_group(
         packed = (texture.packed_format & ~0x0FFF0000) | (count << 16) \
             | ((width.bit_length() - 1) << 20) | ((height.bit_length() - 1) << 24)
         texture = replace(texture, width=width, height=height, mip_levels=count, packed_format=packed)
-        start = (video_end + 127) & ~127
+        key = _appended_chain_key(reference, authored, retail)
+        start = chain_starts.get(key)
+        if start is None:
+            start = chain_starts[key] = (video_end + 127) & ~127
+            video_end = start + sum(
+                max(1, texture.width >> level) * max(1, texture.height >> level)
+                for level in range(texture.mip_levels)
+            )
         updated_textures[reference] = replace(texture, pixel_offset=start)
-        video_end = start + sum(
-            max(1, texture.width >> level) * max(1, texture.height >> level)
-            for level in range(texture.mip_levels)
-        )
     if independent:
         video_end = (video_end + 127) & ~127
     _require(chunk.system_bytes + video_end <= MAX_DECODED_BYTES,
@@ -1424,31 +1468,23 @@ def _compile_group(
             candidate = bytearray(decoded + bytes(video_end - chunk.video_bytes))
             entries: dict[int, int] = {}
             qualities: dict[int, Any] = {}
+            written: dict[int, bytes] = {}
             try:
                 for reference, (target, _payload, _rgba, levels) in sorted(authored.items()):
                     if reference in retail:
                         _source, chain, palette, _levels = retail[reference]
                         actual_entries = 256
                         if reference in independent:
-                            texture = updated_textures[reference]
-                            struct.pack_into("<I", candidate, texture.descriptor_offset + 4, texture.pixel_offset)
-                            struct.pack_into("<I", candidate, texture.descriptor_offset + 12, texture.packed_format)
-                            start = chunk.system_bytes + texture.pixel_offset
-                            candidate[start:start + len(chain)] = chain
+                            _write_appended_chain(candidate, chunk, updated_textures[reference],
+                                                  chain, written)
                     elif reference in independent:
                         colors, index_levels, quality = _quantize_art(levels, maximum, measure_quality=False)
                         palette, actual_entries = palette_tools.palette_bytes(colors), len(colors)
                         qualities[reference] = quality
-                        texture = updated_textures[reference]
-                        struct.pack_into("<I", candidate, texture.descriptor_offset + 4,
-                                         texture.pixel_offset)
-                        struct.pack_into("<I", candidate, texture.descriptor_offset + 12,
-                                         texture.packed_format)
-                        cursor = chunk.system_bytes + texture.pixel_offset
-                        for level, level_indices in zip(levels, index_levels):
-                            swizzled = swizzle_2d(level_indices, level.width, level.height, 1)
-                            candidate[cursor:cursor + len(swizzled)] = swizzled
-                            cursor += len(swizzled)
+                        _write_appended_chain(candidate, chunk, updated_textures[reference],
+                                              b"".join(swizzle_2d(level_indices, level.width, level.height, 1)
+                                                       for level, level_indices in zip(levels, index_levels)),
+                                              written)
                     else:
                         palette, actual_entries = _project_palette(indices, levels, maximum)
                     entries[reference] = actual_entries
@@ -2113,7 +2149,7 @@ def refit_candidates(target: EquipmentTarget, payload: bytes, rgba: bytes) -> It
     Build's automatic refit uses this same generator, so both produce the same
     bytes for the same art.
     """
-    for _scale, _limit, candidate in _refit_ladder(target, payload, rgba):
+    for _scale, _limit, candidate, _reduced in _refit_ladder(target, payload, rgba):
         yield candidate
 
 
@@ -2134,7 +2170,7 @@ def _refit_ladder(target, payload, rgba):
             if digest in seen:
                 continue
             seen.add(digest)
-            yield scale, limit, candidate
+            yield scale, limit, candidate, reduced
 
 
 def refit_item(index: Path, asset_id: str, payload: bytes, rgba: bytes,
@@ -2148,29 +2184,66 @@ def refit_item(index: Path, asset_id: str, payload: bytes, rgba: bytes,
     (optional) receives a short progress note before each candidate. Returns
     ``(png_bytes, compiled, accepted_value)``.
     """
+    staged, compiled, checked = refit_items(
+        index, ((asset_id, payload, rgba),), siblings, directory,
+        accept=(None if accept is None else (lambda pngs, result: accept(pngs[asset_id], result))),
+        compile_cache=compile_cache, heartbeat=heartbeat)
+    return staged[asset_id][1], compiled, checked
+
+
+def refit_items(index: Path, items, siblings: Iterable[tuple[str, Path]], directory: Path, *,
+                accept=None, compile_cache: EquipmentCompileCache | None = None, heartbeat=None):
+    """The same ladder applied to one item, or to several carrying one artwork.
+
+    ``items`` is ``[(asset_id, png_bytes, rgba)]`` for one physical span. Items
+    after the first must share the first's artwork, slot geometry and import
+    choice: a normal shoe, glove or pad import stages the same art into its
+    ``_mud`` twin, and those references compile into ONE shared appended chain,
+    so one choice is measured for all of them. Refitting them one at a time
+    instead measures each against the others' unrefitted full-size art and
+    lands on a needlessly small image, or on no fitting choice at all.
+    ``accept({asset_id: png_path}, compiled)`` is the caller's whole-group
+    check. Returns ``({asset_id: (png_path, png_bytes)}, compiled, accepted)``.
+    """
     from mod_editor.core.nfl2k5_equipment_lz import uncapped_optimal_fit
+    from mod_editor.core.nfl2k5_equipment_import_intent import with_import_mode
     by_id, _ = load_targets()
+    items = [(str(asset_id), payload, rgba) for asset_id, payload, rgba in items]
+    _require(bool(items), "Refit needs at least one equipment item")
+    asset_id, payload, rgba = items[0]
     target = by_id[asset_id]
+    independent = import_settings(payload, asset_id, rgba)[0] == OWN_TEXTURE
     siblings = list(siblings)
-    png = Path(directory) / "refit.png"
+    directory = Path(directory)
+    names = ", ".join(by_id[other].name for other, _payload, _rgba in items)
     last = None
     with uncapped_optimal_fit(heartbeat):
-        for scale, limit, candidate in _refit_ladder(target, payload, rgba):
+        for scale, limit, candidate, reduced in _refit_ladder(target, payload, rgba):
             if heartbeat is not None:
-                heartbeat(f"Refitting {target.set_selector} / {target.name}: trying "
+                heartbeat(f"Refitting {target.set_selector} / {names}: trying "
                           f"{target.width // scale} x {target.height // scale}, up to {limit} colours")
-            png.write_bytes(candidate)
+            staged: dict[str, tuple[Path, bytes]] = {}
+            for other, _payload, _rgba in items:
+                # The first item's PNG keeps the historical name, which Refit
+                # equipment stages directly from this directory.
+                png = directory / ("refit.png" if other == asset_id
+                                   else f"refit-{by_id[other].reference_index}.png")
+                staged[other] = (png, candidate if other == asset_id else with_import_mode(
+                    candidate, other, reduced, independent=independent, scale=scale))
+                png.write_bytes(staged[other][1])
             try:
                 # A refit tries smaller sizes itself; a size suggestion for a
                 # rejected candidate cannot change which candidate is chosen.
-                compiled = build_unified_uniform_equipment_imports(index, siblings + [(asset_id, png)],
+                compiled = build_unified_uniform_equipment_imports(index,
+                    siblings + [(other, png) for other, (png, _bytes) in sorted(staged.items())],
                     preflight_only=True, fit_asset_id=asset_id, compile_cache=compile_cache,
                     suggest_fit=False)
-                checked = accept(png, compiled) if accept is not None else None
+                checked = accept({other: png for other, (png, _bytes) in staged.items()},
+                                 compiled) if accept is not None else None
             except EquipmentRefitError as exc:
                 last = exc
                 continue
-            return candidate, compiled, checked
+            return staged, compiled, checked
     raise EquipmentRefitError(f"Refit could not find a fitting colour count or size. {last}")
 
 
@@ -2188,7 +2261,10 @@ def auto_refit_group(index: Path, edits: Iterable[tuple[str, Path]], directory: 
     The whole group is measured without a clock, in the order the Studio
     measures it. Each item that still needs refit then receives exactly the
     PNG Refit equipment would stage, checked with its fitting siblings, one
-    item after another from the top of the list. Returns ``(rows, substitutes,
+    item after another from the top of the list; own-texture items carrying
+    one artwork (a shoe, glove or pad and its ``_mud`` twin, which import
+    together and compile into one shared appended chain) are refit to one
+    choice together. Returns ``(rows, substitutes,
     refits)``: the final measured rows, ``{asset_id: png_bytes}`` to compile in
     place of the project art, and one record per refitted item for the report.
     The project art itself is never changed.
@@ -2206,48 +2282,65 @@ def auto_refit_group(index: Path, edits: Iterable[tuple[str, Path]], directory: 
                                                compile_cache=compile_cache, suggest_fit=False)
         rows = measure(current)
         failed = [row for row in rows if row.get("fit_status") == "needs refit"]
+        batches: "OrderedDict[Any, list[tuple[dict[str, Any], bytes, bytes]]]" = OrderedDict()
         for original in sorted(failed, key=lambda row: row["asset_id"]):
             asset_id = original["asset_id"]
             target = by_id[asset_id]
             payload = current[asset_id].read_bytes()
             _width, _height, rgba = palette_tools.decode_rgba_png(payload, (target.width, target.height))
+            mode, scale = import_settings(payload, asset_id, rgba)
+            # Only own-texture items append a chain, so only they gain from one
+            # shared choice; a palette-only item keeps its own ladder, as before.
+            key = ((target.outer_index, target.chunk_index, target.width, target.height,
+                    target.mip_levels, _digest(rgba), scale)
+                   if mode == OWN_TEXTURE else asset_id)
+            batches.setdefault(key, []).append((original, payload, rgba))
+        for batch in batches.values():
+            items = [(row["asset_id"], payload, rgba) for row, payload, rgba in batch]
+            chosen = {asset_id for asset_id, _payload, _rgba in items}
+            first = by_id[items[0][0]]
             ready = {row["asset_id"] for row in rows if row.get("fit_status") != "needs refit"}
             siblings = [(key, value) for key, value in sorted(current.items())
-                        if key != asset_id and key in ready]
+                        if key not in chosen and key in ready]
             folder = Path(directory) / f"refit-{len(refits):03d}"
             folder.mkdir()
 
-            def accept(png, _compiled, asset_id=asset_id):
+            def accept(pngs, _compiled):
                 prospective = dict(current)
-                prospective[asset_id] = png
+                prospective.update(pngs)
                 checked = measure(prospective)
-                selected = next(row for row in checked if row["asset_id"] == asset_id)
-                if selected.get("fit_status") == "needs refit":
-                    raise _row_failure(selected)
+                for asset_id in pngs:
+                    selected = next(row for row in checked if row["asset_id"] == asset_id)
+                    if selected.get("fit_status") == "needs refit":
+                        raise _row_failure(selected)
                 return checked
             try:
-                candidate, compiled, checked = refit_item(index, asset_id, payload, rgba, siblings, folder,
-                                                          accept=accept, compile_cache=compile_cache,
-                                                          heartbeat=heartbeat)
+                staged, compiled, checked = refit_items(index, items, siblings, folder,
+                                                        accept=accept, compile_cache=compile_cache,
+                                                        heartbeat=heartbeat)
             except EquipmentRefitError as exc:
                 raise EquipmentRefitError(
-                    f"Equipment / uniform set {target.set_selector} / {asset_id}: needs refit: "
-                    f"{original.get('fit_error')} Build tried every Refit equipment choice and none fits "
+                    f"Equipment / uniform set {first.set_selector} / {', '.join(sorted(chosen))}: needs refit: "
+                    f"{batch[0][0].get('fit_error')} Build tried every Refit equipment choice and none fits "
                     f"beside the other edits in this span ({exc}). Revert this item or import simpler art."
                 ) from exc
-            final = folder / "refitted.png"
-            final.write_bytes(candidate)
-            current[asset_id] = final
-            substitutes[asset_id] = candidate
-            template = compiled.edit_templates[target.reference_index]
-            refits.append(dict(
-                asset_id=asset_id, set_selector=target.set_selector, name=target.name,
-                reason=original.get("fit_error"), original_png_sha256=_digest(payload),
-                refit_png_sha256=_digest(candidate), fit_summary=template["fit_summary"],
-                encoded_dimensions=list(template["encoded_dimensions"]),
-                used_palette_entries=template["used_palette_entries"],
-                encoded_bytes=compiled.rebuild_info.recompressed_bytes,
-                budget=original.get("budget"), required=original.get("required"),
-                required_is_lower_bound=original.get("required_is_lower_bound", False)))
+            for original, payload, _rgba in batch:
+                asset_id = original["asset_id"]
+                target = by_id[asset_id]
+                candidate = staged[asset_id][1]
+                final = folder / f"refitted-{target.reference_index}.png"
+                final.write_bytes(candidate)
+                current[asset_id] = final
+                substitutes[asset_id] = candidate
+                template = compiled.edit_templates[target.reference_index]
+                refits.append(dict(
+                    asset_id=asset_id, set_selector=target.set_selector, name=target.name,
+                    reason=original.get("fit_error"), original_png_sha256=_digest(payload),
+                    refit_png_sha256=_digest(candidate), fit_summary=template["fit_summary"],
+                    encoded_dimensions=list(template["encoded_dimensions"]),
+                    used_palette_entries=template["used_palette_entries"],
+                    encoded_bytes=compiled.rebuild_info.recompressed_bytes,
+                    budget=original.get("budget"), required=original.get("required"),
+                    required_is_lower_bound=original.get("required_is_lower_bound", False)))
             rows = checked
     return rows, substitutes, refits

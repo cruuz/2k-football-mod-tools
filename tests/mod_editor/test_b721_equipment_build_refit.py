@@ -194,10 +194,14 @@ class QuickCheckClockTests(unittest.TestCase):
         self.assertTrue(beats)
         self.assertTrue(lz.optimal_fit_is_capped())
 
-    def test_retail_coach_shoe_is_pending_at_import_and_fits_at_build(self):
+    def test_retail_coach_shoe_and_its_mud_twin_share_one_chain_and_fit(self):
         # Coach Edwards' exact span, tset:3660:8:0:shoes01 (06H0), with the
-        # mud sibling Studio stages beside it. 64x64 art fits only through the
-        # optimal parse (12 bytes spare). Python fallback, as on Windows.
+        # mud sibling Studio stages beside it. Beta 74 appended the same 64x64
+        # chain once per reference, so this pair fit only through the optimal
+        # parse (12 bytes spare) and the quick check reported it pending. Beta
+        # 75 writes one shared chain, as the retail references themselves do,
+        # so the same art fits inside the quick check with the Python fallback,
+        # as on Windows, and Build has nothing left to refit.
         if not RETAIL_INDEX.is_file():
             self.skipTest("private retail pack 0 unavailable")
         from tools.bench.b72.b72_retail_equipment_bench import photo
@@ -217,7 +221,8 @@ class QuickCheckClockTests(unittest.TestCase):
             fresh_caches()
             with quick_check_seconds(0.2):
                 rows = writer.preflight_project_equipment(RETAIL_INDEX, [(None, a, p) for a, p in edits])
-            self.assertEqual({row["fit_status"] for row in rows}, {"fit pending"})
+            self.assertEqual({row["fit_status"] for row in rows}, {"fits"})
+            self.assertEqual(len({row["pixel_offset"] for row in rows}), 1)
             rows, substitutes, refits = writer.auto_refit_group(RETAIL_INDEX, edits, Path(folder))
         self.assertEqual([row["fit_status"] for row in rows], ["fits", "fits"])
         self.assertEqual((substitutes, refits), ({}, []))
