@@ -115,8 +115,8 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
 B69_GAME_RUNTIME_PINS = {
     "mod_editor/core/nfl2k5_weather.py": "6540d7ffc8d441898f5a89988752efd6aa0238c87b4a0941c1962b7b3feba380",
     "mod_editor/core/nfl2k5_weather_haze.py": "3d045e099f1585658b899ab6e7d3560e92edb24529ca8d6f224e901dc7712ff9",
-    "mod_editor/gui/build_panel_qt.py": "e8dccf0b12467e526bdc12cecda41d2beeade7c1c8ceacf0f05068d0a49bced7",
-    "mod_editor/gui/build_panel_qt.py": "e8dccf0b12467e526bdc12cecda41d2beeade7c1c8ceacf0f05068d0a49bced7",
+    "mod_editor/gui/build_panel_qt.py": "7227653f703bedcedf1aaeb3bfa2feae9e2af3010ba8a32586e968c3e3f4f190",
+    "mod_editor/gui/build_panel_qt.py": "7227653f703bedcedf1aaeb3bfa2feae9e2af3010ba8a32586e968c3e3f4f190",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "6377a6089d0c01233b810e0ec82f962dfbc40cdea6d80cb8dbf092b2f83b8839",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "17e2abf5ba748a945406c20668c3d5a7347794947a02c2cf0d70951d2062ff73",
@@ -1849,6 +1849,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_team_column",
         "mod_editor.core.nfl2k5_rdata_sites",
         "mod_editor.core.nfl2k5_elbow_options",
+        "mod_editor.core.nfl2k5_lineman_rating",
         "mod_editor.core.nfl2k5_position_row",
         "mod_editor.core.nfl2k5_probowl_order",
         "mod_editor.core.nfl2k5_penalties",
